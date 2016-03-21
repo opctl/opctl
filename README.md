@@ -46,7 +46,6 @@ explanation:
 - `-w $(pwd)` set container workdir to host workdir
 - `-p 8080:8080` expose container 8080 via docker-machine 8080
 - `devopspec/engine` use latest devopspec/engine image
-```
 
 ### 2) use the engines ReST API 
 
