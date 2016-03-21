@@ -56,7 +56,7 @@ curl $(docker-machine ip):8080/dev-ops
 
 run the dev op named `unit-test`
 ```
-curl -X POST $(docker-machine ip):8080/dev-ops/test/runs
+curl -X POST $(docker-machine ip):8080/dev-ops/unit-test/runs
 ```
 
 list pipelines
