@@ -1,47 +1,53 @@
 package models
 
+type pipelineRunView struct {
+  PipelineName       string `json:"pipelineName"`
+  StageRuns          []PipelineStageRunView `json:"stageRuns"`
+  StartedAtEpochTime int64 `json:"startedAtEpochTime"`
+  EndedAtEpochTime   int64 `json:"endedAtEpochTime"`
+  ExitCode           int `json:"exitCode"`
+}
+
 type PipelineRunView struct {
-  pipelineName       string
-  stageRuns          []PipelineStageRunView
-  startedAtPosixTime int64
-  endedAtPosixTime   int64
-  exitCode           int
+  pipelineRunView
 }
 
 func newPipelineRunView(
 pipelineName       string,
 stageRuns          []PipelineStageRunView,
-startedAtPosixTime int64,
-endedAtPosixTime   int64,
+startedAtEpochTime int64,
+endedAtEpochTime   int64,
 exitCode           int,
 ) PipelineRunView {
 
   return PipelineRunView{
-    pipelineName:pipelineName,
-    stageRuns:stageRuns,
-    startedAtPosixTime:startedAtPosixTime,
-    endedAtPosixTime:endedAtPosixTime,
-    exitCode:exitCode,
+    pipelineRunView{
+      PipelineName:pipelineName,
+      StageRuns:stageRuns,
+      StartedAtEpochTime:startedAtEpochTime,
+      EndedAtEpochTime:endedAtEpochTime,
+      ExitCode:exitCode,
+    },
   }
 
 }
 
-func (pipelineRunView PipelineRunView) PipelineName() string {
-  return pipelineRunView.pipelineName
+func (this PipelineRunView) PipelineName() string {
+  return this.pipelineRunView.PipelineName
 }
 
-func (pipelineRunView PipelineRunView) StageRuns() []PipelineStageRunView {
-  return pipelineRunView.stageRuns
+func (this PipelineRunView) StageRuns() []PipelineStageRunView {
+  return this.pipelineRunView.StageRuns
 }
 
-func (pipelineRunView PipelineRunView) StartedAtPosixTime() int64 {
-  return pipelineRunView.startedAtPosixTime
+func (this PipelineRunView) StartedAtEpochTime() int64 {
+  return this.pipelineRunView.StartedAtEpochTime
 }
 
-func (pipelineRunView PipelineRunView) EndedAtPosixTime() int64 {
-  return pipelineRunView.endedAtPosixTime
+func (this PipelineRunView) EndedAtEpochTime() int64 {
+  return this.pipelineRunView.EndedAtEpochTime
 }
 
-func (pipelineRunView PipelineRunView) ExitCode() int {
-  return pipelineRunView.exitCode
+func (this PipelineRunView) ExitCode() int {
+  return this.pipelineRunView.ExitCode
 }

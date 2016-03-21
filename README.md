@@ -22,7 +22,7 @@ A lightweight runtime for interacting with dev op specs.
 - run pipeline
 - set description of pipeline
 
-# Runtime Dependencies
+# Prerequisites
 
 - [docker](https://github.com/docker/docker) >= 1.10
 
@@ -31,9 +31,45 @@ Note: if using Windows or OSX, you need to update your docker-machine to use NFS
 [docker-machine-nfs](https://github.com/adlogix/docker-machine-nfs). 
 Your mileage may vary.
 
-# Installation
+# Example Usage
 
-see [releases](https://github.com/dev-op-spec/engine/releases) for available versions and release notes
+### 1) start engine for current project
+```SHELL
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -p 8080:8080 devopspec/engine
+```
+explanation:
+
+- `-it` interactive/tty
+- `--rm` remove on exit
+- `-v /var/run/docker.sock:/var/run/docker.sock` bind mount host docker socker
+- `-v $(pwd):$(pwd)` bind mount host workdir
+- `-w $(pwd)` set container workdir to host workdir
+- `-p 8080:8080` expose container 8080 via docker-machine 8080
+- `devopspec/engine` use latest devopspec/engine image
+```
+
+### 2) use the engines ReST API 
+
+list dev ops
+```
+curl $(docker-machine ip):8080/dev-ops
+```
+
+run the dev op named `unit-test`
+```
+curl -X POST $(docker-machine ip):8080/dev-ops/test/runs
+```
+
+list pipelines
+```
+curl $(docker-machine ip):8080/pipelines
+```
+
+run the pipeline named `all-tests`
+```
+curl -X POST $(docker-machine ip):8080/pipelines/all-tests/runs
+```
+
 
 # Contributing
 

@@ -8,4 +8,4 @@ RUN apk add -U git py-pip && \
     pip install -U pip docker-compose==1.6.0 && \
     rm -rf /tmp/* /root/.cache
 
-ENTRYPOINT ["dev-op-spec-engine"]
+CMD ["dev-op-spec-engine"]

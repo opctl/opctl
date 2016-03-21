@@ -4,8 +4,8 @@ type PipelineRunViewBuilder interface {
   Build() PipelineRunView
   SetPipelineName(value string) PipelineRunViewBuilder
   AddStageRun(value PipelineStageRunView) PipelineRunViewBuilder
-  SetStartedAtPosixTime(value int64) PipelineRunViewBuilder
-  SetEndedAtPosixTime(value int64) PipelineRunViewBuilder
+  SetStartedAtEpochTime(value int64) PipelineRunViewBuilder
+  SetEndedAtEpochTime(value int64) PipelineRunViewBuilder
   SetExitCode(value int) PipelineRunViewBuilder
 }
 
@@ -16,8 +16,8 @@ func NewPipelineRunViewBuilder() PipelineRunViewBuilder {
 type pipelineRunViewBuilder struct {
   pipelineName       string
   stageRuns          []PipelineStageRunView
-  startedAtPosixTime int64
-  endedAtPosixTime   int64
+  startedAtEpochTime int64
+  endedAtEpochTime   int64
   exitCode           int
 }
 
@@ -26,8 +26,8 @@ func (b *pipelineRunViewBuilder) Build() PipelineRunView {
   return newPipelineRunView(
     b.pipelineName,
     b.stageRuns,
-    b.startedAtPosixTime,
-    b.endedAtPosixTime,
+    b.startedAtEpochTime,
+    b.endedAtEpochTime,
     b.exitCode,
   )
 
@@ -47,16 +47,16 @@ func (b *pipelineRunViewBuilder) AddStageRun(value PipelineStageRunView) Pipelin
 
 }
 
-func (b *pipelineRunViewBuilder) SetStartedAtPosixTime(value int64) PipelineRunViewBuilder {
+func (b *pipelineRunViewBuilder) SetStartedAtEpochTime(value int64) PipelineRunViewBuilder {
 
-  b.startedAtPosixTime = value
+  b.startedAtEpochTime = value
   return b
 
 }
 
-func (b *pipelineRunViewBuilder) SetEndedAtPosixTime(value int64) PipelineRunViewBuilder {
+func (b *pipelineRunViewBuilder) SetEndedAtEpochTime(value int64) PipelineRunViewBuilder {
 
-  b.endedAtPosixTime = value
+  b.endedAtEpochTime = value
   return b
 
 }

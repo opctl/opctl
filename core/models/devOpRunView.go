@@ -1,40 +1,59 @@
 package models
 
+import "encoding/json"
+
+type devOpRunView struct {
+  DevOpName          string `json:"devOpName"`
+  StartedAtEpochTime int64 `json:"startedAtEpochTime"`
+  EndedAtEpochTime   int64 `json:"endedAtEpochTime"`
+  ExitCode           int `json:"exitCode"`
+}
+
 type DevOpRunView struct {
-  devOpName          string
-  startedAtPosixTime int64
-  endedAtPosixTime   int64
-  exitCode           int
+  devOpRunView
 }
 
 func newDevOpRunView(
 devOpName          string,
-startedAtPosixTime int64,
-endedAtPosixTime   int64,
+startedAtEpochTime int64,
+endedAtEpochTime   int64,
 exitCode           int,
 ) DevOpRunView {
 
   return DevOpRunView{
-    devOpName:devOpName,
-    startedAtPosixTime:startedAtPosixTime,
-    endedAtPosixTime:endedAtPosixTime,
-    exitCode:exitCode,
+    devOpRunView{
+      DevOpName:devOpName,
+      StartedAtEpochTime:startedAtEpochTime,
+      EndedAtEpochTime:endedAtEpochTime,
+      ExitCode:exitCode,
+    },
   }
 
 }
 
-func (devOpRunView DevOpRunView) DevOpName() string {
-  return devOpRunView.devOpName
+func (this DevOpRunView) MarshalJSON(
+) ([]byte, error) {
+  return json.Marshal(this.devOpRunView)
 }
 
-func (devOpRunView DevOpRunView) StartedAtPosixTime() int64 {
-  return devOpRunView.startedAtPosixTime
+func (this *DevOpRunView) UnmarshalJSON(
+b []byte,
+) error {
+  return json.Unmarshal(b, &this.devOpRunView)
 }
 
-func (devOpRunView DevOpRunView) EndedAtPosixTime() int64 {
-  return devOpRunView.endedAtPosixTime
+func (this DevOpRunView) DevOpName() string {
+  return this.devOpRunView.DevOpName
 }
 
-func (devOpRunView DevOpRunView) ExitCode() int {
-  return devOpRunView.exitCode
+func (this DevOpRunView) StartedAtEpochTime() int64 {
+  return this.devOpRunView.StartedAtEpochTime
+}
+
+func (this DevOpRunView) EndedAtEpochTime() int64 {
+  return this.devOpRunView.EndedAtEpochTime
+}
+
+func (this DevOpRunView) ExitCode() int {
+  return this.devOpRunView.ExitCode
 }

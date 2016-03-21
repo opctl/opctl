@@ -40,7 +40,7 @@ namesOfAlreadyRunPipelines[]string,
 ) (pipelineRun models.PipelineRunView, err error) {
 
   pipelineRunViewBuilder := models.NewPipelineRunViewBuilder()
-  pipelineRunViewBuilder.SetStartedAtPosixTime(time.Now().Unix())
+  pipelineRunViewBuilder.SetStartedAtEpochTime(time.Now().Unix())
   pipelineRunViewBuilder.SetPipelineName(pipelineName)
 
   var pipelineFileBytes []byte
@@ -60,7 +60,7 @@ namesOfAlreadyRunPipelines[]string,
 
   defer func() {
 
-    pipelineRunViewBuilder.SetEndedAtPosixTime(time.Now().Unix())
+    pipelineRunViewBuilder.SetEndedAtEpochTime(time.Now().Unix())
 
     pipelineRun = pipelineRunViewBuilder.Build()
 

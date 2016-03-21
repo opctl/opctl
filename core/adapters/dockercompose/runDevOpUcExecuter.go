@@ -42,7 +42,7 @@ devOpName string,
 ) (devOpRunView models.DevOpRunView, err error) {
 
   devOpRunViewBuilder := models.NewDevOpRunViewBuilder()
-  devOpRunViewBuilder.SetStartedAtPosixTime(time.Now().Unix())
+  devOpRunViewBuilder.SetStartedAtEpochTime(time.Now().Unix())
   devOpRunViewBuilder.SetDevOpName(devOpName)
 
   var relPathToDevOpDockerComposeFile string
@@ -117,7 +117,7 @@ devOpName string,
 
     }
 
-    devOpRunViewBuilder.SetEndedAtPosixTime(time.Now().Unix())
+    devOpRunViewBuilder.SetEndedAtEpochTime(time.Now().Unix())
 
     devOpRunView = devOpRunViewBuilder.Build()
 

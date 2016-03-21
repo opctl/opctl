@@ -14,9 +14,9 @@ var _ = Describe("devOpRunViewBuilder", func() {
       expectedDevOpRunView := newDevOpRunView("devOpName", time.Now().Unix(), time.Now().Unix(), 1)
 
       objectUnderTest := NewDevOpRunViewBuilder()
-      objectUnderTest.SetDevOpName(expectedDevOpRunView.devOpName)
-      objectUnderTest.SetStartedAtPosixTime(expectedDevOpRunView.StartedAtPosixTime())
-      objectUnderTest.SetEndedAtPosixTime(expectedDevOpRunView.EndedAtPosixTime())
+      objectUnderTest.SetDevOpName(expectedDevOpRunView.DevOpName())
+      objectUnderTest.SetStartedAtEpochTime(expectedDevOpRunView.StartedAtEpochTime())
+      objectUnderTest.SetEndedAtEpochTime(expectedDevOpRunView.EndedAtEpochTime())
       objectUnderTest.SetExitCode(expectedDevOpRunView.ExitCode())
 
       /* act */

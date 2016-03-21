@@ -1,7 +1,7 @@
 package models
 
 type PipelineStageRunView interface {
-  StartedAtPosixTime() int64
-  EndedAtPosixTime()   int64
+  StartedAtEpochTime() int64
+  EndedAtEpochTime()   int64
   ExitCode()           int
 }

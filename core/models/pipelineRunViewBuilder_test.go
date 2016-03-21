@@ -14,9 +14,9 @@ var _ = Describe("pipelineRunViewBuilder", func() {
       expectedPipelineRunView := newPipelineRunView("pipelineName", nil, time.Now().Unix(), time.Now().Unix(), 1)
 
       objectUnderTest := NewPipelineRunViewBuilder()
-      objectUnderTest.SetPipelineName(expectedPipelineRunView.pipelineName)
-      objectUnderTest.SetStartedAtPosixTime(expectedPipelineRunView.StartedAtPosixTime())
-      objectUnderTest.SetEndedAtPosixTime(expectedPipelineRunView.EndedAtPosixTime())
+      objectUnderTest.SetPipelineName(expectedPipelineRunView.PipelineName())
+      objectUnderTest.SetStartedAtEpochTime(expectedPipelineRunView.StartedAtEpochTime())
+      objectUnderTest.SetEndedAtEpochTime(expectedPipelineRunView.EndedAtEpochTime())
       objectUnderTest.SetExitCode(expectedPipelineRunView.ExitCode())
 
       /* act */

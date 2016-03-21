@@ -76,6 +76,17 @@ func (api _api) Start(
 
   })
 
+  router.POST("/dev-ops/:dev-op-name/runs", func(c *gin.Context) {
+
+    devOpRunView, err := api.compositionRoot.CoreApi().RunDevOp(c.Param("dev-op-name"))
+    if (nil != err) {
+      panic(err)
+    }
+
+    c.JSON(http.StatusOK, devOpRunView)
+
+  })
+
   router.GET("/pipelines", func(c *gin.Context) {
 
     pipelines, err := api.compositionRoot.CoreApi().ListPipelines()
@@ -119,6 +130,17 @@ func (api _api) Start(
     }
 
     c.Status(http.StatusOK)
+
+  })
+
+  router.POST("/pipelines/:pipeline-name/runs", func(c *gin.Context) {
+
+    pipelineRunView, err := api.compositionRoot.CoreApi().RunPipeline(c.Param("pipeline-name"))
+    if (nil != err) {
+      panic(err)
+    }
+
+    c.JSON(http.StatusOK, pipelineRunView)
 
   })
 

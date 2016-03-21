@@ -3,8 +3,8 @@ package models
 type DevOpRunViewBuilder interface {
   Build() DevOpRunView
   SetDevOpName(value string) DevOpRunViewBuilder
-  SetStartedAtPosixTime(value int64) DevOpRunViewBuilder
-  SetEndedAtPosixTime(value int64) DevOpRunViewBuilder
+  SetStartedAtEpochTime(value int64) DevOpRunViewBuilder
+  SetEndedAtEpochTime(value int64) DevOpRunViewBuilder
   SetExitCode(value int) DevOpRunViewBuilder
 }
 
@@ -14,8 +14,8 @@ func NewDevOpRunViewBuilder() DevOpRunViewBuilder {
 
 type devOpRunViewBuilder struct {
   devOpName          string
-  startedAtPosixTime int64
-  endedAtPosixTime   int64
+  startedAtEpochTime int64
+  endedAtEpochTime   int64
   exitCode           int
 }
 
@@ -23,8 +23,8 @@ func (b *devOpRunViewBuilder) Build() DevOpRunView {
 
   return newDevOpRunView(
     b.devOpName,
-    b.startedAtPosixTime,
-    b.endedAtPosixTime,
+    b.startedAtEpochTime,
+    b.endedAtEpochTime,
     b.exitCode,
   )
 
@@ -37,16 +37,16 @@ func (b *devOpRunViewBuilder) SetDevOpName(value string) DevOpRunViewBuilder {
 
 }
 
-func (b *devOpRunViewBuilder) SetStartedAtPosixTime(value int64) DevOpRunViewBuilder {
+func (b *devOpRunViewBuilder) SetStartedAtEpochTime(value int64) DevOpRunViewBuilder {
 
-  b.startedAtPosixTime = value
+  b.startedAtEpochTime = value
   return b
 
 }
 
-func (b *devOpRunViewBuilder) SetEndedAtPosixTime(value int64) DevOpRunViewBuilder {
+func (b *devOpRunViewBuilder) SetEndedAtEpochTime(value int64) DevOpRunViewBuilder {
 
-  b.endedAtPosixTime = value
+  b.endedAtEpochTime = value
   return b
 
 }
