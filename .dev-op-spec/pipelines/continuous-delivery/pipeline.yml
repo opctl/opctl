@@ -1,0 +1,8 @@
+description: ensures the cli is of "deliverable quality" and delivers it
+stages:
+- name: build
+  type: dev-op
+- name: test
+  type: pipeline
+- name: publish-coverage-to-codecov
+  type: dev-op

@@ -1,0 +1,10 @@
+version: "2"
+services:
+  publish-coverage-to-codecov:
+    extends:
+      service: src
+      file: ../.common/docker-compose.yml
+    build: ./
+    environment:
+      - CODECOV_TOKEN
+    entrypoint: .dev-op-spec/dev-ops/publish-coverage-to-codecov/entrypoint.sh

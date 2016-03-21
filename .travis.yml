@@ -1,0 +1,18 @@
+language: generic
+sudo: required
+before_script:
+- sudo apt-get remove --purge docker-engine
+- curl -fsSL https://get.docker.com/ | sh
+- sudo rm /usr/local/bin/docker-compose
+- sudo curl -L -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.6.0/docker-compose-Linux-x86_64
+- sudo chmod +x /usr/local/bin/docker-compose
+- sudo curl -L -o /usr/local/bin/dos https://github.com/dev-op-spec/cli/releases/download/0.8.0/dos-linux-x86_64
+- sudo chmod +x /usr/local/bin/dos
+env:
+  matrix:
+  - GOPATH=/golang
+  global:
+    secure: qrK5lDFe4xWVpnrNEV84CnhX0qxiVW64+4CRNKbpRV8La2qK6ESQqt5uijA+r/IVH1U1qXb1ovSZFpq9pvkQRpfNJmrlQZHtIrJ8Gqobs7TIBeYVVNSakt7hntffZBT2mQdXUliCgiWgcduen8BmxcQ8XuXbD8hk0ry/pR9sBgMsnTTfwvXA4WhMC5FfccjPWIVZiYrx6iTEsm22xZbwB9dBJWeqI8dj0FjXZ7WPObLY8Gvc6IqkBk9IKUGobLkjcvbTyhYkiXFTPE30UOyFibES0wOFmrMbUvM7xdmdFpviS/QO2cc4uiMtpTfsgUxRNDQFcO7i/Qi+M7LmGpmd7Wy5ILB1kbjWEMW7VPX75yI1foj72suPs5auwKzzrlglCtpN79eB+fM3YDUjkzSWWk3upp72euJZU90XEflFoe6sPl/4al8PnMuXuYlNIcncdksuU2LapvCK/oZzj0/877CRg1OF5KgpfIxzNV35fcheawKG2Ce8bNIxSkuyFx5ySEeFYmwJdy+Q3OUsnlOtAQKRayeMfuQVjNmOKmC9wO7qvHx415ESm/lrAbjAE2ZIPwhHZX+wMY6wThvjtekDhtcsxc3NNr8BSHyNz55JHDOximdnXs5juX+12pVC3rdZCYiR3mb14YyMpHczx7Jb1VH/2C8EL7gJP1gNVryDgQY=
+services:
+- docker
+script: dos pl run continuous-delivery

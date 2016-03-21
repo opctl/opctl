@@ -1,0 +1,19 @@
+version: "2"
+services:
+  src:
+    image: scratch
+    dns: 8.8.8.8
+    volumes:
+      - ../../../:/golang/src/github.com/dev-op-spec/engine
+    working_dir: /golang/src/github.com/dev-op-spec/engine
+  go:
+    image: repworth/git-go:git2.6-go1.6
+    extends:
+      service: src
+    volumes:
+      - $GOPATH:/golang
+    environment:
+      - GOPATH=/golang
+      - GOARCH=amd64
+      - CGO_ENABLED=0
+      - GOOS=linux

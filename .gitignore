@@ -1,0 +1,11 @@
+### JetBrains
+*.iml
+.idea/
+
+### dev-op-spec
+*.tmp
+
+### go
+*.coverprofile
+core/coverage.txt
+engine
