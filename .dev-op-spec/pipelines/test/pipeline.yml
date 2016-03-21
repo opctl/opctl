@@ -1,6 +1,4 @@
 description: performs all test related dev ops
 stages:
-- name: build
-  type: dev-op
 - name: test
   type: dev-op
