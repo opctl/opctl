@@ -70,6 +70,8 @@ run the pipeline named `all-tests`
 curl -X POST $(docker-machine ip):8080/pipelines/all-tests/runs
 ```
 
+and so on...
+
 
 # Contributing
 
