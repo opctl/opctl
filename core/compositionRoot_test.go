@@ -3,14 +3,20 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
+
+  fakeContainerEngine "github.com/dev-op-spec/engine/core/adapters/containerengine/fake"
+  fakeFilesys "github.com/dev-op-spec/engine/core/adapters/filesys/fake"
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("addDevOpUseCase", func() {
+  Context("AddDevOpUseCase()", func() {
     It("should return an instance of type addDevOpUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualAddDevOpUseCase := objectUnderTest.AddDevOpUseCase()
@@ -20,11 +26,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("addPipelineUseCase", func() {
+  Context("AddPipelineUseCase()", func() {
     It("should return an instance of type addPipelineUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualAddPipelineUseCase := objectUnderTest.AddPipelineUseCase()
@@ -34,11 +43,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("addStageToPipelineUseCase", func() {
+  Context("AddStageToPipelineUseCase()", func() {
     It("should return an instance of type addStageToPipelineUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualAddStageToPipelineUseCase := objectUnderTest.AddStageToPipelineUseCase()
@@ -48,11 +60,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("listDevOpsUseCase", func() {
+  Context("ListDevOpsUseCase()", func() {
     It("should return an instance of type listDevOpsUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualListDevOpsUseCase := objectUnderTest.ListDevOpsUseCase()
@@ -62,11 +77,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("listPipelinesUseCase", func() {
+  Context("ListPipelinesUseCase()", func() {
     It("should return an instance of type listPipelinesUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualListPipelinesUseCase := objectUnderTest.ListPipelinesUseCase()
@@ -76,11 +94,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("runDevOpUseCase", func() {
+  Context("RunDevOpUseCase()", func() {
     It("should return an instance of type runDevOpUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualRunDevOpUseCase := objectUnderTest.RunDevOpUseCase()
@@ -90,11 +111,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("runPipelineUseCase", func() {
+  Context("RunPipelineUseCase()", func() {
     It("should return an instance of type runPipelineUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualRunPipelineUseCase := objectUnderTest.RunPipelineUseCase()
@@ -104,11 +128,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("setDescriptionOfDevOpUseCase", func() {
+  Context("SetDescriptionOfDevOpUseCase()", func() {
     It("should return an instance of type setDescriptionOfDevOpUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualSetDescriptionOfDevOpUseCase := objectUnderTest.SetDescriptionOfDevOpUseCase()
@@ -118,11 +145,14 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("setDescriptionOfPipelineUseCase", func() {
+  Context("SetDescriptionOfPipelineUseCase()", func() {
     It("should return an instance of type setDescriptionOfPipelineUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot(
+        fakeContainerEngine.New(),
+        fakeFilesys.New(),
+      )
 
       /* act */
       actualSetDescriptionOfPipelineUseCase := objectUnderTest.SetDescriptionOfPipelineUseCase()

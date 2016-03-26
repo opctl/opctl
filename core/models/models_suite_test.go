@@ -9,5 +9,5 @@ import (
 
 func TestModels(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "Models Suite")
+  RunSpecs(t, "engine/core/models")
 }

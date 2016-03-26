@@ -6,8 +6,8 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("RestApi", func() {
-    It("should return a rest.Api instance", func() {
+  Context("RestApi()", func() {
+    It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot()
@@ -16,7 +16,7 @@ var _ = Describe("compositionRoot", func() {
       actualRestApi := objectUnderTest.RestApi()
 
       /* assert */
-      Expect(actualRestApi).ToNot(BeNil())
+      Expect(actualRestApi).ShouldNot(BeNil())
 
     })
   })

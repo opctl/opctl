@@ -1,6 +1,9 @@
 package core
 
-import "github.com/dev-op-spec/engine/core/models"
+import (
+  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/ports"
+)
 
 type Api interface {
   AddDevOp(
@@ -39,10 +42,15 @@ type Api interface {
 }
 
 func New(
+containerEngine ports.ContainerEngine,
+filesys ports.Filesys,
 ) (api Api, err error) {
 
   var compositionRoot compositionRoot
-  compositionRoot, err = newCompositionRoot()
+  compositionRoot, err = newCompositionRoot(
+    containerEngine,
+    filesys,
+  )
   if (nil != err) {
     return
   }

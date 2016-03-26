@@ -1,4 +1,4 @@
-package main
+package git
 
 import (
   . "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
   "testing"
 )
 
-func TestEngine(t *testing.T) {
+func TestGit(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "engine")
+  RunSpecs(t, "engine/core/adapters/templatesrc/git")
 }

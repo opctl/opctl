@@ -9,5 +9,5 @@ import (
 
 func TestReSt(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "ReST Suite")
+  RunSpecs(t, "engine/rest")
 }

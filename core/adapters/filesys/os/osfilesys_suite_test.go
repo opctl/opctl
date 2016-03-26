@@ -1,4 +1,4 @@
-package main
+package os
 
 import (
   . "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
   "testing"
 )
 
-func TestEngine(t *testing.T) {
+func TestOsfilesys(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "engine")
+  RunSpecs(t, "engine/core/adapters/filesys/os")
 }
