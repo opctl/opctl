@@ -18,7 +18,7 @@ var _ = Describe("yamlCodec", func() {
           },
         },
       }
-      objectUnderTest := yamlCodecImpl{}
+      objectUnderTest := _yamlCodec{}
 
       /* act */
       dockercomposeFileBytes, _ := objectUnderTest.toYaml(&expectedDockerComposeFile)

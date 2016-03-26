@@ -6,129 +6,129 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("addDevOpUcExecuter", func() {
-    It("should return an instance of type addDevOpUcExecuter", func() {
+  Context("addDevOpUseCase", func() {
+    It("should return an instance of type addDevOpUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualAddDevOpUcExecuter := objectUnderTest.AddDevOpUcExecuter()
+      actualAddDevOpUseCase := objectUnderTest.AddDevOpUseCase()
 
       /* assert */
-      Expect(actualAddDevOpUcExecuter).To(BeAssignableToTypeOf(&addDevOpUcExecuterImpl{}))
+      Expect(actualAddDevOpUseCase).To(BeAssignableToTypeOf(&_addDevOpUseCase{}))
 
     })
   })
-  Context("addPipelineUcExecuter", func() {
-    It("should return an instance of type addPipelineUcExecuter", func() {
+  Context("addPipelineUseCase", func() {
+    It("should return an instance of type addPipelineUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualAddPipelineUcExecuter := objectUnderTest.AddPipelineUcExecuter()
+      actualAddPipelineUseCase := objectUnderTest.AddPipelineUseCase()
 
       /* assert */
-      Expect(actualAddPipelineUcExecuter).To(BeAssignableToTypeOf(&addPipelineUcExecuterImpl{}))
+      Expect(actualAddPipelineUseCase).To(BeAssignableToTypeOf(&_addPipelineUseCase{}))
 
     })
   })
-  Context("addStageToPipelineUcExecuter", func() {
-    It("should return an instance of type addStageToPipelineUcExecuter", func() {
+  Context("addStageToPipelineUseCase", func() {
+    It("should return an instance of type addStageToPipelineUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualAddStageToPipelineUcExecuter := objectUnderTest.AddStageToPipelineUcExecuter()
+      actualAddStageToPipelineUseCase := objectUnderTest.AddStageToPipelineUseCase()
 
       /* assert */
-      Expect(actualAddStageToPipelineUcExecuter).To(BeAssignableToTypeOf(&addStageToPipelineUcExecuterImpl{}))
+      Expect(actualAddStageToPipelineUseCase).To(BeAssignableToTypeOf(&_addStageToPipelineUseCase{}))
 
     })
   })
-  Context("listDevOpsUcExecuter", func() {
-    It("should return an instance of type listDevOpsUcExecuter", func() {
+  Context("listDevOpsUseCase", func() {
+    It("should return an instance of type listDevOpsUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualListDevOpsUcExecuter := objectUnderTest.ListDevOpsUcExecuter()
+      actualListDevOpsUseCase := objectUnderTest.ListDevOpsUseCase()
 
       /* assert */
-      Expect(actualListDevOpsUcExecuter).To(BeAssignableToTypeOf(&listDevOpsUcExecuterImpl{}))
+      Expect(actualListDevOpsUseCase).To(BeAssignableToTypeOf(&_listDevOpsUseCase{}))
 
     })
   })
-  Context("listPipelinesUcExecuter", func() {
-    It("should return an instance of type listPipelinesUcExecuter", func() {
+  Context("listPipelinesUseCase", func() {
+    It("should return an instance of type listPipelinesUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualListPipelinesUcExecuter := objectUnderTest.ListPipelinesUcExecuter()
+      actualListPipelinesUseCase := objectUnderTest.ListPipelinesUseCase()
 
       /* assert */
-      Expect(actualListPipelinesUcExecuter).To(BeAssignableToTypeOf(&listPipelinesUcExecuterImpl{}))
+      Expect(actualListPipelinesUseCase).To(BeAssignableToTypeOf(&_listPipelinesUseCase{}))
 
     })
   })
-  Context("runDevOpUcExecuter", func() {
-    It("should return an instance of type runDevOpUcExecuter", func() {
+  Context("runDevOpUseCase", func() {
+    It("should return an instance of type runDevOpUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualRunDevOpUcExecuter := objectUnderTest.RunDevOpUcExecuter()
+      actualRunDevOpUseCase := objectUnderTest.RunDevOpUseCase()
 
       /* assert */
-      Expect(actualRunDevOpUcExecuter).To(BeAssignableToTypeOf(&runDevOpUcExecuterImpl{}))
+      Expect(actualRunDevOpUseCase).To(BeAssignableToTypeOf(&_runDevOpUseCase{}))
 
     })
   })
-  Context("runPipelineUcExecuter", func() {
-    It("should return an instance of type runPipelineUcExecuter", func() {
+  Context("runPipelineUseCase", func() {
+    It("should return an instance of type runPipelineUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualRunPipelineUcExecuter := objectUnderTest.RunPipelineUcExecuter()
+      actualRunPipelineUseCase := objectUnderTest.RunPipelineUseCase()
 
       /* assert */
-      Expect(actualRunPipelineUcExecuter).To(BeAssignableToTypeOf(&runPipelineUcExecuterImpl{}))
+      Expect(actualRunPipelineUseCase).To(BeAssignableToTypeOf(&_runPipelineUseCase{}))
 
     })
   })
-  Context("setDescriptionOfDevOpUcExecuter", func() {
-    It("should return an instance of type setDescriptionOfDevOpUcExecuter", func() {
+  Context("setDescriptionOfDevOpUseCase", func() {
+    It("should return an instance of type setDescriptionOfDevOpUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualSetDescriptionOfDevOpUcExecuter := objectUnderTest.SetDescriptionOfDevOpUcExecuter()
+      actualSetDescriptionOfDevOpUseCase := objectUnderTest.SetDescriptionOfDevOpUseCase()
 
       /* assert */
-      Expect(actualSetDescriptionOfDevOpUcExecuter).To(BeAssignableToTypeOf(&setDescriptionOfDevOpUcExecuterImpl{}))
+      Expect(actualSetDescriptionOfDevOpUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfDevOpUseCase{}))
 
     })
   })
-  Context("setDescriptionOfPipelineUcExecuter", func() {
-    It("should return an instance of type setDescriptionOfPipelineUcExecuter", func() {
+  Context("setDescriptionOfPipelineUseCase", func() {
+    It("should return an instance of type setDescriptionOfPipelineUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualSetDescriptionOfPipelineUcExecuter := objectUnderTest.SetDescriptionOfPipelineUcExecuter()
+      actualSetDescriptionOfPipelineUseCase := objectUnderTest.SetDescriptionOfPipelineUseCase()
 
       /* assert */
-      Expect(actualSetDescriptionOfPipelineUcExecuter).To(BeAssignableToTypeOf(&setDescriptionOfPipelineUcExecuterImpl{}))
+      Expect(actualSetDescriptionOfPipelineUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfPipelineUseCase{}))
 
     })
   })

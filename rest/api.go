@@ -5,6 +5,9 @@ import (
   "github.com/dev-op-spec/engine/core"
   "net/http"
   "github.com/dev-op-spec/engine/core/models"
+  "time"
+  "io"
+  "fmt"
 )
 
 type Api interface {
@@ -29,6 +32,24 @@ func (api _api) Start(
 ) {
 
   router := gin.Default()
+
+  router.GET("/stream", func(c *gin.Context) {
+
+    ticker := time.NewTicker(3 * time.Second)
+    listener := ticker.C
+
+    defer func() {
+      ticker.Stop()
+    }()
+
+    c.Stream(func(w io.Writer) bool {
+
+      fmt.Println()
+      c.SSEvent("message", <-listener)
+      return true
+
+    })
+  })
 
   router.GET("/dev-ops", func(c *gin.Context) {
 

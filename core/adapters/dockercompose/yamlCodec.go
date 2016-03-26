@@ -15,9 +15,9 @@ type yamlCodec interface {
   ) (err error)
 }
 
-type yamlCodecImpl struct{}
+type _yamlCodec struct{}
 
-func (yc yamlCodecImpl) toYaml(
+func (this _yamlCodec) toYaml(
 in interface{},
 ) (pipelineFileBytes []byte, err error) {
 
@@ -27,7 +27,7 @@ in interface{},
 
 }
 
-func (yc yamlCodecImpl)  fromYaml(
+func (this _yamlCodec)  fromYaml(
 in []byte,
 out interface{},
 ) (err error) {

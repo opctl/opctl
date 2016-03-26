@@ -12,12 +12,12 @@ type relPathToPipelineDirFactory interface {
 }
 
 func newRelPathToPipelineDirFactory() relPathToPipelineDirFactory {
-  return &relPathToPipelineDirFactoryImpl{}
+  return &_relPathToPipelineDirFactory{}
 }
 
-type relPathToPipelineDirFactoryImpl struct{}
+type _relPathToPipelineDirFactory struct{}
 
-func (f relPathToPipelineDirFactoryImpl) Construct(
+func (this _relPathToPipelineDirFactory) Construct(
 pipelineName string,
 ) (relPathToPipelineDir string, err error) {
 

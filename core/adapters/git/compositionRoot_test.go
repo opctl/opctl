@@ -6,17 +6,17 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("getTemplateUcExecuter", func() {
-    It("should return an instance of type getTemplateUcExecuter", func() {
+  Context("getTemplateUseCase", func() {
+    It("should return an instance of type getTemplateUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualGetTemplateUcExecuter := objectUnderTest.GetTemplateUcExecuter()
+      actualGetTemplateUseCase := objectUnderTest.GetTemplateUseCase()
 
       /* assert */
-      Expect(actualGetTemplateUcExecuter).To(BeAssignableToTypeOf(&getTemplateUcExecuterImpl{}))
+      Expect(actualGetTemplateUseCase).To(BeAssignableToTypeOf(&getTemplateUseCaseImpl{}))
 
     })
   })

@@ -7,16 +7,16 @@ import (
 
 var _ = Describe("filesys", func() {
   Context(".CreateDevOpDir() method", func() {
-    It("should invoke compositionRoot.createDevOpDirUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.createDevOpDirUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedDevOpName := ""
 
       // wire up fakes
-      fakeCreateDevOpDirUCExecuter := new(FakeCreateDevOpDirUcExecuter)
+      fakeCreateDevOpDirUseCase := new(FakeCreateDevOpDirUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.CreateDevOpDirUcExecuterReturns(fakeCreateDevOpDirUCExecuter)
+      fakeCompositionRoot.CreateDevOpDirUseCaseReturns(fakeCreateDevOpDirUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -26,22 +26,22 @@ var _ = Describe("filesys", func() {
       objectUnderTest.CreateDevOpDir(providedDevOpName)
 
       /* assert */
-      Expect(fakeCreateDevOpDirUCExecuter.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
-      Expect(fakeCreateDevOpDirUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeCreateDevOpDirUseCase.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
+      Expect(fakeCreateDevOpDirUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".CreatePipelineDir() method", func() {
-    It("should invoke compositionRoot.createPipelineDirUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.createPipelineDirUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedPipelineName := ""
 
       // wire up fakes
-      fakeCreatePipelineDirUCExecuter := new(FakeCreatePipelineDirUcExecuter)
+      fakeCreatePipelineDirUseCase := new(FakeCreatePipelineDirUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.CreatePipelineDirUcExecuterReturns(fakeCreatePipelineDirUCExecuter)
+      fakeCompositionRoot.CreatePipelineDirUseCaseReturns(fakeCreatePipelineDirUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -51,21 +51,21 @@ var _ = Describe("filesys", func() {
       objectUnderTest.CreatePipelineDir(providedPipelineName)
 
       /* assert */
-      Expect(fakeCreatePipelineDirUCExecuter.ExecuteArgsForCall(0)).To(Equal(providedPipelineName))
-      Expect(fakeCreatePipelineDirUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeCreatePipelineDirUseCase.ExecuteArgsForCall(0)).To(Equal(providedPipelineName))
+      Expect(fakeCreatePipelineDirUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".ListNamesOfDevOpDirs() method", func() {
-    It("should invoke compositionRoot.listNamesOfDevOpDirsUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.listNamesOfDevOpDirsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
 
       // wire up fakes
-      fakeListNamesOfDevOpDirsUCExecuter := new(FakeListNamesOfDevOpDirsUcExecuter)
+      fakeListNamesOfDevOpDirsUseCase := new(FakeListNamesOfDevOpDirsUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ListNamesOfDevOpDirsUcExecuterReturns(fakeListNamesOfDevOpDirsUCExecuter)
+      fakeCompositionRoot.ListNamesOfDevOpDirsUseCaseReturns(fakeListNamesOfDevOpDirsUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -75,20 +75,20 @@ var _ = Describe("filesys", func() {
       objectUnderTest.ListNamesOfDevOpDirs()
 
       /* assert */
-      Expect(fakeListNamesOfDevOpDirsUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeListNamesOfDevOpDirsUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".ListNamesOfPipelineDirs() method", func() {
-    It("should invoke compositionRoot.listNamesOfPipelineDirsUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.listNamesOfPipelineDirsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
 
       // wire up fakes
-      fakeListNamesOfPipelineDirsUCExecuter := new(FakeListNamesOfPipelineDirsUcExecuter)
+      fakeListNamesOfPipelineDirsUseCase := new(FakeListNamesOfPipelineDirsUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ListNamesOfPipelineDirsUcExecuterReturns(fakeListNamesOfPipelineDirsUCExecuter)
+      fakeCompositionRoot.ListNamesOfPipelineDirsUseCaseReturns(fakeListNamesOfPipelineDirsUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -98,21 +98,21 @@ var _ = Describe("filesys", func() {
       objectUnderTest.ListNamesOfPipelineDirs()
 
       /* assert */
-      Expect(fakeListNamesOfPipelineDirsUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeListNamesOfPipelineDirsUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".ReadDevOpFile() method", func() {
-    It("should invoke compositionRoot.readDevOpFileUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.readDevOpFileUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedDevOpName := ""
 
       // wire up fakes
-      fakeReadDevOpFileUCExecuter := new(FakeReadDevOpFileUcExecuter)
+      fakeReadDevOpFileUseCase := new(FakeReadDevOpFileUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ReadDevOpFileUcExecuterReturns(fakeReadDevOpFileUCExecuter)
+      fakeCompositionRoot.ReadDevOpFileUseCaseReturns(fakeReadDevOpFileUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -122,22 +122,22 @@ var _ = Describe("filesys", func() {
       objectUnderTest.ReadDevOpFile(providedDevOpName)
 
       /* assert */
-      Expect(fakeReadDevOpFileUCExecuter.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
-      Expect(fakeReadDevOpFileUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeReadDevOpFileUseCase.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
+      Expect(fakeReadDevOpFileUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".ReadPipelineFile() method", func() {
-    It("should invoke compositionRoot.readPipelineFileUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.readPipelineFileUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedPipelineName := ""
 
       // wire up fakes
-      fakeReadPipelineFileUCExecuter := new(FakeReadPipelineFileUcExecuter)
+      fakeReadPipelineFileUseCase := new(FakeReadPipelineFileUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ReadPipelineFileUcExecuterReturns(fakeReadPipelineFileUCExecuter)
+      fakeCompositionRoot.ReadPipelineFileUseCaseReturns(fakeReadPipelineFileUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -147,23 +147,23 @@ var _ = Describe("filesys", func() {
       objectUnderTest.ReadPipelineFile(providedPipelineName)
 
       /* assert */
-      Expect(fakeReadPipelineFileUCExecuter.ExecuteArgsForCall(0)).To(Equal(providedPipelineName))
-      Expect(fakeReadPipelineFileUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeReadPipelineFileUseCase.ExecuteArgsForCall(0)).To(Equal(providedPipelineName))
+      Expect(fakeReadPipelineFileUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".SaveDevOpFile() method", func() {
-    It("should invoke compositionRoot.saveDevOpFileUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.saveDevOpFileUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedDevOpName := ""
       providedDevOpData := make([]byte, 0)
 
       // wire up fakes
-      fakeSaveDevOpFileUCExecuter := new(FakeSaveDevOpFileUcExecuter)
+      fakeSaveDevOpFileUseCase := new(FakeSaveDevOpFileUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.SaveDevOpFileUcExecuterReturns(fakeSaveDevOpFileUCExecuter)
+      fakeCompositionRoot.SaveDevOpFileUseCaseReturns(fakeSaveDevOpFileUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -173,25 +173,25 @@ var _ = Describe("filesys", func() {
       objectUnderTest.SaveDevOpFile(providedDevOpName, providedDevOpData)
 
       /* assert */
-      executeArg0, executeArg1 := fakeSaveDevOpFileUCExecuter.ExecuteArgsForCall(0)
+      executeArg0, executeArg1 := fakeSaveDevOpFileUseCase.ExecuteArgsForCall(0)
       Expect(executeArg0).To(Equal(providedDevOpName))
       Expect(executeArg1).To(Equal(providedDevOpData))
-      Expect(fakeSaveDevOpFileUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeSaveDevOpFileUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".SavePipelineFile() method", func() {
-    It("should invoke compositionRoot.savePipelineFileUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.savePipelineFileUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedPipelineName := ""
       providedPipelineData := make([]byte, 0)
 
       // wire up fakes
-      fakeSavePipelineFileUCExecuter := new(FakeSavePipelineFileUcExecuter)
+      fakeSavePipelineFileUseCase := new(FakeSavePipelineFileUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.SavePipelineFileUcExecuterReturns(fakeSavePipelineFileUCExecuter)
+      fakeCompositionRoot.SavePipelineFileUseCaseReturns(fakeSavePipelineFileUseCase)
 
       objectUnderTest := &filesys{
         compositionRoot:fakeCompositionRoot,
@@ -201,10 +201,10 @@ var _ = Describe("filesys", func() {
       objectUnderTest.SavePipelineFile(providedPipelineName, providedPipelineData)
 
       /* assert */
-      executeArg0, executeArg1 := fakeSavePipelineFileUCExecuter.ExecuteArgsForCall(0)
+      executeArg0, executeArg1 := fakeSavePipelineFileUseCase.ExecuteArgsForCall(0)
       Expect(executeArg0).To(Equal(providedPipelineName))
       Expect(executeArg1).To(Equal(providedPipelineData))
-      Expect(fakeSavePipelineFileUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeSavePipelineFileUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

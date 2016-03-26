@@ -14,70 +14,70 @@ type filesys struct {
   compositionRoot compositionRoot
 }
 
-func (fs filesys) CreateDevOpDir(
+func (this filesys) CreateDevOpDir(
 devOpName string,
 ) (err error) {
-  return fs.compositionRoot.
-  CreateDevOpDirUcExecuter().
+  return this.compositionRoot.
+  CreateDevOpDirUseCase().
   Execute(devOpName)
 }
 
-func (fs filesys) CreatePipelineDir(
+func (this filesys) CreatePipelineDir(
 pipelineName string,
 ) (err error) {
-  return fs.compositionRoot.
-  CreatePipelineDirUcExecuter().
+  return this.compositionRoot.
+  CreatePipelineDirUseCase().
   Execute(pipelineName)
 }
 
-func (fs filesys) ListNamesOfDevOpDirs(
+func (this filesys) ListNamesOfDevOpDirs(
 ) (namesOfDevOpDirs []string, err error) {
-  return fs.compositionRoot.
-  ListNamesOfDevOpDirsUcExecuter().
+  return this.compositionRoot.
+  ListNamesOfDevOpDirsUseCase().
   Execute()
 }
 
-func (fs filesys) ListNamesOfPipelineDirs(
+func (this filesys) ListNamesOfPipelineDirs(
 ) (namesOfPipelineDirs []string, err error) {
-  return fs.compositionRoot.
-  ListNamesOfPipelineDirsUcExecuter().
+  return this.compositionRoot.
+  ListNamesOfPipelineDirsUseCase().
   Execute()
 }
 
-func (fs filesys) ReadDevOpFile(
+func (this filesys) ReadDevOpFile(
 devOpName string,
 ) (file []byte, err error) {
-  return fs.compositionRoot.
-  ReadDevOpFileUcExecuter().
+  return this.compositionRoot.
+  ReadDevOpFileUseCase().
   Execute(devOpName)
 }
 
-func (fs filesys) ReadPipelineFile(
+func (this filesys) ReadPipelineFile(
 pipelineName string,
 ) (file []byte, err error) {
-  return fs.compositionRoot.
-  ReadPipelineFileUcExecuter().
+  return this.compositionRoot.
+  ReadPipelineFileUseCase().
   Execute(pipelineName)
 }
 
-func (fs filesys) SaveDevOpFile(
+func (this filesys) SaveDevOpFile(
 devOpName string,
 data []byte,
 ) (err error) {
-  return fs.compositionRoot.
-  SaveDevOpFileUcExecuter().
+  return this.compositionRoot.
+  SaveDevOpFileUseCase().
   Execute(
     devOpName,
     data,
   )
 }
 
-func (fs filesys) SavePipelineFile(
+func (this filesys) SavePipelineFile(
 pipelineName string,
 data []byte,
 ) (err error) {
-  return fs.compositionRoot.
-  SavePipelineFileUcExecuter().
+  return this.compositionRoot.
+  SavePipelineFileUseCase().
   Execute(
     pipelineName,
     data,

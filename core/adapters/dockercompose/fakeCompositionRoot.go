@@ -6,64 +6,64 @@ import (
 )
 
 type fakeCompositionRoot struct {
-	InitDevOpUcExecuterStub        func() initDevOpUcExecuter
-	initDevOpUcExecuterMutex       sync.RWMutex
-	initDevOpUcExecuterArgsForCall []struct{}
-	initDevOpUcExecuterReturns     struct {
-		result1 initDevOpUcExecuter
+	InitDevOpUseCaseStub        func() initDevOpUseCase
+	initDevOpUseCaseMutex       sync.RWMutex
+	initDevOpUseCaseArgsForCall []struct{}
+	initDevOpUseCaseReturns     struct {
+		result1 initDevOpUseCase
 	}
-	RunDevOpUcExecuterStub        func() runDevOpUcExecuter
-	runDevOpUcExecuterMutex       sync.RWMutex
-	runDevOpUcExecuterArgsForCall []struct{}
-	runDevOpUcExecuterReturns     struct {
-		result1 runDevOpUcExecuter
+	RunDevOpUseCaseStub        func() runDevOpUseCase
+	runDevOpUseCaseMutex       sync.RWMutex
+	runDevOpUseCaseArgsForCall []struct{}
+	runDevOpUseCaseReturns     struct {
+		result1 runDevOpUseCase
 	}
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUcExecuter() initDevOpUcExecuter {
-	fake.initDevOpUcExecuterMutex.Lock()
-	fake.initDevOpUcExecuterArgsForCall = append(fake.initDevOpUcExecuterArgsForCall, struct{}{})
-	fake.initDevOpUcExecuterMutex.Unlock()
-	if fake.InitDevOpUcExecuterStub != nil {
-		return fake.InitDevOpUcExecuterStub()
+func (fake *fakeCompositionRoot) InitDevOpUseCase() initDevOpUseCase {
+	fake.initDevOpUseCaseMutex.Lock()
+	fake.initDevOpUseCaseArgsForCall = append(fake.initDevOpUseCaseArgsForCall, struct{}{})
+	fake.initDevOpUseCaseMutex.Unlock()
+	if fake.InitDevOpUseCaseStub != nil {
+		return fake.InitDevOpUseCaseStub()
 	} else {
-		return fake.initDevOpUcExecuterReturns.result1
+		return fake.initDevOpUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUcExecuterCallCount() int {
-	fake.initDevOpUcExecuterMutex.RLock()
-	defer fake.initDevOpUcExecuterMutex.RUnlock()
-	return len(fake.initDevOpUcExecuterArgsForCall)
+func (fake *fakeCompositionRoot) InitDevOpUseCaseCallCount() int {
+	fake.initDevOpUseCaseMutex.RLock()
+	defer fake.initDevOpUseCaseMutex.RUnlock()
+	return len(fake.initDevOpUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUcExecuterReturns(result1 initDevOpUcExecuter) {
-	fake.InitDevOpUcExecuterStub = nil
-	fake.initDevOpUcExecuterReturns = struct {
-		result1 initDevOpUcExecuter
+func (fake *fakeCompositionRoot) InitDevOpUseCaseReturns(result1 initDevOpUseCase) {
+	fake.InitDevOpUseCaseStub = nil
+	fake.initDevOpUseCaseReturns = struct {
+		result1 initDevOpUseCase
 	}{result1}
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUcExecuter() runDevOpUcExecuter {
-	fake.runDevOpUcExecuterMutex.Lock()
-	fake.runDevOpUcExecuterArgsForCall = append(fake.runDevOpUcExecuterArgsForCall, struct{}{})
-	fake.runDevOpUcExecuterMutex.Unlock()
-	if fake.RunDevOpUcExecuterStub != nil {
-		return fake.RunDevOpUcExecuterStub()
+func (fake *fakeCompositionRoot) RunDevOpUseCase() runDevOpUseCase {
+	fake.runDevOpUseCaseMutex.Lock()
+	fake.runDevOpUseCaseArgsForCall = append(fake.runDevOpUseCaseArgsForCall, struct{}{})
+	fake.runDevOpUseCaseMutex.Unlock()
+	if fake.RunDevOpUseCaseStub != nil {
+		return fake.RunDevOpUseCaseStub()
 	} else {
-		return fake.runDevOpUcExecuterReturns.result1
+		return fake.runDevOpUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUcExecuterCallCount() int {
-	fake.runDevOpUcExecuterMutex.RLock()
-	defer fake.runDevOpUcExecuterMutex.RUnlock()
-	return len(fake.runDevOpUcExecuterArgsForCall)
+func (fake *fakeCompositionRoot) RunDevOpUseCaseCallCount() int {
+	fake.runDevOpUseCaseMutex.RLock()
+	defer fake.runDevOpUseCaseMutex.RUnlock()
+	return len(fake.runDevOpUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUcExecuterReturns(result1 runDevOpUcExecuter) {
-	fake.RunDevOpUcExecuterStub = nil
-	fake.runDevOpUcExecuterReturns = struct {
-		result1 runDevOpUcExecuter
+func (fake *fakeCompositionRoot) RunDevOpUseCaseReturns(result1 runDevOpUseCase) {
+	fake.RunDevOpUseCaseStub = nil
+	fake.runDevOpUseCaseReturns = struct {
+		result1 runDevOpUseCase
 	}{result1}
 }

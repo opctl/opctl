@@ -18,6 +18,6 @@ func (templateSrc templateSrc) GetTemplate(
 templateRef string,
 ) (pathToTemplateRootDir string, err error) {
   return templateSrc.compositionRoot.
-  GetTemplateUcExecuter().
+  GetTemplateUseCase().
   Execute(templateRef)
 }

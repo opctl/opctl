@@ -5,15 +5,15 @@ import (
 )
 
 type compositionRoot interface {
-  InitDevOpUcExecuter() initDevOpUcExecuter
-  RunDevOpUcExecuter() runDevOpUcExecuter
+  InitDevOpUseCase() initDevOpUseCase
+  RunDevOpUseCase() runDevOpUseCase
 }
 
 func newCompositionRoot(
 ) (compositionRoot compositionRoot, err error) {
 
   fs := filesystemImpl{}
-  yml := yamlCodecImpl{}
+  yml := _yamlCodec{}
 
   dockerEngine, err := dockerEngine.NewEnvClient()
   if (nil != err) {
@@ -25,22 +25,22 @@ func newCompositionRoot(
   rf := newDevOpResourceFlusher(fs)
 
   compositionRoot = &_compositionRoot{
-    initDevOpUcExecuter: newInitDevOpUcExecuter(fs, yml),
-    runDevOpUcExecuter: newRunDevOpUcExecuter(fs, ecr, rf),
+    initDevOpUseCase: newInitDevOpUseCase(fs, yml),
+    runDevOpUseCase: newRunDevOpUseCase(fs, ecr, rf),
   }
 
   return
 }
 
 type _compositionRoot struct {
-  initDevOpUcExecuter initDevOpUcExecuter
-  runDevOpUcExecuter  runDevOpUcExecuter
+  initDevOpUseCase initDevOpUseCase
+  runDevOpUseCase  runDevOpUseCase
 }
 
-func (_compositionRoot _compositionRoot) InitDevOpUcExecuter() initDevOpUcExecuter {
-  return _compositionRoot.initDevOpUcExecuter
+func (this _compositionRoot) InitDevOpUseCase() initDevOpUseCase {
+  return this.initDevOpUseCase
 }
 
-func (_compositionRoot _compositionRoot) RunDevOpUcExecuter() runDevOpUcExecuter {
-  return _compositionRoot.runDevOpUcExecuter
+func (this _compositionRoot) RunDevOpUseCase() runDevOpUseCase {
+  return this.runDevOpUseCase
 }

@@ -6,15 +6,15 @@ import (
 )
 
 type compositionRoot interface {
-  AddDevOpUcExecuter() addDevOpUcExecuter
-  AddPipelineUcExecuter() addPipelineUcExecuter
-  AddStageToPipelineUcExecuter() addStageToPipelineUcExecuter
-  ListDevOpsUcExecuter() listDevOpsUcExecuter
-  ListPipelinesUcExecuter() listPipelinesUcExecuter
-  RunDevOpUcExecuter() runDevOpUcExecuter
-  RunPipelineUcExecuter() runPipelineUcExecuter
-  SetDescriptionOfDevOpUcExecuter() setDescriptionOfDevOpUcExecuter
-  SetDescriptionOfPipelineUcExecuter() setDescriptionOfPipelineUcExecuter
+  AddDevOpUseCase() addDevOpUseCase
+  AddPipelineUseCase() addPipelineUseCase
+  AddStageToPipelineUseCase() addStageToPipelineUseCase
+  ListDevOpsUseCase() listDevOpsUseCase
+  ListPipelinesUseCase() listPipelinesUseCase
+  RunDevOpUseCase() runDevOpUseCase
+  RunPipelineUseCase() runPipelineUseCase
+  SetDescriptionOfDevOpUseCase() setDescriptionOfDevOpUseCase
+  SetDescriptionOfPipelineUseCase() setDescriptionOfPipelineUseCase
 }
 
 func newCompositionRoot(
@@ -22,25 +22,25 @@ func newCompositionRoot(
 
   fs := osfilesys.NewFilesys()
 
-  yml := yamlCodecImpl{}
+  yml := _yamlCodec{}
 
   containerEngine, err := dockercompose.NewContainerEngine()
   if (nil != err) {
     return
   }
 
-  runDevOpUcExecuter := newRunDevOpUcExecuter(containerEngine)
+  runDevOpUseCase := newRunDevOpUseCase(containerEngine)
 
   compositionRoot = &_compositionRoot{
-    addDevOpUcExecuter: newAddDevOpUcExecuter(fs, yml, containerEngine),
-    addPipelineUcExecuter: newAddPipelineUcExecuter(fs, yml),
-    addStageToPipelineUcExecuter: newAddStageToPipelineUcExecuter(fs, yml),
-    listDevOpsUcExecuter: newListDevOpsUcExecuter(fs, yml),
-    listPipelinesUcExecuter: newListPipelinesUcExecuter(fs, yml),
-    runDevOpUcExecuter: runDevOpUcExecuter,
-    runPipelineUcExecuter: newRunPipelineUcExecuter(fs, yml, runDevOpUcExecuter),
-    setDescriptionOfDevOpUcExecuter: newSetDescriptionOfDevOpUcExecuter(fs, yml),
-    setDescriptionOfPipelineUcExecuter: newSetDescriptionOfPipelineUcExecuter(fs, yml),
+    addDevOpUseCase: newAddDevOpUseCase(fs, yml, containerEngine),
+    addPipelineUseCase: newAddPipelineUseCase(fs, yml),
+    addStageToPipelineUseCase: newAddStageToPipelineUseCase(fs, yml),
+    listDevOpsUseCase: newListDevOpsUseCase(fs, yml),
+    listPipelinesUseCase: newListPipelinesUseCase(fs, yml),
+    runDevOpUseCase: runDevOpUseCase,
+    runPipelineUseCase: newRunPipelineUseCase(fs, yml, runDevOpUseCase),
+    setDescriptionOfDevOpUseCase: newSetDescriptionOfDevOpUseCase(fs, yml),
+    setDescriptionOfPipelineUseCase: newSetDescriptionOfPipelineUseCase(fs, yml),
   }
 
   return
@@ -48,49 +48,49 @@ func newCompositionRoot(
 }
 
 type _compositionRoot struct {
-  addDevOpUcExecuter                 addDevOpUcExecuter
-  addPipelineUcExecuter              addPipelineUcExecuter
-  addStageToPipelineUcExecuter       addStageToPipelineUcExecuter
-  listDevOpsUcExecuter               listDevOpsUcExecuter
-  listPipelinesUcExecuter            listPipelinesUcExecuter
-  runDevOpUcExecuter                 runDevOpUcExecuter
-  runPipelineUcExecuter              runPipelineUcExecuter
-  setDescriptionOfDevOpUcExecuter    setDescriptionOfDevOpUcExecuter
-  setDescriptionOfPipelineUcExecuter setDescriptionOfPipelineUcExecuter
+  addDevOpUseCase                 addDevOpUseCase
+  addPipelineUseCase              addPipelineUseCase
+  addStageToPipelineUseCase       addStageToPipelineUseCase
+  listDevOpsUseCase               listDevOpsUseCase
+  listPipelinesUseCase            listPipelinesUseCase
+  runDevOpUseCase                 runDevOpUseCase
+  runPipelineUseCase              runPipelineUseCase
+  setDescriptionOfDevOpUseCase    setDescriptionOfDevOpUseCase
+  setDescriptionOfPipelineUseCase setDescriptionOfPipelineUseCase
 }
 
-func (_compositionRoot _compositionRoot) AddDevOpUcExecuter() addDevOpUcExecuter {
-  return _compositionRoot.addDevOpUcExecuter
+func (this _compositionRoot) AddDevOpUseCase() addDevOpUseCase {
+  return this.addDevOpUseCase
 }
 
-func (_compositionRoot _compositionRoot) AddPipelineUcExecuter() addPipelineUcExecuter {
-  return _compositionRoot.addPipelineUcExecuter
+func (this _compositionRoot) AddPipelineUseCase() addPipelineUseCase {
+  return this.addPipelineUseCase
 }
 
-func (_compositionRoot _compositionRoot) AddStageToPipelineUcExecuter() addStageToPipelineUcExecuter {
-  return _compositionRoot.addStageToPipelineUcExecuter
+func (this _compositionRoot) AddStageToPipelineUseCase() addStageToPipelineUseCase {
+  return this.addStageToPipelineUseCase
 }
 
-func (_compositionRoot _compositionRoot) ListDevOpsUcExecuter() listDevOpsUcExecuter {
-  return _compositionRoot.listDevOpsUcExecuter
+func (this _compositionRoot) ListDevOpsUseCase() listDevOpsUseCase {
+  return this.listDevOpsUseCase
 }
 
-func (_compositionRoot _compositionRoot) ListPipelinesUcExecuter() listPipelinesUcExecuter {
-  return _compositionRoot.listPipelinesUcExecuter
+func (this _compositionRoot) ListPipelinesUseCase() listPipelinesUseCase {
+  return this.listPipelinesUseCase
 }
 
-func (_compositionRoot _compositionRoot) RunDevOpUcExecuter() runDevOpUcExecuter {
-  return _compositionRoot.runDevOpUcExecuter
+func (this _compositionRoot) RunDevOpUseCase() runDevOpUseCase {
+  return this.runDevOpUseCase
 }
 
-func (_compositionRoot _compositionRoot) RunPipelineUcExecuter() runPipelineUcExecuter {
-  return _compositionRoot.runPipelineUcExecuter
+func (this _compositionRoot) RunPipelineUseCase() runPipelineUseCase {
+  return this.runPipelineUseCase
 }
 
-func (_compositionRoot _compositionRoot) SetDescriptionOfDevOpUcExecuter() setDescriptionOfDevOpUcExecuter {
-  return _compositionRoot.setDescriptionOfDevOpUcExecuter
+func (this _compositionRoot) SetDescriptionOfDevOpUseCase() setDescriptionOfDevOpUseCase {
+  return this.setDescriptionOfDevOpUseCase
 }
 
-func (_compositionRoot _compositionRoot) SetDescriptionOfPipelineUcExecuter() setDescriptionOfPipelineUcExecuter {
-  return _compositionRoot.setDescriptionOfPipelineUcExecuter
+func (this _compositionRoot) SetDescriptionOfPipelineUseCase() setDescriptionOfPipelineUseCase {
+  return this.setDescriptionOfPipelineUseCase
 }

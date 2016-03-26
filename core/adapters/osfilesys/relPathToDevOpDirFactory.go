@@ -12,12 +12,12 @@ type relPathToDevOpDirFactory interface {
 }
 
 func newRelPathToDevOpDirFactory() relPathToDevOpDirFactory {
-  return &relPathToDevOpDirFactoryImpl{}
+  return &_relPathToDevOpDirFactory{}
 }
 
-type relPathToDevOpDirFactoryImpl struct{}
+type _relPathToDevOpDirFactory struct{}
 
-func (f relPathToDevOpDirFactoryImpl) Construct(
+func (this _relPathToDevOpDirFactory) Construct(
 devOpName string,
 ) (relPathToDevOpDir string, err error) {
 

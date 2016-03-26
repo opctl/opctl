@@ -58,87 +58,87 @@ type _api struct {
   compositionRoot compositionRoot
 }
 
-func (_api _api) AddDevOp(
+func (this _api) AddDevOp(
 req models.AddDevOpReq,
 ) (err error) {
-  return _api.
+  return this.
   compositionRoot.
-  AddDevOpUcExecuter().
+  AddDevOpUseCase().
   Execute(req)
 }
 
-func (_api _api) AddPipeline(
+func (this _api) AddPipeline(
 req models.AddPipelineReq,
 ) (err error) {
-  return _api.
+  return this.
   compositionRoot.
-  AddPipelineUcExecuter().
+  AddPipelineUseCase().
   Execute(req)
 }
 
-func (_api _api) AddStageToPipeline(
+func (this _api) AddStageToPipeline(
 req models.AddStageToPipelineReq,
 ) (err error) {
-  return _api.
+  return this.
   compositionRoot.
-  AddStageToPipelineUcExecuter().
+  AddStageToPipelineUseCase().
   Execute(req)
 }
 
-func (_api _api) ListDevOps(
+func (this _api) ListDevOps(
 ) (devOps []models.DevOpView, err error) {
-  return _api.
+  return this.
   compositionRoot.
-  ListDevOpsUcExecuter().
+  ListDevOpsUseCase().
   Execute()
 }
 
-func (_api _api) ListPipelines(
+func (this _api) ListPipelines(
 ) (pipelines []models.PipelineView, err error) {
-  return _api.
+  return this.
   compositionRoot.
-  ListPipelinesUcExecuter().
+  ListPipelinesUseCase().
   Execute()
 }
 
-func (_api _api) RunDevOp(
+func (this _api) RunDevOp(
 devOpName string,
 ) (devOpRun models.DevOpRunView, err error) {
-  return _api.
+  return this.
   compositionRoot.
-  RunDevOpUcExecuter().
+  RunDevOpUseCase().
   Execute(devOpName)
 }
 
-func (_api _api) RunPipeline(
+func (this _api) RunPipeline(
 pipelineName string,
 ) (pipelineRun models.PipelineRunView, err error) {
-  return _api.
+  return this.
   compositionRoot.
-  RunPipelineUcExecuter().
+  RunPipelineUseCase().
   Execute(
     pipelineName,
     make([]string, 0),
   )
 }
 
-func (_api _api) SetDescriptionOfDevOp(
+func (this _api) SetDescriptionOfDevOp(
 req models.SetDescriptionOfDevOpReq,
 ) (err error) {
-  return _api.
+  return this.
   compositionRoot.
-  SetDescriptionOfDevOpUcExecuter().
+  SetDescriptionOfDevOpUseCase().
   Execute(
     req,
   )
 }
 
-func (_api _api) SetDescriptionOfPipeline(
+func (this _api) SetDescriptionOfPipeline(
 req models.SetDescriptionOfPipelineReq,
 ) (err error) {
-  return _api.
+  return this.
   compositionRoot.
-  SetDescriptionOfPipelineUcExecuter().
+  SetDescriptionOfPipelineUseCase().
   Execute(
     req,
   )

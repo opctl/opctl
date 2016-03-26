@@ -14,7 +14,7 @@ func NewContainerEngine(
     return
   }
 
-  containerEngine = containerEngineImpl{
+  containerEngine = _containerEngine{
     compositionRoot:compositionRoot,
   }
 
@@ -22,22 +22,22 @@ func NewContainerEngine(
 
 }
 
-type containerEngineImpl struct {
+type _containerEngine struct {
   compositionRoot compositionRoot
 }
 
-func (ce containerEngineImpl) InitDevOp(
+func (this _containerEngine) InitDevOp(
 devOpName string,
 ) (err error) {
-  return ce.compositionRoot.
-  InitDevOpUcExecuter().
+  return this.compositionRoot.
+  InitDevOpUseCase().
   Execute(devOpName)
 }
 
-func (ce containerEngineImpl) RunDevOp(
+func (this _containerEngine) RunDevOp(
 devOpName string,
 ) (devOpRun models.DevOpRunView, err error) {
-  return ce.compositionRoot.
-  RunDevOpUcExecuter().
+  return this.compositionRoot.
+  RunDevOpUseCase().
   Execute(devOpName)
 }

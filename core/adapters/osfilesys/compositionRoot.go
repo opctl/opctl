@@ -1,14 +1,14 @@
 package osfilesys
 
 type compositionRoot interface {
-  ListNamesOfDevOpDirsUcExecuter() listNamesOfDevOpDirsUcExecuter
-  ListNamesOfPipelineDirsUcExecuter() listNamesOfPipelineDirsUcExecuter
-  ReadDevOpFileUcExecuter() readDevOpFileUcExecuter
-  ReadPipelineFileUcExecuter() readPipelineFileUcExecuter
-  SaveDevOpFileUcExecuter() saveDevOpFileUcExecuter
-  SavePipelineFileUcExecuter() savePipelineFileUcExecuter
-  CreateDevOpDirUcExecuter() createDevOpDirUcExecuter
-  CreatePipelineDirUcExecuter() createPipelineDirUcExecuter
+  ListNamesOfDevOpDirsUseCase() listNamesOfDevOpDirsUseCase
+  ListNamesOfPipelineDirsUseCase() listNamesOfPipelineDirsUseCase
+  ReadDevOpFileUseCase() readDevOpFileUseCase
+  ReadPipelineFileUseCase() readPipelineFileUseCase
+  SaveDevOpFileUseCase() saveDevOpFileUseCase
+  SavePipelineFileUseCase() savePipelineFileUseCase
+  CreateDevOpDirUseCase() createDevOpDirUseCase
+  CreatePipelineDirUseCase() createPipelineDirUseCase
 }
 
 func newCompositionRoot(
@@ -20,65 +20,65 @@ func newCompositionRoot(
   relPathToPipelineFileFactory := newRelPathToPipelineFileFactory(relPathToPipelineDirFactory)
 
   return &_compositionRoot{
-    listNamesOfDevOpDirsUcExecuter: newListNamesOfDevOpDirsUcExecuter(),
-    listNamesOfPipelineDirsUcExecuter:newListNamesOfPipelineDirsUcExecuter(),
-    readDevOpFileUcExecuter:newReadDevOpFileUcExecuter(relPathToDevOpFileFactory),
-    readPipelineFileUcExecuter:newReadPipelineFileUcExecuter(relPathToPipelineFileFactory),
-    saveDevOpFileUcExecuter:newSaveDevOpFileUcExecuter(relPathToDevOpFileFactory),
-    savePipelineFileUcExecuter:newSavePipelineFileUcExecuter(relPathToPipelineFileFactory),
-    createDevOpDirUcExecuter:newCreateDevOpDirUcExecuter(relPathToDevOpDirFactory),
-    createPipelineDirUcExecuter:newCreatePipelineDirUcExecuter(relPathToPipelineDirFactory),
+    listNamesOfDevOpDirsUseCase: newListNamesOfDevOpDirsUseCase(),
+    listNamesOfPipelineDirsUseCase:newListNamesOfPipelineDirsUseCase(),
+    readDevOpFileUseCase:newReadDevOpFileUseCase(relPathToDevOpFileFactory),
+    readPipelineFileUseCase:newReadPipelineFileUseCase(relPathToPipelineFileFactory),
+    saveDevOpFileUseCase:newSaveDevOpFileUseCase(relPathToDevOpFileFactory),
+    savePipelineFileUseCase:newSavePipelineFileUseCase(relPathToPipelineFileFactory),
+    createDevOpDirUseCase:newCreateDevOpDirUseCase(relPathToDevOpDirFactory),
+    createPipelineDirUseCase:newCreatePipelineDirUseCase(relPathToPipelineDirFactory),
   }
 
 }
 
 type _compositionRoot struct {
-  listNamesOfDevOpDirsUcExecuter    listNamesOfDevOpDirsUcExecuter
-  listNamesOfPipelineDirsUcExecuter listNamesOfPipelineDirsUcExecuter
-  readDevOpFileUcExecuter           readDevOpFileUcExecuter
-  readPipelineFileUcExecuter        readPipelineFileUcExecuter
-  saveDevOpFileUcExecuter           saveDevOpFileUcExecuter
-  savePipelineFileUcExecuter        savePipelineFileUcExecuter
-  createDevOpDirUcExecuter          createDevOpDirUcExecuter
-  createPipelineDirUcExecuter       createPipelineDirUcExecuter
+  listNamesOfDevOpDirsUseCase    listNamesOfDevOpDirsUseCase
+  listNamesOfPipelineDirsUseCase listNamesOfPipelineDirsUseCase
+  readDevOpFileUseCase           readDevOpFileUseCase
+  readPipelineFileUseCase        readPipelineFileUseCase
+  saveDevOpFileUseCase           saveDevOpFileUseCase
+  savePipelineFileUseCase        savePipelineFileUseCase
+  createDevOpDirUseCase          createDevOpDirUseCase
+  createPipelineDirUseCase       createPipelineDirUseCase
 }
 
-func (_compositionRoot _compositionRoot) ListNamesOfDevOpDirsUcExecuter(
-) listNamesOfDevOpDirsUcExecuter {
-  return _compositionRoot.listNamesOfDevOpDirsUcExecuter
+func (this _compositionRoot) ListNamesOfDevOpDirsUseCase(
+) listNamesOfDevOpDirsUseCase {
+  return this.listNamesOfDevOpDirsUseCase
 }
 
-func (_compositionRoot _compositionRoot) ListNamesOfPipelineDirsUcExecuter(
-) listNamesOfPipelineDirsUcExecuter {
-  return _compositionRoot.listNamesOfPipelineDirsUcExecuter
+func (this _compositionRoot) ListNamesOfPipelineDirsUseCase(
+) listNamesOfPipelineDirsUseCase {
+  return this.listNamesOfPipelineDirsUseCase
 }
 
-func (_compositionRoot _compositionRoot) ReadDevOpFileUcExecuter(
-) readDevOpFileUcExecuter {
-  return _compositionRoot.readDevOpFileUcExecuter
+func (this _compositionRoot) ReadDevOpFileUseCase(
+) readDevOpFileUseCase {
+  return this.readDevOpFileUseCase
 }
 
-func (_compositionRoot _compositionRoot) ReadPipelineFileUcExecuter(
-) readPipelineFileUcExecuter {
-  return _compositionRoot.readPipelineFileUcExecuter
+func (this _compositionRoot) ReadPipelineFileUseCase(
+) readPipelineFileUseCase {
+  return this.readPipelineFileUseCase
 }
 
-func (_compositionRoot _compositionRoot) SaveDevOpFileUcExecuter(
-) saveDevOpFileUcExecuter {
-  return _compositionRoot.saveDevOpFileUcExecuter
+func (this _compositionRoot) SaveDevOpFileUseCase(
+) saveDevOpFileUseCase {
+  return this.saveDevOpFileUseCase
 }
 
-func (_compositionRoot _compositionRoot) SavePipelineFileUcExecuter(
-) savePipelineFileUcExecuter {
-  return _compositionRoot.savePipelineFileUcExecuter
+func (this _compositionRoot) SavePipelineFileUseCase(
+) savePipelineFileUseCase {
+  return this.savePipelineFileUseCase
 }
 
-func (_compositionRoot _compositionRoot) CreateDevOpDirUcExecuter(
-) createDevOpDirUcExecuter {
-  return _compositionRoot.createDevOpDirUcExecuter
+func (this _compositionRoot) CreateDevOpDirUseCase(
+) createDevOpDirUseCase {
+  return this.createDevOpDirUseCase
 }
 
-func (_compositionRoot _compositionRoot) CreatePipelineDirUcExecuter(
-) createPipelineDirUcExecuter {
-  return _compositionRoot.createPipelineDirUcExecuter
+func (this _compositionRoot) CreatePipelineDirUseCase(
+) createPipelineDirUseCase {
+  return this.createPipelineDirUseCase
 }

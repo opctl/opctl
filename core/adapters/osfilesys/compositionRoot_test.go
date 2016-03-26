@@ -6,115 +6,115 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("listNamesOfDevOpDirsUcExecuter", func() {
-    It("should return an instance of type listNamesOfDevOpDirsUcExecuter", func() {
+  Context("listNamesOfDevOpDirsUseCase", func() {
+    It("should return an instance of type listNamesOfDevOpDirsUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualListNamesOfDevOpDirsUcExecuter := objectUnderTest.ListNamesOfDevOpDirsUcExecuter()
+      actualListNamesOfDevOpDirsUseCase := objectUnderTest.ListNamesOfDevOpDirsUseCase()
 
       /* assert */
-      Expect(actualListNamesOfDevOpDirsUcExecuter).To(BeAssignableToTypeOf(&listNamesOfDevOpDirsUcExecuterImpl{}))
+      Expect(actualListNamesOfDevOpDirsUseCase).To(BeAssignableToTypeOf(&_listNamesOfDevOpDirsUseCase{}))
 
     })
   })
-  Context("listNamesOfPipelineDirsUcExecuter", func() {
-    It("should return an instance of type listNamesOfPipelineDirsUcExecuter", func() {
+  Context("listNamesOfPipelineDirsUseCase", func() {
+    It("should return an instance of type listNamesOfPipelineDirsUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualListNamesOfPipelineDirsUcExecuter := objectUnderTest.ListNamesOfPipelineDirsUcExecuter()
+      actualListNamesOfPipelineDirsUseCase := objectUnderTest.ListNamesOfPipelineDirsUseCase()
 
       /* assert */
-      Expect(actualListNamesOfPipelineDirsUcExecuter).To(BeAssignableToTypeOf(&listNamesOfPipelineDirsUcExecuterImpl{}))
+      Expect(actualListNamesOfPipelineDirsUseCase).To(BeAssignableToTypeOf(&_listNamesOfPipelineDirsUseCase{}))
 
     })
   })
-  Context("readDevOpFileUcExecuter", func() {
-    It("should return an instance of type readDevOpFileUcExecuter", func() {
+  Context("readDevOpFileUseCase", func() {
+    It("should return an instance of type readDevOpFileUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualReadDevOpFileUcExecuter := objectUnderTest.ReadDevOpFileUcExecuter()
+      actualReadDevOpFileUseCase := objectUnderTest.ReadDevOpFileUseCase()
 
       /* assert */
-      Expect(actualReadDevOpFileUcExecuter).To(BeAssignableToTypeOf(&readDevOpFileUcExecuterImpl{}))
+      Expect(actualReadDevOpFileUseCase).To(BeAssignableToTypeOf(&_readDevOpFileUseCase{}))
 
     })
   })
-  Context("readPipelineFileUcExecuter", func() {
-    It("should return an instance of type readPipelineFileUcExecuter", func() {
+  Context("readPipelineFileUseCase", func() {
+    It("should return an instance of type readPipelineFileUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualReadPipelineFileUcExecuter := objectUnderTest.ReadPipelineFileUcExecuter()
+      actualReadPipelineFileUseCase := objectUnderTest.ReadPipelineFileUseCase()
 
       /* assert */
-      Expect(actualReadPipelineFileUcExecuter).To(BeAssignableToTypeOf(&readPipelineFileUcExecuterImpl{}))
+      Expect(actualReadPipelineFileUseCase).To(BeAssignableToTypeOf(&_readPipelineFileUseCase{}))
 
     })
   })
-  Context("saveDevOpFileUcExecuter", func() {
-    It("should return an instance of type saveDevOpFileUcExecuter", func() {
+  Context("saveDevOpFileUseCase", func() {
+    It("should return an instance of type saveDevOpFileUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualSaveDevOpFileUcExecuter := objectUnderTest.SaveDevOpFileUcExecuter()
+      actualSaveDevOpFileUseCase := objectUnderTest.SaveDevOpFileUseCase()
 
       /* assert */
-      Expect(actualSaveDevOpFileUcExecuter).To(BeAssignableToTypeOf(&saveDevOpFileUcExecuterImpl{}))
+      Expect(actualSaveDevOpFileUseCase).To(BeAssignableToTypeOf(&_saveDevOpFileUseCase{}))
 
     })
   })
-  Context("savePipelineFileUcExecuter", func() {
-    It("should return an instance of type savePipelineFileUcExecuter", func() {
+  Context("savePipelineFileUseCase", func() {
+    It("should return an instance of type savePipelineFileUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualSavePipelineFileUcExecuter := objectUnderTest.SavePipelineFileUcExecuter()
+      actualSavePipelineFileUseCase := objectUnderTest.SavePipelineFileUseCase()
 
       /* assert */
-      Expect(actualSavePipelineFileUcExecuter).To(BeAssignableToTypeOf(&savePipelineFileUcExecuterImpl{}))
+      Expect(actualSavePipelineFileUseCase).To(BeAssignableToTypeOf(&_savePipelineFileUseCase{}))
 
     })
   })
-  Context("createDevOpDirUcExecuter", func() {
-    It("should return an instance of type createDevOpDirUcExecuter", func() {
+  Context("createDevOpDirUseCase", func() {
+    It("should return an instance of type createDevOpDirUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualCreateDevOpDirUcExecuter := objectUnderTest.CreateDevOpDirUcExecuter()
+      actualCreateDevOpDirUseCase := objectUnderTest.CreateDevOpDirUseCase()
 
       /* assert */
-      Expect(actualCreateDevOpDirUcExecuter).To(BeAssignableToTypeOf(&createDevOpDirUcExecuterImpl{}))
+      Expect(actualCreateDevOpDirUseCase).To(BeAssignableToTypeOf(&_createDevOpDirUseCase{}))
 
     })
   })
-  Context("createPipelineDirUcExecuter", func() {
-    It("should return an instance of type createPipelineDirUcExecuter", func() {
+  Context("createPipelineDirUseCase", func() {
+    It("should return an instance of type createPipelineDirUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualCreatePipelineDirUcExecuter := objectUnderTest.CreatePipelineDirUcExecuter()
+      actualCreatePipelineDirUseCase := objectUnderTest.CreatePipelineDirUseCase()
 
       /* assert */
-      Expect(actualCreatePipelineDirUcExecuter).To(BeAssignableToTypeOf(&createPipelineDirUcExecuterImpl{}))
+      Expect(actualCreatePipelineDirUseCase).To(BeAssignableToTypeOf(&_createPipelineDirUseCase{}))
 
     })
   })

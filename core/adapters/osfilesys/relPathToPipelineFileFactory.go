@@ -12,22 +12,22 @@ func newRelPathToPipelineFileFactory(
 relPathToPipelineDirFactory relPathToPipelineDirFactory,
 ) relPathToPipelineFileFactory {
 
-  return &relPathToPipelineFileFactoryImpl{
+  return &_relPathToPipelineFileFactory{
     relPathToPipelineDirFactory:relPathToPipelineDirFactory,
   }
 
 }
 
-type relPathToPipelineFileFactoryImpl struct {
+type _relPathToPipelineFileFactory struct {
   relPathToPipelineDirFactory relPathToPipelineDirFactory
 }
 
-func (f relPathToPipelineFileFactoryImpl) Construct(
+func (this _relPathToPipelineFileFactory) Construct(
 pipelineName string,
 ) (relPathToPipelineFile string, err error) {
 
   var relPathToPipelineDir string
-  relPathToPipelineDir, err = f.relPathToPipelineDirFactory.Construct(pipelineName)
+  relPathToPipelineDir, err = this.relPathToPipelineDirFactory.Construct(pipelineName)
   if (nil != err) {
     return
   }

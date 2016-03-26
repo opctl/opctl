@@ -13,22 +13,22 @@ func newDevOpResourceFlusher(
 fs filesystem,
 ) devOpResourceFlusher {
 
-  return &devOpResourceFlusherImpl{
+  return &_devOpResourceFlusher{
     fs:fs,
   }
 
 }
 
-type devOpResourceFlusherImpl struct {
+type _devOpResourceFlusher struct {
   fs filesystem
 }
 
-func (f devOpResourceFlusherImpl) flush(
+func (this _devOpResourceFlusher) flush(
 devOpName string,
 ) (err error) {
 
   var relPathToDevOpDockerComposeFile string
-  relPathToDevOpDockerComposeFile, err = f.fs.getRelPathToDevOpDockerComposeFile(devOpName)
+  relPathToDevOpDockerComposeFile, err = this.fs.getRelPathToDevOpDockerComposeFile(devOpName)
   if (nil != err) {
     return
   }

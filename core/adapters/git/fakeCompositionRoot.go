@@ -6,34 +6,34 @@ import (
 )
 
 type fakeCompositionRoot struct {
-	GetTemplateUcExecuterStub        func() getTemplateUcExecuter
-	getTemplateUcExecuterMutex       sync.RWMutex
-	getTemplateUcExecuterArgsForCall []struct{}
-	getTemplateUcExecuterReturns     struct {
-		result1 getTemplateUcExecuter
+	GetTemplateUseCaseStub        func() getTemplateUseCase
+	getTemplateUseCaseMutex       sync.RWMutex
+	getTemplateUseCaseArgsForCall []struct{}
+	getTemplateUseCaseReturns     struct {
+		result1 getTemplateUseCase
 	}
 }
 
-func (fake *fakeCompositionRoot) GetTemplateUcExecuter() getTemplateUcExecuter {
-	fake.getTemplateUcExecuterMutex.Lock()
-	fake.getTemplateUcExecuterArgsForCall = append(fake.getTemplateUcExecuterArgsForCall, struct{}{})
-	fake.getTemplateUcExecuterMutex.Unlock()
-	if fake.GetTemplateUcExecuterStub != nil {
-		return fake.GetTemplateUcExecuterStub()
+func (fake *fakeCompositionRoot) GetTemplateUseCase() getTemplateUseCase {
+	fake.getTemplateUseCaseMutex.Lock()
+	fake.getTemplateUseCaseArgsForCall = append(fake.getTemplateUseCaseArgsForCall, struct{}{})
+	fake.getTemplateUseCaseMutex.Unlock()
+	if fake.GetTemplateUseCaseStub != nil {
+		return fake.GetTemplateUseCaseStub()
 	} else {
-		return fake.getTemplateUcExecuterReturns.result1
+		return fake.getTemplateUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) GetTemplateUcExecuterCallCount() int {
-	fake.getTemplateUcExecuterMutex.RLock()
-	defer fake.getTemplateUcExecuterMutex.RUnlock()
-	return len(fake.getTemplateUcExecuterArgsForCall)
+func (fake *fakeCompositionRoot) GetTemplateUseCaseCallCount() int {
+	fake.getTemplateUseCaseMutex.RLock()
+	defer fake.getTemplateUseCaseMutex.RUnlock()
+	return len(fake.getTemplateUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) GetTemplateUcExecuterReturns(result1 getTemplateUcExecuter) {
-	fake.GetTemplateUcExecuterStub = nil
-	fake.getTemplateUcExecuterReturns = struct {
-		result1 getTemplateUcExecuter
+func (fake *fakeCompositionRoot) GetTemplateUseCaseReturns(result1 getTemplateUseCase) {
+	fake.GetTemplateUseCaseStub = nil
+	fake.getTemplateUseCaseReturns = struct {
+		result1 getTemplateUseCase
 	}{result1}
 }

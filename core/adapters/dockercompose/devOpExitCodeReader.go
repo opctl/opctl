@@ -19,24 +19,24 @@ fs filesystem,
 dockerEngine *dockerEngine.Client,
 ) devOpExitCodeReader {
 
-  return &devOpExitCodeReaderImpl{
+  return &_devOpExitCodeReader{
     fs:fs,
     dockerEngine:dockerEngine,
   }
 
 }
 
-type devOpExitCodeReaderImpl struct {
+type _devOpExitCodeReader struct {
   fs           filesystem
   dockerEngine *dockerEngine.Client
 }
 
-func (r devOpExitCodeReaderImpl) read(
+func (this _devOpExitCodeReader) read(
 devOpName string,
 ) (devOpExitCode int, err error) {
 
   var relPathToDevOpDockerComposeFile string
-  relPathToDevOpDockerComposeFile, err = r.fs.getRelPathToDevOpDockerComposeFile(devOpName)
+  relPathToDevOpDockerComposeFile, err = this.fs.getRelPathToDevOpDockerComposeFile(devOpName)
   if (nil != err) {
     return
   }
@@ -59,7 +59,7 @@ devOpName string,
     return
   }
 
-  container, err := r.dockerEngine.ContainerInspect(context.Background(), strings.TrimSpace(string(dockerComposePsCmdRawOutput)))
+  container, err := this.dockerEngine.ContainerInspect(context.Background(), strings.TrimSpace(string(dockerComposePsCmdRawOutput)))
   if (nil != err) {
     return
   }

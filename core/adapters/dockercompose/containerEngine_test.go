@@ -7,18 +7,18 @@ import (
 
 var _ = Describe("containerEngine", func() {
   Context(".InitDevOp() method", func() {
-    It("should invoke compositionRoot.initDevOpUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.initDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedDevOpName := ""
 
       // wire up fakes
-      fakeInitDevOpUCExecuter := new(FakeInitDevOpUcExecuter)
+      fakeInitDevOpUseCase := new(FakeInitDevOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.InitDevOpUcExecuterReturns(fakeInitDevOpUCExecuter)
+      fakeCompositionRoot.InitDevOpUseCaseReturns(fakeInitDevOpUseCase)
 
-      objectUnderTest := &containerEngineImpl{
+      objectUnderTest := &_containerEngine{
         compositionRoot:fakeCompositionRoot,
       }
 
@@ -26,23 +26,23 @@ var _ = Describe("containerEngine", func() {
       objectUnderTest.InitDevOp(providedDevOpName)
 
       /* assert */
-      Expect(fakeInitDevOpUCExecuter.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
-      Expect(fakeInitDevOpUCExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeInitDevOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
+      Expect(fakeInitDevOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
   Context(".RunDevOp() method", func() {
-    It("should invoke compositionRoot.runDevOpUcExecuter.Execute() with expected args & return result", func() {
+    It("should invoke compositionRoot.runDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedDevOpName := ""
 
-      fakeRunDevOpUcExecuter := new(FakeRunDevOpUcExecuter)
+      fakeRunDevOpUseCase := new(FakeRunDevOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.RunDevOpUcExecuterReturns(fakeRunDevOpUcExecuter)
+      fakeCompositionRoot.RunDevOpUseCaseReturns(fakeRunDevOpUseCase)
 
-      objectUnderTest := &containerEngineImpl{
+      objectUnderTest := &_containerEngine{
         compositionRoot:fakeCompositionRoot,
       }
 
@@ -50,8 +50,8 @@ var _ = Describe("containerEngine", func() {
       objectUnderTest.RunDevOp(providedDevOpName)
 
       /* assert */
-      Expect(fakeRunDevOpUcExecuter.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
-      Expect(fakeRunDevOpUcExecuter.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeRunDevOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
+      Expect(fakeRunDevOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

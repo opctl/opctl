@@ -1,23 +1,23 @@
 package git
 
 type compositionRoot interface {
-  GetTemplateUcExecuter() getTemplateUcExecuter
+  GetTemplateUseCase() getTemplateUseCase
 }
 
 func newCompositionRoot(
 ) compositionRoot {
 
   return &_compositionRoot{
-    getTemplateUcExecuter: newGetTemplateUcExecuter(),
+    getTemplateUseCase: newGetTemplateUseCase(),
   }
 
 }
 
 type _compositionRoot struct {
-  getTemplateUcExecuter getTemplateUcExecuter
+  getTemplateUseCase getTemplateUseCase
 }
 
-func (_compositionRoot _compositionRoot) GetTemplateUcExecuter(
-) getTemplateUcExecuter {
-  return _compositionRoot.getTemplateUcExecuter
+func (this _compositionRoot) GetTemplateUseCase(
+) getTemplateUseCase {
+  return this.getTemplateUseCase
 }

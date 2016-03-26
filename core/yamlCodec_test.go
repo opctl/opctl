@@ -11,7 +11,7 @@ var _ = Describe("yamlCodec", func() {
 
       /* arrange */
       expectedDevOpFile := devOpFile{Description:"dev op description"}
-      objectUnderTest := yamlCodecImpl{}
+      objectUnderTest := _yamlCodec{}
 
       /* act */
       devOpFileBytes, _ := objectUnderTest.toYaml(&expectedDevOpFile)
@@ -32,7 +32,7 @@ var _ = Describe("yamlCodec", func() {
           pipelineFileStage{Name:"dev op stage name", Type:devOpStageType},
         },
       }
-      objectUnderTest := yamlCodecImpl{}
+      objectUnderTest := _yamlCodec{}
 
       /* act */
       pipelineFileBytes, _ := objectUnderTest.toYaml(&expectedPipelineFile)

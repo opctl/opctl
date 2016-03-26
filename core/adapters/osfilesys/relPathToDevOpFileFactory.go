@@ -12,22 +12,22 @@ func newRelPathToDevOpFileFactory(
 relPathToDevOpDirFactory relPathToDevOpDirFactory,
 ) relPathToDevOpFileFactory {
 
-  return &relPathToDevOpFileFactoryImpl{
+  return &_relPathToDevOpFileFactory{
     relPathToDevOpDirFactory:relPathToDevOpDirFactory,
   }
 
 }
 
-type relPathToDevOpFileFactoryImpl struct {
+type _relPathToDevOpFileFactory struct {
   relPathToDevOpDirFactory relPathToDevOpDirFactory
 }
 
-func (f relPathToDevOpFileFactoryImpl) Construct(
+func (this _relPathToDevOpFileFactory) Construct(
 devOpName string,
 ) (relPathToDevOpFile string, err error) {
 
   var relPathToDevOpDir string
-  relPathToDevOpDir, err = f.relPathToDevOpDirFactory.Construct(devOpName)
+  relPathToDevOpDir, err = this.relPathToDevOpDirFactory.Construct(devOpName)
   if (nil != err) {
     return
   }
