@@ -3,8 +3,8 @@ package core
 import (
   "errors"
   "time"
-"github.com/dev-op-spec/engine/core/models"
-"github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/ports"
 )
 
 type runPipelineUseCase interface {
@@ -29,8 +29,8 @@ runDevOpUseCase runDevOpUseCase,
 }
 
 type _runPipelineUseCase struct {
-  fs                 ports.Filesys
-  yml                yamlCodec
+  fs              ports.Filesys
+  yml             yamlCodec
   runDevOpUseCase runDevOpUseCase
 }
 
@@ -39,9 +39,8 @@ pipelineName string,
 namesOfAlreadyRunPipelines[]string,
 ) (pipelineRun models.PipelineRunView, err error) {
 
-  pipelineRunViewBuilder := models.NewPipelineRunViewBuilder()
-  pipelineRunViewBuilder.SetStartedAtEpochTime(time.Now().Unix())
-  pipelineRunViewBuilder.SetPipelineName(pipelineName)
+  pipelineRun.StartedAtEpochTime = time.Now().Unix()
+  pipelineRun.PipelineName = pipelineName
 
   var pipelineFileBytes []byte
   pipelineFileBytes, err = this.fs.ReadPipelineFile(pipelineName)
@@ -60,9 +59,7 @@ namesOfAlreadyRunPipelines[]string,
 
   defer func() {
 
-    pipelineRunViewBuilder.SetEndedAtEpochTime(time.Now().Unix())
-
-    pipelineRun = pipelineRunViewBuilder.Build()
+    pipelineRun.EndedAtEpochTime = time.Now().Unix()
 
   }()
 
@@ -85,18 +82,28 @@ namesOfAlreadyRunPipelines[]string,
     case devOpStageType:
       {
 
-        var stageRun models.DevOpRunView
+        var devOpStageRun models.DevOpRunView
 
-        stageRun, err = this.runDevOpUseCase.Execute(
+        devOpStageRun, err = this.runDevOpUseCase.Execute(
           stage.Name,
         )
 
-        pipelineRunViewBuilder.AddStageRun(stageRun)
+        pipelineRun.Stages = append(
+          pipelineRun.Stages,
+          models.NewPipelineStageRunView(
+            devOpStageRun.DevOpName,
+            devOpStageType,
+            devOpStageRun.StartedAtEpochTime,
+            devOpStageRun.EndedAtEpochTime,
+            devOpStageRun.ExitCode,
+            nil,
+          ),
+        )
 
-        if (stageRun.ExitCode() != 0 || nil != err) {
+        if (devOpStageRun.ExitCode != 0 || nil != err) {
 
           // bubble exit code up
-          pipelineRunViewBuilder.SetExitCode(stageRun.ExitCode())
+          pipelineRun.ExitCode = devOpStageRun.ExitCode
           return
 
         }
@@ -108,19 +115,29 @@ namesOfAlreadyRunPipelines[]string,
     case pipelineStageType:
       {
 
-        var stageRun models.PipelineRunView
+        var pipelineStageRun models.PipelineRunView
 
-        stageRun, err = this.Execute(
+        pipelineStageRun, err = this.Execute(
           stage.Name,
           namesOfAlreadyRunPipelines,
         )
 
-        pipelineRunViewBuilder.AddStageRun(stageRun)
+        pipelineRun.Stages = append(
+          pipelineRun.Stages,
+          models.NewPipelineStageRunView(
+            pipelineStageRun.PipelineName,
+            pipelineStageType,
+            pipelineStageRun.StartedAtEpochTime,
+            pipelineStageRun.EndedAtEpochTime,
+            pipelineStageRun.ExitCode,
+            nil,
+          ),
+        )
 
-        if (stageRun.ExitCode() != 0 || nil != err) {
+        if (pipelineStageRun.ExitCode != 0 || nil != err) {
 
           // bubble exit code up
-          pipelineRunViewBuilder.SetExitCode(stageRun.ExitCode())
+          pipelineRun.ExitCode = pipelineStageRun.ExitCode
           return
 
         }

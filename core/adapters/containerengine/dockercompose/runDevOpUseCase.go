@@ -8,7 +8,7 @@ import (
   "fmt"
   "time"
   "syscall"
-"github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 type runDevOpUseCase interface {
@@ -41,9 +41,8 @@ func (this _runDevOpUseCase) Execute(
 devOpName string,
 ) (devOpRunView models.DevOpRunView, err error) {
 
-  devOpRunViewBuilder := models.NewDevOpRunViewBuilder()
-  devOpRunViewBuilder.SetStartedAtEpochTime(time.Now().Unix())
-  devOpRunViewBuilder.SetDevOpName(devOpName)
+  devOpRunView.StartedAtEpochTime = time.Now().Unix()
+  devOpRunView.DevOpName = devOpName
 
   var relPathToDevOpDockerComposeFile string
   relPathToDevOpDockerComposeFile, err = this.fs.getRelPathToDevOpDockerComposeFile(devOpName)
@@ -80,7 +79,7 @@ devOpName string,
 
     dockerComposeUpCmd.Process.Kill()
 
-    devOpRunViewBuilder.SetExitCode(130)
+    devOpRunView.ExitCode = 130
 
     // guard against hanging prompt
     os.Stdin.WriteString("\x03")
@@ -100,7 +99,7 @@ devOpName string,
         err = errors.New(err.Error() + "\n" + runError.Error())
       }
 
-      devOpRunViewBuilder.SetExitCode(devOpExitCode)
+      devOpRunView.ExitCode = devOpExitCode
 
     }
 
@@ -113,13 +112,11 @@ devOpName string,
         err = errors.New(err.Error() + "\n" + flushDevOpResourcesError.Error())
       }
 
-      devOpRunViewBuilder.SetExitCode(1)
+      devOpRunView.ExitCode = 1
 
     }
 
-    devOpRunViewBuilder.SetEndedAtEpochTime(time.Now().Unix())
-
-    devOpRunView = devOpRunViewBuilder.Build()
+    devOpRunView.EndedAtEpochTime = time.Now().Unix()
 
   }()
 
