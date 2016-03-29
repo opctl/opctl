@@ -35,7 +35,7 @@ Your mileage may vary.
 
 ### 1) Start dockerized engine
 ```SHELL
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):$(pwd) -w $(pwd) -p 8080:8080 devopspec/engine
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 8080:8080 devopspec/engine
 ```
 explanation:
 
