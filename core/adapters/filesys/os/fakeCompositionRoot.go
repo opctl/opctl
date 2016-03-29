@@ -6,244 +6,124 @@ import (
 )
 
 type fakeCompositionRoot struct {
-  ListNamesOfDevOpDirsUseCaseStub           func() listNamesOfDevOpDirsUseCase
-  listNamesOfDevOpDirsUseCaseMutex          sync.RWMutex
-  listNamesOfDevOpDirsUseCaseArgsForCall    []struct{}
-  listNamesOfDevOpDirsUseCaseReturns        struct {
-                                                 result1 listNamesOfDevOpDirsUseCase
-                                               }
-  ListNamesOfPipelineDirsUseCaseStub        func() listNamesOfPipelineDirsUseCase
-  listNamesOfPipelineDirsUseCaseMutex       sync.RWMutex
-  listNamesOfPipelineDirsUseCaseArgsForCall []struct{}
-  listNamesOfPipelineDirsUseCaseReturns     struct {
-                                                 result1 listNamesOfPipelineDirsUseCase
-                                               }
-  ReadDevOpFileUseCaseStub                  func() readDevOpFileUseCase
-  readDevOpFileUseCaseMutex                 sync.RWMutex
-  readDevOpFileUseCaseArgsForCall           []struct{}
-  readDevOpFileUseCaseReturns               struct {
-                                                 result1 readDevOpFileUseCase
-                                               }
-  ReadPipelineFileUseCaseStub               func() readPipelineFileUseCase
-  readPipelineFileUseCaseMutex              sync.RWMutex
-  readPipelineFileUseCaseArgsForCall        []struct{}
-  readPipelineFileUseCaseReturns            struct {
-                                                 result1 readPipelineFileUseCase
-                                               }
-  SaveDevOpFileUseCaseStub                  func() saveDevOpFileUseCase
-  saveDevOpFileUseCaseMutex                 sync.RWMutex
-  saveDevOpFileUseCaseArgsForCall           []struct{}
-  saveDevOpFileUseCaseReturns               struct {
-                                                 result1 saveDevOpFileUseCase
-                                               }
-  SavePipelineFileUseCaseStub               func() savePipelineFileUseCase
-  savePipelineFileUseCaseMutex              sync.RWMutex
-  savePipelineFileUseCaseArgsForCall        []struct{}
-  savePipelineFileUseCaseReturns            struct {
-                                                 result1 savePipelineFileUseCase
-                                               }
-  CreateDevOpDirUseCaseStub                 func() createDevOpDirUseCase
-  createDevOpDirUseCaseMutex                sync.RWMutex
-  createDevOpDirUseCaseArgsForCall          []struct{}
-  createDevOpDirUseCaseReturns              struct {
-                                                 result1 createDevOpDirUseCase
-                                               }
-  CreatePipelineDirUseCaseStub              func() createPipelineDirUseCase
-  createPipelineDirUseCaseMutex             sync.RWMutex
-  createPipelineDirUseCaseArgsForCall       []struct{}
-  createPipelineDirUseCaseReturns           struct {
-                                                 result1 createPipelineDirUseCase
-                                               }
+  ListNamesOfChildDirsUseCaseStub        func() listNamesOfChildDirsUseCase
+  listNamesOfChildDirsUseCaseMutex       sync.RWMutex
+  listNamesOfChildDirsUseCaseArgsForCall []struct{}
+  listNamesOfChildDirsUseCaseReturns     struct {
+                                           result1 listNamesOfChildDirsUseCase
+                                         }
+  GetBytesOfFileUseCaseStub              func() getBytesOfFileUseCase
+  getBytesOfFileUseCaseMutex             sync.RWMutex
+  getBytesOfFileUseCaseArgsForCall       []struct{}
+  getBytesOfFileUseCaseReturns           struct {
+                                           result1 getBytesOfFileUseCase
+                                         }
+  SaveFileUseCaseStub                    func() saveFileUseCase
+  saveFileUseCaseMutex                   sync.RWMutex
+  saveFileUseCaseArgsForCall             []struct{}
+  saveFileUseCaseReturns                 struct {
+                                           result1 saveFileUseCase
+                                         }
+  CreateDirUseCaseStub                   func() createDirUseCase
+  createDirUseCaseMutex                  sync.RWMutex
+  createDirUseCaseArgsForCall            []struct{}
+  createDirUseCaseReturns                struct {
+                                           result1 createDirUseCase
+                                         }
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfDevOpDirsUseCase() listNamesOfDevOpDirsUseCase {
-  fake.listNamesOfDevOpDirsUseCaseMutex.Lock()
-  fake.listNamesOfDevOpDirsUseCaseArgsForCall = append(fake.listNamesOfDevOpDirsUseCaseArgsForCall, struct{}{})
-  fake.listNamesOfDevOpDirsUseCaseMutex.Unlock()
-  if fake.ListNamesOfDevOpDirsUseCaseStub != nil {
-    return fake.ListNamesOfDevOpDirsUseCaseStub()
+func (fake *fakeCompositionRoot) ListNamesOfChildDirsUseCase() listNamesOfChildDirsUseCase {
+  fake.listNamesOfChildDirsUseCaseMutex.Lock()
+  fake.listNamesOfChildDirsUseCaseArgsForCall = append(fake.listNamesOfChildDirsUseCaseArgsForCall, struct{}{})
+  fake.listNamesOfChildDirsUseCaseMutex.Unlock()
+  if fake.ListNamesOfChildDirsUseCaseStub != nil {
+    return fake.ListNamesOfChildDirsUseCaseStub()
   } else {
-    return fake.listNamesOfDevOpDirsUseCaseReturns.result1
+    return fake.listNamesOfChildDirsUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfDevOpDirsUseCaseCallCount() int {
-  fake.listNamesOfDevOpDirsUseCaseMutex.RLock()
-  defer fake.listNamesOfDevOpDirsUseCaseMutex.RUnlock()
-  return len(fake.listNamesOfDevOpDirsUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) ListNamesOfChildDirsUseCaseCallCount() int {
+  fake.listNamesOfChildDirsUseCaseMutex.RLock()
+  defer fake.listNamesOfChildDirsUseCaseMutex.RUnlock()
+  return len(fake.listNamesOfChildDirsUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfDevOpDirsUseCaseReturns(result1 listNamesOfDevOpDirsUseCase) {
-  fake.ListNamesOfDevOpDirsUseCaseStub = nil
-  fake.listNamesOfDevOpDirsUseCaseReturns = struct {
-    result1 listNamesOfDevOpDirsUseCase
+func (fake *fakeCompositionRoot) ListNamesOfChildDirsUseCaseReturns(result1 listNamesOfChildDirsUseCase) {
+  fake.ListNamesOfChildDirsUseCaseStub = nil
+  fake.listNamesOfChildDirsUseCaseReturns = struct {
+    result1 listNamesOfChildDirsUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfPipelineDirsUseCase() listNamesOfPipelineDirsUseCase {
-  fake.listNamesOfPipelineDirsUseCaseMutex.Lock()
-  fake.listNamesOfPipelineDirsUseCaseArgsForCall = append(fake.listNamesOfPipelineDirsUseCaseArgsForCall, struct{}{})
-  fake.listNamesOfPipelineDirsUseCaseMutex.Unlock()
-  if fake.ListNamesOfPipelineDirsUseCaseStub != nil {
-    return fake.ListNamesOfPipelineDirsUseCaseStub()
+func (fake *fakeCompositionRoot) GetBytesOfFileUseCase() getBytesOfFileUseCase {
+  fake.getBytesOfFileUseCaseMutex.Lock()
+  fake.getBytesOfFileUseCaseArgsForCall = append(fake.getBytesOfFileUseCaseArgsForCall, struct{}{})
+  fake.getBytesOfFileUseCaseMutex.Unlock()
+  if fake.GetBytesOfFileUseCaseStub != nil {
+    return fake.GetBytesOfFileUseCaseStub()
   } else {
-    return fake.listNamesOfPipelineDirsUseCaseReturns.result1
+    return fake.getBytesOfFileUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfPipelineDirsUseCaseCallCount() int {
-  fake.listNamesOfPipelineDirsUseCaseMutex.RLock()
-  defer fake.listNamesOfPipelineDirsUseCaseMutex.RUnlock()
-  return len(fake.listNamesOfPipelineDirsUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) GetBytesOfFileUseCaseCallCount() int {
+  fake.getBytesOfFileUseCaseMutex.RLock()
+  defer fake.getBytesOfFileUseCaseMutex.RUnlock()
+  return len(fake.getBytesOfFileUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ListNamesOfPipelineDirsUseCaseReturns(result1 listNamesOfPipelineDirsUseCase) {
-  fake.ListNamesOfPipelineDirsUseCaseStub = nil
-  fake.listNamesOfPipelineDirsUseCaseReturns = struct {
-    result1 listNamesOfPipelineDirsUseCase
+func (fake *fakeCompositionRoot) GetBytesOfFileUseCaseReturns(result1 getBytesOfFileUseCase) {
+  fake.GetBytesOfFileUseCaseStub = nil
+  fake.getBytesOfFileUseCaseReturns = struct {
+    result1 getBytesOfFileUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) ReadDevOpFileUseCase() readDevOpFileUseCase {
-  fake.readDevOpFileUseCaseMutex.Lock()
-  fake.readDevOpFileUseCaseArgsForCall = append(fake.readDevOpFileUseCaseArgsForCall, struct{}{})
-  fake.readDevOpFileUseCaseMutex.Unlock()
-  if fake.ReadDevOpFileUseCaseStub != nil {
-    return fake.ReadDevOpFileUseCaseStub()
+func (fake *fakeCompositionRoot) SaveFileUseCase() saveFileUseCase {
+  fake.saveFileUseCaseMutex.Lock()
+  fake.saveFileUseCaseArgsForCall = append(fake.saveFileUseCaseArgsForCall, struct{}{})
+  fake.saveFileUseCaseMutex.Unlock()
+  if fake.SaveFileUseCaseStub != nil {
+    return fake.SaveFileUseCaseStub()
   } else {
-    return fake.readDevOpFileUseCaseReturns.result1
+    return fake.saveFileUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ReadDevOpFileUseCaseCallCount() int {
-  fake.readDevOpFileUseCaseMutex.RLock()
-  defer fake.readDevOpFileUseCaseMutex.RUnlock()
-  return len(fake.readDevOpFileUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) SaveFileUseCaseCallCount() int {
+  fake.saveFileUseCaseMutex.RLock()
+  defer fake.saveFileUseCaseMutex.RUnlock()
+  return len(fake.saveFileUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ReadDevOpFileUseCaseReturns(result1 readDevOpFileUseCase) {
-  fake.ReadDevOpFileUseCaseStub = nil
-  fake.readDevOpFileUseCaseReturns = struct {
-    result1 readDevOpFileUseCase
+func (fake *fakeCompositionRoot) SaveFileUseCaseReturns(result1 saveFileUseCase) {
+  fake.SaveFileUseCaseStub = nil
+  fake.saveFileUseCaseReturns = struct {
+    result1 saveFileUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) ReadPipelineFileUseCase() readPipelineFileUseCase {
-  fake.readPipelineFileUseCaseMutex.Lock()
-  fake.readPipelineFileUseCaseArgsForCall = append(fake.readPipelineFileUseCaseArgsForCall, struct{}{})
-  fake.readPipelineFileUseCaseMutex.Unlock()
-  if fake.ReadPipelineFileUseCaseStub != nil {
-    return fake.ReadPipelineFileUseCaseStub()
+func (fake *fakeCompositionRoot) CreateDirUseCase() createDirUseCase {
+  fake.createDirUseCaseMutex.Lock()
+  fake.createDirUseCaseArgsForCall = append(fake.createDirUseCaseArgsForCall, struct{}{})
+  fake.createDirUseCaseMutex.Unlock()
+  if fake.CreateDirUseCaseStub != nil {
+    return fake.CreateDirUseCaseStub()
   } else {
-    return fake.readPipelineFileUseCaseReturns.result1
+    return fake.createDirUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ReadPipelineFileUseCaseCallCount() int {
-  fake.readPipelineFileUseCaseMutex.RLock()
-  defer fake.readPipelineFileUseCaseMutex.RUnlock()
-  return len(fake.readPipelineFileUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) CreateDirUseCaseCallCount() int {
+  fake.createDirUseCaseMutex.RLock()
+  defer fake.createDirUseCaseMutex.RUnlock()
+  return len(fake.createDirUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ReadPipelineFileUseCaseReturns(result1 readPipelineFileUseCase) {
-  fake.ReadPipelineFileUseCaseStub = nil
-  fake.readPipelineFileUseCaseReturns = struct {
-    result1 readPipelineFileUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) SaveDevOpFileUseCase() saveDevOpFileUseCase {
-  fake.saveDevOpFileUseCaseMutex.Lock()
-  fake.saveDevOpFileUseCaseArgsForCall = append(fake.saveDevOpFileUseCaseArgsForCall, struct{}{})
-  fake.saveDevOpFileUseCaseMutex.Unlock()
-  if fake.SaveDevOpFileUseCaseStub != nil {
-    return fake.SaveDevOpFileUseCaseStub()
-  } else {
-    return fake.saveDevOpFileUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) SaveDevOpFileUseCaseCallCount() int {
-  fake.saveDevOpFileUseCaseMutex.RLock()
-  defer fake.saveDevOpFileUseCaseMutex.RUnlock()
-  return len(fake.saveDevOpFileUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) SaveDevOpFileUseCaseReturns(result1 saveDevOpFileUseCase) {
-  fake.SaveDevOpFileUseCaseStub = nil
-  fake.saveDevOpFileUseCaseReturns = struct {
-    result1 saveDevOpFileUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) SavePipelineFileUseCase() savePipelineFileUseCase {
-  fake.savePipelineFileUseCaseMutex.Lock()
-  fake.savePipelineFileUseCaseArgsForCall = append(fake.savePipelineFileUseCaseArgsForCall, struct{}{})
-  fake.savePipelineFileUseCaseMutex.Unlock()
-  if fake.SavePipelineFileUseCaseStub != nil {
-    return fake.SavePipelineFileUseCaseStub()
-  } else {
-    return fake.savePipelineFileUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) SavePipelineFileUseCaseCallCount() int {
-  fake.savePipelineFileUseCaseMutex.RLock()
-  defer fake.savePipelineFileUseCaseMutex.RUnlock()
-  return len(fake.savePipelineFileUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) SavePipelineFileUseCaseReturns(result1 savePipelineFileUseCase) {
-  fake.SavePipelineFileUseCaseStub = nil
-  fake.savePipelineFileUseCaseReturns = struct {
-    result1 savePipelineFileUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) CreateDevOpDirUseCase() createDevOpDirUseCase {
-  fake.createDevOpDirUseCaseMutex.Lock()
-  fake.createDevOpDirUseCaseArgsForCall = append(fake.createDevOpDirUseCaseArgsForCall, struct{}{})
-  fake.createDevOpDirUseCaseMutex.Unlock()
-  if fake.CreateDevOpDirUseCaseStub != nil {
-    return fake.CreateDevOpDirUseCaseStub()
-  } else {
-    return fake.createDevOpDirUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) CreateDevOpDirUseCaseCallCount() int {
-  fake.createDevOpDirUseCaseMutex.RLock()
-  defer fake.createDevOpDirUseCaseMutex.RUnlock()
-  return len(fake.createDevOpDirUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) CreateDevOpDirUseCaseReturns(result1 createDevOpDirUseCase) {
-  fake.CreateDevOpDirUseCaseStub = nil
-  fake.createDevOpDirUseCaseReturns = struct {
-    result1 createDevOpDirUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) CreatePipelineDirUseCase() createPipelineDirUseCase {
-  fake.createPipelineDirUseCaseMutex.Lock()
-  fake.createPipelineDirUseCaseArgsForCall = append(fake.createPipelineDirUseCaseArgsForCall, struct{}{})
-  fake.createPipelineDirUseCaseMutex.Unlock()
-  if fake.CreatePipelineDirUseCaseStub != nil {
-    return fake.CreatePipelineDirUseCaseStub()
-  } else {
-    return fake.createPipelineDirUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) CreatePipelineDirUseCaseCallCount() int {
-  fake.createPipelineDirUseCaseMutex.RLock()
-  defer fake.createPipelineDirUseCaseMutex.RUnlock()
-  return len(fake.createPipelineDirUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) CreatePipelineDirUseCaseReturns(result1 createPipelineDirUseCase) {
-  fake.CreatePipelineDirUseCaseStub = nil
-  fake.createPipelineDirUseCaseReturns = struct {
-    result1 createPipelineDirUseCase
+func (fake *fakeCompositionRoot) CreateDirUseCaseReturns(result1 createDirUseCase) {
+  fake.CreateDirUseCaseStub = nil
+  fake.createDirUseCaseReturns = struct {
+    result1 createDirUseCase
   }{result1}
 }

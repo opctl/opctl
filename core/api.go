@@ -19,17 +19,19 @@ type Api interface {
   ) (err error)
 
   ListDevOps(
+  pathToProjectRootDir string,
   ) (devOps []models.DevOpView, err error)
 
   ListPipelines(
+  pathToProjectRootDir string,
   ) (pipelines []models.PipelineView, err error)
 
   RunDevOp(
-  devOpName string,
+  req models.RunDevOpReq,
   ) (devOpRun models.DevOpRunView, err error)
 
   RunPipeline(
-  pipelineName string,
+  req models.RunPipelineReq,
   ) (pipelineRun models.PipelineRunView, err error)
 
   SetDescriptionOfDevOp(
@@ -94,38 +96,40 @@ req models.AddStageToPipelineReq,
 }
 
 func (this _api) ListDevOps(
+pathToProjectRootDir string,
 ) (devOps []models.DevOpView, err error) {
   return this.
   compositionRoot.
   ListDevOpsUseCase().
-  Execute()
+  Execute(pathToProjectRootDir)
 }
 
 func (this _api) ListPipelines(
+pathToProjectRootDir string,
 ) (pipelines []models.PipelineView, err error) {
   return this.
   compositionRoot.
   ListPipelinesUseCase().
-  Execute()
+  Execute(pathToProjectRootDir)
 }
 
 func (this _api) RunDevOp(
-devOpName string,
+req models.RunDevOpReq,
 ) (devOpRun models.DevOpRunView, err error) {
   return this.
   compositionRoot.
   RunDevOpUseCase().
-  Execute(devOpName)
+  Execute(req)
 }
 
 func (this _api) RunPipeline(
-pipelineName string,
+req models.RunPipelineReq,
 ) (pipelineRun models.PipelineRunView, err error) {
   return this.
   compositionRoot.
   RunPipelineUseCase().
   Execute(
-    pipelineName,
+    req,
     make([]string, 0),
   )
 }

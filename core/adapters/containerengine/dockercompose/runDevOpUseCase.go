@@ -9,53 +9,50 @@ import (
   "time"
   "syscall"
   "github.com/dev-op-spec/engine/core/models"
+  "path/filepath"
 )
 
 type runDevOpUseCase interface {
   Execute(
-  devOpName string,
+  pathToDevOpDir string,
   ) (devOpRun models.DevOpRunView, err error)
 }
 
 func newRunDevOpUseCase(
 fs filesystem,
-ecr devOpExitCodeReader,
-rf devOpResourceFlusher,
+devOpRunExitCodeReader devOpRunExitCodeReader,
+devOpRunResourceFlusher devOpRunResourceFlusher,
 ) runDevOpUseCase {
 
   return &_runDevOpUseCase{
     fs:fs,
-    ecr: ecr,
-    rf: rf,
+    devOpRunExitCodeReader: devOpRunExitCodeReader,
+    devOpRunResourceFlusher: devOpRunResourceFlusher,
   }
 
 }
 
 type _runDevOpUseCase struct {
-  fs  filesystem
-  ecr devOpExitCodeReader
-  rf  devOpResourceFlusher
+  fs                      filesystem
+  devOpRunExitCodeReader  devOpRunExitCodeReader
+  devOpRunResourceFlusher devOpRunResourceFlusher
 }
 
 func (this _runDevOpUseCase) Execute(
-devOpName string,
+pathToDevOpDir string,
 ) (devOpRunView models.DevOpRunView, err error) {
 
-  devOpRunView.StartedAtEpochTime = time.Now().Unix()
-  devOpRunView.DevOpName = devOpName
+  devOpRunView.StartedAtUnixTime = time.Now().Unix()
+  devOpRunView.DevOpName = filepath.Base(pathToDevOpDir)
 
-  var relPathToDevOpDockerComposeFile string
-  relPathToDevOpDockerComposeFile, err = this.fs.getRelPathToDevOpDockerComposeFile(devOpName)
-  if (nil != err) {
-    return
-  }
+  pathToDevOpDockerComposeFile := this.fs.getPathToDevOpDockerComposeFile(pathToDevOpDir)
 
   // up
   dockerComposeUpCmd :=
   exec.Command(
     "docker-compose",
     "-f",
-    relPathToDevOpDockerComposeFile,
+    pathToDevOpDockerComposeFile,
     "up",
     "--abort-on-container-exit",
   )
@@ -88,35 +85,36 @@ devOpName string,
 
   defer func() {
 
-    var devOpExitCode int
-    devOpExitCode, err = this.ecr.read(devOpName)
-    if (0 != devOpExitCode) {
+    devOpRunView.ExitCode, err = this.devOpRunExitCodeReader.read(
+      pathToDevOpDockerComposeFile,
+    )
+    if (0 != devOpRunView.ExitCode) {
 
-      runError := errors.New(fmt.Sprintf("%v exit code was: %v", devOpName, devOpExitCode))
+      runError := errors.New(fmt.Sprintf("%v exit code was: %v", devOpRunView.DevOpName, devOpRunView.ExitCode))
       if (nil == err) {
         err = runError
       }else {
         err = errors.New(err.Error() + "\n" + runError.Error())
       }
 
-      devOpRunView.ExitCode = devOpExitCode
-
     }
 
-    flushDevOpResourcesError := this.rf.flush(devOpName)
-    if (nil != flushDevOpResourcesError) {
+    flushDevOpRunResourcesError := this.devOpRunResourceFlusher.flush(
+      pathToDevOpDockerComposeFile,
+    )
+    if (nil != flushDevOpRunResourcesError) {
 
       if (nil == err) {
-        err = flushDevOpResourcesError
+        err = flushDevOpRunResourcesError
       } else {
-        err = errors.New(err.Error() + "\n" + flushDevOpResourcesError.Error())
+        err = errors.New(err.Error() + "\n" + flushDevOpRunResourcesError.Error())
       }
 
       devOpRunView.ExitCode = 1
 
     }
 
-    devOpRunView.EndedAtEpochTime = time.Now().Unix()
+    devOpRunView.EndedAtUnixTime = time.Now().Unix()
 
   }()
 

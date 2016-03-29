@@ -1,11 +1,13 @@
 package models
 
 func NewAddDevOpReq(
+pathToProjectRootDir string,
 name string,
 description string,
 ) *AddDevOpReq {
 
   return &AddDevOpReq{
+    PathToProjectRootDir:pathToProjectRootDir,
     Name:name,
     Description :description,
   }
@@ -13,7 +15,8 @@ description string,
 }
 
 type AddDevOpReq struct {
-  Name        string
-  Description string
+  PathToProjectRootDir string
+  Name                 string
+  Description          string
 }
 

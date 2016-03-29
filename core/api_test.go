@@ -3,7 +3,7 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-"github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 var _ = Describe("_sdk", func() {
@@ -11,11 +11,11 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddDevOpReq := models.NewAddDevOpReq("", "")
+      providedAddDevOpReq := models.NewAddDevOpReq("", "", "")
 
       // wire up fakes
       fakeAddDevOpUseCase := new(fakeAddDevOpUseCase)
-      
+
       fakeCompositionRoot := new(fakeCompositionRoot)
       fakeCompositionRoot.AddDevOpUseCaseReturns(fakeAddDevOpUseCase)
 
@@ -36,11 +36,11 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddPipelineReq := models.NewAddPipelineReq("", "")
+      providedAddPipelineReq := models.NewAddPipelineReq("", "", "")
 
       // wire up fakes
       fakeAddPipelineUseCase := new(fakeAddPipelineUseCase)
-      
+
       fakeCompositionRoot := new(fakeCompositionRoot)
       fakeCompositionRoot.AddPipelineUseCaseReturns(fakeAddPipelineUseCase)
 
@@ -61,11 +61,11 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addStageToPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddStageToPipelineReq := models.NewAddStageToPipelineReq(false, "", "", "")
+      providedAddStageToPipelineReq := models.NewAddStageToPipelineReq("", false, "", "", "")
 
       // wire up fakes
       fakeAddStageToPipelineUseCase := new(fakeAddStageToPipelineUseCase)
-      
+
       fakeCompositionRoot := new(fakeCompositionRoot)
       fakeCompositionRoot.AddStageToPipelineUseCaseReturns(fakeAddStageToPipelineUseCase)
 
@@ -91,7 +91,7 @@ var _ = Describe("_sdk", func() {
       // wire up fakes
       fakeListDevOpsUseCase := new(fakeListDevOpsUseCase)
       fakeListDevOpsUseCase.ExecuteReturns(expectedReturnedDevOps, nil)
-      
+
       fakeCompositionRoot := new(fakeCompositionRoot)
       fakeCompositionRoot.ListDevOpsUseCaseReturns(fakeListDevOpsUseCase)
 
@@ -100,7 +100,7 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      actualReturnedDevOps, _ := objectUnderTest.ListDevOps()
+      actualReturnedDevOps, _ := objectUnderTest.ListDevOps("")
 
       /* assert */
       Expect(actualReturnedDevOps).To(Equal(expectedReturnedDevOps))
@@ -125,7 +125,7 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      actualReturnedPipelines, _ := objectUnderTest.ListPipelines()
+      actualReturnedPipelines, _ := objectUnderTest.ListPipelines("")
 
       /* assert */
       Expect(actualReturnedPipelines).To(Equal(expectedReturnedPipelines))
@@ -136,7 +136,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.runDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedDevOpName := ""
+      providedRunDevOpReq := models.NewRunDevOpReq("", "")
 
       // wire up fakes
       fakeRunDevOpUseCase := new(fakeRunDevOpUseCase)
@@ -149,10 +149,10 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      objectUnderTest.RunDevOp(providedDevOpName)
+      objectUnderTest.RunDevOp(*providedRunDevOpReq)
 
       /* assert */
-      Expect(fakeRunDevOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedDevOpName))
+      Expect(fakeRunDevOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedRunDevOpReq))
       Expect(fakeRunDevOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
@@ -161,7 +161,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.runPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedPipelineName := ""
+      providedRunPipelineReq := models.NewRunPipelineReq("", "")
 
       // wire up fakes
       fakeRunPipelineUseCase := new(fakeRunPipelineUseCase)
@@ -174,11 +174,11 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      objectUnderTest.RunPipeline(providedPipelineName)
+      objectUnderTest.RunPipeline(*providedRunPipelineReq)
 
       /* assert */
       executeArg0, executeArg1 := fakeRunPipelineUseCase.ExecuteArgsForCall(0)
-      Expect(executeArg0).To(Equal(providedPipelineName))
+      Expect(executeArg0).To(Equal(*providedRunPipelineReq))
       Expect(executeArg1).To(Equal(make([]string, 0)))
       Expect(fakeRunPipelineUseCase.ExecuteCallCount()).To(Equal(1))
 
@@ -188,7 +188,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfDevOpReq := models.NewSetDescriptionOfDevOpReq("", "")
+      providedSetDescriptionOfDevOpReq := models.NewSetDescriptionOfDevOpReq("", "", "")
 
       // wire up fakes
       fakeSetDescriptionOfDevOpUseCase := new(fakeSetDescriptionOfDevOpUseCase)
@@ -213,7 +213,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfPipelineReq := models.NewSetDescriptionOfPipelineReq("", "")
+      providedSetDescriptionOfPipelineReq := models.NewSetDescriptionOfPipelineReq("", "", "")
 
       // wire up fakes
       fakeSetDescriptionOfPipelineUseCase := new(fakeSetDescriptionOfPipelineUseCase)

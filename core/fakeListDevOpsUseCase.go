@@ -3,25 +3,30 @@ package core
 
 import (
   "sync"
+
   "github.com/dev-op-spec/engine/core/models"
 )
 
 type fakeListDevOpsUseCase struct {
-  ExecuteStub        func() (devOps []models.DevOpView, err error)
+  ExecuteStub        func(pathToProjectRoot string) (devOps []models.DevOpView, err error)
   executeMutex       sync.RWMutex
-  executeArgsForCall []struct{}
+  executeArgsForCall []struct {
+    pathToProjectRoot string
+  }
   executeReturns     struct {
                        result1 []models.DevOpView
                        result2 error
                      }
 }
 
-func (fake *fakeListDevOpsUseCase) Execute() (devOps []models.DevOpView, err error) {
+func (fake *fakeListDevOpsUseCase) Execute(pathToProjectRoot string) (devOps []models.DevOpView, err error) {
   fake.executeMutex.Lock()
-  fake.executeArgsForCall = append(fake.executeArgsForCall, struct{}{})
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathToProjectRoot string
+  }{pathToProjectRoot})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub()
+    return fake.ExecuteStub(pathToProjectRoot)
   } else {
     return fake.executeReturns.result1, fake.executeReturns.result2
   }
@@ -31,6 +36,12 @@ func (fake *fakeListDevOpsUseCase) ExecuteCallCount() int {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
   return len(fake.executeArgsForCall)
+}
+
+func (fake *fakeListDevOpsUseCase) ExecuteArgsForCall(i int) string {
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathToProjectRoot
 }
 
 func (fake *fakeListDevOpsUseCase) ExecuteReturns(result1 []models.DevOpView, result2 error) {

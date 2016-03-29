@@ -14,80 +14,38 @@ type filesys struct {
   compositionRoot compositionRoot
 }
 
-func (this filesys) CreateDevOpDir(
-devOpName string,
+func (this filesys) CreateDir(
+pathToDir string,
 ) (err error) {
   return this.compositionRoot.
-  CreateDevOpDirUseCase().
-  Execute(devOpName)
+  CreateDirUseCase().
+  Execute(pathToDir)
 }
 
-func (this filesys) CreatePipelineDir(
-pipelineName string,
+func (this filesys) ListNamesOfChildDirs(
+pathToParentDir string,
+) (namesOfChildDirs []string, err error) {
+  return this.compositionRoot.
+  ListNamesOfChildDirsUseCase().
+  Execute(pathToParentDir)
+}
+
+func (this filesys) GetBytesOfFile(
+pathToFile string,
+) (bytesOfFile []byte, err error) {
+  return this.compositionRoot.
+  GetBytesOfFileUseCase().
+  Execute(pathToFile)
+}
+
+func (this filesys) SaveFile(
+pathToFile string,
+bytesOfFile []byte,
 ) (err error) {
   return this.compositionRoot.
-  CreatePipelineDirUseCase().
-  Execute(pipelineName)
-}
-
-func (this filesys) ListNamesOfDevOpDirs(
-) (namesOfDevOpDirs []string, err error) {
-  return this.compositionRoot.
-  ListNamesOfDevOpDirsUseCase().
-  Execute()
-}
-
-func (this filesys) ListNamesOfPipelineDirs(
-) (namesOfPipelineDirs []string, err error) {
-  return this.compositionRoot.
-  ListNamesOfPipelineDirsUseCase().
-  Execute()
-}
-
-func (this filesys) ReadDevOpFile(
-devOpName string,
-) (file []byte, err error) {
-  return this.compositionRoot.
-  ReadDevOpFileUseCase().
-  Execute(devOpName)
-}
-
-func (this filesys) ReadPipelineFile(
-pipelineName string,
-) (file []byte, err error) {
-  return this.compositionRoot.
-  ReadPipelineFileUseCase().
-  Execute(pipelineName)
-}
-
-func (this filesys) SaveDevOpFile(
-devOpName string,
-data []byte,
-) (err error) {
-  return this.compositionRoot.
-  SaveDevOpFileUseCase().
+  SaveFileUseCase().
   Execute(
-    devOpName,
-    data,
+    pathToFile,
+    bytesOfFile,
   )
 }
-
-func (this filesys) SavePipelineFile(
-pipelineName string,
-data []byte,
-) (err error) {
-  return this.compositionRoot.
-  SavePipelineFileUseCase().
-  Execute(
-    pipelineName,
-    data,
-  )
-}
-
-const (
-  relPathToDevOpSpecDir = "./.dev-op-spec"
-
-  relPathToDevOpsDir = relPathToDevOpSpecDir + "/dev-ops"
-
-  relPathToPipelinesDir = relPathToDevOpSpecDir + "/pipelines"
-)

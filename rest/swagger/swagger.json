@@ -1,0 +1,406 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.0",
+    "title": "Engine ReST API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/project/{url}/dev-ops": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Lists project dev ops \n",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "title": "DevOp",
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add project dev op \n",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "AddDevOpReq",
+              "type": "object",
+              "properties": {
+                "Name": {
+                  "type": "string",
+                  "required": true
+                },
+                "Description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/project/{url}/dev-ops/{name}": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "summary": "Update description of project dev op \n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The name of the dev op \n",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "required": [
+                "Description"
+              ],
+              "title": "UpdateDescriptionOfDevOpReq",
+              "type": "object",
+              "properties": {
+                "Description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/project/{url}/dev-ops/{name}/runs": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "summary": "Run project dev op \n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The name of the dev-op \n",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/DevOpRunView"
+            }
+          }
+        }
+      }
+    },
+    "/project/{url}/pipelines": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "List project pipelines \n",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "title": "Pipeline",
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add project pipeline \n",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "AddPipelineReq",
+              "type": "object",
+              "properties": {
+                "Name": {
+                  "type": "string",
+                  "required": true
+                },
+                "Description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/project/{url}/pipelines/{name}": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "summary": "Update description of project pipeline \n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The name of the pipeline \n",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "UpdateDescriptionOfPipelineReq",
+              "type": "object",
+              "properties": {
+                "Description": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add stage to project pipeline \n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The name of the pipeline \n",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "AddStageToPipelineReq",
+              "type": "object",
+              "properties": {
+                "IsPipelineStage": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "StageName": {
+                  "type": "string",
+                  "required": true
+                },
+                "PrecedingStageName": {
+                  "type": "string",
+                  "allowEmptyValue": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/project/{url}/pipelines/{name}/runs": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "summary": "Run project pipeline \n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "The name of the pipeline \n",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/PipelineRunView"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DevOpRunView": {
+      "title": "DevOpRunView",
+      "type": "object",
+      "properties": {
+        "DevOpName": {
+          "type": "string"
+        },
+        "StartedAtUnixTime": {
+          "type": "integer"
+        },
+        "EndedAtUnixTime": {
+          "type": "integer"
+        },
+        "ExitCode": {
+          "type": "integer"
+        }
+      }
+    },
+    "PipelineRunView": {
+      "title": "PipelineRunView",
+      "type": "object",
+      "properties": {
+        "PipelineName": {
+          "type": "string"
+        },
+        "StartedAtUnixTime": {
+          "type": "integer"
+        },
+        "EndedAtUnixTime": {
+          "type": "integer"
+        },
+        "ExitCode": {
+          "type": "integer"
+        },
+        "Stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelineStageRunView"
+          }
+        }
+      }
+    },
+    "PipelineStageRunView": {
+      "title": "PipelineStageRunView",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "StageType": {
+          "type": "string"
+        },
+        "StartedAtUnixTime": {
+          "type": "integer"
+        },
+        "EndedAtUnixTime": {
+          "type": "integer"
+        },
+        "ExitCode": {
+          "type": "integer"
+        },
+        "Stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelineStageRunView"
+          }
+        }
+      }
+    }
+  }
+}
+
+

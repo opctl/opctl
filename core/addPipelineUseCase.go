@@ -12,41 +12,58 @@ type addPipelineUseCase interface {
 }
 
 func newAddPipelineUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToPipelineDirFactory pathToPipelineFileFactory,
+pathToPipelineFileFactory pathToPipelineFileFactory,
+yamlCodec yamlCodec,
 ) addPipelineUseCase {
 
   return &_addPipelineUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToPipelineDirFactory:pathToPipelineDirFactory,
+    pathToPipelineFileFactory:pathToPipelineFileFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _addPipelineUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
+  filesys                   ports.Filesys
+  pathToPipelineDirFactory  pathToPipelineFileFactory
+  pathToPipelineFileFactory pathToPipelineFileFactory
+  yamlCodec                 yamlCodec
 }
 
 func (this _addPipelineUseCase) Execute(
 req models.AddPipelineReq,
 ) (err error) {
 
-  err = this.fs.CreatePipelineDir(req.Name)
-  if (nil != err) {
-    return
-  }
-
-  var pipelineFile = pipelineFile{Description:req.Description}
-
-  var pipelineFileBytes []byte
-  pipelineFileBytes, err = this.yml.toYaml(&pipelineFile)
-  if (nil != err) {
-    return
-  }
-
-  err = this.fs.SavePipelineFile(
+  pathToPipelineDir := this.pathToPipelineDirFactory.Construct(
+    req.PathToProjectRootDir,
     req.Name,
+  )
+
+  err = this.filesys.CreateDir(pathToPipelineDir)
+  if (nil != err) {
+    return
+  }
+
+  var pipelineFile = pipelineFile{
+    Description:req.Description,
+  }
+
+  pipelineFileBytes, err := this.yamlCodec.toYaml(&pipelineFile)
+  if (nil != err) {
+    return
+  }
+
+  pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.Name,
+  )
+
+  err = this.filesys.SaveFile(
+    pathToPipelineFile,
     pipelineFileBytes,
   )
 

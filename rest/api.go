@@ -1,13 +1,12 @@
 package rest
 
 import (
-  "github.com/gin-gonic/gin"
+  "github.com/chrisdostert/mux"
   "github.com/dev-op-spec/engine/core"
   "net/http"
-  "github.com/dev-op-spec/engine/core/models"
-  "time"
-  "io"
   "fmt"
+  "github.com/codegangsta/negroni"
+  "github.com/rs/cors"
 )
 
 type Api interface {
@@ -28,160 +27,76 @@ type _api struct {
   compositionRoot compositionRoot
 }
 
-func (api _api) Start(
+func MyHandler(w http.ResponseWriter, r *http.Request) {
+  vars := mux.Vars(r)
+  fmt.Fprintf(w, "Hello %v\n", vars["id"])
+}
+
+func (this _api) Start(
 ) {
 
-  router := gin.Default()
+  router := mux.NewRouter()
 
-  router.GET("/stream", func(c *gin.Context) {
+  router.HandleFunc("/some/page/{id}", MyHandler).Methods("GET")
 
-    ticker := time.NewTicker(3 * time.Second)
-    listener := ticker.C
+  router.Handle(
+    "/project/{projectRootUrl}/dev-ops",
+    this.compositionRoot.ListDevOpsHandler(),
+  ).Methods("GET")
 
-    defer func() {
-      ticker.Stop()
-    }()
+  router.Handle(
+    "/project/{projectRootUrl}/dev-ops",
+    this.compositionRoot.AddDevOpHandler(),
+  ).Methods("POST")
 
-    c.Stream(func(w io.Writer) bool {
+  router.Handle(
+    "/project/{projectRootUrl}/dev-ops/{devOpName}",
+    this.compositionRoot.SetDescriptionOfDevOpHandler(),
+  ).Methods("PUT")
 
-      fmt.Println()
-      c.SSEvent("message", <-listener)
-      return true
+  router.Handle(
+    "/project/{projectRootUrl}/dev-ops/{devOpName}/runs",
+    this.compositionRoot.RunDevOpHandler(),
+  ).Methods("POST")
 
-    })
-  })
+  router.Handle(
+    "/project/{projectRootUrl}/pipelines",
+    this.compositionRoot.ListPipelinesHandler(),
+  ).Methods("GET")
 
-  router.GET("/dev-ops", func(c *gin.Context) {
+  router.Handle(
+    "/project/{projectRootUrl}/pipelines",
+    this.compositionRoot.AddPipelineHandler(),
+  ).Methods("POST")
 
-    devOps, err := api.compositionRoot.CoreApi().ListDevOps()
-    if (nil != err) {
-      panic(err)
-    }
+  router.Handle(
+    "/project/{projectRootUrl}/pipelines/{pipelineName}",
+    this.compositionRoot.SetDescriptionOfPipelineHandler(),
+  ).Methods("PUT")
 
-    c.JSON(http.StatusOK, devOps)
+  router.Handle(
+    "/project/{projectRootUrl}/pipelines/{pipelineName}",
+    this.compositionRoot.AddStageToPipelineHandler(),
+  ).Methods("POST")
 
-  })
+  router.Handle(
+    "/project/{projectRootUrl}/pipelines/{pipelineName}/runs",
+    this.compositionRoot.RunPipelineHandler(),
+  ).Methods("POST")
 
-  router.POST("/dev-ops", func(c *gin.Context) {
+  n := negroni.Classic()
 
-    var req models.AddDevOpReq
+  n.Use(cors.New(cors.Options{
+    AllowedOrigins: []string{"*"},
+    AllowedMethods:[]string{"GET", "POST", "PUT", "OPTIONS"},
+    AllowedHeaders:[]string{"*"},
+    Debug:true,
+  }))
 
-    c.BindJSON(&req)
+  n.Use(negroni.NewStatic(http.Dir("swagger")))
 
-    err := api.compositionRoot.CoreApi().AddDevOp(req)
-    if (nil != err) {
-      panic(err)
-    }
+  n.UseHandler(router)
 
-    c.Status(http.StatusOK)
-
-  })
-
-  router.PUT("/dev-ops/:dev-op-name/description", func(c *gin.Context) {
-
-    var description string
-
-    c.BindJSON(&description)
-
-    req := models.NewSetDescriptionOfDevOpReq(
-      description,
-      c.Param("dev-op-name"),
-    )
-
-    err := api.compositionRoot.CoreApi().SetDescriptionOfDevOp(*req)
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.Status(http.StatusOK)
-
-  })
-
-  router.POST("/dev-ops/:dev-op-name/runs", func(c *gin.Context) {
-
-    devOpRunView, err := api.compositionRoot.CoreApi().RunDevOp(c.Param("dev-op-name"))
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.JSON(http.StatusOK, devOpRunView)
-
-  })
-
-  router.GET("/pipelines", func(c *gin.Context) {
-
-    pipelines, err := api.compositionRoot.CoreApi().ListPipelines()
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.JSON(http.StatusOK, pipelines)
-
-  })
-
-  router.POST("/pipelines", func(c *gin.Context) {
-
-    var req models.AddPipelineReq
-
-    c.BindJSON(&req)
-
-    err := api.compositionRoot.CoreApi().AddPipeline(req)
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.Status(http.StatusOK)
-
-  })
-
-  router.PUT("/pipelines/:pipeline-name/description", func(c *gin.Context) {
-
-    var description string
-
-    c.BindJSON(&description)
-
-    req := models.NewSetDescriptionOfPipelineReq(
-      description,
-      c.Param("pipeline-name"),
-    )
-
-    err := api.compositionRoot.CoreApi().SetDescriptionOfPipeline(*req)
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.Status(http.StatusOK)
-
-  })
-
-  router.POST("/pipelines/:pipeline-name/runs", func(c *gin.Context) {
-
-    pipelineRunView, err := api.compositionRoot.CoreApi().RunPipeline(c.Param("pipeline-name"))
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.JSON(http.StatusOK, pipelineRunView)
-
-  })
-
-  router.POST("/pipelines/:pipeline-name/stages", func(c *gin.Context) {
-
-    var req models.AddStageToPipelineReq
-
-    c.BindJSON(&req)
-
-    req.PipelineName = c.Param("pipeline-name")
-
-    err := api.compositionRoot.CoreApi().AddStageToPipeline(req)
-    if (nil != err) {
-      panic(err)
-    }
-
-    c.Status(http.StatusOK)
-
-  })
-
-  router.Run()
+  n.Run(":8080")
 
 }

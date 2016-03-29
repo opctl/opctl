@@ -12,34 +12,41 @@ type setDescriptionOfPipelineUseCase interface {
 }
 
 func newSetDescriptionOfPipelineUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToPipelineFileFactory pathToPipelineFileFactory,
+yamlCodec yamlCodec,
 ) setDescriptionOfPipelineUseCase {
 
   return &_setDescriptionOfPipelineUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToPipelineFileFactory:pathToPipelineFileFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _setDescriptionOfPipelineUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
+  filesys                  ports.Filesys
+  pathToPipelineFileFactory pathToPipelineFileFactory
+  yamlCodec                yamlCodec
 }
 
 func (this _setDescriptionOfPipelineUseCase) Execute(
 req models.SetDescriptionOfPipelineReq,
 ) (err error) {
 
-  var pipelineFileBytes []byte
-  pipelineFileBytes, err = this.fs.ReadPipelineFile(req.PipelineName)
+  pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.PipelineName,
+  )
+
+  pipelineFileBytes, err := this.filesys.GetBytesOfFile(pathToPipelineFile)
   if (nil != err) {
     return
   }
 
   pipelineFile := pipelineFile{}
-  err = this.yml.fromYaml(
+  err = this.yamlCodec.fromYaml(
     pipelineFileBytes,
     &pipelineFile,
   )
@@ -49,13 +56,13 @@ req models.SetDescriptionOfPipelineReq,
 
   pipelineFile.Description = req.Description
 
-  pipelineFileBytes, err = this.yml.toYaml(&pipelineFile)
+  pipelineFileBytes, err = this.yamlCodec.toYaml(&pipelineFile)
   if (nil != err) {
     return
   }
 
-  err = this.fs.SavePipelineFile(
-    req.PipelineName,
+  err = this.filesys.SaveFile(
+    pathToPipelineFile,
     pipelineFileBytes,
   )
 

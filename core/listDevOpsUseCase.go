@@ -2,52 +2,68 @@ package core
 
 import (
   "github.com/dev-op-spec/engine/core/models"
-"github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/ports"
 )
 
 type listDevOpsUseCase interface {
   Execute(
+  pathToProjectRoot string,
   ) (devOps []models.DevOpView, err error)
 }
 
 func newListDevOpsUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToDevOpFileFactory pathToDevOpFileFactory,
+pathToDevOpsDirFactory pathToDevOpsDirFactory,
+yamlCodec yamlCodec,
 ) listDevOpsUseCase {
 
   return &_listDevOpsUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToDevOpFileFactory:pathToDevOpFileFactory,
+    pathToDevOpsDirFactory:pathToDevOpsDirFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _listDevOpsUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
+  filesys                ports.Filesys
+  pathToDevOpFileFactory pathToDevOpFileFactory
+  pathToDevOpsDirFactory pathToDevOpsDirFactory
+  yamlCodec              yamlCodec
 }
 
 func (this _listDevOpsUseCase) Execute(
+pathToProjectRoot string,
 ) (devOps []models.DevOpView, err error) {
 
-  devOps = make([]models.DevOpView, 0)
+  pathToDevOpsDir := this.pathToDevOpsDirFactory.Construct(
+    pathToProjectRoot,
+  )
 
-  var devOpDirNames []string
-  devOpDirNames, err= this.fs.ListNamesOfDevOpDirs()
+  devOpDirNames, err := this.filesys.ListNamesOfChildDirs(
+    pathToDevOpsDir,
+  )
   if (nil != err) {
     return
   }
 
   for _, devOpDirName := range devOpDirNames {
 
+    pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
+      pathToProjectRoot,
+      devOpDirName,
+    )
+
     var devOpFileBytes []byte
-    devOpFileBytes, err= this.fs.ReadDevOpFile(devOpDirName)
+    devOpFileBytes, err = this.filesys.GetBytesOfFile(pathToDevOpFile)
     if (nil != err) {
       return
     }
 
     devOpFile := devOpFile{}
-    err= this.yml.fromYaml(
+    err = this.yamlCodec.fromYaml(
       devOpFileBytes,
       &devOpFile,
     )

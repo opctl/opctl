@@ -20,13 +20,13 @@ func newCompositionRoot(
     return
   }
 
-  ecr := newDevOpExitCodeReader(fs, dockerEngine)
+  devOpRunExitCodeReader := newDevOpRunExitCodeReader(fs, dockerEngine)
 
-  rf := newDevOpResourceFlusher(fs)
+  devOpRunResourceFlusher := newDevOpRunResourceFlusher(fs)
 
   compositionRoot = &_compositionRoot{
     initDevOpUseCase: newInitDevOpUseCase(fs, yml),
-    runDevOpUseCase: newRunDevOpUseCase(fs, ecr, rf),
+    runDevOpUseCase: newRunDevOpUseCase(fs, devOpRunExitCodeReader, devOpRunResourceFlusher),
   }
 
   return

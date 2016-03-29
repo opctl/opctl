@@ -3,74 +3,38 @@ package dockercompose
 import (
   "io/ioutil"
   "path"
-  "errors"
 )
 
 type filesystem interface {
-  getRelPathToDevOpDir(
+  getPathToDevOpDockerComposeFile(
   devOpName string,
-  ) (relPathToDevOpDir string, err error)
-
-  getRelPathToDevOpDockerComposeFile(
-  devOpName string,
-  ) (relPathToDevOpDockerComposeFile string, err error)
+  ) (pathToDevOpDockerComposeFile string)
 
   saveDevOpDockerComposeFile(
-  devOpName string,
+  pathToDevOpDir string,
   data []byte,
   ) (err error)
 }
 
-const (
-  relPathToDevOpSpecDir = "./.dev-op-spec"
-
-  relPathToDevOpsDir = relPathToDevOpSpecDir + "/dev-ops"
-)
-
 type filesystemImpl struct{}
 
-func (fs filesystemImpl)  getRelPathToDevOpDir(
-devOpName string,
-) (relPathToDevOpDir string, err error) {
+func (this filesystemImpl)  getPathToDevOpDockerComposeFile(
+pathToDevOp string,
+) (pathToDevOpDockerComposeFile string) {
 
-  if ("" == devOpName) {
-    err= errors.New("devOpName cannot be nil")
-  }
-
-  relPathToDevOpDir = path.Join(relPathToDevOpsDir, devOpName)
-
-  return
-}
-
-func (fs filesystemImpl)  getRelPathToDevOpDockerComposeFile(
-devOpName string,
-) (relPathToDevOpDockerComposeFile string, err error) {
-
-  var relPathToDevOpDir string
-  relPathToDevOpDir, err= fs.getRelPathToDevOpDir(devOpName)
-  if (nil != err) {
-    return
-  }
-
-  relPathToDevOpDockerComposeFile = path.Join(relPathToDevOpDir, "docker-compose.yml")
+  pathToDevOpDockerComposeFile = path.Join(pathToDevOp, "docker-compose.yml")
 
   return
 
 }
 
-func (fs filesystemImpl)  saveDevOpDockerComposeFile(
-devOpName string,
+func (this filesystemImpl)  saveDevOpDockerComposeFile(
+pathToDevOpDir string,
 data []byte,
 ) (err error) {
 
-  var relPathToDevOpDockerComposeFile string
-  relPathToDevOpDockerComposeFile, err= fs.getRelPathToDevOpDockerComposeFile(devOpName)
-  if (nil != err) {
-    return
-  }
-
-  err= ioutil.WriteFile(
-    relPathToDevOpDockerComposeFile,
+  err = ioutil.WriteFile(
+    this.getPathToDevOpDockerComposeFile(pathToDevOpDir),
     data,
     0777,
   )

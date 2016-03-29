@@ -9,47 +9,57 @@ import (
 
 type runPipelineUseCase interface {
   Execute(
-  pipelineName string,
+  req models.RunPipelineReq,
   namesOfAlreadyRunPipelines[]string,
   ) (pipelineRun models.PipelineRunView, err error)
 }
 
 func newRunPipelineUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToPipelineDirFactory pathToPipelineDirFactory,
+pathToPipelineFileFactory pathToPipelineFileFactory,
+yamlCodec yamlCodec,
 runDevOpUseCase runDevOpUseCase,
 ) runPipelineUseCase {
 
   return &_runPipelineUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToPipelineDirFactory:pathToPipelineDirFactory,
+    pathToPipelineFileFactory:pathToPipelineFileFactory,
+    yamlCodec:yamlCodec,
     runDevOpUseCase: runDevOpUseCase,
   }
 
 }
 
 type _runPipelineUseCase struct {
-  fs              ports.Filesys
-  yml             yamlCodec
-  runDevOpUseCase runDevOpUseCase
+  filesys                   ports.Filesys
+  pathToPipelineDirFactory  pathToPipelineDirFactory
+  pathToPipelineFileFactory pathToPipelineFileFactory
+  yamlCodec                 yamlCodec
+  runDevOpUseCase           runDevOpUseCase
 }
 
 func (this _runPipelineUseCase) Execute(
-pipelineName string,
+req models.RunPipelineReq,
 namesOfAlreadyRunPipelines[]string,
 ) (pipelineRun models.PipelineRunView, err error) {
 
-  pipelineRun.StartedAtEpochTime = time.Now().Unix()
-  pipelineRun.PipelineName = pipelineName
+  pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.PipelineName,
+  )
 
-  var pipelineFileBytes []byte
-  pipelineFileBytes, err = this.fs.ReadPipelineFile(pipelineName)
+  pipelineRun.StartedAtUnixTime = time.Now().Unix()
+  pipelineRun.PipelineName = req.PipelineName
+
+  pipelineFileBytes, err := this.filesys.GetBytesOfFile(pathToPipelineFile)
   if (nil != err) {
     return
   }
 
   pipelineFile := pipelineFile{}
-  err = this.yml.fromYaml(
+  err = this.yamlCodec.fromYaml(
     pipelineFileBytes,
     &pipelineFile,
   )
@@ -59,21 +69,21 @@ namesOfAlreadyRunPipelines[]string,
 
   defer func() {
 
-    pipelineRun.EndedAtEpochTime = time.Now().Unix()
+    pipelineRun.EndedAtUnixTime = time.Now().Unix()
 
   }()
 
   // guard infinite loop
   for _, previouslyRunPipeline := range namesOfAlreadyRunPipelines {
 
-    if (previouslyRunPipeline == pipelineName) {
-      err = errors.New("Unable to run pipeline with name=`" + pipelineName +
+    if (previouslyRunPipeline == req.PipelineName) {
+      err = errors.New("Unable to run pipeline with name=`" + req.PipelineName +
       "`. Pipelines cannot call themselves recursively.")
       return
     }
 
   }
-  namesOfAlreadyRunPipelines = append(namesOfAlreadyRunPipelines, pipelineName)
+  namesOfAlreadyRunPipelines = append(namesOfAlreadyRunPipelines, req.PipelineName)
 
   for _, stage := range pipelineFile.Stages {
 
@@ -83,9 +93,11 @@ namesOfAlreadyRunPipelines[]string,
       {
 
         var devOpStageRun models.DevOpRunView
-
         devOpStageRun, err = this.runDevOpUseCase.Execute(
-          stage.Name,
+          *models.NewRunDevOpReq(
+            req.PathToProjectRootDir,
+            stage.Name,
+          ),
         )
 
         pipelineRun.Stages = append(
@@ -93,8 +105,8 @@ namesOfAlreadyRunPipelines[]string,
           models.NewPipelineStageRunView(
             devOpStageRun.DevOpName,
             devOpStageType,
-            devOpStageRun.StartedAtEpochTime,
-            devOpStageRun.EndedAtEpochTime,
+            devOpStageRun.StartedAtUnixTime,
+            devOpStageRun.EndedAtUnixTime,
             devOpStageRun.ExitCode,
             nil,
           ),
@@ -116,9 +128,11 @@ namesOfAlreadyRunPipelines[]string,
       {
 
         var pipelineStageRun models.PipelineRunView
-
         pipelineStageRun, err = this.Execute(
-          stage.Name,
+          *models.NewRunPipelineReq(
+            req.PathToProjectRootDir,
+            stage.Name,
+          ),
           namesOfAlreadyRunPipelines,
         )
 
@@ -127,8 +141,8 @@ namesOfAlreadyRunPipelines[]string,
           models.NewPipelineStageRunView(
             pipelineStageRun.PipelineName,
             pipelineStageType,
-            pipelineStageRun.StartedAtEpochTime,
-            pipelineStageRun.EndedAtEpochTime,
+            pipelineStageRun.StartedAtUnixTime,
+            pipelineStageRun.EndedAtUnixTime,
             pipelineStageRun.ExitCode,
             nil,
           ),
@@ -149,7 +163,7 @@ namesOfAlreadyRunPipelines[]string,
     default:
       {
 
-        err = errors.New("Unable to run pipeline with name=`" + pipelineName +
+        err = errors.New("Unable to run pipeline with name=`" + req.PipelineName +
         "`. Expected stage equal to `" + pipelineStageType + "` or `" + devOpStageType +
         "` but found `" + stage.Type + "`")
 

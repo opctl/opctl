@@ -3,25 +3,30 @@ package core
 
 import (
   "sync"
+
   "github.com/dev-op-spec/engine/core/models"
 )
 
 type fakeListPipelinesUseCase struct {
-  ExecuteStub        func() (pipelines []models.PipelineView, err error)
+  ExecuteStub        func(pathToProjectRootDir string) (pipelines []models.PipelineView, err error)
   executeMutex       sync.RWMutex
-  executeArgsForCall []struct{}
+  executeArgsForCall []struct {
+    pathToProjectRootDir string
+  }
   executeReturns     struct {
                        result1 []models.PipelineView
                        result2 error
                      }
 }
 
-func (fake *fakeListPipelinesUseCase) Execute() (pipelines []models.PipelineView, err error) {
+func (fake *fakeListPipelinesUseCase) Execute(pathToProjectRootDir string) (pipelines []models.PipelineView, err error) {
   fake.executeMutex.Lock()
-  fake.executeArgsForCall = append(fake.executeArgsForCall, struct{}{})
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathToProjectRootDir string
+  }{pathToProjectRootDir})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub()
+    return fake.ExecuteStub(pathToProjectRootDir)
   } else {
     return fake.executeReturns.result1, fake.executeReturns.result2
   }
@@ -31,6 +36,12 @@ func (fake *fakeListPipelinesUseCase) ExecuteCallCount() int {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
   return len(fake.executeArgsForCall)
+}
+
+func (fake *fakeListPipelinesUseCase) ExecuteArgsForCall(i int) string {
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathToProjectRootDir
 }
 
 func (fake *fakeListPipelinesUseCase) ExecuteReturns(result1 []models.PipelineView, result2 error) {

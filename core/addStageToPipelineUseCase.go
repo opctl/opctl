@@ -12,34 +12,42 @@ type addStageToPipelineUseCase interface {
 }
 
 func newAddStageToPipelineUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToPipelineFileFactory pathToPipelineFileFactory,
+yamlCodec yamlCodec,
 ) addStageToPipelineUseCase {
 
   return &_addStageToPipelineUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToPipelineFileFactory:pathToPipelineFileFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _addStageToPipelineUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
+  filesys                   ports.Filesys
+  pathToPipelineFileFactory pathToPipelineFileFactory
+  yamlCodec                 yamlCodec
 }
 
 func (this _addStageToPipelineUseCase) Execute(
 req models.AddStageToPipelineReq,
 ) (err error) {
 
-  var pipelineFileBytes []byte
-  pipelineFileBytes, err = this.fs.ReadPipelineFile(req.PipelineName)
+  pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.PipelineName,
+  )
+
+  pipelineFileBytes, err := this.filesys.GetBytesOfFile(pathToPipelineFile)
   if (nil != err) {
     return
   }
 
   pipelineFile := pipelineFile{}
-  err = this.yml.fromYaml(
+
+  err = this.yamlCodec.fromYaml(
     pipelineFileBytes,
     &pipelineFile,
   )
@@ -57,12 +65,12 @@ req models.AddStageToPipelineReq,
   }
 
   if (nil == pipelineFile.Stages) {
-    pipelineFile.Stages = make([]pipelineFileStage, 0)
+    pipelineFile.Stages = []pipelineFileStage{}
   }
 
   if (len(req.PrecedingStageName) > 0) {
 
-    var stages = make([]pipelineFileStage, 0)
+    stages := []pipelineFileStage{}
 
     for _, stage := range pipelineFile.Stages {
 
@@ -81,13 +89,13 @@ req models.AddStageToPipelineReq,
 
   }
 
-  pipelineFileBytes, err = this.yml.toYaml(&pipelineFile)
+  pipelineFileBytes, err = this.yamlCodec.toYaml(&pipelineFile)
   if (nil != err) {
     return
   }
 
-  err = this.fs.SavePipelineFile(
-    req.PipelineName,
+  err = this.filesys.SaveFile(
+    pathToPipelineFile,
     pipelineFileBytes,
   )
 

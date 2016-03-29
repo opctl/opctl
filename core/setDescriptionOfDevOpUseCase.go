@@ -12,34 +12,41 @@ type setDescriptionOfDevOpUseCase interface {
 }
 
 func newSetDescriptionOfDevOpUseCase(
-fs ports.Filesys,
-yml yamlCodec,
+filesys ports.Filesys,
+pathToDevOpFileFactory pathToDevOpFileFactory,
+yamlCodec yamlCodec,
 ) setDescriptionOfDevOpUseCase {
 
   return &_setDescriptionOfDevOpUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    pathToDevOpFileFactory:pathToDevOpFileFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _setDescriptionOfDevOpUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
+  filesys               ports.Filesys
+  pathToDevOpFileFactory pathToDevOpFileFactory
+  yamlCodec             yamlCodec
 }
 
 func (this _setDescriptionOfDevOpUseCase) Execute(
 req models.SetDescriptionOfDevOpReq,
 ) (err error) {
 
-  var devOpFileBytes []byte
-  devOpFileBytes, err = this.fs.ReadDevOpFile(req.DevOpName)
+  pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.DevOpName,
+  )
+
+  devOpFileBytes, err := this.filesys.GetBytesOfFile(pathToDevOpFile)
   if (nil != err) {
     return
   }
 
   devOpFile := devOpFile{}
-  err = this.yml.fromYaml(
+  err = this.yamlCodec.fromYaml(
     devOpFileBytes,
     &devOpFile,
   )
@@ -49,13 +56,13 @@ req models.SetDescriptionOfDevOpReq,
 
   devOpFile.Description = req.Description
 
-  devOpFileBytes, err = this.yml.toYaml(&devOpFile)
+  devOpFileBytes, err = this.yamlCodec.toYaml(&devOpFile)
   if (nil != err) {
     return
   }
 
-  err = this.fs.SaveDevOpFile(
-    req.DevOpName,
+  err = this.filesys.SaveFile(
+    pathToDevOpFile,
     devOpFileBytes,
   )
 

@@ -12,51 +12,68 @@ type addDevOpUseCase interface {
 }
 
 func newAddDevOpUseCase(
-fs ports.Filesys,
-yml yamlCodec,
-ce ports.ContainerEngine,
+filesys ports.Filesys,
+pathToDevOpDirFactory pathToDevOpDirFactory,
+pathToDevOpFileFactory pathToDevOpFileFactory,
+ymlCodec yamlCodec,
+containerEngine ports.ContainerEngine,
 ) addDevOpUseCase {
 
   return &_addDevOpUseCase{
-    fs:fs,
-    yml:yml,
-    ce:ce,
+    filesys:filesys,
+    pathToDevOpDirFactory:pathToDevOpDirFactory,
+    pathToDevOpFileFactory:pathToDevOpFileFactory,
+    ymlCodec:ymlCodec,
+    containerEngine:containerEngine,
   }
 
 }
 
 type _addDevOpUseCase struct {
-  fs  ports.Filesys
-  yml yamlCodec
-  ce  ports.ContainerEngine
+  filesys                ports.Filesys
+  pathToDevOpDirFactory  pathToDevOpDirFactory
+  pathToDevOpFileFactory pathToDevOpFileFactory
+  ymlCodec               yamlCodec
+  containerEngine        ports.ContainerEngine
 }
 
 func (this _addDevOpUseCase) Execute(
 req models.AddDevOpReq,
 ) (err error) {
 
-  err = this.fs.CreateDevOpDir(req.Name)
-  if (nil != err) {
-    return
-  }
-
-  var devOpFile = devOpFile{Description:req.Description}
-
-  var devOpFileBytes []byte
-  devOpFileBytes, err = this.yml.toYaml(&devOpFile)
-  if (nil != err) {
-    return
-  }
-
-  err = this.fs.SaveDevOpFile(
+  pathToDevOpDir := this.pathToDevOpDirFactory.Construct(
+    req.PathToProjectRootDir,
     req.Name,
+  )
+
+  err = this.filesys.CreateDir(pathToDevOpDir)
+  if (nil != err) {
+    return
+  }
+
+  var devOpFile = devOpFile{
+    Description:req.Description,
+  }
+
+  devOpFileBytes, err := this.ymlCodec.toYaml(&devOpFile)
+  if (nil != err) {
+    return
+  }
+
+  pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
+    req.PathToProjectRootDir,
+    req.Name,
+  )
+
+  err = this.filesys.SaveFile(
+    pathToDevOpFile,
     devOpFileBytes,
   )
   if (nil != err) {
     return
   }
 
-  err = this.ce.InitDevOp(req.Name)
+  err = this.containerEngine.InitDevOp(pathToDevOpDir)
 
   return
 

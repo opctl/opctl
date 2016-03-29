@@ -21,20 +21,85 @@ containerEngine ports.ContainerEngine,
 filesys ports.Filesys,
 ) (compositionRoot compositionRoot, err error) {
 
-  yml := _yamlCodec{}
+  // factories
+  pathToDevOpsDirFactory := newPathToDevOpsDirFactory()
+  pathToDevOpDirFactory := newPathToDevOpDirFactory(pathToDevOpsDirFactory)
+  pathToDevOpFileFactory := newPathToDevOpFileFactory(pathToDevOpDirFactory)
+  pathToPipelinesDirFactory := newPathToPipelinesDirFactory()
+  pathToPipelineDirFactory := newPathToPipelineDirFactory(pathToPipelinesDirFactory)
+  pathToPipelineFileFactory := newPathToPipelineFileFactory(pathToPipelineDirFactory)
 
-  runDevOpUseCase := newRunDevOpUseCase(containerEngine)
+  runDevOpUseCase := newRunDevOpUseCase(containerEngine, pathToDevOpDirFactory)
+
+  yamlCodec := newYamlCodec()
+
+  // use cases
+  addDevOpUseCase := newAddDevOpUseCase(
+    filesys,
+    pathToDevOpDirFactory,
+    pathToDevOpFileFactory,
+    yamlCodec,
+    containerEngine,
+  )
+
+  addPipelineUseCase := newAddPipelineUseCase(
+    filesys,
+    pathToPipelineDirFactory,
+    pathToPipelineFileFactory,
+    yamlCodec,
+  )
+
+  addStageToPipelineUseCase := newAddStageToPipelineUseCase(
+    filesys,
+    pathToPipelineFileFactory,
+    yamlCodec,
+  )
+
+  listDevOpsUseCase := newListDevOpsUseCase(
+    filesys,
+    pathToDevOpFileFactory,
+    pathToDevOpsDirFactory,
+    yamlCodec,
+  )
+
+  listPipelinesUseCase := newListPipelinesUseCase(
+    filesys,
+    pathToPipelineFileFactory,
+    pathToPipelinesDirFactory,
+    yamlCodec,
+  )
+
+  runPipelineUseCase := newRunPipelineUseCase(
+    filesys,
+    pathToPipelineDirFactory,
+    pathToPipelineFileFactory,
+    yamlCodec,
+    runDevOpUseCase,
+  )
+
+  setDescriptionOfDevOpUseCase := newSetDescriptionOfDevOpUseCase(
+    filesys,
+    pathToDevOpFileFactory,
+    yamlCodec,
+  )
+
+  setDescriptionOfPipelineUseCase :=
+  newSetDescriptionOfPipelineUseCase(
+    filesys,
+    pathToPipelineFileFactory,
+    yamlCodec,
+  )
 
   compositionRoot = &_compositionRoot{
-    addDevOpUseCase: newAddDevOpUseCase(filesys, yml, containerEngine),
-    addPipelineUseCase: newAddPipelineUseCase(filesys, yml),
-    addStageToPipelineUseCase: newAddStageToPipelineUseCase(filesys, yml),
-    listDevOpsUseCase: newListDevOpsUseCase(filesys, yml),
-    listPipelinesUseCase: newListPipelinesUseCase(filesys, yml),
+    addDevOpUseCase: addDevOpUseCase,
+    addPipelineUseCase: addPipelineUseCase,
+    addStageToPipelineUseCase: addStageToPipelineUseCase,
+    listDevOpsUseCase: listDevOpsUseCase,
+    listPipelinesUseCase:listPipelinesUseCase,
     runDevOpUseCase: runDevOpUseCase,
-    runPipelineUseCase: newRunPipelineUseCase(filesys, yml, runDevOpUseCase),
-    setDescriptionOfDevOpUseCase: newSetDescriptionOfDevOpUseCase(filesys, yml),
-    setDescriptionOfPipelineUseCase: newSetDescriptionOfPipelineUseCase(filesys, yml),
+    runPipelineUseCase: runPipelineUseCase,
+    setDescriptionOfDevOpUseCase: setDescriptionOfDevOpUseCase,
+    setDescriptionOfPipelineUseCase:setDescriptionOfPipelineUseCase,
   }
 
   return

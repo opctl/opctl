@@ -27,17 +27,17 @@ type _containerEngine struct {
 }
 
 func (this _containerEngine) InitDevOp(
-devOpName string,
+pathToDevOpDir string,
 ) (err error) {
   return this.compositionRoot.
   InitDevOpUseCase().
-  Execute(devOpName)
+  Execute(pathToDevOpDir)
 }
 
 func (this _containerEngine) RunDevOp(
-devOpName string,
+pathToDevOpDir string,
 ) (devOpRun models.DevOpRunView, err error) {
   return this.compositionRoot.
   RunDevOpUseCase().
-  Execute(devOpName)
+  Execute(pathToDevOpDir)
 }

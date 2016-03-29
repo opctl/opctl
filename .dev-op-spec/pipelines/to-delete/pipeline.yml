@@ -1,0 +1,4 @@
+description: somebody gonna get hurt...
+stages:
+- name: to-delete
+  type: pipeline

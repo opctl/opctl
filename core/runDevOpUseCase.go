@@ -1,34 +1,43 @@
 package core
 
 import (
-"github.com/dev-op-spec/engine/core/models"
-"github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/ports"
 )
 
 type runDevOpUseCase interface {
   Execute(
-  devOpName string,
+  req models.RunDevOpReq,
   ) (devOpRun models.DevOpRunView, err error)
 }
 
 func newRunDevOpUseCase(
-ce ports.ContainerEngine,
+containerEngine ports.ContainerEngine,
+pathToDevOpDirFactory pathToDevOpDirFactory,
 ) runDevOpUseCase {
 
   return &_runDevOpUseCase{
-    ce:ce,
+    containerEngine:containerEngine,
+    pathToDevOpDirFactory:pathToDevOpDirFactory,
   }
 
 }
 
 type _runDevOpUseCase struct {
-  ce ports.ContainerEngine
+  containerEngine       ports.ContainerEngine
+  pathToDevOpDirFactory pathToDevOpDirFactory
 }
 
 func (this _runDevOpUseCase) Execute(
-devOpName string,
+req models.RunDevOpReq,
 ) (devOpRun models.DevOpRunView, err error) {
 
-  return this.ce.RunDevOp(devOpName)
+  pathToDevOpDir := this.pathToDevOpDirFactory.Construct(
+    req.PathToProjectRootDir,
+    req.DevOpName,
+  )
 
+  devOpRun, err = this.containerEngine.RunDevOp(pathToDevOpDir)
+
+  return
 }

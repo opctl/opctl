@@ -1,11 +1,13 @@
 package models
 
 func NewSetDescriptionOfDevOpReq(
+pathToProjectRootDir string,
 description string,
 devOpName string,
 ) *SetDescriptionOfDevOpReq {
 
   return &SetDescriptionOfDevOpReq{
+    PathToProjectRootDir:pathToProjectRootDir,
     Description:description,
     DevOpName :devOpName,
   }
@@ -13,6 +15,7 @@ devOpName string,
 }
 
 type SetDescriptionOfDevOpReq struct {
-  Description string
-  DevOpName   string
+  PathToProjectRootDir string
+  Description          string
+  DevOpName            string
 }

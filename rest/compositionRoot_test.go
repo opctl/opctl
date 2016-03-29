@@ -7,8 +7,8 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("CoreApi", func() {
-    It("should return a core.Api instance", func() {
+  Context("AddDevOpHandler()", func() {
+    It("should return an addDevOpHandler instance", func() {
 
       /* arrange */
 
@@ -17,10 +17,10 @@ var _ = Describe("compositionRoot", func() {
       objectUnderTest := newCompositionRoot(fakeCoreApi)
 
       /* act */
-      actualCoreApi := objectUnderTest.CoreApi()
+      actualAddDevOpHandler := objectUnderTest.AddDevOpHandler()
 
       /* assert */
-      Expect(actualCoreApi).To(Equal(fakeCoreApi))
+      Expect(actualAddDevOpHandler).To(BeAssignableToTypeOf(&addDevOpHandler{}))
 
     })
   })

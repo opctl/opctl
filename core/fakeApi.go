@@ -32,33 +32,37 @@ type FakeApi struct {
   addStageToPipelineReturns           struct {
                                         result1 error
                                       }
-  ListDevOpsStub                      func() (devOps []models.DevOpView, err error)
+  ListDevOpsStub                      func(pathToProjectRootDir string) (devOps []models.DevOpView, err error)
   listDevOpsMutex                     sync.RWMutex
-  listDevOpsArgsForCall               []struct{}
+  listDevOpsArgsForCall               []struct {
+    pathToProjectRootDir string
+  }
   listDevOpsReturns                   struct {
                                         result1 []models.DevOpView
                                         result2 error
                                       }
-  ListPipelinesStub                   func() (pipelines []models.PipelineView, err error)
+  ListPipelinesStub                   func(pathToProjectRootDir string) (pipelines []models.PipelineView, err error)
   listPipelinesMutex                  sync.RWMutex
-  listPipelinesArgsForCall            []struct{}
+  listPipelinesArgsForCall            []struct {
+    pathToProjectRootDir string
+  }
   listPipelinesReturns                struct {
                                         result1 []models.PipelineView
                                         result2 error
                                       }
-  RunDevOpStub                        func(devOpName string) (devOpRun models.DevOpRunView, err error)
+  RunDevOpStub                        func(req models.RunDevOpReq) (devOpRun models.DevOpRunView, err error)
   runDevOpMutex                       sync.RWMutex
   runDevOpArgsForCall                 []struct {
-    devOpName string
+    req models.RunDevOpReq
   }
   runDevOpReturns                     struct {
                                         result1 models.DevOpRunView
                                         result2 error
                                       }
-  RunPipelineStub                     func(pipelineName string) (pipelineRun models.PipelineRunView, err error)
+  RunPipelineStub                     func(req models.RunPipelineReq) (pipelineRun models.PipelineRunView, err error)
   runPipelineMutex                    sync.RWMutex
   runPipelineArgsForCall              []struct {
-    pipelineName string
+    req models.RunPipelineReq
   }
   runPipelineReturns                  struct {
                                         result1 models.PipelineRunView
@@ -178,12 +182,14 @@ func (fake *FakeApi) AddStageToPipelineReturns(result1 error) {
   }{result1}
 }
 
-func (fake *FakeApi) ListDevOps() (devOps []models.DevOpView, err error) {
+func (fake *FakeApi) ListDevOps(pathToProjectRootDir string) (devOps []models.DevOpView, err error) {
   fake.listDevOpsMutex.Lock()
-  fake.listDevOpsArgsForCall = append(fake.listDevOpsArgsForCall, struct{}{})
+  fake.listDevOpsArgsForCall = append(fake.listDevOpsArgsForCall, struct {
+    pathToProjectRootDir string
+  }{pathToProjectRootDir})
   fake.listDevOpsMutex.Unlock()
   if fake.ListDevOpsStub != nil {
-    return fake.ListDevOpsStub()
+    return fake.ListDevOpsStub(pathToProjectRootDir)
   } else {
     return fake.listDevOpsReturns.result1, fake.listDevOpsReturns.result2
   }
@@ -195,6 +201,12 @@ func (fake *FakeApi) ListDevOpsCallCount() int {
   return len(fake.listDevOpsArgsForCall)
 }
 
+func (fake *FakeApi) ListDevOpsArgsForCall(i int) string {
+  fake.listDevOpsMutex.RLock()
+  defer fake.listDevOpsMutex.RUnlock()
+  return fake.listDevOpsArgsForCall[i].pathToProjectRootDir
+}
+
 func (fake *FakeApi) ListDevOpsReturns(result1 []models.DevOpView, result2 error) {
   fake.ListDevOpsStub = nil
   fake.listDevOpsReturns = struct {
@@ -203,12 +215,14 @@ func (fake *FakeApi) ListDevOpsReturns(result1 []models.DevOpView, result2 error
   }{result1, result2}
 }
 
-func (fake *FakeApi) ListPipelines() (pipelines []models.PipelineView, err error) {
+func (fake *FakeApi) ListPipelines(pathToProjectRootDir string) (pipelines []models.PipelineView, err error) {
   fake.listPipelinesMutex.Lock()
-  fake.listPipelinesArgsForCall = append(fake.listPipelinesArgsForCall, struct{}{})
+  fake.listPipelinesArgsForCall = append(fake.listPipelinesArgsForCall, struct {
+    pathToProjectRootDir string
+  }{pathToProjectRootDir})
   fake.listPipelinesMutex.Unlock()
   if fake.ListPipelinesStub != nil {
-    return fake.ListPipelinesStub()
+    return fake.ListPipelinesStub(pathToProjectRootDir)
   } else {
     return fake.listPipelinesReturns.result1, fake.listPipelinesReturns.result2
   }
@@ -220,6 +234,12 @@ func (fake *FakeApi) ListPipelinesCallCount() int {
   return len(fake.listPipelinesArgsForCall)
 }
 
+func (fake *FakeApi) ListPipelinesArgsForCall(i int) string {
+  fake.listPipelinesMutex.RLock()
+  defer fake.listPipelinesMutex.RUnlock()
+  return fake.listPipelinesArgsForCall[i].pathToProjectRootDir
+}
+
 func (fake *FakeApi) ListPipelinesReturns(result1 []models.PipelineView, result2 error) {
   fake.ListPipelinesStub = nil
   fake.listPipelinesReturns = struct {
@@ -228,14 +248,14 @@ func (fake *FakeApi) ListPipelinesReturns(result1 []models.PipelineView, result2
   }{result1, result2}
 }
 
-func (fake *FakeApi) RunDevOp(devOpName string) (devOpRun models.DevOpRunView, err error) {
+func (fake *FakeApi) RunDevOp(req models.RunDevOpReq) (devOpRun models.DevOpRunView, err error) {
   fake.runDevOpMutex.Lock()
   fake.runDevOpArgsForCall = append(fake.runDevOpArgsForCall, struct {
-    devOpName string
-  }{devOpName})
+    req models.RunDevOpReq
+  }{req})
   fake.runDevOpMutex.Unlock()
   if fake.RunDevOpStub != nil {
-    return fake.RunDevOpStub(devOpName)
+    return fake.RunDevOpStub(req)
   } else {
     return fake.runDevOpReturns.result1, fake.runDevOpReturns.result2
   }
@@ -247,10 +267,10 @@ func (fake *FakeApi) RunDevOpCallCount() int {
   return len(fake.runDevOpArgsForCall)
 }
 
-func (fake *FakeApi) RunDevOpArgsForCall(i int) string {
+func (fake *FakeApi) RunDevOpArgsForCall(i int) models.RunDevOpReq {
   fake.runDevOpMutex.RLock()
   defer fake.runDevOpMutex.RUnlock()
-  return fake.runDevOpArgsForCall[i].devOpName
+  return fake.runDevOpArgsForCall[i].req
 }
 
 func (fake *FakeApi) RunDevOpReturns(result1 models.DevOpRunView, result2 error) {
@@ -261,14 +281,14 @@ func (fake *FakeApi) RunDevOpReturns(result1 models.DevOpRunView, result2 error)
   }{result1, result2}
 }
 
-func (fake *FakeApi) RunPipeline(pipelineName string) (pipelineRun models.PipelineRunView, err error) {
+func (fake *FakeApi) RunPipeline(req models.RunPipelineReq) (pipelineRun models.PipelineRunView, err error) {
   fake.runPipelineMutex.Lock()
   fake.runPipelineArgsForCall = append(fake.runPipelineArgsForCall, struct {
-    pipelineName string
-  }{pipelineName})
+    req models.RunPipelineReq
+  }{req})
   fake.runPipelineMutex.Unlock()
   if fake.RunPipelineStub != nil {
-    return fake.RunPipelineStub(pipelineName)
+    return fake.RunPipelineStub(req)
   } else {
     return fake.runPipelineReturns.result1, fake.runPipelineReturns.result2
   }
@@ -280,10 +300,10 @@ func (fake *FakeApi) RunPipelineCallCount() int {
   return len(fake.runPipelineArgsForCall)
 }
 
-func (fake *FakeApi) RunPipelineArgsForCall(i int) string {
+func (fake *FakeApi) RunPipelineArgsForCall(i int) models.RunPipelineReq {
   fake.runPipelineMutex.RLock()
   defer fake.runPipelineMutex.RUnlock()
-  return fake.runPipelineArgsForCall[i].pipelineName
+  return fake.runPipelineArgsForCall[i].req
 }
 
 func (fake *FakeApi) RunPipelineReturns(result1 models.PipelineRunView, result2 error) {

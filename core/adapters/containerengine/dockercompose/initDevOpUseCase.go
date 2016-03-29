@@ -1,8 +1,10 @@
 package dockercompose
 
+import "path"
+
 type initDevOpUseCase interface {
   Execute(
-  devOpName string,
+  pathToDevOpDir string,
   ) (err error)
 }
 
@@ -24,8 +26,10 @@ type _initDevOpUseCase struct {
 }
 
 func (this _initDevOpUseCase) Execute(
-devOpName string,
+pathToDevOpDir string,
 ) (err error) {
+
+  devOpName := path.Base(pathToDevOpDir)
 
   var dockerComposeFile =
   dockerComposeFile{
@@ -38,13 +42,13 @@ devOpName string,
   }
 
   var dockerComposeFileBytes []byte
-  dockerComposeFileBytes, err= this.yml.toYaml(&dockerComposeFile)
+  dockerComposeFileBytes, err = this.yml.toYaml(&dockerComposeFile)
 
-  return this.
-  fs.
-  saveDevOpDockerComposeFile(
-    devOpName,
+  err = this.fs.saveDevOpDockerComposeFile(
+    pathToDevOpDir,
     dockerComposeFileBytes,
   )
+
+  return
 
 }
