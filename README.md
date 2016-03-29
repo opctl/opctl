@@ -10,17 +10,17 @@ A lightweight runtime for interacting with dev op specs.
 # Supported Use Cases
 
 ### Dev Ops
-- add dev op
-- list dev ops
-- run dev op
-- set description of dev op
+- add project dev op
+- list project dev ops
+- run project dev op
+- set description of project dev op
 
 ### Pipelines
-- add stage to pipeline
-- add pipeline
-- list pipelines
-- run pipeline
-- set description of pipeline
+- add stage to project pipeline
+- add project pipeline
+- list project pipelines
+- run project pipeline
+- set description of project pipeline
 
 # Prerequisites
 
