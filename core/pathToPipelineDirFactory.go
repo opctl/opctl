@@ -1,10 +1,13 @@
 package core
 
-import "path"
+import (
+  "path"
+  "github.com/dev-op-spec/engine/core/models"
+)
 
 type pathToPipelineDirFactory interface {
   Construct(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   pipelineName string,
   ) (pathToPipelineDir string)
 }
@@ -24,12 +27,12 @@ type _pathToPipelineDirFactory struct {
 }
 
 func (this _pathToPipelineDirFactory) Construct(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 pipelineName string,
 ) (pathToPipelineDir string) {
 
   pathToPipelinesDir := this.pathToPipelinesDirFactory.Construct(
-    pathToProjectRootDir,
+    projectUrl,
   )
 
   pathToPipelineDir = path.Join(

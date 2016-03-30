@@ -1,7 +1,7 @@
 package models
 
 func NewAddStageToPipelineReq(
-pathToProjectRootDir string,
+projectUrl *ProjectUrl,
 isPipelineStage bool,
 stageName string,
 pipelineName string,
@@ -9,7 +9,7 @@ precedingStageName string,
 ) *AddStageToPipelineReq {
 
   return &AddStageToPipelineReq{
-    PathToProjectRootDir:pathToProjectRootDir,
+    ProjectUrl:projectUrl,
     IsPipelineStage:isPipelineStage,
     StageName :stageName,
     PipelineName :pipelineName,
@@ -19,9 +19,9 @@ precedingStageName string,
 }
 
 type AddStageToPipelineReq struct {
-  PathToProjectRootDir string
-  IsPipelineStage      bool
-  StageName            string
-  PipelineName         string
-  PrecedingStageName   string
+  ProjectUrl         *ProjectUrl
+  IsPipelineStage    bool
+  StageName          string
+  PipelineName       string
+  PrecedingStageName string
 }

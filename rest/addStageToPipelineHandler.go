@@ -32,7 +32,13 @@ func (this addStageToPipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.R
     panic(err)
   }
 
-  addStageToPipelineReq.PathToProjectRootDir, err = url.QueryUnescape(mux.Vars(r)["projectRootUrl"])
+  var unEscapedProjectUrl string
+  unEscapedProjectUrl, err = url.QueryUnescape(mux.Vars(r)["projectUrl"])
+  if (nil != err) {
+    panic(err)
+  }
+
+  addStageToPipelineReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
     panic(err)
   }

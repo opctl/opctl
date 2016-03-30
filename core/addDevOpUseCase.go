@@ -42,7 +42,7 @@ req models.AddDevOpReq,
 ) (err error) {
 
   pathToDevOpDir := this.pathToDevOpDirFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.Name,
   )
 
@@ -61,7 +61,7 @@ req models.AddDevOpReq,
   }
 
   pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.Name,
   )
 

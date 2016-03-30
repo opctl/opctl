@@ -36,7 +36,7 @@ req models.AddStageToPipelineReq,
 ) (err error) {
 
   pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.PipelineName,
   )
 
@@ -55,7 +55,9 @@ req models.AddStageToPipelineReq,
     return
   }
 
-  newPipelineFileStage := pipelineFileStage{Name:req.StageName}
+  newPipelineFileStage := pipelineFileStage{
+    Name:req.StageName,
+  }
 
   // set type
   if (req.IsPipelineStage) {

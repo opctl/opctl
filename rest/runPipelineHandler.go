@@ -27,8 +27,12 @@ func (this runPipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
   runPipelineReq := models.RunPipelineReq{}
 
-  var err error
-  runPipelineReq.PathToProjectRootDir, err = url.QueryUnescape(mux.Vars(r)["projectRootUrl"])
+  unEscapedProjectUrl, err := url.QueryUnescape(mux.Vars(r)["projectUrl"])
+  if (nil != err) {
+    panic(err)
+  }
+
+  runPipelineReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
     panic(err)
   }

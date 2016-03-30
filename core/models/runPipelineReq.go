@@ -1,18 +1,18 @@
 package models
 
 func NewRunPipelineReq(
-pathToProjectRootDir string,
+projectUrl *ProjectUrl,
 pipelineName string,
 ) *RunPipelineReq {
 
   return &RunPipelineReq{
-    PathToProjectRootDir:pathToProjectRootDir,
+    ProjectUrl:projectUrl,
     PipelineName :pipelineName,
   }
 
 }
 
 type RunPipelineReq struct {
-  PathToProjectRootDir string
-  PipelineName         string
+  ProjectUrl   *ProjectUrl
+  PipelineName string
 }

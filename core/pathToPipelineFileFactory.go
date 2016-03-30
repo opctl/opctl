@@ -2,11 +2,12 @@ package core
 
 import (
   "path"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 type pathToPipelineFileFactory interface {
   Construct(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   pipelineName string,
   ) (pathToPipelineFile string)
 }
@@ -26,12 +27,12 @@ type _pathToPipelineFileFactory struct {
 }
 
 func (this _pathToPipelineFileFactory) Construct(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 pipelineName string,
 ) (pathToPipelineFile string) {
 
   pathToPipelineDir := this.pathToPipelineDirFactory.Construct(
-    pathToProjectRootDir,
+    projectUrl,
     pipelineName,
   )
 

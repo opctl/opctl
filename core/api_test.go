@@ -11,7 +11,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddDevOpReq := models.NewAddDevOpReq("", "", "")
+      providedAddDevOpReq := models.NewAddDevOpReq(&models.ProjectUrl{}, "", "")
 
       // wire up fakes
       fakeAddDevOpUseCase := new(fakeAddDevOpUseCase)
@@ -36,7 +36,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddPipelineReq := models.NewAddPipelineReq("", "", "")
+      providedAddPipelineReq := models.NewAddPipelineReq(&models.ProjectUrl{}, "", "")
 
       // wire up fakes
       fakeAddPipelineUseCase := new(fakeAddPipelineUseCase)
@@ -61,7 +61,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addStageToPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddStageToPipelineReq := models.NewAddStageToPipelineReq("", false, "", "", "")
+      providedAddStageToPipelineReq := models.NewAddStageToPipelineReq(&models.ProjectUrl{}, false, "", "", "")
 
       // wire up fakes
       fakeAddStageToPipelineUseCase := new(fakeAddStageToPipelineUseCase)
@@ -86,6 +86,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.listDevOpsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
+      providedProjectUrl := &models.ProjectUrl{}
       expectedReturnedDevOps := make([]models.DevOpView, 0)
 
       // wire up fakes
@@ -100,7 +101,7 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      actualReturnedDevOps, _ := objectUnderTest.ListDevOps("")
+      actualReturnedDevOps, _ := objectUnderTest.ListDevOps(providedProjectUrl)
 
       /* assert */
       Expect(actualReturnedDevOps).To(Equal(expectedReturnedDevOps))
@@ -111,6 +112,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.listPipelinesUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
+      providedProjectUrl := &models.ProjectUrl{}
       expectedReturnedPipelines := make([]models.PipelineView, 0)
 
       // wire up fakes
@@ -125,7 +127,7 @@ var _ = Describe("_sdk", func() {
       }
 
       /* act */
-      actualReturnedPipelines, _ := objectUnderTest.ListPipelines("")
+      actualReturnedPipelines, _ := objectUnderTest.ListPipelines(providedProjectUrl)
 
       /* assert */
       Expect(actualReturnedPipelines).To(Equal(expectedReturnedPipelines))
@@ -136,7 +138,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.runDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunDevOpReq := models.NewRunDevOpReq("", "")
+      providedRunDevOpReq := models.NewRunDevOpReq(&models.ProjectUrl{}, "")
 
       // wire up fakes
       fakeRunDevOpUseCase := new(fakeRunDevOpUseCase)
@@ -161,7 +163,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.runPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunPipelineReq := models.NewRunPipelineReq("", "")
+      providedRunPipelineReq := models.NewRunPipelineReq(&models.ProjectUrl{}, "")
 
       // wire up fakes
       fakeRunPipelineUseCase := new(fakeRunPipelineUseCase)
@@ -188,7 +190,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfDevOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfDevOpReq := models.NewSetDescriptionOfDevOpReq("", "", "")
+      providedSetDescriptionOfDevOpReq := models.NewSetDescriptionOfDevOpReq(&models.ProjectUrl{}, "", "")
 
       // wire up fakes
       fakeSetDescriptionOfDevOpUseCase := new(fakeSetDescriptionOfDevOpUseCase)
@@ -213,7 +215,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfPipelineUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfPipelineReq := models.NewSetDescriptionOfPipelineReq("", "", "")
+      providedSetDescriptionOfPipelineReq := models.NewSetDescriptionOfPipelineReq(&models.ProjectUrl{}, "", "")
 
       // wire up fakes
       fakeSetDescriptionOfPipelineUseCase := new(fakeSetDescriptionOfPipelineUseCase)

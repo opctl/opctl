@@ -7,7 +7,7 @@ import (
 
 type listPipelinesUseCase interface {
   Execute(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   ) (pipelines []models.PipelineView, err error)
 }
 
@@ -35,11 +35,11 @@ type _listPipelinesUseCase struct {
 }
 
 func (this _listPipelinesUseCase) Execute(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 ) (pipelines []models.PipelineView, err error) {
 
   pathToPipelinesDir := this.pathToPipelinesDirFactory.Construct(
-    pathToProjectRootDir,
+    projectUrl,
   )
 
   pipelineDirNames, err := this.filesys.ListNamesOfChildDirs(
@@ -52,7 +52,7 @@ pathToProjectRootDir string,
   for _, pipelineDirName := range pipelineDirNames {
 
     pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
-      pathToProjectRootDir,
+      projectUrl,
       pipelineDirName,
     )
 
@@ -76,13 +76,20 @@ pathToProjectRootDir string,
 
     for _, pipelineStage := range pipelineFile.Stages {
 
-      pipelineStageView := models.NewPipelineStageView(pipelineStage.Name, pipelineStage.Type)
+      pipelineStageView := models.NewPipelineStageView(
+        pipelineStage.Name,
+        pipelineStage.Type,
+      )
 
       pipelineStageViews = append(pipelineStageViews, *pipelineStageView)
 
     }
 
-    pipelineView := models.NewPipelineView(pipelineFile.Description, pipelineDirName, pipelineStageViews)
+    pipelineView := models.NewPipelineView(
+      pipelineFile.Description,
+      pipelineDirName,
+      pipelineStageViews,
+    )
 
     pipelines = append(pipelines, *pipelineView)
 

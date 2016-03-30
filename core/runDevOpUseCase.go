@@ -33,7 +33,7 @@ req models.RunDevOpReq,
 ) (devOpRun models.DevOpRunView, err error) {
 
   pathToDevOpDir := this.pathToDevOpDirFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.DevOpName,
   )
 

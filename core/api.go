@@ -19,11 +19,11 @@ type Api interface {
   ) (err error)
 
   ListDevOps(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   ) (devOps []models.DevOpView, err error)
 
   ListPipelines(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   ) (pipelines []models.PipelineView, err error)
 
   RunDevOp(
@@ -96,21 +96,21 @@ req models.AddStageToPipelineReq,
 }
 
 func (this _api) ListDevOps(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 ) (devOps []models.DevOpView, err error) {
   return this.
   compositionRoot.
   ListDevOpsUseCase().
-  Execute(pathToProjectRootDir)
+  Execute(projectUrl)
 }
 
 func (this _api) ListPipelines(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 ) (pipelines []models.PipelineView, err error) {
   return this.
   compositionRoot.
   ListPipelinesUseCase().
-  Execute(pathToProjectRootDir)
+  Execute(projectUrl)
 }
 
 func (this _api) RunDevOp(

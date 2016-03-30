@@ -1,18 +1,18 @@
 package models
 
 func NewRunDevOpReq(
-pathToProjectRootDir string,
+projectUrl *ProjectUrl,
 devOpName string,
 ) *RunDevOpReq {
 
   return &RunDevOpReq{
-    PathToProjectRootDir:pathToProjectRootDir,
+    ProjectUrl:projectUrl,
     DevOpName :devOpName,
   }
 
 }
 
 type RunDevOpReq struct {
-  PathToProjectRootDir string
-  DevOpName            string
+  ProjectUrl *ProjectUrl
+  DevOpName  string
 }

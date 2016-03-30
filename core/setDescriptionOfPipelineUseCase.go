@@ -36,7 +36,7 @@ req models.SetDescriptionOfPipelineReq,
 ) (err error) {
 
   pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.PipelineName,
   )
 

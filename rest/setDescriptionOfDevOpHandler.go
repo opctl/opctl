@@ -32,7 +32,13 @@ func (this setDescriptionOfDevOpHandler) ServeHTTP(w http.ResponseWriter, r *htt
     panic(err)
   }
 
-  setDescriptionOfDevOpReq.PathToProjectRootDir, err = url.QueryUnescape(mux.Vars(r)["projectRootUrl"])
+  var unEscapedProjectUrl string
+  unEscapedProjectUrl, err = url.QueryUnescape(mux.Vars(r)["projectUrl"])
+  if (nil != err) {
+    panic(err)
+  }
+
+  setDescriptionOfDevOpReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
     panic(err)
   }

@@ -7,7 +7,7 @@ import (
 
 type listDevOpsUseCase interface {
   Execute(
-  pathToProjectRoot string,
+  projectUrl *models.ProjectUrl,
   ) (devOps []models.DevOpView, err error)
 }
 
@@ -35,11 +35,11 @@ type _listDevOpsUseCase struct {
 }
 
 func (this _listDevOpsUseCase) Execute(
-pathToProjectRoot string,
+projectUrl *models.ProjectUrl,
 ) (devOps []models.DevOpView, err error) {
 
   pathToDevOpsDir := this.pathToDevOpsDirFactory.Construct(
-    pathToProjectRoot,
+    projectUrl,
   )
 
   devOpDirNames, err := this.filesys.ListNamesOfChildDirs(
@@ -52,7 +52,7 @@ pathToProjectRoot string,
   for _, devOpDirName := range devOpDirNames {
 
     pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
-      pathToProjectRoot,
+      projectUrl,
       devOpDirName,
     )
 
@@ -71,7 +71,10 @@ pathToProjectRoot string,
       return
     }
 
-    devOpView := models.NewDevOpView(devOpFile.Description, devOpDirName)
+    devOpView := models.NewDevOpView(
+      devOpFile.Description,
+      devOpDirName,
+    )
 
     devOps = append(devOps, *devOpView)
 

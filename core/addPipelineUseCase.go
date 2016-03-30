@@ -39,7 +39,7 @@ req models.AddPipelineReq,
 ) (err error) {
 
   pathToPipelineDir := this.pathToPipelineDirFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.Name,
   )
 
@@ -58,7 +58,7 @@ req models.AddPipelineReq,
   }
 
   pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.Name,
   )
 

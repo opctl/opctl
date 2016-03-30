@@ -2,11 +2,12 @@ package core
 
 import (
   "path"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 type pathToDevOpFileFactory interface {
   Construct(
-  pathToProjectRootDir string,
+  projectUrl *models.ProjectUrl,
   devOpName string,
   ) (pathToDevOpFile string)
 }
@@ -26,12 +27,12 @@ type _pathToDevOpFileFactory struct {
 }
 
 func (this _pathToDevOpFileFactory) Construct(
-pathToProjectRootDir string,
+projectUrl *models.ProjectUrl,
 devOpName string,
 ) (pathToDevOpFile string) {
 
   pathToDevOpDir := this.pathToDevOpDirFactory.Construct(
-    pathToProjectRootDir,
+    projectUrl,
     devOpName,
   )
 

@@ -10,8 +10,6 @@ services:
     image: repworth/git-go:git2.6-go1.6
     extends:
       service: src
-    volumes:
-      - $GOPATH:/golang
     environment:
       - GOPATH=/golang
       - GOARCH=amd64

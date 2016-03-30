@@ -8,10 +8,10 @@ import (
 )
 
 type fakeListPipelinesUseCase struct {
-  ExecuteStub        func(pathToProjectRootDir string) (pipelines []models.PipelineView, err error)
+  ExecuteStub        func(projectUrl *models.ProjectUrl) (pipelines []models.PipelineView, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
-    pathToProjectRootDir string
+    projectUrl *models.ProjectUrl
   }
   executeReturns     struct {
                        result1 []models.PipelineView
@@ -19,14 +19,14 @@ type fakeListPipelinesUseCase struct {
                      }
 }
 
-func (fake *fakeListPipelinesUseCase) Execute(pathToProjectRootDir string) (pipelines []models.PipelineView, err error) {
+func (fake *fakeListPipelinesUseCase) Execute(projectUrl *models.ProjectUrl) (pipelines []models.PipelineView, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-    pathToProjectRootDir string
-  }{pathToProjectRootDir})
+    projectUrl *models.ProjectUrl
+  }{projectUrl})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub(pathToProjectRootDir)
+    return fake.ExecuteStub(projectUrl)
   } else {
     return fake.executeReturns.result1, fake.executeReturns.result2
   }
@@ -38,10 +38,10 @@ func (fake *fakeListPipelinesUseCase) ExecuteCallCount() int {
   return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeListPipelinesUseCase) ExecuteArgsForCall(i int) string {
+func (fake *fakeListPipelinesUseCase) ExecuteArgsForCall(i int) *models.ProjectUrl {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].pathToProjectRootDir
+  return fake.executeArgsForCall[i].projectUrl
 }
 
 func (fake *fakeListPipelinesUseCase) ExecuteReturns(result1 []models.PipelineView, result2 error) {

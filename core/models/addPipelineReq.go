@@ -1,13 +1,13 @@
 package models
 
 func NewAddPipelineReq(
-pathToProjectRootDir string,
+projectUrl *ProjectUrl,
 name string,
 description string,
 ) *AddPipelineReq {
 
   return &AddPipelineReq{
-    PathToProjectRootDir:pathToProjectRootDir,
+    ProjectUrl:projectUrl,
     Name:name,
     Description :description,
   }
@@ -15,8 +15,8 @@ description string,
 }
 
 type AddPipelineReq struct {
-  PathToProjectRootDir string
-  Name                 string
-  Description          string
+  ProjectUrl  *ProjectUrl
+  Name        string
+  Description string
 }
 

@@ -8,10 +8,10 @@ import (
 )
 
 type fakeListDevOpsUseCase struct {
-  ExecuteStub        func(pathToProjectRoot string) (devOps []models.DevOpView, err error)
+  ExecuteStub        func(projectUrl *models.ProjectUrl) (devOps []models.DevOpView, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
-    pathToProjectRoot string
+    projectUrl *models.ProjectUrl
   }
   executeReturns     struct {
                        result1 []models.DevOpView
@@ -19,14 +19,14 @@ type fakeListDevOpsUseCase struct {
                      }
 }
 
-func (fake *fakeListDevOpsUseCase) Execute(pathToProjectRoot string) (devOps []models.DevOpView, err error) {
+func (fake *fakeListDevOpsUseCase) Execute(projectUrl *models.ProjectUrl) (devOps []models.DevOpView, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-    pathToProjectRoot string
-  }{pathToProjectRoot})
+    projectUrl *models.ProjectUrl
+  }{projectUrl})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub(pathToProjectRoot)
+    return fake.ExecuteStub(projectUrl)
   } else {
     return fake.executeReturns.result1, fake.executeReturns.result2
   }
@@ -38,10 +38,10 @@ func (fake *fakeListDevOpsUseCase) ExecuteCallCount() int {
   return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeListDevOpsUseCase) ExecuteArgsForCall(i int) string {
+func (fake *fakeListDevOpsUseCase) ExecuteArgsForCall(i int) *models.ProjectUrl {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].pathToProjectRoot
+  return fake.executeArgsForCall[i].projectUrl
 }
 
 func (fake *fakeListDevOpsUseCase) ExecuteReturns(result1 []models.DevOpView, result2 error) {

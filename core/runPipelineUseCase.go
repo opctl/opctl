@@ -46,7 +46,7 @@ namesOfAlreadyRunPipelines[]string,
 ) (pipelineRun models.PipelineRunView, err error) {
 
   pathToPipelineFile := this.pathToPipelineFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.PipelineName,
   )
 
@@ -95,7 +95,7 @@ namesOfAlreadyRunPipelines[]string,
         var devOpStageRun models.DevOpRunView
         devOpStageRun, err = this.runDevOpUseCase.Execute(
           *models.NewRunDevOpReq(
-            req.PathToProjectRootDir,
+            req.ProjectUrl,
             stage.Name,
           ),
         )
@@ -130,7 +130,7 @@ namesOfAlreadyRunPipelines[]string,
         var pipelineStageRun models.PipelineRunView
         pipelineStageRun, err = this.Execute(
           *models.NewRunPipelineReq(
-            req.PathToProjectRootDir,
+            req.ProjectUrl,
             stage.Name,
           ),
           namesOfAlreadyRunPipelines,

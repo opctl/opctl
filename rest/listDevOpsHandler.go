@@ -6,6 +6,7 @@ import (
   "github.com/chrisdostert/mux"
   "github.com/dev-op-spec/engine/core"
   "encoding/json"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 func newListDevOpsHandler(
@@ -24,12 +25,18 @@ type listDevOpsHandler struct {
 
 func (this listDevOpsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-  projectRootUrl, err := url.QueryUnescape(mux.Vars(r)["projectRootUrl"])
+  unEscapedProjectUrl, err := url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
     panic(err)
   }
 
-  devOps, err := this.coreApi.ListDevOps(projectRootUrl)
+  var projectUrl *models.ProjectUrl
+  projectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
+  if (nil != err) {
+    return
+  }
+
+  devOps, err := this.coreApi.ListDevOps(projectUrl)
   if (nil != err) {
     panic(err)
   }

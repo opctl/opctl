@@ -36,7 +36,7 @@ req models.SetDescriptionOfDevOpReq,
 ) (err error) {
 
   pathToDevOpFile := this.pathToDevOpFileFactory.Construct(
-    req.PathToProjectRootDir,
+    req.ProjectUrl,
     req.DevOpName,
   )
 

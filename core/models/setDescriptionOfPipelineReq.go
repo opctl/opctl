@@ -1,13 +1,13 @@
 package models
 
 func NewSetDescriptionOfPipelineReq(
-pathToProjectRootDir string,
+projectUrl *ProjectUrl,
 description string,
 pipelineName string,
 ) *SetDescriptionOfPipelineReq {
 
   return &SetDescriptionOfPipelineReq{
-    PathToProjectRootDir:pathToProjectRootDir,
+    ProjectUrl:projectUrl,
     Description:description,
     PipelineName :pipelineName,
   }
@@ -15,7 +15,7 @@ pipelineName string,
 }
 
 type SetDescriptionOfPipelineReq struct {
-  PathToProjectRootDir string
-  Description          string
-  PipelineName         string
+  ProjectUrl   *ProjectUrl
+  Description  string
+  PipelineName string
 }
