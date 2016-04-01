@@ -29,12 +29,14 @@ func (this runDevOpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
   unEscapedProjectUrl, err := url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   runDevOpReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   runDevOpReq.DevOpName = mux.Vars(r)["devOpName"]
@@ -42,14 +44,16 @@ func (this runDevOpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   var devOpRun models.DevOpRunView
   devOpRun, err = this.coreApi.RunDevOp(runDevOpReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
   err = json.NewEncoder(w).Encode(devOpRun)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
 }

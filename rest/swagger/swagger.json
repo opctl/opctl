@@ -29,21 +29,24 @@
         "summary": "Lists project dev ops \n",
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "OK",
             "schema": {
               "type": "array",
               "items": {
-                "title": "DevOp",
-                "type": "object",
-                "properties": {
-                  "Name": {
-                    "type": "string"
-                  },
-                  "Description": {
-                    "type": "string"
-                  }
-                }
+                "$ref": "#/definitions/DevOpView"
               }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -72,7 +75,19 @@
         ],
         "responses": {
           "201": {
-            "description": "Successful response"
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -117,7 +132,19 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -145,9 +172,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "OK",
             "schema": {
               "$ref": "#/definitions/DevOpRunView"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -167,21 +206,24 @@
         "summary": "List project pipelines \n",
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "OK",
             "schema": {
               "type": "array",
               "items": {
-                "title": "Pipeline",
-                "type": "object",
-                "properties": {
-                  "Name": {
-                    "type": "string"
-                  },
-                  "Description": {
-                    "type": "string"
-                  }
-                }
+                "$ref": "#/definitions/PipelineView"
               }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -210,7 +252,19 @@
         ],
         "responses": {
           "201": {
-            "description": "Successful response"
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -253,10 +307,33 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
-      },
+      }
+    },
+    "/project/{url}/pipelines/{name}/stages": {
+      "parameters": [
+        {
+          "name": "url",
+          "in": "path",
+          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "required": true,
+          "type": "string"
+        }
+      ],
       "post": {
         "summary": "Add stage to project pipeline \n",
         "parameters": [
@@ -293,7 +370,19 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response"
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -321,9 +410,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "OK",
             "schema": {
               "$ref": "#/definitions/PipelineRunView"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -346,6 +447,18 @@
         },
         "ExitCode": {
           "type": "integer"
+        }
+      }
+    },
+    "DevOpView": {
+      "title": "DevOpView",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
         }
       }
     },
@@ -399,8 +512,40 @@
           }
         }
       }
+    },
+    "PipelineStageView": {
+      "title": "PipelineStageView",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string",
+          "enum": [
+            "pipeline",
+            "dev-op"
+          ]
+        }
+      }
+    },
+    "PipelineView": {
+      "title": "PipelineView",
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PipelineStageView"
+          }
+        }
+      }
     }
   }
 }
-
-

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-go get -t && \
+go get ./... && \
 go build -o .tmp/dev-op-spec-engine

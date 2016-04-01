@@ -29,23 +29,27 @@ func (this addPipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
   err := json.NewDecoder(r.Body).Decode(&addPipelineReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   var unEscapedProjectUrl string
   unEscapedProjectUrl, err = url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   addPipelineReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   err = this.coreApi.AddPipeline(addPipelineReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
 }

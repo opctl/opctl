@@ -32,47 +32,47 @@ func (this _api) Start(
   router := mux.NewRouter()
 
   router.Handle(
-    "/project/{projectUrl}/dev-ops",
+    listDevOpsRelUrlTemplate,
     this.compositionRoot.ListDevOpsHandler(),
   ).Methods("GET")
 
   router.Handle(
-    "/project/{projectUrl}/dev-ops",
+    addDevOpRelUrlTemplate,
     this.compositionRoot.AddDevOpHandler(),
   ).Methods("POST")
 
   router.Handle(
-    "/project/{projectUrl}/dev-ops/{devOpName}",
+    setDescriptionOfDevOpRelUrlTemplate,
     this.compositionRoot.SetDescriptionOfDevOpHandler(),
   ).Methods("PUT")
 
   router.Handle(
-    "/project/{projectUrl}/dev-ops/{devOpName}/runs",
+    runDevOpRelUrlTemplate,
     this.compositionRoot.RunDevOpHandler(),
   ).Methods("POST")
 
   router.Handle(
-    "/project/{projectUrl}/pipelines",
+    listPipelinesRelUrlTemplate,
     this.compositionRoot.ListPipelinesHandler(),
   ).Methods("GET")
 
   router.Handle(
-    "/project/{projectUrl}/pipelines",
+    addPipelineRelUrlTemplate,
     this.compositionRoot.AddPipelineHandler(),
   ).Methods("POST")
 
   router.Handle(
-    "/project/{projectUrl}/pipelines/{pipelineName}",
+    setDescriptionOfPipelineRelUrlTemplate,
     this.compositionRoot.SetDescriptionOfPipelineHandler(),
   ).Methods("PUT")
 
   router.Handle(
-    "/project/{projectUrl}/pipelines/{pipelineName}",
+    addStageToPipelineRelUrlTemplate,
     this.compositionRoot.AddStageToPipelineHandler(),
   ).Methods("POST")
 
   router.Handle(
-    "/project/{projectUrl}/pipelines/{pipelineName}/runs",
+    runPipelineRelUrlTemplate,
     this.compositionRoot.RunPipelineHandler(),
   ).Methods("POST")
 

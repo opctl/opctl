@@ -27,25 +27,29 @@ func (this listPipelinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
   unEscapedProjectUrl, err := url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   var projectUrl *models.ProjectUrl
   projectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
+    http.Error(w, err.Error(), http.StatusBadRequest)
     return
   }
 
   pipelines, err := this.coreApi.ListPipelines(projectUrl)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
   err = json.NewEncoder(w).Encode(pipelines)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
 }

@@ -29,25 +29,29 @@ func (this setDescriptionOfDevOpHandler) ServeHTTP(w http.ResponseWriter, r *htt
 
   err := json.NewDecoder(r.Body).Decode(&setDescriptionOfDevOpReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   var unEscapedProjectUrl string
   unEscapedProjectUrl, err = url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   setDescriptionOfDevOpReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   setDescriptionOfDevOpReq.DevOpName = mux.Vars(r)["devOpName"]
 
   err = this.coreApi.SetDescriptionOfDevOp(setDescriptionOfDevOpReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
 }

@@ -11,10 +11,15 @@ func NewProjectUrl(
 projectUrlStr string,
 ) (projectUrl *ProjectUrl, err error) {
 
-  var url *url.URL
-  url, err = url.Parse(projectUrlStr)
+  var parsedUrl *url.URL
+  parsedUrl, err = url.Parse(projectUrlStr)
+  if (nil != err) {
+    return
+  }
 
-  if (url.IsAbs() && strings.ToLower(url.Scheme) != "file") {
+  projectUrl = &ProjectUrl{parsedUrl}
+
+  if (parsedUrl.IsAbs() && strings.ToLower(parsedUrl.Scheme) != "file") {
     err = errors.New(
       fmt.Sprintf(
         "Remote projects are currently unsupported. Received non local projectUrl: `%v`",
@@ -22,8 +27,6 @@ projectUrlStr string,
       ),
     )
   }
-
-  projectUrl = &ProjectUrl{url}
 
   return
 

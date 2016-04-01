@@ -29,25 +29,29 @@ func (this setDescriptionOfPipelineHandler) ServeHTTP(w http.ResponseWriter, r *
 
   err := json.NewDecoder(r.Body).Decode(&setDescriptionOfPipelineReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   var unEscapedProjectUrl string
   unEscapedProjectUrl, err = url.QueryUnescape(mux.Vars(r)["projectUrl"])
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   setDescriptionOfPipelineReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   setDescriptionOfPipelineReq.PipelineName = mux.Vars(r)["pipelineName"]
 
   err = this.coreApi.SetDescriptionOfPipeline(setDescriptionOfPipelineReq)
   if (nil != err) {
-    panic(err)
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
   }
 
 }
