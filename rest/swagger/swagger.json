@@ -20,13 +20,13 @@
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "get": {
-        "summary": "Lists project dev ops \n",
+        "summary": "Lists project dev ops",
         "responses": {
           "200": {
             "description": "OK",
@@ -52,7 +52,7 @@
         }
       },
       "post": {
-        "summary": "Add project dev op \n",
+        "summary": "Add project dev op",
         "parameters": [
           {
             "name": "body",
@@ -92,23 +92,23 @@
         }
       }
     },
-    "/project/{url}/dev-ops/{name}": {
+    "/project/{url}/dev-ops/{name}/description": {
       "parameters": [
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "put": {
-        "summary": "Update description of project dev op \n",
+        "summary": "Update description of project dev op",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the dev op \n",
+            "description": "The name of the dev op",
             "required": true,
             "type": "string"
           },
@@ -154,18 +154,18 @@
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "post": {
-        "summary": "Run project dev op \n",
+        "summary": "Run project dev op",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the dev-op \n",
+            "description": "The name of the dev-op",
             "required": true,
             "type": "string"
           }
@@ -197,13 +197,13 @@
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "get": {
-        "summary": "List project pipelines \n",
+        "summary": "List project pipelines",
         "responses": {
           "200": {
             "description": "OK",
@@ -229,7 +229,7 @@
         }
       },
       "post": {
-        "summary": "Add project pipeline \n",
+        "summary": "Add project pipeline",
         "parameters": [
           {
             "name": "body",
@@ -269,23 +269,23 @@
         }
       }
     },
-    "/project/{url}/pipelines/{name}": {
+    "/project/{url}/pipelines/{name}/description": {
       "parameters": [
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "put": {
-        "summary": "Update description of project pipeline \n",
+        "summary": "Update description of project pipeline",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the pipeline \n",
+            "description": "The name of the pipeline",
             "required": true,
             "type": "string"
           },
@@ -329,18 +329,18 @@
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "post": {
-        "summary": "Add stage to project pipeline \n",
+        "summary": "Add stage to project pipeline",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the pipeline \n",
+            "description": "The name of the pipeline",
             "required": true,
             "type": "string"
           },
@@ -392,18 +392,18 @@
         {
           "name": "url",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path \n",
+          "description": "The root url of the projects source. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "post": {
-        "summary": "Run project pipeline \n",
+        "summary": "Run project pipeline",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the pipeline \n",
+            "description": "The name of the pipeline",
             "required": true,
             "type": "string"
           }

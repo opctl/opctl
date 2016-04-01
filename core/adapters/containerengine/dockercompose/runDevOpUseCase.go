@@ -64,10 +64,7 @@ pathToDevOpDir string,
   signalChannel := make(chan os.Signal, 1)
   signal.Notify(
     signalChannel,
-    syscall.SIGHUP,
     syscall.SIGINT,
-    syscall.SIGTERM,
-    syscall.SIGQUIT,
   )
 
   // @TODO: this currently leaks memory if signal not received..
