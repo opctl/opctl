@@ -2,7 +2,7 @@ version: "2"
 services:
   publish-coverage-to-codecov:
     extends:
-      service: src
+      service: working_dir
       file: ../.common/docker-compose.yml
     build: ./
     environment:
