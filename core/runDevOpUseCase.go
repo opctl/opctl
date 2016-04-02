@@ -14,11 +14,13 @@ type runDevOpUseCase interface {
 func newRunDevOpUseCase(
 containerEngine ports.ContainerEngine,
 pathToDevOpDirFactory pathToDevOpDirFactory,
+uniqueStringFactory uniqueStringFactory,
 ) runDevOpUseCase {
 
   return &_runDevOpUseCase{
     containerEngine:containerEngine,
     pathToDevOpDirFactory:pathToDevOpDirFactory,
+    uniqueStringFactory:uniqueStringFactory,
   }
 
 }
@@ -26,6 +28,7 @@ pathToDevOpDirFactory pathToDevOpDirFactory,
 type _runDevOpUseCase struct {
   containerEngine       ports.ContainerEngine
   pathToDevOpDirFactory pathToDevOpDirFactory
+  uniqueStringFactory   uniqueStringFactory
 }
 
 func (this _runDevOpUseCase) Execute(
@@ -38,6 +41,11 @@ req models.RunDevOpReq,
   )
 
   devOpRun, err = this.containerEngine.RunDevOp(pathToDevOpDir)
+  if (nil != err) {
+    return
+  }
+
+  devOpRun.Id, err = this.uniqueStringFactory.Construct()
 
   return
 }

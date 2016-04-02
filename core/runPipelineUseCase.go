@@ -18,16 +18,18 @@ func newRunPipelineUseCase(
 filesys ports.Filesys,
 pathToPipelineDirFactory pathToPipelineDirFactory,
 pathToPipelineFileFactory pathToPipelineFileFactory,
-yamlCodec yamlCodec,
 runDevOpUseCase runDevOpUseCase,
+uniqueStringFactory uniqueStringFactory,
+yamlCodec yamlCodec,
 ) runPipelineUseCase {
 
   return &_runPipelineUseCase{
     filesys:filesys,
     pathToPipelineDirFactory:pathToPipelineDirFactory,
     pathToPipelineFileFactory:pathToPipelineFileFactory,
-    yamlCodec:yamlCodec,
     runDevOpUseCase: runDevOpUseCase,
+    uniqueStringFactory:uniqueStringFactory,
+    yamlCodec:yamlCodec,
   }
 
 }
@@ -36,8 +38,9 @@ type _runPipelineUseCase struct {
   filesys                   ports.Filesys
   pathToPipelineDirFactory  pathToPipelineDirFactory
   pathToPipelineFileFactory pathToPipelineFileFactory
-  yamlCodec                 yamlCodec
   runDevOpUseCase           runDevOpUseCase
+  uniqueStringFactory       uniqueStringFactory
+  yamlCodec                 yamlCodec
 }
 
 func (this _runPipelineUseCase) Execute(
@@ -51,6 +54,12 @@ namesOfAlreadyRunPipelines[]string,
   )
 
   pipelineRun.StartedAtUnixTime = time.Now().Unix()
+
+  pipelineRun.Id, err = this.uniqueStringFactory.Construct()
+  if (nil != err) {
+    return
+  }
+
   pipelineRun.PipelineName = req.PipelineName
 
   pipelineFileBytes, err := this.filesys.GetBytesOfFile(pathToPipelineFile)

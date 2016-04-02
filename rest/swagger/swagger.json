@@ -437,6 +437,9 @@
       "title": "DevOpRunView",
       "type": "object",
       "properties": {
+        "Id":{
+          "type":"string"
+        },
         "DevOpName": {
           "type": "string"
         },
@@ -467,6 +470,9 @@
       "title": "PipelineRunView",
       "type": "object",
       "properties": {
+        "Id":{
+          "type":"string"
+        },
         "PipelineName": {
           "type": "string"
         },

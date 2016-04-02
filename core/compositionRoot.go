@@ -28,8 +28,9 @@ filesys ports.Filesys,
   pathToPipelinesDirFactory := newPathToPipelinesDirFactory()
   pathToPipelineDirFactory := newPathToPipelineDirFactory(pathToPipelinesDirFactory)
   pathToPipelineFileFactory := newPathToPipelineFileFactory(pathToPipelineDirFactory)
+  uniqueStringFactory := newUniqueStringFactory()
 
-  runDevOpUseCase := newRunDevOpUseCase(containerEngine, pathToDevOpDirFactory)
+  runDevOpUseCase := newRunDevOpUseCase(containerEngine, pathToDevOpDirFactory, uniqueStringFactory)
 
   yamlCodec := newYamlCodec()
 
@@ -73,8 +74,9 @@ filesys ports.Filesys,
     filesys,
     pathToPipelineDirFactory,
     pathToPipelineFileFactory,
-    yamlCodec,
     runDevOpUseCase,
+    uniqueStringFactory,
+    yamlCodec,
   )
 
   setDescriptionOfDevOpUseCase := newSetDescriptionOfDevOpUseCase(
