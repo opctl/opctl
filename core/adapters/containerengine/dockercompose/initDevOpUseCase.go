@@ -37,6 +37,7 @@ pathToDevOpDir string,
     Services:map[string]dockerComposeFileService{
       devOpName:dockerComposeFileService{
         Image:"alpine:3.3",
+        Entrypoint:"echo 'hello world'",
       },
     },
   }

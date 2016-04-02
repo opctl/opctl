@@ -54,6 +54,7 @@ pathToDevOpDir string,
     "-f",
     pathToDevOpDockerComposeFile,
     "up",
+    "--force-recreate",
     "--abort-on-container-exit",
   )
   dockerComposeUpCmd.Stdout = os.Stdout
@@ -67,16 +68,28 @@ pathToDevOpDir string,
     syscall.SIGINT,
   )
 
-  // @TODO: this currently leaks memory if signal not received..
+  resourceFlushIsCompleteChannel := make(chan bool, 1)
+
   go func() {
+
     <-signalChannel
 
+    // kill docker-compose; we flush our own resources
     dockerComposeUpCmd.Process.Kill()
 
-    devOpRunView.ExitCode = 130
+    signal.Stop(signalChannel)
 
-    // guard against hanging prompt
-    os.Stdin.WriteString("\x03")
+    // wait for resource flush to complete
+    <-resourceFlushIsCompleteChannel
+
+    if (nil != err) {
+
+      fmt.Fprint(os.Stderr, err)
+
+    }
+
+    // exit with proper exit code
+    os.Exit(130)
 
   }()
 
@@ -110,6 +123,9 @@ pathToDevOpDir string,
       devOpRunView.ExitCode = 1
 
     }
+
+    // send resourceFlushIsCompleteChannel
+    resourceFlushIsCompleteChannel <- true
 
     devOpRunView.EndedAtUnixTime = time.Now().Unix()
 
