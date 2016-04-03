@@ -3,7 +3,7 @@ package rest
 /* resources */
 const (
 // resource: a single project
-  projectRelUrlTemplate string = "/project/{projectUrl}"
+  projectRelUrlTemplate string = "/projects/{projectUrl}"
 
 // resource: all project operations
   projectOperationsRelUrlTemplate string = projectRelUrlTemplate + "/operations"

@@ -5,7 +5,7 @@
     "title": "Engine ReST API",
     "license": {
       "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      "projUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
   "consumes": [
@@ -16,18 +16,21 @@
     "text/html"
   ],
   "paths": {
-    "/project/{url}/operations": {
+    "/projects/{projUrl}/operations": {
       "parameters": [
         {
-          "name": "url",
+          "name": "projUrl",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
+          "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "get": {
         "summary": "List project operations",
+        "tags":[
+          "projects"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -54,6 +57,9 @@
       },
       "post": {
         "summary": "Add project operation",
+        "tags":[
+          "projects"
+        ],
         "parameters": [
           {
             "name": "body",
@@ -93,21 +99,24 @@
         }
       }
     },
-    "/project/{url}/operations/{name}/description": {
+    "/projects/{projUrl}/operations/{opName}/description": {
       "parameters": [
         {
-          "name": "url",
+          "name": "projUrl",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
+          "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "put": {
         "summary": "Update description of project operation",
+        "tags":[
+          "projects"
+        ],
         "parameters": [
           {
-            "name": "name",
+            "name": "opName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
@@ -148,21 +157,24 @@
         }
       }
     },
-    "/project/{url}/operations/{name}/sub-operations": {
+    "/projects/{projUrl}/operations/{opName}/sub-operations": {
       "parameters": [
         {
-          "name": "url",
+          "name": "projUrl",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
+          "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "post": {
         "summary": "Add sub-operation to project operation",
+        "tags":[
+          "projects"
+        ],
         "parameters": [
           {
-            "name": "name",
+            "name": "opName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
@@ -211,21 +223,24 @@
         }
       }
     },
-    "/project/{url}/operations/{name}/runs": {
+    "/projects/{projUrl}/operations/{opName}/runs": {
       "parameters": [
         {
-          "name": "url",
+          "name": "projUrl",
           "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
+          "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
         }
       ],
       "post": {
         "summary": "Run project operation",
+        "tags":[
+          "projects"
+        ],
         "parameters": [
           {
-            "name": "name",
+            "name": "opName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
