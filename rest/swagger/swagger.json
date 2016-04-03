@@ -28,7 +28,7 @@
       ],
       "get": {
         "summary": "List project operations",
-        "tags":[
+        "tags": [
           "projects"
         ],
         "responses": {
@@ -57,7 +57,7 @@
       },
       "post": {
         "summary": "Add project operation",
-        "tags":[
+        "tags": [
           "projects"
         ],
         "parameters": [
@@ -111,7 +111,7 @@
       ],
       "put": {
         "summary": "Update description of project operation",
-        "tags":[
+        "tags": [
           "projects"
         ],
         "parameters": [
@@ -169,7 +169,7 @@
       ],
       "post": {
         "summary": "Add sub-operation to project operation",
-        "tags":[
+        "tags": [
           "projects"
         ],
         "parameters": [
@@ -235,7 +235,7 @@
       ],
       "post": {
         "summary": "Run project operation",
-        "tags":[
+        "tags": [
           "projects"
         ],
         "parameters": [
@@ -275,8 +275,8 @@
       "title": "OperationRunView",
       "type": "object",
       "properties": {
-        "Id":{
-          "type":"string"
+        "Id": {
+          "type": "string"
         },
         "OperationName": {
           "type": "string"
@@ -298,8 +298,9 @@
         }
       }
     },
-    "SubOperationView": {
-      "title": "SubOperationView",
+    "OperationRefView": {
+      "title": "OperationRefView",
+      "description": "A reference to an operation",
       "type": "object",
       "properties": {
         "Name": {
@@ -320,7 +321,7 @@
         "SubOperations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SubOperationView"
+            "$ref": "#/definitions/OperationRefView"
           }
         }
       }

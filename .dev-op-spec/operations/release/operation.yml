@@ -1,4 +1,4 @@
-description: ensures the cli is of "deliverable quality" and delivers it
+description: runs all operations necessary to perform a release
 subOperations:
 - name: build
 - name: test

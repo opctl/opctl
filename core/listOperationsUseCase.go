@@ -72,22 +72,22 @@ projectUrl *models.ProjectUrl,
       return
     }
 
-    subOperationViews := []models.SubOperationView{}
+    operationRefViews := []models.OperationRefView{}
 
     for _, operationSubOperation := range operationFile.SubOperations {
 
-      subOperationView := models.NewSubOperationView(
+      operationRefView := models.NewOperationRefView(
         operationSubOperation.Name,
       )
 
-      subOperationViews = append(subOperationViews, *subOperationView)
+      operationRefViews = append(operationRefViews, *operationRefView)
 
     }
 
     operationView := models.NewOperationView(
       operationFile.Description,
       operationDirName,
-      subOperationViews,
+      operationRefViews,
     )
 
     operations = append(operations, *operationView)

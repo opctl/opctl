@@ -3,13 +3,13 @@ package models
 type OperationView struct {
   Description   string
   Name          string
-  SubOperations []SubOperationView `json:",omitempty"`
+  SubOperations []OperationRefView `json:",omitempty"`
 }
 
 func NewOperationView(
 description string,
 name string,
-subOperations []SubOperationView,
+subOperations []OperationRefView,
 ) *OperationView {
 
   return &OperationView{
