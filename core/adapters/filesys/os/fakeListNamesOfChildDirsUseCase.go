@@ -4,10 +4,10 @@ package os
 import "sync"
 
 type fakeListNamesOfChildDirsUseCase struct {
-	ExecuteStub        func(pathToParentDir string) (namesOfChildDirs []string, err error)
+	ExecuteStub        func(pathToPERATIONarentDir string) (namesOfChildDirs []string, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
-		pathToParentDir string
+		pathToPERATIONarentDir string
 	}
 	executeReturns struct {
 		result1 []string
@@ -15,14 +15,14 @@ type fakeListNamesOfChildDirsUseCase struct {
 	}
 }
 
-func (fake *fakeListNamesOfChildDirsUseCase) Execute(pathToParentDir string) (namesOfChildDirs []string, err error) {
+func (fake *fakeListNamesOfChildDirsUseCase) Execute(pathToPERATIONarentDir string) (namesOfChildDirs []string, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		pathToParentDir string
-	}{pathToParentDir})
+		pathToPERATIONarentDir string
+	}{pathToPERATIONarentDir})
 	fake.executeMutex.Unlock()
 	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathToParentDir)
+		return fake.ExecuteStub(pathToPERATIONarentDir)
 	} else {
 		return fake.executeReturns.result1, fake.executeReturns.result2
 	}
@@ -37,7 +37,7 @@ func (fake *fakeListNamesOfChildDirsUseCase) ExecuteCallCount() int {
 func (fake *fakeListNamesOfChildDirsUseCase) ExecuteArgsForCall(i int) string {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathToParentDir
+	return fake.executeArgsForCall[i].pathToPERATIONarentDir
 }
 
 func (fake *fakeListNamesOfChildDirsUseCase) ExecuteReturns(result1 []string, result2 error) {

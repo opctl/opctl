@@ -7,40 +7,40 @@ import (
 
 var _ = Describe("yamlCodec", func() {
   Context("executing .toYaml() then .fromYaml", func() {
-    It("should roundtrip a devOpFile", func() {
+    It("should roundtrip a operationFile", func() {
 
       /* arrange */
-      expectedDevOpFile := devOpFile{Description:"dev op description"}
+      expectedOperationFile := operationFile{Description:"operation description"}
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      devOpFileBytes, _ := objectUnderTest.toYaml(&expectedDevOpFile)
-      actualDevOpFile := devOpFile{}
-      objectUnderTest.fromYaml(devOpFileBytes, &actualDevOpFile)
+      operationFileBytes, _ := objectUnderTest.toYaml(&expectedOperationFile)
+      actualOperationFile := operationFile{}
+      objectUnderTest.fromYaml(operationFileBytes, &actualOperationFile)
 
       /* assert */
-      Expect(actualDevOpFile).To(Equal(expectedDevOpFile))
+      Expect(actualOperationFile).To(Equal(expectedOperationFile))
 
     })
-    It("should roundtrip a pipelineFile", func() {
+    It("should roundtrip a operationFile", func() {
 
       /* arrange */
-      expectedPipelineFile := pipelineFile{
-        Description:"pipeline description",
-        Stages:[]pipelineFileStage{
-          pipelineFileStage{Name:"pipeline stage name", Type:pipelineStageType},
-          pipelineFileStage{Name:"dev op stage name", Type:devOpStageType},
+      expectedOperationFile := operationFile{
+        Description:"operation description",
+        SubOperations:[]operationFileSubOperation{
+          operationFileSubOperation{Name:"subOperation name"},
+          operationFileSubOperation{Name:"subOperation name"},
         },
       }
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      pipelineFileBytes, _ := objectUnderTest.toYaml(&expectedPipelineFile)
-      actualPipelineFile := pipelineFile{}
-      objectUnderTest.fromYaml(pipelineFileBytes, &actualPipelineFile)
+      operationFileBytes, _ := objectUnderTest.toYaml(&expectedOperationFile)
+      actualOperationFile := operationFile{}
+      objectUnderTest.fromYaml(operationFileBytes, &actualOperationFile)
 
       /* assert */
-      Expect(actualPipelineFile).To(Equal(expectedPipelineFile))
+      Expect(actualOperationFile).To(Equal(expectedOperationFile))
 
     })
   })

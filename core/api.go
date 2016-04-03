@@ -6,40 +6,24 @@ import (
 )
 
 type Api interface {
-  AddDevOp(
-  req models.AddDevOpReq,
+  AddOperation(
+  req models.AddOperationReq,
   ) (err error)
 
-  AddPipeline(
-  req models.AddPipelineReq,
+  AddSubOperation(
+  req models.AddSubOperationReq,
   ) (err error)
 
-  AddStageToPipeline(
-  req models.AddStageToPipelineReq,
-  ) (err error)
-
-  ListDevOps(
+  ListOperations(
   projectUrl *models.ProjectUrl,
-  ) (devOps []models.DevOpView, err error)
+  ) (operations []models.OperationView, err error)
 
-  ListPipelines(
-  projectUrl *models.ProjectUrl,
-  ) (pipelines []models.PipelineView, err error)
+  RunOperation(
+  req models.RunOperationReq,
+  ) (operationRun models.OperationRunView, err error)
 
-  RunDevOp(
-  req models.RunDevOpReq,
-  ) (devOpRun models.DevOpRunView, err error)
-
-  RunPipeline(
-  req models.RunPipelineReq,
-  ) (pipelineRun models.PipelineRunView, err error)
-
-  SetDescriptionOfDevOp(
-  req models.SetDescriptionOfDevOpReq,
-  ) (err error)
-
-  SetDescriptionOfPipeline(
-  req models.SetDescriptionOfPipelineReq,
+  SetDescriptionOfOperation(
+  req models.SetDescriptionOfOperationReq,
   ) (err error)
 }
 
@@ -68,89 +52,51 @@ type _api struct {
   compositionRoot compositionRoot
 }
 
-func (this _api) AddDevOp(
-req models.AddDevOpReq,
+func (this _api) AddOperation(
+req models.AddOperationReq,
 ) (err error) {
   return this.
   compositionRoot.
-  AddDevOpUseCase().
+  AddOperationUseCase().
   Execute(req)
 }
 
-func (this _api) AddPipeline(
-req models.AddPipelineReq,
+func (this _api) AddSubOperation(
+req models.AddSubOperationReq,
 ) (err error) {
   return this.
   compositionRoot.
-  AddPipelineUseCase().
+  AddSubOperationUseCase().
   Execute(req)
 }
 
-func (this _api) AddStageToPipeline(
-req models.AddStageToPipelineReq,
-) (err error) {
-  return this.
-  compositionRoot.
-  AddStageToPipelineUseCase().
-  Execute(req)
-}
-
-func (this _api) ListDevOps(
+func (this _api) ListOperations(
 projectUrl *models.ProjectUrl,
-) (devOps []models.DevOpView, err error) {
+) (operations []models.OperationView, err error) {
   return this.
   compositionRoot.
-  ListDevOpsUseCase().
+  ListOperationsUseCase().
   Execute(projectUrl)
 }
 
-func (this _api) ListPipelines(
-projectUrl *models.ProjectUrl,
-) (pipelines []models.PipelineView, err error) {
+func (this _api) RunOperation(
+req models.RunOperationReq,
+) (operationRun models.OperationRunView, err error) {
   return this.
   compositionRoot.
-  ListPipelinesUseCase().
-  Execute(projectUrl)
-}
-
-func (this _api) RunDevOp(
-req models.RunDevOpReq,
-) (devOpRun models.DevOpRunView, err error) {
-  return this.
-  compositionRoot.
-  RunDevOpUseCase().
-  Execute(req)
-}
-
-func (this _api) RunPipeline(
-req models.RunPipelineReq,
-) (pipelineRun models.PipelineRunView, err error) {
-  return this.
-  compositionRoot.
-  RunPipelineUseCase().
+  RunOperationUseCase().
   Execute(
     req,
     make([]string, 0),
   )
 }
 
-func (this _api) SetDescriptionOfDevOp(
-req models.SetDescriptionOfDevOpReq,
+func (this _api) SetDescriptionOfOperation(
+req models.SetDescriptionOfOperationReq,
 ) (err error) {
   return this.
   compositionRoot.
-  SetDescriptionOfDevOpUseCase().
-  Execute(
-    req,
-  )
-}
-
-func (this _api) SetDescriptionOfPipeline(
-req models.SetDescriptionOfPipelineReq,
-) (err error) {
-  return this.
-  compositionRoot.
-  SetDescriptionOfPipelineUseCase().
+  SetDescriptionOfOperationUseCase().
   Execute(
     req,
   )

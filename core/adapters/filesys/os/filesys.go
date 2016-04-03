@@ -23,11 +23,11 @@ pathToDir string,
 }
 
 func (this filesys) ListNamesOfChildDirs(
-pathToParentDir string,
+pathToPERATIONarentDir string,
 ) (namesOfChildDirs []string, err error) {
   return this.compositionRoot.
   ListNamesOfChildDirsUseCase().
-  Execute(pathToParentDir)
+  Execute(pathToPERATIONarentDir)
 }
 
 func (this filesys) GetBytesOfFile(

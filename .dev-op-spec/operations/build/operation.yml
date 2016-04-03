@@ -1,0 +1,4 @@
+description: builds all artifacts
+subOperations:
+- name: build-bin
+- name: build-docker-image

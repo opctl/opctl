@@ -7,7 +7,7 @@ import (
 
 type listNamesOfChildDirsUseCase interface {
   Execute(
-  pathToParentDir string,
+  pathToPERATIONarentDir string,
   ) (namesOfChildDirs []string, err error)
 }
 
@@ -20,12 +20,12 @@ func newListNamesOfChildDirsUseCase() listNamesOfChildDirsUseCase {
 type _listNamesOfChildDirsUseCase struct{}
 
 func (this _listNamesOfChildDirsUseCase)  Execute(
-pathToParentDir string,
+pathToPERATIONarentDir string,
 ) (namesOfChildDirs []string, err error) {
 
   namesOfChildDirs = []string{}
 
-  childDirFileInfos, err := ioutil.ReadDir(pathToParentDir)
+  childDirFileInfos, err := ioutil.ReadDir(pathToPERATIONarentDir)
   if (nil != err) {
     return
   }

@@ -6,64 +6,64 @@ import (
 )
 
 type fakeCompositionRoot struct {
-	InitDevOpUseCaseStub        func() initDevOpUseCase
-	initDevOpUseCaseMutex       sync.RWMutex
-	initDevOpUseCaseArgsForCall []struct{}
-	initDevOpUseCaseReturns     struct {
-		result1 initDevOpUseCase
+	InitOperationUseCaseStub        func() initOperationUseCase
+	initOperationUseCaseMutex       sync.RWMutex
+	initOperationUseCaseArgsForCall []struct{}
+	initOperationUseCaseReturns     struct {
+		result1 initOperationUseCase
 	}
-	RunDevOpUseCaseStub        func() runDevOpUseCase
-	runDevOpUseCaseMutex       sync.RWMutex
-	runDevOpUseCaseArgsForCall []struct{}
-	runDevOpUseCaseReturns     struct {
-		result1 runDevOpUseCase
+	RunOperationUseCaseStub        func() runOperationUseCase
+	runOperationUseCaseMutex       sync.RWMutex
+	runOperationUseCaseArgsForCall []struct{}
+	runOperationUseCaseReturns     struct {
+		result1 runOperationUseCase
 	}
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUseCase() initDevOpUseCase {
-	fake.initDevOpUseCaseMutex.Lock()
-	fake.initDevOpUseCaseArgsForCall = append(fake.initDevOpUseCaseArgsForCall, struct{}{})
-	fake.initDevOpUseCaseMutex.Unlock()
-	if fake.InitDevOpUseCaseStub != nil {
-		return fake.InitDevOpUseCaseStub()
+func (fake *fakeCompositionRoot) InitOperationUseCase() initOperationUseCase {
+	fake.initOperationUseCaseMutex.Lock()
+	fake.initOperationUseCaseArgsForCall = append(fake.initOperationUseCaseArgsForCall, struct{}{})
+	fake.initOperationUseCaseMutex.Unlock()
+	if fake.InitOperationUseCaseStub != nil {
+		return fake.InitOperationUseCaseStub()
 	} else {
-		return fake.initDevOpUseCaseReturns.result1
+		return fake.initOperationUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUseCaseCallCount() int {
-	fake.initDevOpUseCaseMutex.RLock()
-	defer fake.initDevOpUseCaseMutex.RUnlock()
-	return len(fake.initDevOpUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) InitOperationUseCaseCallCount() int {
+	fake.initOperationUseCaseMutex.RLock()
+	defer fake.initOperationUseCaseMutex.RUnlock()
+	return len(fake.initOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) InitDevOpUseCaseReturns(result1 initDevOpUseCase) {
-	fake.InitDevOpUseCaseStub = nil
-	fake.initDevOpUseCaseReturns = struct {
-		result1 initDevOpUseCase
+func (fake *fakeCompositionRoot) InitOperationUseCaseReturns(result1 initOperationUseCase) {
+	fake.InitOperationUseCaseStub = nil
+	fake.initOperationUseCaseReturns = struct {
+		result1 initOperationUseCase
 	}{result1}
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUseCase() runDevOpUseCase {
-	fake.runDevOpUseCaseMutex.Lock()
-	fake.runDevOpUseCaseArgsForCall = append(fake.runDevOpUseCaseArgsForCall, struct{}{})
-	fake.runDevOpUseCaseMutex.Unlock()
-	if fake.RunDevOpUseCaseStub != nil {
-		return fake.RunDevOpUseCaseStub()
+func (fake *fakeCompositionRoot) RunOperationUseCase() runOperationUseCase {
+	fake.runOperationUseCaseMutex.Lock()
+	fake.runOperationUseCaseArgsForCall = append(fake.runOperationUseCaseArgsForCall, struct{}{})
+	fake.runOperationUseCaseMutex.Unlock()
+	if fake.RunOperationUseCaseStub != nil {
+		return fake.RunOperationUseCaseStub()
 	} else {
-		return fake.runDevOpUseCaseReturns.result1
+		return fake.runOperationUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUseCaseCallCount() int {
-	fake.runDevOpUseCaseMutex.RLock()
-	defer fake.runDevOpUseCaseMutex.RUnlock()
-	return len(fake.runDevOpUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) RunOperationUseCaseCallCount() int {
+	fake.runOperationUseCaseMutex.RLock()
+	defer fake.runOperationUseCaseMutex.RUnlock()
+	return len(fake.runOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) RunDevOpUseCaseReturns(result1 runDevOpUseCase) {
-	fake.RunDevOpUseCaseStub = nil
-	fake.runDevOpUseCaseReturns = struct {
-		result1 runDevOpUseCase
+func (fake *fakeCompositionRoot) RunOperationUseCaseReturns(result1 runOperationUseCase) {
+	fake.RunOperationUseCaseStub = nil
+	fake.runOperationUseCaseReturns = struct {
+		result1 runOperationUseCase
 	}{result1}
 }

@@ -9,8 +9,8 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("AddDevOpUseCase()", func() {
-    It("should return an instance of type addDevOpUseCase", func() {
+  Context("AddOperationUseCase()", func() {
+    It("should return an instance of type addOperationUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -19,15 +19,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualAddDevOpUseCase := objectUnderTest.AddDevOpUseCase()
+      actualAddOperationUseCase := objectUnderTest.AddOperationUseCase()
 
       /* assert */
-      Expect(actualAddDevOpUseCase).To(BeAssignableToTypeOf(&_addDevOpUseCase{}))
+      Expect(actualAddOperationUseCase).To(BeAssignableToTypeOf(&_addOperationUseCase{}))
 
     })
   })
-  Context("AddPipelineUseCase()", func() {
-    It("should return an instance of type addPipelineUseCase", func() {
+  Context("AddSubOperationUseCase()", func() {
+    It("should return an instance of type addSubOperationUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -36,15 +36,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualAddPipelineUseCase := objectUnderTest.AddPipelineUseCase()
+      actualAddSubOperationUseCase := objectUnderTest.AddSubOperationUseCase()
 
       /* assert */
-      Expect(actualAddPipelineUseCase).To(BeAssignableToTypeOf(&_addPipelineUseCase{}))
+      Expect(actualAddSubOperationUseCase).To(BeAssignableToTypeOf(&_addSubOperationUseCase{}))
 
     })
   })
-  Context("AddStageToPipelineUseCase()", func() {
-    It("should return an instance of type addStageToPipelineUseCase", func() {
+  Context("ListOperationsUseCase()", func() {
+    It("should return an instance of type listOperationsUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -53,15 +53,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualAddStageToPipelineUseCase := objectUnderTest.AddStageToPipelineUseCase()
+      actualListOperationsUseCase := objectUnderTest.ListOperationsUseCase()
 
       /* assert */
-      Expect(actualAddStageToPipelineUseCase).To(BeAssignableToTypeOf(&_addStageToPipelineUseCase{}))
+      Expect(actualListOperationsUseCase).To(BeAssignableToTypeOf(&_listOperationsUseCase{}))
 
     })
   })
-  Context("ListDevOpsUseCase()", func() {
-    It("should return an instance of type listDevOpsUseCase", func() {
+  Context("RunOperationUseCase()", func() {
+    It("should return an instance of type runOperationUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -70,15 +70,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualListDevOpsUseCase := objectUnderTest.ListDevOpsUseCase()
+      actualRunOperationUseCase := objectUnderTest.RunOperationUseCase()
 
       /* assert */
-      Expect(actualListDevOpsUseCase).To(BeAssignableToTypeOf(&_listDevOpsUseCase{}))
+      Expect(actualRunOperationUseCase).To(BeAssignableToTypeOf(&_runOperationUseCase{}))
 
     })
   })
-  Context("ListPipelinesUseCase()", func() {
-    It("should return an instance of type listPipelinesUseCase", func() {
+  Context("SetDescriptionOfOperationUseCase()", func() {
+    It("should return an instance of type setDescriptionOfOperationUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -87,78 +87,10 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualListPipelinesUseCase := objectUnderTest.ListPipelinesUseCase()
+      actualSetDescriptionOfOperationUseCase := objectUnderTest.SetDescriptionOfOperationUseCase()
 
       /* assert */
-      Expect(actualListPipelinesUseCase).To(BeAssignableToTypeOf(&_listPipelinesUseCase{}))
-
-    })
-  })
-  Context("RunDevOpUseCase()", func() {
-    It("should return an instance of type runDevOpUseCase", func() {
-
-      /* arrange */
-      objectUnderTest, _ := newCompositionRoot(
-        fakeContainerEngine.New(),
-        fakeFilesys.New(),
-      )
-
-      /* act */
-      actualRunDevOpUseCase := objectUnderTest.RunDevOpUseCase()
-
-      /* assert */
-      Expect(actualRunDevOpUseCase).To(BeAssignableToTypeOf(&_runDevOpUseCase{}))
-
-    })
-  })
-  Context("RunPipelineUseCase()", func() {
-    It("should return an instance of type runPipelineUseCase", func() {
-
-      /* arrange */
-      objectUnderTest, _ := newCompositionRoot(
-        fakeContainerEngine.New(),
-        fakeFilesys.New(),
-      )
-
-      /* act */
-      actualRunPipelineUseCase := objectUnderTest.RunPipelineUseCase()
-
-      /* assert */
-      Expect(actualRunPipelineUseCase).To(BeAssignableToTypeOf(&_runPipelineUseCase{}))
-
-    })
-  })
-  Context("SetDescriptionOfDevOpUseCase()", func() {
-    It("should return an instance of type setDescriptionOfDevOpUseCase", func() {
-
-      /* arrange */
-      objectUnderTest, _ := newCompositionRoot(
-        fakeContainerEngine.New(),
-        fakeFilesys.New(),
-      )
-
-      /* act */
-      actualSetDescriptionOfDevOpUseCase := objectUnderTest.SetDescriptionOfDevOpUseCase()
-
-      /* assert */
-      Expect(actualSetDescriptionOfDevOpUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfDevOpUseCase{}))
-
-    })
-  })
-  Context("SetDescriptionOfPipelineUseCase()", func() {
-    It("should return an instance of type setDescriptionOfPipelineUseCase", func() {
-
-      /* arrange */
-      objectUnderTest, _ := newCompositionRoot(
-        fakeContainerEngine.New(),
-        fakeFilesys.New(),
-      )
-
-      /* act */
-      actualSetDescriptionOfPipelineUseCase := objectUnderTest.SetDescriptionOfPipelineUseCase()
-
-      /* assert */
-      Expect(actualSetDescriptionOfPipelineUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfPipelineUseCase{}))
+      Expect(actualSetDescriptionOfOperationUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfOperationUseCase{}))
 
     })
   })

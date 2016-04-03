@@ -32,55 +32,40 @@ func (this _api) Start(
   router := mux.NewRouter()
 
   router.Handle(
-    listDevOpsRelUrlTemplate,
-    this.compositionRoot.ListDevOpsHandler(),
-  ).Methods("GET")
+    listOperationsRelUrlTemplate,
+    this.compositionRoot.ListOperationsHandler(),
+  ).Methods(http.MethodGet)
 
   router.Handle(
-    addDevOpRelUrlTemplate,
-    this.compositionRoot.AddDevOpHandler(),
-  ).Methods("POST")
+    addOperationRelUrlTemplate,
+    this.compositionRoot.AddOperationHandler(),
+  ).Methods(http.MethodPost)
 
   router.Handle(
-    setDescriptionOfDevOpRelUrlTemplate,
-    this.compositionRoot.SetDescriptionOfDevOpHandler(),
-  ).Methods("PUT")
+    setDescriptionOfOperationRelUrlTemplate,
+    this.compositionRoot.SetDescriptionOfOperationHandler(),
+  ).Methods(http.MethodPut)
 
   router.Handle(
-    runDevOpRelUrlTemplate,
-    this.compositionRoot.RunDevOpHandler(),
-  ).Methods("POST")
+    addSubOperationRelUrlTemplate,
+    this.compositionRoot.AddSubOperationHandler(),
+  ).Methods(http.MethodPost)
 
   router.Handle(
-    listPipelinesRelUrlTemplate,
-    this.compositionRoot.ListPipelinesHandler(),
-  ).Methods("GET")
-
-  router.Handle(
-    addPipelineRelUrlTemplate,
-    this.compositionRoot.AddPipelineHandler(),
-  ).Methods("POST")
-
-  router.Handle(
-    setDescriptionOfPipelineRelUrlTemplate,
-    this.compositionRoot.SetDescriptionOfPipelineHandler(),
-  ).Methods("PUT")
-
-  router.Handle(
-    addStageToPipelineRelUrlTemplate,
-    this.compositionRoot.AddStageToPipelineHandler(),
-  ).Methods("POST")
-
-  router.Handle(
-    runPipelineRelUrlTemplate,
-    this.compositionRoot.RunPipelineHandler(),
-  ).Methods("POST")
+    runOperationRelUrlTemplate,
+    this.compositionRoot.RunOperationHandler(),
+  ).Methods(http.MethodPost)
 
   n := negroni.Classic()
 
   n.Use(cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
-    AllowedMethods:[]string{"GET", "POST", "PUT", "OPTIONS"},
+    AllowedMethods:[]string{
+      http.MethodGet,
+      http.MethodPost,
+      http.MethodPut,
+      http.MethodOptions,
+    },
     AllowedHeaders:[]string{"*"},
   }))
 

@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/dev-op-spec/engine.svg?branch=master)](https://travis-ci.org/dev-op-spec/engine)
 [![codecov.io](https://codecov.io/github/dev-op-spec/engine/coverage.svg?branch=master)](https://codecov.io/github/dev-op-spec/engine?branch=master)
 
-A lightweight runtime for interacting with dev op specs.
+A lightweight dev op spec runtime.
 
 # Official SDK's
 
@@ -9,18 +9,12 @@ A lightweight runtime for interacting with dev op specs.
 
 # Supported Use Cases
 
-### Dev Ops
-- add project dev op
-- list project dev ops
-- run project dev op
-- set description of project dev op
-
-### Pipelines
-- add stage to project pipeline
-- add project pipeline
-- list project pipelines
-- run project pipeline
-- set description of project pipeline
+### Operations
+- add sub-operation to project operation
+- add project operation
+- list project operations
+- run project operation
+- set description of project operation
 
 # Prerequisites
 

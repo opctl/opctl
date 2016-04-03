@@ -1,0 +1,6 @@
+description: ensures the cli is of "deliverable quality" and delivers it
+subOperations:
+- name: build
+- name: test
+- name: publish-coverage-to-codecov
+- name: push-docker-image

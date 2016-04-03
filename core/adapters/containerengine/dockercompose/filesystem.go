@@ -6,35 +6,35 @@ import (
 )
 
 type filesystem interface {
-  getPathToDevOpDockerComposeFile(
-  devOpName string,
-  ) (pathToDevOpDockerComposeFile string)
+  getPathToOperationDockerComposeFile(
+  operationName string,
+  ) (pathToOperationDockerComposeFile string)
 
-  saveDevOpDockerComposeFile(
-  pathToDevOpDir string,
+  saveOperationDockerComposeFile(
+  pathToOperationDir string,
   data []byte,
   ) (err error)
 }
 
 type filesystemImpl struct{}
 
-func (this filesystemImpl)  getPathToDevOpDockerComposeFile(
-pathToDevOp string,
-) (pathToDevOpDockerComposeFile string) {
+func (this filesystemImpl)  getPathToOperationDockerComposeFile(
+pathToOperation string,
+) (pathToOperationDockerComposeFile string) {
 
-  pathToDevOpDockerComposeFile = path.Join(pathToDevOp, "docker-compose.yml")
+  pathToOperationDockerComposeFile = path.Join(pathToOperation, "docker-compose.yml")
 
   return
 
 }
 
-func (this filesystemImpl)  saveDevOpDockerComposeFile(
-pathToDevOpDir string,
+func (this filesystemImpl)  saveOperationDockerComposeFile(
+pathToOperationDir string,
 data []byte,
 ) (err error) {
 
   err = ioutil.WriteFile(
-    this.getPathToDevOpDockerComposeFile(pathToDevOpDir),
+    this.getPathToOperationDockerComposeFile(pathToOperationDir),
     data,
     0777,
   )

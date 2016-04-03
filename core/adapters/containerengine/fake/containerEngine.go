@@ -15,86 +15,86 @@ func New() ports.ContainerEngine {
 }
 
 type containerEngine struct {
-  InitDevOpStub        func(devOpName string) (err error)
-  initDevOpMutex       sync.RWMutex
-  initDevOpArgsForCall []struct {
-    devOpName string
+  InitOperationStub        func(operationName string) (err error)
+  initOperationMutex       sync.RWMutex
+  initOperationArgsForCall []struct {
+    operationName string
   }
-  initDevOpReturns     struct {
+  initOperationReturns     struct {
                          result1 error
                        }
-  RunDevOpStub         func(devOpName string) (devOpRun models.DevOpRunView, err error)
-  runDevOpMutex        sync.RWMutex
-  runDevOpArgsForCall  []struct {
-    devOpName string
+  RunOperationStub         func(operationName string) (operationRun models.OperationRunView, err error)
+  runOperationMutex        sync.RWMutex
+  runOperationArgsForCall  []struct {
+    operationName string
   }
-  runDevOpReturns      struct {
-                         result1 models.DevOpRunView
+  runOperationReturns      struct {
+                         result1 models.OperationRunView
                          result2 error
                        }
 }
 
-func (fake *containerEngine) InitDevOp(devOpName string) (err error) {
-  fake.initDevOpMutex.Lock()
-  fake.initDevOpArgsForCall = append(fake.initDevOpArgsForCall, struct {
-    devOpName string
-  }{devOpName})
-  fake.initDevOpMutex.Unlock()
-  if fake.InitDevOpStub != nil {
-    return fake.InitDevOpStub(devOpName)
+func (fake *containerEngine) InitOperation(operationName string) (err error) {
+  fake.initOperationMutex.Lock()
+  fake.initOperationArgsForCall = append(fake.initOperationArgsForCall, struct {
+    operationName string
+  }{operationName})
+  fake.initOperationMutex.Unlock()
+  if fake.InitOperationStub != nil {
+    return fake.InitOperationStub(operationName)
   } else {
-    return fake.initDevOpReturns.result1
+    return fake.initOperationReturns.result1
   }
 }
 
-func (fake *containerEngine) InitDevOpCallCount() int {
-  fake.initDevOpMutex.RLock()
-  defer fake.initDevOpMutex.RUnlock()
-  return len(fake.initDevOpArgsForCall)
+func (fake *containerEngine) InitOperationCallCount() int {
+  fake.initOperationMutex.RLock()
+  defer fake.initOperationMutex.RUnlock()
+  return len(fake.initOperationArgsForCall)
 }
 
-func (fake *containerEngine) InitDevOpArgsForCall(i int) string {
-  fake.initDevOpMutex.RLock()
-  defer fake.initDevOpMutex.RUnlock()
-  return fake.initDevOpArgsForCall[i].devOpName
+func (fake *containerEngine) InitOperationArgsForCall(i int) string {
+  fake.initOperationMutex.RLock()
+  defer fake.initOperationMutex.RUnlock()
+  return fake.initOperationArgsForCall[i].operationName
 }
 
-func (fake *containerEngine) InitDevOpReturns(result1 error) {
-  fake.InitDevOpStub = nil
-  fake.initDevOpReturns = struct {
+func (fake *containerEngine) InitOperationReturns(result1 error) {
+  fake.InitOperationStub = nil
+  fake.initOperationReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *containerEngine) RunDevOp(devOpName string) (devOpRun models.DevOpRunView, err error) {
-  fake.runDevOpMutex.Lock()
-  fake.runDevOpArgsForCall = append(fake.runDevOpArgsForCall, struct {
-    devOpName string
-  }{devOpName})
-  fake.runDevOpMutex.Unlock()
-  if fake.RunDevOpStub != nil {
-    return fake.RunDevOpStub(devOpName)
+func (fake *containerEngine) RunOperation(operationName string) (operationRun models.OperationRunView, err error) {
+  fake.runOperationMutex.Lock()
+  fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
+    operationName string
+  }{operationName})
+  fake.runOperationMutex.Unlock()
+  if fake.RunOperationStub != nil {
+    return fake.RunOperationStub(operationName)
   } else {
-    return fake.runDevOpReturns.result1, fake.runDevOpReturns.result2
+    return fake.runOperationReturns.result1, fake.runOperationReturns.result2
   }
 }
 
-func (fake *containerEngine) RunDevOpCallCount() int {
-  fake.runDevOpMutex.RLock()
-  defer fake.runDevOpMutex.RUnlock()
-  return len(fake.runDevOpArgsForCall)
+func (fake *containerEngine) RunOperationCallCount() int {
+  fake.runOperationMutex.RLock()
+  defer fake.runOperationMutex.RUnlock()
+  return len(fake.runOperationArgsForCall)
 }
 
-func (fake *containerEngine) RunDevOpArgsForCall(i int) string {
-  fake.runDevOpMutex.RLock()
-  defer fake.runDevOpMutex.RUnlock()
-  return fake.runDevOpArgsForCall[i].devOpName
+func (fake *containerEngine) RunOperationArgsForCall(i int) string {
+  fake.runOperationMutex.RLock()
+  defer fake.runOperationMutex.RUnlock()
+  return fake.runOperationArgsForCall[i].operationName
 }
 
-func (fake *containerEngine) RunDevOpReturns(result1 models.DevOpRunView, result2 error) {
-  fake.RunDevOpStub = nil
-  fake.runDevOpReturns = struct {
-    result1 models.DevOpRunView
+func (fake *containerEngine) RunOperationReturns(result1 models.OperationRunView, result2 error) {
+  fake.RunOperationStub = nil
+  fake.runOperationReturns = struct {
+    result1 models.OperationRunView
     result2 error
   }{result1, result2}
 }

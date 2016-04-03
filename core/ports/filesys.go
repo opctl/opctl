@@ -6,7 +6,7 @@ type Filesys interface {
   ) (err error)
 
   ListNamesOfChildDirs(
-  pathToParentDir string,
+  pathToPERATIONarentDir string,
   ) (namesOfChildDirs []string, err error)
 
   GetBytesOfFile(

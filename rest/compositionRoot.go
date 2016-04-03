@@ -6,15 +6,11 @@ import (
 )
 
 type compositionRoot interface {
-  AddDevOpHandler() http.Handler
-  AddPipelineHandler() http.Handler
-  AddStageToPipelineHandler() http.Handler
-  ListDevOpsHandler() http.Handler
-  ListPipelinesHandler() http.Handler
-  RunDevOpHandler() http.Handler
-  RunPipelineHandler() http.Handler
-  SetDescriptionOfDevOpHandler() http.Handler
-  SetDescriptionOfPipelineHandler() http.Handler
+  AddOperationHandler() http.Handler
+  AddSubOperationHandler() http.Handler
+  ListOperationsHandler() http.Handler
+  RunOperationHandler() http.Handler
+  SetDescriptionOfOperationHandler() http.Handler
 }
 
 func newCompositionRoot(
@@ -22,15 +18,11 @@ coreApi core.Api,
 ) (compositionRoot compositionRoot) {
 
   compositionRoot = &_compositionRoot{
-    addDevOpHandler: newAddDevOpHandler(coreApi),
-    addPipelineHandler:newAddPipelineHandler(coreApi),
-    addStageToPipelineHandler:newAddStageToPipelineHandler(coreApi),
-    listDevOpsHandler:newListDevOpsHandler(coreApi),
-    listPipelinesHandler:newListPipelinesHandler(coreApi),
-    runDevOpHandler:newRunDevOpHandler(coreApi),
-    runPipelineHandler:newRunPipelineHandler(coreApi),
-    setDescriptionOfDevOpHandler:newSetDescriptionOfDevOpHandler(coreApi),
-    setDescriptionOfPipelineHandler:newSetDescriptionOfPipelineHandler(coreApi),
+    addOperationHandler:newAddOperationHandler(coreApi),
+    addSubOperationHandler:newAddSubOperationHandler(coreApi),
+    listOperationsHandler:newListOperationsHandler(coreApi),
+    runOperationHandler:newRunOperationHandler(coreApi),
+    setDescriptionOfOperationHandler:newSetDescriptionOfOperationHandler(coreApi),
   }
 
   return
@@ -38,58 +30,34 @@ coreApi core.Api,
 }
 
 type _compositionRoot struct {
-  addDevOpHandler                 http.Handler
-  addPipelineHandler              http.Handler
-  addStageToPipelineHandler       http.Handler
-  listDevOpsHandler               http.Handler
-  listPipelinesHandler            http.Handler
-  runDevOpHandler                 http.Handler
-  runPipelineHandler              http.Handler
-  setDescriptionOfDevOpHandler    http.Handler
-  setDescriptionOfPipelineHandler http.Handler
+  addOperationHandler              http.Handler
+  addSubOperationHandler           http.Handler
+  listOperationsHandler            http.Handler
+  runOperationHandler              http.Handler
+  setDescriptionOfOperationHandler http.Handler
 }
 
-func (this _compositionRoot) AddDevOpHandler(
+func (this _compositionRoot) AddOperationHandler(
 ) http.Handler {
-  return this.addDevOpHandler
+  return this.addOperationHandler
 }
 
-func (this _compositionRoot) AddPipelineHandler(
+func (this _compositionRoot) AddSubOperationHandler(
 ) http.Handler {
-  return this.addPipelineHandler
+  return this.addSubOperationHandler
 }
 
-func (this _compositionRoot) AddStageToPipelineHandler(
+func (this _compositionRoot) ListOperationsHandler(
 ) http.Handler {
-  return this.addStageToPipelineHandler
+  return this.listOperationsHandler
 }
 
-func (this _compositionRoot) ListDevOpsHandler(
+func (this _compositionRoot) RunOperationHandler(
 ) http.Handler {
-  return this.listDevOpsHandler
+  return this.runOperationHandler
 }
 
-func (this _compositionRoot) ListPipelinesHandler(
+func (this _compositionRoot) SetDescriptionOfOperationHandler(
 ) http.Handler {
-  return this.listPipelinesHandler
-}
-
-func (this _compositionRoot) RunDevOpHandler(
-) http.Handler {
-  return this.runDevOpHandler
-}
-
-func (this _compositionRoot) RunPipelineHandler(
-) http.Handler {
-  return this.runPipelineHandler
-}
-
-func (this _compositionRoot) SetDescriptionOfDevOpHandler(
-) http.Handler {
-  return this.setDescriptionOfDevOpHandler
-}
-
-func (this _compositionRoot) SetDescriptionOfPipelineHandler(
-) http.Handler {
-  return this.setDescriptionOfPipelineHandler
+  return this.setDescriptionOfOperationHandler
 }

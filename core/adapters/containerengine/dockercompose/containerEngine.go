@@ -26,18 +26,18 @@ type _containerEngine struct {
   compositionRoot compositionRoot
 }
 
-func (this _containerEngine) InitDevOp(
-pathToDevOpDir string,
+func (this _containerEngine) InitOperation(
+pathToOperationDir string,
 ) (err error) {
   return this.compositionRoot.
-  InitDevOpUseCase().
-  Execute(pathToDevOpDir)
+  InitOperationUseCase().
+  Execute(pathToOperationDir)
 }
 
-func (this _containerEngine) RunDevOp(
-pathToDevOpDir string,
-) (devOpRun models.DevOpRunView, err error) {
+func (this _containerEngine) RunOperation(
+pathToOperationDir string,
+) (operationRun models.OperationRunView, err error) {
   return this.compositionRoot.
-  RunDevOpUseCase().
-  Execute(pathToDevOpDir)
+  RunOperationUseCase().
+  Execute(pathToOperationDir)
 }

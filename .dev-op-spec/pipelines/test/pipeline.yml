@@ -1,4 +1,0 @@
-description: performs all test related dev ops
-stages:
-- name: test
-  type: dev-op

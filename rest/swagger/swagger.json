@@ -16,7 +16,7 @@
     "text/html"
   ],
   "paths": {
-    "/project/{url}/dev-ops": {
+    "/project/{url}/operations": {
       "parameters": [
         {
           "name": "url",
@@ -27,14 +27,14 @@
         }
       ],
       "get": {
-        "summary": "Lists project dev ops",
+        "summary": "List project operations",
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/DevOpView"
+                "$ref": "#/definitions/OperationView"
               }
             }
           },
@@ -53,14 +53,14 @@
         }
       },
       "post": {
-        "summary": "Add project dev op",
+        "summary": "Add project operation",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "description": "The body of the request",
             "schema": {
-              "title": "AddDevOpReq",
+              "title": "AddOperationReq",
               "type": "object",
               "properties": {
                 "Name": {
@@ -93,7 +93,7 @@
         }
       }
     },
-    "/project/{url}/dev-ops/{name}/description": {
+    "/project/{url}/operations/{name}/description": {
       "parameters": [
         {
           "name": "url",
@@ -104,12 +104,12 @@
         }
       ],
       "put": {
-        "summary": "Update description of project dev op",
+        "summary": "Update description of project operation",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the dev op",
+            "description": "The name of the operation",
             "required": true,
             "type": "string"
           },
@@ -118,184 +118,7 @@
             "in": "body",
             "description": "The body of the request",
             "schema": {
-              "required": [
-                "Description"
-              ],
-              "title": "UpdateDescriptionOfDevOpReq",
-              "type": "object",
-              "properties": {
-                "Description": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "/project/{url}/dev-ops/{name}/runs": {
-      "parameters": [
-        {
-          "name": "url",
-          "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "post": {
-        "summary": "Run project dev op",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "description": "The name of the dev-op",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/DevOpRunView"
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "/project/{url}/pipelines": {
-      "parameters": [
-        {
-          "name": "url",
-          "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "get": {
-        "summary": "List project pipelines",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/PipelineView"
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Add project pipeline",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "The body of the request",
-            "schema": {
-              "title": "AddPipelineReq",
-              "type": "object",
-              "properties": {
-                "Name": {
-                  "type": "string",
-                  "required": true
-                },
-                "Description": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "/project/{url}/pipelines/{name}/description": {
-      "parameters": [
-        {
-          "name": "url",
-          "in": "path",
-          "description": "The root url of the projects source. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "put": {
-        "summary": "Update description of project pipeline",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "description": "The name of the pipeline",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "The body of the request",
-            "schema": {
-              "title": "UpdateDescriptionOfPipelineReq",
+              "title": "UpdateDescriptionOfOperationReq",
               "type": "object",
               "properties": {
                 "Description": {
@@ -325,7 +148,7 @@
         }
       }
     },
-    "/project/{url}/pipelines/{name}/stages": {
+    "/project/{url}/operations/{name}/sub-operations": {
       "parameters": [
         {
           "name": "url",
@@ -336,12 +159,12 @@
         }
       ],
       "post": {
-        "summary": "Add stage to project pipeline",
+        "summary": "Add sub-operation to project operation",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the pipeline",
+            "description": "The name of the operation",
             "required": true,
             "type": "string"
           },
@@ -350,18 +173,18 @@
             "in": "body",
             "description": "The body of the request",
             "schema": {
-              "title": "AddStageToPipelineReq",
+              "title": "AddSubOperationReq",
               "type": "object",
               "properties": {
-                "IsPipelineStage": {
+                "IsOperationSubOperation": {
                   "type": "boolean",
                   "default": false
                 },
-                "StageName": {
+                "SubOperationName": {
                   "type": "string",
                   "required": true
                 },
-                "PrecedingStageName": {
+                "PrecedingSubOperationName": {
                   "type": "string",
                   "allowEmptyValue": true
                 }
@@ -388,7 +211,7 @@
         }
       }
     },
-    "/project/{url}/pipelines/{name}/runs": {
+    "/project/{url}/operations/{name}/runs": {
       "parameters": [
         {
           "name": "url",
@@ -399,12 +222,12 @@
         }
       ],
       "post": {
-        "summary": "Run project pipeline",
+        "summary": "Run project operation",
         "parameters": [
           {
             "name": "name",
             "in": "path",
-            "description": "The name of the pipeline",
+            "description": "The name of the operation",
             "required": true,
             "type": "string"
           }
@@ -413,7 +236,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/PipelineRunView"
+              "$ref": "#/definitions/OperationRunView"
             }
           },
           "400": {
@@ -433,47 +256,14 @@
     }
   },
   "definitions": {
-    "DevOpRunView": {
-      "title": "DevOpRunView",
+    "OperationRunView": {
+      "title": "OperationRunView",
       "type": "object",
       "properties": {
         "Id":{
           "type":"string"
         },
-        "DevOpName": {
-          "type": "string"
-        },
-        "StartedAtUnixTime": {
-          "type": "integer"
-        },
-        "EndedAtUnixTime": {
-          "type": "integer"
-        },
-        "ExitCode": {
-          "type": "integer"
-        }
-      }
-    },
-    "DevOpView": {
-      "title": "DevOpView",
-      "type": "object",
-      "properties": {
-        "Name": {
-          "type": "string"
-        },
-        "Description": {
-          "type": "string"
-        }
-      }
-    },
-    "PipelineRunView": {
-      "title": "PipelineRunView",
-      "type": "object",
-      "properties": {
-        "Id":{
-          "type":"string"
-        },
-        "PipelineName": {
+        "OperationName": {
           "type": "string"
         },
         "StartedAtUnixTime": {
@@ -485,59 +275,25 @@
         "ExitCode": {
           "type": "integer"
         },
-        "Stages": {
+        "SubOperations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PipelineStageRunView"
+            "$ref": "#/definitions/OperationRunView"
           }
         }
       }
     },
-    "PipelineStageRunView": {
-      "title": "PipelineStageRunView",
+    "SubOperationView": {
+      "title": "SubOperationView",
       "type": "object",
       "properties": {
         "Name": {
           "type": "string"
-        },
-        "StageType": {
-          "type": "string"
-        },
-        "StartedAtUnixTime": {
-          "type": "integer"
-        },
-        "EndedAtUnixTime": {
-          "type": "integer"
-        },
-        "ExitCode": {
-          "type": "integer"
-        },
-        "Stages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/PipelineStageRunView"
-          }
         }
       }
     },
-    "PipelineStageView": {
-      "title": "PipelineStageView",
-      "type": "object",
-      "properties": {
-        "Name": {
-          "type": "string"
-        },
-        "Type": {
-          "type": "string",
-          "enum": [
-            "pipeline",
-            "dev-op"
-          ]
-        }
-      }
-    },
-    "PipelineView": {
-      "title": "PipelineView",
+    "OperationView": {
+      "title": "OperationView",
       "type": "object",
       "properties": {
         "Name": {
@@ -546,10 +302,10 @@
         "Description": {
           "type": "string"
         },
-        "Stages": {
+        "SubOperations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/PipelineStageView"
+            "$ref": "#/definitions/SubOperationView"
           }
         }
       }

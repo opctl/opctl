@@ -5,11 +5,11 @@ import (
 )
 
 type ContainerEngine interface {
-  InitDevOp(
-  pathToDevOpDir string,
+  InitOperation(
+  pathToOperationDir string,
   ) (err error)
 
-  RunDevOp(
-  pathToDevOpDir string,
-  ) (devOpRun models.DevOpRunView, err error)
+  RunOperation(
+  pathToOperationDir string,
+  ) (operationRun models.OperationRunView, err error)
 }

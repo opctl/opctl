@@ -3,8 +3,8 @@ package main
 import (
   "github.com/dev-op-spec/engine/core"
   "github.com/dev-op-spec/engine/rest"
-  "github.com/dev-op-spec/engine/core/adapters/containerengine/dockercompose"
-  "github.com/dev-op-spec/engine/core/adapters/filesys/os"
+  dockerComposeContainerEngine "github.com/dev-op-spec/engine/core/adapters/containerengine/dockercompose"
+  osFilesys "github.com/dev-op-spec/engine/core/adapters/filesys/os"
 )
 
 type compositionRoot interface {
@@ -14,12 +14,12 @@ type compositionRoot interface {
 func newCompositionRoot(
 ) (compositionRoot compositionRoot, err error) {
 
-  containerEngine, err := dockercompose.New()
+  containerEngine, err := dockerComposeContainerEngine.New()
   if (nil != err) {
     return
   }
 
-  filesys := os.New()
+  filesys := osFilesys.New()
 
   coreApi, err := core.New(
     containerEngine,

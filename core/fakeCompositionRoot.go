@@ -6,274 +6,154 @@ import (
 )
 
 type fakeCompositionRoot struct {
-  AddDevOpUseCaseStub                        func() addDevOpUseCase
-  addDevOpUseCaseMutex                       sync.RWMutex
-  addDevOpUseCaseArgsForCall                 []struct{}
-  addDevOpUseCaseReturns                     struct {
-                                                  result1 addDevOpUseCase
-                                                }
-  AddPipelineUseCaseStub                     func() addPipelineUseCase
-  addPipelineUseCaseMutex                    sync.RWMutex
-  addPipelineUseCaseArgsForCall              []struct{}
-  addPipelineUseCaseReturns                  struct {
-                                                  result1 addPipelineUseCase
-                                                }
-  AddStageToPipelineUseCaseStub              func() addStageToPipelineUseCase
-  addStageToPipelineUseCaseMutex             sync.RWMutex
-  addStageToPipelineUseCaseArgsForCall       []struct{}
-  addStageToPipelineUseCaseReturns           struct {
-                                                  result1 addStageToPipelineUseCase
-                                                }
-  ListDevOpsUseCaseStub                      func() listDevOpsUseCase
-  listDevOpsUseCaseMutex                     sync.RWMutex
-  listDevOpsUseCaseArgsForCall               []struct{}
-  listDevOpsUseCaseReturns                   struct {
-                                                  result1 listDevOpsUseCase
-                                                }
-  ListPipelinesUseCaseStub                   func() listPipelinesUseCase
-  listPipelinesUseCaseMutex                  sync.RWMutex
-  listPipelinesUseCaseArgsForCall            []struct{}
-  listPipelinesUseCaseReturns                struct {
-                                                  result1 listPipelinesUseCase
-                                                }
-  RunDevOpUseCaseStub                        func() runDevOpUseCase
-  runDevOpUseCaseMutex                       sync.RWMutex
-  runDevOpUseCaseArgsForCall                 []struct{}
-  runDevOpUseCaseReturns                     struct {
-                                                  result1 runDevOpUseCase
-                                                }
-  RunPipelineUseCaseStub                     func() runPipelineUseCase
-  runPipelineUseCaseMutex                    sync.RWMutex
-  runPipelineUseCaseArgsForCall              []struct{}
-  runPipelineUseCaseReturns                  struct {
-                                                  result1 runPipelineUseCase
-                                                }
-  SetDescriptionOfDevOpUseCaseStub           func() setDescriptionOfDevOpUseCase
-  setDescriptionOfDevOpUseCaseMutex          sync.RWMutex
-  setDescriptionOfDevOpUseCaseArgsForCall    []struct{}
-  setDescriptionOfDevOpUseCaseReturns        struct {
-                                                  result1 setDescriptionOfDevOpUseCase
-                                                }
-  SetDescriptionOfPipelineUseCaseStub        func() setDescriptionOfPipelineUseCase
-  setDescriptionOfPipelineUseCaseMutex       sync.RWMutex
-  setDescriptionOfPipelineUseCaseArgsForCall []struct{}
-  setDescriptionOfPipelineUseCaseReturns     struct {
-                                                  result1 setDescriptionOfPipelineUseCase
-                                                }
+  AddOperationUseCaseStub                     func() addOperationUseCase
+  addOperationUseCaseMutex                    sync.RWMutex
+  addOperationUseCaseArgsForCall              []struct{}
+  addOperationUseCaseReturns                  struct {
+                                                result1 addOperationUseCase
+                                              }
+  AddSubOperationUseCaseStub                  func() addSubOperationUseCase
+  addSubOperationUseCaseMutex                 sync.RWMutex
+  addSubOperationUseCaseArgsForCall           []struct{}
+  addSubOperationUseCaseReturns               struct {
+                                                result1 addSubOperationUseCase
+                                              }
+  ListOperationsUseCaseStub                   func() listOperationsUseCase
+  listOperationsUseCaseMutex                  sync.RWMutex
+  listOperationsUseCaseArgsForCall            []struct{}
+  listOperationsUseCaseReturns                struct {
+                                                result1 listOperationsUseCase
+                                              }
+  RunOperationUseCaseStub                     func() runOperationUseCase
+  runOperationUseCaseMutex                    sync.RWMutex
+  runOperationUseCaseArgsForCall              []struct{}
+  runOperationUseCaseReturns                  struct {
+                                                result1 runOperationUseCase
+                                              }
+  SetDescriptionOfOperationUseCaseStub        func() setDescriptionOfOperationUseCase
+  setDescriptionOfOperationUseCaseMutex       sync.RWMutex
+  setDescriptionOfOperationUseCaseArgsForCall []struct{}
+  setDescriptionOfOperationUseCaseReturns     struct {
+                                                result1 setDescriptionOfOperationUseCase
+                                              }
 }
 
-func (fake *fakeCompositionRoot) AddDevOpUseCase() addDevOpUseCase {
-  fake.addDevOpUseCaseMutex.Lock()
-  fake.addDevOpUseCaseArgsForCall = append(fake.addDevOpUseCaseArgsForCall, struct{}{})
-  fake.addDevOpUseCaseMutex.Unlock()
-  if fake.AddDevOpUseCaseStub != nil {
-    return fake.AddDevOpUseCaseStub()
+func (fake *fakeCompositionRoot) AddOperationUseCase() addOperationUseCase {
+  fake.addOperationUseCaseMutex.Lock()
+  fake.addOperationUseCaseArgsForCall = append(fake.addOperationUseCaseArgsForCall, struct{}{})
+  fake.addOperationUseCaseMutex.Unlock()
+  if fake.AddOperationUseCaseStub != nil {
+    return fake.AddOperationUseCaseStub()
   } else {
-    return fake.addDevOpUseCaseReturns.result1
+    return fake.addOperationUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) AddDevOpUseCaseCallCount() int {
-  fake.addDevOpUseCaseMutex.RLock()
-  defer fake.addDevOpUseCaseMutex.RUnlock()
-  return len(fake.addDevOpUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) AddOperationUseCaseCallCount() int {
+  fake.addOperationUseCaseMutex.RLock()
+  defer fake.addOperationUseCaseMutex.RUnlock()
+  return len(fake.addOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) AddDevOpUseCaseReturns(result1 addDevOpUseCase) {
-  fake.AddDevOpUseCaseStub = nil
-  fake.addDevOpUseCaseReturns = struct {
-    result1 addDevOpUseCase
+func (fake *fakeCompositionRoot) AddOperationUseCaseReturns(result1 addOperationUseCase) {
+  fake.AddOperationUseCaseStub = nil
+  fake.addOperationUseCaseReturns = struct {
+    result1 addOperationUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) AddPipelineUseCase() addPipelineUseCase {
-  fake.addPipelineUseCaseMutex.Lock()
-  fake.addPipelineUseCaseArgsForCall = append(fake.addPipelineUseCaseArgsForCall, struct{}{})
-  fake.addPipelineUseCaseMutex.Unlock()
-  if fake.AddPipelineUseCaseStub != nil {
-    return fake.AddPipelineUseCaseStub()
+func (fake *fakeCompositionRoot) AddSubOperationUseCase() addSubOperationUseCase {
+  fake.addSubOperationUseCaseMutex.Lock()
+  fake.addSubOperationUseCaseArgsForCall = append(fake.addSubOperationUseCaseArgsForCall, struct{}{})
+  fake.addSubOperationUseCaseMutex.Unlock()
+  if fake.AddSubOperationUseCaseStub != nil {
+    return fake.AddSubOperationUseCaseStub()
   } else {
-    return fake.addPipelineUseCaseReturns.result1
+    return fake.addSubOperationUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) AddPipelineUseCaseCallCount() int {
-  fake.addPipelineUseCaseMutex.RLock()
-  defer fake.addPipelineUseCaseMutex.RUnlock()
-  return len(fake.addPipelineUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) AddSubOperationUseCaseCallCount() int {
+  fake.addSubOperationUseCaseMutex.RLock()
+  defer fake.addSubOperationUseCaseMutex.RUnlock()
+  return len(fake.addSubOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) AddPipelineUseCaseReturns(result1 addPipelineUseCase) {
-  fake.AddPipelineUseCaseStub = nil
-  fake.addPipelineUseCaseReturns = struct {
-    result1 addPipelineUseCase
+func (fake *fakeCompositionRoot) AddSubOperationUseCaseReturns(result1 addSubOperationUseCase) {
+  fake.AddSubOperationUseCaseStub = nil
+  fake.addSubOperationUseCaseReturns = struct {
+    result1 addSubOperationUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) AddStageToPipelineUseCase() addStageToPipelineUseCase {
-  fake.addStageToPipelineUseCaseMutex.Lock()
-  fake.addStageToPipelineUseCaseArgsForCall = append(fake.addStageToPipelineUseCaseArgsForCall, struct{}{})
-  fake.addStageToPipelineUseCaseMutex.Unlock()
-  if fake.AddStageToPipelineUseCaseStub != nil {
-    return fake.AddStageToPipelineUseCaseStub()
+func (fake *fakeCompositionRoot) ListOperationsUseCase() listOperationsUseCase {
+  fake.listOperationsUseCaseMutex.Lock()
+  fake.listOperationsUseCaseArgsForCall = append(fake.listOperationsUseCaseArgsForCall, struct{}{})
+  fake.listOperationsUseCaseMutex.Unlock()
+  if fake.ListOperationsUseCaseStub != nil {
+    return fake.ListOperationsUseCaseStub()
   } else {
-    return fake.addStageToPipelineUseCaseReturns.result1
+    return fake.listOperationsUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) AddStageToPipelineUseCaseCallCount() int {
-  fake.addStageToPipelineUseCaseMutex.RLock()
-  defer fake.addStageToPipelineUseCaseMutex.RUnlock()
-  return len(fake.addStageToPipelineUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) ListOperationsUseCaseCallCount() int {
+  fake.listOperationsUseCaseMutex.RLock()
+  defer fake.listOperationsUseCaseMutex.RUnlock()
+  return len(fake.listOperationsUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) AddStageToPipelineUseCaseReturns(result1 addStageToPipelineUseCase) {
-  fake.AddStageToPipelineUseCaseStub = nil
-  fake.addStageToPipelineUseCaseReturns = struct {
-    result1 addStageToPipelineUseCase
+func (fake *fakeCompositionRoot) ListOperationsUseCaseReturns(result1 listOperationsUseCase) {
+  fake.ListOperationsUseCaseStub = nil
+  fake.listOperationsUseCaseReturns = struct {
+    result1 listOperationsUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) ListDevOpsUseCase() listDevOpsUseCase {
-  fake.listDevOpsUseCaseMutex.Lock()
-  fake.listDevOpsUseCaseArgsForCall = append(fake.listDevOpsUseCaseArgsForCall, struct{}{})
-  fake.listDevOpsUseCaseMutex.Unlock()
-  if fake.ListDevOpsUseCaseStub != nil {
-    return fake.ListDevOpsUseCaseStub()
+func (fake *fakeCompositionRoot) RunOperationUseCase() runOperationUseCase {
+  fake.runOperationUseCaseMutex.Lock()
+  fake.runOperationUseCaseArgsForCall = append(fake.runOperationUseCaseArgsForCall, struct{}{})
+  fake.runOperationUseCaseMutex.Unlock()
+  if fake.RunOperationUseCaseStub != nil {
+    return fake.RunOperationUseCaseStub()
   } else {
-    return fake.listDevOpsUseCaseReturns.result1
+    return fake.runOperationUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ListDevOpsUseCaseCallCount() int {
-  fake.listDevOpsUseCaseMutex.RLock()
-  defer fake.listDevOpsUseCaseMutex.RUnlock()
-  return len(fake.listDevOpsUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) RunOperationUseCaseCallCount() int {
+  fake.runOperationUseCaseMutex.RLock()
+  defer fake.runOperationUseCaseMutex.RUnlock()
+  return len(fake.runOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ListDevOpsUseCaseReturns(result1 listDevOpsUseCase) {
-  fake.ListDevOpsUseCaseStub = nil
-  fake.listDevOpsUseCaseReturns = struct {
-    result1 listDevOpsUseCase
+func (fake *fakeCompositionRoot) RunOperationUseCaseReturns(result1 runOperationUseCase) {
+  fake.RunOperationUseCaseStub = nil
+  fake.runOperationUseCaseReturns = struct {
+    result1 runOperationUseCase
   }{result1}
 }
 
-func (fake *fakeCompositionRoot) ListPipelinesUseCase() listPipelinesUseCase {
-  fake.listPipelinesUseCaseMutex.Lock()
-  fake.listPipelinesUseCaseArgsForCall = append(fake.listPipelinesUseCaseArgsForCall, struct{}{})
-  fake.listPipelinesUseCaseMutex.Unlock()
-  if fake.ListPipelinesUseCaseStub != nil {
-    return fake.ListPipelinesUseCaseStub()
+func (fake *fakeCompositionRoot) SetDescriptionOfOperationUseCase() setDescriptionOfOperationUseCase {
+  fake.setDescriptionOfOperationUseCaseMutex.Lock()
+  fake.setDescriptionOfOperationUseCaseArgsForCall = append(fake.setDescriptionOfOperationUseCaseArgsForCall, struct{}{})
+  fake.setDescriptionOfOperationUseCaseMutex.Unlock()
+  if fake.SetDescriptionOfOperationUseCaseStub != nil {
+    return fake.SetDescriptionOfOperationUseCaseStub()
   } else {
-    return fake.listPipelinesUseCaseReturns.result1
+    return fake.setDescriptionOfOperationUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) ListPipelinesUseCaseCallCount() int {
-  fake.listPipelinesUseCaseMutex.RLock()
-  defer fake.listPipelinesUseCaseMutex.RUnlock()
-  return len(fake.listPipelinesUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) SetDescriptionOfOperationUseCaseCallCount() int {
+  fake.setDescriptionOfOperationUseCaseMutex.RLock()
+  defer fake.setDescriptionOfOperationUseCaseMutex.RUnlock()
+  return len(fake.setDescriptionOfOperationUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) ListPipelinesUseCaseReturns(result1 listPipelinesUseCase) {
-  fake.ListPipelinesUseCaseStub = nil
-  fake.listPipelinesUseCaseReturns = struct {
-    result1 listPipelinesUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) RunDevOpUseCase() runDevOpUseCase {
-  fake.runDevOpUseCaseMutex.Lock()
-  fake.runDevOpUseCaseArgsForCall = append(fake.runDevOpUseCaseArgsForCall, struct{}{})
-  fake.runDevOpUseCaseMutex.Unlock()
-  if fake.RunDevOpUseCaseStub != nil {
-    return fake.RunDevOpUseCaseStub()
-  } else {
-    return fake.runDevOpUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) RunDevOpUseCaseCallCount() int {
-  fake.runDevOpUseCaseMutex.RLock()
-  defer fake.runDevOpUseCaseMutex.RUnlock()
-  return len(fake.runDevOpUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) RunDevOpUseCaseReturns(result1 runDevOpUseCase) {
-  fake.RunDevOpUseCaseStub = nil
-  fake.runDevOpUseCaseReturns = struct {
-    result1 runDevOpUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) RunPipelineUseCase() runPipelineUseCase {
-  fake.runPipelineUseCaseMutex.Lock()
-  fake.runPipelineUseCaseArgsForCall = append(fake.runPipelineUseCaseArgsForCall, struct{}{})
-  fake.runPipelineUseCaseMutex.Unlock()
-  if fake.RunPipelineUseCaseStub != nil {
-    return fake.RunPipelineUseCaseStub()
-  } else {
-    return fake.runPipelineUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) RunPipelineUseCaseCallCount() int {
-  fake.runPipelineUseCaseMutex.RLock()
-  defer fake.runPipelineUseCaseMutex.RUnlock()
-  return len(fake.runPipelineUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) RunPipelineUseCaseReturns(result1 runPipelineUseCase) {
-  fake.RunPipelineUseCaseStub = nil
-  fake.runPipelineUseCaseReturns = struct {
-    result1 runPipelineUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfDevOpUseCase() setDescriptionOfDevOpUseCase {
-  fake.setDescriptionOfDevOpUseCaseMutex.Lock()
-  fake.setDescriptionOfDevOpUseCaseArgsForCall = append(fake.setDescriptionOfDevOpUseCaseArgsForCall, struct{}{})
-  fake.setDescriptionOfDevOpUseCaseMutex.Unlock()
-  if fake.SetDescriptionOfDevOpUseCaseStub != nil {
-    return fake.SetDescriptionOfDevOpUseCaseStub()
-  } else {
-    return fake.setDescriptionOfDevOpUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfDevOpUseCaseCallCount() int {
-  fake.setDescriptionOfDevOpUseCaseMutex.RLock()
-  defer fake.setDescriptionOfDevOpUseCaseMutex.RUnlock()
-  return len(fake.setDescriptionOfDevOpUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfDevOpUseCaseReturns(result1 setDescriptionOfDevOpUseCase) {
-  fake.SetDescriptionOfDevOpUseCaseStub = nil
-  fake.setDescriptionOfDevOpUseCaseReturns = struct {
-    result1 setDescriptionOfDevOpUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfPipelineUseCase() setDescriptionOfPipelineUseCase {
-  fake.setDescriptionOfPipelineUseCaseMutex.Lock()
-  fake.setDescriptionOfPipelineUseCaseArgsForCall = append(fake.setDescriptionOfPipelineUseCaseArgsForCall, struct{}{})
-  fake.setDescriptionOfPipelineUseCaseMutex.Unlock()
-  if fake.SetDescriptionOfPipelineUseCaseStub != nil {
-    return fake.SetDescriptionOfPipelineUseCaseStub()
-  } else {
-    return fake.setDescriptionOfPipelineUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfPipelineUseCaseCallCount() int {
-  fake.setDescriptionOfPipelineUseCaseMutex.RLock()
-  defer fake.setDescriptionOfPipelineUseCaseMutex.RUnlock()
-  return len(fake.setDescriptionOfPipelineUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) SetDescriptionOfPipelineUseCaseReturns(result1 setDescriptionOfPipelineUseCase) {
-  fake.SetDescriptionOfPipelineUseCaseStub = nil
-  fake.setDescriptionOfPipelineUseCaseReturns = struct {
-    result1 setDescriptionOfPipelineUseCase
+func (fake *fakeCompositionRoot) SetDescriptionOfOperationUseCaseReturns(result1 setDescriptionOfOperationUseCase) {
+  fake.SetDescriptionOfOperationUseCaseStub = nil
+  fake.setDescriptionOfOperationUseCaseReturns = struct {
+    result1 setDescriptionOfOperationUseCase
   }{result1}
 }

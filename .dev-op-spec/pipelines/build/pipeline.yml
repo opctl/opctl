@@ -1,6 +1,0 @@
-description: builds all artifacts
-stages:
-- name: build-bin
-  type: dev-op
-- name: build-docker-image
-  type: dev-op
