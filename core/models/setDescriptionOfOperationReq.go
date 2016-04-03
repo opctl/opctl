@@ -16,6 +16,6 @@ operationName string,
 
 type SetDescriptionOfOperationReq struct {
   ProjectUrl    *ProjectUrl
-  Description   string
-  OperationName string
+  Description   string `json:"description"`
+  OperationName string `json:"operationName"`
 }

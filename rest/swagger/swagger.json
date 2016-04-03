@@ -5,7 +5,7 @@
     "title": "Engine ReST API",
     "license": {
       "name": "Apache 2.0",
-      "projUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      "projectUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
   "consumes": [
@@ -16,10 +16,10 @@
     "text/html"
   ],
   "paths": {
-    "/projects/{projUrl}/operations": {
+    "/projects/{projectUrl}/operations": {
       "parameters": [
         {
-          "name": "projUrl",
+          "name": "projectUrl",
           "in": "path",
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
@@ -37,7 +37,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/OperationView"
+                "$ref": "#/definitions/OperationDetailedView"
               }
             }
           },
@@ -69,11 +69,11 @@
               "title": "AddOperationReq",
               "type": "object",
               "properties": {
-                "Name": {
+                "name": {
                   "type": "string",
                   "required": true
                 },
-                "Description": {
+                "description": {
                   "type": "string"
                 }
               }
@@ -99,10 +99,10 @@
         }
       }
     },
-    "/projects/{projUrl}/operations/{opName}/description": {
+    "/projects/{projectUrl}/operations/{operationName}/description": {
       "parameters": [
         {
-          "name": "projUrl",
+          "name": "projectUrl",
           "in": "path",
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
@@ -116,7 +116,7 @@
         ],
         "parameters": [
           {
-            "name": "opName",
+            "name": "operationName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
@@ -130,7 +130,7 @@
               "title": "UpdateDescriptionOfOperationReq",
               "type": "object",
               "properties": {
-                "Description": {
+                "description": {
                   "type": "string",
                   "required": true
                 }
@@ -157,10 +157,10 @@
         }
       }
     },
-    "/projects/{projUrl}/operations/{opName}/sub-operations": {
+    "/projects/{projectUrl}/operations/{operationName}/sub-operations": {
       "parameters": [
         {
-          "name": "projUrl",
+          "name": "projectUrl",
           "in": "path",
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
@@ -174,7 +174,7 @@
         ],
         "parameters": [
           {
-            "name": "opName",
+            "name": "operationName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
@@ -192,11 +192,11 @@
                   "type": "boolean",
                   "default": false
                 },
-                "SubOperationName": {
+                "subOperationName": {
                   "type": "string",
                   "required": true
                 },
-                "PrecedingSubOperationName": {
+                "precedingSubOperationName": {
                   "type": "string",
                   "allowEmptyValue": true
                 }
@@ -223,10 +223,10 @@
         }
       }
     },
-    "/projects/{projUrl}/operations/{opName}/runs": {
+    "/projects/{projectUrl}/operations/{operationName}/runs": {
       "parameters": [
         {
-          "name": "projUrl",
+          "name": "projectUrl",
           "in": "path",
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
@@ -240,7 +240,7 @@
         ],
         "parameters": [
           {
-            "name": "opName",
+            "name": "operationName",
             "in": "path",
             "description": "The name of the operation",
             "required": true,
@@ -251,7 +251,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/OperationRunView"
+              "$ref": "#/definitions/OperationRunDetailedView"
             }
           },
           "400": {
@@ -271,57 +271,57 @@
     }
   },
   "definitions": {
-    "OperationRunView": {
-      "title": "OperationRunView",
+    "OperationRunDetailedView": {
+      "title": "OperationRunDetailedView",
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "OperationName": {
+        "operationName": {
           "type": "string"
         },
-        "StartedAtUnixTime": {
+        "startedAtUnixTime": {
           "type": "integer"
         },
-        "EndedAtUnixTime": {
+        "endedAtUnixTime": {
           "type": "integer"
         },
-        "ExitCode": {
+        "exitCode": {
           "type": "integer"
         },
-        "SubOperations": {
+        "subOperations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/OperationRunView"
+            "$ref": "#/definitions/OperationRunDetailedView"
           }
         }
       }
     },
-    "OperationRefView": {
-      "title": "OperationRefView",
+    "OperationSummaryView": {
+      "title": "OperationSummaryView",
       "description": "A reference to an operation",
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
     },
-    "OperationView": {
-      "title": "OperationView",
+    "OperationDetailedView": {
+      "title": "OperationDetailedView",
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "SubOperations": {
+        "subOperations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/OperationRefView"
+            "$ref": "#/definitions/OperationSummaryView"
           }
         }
       }

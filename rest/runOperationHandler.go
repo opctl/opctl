@@ -41,7 +41,7 @@ func (this runOperationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 
   runOperationReq.OperationName = mux.Vars(r)["operationName"]
 
-  var operationRun models.OperationRunView
+  var operationRun models.OperationRunDetailedView
   operationRun, err = this.coreApi.RunOperation(runOperationReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)

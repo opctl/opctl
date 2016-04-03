@@ -16,7 +16,7 @@ description string,
 
 type AddOperationReq struct {
   ProjectUrl  *ProjectUrl
-  Name        string
-  Description string
+  Name        string `json:"name"`
+  Description string `json:"description"`
 }
 

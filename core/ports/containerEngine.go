@@ -11,5 +11,5 @@ type ContainerEngine interface {
 
   RunOperation(
   pathToOperationDir string,
-  ) (operationRun models.OperationRunView, err error)
+  ) (operationRun models.OperationRunDetailedView, err error)
 }

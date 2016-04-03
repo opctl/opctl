@@ -23,13 +23,13 @@ type containerEngine struct {
   initOperationReturns     struct {
                          result1 error
                        }
-  RunOperationStub         func(operationName string) (operationRun models.OperationRunView, err error)
+  RunOperationStub         func(operationName string) (operationRun models.OperationRunDetailedView, err error)
   runOperationMutex        sync.RWMutex
   runOperationArgsForCall  []struct {
     operationName string
   }
   runOperationReturns      struct {
-                         result1 models.OperationRunView
+                         result1 models.OperationRunDetailedView
                          result2 error
                        }
 }
@@ -66,7 +66,7 @@ func (fake *containerEngine) InitOperationReturns(result1 error) {
   }{result1}
 }
 
-func (fake *containerEngine) RunOperation(operationName string) (operationRun models.OperationRunView, err error) {
+func (fake *containerEngine) RunOperation(operationName string) (operationRun models.OperationRunDetailedView, err error) {
   fake.runOperationMutex.Lock()
   fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
     operationName string
@@ -91,10 +91,10 @@ func (fake *containerEngine) RunOperationArgsForCall(i int) string {
   return fake.runOperationArgsForCall[i].operationName
 }
 
-func (fake *containerEngine) RunOperationReturns(result1 models.OperationRunView, result2 error) {
+func (fake *containerEngine) RunOperationReturns(result1 models.OperationRunDetailedView, result2 error) {
   fake.RunOperationStub = nil
   fake.runOperationReturns = struct {
-    result1 models.OperationRunView
+    result1 models.OperationRunDetailedView
     result2 error
   }{result1, result2}
 }

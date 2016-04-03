@@ -7,18 +7,18 @@ import (
 )
 
 type FakeRunOperationUseCase struct {
-	ExecuteStub        func(operationName string) (operationRun models.OperationRunView, err error)
+	ExecuteStub        func(operationName string) (operationRun models.OperationRunDetailedView, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		operationName string
 	}
 	executeReturns struct {
-		result1 models.OperationRunView
+		result1 models.OperationRunDetailedView
 		result2 error
 	}
 }
 
-func (fake *FakeRunOperationUseCase) Execute(operationName string) (operationRun models.OperationRunView, err error) {
+func (fake *FakeRunOperationUseCase) Execute(operationName string) (operationRun models.OperationRunDetailedView, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
 		operationName string
@@ -43,10 +43,10 @@ func (fake *FakeRunOperationUseCase) ExecuteArgsForCall(i int) string {
 	return fake.executeArgsForCall[i].operationName
 }
 
-func (fake *FakeRunOperationUseCase) ExecuteReturns(result1 models.OperationRunView, result2 error) {
+func (fake *FakeRunOperationUseCase) ExecuteReturns(result1 models.OperationRunDetailedView, result2 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
-		result1 models.OperationRunView
+		result1 models.OperationRunDetailedView
 		result2 error
 	}{result1, result2}
 }

@@ -14,5 +14,5 @@ operationName string,
 
 type RunOperationReq struct {
   ProjectUrl    *ProjectUrl
-  OperationName string
+  OperationName string `json:"operationName"`
 }

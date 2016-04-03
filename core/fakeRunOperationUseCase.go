@@ -8,19 +8,19 @@ import (
 )
 
 type fakeRunOperationUseCase struct {
-	ExecuteStub        func(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunView, err error)
+	ExecuteStub        func(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunDetailedView, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		req                        models.RunOperationReq
 		namesOfAlreadyRunOperations []string
 	}
 	executeReturns struct {
-		result1 models.OperationRunView
+		result1 models.OperationRunDetailedView
 		result2 error
 	}
 }
 
-func (fake *fakeRunOperationUseCase) Execute(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunView, err error) {
+func (fake *fakeRunOperationUseCase) Execute(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunDetailedView, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
 		req                        models.RunOperationReq
@@ -46,10 +46,10 @@ func (fake *fakeRunOperationUseCase) ExecuteArgsForCall(i int) (models.RunOperat
 	return fake.executeArgsForCall[i].req, fake.executeArgsForCall[i].namesOfAlreadyRunOperations
 }
 
-func (fake *fakeRunOperationUseCase) ExecuteReturns(result1 models.OperationRunView, result2 error) {
+func (fake *fakeRunOperationUseCase) ExecuteReturns(result1 models.OperationRunDetailedView, result2 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
-		result1 models.OperationRunView
+		result1 models.OperationRunDetailedView
 		result2 error
 	}{result1, result2}
 }

@@ -36,7 +36,7 @@ pathToOperationDir string,
 
 func (this _containerEngine) RunOperation(
 pathToOperationDir string,
-) (operationRun models.OperationRunView, err error) {
+) (operationRun models.OperationRunDetailedView, err error) {
   return this.compositionRoot.
   RunOperationUseCase().
   Execute(pathToOperationDir)

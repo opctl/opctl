@@ -16,11 +16,11 @@ type Api interface {
 
   ListOperations(
   projectUrl *models.ProjectUrl,
-  ) (operations []models.OperationView, err error)
+  ) (operations []models.OperationDetailedView, err error)
 
   RunOperation(
   req models.RunOperationReq,
-  ) (operationRun models.OperationRunView, err error)
+  ) (operationRun models.OperationRunDetailedView, err error)
 
   SetDescriptionOfOperation(
   req models.SetDescriptionOfOperationReq,
@@ -72,7 +72,7 @@ req models.AddSubOperationReq,
 
 func (this _api) ListOperations(
 projectUrl *models.ProjectUrl,
-) (operations []models.OperationView, err error) {
+) (operations []models.OperationDetailedView, err error) {
   return this.
   compositionRoot.
   ListOperationsUseCase().
@@ -81,7 +81,7 @@ projectUrl *models.ProjectUrl,
 
 func (this _api) RunOperation(
 req models.RunOperationReq,
-) (operationRun models.OperationRunView, err error) {
+) (operationRun models.OperationRunDetailedView, err error) {
   return this.
   compositionRoot.
   RunOperationUseCase().

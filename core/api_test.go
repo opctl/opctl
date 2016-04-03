@@ -62,7 +62,7 @@ var _ = Describe("_sdk", func() {
 
       /* arrange */
       providedProjectUrl := &models.ProjectUrl{}
-      expectedReturnedOperations := make([]models.OperationView, 0)
+      expectedReturnedOperations := make([]models.OperationDetailedView, 0)
 
       // wire up fakes
       fakeListOperationsUseCase := new(fakeListOperationsUseCase)

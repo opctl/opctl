@@ -12,7 +12,7 @@ type runOperationUseCase interface {
   Execute(
   req models.RunOperationReq,
   namesOfAlreadyRunOperations[]string,
-  ) (operationRun models.OperationRunView, err error)
+  ) (operationRun models.OperationRunDetailedView, err error)
 }
 
 func newRunOperationUseCase(
@@ -47,7 +47,7 @@ type _runOperationUseCase struct {
 func (this _runOperationUseCase) Execute(
 req models.RunOperationReq,
 namesOfAlreadyRunOperations[]string,
-) (operationRun models.OperationRunView, err error) {
+) (operationRun models.OperationRunDetailedView, err error) {
 
   pathToOperationFile := this.pathToOperationFileFactory.Construct(
     req.ProjectUrl,
@@ -99,7 +99,7 @@ namesOfAlreadyRunOperations[]string,
 
     // run operation
 
-    var containerEngineOperationRun models.OperationRunView
+    var containerEngineOperationRun models.OperationRunDetailedView
     containerEngineOperationRun, err = this.containerEngine.RunOperation(
       filepath.Dir(pathToOperationFile),
     )
@@ -137,7 +137,7 @@ namesOfAlreadyRunOperations[]string,
         return
       }
 
-      var subOperationRun models.OperationRunView
+      var subOperationRun models.OperationRunDetailedView
       subOperationRun, err = this.Execute(
         *models.NewRunOperationReq(
           req.ProjectUrl,
@@ -148,12 +148,12 @@ namesOfAlreadyRunOperations[]string,
 
       operationRun.SubOperations = append(
         operationRun.SubOperations,
-        models.NewSubOperationRunView(
+        models.NewOperationRunSummaryView(
+          subOperationRun.Id,
           subOperationRun.OperationName,
           subOperationRun.StartedAtUnixTime,
           subOperationRun.EndedAtUnixTime,
           subOperationRun.ExitCode,
-          nil,
         ),
       )
 

@@ -2,7 +2,6 @@ package models
 
 func NewAddSubOperationReq(
 projectUrl *ProjectUrl,
-isOperationSubOperation bool,
 subOperationName string,
 operationName string,
 precedingSubOperationName string,
@@ -10,7 +9,6 @@ precedingSubOperationName string,
 
   return &AddSubOperationReq{
     ProjectUrl:projectUrl,
-    IsOperationSubOperation:isOperationSubOperation,
     SubOperationName :subOperationName,
     OperationName :operationName,
     PrecedingSubOperationName :precedingSubOperationName,
@@ -20,8 +18,7 @@ precedingSubOperationName string,
 
 type AddSubOperationReq struct {
   ProjectUrl                *ProjectUrl
-  IsOperationSubOperation   bool
-  SubOperationName          string
-  OperationName             string
-  PrecedingSubOperationName string
+  SubOperationName          string `json:"subOperationName"`
+  OperationName             string `json:"operationName"`
+  PrecedingSubOperationName string `json:"precedingSubOperationName"`
 }

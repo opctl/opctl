@@ -15,7 +15,7 @@ import (
 type runOperationUseCase interface {
   Execute(
   pathToOperationDir string,
-  ) (operationRun models.OperationRunView, err error)
+  ) (operationRun models.OperationRunDetailedView, err error)
 }
 
 func newRunOperationUseCase(
@@ -40,10 +40,10 @@ type _runOperationUseCase struct {
 
 func (this _runOperationUseCase) Execute(
 pathToOperationDir string,
-) (operationRunView models.OperationRunView, err error) {
+) (operationRunDetailedView models.OperationRunDetailedView, err error) {
 
-  operationRunView.StartedAtUnixTime = time.Now().Unix()
-  operationRunView.OperationName = filepath.Base(pathToOperationDir)
+  operationRunDetailedView.StartedAtUnixTime = time.Now().Unix()
+  operationRunDetailedView.OperationName = filepath.Base(pathToOperationDir)
 
   pathToOperationDockerComposeFile := this.fs.getPathToOperationDockerComposeFile(pathToOperationDir)
 
@@ -95,12 +95,12 @@ pathToOperationDir string,
 
   defer func() {
 
-    operationRunView.ExitCode, err = this.operationRunExitCodeReader.read(
+    operationRunDetailedView.ExitCode, err = this.operationRunExitCodeReader.read(
       pathToOperationDockerComposeFile,
     )
-    if (0 != operationRunView.ExitCode) {
+    if (0 != operationRunDetailedView.ExitCode) {
 
-      runError := errors.New(fmt.Sprintf("%v exit code was: %v", operationRunView.OperationName, operationRunView.ExitCode))
+      runError := errors.New(fmt.Sprintf("%v exit code was: %v", operationRunDetailedView.OperationName, operationRunDetailedView.ExitCode))
       if (nil == err) {
         err = runError
       }else {
@@ -120,14 +120,14 @@ pathToOperationDir string,
         err = errors.New(err.Error() + "\n" + flushOperationRunResourcesError.Error())
       }
 
-      operationRunView.ExitCode = 1
+      operationRunDetailedView.ExitCode = 1
 
     }
 
     // send resourceFlushIsCompleteChannel
     resourceFlushIsCompleteChannel <- true
 
-    operationRunView.EndedAtUnixTime = time.Now().Unix()
+    operationRunDetailedView.EndedAtUnixTime = time.Now().Unix()
 
   }()
 

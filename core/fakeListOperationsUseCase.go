@@ -8,18 +8,18 @@ import (
 )
 
 type fakeListOperationsUseCase struct {
-  ExecuteStub        func(projectUrl *models.ProjectUrl) (operations []models.OperationView, err error)
+  ExecuteStub        func(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
     projectUrl *models.ProjectUrl
   }
   executeReturns     struct {
-                       result1 []models.OperationView
+                       result1 []models.OperationDetailedView
                        result2 error
                      }
 }
 
-func (fake *fakeListOperationsUseCase) Execute(projectUrl *models.ProjectUrl) (operations []models.OperationView, err error) {
+func (fake *fakeListOperationsUseCase) Execute(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
     projectUrl *models.ProjectUrl
@@ -44,10 +44,10 @@ func (fake *fakeListOperationsUseCase) ExecuteArgsForCall(i int) *models.Project
   return fake.executeArgsForCall[i].projectUrl
 }
 
-func (fake *fakeListOperationsUseCase) ExecuteReturns(result1 []models.OperationView, result2 error) {
+func (fake *fakeListOperationsUseCase) ExecuteReturns(result1 []models.OperationDetailedView, result2 error) {
   fake.ExecuteStub = nil
   fake.executeReturns = struct {
-    result1 []models.OperationView
+    result1 []models.OperationDetailedView
     result2 error
   }{result1, result2}
 }

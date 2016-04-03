@@ -24,22 +24,22 @@ type FakeApi struct {
   addSubOperationReturns               struct {
                                          result1 error
                                        }
-  ListOperationsStub                   func(projectUrl *models.ProjectUrl) (operations []models.OperationView, err error)
+  ListOperationsStub                   func(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error)
   listOperationsMutex                  sync.RWMutex
   listOperationsArgsForCall            []struct {
     projectUrl *models.ProjectUrl
   }
   listOperationsReturns                struct {
-                                         result1 []models.OperationView
+                                         result1 []models.OperationDetailedView
                                          result2 error
                                        }
-  RunOperationStub                     func(req models.RunOperationReq) (operationRun models.OperationRunView, err error)
+  RunOperationStub                     func(req models.RunOperationReq) (operationRun models.OperationRunDetailedView, err error)
   runOperationMutex                    sync.RWMutex
   runOperationArgsForCall              []struct {
     req models.RunOperationReq
   }
   runOperationReturns                  struct {
-                                         result1 models.OperationRunView
+                                         result1 models.OperationRunDetailedView
                                          result2 error
                                        }
   SetDescriptionOfOperationStub        func(req models.SetDescriptionOfOperationReq) (err error)
@@ -116,7 +116,7 @@ func (fake *FakeApi) AddSubOperationReturns(result1 error) {
   }{result1}
 }
 
-func (fake *FakeApi) ListOperations(projectUrl *models.ProjectUrl) (operations []models.OperationView, err error) {
+func (fake *FakeApi) ListOperations(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error) {
   fake.listOperationsMutex.Lock()
   fake.listOperationsArgsForCall = append(fake.listOperationsArgsForCall, struct {
     projectUrl *models.ProjectUrl
@@ -141,15 +141,15 @@ func (fake *FakeApi) ListOperationsArgsForCall(i int) *models.ProjectUrl {
   return fake.listOperationsArgsForCall[i].projectUrl
 }
 
-func (fake *FakeApi) ListOperationsReturns(result1 []models.OperationView, result2 error) {
+func (fake *FakeApi) ListOperationsReturns(result1 []models.OperationDetailedView, result2 error) {
   fake.ListOperationsStub = nil
   fake.listOperationsReturns = struct {
-    result1 []models.OperationView
+    result1 []models.OperationDetailedView
     result2 error
   }{result1, result2}
 }
 
-func (fake *FakeApi) RunOperation(req models.RunOperationReq) (operationRun models.OperationRunView, err error) {
+func (fake *FakeApi) RunOperation(req models.RunOperationReq) (operationRun models.OperationRunDetailedView, err error) {
   fake.runOperationMutex.Lock()
   fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
     req models.RunOperationReq
@@ -174,10 +174,10 @@ func (fake *FakeApi) RunOperationArgsForCall(i int) models.RunOperationReq {
   return fake.runOperationArgsForCall[i].req
 }
 
-func (fake *FakeApi) RunOperationReturns(result1 models.OperationRunView, result2 error) {
+func (fake *FakeApi) RunOperationReturns(result1 models.OperationRunDetailedView, result2 error) {
   fake.RunOperationStub = nil
   fake.runOperationReturns = struct {
-    result1 models.OperationRunView
+    result1 models.OperationRunDetailedView
     result2 error
   }{result1, result2}
 }
