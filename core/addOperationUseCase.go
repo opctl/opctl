@@ -13,7 +13,7 @@ type addOperationUseCase interface {
 
 func newAddOperationUseCase(
 filesys ports.Filesys,
-pathToOperationDirFactory pathToOperationFileFactory,
+pathToOperationDirFactory pathToOperationDirFactory,
 pathToOperationFileFactory pathToOperationFileFactory,
 yamlCodec yamlCodec,
 ) addOperationUseCase {
@@ -28,10 +28,10 @@ yamlCodec yamlCodec,
 }
 
 type _addOperationUseCase struct {
-  filesys                   ports.Filesys
-  pathToOperationDirFactory  pathToOperationFileFactory
+  filesys                    ports.Filesys
+  pathToOperationDirFactory  pathToOperationDirFactory
   pathToOperationFileFactory pathToOperationFileFactory
-  yamlCodec                 yamlCodec
+  yamlCodec                  yamlCodec
 }
 
 func (this _addOperationUseCase) Execute(
@@ -40,7 +40,7 @@ req models.AddOperationReq,
 
   pathToOperationDir := this.pathToOperationDirFactory.Construct(
     req.ProjectUrl,
-    req.Name,
+    &req.Name,
   )
 
   err = this.filesys.CreateDir(pathToOperationDir)
@@ -50,6 +50,7 @@ req models.AddOperationReq,
 
   var operationFile = operationFile{
     Description:req.Description,
+    Name:&req.Name,
   }
 
   operationFileBytes, err := this.yamlCodec.toYaml(&operationFile)
@@ -59,7 +60,7 @@ req models.AddOperationReq,
 
   pathToOperationFile := this.pathToOperationFileFactory.Construct(
     req.ProjectUrl,
-    req.Name,
+    &req.Name,
   )
 
   err = this.filesys.SaveFile(

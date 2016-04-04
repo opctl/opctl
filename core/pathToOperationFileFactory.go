@@ -7,8 +7,8 @@ import (
 
 type pathToOperationFileFactory interface {
   Construct(
-  projectUrl *models.ProjectUrl,
-  operationName string,
+  projectUrl *models.Url,
+  operationName *string,
   ) (pathToOperationFile string)
 }
 
@@ -27,8 +27,8 @@ type _pathToOperationFileFactory struct {
 }
 
 func (this _pathToOperationFileFactory) Construct(
-projectUrl *models.ProjectUrl,
-operationName string,
+projectUrl *models.Url,
+operationName *string,
 ) (pathToOperationFile string) {
 
   pathToOperationDir := this.pathToOperationDirFactory.Construct(

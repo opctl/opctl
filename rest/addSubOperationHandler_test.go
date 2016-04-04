@@ -24,7 +24,6 @@ var _ = Describe("addSubOperationHandler", func() {
       m.Handle(addSubOperationRelUrlTemplate, objectUnderTest)
 
       providedProjectUrl := "%%invalidProjectUrl%%"
-      providedOperationName := "validOperationName"
       providedAddSubOperationReqJson, err := json.Marshal(models.AddSubOperationReq{})
       if (nil != err) {
         Fail(err.Error())
@@ -37,7 +36,6 @@ var _ = Describe("addSubOperationHandler", func() {
 
       // brute force a request with malformed projectUrl
       httpReq.URL.Path = strings.Replace(addSubOperationRelUrlTemplate, "{projectUrl}", providedProjectUrl, 1)
-      httpReq.URL.Path = strings.Replace(httpReq.URL.Path, "{operationName}", providedOperationName, 1)
 
       /* act */
       m.ServeHTTP(recorder, httpReq)

@@ -107,6 +107,13 @@
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
+        },
+        {
+          "name": "operationName",
+          "in": "path",
+          "description": "The name of the dev op",
+          "required": true,
+          "type": "string"
         }
       ],
       "put": {
@@ -115,13 +122,6 @@
           "projects"
         ],
         "parameters": [
-          {
-            "name": "operationName",
-            "in": "path",
-            "description": "The name of the operation",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -165,21 +165,21 @@
           "description": "A projects url. For local projects use an absolute path",
           "required": true,
           "type": "string"
+        },
+        {
+          "name": "operationName",
+          "in": "path",
+          "description": "The name of the dev op",
+          "required": true,
+          "type": "string"
         }
       ],
       "post": {
-        "summary": "Add sub-operation to project operation",
+        "summary": "Add sub-operation",
         "tags": [
           "projects"
         ],
         "parameters": [
-          {
-            "name": "operationName",
-            "in": "path",
-            "description": "The name of the operation",
-            "required": true,
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
@@ -188,15 +188,11 @@
               "title": "AddSubOperationReq",
               "type": "object",
               "properties": {
-                "IsOperationSubOperation": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "subOperationName": {
+                "subOperationUrl": {
                   "type": "string",
                   "required": true
                 },
-                "precedingSubOperationName": {
+                "precedingSubOperationUrl": {
                   "type": "string",
                   "allowEmptyValue": true
                 }
@@ -223,28 +219,27 @@
         }
       }
     },
-    "/projects/{projectUrl}/operations/{operationName}/runs": {
-      "parameters": [
-        {
-          "name": "projectUrl",
-          "in": "path",
-          "description": "A projects url. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        }
-      ],
+    "/operation-runs": {
       "post": {
-        "summary": "Run project operation",
+        "summary": "Run operation",
         "tags": [
-          "projects"
+          "operation-runs"
         ],
         "parameters": [
           {
-            "name": "operationName",
-            "in": "path",
-            "description": "The name of the operation",
-            "required": true,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "RunOperationReq",
+              "type": "object",
+              "properties": {
+                "operationUrl": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+            }
           }
         ],
         "responses": {

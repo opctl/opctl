@@ -1,1 +1,2 @@
+name: push-docker-image
 description: pushes docker image to remote registry

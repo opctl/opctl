@@ -11,7 +11,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addOperationUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddOperationReq := models.NewAddOperationReq(&models.ProjectUrl{}, "", "")
+      providedAddOperationReq := models.NewAddOperationReq(&models.Url{}, "", "")
 
       // wire up fakes
       fakeAddOperationUseCase := new(fakeAddOperationUseCase)
@@ -36,7 +36,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.addSubOperationUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddSubOperationReq := models.NewAddSubOperationReq(&models.ProjectUrl{}, false, "", "", "")
+      providedAddSubOperationReq := models.NewAddSubOperationReq(&models.Url{}, "", "", "")
 
       // wire up fakes
       fakeAddSubOperationUseCase := new(fakeAddSubOperationUseCase)
@@ -61,7 +61,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.listOperationsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedProjectUrl := &models.ProjectUrl{}
+      providedProjectUrl := &models.Url{}
       expectedReturnedOperations := make([]models.OperationDetailedView, 0)
 
       // wire up fakes
@@ -87,7 +87,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.runOperationUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunOperationReq := models.NewRunOperationReq(&models.ProjectUrl{}, "")
+      providedRunOperationReq := models.NewRunOperationReq(&models.Url{})
 
       // wire up fakes
       fakeRunOperationUseCase := new(fakeRunOperationUseCase)
@@ -105,7 +105,7 @@ var _ = Describe("_sdk", func() {
       /* assert */
       executeArg0, executeArg1 := fakeRunOperationUseCase.ExecuteArgsForCall(0)
       Expect(executeArg0).To(Equal(*providedRunOperationReq))
-      Expect(executeArg1).To(Equal(make([]string, 0)))
+      Expect(executeArg1).To(Equal(make([]*models.Url, 0)))
       Expect(fakeRunOperationUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
@@ -114,7 +114,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfOperationUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfOperationReq := models.NewSetDescriptionOfOperationReq(&models.ProjectUrl{}, "", "")
+      providedSetDescriptionOfOperationReq := models.NewSetDescriptionOfOperationReq(&models.Url{}, new(string), "")
 
       // wire up fakes
       fakeSetDescriptionOfOperationUseCase := new(fakeSetDescriptionOfOperationUseCase)

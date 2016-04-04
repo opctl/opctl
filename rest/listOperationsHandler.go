@@ -31,8 +31,8 @@ func (this listOperationsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
     return
   }
 
-  var projectUrl *models.ProjectUrl
-  projectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
+  var projectUrl *models.Url
+  projectUrl, err = models.NewUrl(unEscapedProjectUrl)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return

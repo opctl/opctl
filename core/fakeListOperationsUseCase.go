@@ -8,10 +8,10 @@ import (
 )
 
 type fakeListOperationsUseCase struct {
-  ExecuteStub        func(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error)
+  ExecuteStub        func(projectUrl *models.Url) (operations []models.OperationDetailedView, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
-    projectUrl *models.ProjectUrl
+    projectUrl *models.Url
   }
   executeReturns     struct {
                        result1 []models.OperationDetailedView
@@ -19,10 +19,10 @@ type fakeListOperationsUseCase struct {
                      }
 }
 
-func (fake *fakeListOperationsUseCase) Execute(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error) {
+func (fake *fakeListOperationsUseCase) Execute(projectUrl *models.Url) (operations []models.OperationDetailedView, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-    projectUrl *models.ProjectUrl
+    projectUrl *models.Url
   }{projectUrl})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
@@ -38,7 +38,7 @@ func (fake *fakeListOperationsUseCase) ExecuteCallCount() int {
   return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeListOperationsUseCase) ExecuteArgsForCall(i int) *models.ProjectUrl {
+func (fake *fakeListOperationsUseCase) ExecuteArgsForCall(i int) *models.Url {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
   return fake.executeArgsForCall[i].projectUrl

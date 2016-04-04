@@ -11,10 +11,13 @@ A lightweight dev op spec runtime.
 
 ### Project
 - add project operation
-- add sub-operation to project operation
+- add project sub-operation
 - list project operations
-- run project operation
 - set description of project operation
+
+### Operation
+- run operation
+
 
 # Prerequisites
 

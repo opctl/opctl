@@ -7,7 +7,7 @@ import (
 
 type listOperationsUseCase interface {
   Execute(
-  projectUrl *models.ProjectUrl,
+  projectUrl *models.Url,
   ) (operations []models.OperationDetailedView, err error)
 }
 
@@ -35,7 +35,7 @@ type _listOperationsUseCase struct {
 }
 
 func (this _listOperationsUseCase) Execute(
-projectUrl *models.ProjectUrl,
+projectUrl *models.Url,
 ) (operations []models.OperationDetailedView, err error) {
 
   pathToOperationsDir := this.pathToOperationsDirFactory.Construct(
@@ -53,7 +53,7 @@ projectUrl *models.ProjectUrl,
 
     pathToOperationFile := this.pathToOperationFileFactory.Construct(
       projectUrl,
-      operationDirName,
+      &operationDirName,
     )
 
     var operationFileBytes []byte
@@ -77,7 +77,7 @@ projectUrl *models.ProjectUrl,
     for _, operationSubOperation := range operationFile.SubOperations {
 
       operationSummaryView := models.NewOperationSummaryView(
-        operationSubOperation.Name,
+        operationSubOperation.Url,
       )
 
       operationSummaryViews = append(operationSummaryViews, *operationSummaryView)

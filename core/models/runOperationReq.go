@@ -1,18 +1,15 @@
 package models
 
 func NewRunOperationReq(
-projectUrl *ProjectUrl,
-operationName string,
+operationUrl *Url,
 ) *RunOperationReq {
 
   return &RunOperationReq{
-    ProjectUrl:projectUrl,
-    OperationName :operationName,
+    OperationUrl:operationUrl,
   }
 
 }
 
 type RunOperationReq struct {
-  ProjectUrl    *ProjectUrl
-  OperationName string `json:"operationName"`
+  OperationUrl  *Url
 }

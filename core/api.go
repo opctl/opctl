@@ -15,7 +15,7 @@ type Api interface {
   ) (err error)
 
   ListOperations(
-  projectUrl *models.ProjectUrl,
+  projectUrl *models.Url,
   ) (operations []models.OperationDetailedView, err error)
 
   RunOperation(
@@ -71,7 +71,7 @@ req models.AddSubOperationReq,
 }
 
 func (this _api) ListOperations(
-projectUrl *models.ProjectUrl,
+projectUrl *models.Url,
 ) (operations []models.OperationDetailedView, err error) {
   return this.
   compositionRoot.
@@ -87,7 +87,7 @@ req models.RunOperationReq,
   RunOperationUseCase().
   Execute(
     req,
-    make([]string, 0),
+    make([]*models.Url, 0),
   )
 }
 

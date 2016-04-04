@@ -40,7 +40,7 @@ func (this addSubOperationHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
     return
   }
 
-  addSubOperationReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
+  addSubOperationReq.ProjectUrl, err = models.NewUrl(unEscapedProjectUrl)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return

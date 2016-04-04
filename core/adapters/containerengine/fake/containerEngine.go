@@ -4,7 +4,6 @@ package fake
 import (
   "sync"
 
-  "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
 )
 
@@ -21,17 +20,17 @@ type containerEngine struct {
     operationName string
   }
   initOperationReturns     struct {
-                         result1 error
-                       }
-  RunOperationStub         func(operationName string) (operationRun models.OperationRunDetailedView, err error)
+                             result1 error
+                           }
+  RunOperationStub         func(operationName string) (exitCode int, err error)
   runOperationMutex        sync.RWMutex
   runOperationArgsForCall  []struct {
     operationName string
   }
   runOperationReturns      struct {
-                         result1 models.OperationRunDetailedView
-                         result2 error
-                       }
+                             result1 int
+                             result2 error
+                           }
 }
 
 func (fake *containerEngine) InitOperation(operationName string) (err error) {
@@ -66,7 +65,7 @@ func (fake *containerEngine) InitOperationReturns(result1 error) {
   }{result1}
 }
 
-func (fake *containerEngine) RunOperation(operationName string) (operationRun models.OperationRunDetailedView, err error) {
+func (fake *containerEngine) RunOperation(operationName string) (exitCode int, err error) {
   fake.runOperationMutex.Lock()
   fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
     operationName string
@@ -91,10 +90,10 @@ func (fake *containerEngine) RunOperationArgsForCall(i int) string {
   return fake.runOperationArgsForCall[i].operationName
 }
 
-func (fake *containerEngine) RunOperationReturns(result1 models.OperationRunDetailedView, result2 error) {
+func (fake *containerEngine) RunOperationReturns(result1 int, result2 error) {
   fake.RunOperationStub = nil
   fake.runOperationReturns = struct {
-    result1 models.OperationRunDetailedView
+    result1 int
     result2 error
   }{result1, result2}
 }

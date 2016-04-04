@@ -24,10 +24,10 @@ type FakeApi struct {
   addSubOperationReturns               struct {
                                          result1 error
                                        }
-  ListOperationsStub                   func(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error)
+  ListOperationsStub                   func(projectUrl *models.Url) (operations []models.OperationDetailedView, err error)
   listOperationsMutex                  sync.RWMutex
   listOperationsArgsForCall            []struct {
-    projectUrl *models.ProjectUrl
+    projectUrl *models.Url
   }
   listOperationsReturns                struct {
                                          result1 []models.OperationDetailedView
@@ -116,10 +116,10 @@ func (fake *FakeApi) AddSubOperationReturns(result1 error) {
   }{result1}
 }
 
-func (fake *FakeApi) ListOperations(projectUrl *models.ProjectUrl) (operations []models.OperationDetailedView, err error) {
+func (fake *FakeApi) ListOperations(projectUrl *models.Url) (operations []models.OperationDetailedView, err error) {
   fake.listOperationsMutex.Lock()
   fake.listOperationsArgsForCall = append(fake.listOperationsArgsForCall, struct {
-    projectUrl *models.ProjectUrl
+    projectUrl *models.Url
   }{projectUrl})
   fake.listOperationsMutex.Unlock()
   if fake.ListOperationsStub != nil {
@@ -135,7 +135,7 @@ func (fake *FakeApi) ListOperationsCallCount() int {
   return len(fake.listOperationsArgsForCall)
 }
 
-func (fake *FakeApi) ListOperationsArgsForCall(i int) *models.ProjectUrl {
+func (fake *FakeApi) ListOperationsArgsForCall(i int) *models.Url {
   fake.listOperationsMutex.RLock()
   defer fake.listOperationsMutex.RUnlock()
   return fake.listOperationsArgsForCall[i].projectUrl

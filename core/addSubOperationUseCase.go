@@ -37,7 +37,7 @@ req models.AddSubOperationReq,
 
   pathToOperationFile := this.pathToOperationFileFactory.Construct(
     req.ProjectUrl,
-    req.OperationName,
+    &req.OperationName,
   )
 
   operationFileBytes, err := this.filesys.GetBytesOfFile(pathToOperationFile)
@@ -56,17 +56,17 @@ req models.AddSubOperationReq,
   }
 
   newOperationFileSubOperation := operationFileSubOperation{
-    Name:req.SubOperationName,
+    Url:req.SubOperationUrl,
   }
 
-  if (len(req.PrecedingSubOperationName) > 0) {
+  if (len(req.PrecedingSubOperationUrl) > 0) {
 
     subOperations := []operationFileSubOperation{}
 
     for _, subOperation := range operationFile.SubOperations {
 
       subOperations = append(subOperations, subOperation)
-      if (subOperation.Name == req.PrecedingSubOperationName) {
+      if (subOperation.Url == req.PrecedingSubOperationUrl) {
         subOperations = append(subOperations, newOperationFileSubOperation)
       }
 

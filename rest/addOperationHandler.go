@@ -40,7 +40,7 @@ func (this addOperationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
     return
   }
 
-  addOperationReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
+  addOperationReq.ProjectUrl, err = models.NewUrl(unEscapedProjectUrl)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return

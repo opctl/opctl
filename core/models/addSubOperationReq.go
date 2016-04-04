@@ -1,24 +1,24 @@
 package models
 
 func NewAddSubOperationReq(
-projectUrl *ProjectUrl,
-subOperationName string,
+projectUrl *Url,
 operationName string,
-precedingSubOperationName string,
+subOperationUrl string,
+precedingSubOperationUrl string,
 ) *AddSubOperationReq {
 
   return &AddSubOperationReq{
     ProjectUrl:projectUrl,
-    SubOperationName :subOperationName,
     OperationName :operationName,
-    PrecedingSubOperationName :precedingSubOperationName,
+    SubOperationUrl :subOperationUrl,
+    PrecedingSubOperationUrl :precedingSubOperationUrl,
   }
 
 }
 
 type AddSubOperationReq struct {
-  ProjectUrl                *ProjectUrl
-  SubOperationName          string `json:"subOperationName"`
-  OperationName             string `json:"operationName"`
-  PrecedingSubOperationName string `json:"precedingSubOperationName"`
+  ProjectUrl               *Url
+  OperationName            string `json:"operationName"`
+  SubOperationUrl          string `json:"subOperationUrl"`
+  PrecedingSubOperationUrl string `json:"precedingSubOperationUrl"`
 }

@@ -6,16 +6,14 @@ import (
   "os/exec"
   "errors"
   "fmt"
-  "time"
   "syscall"
-  "github.com/dev-op-spec/engine/core/models"
   "path/filepath"
 )
 
 type runOperationUseCase interface {
   Execute(
   pathToOperationDir string,
-  ) (operationRun models.OperationRunDetailedView, err error)
+  ) (exitCode int, err error)
 }
 
 func newRunOperationUseCase(
@@ -40,10 +38,7 @@ type _runOperationUseCase struct {
 
 func (this _runOperationUseCase) Execute(
 pathToOperationDir string,
-) (operationRunDetailedView models.OperationRunDetailedView, err error) {
-
-  operationRunDetailedView.StartedAtUnixTime = time.Now().Unix()
-  operationRunDetailedView.OperationName = filepath.Base(pathToOperationDir)
+) (exitCode int, err error) {
 
   pathToOperationDockerComposeFile := this.fs.getPathToOperationDockerComposeFile(pathToOperationDir)
 
@@ -95,12 +90,17 @@ pathToOperationDir string,
 
   defer func() {
 
-    operationRunDetailedView.ExitCode, err = this.operationRunExitCodeReader.read(
+    exitCode, err = this.operationRunExitCodeReader.read(
       pathToOperationDockerComposeFile,
     )
-    if (0 != operationRunDetailedView.ExitCode) {
+    if (0 != exitCode) {
 
-      runError := errors.New(fmt.Sprintf("%v exit code was: %v", operationRunDetailedView.OperationName, operationRunDetailedView.ExitCode))
+      runError := errors.New(
+        fmt.Sprintf(
+          "%v exit code was: %v",
+          filepath.Base(pathToOperationDir),
+          exitCode),
+      )
       if (nil == err) {
         err = runError
       }else {
@@ -120,14 +120,12 @@ pathToOperationDir string,
         err = errors.New(err.Error() + "\n" + flushOperationRunResourcesError.Error())
       }
 
-      operationRunDetailedView.ExitCode = 1
+      exitCode = 1
 
     }
 
     // send resourceFlushIsCompleteChannel
     resourceFlushIsCompleteChannel <- true
-
-    operationRunDetailedView.EndedAtUnixTime = time.Now().Unix()
 
   }()
 

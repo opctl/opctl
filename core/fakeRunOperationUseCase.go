@@ -8,11 +8,11 @@ import (
 )
 
 type fakeRunOperationUseCase struct {
-	ExecuteStub        func(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunDetailedView, err error)
+	ExecuteStub        func(req models.RunOperationReq, namesOfAlreadyRunOperations []*models.Url) (operationRun models.OperationRunDetailedView, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		req                        models.RunOperationReq
-		namesOfAlreadyRunOperations []string
+		namesOfAlreadyRunOperations []*models.Url
 	}
 	executeReturns struct {
 		result1 models.OperationRunDetailedView
@@ -20,11 +20,11 @@ type fakeRunOperationUseCase struct {
 	}
 }
 
-func (fake *fakeRunOperationUseCase) Execute(req models.RunOperationReq, namesOfAlreadyRunOperations []string) (operationRun models.OperationRunDetailedView, err error) {
+func (fake *fakeRunOperationUseCase) Execute(req models.RunOperationReq, namesOfAlreadyRunOperations []*models.Url) (operationRun models.OperationRunDetailedView, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
 		req                        models.RunOperationReq
-		namesOfAlreadyRunOperations []string
+		namesOfAlreadyRunOperations []*models.Url
 	}{req, namesOfAlreadyRunOperations})
 	fake.executeMutex.Unlock()
 	if fake.ExecuteStub != nil {
@@ -40,7 +40,7 @@ func (fake *fakeRunOperationUseCase) ExecuteCallCount() int {
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeRunOperationUseCase) ExecuteArgsForCall(i int) (models.RunOperationReq, []string) {
+func (fake *fakeRunOperationUseCase) ExecuteArgsForCall(i int) (models.RunOperationReq, []*models.Url) {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return fake.executeArgsForCall[i].req, fake.executeArgsForCall[i].namesOfAlreadyRunOperations

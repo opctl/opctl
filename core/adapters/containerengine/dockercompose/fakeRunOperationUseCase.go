@@ -2,51 +2,50 @@
 package dockercompose
 
 import (
-	"sync"
-"github.com/dev-op-spec/engine/core/models"
+  "sync"
 )
 
 type FakeRunOperationUseCase struct {
-	ExecuteStub        func(operationName string) (operationRun models.OperationRunDetailedView, err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		operationName string
-	}
-	executeReturns struct {
-		result1 models.OperationRunDetailedView
-		result2 error
-	}
+  ExecuteStub        func(operationName string) (exitCode int, err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    operationName string
+  }
+  executeReturns     struct {
+                       result1 int
+                       result2 error
+                     }
 }
 
-func (fake *FakeRunOperationUseCase) Execute(operationName string) (operationRun models.OperationRunDetailedView, err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		operationName string
-	}{operationName})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(operationName)
-	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2
-	}
+func (fake *FakeRunOperationUseCase) Execute(operationName string) (exitCode int, err error) {
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    operationName string
+  }{operationName})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(operationName)
+  } else {
+    return fake.executeReturns.result1, fake.executeReturns.result2
+  }
 }
 
 func (fake *FakeRunOperationUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *FakeRunOperationUseCase) ExecuteArgsForCall(i int) string {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].operationName
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].operationName
 }
 
-func (fake *FakeRunOperationUseCase) ExecuteReturns(result1 models.OperationRunDetailedView, result2 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 models.OperationRunDetailedView
-		result2 error
-	}{result1, result2}
+func (fake *FakeRunOperationUseCase) ExecuteReturns(result1 int, result2 error) {
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 int
+    result2 error
+  }{result1, result2}
 }

@@ -1,1 +1,2 @@
+name: build-docker-image
 description: builds the generated docker image and stores it in the local registry

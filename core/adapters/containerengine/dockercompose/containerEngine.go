@@ -2,7 +2,6 @@ package dockercompose
 
 import (
   "github.com/dev-op-spec/engine/core/ports"
-  "github.com/dev-op-spec/engine/core/models"
 )
 
 func New(
@@ -36,7 +35,7 @@ pathToOperationDir string,
 
 func (this _containerEngine) RunOperation(
 pathToOperationDir string,
-) (operationRun models.OperationRunDetailedView, err error) {
+) (exitCode int, err error) {
   return this.compositionRoot.
   RunOperationUseCase().
   Execute(pathToOperationDir)

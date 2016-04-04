@@ -1,9 +1,5 @@
 package ports
 
-import (
-  "github.com/dev-op-spec/engine/core/models"
-)
-
 type ContainerEngine interface {
   InitOperation(
   pathToOperationDir string,
@@ -11,5 +7,5 @@ type ContainerEngine interface {
 
   RunOperation(
   pathToOperationDir string,
-  ) (operationRun models.OperationRunDetailedView, err error)
+  ) (exitCode int, err error)
 }

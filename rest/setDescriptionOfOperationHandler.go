@@ -40,13 +40,14 @@ func (this setDescriptionOfOperationHandler) ServeHTTP(w http.ResponseWriter, r 
     return
   }
 
-  setDescriptionOfOperationReq.ProjectUrl, err = models.NewProjectUrl(unEscapedProjectUrl)
+  setDescriptionOfOperationReq.ProjectUrl, err = models.NewUrl(unEscapedProjectUrl)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return
   }
 
-  setDescriptionOfOperationReq.OperationName = mux.Vars(r)["operationName"]
+  operationName := mux.Vars(r)["operationName"]
+  setDescriptionOfOperationReq.OperationName = &operationName
 
   err = this.coreApi.SetDescriptionOfOperation(setDescriptionOfOperationReq)
   if (nil != err) {

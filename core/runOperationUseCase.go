@@ -6,19 +6,19 @@ import (
   "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
   "path/filepath"
+  "fmt"
+  "path"
 )
 
 type runOperationUseCase interface {
   Execute(
   req models.RunOperationReq,
-  namesOfAlreadyRunOperations[]string,
+  namesOfAlreadyRunOperations[]*models.Url,
   ) (operationRun models.OperationRunDetailedView, err error)
 }
 
 func newRunOperationUseCase(
 filesys ports.Filesys,
-pathToOperationDirFactory pathToOperationDirFactory,
-pathToOperationFileFactory pathToOperationFileFactory,
 containerEngine ports.ContainerEngine,
 uniqueStringFactory uniqueStringFactory,
 yamlCodec yamlCodec,
@@ -26,8 +26,6 @@ yamlCodec yamlCodec,
 
   return &_runOperationUseCase{
     filesys:filesys,
-    pathToOperationDirFactory:pathToOperationDirFactory,
-    pathToOperationFileFactory:pathToOperationFileFactory,
     containerEngine: containerEngine,
     uniqueStringFactory:uniqueStringFactory,
     yamlCodec:yamlCodec,
@@ -36,23 +34,16 @@ yamlCodec yamlCodec,
 }
 
 type _runOperationUseCase struct {
-  filesys                    ports.Filesys
-  pathToOperationDirFactory  pathToOperationDirFactory
-  pathToOperationFileFactory pathToOperationFileFactory
-  containerEngine            ports.ContainerEngine
-  uniqueStringFactory        uniqueStringFactory
-  yamlCodec                  yamlCodec
+  filesys             ports.Filesys
+  containerEngine     ports.ContainerEngine
+  uniqueStringFactory uniqueStringFactory
+  yamlCodec           yamlCodec
 }
 
 func (this _runOperationUseCase) Execute(
 req models.RunOperationReq,
-namesOfAlreadyRunOperations[]string,
+urlsOfAlreadyRunOperations[]*models.Url,
 ) (operationRun models.OperationRunDetailedView, err error) {
-
-  pathToOperationFile := this.pathToOperationFileFactory.Construct(
-    req.ProjectUrl,
-    req.OperationName,
-  )
 
   operationRun.StartedAtUnixTime = time.Now().Unix()
 
@@ -61,9 +52,11 @@ namesOfAlreadyRunOperations[]string,
     return
   }
 
-  operationRun.OperationName = req.OperationName
+  operationRun.OperationUrl = req.OperationUrl
 
-  operationFileBytes, err := this.filesys.GetBytesOfFile(pathToOperationFile)
+  operationFileBytes, err := this.filesys.GetBytesOfFile(
+    filepath.Join(req.OperationUrl.Path, "operation.yml"),
+  )
   if (nil != err) {
     return
   }
@@ -84,32 +77,30 @@ namesOfAlreadyRunOperations[]string,
   }()
 
   // guard infinite loop
-  for _, previouslyRunOperation := range namesOfAlreadyRunOperations {
+  for _, previouslyRunOperation := range urlsOfAlreadyRunOperations {
 
-    if (previouslyRunOperation == req.OperationName) {
-      err = errors.New("Unable to run operation with name=`" + req.OperationName +
-      "`. Operations cannot call themselves recursively.")
+    if (*previouslyRunOperation == *req.OperationUrl) {
+      err = errors.New(
+        fmt.Sprintf(
+          "Unable to run operation with url=`%v`. Operation recursion is currently not supported.",
+          *req.OperationUrl,
+        ),
+      )
       return
     }
 
   }
-  namesOfAlreadyRunOperations = append(namesOfAlreadyRunOperations, req.OperationName)
+  urlsOfAlreadyRunOperations = append(urlsOfAlreadyRunOperations, req.OperationUrl)
 
   if (len(_operationFile.SubOperations) == 0) {
 
     // run operation
-
-    var containerEngineOperationRun models.OperationRunDetailedView
-    containerEngineOperationRun, err = this.containerEngine.RunOperation(
-      filepath.Dir(pathToOperationFile),
+    operationRun.ExitCode, err = this.containerEngine.RunOperation(
+      req.OperationUrl.Path,
     )
 
-    if (containerEngineOperationRun.ExitCode != 0 || nil != err) {
-
-      // bubble exit code up
-      operationRun.ExitCode = containerEngineOperationRun.ExitCode
+    if (operationRun.ExitCode != 0 || nil != err) {
       return
-
     }
 
   } else {
@@ -117,21 +108,12 @@ namesOfAlreadyRunOperations[]string,
     // run sub operations
     for _, subOperation := range _operationFile.SubOperations {
 
-      pathToSubOperationFile := this.pathToOperationFileFactory.Construct(
-        req.ProjectUrl,
-        subOperation.Name,
-      )
-
-      var subOperationFileBytes []byte
-      subOperationFileBytes, err = this.filesys.GetBytesOfFile(pathToSubOperationFile)
-      if (nil != err) {
-        return
-      }
-
-      subOperationFile := operationFile{}
-      err = this.yamlCodec.fromYaml(
-        subOperationFileBytes,
-        &subOperationFile,
+      var subOperationUrl *models.Url
+      subOperationUrl, err = models.NewUrl(
+        // only support local relative urls for now...
+        path.Join(
+          filepath.Dir(req.OperationUrl.Path),
+          subOperation.Url),
       )
       if (nil != err) {
         return
@@ -140,17 +122,16 @@ namesOfAlreadyRunOperations[]string,
       var subOperationRun models.OperationRunDetailedView
       subOperationRun, err = this.Execute(
         *models.NewRunOperationReq(
-          req.ProjectUrl,
-          subOperation.Name,
+          subOperationUrl,
         ),
-        namesOfAlreadyRunOperations,
+        urlsOfAlreadyRunOperations,
       )
 
       operationRun.SubOperations = append(
         operationRun.SubOperations,
         models.NewOperationRunSummaryView(
           subOperationRun.Id,
-          subOperationRun.OperationName,
+          subOperationRun.OperationUrl,
           subOperationRun.StartedAtUnixTime,
           subOperationRun.EndedAtUnixTime,
           subOperationRun.ExitCode,

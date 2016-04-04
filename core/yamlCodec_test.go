@@ -28,8 +28,8 @@ var _ = Describe("yamlCodec", func() {
       expectedOperationFile := operationFile{
         Description:"operation description",
         SubOperations:[]operationFileSubOperation{
-          operationFileSubOperation{Name:"subOperation name"},
-          operationFileSubOperation{Name:"subOperation name"},
+          operationFileSubOperation{Url:"op1-name"},
+          operationFileSubOperation{Url:"op2-name"},
         },
       }
       objectUnderTest := _yamlCodec{}

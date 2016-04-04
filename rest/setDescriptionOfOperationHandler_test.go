@@ -24,7 +24,6 @@ var _ = Describe("setDescriptionOfOperationHandler", func() {
       m.Handle(setDescriptionOfOperationRelUrlTemplate, objectUnderTest)
 
       providedProjectUrl := "%%invalidProjectUrl%%"
-      providedOperationName := "validOperationName"
       providedSetDescriptionOfOperationReqJson, err := json.Marshal(models.SetDescriptionOfOperationReq{})
       if (nil != err) {
         Fail(err.Error())
@@ -37,7 +36,6 @@ var _ = Describe("setDescriptionOfOperationHandler", func() {
 
       // brute force a request with malformed projectUrl
       httpReq.URL.Path = strings.Replace(setDescriptionOfOperationRelUrlTemplate, "{projectUrl}", providedProjectUrl, 1)
-      httpReq.URL.Path = strings.Replace(httpReq.URL.Path, "{operationName}", providedOperationName, 1)
 
       /* act */
       m.ServeHTTP(recorder, httpReq)

@@ -2,7 +2,7 @@ package models
 
 func NewOperationRunSummaryView(
 id                *string,
-operationName     string,
+operationUrl     *Url,
 startedAtUnixTime int64,
 endedAtUnixTime   int64,
 exitCode           int,
@@ -10,7 +10,7 @@ exitCode           int,
 
   return &OperationRunSummaryView{
     Id:id,
-    OperationName:operationName,
+    OperationUrl:operationUrl,
     StartedAtUnixTime:startedAtUnixTime,
     EndedAtUnixTime:endedAtUnixTime,
     ExitCode:exitCode,
@@ -20,7 +20,7 @@ exitCode           int,
 
 type OperationRunSummaryView struct {
   Id                *string `json:"id"`
-  OperationName     string `json:"operationName"`
+  OperationUrl      *Url `json:"operationUrl"`
   StartedAtUnixTime int64 `json:"startedAtUnixTime"`
   EndedAtUnixTime   int64 `json:"endedAtUnixTime"`
   ExitCode          int `json:"exitCode"`

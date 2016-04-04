@@ -26,7 +26,6 @@ filesys ports.Filesys,
   yamlCodec := newYamlCodec()
 
   // use cases
-
   addOperationUseCase := newAddOperationUseCase(
     filesys,
     pathToOperationDirFactory,
@@ -49,8 +48,6 @@ filesys ports.Filesys,
 
   runOperationUseCase := newRunOperationUseCase(
     filesys,
-    pathToOperationDirFactory,
-    pathToOperationFileFactory,
     containerEngine,
     uniqueStringFactory,
     yamlCodec,

@@ -1,1 +1,2 @@
+name: test
 description: performs a `go test`

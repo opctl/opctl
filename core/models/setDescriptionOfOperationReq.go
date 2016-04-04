@@ -1,21 +1,21 @@
 package models
 
 func NewSetDescriptionOfOperationReq(
-projectUrl *ProjectUrl,
+projectUrl *Url,
+operationName *string,
 description string,
-operationName string,
 ) *SetDescriptionOfOperationReq {
 
   return &SetDescriptionOfOperationReq{
     ProjectUrl:projectUrl,
+    OperationName:operationName,
     Description:description,
-    OperationName :operationName,
   }
 
 }
 
 type SetDescriptionOfOperationReq struct {
-  ProjectUrl    *ProjectUrl
+  ProjectUrl    *Url
+  OperationName *string
   Description   string `json:"description"`
-  OperationName string `json:"operationName"`
 }

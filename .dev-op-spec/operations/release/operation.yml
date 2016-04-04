@@ -1,6 +1,7 @@
+name: release
 description: runs all operations necessary to perform a release
 subOperations:
-- name: build
-- name: test
-- name: publish-coverage-to-codecov
-- name: push-docker-image
+- url: build
+- url: test
+- url: publish-coverage-to-codecov
+- url: push-docker-image

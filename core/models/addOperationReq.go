@@ -1,7 +1,7 @@
 package models
 
 func NewAddOperationReq(
-projectUrl *ProjectUrl,
+projectUrl *Url,
 name string,
 description string,
 ) *AddOperationReq {
@@ -15,7 +15,7 @@ description string,
 }
 
 type AddOperationReq struct {
-  ProjectUrl  *ProjectUrl
+  ProjectUrl  *Url
   Name        string `json:"name"`
   Description string `json:"description"`
 }
