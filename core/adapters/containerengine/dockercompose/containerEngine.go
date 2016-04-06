@@ -30,22 +30,29 @@ func (this _containerEngine) InitOp(
 pathToOpDir string,
 opName string,
 ) (err error) {
+
   return this.compositionRoot.
   InitOpUseCase().
   Execute(
     pathToOpDir,
     opName,
   )
+
 }
 
 func (this _containerEngine) RunOp(
 pathToOpDir string,
 opName string,
-) (exitCode int, logChannel chan *models.LogEntry, err error) {
+logChannel chan *models.LogEntry,
+) (exitCode int, err error) {
+
   return this.compositionRoot.
   RunOpUseCase().
   Execute(
     pathToOpDir,
     opName,
+    logChannel,
   )
+
 }
+

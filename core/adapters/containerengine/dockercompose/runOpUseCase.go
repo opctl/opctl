@@ -8,13 +8,15 @@ import (
   "fmt"
   "syscall"
   "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core"
 )
 
 type runOpUseCase interface {
   Execute(
   pathToOpDir string,
   opName string,
-  ) (exitCode int, logChannel chan *models.LogEntry, err error)
+  logChannel chan *models.LogEntry,
+  ) (exitCode int, err error)
 }
 
 func newRunOpUseCase(
@@ -37,7 +39,8 @@ type _runOpUseCase struct {
 func (this _runOpUseCase) Execute(
 pathToOpDir string,
 opName string,
-) (exitCode int, logChannel chan *models.LogEntry, err error) {
+logChannel chan *models.LogEntry,
+) (exitCode int, err error) {
 
   // up
   dockerComposeUpCmd :=
@@ -124,21 +127,9 @@ opName string,
 
   }()
 
-  logChannel = make(chan *models.LogEntry, 1000)
-  go func() {
-    for {
-      logEntry := <-logChannel
-      fmt.Printf(
-        "Timestamp: `%v` | Stream: `%v` | Message: `%v` \n",
-        logEntry.Timestamp,
-        logEntry.Stream,
-        logEntry.Message,
-      )
-    }
-  }()
+  dockerComposeUpCmd.Stdout = core.NewLogEmittingIoWriter(logChannel, models.StdOutStream)
 
-  dockerComposeUpCmd.Stdout = newStdOutLogWriter(logChannel)
-  dockerComposeUpCmd.Stderr = newStdErrLogWriter(logChannel)
+  dockerComposeUpCmd.Stderr = core.NewLogEmittingIoWriter(logChannel, models.StdErrStream)
 
   err = dockerComposeUpCmd.Run()
 

@@ -8,30 +8,31 @@ import (
 )
 
 type fakeRunOpUseCase struct {
-	ExecuteStub        func(pathToOpDir string, opName string) (exitCode int, logChannel chan *models.LogEntry, err error)
+	ExecuteStub        func(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		pathToOpDir string
 		opName      string
+		logChannel  chan *models.LogEntry
 	}
 	executeReturns struct {
 		result1 int
-		result2 chan *models.LogEntry
-		result3 error
+		result2 error
 	}
 }
 
-func (fake *fakeRunOpUseCase) Execute(pathToOpDir string, opName string) (exitCode int, logChannel chan *models.LogEntry, err error) {
+func (fake *fakeRunOpUseCase) Execute(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
 		pathToOpDir string
 		opName      string
-	}{pathToOpDir, opName})
+		logChannel  chan *models.LogEntry
+	}{pathToOpDir, opName, logChannel})
 	fake.executeMutex.Unlock()
 	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathToOpDir, opName)
+		return fake.ExecuteStub(pathToOpDir, opName, logChannel)
 	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2, fake.executeReturns.result3
+		return fake.executeReturns.result1, fake.executeReturns.result2
 	}
 }
 
@@ -41,17 +42,16 @@ func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, string) {
+func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, string, chan *models.LogEntry) {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName
+	return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].logChannel
 }
 
-func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 chan *models.LogEntry, result3 error) {
+func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
 		result1 int
-		result2 chan *models.LogEntry
-		result3 error
-	}{result1, result2, result3}
+		result2 error
+	}{result1, result2}
 }

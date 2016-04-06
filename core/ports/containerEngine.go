@@ -11,5 +11,6 @@ type ContainerEngine interface {
   RunOp(
   pathToOpDir string,
   name string,
-  ) (exitCode int, logChannel chan *models.LogEntry, err error)
+  logChannel chan *models.LogEntry,
+  ) (exitCode int, err error)
 }

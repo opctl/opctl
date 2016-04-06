@@ -22,16 +22,16 @@ type containerEngine struct {
   initOpReturns     struct {
                       result1 error
                     }
-  RunOpStub         func(pathToOpDir string, name string) (exitCode int, logChannel chan *models.LogEntry, err error)
+  RunOpStub         func(pathToOpDir string, name string, logChannel chan *models.LogEntry) (exitCode int, err error)
   runOpMutex        sync.RWMutex
   runOpArgsForCall  []struct {
     pathToOpDir string
     name        string
+    logChannel  chan *models.LogEntry
   }
   runOpReturns      struct {
                       result1 int
-                      result2 chan *models.LogEntry
-                      result3 error
+                      result2 error
                     }
 }
 
@@ -68,17 +68,18 @@ func (fake *containerEngine) InitOpReturns(result1 error) {
   }{result1}
 }
 
-func (fake *containerEngine) RunOp(pathToOpDir string, name string) (exitCode int, logChannel chan *models.LogEntry, err error) {
+func (fake *containerEngine) RunOp(pathToOpDir string, name string, logChannel chan *models.LogEntry) (exitCode int, err error) {
   fake.runOpMutex.Lock()
   fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
     pathToOpDir string
     name        string
-  }{pathToOpDir, name})
+    logChannel  chan *models.LogEntry
+  }{pathToOpDir, name, logChannel})
   fake.runOpMutex.Unlock()
   if fake.RunOpStub != nil {
-    return fake.RunOpStub(pathToOpDir, name)
+    return fake.RunOpStub(pathToOpDir, name, logChannel)
   } else {
-    return fake.runOpReturns.result1, fake.runOpReturns.result2, fake.runOpReturns.result3
+    return fake.runOpReturns.result1, fake.runOpReturns.result2
   }
 }
 
@@ -88,19 +89,18 @@ func (fake *containerEngine) RunOpCallCount() int {
   return len(fake.runOpArgsForCall)
 }
 
-func (fake *containerEngine) RunOpArgsForCall(i int) (string, string) {
+func (fake *containerEngine) RunOpArgsForCall(i int) (string, string, chan *models.LogEntry) {
   fake.runOpMutex.RLock()
   defer fake.runOpMutex.RUnlock()
-  return fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name
+  return fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name, fake.runOpArgsForCall[i].logChannel
 }
 
-func (fake *containerEngine) RunOpReturns(result1 int, result2 chan *models.LogEntry, result3 error) {
+func (fake *containerEngine) RunOpReturns(result1 int, result2 error) {
   fake.RunOpStub = nil
   fake.runOpReturns = struct {
     result1 int
-    result2 chan *models.LogEntry
-    result3 error
-  }{result1, result2, result3}
+    result2 error
+  }{result1, result2}
 }
 
 var _ ports.ContainerEngine = new(containerEngine)

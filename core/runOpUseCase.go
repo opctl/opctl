@@ -94,10 +94,24 @@ urlsOfAlreadyRunOps[]*models.Url,
 
   if (len(_opFile.SubOps) == 0) {
 
+    logChannel := make(chan *models.LogEntry, 1000)
+    go func() {
+      for {
+        logEntry := <-logChannel
+        fmt.Printf(
+          "Timestamp: `%v` | Stream: `%v` | Message: `%v` \n",
+          logEntry.Timestamp,
+          logEntry.Stream,
+          logEntry.Message,
+        )
+      }
+    }()
+
     // run op
-    opRun.ExitCode, _, err = this.containerEngine.RunOp(
+    opRun.ExitCode, err = this.containerEngine.RunOp(
       req.OpUrl.Path,
       *_opFile.Name,
+      logChannel,
     )
 
     if (opRun.ExitCode != 0 || nil != err) {
