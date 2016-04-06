@@ -5,8 +5,8 @@ import (
 )
 
 type compositionRoot interface {
-  InitOperationUseCase() initOperationUseCase
-  RunOperationUseCase() runOperationUseCase
+  InitOpUseCase() initOpUseCase
+  RunOpUseCase() runOpUseCase
 }
 
 func newCompositionRoot(
@@ -20,27 +20,27 @@ func newCompositionRoot(
     return
   }
 
-  operationRunExitCodeReader := newOperationRunExitCodeReader(fs, dockerEngine)
+  opRunExitCodeReader := newOpRunExitCodeReader(fs, dockerEngine)
 
-  operationRunResourceFlusher := newOperationRunResourceFlusher(fs)
+  opRunResourceFlusher := newOpRunResourceFlusher(fs)
 
   compositionRoot = &_compositionRoot{
-    initOperationUseCase: newInitOperationUseCase(fs, yml),
-    runOperationUseCase: newRunOperationUseCase(fs, operationRunExitCodeReader, operationRunResourceFlusher),
+    initOpUseCase: newInitOpUseCase(fs, yml),
+    runOpUseCase: newRunOpUseCase(opRunExitCodeReader, opRunResourceFlusher),
   }
 
   return
 }
 
 type _compositionRoot struct {
-  initOperationUseCase initOperationUseCase
-  runOperationUseCase  runOperationUseCase
+  initOpUseCase initOpUseCase
+  runOpUseCase  runOpUseCase
 }
 
-func (this _compositionRoot) InitOperationUseCase() initOperationUseCase {
-  return this.initOperationUseCase
+func (this _compositionRoot) InitOpUseCase() initOpUseCase {
+  return this.initOpUseCase
 }
 
-func (this _compositionRoot) RunOperationUseCase() runOperationUseCase {
-  return this.runOperationUseCase
+func (this _compositionRoot) RunOpUseCase() runOpUseCase {
+  return this.runOpUseCase
 }

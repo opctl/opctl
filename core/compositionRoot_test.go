@@ -9,8 +9,8 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("AddOperationUseCase()", func() {
-    It("should return an instance of type addOperationUseCase", func() {
+  Context("AddOpUseCase()", func() {
+    It("should return an instance of type addOpUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -19,15 +19,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualAddOperationUseCase := objectUnderTest.AddOperationUseCase()
+      actualAddOpUseCase := objectUnderTest.AddOpUseCase()
 
       /* assert */
-      Expect(actualAddOperationUseCase).To(BeAssignableToTypeOf(&_addOperationUseCase{}))
+      Expect(actualAddOpUseCase).To(BeAssignableToTypeOf(&_addOpUseCase{}))
 
     })
   })
-  Context("AddSubOperationUseCase()", func() {
-    It("should return an instance of type addSubOperationUseCase", func() {
+  Context("AddSubOpUseCase()", func() {
+    It("should return an instance of type addSubOpUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -36,15 +36,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualAddSubOperationUseCase := objectUnderTest.AddSubOperationUseCase()
+      actualAddSubOpUseCase := objectUnderTest.AddSubOpUseCase()
 
       /* assert */
-      Expect(actualAddSubOperationUseCase).To(BeAssignableToTypeOf(&_addSubOperationUseCase{}))
+      Expect(actualAddSubOpUseCase).To(BeAssignableToTypeOf(&_addSubOpUseCase{}))
 
     })
   })
-  Context("ListOperationsUseCase()", func() {
-    It("should return an instance of type listOperationsUseCase", func() {
+  Context("ListOpsUseCase()", func() {
+    It("should return an instance of type listOpsUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -53,15 +53,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualListOperationsUseCase := objectUnderTest.ListOperationsUseCase()
+      actualListOpsUseCase := objectUnderTest.ListOpsUseCase()
 
       /* assert */
-      Expect(actualListOperationsUseCase).To(BeAssignableToTypeOf(&_listOperationsUseCase{}))
+      Expect(actualListOpsUseCase).To(BeAssignableToTypeOf(&_listOpsUseCase{}))
 
     })
   })
-  Context("RunOperationUseCase()", func() {
-    It("should return an instance of type runOperationUseCase", func() {
+  Context("RunOpUseCase()", func() {
+    It("should return an instance of type runOpUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -70,15 +70,15 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualRunOperationUseCase := objectUnderTest.RunOperationUseCase()
+      actualRunOpUseCase := objectUnderTest.RunOpUseCase()
 
       /* assert */
-      Expect(actualRunOperationUseCase).To(BeAssignableToTypeOf(&_runOperationUseCase{}))
+      Expect(actualRunOpUseCase).To(BeAssignableToTypeOf(&_runOpUseCase{}))
 
     })
   })
-  Context("SetDescriptionOfOperationUseCase()", func() {
-    It("should return an instance of type setDescriptionOfOperationUseCase", func() {
+  Context("SetDescriptionOfOpUseCase()", func() {
+    It("should return an instance of type setDescriptionOfOpUseCase", func() {
 
       /* arrange */
       objectUnderTest, _ := newCompositionRoot(
@@ -87,10 +87,10 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualSetDescriptionOfOperationUseCase := objectUnderTest.SetDescriptionOfOperationUseCase()
+      actualSetDescriptionOfOpUseCase := objectUnderTest.SetDescriptionOfOpUseCase()
 
       /* assert */
-      Expect(actualSetDescriptionOfOperationUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfOperationUseCase{}))
+      Expect(actualSetDescriptionOfOpUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfOpUseCase{}))
 
     })
   })

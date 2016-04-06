@@ -7,40 +7,40 @@ import (
 
 var _ = Describe("yamlCodec", func() {
   Context("executing .toYaml() then .fromYaml", func() {
-    It("should roundtrip a operationFile", func() {
+    It("should roundtrip a opFile", func() {
 
       /* arrange */
-      expectedOperationFile := operationFile{Description:"operation description"}
+      expectedOpFile := opFile{Description:"op description"}
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      operationFileBytes, _ := objectUnderTest.toYaml(&expectedOperationFile)
-      actualOperationFile := operationFile{}
-      objectUnderTest.fromYaml(operationFileBytes, &actualOperationFile)
+      opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
+      actualOpFile := opFile{}
+      objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
 
       /* assert */
-      Expect(actualOperationFile).To(Equal(expectedOperationFile))
+      Expect(actualOpFile).To(Equal(expectedOpFile))
 
     })
-    It("should roundtrip a operationFile", func() {
+    It("should roundtrip a opFile", func() {
 
       /* arrange */
-      expectedOperationFile := operationFile{
-        Description:"operation description",
-        SubOperations:[]operationFileSubOperation{
-          operationFileSubOperation{Url:"op1-name"},
-          operationFileSubOperation{Url:"op2-name"},
+      expectedOpFile := opFile{
+        Description:"op description",
+        SubOps:[]opFileSubOp{
+          opFileSubOp{Url:"op1-name"},
+          opFileSubOp{Url:"op2-name"},
         },
       }
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      operationFileBytes, _ := objectUnderTest.toYaml(&expectedOperationFile)
-      actualOperationFile := operationFile{}
-      objectUnderTest.fromYaml(operationFileBytes, &actualOperationFile)
+      opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
+      actualOpFile := opFile{}
+      objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
 
       /* assert */
-      Expect(actualOperationFile).To(Equal(expectedOperationFile))
+      Expect(actualOpFile).To(Equal(expectedOpFile))
 
     })
   })

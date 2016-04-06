@@ -2,13 +2,13 @@ package main
 
 import (
   "github.com/dev-op-spec/engine/core"
-  "github.com/dev-op-spec/engine/rest"
+  "github.com/dev-op-spec/engine/tcp"
   dockerComposeContainerEngine "github.com/dev-op-spec/engine/core/adapters/containerengine/dockercompose"
   osFilesys "github.com/dev-op-spec/engine/core/adapters/filesys/os"
 )
 
 type compositionRoot interface {
-  RestApi() rest.Api
+  TcpApi() tcp.Api
 }
 
 func newCompositionRoot(
@@ -30,7 +30,7 @@ func newCompositionRoot(
   }
 
   compositionRoot = &_compositionRoot{
-    restApi:rest.New(coreApi),
+    tcpApi:tcp.New(coreApi),
   }
 
   return
@@ -38,9 +38,9 @@ func newCompositionRoot(
 }
 
 type _compositionRoot struct {
-  restApi rest.Api
+  tcpApi tcp.Api
 }
 
-func (_compositionRoot _compositionRoot) RestApi() rest.Api {
-  return _compositionRoot.restApi
+func (_compositionRoot _compositionRoot) TcpApi() tcp.Api {
+  return _compositionRoot.tcpApi
 }

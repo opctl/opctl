@@ -1,7 +1,0 @@
-version: "2"
-services:
-  test:
-    extends:
-      service: go
-      file: ../.common/docker-compose.yml
-    entrypoint: .dev-op-spec/operations/test/entrypoint.sh

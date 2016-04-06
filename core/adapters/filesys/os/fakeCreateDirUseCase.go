@@ -6,24 +6,24 @@ import (
 )
 
 type fakeCreateDirUseCase struct {
-  ExecuteStub        func(operationName string) (err error)
+  ExecuteStub        func(opName string) (err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
-    operationName string
+    opName string
   }
   executeReturns     struct {
                        result1 error
                      }
 }
 
-func (fake *fakeCreateDirUseCase) Execute(operationName string) (err error) {
+func (fake *fakeCreateDirUseCase) Execute(opName string) (err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-    operationName string
-  }{operationName})
+    opName string
+  }{opName})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub(operationName)
+    return fake.ExecuteStub(opName)
   } else {
     return fake.executeReturns.result1
   }
@@ -38,7 +38,7 @@ func (fake *fakeCreateDirUseCase) ExecuteCallCount() int {
 func (fake *fakeCreateDirUseCase) ExecuteArgsForCall(i int) string {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].operationName
+  return fake.executeArgsForCall[i].opName
 }
 
 func (fake *fakeCreateDirUseCase) ExecuteReturns(result1 error) {

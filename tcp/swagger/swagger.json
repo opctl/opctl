@@ -1,0 +1,367 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.0",
+    "title": "Engine ReST API",
+    "license": {
+      "name": "Apache 2.0",
+      "projectUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json",
+    "text/html"
+  ],
+  "paths": {
+    "/projects/{projectUrl}/ops": {
+      "parameters": [
+        {
+          "name": "projectUrl",
+          "in": "path",
+          "description": "A projects url. For local projects use an absolute path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "List project ops",
+        "tags": [
+          "projects"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OpDetailedView"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add project op",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "AddOpReq",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "required": true
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectUrl}/ops/{opName}/description": {
+      "parameters": [
+        {
+          "name": "projectUrl",
+          "in": "path",
+          "description": "A projects url. For local projects use an absolute path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "opName",
+          "in": "path",
+          "description": "The name of the dev op",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "put": {
+        "summary": "Update description of project op",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "UpdateDescriptionOfOpReq",
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/projects/{projectUrl}/ops/{opName}/sub-ops": {
+      "parameters": [
+        {
+          "name": "projectUrl",
+          "in": "path",
+          "description": "A projects url. For local projects use an absolute path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "opName",
+          "in": "path",
+          "description": "The name of the dev op",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "post": {
+        "summary": "Add sub-op",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "AddSubOpReq",
+              "type": "object",
+              "properties": {
+                "subOpUrl": {
+                  "type": "string",
+                  "required": true
+                },
+                "precedingSubOpUrl": {
+                  "type": "string",
+                  "allowEmptyValue": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/op-runs": {
+      "post": {
+        "summary": "Run op",
+        "tags": [
+          "op-runs"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "The body of the request",
+            "schema": {
+              "title": "RunOpReq",
+              "type": "object",
+              "properties": {
+                "opUrl": {
+                  "type": "string",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OpRunDetailedView"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/op-runs/{opRunId}/log": {
+      "parameters": [
+        {
+          "name": "opRunId",
+          "in": "path",
+          "description": "The id of the op run",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "summary": "Get log for op run",
+        "tags": [
+          "op-runs"
+        ],
+        "responses": {
+          "101": {
+            "description": "Switching Protocols",
+            "headers": {
+              "Upgrade": {
+                "type": "string",
+                "enum": [
+                  "websocket"
+                ]
+              },
+              "Connection": {
+                "type": "string",
+                "enum": [
+                  "Upgrade"
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "OpRunDetailedView": {
+      "title": "OpRunDetailedView",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "opName": {
+          "type": "string"
+        },
+        "startedAtUnixTime": {
+          "type": "integer"
+        },
+        "endedAtUnixTime": {
+          "type": "integer"
+        },
+        "exitCode": {
+          "type": "integer"
+        },
+        "subOps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpRunDetailedView"
+          }
+        }
+      }
+    },
+    "OpSummaryView": {
+      "title": "OpSummaryView",
+      "description": "A reference to an op",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OpDetailedView": {
+      "title": "OpDetailedView",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "subOps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpSummaryView"
+          }
+        }
+      }
+    }
+  }
+}

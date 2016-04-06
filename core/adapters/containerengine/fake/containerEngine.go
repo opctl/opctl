@@ -4,98 +4,103 @@ package fake
 import (
   "sync"
 
+  "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
 )
 
 func New() ports.ContainerEngine {
-
-  return new(containerEngine)
-
+  return &containerEngine{}
 }
 
 type containerEngine struct {
-  InitOperationStub        func(operationName string) (err error)
-  initOperationMutex       sync.RWMutex
-  initOperationArgsForCall []struct {
-    operationName string
+  InitOpStub        func(pathToOpDir string, name string) (err error)
+  initOpMutex       sync.RWMutex
+  initOpArgsForCall []struct {
+    pathToOpDir string
+    name        string
   }
-  initOperationReturns     struct {
-                             result1 error
-                           }
-  RunOperationStub         func(operationName string) (exitCode int, err error)
-  runOperationMutex        sync.RWMutex
-  runOperationArgsForCall  []struct {
-    operationName string
+  initOpReturns     struct {
+                      result1 error
+                    }
+  RunOpStub         func(pathToOpDir string, name string) (exitCode int, logChannel chan *models.LogEntry, err error)
+  runOpMutex        sync.RWMutex
+  runOpArgsForCall  []struct {
+    pathToOpDir string
+    name        string
   }
-  runOperationReturns      struct {
-                             result1 int
-                             result2 error
-                           }
+  runOpReturns      struct {
+                      result1 int
+                      result2 chan *models.LogEntry
+                      result3 error
+                    }
 }
 
-func (fake *containerEngine) InitOperation(operationName string) (err error) {
-  fake.initOperationMutex.Lock()
-  fake.initOperationArgsForCall = append(fake.initOperationArgsForCall, struct {
-    operationName string
-  }{operationName})
-  fake.initOperationMutex.Unlock()
-  if fake.InitOperationStub != nil {
-    return fake.InitOperationStub(operationName)
+func (fake *containerEngine) InitOp(pathToOpDir string, name string) (err error) {
+  fake.initOpMutex.Lock()
+  fake.initOpArgsForCall = append(fake.initOpArgsForCall, struct {
+    pathToOpDir string
+    name        string
+  }{pathToOpDir, name})
+  fake.initOpMutex.Unlock()
+  if fake.InitOpStub != nil {
+    return fake.InitOpStub(pathToOpDir, name)
   } else {
-    return fake.initOperationReturns.result1
+    return fake.initOpReturns.result1
   }
 }
 
-func (fake *containerEngine) InitOperationCallCount() int {
-  fake.initOperationMutex.RLock()
-  defer fake.initOperationMutex.RUnlock()
-  return len(fake.initOperationArgsForCall)
+func (fake *containerEngine) InitOpCallCount() int {
+  fake.initOpMutex.RLock()
+  defer fake.initOpMutex.RUnlock()
+  return len(fake.initOpArgsForCall)
 }
 
-func (fake *containerEngine) InitOperationArgsForCall(i int) string {
-  fake.initOperationMutex.RLock()
-  defer fake.initOperationMutex.RUnlock()
-  return fake.initOperationArgsForCall[i].operationName
+func (fake *containerEngine) InitOpArgsForCall(i int) (string, string) {
+  fake.initOpMutex.RLock()
+  defer fake.initOpMutex.RUnlock()
+  return fake.initOpArgsForCall[i].pathToOpDir, fake.initOpArgsForCall[i].name
 }
 
-func (fake *containerEngine) InitOperationReturns(result1 error) {
-  fake.InitOperationStub = nil
-  fake.initOperationReturns = struct {
+func (fake *containerEngine) InitOpReturns(result1 error) {
+  fake.InitOpStub = nil
+  fake.initOpReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *containerEngine) RunOperation(operationName string) (exitCode int, err error) {
-  fake.runOperationMutex.Lock()
-  fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
-    operationName string
-  }{operationName})
-  fake.runOperationMutex.Unlock()
-  if fake.RunOperationStub != nil {
-    return fake.RunOperationStub(operationName)
+func (fake *containerEngine) RunOp(pathToOpDir string, name string) (exitCode int, logChannel chan *models.LogEntry, err error) {
+  fake.runOpMutex.Lock()
+  fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
+    pathToOpDir string
+    name        string
+  }{pathToOpDir, name})
+  fake.runOpMutex.Unlock()
+  if fake.RunOpStub != nil {
+    return fake.RunOpStub(pathToOpDir, name)
   } else {
-    return fake.runOperationReturns.result1, fake.runOperationReturns.result2
+    return fake.runOpReturns.result1, fake.runOpReturns.result2, fake.runOpReturns.result3
   }
 }
 
-func (fake *containerEngine) RunOperationCallCount() int {
-  fake.runOperationMutex.RLock()
-  defer fake.runOperationMutex.RUnlock()
-  return len(fake.runOperationArgsForCall)
+func (fake *containerEngine) RunOpCallCount() int {
+  fake.runOpMutex.RLock()
+  defer fake.runOpMutex.RUnlock()
+  return len(fake.runOpArgsForCall)
 }
 
-func (fake *containerEngine) RunOperationArgsForCall(i int) string {
-  fake.runOperationMutex.RLock()
-  defer fake.runOperationMutex.RUnlock()
-  return fake.runOperationArgsForCall[i].operationName
+func (fake *containerEngine) RunOpArgsForCall(i int) (string, string) {
+  fake.runOpMutex.RLock()
+  defer fake.runOpMutex.RUnlock()
+  return fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name
 }
 
-func (fake *containerEngine) RunOperationReturns(result1 int, result2 error) {
-  fake.RunOperationStub = nil
-  fake.runOperationReturns = struct {
+func (fake *containerEngine) RunOpReturns(result1 int, result2 chan *models.LogEntry, result3 error) {
+  fake.RunOpStub = nil
+  fake.runOpReturns = struct {
     result1 int
-    result2 error
-  }{result1, result2}
+    result2 chan *models.LogEntry
+    result3 error
+  }{result1, result2, result3}
 }
 
 var _ ports.ContainerEngine = new(containerEngine)

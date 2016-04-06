@@ -1,7 +1,0 @@
-name: release
-description: runs all operations necessary to perform a release
-subOperations:
-- url: build
-- url: test
-- url: publish-coverage-to-codecov
-- url: push-docker-image

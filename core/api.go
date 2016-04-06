@@ -6,24 +6,24 @@ import (
 )
 
 type Api interface {
-  AddOperation(
-  req models.AddOperationReq,
+  AddOp(
+  req models.AddOpReq,
   ) (err error)
 
-  AddSubOperation(
-  req models.AddSubOperationReq,
+  AddSubOp(
+  req models.AddSubOpReq,
   ) (err error)
 
-  ListOperations(
+  ListOps(
   projectUrl *models.Url,
-  ) (operations []models.OperationDetailedView, err error)
+  ) (ops []models.OpDetailedView, err error)
 
-  RunOperation(
-  req models.RunOperationReq,
-  ) (operationRun models.OperationRunDetailedView, err error)
+  RunOp(
+  req models.RunOpReq,
+  ) (opRun models.OpRunDetailedView, err error)
 
-  SetDescriptionOfOperation(
-  req models.SetDescriptionOfOperationReq,
+  SetDescriptionOfOp(
+  req models.SetDescriptionOfOpReq,
   ) (err error)
 }
 
@@ -52,51 +52,51 @@ type _api struct {
   compositionRoot compositionRoot
 }
 
-func (this _api) AddOperation(
-req models.AddOperationReq,
+func (this _api) AddOp(
+req models.AddOpReq,
 ) (err error) {
   return this.
   compositionRoot.
-  AddOperationUseCase().
+  AddOpUseCase().
   Execute(req)
 }
 
-func (this _api) AddSubOperation(
-req models.AddSubOperationReq,
+func (this _api) AddSubOp(
+req models.AddSubOpReq,
 ) (err error) {
   return this.
   compositionRoot.
-  AddSubOperationUseCase().
+  AddSubOpUseCase().
   Execute(req)
 }
 
-func (this _api) ListOperations(
+func (this _api) ListOps(
 projectUrl *models.Url,
-) (operations []models.OperationDetailedView, err error) {
+) (ops []models.OpDetailedView, err error) {
   return this.
   compositionRoot.
-  ListOperationsUseCase().
+  ListOpsUseCase().
   Execute(projectUrl)
 }
 
-func (this _api) RunOperation(
-req models.RunOperationReq,
-) (operationRun models.OperationRunDetailedView, err error) {
+func (this _api) RunOp(
+req models.RunOpReq,
+) (opRun models.OpRunDetailedView, err error) {
   return this.
   compositionRoot.
-  RunOperationUseCase().
+  RunOpUseCase().
   Execute(
     req,
     make([]*models.Url, 0),
   )
 }
 
-func (this _api) SetDescriptionOfOperation(
-req models.SetDescriptionOfOperationReq,
+func (this _api) SetDescriptionOfOp(
+req models.SetDescriptionOfOpReq,
 ) (err error) {
   return this.
   compositionRoot.
-  SetDescriptionOfOperationUseCase().
+  SetDescriptionOfOpUseCase().
   Execute(
     req,
   )

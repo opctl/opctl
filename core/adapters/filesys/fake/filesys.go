@@ -23,10 +23,10 @@ type fakeFilesys struct {
   createDirReturns                struct {
                                     result1 error
                                   }
-  ListNamesOfChildDirsStub        func(pathToPERATIONarentDir string) (namesOfChildDirs []string, err error)
+  ListNamesOfChildDirsStub        func(pathToParentDir string) (namesOfChildDirs []string, err error)
   listNamesOfChildDirsMutex       sync.RWMutex
   listNamesOfChildDirsArgsForCall []struct {
-    pathToPERATIONarentDir string
+    pathToParentDir string
   }
   listNamesOfChildDirsReturns     struct {
                                     result1 []string
@@ -84,14 +84,14 @@ func (fake *fakeFilesys) CreateDirReturns(result1 error) {
   }{result1}
 }
 
-func (fake *fakeFilesys) ListNamesOfChildDirs(pathToPERATIONarentDir string) (namesOfChildDirs []string, err error) {
+func (fake *fakeFilesys) ListNamesOfChildDirs(pathToParentDir string) (namesOfChildDirs []string, err error) {
   fake.listNamesOfChildDirsMutex.Lock()
   fake.listNamesOfChildDirsArgsForCall = append(fake.listNamesOfChildDirsArgsForCall, struct {
-    pathToPERATIONarentDir string
-  }{pathToPERATIONarentDir})
+    pathToParentDir string
+  }{pathToParentDir})
   fake.listNamesOfChildDirsMutex.Unlock()
   if fake.ListNamesOfChildDirsStub != nil {
-    return fake.ListNamesOfChildDirsStub(pathToPERATIONarentDir)
+    return fake.ListNamesOfChildDirsStub(pathToParentDir)
   } else {
     return fake.listNamesOfChildDirsReturns.result1, fake.listNamesOfChildDirsReturns.result2
   }
@@ -106,7 +106,7 @@ func (fake *fakeFilesys) ListNamesOfChildDirsCallCount() int {
 func (fake *fakeFilesys) ListNamesOfChildDirsArgsForCall(i int) string {
   fake.listNamesOfChildDirsMutex.RLock()
   defer fake.listNamesOfChildDirsMutex.RUnlock()
-  return fake.listNamesOfChildDirsArgsForCall[i].pathToPERATIONarentDir
+  return fake.listNamesOfChildDirsArgsForCall[i].pathToParentDir
 }
 
 func (fake *fakeFilesys) ListNamesOfChildDirsReturns(result1 []string, result2 error) {

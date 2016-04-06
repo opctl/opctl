@@ -7,131 +7,131 @@ import (
 )
 
 var _ = Describe("_sdk", func() {
-  Context(".AddOperation() method", func() {
-    It("should invoke compositionRoot.addOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".AddOp() method", func() {
+    It("should invoke compositionRoot.addOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddOperationReq := models.NewAddOperationReq(&models.Url{}, "", "")
+      providedAddOpReq := models.NewAddOpReq(&models.Url{}, "", "")
 
       // wire up fakes
-      fakeAddOperationUseCase := new(fakeAddOperationUseCase)
+      fakeAddOpUseCase := new(fakeAddOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.AddOperationUseCaseReturns(fakeAddOperationUseCase)
+      fakeCompositionRoot.AddOpUseCaseReturns(fakeAddOpUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.AddOperation(*providedAddOperationReq)
+      objectUnderTest.AddOp(*providedAddOpReq)
 
       /* assert */
-      Expect(fakeAddOperationUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddOperationReq))
-      Expect(fakeAddOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeAddOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddOpReq))
+      Expect(fakeAddOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
-  Context(".AddSubOperation() method", func() {
-    It("should invoke compositionRoot.addSubOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".AddSubOp() method", func() {
+    It("should invoke compositionRoot.addSubOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedAddSubOperationReq := models.NewAddSubOperationReq(&models.Url{}, "", "", "")
+      providedAddSubOpReq := models.NewAddSubOpReq(&models.Url{}, "", "", "")
 
       // wire up fakes
-      fakeAddSubOperationUseCase := new(fakeAddSubOperationUseCase)
+      fakeAddSubOpUseCase := new(fakeAddSubOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.AddSubOperationUseCaseReturns(fakeAddSubOperationUseCase)
+      fakeCompositionRoot.AddSubOpUseCaseReturns(fakeAddSubOpUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.AddSubOperation(*providedAddSubOperationReq)
+      objectUnderTest.AddSubOp(*providedAddSubOpReq)
 
       /* assert */
-      Expect(fakeAddSubOperationUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddSubOperationReq))
-      Expect(fakeAddSubOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeAddSubOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddSubOpReq))
+      Expect(fakeAddSubOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
-  Context(".ListOperations() method", func() {
-    It("should invoke compositionRoot.listOperationsUseCase.Execute() with expected args & return result", func() {
+  Context(".ListOps() method", func() {
+    It("should invoke compositionRoot.listOpsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
       providedProjectUrl := &models.Url{}
-      expectedReturnedOperations := make([]models.OperationDetailedView, 0)
+      expectedReturnedOps := make([]models.OpDetailedView, 0)
 
       // wire up fakes
-      fakeListOperationsUseCase := new(fakeListOperationsUseCase)
-      fakeListOperationsUseCase.ExecuteReturns(expectedReturnedOperations, nil)
+      fakeListOpsUseCase := new(fakeListOpsUseCase)
+      fakeListOpsUseCase.ExecuteReturns(expectedReturnedOps, nil)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ListOperationsUseCaseReturns(fakeListOperationsUseCase)
+      fakeCompositionRoot.ListOpsUseCaseReturns(fakeListOpsUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      actualReturnedOperations, _ := objectUnderTest.ListOperations(providedProjectUrl)
+      actualReturnedOps, _ := objectUnderTest.ListOps(providedProjectUrl)
 
       /* assert */
-      Expect(actualReturnedOperations).To(Equal(expectedReturnedOperations))
+      Expect(actualReturnedOps).To(Equal(expectedReturnedOps))
 
     })
   })
-  Context(".RunOperation() method", func() {
-    It("should invoke compositionRoot.runOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".RunOp() method", func() {
+    It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunOperationReq := models.NewRunOperationReq(&models.Url{})
+      providedRunOpReq := models.NewRunOpReq(&models.Url{})
 
       // wire up fakes
-      fakeRunOperationUseCase := new(fakeRunOperationUseCase)
+      fakeRunOpUseCase := new(fakeRunOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.RunOperationUseCaseReturns(fakeRunOperationUseCase)
+      fakeCompositionRoot.RunOpUseCaseReturns(fakeRunOpUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.RunOperation(*providedRunOperationReq)
+      objectUnderTest.RunOp(*providedRunOpReq)
 
       /* assert */
-      executeArg0, executeArg1 := fakeRunOperationUseCase.ExecuteArgsForCall(0)
-      Expect(executeArg0).To(Equal(*providedRunOperationReq))
+      executeArg0, executeArg1 := fakeRunOpUseCase.ExecuteArgsForCall(0)
+      Expect(executeArg0).To(Equal(*providedRunOpReq))
       Expect(executeArg1).To(Equal(make([]*models.Url, 0)))
-      Expect(fakeRunOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
-  Context(".SetDescriptionOfOperation() method", func() {
-    It("should invoke compositionRoot.setDescriptionOfOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".SetDescriptionOfOp() method", func() {
+    It("should invoke compositionRoot.setDescriptionOfOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfOperationReq := models.NewSetDescriptionOfOperationReq(&models.Url{}, new(string), "")
+      providedSetDescriptionOfOpReq := models.NewSetDescriptionOfOpReq(&models.Url{}, new(string), "")
 
       // wire up fakes
-      fakeSetDescriptionOfOperationUseCase := new(fakeSetDescriptionOfOperationUseCase)
+      fakeSetDescriptionOfOpUseCase := new(fakeSetDescriptionOfOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.SetDescriptionOfOperationUseCaseReturns(fakeSetDescriptionOfOperationUseCase)
+      fakeCompositionRoot.SetDescriptionOfOpUseCaseReturns(fakeSetDescriptionOfOpUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.SetDescriptionOfOperation(*providedSetDescriptionOfOperationReq)
+      objectUnderTest.SetDescriptionOfOp(*providedSetDescriptionOfOpReq)
 
       /* assert */
-      Expect(fakeSetDescriptionOfOperationUseCase.ExecuteArgsForCall(0)).To(Equal(*providedSetDescriptionOfOperationReq))
-      Expect(fakeSetDescriptionOfOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeSetDescriptionOfOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedSetDescriptionOfOpReq))
+      Expect(fakeSetDescriptionOfOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

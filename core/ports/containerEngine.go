@@ -1,11 +1,15 @@
 package ports
 
+import "github.com/dev-op-spec/engine/core/models"
+
 type ContainerEngine interface {
-  InitOperation(
-  pathToOperationDir string,
+  InitOp(
+  pathToOpDir string,
+  name string,
   ) (err error)
 
-  RunOperation(
-  pathToOperationDir string,
-  ) (exitCode int, err error)
+  RunOp(
+  pathToOpDir string,
+  name string,
+  ) (exitCode int, logChannel chan *models.LogEntry, err error)
 }

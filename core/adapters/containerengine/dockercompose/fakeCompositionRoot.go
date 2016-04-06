@@ -6,64 +6,64 @@ import (
 )
 
 type fakeCompositionRoot struct {
-	InitOperationUseCaseStub        func() initOperationUseCase
-	initOperationUseCaseMutex       sync.RWMutex
-	initOperationUseCaseArgsForCall []struct{}
-	initOperationUseCaseReturns     struct {
-		result1 initOperationUseCase
+	InitOpUseCaseStub        func() initOpUseCase
+	initOpUseCaseMutex       sync.RWMutex
+	initOpUseCaseArgsForCall []struct{}
+	initOpUseCaseReturns     struct {
+		result1 initOpUseCase
 	}
-	RunOperationUseCaseStub        func() runOperationUseCase
-	runOperationUseCaseMutex       sync.RWMutex
-	runOperationUseCaseArgsForCall []struct{}
-	runOperationUseCaseReturns     struct {
-		result1 runOperationUseCase
+	RunOpUseCaseStub        func() runOpUseCase
+	runOpUseCaseMutex       sync.RWMutex
+	runOpUseCaseArgsForCall []struct{}
+	runOpUseCaseReturns     struct {
+		result1 runOpUseCase
 	}
 }
 
-func (fake *fakeCompositionRoot) InitOperationUseCase() initOperationUseCase {
-	fake.initOperationUseCaseMutex.Lock()
-	fake.initOperationUseCaseArgsForCall = append(fake.initOperationUseCaseArgsForCall, struct{}{})
-	fake.initOperationUseCaseMutex.Unlock()
-	if fake.InitOperationUseCaseStub != nil {
-		return fake.InitOperationUseCaseStub()
+func (fake *fakeCompositionRoot) InitOpUseCase() initOpUseCase {
+	fake.initOpUseCaseMutex.Lock()
+	fake.initOpUseCaseArgsForCall = append(fake.initOpUseCaseArgsForCall, struct{}{})
+	fake.initOpUseCaseMutex.Unlock()
+	if fake.InitOpUseCaseStub != nil {
+		return fake.InitOpUseCaseStub()
 	} else {
-		return fake.initOperationUseCaseReturns.result1
+		return fake.initOpUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) InitOperationUseCaseCallCount() int {
-	fake.initOperationUseCaseMutex.RLock()
-	defer fake.initOperationUseCaseMutex.RUnlock()
-	return len(fake.initOperationUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) InitOpUseCaseCallCount() int {
+	fake.initOpUseCaseMutex.RLock()
+	defer fake.initOpUseCaseMutex.RUnlock()
+	return len(fake.initOpUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) InitOperationUseCaseReturns(result1 initOperationUseCase) {
-	fake.InitOperationUseCaseStub = nil
-	fake.initOperationUseCaseReturns = struct {
-		result1 initOperationUseCase
+func (fake *fakeCompositionRoot) InitOpUseCaseReturns(result1 initOpUseCase) {
+	fake.InitOpUseCaseStub = nil
+	fake.initOpUseCaseReturns = struct {
+		result1 initOpUseCase
 	}{result1}
 }
 
-func (fake *fakeCompositionRoot) RunOperationUseCase() runOperationUseCase {
-	fake.runOperationUseCaseMutex.Lock()
-	fake.runOperationUseCaseArgsForCall = append(fake.runOperationUseCaseArgsForCall, struct{}{})
-	fake.runOperationUseCaseMutex.Unlock()
-	if fake.RunOperationUseCaseStub != nil {
-		return fake.RunOperationUseCaseStub()
+func (fake *fakeCompositionRoot) RunOpUseCase() runOpUseCase {
+	fake.runOpUseCaseMutex.Lock()
+	fake.runOpUseCaseArgsForCall = append(fake.runOpUseCaseArgsForCall, struct{}{})
+	fake.runOpUseCaseMutex.Unlock()
+	if fake.RunOpUseCaseStub != nil {
+		return fake.RunOpUseCaseStub()
 	} else {
-		return fake.runOperationUseCaseReturns.result1
+		return fake.runOpUseCaseReturns.result1
 	}
 }
 
-func (fake *fakeCompositionRoot) RunOperationUseCaseCallCount() int {
-	fake.runOperationUseCaseMutex.RLock()
-	defer fake.runOperationUseCaseMutex.RUnlock()
-	return len(fake.runOperationUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) RunOpUseCaseCallCount() int {
+	fake.runOpUseCaseMutex.RLock()
+	defer fake.runOpUseCaseMutex.RUnlock()
+	return len(fake.runOpUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) RunOperationUseCaseReturns(result1 runOperationUseCase) {
-	fake.RunOperationUseCaseStub = nil
-	fake.runOperationUseCaseReturns = struct {
-		result1 runOperationUseCase
+func (fake *fakeCompositionRoot) RunOpUseCaseReturns(result1 runOpUseCase) {
+	fake.RunOpUseCaseStub = nil
+	fake.runOpUseCaseReturns = struct {
+		result1 runOpUseCase
 	}{result1}
 }

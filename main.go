@@ -13,6 +13,6 @@ func main() {
     os.Exit(1)
   }
 
-  compositionRoot.RestApi().Start()
+  compositionRoot.TcpApi().Start()
 
 }

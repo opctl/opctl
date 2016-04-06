@@ -7,7 +7,7 @@ import (
 type yamlCodec interface {
   toYaml(
   in interface{},
-  ) (operationFileBytes []byte, err error)
+  ) (opFileBytes []byte, err error)
 
   fromYaml(
   in []byte,
@@ -19,9 +19,9 @@ type _yamlCodec struct{}
 
 func (this _yamlCodec) toYaml(
 in interface{},
-) (operationFileBytes []byte, err error) {
+) (opFileBytes []byte, err error) {
 
-  operationFileBytes, err = yaml.Marshal(in)
+  opFileBytes, err = yaml.Marshal(in)
 
   return
 

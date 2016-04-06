@@ -2,6 +2,7 @@ package dockercompose
 
 import (
   "github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 func New(
@@ -25,18 +26,26 @@ type _containerEngine struct {
   compositionRoot compositionRoot
 }
 
-func (this _containerEngine) InitOperation(
-pathToOperationDir string,
+func (this _containerEngine) InitOp(
+pathToOpDir string,
+opName string,
 ) (err error) {
   return this.compositionRoot.
-  InitOperationUseCase().
-  Execute(pathToOperationDir)
+  InitOpUseCase().
+  Execute(
+    pathToOpDir,
+    opName,
+  )
 }
 
-func (this _containerEngine) RunOperation(
-pathToOperationDir string,
-) (exitCode int, err error) {
+func (this _containerEngine) RunOp(
+pathToOpDir string,
+opName string,
+) (exitCode int, logChannel chan *models.LogEntry, err error) {
   return this.compositionRoot.
-  RunOperationUseCase().
-  Execute(pathToOperationDir)
+  RunOpUseCase().
+  Execute(
+    pathToOpDir,
+    opName,
+  )
 }

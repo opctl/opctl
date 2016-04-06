@@ -5,11 +5,11 @@ import (
 )
 
 type compositionRoot interface {
-  AddOperationUseCase() addOperationUseCase
-  AddSubOperationUseCase() addSubOperationUseCase
-  ListOperationsUseCase() listOperationsUseCase
-  RunOperationUseCase() runOperationUseCase
-  SetDescriptionOfOperationUseCase() setDescriptionOfOperationUseCase
+  AddOpUseCase() addOpUseCase
+  AddSubOpUseCase() addSubOpUseCase
+  ListOpsUseCase() listOpsUseCase
+  RunOpUseCase() runOpUseCase
+  SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
 
 func newCompositionRoot(
@@ -18,53 +18,53 @@ filesys ports.Filesys,
 ) (compositionRoot compositionRoot, err error) {
 
   // factories
-  pathToOperationsDirFactory := newPathToOperationsDirFactory()
-  pathToOperationDirFactory := newPathToOperationDirFactory(pathToOperationsDirFactory)
-  pathToOperationFileFactory := newPathToOperationFileFactory(pathToOperationDirFactory)
+  pathToOpsDirFactory := newPathToOpsDirFactory()
+  pathToOpDirFactory := newPathToOpDirFactory(pathToOpsDirFactory)
+  pathToOpFileFactory := newPathToOpFileFactory(pathToOpDirFactory)
   uniqueStringFactory := newUniqueStringFactory()
 
   yamlCodec := newYamlCodec()
 
   // use cases
-  addOperationUseCase := newAddOperationUseCase(
+  addOpUseCase := newAddOpUseCase(
     filesys,
-    pathToOperationDirFactory,
-    pathToOperationFileFactory,
+    pathToOpDirFactory,
+    pathToOpFileFactory,
     yamlCodec,
   )
 
-  addSubOperationUseCase := newAddSubOperationUseCase(
+  addSubOpUseCase := newAddSubOpUseCase(
     filesys,
-    pathToOperationFileFactory,
+    pathToOpFileFactory,
     yamlCodec,
   )
 
-  listOperationsUseCase := newListOperationsUseCase(
+  listOpsUseCase := newListOpsUseCase(
     filesys,
-    pathToOperationFileFactory,
-    pathToOperationsDirFactory,
+    pathToOpFileFactory,
+    pathToOpsDirFactory,
     yamlCodec,
   )
 
-  runOperationUseCase := newRunOperationUseCase(
+  runOpUseCase := newRunOpUseCase(
     filesys,
     containerEngine,
     uniqueStringFactory,
     yamlCodec,
   )
 
-  setDescriptionOfOperationUseCase := newSetDescriptionOfOperationUseCase(
+  setDescriptionOfOpUseCase := newSetDescriptionOfOpUseCase(
     filesys,
-    pathToOperationFileFactory,
+    pathToOpFileFactory,
     yamlCodec,
   )
 
   compositionRoot = &_compositionRoot{
-    addOperationUseCase: addOperationUseCase,
-    addSubOperationUseCase: addSubOperationUseCase,
-    listOperationsUseCase: listOperationsUseCase,
-    runOperationUseCase: runOperationUseCase,
-    setDescriptionOfOperationUseCase: setDescriptionOfOperationUseCase,
+    addOpUseCase: addOpUseCase,
+    addSubOpUseCase: addSubOpUseCase,
+    listOpsUseCase: listOpsUseCase,
+    runOpUseCase: runOpUseCase,
+    setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
 
   return
@@ -72,29 +72,29 @@ filesys ports.Filesys,
 }
 
 type _compositionRoot struct {
-  addOperationUseCase              addOperationUseCase
-  addSubOperationUseCase           addSubOperationUseCase
-  listOperationsUseCase            listOperationsUseCase
-  runOperationUseCase              runOperationUseCase
-  setDescriptionOfOperationUseCase setDescriptionOfOperationUseCase
+  addOpUseCase              addOpUseCase
+  addSubOpUseCase           addSubOpUseCase
+  listOpsUseCase            listOpsUseCase
+  runOpUseCase              runOpUseCase
+  setDescriptionOfOpUseCase setDescriptionOfOpUseCase
 }
 
-func (this _compositionRoot) AddOperationUseCase() addOperationUseCase {
-  return this.addOperationUseCase
+func (this _compositionRoot) AddOpUseCase() addOpUseCase {
+  return this.addOpUseCase
 }
 
-func (this _compositionRoot) AddSubOperationUseCase() addSubOperationUseCase {
-  return this.addSubOperationUseCase
+func (this _compositionRoot) AddSubOpUseCase() addSubOpUseCase {
+  return this.addSubOpUseCase
 }
 
-func (this _compositionRoot) ListOperationsUseCase() listOperationsUseCase {
-  return this.listOperationsUseCase
+func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {
+  return this.listOpsUseCase
 }
 
-func (this _compositionRoot) RunOperationUseCase() runOperationUseCase {
-  return this.runOperationUseCase
+func (this _compositionRoot) RunOpUseCase() runOpUseCase {
+  return this.runOpUseCase
 }
 
-func (this _compositionRoot) SetDescriptionOfOperationUseCase() setDescriptionOfOperationUseCase {
-  return this.setDescriptionOfOperationUseCase
+func (this _compositionRoot) SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase {
+  return this.setDescriptionOfOpUseCase
 }

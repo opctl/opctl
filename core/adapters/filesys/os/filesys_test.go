@@ -35,7 +35,7 @@ var _ = Describe("filesys", func() {
     It("should invoke compositionRoot.listNamesOfChildDirsUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedPathToPERATIONarentDir := ""
+      providedPathToParentDir := ""
 
       // wire up fakes
       fakeListNamesOfChildDirsUseCase := new(fakeListNamesOfChildDirsUseCase)
@@ -48,10 +48,10 @@ var _ = Describe("filesys", func() {
       }
 
       /* act */
-      objectUnderTest.ListNamesOfChildDirs(providedPathToPERATIONarentDir)
+      objectUnderTest.ListNamesOfChildDirs(providedPathToParentDir)
 
       /* assert */
-      Expect(fakeListNamesOfChildDirsUseCase.ExecuteArgsForCall(0)).To(Equal(providedPathToPERATIONarentDir))
+      Expect(fakeListNamesOfChildDirsUseCase.ExecuteArgsForCall(0)).To(Equal(providedPathToParentDir))
       Expect(fakeListNamesOfChildDirsUseCase.ExecuteCallCount()).To(Equal(1))
 
     })

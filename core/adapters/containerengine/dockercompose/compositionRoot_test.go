@@ -6,31 +6,31 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("initOperationUseCase", func() {
-    It("should return an instance of type initOperationUseCase", func() {
+  Context("initOpUseCase", func() {
+    It("should return an instance of type initOpUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualInitOperationUseCase := objectUnderTest.InitOperationUseCase()
+      actualInitOpUseCase := objectUnderTest.InitOpUseCase()
 
       /* assert */
-      Expect(actualInitOperationUseCase).To(BeAssignableToTypeOf(&_initOperationUseCase{}))
+      Expect(actualInitOpUseCase).To(BeAssignableToTypeOf(&_initOpUseCase{}))
 
     })
   })
-  Context("runOperationUseCase", func() {
-    It("should return an instance of type runOperationUseCase", func() {
+  Context("runOpUseCase", func() {
+    It("should return an instance of type runOpUseCase", func() {
 
       /* arrange */
       objectUnderTest,_ := newCompositionRoot()
 
       /* act */
-      actualRunOperationUseCase := objectUnderTest.RunOperationUseCase()
+      actualRunOpUseCase := objectUnderTest.RunOpUseCase()
 
       /* assert */
-      Expect(actualRunOperationUseCase).To(BeAssignableToTypeOf(&_runOperationUseCase{}))
+      Expect(actualRunOpUseCase).To(BeAssignableToTypeOf(&_runOpUseCase{}))
 
     })
   })

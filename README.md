@@ -10,13 +10,14 @@ A lightweight dev op spec runtime.
 # Supported Use Cases
 
 ### Project
-- add project operation
-- add project sub-operation
-- list project operations
-- set description of project operation
+- add project op
+- add project sub-op
+- list project ops
+- set description of project op
 
-### Operation
-- run operation
+### Op Run
+- run op
+- get logs for op run
 
 
 # Prerequisites

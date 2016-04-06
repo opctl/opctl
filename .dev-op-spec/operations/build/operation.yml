@@ -1,5 +1,0 @@
-name: build
-description: builds all artifacts
-subOperations:
-- url: build-bin
-- url: build-docker-image

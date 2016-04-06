@@ -8,208 +8,208 @@ import (
 )
 
 type FakeApi struct {
-  AddOperationStub                     func(req models.AddOperationReq) (err error)
-  addOperationMutex                    sync.RWMutex
-  addOperationArgsForCall              []struct {
-    req models.AddOperationReq
+  AddOpStub                     func(req models.AddOpReq) (err error)
+  addOpMutex                    sync.RWMutex
+  addOpArgsForCall              []struct {
+    req models.AddOpReq
   }
-  addOperationReturns                  struct {
+  addOpReturns                  struct {
                                          result1 error
                                        }
-  AddSubOperationStub                  func(req models.AddSubOperationReq) (err error)
-  addSubOperationMutex                 sync.RWMutex
-  addSubOperationArgsForCall           []struct {
-    req models.AddSubOperationReq
+  AddSubOpStub                  func(req models.AddSubOpReq) (err error)
+  addSubOpMutex                 sync.RWMutex
+  addSubOpArgsForCall           []struct {
+    req models.AddSubOpReq
   }
-  addSubOperationReturns               struct {
+  addSubOpReturns               struct {
                                          result1 error
                                        }
-  ListOperationsStub                   func(projectUrl *models.Url) (operations []models.OperationDetailedView, err error)
-  listOperationsMutex                  sync.RWMutex
-  listOperationsArgsForCall            []struct {
+  ListOpsStub                   func(projectUrl *models.Url) (ops []models.OpDetailedView, err error)
+  listOpsMutex                  sync.RWMutex
+  listOpsArgsForCall            []struct {
     projectUrl *models.Url
   }
-  listOperationsReturns                struct {
-                                         result1 []models.OperationDetailedView
+  listOpsReturns                struct {
+                                         result1 []models.OpDetailedView
                                          result2 error
                                        }
-  RunOperationStub                     func(req models.RunOperationReq) (operationRun models.OperationRunDetailedView, err error)
-  runOperationMutex                    sync.RWMutex
-  runOperationArgsForCall              []struct {
-    req models.RunOperationReq
+  RunOpStub                     func(req models.RunOpReq) (opRun models.OpRunDetailedView, err error)
+  runOpMutex                    sync.RWMutex
+  runOpArgsForCall              []struct {
+    req models.RunOpReq
   }
-  runOperationReturns                  struct {
-                                         result1 models.OperationRunDetailedView
+  runOpReturns                  struct {
+                                         result1 models.OpRunDetailedView
                                          result2 error
                                        }
-  SetDescriptionOfOperationStub        func(req models.SetDescriptionOfOperationReq) (err error)
-  setDescriptionOfOperationMutex       sync.RWMutex
-  setDescriptionOfOperationArgsForCall []struct {
-    req models.SetDescriptionOfOperationReq
+  SetDescriptionOfOpStub        func(req models.SetDescriptionOfOpReq) (err error)
+  setDescriptionOfOpMutex       sync.RWMutex
+  setDescriptionOfOpArgsForCall []struct {
+    req models.SetDescriptionOfOpReq
   }
-  setDescriptionOfOperationReturns     struct {
+  setDescriptionOfOpReturns     struct {
                                          result1 error
                                        }
 }
 
-func (fake *FakeApi) AddOperation(req models.AddOperationReq) (err error) {
-  fake.addOperationMutex.Lock()
-  fake.addOperationArgsForCall = append(fake.addOperationArgsForCall, struct {
-    req models.AddOperationReq
+func (fake *FakeApi) AddOp(req models.AddOpReq) (err error) {
+  fake.addOpMutex.Lock()
+  fake.addOpArgsForCall = append(fake.addOpArgsForCall, struct {
+    req models.AddOpReq
   }{req})
-  fake.addOperationMutex.Unlock()
-  if fake.AddOperationStub != nil {
-    return fake.AddOperationStub(req)
+  fake.addOpMutex.Unlock()
+  if fake.AddOpStub != nil {
+    return fake.AddOpStub(req)
   } else {
-    return fake.addOperationReturns.result1
+    return fake.addOpReturns.result1
   }
 }
 
-func (fake *FakeApi) AddOperationCallCount() int {
-  fake.addOperationMutex.RLock()
-  defer fake.addOperationMutex.RUnlock()
-  return len(fake.addOperationArgsForCall)
+func (fake *FakeApi) AddOpCallCount() int {
+  fake.addOpMutex.RLock()
+  defer fake.addOpMutex.RUnlock()
+  return len(fake.addOpArgsForCall)
 }
 
-func (fake *FakeApi) AddOperationArgsForCall(i int) models.AddOperationReq {
-  fake.addOperationMutex.RLock()
-  defer fake.addOperationMutex.RUnlock()
-  return fake.addOperationArgsForCall[i].req
+func (fake *FakeApi) AddOpArgsForCall(i int) models.AddOpReq {
+  fake.addOpMutex.RLock()
+  defer fake.addOpMutex.RUnlock()
+  return fake.addOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) AddOperationReturns(result1 error) {
-  fake.AddOperationStub = nil
-  fake.addOperationReturns = struct {
+func (fake *FakeApi) AddOpReturns(result1 error) {
+  fake.AddOpStub = nil
+  fake.addOpReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *FakeApi) AddSubOperation(req models.AddSubOperationReq) (err error) {
-  fake.addSubOperationMutex.Lock()
-  fake.addSubOperationArgsForCall = append(fake.addSubOperationArgsForCall, struct {
-    req models.AddSubOperationReq
+func (fake *FakeApi) AddSubOp(req models.AddSubOpReq) (err error) {
+  fake.addSubOpMutex.Lock()
+  fake.addSubOpArgsForCall = append(fake.addSubOpArgsForCall, struct {
+    req models.AddSubOpReq
   }{req})
-  fake.addSubOperationMutex.Unlock()
-  if fake.AddSubOperationStub != nil {
-    return fake.AddSubOperationStub(req)
+  fake.addSubOpMutex.Unlock()
+  if fake.AddSubOpStub != nil {
+    return fake.AddSubOpStub(req)
   } else {
-    return fake.addSubOperationReturns.result1
+    return fake.addSubOpReturns.result1
   }
 }
 
-func (fake *FakeApi) AddSubOperationCallCount() int {
-  fake.addSubOperationMutex.RLock()
-  defer fake.addSubOperationMutex.RUnlock()
-  return len(fake.addSubOperationArgsForCall)
+func (fake *FakeApi) AddSubOpCallCount() int {
+  fake.addSubOpMutex.RLock()
+  defer fake.addSubOpMutex.RUnlock()
+  return len(fake.addSubOpArgsForCall)
 }
 
-func (fake *FakeApi) AddSubOperationArgsForCall(i int) models.AddSubOperationReq {
-  fake.addSubOperationMutex.RLock()
-  defer fake.addSubOperationMutex.RUnlock()
-  return fake.addSubOperationArgsForCall[i].req
+func (fake *FakeApi) AddSubOpArgsForCall(i int) models.AddSubOpReq {
+  fake.addSubOpMutex.RLock()
+  defer fake.addSubOpMutex.RUnlock()
+  return fake.addSubOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) AddSubOperationReturns(result1 error) {
-  fake.AddSubOperationStub = nil
-  fake.addSubOperationReturns = struct {
+func (fake *FakeApi) AddSubOpReturns(result1 error) {
+  fake.AddSubOpStub = nil
+  fake.addSubOpReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *FakeApi) ListOperations(projectUrl *models.Url) (operations []models.OperationDetailedView, err error) {
-  fake.listOperationsMutex.Lock()
-  fake.listOperationsArgsForCall = append(fake.listOperationsArgsForCall, struct {
+func (fake *FakeApi) ListOps(projectUrl *models.Url) (ops []models.OpDetailedView, err error) {
+  fake.listOpsMutex.Lock()
+  fake.listOpsArgsForCall = append(fake.listOpsArgsForCall, struct {
     projectUrl *models.Url
   }{projectUrl})
-  fake.listOperationsMutex.Unlock()
-  if fake.ListOperationsStub != nil {
-    return fake.ListOperationsStub(projectUrl)
+  fake.listOpsMutex.Unlock()
+  if fake.ListOpsStub != nil {
+    return fake.ListOpsStub(projectUrl)
   } else {
-    return fake.listOperationsReturns.result1, fake.listOperationsReturns.result2
+    return fake.listOpsReturns.result1, fake.listOpsReturns.result2
   }
 }
 
-func (fake *FakeApi) ListOperationsCallCount() int {
-  fake.listOperationsMutex.RLock()
-  defer fake.listOperationsMutex.RUnlock()
-  return len(fake.listOperationsArgsForCall)
+func (fake *FakeApi) ListOpsCallCount() int {
+  fake.listOpsMutex.RLock()
+  defer fake.listOpsMutex.RUnlock()
+  return len(fake.listOpsArgsForCall)
 }
 
-func (fake *FakeApi) ListOperationsArgsForCall(i int) *models.Url {
-  fake.listOperationsMutex.RLock()
-  defer fake.listOperationsMutex.RUnlock()
-  return fake.listOperationsArgsForCall[i].projectUrl
+func (fake *FakeApi) ListOpsArgsForCall(i int) *models.Url {
+  fake.listOpsMutex.RLock()
+  defer fake.listOpsMutex.RUnlock()
+  return fake.listOpsArgsForCall[i].projectUrl
 }
 
-func (fake *FakeApi) ListOperationsReturns(result1 []models.OperationDetailedView, result2 error) {
-  fake.ListOperationsStub = nil
-  fake.listOperationsReturns = struct {
-    result1 []models.OperationDetailedView
+func (fake *FakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 error) {
+  fake.ListOpsStub = nil
+  fake.listOpsReturns = struct {
+    result1 []models.OpDetailedView
     result2 error
   }{result1, result2}
 }
 
-func (fake *FakeApi) RunOperation(req models.RunOperationReq) (operationRun models.OperationRunDetailedView, err error) {
-  fake.runOperationMutex.Lock()
-  fake.runOperationArgsForCall = append(fake.runOperationArgsForCall, struct {
-    req models.RunOperationReq
+func (fake *FakeApi) RunOp(req models.RunOpReq) (opRun models.OpRunDetailedView, err error) {
+  fake.runOpMutex.Lock()
+  fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
+    req models.RunOpReq
   }{req})
-  fake.runOperationMutex.Unlock()
-  if fake.RunOperationStub != nil {
-    return fake.RunOperationStub(req)
+  fake.runOpMutex.Unlock()
+  if fake.RunOpStub != nil {
+    return fake.RunOpStub(req)
   } else {
-    return fake.runOperationReturns.result1, fake.runOperationReturns.result2
+    return fake.runOpReturns.result1, fake.runOpReturns.result2
   }
 }
 
-func (fake *FakeApi) RunOperationCallCount() int {
-  fake.runOperationMutex.RLock()
-  defer fake.runOperationMutex.RUnlock()
-  return len(fake.runOperationArgsForCall)
+func (fake *FakeApi) RunOpCallCount() int {
+  fake.runOpMutex.RLock()
+  defer fake.runOpMutex.RUnlock()
+  return len(fake.runOpArgsForCall)
 }
 
-func (fake *FakeApi) RunOperationArgsForCall(i int) models.RunOperationReq {
-  fake.runOperationMutex.RLock()
-  defer fake.runOperationMutex.RUnlock()
-  return fake.runOperationArgsForCall[i].req
+func (fake *FakeApi) RunOpArgsForCall(i int) models.RunOpReq {
+  fake.runOpMutex.RLock()
+  defer fake.runOpMutex.RUnlock()
+  return fake.runOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) RunOperationReturns(result1 models.OperationRunDetailedView, result2 error) {
-  fake.RunOperationStub = nil
-  fake.runOperationReturns = struct {
-    result1 models.OperationRunDetailedView
+func (fake *FakeApi) RunOpReturns(result1 models.OpRunDetailedView, result2 error) {
+  fake.RunOpStub = nil
+  fake.runOpReturns = struct {
+    result1 models.OpRunDetailedView
     result2 error
   }{result1, result2}
 }
 
-func (fake *FakeApi) SetDescriptionOfOperation(req models.SetDescriptionOfOperationReq) (err error) {
-  fake.setDescriptionOfOperationMutex.Lock()
-  fake.setDescriptionOfOperationArgsForCall = append(fake.setDescriptionOfOperationArgsForCall, struct {
-    req models.SetDescriptionOfOperationReq
+func (fake *FakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err error) {
+  fake.setDescriptionOfOpMutex.Lock()
+  fake.setDescriptionOfOpArgsForCall = append(fake.setDescriptionOfOpArgsForCall, struct {
+    req models.SetDescriptionOfOpReq
   }{req})
-  fake.setDescriptionOfOperationMutex.Unlock()
-  if fake.SetDescriptionOfOperationStub != nil {
-    return fake.SetDescriptionOfOperationStub(req)
+  fake.setDescriptionOfOpMutex.Unlock()
+  if fake.SetDescriptionOfOpStub != nil {
+    return fake.SetDescriptionOfOpStub(req)
   } else {
-    return fake.setDescriptionOfOperationReturns.result1
+    return fake.setDescriptionOfOpReturns.result1
   }
 }
 
-func (fake *FakeApi) SetDescriptionOfOperationCallCount() int {
-  fake.setDescriptionOfOperationMutex.RLock()
-  defer fake.setDescriptionOfOperationMutex.RUnlock()
-  return len(fake.setDescriptionOfOperationArgsForCall)
+func (fake *FakeApi) SetDescriptionOfOpCallCount() int {
+  fake.setDescriptionOfOpMutex.RLock()
+  defer fake.setDescriptionOfOpMutex.RUnlock()
+  return len(fake.setDescriptionOfOpArgsForCall)
 }
 
-func (fake *FakeApi) SetDescriptionOfOperationArgsForCall(i int) models.SetDescriptionOfOperationReq {
-  fake.setDescriptionOfOperationMutex.RLock()
-  defer fake.setDescriptionOfOperationMutex.RUnlock()
-  return fake.setDescriptionOfOperationArgsForCall[i].req
+func (fake *FakeApi) SetDescriptionOfOpArgsForCall(i int) models.SetDescriptionOfOpReq {
+  fake.setDescriptionOfOpMutex.RLock()
+  defer fake.setDescriptionOfOpMutex.RUnlock()
+  return fake.setDescriptionOfOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) SetDescriptionOfOperationReturns(result1 error) {
-  fake.SetDescriptionOfOperationStub = nil
-  fake.setDescriptionOfOperationReturns = struct {
+func (fake *FakeApi) SetDescriptionOfOpReturns(result1 error) {
+  fake.SetDescriptionOfOpStub = nil
+  fake.setDescriptionOfOpReturns = struct {
     result1 error
   }{result1}
 }

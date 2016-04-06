@@ -13,10 +13,10 @@ var _ = Describe("compositionRoot", func() {
       objectUnderTest, _ := newCompositionRoot()
 
       /* act */
-      actualRestApi := objectUnderTest.RestApi()
+      actualTcpApi := objectUnderTest.TcpApi()
 
       /* assert */
-      Expect(actualRestApi).ShouldNot(BeNil())
+      Expect(actualTcpApi).ShouldNot(BeNil())
 
     })
   })

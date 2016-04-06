@@ -6,52 +6,60 @@ import (
 )
 
 var _ = Describe("containerEngine", func() {
-  Context(".InitOperation() method", func() {
-    It("should invoke compositionRoot.initOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".InitOp() method", func() {
+    It("should invoke compositionRoot.initOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedOperationName := ""
+      providedPathToOpDir := ""
+      providedOpName := ""
 
       // wire up fakes
-      fakeInitOperationUseCase := new(FakeInitOperationUseCase)
+      fakeInitOpUseCase := new(fakeInitOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.InitOperationUseCaseReturns(fakeInitOperationUseCase)
+      fakeCompositionRoot.InitOpUseCaseReturns(fakeInitOpUseCase)
 
       objectUnderTest := &_containerEngine{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.InitOperation(providedOperationName)
+      objectUnderTest.InitOp(
+        providedPathToOpDir,
+        providedOpName,
+      )
 
       /* assert */
-      Expect(fakeInitOperationUseCase.ExecuteArgsForCall(0)).To(Equal(providedOperationName))
-      Expect(fakeInitOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeInitOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedOpName))
+      Expect(fakeInitOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })
-  Context(".RunOperation() method", func() {
-    It("should invoke compositionRoot.runOperationUseCase.Execute() with expected args & return result", func() {
+  Context(".RunOp() method", func() {
+    It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedOperationName := ""
+      providedPathToOpDir := ""
+      providedOpName := ""
 
-      fakeRunOperationUseCase := new(FakeRunOperationUseCase)
+      fakeRunOpUseCase := new(fakeRunOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.RunOperationUseCaseReturns(fakeRunOperationUseCase)
+      fakeCompositionRoot.RunOpUseCaseReturns(fakeRunOpUseCase)
 
       objectUnderTest := &_containerEngine{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.RunOperation(providedOperationName)
+      objectUnderTest.RunOp(
+        providedPathToOpDir,
+        providedOpName,
+      )
 
       /* assert */
-      Expect(fakeRunOperationUseCase.ExecuteArgsForCall(0)).To(Equal(providedOperationName))
-      Expect(fakeRunOperationUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeRunOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedOpName))
+      Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

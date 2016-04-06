@@ -4,7 +4,7 @@ import "os"
 
 type createDirUseCase interface {
   Execute(
-  operationName string,
+  opName string,
   ) (err error)
 }
 
