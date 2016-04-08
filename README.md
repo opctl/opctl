@@ -10,9 +10,9 @@ A lightweight dev op spec runtime.
 # Supported Use Cases
 
 ### Project
-- add project op
-- add project sub-op
-- list project ops
+- add op to project
+- add sub-op to project op
+- list ops of project
 - set description of project op
 
 ### Op Run
