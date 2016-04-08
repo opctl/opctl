@@ -14,6 +14,11 @@ type Api interface {
   req models.AddSubOpReq,
   ) (err error)
 
+  GetLogForOpRun(
+  opRunId string,
+  logChannel chan *models.LogEntry,
+  ) (err error)
+
   ListOps(
   projectUrl *models.Url,
   ) (ops []models.OpDetailedView, err error)
@@ -68,6 +73,19 @@ req models.AddSubOpReq,
   compositionRoot.
   AddSubOpUseCase().
   Execute(req)
+}
+
+func (this _api) GetLogForOpRun(
+opRunId string,
+logChannel chan *models.LogEntry,
+) (err error) {
+  return this.
+  compositionRoot.
+  GetLogForOpRunUseCase().
+  Execute(
+    opRunId,
+    logChannel,
+  )
 }
 
 func (this _api) ListOps(

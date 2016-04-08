@@ -21,7 +21,7 @@ coreApi core.Api,
   compositionRoot = &_compositionRoot{
     addOpHandler:newAddOpHandler(coreApi),
     addSubOpHandler:newAddSubOpHandler(coreApi),
-    getLogForOpRunHandler:newGetLogForOpRunHandler(),
+    getLogForOpRunHandler:newGetLogForOpRunHandler(coreApi),
     listOpsHandler:newListOpsHandler(coreApi),
     runOpHandler:newRunOpHandler(coreApi),
     setDescriptionOfOpHandler:newSetDescriptionOfOpHandler(coreApi),
@@ -34,9 +34,9 @@ coreApi core.Api,
 type _compositionRoot struct {
   addOpHandler              http.Handler
   addSubOpHandler           http.Handler
-  getLogForOpRunHandler            http.Handler
+  getLogForOpRunHandler     http.Handler
   listOpsHandler            http.Handler
-  runOpHandler                     http.Handler
+  runOpHandler              http.Handler
   setDescriptionOfOpHandler http.Handler
 }
 

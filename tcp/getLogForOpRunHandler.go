@@ -3,26 +3,35 @@ package tcp
 import (
   "github.com/gorilla/websocket"
   "net/http"
-  "fmt"
+  "github.com/dev-op-spec/engine/core"
+  "net/url"
+  "github.com/chrisdostert/mux"
+  "encoding/json"
+  "github.com/dev-op-spec/engine/core/models"
+  "time"
 )
 
-func newGetLogForOpRunHandler() http.Handler {
+func newGetLogForOpRunHandler(
+coreApi core.Api,
+) http.Handler {
 
-  return &getLogForOpRunHandler{}
-
-}
-
-func print_binary(s []byte) {
-  fmt.Printf("Received b:");
-  for n := 0; n < len(s); n++ {
-    fmt.Printf("%d,", s[n]);
+  return &getLogForOpRunHandler{
+    coreApi:coreApi,
   }
-  fmt.Printf("\n");
+
 }
 
-type getLogForOpRunHandler struct{}
+type getLogForOpRunHandler struct {
+  coreApi core.Api
+}
 
 func (this getLogForOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+  opRunId, err := url.QueryUnescape(mux.Vars(r)["opRunId"])
+  if (nil != err) {
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
+  }
 
   upgrader := websocket.Upgrader{
     ReadBufferSize:  1024,
@@ -33,22 +42,52 @@ func (this getLogForOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
   }
 
   conn, err := upgrader.Upgrade(w, r, nil)
-  if err != nil {
-    //log.Println(err)
+  if (nil != err) {
+    http.Error(w, err.Error(), http.StatusBadRequest)
     return
   }
 
-  for {
-    messageType, p, err := conn.ReadMessage()
-    if err != nil {
-      return
-    }
+  logChannel := make(chan *models.LogEntry)
 
-    print_binary(p)
+  go func() {
+    for {
 
-    err = conn.WriteMessage(messageType, p);
-    if err != nil {
-      return
+      logEntry, isOpen := <-logChannel
+      if (isOpen) {
+
+        logEntryBytes, err := json.Marshal(logEntry)
+        if (nil != err) {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+          conn.Close()
+        }
+
+        err = conn.WriteMessage(websocket.TextMessage, logEntryBytes);
+        if (nil != err) {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+          conn.Close()
+        }
+
+      }else {
+
+        conn.WriteControl(
+          websocket.CloseMessage,
+          websocket.FormatCloseMessage(websocket.CloseNormalClosure, "success"),
+          time.Time{},
+        )
+        conn.Close()
+
+        return
+
+      }
+
     }
+  }()
+
+  err = this.coreApi.GetLogForOpRun(
+    opRunId,
+    logChannel,
+  )
+  if (nil != err) {
+    conn.Close()
   }
 }

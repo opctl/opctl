@@ -74,6 +74,7 @@ func (this _api) Start(
     AllowedHeaders:[]string{"*"},
   }))
 
+
   n.Use(negroni.NewStatic(http.Dir("swagger")))
 
   n.UseHandler(router)

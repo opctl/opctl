@@ -20,6 +20,7 @@ type runOpUseCase interface {
 func newRunOpUseCase(
 filesys ports.Filesys,
 containerEngine ports.ContainerEngine,
+opRunLogFeed opRunLogFeed,
 uniqueStringFactory uniqueStringFactory,
 yamlCodec yamlCodec,
 ) runOpUseCase {
@@ -27,6 +28,7 @@ yamlCodec yamlCodec,
   return &_runOpUseCase{
     filesys:filesys,
     containerEngine: containerEngine,
+    opRunLogFeed:opRunLogFeed,
     uniqueStringFactory:uniqueStringFactory,
     yamlCodec:yamlCodec,
   }
@@ -36,6 +38,7 @@ yamlCodec yamlCodec,
 type _runOpUseCase struct {
   filesys             ports.Filesys
   containerEngine     ports.ContainerEngine
+  opRunLogFeed        opRunLogFeed
   uniqueStringFactory uniqueStringFactory
   yamlCodec           yamlCodec
 }
@@ -95,17 +98,9 @@ urlsOfAlreadyRunOps[]*models.Url,
   if (len(_opFile.SubOps) == 0) {
 
     logChannel := make(chan *models.LogEntry, 1000)
-    go func() {
-      for {
-        logEntry := <-logChannel
-        fmt.Printf(
-          "Timestamp: `%v` | Stream: `%v` | Message: `%v` \n",
-          logEntry.Timestamp,
-          logEntry.Stream,
-          logEntry.Message,
-        )
-      }
-    }()
+
+    // register logChannel as feed publisher
+    this.opRunLogFeed.RegisterPublisher(*opRun.Id, logChannel)
 
     // run op
     opRun.ExitCode, err = this.containerEngine.RunOp(
@@ -113,6 +108,8 @@ urlsOfAlreadyRunOps[]*models.Url,
       *_opFile.Name,
       logChannel,
     )
+
+    close(logChannel)
 
     if (opRun.ExitCode != 0 || nil != err) {
       return

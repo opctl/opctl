@@ -7,6 +7,7 @@ import (
 type compositionRoot interface {
   AddOpUseCase() addOpUseCase
   AddSubOpUseCase() addSubOpUseCase
+  GetLogForOpRunUseCase() getLogForOpRunUseCase
   ListOpsUseCase() listOpsUseCase
   RunOpUseCase() runOpUseCase
   SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
@@ -25,6 +26,8 @@ filesys ports.Filesys,
 
   yamlCodec := newYamlCodec()
 
+  opRunLogFeed := newOpRunLogFeed()
+
   // use cases
   addOpUseCase := newAddOpUseCase(
     filesys,
@@ -39,6 +42,10 @@ filesys ports.Filesys,
     yamlCodec,
   )
 
+  getLogForOpRunUseCase := newGetLogForOpRunUseCase(
+    opRunLogFeed,
+  )
+
   listOpsUseCase := newListOpsUseCase(
     filesys,
     pathToOpFileFactory,
@@ -49,6 +56,7 @@ filesys ports.Filesys,
   runOpUseCase := newRunOpUseCase(
     filesys,
     containerEngine,
+    opRunLogFeed,
     uniqueStringFactory,
     yamlCodec,
   )
@@ -62,6 +70,7 @@ filesys ports.Filesys,
   compositionRoot = &_compositionRoot{
     addOpUseCase: addOpUseCase,
     addSubOpUseCase: addSubOpUseCase,
+    getLogForOpRunUseCase: getLogForOpRunUseCase,
     listOpsUseCase: listOpsUseCase,
     runOpUseCase: runOpUseCase,
     setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
@@ -74,6 +83,7 @@ filesys ports.Filesys,
 type _compositionRoot struct {
   addOpUseCase              addOpUseCase
   addSubOpUseCase           addSubOpUseCase
+  getLogForOpRunUseCase     getLogForOpRunUseCase
   listOpsUseCase            listOpsUseCase
   runOpUseCase              runOpUseCase
   setDescriptionOfOpUseCase setDescriptionOfOpUseCase
@@ -85,6 +95,10 @@ func (this _compositionRoot) AddOpUseCase() addOpUseCase {
 
 func (this _compositionRoot) AddSubOpUseCase() addSubOpUseCase {
   return this.addSubOpUseCase
+}
+
+func (this _compositionRoot) GetLogForOpRunUseCase() getLogForOpRunUseCase {
+  return this.getLogForOpRunUseCase
 }
 
 func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {
