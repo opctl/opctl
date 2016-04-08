@@ -48,6 +48,13 @@ explanation:
 
 open your browser and navigate to the url returned from `echo $(docker-machine ip):8080`
 
+# Releases
+All releases will be [tagged](https://github.com/dev-op-spec/engine/tags) and made available on the [releases](https://github.com/dev-op-spec/engine/releases) page with release notes.
+
+# Versioning
+This project adheres to the [Semantic Versioning](http://semver.org/) specification
+
+*Be advised: this project is currently at Major version zero. Per the semantic versioning spec: "Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable."*
 
 # Contributing
 
