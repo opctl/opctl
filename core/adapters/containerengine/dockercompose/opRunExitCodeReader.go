@@ -16,19 +16,16 @@ type opRunExitCodeReader interface {
 }
 
 func newOpRunExitCodeReader(
-fs filesystem,
 dockerEngine *dockerEngine.Client,
 ) opRunExitCodeReader {
 
   return &_opRunExitCodeReader{
-    fs:fs,
     dockerEngine:dockerEngine,
   }
 
 }
 
 type _opRunExitCodeReader struct {
-  fs           filesystem
   dockerEngine *dockerEngine.Client
 }
 

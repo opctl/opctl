@@ -20,9 +20,9 @@ func newCompositionRoot(
     return
   }
 
-  opRunExitCodeReader := newOpRunExitCodeReader(fs, dockerEngine)
+  opRunExitCodeReader := newOpRunExitCodeReader(dockerEngine)
 
-  opRunResourceFlusher := newOpRunResourceFlusher(fs)
+  opRunResourceFlusher := newOpRunResourceFlusher()
 
   compositionRoot = &_compositionRoot{
     initOpUseCase: newInitOpUseCase(fs, yml),

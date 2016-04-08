@@ -1,18 +1,19 @@
 package dockercompose
 
 import (
-  "os"
   "os/exec"
+  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core"
 )
 
 type opRunResourceFlusher interface {
   flush(
   pathToOpDir string,
+  logChannel chan *models.LogEntry,
   ) (err error)
 }
 
 func newOpRunResourceFlusher(
-fs filesystem,
 ) opRunResourceFlusher {
 
   return &_opRunResourceFlusher{}
@@ -23,6 +24,7 @@ type _opRunResourceFlusher struct{}
 
 func (this _opRunResourceFlusher) flush(
 pathToOpDir string,
+logChannel chan *models.LogEntry,
 ) (err error) {
 
   // down
@@ -37,8 +39,8 @@ pathToOpDir string,
 
   dockerComposeDownCmd.Dir = pathToOpDir
 
-  dockerComposeDownCmd.Stdout = os.Stdout
-  dockerComposeDownCmd.Stderr = os.Stderr
+  dockerComposeDownCmd.Stdout = core.NewLogEmittingIoWriter(logChannel, models.StdOutStream)
+  dockerComposeDownCmd.Stderr = core.NewLogEmittingIoWriter(logChannel, models.StdErrStream)
 
   err = dockerComposeDownCmd.Run()
 

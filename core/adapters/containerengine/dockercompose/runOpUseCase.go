@@ -109,6 +109,7 @@ logChannel chan *models.LogEntry,
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
       pathToOpDir,
+      logChannel,
     )
     if (nil != flushOpRunResourcesError) {
 
