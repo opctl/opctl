@@ -8,7 +8,7 @@ import (
 type pathToOpDirFactory interface {
   Construct(
   projectUrl *models.Url,
-  opName *string,
+  opName string,
   ) (pathToOpDir string)
 }
 
@@ -28,7 +28,7 @@ type _pathToOpDirFactory struct {
 
 func (this _pathToOpDirFactory) Construct(
 projectUrl *models.Url,
-opName *string,
+opName string,
 ) (pathToOpDir string) {
 
   pathToOpsDir := this.pathToOpsDirFactory.Construct(
@@ -37,7 +37,7 @@ opName *string,
 
   pathToOpDir = path.Join(
     pathToOpsDir,
-    *opName,
+    opName,
   )
 
   return

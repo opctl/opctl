@@ -28,10 +28,10 @@ yamlCodec yamlCodec,
 }
 
 type _addOpUseCase struct {
-  filesys                    ports.Filesys
+  filesys             ports.Filesys
   pathToOpDirFactory  pathToOpDirFactory
   pathToOpFileFactory pathToOpFileFactory
-  yamlCodec                  yamlCodec
+  yamlCodec           yamlCodec
 }
 
 func (this _addOpUseCase) Execute(
@@ -40,7 +40,7 @@ req models.AddOpReq,
 
   pathToOpDir := this.pathToOpDirFactory.Construct(
     req.ProjectUrl,
-    &req.Name,
+    req.Name,
   )
 
   err = this.filesys.CreateDir(pathToOpDir)
@@ -50,7 +50,7 @@ req models.AddOpReq,
 
   var opFile = opFile{
     Description:req.Description,
-    Name:&req.Name,
+    Name:req.Name,
   }
 
   opFileBytes, err := this.yamlCodec.toYaml(&opFile)
@@ -60,7 +60,7 @@ req models.AddOpReq,
 
   pathToOpFile := this.pathToOpFileFactory.Construct(
     req.ProjectUrl,
-    &req.Name,
+    req.Name,
   )
 
   err = this.filesys.SaveFile(

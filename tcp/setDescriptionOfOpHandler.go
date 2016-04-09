@@ -47,7 +47,7 @@ func (this setDescriptionOfOpHandler) ServeHTTP(w http.ResponseWriter, r *http.R
   }
 
   opName := mux.Vars(r)["opName"]
-  setDescriptionOfOpReq.OpName = &opName
+  setDescriptionOfOpReq.OpName = opName
 
   err = this.coreApi.SetDescriptionOfOp(setDescriptionOfOpReq)
   if (nil != err) {

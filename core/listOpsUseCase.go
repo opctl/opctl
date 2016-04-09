@@ -28,10 +28,10 @@ yamlCodec yamlCodec,
 }
 
 type _listOpsUseCase struct {
-  filesys                    ports.Filesys
+  filesys             ports.Filesys
   pathToOpFileFactory pathToOpFileFactory
   pathToOpsDirFactory pathToOpsDirFactory
-  yamlCodec                  yamlCodec
+  yamlCodec           yamlCodec
 }
 
 func (this _listOpsUseCase) Execute(
@@ -53,7 +53,7 @@ projectUrl *models.Url,
 
     pathToOpFile := this.pathToOpFileFactory.Construct(
       projectUrl,
-      &opDirName,
+      opDirName,
     )
 
     var opFileBytes []byte

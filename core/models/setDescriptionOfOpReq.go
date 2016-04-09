@@ -2,7 +2,7 @@ package models
 
 func NewSetDescriptionOfOpReq(
 projectUrl *Url,
-opName *string,
+opName string,
 description string,
 ) *SetDescriptionOfOpReq {
 
@@ -16,6 +16,6 @@ description string,
 
 type SetDescriptionOfOpReq struct {
   ProjectUrl    *Url
-  OpName *string
+  OpName string
   Description   string `json:"description"`
 }

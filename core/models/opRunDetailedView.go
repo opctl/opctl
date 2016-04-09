@@ -1,7 +1,7 @@
 package models
 
 type OpRunDetailedView struct {
-  Id                *string `json:"id"`
+  Id                string `json:"id"`
   OpUrl      *Url `json:"opUrl"`
   SubOps     []*OpRunSummaryView `json:"subOps,omitempty"`
   StartedAtUnixTime int64 `json:"startedAtUnixTime"`

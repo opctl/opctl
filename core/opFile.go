@@ -5,7 +5,7 @@ type opFileSubOp struct {
 }
 
 type opFile struct {
-  Name        *string `yaml:"name"`
+  Name        string `yaml:"name"`
   Description string `yaml:"description"`
   SubOps      []opFileSubOp `yaml:"subOps,omitempty"`
 }

@@ -8,7 +8,7 @@ import (
 type pathToOpFileFactory interface {
   Construct(
   projectUrl *models.Url,
-  opName *string,
+  opName string,
   ) (pathToOpFile string)
 }
 
@@ -28,7 +28,7 @@ type _pathToOpFileFactory struct {
 
 func (this _pathToOpFileFactory) Construct(
 projectUrl *models.Url,
-opName *string,
+opName string,
 ) (pathToOpFile string) {
 
   pathToOpDir := this.pathToOpDirFactory.Construct(

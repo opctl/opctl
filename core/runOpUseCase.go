@@ -100,12 +100,12 @@ urlsOfAlreadyRunOps[]*models.Url,
     logChannel := make(chan *models.LogEntry, 1000)
 
     // register logChannel as feed publisher
-    this.opRunLogFeed.RegisterPublisher(*opRun.Id, logChannel)
+    this.opRunLogFeed.RegisterPublisher(opRun.Id, logChannel)
 
     // run op
     opRun.ExitCode, err = this.containerEngine.RunOp(
       req.OpUrl.Path,
-      *_opFile.Name,
+      _opFile.Name,
       logChannel,
     )
 

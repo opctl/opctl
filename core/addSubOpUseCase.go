@@ -26,9 +26,9 @@ yamlCodec yamlCodec,
 }
 
 type _addSubOpUseCase struct {
-  filesys                    ports.Filesys
+  filesys             ports.Filesys
   pathToOpFileFactory pathToOpFileFactory
-  yamlCodec                  yamlCodec
+  yamlCodec           yamlCodec
 }
 
 func (this _addSubOpUseCase) Execute(
@@ -37,7 +37,7 @@ req models.AddSubOpReq,
 
   pathToOpFile := this.pathToOpFileFactory.Construct(
     req.ProjectUrl,
-    &req.OpName,
+    req.OpName,
   )
 
   opFileBytes, err := this.filesys.GetBytesOfFile(pathToOpFile)
