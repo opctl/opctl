@@ -18,6 +18,7 @@ type runOpUseCase interface {
 }
 
 func newRunOpUseCase(
+eventStream eventStream,
 filesys ports.Filesys,
 containerEngine ports.ContainerEngine,
 opRunLogFeed opRunLogFeed,
@@ -26,6 +27,7 @@ yamlCodec yamlCodec,
 ) runOpUseCase {
 
   return &_runOpUseCase{
+    eventStream:eventStream,
     filesys:filesys,
     containerEngine: containerEngine,
     opRunLogFeed:opRunLogFeed,
@@ -36,6 +38,7 @@ yamlCodec yamlCodec,
 }
 
 type _runOpUseCase struct {
+  eventStream         eventStream
   filesys             ports.Filesys
   containerEngine     ports.ContainerEngine
   opRunLogFeed        opRunLogFeed
@@ -48,12 +51,20 @@ req models.RunOpReq,
 urlsOfAlreadyRunOps[]*models.Url,
 ) (opRun models.OpRunDetailedView, err error) {
 
-  opRun.StartedAtUnixTime = time.Now().Unix()
+  startedAtTime := time.Now()
+  opRun.StartedAtUnixTime = startedAtTime.Unix()
 
   opRun.Id, err = this.uniqueStringFactory.Construct()
   if (nil != err) {
     return
   }
+
+  this.eventStream.Publish(
+    models.NewOpRunStartedEvent(
+      &startedAtTime,
+      opRun.Id,
+    ),
+  )
 
   opRun.OpUrl = req.OpUrl
 
@@ -75,7 +86,15 @@ urlsOfAlreadyRunOps[]*models.Url,
 
   defer func() {
 
-    opRun.EndedAtUnixTime = time.Now().Unix()
+    endedAtTime := time.Now()
+    opRun.EndedAtUnixTime = endedAtTime.Unix()
+
+    this.eventStream.Publish(
+      models.NewOpRunFinishedEvent(
+        &endedAtTime,
+        opRun.Id,
+      ),
+    )
 
   }()
 

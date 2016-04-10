@@ -68,22 +68,16 @@ subscriberChannel chan *models.LogEntry,
   existingSubscribers := this.subscribersLookupByOpRunId[opRunId]
   this.subscribersLookupByOpRunIdRWMutex.RUnlock()
 
-  if (len(existingSubscribers) == 0) {
+  this.subscribersLookupByOpRunIdRWMutex.Lock()
+  if (nil == existingSubscribers) {
     // handle first subscriber
-
-    this.subscribersLookupByOpRunIdRWMutex.Lock()
     this.subscribersLookupByOpRunId = map[string][]chan *models.LogEntry{
       opRunId: []chan *models.LogEntry{subscriberChannel},
     }
-    this.subscribersLookupByOpRunIdRWMutex.Unlock()
-
   }else {
-
-    this.subscribersLookupByOpRunIdRWMutex.Lock()
     this.subscribersLookupByOpRunId[opRunId] = append(existingSubscribers, subscriberChannel)
-    this.subscribersLookupByOpRunIdRWMutex.Unlock()
-
   }
+  this.subscribersLookupByOpRunIdRWMutex.Unlock()
 
 }
 

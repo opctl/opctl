@@ -57,6 +57,11 @@ func (this _api) Start(
   ).Methods(http.MethodPost)
 
   router.Handle(
+    getEventStreamRelUrlTemplate,
+    this.compositionRoot.GetEventStreamHandler(),
+  ).Methods(http.MethodGet)
+
+  router.Handle(
     getLogForOpRunRelUrlTemplate,
     this.compositionRoot.GetLogForOpRunHandler(),
   ).Methods(http.MethodGet)
@@ -73,7 +78,6 @@ func (this _api) Start(
     },
     AllowedHeaders:[]string{"*"},
   }))
-
 
   n.Use(negroni.NewStatic(http.Dir("swagger")))
 

@@ -114,7 +114,7 @@ var _ = Describe("_sdk", func() {
     It("should invoke compositionRoot.setDescriptionOfOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedSetDescriptionOfOpReq := models.NewSetDescriptionOfOpReq(&models.Url{}, new(string), "")
+      providedSetDescriptionOfOpReq := models.NewSetDescriptionOfOpReq(&models.Url{}, "", "")
 
       // wire up fakes
       fakeSetDescriptionOfOpUseCase := new(fakeSetDescriptionOfOpUseCase)

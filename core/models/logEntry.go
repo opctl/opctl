@@ -19,3 +19,7 @@ type LogEntry struct {
   Timestamp int64 `json:"timestamp"`
   Stream    string `json:"stream"`
 }
+
+const StdOutStream string = "stdout"
+
+const StdErrStream string = "stderr"

@@ -20,10 +20,10 @@ var _ = Describe("uniqueStringFactory", func() {
           Fail(err.Error())
         }
 
-        if _, ok := stringsReturnedFromConstruct[*uniqueString]; ok {
+        if _, ok := stringsReturnedFromConstruct[uniqueString]; ok {
           Fail("same string returned twice")
         }else {
-          stringsReturnedFromConstruct[*uniqueString] = true
+          stringsReturnedFromConstruct[uniqueString] = true
         }
 
       }

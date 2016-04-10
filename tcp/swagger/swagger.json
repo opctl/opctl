@@ -305,6 +305,39 @@
           }
         }
       }
+    },
+    "/event-stream": {
+      "get": {
+        "summary": "Get event stream",
+        "tags": [
+          "event-stream"
+        ],
+        "responses": {
+          "101": {
+            "description": "Switching Protocols",
+            "headers": {
+              "Upgrade": {
+                "type": "string",
+                "enum": [
+                  "websocket"
+                ]
+              },
+              "Connection": {
+                "type": "string",
+                "enum": [
+                  "Upgrade"
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

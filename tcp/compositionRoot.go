@@ -8,6 +8,7 @@ import (
 type compositionRoot interface {
   AddOpHandler() http.Handler
   AddSubOpHandler() http.Handler
+  GetEventStreamHandler() http.Handler
   GetLogForOpRunHandler() http.Handler
   ListOpsHandler() http.Handler
   RunOpHandler() http.Handler
@@ -21,6 +22,7 @@ coreApi core.Api,
   compositionRoot = &_compositionRoot{
     addOpHandler:newAddOpHandler(coreApi),
     addSubOpHandler:newAddSubOpHandler(coreApi),
+    getEventStreamHandler:newGetEventStreamHandler(coreApi),
     getLogForOpRunHandler:newGetLogForOpRunHandler(coreApi),
     listOpsHandler:newListOpsHandler(coreApi),
     runOpHandler:newRunOpHandler(coreApi),
@@ -34,6 +36,7 @@ coreApi core.Api,
 type _compositionRoot struct {
   addOpHandler              http.Handler
   addSubOpHandler           http.Handler
+  getEventStreamHandler     http.Handler
   getLogForOpRunHandler     http.Handler
   listOpsHandler            http.Handler
   runOpHandler              http.Handler
@@ -48,6 +51,11 @@ func (this _compositionRoot) AddOpHandler(
 func (this _compositionRoot) AddSubOpHandler(
 ) http.Handler {
   return this.addSubOpHandler
+}
+
+func (this _compositionRoot) GetEventStreamHandler(
+) http.Handler {
+  return this.getEventStreamHandler
 }
 
 func (this _compositionRoot) GetLogForOpRunHandler(

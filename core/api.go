@@ -14,6 +14,10 @@ type Api interface {
   req models.AddSubOpReq,
   ) (err error)
 
+  GetEventStream(
+  eventChannel chan models.Event,
+  ) (err error)
+
   GetLogForOpRun(
   opRunId string,
   logChannel chan *models.LogEntry,
@@ -73,6 +77,15 @@ req models.AddSubOpReq,
   compositionRoot.
   AddSubOpUseCase().
   Execute(req)
+}
+
+func (this _api) GetEventStream(
+eventChannel chan models.Event,
+) (err error) {
+  return this.
+  compositionRoot.
+  GetEventStreamUseCase().
+  Execute(eventChannel)
 }
 
 func (this _api) GetLogForOpRun(
