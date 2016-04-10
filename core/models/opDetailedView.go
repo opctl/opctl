@@ -15,7 +15,7 @@ subOps []OpSummaryView,
 }
 
 type OpDetailedView struct {
-  Description   string `json:"description"`
-  Name          string `json:"name"`
-  SubOps []OpSummaryView `json:"subOps,omitempty"`
+  Description string `json:"description"`
+  Name        string `json:"name"`
+  SubOps      []OpSummaryView `json:"subOps,omitempty"`
 }

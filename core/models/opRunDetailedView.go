@@ -1,10 +1,12 @@
 package models
 
+import "time"
+
 type OpRunDetailedView struct {
-  Id                string `json:"id"`
+  Id         string `json:"id"`
   OpUrl      *Url `json:"opUrl"`
   SubOps     []*OpRunSummaryView `json:"subOps,omitempty"`
-  StartedAtUnixTime int64 `json:"startedAtUnixTime"`
-  EndedAtUnixTime   int64 `json:"endedAtUnixTime"`
-  ExitCode          int `json:"exitCode"`
+  StartTime  time.Time `json:"startTime"`
+  FinishTime time.Time `json:"finishTime"`
+  ExitCode   int `json:"exitCode"`
 }

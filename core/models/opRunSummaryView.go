@@ -1,27 +1,29 @@
 package models
 
+import "time"
+
 func NewOpRunSummaryView(
 id                string,
 opUrl     *Url,
-startedAtUnixTime int64,
-endedAtUnixTime   int64,
+startTime time.Time,
+finishTime   time.Time,
 exitCode           int,
 ) *OpRunSummaryView {
 
   return &OpRunSummaryView{
     Id:id,
     OpUrl:opUrl,
-    StartedAtUnixTime:startedAtUnixTime,
-    EndedAtUnixTime:endedAtUnixTime,
+    StartTime:startTime,
+    FinishTime:finishTime,
     ExitCode:exitCode,
   }
 
 }
 
 type OpRunSummaryView struct {
-  Id                string `json:"id"`
+  Id         string `json:"id"`
   OpUrl      *Url `json:"opUrl"`
-  StartedAtUnixTime int64 `json:"startedAtUnixTime"`
-  EndedAtUnixTime   int64 `json:"endedAtUnixTime"`
-  ExitCode          int `json:"exitCode"`
+  StartTime  time.Time `json:"startTime"`
+  FinishTime time.Time `json:"finishTime"`
+  ExitCode   int `json:"exitCode"`
 }

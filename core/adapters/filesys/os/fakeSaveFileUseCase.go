@@ -4,46 +4,46 @@ package os
 import "sync"
 
 type fakeSaveFileUseCase struct {
-	ExecuteStub        func(pathOfFile string, bytesOfFile []byte) (err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		pathOfFile  string
-		bytesOfFile []byte
-	}
-	executeReturns struct {
-		result1 error
-	}
+  ExecuteStub        func(pathOfFile string, bytesOfFile []byte) (err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    pathOfFile  string
+    bytesOfFile []byte
+  }
+  executeReturns     struct {
+                       result1 error
+                     }
 }
 
 func (fake *fakeSaveFileUseCase) Execute(pathOfFile string, bytesOfFile []byte) (err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		pathOfFile  string
-		bytesOfFile []byte
-	}{pathOfFile, bytesOfFile})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathOfFile, bytesOfFile)
-	} else {
-		return fake.executeReturns.result1
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathOfFile  string
+    bytesOfFile []byte
+  }{pathOfFile, bytesOfFile})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(pathOfFile, bytesOfFile)
+  } else {
+    return fake.executeReturns.result1
+  }
 }
 
 func (fake *fakeSaveFileUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeSaveFileUseCase) ExecuteArgsForCall(i int) (string, []byte) {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathOfFile, fake.executeArgsForCall[i].bytesOfFile
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathOfFile, fake.executeArgsForCall[i].bytesOfFile
 }
 
 func (fake *fakeSaveFileUseCase) ExecuteReturns(result1 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 error
-	}{result1}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 error
+  }{result1}
 }

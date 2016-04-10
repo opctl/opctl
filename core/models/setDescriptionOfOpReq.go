@@ -15,7 +15,7 @@ description string,
 }
 
 type SetDescriptionOfOpReq struct {
-  ProjectUrl    *Url
-  OpName string
-  Description   string `json:"description"`
+  ProjectUrl  *Url
+  OpName      string
+  Description string `json:"description"`
 }

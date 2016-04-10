@@ -4,46 +4,46 @@ package os
 import "sync"
 
 type fakeGetBytesOfFileUseCase struct {
-	ExecuteStub        func(pathToFile string) (bytesOfFile []byte, err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		pathToFile string
-	}
-	executeReturns struct {
-		result1 []byte
-		result2 error
-	}
+  ExecuteStub        func(pathToFile string) (bytesOfFile []byte, err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    pathToFile string
+  }
+  executeReturns     struct {
+                       result1 []byte
+                       result2 error
+                     }
 }
 
 func (fake *fakeGetBytesOfFileUseCase) Execute(pathToFile string) (bytesOfFile []byte, err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		pathToFile string
-	}{pathToFile})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathToFile)
-	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathToFile string
+  }{pathToFile})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(pathToFile)
+  } else {
+    return fake.executeReturns.result1, fake.executeReturns.result2
+  }
 }
 
 func (fake *fakeGetBytesOfFileUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeGetBytesOfFileUseCase) ExecuteArgsForCall(i int) string {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathToFile
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathToFile
 }
 
 func (fake *fakeGetBytesOfFileUseCase) ExecuteReturns(result1 []byte, result2 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 []byte
-		result2 error
-	}{result1, result2}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 []byte
+    result2 error
+  }{result1, result2}
 }

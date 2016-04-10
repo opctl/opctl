@@ -2,56 +2,56 @@
 package dockercompose
 
 import (
-	"sync"
+  "sync"
 
-	"github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 type fakeRunOpUseCase struct {
-	ExecuteStub        func(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		pathToOpDir string
-		opName      string
-		logChannel  chan *models.LogEntry
-	}
-	executeReturns struct {
-		result1 int
-		result2 error
-	}
+  ExecuteStub        func(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    pathToOpDir string
+    opName      string
+    logChannel  chan *models.LogEntry
+  }
+  executeReturns     struct {
+                       result1 int
+                       result2 error
+                     }
 }
 
 func (fake *fakeRunOpUseCase) Execute(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		pathToOpDir string
-		opName      string
-		logChannel  chan *models.LogEntry
-	}{pathToOpDir, opName, logChannel})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathToOpDir, opName, logChannel)
-	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathToOpDir string
+    opName      string
+    logChannel  chan *models.LogEntry
+  }{pathToOpDir, opName, logChannel})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(pathToOpDir, opName, logChannel)
+  } else {
+    return fake.executeReturns.result1, fake.executeReturns.result2
+  }
 }
 
 func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, string, chan *models.LogEntry) {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].logChannel
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].logChannel
 }
 
 func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 int
-		result2 error
-	}{result1, result2}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 int
+    result2 error
+  }{result1, result2}
 }

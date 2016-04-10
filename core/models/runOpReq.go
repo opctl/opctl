@@ -11,5 +11,5 @@ opUrl *Url,
 }
 
 type RunOpReq struct {
-  OpUrl  *Url
+  OpUrl *Url
 }

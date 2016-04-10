@@ -1,8 +1,10 @@
 package models
 
+import "time"
+
 func NewLogEntry(
 message string,
-timestamp int64,
+timestamp time.Time,
 stream string,
 ) *LogEntry {
 
@@ -16,7 +18,7 @@ stream string,
 
 type LogEntry struct {
   Message   string `json:"message"`
-  Timestamp int64 `json:"timestamp"`
+  Timestamp time.Time `json:"timestamp"`
   Stream    string `json:"stream"`
 }
 

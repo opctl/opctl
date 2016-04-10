@@ -351,11 +351,13 @@
         "opName": {
           "type": "string"
         },
-        "startedAtUnixTime": {
-          "type": "integer"
+        "startTime": {
+          "type": "string",
+          "format": "dateTime"
         },
-        "endedAtUnixTime": {
-          "type": "integer"
+        "finishTime": {
+          "type": "string",
+          "format": "dateTime"
         },
         "exitCode": {
           "type": "integer"

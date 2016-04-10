@@ -34,7 +34,7 @@ p []byte,
 
   this.logChannel <- models.NewLogEntry(
     strings.TrimSpace(string(p)),
-    time.Now().Unix(),
+    time.Now(),
     this.logEntryStream,
   )
 

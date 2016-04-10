@@ -4,46 +4,46 @@ package dockercompose
 import "sync"
 
 type fakeInitOpUseCase struct {
-	ExecuteStub        func(pathToOpDir string, opDir string) (err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		pathToOpDir string
-		opDir       string
-	}
-	executeReturns struct {
-		result1 error
-	}
+  ExecuteStub        func(pathToOpDir string, opDir string) (err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    pathToOpDir string
+    opDir       string
+  }
+  executeReturns     struct {
+                       result1 error
+                     }
 }
 
 func (fake *fakeInitOpUseCase) Execute(pathToOpDir string, opDir string) (err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		pathToOpDir string
-		opDir       string
-	}{pathToOpDir, opDir})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(pathToOpDir, opDir)
-	} else {
-		return fake.executeReturns.result1
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    pathToOpDir string
+    opDir       string
+  }{pathToOpDir, opDir})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(pathToOpDir, opDir)
+  } else {
+    return fake.executeReturns.result1
+  }
 }
 
 func (fake *fakeInitOpUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeInitOpUseCase) ExecuteArgsForCall(i int) (string, string) {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opDir
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opDir
 }
 
 func (fake *fakeInitOpUseCase) ExecuteReturns(result1 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 error
-	}{result1}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 error
+  }{result1}
 }

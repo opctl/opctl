@@ -17,7 +17,7 @@ precedingSubOpUrl string,
 }
 
 type AddSubOpReq struct {
-  ProjectUrl               *Url
+  ProjectUrl        *Url
   OpName            string `json:"opName"`
   SubOpUrl          string `json:"subOpUrl"`
   PrecedingSubOpUrl string `json:"precedingSubOpUrl"`

@@ -6,19 +6,19 @@ import (
 )
 
 func NewOpRunStartedEvent(
-opRunStartedAt *time.Time,
+opRunStartTime *time.Time,
 opRunId string,
 ) *OpRunStartedEvent {
 
   return &OpRunStartedEvent{
-    OpRunStartedAt:opRunStartedAt,
+    OpRunStartTime:opRunStartTime,
     OpRunId:opRunId,
   }
 
 }
 
 type OpRunStartedEvent struct {
-  OpRunStartedAt *time.Time
+  OpRunStartTime *time.Time
   OpRunId        string
 }
 
@@ -31,11 +31,11 @@ func (this OpRunStartedEvent) Type() string {
 func (this OpRunStartedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
-    OpRunStartedAt *time.Time `json:"opRunStartedAt"`
+    OpRunStartTime *time.Time `json:"opRunStartTime"`
     OpRunId        string `json:"opRunId"`
     EventType      string `json:"type"`
   }{
-    OpRunStartedAt:this.OpRunStartedAt,
+    OpRunStartTime:this.OpRunStartTime,
     OpRunId:this.OpRunId,
     EventType:this.Type(),
   }

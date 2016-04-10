@@ -51,8 +51,7 @@ req models.RunOpReq,
 urlsOfAlreadyRunOps[]*models.Url,
 ) (opRun models.OpRunDetailedView, err error) {
 
-  startedAtTime := time.Now()
-  opRun.StartedAtUnixTime = startedAtTime.Unix()
+  opRun.StartTime = time.Now()
 
   opRun.Id, err = this.uniqueStringFactory.Construct()
   if (nil != err) {
@@ -61,7 +60,7 @@ urlsOfAlreadyRunOps[]*models.Url,
 
   this.eventStream.Publish(
     models.NewOpRunStartedEvent(
-      &startedAtTime,
+      &opRun.StartTime,
       opRun.Id,
     ),
   )
@@ -86,12 +85,11 @@ urlsOfAlreadyRunOps[]*models.Url,
 
   defer func() {
 
-    endedAtTime := time.Now()
-    opRun.EndedAtUnixTime = endedAtTime.Unix()
+    opRun.FinishTime = time.Now()
 
     this.eventStream.Publish(
       models.NewOpRunFinishedEvent(
-        &endedAtTime,
+        &opRun.FinishTime,
         opRun.Id,
       ),
     )
@@ -163,8 +161,8 @@ urlsOfAlreadyRunOps[]*models.Url,
         models.NewOpRunSummaryView(
           subOpRun.Id,
           subOpRun.OpUrl,
-          subOpRun.StartedAtUnixTime,
-          subOpRun.EndedAtUnixTime,
+          subOpRun.StartTime,
+          subOpRun.FinishTime,
           subOpRun.ExitCode,
         ),
       )

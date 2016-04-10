@@ -26,9 +26,9 @@ yamlCodec yamlCodec,
 }
 
 type _setDescriptionOfOpUseCase struct {
-  filesys                  ports.Filesys
+  filesys             ports.Filesys
   pathToOpFileFactory pathToOpFileFactory
-  yamlCodec                yamlCodec
+  yamlCodec           yamlCodec
 }
 
 func (this _setDescriptionOfOpUseCase) Execute(
