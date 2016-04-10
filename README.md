@@ -17,7 +17,9 @@ A lightweight dev op spec runtime.
 
 ### Op Run
 - run op
-- get logs for op run
+
+### Event Stream
+- get event stream
 
 
 # Prerequisites
