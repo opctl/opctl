@@ -3,17 +3,16 @@ package dockercompose
 
 import (
   "sync"
-
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 type fakeRunOpUseCase struct {
-  ExecuteStub        func(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error)
+  ExecuteStub        func(pathToOpDir string, opName string, logger logging.Logger) (exitCode int, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
     pathToOpDir string
     opName      string
-    logChannel  chan *models.LogEntry
+    logger      logging.Logger
   }
   executeReturns     struct {
                        result1 int
@@ -21,16 +20,16 @@ type fakeRunOpUseCase struct {
                      }
 }
 
-func (fake *fakeRunOpUseCase) Execute(pathToOpDir string, opName string, logChannel chan *models.LogEntry) (exitCode int, err error) {
+func (fake *fakeRunOpUseCase) Execute(pathToOpDir string, opName string, logger logging.Logger) (exitCode int, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
     pathToOpDir string
     opName      string
-    logChannel  chan *models.LogEntry
-  }{pathToOpDir, opName, logChannel})
+    logger      logging.Logger
+  }{pathToOpDir, opName, logger})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub(pathToOpDir, opName, logChannel)
+    return fake.ExecuteStub(pathToOpDir, opName, logger)
   } else {
     return fake.executeReturns.result1, fake.executeReturns.result2
   }
@@ -42,10 +41,10 @@ func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
   return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, string, chan *models.LogEntry) {
+func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, string, logging.Logger) {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].logChannel
+  return fake.executeArgsForCall[i].pathToOpDir, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].logger
 }
 
 func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 error) {

@@ -2,6 +2,7 @@ package core
 
 import (
   "github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/models"
 )
 
 type compositionRoot interface {
@@ -9,7 +10,6 @@ type compositionRoot interface {
   AddOpUseCase() addOpUseCase
   AddSubOpUseCase() addSubOpUseCase
   GetEventStreamUseCase() getEventStreamUseCase
-  GetLogForOpRunUseCase() getLogForOpRunUseCase
   ListOpsUseCase() listOpsUseCase
   SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
@@ -29,14 +29,16 @@ filesys ports.Filesys,
 
   yamlCodec := newYamlCodec()
 
-  opRunLogFeed := newOpRunLogFeed()
+  logger := func(logEntryEmittedEvent models.LogEntryEmittedEvent) {
+    eventStream.Publish(logEntryEmittedEvent)
+  }
 
   // use cases
   runOpUseCase := newRunOpUseCase(
+    containerEngine,
     eventStream,
     filesys,
-    containerEngine,
-    opRunLogFeed,
+    logger,
     uniqueStringFactory,
     yamlCodec,
   )
@@ -58,10 +60,6 @@ filesys ports.Filesys,
     eventStream,
   )
 
-  getLogForOpRunUseCase := newGetLogForOpRunUseCase(
-    opRunLogFeed,
-  )
-
   listOpsUseCase := newListOpsUseCase(
     filesys,
     pathToOpFileFactory,
@@ -80,7 +78,6 @@ filesys ports.Filesys,
     addOpUseCase: addOpUseCase,
     addSubOpUseCase: addSubOpUseCase,
     getEventStreamUseCase:getEventStreamUseCase,
-    getLogForOpRunUseCase: getLogForOpRunUseCase,
     listOpsUseCase: listOpsUseCase,
     setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
@@ -90,11 +87,10 @@ filesys ports.Filesys,
 }
 
 type _compositionRoot struct {
-  runOpUseCase           runOpUseCase
+  runOpUseCase              runOpUseCase
   addOpUseCase              addOpUseCase
   addSubOpUseCase           addSubOpUseCase
   getEventStreamUseCase     getEventStreamUseCase
-  getLogForOpRunUseCase     getLogForOpRunUseCase
   listOpsUseCase            listOpsUseCase
   setDescriptionOfOpUseCase setDescriptionOfOpUseCase
 }
@@ -113,10 +109,6 @@ func (this _compositionRoot) AddSubOpUseCase() addSubOpUseCase {
 
 func (this _compositionRoot) GetEventStreamUseCase() getEventStreamUseCase {
   return this.getEventStreamUseCase
-}
-
-func (this _compositionRoot) GetLogForOpRunUseCase() getLogForOpRunUseCase {
-  return this.getLogForOpRunUseCase
 }
 
 func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {

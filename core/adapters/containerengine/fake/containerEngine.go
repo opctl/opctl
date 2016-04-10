@@ -4,8 +4,8 @@ package fake
 import (
   "sync"
 
-  "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 func New() ports.ContainerEngine {
@@ -22,12 +22,12 @@ type containerEngine struct {
   initOpReturns     struct {
                       result1 error
                     }
-  RunOpStub         func(pathToOpDir string, name string, logChannel chan *models.LogEntry) (exitCode int, err error)
+  RunOpStub         func(pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error)
   runOpMutex        sync.RWMutex
   runOpArgsForCall  []struct {
     pathToOpDir string
     name        string
-    logChannel  chan *models.LogEntry
+    logger      logging.Logger
   }
   runOpReturns      struct {
                       result1 int
@@ -68,16 +68,16 @@ func (fake *containerEngine) InitOpReturns(result1 error) {
   }{result1}
 }
 
-func (fake *containerEngine) RunOp(pathToOpDir string, name string, logChannel chan *models.LogEntry) (exitCode int, err error) {
+func (fake *containerEngine) RunOp(pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error) {
   fake.runOpMutex.Lock()
   fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
     pathToOpDir string
     name        string
-    logChannel  chan *models.LogEntry
-  }{pathToOpDir, name, logChannel})
+    logger      logging.Logger
+  }{pathToOpDir, name, logger})
   fake.runOpMutex.Unlock()
   if fake.RunOpStub != nil {
-    return fake.RunOpStub(pathToOpDir, name, logChannel)
+    return fake.RunOpStub(pathToOpDir, name, logger)
   } else {
     return fake.runOpReturns.result1, fake.runOpReturns.result2
   }
@@ -89,10 +89,10 @@ func (fake *containerEngine) RunOpCallCount() int {
   return len(fake.runOpArgsForCall)
 }
 
-func (fake *containerEngine) RunOpArgsForCall(i int) (string, string, chan *models.LogEntry) {
+func (fake *containerEngine) RunOpArgsForCall(i int) (string, string, logging.Logger) {
   fake.runOpMutex.RLock()
   defer fake.runOpMutex.RUnlock()
-  return fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name, fake.runOpArgsForCall[i].logChannel
+  return fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name, fake.runOpArgsForCall[i].logger
 }
 
 func (fake *containerEngine) RunOpReturns(result1 int, result2 error) {

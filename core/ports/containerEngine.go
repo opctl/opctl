@@ -1,6 +1,6 @@
 package ports
 
-import "github.com/dev-op-spec/engine/core/models"
+import "github.com/dev-op-spec/engine/core/logging"
 
 type ContainerEngine interface {
   InitOp(
@@ -11,6 +11,6 @@ type ContainerEngine interface {
   RunOp(
   pathToOpDir string,
   name string,
-  logChannel chan *models.LogEntry,
+  logger logging.Logger,
   ) (exitCode int, err error)
 }

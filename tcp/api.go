@@ -61,11 +61,6 @@ func (this _api) Start(
     this.compositionRoot.GetEventStreamHandler(),
   ).Methods(http.MethodGet)
 
-  router.Handle(
-    getLogForOpRunRelUrlTemplate,
-    this.compositionRoot.GetLogForOpRunHandler(),
-  ).Methods(http.MethodGet)
-
   n := negroni.Classic()
 
   n.Use(cors.New(cors.Options{

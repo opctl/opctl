@@ -23,9 +23,6 @@ const (
 // resource: a single op-run
   opRunRelUrlTemplate string = opRunsRelUrlTemplate + "/{opRunId}"
 
-// resource: a single op run terminal
-  opRunLogRelUrlTemplate string = opRunRelUrlTemplate + "/log"
-
 // resource: event-stream
   eventStreamRelUrlTemplate string = "/event-stream"
 )
@@ -35,7 +32,6 @@ const (
   addOpRelUrlTemplate string = projectOpsRelUrlTemplate
   addSubOpRelUrlTemplate string = projectOpSubOpsRelUrlTemplate
   getEventStreamRelUrlTemplate string = eventStreamRelUrlTemplate
-  getLogForOpRunRelUrlTemplate string = opRunLogRelUrlTemplate
   listOpsRelUrlTemplate string = projectOpsRelUrlTemplate
   runOpRelUrlTemplate string = opRunsRelUrlTemplate
   setDescriptionOfOpRelUrlTemplate string = projectOpDescriptionRelUrlTemplate

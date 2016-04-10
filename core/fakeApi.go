@@ -32,15 +32,6 @@ type FakeApi struct {
   getEventStreamReturns         struct {
                                   result1 error
                                 }
-  GetLogForOpRunStub            func(opRunId string, logChannel chan *models.LogEntry) (err error)
-  getLogForOpRunMutex           sync.RWMutex
-  getLogForOpRunArgsForCall     []struct {
-    opRunId    string
-    logChannel chan *models.LogEntry
-  }
-  getLogForOpRunReturns         struct {
-                                  result1 error
-                                }
   ListOpsStub                   func(projectUrl *models.Url) (ops []models.OpDetailedView, err error)
   listOpsMutex                  sync.RWMutex
   listOpsArgsForCall            []struct {
@@ -161,39 +152,6 @@ func (fake *FakeApi) GetEventStreamArgsForCall(i int) chan models.Event {
 func (fake *FakeApi) GetEventStreamReturns(result1 error) {
   fake.GetEventStreamStub = nil
   fake.getEventStreamReturns = struct {
-    result1 error
-  }{result1}
-}
-
-func (fake *FakeApi) GetLogForOpRun(opRunId string, logChannel chan *models.LogEntry) (err error) {
-  fake.getLogForOpRunMutex.Lock()
-  fake.getLogForOpRunArgsForCall = append(fake.getLogForOpRunArgsForCall, struct {
-    opRunId    string
-    logChannel chan *models.LogEntry
-  }{opRunId, logChannel})
-  fake.getLogForOpRunMutex.Unlock()
-  if fake.GetLogForOpRunStub != nil {
-    return fake.GetLogForOpRunStub(opRunId, logChannel)
-  } else {
-    return fake.getLogForOpRunReturns.result1
-  }
-}
-
-func (fake *FakeApi) GetLogForOpRunCallCount() int {
-  fake.getLogForOpRunMutex.RLock()
-  defer fake.getLogForOpRunMutex.RUnlock()
-  return len(fake.getLogForOpRunArgsForCall)
-}
-
-func (fake *FakeApi) GetLogForOpRunArgsForCall(i int) (string, chan *models.LogEntry) {
-  fake.getLogForOpRunMutex.RLock()
-  defer fake.getLogForOpRunMutex.RUnlock()
-  return fake.getLogForOpRunArgsForCall[i].opRunId, fake.getLogForOpRunArgsForCall[i].logChannel
-}
-
-func (fake *FakeApi) GetLogForOpRunReturns(result1 error) {
-  fake.GetLogForOpRunStub = nil
-  fake.getLogForOpRunReturns = struct {
     result1 error
   }{result1}
 }

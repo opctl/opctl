@@ -2,7 +2,7 @@ package dockercompose
 
 import (
   "github.com/dev-op-spec/engine/core/ports"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 func New(
@@ -43,7 +43,7 @@ opName string,
 func (this _containerEngine) RunOp(
 pathToOpDir string,
 opName string,
-logChannel chan *models.LogEntry,
+logger logging.Logger,
 ) (exitCode int, err error) {
 
   return this.compositionRoot.
@@ -51,7 +51,7 @@ logChannel chan *models.LogEntry,
   Execute(
     pathToOpDir,
     opName,
-    logChannel,
+    logger,
   )
 
 }

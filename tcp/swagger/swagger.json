@@ -264,48 +264,6 @@
         }
       }
     },
-    "/op-runs/{opRunId}/log": {
-      "parameters": [
-        {
-          "name": "opRunId",
-          "in": "path",
-          "description": "The id of the op run",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "get": {
-        "summary": "Get log for op run",
-        "tags": [
-          "op-runs"
-        ],
-        "responses": {
-          "101": {
-            "description": "Switching Protocols",
-            "headers": {
-              "Upgrade": {
-                "type": "string",
-                "enum": [
-                  "websocket"
-                ]
-              },
-              "Connection": {
-                "type": "string",
-                "enum": [
-                  "Upgrade"
-                ]
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "/event-stream": {
       "get": {
         "summary": "Get event stream",

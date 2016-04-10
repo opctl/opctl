@@ -24,12 +24,6 @@ type fakeCompositionRoot struct {
   getEventStreamUseCaseReturns         struct {
                                          result1 getEventStreamUseCase
                                        }
-  GetLogForOpRunUseCaseStub            func() getLogForOpRunUseCase
-  getLogForOpRunUseCaseMutex           sync.RWMutex
-  getLogForOpRunUseCaseArgsForCall     []struct{}
-  getLogForOpRunUseCaseReturns         struct {
-                                         result1 getLogForOpRunUseCase
-                                       }
   ListOpsUseCaseStub                   func() listOpsUseCase
   listOpsUseCaseMutex                  sync.RWMutex
   listOpsUseCaseArgsForCall            []struct{}
@@ -119,30 +113,6 @@ func (fake *fakeCompositionRoot) GetEventStreamUseCaseReturns(result1 getEventSt
   fake.GetEventStreamUseCaseStub = nil
   fake.getEventStreamUseCaseReturns = struct {
     result1 getEventStreamUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) GetLogForOpRunUseCase() getLogForOpRunUseCase {
-  fake.getLogForOpRunUseCaseMutex.Lock()
-  fake.getLogForOpRunUseCaseArgsForCall = append(fake.getLogForOpRunUseCaseArgsForCall, struct{}{})
-  fake.getLogForOpRunUseCaseMutex.Unlock()
-  if fake.GetLogForOpRunUseCaseStub != nil {
-    return fake.GetLogForOpRunUseCaseStub()
-  } else {
-    return fake.getLogForOpRunUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) GetLogForOpRunUseCaseCallCount() int {
-  fake.getLogForOpRunUseCaseMutex.RLock()
-  defer fake.getLogForOpRunUseCaseMutex.RUnlock()
-  return len(fake.getLogForOpRunUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) GetLogForOpRunUseCaseReturns(result1 getLogForOpRunUseCase) {
-  fake.GetLogForOpRunUseCaseStub = nil
-  fake.getLogForOpRunUseCaseReturns = struct {
-    result1 getLogForOpRunUseCase
   }{result1}
 }
 

@@ -7,15 +7,14 @@ import (
   "errors"
   "fmt"
   "syscall"
-  "github.com/dev-op-spec/engine/core/models"
-  "github.com/dev-op-spec/engine/core"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 type runOpUseCase interface {
   Execute(
   pathToOpDir string,
   opName string,
-  logChannel chan *models.LogEntry,
+  logger logging.Logger,
   ) (exitCode int, err error)
 }
 
@@ -39,7 +38,7 @@ type _runOpUseCase struct {
 func (this _runOpUseCase) Execute(
 pathToOpDir string,
 opName string,
-logChannel chan *models.LogEntry,
+logger logging.Logger,
 ) (exitCode int, err error) {
 
   // up
@@ -109,7 +108,7 @@ logChannel chan *models.LogEntry,
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
       pathToOpDir,
-      logChannel,
+      logger,
     )
     if (nil != flushOpRunResourcesError) {
 
@@ -128,9 +127,9 @@ logChannel chan *models.LogEntry,
 
   }()
 
-  dockerComposeUpCmd.Stdout = core.NewLoggableIoWriter(logChannel, models.StdOutStream)
+  dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(logging.StdOutStream, logger)
 
-  dockerComposeUpCmd.Stderr = core.NewLoggableIoWriter(logChannel, models.StdErrStream)
+  dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(logging.StdErrStream, logger)
 
   err = dockerComposeUpCmd.Run()
 

@@ -5,63 +5,63 @@ import (
   "encoding/json"
 )
 
-func NewLogEntryAddedEvent(
+func NewLogEntryEmittedEvent(
 timestamp time.Time,
 logEntryMsg string,
 logEntryOutputStream string,
-) LogEntryAddedEvent {
+) LogEntryEmittedEvent {
 
-  return &logEntryAddedEvent{
-    timestamp:timestamp,
+  return &logEntryEmittedEvent{
     logEntryMsg:logEntryMsg,
     logEntryOutputStream:logEntryOutputStream,
+    timestamp:timestamp,
   }
 
 }
 
-type LogEntryAddedEvent interface {
-  Timestamp() time.Time
+type LogEntryEmittedEvent interface {
   LogEntryMsg() string
   LogEntryOutputStream() string
+  Timestamp() time.Time
   Type() string
 }
 
-type logEntryAddedEvent struct {
-  timestamp            time.Time
+type logEntryEmittedEvent struct {
   logEntryMsg          string
   logEntryOutputStream string
+  timestamp            time.Time
 }
 
-func (this logEntryAddedEvent) MarshalJSON() ([]byte, error) {
+func (this logEntryEmittedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
-    Timestamp            time.Time `json:"timestamp"`
     LogEntryMsg          string `json:"logEntryMsg"`
     LogEntryOutputStream string `json:"logEntryOutputStream"`
+    Timestamp            time.Time `json:"timestamp"`
     Type                 string `json:"type"`
   }{
-    Timestamp:this.Timestamp(),
     LogEntryMsg:this.LogEntryMsg(),
     LogEntryOutputStream:this.LogEntryOutputStream(),
+    Timestamp:this.Timestamp(),
     Type:this.Type(),
   }
 
   return json.Marshal(data)
 }
 
-func (this logEntryAddedEvent) Timestamp() time.Time {
-  return this.timestamp
-}
-
-func (this logEntryAddedEvent) LogEntryMsg() string {
+func (this logEntryEmittedEvent) LogEntryMsg() string {
   return this.logEntryMsg
 }
 
-func (this logEntryAddedEvent) LogEntryOutputStream() string {
+func (this logEntryEmittedEvent) LogEntryOutputStream() string {
   return this.logEntryOutputStream
 }
 
-func (this logEntryAddedEvent) Type() string {
+func (this logEntryEmittedEvent) Timestamp() time.Time {
+  return this.timestamp
+}
+
+func (this logEntryEmittedEvent) Type() string {
 
   return "LogEntryAdded"
 

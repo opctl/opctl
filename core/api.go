@@ -18,11 +18,6 @@ type Api interface {
   eventChannel chan models.Event,
   ) (err error)
 
-  GetLogForOpRun(
-  opRunId string,
-  logChannel chan *models.LogEntry,
-  ) (err error)
-
   ListOps(
   projectUrl *models.Url,
   ) (ops []models.OpDetailedView, err error)
@@ -86,19 +81,6 @@ eventChannel chan models.Event,
   compositionRoot.
   GetEventStreamUseCase().
   Execute(eventChannel)
-}
-
-func (this _api) GetLogForOpRun(
-opRunId string,
-logChannel chan *models.LogEntry,
-) (err error) {
-  return this.
-  compositionRoot.
-  GetLogForOpRunUseCase().
-  Execute(
-    opRunId,
-    logChannel,
-  )
 }
 
 func (this _api) ListOps(

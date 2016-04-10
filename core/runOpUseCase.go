@@ -8,6 +8,7 @@ import (
   "path/filepath"
   "fmt"
   "path"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 type runOpUseCase interface {
@@ -18,19 +19,19 @@ type runOpUseCase interface {
 }
 
 func newRunOpUseCase(
+containerEngine ports.ContainerEngine,
 eventStream eventStream,
 filesys ports.Filesys,
-containerEngine ports.ContainerEngine,
-opRunLogFeed opRunLogFeed,
+logger logging.Logger,
 uniqueStringFactory uniqueStringFactory,
 yamlCodec yamlCodec,
 ) runOpUseCase {
 
   return &_runOpUseCase{
+    containerEngine: containerEngine,
     eventStream:eventStream,
     filesys:filesys,
-    containerEngine: containerEngine,
-    opRunLogFeed:opRunLogFeed,
+    logger:logger,
     uniqueStringFactory:uniqueStringFactory,
     yamlCodec:yamlCodec,
   }
@@ -38,10 +39,10 @@ yamlCodec yamlCodec,
 }
 
 type _runOpUseCase struct {
+  containerEngine     ports.ContainerEngine
   eventStream         eventStream
   filesys             ports.Filesys
-  containerEngine     ports.ContainerEngine
-  opRunLogFeed        opRunLogFeed
+  logger              logging.Logger
   uniqueStringFactory uniqueStringFactory
   yamlCodec           yamlCodec
 }
@@ -119,22 +120,15 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
 
     if (len(_opFile.SubOps) == 0) {
 
-      logChannel := make(chan *models.LogEntry, 1000)
-
-      // register logChannel as feed publisher
-      this.opRunLogFeed.RegisterPublisher(opRunId, logChannel)
-
       // run op
       opRunExitCode, err = this.containerEngine.RunOp(
         req.OpUrl.Path,
         _opFile.Name,
-        logChannel,
+        this.logger,
       )
       if (nil != err) {
         return
       }
-
-      close(logChannel)
 
     } else {
 

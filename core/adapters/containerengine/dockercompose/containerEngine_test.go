@@ -42,7 +42,7 @@ var _ = Describe("containerEngine", func() {
       /* arrange */
       providedPathToOpDir := ""
       providedOpName := ""
-      providedLogChannel := make(chan *models.LogEntry)
+      providedLogger := func(e models.LogEntryEmittedEvent) {}
 
       fakeRunOpUseCase := new(fakeRunOpUseCase)
 
@@ -57,14 +57,14 @@ var _ = Describe("containerEngine", func() {
       objectUnderTest.RunOp(
         providedPathToOpDir,
         providedOpName,
-        providedLogChannel,
+        providedLogger,
       )
 
       /* assert */
-      receivedPathToOpDir, receivedOpName, receivedLogChannel := fakeRunOpUseCase.ExecuteArgsForCall(0)
+      receivedPathToOpDir, receivedOpName, receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
       Expect(receivedPathToOpDir).To(Equal(providedPathToOpDir))
       Expect(receivedOpName).To(Equal(providedOpName))
-      Expect(receivedLogChannel).To(Equal(providedLogChannel))
+      Expect(receivedLogger).To(Equal(providedLogger))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
