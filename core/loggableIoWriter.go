@@ -7,12 +7,12 @@ import (
   "io"
 )
 
-type LogEmittingIoWriter io.Writer
+type LoggableIoWriter io.Writer
 
-func NewLogEmittingIoWriter(
+func NewLoggableIoWriter(
 logChannel chan *models.LogEntry,
 logEntryStream string,
-) LogEmittingIoWriter {
+) LoggableIoWriter {
 
   return &logEmittingIoWriter{
     logChannel:logChannel,

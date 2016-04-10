@@ -128,9 +128,9 @@ logChannel chan *models.LogEntry,
 
   }()
 
-  dockerComposeUpCmd.Stdout = core.NewLogEmittingIoWriter(logChannel, models.StdOutStream)
+  dockerComposeUpCmd.Stdout = core.NewLoggableIoWriter(logChannel, models.StdOutStream)
 
-  dockerComposeUpCmd.Stderr = core.NewLogEmittingIoWriter(logChannel, models.StdErrStream)
+  dockerComposeUpCmd.Stderr = core.NewLoggableIoWriter(logChannel, models.StdErrStream)
 
   err = dockerComposeUpCmd.Run()
 

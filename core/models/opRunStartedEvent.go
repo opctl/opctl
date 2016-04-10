@@ -6,49 +6,73 @@ import (
 )
 
 func NewOpRunStartedEvent(
-opRunStartTime time.Time,
+timestamp time.Time,
 opRunParentId *string,
 opRunOpUrl Url,
 opRunId string,
-) *OpRunStartedEvent {
+) OpRunStartedEvent {
 
-  return &OpRunStartedEvent{
-    OpRunStartTime:opRunStartTime,
-    OpRunParentId:opRunParentId,
-    OpRunOpUrl:opRunOpUrl,
-    OpRunId:opRunId,
+  return &opRunStartedEvent{
+    timestamp:timestamp,
+    opRunParentId:opRunParentId,
+    opRunOpUrl:opRunOpUrl,
+    opRunId:opRunId,
   }
 
 }
 
-type OpRunStartedEvent struct {
-  OpRunStartTime time.Time
-  OpRunParentId  *string
-  OpRunOpUrl     Url
-  OpRunId        string
+type OpRunStartedEvent interface {
+  OpRunId() string
+  OpRunOpUrl() Url
+  OpRunParentId() *string
+  Timestamp() time.Time
+  Type() string
 }
 
-func (this OpRunStartedEvent) Type() string {
-
-  return "OpRunStarted"
-
+type opRunStartedEvent struct {
+  opRunId       string
+  opRunOpUrl    Url
+  opRunParentId *string
+  timestamp     time.Time
 }
 
-func (this OpRunStartedEvent) MarshalJSON() ([]byte, error) {
+func (this opRunStartedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
-    OpRunStartTime time.Time `json:"opRunStartTime"`
-    OpRunParentId  *string `json:"opRunParentId"`
-    OpRunOpUrl     string `json:"opRunOpUrl"`
-    OpRunId        string `json:"opRunId"`
-    Type           string `json:"type"`
+    OpRunId       string `json:"opRunId"`
+    OpRunOpUrl    string `json:"opRunOpUrl"`
+    OpRunParentId *string `json:"opRunParentId"`
+    Timestamp     time.Time `json:"timestamp"`
+    Type          string `json:"type"`
   }{
-    OpRunStartTime:this.OpRunStartTime,
-    OpRunParentId:this.OpRunParentId,
-    OpRunOpUrl:this.OpRunOpUrl.String(),
-    OpRunId:this.OpRunId,
+    OpRunId:this.opRunId,
+    OpRunOpUrl:this.opRunOpUrl.String(),
+    OpRunParentId:this.opRunParentId,
+    Timestamp:this.timestamp,
     Type:this.Type(),
   }
 
   return json.Marshal(data)
+}
+
+func (this opRunStartedEvent) OpRunId() string {
+  return this.opRunId
+}
+
+func (this opRunStartedEvent) OpRunOpUrl() Url {
+  return this.opRunOpUrl
+}
+
+func (this opRunStartedEvent) OpRunParentId() *string {
+  return this.opRunParentId
+}
+
+func (this opRunStartedEvent) Timestamp() time.Time {
+  return this.timestamp
+}
+
+func (this opRunStartedEvent) Type() string {
+
+  return "OpRunStarted"
+
 }

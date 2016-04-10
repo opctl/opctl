@@ -39,8 +39,8 @@ logChannel chan *models.LogEntry,
 
   dockerComposeDownCmd.Dir = pathToOpDir
 
-  dockerComposeDownCmd.Stdout = core.NewLogEmittingIoWriter(logChannel, models.StdOutStream)
-  dockerComposeDownCmd.Stderr = core.NewLogEmittingIoWriter(logChannel, models.StdErrStream)
+  dockerComposeDownCmd.Stdout = core.NewLoggableIoWriter(logChannel, models.StdOutStream)
+  dockerComposeDownCmd.Stderr = core.NewLoggableIoWriter(logChannel, models.StdErrStream)
 
   err = dockerComposeDownCmd.Run()
 

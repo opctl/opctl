@@ -118,7 +118,7 @@ req models.RunOpReq,
   RunOpUseCase().
   Execute(
     req,
-    make([]*models.OpRunStartedEvent, 0),
+    make([]models.OpRunStartedEvent, 0),
   )
 }
 

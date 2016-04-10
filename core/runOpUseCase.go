@@ -13,7 +13,7 @@ import (
 type runOpUseCase interface {
   Execute(
   req models.RunOpReq,
-  ancestors[]*models.OpRunStartedEvent,
+  ancestors[]models.OpRunStartedEvent,
   ) (opRunId string, err error)
 }
 
@@ -48,13 +48,13 @@ type _runOpUseCase struct {
 
 func (this _runOpUseCase) Execute(
 req models.RunOpReq,
-ancestorOpRunStartedEvents[]*models.OpRunStartedEvent,
+ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
 ) (opRunId string, err error) {
 
-  var parentOpRunId *string
+  var parentOpRunId string
   if (0 != len(ancestorOpRunStartedEvents)) {
     parentOpRunStartedEvent := ancestorOpRunStartedEvents[len(ancestorOpRunStartedEvents) - 1]
-    parentOpRunId = &parentOpRunStartedEvent.OpRunId
+    parentOpRunId = parentOpRunStartedEvent.OpRunId()
   }
 
   opRunId, err = this.uniqueStringFactory.Construct()
@@ -63,7 +63,7 @@ ancestorOpRunStartedEvents[]*models.OpRunStartedEvent,
   }
   opRunStartedEvent := models.NewOpRunStartedEvent(
     time.Now(),
-    parentOpRunId,
+    &parentOpRunId,
     *req.OpUrl,
     opRunId,
   )
@@ -89,7 +89,7 @@ ancestorOpRunStartedEvents[]*models.OpRunStartedEvent,
   // guard infinite loop
   for _, ancestorOpRunStartedEvent := range ancestorOpRunStartedEvents {
 
-    if (ancestorOpRunStartedEvent.OpRunOpUrl == *req.OpUrl) {
+    if (ancestorOpRunStartedEvent.OpRunOpUrl() == *req.OpUrl) {
       err = errors.New(
         fmt.Sprintf(
           "Unable to run op with url=`%v`. Op recursion is currently not supported.",
