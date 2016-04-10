@@ -201,8 +201,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
           "400": {
             "description": "Bad Request",
@@ -243,8 +243,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "schema": {
               "$ref": "#/definitions/OpRunDetailedView"
             }
@@ -309,6 +309,7 @@
     "/event-stream": {
       "get": {
         "summary": "Get event stream",
+        "description": "The connection will be upgraded to use the websocket protocol.",
         "tags": [
           "event-stream"
         ],

@@ -13,8 +13,8 @@ import (
 type runOpUseCase interface {
   Execute(
   req models.RunOpReq,
-  namesOfAlreadyRunOps[]*models.Url,
-  ) (opRun models.OpRunDetailedView, err error)
+  ancestors[]*models.OpRunStartedEvent,
+  ) (opRunId string, err error)
 }
 
 func newRunOpUseCase(
@@ -48,24 +48,27 @@ type _runOpUseCase struct {
 
 func (this _runOpUseCase) Execute(
 req models.RunOpReq,
-urlsOfAlreadyRunOps[]*models.Url,
-) (opRun models.OpRunDetailedView, err error) {
+ancestorOpRunStartedEvents[]*models.OpRunStartedEvent,
+) (opRunId string, err error) {
 
-  opRun.StartTime = time.Now()
+  var parentOpRunId *string
+  if (0 != len(ancestorOpRunStartedEvents)) {
+    parentOpRunStartedEvent := ancestorOpRunStartedEvents[len(ancestorOpRunStartedEvents) - 1]
+    parentOpRunId = &parentOpRunStartedEvent.OpRunId
+  }
 
-  opRun.Id, err = this.uniqueStringFactory.Construct()
+  opRunId, err = this.uniqueStringFactory.Construct()
   if (nil != err) {
     return
   }
-
-  this.eventStream.Publish(
-    models.NewOpRunStartedEvent(
-      &opRun.StartTime,
-      opRun.Id,
-    ),
+  opRunStartedEvent := models.NewOpRunStartedEvent(
+    time.Now(),
+    parentOpRunId,
+    *req.OpUrl,
+    opRunId,
   )
 
-  opRun.OpUrl = req.OpUrl
+  this.eventStream.Publish(opRunStartedEvent)
 
   opFileBytes, err := this.filesys.GetBytesOfFile(
     filepath.Join(req.OpUrl.Path, "op.yml"),
@@ -83,101 +86,118 @@ urlsOfAlreadyRunOps[]*models.Url,
     return
   }
 
-  defer func() {
-
-    opRun.FinishTime = time.Now()
-
-    this.eventStream.Publish(
-      models.NewOpRunFinishedEvent(
-        &opRun.FinishTime,
-        opRun.Id,
-      ),
-    )
-
-  }()
-
   // guard infinite loop
-  for _, previouslyRunOp := range urlsOfAlreadyRunOps {
+  for _, ancestorOpRunStartedEvent := range ancestorOpRunStartedEvents {
 
-    if (*previouslyRunOp == *req.OpUrl) {
+    if (ancestorOpRunStartedEvent.OpRunOpUrl == *req.OpUrl) {
       err = errors.New(
         fmt.Sprintf(
           "Unable to run op with url=`%v`. Op recursion is currently not supported.",
-          *req.OpUrl,
+          req.OpUrl,
         ),
       )
       return
     }
 
   }
-  urlsOfAlreadyRunOps = append(urlsOfAlreadyRunOps, req.OpUrl)
+  ancestorOpRunStartedEvents = append(ancestorOpRunStartedEvents, opRunStartedEvent)
 
-  if (len(_opFile.SubOps) == 0) {
+  go func() {
 
-    logChannel := make(chan *models.LogEntry, 1000)
+    var opRunExitCode int
+    defer func() {
 
-    // register logChannel as feed publisher
-    this.opRunLogFeed.RegisterPublisher(opRun.Id, logChannel)
+      this.eventStream.Publish(
+        models.NewOpRunFinishedEvent(
+          time.Now(),
+          opRunExitCode,
+          opRunId,
+        ),
+      )
 
-    // run op
-    opRun.ExitCode, err = this.containerEngine.RunOp(
-      req.OpUrl.Path,
-      _opFile.Name,
-      logChannel,
-    )
+    }()
 
-    close(logChannel)
+    if (len(_opFile.SubOps) == 0) {
 
-    if (opRun.ExitCode != 0 || nil != err) {
-      return
-    }
+      logChannel := make(chan *models.LogEntry, 1000)
 
-  } else {
+      // register logChannel as feed publisher
+      this.opRunLogFeed.RegisterPublisher(opRunId, logChannel)
 
-    // run sub ops
-    for _, subOp := range _opFile.SubOps {
-
-      var subOpUrl *models.Url
-      subOpUrl, err = models.NewUrl(
-        // only support local relative urls for now...
-        path.Join(
-          filepath.Dir(req.OpUrl.Path),
-          subOp.Url),
+      // run op
+      opRunExitCode, err = this.containerEngine.RunOp(
+        req.OpUrl.Path,
+        _opFile.Name,
+        logChannel,
       )
       if (nil != err) {
         return
       }
 
-      var subOpRun models.OpRunDetailedView
-      subOpRun, err = this.Execute(
-        *models.NewRunOpReq(
-          subOpUrl,
-        ),
-        urlsOfAlreadyRunOps,
-      )
+      close(logChannel)
 
-      opRun.SubOps = append(
-        opRun.SubOps,
-        models.NewOpRunSummaryView(
-          subOpRun.Id,
-          subOpRun.OpUrl,
-          subOpRun.StartTime,
-          subOpRun.FinishTime,
-          subOpRun.ExitCode,
-        ),
-      )
+    } else {
 
-      if (subOpRun.ExitCode != 0 || nil != err) {
+      // run child ops
+      for _, childOp := range _opFile.SubOps {
 
-        // bubble exit code up
-        opRun.ExitCode = subOpRun.ExitCode
-        return
+        var childOpUrl *models.Url
+        childOpUrl, err = models.NewUrl(
+          // only support local relative urls for now...
+          path.Join(
+            filepath.Dir(req.OpUrl.Path),
+            childOp.Url),
+        )
+        if (nil != err) {
+          return
+        }
+
+        var childOpRunId string
+        childOpRunId, err = this.Execute(
+          *models.NewRunOpReq(
+            childOpUrl,
+          ),
+          ancestorOpRunStartedEvents,
+        )
+        if (nil != err) {
+          return
+        }
+
+        eventChannel := make(chan models.Event, 1000)
+        this.eventStream.RegisterSubscriber(eventChannel)
+
+        eventLoop:for {
+          var event models.Event
+          event = <-eventChannel
+
+          switch event := event.(type) {
+          case models.OpRunFinishedEvent:
+            // OpRunFinishedEvents
+
+            if (event.OpRunId() == childOpRunId) {
+              // our childOpRunId
+
+              if (event.OpRunExitCode() != 0) {
+                // if non-zero exit code return immediately
+
+                opRunExitCode = event.OpRunExitCode()
+                return
+
+              }else {
+                break eventLoop
+              }
+            }
+          default:
+          // no op
+          }
+
+        }
 
       }
 
     }
 
-  }
+  }()
 
   return
 

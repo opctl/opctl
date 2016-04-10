@@ -5,12 +5,12 @@ import (
 )
 
 type compositionRoot interface {
+  RunOpUseCase() runOpUseCase
   AddOpUseCase() addOpUseCase
   AddSubOpUseCase() addSubOpUseCase
   GetEventStreamUseCase() getEventStreamUseCase
   GetLogForOpRunUseCase() getLogForOpRunUseCase
   ListOpsUseCase() listOpsUseCase
-  RunOpUseCase() runOpUseCase
   SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
 
@@ -32,6 +32,15 @@ filesys ports.Filesys,
   opRunLogFeed := newOpRunLogFeed()
 
   // use cases
+  runOpUseCase := newRunOpUseCase(
+    eventStream,
+    filesys,
+    containerEngine,
+    opRunLogFeed,
+    uniqueStringFactory,
+    yamlCodec,
+  )
+
   addOpUseCase := newAddOpUseCase(
     filesys,
     pathToOpDirFactory,
@@ -60,15 +69,6 @@ filesys ports.Filesys,
     yamlCodec,
   )
 
-  runOpUseCase := newRunOpUseCase(
-    eventStream,
-    filesys,
-    containerEngine,
-    opRunLogFeed,
-    uniqueStringFactory,
-    yamlCodec,
-  )
-
   setDescriptionOfOpUseCase := newSetDescriptionOfOpUseCase(
     filesys,
     pathToOpFileFactory,
@@ -76,12 +76,12 @@ filesys ports.Filesys,
   )
 
   compositionRoot = &_compositionRoot{
+    runOpUseCase: runOpUseCase,
     addOpUseCase: addOpUseCase,
     addSubOpUseCase: addSubOpUseCase,
     getEventStreamUseCase:getEventStreamUseCase,
     getLogForOpRunUseCase: getLogForOpRunUseCase,
     listOpsUseCase: listOpsUseCase,
-    runOpUseCase: runOpUseCase,
     setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
 
@@ -90,13 +90,17 @@ filesys ports.Filesys,
 }
 
 type _compositionRoot struct {
+  runOpUseCase           runOpUseCase
   addOpUseCase              addOpUseCase
   addSubOpUseCase           addSubOpUseCase
   getEventStreamUseCase     getEventStreamUseCase
   getLogForOpRunUseCase     getLogForOpRunUseCase
   listOpsUseCase            listOpsUseCase
-  runOpUseCase              runOpUseCase
   setDescriptionOfOpUseCase setDescriptionOfOpUseCase
+}
+
+func (this _compositionRoot) RunOpUseCase() runOpUseCase {
+  return this.runOpUseCase
 }
 
 func (this _compositionRoot) AddOpUseCase() addOpUseCase {
@@ -117,10 +121,6 @@ func (this _compositionRoot) GetLogForOpRunUseCase() getLogForOpRunUseCase {
 
 func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {
   return this.listOpsUseCase
-}
-
-func (this _compositionRoot) RunOpUseCase() runOpUseCase {
-  return this.runOpUseCase
 }
 
 func (this _compositionRoot) SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase {

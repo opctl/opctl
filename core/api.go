@@ -29,7 +29,7 @@ type Api interface {
 
   RunOp(
   req models.RunOpReq,
-  ) (opRun models.OpRunDetailedView, err error)
+  ) (opRunId string, err error)
 
   SetDescriptionOfOp(
   req models.SetDescriptionOfOpReq,
@@ -112,13 +112,13 @@ projectUrl *models.Url,
 
 func (this _api) RunOp(
 req models.RunOpReq,
-) (opRun models.OpRunDetailedView, err error) {
+) (opRunId string, err error) {
   return this.
   compositionRoot.
   RunOpUseCase().
   Execute(
     req,
-    make([]*models.Url, 0),
+    make([]*models.OpRunStartedEvent, 0),
   )
 }
 

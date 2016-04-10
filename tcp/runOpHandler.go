@@ -31,16 +31,16 @@ func (this runOpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  var opRun models.OpRunDetailedView
-  opRun, err = this.coreApi.RunOp(runOpReq)
+  opRunId, err := this.coreApi.RunOp(runOpReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return
   }
 
-  w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+  w.WriteHeader(http.StatusCreated)
+  w.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
-  err = json.NewEncoder(w).Encode(opRun)
+  w.Write([]byte(opRunId))
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return

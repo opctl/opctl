@@ -50,13 +50,13 @@ type FakeApi struct {
                                   result1 []models.OpDetailedView
                                   result2 error
                                 }
-  RunOpStub                     func(req models.RunOpReq) (opRun models.OpRunDetailedView, err error)
+  RunOpStub                     func(req models.RunOpReq) (opRunId string, err error)
   runOpMutex                    sync.RWMutex
   runOpArgsForCall              []struct {
     req models.RunOpReq
   }
   runOpReturns                  struct {
-                                  result1 models.OpRunDetailedView
+                                  result1 string
                                   result2 error
                                 }
   SetDescriptionOfOpStub        func(req models.SetDescriptionOfOpReq) (err error)
@@ -231,7 +231,7 @@ func (fake *FakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 err
   }{result1, result2}
 }
 
-func (fake *FakeApi) RunOp(req models.RunOpReq) (opRun models.OpRunDetailedView, err error) {
+func (fake *FakeApi) RunOp(req models.RunOpReq) (opRunId string, err error) {
   fake.runOpMutex.Lock()
   fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
     req models.RunOpReq
@@ -256,10 +256,10 @@ func (fake *FakeApi) RunOpArgsForCall(i int) models.RunOpReq {
   return fake.runOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) RunOpReturns(result1 models.OpRunDetailedView, result2 error) {
+func (fake *FakeApi) RunOpReturns(result1 string, result2 error) {
   fake.RunOpStub = nil
   fake.runOpReturns = struct {
-    result1 models.OpRunDetailedView
+    result1 string
     result2 error
   }{result1, result2}
 }
