@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
+
 import (
   "github.com/dev-op-spec/engine/core/ports"
   "github.com/dev-op-spec/engine/core/models"

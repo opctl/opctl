@@ -26,7 +26,6 @@ type OpRunStartedEvent interface {
   OpRunOpUrl() Url
   OpRunParentId() *string
   Timestamp() time.Time
-  Type() string
 }
 
 type opRunStartedEvent struct {
@@ -43,13 +42,11 @@ func (this opRunStartedEvent) MarshalJSON() ([]byte, error) {
     OpRunOpUrl    string `json:"opRunOpUrl"`
     OpRunParentId *string `json:"opRunParentId"`
     Timestamp     time.Time `json:"timestamp"`
-    Type          string `json:"type"`
   }{
     OpRunId:this.opRunId,
     OpRunOpUrl:this.opRunOpUrl.String(),
     OpRunParentId:this.opRunParentId,
     Timestamp:this.timestamp,
-    Type:this.Type(),
   }
 
   return json.Marshal(data)
@@ -69,10 +66,4 @@ func (this opRunStartedEvent) OpRunParentId() *string {
 
 func (this opRunStartedEvent) Timestamp() time.Time {
   return this.timestamp
-}
-
-func (this opRunStartedEvent) Type() string {
-
-  return "OpRunStarted"
-
 }

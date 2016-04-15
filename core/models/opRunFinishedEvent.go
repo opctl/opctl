@@ -23,7 +23,6 @@ type OpRunFinishedEvent interface {
   OpRunExitCode() int
   OpRunId() string
   Timestamp() time.Time
-  Type() string
 }
 
 type opRunFinishedEvent struct {
@@ -38,12 +37,10 @@ func (this opRunFinishedEvent) MarshalJSON() ([]byte, error) {
     OpRunExitCode int `json:"opRunExitCode"`
     OpRunId       string `json:"opRunId"`
     Timestamp     time.Time `json:"timestamp"`
-    Type          string `json:"type"`
   }{
     OpRunExitCode:this.OpRunExitCode(),
     OpRunId:this.OpRunId(),
     Timestamp:this.Timestamp(),
-    Type:this.Type(),
   }
 
   return json.Marshal(data)
@@ -59,11 +56,5 @@ func (this opRunFinishedEvent) OpRunId() string {
 
 func (this opRunFinishedEvent) Timestamp() time.Time {
   return this.timestamp
-}
-
-func (this opRunFinishedEvent) Type() string {
-
-  return "OpRunFinished"
-
 }
 

@@ -6,7 +6,7 @@ import (
   "github.com/dev-op-spec/engine/core/models"
 )
 
-var _ = Describe("_sdk", func() {
+var _ = Describe("_api", func() {
   Context(".AddOp() method", func() {
     It("should invoke compositionRoot.addOpUseCase.Execute() with expected args & return result", func() {
 
@@ -105,7 +105,7 @@ var _ = Describe("_sdk", func() {
       /* assert */
       executeArg0, executeArg1 := fakeRunOpUseCase.ExecuteArgsForCall(0)
       Expect(executeArg0).To(Equal(*providedRunOpReq))
-      Expect(executeArg1).To(Equal(make([]*models.Url, 0)))
+      Expect(executeArg1).To(Equal(make([]models.OpRunStartedEvent, 0)))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })

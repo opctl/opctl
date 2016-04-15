@@ -34,6 +34,7 @@ logger logging.Logger,
     "--rmi",
     "local",
     "-v",
+    "--remove-orphans",
   )
 
   dockerComposeDownCmd.Dir = pathToOpDir

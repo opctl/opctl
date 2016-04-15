@@ -7,7 +7,7 @@ import (
   "github.com/dev-op-spec/engine/core/models"
 )
 
-type FakeRunOpUseCase struct {
+type fakeRunOpUseCase struct {
   ExecuteStub        func(req models.RunOpReq, ancestors []models.OpRunStartedEvent) (opRunId string, err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
@@ -20,7 +20,7 @@ type FakeRunOpUseCase struct {
                      }
 }
 
-func (fake *FakeRunOpUseCase) Execute(req models.RunOpReq, ancestors []models.OpRunStartedEvent) (opRunId string, err error) {
+func (fake *fakeRunOpUseCase) Execute(req models.RunOpReq, ancestors []models.OpRunStartedEvent) (opRunId string, err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
     req       models.RunOpReq
@@ -34,19 +34,19 @@ func (fake *FakeRunOpUseCase) Execute(req models.RunOpReq, ancestors []models.Op
   }
 }
 
-func (fake *FakeRunOpUseCase) ExecuteCallCount() int {
+func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
   return len(fake.executeArgsForCall)
 }
 
-func (fake *FakeRunOpUseCase) ExecuteArgsForCall(i int) (models.RunOpReq, []models.OpRunStartedEvent) {
+func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (models.RunOpReq, []models.OpRunStartedEvent) {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
   return fake.executeArgsForCall[i].req, fake.executeArgsForCall[i].ancestors
 }
 
-func (fake *FakeRunOpUseCase) ExecuteReturns(result1 string, result2 error) {
+func (fake *fakeRunOpUseCase) ExecuteReturns(result1 string, result2 error) {
   fake.ExecuteStub = nil
   fake.executeReturns = struct {
     result1 string

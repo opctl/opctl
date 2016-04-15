@@ -23,7 +23,6 @@ type LogEntryEmittedEvent interface {
   LogEntryMsg() string
   LogEntryOutputStream() string
   Timestamp() time.Time
-  Type() string
 }
 
 type logEntryEmittedEvent struct {
@@ -38,12 +37,10 @@ func (this logEntryEmittedEvent) MarshalJSON() ([]byte, error) {
     LogEntryMsg          string `json:"logEntryMsg"`
     LogEntryOutputStream string `json:"logEntryOutputStream"`
     Timestamp            time.Time `json:"timestamp"`
-    Type                 string `json:"type"`
   }{
     LogEntryMsg:this.LogEntryMsg(),
     LogEntryOutputStream:this.LogEntryOutputStream(),
     Timestamp:this.Timestamp(),
-    Type:this.Type(),
   }
 
   return json.Marshal(data)
@@ -59,10 +56,4 @@ func (this logEntryEmittedEvent) LogEntryOutputStream() string {
 
 func (this logEntryEmittedEvent) Timestamp() time.Time {
   return this.timestamp
-}
-
-func (this logEntryEmittedEvent) Type() string {
-
-  return "LogEntryAdded"
-
 }

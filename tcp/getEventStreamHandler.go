@@ -5,7 +5,8 @@ import (
   "net/http"
   "github.com/dev-op-spec/engine/core"
   "encoding/json"
-  "github.com/dev-op-spec/engine/core/models"
+  coreModels "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/tcp/models"
 )
 
 func newGetEventStreamHandler(
@@ -38,14 +39,14 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
     return
   }
 
-  eventChannel := make(chan models.Event)
+  eventChannel := make(chan coreModels.Event)
 
   go func() {
     for {
 
       event := <-eventChannel
 
-      eventBytes, err := json.Marshal(event)
+      eventBytes, err := json.Marshal(models.NewEventMsg(event))
       if (nil != err) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         conn.Close()

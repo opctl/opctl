@@ -3,7 +3,7 @@ package dockercompose
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/dev-op-spec/engine/core/logging"
 )
 
 var _ = Describe("containerEngine", func() {
@@ -42,7 +42,7 @@ var _ = Describe("containerEngine", func() {
       /* arrange */
       providedPathToOpDir := ""
       providedOpName := ""
-      providedLogger := func(e models.LogEntryEmittedEvent) {}
+      providedLogger := new(logging.Logger)
 
       fakeRunOpUseCase := new(fakeRunOpUseCase)
 
@@ -57,14 +57,14 @@ var _ = Describe("containerEngine", func() {
       objectUnderTest.RunOp(
         providedPathToOpDir,
         providedOpName,
-        providedLogger,
+        *providedLogger,
       )
 
       /* assert */
       receivedPathToOpDir, receivedOpName, receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
       Expect(receivedPathToOpDir).To(Equal(providedPathToOpDir))
       Expect(receivedOpName).To(Equal(providedOpName))
-      Expect(receivedLogger).To(Equal(providedLogger))
+      Expect(receivedLogger).To(Equal(*providedLogger))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })

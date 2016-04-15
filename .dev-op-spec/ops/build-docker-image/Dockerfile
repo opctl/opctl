@@ -6,7 +6,7 @@ COPY dev-op-spec-engine /usr/local/bin
 COPY swagger /usr/local/bin/swagger
 
 RUN apk add -U py-pip && \
-    pip install -U pip docker-compose==1.6.2 && \
+    pip install -U pip docker-compose==1.7.0 && \
     rm -rf /tmp/* /root/.cache
 
 WORKDIR /usr/local/bin

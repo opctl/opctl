@@ -1,5 +1,10 @@
 package core
 
+import (
+  . "github.com/onsi/ginkgo"
+  . "github.com/onsi/gomega"
+)
+
 var _ = Describe("yamlCodec", func() {
   Context("executing .toYaml() then .fromYaml", func() {
     It("should roundtrip a opFile", func() {
