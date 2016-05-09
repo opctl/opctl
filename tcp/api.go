@@ -61,6 +61,11 @@ func (this _api) Start(
     this.compositionRoot.GetEventStreamHandler(),
   ).Methods(http.MethodGet)
 
+  router.Handle(
+    getLivenessRelUrlTemplate,
+    this.compositionRoot.GetLivenessHandler(),
+  ).Methods(http.MethodGet)
+
   n := negroni.Classic()
 
   n.Use(cors.New(cors.Options{

@@ -3,10 +3,5 @@ services:
   build-docker-image:
     extends:
       file: ../.common/docker-compose.yml
-      service: working_dir
-    image: docker:1.10
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      service: docker
     entrypoint: .dev-op-spec/ops/build-docker-image/entrypoint.sh
-    environment:
-      - DOCKER_REPO_NAME=devopspec/engine

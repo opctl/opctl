@@ -15,3 +15,12 @@ services:
       - GOARCH=amd64
       - CGO_ENABLED=0
       - GOOS=linux
+  docker:
+    image: docker:1.10
+    extends:
+      file: ../.common/docker-compose.yml
+      service: working_dir
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_REPO_NAME=devopspec/engine

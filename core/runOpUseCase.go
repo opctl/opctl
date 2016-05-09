@@ -64,7 +64,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
   }
   opRunStartedEvent := models.NewOpRunStartedEvent(
     time.Now(),
-    &parentOpRunId,
+    parentOpRunId,
     *req.OpUrl,
     opRunId,
   )

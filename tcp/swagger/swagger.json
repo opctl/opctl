@@ -16,6 +16,19 @@
     "text/html"
   ],
   "paths": {
+    "/liveness": {
+      "get": {
+        "summary": "Gets the liveness of the engine",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/projects/{projectUrl}/ops": {
       "parameters": [
         {
