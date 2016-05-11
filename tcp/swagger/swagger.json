@@ -5,7 +5,7 @@
     "title": "Engine API",
     "license": {
       "name": "Apache 2.0",
-      "projectUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
   "consumes": [
@@ -78,13 +78,16 @@
             "name": "body",
             "in": "body",
             "description": "The body of the request",
+            "required": true,
             "schema": {
               "title": "AddOpReq",
               "type": "object",
+              "required": [
+                "name"
+              ],
               "properties": {
                 "name": {
-                  "type": "string",
-                  "required": true
+                  "type": "string"
                 },
                 "description": {
                   "type": "string"
@@ -142,10 +145,12 @@
             "schema": {
               "title": "UpdateDescriptionOfOpReq",
               "type": "object",
+              "required": [
+                "description"
+              ],
               "properties": {
                 "description": {
-                  "type": "string",
-                  "required": true
+                  "type": "string"
                 }
               }
             }
@@ -200,14 +205,16 @@
             "schema": {
               "title": "AddSubOpReq",
               "type": "object",
+              "required": [
+                "subOpUrl"
+              ],
               "properties": {
                 "subOpUrl": {
-                  "type": "string",
-                  "required": true
+                  "type": "string"
                 },
                 "precedingSubOpUrl": {
                   "type": "string",
-                  "allowEmptyValue": true
+                  "minLength": 1
                 }
               }
             }
@@ -246,10 +253,12 @@
             "schema": {
               "title": "RunOpReq",
               "type": "object",
+              "required": [
+                "opUrl"
+              ],
               "properties": {
                 "opUrl": {
-                  "type": "string",
-                  "required": true
+                  "type": "string"
                 }
               }
             }
@@ -259,7 +268,8 @@
           "201": {
             "description": "Created",
             "schema": {
-              "$ref": "#/definitions/OpRunDetailedView"
+              "description": "The id of the op-run",
+              "type": "string"
             }
           },
           "400": {
@@ -299,6 +309,12 @@
                 "enum": [
                   "Upgrade"
                 ]
+              }
+            },
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/EventMsg"
               }
             }
           },
@@ -370,8 +386,23 @@
         }
       }
     },
-    "EventMsg":{
-      "type":
+    "EventMsg": {
+      "title": "EventMsg",
+      "description": "A message containing event data",
+      "type": "object",
+      "discriminator": "type",
+      "required":[
+        "type",
+        "data"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      }
     }
   }
 }
