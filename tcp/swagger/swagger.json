@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "0.0.0",
-    "title": "Engine ReST API",
+    "title": "Engine API",
     "license": {
       "name": "Apache 2.0",
       "projectUrl": "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -369,6 +369,9 @@
           }
         }
       }
+    },
+    "EventMsg":{
+      "type":
     }
   }
 }
