@@ -31,11 +31,13 @@ func (this runOpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  opRunId, err := this.coreApi.RunOp(runOpReq)
+  opRunId, correlationId, err := this.coreApi.RunOp(runOpReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return
   }
+
+  w.Header().Set("Correlation-Id", correlationId)
 
   w.WriteHeader(http.StatusCreated)
   w.Header().Set("Content-Type", "text/plain; charset=UTF-8")

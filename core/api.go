@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeApi.go --fake-name fakeApi ./ Api
+
 import (
   "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
@@ -24,7 +26,11 @@ type Api interface {
 
   RunOp(
   req models.RunOpReq,
-  ) (opRunId string, err error)
+  ) (
+  opRunId string,
+  correlationId string,
+  err error,
+  )
 
   SetDescriptionOfOp(
   req models.SetDescriptionOfOpReq,
@@ -94,7 +100,11 @@ projectUrl *models.Url,
 
 func (this _api) RunOp(
 req models.RunOpReq,
-) (opRunId string, err error) {
+) (
+opRunId string,
+correlationId string,
+err error,
+) {
   return this.
   compositionRoot.
   RunOpUseCase().

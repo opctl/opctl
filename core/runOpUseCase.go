@@ -1,21 +1,27 @@
 package core
 
+//go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
+
 import (
-  "errors"
-  "time"
   "github.com/dev-op-spec/engine/core/models"
   "github.com/dev-op-spec/engine/core/ports"
+  "github.com/dev-op-spec/engine/core/logging"
   "path/filepath"
   "fmt"
   "path"
-  "github.com/dev-op-spec/engine/core/logging"
+  "time"
+  "errors"
 )
 
 type runOpUseCase interface {
   Execute(
   req models.RunOpReq,
-  ancestors[]models.OpRunStartedEvent,
-  ) (opRunId string, err error)
+  ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
+  ) (
+  opRunId string,
+  correlationId string,
+  err error,
+  )
 }
 
 func newRunOpUseCase(
@@ -50,7 +56,11 @@ type _runOpUseCase struct {
 func (this _runOpUseCase) Execute(
 req models.RunOpReq,
 ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
-) (opRunId string, err error) {
+) (
+opRunId string,
+correlationId string,
+err error,
+) {
 
   var parentOpRunId string
   if (0 != len(ancestorOpRunStartedEvents)) {
@@ -58,7 +68,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
     parentOpRunId = parentOpRunStartedEvent.OpRunId()
   }
 
-  correlationId, err := this.uniqueStringFactory.Construct()
+  correlationId, err = this.uniqueStringFactory.Construct()
   if (nil != err) {
     return
   }
@@ -155,7 +165,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
         }
 
         var childOpRunId string
-        childOpRunId, err = this.Execute(
+        childOpRunId, _, err = this.Execute(
           *models.NewRunOpReq(
             childOpUrl,
           ),

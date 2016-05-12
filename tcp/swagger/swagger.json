@@ -267,6 +267,11 @@
         "responses": {
           "201": {
             "description": "Created",
+            "headers": {
+              "Correlation-Id": {
+                "type": "string"
+              }
+            },
             "schema": {
               "description": "The id of the op-run",
               "type": "string"
