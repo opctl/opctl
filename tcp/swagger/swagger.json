@@ -391,7 +391,7 @@
       "description": "A message containing event data",
       "type": "object",
       "discriminator": "type",
-      "required":[
+      "required": [
         "type",
         "data"
       ],
@@ -400,7 +400,20 @@
           "type": "string"
         },
         "data": {
-          "type": "object"
+          "type": "object",
+          "required": [
+            "timestamp",
+            "correlationId"
+          ],
+          "properties": {
+            "timestamp": {
+              "type": "string",
+              "format": "dateTime"
+            },
+            "correlationId": {
+              "type": "string"
+            }
+          }
         }
       }
     }

@@ -2,12 +2,11 @@ version: "2"
 services:
   working_dir:
     image: scratch
-    dns: 8.8.8.8
     volumes:
       - ../../../:/golang/src/github.com/dev-op-spec/engine
     working_dir: /golang/src/github.com/dev-op-spec/engine
   go:
-    image: repworth/git-go:git2.6-go1.6
+    build: ./
     extends:
       service: working_dir
     environment:

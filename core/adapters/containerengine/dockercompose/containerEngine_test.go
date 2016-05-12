@@ -40,6 +40,7 @@ var _ = Describe("containerEngine", func() {
     It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
+      providedCorrelationId := ""
       providedPathToOpDir := ""
       providedOpName := ""
       providedLogger := new(logging.Logger)
@@ -55,13 +56,15 @@ var _ = Describe("containerEngine", func() {
 
       /* act */
       objectUnderTest.RunOp(
+        providedCorrelationId,
         providedPathToOpDir,
         providedOpName,
         *providedLogger,
       )
 
       /* assert */
-      receivedPathToOpDir, receivedOpName, receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
+      receivedCorrelationId, receivedPathToOpDir, receivedOpName, receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
+      Expect(receivedCorrelationId).To(Equal(providedCorrelationId))
       Expect(receivedPathToOpDir).To(Equal(providedPathToOpDir))
       Expect(receivedOpName).To(Equal(providedOpName))
       Expect(receivedLogger).To(Equal(*providedLogger))

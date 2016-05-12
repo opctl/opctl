@@ -1,5 +1,7 @@
 package dockercompose
 
+//go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
+
 import (
   "os"
   "os/signal"
@@ -12,6 +14,7 @@ import (
 
 type runOpUseCase interface {
   Execute(
+  correlationId string,
   pathToOpDir string,
   opName string,
   logger logging.Logger,
@@ -36,6 +39,7 @@ type _runOpUseCase struct {
 }
 
 func (this _runOpUseCase) Execute(
+correlationId string,
 pathToOpDir string,
 opName string,
 logger logging.Logger,
@@ -101,13 +105,14 @@ logger logging.Logger,
       )
       if (nil == err) {
         err = runError
-      }else {
+      } else {
         err = errors.New(err.Error() + "\n" + runError.Error())
       }
 
     }
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
+      correlationId,
       pathToOpDir,
       logger,
     )
@@ -128,9 +133,9 @@ logger logging.Logger,
 
   }()
 
-  dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(logging.StdOutStream, logger)
+  dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
 
-  dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(logging.StdErrStream, logger)
+  dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   err = dockerComposeUpCmd.Run()
 

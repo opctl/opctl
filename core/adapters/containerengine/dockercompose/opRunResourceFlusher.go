@@ -7,6 +7,7 @@ import (
 
 type opRunResourceFlusher interface {
   flush(
+  correlationId string,
   pathToOpDir string,
   logger logging.Logger,
   ) (err error)
@@ -22,6 +23,7 @@ func newOpRunResourceFlusher(
 type _opRunResourceFlusher struct{}
 
 func (this _opRunResourceFlusher) flush(
+correlationId string,
 pathToOpDir string,
 logger logging.Logger,
 ) (err error) {
@@ -39,8 +41,8 @@ logger logging.Logger,
 
   dockerComposeDownCmd.Dir = pathToOpDir
 
-  dockerComposeDownCmd.Stdout = logging.NewLoggableIoWriter(logging.StdOutStream, logger)
-  dockerComposeDownCmd.Stderr = logging.NewLoggableIoWriter(logging.StdErrStream, logger)
+  dockerComposeDownCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
+  dockerComposeDownCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   err = dockerComposeDownCmd.Run()
 

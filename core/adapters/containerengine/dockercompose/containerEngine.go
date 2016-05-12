@@ -41,6 +41,7 @@ opName string,
 }
 
 func (this _containerEngine) RunOp(
+correlationId string,
 pathToOpDir string,
 opName string,
 logger logging.Logger,
@@ -49,6 +50,7 @@ logger logging.Logger,
   return this.compositionRoot.
   RunOpUseCase().
   Execute(
+    correlationId,
     pathToOpDir,
     opName,
     logger,

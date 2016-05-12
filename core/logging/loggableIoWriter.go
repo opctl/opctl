@@ -13,11 +13,13 @@ type LoggableIoWriter interface {
 }
 
 func NewLoggableIoWriter(
+correlationId string,
 logEntryOutputStream string,
 logger Logger,
 ) LoggableIoWriter {
 
   return &logEmittingIoWriter{
+    correlationId:correlationId,
     logEntryOutputStream:logEntryOutputStream,
     logger:logger,
   }
@@ -25,6 +27,7 @@ logger Logger,
 }
 
 type logEmittingIoWriter struct {
+  correlationId        string
   logEntryOutputStream string
   logger               Logger
 }
@@ -37,6 +40,7 @@ p []byte,
 
   this.logger(
     models.NewLogEntryEmittedEvent(
+      this.correlationId,
       time.Now(),
       strings.TrimSpace(string(p)),
       this.logEntryOutputStream,

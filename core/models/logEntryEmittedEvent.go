@@ -6,12 +6,14 @@ import (
 )
 
 func NewLogEntryEmittedEvent(
+correlationId string,
 timestamp time.Time,
 logEntryMsg string,
 logEntryOutputStream string,
 ) LogEntryEmittedEvent {
 
   return &logEntryEmittedEvent{
+    correlationId:correlationId,
     logEntryMsg:logEntryMsg,
     logEntryOutputStream:logEntryOutputStream,
     timestamp:timestamp,
@@ -20,12 +22,14 @@ logEntryOutputStream string,
 }
 
 type LogEntryEmittedEvent interface {
+  CorrelationId() string
   LogEntryMsg() string
   LogEntryOutputStream() string
   Timestamp() time.Time
 }
 
 type logEntryEmittedEvent struct {
+  correlationId        string
   logEntryMsg          string
   logEntryOutputStream string
   timestamp            time.Time
@@ -34,16 +38,22 @@ type logEntryEmittedEvent struct {
 func (this logEntryEmittedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
+    CorrelationId        string `json:"correlationId"`
     LogEntryMsg          string `json:"logEntryMsg"`
     LogEntryOutputStream string `json:"logEntryOutputStream"`
     Timestamp            time.Time `json:"timestamp"`
   }{
+    CorrelationId:this.CorrelationId(),
     LogEntryMsg:this.LogEntryMsg(),
     LogEntryOutputStream:this.LogEntryOutputStream(),
     Timestamp:this.Timestamp(),
   }
 
   return json.Marshal(data)
+}
+
+func (this logEntryEmittedEvent) CorrelationId() string {
+  return this.correlationId
 }
 
 func (this logEntryEmittedEvent) LogEntryMsg() string {

@@ -58,11 +58,17 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
     parentOpRunId = parentOpRunStartedEvent.OpRunId()
   }
 
+  correlationId, err := this.uniqueStringFactory.Construct()
+  if (nil != err) {
+    return
+  }
+
   opRunId, err = this.uniqueStringFactory.Construct()
   if (nil != err) {
     return
   }
   opRunStartedEvent := models.NewOpRunStartedEvent(
+    correlationId,
     time.Now(),
     parentOpRunId,
     *req.OpUrl,
@@ -110,6 +116,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
 
       this.eventStream.Publish(
         models.NewOpRunFinishedEvent(
+          correlationId,
           time.Now(),
           opRunExitCode,
           opRunId,
@@ -122,6 +129,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
 
       // run op
       opRunExitCode, err = this.containerEngine.RunOp(
+        correlationId,
         req.OpUrl.Path,
         _opFile.Name,
         this.logger,
@@ -177,7 +185,7 @@ ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
                 opRunExitCode = event.OpRunExitCode()
                 return
 
-              }else {
+              } else {
                 break eventLoop
               }
             }
