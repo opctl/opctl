@@ -53,6 +53,7 @@ logger logging.Logger,
     "--force-recreate",
     "--abort-on-container-exit",
     "--remove-orphans",
+    "--build",
   )
 
   dockerComposeUpCmd.Dir = pathToOpDir
