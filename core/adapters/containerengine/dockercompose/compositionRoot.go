@@ -1,5 +1,7 @@
 package dockercompose
 
+//go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
+
 import (
   dockerEngine "github.com/docker/engine-api/client"
 )
@@ -7,6 +9,7 @@ import (
 type compositionRoot interface {
   InitOpUseCase() initOpUseCase
   RunOpUseCase() runOpUseCase
+  KillOpRunUseCase() killOpRunUseCase
 }
 
 func newCompositionRoot(
@@ -27,14 +30,16 @@ func newCompositionRoot(
   compositionRoot = &_compositionRoot{
     initOpUseCase: newInitOpUseCase(fs, yml),
     runOpUseCase: newRunOpUseCase(opRunExitCodeReader, opRunResourceFlusher),
+    killOpRunUseCase: newKillOpRunUseCase(opRunResourceFlusher),
   }
 
   return
 }
 
 type _compositionRoot struct {
-  initOpUseCase initOpUseCase
-  runOpUseCase  runOpUseCase
+  initOpUseCase    initOpUseCase
+  runOpUseCase     runOpUseCase
+  killOpRunUseCase killOpRunUseCase
 }
 
 func (this _compositionRoot) InitOpUseCase() initOpUseCase {
@@ -43,4 +48,8 @@ func (this _compositionRoot) InitOpUseCase() initOpUseCase {
 
 func (this _compositionRoot) RunOpUseCase() runOpUseCase {
   return this.runOpUseCase
+}
+
+func (this _compositionRoot) KillOpRunUseCase() killOpRunUseCase {
+  return this.killOpRunUseCase
 }

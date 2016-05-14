@@ -16,4 +16,10 @@ type ContainerEngine interface {
   name string,
   logger logging.Logger,
   ) (exitCode int, err error)
+
+  KillOpRun(
+  correlationId string,
+  pathToOpDir string,
+  logger logging.Logger,
+  ) (err error)
 }

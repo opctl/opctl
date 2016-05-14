@@ -30,6 +30,16 @@ type FakeContainerEngine struct {
 		result1 int
 		result2 error
 	}
+	KillOpRunStub        func(correlationId string, pathToOpDir string, logger logging.Logger) (err error)
+	killOpRunMutex       sync.RWMutex
+	killOpRunArgsForCall []struct {
+		correlationId string
+		pathToOpDir   string
+		logger        logging.Logger
+	}
+	killOpRunReturns struct {
+		result1 error
+	}
 }
 
 func (fake *FakeContainerEngine) InitOp(pathToOpDir string, name string) (err error) {
@@ -99,6 +109,40 @@ func (fake *FakeContainerEngine) RunOpReturns(result1 int, result2 error) {
 		result1 int
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *FakeContainerEngine) KillOpRun(correlationId string, pathToOpDir string, logger logging.Logger) (err error) {
+	fake.killOpRunMutex.Lock()
+	fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
+		correlationId string
+		pathToOpDir   string
+		logger        logging.Logger
+	}{correlationId, pathToOpDir, logger})
+	fake.killOpRunMutex.Unlock()
+	if fake.KillOpRunStub != nil {
+		return fake.KillOpRunStub(correlationId, pathToOpDir, logger)
+	} else {
+		return fake.killOpRunReturns.result1
+	}
+}
+
+func (fake *FakeContainerEngine) KillOpRunCallCount() int {
+	fake.killOpRunMutex.RLock()
+	defer fake.killOpRunMutex.RUnlock()
+	return len(fake.killOpRunArgsForCall)
+}
+
+func (fake *FakeContainerEngine) KillOpRunArgsForCall(i int) (string, string, logging.Logger) {
+	fake.killOpRunMutex.RLock()
+	defer fake.killOpRunMutex.RUnlock()
+	return fake.killOpRunArgsForCall[i].correlationId, fake.killOpRunArgsForCall[i].pathToOpDir, fake.killOpRunArgsForCall[i].logger
+}
+
+func (fake *FakeContainerEngine) KillOpRunReturns(result1 error) {
+	fake.KillOpRunStub = nil
+	fake.killOpRunReturns = struct {
+		result1 error
+	}{result1}
 }
 
 var _ ports.ContainerEngine = new(FakeContainerEngine)

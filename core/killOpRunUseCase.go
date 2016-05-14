@@ -1,42 +1,40 @@
 package core
 
-//go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
+//go:generate counterfeiter -o ./fakeKillOpRunUseCase.go --fake-name fakeKillOpRunUseCase ./ killOpRunUseCase
 
 import (
   "github.com/dev-op-spec/engine/core/models"
 )
 
-type runOpUseCase interface {
+type killOpRunUseCase interface {
   Execute(
-  req models.RunOpReq,
+  req models.KillOpRunReq,
   ) (
-  opRunId string,
   correlationId string,
   err error,
   )
 }
 
-func newRunOpUseCase(
+func newKillOpRunUseCase(
 opRunner opRunner,
 uniqueStringFactory uniqueStringFactory,
-) runOpUseCase {
+) killOpRunUseCase {
 
-  return &_runOpUseCase{
+  return &_killOpRunUseCase{
     opRunner:opRunner,
     uniqueStringFactory:uniqueStringFactory,
   }
 
 }
 
-type _runOpUseCase struct {
+type _killOpRunUseCase struct {
   opRunner            opRunner
   uniqueStringFactory uniqueStringFactory
 }
 
-func (this _runOpUseCase) Execute(
-req models.RunOpReq,
+func (this _killOpRunUseCase) Execute(
+req models.KillOpRunReq,
 ) (
-opRunId string,
 correlationId string,
 err error,
 ) {
@@ -46,10 +44,9 @@ err error,
     return
   }
 
-  opRunId, err = this.opRunner.Run(
+  err = this.opRunner.Kill(
     correlationId,
-    req.OpUrl,
-    make([]models.OpRunStartedEvent, 0),
+    req.OpRunId,
   )
 
   return

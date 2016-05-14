@@ -6,18 +6,24 @@ import (
 )
 
 type fakeCompositionRoot struct {
-  InitOpUseCaseStub        func() initOpUseCase
-  initOpUseCaseMutex       sync.RWMutex
-  initOpUseCaseArgsForCall []struct{}
-  initOpUseCaseReturns     struct {
-                             result1 initOpUseCase
-                           }
-  RunOpUseCaseStub         func() runOpUseCase
-  runOpUseCaseMutex        sync.RWMutex
-  runOpUseCaseArgsForCall  []struct{}
-  runOpUseCaseReturns      struct {
-                             result1 runOpUseCase
-                           }
+  InitOpUseCaseStub           func() initOpUseCase
+  initOpUseCaseMutex          sync.RWMutex
+  initOpUseCaseArgsForCall    []struct{}
+  initOpUseCaseReturns        struct {
+                                result1 initOpUseCase
+                              }
+  RunOpUseCaseStub            func() runOpUseCase
+  runOpUseCaseMutex           sync.RWMutex
+  runOpUseCaseArgsForCall     []struct{}
+  runOpUseCaseReturns         struct {
+                                result1 runOpUseCase
+                              }
+  KillOpRunUseCaseStub        func() killOpRunUseCase
+  killOpRunUseCaseMutex       sync.RWMutex
+  killOpRunUseCaseArgsForCall []struct{}
+  killOpRunUseCaseReturns     struct {
+                                result1 killOpRunUseCase
+                              }
 }
 
 func (fake *fakeCompositionRoot) InitOpUseCase() initOpUseCase {
@@ -65,5 +71,29 @@ func (fake *fakeCompositionRoot) RunOpUseCaseReturns(result1 runOpUseCase) {
   fake.RunOpUseCaseStub = nil
   fake.runOpUseCaseReturns = struct {
     result1 runOpUseCase
+  }{result1}
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCase() killOpRunUseCase {
+  fake.killOpRunUseCaseMutex.Lock()
+  fake.killOpRunUseCaseArgsForCall = append(fake.killOpRunUseCaseArgsForCall, struct{}{})
+  fake.killOpRunUseCaseMutex.Unlock()
+  if fake.KillOpRunUseCaseStub != nil {
+    return fake.KillOpRunUseCaseStub()
+  } else {
+    return fake.killOpRunUseCaseReturns.result1
+  }
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCaseCallCount() int {
+  fake.killOpRunUseCaseMutex.RLock()
+  defer fake.killOpRunUseCaseMutex.RUnlock()
+  return len(fake.killOpRunUseCaseArgsForCall)
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCaseReturns(result1 killOpRunUseCase) {
+  fake.KillOpRunUseCaseStub = nil
+  fake.killOpRunUseCaseReturns = struct {
+    result1 killOpRunUseCase
   }{result1}
 }

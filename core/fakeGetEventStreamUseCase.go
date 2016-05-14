@@ -7,43 +7,43 @@ import (
 	"github.com/dev-op-spec/engine/core/models"
 )
 
-type fakeAddSubOpUseCase struct {
-	ExecuteStub        func(req models.AddSubOpReq) (err error)
+type fakeGetEventStreamUseCase struct {
+	ExecuteStub        func(subscriberEventChannel chan models.Event) (err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
-		req models.AddSubOpReq
+		subscriberEventChannel chan models.Event
 	}
 	executeReturns struct {
 		result1 error
 	}
 }
 
-func (fake *fakeAddSubOpUseCase) Execute(req models.AddSubOpReq) (err error) {
+func (fake *fakeGetEventStreamUseCase) Execute(subscriberEventChannel chan models.Event) (err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		req models.AddSubOpReq
-	}{req})
+		subscriberEventChannel chan models.Event
+	}{subscriberEventChannel})
 	fake.executeMutex.Unlock()
 	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(req)
+		return fake.ExecuteStub(subscriberEventChannel)
 	} else {
 		return fake.executeReturns.result1
 	}
 }
 
-func (fake *fakeAddSubOpUseCase) ExecuteCallCount() int {
+func (fake *fakeGetEventStreamUseCase) ExecuteCallCount() int {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeAddSubOpUseCase) ExecuteArgsForCall(i int) models.AddSubOpReq {
+func (fake *fakeGetEventStreamUseCase) ExecuteArgsForCall(i int) chan models.Event {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].req
+	return fake.executeArgsForCall[i].subscriberEventChannel
 }
 
-func (fake *fakeAddSubOpUseCase) ExecuteReturns(result1 error) {
+func (fake *fakeGetEventStreamUseCase) ExecuteReturns(result1 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
 		result1 error

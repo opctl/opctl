@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeApi.go --fake-name fakeApi ./ Api
+//go:generate counterfeiter -o ./fakeApi.go --fake-name FakeApi ./ Api
 
 import (
   "github.com/dev-op-spec/engine/core/models"
@@ -20,9 +20,19 @@ type Api interface {
   eventChannel chan models.Event,
   ) (err error)
 
+  KillOpRun(
+  req models.KillOpRunReq,
+  ) (
+  correlationId string,
+  err error,
+  )
+
   ListOps(
   projectUrl *models.Url,
-  ) (ops []models.OpDetailedView, err error)
+  ) (
+  ops []models.OpDetailedView,
+  err error,
+  )
 
   RunOp(
   req models.RunOpReq,
@@ -89,9 +99,24 @@ eventChannel chan models.Event,
   Execute(eventChannel)
 }
 
+func (this _api) KillOpRun(
+req models.KillOpRunReq,
+) (
+correlationId string,
+err error,
+) {
+  return this.
+  compositionRoot.
+  KillOpRunUseCase().
+  Execute(req)
+}
+
 func (this _api) ListOps(
 projectUrl *models.Url,
-) (ops []models.OpDetailedView, err error) {
+) (
+ops []models.OpDetailedView,
+err error,
+) {
   return this.
   compositionRoot.
   ListOpsUseCase().
@@ -108,10 +133,7 @@ err error,
   return this.
   compositionRoot.
   RunOpUseCase().
-  Execute(
-    req,
-    make([]models.OpRunStartedEvent, 0),
-  )
+  Execute(req)
 }
 
 func (this _api) SetDescriptionOfOp(
@@ -120,7 +142,5 @@ req models.SetDescriptionOfOpReq,
   return this.
   compositionRoot.
   SetDescriptionOfOpUseCase().
-  Execute(
-    req,
-  )
+  Execute(req)
 }

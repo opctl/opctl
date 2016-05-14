@@ -8,11 +8,10 @@ import (
 )
 
 type fakeRunOpUseCase struct {
-	ExecuteStub        func(req models.RunOpReq, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, correlationId string, err error)
+	ExecuteStub        func(req models.RunOpReq) (opRunId string, correlationId string, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
-		req                        models.RunOpReq
-		ancestorOpRunStartedEvents []models.OpRunStartedEvent
+		req models.RunOpReq
 	}
 	executeReturns struct {
 		result1 string
@@ -21,17 +20,14 @@ type fakeRunOpUseCase struct {
 	}
 }
 
-func (fake *fakeRunOpUseCase) Execute(req models.RunOpReq, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, correlationId string, err error) {
-	ancestorOpRunStartedEventsCopy := make([]models.OpRunStartedEvent, len(ancestorOpRunStartedEvents))
-	copy(ancestorOpRunStartedEventsCopy, ancestorOpRunStartedEvents)
+func (fake *fakeRunOpUseCase) Execute(req models.RunOpReq) (opRunId string, correlationId string, err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		req                        models.RunOpReq
-		ancestorOpRunStartedEvents []models.OpRunStartedEvent
-	}{req, ancestorOpRunStartedEventsCopy})
+		req models.RunOpReq
+	}{req})
 	fake.executeMutex.Unlock()
 	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(req, ancestorOpRunStartedEvents)
+		return fake.ExecuteStub(req)
 	} else {
 		return fake.executeReturns.result1, fake.executeReturns.result2, fake.executeReturns.result3
 	}
@@ -43,10 +39,10 @@ func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (models.RunOpReq, []models.OpRunStartedEvent) {
+func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) models.RunOpReq {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].req, fake.executeArgsForCall[i].ancestorOpRunStartedEvents
+	return fake.executeArgsForCall[i].req
 }
 
 func (fake *fakeRunOpUseCase) ExecuteReturns(result1 string, result2 string, result3 error) {

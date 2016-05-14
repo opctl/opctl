@@ -32,28 +32,13 @@ func (this _api) Start(
   router := mux.NewRouter()
 
   router.Handle(
-    listOpsRelUrlTemplate,
-    this.compositionRoot.ListOpsHandler(),
-  ).Methods(http.MethodGet)
-
-  router.Handle(
     addOpRelUrlTemplate,
     this.compositionRoot.AddOpHandler(),
   ).Methods(http.MethodPost)
 
   router.Handle(
-    setDescriptionOfOpRelUrlTemplate,
-    this.compositionRoot.SetDescriptionOfOpHandler(),
-  ).Methods(http.MethodPut)
-
-  router.Handle(
     addSubOpRelUrlTemplate,
     this.compositionRoot.AddSubOpHandler(),
-  ).Methods(http.MethodPost)
-
-  router.Handle(
-    runOpRelUrlTemplate,
-    this.compositionRoot.RunOpHandler(),
   ).Methods(http.MethodPost)
 
   router.Handle(
@@ -65,6 +50,26 @@ func (this _api) Start(
     getLivenessRelUrlTemplate,
     this.compositionRoot.GetLivenessHandler(),
   ).Methods(http.MethodGet)
+
+  router.Handle(
+    killOpRunRelUrlTemplate,
+    this.compositionRoot.KillOpRunHandler(),
+  ).Methods(http.MethodPost)
+
+  router.Handle(
+    listOpsRelUrlTemplate,
+    this.compositionRoot.ListOpsHandler(),
+  ).Methods(http.MethodGet)
+
+  router.Handle(
+    runOpRelUrlTemplate,
+    this.compositionRoot.RunOpHandler(),
+  ).Methods(http.MethodPost)
+
+  router.Handle(
+    setDescriptionOfOpRelUrlTemplate,
+    this.compositionRoot.SetDescriptionOfOpHandler(),
+  ).Methods(http.MethodPut)
 
   n := negroni.Classic()
 

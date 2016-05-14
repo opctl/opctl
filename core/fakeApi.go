@@ -7,7 +7,7 @@ import (
   "github.com/dev-op-spec/engine/core/models"
 )
 
-type fakeApi struct {
+type FakeApi struct {
   AddOpStub                     func(req models.AddOpReq) (err error)
   addOpMutex                    sync.RWMutex
   addOpArgsForCall              []struct {
@@ -31,6 +31,15 @@ type fakeApi struct {
   }
   getEventStreamReturns         struct {
                                   result1 error
+                                }
+  KillOpRunStub                 func(req models.KillOpRunReq) (correlationId string, err error)
+  killOpRunMutex                sync.RWMutex
+  killOpRunArgsForCall          []struct {
+    req models.KillOpRunReq
+  }
+  killOpRunReturns              struct {
+                                  result1 string
+                                  result2 error
                                 }
   ListOpsStub                   func(projectUrl *models.Url) (ops []models.OpDetailedView, err error)
   listOpsMutex                  sync.RWMutex
@@ -61,7 +70,7 @@ type fakeApi struct {
                                 }
 }
 
-func (fake *fakeApi) AddOp(req models.AddOpReq) (err error) {
+func (fake *FakeApi) AddOp(req models.AddOpReq) (err error) {
   fake.addOpMutex.Lock()
   fake.addOpArgsForCall = append(fake.addOpArgsForCall, struct {
     req models.AddOpReq
@@ -74,26 +83,26 @@ func (fake *fakeApi) AddOp(req models.AddOpReq) (err error) {
   }
 }
 
-func (fake *fakeApi) AddOpCallCount() int {
+func (fake *FakeApi) AddOpCallCount() int {
   fake.addOpMutex.RLock()
   defer fake.addOpMutex.RUnlock()
   return len(fake.addOpArgsForCall)
 }
 
-func (fake *fakeApi) AddOpArgsForCall(i int) models.AddOpReq {
+func (fake *FakeApi) AddOpArgsForCall(i int) models.AddOpReq {
   fake.addOpMutex.RLock()
   defer fake.addOpMutex.RUnlock()
   return fake.addOpArgsForCall[i].req
 }
 
-func (fake *fakeApi) AddOpReturns(result1 error) {
+func (fake *FakeApi) AddOpReturns(result1 error) {
   fake.AddOpStub = nil
   fake.addOpReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *fakeApi) AddSubOp(req models.AddSubOpReq) (err error) {
+func (fake *FakeApi) AddSubOp(req models.AddSubOpReq) (err error) {
   fake.addSubOpMutex.Lock()
   fake.addSubOpArgsForCall = append(fake.addSubOpArgsForCall, struct {
     req models.AddSubOpReq
@@ -106,26 +115,26 @@ func (fake *fakeApi) AddSubOp(req models.AddSubOpReq) (err error) {
   }
 }
 
-func (fake *fakeApi) AddSubOpCallCount() int {
+func (fake *FakeApi) AddSubOpCallCount() int {
   fake.addSubOpMutex.RLock()
   defer fake.addSubOpMutex.RUnlock()
   return len(fake.addSubOpArgsForCall)
 }
 
-func (fake *fakeApi) AddSubOpArgsForCall(i int) models.AddSubOpReq {
+func (fake *FakeApi) AddSubOpArgsForCall(i int) models.AddSubOpReq {
   fake.addSubOpMutex.RLock()
   defer fake.addSubOpMutex.RUnlock()
   return fake.addSubOpArgsForCall[i].req
 }
 
-func (fake *fakeApi) AddSubOpReturns(result1 error) {
+func (fake *FakeApi) AddSubOpReturns(result1 error) {
   fake.AddSubOpStub = nil
   fake.addSubOpReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *fakeApi) GetEventStream(eventChannel chan models.Event) (err error) {
+func (fake *FakeApi) GetEventStream(eventChannel chan models.Event) (err error) {
   fake.getEventStreamMutex.Lock()
   fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
     eventChannel chan models.Event
@@ -138,26 +147,59 @@ func (fake *fakeApi) GetEventStream(eventChannel chan models.Event) (err error) 
   }
 }
 
-func (fake *fakeApi) GetEventStreamCallCount() int {
+func (fake *FakeApi) GetEventStreamCallCount() int {
   fake.getEventStreamMutex.RLock()
   defer fake.getEventStreamMutex.RUnlock()
   return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *fakeApi) GetEventStreamArgsForCall(i int) chan models.Event {
+func (fake *FakeApi) GetEventStreamArgsForCall(i int) chan models.Event {
   fake.getEventStreamMutex.RLock()
   defer fake.getEventStreamMutex.RUnlock()
   return fake.getEventStreamArgsForCall[i].eventChannel
 }
 
-func (fake *fakeApi) GetEventStreamReturns(result1 error) {
+func (fake *FakeApi) GetEventStreamReturns(result1 error) {
   fake.GetEventStreamStub = nil
   fake.getEventStreamReturns = struct {
     result1 error
   }{result1}
 }
 
-func (fake *fakeApi) ListOps(projectUrl *models.Url) (ops []models.OpDetailedView, err error) {
+func (fake *FakeApi) KillOpRun(req models.KillOpRunReq) (correlationId string, err error) {
+  fake.killOpRunMutex.Lock()
+  fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
+    req models.KillOpRunReq
+  }{req})
+  fake.killOpRunMutex.Unlock()
+  if fake.KillOpRunStub != nil {
+    return fake.KillOpRunStub(req)
+  } else {
+    return fake.killOpRunReturns.result1, fake.killOpRunReturns.result2
+  }
+}
+
+func (fake *FakeApi) KillOpRunCallCount() int {
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
+  return len(fake.killOpRunArgsForCall)
+}
+
+func (fake *FakeApi) KillOpRunArgsForCall(i int) models.KillOpRunReq {
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
+  return fake.killOpRunArgsForCall[i].req
+}
+
+func (fake *FakeApi) KillOpRunReturns(result1 string, result2 error) {
+  fake.KillOpRunStub = nil
+  fake.killOpRunReturns = struct {
+    result1 string
+    result2 error
+  }{result1, result2}
+}
+
+func (fake *FakeApi) ListOps(projectUrl *models.Url) (ops []models.OpDetailedView, err error) {
   fake.listOpsMutex.Lock()
   fake.listOpsArgsForCall = append(fake.listOpsArgsForCall, struct {
     projectUrl *models.Url
@@ -170,19 +212,19 @@ func (fake *fakeApi) ListOps(projectUrl *models.Url) (ops []models.OpDetailedVie
   }
 }
 
-func (fake *fakeApi) ListOpsCallCount() int {
+func (fake *FakeApi) ListOpsCallCount() int {
   fake.listOpsMutex.RLock()
   defer fake.listOpsMutex.RUnlock()
   return len(fake.listOpsArgsForCall)
 }
 
-func (fake *fakeApi) ListOpsArgsForCall(i int) *models.Url {
+func (fake *FakeApi) ListOpsArgsForCall(i int) *models.Url {
   fake.listOpsMutex.RLock()
   defer fake.listOpsMutex.RUnlock()
   return fake.listOpsArgsForCall[i].projectUrl
 }
 
-func (fake *fakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 error) {
+func (fake *FakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 error) {
   fake.ListOpsStub = nil
   fake.listOpsReturns = struct {
     result1 []models.OpDetailedView
@@ -190,7 +232,7 @@ func (fake *fakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 err
   }{result1, result2}
 }
 
-func (fake *fakeApi) RunOp(req models.RunOpReq) (opRunId string, correlationId string, err error) {
+func (fake *FakeApi) RunOp(req models.RunOpReq) (opRunId string, correlationId string, err error) {
   fake.runOpMutex.Lock()
   fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
     req models.RunOpReq
@@ -203,19 +245,19 @@ func (fake *fakeApi) RunOp(req models.RunOpReq) (opRunId string, correlationId s
   }
 }
 
-func (fake *fakeApi) RunOpCallCount() int {
+func (fake *FakeApi) RunOpCallCount() int {
   fake.runOpMutex.RLock()
   defer fake.runOpMutex.RUnlock()
   return len(fake.runOpArgsForCall)
 }
 
-func (fake *fakeApi) RunOpArgsForCall(i int) models.RunOpReq {
+func (fake *FakeApi) RunOpArgsForCall(i int) models.RunOpReq {
   fake.runOpMutex.RLock()
   defer fake.runOpMutex.RUnlock()
   return fake.runOpArgsForCall[i].req
 }
 
-func (fake *fakeApi) RunOpReturns(result1 string, result2 string, result3 error) {
+func (fake *FakeApi) RunOpReturns(result1 string, result2 string, result3 error) {
   fake.RunOpStub = nil
   fake.runOpReturns = struct {
     result1 string
@@ -224,7 +266,7 @@ func (fake *fakeApi) RunOpReturns(result1 string, result2 string, result3 error)
   }{result1, result2, result3}
 }
 
-func (fake *fakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err error) {
+func (fake *FakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err error) {
   fake.setDescriptionOfOpMutex.Lock()
   fake.setDescriptionOfOpArgsForCall = append(fake.setDescriptionOfOpArgsForCall, struct {
     req models.SetDescriptionOfOpReq
@@ -237,23 +279,23 @@ func (fake *fakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err e
   }
 }
 
-func (fake *fakeApi) SetDescriptionOfOpCallCount() int {
+func (fake *FakeApi) SetDescriptionOfOpCallCount() int {
   fake.setDescriptionOfOpMutex.RLock()
   defer fake.setDescriptionOfOpMutex.RUnlock()
   return len(fake.setDescriptionOfOpArgsForCall)
 }
 
-func (fake *fakeApi) SetDescriptionOfOpArgsForCall(i int) models.SetDescriptionOfOpReq {
+func (fake *FakeApi) SetDescriptionOfOpArgsForCall(i int) models.SetDescriptionOfOpReq {
   fake.setDescriptionOfOpMutex.RLock()
   defer fake.setDescriptionOfOpMutex.RUnlock()
   return fake.setDescriptionOfOpArgsForCall[i].req
 }
 
-func (fake *fakeApi) SetDescriptionOfOpReturns(result1 error) {
+func (fake *FakeApi) SetDescriptionOfOpReturns(result1 error) {
   fake.SetDescriptionOfOpStub = nil
   fake.setDescriptionOfOpReturns = struct {
     result1 error
   }{result1}
 }
 
-var _ Api = new(fakeApi)
+var _ Api = new(FakeApi)

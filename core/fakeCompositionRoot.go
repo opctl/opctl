@@ -3,7 +3,6 @@ package core
 
 import (
   "sync"
-
 )
 
 type fakeCompositionRoot struct {
@@ -30,6 +29,12 @@ type fakeCompositionRoot struct {
   getEventStreamUseCaseArgsForCall     []struct{}
   getEventStreamUseCaseReturns         struct {
                                          result1 getEventStreamUseCase
+                                       }
+  KillOpRunUseCaseStub                 func() killOpRunUseCase
+  killOpRunUseCaseMutex                sync.RWMutex
+  killOpRunUseCaseArgsForCall          []struct{}
+  killOpRunUseCaseReturns              struct {
+                                         result1 killOpRunUseCase
                                        }
   ListOpsUseCaseStub                   func() listOpsUseCase
   listOpsUseCaseMutex                  sync.RWMutex
@@ -138,6 +143,30 @@ func (fake *fakeCompositionRoot) GetEventStreamUseCaseReturns(result1 getEventSt
   fake.GetEventStreamUseCaseStub = nil
   fake.getEventStreamUseCaseReturns = struct {
     result1 getEventStreamUseCase
+  }{result1}
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCase() killOpRunUseCase {
+  fake.killOpRunUseCaseMutex.Lock()
+  fake.killOpRunUseCaseArgsForCall = append(fake.killOpRunUseCaseArgsForCall, struct{}{})
+  fake.killOpRunUseCaseMutex.Unlock()
+  if fake.KillOpRunUseCaseStub != nil {
+    return fake.KillOpRunUseCaseStub()
+  } else {
+    return fake.killOpRunUseCaseReturns.result1
+  }
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCaseCallCount() int {
+  fake.killOpRunUseCaseMutex.RLock()
+  defer fake.killOpRunUseCaseMutex.RUnlock()
+  return len(fake.killOpRunUseCaseArgsForCall)
+}
+
+func (fake *fakeCompositionRoot) KillOpRunUseCaseReturns(result1 killOpRunUseCase) {
+  fake.KillOpRunUseCaseStub = nil
+  fake.killOpRunUseCaseReturns = struct {
+    result1 killOpRunUseCase
   }{result1}
 }
 

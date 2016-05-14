@@ -58,3 +58,19 @@ logger logging.Logger,
 
 }
 
+func (this _containerEngine) KillOpRun(
+correlationId string,
+pathToOpDir string,
+logger logging.Logger,
+) (err error) {
+
+  return this.compositionRoot.
+  KillOpRunUseCase().
+  Execute(
+    correlationId,
+    pathToOpDir,
+    logger,
+  )
+
+}
+

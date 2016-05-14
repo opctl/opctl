@@ -8,22 +8,16 @@ A lightweight dev op spec runtime.
 [sdk-for-golang](https://github.com/dev-op-spec/sdk-for-golang)
 
 # Supported Use Cases
-
-### Project
-- add op to project
-- add sub-op to project op
-- list ops of project
-- set description of project op
-
-### Op Run
-- run op
-
-### Event Stream
+- add op
+- add sub-op
 - get event stream
+- kill op run
+- list ops
+- run op
+- set description op
 
 
 # Prerequisites
-
 - [docker](https://github.com/docker/docker) >= 1.10
 
 Note: if using Windows or OSX, you need to update your docker-machine to use NFS instead of vboxfs 

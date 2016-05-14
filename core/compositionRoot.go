@@ -12,6 +12,7 @@ type compositionRoot interface {
   AddOpUseCase() addOpUseCase
   AddSubOpUseCase() addSubOpUseCase
   GetEventStreamUseCase() getEventStreamUseCase
+  KillOpRunUseCase() killOpRunUseCase
   ListOpsUseCase() listOpsUseCase
   SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
@@ -21,13 +22,17 @@ containerEngine ports.ContainerEngine,
 filesys ports.Filesys,
 ) (compositionRoot compositionRoot, err error) {
 
-  eventStream := newEventStream()
-
-  // factories
+  /* factories */
   pathToOpsDirFactory := newPathToOpsDirFactory()
+
   pathToOpDirFactory := newPathToOpDirFactory(pathToOpsDirFactory)
+
   pathToOpFileFactory := newPathToOpFileFactory(pathToOpDirFactory)
+
   uniqueStringFactory := newUniqueStringFactory()
+
+  /* components */
+  eventStream := newEventStream()
 
   yamlCodec := newYamlCodec()
 
@@ -35,14 +40,19 @@ filesys ports.Filesys,
     eventStream.Publish(logEntryEmittedEvent)
   }
 
-  // use cases
-  runOpUseCase := newRunOpUseCase(
+  opRunner := newOpRunner(
     containerEngine,
     eventStream,
     filesys,
     logger,
     uniqueStringFactory,
     yamlCodec,
+  )
+
+  /* use cases */
+  runOpUseCase := newRunOpUseCase(
+    opRunner,
+    uniqueStringFactory,
   )
 
   addOpUseCase := newAddOpUseCase(
@@ -60,6 +70,11 @@ filesys ports.Filesys,
 
   getEventStreamUseCase := newGetEventStreamUseCase(
     eventStream,
+  )
+
+  killOpRunUseCase := newKillOpRunUseCase(
+    opRunner,
+    uniqueStringFactory,
   )
 
   listOpsUseCase := newListOpsUseCase(
@@ -80,6 +95,7 @@ filesys ports.Filesys,
     addOpUseCase: addOpUseCase,
     addSubOpUseCase: addSubOpUseCase,
     getEventStreamUseCase:getEventStreamUseCase,
+    killOpRunUseCase:killOpRunUseCase,
     listOpsUseCase: listOpsUseCase,
     setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
@@ -93,6 +109,7 @@ type _compositionRoot struct {
   addOpUseCase              addOpUseCase
   addSubOpUseCase           addSubOpUseCase
   getEventStreamUseCase     getEventStreamUseCase
+  killOpRunUseCase          killOpRunUseCase
   listOpsUseCase            listOpsUseCase
   setDescriptionOfOpUseCase setDescriptionOfOpUseCase
 }
@@ -111,6 +128,10 @@ func (this _compositionRoot) AddSubOpUseCase() addSubOpUseCase {
 
 func (this _compositionRoot) GetEventStreamUseCase() getEventStreamUseCase {
   return this.getEventStreamUseCase
+}
+
+func (this _compositionRoot) KillOpRunUseCase() killOpRunUseCase {
+  return this.killOpRunUseCase
 }
 
 func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {

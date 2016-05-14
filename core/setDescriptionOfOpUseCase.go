@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeSetDescriptionOfOpUseCase.go --fake-name fakeSetDescriptionOfOpUseCase ./ setDescriptionOfOpUseCase
+
 import (
   "github.com/dev-op-spec/engine/core/ports"
   "github.com/dev-op-spec/engine/core/models"

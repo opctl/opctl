@@ -2,8 +2,18 @@ package tcp
 
 /* resources */
 const (
+
+  // resource: event-stream
+  eventStreamRelUrlTemplate string = "/event-stream"
+
   // resource: a single liveness
   livenessRelUrlTemplate string = "/liveness"
+
+  // resource: all op-runs
+  opRunKillsRelUrlTemplate string = "/op-run-kills"
+
+  // resource: all op-runs
+  opRunsRelUrlTemplate string = "/op-runs"
 
   // resource: a single project
   projectRelUrlTemplate string = "/projects/{projectUrl}"
@@ -19,12 +29,6 @@ const (
 
   // resource: all subOps of a project op
   projectOpSubOpsRelUrlTemplate string = projectOpRelUrlTemplate + "/sub-ops"
-
-  // resource: all op-runs
-  opRunsRelUrlTemplate string = "/op-runs"
-
-  // resource: event-stream
-  eventStreamRelUrlTemplate string = "/event-stream"
 )
 
 /* use cases */
@@ -33,6 +37,7 @@ const (
   addSubOpRelUrlTemplate string = projectOpSubOpsRelUrlTemplate
   getLivenessRelUrlTemplate string = livenessRelUrlTemplate
   getEventStreamRelUrlTemplate string = eventStreamRelUrlTemplate
+  killOpRunRelUrlTemplate string = opRunKillsRelUrlTemplate
   listOpsRelUrlTemplate string = projectOpsRelUrlTemplate
   runOpRelUrlTemplate string = opRunsRelUrlTemplate
   setDescriptionOfOpRelUrlTemplate string = projectOpDescriptionRelUrlTemplate

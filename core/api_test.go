@@ -103,9 +103,7 @@ var _ = Describe("_api", func() {
       objectUnderTest.RunOp(*providedRunOpReq)
 
       /* assert */
-      executeArg0, executeArg1 := fakeRunOpUseCase.ExecuteArgsForCall(0)
-      Expect(executeArg0).To(Equal(*providedRunOpReq))
-      Expect(executeArg1).To(Equal(make([]models.OpRunStartedEvent, 0)))
+      Expect(fakeRunOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedRunOpReq))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })

@@ -2,39 +2,50 @@
 package core
 
 import (
-  "sync"
-  "github.com/dev-op-spec/engine/core/models"
+	"sync"
+
+	"github.com/dev-op-spec/engine/core/models"
 )
 
 type fakeSetDescriptionOfOpUseCase struct {
-  ExecuteStub        func(req models.SetDescriptionOfOpReq)
-  executeMutex       sync.RWMutex
-  executeArgsForCall []struct {
-    req models.SetDescriptionOfOpReq
-  }
+	ExecuteStub        func(req models.SetDescriptionOfOpReq) (err error)
+	executeMutex       sync.RWMutex
+	executeArgsForCall []struct {
+		req models.SetDescriptionOfOpReq
+	}
+	executeReturns struct {
+		result1 error
+	}
 }
 
 func (fake *fakeSetDescriptionOfOpUseCase) Execute(req models.SetDescriptionOfOpReq) (err error) {
-  fake.executeMutex.Lock()
-  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-    req models.SetDescriptionOfOpReq
-  }{req})
-  fake.executeMutex.Unlock()
-  if fake.ExecuteStub != nil {
-    fake.ExecuteStub(req)
-  }
-
-  return
+	fake.executeMutex.Lock()
+	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+		req models.SetDescriptionOfOpReq
+	}{req})
+	fake.executeMutex.Unlock()
+	if fake.ExecuteStub != nil {
+		return fake.ExecuteStub(req)
+	} else {
+		return fake.executeReturns.result1
+	}
 }
 
 func (fake *fakeSetDescriptionOfOpUseCase) ExecuteCallCount() int {
-  fake.executeMutex.RLock()
-  defer fake.executeMutex.RUnlock()
-  return len(fake.executeArgsForCall)
+	fake.executeMutex.RLock()
+	defer fake.executeMutex.RUnlock()
+	return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeSetDescriptionOfOpUseCase) ExecuteArgsForCall(i int) models.SetDescriptionOfOpReq {
-  fake.executeMutex.RLock()
-  defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].req
+	fake.executeMutex.RLock()
+	defer fake.executeMutex.RUnlock()
+	return fake.executeArgsForCall[i].req
+}
+
+func (fake *fakeSetDescriptionOfOpUseCase) ExecuteReturns(result1 error) {
+	fake.ExecuteStub = nil
+	fake.executeReturns = struct {
+		result1 error
+	}{result1}
 }
