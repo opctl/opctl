@@ -274,7 +274,7 @@
         }
       ],
       "put": {
-        "summary": "Update description of project op",
+        "summary": "Update description of op",
         "tags": [
           "projects"
         ],
@@ -382,35 +382,6 @@
     }
   },
   "definitions": {
-    "OpRunDetailedView": {
-      "title": "OpRunDetailedView",
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "opName": {
-          "type": "string"
-        },
-        "startTime": {
-          "type": "string",
-          "format": "dateTime"
-        },
-        "finishTime": {
-          "type": "string",
-          "format": "dateTime"
-        },
-        "exitCode": {
-          "type": "integer"
-        },
-        "subOps": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OpRunDetailedView"
-          }
-        }
-      }
-    },
     "OpSummaryView": {
       "title": "OpSummaryView",
       "description": "A reference to an op",

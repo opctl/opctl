@@ -194,10 +194,7 @@ err error,
 
           switch event := event.(type) {
           case models.OpRunFinishedEvent:
-            // OpRunFinishedEvents
-
             if (event.OpRunId() == childOpRunId) {
-              // our childOpRunId
 
               if (event.OpRunExitCode() != 0) {
                 // if non-zero exit code return immediately
@@ -208,6 +205,10 @@ err error,
               } else {
                 break eventLoop
               }
+            }
+          case models.OpRunKilledEvent:
+            if (event.OpRunId() == childOpRunId) {
+              return
             }
           default:
           // no op
