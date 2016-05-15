@@ -18,7 +18,7 @@ type opRunner interface {
   Run(
   correlationId string,
   opUrl *models.Url,
-  ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
+  parentOpRunId string,
   ) (
   opRunId string,
   err error,
@@ -68,16 +68,18 @@ type _opRunner struct {
 func (this _opRunner) Run(
 correlationId string,
 opUrl *models.Url,
-ancestorOpRunStartedEvents[]models.OpRunStartedEvent,
+parentOpRunId string,
 ) (
 opRunId string,
 err error,
 ) {
 
-  var parentOpRunId string
-  if (0 != len(ancestorOpRunStartedEvents)) {
-    parentOpRunStartedEvent := ancestorOpRunStartedEvents[len(ancestorOpRunStartedEvents) - 1]
-    parentOpRunId = parentOpRunStartedEvent.OpRunId()
+  err = this.guardOpRunNotRecursive(
+    parentOpRunId,
+    opUrl,
+  )
+  if (nil != err) {
+    return
   }
 
   opFileBytes, err := this.filesys.GetBytesOfFile(
@@ -100,55 +102,68 @@ err error,
   if (nil != err) {
     return
   }
-  opRunStartedEvent := models.NewOpRunStartedEvent(
-    correlationId,
-    time.Now(),
-    parentOpRunId,
-    *opUrl,
-    opRunId,
-  )
 
-  // guard infinite loop
-  for _, ancestorOpRunStartedEvent := range ancestorOpRunStartedEvents {
+  var rootOpRunId string
+  if ("" == parentOpRunId) {
+    // handle root op run
 
-    if (ancestorOpRunStartedEvent.OpRunOpUrl() == *opUrl) {
-      err = errors.New(
-        fmt.Sprintf(
-          "Unable to run op with url=`%v`. Op recursion is currently not supported.",
-          opUrl,
-        ),
-      )
-      return
-    }
+    rootOpRunId = opRunId
+
+  } else {
+    // handle sub op run
+
+    this.unfinishedOpRunsByIdMapRWMutex.RLock()
+    rootOpRunId = this.unfinishedOpRunsByIdMap[parentOpRunId].RootOpRunId()
+    this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
 
   }
-  ancestorOpRunStartedEvents = append(ancestorOpRunStartedEvents, opRunStartedEvent)
+
+  opRunStartedEvent := models.NewOpRunStartedEvent(
+    correlationId,
+    *opUrl,
+    opRunId,
+    parentOpRunId,
+    rootOpRunId,
+    time.Now().UTC(),
+  )
+
+  this.eventStream.Publish(opRunStartedEvent)
+
+  this.unfinishedOpRunsByIdMapRWMutex.Lock()
+  this.unfinishedOpRunsByIdMap[opRunId] = opRunStartedEvent
+  this.unfinishedOpRunsByIdMapRWMutex.Unlock()
 
   go func() {
-
-    this.eventStream.Publish(opRunStartedEvent)
-
-    this.unfinishedOpRunsByIdMapRWMutex.Lock()
-    this.unfinishedOpRunsByIdMap[opRunId] = opRunStartedEvent
-    this.unfinishedOpRunsByIdMapRWMutex.Unlock()
 
     var opRunExitCode int
     defer func() {
 
-      this.eventStream.Publish(
-        models.NewOpRunFinishedEvent(
-          correlationId,
-          time.Now(),
-          opRunExitCode,
-          opRunId,
-        ),
-      )
+      this.unfinishedOpRunsByIdMapRWMutex.RLock()
+      _, isUnfinishedOpRun := this.unfinishedOpRunsByIdMap[opRunId]
+      this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
+
+      if (isUnfinishedOpRun) {
+
+        this.unfinishedOpRunsByIdMapRWMutex.Lock()
+        delete(this.unfinishedOpRunsByIdMap, opRunId)
+        this.unfinishedOpRunsByIdMapRWMutex.Unlock()
+
+        this.eventStream.Publish(
+          models.NewOpRunFinishedEvent(
+            correlationId,
+            opRunExitCode,
+            opRunId,
+            time.Now().UTC(),
+          ),
+        )
+
+      }
 
     }()
 
     if (len(_opFile.SubOps) == 0) {
-
       // run op
+
       opRunExitCode, err = this.containerEngine.RunOp(
         correlationId,
         opUrl.Path,
@@ -160,26 +175,27 @@ err error,
       }
 
     } else {
+      // run sub ops
 
-      // run child ops
-      for _, childOp := range _opFile.SubOps {
+      for _, subOp := range _opFile.SubOps {
 
-        var childOpUrl *models.Url
-        childOpUrl, err = models.NewUrl(
+        var subOpUrl *models.Url
+        subOpUrl, err = models.NewUrl(
           // only support local relative urls for now...
+
           path.Join(
             filepath.Dir(opUrl.Path),
-            childOp.Url),
+            subOp.Url),
         )
         if (nil != err) {
           return
         }
 
-        var childOpRunId string
-        childOpRunId, err = this.Run(
+        var subOpRunId string
+        subOpRunId, err = this.Run(
           correlationId,
-          childOpUrl,
-          ancestorOpRunStartedEvents,
+          subOpUrl,
+          parentOpRunId,
         )
         if (nil != err) {
           return
@@ -194,7 +210,7 @@ err error,
 
           switch event := event.(type) {
           case models.OpRunFinishedEvent:
-            if (event.OpRunId() == childOpRunId) {
+            if (event.OpRunId() == subOpRunId) {
 
               if (event.OpRunExitCode() != 0) {
                 // if non-zero exit code return immediately
@@ -206,12 +222,7 @@ err error,
                 break eventLoop
               }
             }
-          case models.OpRunKilledEvent:
-            if (event.OpRunId() == childOpRunId) {
-              return
-            }
-          default:
-          // no op
+          default: // no op
           }
 
         }
@@ -226,6 +237,39 @@ err error,
 
 }
 
+func (this _opRunner) guardOpRunNotRecursive(
+parentOpRunId string,
+opUrl *models.Url,
+) (err error) {
+
+  if ("" == parentOpRunId) {
+    // handle root op run
+
+    return
+  }
+
+  this.unfinishedOpRunsByIdMapRWMutex.RLock()
+  parentOpRun := this.unfinishedOpRunsByIdMap[parentOpRunId]
+  this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
+
+  if (*opUrl == parentOpRun.OpRunOpUrl()) {
+    // handle infinite recursion
+
+    return errors.New(
+      fmt.Sprintf(
+        "Unable to run op with url=`%v`. Found op recursion.",
+        opUrl,
+      ),
+    )
+  }
+
+  return this.guardOpRunNotRecursive(
+    parentOpRun.ParentOpRunId(),
+    opUrl,
+  )
+
+}
+
 func (this _opRunner) Kill(
 correlationId string,
 opRunId string,
@@ -233,34 +277,57 @@ opRunId string,
 err error,
 ) {
 
+  // get rootOpRunId
   this.unfinishedOpRunsByIdMapRWMutex.RLock()
-  opRunStartedEvent, isUnfinishedOpRun := this.unfinishedOpRunsByIdMap[opRunId]
+  rootOpRunId := this.unfinishedOpRunsByIdMap[opRunId].RootOpRunId()
   this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
 
-  opRunKilledEvent :=
-  models.NewOpRunKilledEvent(
-    correlationId,
-    time.Now(),
-    opRunId,
-  )
+  this.unfinishedOpRunsByIdMapRWMutex.Lock()
+  for _, unfinishedOpRun := range this.unfinishedOpRunsByIdMap {
 
-  this.eventStream.Publish(
-    opRunKilledEvent,
-  )
+    delete(this.unfinishedOpRunsByIdMap, unfinishedOpRun.OpRunId())
 
-  if (isUnfinishedOpRun) {
-
-    this.unfinishedOpRunsByIdMapRWMutex.RLock()
-    delete(this.unfinishedOpRunsByIdMap, opRunId)
-    this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
-
-    this.containerEngine.KillOpRun(
-      correlationId,
-      opRunStartedEvent.OpRunOpUrl().Path,
-      this.logger,
+    this.eventStream.Publish(
+      models.NewOpRunKilledEvent(
+        correlationId,
+        unfinishedOpRun.OpRunId(),
+        rootOpRunId,
+        time.Now(),
+      ),
     )
 
+    go func() {
+
+      // @TODO: handle failure scenario; currently this can leak docker-compose resources
+      err := this.containerEngine.KillOpRun(
+        correlationId,
+        unfinishedOpRun.OpRunOpUrl().Path,
+        this.logger,
+      )
+      if (nil != err) {
+        this.logger(
+          models.NewLogEntryEmittedEvent(
+            correlationId,
+            time.Now().UTC(),
+            err.Error(),
+            logging.StdErrStream,
+          ),
+        )
+      }
+
+      this.eventStream.Publish(
+        models.NewOpRunFinishedEvent(
+          correlationId,
+          138,
+          opRunId,
+          time.Now().UTC(),
+        ),
+      )
+
+    }()
+
   }
+  this.unfinishedOpRunsByIdMapRWMutex.Unlock()
 
   return
 }

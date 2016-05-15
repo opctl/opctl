@@ -8,20 +8,20 @@ type initOpUseCase interface {
 }
 
 func newInitOpUseCase(
-fs filesystem,
-yml yamlCodec,
+filesys filesys,
+yamlCodec yamlCodec,
 ) initOpUseCase {
 
   return &_initOpUseCase{
-    fs:fs,
-    yml:yml,
+    filesys:filesys,
+    yamlCodec:yamlCodec,
   }
 
 }
 
 type _initOpUseCase struct {
-  fs  filesystem
-  yml yamlCodec
+  filesys   filesys
+  yamlCodec yamlCodec
 }
 
 func (this _initOpUseCase) Execute(
@@ -41,9 +41,9 @@ opName string,
   }
 
   var dockerComposeFileBytes []byte
-  dockerComposeFileBytes, err = this.yml.toYaml(&dockerComposeFile)
+  dockerComposeFileBytes, err = this.yamlCodec.toYaml(&dockerComposeFile)
 
-  err = this.fs.saveOpDockerComposeFile(
+  err = this.filesys.saveOpDockerComposeFile(
     pathToOpDir,
     dockerComposeFileBytes,
   )

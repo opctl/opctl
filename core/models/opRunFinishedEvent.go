@@ -7,12 +7,12 @@ import (
 
 func NewOpRunFinishedEvent(
 correlationId string,
-timestamp time.Time,
 opRunExitCode int,
 opRunId string,
+timestamp time.Time,
 ) OpRunFinishedEvent {
 
-  return &opRunFinishedEvent{
+  return OpRunFinishedEvent{
     correlationId:correlationId,
     opRunExitCode:opRunExitCode,
     opRunId:opRunId,
@@ -21,21 +21,14 @@ opRunId string,
 
 }
 
-type OpRunFinishedEvent interface {
-  CorrelationId() string
-  OpRunExitCode() int
-  OpRunId() string
-  Timestamp() time.Time
-}
-
-type opRunFinishedEvent struct {
+type OpRunFinishedEvent struct {
   correlationId string
   opRunExitCode int
   opRunId       string
   timestamp     time.Time
 }
 
-func (this opRunFinishedEvent) MarshalJSON() ([]byte, error) {
+func (this OpRunFinishedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
     CorrelationId string `json:"correlationId"`
@@ -52,18 +45,18 @@ func (this opRunFinishedEvent) MarshalJSON() ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (this opRunFinishedEvent) CorrelationId() string {
+func (this OpRunFinishedEvent) CorrelationId() string {
   return this.correlationId
 }
 
-func (this opRunFinishedEvent) OpRunExitCode() int {
+func (this OpRunFinishedEvent) OpRunExitCode() int {
   return this.opRunExitCode
 }
 
-func (this opRunFinishedEvent) OpRunId() string {
+func (this OpRunFinishedEvent) OpRunId() string {
   return this.opRunId
 }
 
-func (this opRunFinishedEvent) Timestamp() time.Time {
+func (this OpRunFinishedEvent) Timestamp() time.Time {
   return this.timestamp
 }

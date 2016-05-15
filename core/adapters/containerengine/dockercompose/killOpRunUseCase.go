@@ -16,16 +16,19 @@ type killOpRunUseCase interface {
 
 func newKillOpRunUseCase(
 opRunResourceFlusher opRunResourceFlusher,
+filesys filesys,
 ) killOpRunUseCase {
 
   return &_killOpRunUseCase{
     opRunResourceFlusher: opRunResourceFlusher,
+    filesys:filesys,
   }
 
 }
 
 type _killOpRunUseCase struct {
   opRunResourceFlusher opRunResourceFlusher
+  filesys           filesys
 }
 
 func (this _killOpRunUseCase) Execute(
@@ -34,11 +37,15 @@ pathToOpDir string,
 logger logging.Logger,
 ) (err error) {
 
-  this.opRunResourceFlusher.flush(
-    correlationId,
-    pathToOpDir,
-    logger,
-  )
+  if (this.filesys.isDockerComposeFileExistent(pathToOpDir)) {
+
+    this.opRunResourceFlusher.flush(
+      correlationId,
+      pathToOpDir,
+      logger,
+    )
+
+  }
 
   return
 

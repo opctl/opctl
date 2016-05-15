@@ -3,12 +3,17 @@ package dockercompose
 import (
   "io/ioutil"
   "path"
+  "os"
 )
 
-type filesystem interface {
+type filesys interface {
   getPathToOpDockerComposeFile(
   opName string,
   ) (pathToOpDockerComposeFile string)
+
+  isDockerComposeFileExistent(
+  pathToOpDir string,
+  ) (isExistent bool)
 
   saveOpDockerComposeFile(
   pathToOpDir string,
@@ -16,9 +21,9 @@ type filesystem interface {
   ) (err error)
 }
 
-type filesystemImpl struct{}
+type _filesys struct{}
 
-func (this filesystemImpl)  getPathToOpDockerComposeFile(
+func (this _filesys)  getPathToOpDockerComposeFile(
 pathToOp string,
 ) (pathToOpDockerComposeFile string) {
 
@@ -28,7 +33,21 @@ pathToOp string,
 
 }
 
-func (this filesystemImpl)  saveOpDockerComposeFile(
+func (this _filesys) isDockerComposeFileExistent(
+pathToOpDir string,
+) (isExistent bool) {
+
+  pathToFile := this.getPathToOpDockerComposeFile(pathToOpDir)
+
+  if _, err := os.Stat(pathToFile); err == nil {
+    return true
+  }
+
+  return false
+
+}
+
+func (this _filesys)  saveOpDockerComposeFile(
 pathToOpDir string,
 data []byte,
 ) (err error) {

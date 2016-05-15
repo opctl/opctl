@@ -11,7 +11,7 @@ event models.Event,
 ) EventMsg {
 
   eventType := strings.TrimSuffix(
-    reflect.TypeOf(event).Elem().Name(),
+    reflect.TypeOf(event).Name(),
     "Event",
   )
 

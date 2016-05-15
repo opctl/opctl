@@ -49,7 +49,7 @@ err error,
   opRunId, err = this.opRunner.Run(
     correlationId,
     req.OpUrl,
-    make([]models.OpRunStartedEvent, 0),
+    "",
   )
 
   return

@@ -7,53 +7,56 @@ import (
 
 func NewOpRunKilledEvent(
 correlationId string,
-timestamp time.Time,
 opRunId string,
+rootOpRunId string,
+timestamp time.Time,
 ) OpRunKilledEvent {
 
-  return &opRunKilledEvent{
+  return OpRunKilledEvent{
     correlationId:correlationId,
     opRunId:opRunId,
+    rootOpRunId:rootOpRunId,
     timestamp:timestamp,
   }
 
 }
 
-type OpRunKilledEvent interface {
-  CorrelationId() string
-  OpRunId() string
-  Timestamp() time.Time
-}
-
-type opRunKilledEvent struct {
+type OpRunKilledEvent struct {
   correlationId string
   opRunId       string
+  rootOpRunId   string
   timestamp     time.Time
 }
 
-func (this opRunKilledEvent) MarshalJSON() ([]byte, error) {
+func (this OpRunKilledEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
     CorrelationId string `json:"correlationId"`
     OpRunId       string `json:"opRunId"`
+    RootOpRunId   string `json:"rootOpRunId"`
     Timestamp     time.Time `json:"timestamp"`
   }{
     CorrelationId:this.CorrelationId(),
     OpRunId:this.OpRunId(),
+    RootOpRunId:this.RootOpRunId(),
     Timestamp:this.Timestamp(),
   }
 
   return json.Marshal(data)
 }
 
-func (this opRunKilledEvent) CorrelationId() string {
+func (this OpRunKilledEvent) CorrelationId() string {
   return this.correlationId
 }
 
-func (this opRunKilledEvent) OpRunId() string {
+func (this OpRunKilledEvent) OpRunId() string {
   return this.opRunId
 }
 
-func (this opRunKilledEvent) Timestamp() time.Time {
+func (this OpRunKilledEvent) RootOpRunId() string {
+  return this.rootOpRunId
+}
+
+func (this OpRunKilledEvent) Timestamp() time.Time {
   return this.timestamp
 }

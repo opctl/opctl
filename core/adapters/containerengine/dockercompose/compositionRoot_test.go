@@ -10,7 +10,7 @@ var _ = Describe("compositionRoot", func() {
     It("should return an instance of type initOpUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot()
 
       /* act */
       actualInitOpUseCase := objectUnderTest.InitOpUseCase()
@@ -20,11 +20,25 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
+  Context("killOpRunUseCase", func() {
+    It("should return an instance of type killOpRunUseCase", func() {
+
+      /* arrange */
+      objectUnderTest, _ := newCompositionRoot()
+
+      /* act */
+      actualKillOpRunUseCase := objectUnderTest.KillOpRunUseCase()
+
+      /* assert */
+      Expect(actualKillOpRunUseCase).To(BeAssignableToTypeOf(&_killOpRunUseCase{}))
+
+    })
+  })
   Context("runOpUseCase", func() {
     It("should return an instance of type runOpUseCase", func() {
 
       /* arrange */
-      objectUnderTest,_ := newCompositionRoot()
+      objectUnderTest, _ := newCompositionRoot()
 
       /* act */
       actualRunOpUseCase := objectUnderTest.RunOpUseCase()

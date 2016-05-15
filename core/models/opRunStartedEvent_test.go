@@ -13,7 +13,7 @@ var _ = Describe("OpRunStartedEvent", func() {
       var objectUnderTest Event
 
       /* act/assert */
-      objectUnderTest = opRunStartedEvent{}
+      objectUnderTest = OpRunStartedEvent{}
       fmt.Sprint(objectUnderTest)
 
     })

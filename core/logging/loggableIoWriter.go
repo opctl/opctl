@@ -41,7 +41,7 @@ p []byte,
   this.logger(
     models.NewLogEntryEmittedEvent(
       this.correlationId,
-      time.Now(),
+      time.Now().UTC(),
       strings.TrimSpace(string(p)),
       this.logEntryOutputStream,
     ),

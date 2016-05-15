@@ -15,8 +15,8 @@ type compositionRoot interface {
 func newCompositionRoot(
 ) (compositionRoot compositionRoot, err error) {
 
-  fs := filesystemImpl{}
-  yml := _yamlCodec{}
+  filesys := _filesys{}
+  yamlCodec := _yamlCodec{}
 
   dockerEngine, err := dockerEngine.NewEnvClient()
   if (nil != err) {
@@ -28,9 +28,9 @@ func newCompositionRoot(
   opRunResourceFlusher := newOpRunResourceFlusher()
 
   compositionRoot = &_compositionRoot{
-    initOpUseCase: newInitOpUseCase(fs, yml),
+    initOpUseCase: newInitOpUseCase(filesys, yamlCodec),
     runOpUseCase: newRunOpUseCase(opRunExitCodeReader, opRunResourceFlusher),
-    killOpRunUseCase: newKillOpRunUseCase(opRunResourceFlusher),
+    killOpRunUseCase: newKillOpRunUseCase(opRunResourceFlusher, filesys),
   }
 
   return

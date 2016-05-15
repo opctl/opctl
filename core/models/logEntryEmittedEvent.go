@@ -12,7 +12,7 @@ logEntryMsg string,
 logEntryOutputStream string,
 ) LogEntryEmittedEvent {
 
-  return &logEntryEmittedEvent{
+  return LogEntryEmittedEvent{
     correlationId:correlationId,
     logEntryMsg:logEntryMsg,
     logEntryOutputStream:logEntryOutputStream,
@@ -21,21 +21,14 @@ logEntryOutputStream string,
 
 }
 
-type LogEntryEmittedEvent interface {
-  CorrelationId() string
-  LogEntryMsg() string
-  LogEntryOutputStream() string
-  Timestamp() time.Time
-}
-
-type logEntryEmittedEvent struct {
+type LogEntryEmittedEvent struct {
   correlationId        string
   logEntryMsg          string
   logEntryOutputStream string
   timestamp            time.Time
 }
 
-func (this logEntryEmittedEvent) MarshalJSON() ([]byte, error) {
+func (this LogEntryEmittedEvent) MarshalJSON() ([]byte, error) {
 
   data := struct {
     CorrelationId        string `json:"correlationId"`
@@ -52,18 +45,18 @@ func (this logEntryEmittedEvent) MarshalJSON() ([]byte, error) {
   return json.Marshal(data)
 }
 
-func (this logEntryEmittedEvent) CorrelationId() string {
+func (this LogEntryEmittedEvent) CorrelationId() string {
   return this.correlationId
 }
 
-func (this logEntryEmittedEvent) LogEntryMsg() string {
+func (this LogEntryEmittedEvent) LogEntryMsg() string {
   return this.logEntryMsg
 }
 
-func (this logEntryEmittedEvent) LogEntryOutputStream() string {
+func (this LogEntryEmittedEvent) LogEntryOutputStream() string {
   return this.logEntryOutputStream
 }
 
-func (this logEntryEmittedEvent) Timestamp() time.Time {
+func (this LogEntryEmittedEvent) Timestamp() time.Time {
   return this.timestamp
 }
