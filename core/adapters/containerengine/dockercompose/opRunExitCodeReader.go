@@ -53,7 +53,10 @@ opName string,
     return
   }
 
-  container, err := this.dockerEngine.ContainerInspect(context.Background(), strings.TrimSpace(string(dockerComposePsCmdRawOutput)))
+  container, err := this.dockerEngine.ContainerInspect(
+    context.Background(),
+    strings.TrimSpace(string(dockerComposePsCmdRawOutput)),
+  )
   if (nil != err) {
     return
   }

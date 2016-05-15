@@ -139,6 +139,11 @@ logger logging.Logger,
   dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   err = dockerComposeUpCmd.Run()
+  if (nil != err) {
+
+    exitCode = 1
+
+  }
 
   return
 

@@ -29,7 +29,7 @@ Your mileage may vary.
 
 ### 1) Start dockerized engine
 ```SHELL
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 8080:8080 devopspec/engine
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 devopspec/engine
 ```
 explanation:
 
@@ -37,12 +37,12 @@ explanation:
 - `--rm` remove on exit
 - `-v /var/run/docker.sock:/var/run/docker.sock` bind mount host docker socket
 - `-v /Users:/Users` bind mount host `/Users` dir
-- `-p 8080:8080` expose container port `8080` via docker-machine port `8080`
+- `-p 42224:42224` expose container port `42224` via docker-machine port `42224`
 - `devopspec/engine` use latest [devopspec/engine](https://hub.docker.com/r/devopspec/engine/) image
 
 ### 2) Explore the engine ReST API via Swagger UI
 
-open your browser and navigate to the url returned from `echo $(docker-machine ip):8080`
+open your browser and navigate to the url returned from `echo $(docker-machine ip):42224`
 
 # Releases
 All releases will be [tagged](https://github.com/dev-op-spec/engine/tags) and made available on the [releases](https://github.com/dev-op-spec/engine/releases) page with release notes.

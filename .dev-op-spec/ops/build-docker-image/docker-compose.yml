@@ -4,4 +4,8 @@ services:
     extends:
       file: ../.common/docker-compose.yml
       service: docker
-    entrypoint: .dev-op-spec/ops/build-docker-image/entrypoint.sh
+    build:
+      context: ../../../
+      dockerfile: .dev-op-spec/ops/build-docker-image/Dockerfile
+    image: devopspec/engine
+    entrypoint: echo # noop

@@ -1,14 +1,14 @@
 FROM docker:1.10.3
 
-EXPOSE 8080
+EXPOSE 42224
 
-COPY dev-op-spec-engine /usr/local/bin
-COPY swagger /usr/local/bin/swagger
+WORKDIR /opt/dev-op-spec
+
+COPY engine ./
+COPY tcp/swagger ./swagger/
 
 RUN apk add -U py-pip && \
     pip install -U docker-compose==1.7.1 && \
     rm -rf /tmp/* /root/.cache
 
-WORKDIR /usr/local/bin
-
-CMD ["dev-op-spec-engine"]
+CMD ["/opt/dev-op-spec/engine"]
