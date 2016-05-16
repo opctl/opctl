@@ -9,12 +9,13 @@ A lightweight dev op spec runtime.
 
 # Supported Use Cases
 - add op
-- add sub-op
+- add sub op
 - get event stream
+- get liveness
 - kill op run
 - list ops
 - run op
-- set description op
+- set description of op
 
 
 # Prerequisites

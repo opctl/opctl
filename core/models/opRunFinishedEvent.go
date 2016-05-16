@@ -9,6 +9,7 @@ func NewOpRunFinishedEvent(
 correlationId string,
 opRunExitCode int,
 opRunId string,
+rootOpRunId string,
 timestamp time.Time,
 ) OpRunFinishedEvent {
 
@@ -16,6 +17,7 @@ timestamp time.Time,
     correlationId:correlationId,
     opRunExitCode:opRunExitCode,
     opRunId:opRunId,
+    rootOpRunId:rootOpRunId,
     timestamp:timestamp,
   }
 
@@ -25,6 +27,7 @@ type OpRunFinishedEvent struct {
   correlationId string
   opRunExitCode int
   opRunId       string
+  rootOpRunId   string
   timestamp     time.Time
 }
 
@@ -34,11 +37,13 @@ func (this OpRunFinishedEvent) MarshalJSON() ([]byte, error) {
     CorrelationId string `json:"correlationId"`
     OpRunExitCode int `json:"opRunExitCode"`
     OpRunId       string `json:"opRunId"`
+    RootOpRunId   string `json:"rootOpRunId"`
     Timestamp     time.Time `json:"timestamp"`
   }{
     CorrelationId:this.CorrelationId(),
     OpRunExitCode:this.OpRunExitCode(),
     OpRunId:this.OpRunId(),
+    RootOpRunId:this.RootOpRunId(),
     Timestamp:this.Timestamp(),
   }
 
@@ -55,6 +60,10 @@ func (this OpRunFinishedEvent) OpRunExitCode() int {
 
 func (this OpRunFinishedEvent) OpRunId() string {
   return this.opRunId
+}
+
+func (this OpRunFinishedEvent) RootOpRunId() string {
+  return this.rootOpRunId
 }
 
 func (this OpRunFinishedEvent) Timestamp() time.Time {
