@@ -1,8 +1,8 @@
 package dockercompose
 
 import (
-  "github.com/dev-op-spec/engine/core/ports"
-  "github.com/dev-op-spec/engine/core/logging"
+  "github.com/open-devops/engine/core/ports"
+  "github.com/open-devops/engine/core/logging"
 )
 
 func New(

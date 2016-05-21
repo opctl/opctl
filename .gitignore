@@ -2,7 +2,7 @@
 *.iml
 .idea/
 
-### dev-op-spec
+### open-devops
 *.tmp
 
 ### go

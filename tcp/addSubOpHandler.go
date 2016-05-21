@@ -4,9 +4,9 @@ import (
   "net/http"
   "net/url"
   "github.com/chrisdostert/mux"
-  "github.com/dev-op-spec/engine/core"
+  "github.com/open-devops/engine/core"
   "encoding/json"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
 )
 
 func newAddSubOpHandler(

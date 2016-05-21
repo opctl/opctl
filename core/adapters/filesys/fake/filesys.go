@@ -4,7 +4,7 @@ package fake
 import (
   "sync"
 
-  "github.com/dev-op-spec/engine/core/ports"
+  "github.com/open-devops/engine/core/ports"
 )
 
 func New(

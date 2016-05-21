@@ -4,7 +4,7 @@ package dockercompose
 import (
 	"sync"
 
-	"github.com/dev-op-spec/engine/core/logging"
+	"github.com/open-devops/engine/core/logging"
 )
 
 type fakeRunOpUseCase struct {

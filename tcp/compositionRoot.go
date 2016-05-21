@@ -1,7 +1,7 @@
 package tcp
 
 import (
-  "github.com/dev-op-spec/engine/core"
+  "github.com/open-devops/engine/core"
   "net/http"
 )
 

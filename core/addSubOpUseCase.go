@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeAddSubOpUseCase.go --fake-name fakeAddSubOpUseCase ./ addSubOpUseCase
 
 import (
-  "github.com/dev-op-spec/engine/core/models"
-  "github.com/dev-op-spec/engine/core/ports"
+  "github.com/open-devops/engine/core/models"
+  "github.com/open-devops/engine/core/ports"
 )
 
 type addSubOpUseCase interface {

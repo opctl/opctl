@@ -3,7 +3,7 @@ package dockercompose
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/dev-op-spec/engine/core/logging"
+  "github.com/open-devops/engine/core/logging"
 )
 
 var _ = Describe("containerEngine", func() {

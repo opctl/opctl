@@ -1,7 +1,7 @@
 package logging
 
 import (
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
   "time"
   "strings"
 )

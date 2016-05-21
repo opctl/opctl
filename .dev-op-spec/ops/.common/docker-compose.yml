@@ -3,8 +3,8 @@ services:
   working_dir:
     image: scratch
     volumes:
-      - ../../../:/golang/src/github.com/dev-op-spec/engine
-    working_dir: /golang/src/github.com/dev-op-spec/engine
+      - ../../../:/golang/src/github.com/open-devops/engine
+    working_dir: /golang/src/github.com/open-devops/engine
   go:
     build: ./
     extends:
@@ -15,7 +15,7 @@ services:
       - CGO_ENABLED=0
       - GOOS=linux
   docker:
-    image: docker:1.10
+    image: docker:1.11.1
     extends:
       file: ../.common/docker-compose.yml
       service: working_dir

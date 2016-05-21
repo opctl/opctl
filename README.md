@@ -1,11 +1,11 @@
-[![Build Status](https://travis-ci.org/dev-op-spec/engine.svg?branch=master)](https://travis-ci.org/dev-op-spec/engine)
-[![codecov.io](https://codecov.io/github/dev-op-spec/engine/coverage.svg?branch=master)](https://codecov.io/github/dev-op-spec/engine?branch=master)
+[![Build Status](https://travis-ci.org/open-devops/engine.svg?branch=master)](https://travis-ci.org/open-devops/engine)
+[![codecov.io](https://codecov.io/github/open-devops/engine/coverage.svg?branch=master)](https://codecov.io/github/open-devops/engine?branch=master)
 
 A lightweight dev op spec runtime.
 
 # Official SDK's
 
-[sdk-for-golang](https://github.com/dev-op-spec/sdk-for-golang)
+[sdk-for-golang](https://github.com/open-devops/sdk-for-golang)
 
 # Supported Use Cases
 - add op
@@ -41,12 +41,12 @@ explanation:
 - `-p 42224:42224` expose container port `42224` via docker-machine port `42224`
 - `devopspec/engine` use latest [devopspec/engine](https://hub.docker.com/r/devopspec/engine/) image
 
-### 2) Explore the engine ReST API via Swagger UI
+### 2) Explore the engine API via Swagger UI
 
 open your browser and navigate to the url returned from `echo $(docker-machine ip):42224`
 
 # Releases
-All releases will be [tagged](https://github.com/dev-op-spec/engine/tags) and made available on the [releases](https://github.com/dev-op-spec/engine/releases) page with release notes.
+All releases will be [tagged](https://github.com/open-devops/engine/tags) and made available on the [releases](https://github.com/open-devops/engine/releases) page with release notes.
 
 # Versioning
 This project adheres to the [Semantic Versioning](http://semver.org/) specification

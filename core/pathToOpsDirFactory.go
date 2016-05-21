@@ -2,7 +2,7 @@ package core
 
 import (
   "path"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
 )
 
 type pathToOpsDirFactory interface {
@@ -26,7 +26,7 @@ projectUrl *models.Url,
 
   pathToOpsDir = path.Join(
     projectUrl.Path,
-    ".dev-op-spec",
+    ".open-devops",
     "ops",
   )
 

@@ -1,6 +1,6 @@
 package os
 
-import "github.com/dev-op-spec/engine/core/ports"
+import "github.com/open-devops/engine/core/ports"
 
 func New() ports.Filesys {
 

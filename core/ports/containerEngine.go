@@ -2,7 +2,7 @@ package ports
 
 //go:generate counterfeiter -o ../adapters/containerengine/fake/containerEngine.go --fake-name FakeContainerEngine ./ ContainerEngine
 
-import "github.com/dev-op-spec/engine/core/logging"
+import "github.com/open-devops/engine/core/logging"
 
 type ContainerEngine interface {
   InitOp(

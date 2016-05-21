@@ -3,7 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
 
 import (
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
 )
 
 type runOpUseCase interface {

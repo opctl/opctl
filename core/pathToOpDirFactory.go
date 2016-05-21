@@ -2,7 +2,7 @@ package core
 
 import (
   "path"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
 )
 
 type pathToOpDirFactory interface {

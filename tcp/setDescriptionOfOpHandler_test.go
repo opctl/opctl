@@ -7,7 +7,7 @@ import (
   "net/http"
   "strings"
   "github.com/chrisdostert/mux"
-  "github.com/dev-op-spec/engine/core/models"
+  "github.com/open-devops/engine/core/models"
   "bytes"
   "encoding/json"
 )

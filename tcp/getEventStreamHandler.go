@@ -3,10 +3,10 @@ package tcp
 import (
   "github.com/gorilla/websocket"
   "net/http"
-  "github.com/dev-op-spec/engine/core"
+  "github.com/open-devops/engine/core"
   "encoding/json"
-  coreModels "github.com/dev-op-spec/engine/core/models"
-  "github.com/dev-op-spec/engine/tcp/models"
+  coreModels "github.com/open-devops/engine/core/models"
+  "github.com/open-devops/engine/tcp/models"
 )
 
 func newGetEventStreamHandler(
