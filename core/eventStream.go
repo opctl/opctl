@@ -34,21 +34,26 @@ func (this *_eventStream) RegisterSubscriber(
 eventChannel chan models.Event,
 ) {
 
-  this.cachedEventsRWMutex.RLock()
-  for _, event := range this.cachedEvents {
-    // return cached
-    eventChannel <- event
-  }
-  this.cachedEventsRWMutex.RUnlock()
+  // don't block; subscriber may not be ready
+  go func() {
 
-  this.subscribersRWMutex.Lock()
-  if (nil == this.subscribers) {
-    // handle first subscriber
-    this.subscribers = []chan models.Event{eventChannel}
-  }else {
-    this.subscribers = append(this.subscribers, eventChannel)
-  }
-  this.subscribersRWMutex.Unlock()
+    this.cachedEventsRWMutex.RLock()
+    for _, event := range this.cachedEvents {
+      // return cached
+      eventChannel <- event
+    }
+    this.cachedEventsRWMutex.RUnlock()
+
+    this.subscribersRWMutex.Lock()
+    if (nil == this.subscribers) {
+      // handle first subscriber
+      this.subscribers = []chan models.Event{eventChannel}
+    } else {
+      this.subscribers = append(this.subscribers, eventChannel)
+    }
+    this.subscribersRWMutex.Unlock()
+
+  }()
 
 }
 
@@ -61,11 +66,17 @@ event models.Event,
   this.cachedEventsRWMutex.Unlock()
 
   this.subscribersRWMutex.RLock()
-  for _, eventChannel := range this.subscribers {
-    eventChannel <- event
-  }
+  subscribers := this.subscribers
   this.subscribersRWMutex.RUnlock()
 
-  return
+  for _, eventChannel := range subscribers {
+
+    // don't block; subscriber may not be ready
+    go func(eventChannel chan models.Event) {
+
+      eventChannel <- event
+
+    }(eventChannel)
+  }
 
 }

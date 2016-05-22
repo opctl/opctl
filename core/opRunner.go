@@ -202,12 +202,11 @@ err error,
           return
         }
 
-        eventChannel := make(chan models.Event, 1000)
+        eventChannel := make(chan models.Event)
         this.eventStream.RegisterSubscriber(eventChannel)
 
         eventLoop:for {
-          var event models.Event
-          event = <-eventChannel
+          event := <-eventChannel
 
           switch event := event.(type) {
           case models.OpRunFinishedEvent:
