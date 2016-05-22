@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/opctl/engine.svg?branch=master)](https://travis-ci.org/opctl/engine)
-[![codecov.io](https://codecov.io/github/opctl/engine/coverage.svg?branch=master)](https://codecov.io/github/opctl/engine?branch=master)
-
 engine for controlling http://devopspec.com/ compliant ops.
+
 *Be advised: this project is currently at Major version zero. Per the semantic versioning spec: 
 "Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable."*
 
@@ -18,15 +16,6 @@ engine for controlling http://devopspec.com/ compliant ops.
 - list ops
 - run op
 - set description of op
-
-
-# Prerequisites
-- [docker](https://github.com/docker/docker) >= 1.10
-
-Note: if using Windows or OSX, you need to update your docker-machine to use NFS instead of vboxfs 
-(or suffer painfully slow performance). One recommended way to achieve this is via 
-[docker-machine-nfs](https://github.com/adlogix/docker-machine-nfs). 
-Your mileage may vary.
 
 # Example Usage
 
