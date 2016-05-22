@@ -2,9 +2,9 @@ package tcp
 
 import (
   "net/http"
-  "github.com/open-devops/engine/core"
+  "github.com/opctl/engine/core"
   "encoding/json"
-  "github.com/open-devops/engine/core/models"
+  "github.com/opctl/engine/core/models"
 )
 
 func newRunOpHandler(

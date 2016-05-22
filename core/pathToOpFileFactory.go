@@ -2,7 +2,7 @@ package core
 
 import (
   "path"
-  "github.com/open-devops/engine/core/models"
+  "github.com/opctl/engine/core/models"
 )
 
 type pathToOpFileFactory interface {

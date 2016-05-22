@@ -3,7 +3,7 @@ package models
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/open-devops/engine/core/models"
+  "github.com/opctl/engine/core/models"
   "time"
 )
 

@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeListOpsUseCase.go --fake-name fakeListOpsUseCase ./ listOpsUseCase
 
 import (
-  "github.com/open-devops/engine/core/models"
-  "github.com/open-devops/engine/core/ports"
+  "github.com/opctl/engine/core/models"
+  "github.com/opctl/engine/core/ports"
 )
 
 type listOpsUseCase interface {

@@ -6,7 +6,7 @@ before_script:
 - sudo rm /usr/local/bin/docker-compose
 - sudo curl -L -o /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.6.0/docker-compose-Linux-x86_64
 - sudo chmod +x /usr/local/bin/docker-compose
-- sudo curl -L -o /usr/local/bin/dos https://github.com/open-devops/cli/releases/download/0.8.0/dos-linux-x86_64
+- sudo curl -L -o /usr/local/bin/dos https://github.com/opctl/cli/releases/download/0.8.0/dos-linux-x86_64
 - sudo chmod +x /usr/local/bin/dos
 env:
   matrix:

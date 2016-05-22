@@ -3,7 +3,7 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/open-devops/engine/core/models"
+  "github.com/opctl/engine/core/models"
 )
 
 var _ = Describe("_api", func() {

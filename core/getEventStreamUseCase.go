@@ -2,7 +2,7 @@ package core
 
 //go:generate counterfeiter -o ./fakeGetEventStreamUseCase.go --fake-name fakeGetEventStreamUseCase ./ getEventStreamUseCase
 
-import "github.com/open-devops/engine/core/models"
+import "github.com/opctl/engine/core/models"
 
 func newGetEventStreamUseCase(
 eventStream eventStream,

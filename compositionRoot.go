@@ -1,10 +1,10 @@
 package main
 
 import (
-  "github.com/open-devops/engine/core"
-  "github.com/open-devops/engine/tcp"
-  dockerComposeContainerEngine "github.com/open-devops/engine/core/adapters/containerengine/dockercompose"
-  osFilesys "github.com/open-devops/engine/core/adapters/filesys/os"
+  "github.com/opctl/engine/core"
+  "github.com/opctl/engine/tcp"
+  dockerComposeContainerEngine "github.com/opctl/engine/core/adapters/containerengine/dockercompose"
+  osFilesys "github.com/opctl/engine/core/adapters/filesys/os"
 )
 
 type compositionRoot interface {

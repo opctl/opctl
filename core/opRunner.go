@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
 
 import (
-  "github.com/open-devops/engine/core/models"
-  "github.com/open-devops/engine/core/ports"
-  "github.com/open-devops/engine/core/logging"
+  "github.com/opctl/engine/core/models"
+  "github.com/opctl/engine/core/ports"
+  "github.com/opctl/engine/core/logging"
   "path/filepath"
   "fmt"
   "path"

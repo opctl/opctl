@@ -7,5 +7,5 @@ services:
     build:
       context: ../../../
       dockerfile: .dev-op-spec/ops/build-docker-image/Dockerfile
-    image: devopspec/engine
+    image: opctl/engine
     entrypoint: echo # noop

@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeSetDescriptionOfOpUseCase.go --fake-name fakeSetDescriptionOfOpUseCase ./ setDescriptionOfOpUseCase
 
 import (
-  "github.com/open-devops/engine/core/ports"
-  "github.com/open-devops/engine/core/models"
+  "github.com/opctl/engine/core/ports"
+  "github.com/opctl/engine/core/models"
 )
 
 type setDescriptionOfOpUseCase interface {

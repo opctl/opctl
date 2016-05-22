@@ -2,7 +2,7 @@ package dockercompose
 
 import (
   "os/exec"
-  "github.com/open-devops/engine/core/logging"
+  "github.com/opctl/engine/core/logging"
 )
 
 type opRunResourceFlusher interface {

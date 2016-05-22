@@ -2,11 +2,9 @@
 *.iml
 .idea/
 
-### open-devops
-*.tmp
+### temp
+engine
 
-### go
+### codecov.io
 coverage.txt
 *.coverprofile
-core/coverage.txt
-engine

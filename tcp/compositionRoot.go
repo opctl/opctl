@@ -1,7 +1,7 @@
 package tcp
 
 import (
-  "github.com/open-devops/engine/core"
+  "github.com/opctl/engine/core"
   "net/http"
 )
 
