@@ -1,11 +1,9 @@
 package tcp
 
 import (
-  "github.com/chrisdostert/mux"
   "github.com/opctl/engine/core"
   "net/http"
-  "github.com/codegangsta/negroni"
-  "github.com/rs/cors"
+  "github.com/chrisdostert/mux"
 )
 
 type Api interface {
@@ -71,23 +69,8 @@ func (this _api) Start(
     this.compositionRoot.SetDescriptionOfOpHandler(),
   ).Methods(http.MethodPut)
 
-  n := negroni.Classic()
+  router.PathPrefix("/").Handler(http.FileServer(http.Dir("./swagger/")))
 
-  n.Use(cors.New(cors.Options{
-    AllowedOrigins: []string{"*"},
-    AllowedMethods:[]string{
-      http.MethodGet,
-      http.MethodPost,
-      http.MethodPut,
-      http.MethodOptions,
-    },
-    AllowedHeaders:[]string{"*"},
-  }))
-
-  n.Use(negroni.NewStatic(http.Dir("swagger")))
-
-  n.UseHandler(router)
-
-  n.Run(":42224")
+  http.ListenAndServe(":42224", router)
 
 }

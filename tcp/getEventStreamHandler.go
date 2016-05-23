@@ -4,8 +4,8 @@ import (
   "github.com/gorilla/websocket"
   "net/http"
   "github.com/opctl/engine/core"
-  "encoding/json"
   coreModels "github.com/opctl/engine/core/models"
+  "encoding/json"
   "github.com/opctl/engine/tcp/models"
 )
 
@@ -39,32 +39,49 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
     return
   }
 
+  defer conn.Close()
+
   eventChannel := make(chan coreModels.Event)
-
-  go func() {
-    for {
-
-      event := <-eventChannel
-
-      eventBytes, err := json.Marshal(models.NewEventMsg(event))
-      if (nil != err) {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        conn.Close()
-      }
-
-      err = conn.WriteMessage(websocket.TextMessage, eventBytes);
-      if (nil != err) {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        conn.Close()
-      }
-
-    }
-  }()
 
   err = this.coreApi.GetEventStream(
     eventChannel,
   )
   if (nil != err) {
-    conn.Close()
+    http.Error(w, err.Error(), http.StatusBadRequest)
   }
+
+  isWebsocketClosedChannel := make(chan bool, 1)
+  defer func() {
+    isWebsocketClosedChannel <- true
+  }()
+
+  go func() {
+    for {
+
+      select {
+      case <-isWebsocketClosedChannel:
+        return
+      case event := <-eventChannel:
+
+        eventBytes, err := json.Marshal(models.NewEventMsg(event))
+        if (nil != err) {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+        }
+
+        err = conn.WriteMessage(websocket.TextMessage, eventBytes);
+        if (nil != err) {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+        }
+      }
+
+    }
+  }()
+
+  for {
+    _, _, err := conn.ReadMessage()
+    if (err != nil) {
+      return
+    }
+  }
+
 }
