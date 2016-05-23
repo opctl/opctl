@@ -2,13 +2,23 @@ package core
 
 import (
   "github.com/opctl/engine/core/models"
-  "sync"
+  "fmt"
+  "time"
 )
 
 func newEventStream(
 ) eventStream {
 
-  return &_eventStream{}
+  objectUnderConstruction := &_eventStream{
+    pendingPublishesChannel:make(chan models.Event),
+    pendingSubscribesChannel:make(chan chan models.Event),
+    pendingUnsubscribesChannel:make(chan chan models.Event),
+    subscribers:make(map[chan models.Event]bool),
+  }
+
+  go objectUnderConstruction.init()
+
+  return objectUnderConstruction
 
 }
 
@@ -20,40 +30,56 @@ type eventStream interface {
   Publish(
   event models.Event,
   )
+
+  UnregisterSubscriber(
+  eventChannel chan models.Event,
+  )
 }
 
 type _eventStream struct {
-  cachedEventsRWMutex sync.RWMutex
-  cachedEvents        []models.Event
+  pendingPublishesChannel    chan models.Event
 
-  subscribersRWMutex  sync.RWMutex
-  subscribers         []chan models.Event
+  pendingSubscribesChannel   chan chan models.Event
+
+  pendingUnsubscribesChannel chan chan models.Event
+
+  subscribers                map[chan models.Event]bool
+}
+
+func (this *_eventStream) init(
+) {
+
+  for {
+
+    select {
+
+    case event := <-this.pendingPublishesChannel:
+      for subscriber := range this.subscribers {
+        select {
+        case subscriber <- event:
+        case <-time.After(time.Second * 5):
+          delete(this.subscribers, subscriber)
+          close(subscriber)
+        }
+      }
+    case subscribe := <-this.pendingSubscribesChannel:
+      this.subscribers[subscribe] = true
+    case unsubscribe := <-this.pendingUnsubscribesChannel:
+      if _, ok := this.subscribers[unsubscribe]; ok {
+        delete(this.subscribers, unsubscribe)
+        close(unsubscribe)
+      }
+    }
+
+  }
+
 }
 
 func (this *_eventStream) RegisterSubscriber(
 eventChannel chan models.Event,
 ) {
 
-  // don't block; subscriber may not be ready
-  go func() {
-
-    this.subscribersRWMutex.Lock()
-    if (nil == this.subscribers) {
-      // handle first subscriber
-      this.subscribers = []chan models.Event{eventChannel}
-    } else {
-      this.subscribers = append(this.subscribers, eventChannel)
-    }
-    this.subscribersRWMutex.Unlock()
-
-    this.cachedEventsRWMutex.RLock()
-    for _, event := range this.cachedEvents {
-      // return cached
-      eventChannel <- event
-    }
-    this.cachedEventsRWMutex.RUnlock()
-
-  }()
+  this.pendingSubscribesChannel <- eventChannel
 
 }
 
@@ -61,22 +87,14 @@ func (this *_eventStream) Publish(
 event models.Event,
 ) {
 
-  this.cachedEventsRWMutex.Lock()
-  this.cachedEvents = append(this.cachedEvents, event)
-  this.cachedEventsRWMutex.Unlock()
+  this.pendingPublishesChannel <- event
 
-  this.subscribersRWMutex.RLock()
-  subscribers := this.subscribers
-  this.subscribersRWMutex.RUnlock()
+}
 
-  for _, eventChannel := range subscribers {
+func (this *_eventStream)   UnregisterSubscriber(
+eventChannel chan models.Event,
+) {
 
-    // don't block; subscriber may not be ready
-    go func(eventChannel chan models.Event) {
-
-      eventChannel <- event
-
-    }(eventChannel)
-  }
+  this.pendingUnsubscribesChannel <- eventChannel
 
 }

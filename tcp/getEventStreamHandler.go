@@ -72,6 +72,8 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
         if (nil != err) {
           http.Error(w, err.Error(), http.StatusInternalServerError)
         }
+
+
       }
 
     }

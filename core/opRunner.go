@@ -192,6 +192,10 @@ err error,
           return
         }
 
+        eventChannel := make(chan models.Event)
+        this.eventStream.RegisterSubscriber(eventChannel)
+        defer this.eventStream.UnregisterSubscriber(eventChannel)
+
         var subOpRunId string
         subOpRunId, err = this.Run(
           correlationId,
@@ -202,15 +206,14 @@ err error,
           return
         }
 
-        eventChannel := make(chan models.Event)
-        this.eventStream.RegisterSubscriber(eventChannel)
-
         eventLoop:for {
           event := <-eventChannel
 
           switch event := event.(type) {
           case models.OpRunFinishedEvent:
             if (event.OpRunId() == subOpRunId) {
+
+              this.eventStream.UnregisterSubscriber(eventChannel)
 
               if (event.OpRunExitCode() != 0) {
                 // if non-zero exit code return immediately
