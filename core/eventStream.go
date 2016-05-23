@@ -37,13 +37,6 @@ eventChannel chan models.Event,
   // don't block; subscriber may not be ready
   go func() {
 
-    this.cachedEventsRWMutex.RLock()
-    for _, event := range this.cachedEvents {
-      // return cached
-      eventChannel <- event
-    }
-    this.cachedEventsRWMutex.RUnlock()
-
     this.subscribersRWMutex.Lock()
     if (nil == this.subscribers) {
       // handle first subscriber
@@ -52,6 +45,13 @@ eventChannel chan models.Event,
       this.subscribers = append(this.subscribers, eventChannel)
     }
     this.subscribersRWMutex.Unlock()
+
+    this.cachedEventsRWMutex.RLock()
+    for _, event := range this.cachedEvents {
+      // return cached
+      eventChannel <- event
+    }
+    this.cachedEventsRWMutex.RUnlock()
 
   }()
 
