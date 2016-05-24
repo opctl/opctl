@@ -29,7 +29,7 @@ var _ = Describe("addOpHandler", func() {
         Fail(err.Error())
       }
 
-      httpReq, err := http.NewRequest(http.MethodGet, "", bytes.NewReader(providedAddOpReqJson))
+      httpReq, err := http.NewRequest(http.MethodPost, "", bytes.NewReader(providedAddOpReqJson))
       if (nil != err) {
         Fail(err.Error())
       }

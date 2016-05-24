@@ -29,7 +29,7 @@ var _ = Describe("addSubOpHandler", func() {
         Fail(err.Error())
       }
 
-      httpReq, err := http.NewRequest(http.MethodGet, "", bytes.NewReader(providedAddSubOpReqJson))
+      httpReq, err := http.NewRequest(http.MethodPost, "", bytes.NewReader(providedAddSubOpReqJson))
       if (nil != err) {
         Fail(err.Error())
       }

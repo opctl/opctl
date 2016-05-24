@@ -3,12 +3,8 @@ package dockercompose
 //go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
 
 import (
-  "os"
-  "os/signal"
   "os/exec"
   "errors"
-  "fmt"
-  "syscall"
   "github.com/opctl/engine/core/logging"
 )
 
@@ -58,55 +54,7 @@ logger logging.Logger,
 
   dockerComposeUpCmd.Dir = pathToOpDir
 
-  // handle SIGINT
-  signalChannel := make(chan os.Signal, 1)
-  signal.Notify(
-    signalChannel,
-    syscall.SIGINT,
-  )
-
-  resourceFlushIsCompleteChannel := make(chan bool, 1)
-
-  go func() {
-
-    <-signalChannel
-
-    // kill docker-compose; we flush our own resources
-    dockerComposeUpCmd.Process.Kill()
-
-    signal.Stop(signalChannel)
-
-    // wait for resource flush to complete
-    <-resourceFlushIsCompleteChannel
-
-    // exit with SIGINT exit code
-    os.Exit(130)
-
-  }()
-
   defer func() {
-
-    exitCode, err = this.opRunExitCodeReader.read(
-      correlationId,
-      logger,
-      opName,
-      pathToOpDir,
-    )
-    if (0 != exitCode) {
-
-      runError := errors.New(
-        fmt.Sprintf(
-          "%v exit code was: %v",
-          opName,
-          exitCode),
-      )
-      if (nil == err) {
-        err = runError
-      } else {
-        err = errors.New(err.Error() + "\n" + runError.Error())
-      }
-
-    }
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
       correlationId,
@@ -125,21 +73,20 @@ logger logging.Logger,
 
     }
 
-    // send resourceFlushIsComplete message
-    resourceFlushIsCompleteChannel <- true
-
   }()
 
   dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
-
   dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   err = dockerComposeUpCmd.Run()
   if (nil != err) {
-
     exitCode = 1
-
   }
+
+  exitCode, err = this.opRunExitCodeReader.read(
+    opName,
+    pathToOpDir,
+  )
 
   return
 

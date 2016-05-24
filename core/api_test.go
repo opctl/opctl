@@ -87,7 +87,7 @@ var _ = Describe("_api", func() {
     It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunOpReq := models.NewRunOpReq(&models.Url{})
+      providedRunOpReq := models.NewRunOpReq(&models.Url{}, map[string]string{})
 
       // wire up fakes
       fakeRunOpUseCase := new(fakeRunOpUseCase)

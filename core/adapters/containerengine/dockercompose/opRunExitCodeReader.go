@@ -7,13 +7,10 @@ import (
   "strings"
   dockerEngine "github.com/docker/engine-api/client"
   "golang.org/x/net/context"
-  "github.com/opctl/engine/core/logging"
 )
 
 type opRunExitCodeReader interface {
   read(
-  correlationId string,
-  logger logging.Logger,
   opName string,
   pathToOpDir string,
   ) (opExitCode int, err error)
@@ -34,8 +31,6 @@ type _opRunExitCodeReader struct {
 }
 
 func (this _opRunExitCodeReader) read(
-correlationId string,
-logger logging.Logger,
 opName string,
 pathToOpDir string,
 ) (
@@ -53,8 +48,6 @@ err error,
   )
 
   dockerComposePsCmd.Dir = pathToOpDir
-
-  dockerComposePsCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   var dockerComposePsCmdRawOutput []byte
   dockerComposePsCmdRawOutput, err = dockerComposePsCmd.Output()
