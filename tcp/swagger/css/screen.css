@@ -667,6 +667,7 @@
 }
 .swagger-section .swagger-ui-wrap .markdown pre code {
   line-height: 1.6em;
+  overflow: auto;
 }
 .swagger-section .swagger-ui-wrap div.gist {
   margin: 20px 0 25px 0 !important;
@@ -1405,7 +1406,7 @@
   cursor: pointer;
 }
 .swagger-section #header {
-  background-color: #f18729;
+  background-color: #89bf04;
   padding: 9px 14px 19px 14px;
   height: 23px;
   min-width: 775px;

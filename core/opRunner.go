@@ -16,6 +16,7 @@ import (
 
 type opRunner interface {
   Run(
+  args map[string]string,
   correlationId string,
   opUrl *models.Url,
   parentOpRunId string,
@@ -66,6 +67,7 @@ type _opRunner struct {
 }
 
 func (this _opRunner) Run(
+args map[string]string,
 correlationId string,
 opUrl *models.Url,
 parentOpRunId string,
@@ -166,6 +168,7 @@ err error,
       // run op
 
       opRunExitCode, err = this.containerEngine.RunOp(
+        args,
         correlationId,
         opUrl.Path,
         _opFile.Name,
@@ -212,6 +215,7 @@ err error,
 
         var subOpRunId string
         subOpRunId, err = this.Run(
+          args,
           correlationId,
           subOpUrl,
           opRunId,

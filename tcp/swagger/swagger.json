@@ -90,6 +90,12 @@
                 "opUrl"
               ],
               "properties": {
+                "args": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/definitions/OpRunArg"
+                  }
+                },
                 "opUrl": {
                   "type": "string"
                 }
@@ -382,34 +388,6 @@
     }
   },
   "definitions": {
-    "OpSummaryView": {
-      "title": "OpSummaryView",
-      "description": "A reference to an op",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "OpDetailedView": {
-      "title": "OpDetailedView",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "subOps": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OpSummaryView"
-          }
-        }
-      }
-    },
     "EventMsg": {
       "title": "EventMsg",
       "description": "A message containing event data",
@@ -437,6 +415,51 @@
             "correlationId": {
               "type": "string"
             }
+          }
+        }
+      }
+    },
+    "OpRunArg": {
+      "title": "OpRunArg",
+      "description": "An arg to be provided to the op",
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "OpSummaryView": {
+      "title": "OpSummaryView",
+      "description": "A reference to an op",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OpDetailedView": {
+      "title": "OpDetailedView",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "subOps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OpSummaryView"
           }
         }
       }

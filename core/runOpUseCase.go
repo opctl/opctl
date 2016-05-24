@@ -47,6 +47,7 @@ err error,
   }
 
   opRunId, err = this.opRunner.Run(
+    req.Args,
     correlationId,
     req.OpUrl,
     "",

@@ -44,6 +44,7 @@ opName string,
 }
 
 func (this _containerEngine) RunOp(
+args map[string]string,
 correlationId string,
 pathToOpDir string,
 opName string,
@@ -56,6 +57,7 @@ err error,
   return this.compositionRoot.
   RunOpUseCase().
   Execute(
+    args,
     correlationId,
     pathToOpDir,
     opName,

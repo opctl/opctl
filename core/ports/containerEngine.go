@@ -11,6 +11,7 @@ type ContainerEngine interface {
   ) (err error)
 
   RunOp(
+  args map[string]string,
   correlationId string,
   pathToOpDir string,
   name string,

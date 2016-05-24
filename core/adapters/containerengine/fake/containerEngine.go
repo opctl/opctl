@@ -18,9 +18,10 @@ type FakeContainerEngine struct {
 	initOpReturns struct {
 		result1 error
 	}
-	RunOpStub        func(correlationId string, pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error)
+	RunOpStub        func(args map[string]string, correlationId string, pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error)
 	runOpMutex       sync.RWMutex
 	runOpArgsForCall []struct {
+		args          map[string]string
 		correlationId string
 		pathToOpDir   string
 		name          string
@@ -75,17 +76,18 @@ func (fake *FakeContainerEngine) InitOpReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContainerEngine) RunOp(correlationId string, pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error) {
+func (fake *FakeContainerEngine) RunOp(args map[string]string, correlationId string, pathToOpDir string, name string, logger logging.Logger) (exitCode int, err error) {
 	fake.runOpMutex.Lock()
 	fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
+		args          map[string]string
 		correlationId string
 		pathToOpDir   string
 		name          string
 		logger        logging.Logger
-	}{correlationId, pathToOpDir, name, logger})
+	}{args, correlationId, pathToOpDir, name, logger})
 	fake.runOpMutex.Unlock()
 	if fake.RunOpStub != nil {
-		return fake.RunOpStub(correlationId, pathToOpDir, name, logger)
+		return fake.RunOpStub(args, correlationId, pathToOpDir, name, logger)
 	} else {
 		return fake.runOpReturns.result1, fake.runOpReturns.result2
 	}
@@ -97,10 +99,10 @@ func (fake *FakeContainerEngine) RunOpCallCount() int {
 	return len(fake.runOpArgsForCall)
 }
 
-func (fake *FakeContainerEngine) RunOpArgsForCall(i int) (string, string, string, logging.Logger) {
+func (fake *FakeContainerEngine) RunOpArgsForCall(i int) (map[string]string, string, string, string, logging.Logger) {
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
-	return fake.runOpArgsForCall[i].correlationId, fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name, fake.runOpArgsForCall[i].logger
+	return fake.runOpArgsForCall[i].args, fake.runOpArgsForCall[i].correlationId, fake.runOpArgsForCall[i].pathToOpDir, fake.runOpArgsForCall[i].name, fake.runOpArgsForCall[i].logger
 }
 
 func (fake *FakeContainerEngine) RunOpReturns(result1 int, result2 error) {

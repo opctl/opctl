@@ -6,10 +6,12 @@ import (
   "os/exec"
   "errors"
   "github.com/opctl/engine/core/logging"
+  "fmt"
 )
 
 type runOpUseCase interface {
   Execute(
+  args map[string]string,
   correlationId string,
   pathToOpDir string,
   opName string,
@@ -35,6 +37,7 @@ type _runOpUseCase struct {
 }
 
 func (this _runOpUseCase) Execute(
+args map[string]string,
 correlationId string,
 pathToOpDir string,
 opName string,
@@ -53,6 +56,26 @@ logger logging.Logger,
   )
 
   dockerComposeUpCmd.Dir = pathToOpDir
+
+  dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
+  dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
+
+  for argName, argVal := range args {
+    dockerComposeUpCmd.Env = append(
+      dockerComposeUpCmd.Env,
+      fmt.Sprintf("%v=%v", argName, argVal),
+    )
+  }
+
+  err = dockerComposeUpCmd.Run()
+  if (nil != err) {
+    exitCode = 1
+  }
+
+  exitCode, err = this.opRunExitCodeReader.read(
+    opName,
+    pathToOpDir,
+  )
 
   defer func() {
 
@@ -74,19 +97,6 @@ logger logging.Logger,
     }
 
   }()
-
-  dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
-  dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
-
-  err = dockerComposeUpCmd.Run()
-  if (nil != err) {
-    exitCode = 1
-  }
-
-  exitCode, err = this.opRunExitCodeReader.read(
-    opName,
-    pathToOpDir,
-  )
 
   return
 
