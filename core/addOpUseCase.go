@@ -50,7 +50,7 @@ req models.AddOpReq,
     return
   }
 
-  var opFile = opFile{
+  var opFile = models.OpFile{
     Description:req.Description,
     Name:req.Name,
   }

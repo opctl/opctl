@@ -1,17 +1,21 @@
 package dockercompose
 
+//go:generate counterfeiter -o ./fakeOpRunExitCodeReader.go --fake-name fakeOpRunExitCodeReader ./ opRunExitCodeReader
+
 import (
   "os/exec"
-  "os"
   "strings"
   dockerEngine "github.com/docker/engine-api/client"
   "golang.org/x/net/context"
+  "github.com/opctl/engine/core/logging"
 )
 
 type opRunExitCodeReader interface {
   read(
-  pathToOpDir string,
+  correlationId string,
+  logger logging.Logger,
   opName string,
+  pathToOpDir string,
   ) (opExitCode int, err error)
 }
 
@@ -30,9 +34,14 @@ type _opRunExitCodeReader struct {
 }
 
 func (this _opRunExitCodeReader) read(
-pathToOpDir string,
+correlationId string,
+logger logging.Logger,
 opName string,
-) (opExitCode int, err error) {
+pathToOpDir string,
+) (
+opExitCode int,
+err error,
+) {
 
   // get container id
   dockerComposePsCmd :=
@@ -45,7 +54,7 @@ opName string,
 
   dockerComposePsCmd.Dir = pathToOpDir
 
-  dockerComposePsCmd.Stderr = os.Stderr
+  dockerComposePsCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
   var dockerComposePsCmdRawOutput []byte
   dockerComposePsCmdRawOutput, err = dockerComposePsCmd.Output()

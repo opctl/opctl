@@ -3,6 +3,7 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
+  "github.com/opctl/engine/core/models"
 )
 
 var _ = Describe("yamlCodec", func() {
@@ -10,12 +11,12 @@ var _ = Describe("yamlCodec", func() {
     It("should roundtrip a opFile", func() {
 
       /* arrange */
-      expectedOpFile := opFile{Description:"op description"}
+      expectedOpFile := models.OpFile{Description:"op description"}
       objectUnderTest := _yamlCodec{}
 
       /* act */
       opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
-      actualOpFile := opFile{}
+      actualOpFile := models.OpFile{}
       objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
 
       /* assert */
@@ -25,18 +26,18 @@ var _ = Describe("yamlCodec", func() {
     It("should roundtrip a opFile", func() {
 
       /* arrange */
-      expectedOpFile := opFile{
+      expectedOpFile := models.OpFile{
         Description:"op description",
-        SubOps:[]opFileSubOp{
-          opFileSubOp{Url:"op1-name"},
-          opFileSubOp{Url:"op2-name"},
+        SubOps:[]models.OpFileSubOp{
+          models.OpFileSubOp{Url:"op1-name"},
+          models.OpFileSubOp{Url:"op2-name"},
         },
       }
       objectUnderTest := _yamlCodec{}
 
       /* act */
       opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
-      actualOpFile := opFile{}
+      actualOpFile := models.OpFile{}
       objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
 
       /* assert */

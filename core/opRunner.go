@@ -89,7 +89,7 @@ err error,
     return
   }
 
-  _opFile := &opFile{}
+  _opFile := &models.OpFile{}
   err = this.yamlCodec.fromYaml(
     opFileBytes,
     _opFile,
@@ -172,7 +172,14 @@ err error,
         this.logger,
       )
       if (nil != err) {
-        return
+        this.logger(
+          models.NewLogEntryEmittedEvent(
+            correlationId,
+            time.Now().UTC(),
+            err.Error(),
+            logging.StdErrStream,
+          ),
+        )
       }
 
     } else {
@@ -189,7 +196,14 @@ err error,
             subOp.Url),
         )
         if (nil != err) {
-          return
+          this.logger(
+            models.NewLogEntryEmittedEvent(
+              correlationId,
+              time.Now().UTC(),
+              err.Error(),
+              logging.StdErrStream,
+            ),
+          )
         }
 
         eventChannel := make(chan models.Event)
@@ -203,7 +217,14 @@ err error,
           opRunId,
         )
         if (nil != err) {
-          return
+          this.logger(
+            models.NewLogEntryEmittedEvent(
+              correlationId,
+              time.Now().UTC(),
+              err.Error(),
+              logging.StdErrStream,
+            ),
+          )
         }
 
         eventLoop:for {

@@ -47,7 +47,7 @@ req models.AddSubOpReq,
     return
   }
 
-  opFile := opFile{}
+  opFile := models.OpFile{}
 
   err = this.yamlCodec.fromYaml(
     opFileBytes,
@@ -57,13 +57,13 @@ req models.AddSubOpReq,
     return
   }
 
-  newOpFileSubOp := opFileSubOp{
+  newOpFileSubOp := models.OpFileSubOp{
     Url:req.SubOpUrl,
   }
 
   if (len(req.PrecedingSubOpUrl) > 0) {
 
-    subOps := []opFileSubOp{}
+    subOps := []models.OpFileSubOp{}
 
     for _, subOp := range opFile.SubOps {
 

@@ -6,7 +6,10 @@ import (
 )
 
 func New(
-) (containerEngine ports.ContainerEngine, err error) {
+) (
+containerEngine ports.ContainerEngine,
+err error,
+) {
 
   var compositionRoot compositionRoot
   compositionRoot, err = newCompositionRoot()
@@ -45,7 +48,10 @@ correlationId string,
 pathToOpDir string,
 opName string,
 logger logging.Logger,
-) (exitCode int, err error) {
+) (
+exitCode int,
+err error,
+) {
 
   return this.compositionRoot.
   RunOpUseCase().

@@ -64,7 +64,7 @@ projectUrl *models.Url,
       return
     }
 
-    opFile := opFile{}
+    opFile := models.OpFile{}
 
     err = this.yamlCodec.fromYaml(
       opFileBytes,

@@ -1,5 +1,8 @@
 package dockercompose
 
+//go:generate counterfeiter -o ./fakeInitOpUseCase.go --fake-name fakeInitOpUseCase ./ initOpUseCase
+
+
 type initOpUseCase interface {
   Execute(
   pathToOpDir string,

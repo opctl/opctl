@@ -47,7 +47,7 @@ req models.SetDescriptionOfOpReq,
     return
   }
 
-  opFile := opFile{}
+  opFile := models.OpFile{}
   err = this.yamlCodec.fromYaml(
     opFileBytes,
     &opFile,

@@ -1,5 +1,7 @@
 package dockercompose
 
+//go:generate counterfeiter -o ./fakeOpRunResourceFlusher.go --fake-name fakeOpRunResourceFlusher ./ opRunResourceFlusher
+
 import (
   "os/exec"
   "github.com/opctl/engine/core/logging"

@@ -79,12 +79,6 @@ logger logging.Logger,
     // wait for resource flush to complete
     <-resourceFlushIsCompleteChannel
 
-    if (nil != err) {
-
-      fmt.Fprint(os.Stderr, err)
-
-    }
-
     // exit with SIGINT exit code
     os.Exit(130)
 
@@ -93,8 +87,10 @@ logger logging.Logger,
   defer func() {
 
     exitCode, err = this.opRunExitCodeReader.read(
-      pathToOpDir,
+      correlationId,
+      logger,
       opName,
+      pathToOpDir,
     )
     if (0 != exitCode) {
 

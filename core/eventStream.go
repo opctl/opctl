@@ -2,7 +2,6 @@ package core
 
 import (
   "github.com/opctl/engine/core/models"
-  "fmt"
   "time"
 )
 
@@ -62,13 +61,16 @@ func (this *_eventStream) init(
           close(subscriber)
         }
       }
+
     case subscribe := <-this.pendingSubscribesChannel:
       this.subscribers[subscribe] = true
+
     case unsubscribe := <-this.pendingUnsubscribesChannel:
       if _, ok := this.subscribers[unsubscribe]; ok {
         delete(this.subscribers, unsubscribe)
         close(unsubscribe)
       }
+
     }
 
   }
