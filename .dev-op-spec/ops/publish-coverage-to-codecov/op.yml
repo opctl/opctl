@@ -1,2 +1,6 @@
 name: publish-coverage-to-codecov
-description: publishes a code coverage profile to https://codecov.io
+description: publishes code coverage to https://codecov.io
+params:
+  CODECOV_TOKEN:
+    description: A https://codecov.io/ auth token
+    isSecure: true

@@ -135,7 +135,7 @@
       "post": {
         "summary": "Kill op run",
         "tags": [
-          "op-runs-kills"
+          "op-run-kills"
         ],
         "parameters": [
           {

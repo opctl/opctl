@@ -6,6 +6,6 @@ services:
       service: docker
     entrypoint: .dev-op-spec/ops/push-docker-image/entrypoint.sh
     environment:
-      - DOCKER_EMAIL
+      - DOCKER_REPO_NAME=opctl/engine
       - DOCKER_PASSWORD
       - DOCKER_USERNAME

@@ -1,2 +1,9 @@
 name: push-docker-image
 description: pushes docker image to remote registry
+params:
+  DOCKER_PASSWORD:
+    description: Password for docker registry
+    isSecure: true
+  DOCKER_USERNAME:
+    description: Username for docker registry
+    isSecure: true
