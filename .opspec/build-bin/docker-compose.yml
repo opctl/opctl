@@ -1,7 +1,7 @@
 version: "2"
 services:
-  test:
+  build-bin:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: .dev-op-spec/ops/test/entrypoint.sh
+    entrypoint: .opspec/build-bin/entrypoint.sh

@@ -4,7 +4,7 @@ services:
     extends:
       file: ../.common/docker-compose.yml
       service: docker
-    entrypoint: .dev-op-spec/ops/push-docker-image/entrypoint.sh
+    entrypoint: .opspec/push-docker-image/entrypoint.sh
     environment:
       - DOCKER_REPO_NAME=opctl/engine
       - DOCKER_PASSWORD

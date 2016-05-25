@@ -5,7 +5,7 @@ services:
       file: ../.common/docker-compose.yml
       service: docker
     build:
-      context: ../../../
-      dockerfile: .dev-op-spec/ops/build-docker-image/Dockerfile
+      context: ../../
+      dockerfile: .opspec/build-docker-image/Dockerfile
     image: opctl/engine
     entrypoint: echo # noop

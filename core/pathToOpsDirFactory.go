@@ -26,8 +26,7 @@ projectUrl *models.Url,
 
   pathToOpsDir = path.Join(
     projectUrl.Path,
-    ".dev-op-spec",
-    "ops",
+    ".opspec",
   )
 
   return

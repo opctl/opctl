@@ -7,4 +7,4 @@ services:
     build: ./
     environment:
       - CODECOV_TOKEN
-    entrypoint: .dev-op-spec/ops/publish-coverage-to-codecov/entrypoint.sh
+    entrypoint: .opspec/publish-coverage-to-codecov/entrypoint.sh
