@@ -7,4 +7,5 @@ services:
     build: ./
     environment:
       - CODECOV_TOKEN
+      - GIT_BRANCH
     entrypoint: .opspec/publish-coverage-to-codecov/entrypoint.sh
