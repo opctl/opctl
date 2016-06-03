@@ -7,7 +7,7 @@ before_script:
 - sudo chmod +x /usr/local/bin/opctl
 services:
 - docker
-script: opctl run release
+script: opctl run -a DOCKER_USERNAME -a DOCKER_PASSWORD -a CODECOV_TOKEN release
 env:
   global:
   - secure: XVNVCxOSKeaV4lYy4iOq/AurqKD/N0jKp/lOctU9lW5EdLFD7KBmps2uASYqYV6epssaDoyFDfkNrZ1Wjh5tQGxCf52WKR5fUogTTOazmzgQKLRqN/UYY3ADjjjyYoAJlGThmGw+X+gtIzrYM7qMCb4TlIkqA6844//Oa7rCvEl9chJ4DuOO2wQhPNjI54VSrXbp7nX1r4i2MzIAPMMuuDTxVgCeeMeiLPBZvixGU4kb87+0aE8YtVUCLvU06BX/wl59LKEqGjFMh/EELOBncie6Yffx7XOLZBg0LrlSHXePBUIicviynGeW23P3Suds8bmrbw0+G4FFc0qWoYlX0E0zs39TEaDYfYJltwTccbEOsUfaRxnqO8n7Ou2uzvVi22Xt/u/W2Zy2UT1/1+NZ1vqn/B/ZGkmtFLUyGbMp29Y/085P8EnIF8yEP+WUoWq1fNzyOB+ZtBbRCbjEW1UTL+h3iXIeAoiYU/Cm5u6uj77sM8dDrVITuajbHjjJh+JMVSw/zD0RfqMwA4VhT7RFlWkWWjNc2yFdRoQglZZRr/02dbPjJLu29lJ4AQDSO3gobOkMWeLGjVbwVaa8NTFtm4ZPAKRLt9lB7HdUnPcKTBE0aKJg+sZn0EV+nd9ztptR9zVuUdYLgaNDsay6s2z0OIaREwI0J0/vKziJ+F3BUw8=
