@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/opctl/engine.svg?branch=master)](https://travis-ci.org/opctl/engine)
+
 engine for controlling http://devopspec.com/ compliant ops.
 
 *Be advised: this project is currently at Major version zero. Per the semantic versioning spec: 
