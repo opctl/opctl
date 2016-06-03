@@ -4,3 +4,6 @@ params:
   CODECOV_TOKEN:
     description: A https://codecov.io/ auth token
     isSecure: true
+  GIT_BRANCH:
+    description: The git branch the coverage should be associated with
+    isSecure: false
