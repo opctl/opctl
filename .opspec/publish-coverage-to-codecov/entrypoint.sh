@@ -11,4 +11,4 @@ cat tcp/tcp.coverprofile >> coverage.txt
 # strip fakes from coverage profile
 sed -i '/fake/d' coverage.txt
 
-curl -s https://codecov.io/bash | bash -s
+bash <(curl -s https://codecov.io/bash)

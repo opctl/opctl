@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/opctl/engine.svg?branch=master)](https://travis-ci.org/opctl/engine)
+[![codecov](https://codecov.io/gh/opctl/engine/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/engine)
 
 engine for controlling http://devopspec.com/ compliant ops.
 
