@@ -11,4 +11,6 @@ cat tcp/tcp.coverprofile >> coverage.txt
 # strip fakes from coverage profile
 sed -i '/fake/d' coverage.txt
 
+export GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 curl -s https://codecov.io/bash | bash -s
