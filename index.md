@@ -43,15 +43,15 @@ Ops are processes or tasks. Ops can be composed, i.e. ops can consist of other c
 ## Op Bundle
 Ops [MUST](./index.md#requirements) be stored as op bundles (see [FILE_BUNDLE](#file_bundle)).
 
-**Manifest**
+**Manifest**  
 An [op manifest file](op-manifest-file.md) [MUST](./index.md#requirements) 
 exist at the root of an op bundle.
 
-**Docker Composition**
+**Docker Composition**  
 An [op docker compose file](./op-docker-compose-file.md) [MUST](./index.md#requirements) 
 exist at the root of an op bundle.
 
-**Tree**
+**Tree**  
 ```TEXT
   |-- op.yml
   |-- docker-compose.yml
@@ -64,19 +64,19 @@ Op collections consist of one or more [ops](#ops)
 ## Op Collection Bundle
 Op collections [MUST](./index.md#requirements) be stored as op collection bundles (see [FILE_BUNDLE](#file_bundle)).
 
-**Manifest**
+**Manifest**  
 An [op collection manifest file](op-collection-manifest-file.md)
 [MUST](./index.md#requirements) exist at the root of an op collection bundle.
 
-**Embedded Op Bundles**
+**Embedded Op Bundles**  
 One or more [op bundle](#op-bundle)s [MAY](./index.md#requirements) be embedded
 by including them as child directories.
 
-**Default Designation** 
+**Default Designation**  
 An [op collection bundle](#op-collection-bundle) who's containing folder is named `.opspec` 
 [MUST](./index.md#requirements) be considered the default op collection at that path.
 
-**Tree**
+**Tree**  
 ```TEXT
   |-- .op-collection.yml
   |-- .common
