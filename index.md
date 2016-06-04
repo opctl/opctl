@@ -2,9 +2,9 @@
 - [Introduction](#introduction)
     - [Purpose](#purpose)
     - [Terminology](#terminology)
-- [Ops](#ops)
+- [Op](#op)
     - [Op Bundle](#op-bundle)
-- [Op Collections](#op-collections)
+- [Op Collection](#op-collection)
     - [Op Collection Bundle](#op-collection-bundle)
 
 # Introduction
@@ -29,8 +29,8 @@ a file directory with a defined structure allowing related files to be grouped t
 ### MUST/MAY
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
 
-# Ops
-Ops are processes or tasks. Ops can be composed, i.e. ops can consist of other constituent ops. 
+# Op
+An op is a process or task. Ops can be composed, i.e. ops can consist of other constituent ops. 
 
 ## Op Bundle
 Ops [MUST](#mustmay) be stored as op bundles (see [FILE_BUNDLE](#file_bundle)).
@@ -50,8 +50,8 @@ exist at the root of an op bundle.
   ... (op specific files/dirs)
 ```
 
-# Op Collections
-Op collections consist of one or more [ops](#ops)
+# Op Collection
+An op collection consists of one or more [ops](#op)s
 
 ## Op Collection Bundle
 Op collections [MUST](#mustmay) be stored as op collection bundles (see [FILE_BUNDLE](#file_bundle)).
