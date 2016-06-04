@@ -1,23 +1,21 @@
 A manifest file for an op.
 
-# criteria
+# Name
 
-## name
+[MUST](index.md#mustmay) be named `op.yml`
 
-[MUST](index.md#requirements) be named `op.yml`
-
-## schema
+# Schema
 
 format: [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html)
 
-### op
+## Op Schema
 attributes:
 
 | name | type | constraints |
 | :---- | :---- | :--- |
 | name | [string](http://yaml.org/type/str.html) | Required |
 | description | [string](http://yaml.org/type/str.html) | Required |
-| subOps | [sequence](http://yaml.org/type/seq.html) of [Sub Op](#sub-op)s | - |
+| subOps | [sequence](http://yaml.org/type/seq.html) of [Sub Op](#sub-op-schema)s | - |
 
 example:
 ```YAML
@@ -28,12 +26,12 @@ subOps:
 - url: push-to-docker-hub
 ```
 
-### sub-op
+## Sub Op Schema
 attributes:
 
 | name | type                                    | constraints                                                  |
 |:-----|:----------------------------------------|:-------------------------------------------------------------|
-| url  | [string](http://yaml.org/type/str.html) | Required, [MUST](index.md#requirements) be a valid op url |
+| url  | [string](http://yaml.org/type/str.html) | Required, [MUST](index.md#mustmay) be a valid op url |
 
 example:
 ```YAML
