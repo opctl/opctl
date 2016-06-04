@@ -31,7 +31,7 @@ requirements for its protocols is said to be "conditionally compliant."
 ## Terminology
 
 ### FILE_SAFE_NAME
-a string matching the regex 
+a string matching the regex `^[a-zA-Z0-9][a-zA-Z0-9_.-]+$`
 
 ### FILE_BUNDLE
 a file directory with a defined structure (see <a href="https://en.wikipedia.org/wiki/Bundle_(OS_X)">Bundle_(OS_X)</a> for similar usage)
