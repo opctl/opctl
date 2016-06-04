@@ -51,7 +51,7 @@ exist at the root of an op bundle.
 ```
 
 # Op Collection
-An op collection consists of one or more [ops](#op)s
+An op collection consists of one or more [op](#op)s
 
 ## Op Collection Bundle
 Op collections [MUST](#mustmay) be stored as op collection bundles (see [FILE_BUNDLE](#file_bundle)).
