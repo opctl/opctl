@@ -1,0 +1,5 @@
+description: runs all ops necessary to perform a release
+name: release
+subOps:
+- url: test
+- url: publish-coverage-to-codecov

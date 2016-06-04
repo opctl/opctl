@@ -1,0 +1,2 @@
+description: performs a `go test`
+name: test

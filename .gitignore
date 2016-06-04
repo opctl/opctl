@@ -1,0 +1,13 @@
+### JetBrains
+*.iml
+.idea/
+
+### temp
+*.tmp/
+
+### codecov.io
+*.coverprofile
+coverage.txt
+
+### OSX
+.DS_Store/
