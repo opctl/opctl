@@ -5,6 +5,7 @@
  "Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable."*
 
 # Supported Use Cases
+- set description of op
 
 # Releases
 All releases will be [tagged](https://github.com/opspec-io/sdk-golang/tags) and made available on the 
