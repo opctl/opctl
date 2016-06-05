@@ -1,0 +1,2 @@
+description: performs a `go generate`
+name: generate-fakes

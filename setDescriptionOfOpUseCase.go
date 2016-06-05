@@ -1,4 +1,4 @@
-package sdk_golang
+package sdk
 
 import "github.com/opspec-io/sdk-golang/models"
 

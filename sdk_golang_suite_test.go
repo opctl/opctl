@@ -1,4 +1,4 @@
-package sdk_golang
+package sdk
 
 import (
   . "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func TestSdk(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "sdk_golang")
+  RunSpecs(t, "sdk")
 }

@@ -1,12 +1,11 @@
 version: "2"
 services:
-  test:
+  generate-fakes:
     extends:
       service: go
       file: ../.common/docker-compose.yml
     entrypoint: |
       sh -c "
-      go get -t ./... && \
-      go get github.com/onsi/ginkgo/ginkgo && \
-      ginkgo -r -cover
+      go get github.com/maxbrunsfeld/counterfeiter && \
+      go generate
       "

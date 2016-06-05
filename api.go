@@ -1,9 +1,8 @@
-package sdk_golang
-
-import "github.com/opspec-io/sdk-golang/models"
+package sdk
 
 //go:generate counterfeiter -o ./fakeApi.go --fake-name FakeApi ./ Api
 
+import "github.com/opspec-io/sdk-golang/models"
 
 type Api interface {
   SetDescriptionOfOp(

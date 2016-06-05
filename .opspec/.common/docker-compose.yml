@@ -3,14 +3,13 @@ services:
   src:
     image: scratch
     volumes:
-      - ../../:/golang/src/github.com/opspec-io/sdk-golang
-    working_dir: /golang/src/github.com/opspec-io/sdk-golang
+      - ../../:/go/src/github.com/opspec-io/sdk-golang
+    working_dir: /go/src/github.com/opspec-io/sdk-golang
   go:
     extends:
       service: src
     build: ./
     environment:
-      - GOPATH=/golang
       - "GOARCH=amd64"
       - CGO_ENABLED=0
       - GOOS=linux
