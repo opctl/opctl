@@ -29,7 +29,7 @@ value
 
 | type                                    | constraints                                                  |
 |:----------------------------------------|:-------------------------------------------------------------|
-| [Param Map Value](#param-map-entry-value) | Required |
+| [Param Map Entry Value](#param-map-entry-value) | Required |
 
 ## Param Map Entry Value
 attributes:
