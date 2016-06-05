@@ -36,7 +36,7 @@ An op is a process or task. Ops can be composed, i.e. ops can consist of other c
 Ops [MUST](#mustmay) be stored as op bundles (see [FILE_BUNDLE](#file_bundle)).
 
 **Manifest**  
-An [op manifest file](op-manifest-file.md) [MUST](#mustmay) 
+An [op file](op-file.md) [MUST](#mustmay) 
 exist at the root of an op bundle.
 
 **Docker Composition**  
