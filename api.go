@@ -5,6 +5,10 @@ package sdk
 import "github.com/opspec-io/sdk-golang/models"
 
 type Api interface {
+  CreateOp(
+  req models.CreateOpReq,
+  ) (err error)
+  
   SetDescriptionOfOp(
   req models.SetDescriptionOfOpReq,
   ) (err error)
@@ -12,15 +16,12 @@ type Api interface {
 
 func New(
 filesys Filesystem,
-) (api Api, err error) {
+) (api Api) {
 
   var compositionRoot compositionRoot
-  compositionRoot, err = newCompositionRoot(
+  compositionRoot = newCompositionRoot(
     filesys,
   )
-  if (nil != err) {
-    return
-  }
 
   api = &_api{
     compositionRoot:compositionRoot,
@@ -31,6 +32,15 @@ filesys Filesystem,
 
 type _api struct {
   compositionRoot compositionRoot
+}
+
+func (this _api) CreateOp(
+req models.CreateOpReq,
+) (err error) {
+  return this.
+  compositionRoot.
+  CreateOpUseCase().
+  Execute(req)
 }
 
 func (this _api) SetDescriptionOfOp(

@@ -3,14 +3,20 @@ package sdk
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 type compositionRoot interface {
+  CreateOpUseCase() createOpUseCase
   SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
 
 func newCompositionRoot(
 filesystem Filesystem,
-) (compositionRoot compositionRoot, err error) {
+) (compositionRoot compositionRoot) {
 
   yamlCodec := newYamlCodec()
+
+  createOpUseCase := newCreateOpUseCase(
+    filesystem,
+    yamlCodec,
+  )
 
   setDescriptionOfOpUseCase := newSetDescriptionOfOpUseCase(
     filesystem,
@@ -18,6 +24,7 @@ filesystem Filesystem,
   )
 
   compositionRoot = &_compositionRoot{
+    createOpUseCase:createOpUseCase,
     setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
 
@@ -26,7 +33,12 @@ filesystem Filesystem,
 }
 
 type _compositionRoot struct {
+  createOpUseCase              createOpUseCase
   setDescriptionOfOpUseCase setDescriptionOfOpUseCase
+}
+
+func (this _compositionRoot) CreateOpUseCase() createOpUseCase {
+  return this.createOpUseCase
 }
 
 func (this _compositionRoot) SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase {

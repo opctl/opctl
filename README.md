@@ -5,6 +5,7 @@
  "Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable."*
 
 # Supported Use Cases
+- create op
 - set description of op
 
 # Releases

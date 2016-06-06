@@ -6,7 +6,18 @@ import (
   "github.com/opctl/engine/core/models"
 )
 
-var _ = Describe("yamlCodec", func() {
+var _ = Describe("_yamlCodec", func() {
+  Context("newYamlCodec()", func() {
+    It("should return an instance of _yamlCodec", func() {
+
+      /* arrange/act */
+      objectUnderTest := newYamlCodec()
+
+      /* assert */
+      Expect(objectUnderTest).To(BeAssignableToTypeOf(&_yamlCodec{}))
+
+    })
+  })
   Context("executing .toYaml() then .fromYaml", func() {
     It("should roundtrip a opFile", func() {
 

@@ -6,6 +6,12 @@ import (
 )
 
 type fakeCompositionRoot struct {
+  CreateOpUseCaseStub                     func() createOpUseCase
+  createOpUseCaseMutex                    sync.RWMutex
+  createOpUseCaseArgsForCall              []struct{}
+  createOpUseCaseReturns                  struct {
+                                         result1 createOpUseCase
+                                       }
   SetDescriptionOfOpUseCaseStub        func() setDescriptionOfOpUseCase
   setDescriptionOfOpUseCaseMutex       sync.RWMutex
   setDescriptionOfOpUseCaseArgsForCall []struct{}
@@ -14,6 +20,31 @@ type fakeCompositionRoot struct {
                                        }
   invocations                          map[string][][]interface{}
   invocationsMutex                     sync.RWMutex
+}
+
+func (fake *fakeCompositionRoot) CreateOpUseCase() createOpUseCase {
+  fake.createOpUseCaseMutex.Lock()
+  fake.createOpUseCaseArgsForCall = append(fake.createOpUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("CreateOpUseCase", []interface{}{})
+  fake.createOpUseCaseMutex.Unlock()
+  if fake.CreateOpUseCaseStub != nil {
+    return fake.CreateOpUseCaseStub()
+  } else {
+    return fake.createOpUseCaseReturns.result1
+  }
+}
+
+func (fake *fakeCompositionRoot) CreateOpUseCaseCallCount() int {
+  fake.createOpUseCaseMutex.RLock()
+  defer fake.createOpUseCaseMutex.RUnlock()
+  return len(fake.createOpUseCaseArgsForCall)
+}
+
+func (fake *fakeCompositionRoot) CreateOpUseCaseReturns(result1 createOpUseCase) {
+  fake.CreateOpUseCaseStub = nil
+  fake.createOpUseCaseReturns = struct {
+    result1 createOpUseCase
+  }{result1}
 }
 
 func (fake *fakeCompositionRoot) SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase {
@@ -44,6 +75,8 @@ func (fake *fakeCompositionRoot) SetDescriptionOfOpUseCaseReturns(result1 setDes
 func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
+  fake.createOpUseCaseMutex.RLock()
+  defer fake.createOpUseCaseMutex.RUnlock()
   fake.setDescriptionOfOpUseCaseMutex.RLock()
   defer fake.setDescriptionOfOpUseCaseMutex.RUnlock()
   return fake.invocations

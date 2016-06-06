@@ -13,6 +13,6 @@ description string,
 }
 
 type SetDescriptionOfOpReq struct {
-  PathToOpFile      string
-  Description string `json:"description"`
+  PathToOpFile string
+  Description  string
 }

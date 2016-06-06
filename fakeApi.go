@@ -8,6 +8,14 @@ import (
 )
 
 type FakeApi struct {
+  CreateOpStub                     func(req models.CreateOpReq) (err error)
+  createOpMutex                    sync.RWMutex
+  createOpArgsForCall              []struct {
+    req models.CreateOpReq
+  }
+  createOpReturns                  struct {
+                                  result1 error
+                                }
   SetDescriptionOfOpStub        func(req models.SetDescriptionOfOpReq) (err error)
   setDescriptionOfOpMutex       sync.RWMutex
   setDescriptionOfOpArgsForCall []struct {
@@ -18,6 +26,39 @@ type FakeApi struct {
                                 }
   invocations                   map[string][][]interface{}
   invocationsMutex              sync.RWMutex
+}
+
+func (fake *FakeApi) CreateOp(req models.CreateOpReq) (err error) {
+  fake.createOpMutex.Lock()
+  fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
+    req models.CreateOpReq
+  }{req})
+  fake.recordInvocation("CreateOp", []interface{}{req})
+  fake.createOpMutex.Unlock()
+  if fake.CreateOpStub != nil {
+    return fake.CreateOpStub(req)
+  } else {
+    return fake.createOpReturns.result1
+  }
+}
+
+func (fake *FakeApi) CreateOpCallCount() int {
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return len(fake.createOpArgsForCall)
+}
+
+func (fake *FakeApi) CreateOpArgsForCall(i int) models.CreateOpReq {
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return fake.createOpArgsForCall[i].req
+}
+
+func (fake *FakeApi) CreateOpReturns(result1 error) {
+  fake.CreateOpStub = nil
+  fake.createOpReturns = struct {
+    result1 error
+  }{result1}
 }
 
 func (fake *FakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err error) {
@@ -56,6 +97,8 @@ func (fake *FakeApi) SetDescriptionOfOpReturns(result1 error) {
 func (fake *FakeApi) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
   fake.setDescriptionOfOpMutex.RLock()
   defer fake.setDescriptionOfOpMutex.RUnlock()
   return fake.invocations
