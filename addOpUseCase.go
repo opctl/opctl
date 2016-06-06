@@ -1,40 +1,40 @@
 package sdk
 
-//go:generate counterfeiter -o ./fakeCreateOpUseCase.go --fake-name fakeCreateOpUseCase ./ createOpUseCase
+//go:generate counterfeiter -o ./fakeAddOpUseCase.go --fake-name fakeAddOpUseCase ./ addOpUseCase
 
 import (
   "github.com/opspec-io/sdk-golang/models"
   "path"
 )
 
-type createOpUseCase interface {
+type addOpUseCase interface {
   Execute(
-  req models.CreateOpReq,
+  req models.AddOpReq,
   ) (err error)
 }
 
-func newCreateOpUseCase(
+func newAddOpUseCase(
 filesystem Filesystem,
 yamlCodec yamlCodec,
-) createOpUseCase {
+) addOpUseCase {
 
-  return &_createOpUseCase{
+  return &_addOpUseCase{
     filesystem:filesystem,
     yamlCodec:yamlCodec,
   }
 
 }
 
-type _createOpUseCase struct {
+type _addOpUseCase struct {
   filesystem Filesystem
   yamlCodec  yamlCodec
 }
 
-func (this _createOpUseCase) Execute(
-req models.CreateOpReq,
+func (this _addOpUseCase) Execute(
+req models.AddOpReq,
 ) (err error) {
 
-  err = this.filesystem.CreateDir(
+  err = this.filesystem.AddDir(
     req.Path,
   )
   if (nil != err) {

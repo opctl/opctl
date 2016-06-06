@@ -5,8 +5,8 @@ package sdk
 import "github.com/opspec-io/sdk-golang/models"
 
 type Api interface {
-  CreateOp(
-  req models.CreateOpReq,
+  AddOp(
+  req models.AddOpReq,
   ) (err error)
   
   SetDescriptionOfOp(
@@ -34,12 +34,12 @@ type _api struct {
   compositionRoot compositionRoot
 }
 
-func (this _api) CreateOp(
-req models.CreateOpReq,
+func (this _api) AddOp(
+req models.AddOpReq,
 ) (err error) {
   return this.
   compositionRoot.
-  CreateOpUseCase().
+  AddOpUseCase().
   Execute(req)
 }
 

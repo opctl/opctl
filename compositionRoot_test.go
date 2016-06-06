@@ -9,17 +9,17 @@ var _ = Describe("_compositionRoot", func() {
 
   var fakeFilesystem = new(FakeFilesystem)
 
-  Context("CreateOpUseCase", func() {
-    It("should return an instance of type _createOpUseCase", func() {
+  Context("AddOpUseCase", func() {
+    It("should return an instance of type _addOpUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
 
       /* act */
-      actualCreateOpUseCase := objectUnderTest.CreateOpUseCase()
+      actualAddOpUseCase := objectUnderTest.AddOpUseCase()
 
       /* assert */
-      Expect(actualCreateOpUseCase).To(BeAssignableToTypeOf(&_createOpUseCase{}))
+      Expect(actualAddOpUseCase).To(BeAssignableToTypeOf(&_addOpUseCase{}))
 
     })
   })

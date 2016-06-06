@@ -23,28 +23,28 @@ var _ = Describe("_api", func() {
 
     })
   })
-  Context(".CreateOp() method", func() {
-    It("should invoke compositionRoot.createOpUseCase.Execute() with expected args & return result", func() {
+  Context(".AddOp() method", func() {
+    It("should invoke compositionRoot.addOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedCreateOpReq := models.NewCreateOpReq("", "", "")
+      providedAddOpReq := models.NewAddOpReq("", "", "")
 
       // wire up fakes
-      fakeCreateOpUseCase := new(fakeCreateOpUseCase)
+      fakeAddOpUseCase := new(fakeAddOpUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.CreateOpUseCaseReturns(fakeCreateOpUseCase)
+      fakeCompositionRoot.AddOpUseCaseReturns(fakeAddOpUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.CreateOp(*providedCreateOpReq)
+      objectUnderTest.AddOp(*providedAddOpReq)
 
       /* assert */
-      Expect(fakeCreateOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedCreateOpReq))
-      Expect(fakeCreateOpUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeAddOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddOpReq))
+      Expect(fakeAddOpUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

@@ -6,12 +6,12 @@ import (
 )
 
 type FakeFilesystem struct {
-  CreateDirStub             func(pathToDir string) (err error)
-  createDirMutex            sync.RWMutex
-  createDirArgsForCall      []struct {
+  AddDirStub             func(pathToDir string) (err error)
+  addDirMutex            sync.RWMutex
+  addDirArgsForCall      []struct {
     pathToDir string
   }
-  createDirReturns          struct {
+  addDirReturns          struct {
                               result1 error
                             }
   GetBytesOfFileStub        func(pathToFile string) (bytesOfFile []byte, err error)
@@ -36,35 +36,35 @@ type FakeFilesystem struct {
   invocationsMutex          sync.RWMutex
 }
 
-func (fake *FakeFilesystem) CreateDir(pathToDir string) (err error) {
-  fake.createDirMutex.Lock()
-  fake.createDirArgsForCall = append(fake.createDirArgsForCall, struct {
+func (fake *FakeFilesystem) AddDir(pathToDir string) (err error) {
+  fake.addDirMutex.Lock()
+  fake.addDirArgsForCall = append(fake.addDirArgsForCall, struct {
     pathToDir string
   }{pathToDir})
-  fake.recordInvocation("CreateDir", []interface{}{pathToDir})
-  fake.createDirMutex.Unlock()
-  if fake.CreateDirStub != nil {
-    return fake.CreateDirStub(pathToDir)
+  fake.recordInvocation("AddDir", []interface{}{pathToDir})
+  fake.addDirMutex.Unlock()
+  if fake.AddDirStub != nil {
+    return fake.AddDirStub(pathToDir)
   } else {
-    return fake.createDirReturns.result1
+    return fake.addDirReturns.result1
   }
 }
 
-func (fake *FakeFilesystem) CreateDirCallCount() int {
-  fake.createDirMutex.RLock()
-  defer fake.createDirMutex.RUnlock()
-  return len(fake.createDirArgsForCall)
+func (fake *FakeFilesystem) AddDirCallCount() int {
+  fake.addDirMutex.RLock()
+  defer fake.addDirMutex.RUnlock()
+  return len(fake.addDirArgsForCall)
 }
 
-func (fake *FakeFilesystem) CreateDirArgsForCall(i int) string {
-  fake.createDirMutex.RLock()
-  defer fake.createDirMutex.RUnlock()
-  return fake.createDirArgsForCall[i].pathToDir
+func (fake *FakeFilesystem) AddDirArgsForCall(i int) string {
+  fake.addDirMutex.RLock()
+  defer fake.addDirMutex.RUnlock()
+  return fake.addDirArgsForCall[i].pathToDir
 }
 
-func (fake *FakeFilesystem) CreateDirReturns(result1 error) {
-  fake.CreateDirStub = nil
-  fake.createDirReturns = struct {
+func (fake *FakeFilesystem) AddDirReturns(result1 error) {
+  fake.AddDirStub = nil
+  fake.addDirReturns = struct {
     result1 error
   }{result1}
 }
@@ -145,8 +145,8 @@ func (fake *FakeFilesystem) SaveFileReturns(result1 error) {
 func (fake *FakeFilesystem) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
-  fake.createDirMutex.RLock()
-  defer fake.createDirMutex.RUnlock()
+  fake.addDirMutex.RLock()
+  defer fake.addDirMutex.RUnlock()
   fake.getBytesOfFileMutex.RLock()
   defer fake.getBytesOfFileMutex.RUnlock()
   fake.saveFileMutex.RLock()

@@ -8,7 +8,7 @@ import (
 )
 
 type Filesystem  interface {
-  CreateDir(
+  AddDir(
   pathToDir string,
   ) (err error)
 
