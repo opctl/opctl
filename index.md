@@ -3,9 +3,8 @@
     - [Purpose](#purpose)
     - [Terminology](#terminology)
 - [Op](#op)
-    - [Op Bundle](#op-bundle)
 - [Op Collection](#op-collection)
-    - [Op Collection Bundle](#op-collection-bundle)
+- [Default Op Collection](#default-op-collection)
 
 # Introduction
 
@@ -24,26 +23,24 @@ Primary concerns of op spec are to make operations:
 a string matching the regex `^[a-zA-Z0-9][a-zA-Z0-9_.-]+$`
 
 ### FILE_BUNDLE
-a file directory with a defined structure allowing related files to be grouped together as a conceptually single item (see <a href="https://en.wikipedia.org/wiki/Bundle_(OS_X)">Bundle_(OS_X)</a> for similar usage)
+a file directory with a defined structure allowing related files to be grouped 
+together as a conceptually single item 
+(see <a href="https://en.wikipedia.org/wiki/Bundle_(OS_X)">Bundle_(OS_X)</a> for similar usage)
 
 ### MUST/MAY
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
 
 # Op
-An op is a process or task. Ops can be composed, i.e. ops can consist of other constituent ops. 
+An op is a process or task. 
 
-## Op Bundle
-Ops [MUST](#mustmay) be stored as op bundles (see [FILE_BUNDLE](#file_bundle)).
+Ops are defined in the form of a [FILE_BUNDLE](#file_bundle) adhering to the 
+following criteria:
 
-**Manifest**  
-An [op file](op-file.md) [MUST](#mustmay) 
-exist at the root of an op bundle.
+- [MUST](#mustmay) contain an [op file](op-file.md) at the root of the op directory.
+- [MUST](#mustmay) contain an [op docker compose file](./op-docker-compose-file.md) 
+at the root of the op directory.
 
-**Docker Composition**  
-An [op docker compose file](./op-docker-compose-file.md) [MUST](#mustmay) 
-exist at the root of an op bundle.
-
-**Tree**  
+**op file bundle**  
 ```TEXT
   |-- op.yml
   |-- docker-compose.yml
@@ -51,22 +48,25 @@ exist at the root of an op bundle.
 ```
 
 # Op Collection
-An op collection consists of one or more [op](#op)s
+An op collection groups one or more [op](#op)s together
 
-## Op Collection Bundle
-Op collections [MUST](#mustmay) be stored as op collection bundles (see [FILE_BUNDLE](#file_bundle)).
+Op collections are defined in the form of a [FILE_BUNDLE](#file_bundle) adhering to the 
+following criteria:
 
-**Embedded Op Bundles**  
-One or more [op bundle](#op-bundle)s [MAY](#mustmay) be embedded
-by including them as child directories.
+- [MAY](#mustmay) contain one or more [op](#op)s at the root of the op collection directory.
 
-**Default Designation**  
-An [op collection bundle](#op-collection-bundle) who's containing folder is named `.opspec` 
-[MUST](#mustmay) be considered the default op collection at that path.
-
-**Tree**  
+**op collection file bundle**  
 ```TEXT
   |-- .op-collection.yml
   |-- .common
   ... (op bundles)
 ```
+
+# Default Op Collection
+A default op collection may be designated for a directory according to the following rules:
+
+- [MUST](#mustmay) be contained by an `.opspec` directory
+
+In the event a default op collection is not present in a directory, its
+nearest ancestor [MUST](#mustmay) be used as the effective default
+
