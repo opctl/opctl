@@ -4,4 +4,8 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: .opspec/build-bin/entrypoint.sh
+    entrypoint: |
+      sh -c "
+      go get ./... && \
+      go build
+      "

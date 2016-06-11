@@ -14,7 +14,6 @@ type compositionRoot interface {
   GetEventStreamUseCase() getEventStreamUseCase
   KillOpRunUseCase() killOpRunUseCase
   ListOpsUseCase() listOpsUseCase
-  SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase
 }
 
 func newCompositionRoot(
@@ -84,12 +83,6 @@ filesys ports.Filesys,
     yamlCodec,
   )
 
-  setDescriptionOfOpUseCase := newSetDescriptionOfOpUseCase(
-    filesys,
-    pathToOpFileFactory,
-    yamlCodec,
-  )
-
   compositionRoot = &_compositionRoot{
     runOpUseCase: runOpUseCase,
     addOpUseCase: addOpUseCase,
@@ -97,7 +90,6 @@ filesys ports.Filesys,
     getEventStreamUseCase:getEventStreamUseCase,
     killOpRunUseCase:killOpRunUseCase,
     listOpsUseCase: listOpsUseCase,
-    setDescriptionOfOpUseCase: setDescriptionOfOpUseCase,
   }
 
   return
@@ -111,7 +103,6 @@ type _compositionRoot struct {
   getEventStreamUseCase     getEventStreamUseCase
   killOpRunUseCase          killOpRunUseCase
   listOpsUseCase            listOpsUseCase
-  setDescriptionOfOpUseCase setDescriptionOfOpUseCase
 }
 
 func (this _compositionRoot) RunOpUseCase() runOpUseCase {
@@ -136,8 +127,4 @@ func (this _compositionRoot) KillOpRunUseCase() killOpRunUseCase {
 
 func (this _compositionRoot) ListOpsUseCase() listOpsUseCase {
   return this.listOpsUseCase
-}
-
-func (this _compositionRoot) SetDescriptionOfOpUseCase() setDescriptionOfOpUseCase {
-  return this.setDescriptionOfOpUseCase
 }

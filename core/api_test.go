@@ -108,30 +108,5 @@ var _ = Describe("_api", func() {
 
     })
   })
-  Context(".SetDescriptionOfOp() method", func() {
-    It("should invoke compositionRoot.setDescriptionOfOpUseCase.Execute() with expected args & return result", func() {
-
-      /* arrange */
-      providedSetDescriptionOfOpReq := models.NewSetDescriptionOfOpReq(&models.Url{}, "", "")
-
-      // wire up fakes
-      fakeSetDescriptionOfOpUseCase := new(fakeSetDescriptionOfOpUseCase)
-
-      fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.SetDescriptionOfOpUseCaseReturns(fakeSetDescriptionOfOpUseCase)
-
-      objectUnderTest := &_api{
-        compositionRoot:fakeCompositionRoot,
-      }
-
-      /* act */
-      objectUnderTest.SetDescriptionOfOp(*providedSetDescriptionOfOpReq)
-
-      /* assert */
-      Expect(fakeSetDescriptionOfOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedSetDescriptionOfOpReq))
-      Expect(fakeSetDescriptionOfOpUseCase.ExecuteCallCount()).To(Equal(1))
-
-    })
-  })
 
 })

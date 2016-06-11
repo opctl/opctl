@@ -2,7 +2,6 @@ package tcp
 
 /* resources */
 const (
-
   // resource: event-stream
   eventStreamRelUrlTemplate string = "/event-stream"
 
@@ -24,9 +23,6 @@ const (
   // resource: a single project op
   projectOpRelUrlTemplate string = projectOpsRelUrlTemplate + "/{opName}"
 
-  // resource: description of a project op
-  projectOpDescriptionRelUrlTemplate string = projectOpRelUrlTemplate + "/description"
-
   // resource: all subOps of a project op
   projectOpSubOpsRelUrlTemplate string = projectOpRelUrlTemplate + "/sub-ops"
 )
@@ -40,5 +36,4 @@ const (
   killOpRunRelUrlTemplate string = opRunKillsRelUrlTemplate
   listOpsRelUrlTemplate string = projectOpsRelUrlTemplate
   runOpRelUrlTemplate string = opRunsRelUrlTemplate
-  setDescriptionOfOpRelUrlTemplate string = projectOpDescriptionRelUrlTemplate
 )

@@ -262,66 +262,6 @@
         }
       }
     },
-    "/projects/{projectUrl}/ops/{opName}/description": {
-      "parameters": [
-        {
-          "name": "projectUrl",
-          "in": "path",
-          "description": "A projects url. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "opName",
-          "in": "path",
-          "description": "The name of the dev op",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "put": {
-        "summary": "Update description of op",
-        "tags": [
-          "projects"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "The body of the request",
-            "schema": {
-              "title": "UpdateDescriptionOfOpReq",
-              "type": "object",
-              "required": [
-                "description"
-              ],
-              "properties": {
-                "description": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "/projects/{projectUrl}/ops/{opName}/sub-ops": {
       "parameters": [
         {

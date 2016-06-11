@@ -3,14 +3,13 @@ services:
   working_dir:
     image: scratch
     volumes:
-      - ../../:/golang/src/github.com/opctl/engine
-    working_dir: /golang/src/github.com/opctl/engine
+      - ../../:/go/src/github.com/opctl/engine
+    working_dir: /go/src/github.com/opctl/engine
   go:
     build: ./
     extends:
       service: working_dir
     environment:
-      - GOPATH=/golang
       - GOARCH=amd64
       - CGO_ENABLED=0
       - GOOS=linux

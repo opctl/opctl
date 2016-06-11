@@ -60,14 +60,6 @@ type FakeApi struct {
                                   result2 string
                                   result3 error
                                 }
-  SetDescriptionOfOpStub        func(req models.SetDescriptionOfOpReq) (err error)
-  setDescriptionOfOpMutex       sync.RWMutex
-  setDescriptionOfOpArgsForCall []struct {
-    req models.SetDescriptionOfOpReq
-  }
-  setDescriptionOfOpReturns     struct {
-                                  result1 error
-                                }
 }
 
 func (fake *FakeApi) AddOp(req models.AddOpReq) (err error) {
@@ -264,38 +256,6 @@ func (fake *FakeApi) RunOpReturns(result1 string, result2 string, result3 error)
     result2 string
     result3 error
   }{result1, result2, result3}
-}
-
-func (fake *FakeApi) SetDescriptionOfOp(req models.SetDescriptionOfOpReq) (err error) {
-  fake.setDescriptionOfOpMutex.Lock()
-  fake.setDescriptionOfOpArgsForCall = append(fake.setDescriptionOfOpArgsForCall, struct {
-    req models.SetDescriptionOfOpReq
-  }{req})
-  fake.setDescriptionOfOpMutex.Unlock()
-  if fake.SetDescriptionOfOpStub != nil {
-    return fake.SetDescriptionOfOpStub(req)
-  } else {
-    return fake.setDescriptionOfOpReturns.result1
-  }
-}
-
-func (fake *FakeApi) SetDescriptionOfOpCallCount() int {
-  fake.setDescriptionOfOpMutex.RLock()
-  defer fake.setDescriptionOfOpMutex.RUnlock()
-  return len(fake.setDescriptionOfOpArgsForCall)
-}
-
-func (fake *FakeApi) SetDescriptionOfOpArgsForCall(i int) models.SetDescriptionOfOpReq {
-  fake.setDescriptionOfOpMutex.RLock()
-  defer fake.setDescriptionOfOpMutex.RUnlock()
-  return fake.setDescriptionOfOpArgsForCall[i].req
-}
-
-func (fake *FakeApi) SetDescriptionOfOpReturns(result1 error) {
-  fake.SetDescriptionOfOpStub = nil
-  fake.setDescriptionOfOpReturns = struct {
-    result1 error
-  }{result1}
 }
 
 var _ Api = new(FakeApi)

@@ -64,11 +64,6 @@ func (this _api) Start(
     this.compositionRoot.RunOpHandler(),
   ).Methods(http.MethodPost)
 
-  router.Handle(
-    setDescriptionOfOpRelUrlTemplate,
-    this.compositionRoot.SetDescriptionOfOpHandler(),
-  ).Methods(http.MethodPut)
-
   router.PathPrefix("/").Handler(http.FileServer(http.Dir("./swagger/")))
 
   http.ListenAndServe(":42224", router)

@@ -13,7 +13,6 @@ type compositionRoot interface {
   KillOpRunHandler() http.Handler
   ListOpsHandler() http.Handler
   RunOpHandler() http.Handler
-  SetDescriptionOfOpHandler() http.Handler
 }
 
 func newCompositionRoot(
@@ -28,7 +27,6 @@ coreApi core.Api,
     killOpRunHandler:newKillOpRunHandler(coreApi),
     listOpsHandler:newListOpsHandler(coreApi),
     runOpHandler:newRunOpHandler(coreApi),
-    setDescriptionOfOpHandler:newSetDescriptionOfOpHandler(coreApi),
   }
 
   return
@@ -36,14 +34,13 @@ coreApi core.Api,
 }
 
 type _compositionRoot struct {
-  addOpHandler              http.Handler
-  addSubOpHandler           http.Handler
-  getLivenessHandler        http.Handler
-  getEventStreamHandler     http.Handler
-  killOpRunHandler          http.Handler
-  listOpsHandler            http.Handler
-  runOpHandler              http.Handler
-  setDescriptionOfOpHandler http.Handler
+  addOpHandler          http.Handler
+  addSubOpHandler       http.Handler
+  getLivenessHandler    http.Handler
+  getEventStreamHandler http.Handler
+  killOpRunHandler      http.Handler
+  listOpsHandler        http.Handler
+  runOpHandler          http.Handler
 }
 
 func (this _compositionRoot) AddOpHandler(
@@ -79,9 +76,4 @@ func (this _compositionRoot) ListOpsHandler(
 func (this _compositionRoot) RunOpHandler(
 ) http.Handler {
   return this.runOpHandler
-}
-
-func (this _compositionRoot) SetDescriptionOfOpHandler(
-) http.Handler {
-  return this.setDescriptionOfOpHandler
 }

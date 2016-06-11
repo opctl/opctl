@@ -41,10 +41,6 @@ type Api interface {
   correlationId string,
   err error,
   )
-
-  SetDescriptionOfOp(
-  req models.SetDescriptionOfOpReq,
-  ) (err error)
 }
 
 func New(
@@ -133,14 +129,5 @@ err error,
   return this.
   compositionRoot.
   RunOpUseCase().
-  Execute(req)
-}
-
-func (this _api) SetDescriptionOfOp(
-req models.SetDescriptionOfOpReq,
-) (err error) {
-  return this.
-  compositionRoot.
-  SetDescriptionOfOpUseCase().
   Execute(req)
 }

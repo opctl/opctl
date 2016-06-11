@@ -18,7 +18,6 @@ engine for running http://opspec.io compliant ops.
 - kill op run
 - list ops
 - run op
-- set description of op
 
 # Example Usage
 
