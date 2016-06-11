@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)
 [![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
 
-SDK for golang implementing common [Opspec](http://opspec.io)
+SDK for golang implementing common [opspec](http://opspec.io)
 integration scenarios such as creating, editing, and consuming opspec
 definitions.
 
