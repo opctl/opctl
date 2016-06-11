@@ -22,9 +22,14 @@ type Filesystem  interface {
   ) (err error)
 }
 
+func newFilesystem(
+) Filesystem {
+  return &_filesystem{}
+}
+
 type _filesystem struct{}
 
-func (this _filesystem)  Execute(
+func (this _filesystem)  AddDir(
 pathToDir string,
 ) (err error) {
 

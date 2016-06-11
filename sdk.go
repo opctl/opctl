@@ -19,6 +19,13 @@ type Sdk interface {
 }
 
 func New(
+) Sdk {
+  return newSdk(
+    newFilesystem(),
+  )
+}
+
+func newSdk(
 filesystem Filesystem,
 ) (sdk Sdk) {
 

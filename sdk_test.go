@@ -6,17 +6,13 @@ import (
   "github.com/opspec-io/sdk-golang/models"
 )
 
-var _ = Describe("_api", func() {
+var _ = Describe("_sdk", func() {
 
-  var fakeFilesystem = new(FakeFilesystem)
-
-  Context("new()", func() {
-    It("should return an instance of _api", func() {
+  Context("New()", func() {
+    It("should return an instance of _sdk", func() {
 
       /* arrange/act */
-      objectUnderTest := New(
-        fakeFilesystem,
-      )
+      objectUnderTest := New()
 
       /* assert */
       Expect(objectUnderTest).To(BeAssignableToTypeOf(&_sdk{}))
