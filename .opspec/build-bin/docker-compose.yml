@@ -6,6 +6,6 @@ services:
       file: ../.common/docker-compose.yml
     entrypoint: |
       sh -c "
-      go get ./... && \
-      go build
+        go get ./... && \
+        go build
       "
