@@ -1,12 +1,12 @@
 package models
 
-func NewAddOpReq(
+func NewCreateOpReq(
 path string,
 name string,
 description string,
-) *AddOpReq {
+) *CreateOpReq {
 
-  return &AddOpReq{
+  return &CreateOpReq{
     Path:path,
     Name:name,
     Description :description,
@@ -14,7 +14,7 @@ description string,
 
 }
 
-type AddOpReq struct {
+type CreateOpReq struct {
   Path        string
   Name        string
   Description string

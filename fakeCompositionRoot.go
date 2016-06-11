@@ -6,11 +6,11 @@ import (
 )
 
 type fakeCompositionRoot struct {
-  AddOpUseCaseStub                     func() addOpUseCase
-  addOpUseCaseMutex                    sync.RWMutex
-  addOpUseCaseArgsForCall              []struct{}
-  addOpUseCaseReturns                  struct {
-                                         result1 addOpUseCase
+  CreateOpUseCaseStub                     func() createOpUseCase
+  createOpUseCaseMutex                    sync.RWMutex
+  createOpUseCaseArgsForCall              []struct{}
+  createOpUseCaseReturns                  struct {
+                                         result1 createOpUseCase
                                        }
   SetDescriptionOfOpUseCaseStub        func() setDescriptionOfOpUseCase
   setDescriptionOfOpUseCaseMutex       sync.RWMutex
@@ -22,28 +22,28 @@ type fakeCompositionRoot struct {
   invocationsMutex                     sync.RWMutex
 }
 
-func (fake *fakeCompositionRoot) AddOpUseCase() addOpUseCase {
-  fake.addOpUseCaseMutex.Lock()
-  fake.addOpUseCaseArgsForCall = append(fake.addOpUseCaseArgsForCall, struct{}{})
-  fake.recordInvocation("AddOpUseCase", []interface{}{})
-  fake.addOpUseCaseMutex.Unlock()
-  if fake.AddOpUseCaseStub != nil {
-    return fake.AddOpUseCaseStub()
+func (fake *fakeCompositionRoot) CreateOpUseCase() createOpUseCase {
+  fake.createOpUseCaseMutex.Lock()
+  fake.createOpUseCaseArgsForCall = append(fake.createOpUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("CreateOpUseCase", []interface{}{})
+  fake.createOpUseCaseMutex.Unlock()
+  if fake.CreateOpUseCaseStub != nil {
+    return fake.CreateOpUseCaseStub()
   } else {
-    return fake.addOpUseCaseReturns.result1
+    return fake.createOpUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) AddOpUseCaseCallCount() int {
-  fake.addOpUseCaseMutex.RLock()
-  defer fake.addOpUseCaseMutex.RUnlock()
-  return len(fake.addOpUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) CreateOpUseCaseCallCount() int {
+  fake.createOpUseCaseMutex.RLock()
+  defer fake.createOpUseCaseMutex.RUnlock()
+  return len(fake.createOpUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) AddOpUseCaseReturns(result1 addOpUseCase) {
-  fake.AddOpUseCaseStub = nil
-  fake.addOpUseCaseReturns = struct {
-    result1 addOpUseCase
+func (fake *fakeCompositionRoot) CreateOpUseCaseReturns(result1 createOpUseCase) {
+  fake.CreateOpUseCaseStub = nil
+  fake.createOpUseCaseReturns = struct {
+    result1 createOpUseCase
   }{result1}
 }
 
@@ -75,8 +75,8 @@ func (fake *fakeCompositionRoot) SetDescriptionOfOpUseCaseReturns(result1 setDes
 func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
-  fake.addOpUseCaseMutex.RLock()
-  defer fake.addOpUseCaseMutex.RUnlock()
+  fake.createOpUseCaseMutex.RLock()
+  defer fake.createOpUseCaseMutex.RUnlock()
   fake.setDescriptionOfOpUseCaseMutex.RLock()
   defer fake.setDescriptionOfOpUseCaseMutex.RUnlock()
   return fake.invocations

@@ -8,12 +8,12 @@ import (
 )
 
 type FakeApi struct {
-  AddOpStub                     func(req models.AddOpReq) (err error)
-  addOpMutex                    sync.RWMutex
-  addOpArgsForCall              []struct {
-    req models.AddOpReq
+  CreateOpStub                     func(req models.CreateOpReq) (err error)
+  createOpMutex                    sync.RWMutex
+  createOpArgsForCall              []struct {
+    req models.CreateOpReq
   }
-  addOpReturns                  struct {
+  createOpReturns                  struct {
                                   result1 error
                                 }
   SetDescriptionOfOpStub        func(req models.SetDescriptionOfOpReq) (err error)
@@ -28,35 +28,35 @@ type FakeApi struct {
   invocationsMutex              sync.RWMutex
 }
 
-func (fake *FakeApi) AddOp(req models.AddOpReq) (err error) {
-  fake.addOpMutex.Lock()
-  fake.addOpArgsForCall = append(fake.addOpArgsForCall, struct {
-    req models.AddOpReq
+func (fake *FakeApi) CreateOp(req models.CreateOpReq) (err error) {
+  fake.createOpMutex.Lock()
+  fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
+    req models.CreateOpReq
   }{req})
-  fake.recordInvocation("AddOp", []interface{}{req})
-  fake.addOpMutex.Unlock()
-  if fake.AddOpStub != nil {
-    return fake.AddOpStub(req)
+  fake.recordInvocation("CreateOp", []interface{}{req})
+  fake.createOpMutex.Unlock()
+  if fake.CreateOpStub != nil {
+    return fake.CreateOpStub(req)
   } else {
-    return fake.addOpReturns.result1
+    return fake.createOpReturns.result1
   }
 }
 
-func (fake *FakeApi) AddOpCallCount() int {
-  fake.addOpMutex.RLock()
-  defer fake.addOpMutex.RUnlock()
-  return len(fake.addOpArgsForCall)
+func (fake *FakeApi) CreateOpCallCount() int {
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return len(fake.createOpArgsForCall)
 }
 
-func (fake *FakeApi) AddOpArgsForCall(i int) models.AddOpReq {
-  fake.addOpMutex.RLock()
-  defer fake.addOpMutex.RUnlock()
-  return fake.addOpArgsForCall[i].req
+func (fake *FakeApi) CreateOpArgsForCall(i int) models.CreateOpReq {
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return fake.createOpArgsForCall[i].req
 }
 
-func (fake *FakeApi) AddOpReturns(result1 error) {
-  fake.AddOpStub = nil
-  fake.addOpReturns = struct {
+func (fake *FakeApi) CreateOpReturns(result1 error) {
+  fake.CreateOpStub = nil
+  fake.createOpReturns = struct {
     result1 error
   }{result1}
 }
@@ -97,8 +97,8 @@ func (fake *FakeApi) SetDescriptionOfOpReturns(result1 error) {
 func (fake *FakeApi) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
-  fake.addOpMutex.RLock()
-  defer fake.addOpMutex.RUnlock()
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
   fake.setDescriptionOfOpMutex.RLock()
   defer fake.setDescriptionOfOpMutex.RUnlock()
   return fake.invocations
