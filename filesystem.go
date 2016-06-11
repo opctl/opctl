@@ -1,4 +1,4 @@
-package sdk
+package opspec
 
 //go:generate counterfeiter -o ./fakeFileSystem.go --fake-name FakeFilesystem ./ Filesystem
 

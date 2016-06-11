@@ -1,4 +1,4 @@
-package sdk
+package opspec
 
 //go:generate counterfeiter -o ./fakeCreateOpUseCase.go --fake-name fakeCreateOpUseCase ./ createOpUseCase
 

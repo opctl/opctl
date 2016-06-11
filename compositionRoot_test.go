@@ -1,4 +1,4 @@
-package sdk
+package opspec
 
 import (
   . "github.com/onsi/ginkgo"
@@ -23,17 +23,31 @@ var _ = Describe("_compositionRoot", func() {
 
     })
   })
-  Context("SetDescriptionOfOpUseCase", func() {
-    It("should return an instance of type _setDescriptionOfOpUseCase", func() {
+  Context("SetCollectionDescriptionUseCase", func() {
+    It("should return an instance of type _setCollectionDescriptionUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
 
       /* act */
-      actualSetDescriptionOfOpUseCase := objectUnderTest.SetDescriptionOfOpUseCase()
+      actualSetCollectionDescriptionUseCase := objectUnderTest.SetCollectionDescriptionUseCase()
 
       /* assert */
-      Expect(actualSetDescriptionOfOpUseCase).To(BeAssignableToTypeOf(&_setDescriptionOfOpUseCase{}))
+      Expect(actualSetCollectionDescriptionUseCase).To(BeAssignableToTypeOf(&_setCollectionDescriptionUseCase{}))
+
+    })
+  })
+  Context("SetOpDescriptionUseCase", func() {
+    It("should return an instance of type _setOpDescriptionUseCase", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeFilesystem)
+
+      /* act */
+      actualSetOpDescriptionUseCase := objectUnderTest.SetOpDescriptionUseCase()
+
+      /* assert */
+      Expect(actualSetOpDescriptionUseCase).To(BeAssignableToTypeOf(&_setOpDescriptionUseCase{}))
 
     })
   })

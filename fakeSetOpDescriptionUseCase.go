@@ -7,11 +7,11 @@ import (
 	"github.com/opspec-io/sdk-golang/models"
 )
 
-type fakeCreateOpUseCase struct {
-	ExecuteStub        func(req models.CreateOpReq) (err error)
+type fakeSetOpDescriptionUseCase struct {
+	ExecuteStub        func(req models.SetOpDescriptionReq) (err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
-		req models.CreateOpReq
+		req models.SetOpDescriptionReq
 	}
 	executeReturns struct {
 		result1 error
@@ -20,10 +20,10 @@ type fakeCreateOpUseCase struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCreateOpUseCase) Execute(req models.CreateOpReq) (err error) {
+func (fake *fakeSetOpDescriptionUseCase) Execute(req models.SetOpDescriptionReq) (err error) {
 	fake.executeMutex.Lock()
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		req models.CreateOpReq
+		req models.SetOpDescriptionReq
 	}{req})
 	fake.recordInvocation("Execute", []interface{}{req})
 	fake.executeMutex.Unlock()
@@ -34,26 +34,26 @@ func (fake *fakeCreateOpUseCase) Execute(req models.CreateOpReq) (err error) {
 	}
 }
 
-func (fake *fakeCreateOpUseCase) ExecuteCallCount() int {
+func (fake *fakeSetOpDescriptionUseCase) ExecuteCallCount() int {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeCreateOpUseCase) ExecuteArgsForCall(i int) models.CreateOpReq {
+func (fake *fakeSetOpDescriptionUseCase) ExecuteArgsForCall(i int) models.SetOpDescriptionReq {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return fake.executeArgsForCall[i].req
 }
 
-func (fake *fakeCreateOpUseCase) ExecuteReturns(result1 error) {
+func (fake *fakeSetOpDescriptionUseCase) ExecuteReturns(result1 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *fakeCreateOpUseCase) Invocations() map[string][][]interface{} {
+func (fake *fakeSetOpDescriptionUseCase) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.executeMutex.RLock()
@@ -61,7 +61,7 @@ func (fake *fakeCreateOpUseCase) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *fakeCreateOpUseCase) recordInvocation(key string, args []interface{}) {
+func (fake *fakeSetOpDescriptionUseCase) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

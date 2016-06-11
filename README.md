@@ -1,14 +1,15 @@
 [![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)
 [![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
 
-SDK for working with [opspec](http://opspec.io)s.
+SDK for working with the [opspec](http://opspec.io).
 
 *Be advised: this project is currently at Major version zero. Per the semantic versioning spec:
  "Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable."*
 
 # Supported Use Cases
 - create op
-- set description of op
+- set collection description
+- set op description
 
 # Releases
 All releases will be [tagged](https://github.com/opspec-io/sdk-golang/tags) and made available on the 

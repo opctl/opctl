@@ -1,4 +1,4 @@
-package sdk
+package opspec
 
 import (
   "gopkg.in/yaml.v2"
