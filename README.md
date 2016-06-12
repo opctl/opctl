@@ -15,6 +15,7 @@ be considered stable."*
 - create op
 - set collection description
 - set op description
+- try resolve default collection
 
 # Releases
 

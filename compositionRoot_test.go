@@ -24,7 +24,7 @@ var _ = Describe("_compositionRoot", func() {
     })
   })
   Context("SetCollectionDescriptionUseCase", func() {
-    It("should return an instance of type setCollectionDescriptionUseCase", func() {
+    It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -38,7 +38,7 @@ var _ = Describe("_compositionRoot", func() {
     })
   })
   Context("SetOpDescriptionUseCase", func() {
-    It("should return an instance of type setOpDescriptionUseCase", func() {
+    It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -48,6 +48,21 @@ var _ = Describe("_compositionRoot", func() {
 
       /* assert */
       Expect(actualSetOpDescriptionUseCase).NotTo(BeNil())
+
+    })
+  })
+
+  Context("TryResolveDefaultCollectionUseCase", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeFilesystem)
+
+      /* act */
+      actualTryResolveDefaultCollectionUseCase := objectUnderTest.TryResolveDefaultCollectionUseCase()
+
+      /* assert */
+      Expect(actualTryResolveDefaultCollectionUseCase).NotTo(BeNil())
 
     })
   })

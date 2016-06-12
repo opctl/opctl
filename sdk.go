@@ -16,6 +16,13 @@ type Sdk interface {
   SetOpDescription(
   req models.SetOpDescriptionReq,
   ) (err error)
+
+  TryResolveDefaultCollection(
+  req models.TryResolveDefaultCollectionReq,
+  ) (
+  pathToDefaultCollection string,
+  err error,
+  )
 }
 
 func New(
@@ -69,5 +76,17 @@ req models.SetOpDescriptionReq,
   return this.
   compositionRoot.
   SetOpDescriptionUseCase().
+  Execute(req)
+}
+
+func (this _sdk) TryResolveDefaultCollection(
+req models.TryResolveDefaultCollectionReq,
+) (
+pathToDefaultCollection string,
+err error,
+) {
+  return this.
+  compositionRoot.
+  TryResolveDefaultCollectionUseCase().
   Execute(req)
 }

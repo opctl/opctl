@@ -129,6 +129,77 @@ var _ = Describe("_filesystem", func() {
 
   })
 
+  Context("ListChildFileInfosOfDir", func() {
+
+    Context("when passed path of non-existent dir", func() {
+
+      It("should return non nill err", func() {
+
+        /* arrange */
+        uuid, err := uuid.NewV4()
+        if (nil != err) {
+          panic(err)
+        }
+        providedPath := path.Join(os.TempDir(), uuid.String())
+
+        objectUnderTest := newFilesystem()
+
+        /* act */
+        _, err = objectUnderTest.ListChildFileInfosOfDir(providedPath)
+
+        /* assert */
+        Expect(err).ToNot(BeNil())
+
+      })
+
+    })
+
+    Context("when passed path of existent dir", func() {
+
+      It("should return expected fileInfos", func() {
+
+        /* arrange */
+        existentDir, err := os.Getwd()
+        if (nil != err) {
+          panic(err)
+        }
+
+        existentDirWithContent := path.Dir(existentDir)
+
+        expectedChildFileInfos, err := ioutil.ReadDir(existentDirWithContent)
+
+        objectUnderTest := newFilesystem()
+
+        /* act */
+        actualChildFileInfos, _ := objectUnderTest.ListChildFileInfosOfDir(existentDirWithContent)
+
+        /* assert */
+        Expect(actualChildFileInfos).To(Equal(expectedChildFileInfos))
+
+      })
+
+      It("should return nill err", func() {
+
+        /* arrange */
+        existentDir, err := os.Getwd()
+        if (nil != err) {
+          panic(err)
+        }
+
+        objectUnderTest := newFilesystem()
+
+        /* act */
+        _, err = objectUnderTest.ListChildFileInfosOfDir(existentDir)
+
+        /* assert */
+        Expect(err).To(BeNil())
+
+      })
+
+    })
+
+  })
+
   Context("SaveFile", func() {
 
     Context("when passed path of non-existing file", func() {

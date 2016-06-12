@@ -94,5 +94,30 @@ var _ = Describe("_sdk", func() {
 
     })
   })
+  Context(".TryResolveDefaultCollection() method", func() {
+    It("should invoke compositionRoot.tryResolveDefaultCollectionUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedTryResolveDefaultCollectionReq := models.NewTryResolveDefaultCollectionReq("")
+
+      // wire up fakes
+      fakeTryResolveDefaultCollectionUseCase := new(fakeTryResolveDefaultCollectionUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.TryResolveDefaultCollectionUseCaseReturns(fakeTryResolveDefaultCollectionUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.TryResolveDefaultCollection(*providedTryResolveDefaultCollectionReq)
+
+      /* assert */
+      Expect(fakeTryResolveDefaultCollectionUseCase.ExecuteArgsForCall(0)).To(Equal(*providedTryResolveDefaultCollectionReq))
+      Expect(fakeTryResolveDefaultCollectionUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
 
 })

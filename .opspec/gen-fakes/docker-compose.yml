@@ -1,6 +1,6 @@
 version: "2"
 services:
-  generate-fakes:
+  gen-fakes:
     extends:
       service: go
       file: ../.common/docker-compose.yml

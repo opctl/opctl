@@ -2,161 +2,206 @@
 package opspec
 
 import (
-	"sync"
+  "sync"
 
-	"github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 type FakeSdk struct {
-	CreateOpStub        func(req models.CreateOpReq) (err error)
-	createOpMutex       sync.RWMutex
-	createOpArgsForCall []struct {
-		req models.CreateOpReq
-	}
-	createOpReturns struct {
-		result1 error
-	}
-	SetCollectionDescriptionStub        func(req models.SetCollectionDescriptionReq) (err error)
-	setCollectionDescriptionMutex       sync.RWMutex
-	setCollectionDescriptionArgsForCall []struct {
-		req models.SetCollectionDescriptionReq
-	}
-	setCollectionDescriptionReturns struct {
-		result1 error
-	}
-	SetOpDescriptionStub        func(req models.SetOpDescriptionReq) (err error)
-	setOpDescriptionMutex       sync.RWMutex
-	setOpDescriptionArgsForCall []struct {
-		req models.SetOpDescriptionReq
-	}
-	setOpDescriptionReturns struct {
-		result1 error
-	}
-	invocations      map[string][][]interface{}
-	invocationsMutex sync.RWMutex
+  CreateOpStub                           func(req models.CreateOpReq) (err error)
+  createOpMutex                          sync.RWMutex
+  createOpArgsForCall                    []struct {
+    req models.CreateOpReq
+  }
+  createOpReturns                        struct {
+                                           result1 error
+                                         }
+  SetCollectionDescriptionStub           func(req models.SetCollectionDescriptionReq) (err error)
+  setCollectionDescriptionMutex          sync.RWMutex
+  setCollectionDescriptionArgsForCall    []struct {
+    req models.SetCollectionDescriptionReq
+  }
+  setCollectionDescriptionReturns        struct {
+                                           result1 error
+                                         }
+  SetOpDescriptionStub                   func(req models.SetOpDescriptionReq) (err error)
+  setOpDescriptionMutex                  sync.RWMutex
+  setOpDescriptionArgsForCall            []struct {
+    req models.SetOpDescriptionReq
+  }
+  setOpDescriptionReturns                struct {
+                                           result1 error
+                                         }
+  TryResolveDefaultCollectionStub        func(req models.TryResolveDefaultCollectionReq) (pathToDefaultCollection string, err error)
+  tryResolveDefaultCollectionMutex       sync.RWMutex
+  tryResolveDefaultCollectionArgsForCall []struct {
+    req models.TryResolveDefaultCollectionReq
+  }
+  tryResolveDefaultCollectionReturns     struct {
+                                           result1 string
+                                           result2 error
+                                         }
+  invocations                            map[string][][]interface{}
+  invocationsMutex                       sync.RWMutex
 }
 
 func (fake *FakeSdk) CreateOp(req models.CreateOpReq) (err error) {
-	fake.createOpMutex.Lock()
-	fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
-		req models.CreateOpReq
-	}{req})
-	fake.recordInvocation("CreateOp", []interface{}{req})
-	fake.createOpMutex.Unlock()
-	if fake.CreateOpStub != nil {
-		return fake.CreateOpStub(req)
-	} else {
-		return fake.createOpReturns.result1
-	}
+  fake.createOpMutex.Lock()
+  fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
+    req models.CreateOpReq
+  }{req})
+  fake.recordInvocation("CreateOp", []interface{}{req})
+  fake.createOpMutex.Unlock()
+  if fake.CreateOpStub != nil {
+    return fake.CreateOpStub(req)
+  } else {
+    return fake.createOpReturns.result1
+  }
 }
 
 func (fake *FakeSdk) CreateOpCallCount() int {
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	return len(fake.createOpArgsForCall)
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return len(fake.createOpArgsForCall)
 }
 
 func (fake *FakeSdk) CreateOpArgsForCall(i int) models.CreateOpReq {
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	return fake.createOpArgsForCall[i].req
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  return fake.createOpArgsForCall[i].req
 }
 
 func (fake *FakeSdk) CreateOpReturns(result1 error) {
-	fake.CreateOpStub = nil
-	fake.createOpReturns = struct {
-		result1 error
-	}{result1}
+  fake.CreateOpStub = nil
+  fake.createOpReturns = struct {
+    result1 error
+  }{result1}
 }
 
 func (fake *FakeSdk) SetCollectionDescription(req models.SetCollectionDescriptionReq) (err error) {
-	fake.setCollectionDescriptionMutex.Lock()
-	fake.setCollectionDescriptionArgsForCall = append(fake.setCollectionDescriptionArgsForCall, struct {
-		req models.SetCollectionDescriptionReq
-	}{req})
-	fake.recordInvocation("SetCollectionDescription", []interface{}{req})
-	fake.setCollectionDescriptionMutex.Unlock()
-	if fake.SetCollectionDescriptionStub != nil {
-		return fake.SetCollectionDescriptionStub(req)
-	} else {
-		return fake.setCollectionDescriptionReturns.result1
-	}
+  fake.setCollectionDescriptionMutex.Lock()
+  fake.setCollectionDescriptionArgsForCall = append(fake.setCollectionDescriptionArgsForCall, struct {
+    req models.SetCollectionDescriptionReq
+  }{req})
+  fake.recordInvocation("SetCollectionDescription", []interface{}{req})
+  fake.setCollectionDescriptionMutex.Unlock()
+  if fake.SetCollectionDescriptionStub != nil {
+    return fake.SetCollectionDescriptionStub(req)
+  } else {
+    return fake.setCollectionDescriptionReturns.result1
+  }
 }
 
 func (fake *FakeSdk) SetCollectionDescriptionCallCount() int {
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	return len(fake.setCollectionDescriptionArgsForCall)
+  fake.setCollectionDescriptionMutex.RLock()
+  defer fake.setCollectionDescriptionMutex.RUnlock()
+  return len(fake.setCollectionDescriptionArgsForCall)
 }
 
 func (fake *FakeSdk) SetCollectionDescriptionArgsForCall(i int) models.SetCollectionDescriptionReq {
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	return fake.setCollectionDescriptionArgsForCall[i].req
+  fake.setCollectionDescriptionMutex.RLock()
+  defer fake.setCollectionDescriptionMutex.RUnlock()
+  return fake.setCollectionDescriptionArgsForCall[i].req
 }
 
 func (fake *FakeSdk) SetCollectionDescriptionReturns(result1 error) {
-	fake.SetCollectionDescriptionStub = nil
-	fake.setCollectionDescriptionReturns = struct {
-		result1 error
-	}{result1}
+  fake.SetCollectionDescriptionStub = nil
+  fake.setCollectionDescriptionReturns = struct {
+    result1 error
+  }{result1}
 }
 
 func (fake *FakeSdk) SetOpDescription(req models.SetOpDescriptionReq) (err error) {
-	fake.setOpDescriptionMutex.Lock()
-	fake.setOpDescriptionArgsForCall = append(fake.setOpDescriptionArgsForCall, struct {
-		req models.SetOpDescriptionReq
-	}{req})
-	fake.recordInvocation("SetOpDescription", []interface{}{req})
-	fake.setOpDescriptionMutex.Unlock()
-	if fake.SetOpDescriptionStub != nil {
-		return fake.SetOpDescriptionStub(req)
-	} else {
-		return fake.setOpDescriptionReturns.result1
-	}
+  fake.setOpDescriptionMutex.Lock()
+  fake.setOpDescriptionArgsForCall = append(fake.setOpDescriptionArgsForCall, struct {
+    req models.SetOpDescriptionReq
+  }{req})
+  fake.recordInvocation("SetOpDescription", []interface{}{req})
+  fake.setOpDescriptionMutex.Unlock()
+  if fake.SetOpDescriptionStub != nil {
+    return fake.SetOpDescriptionStub(req)
+  } else {
+    return fake.setOpDescriptionReturns.result1
+  }
 }
 
 func (fake *FakeSdk) SetOpDescriptionCallCount() int {
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
-	return len(fake.setOpDescriptionArgsForCall)
+  fake.setOpDescriptionMutex.RLock()
+  defer fake.setOpDescriptionMutex.RUnlock()
+  return len(fake.setOpDescriptionArgsForCall)
 }
 
 func (fake *FakeSdk) SetOpDescriptionArgsForCall(i int) models.SetOpDescriptionReq {
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
-	return fake.setOpDescriptionArgsForCall[i].req
+  fake.setOpDescriptionMutex.RLock()
+  defer fake.setOpDescriptionMutex.RUnlock()
+  return fake.setOpDescriptionArgsForCall[i].req
 }
 
 func (fake *FakeSdk) SetOpDescriptionReturns(result1 error) {
-	fake.SetOpDescriptionStub = nil
-	fake.setOpDescriptionReturns = struct {
-		result1 error
-	}{result1}
+  fake.SetOpDescriptionStub = nil
+  fake.setOpDescriptionReturns = struct {
+    result1 error
+  }{result1}
+}
+
+func (fake *FakeSdk) TryResolveDefaultCollection(req models.TryResolveDefaultCollectionReq) (pathToDefaultCollection string, err error) {
+  fake.tryResolveDefaultCollectionMutex.Lock()
+  fake.tryResolveDefaultCollectionArgsForCall = append(fake.tryResolveDefaultCollectionArgsForCall, struct {
+    req models.TryResolveDefaultCollectionReq
+  }{req})
+  fake.recordInvocation("TryResolveDefaultCollection", []interface{}{req})
+  fake.tryResolveDefaultCollectionMutex.Unlock()
+  if fake.TryResolveDefaultCollectionStub != nil {
+    return fake.TryResolveDefaultCollectionStub(req)
+  } else {
+    return fake.tryResolveDefaultCollectionReturns.result1, fake.tryResolveDefaultCollectionReturns.result2
+  }
+}
+
+func (fake *FakeSdk) TryResolveDefaultCollectionCallCount() int {
+  fake.tryResolveDefaultCollectionMutex.RLock()
+  defer fake.tryResolveDefaultCollectionMutex.RUnlock()
+  return len(fake.tryResolveDefaultCollectionArgsForCall)
+}
+
+func (fake *FakeSdk) TryResolveDefaultCollectionArgsForCall(i int) models.TryResolveDefaultCollectionReq {
+  fake.tryResolveDefaultCollectionMutex.RLock()
+  defer fake.tryResolveDefaultCollectionMutex.RUnlock()
+  return fake.tryResolveDefaultCollectionArgsForCall[i].req
+}
+
+func (fake *FakeSdk) TryResolveDefaultCollectionReturns(result1 string, result2 error) {
+  fake.TryResolveDefaultCollectionStub = nil
+  fake.tryResolveDefaultCollectionReturns = struct {
+    result1 string
+    result2 error
+  }{result1, result2}
 }
 
 func (fake *FakeSdk) Invocations() map[string][][]interface{} {
-	fake.invocationsMutex.RLock()
-	defer fake.invocationsMutex.RUnlock()
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
-	return fake.invocations
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.createOpMutex.RLock()
+  defer fake.createOpMutex.RUnlock()
+  fake.setCollectionDescriptionMutex.RLock()
+  defer fake.setCollectionDescriptionMutex.RUnlock()
+  fake.setOpDescriptionMutex.RLock()
+  defer fake.setOpDescriptionMutex.RUnlock()
+  fake.tryResolveDefaultCollectionMutex.RLock()
+  defer fake.tryResolveDefaultCollectionMutex.RUnlock()
+  return fake.invocations
 }
 
 func (fake *FakeSdk) recordInvocation(key string, args []interface{}) {
-	fake.invocationsMutex.Lock()
-	defer fake.invocationsMutex.Unlock()
-	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
-	}
-	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
-	}
-	fake.invocations[key] = append(fake.invocations[key], args)
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }
 
 var _ Sdk = new(FakeSdk)

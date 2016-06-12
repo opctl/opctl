@@ -14,7 +14,17 @@ type Filesystem  interface {
 
   GetBytesOfFile(
   pathToFile string,
-  ) (bytesOfFile []byte, err error)
+  ) (
+  bytesOfFile []byte,
+  err error,
+  )
+
+  ListChildFileInfosOfDir(
+  pathToDir string,
+  ) (
+  childFileInfos []os.FileInfo,
+  err error,
+  )
 
   SaveFile(
   pathToFile string,
@@ -45,6 +55,16 @@ pathToFile string,
 
   bytesOfFile, err = ioutil.ReadFile(pathToFile)
 
+  return
+}
+
+func (this _filesystem) ListChildFileInfosOfDir(
+pathToDir string,
+) (
+childFileInfos []os.FileInfo,
+err error,
+) {
+  childFileInfos, err = ioutil.ReadDir(pathToDir)
   return
 }
 
