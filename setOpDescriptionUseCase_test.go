@@ -65,6 +65,31 @@ var _ = Describe("_setOpDescriptionUseCase", func() {
       })
     })
 
+    Context("when YamlCodec.ToYaml returns an error", func() {
+      It("should be returned", func() {
+
+        /* arrange */
+        expectedError := errors.New("ToYamlError")
+
+        fakeYamlCodec := new(fakeYamlCodec)
+        fakeYamlCodec.ToYamlReturns(nil, expectedError)
+
+        objectUnderTest := newSetOpDescriptionUseCase(
+          new(FakeFilesystem),
+          fakeYamlCodec,
+        )
+
+        /* act */
+        actualError := objectUnderTest.Execute(
+          models.SetOpDescriptionReq{},
+        )
+
+        /* assert */
+        Expect(actualError).To(Equal(expectedError))
+
+      })
+    })
+
     It("should call YamlCodec.ToYaml with expected opFile", func() {
 
       /* arrange */

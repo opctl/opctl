@@ -65,6 +65,31 @@ var _ = Describe("_setCollectionDescriptionUseCase", func() {
       })
     })
 
+    Context("when YamlCodec.ToYaml returns an error", func() {
+      It("should be returned", func() {
+
+        /* arrange */
+        expectedError := errors.New("ToYamlError")
+
+        fakeYamlCodec := new(fakeYamlCodec)
+        fakeYamlCodec.ToYamlReturns(nil, expectedError)
+
+        objectUnderTest := newSetCollectionDescriptionUseCase(
+          new(FakeFilesystem),
+          fakeYamlCodec,
+        )
+
+        /* act */
+        actualError := objectUnderTest.Execute(
+          models.SetCollectionDescriptionReq{},
+        )
+
+        /* assert */
+        Expect(actualError).To(Equal(expectedError))
+
+      })
+    })
+
     It("should call YamlCodec.ToYaml with expected collectionFile", func() {
 
       /* arrange */
