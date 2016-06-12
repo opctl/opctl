@@ -101,7 +101,7 @@ var _ = Describe("_filesystem", func() {
 
       })
 
-      It("should return expected bytes", func() {
+      It("should return nil error", func() {
 
         /* arrange */
         uuid, err := uuid.NewV4()
@@ -131,9 +131,58 @@ var _ = Describe("_filesystem", func() {
 
   Context("SaveFile", func() {
 
-    Context("when passed valid path of existing file", func() {
+    Context("when passed path of non-existing file", func() {
 
-      It("should return expected bytes", func() {
+      It("should create file with provided bytes", func() {
+
+        /* arrange */
+        uuid, err := uuid.NewV4()
+        if (nil != err) {
+          panic(err)
+        }
+        providedPath := path.Join(os.TempDir(), uuid.String())
+
+        expectedBytes := []byte("dummyBytes")
+
+        objectUnderTest := newFilesystem()
+
+        /* act */
+        objectUnderTest.SaveFile(providedPath, expectedBytes)
+
+        /* assert */
+        actualBytes, err := ioutil.ReadFile(providedPath)
+        if (nil != err) {
+          panic(err)
+        }
+
+        Expect(actualBytes).To(Equal(expectedBytes))
+
+      })
+
+      It("should return nil error", func() {
+
+        /* arrange */
+        uuid, err := uuid.NewV4()
+        if (nil != err) {
+          panic(err)
+        }
+        providedPath := path.Join(os.TempDir(), uuid.String())
+
+        objectUnderTest := newFilesystem()
+
+        /* act */
+        err = objectUnderTest.SaveFile(providedPath, []byte("dummyBytes"))
+
+        /* assert */
+        Expect(err).To(BeNil())
+
+      })
+
+    })
+
+    Context("when passed path of existing file", func() {
+
+      It("should overwrite existing file with provided bytes", func() {
 
         /* arrange */
         uuid, err := uuid.NewV4()
@@ -151,14 +200,19 @@ var _ = Describe("_filesystem", func() {
         objectUnderTest := newFilesystem()
 
         /* act */
-        actualBytes, _ := objectUnderTest.GetBytesOfFile(providedPath)
+        objectUnderTest.SaveFile(providedPath, expectedBytes)
 
         /* assert */
+        actualBytes, err := ioutil.ReadFile(providedPath)
+        if (nil != err) {
+          panic(err)
+        }
+
         Expect(actualBytes).To(Equal(expectedBytes))
 
       })
 
-      It("should return expected bytes", func() {
+      It("should return nil error", func() {
 
         /* arrange */
         uuid, err := uuid.NewV4()
@@ -175,7 +229,7 @@ var _ = Describe("_filesystem", func() {
         objectUnderTest := newFilesystem()
 
         /* act */
-        _, err = objectUnderTest.GetBytesOfFile(providedPath)
+        err = objectUnderTest.SaveFile(providedPath, []byte("dummyBytes"))
 
         /* assert */
         Expect(err).To(BeNil())
