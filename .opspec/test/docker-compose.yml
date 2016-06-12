@@ -7,6 +7,6 @@ services:
     entrypoint: |
       sh -c "
         go get -t ./... && \
-        go get github.com/onsi/ginkgo/ginkgo && \
-        ginkgo -r -cover
+        go get github.com/go-playground/overalls && \
+        overalls -project=github.com/opspec-io/sdk-golang
       "
