@@ -2,6 +2,7 @@ package opspec
 
 import (
   . "github.com/onsi/ginkgo"
+  . "github.com/onsi/gomega"
 )
 
 var _ = Describe("_compositionRoot", func() {
@@ -9,7 +10,7 @@ var _ = Describe("_compositionRoot", func() {
   var fakeFilesystem = new(FakeFilesystem)
 
   Context("CreateOpUseCase", func() {
-    It("should return an instance of type createOpUseCase", func() {
+    It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -18,10 +19,7 @@ var _ = Describe("_compositionRoot", func() {
       actualCreateOpUseCase := objectUnderTest.CreateOpUseCase()
 
       /* assert */
-      _, ok := actualCreateOpUseCase.(createOpUseCase)
-      if !ok {
-        Fail("result not assignable to createOpUseCase")
-      }
+      Expect(actualCreateOpUseCase).NotTo(BeNil())
 
     })
   })
@@ -35,10 +33,7 @@ var _ = Describe("_compositionRoot", func() {
       actualSetCollectionDescriptionUseCase := objectUnderTest.SetCollectionDescriptionUseCase()
 
       /* assert */
-      _, ok := actualSetCollectionDescriptionUseCase.(setCollectionDescriptionUseCase)
-      if !ok {
-        Fail("result not assignable to setCollectionDescriptionUseCase")
-      }
+      Expect(actualSetCollectionDescriptionUseCase).NotTo(BeNil())
 
     })
   })
@@ -52,10 +47,7 @@ var _ = Describe("_compositionRoot", func() {
       actualSetOpDescriptionUseCase := objectUnderTest.SetOpDescriptionUseCase()
 
       /* assert */
-      _, ok := actualSetOpDescriptionUseCase.(setOpDescriptionUseCase)
-      if !ok {
-        Fail("result not assignable to setOpDescriptionUseCase")
-      }
+      Expect(actualSetOpDescriptionUseCase).NotTo(BeNil())
 
     })
   })
