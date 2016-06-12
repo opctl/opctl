@@ -8,5 +8,5 @@ services:
       sh -c "
         go get -t ./... && \
         go get github.com/go-playground/overalls && \
-        overalls -project=github.com/opspec-io/sdk-golang
+        overalls -project=github.com/opctl/engine
       "
