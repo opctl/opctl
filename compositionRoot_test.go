@@ -2,7 +2,6 @@ package opspec
 
 import (
   . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
 )
 
 var _ = Describe("_compositionRoot", func() {
@@ -10,7 +9,7 @@ var _ = Describe("_compositionRoot", func() {
   var fakeFilesystem = new(FakeFilesystem)
 
   Context("CreateOpUseCase", func() {
-    It("should return an instance of type _createOpUseCase", func() {
+    It("should return an instance of type createOpUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -19,12 +18,15 @@ var _ = Describe("_compositionRoot", func() {
       actualCreateOpUseCase := objectUnderTest.CreateOpUseCase()
 
       /* assert */
-      Expect(actualCreateOpUseCase).To(BeAssignableToTypeOf(&_createOpUseCase{}))
+      _, ok := actualCreateOpUseCase.(createOpUseCase)
+      if !ok {
+        Fail("result not assignable to createOpUseCase")
+      }
 
     })
   })
   Context("SetCollectionDescriptionUseCase", func() {
-    It("should return an instance of type _setCollectionDescriptionUseCase", func() {
+    It("should return an instance of type setCollectionDescriptionUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -33,12 +35,15 @@ var _ = Describe("_compositionRoot", func() {
       actualSetCollectionDescriptionUseCase := objectUnderTest.SetCollectionDescriptionUseCase()
 
       /* assert */
-      Expect(actualSetCollectionDescriptionUseCase).To(BeAssignableToTypeOf(&_setCollectionDescriptionUseCase{}))
+      _, ok := actualSetCollectionDescriptionUseCase.(setCollectionDescriptionUseCase)
+      if !ok {
+        Fail("result not assignable to setCollectionDescriptionUseCase")
+      }
 
     })
   })
   Context("SetOpDescriptionUseCase", func() {
-    It("should return an instance of type _setOpDescriptionUseCase", func() {
+    It("should return an instance of type setOpDescriptionUseCase", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(fakeFilesystem)
@@ -47,7 +52,10 @@ var _ = Describe("_compositionRoot", func() {
       actualSetOpDescriptionUseCase := objectUnderTest.SetOpDescriptionUseCase()
 
       /* assert */
-      Expect(actualSetOpDescriptionUseCase).To(BeAssignableToTypeOf(&_setOpDescriptionUseCase{}))
+      _, ok := actualSetOpDescriptionUseCase.(setOpDescriptionUseCase)
+      if !ok {
+        Fail("result not assignable to setOpDescriptionUseCase")
+      }
 
     })
   })
