@@ -1,11 +1,11 @@
 package opspec
 
+//go:generate counterfeiter -o ./fakeSetOpDescriptionUseCase.go --fake-name fakeSetOpDescriptionUseCase ./ setOpDescriptionUseCase
+
 import (
   "github.com/opspec-io/sdk-golang/models"
   "path"
 )
-
-//go:generate counterfeiter -o ./fakeSetOpDescriptionUseCase.go --fake-name fakeSetOpDescriptionUseCase ./ setOpDescriptionUseCase
 
 type setOpDescriptionUseCase interface {
   Execute(
@@ -34,15 +34,17 @@ func (this _setOpDescriptionUseCase) Execute(
 req models.SetOpDescriptionReq,
 ) (err error) {
 
+  pathToOpFile := path.Join(req.PathToOp, NameOfOpFile)
+
   opBytes, err := this.filesystem.GetBytesOfFile(
-    path.Join(req.PathToOp, NameOfOpFile),
+    pathToOpFile,
   )
   if (nil != err) {
     return
   }
 
   opFile := models.OpFile{}
-  err = this.yamlCodec.fromYaml(
+  err = this.yamlCodec.FromYaml(
     opBytes,
     &opFile,
   )
@@ -52,13 +54,13 @@ req models.SetOpDescriptionReq,
 
   opFile.Description = req.Description
 
-  opBytes, err = this.yamlCodec.toYaml(&opFile)
+  opBytes, err = this.yamlCodec.ToYaml(&opFile)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
-    req.PathToOp,
+    pathToOpFile,
     opBytes,
   )
 

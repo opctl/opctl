@@ -26,9 +26,9 @@ var _ = Describe("_yamlCodec", func() {
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
+      opFileBytes, _ := objectUnderTest.ToYaml(&expectedOpFile)
       actualOpFile := models.OpFile{}
-      objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
+      objectUnderTest.FromYaml(opFileBytes, &actualOpFile)
 
       /* assert */
       Expect(actualOpFile).To(Equal(expectedOpFile))
@@ -47,9 +47,9 @@ var _ = Describe("_yamlCodec", func() {
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      opFileBytes, _ := objectUnderTest.toYaml(&expectedOpFile)
+      opFileBytes, _ := objectUnderTest.ToYaml(&expectedOpFile)
       actualOpFile := models.OpFile{}
-      objectUnderTest.fromYaml(opFileBytes, &actualOpFile)
+      objectUnderTest.FromYaml(opFileBytes, &actualOpFile)
 
       /* assert */
       Expect(actualOpFile).To(Equal(expectedOpFile))

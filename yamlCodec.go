@@ -1,15 +1,17 @@
 package opspec
 
+//go:generate counterfeiter -o ./fakeYamlCodec.go --fake-name fakeYamlCodec ./ yamlCodec
+
 import (
   "gopkg.in/yaml.v2"
 )
 
 type yamlCodec interface {
-  toYaml(
+  ToYaml(
   in interface{},
   ) (opFileBytes []byte, err error)
 
-  fromYaml(
+  FromYaml(
   in []byte,
   out interface{},
   ) (err error)
@@ -23,7 +25,7 @@ func newYamlCodec() yamlCodec {
 
 type _yamlCodec struct{}
 
-func (this _yamlCodec) toYaml(
+func (this _yamlCodec) ToYaml(
 in interface{},
 ) (opFileBytes []byte, err error) {
 
@@ -33,7 +35,7 @@ in interface{},
 
 }
 
-func (this _yamlCodec)  fromYaml(
+func (this _yamlCodec)  FromYaml(
 in []byte,
 out interface{},
 ) (err error) {

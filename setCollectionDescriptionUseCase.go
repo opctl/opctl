@@ -1,11 +1,11 @@
 package opspec
 
+//go:generate counterfeiter -o ./fakeSetCollectionDescriptionUseCase.go --fake-name fakeSetCollectionDescriptionUseCase ./ setCollectionDescriptionUseCase
+
 import (
   "github.com/opspec-io/sdk-golang/models"
   "path"
 )
-
-//go:generate counterfeiter -o ./fakeSetCollectionDescriptionUseCase.go --fake-name fakeSetCollectionDescriptionUseCase ./ setCollectionDescriptionUseCase
 
 type setCollectionDescriptionUseCase interface {
   Execute(
@@ -34,32 +34,34 @@ func (this _setCollectionDescriptionUseCase) Execute(
 req models.SetCollectionDescriptionReq,
 ) (err error) {
 
-  opFileBytes, err := this.filesystem.GetBytesOfFile(
-    path.Join(req.PathToCollection, NameOfCollectionFile),
+  pathToCollectionFile := path.Join(req.PathToCollection, NameOfCollectionFile)
+
+  collectionFileBytes, err := this.filesystem.GetBytesOfFile(
+    pathToCollectionFile,
   )
   if (nil != err) {
     return
   }
 
-  opFile := models.OpFile{}
-  err = this.yamlCodec.fromYaml(
-    opFileBytes,
-    &opFile,
+  collectionFile := models.CollectionFile{}
+  err = this.yamlCodec.FromYaml(
+    collectionFileBytes,
+    &collectionFile,
   )
   if (nil != err) {
     return
   }
 
-  opFile.Description = req.Description
+  collectionFile.Description = req.Description
 
-  opFileBytes, err = this.yamlCodec.toYaml(&opFile)
+  collectionFileBytes, err = this.yamlCodec.ToYaml(&collectionFile)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
-    req.PathToCollection,
-    opFileBytes,
+    pathToCollectionFile,
+    collectionFileBytes,
   )
 
   return

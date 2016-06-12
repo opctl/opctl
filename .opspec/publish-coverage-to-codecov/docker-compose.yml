@@ -10,11 +10,11 @@ services:
       - GIT_BRANCH
     entrypoint: |
       sh -c "
-      # generate aggregate coverage profile
-      cat sdk-golang.coverprofile > coverage.txt && \
+        # generate aggregate coverage profile
+        cat sdk-golang.coverprofile > coverage.txt && \
 
-      # strip fakes from coverage profile
-      sed -i '/fake/d' coverage.txt && \
+        # strip fakes from coverage profile
+        sed -i '/fake/d' coverage.txt && \
 
-      curl -s https://codecov.io/bash | bash -s
+        curl -s https://codecov.io/bash | bash -s
       "

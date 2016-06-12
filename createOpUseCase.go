@@ -46,7 +46,7 @@ req models.CreateOpReq,
     Name:req.Name,
   }
 
-  opFileBytes, err := this.yamlCodec.toYaml(&opFile)
+  opFileBytes, err := this.yamlCodec.ToYaml(&opFile)
   if (nil != err) {
     return
   }
