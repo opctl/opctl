@@ -7,21 +7,73 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("AddOpHandler()", func() {
-    It("should return an addOpHandler instance", func() {
+
+  Context("GetEventStreamHandler()", func() {
+    It("should not return nil", func() {
 
       /* arrange */
-
-      fakeCoreApi := new(core.FakeApi)
-
-      objectUnderTest := newCompositionRoot(fakeCoreApi)
+      objectUnderTest := newCompositionRoot(
+        new(core.FakeApi),
+      )
 
       /* act */
-      actualAddOpHandler := objectUnderTest.AddOpHandler()
+      actualGetEventStreamHandler := objectUnderTest.GetEventStreamHandler()
 
       /* assert */
-      Expect(actualAddOpHandler).To(BeAssignableToTypeOf(&addOpHandler{}))
+      Expect(actualGetEventStreamHandler).NotTo(BeNil())
 
     })
   })
+
+  Context("GetLivenessHandler()", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(
+        new(core.FakeApi),
+      )
+
+      /* act */
+      actualGetLivenessHandler := objectUnderTest.GetLivenessHandler()
+
+      /* assert */
+      Expect(actualGetLivenessHandler).NotTo(BeNil())
+
+    })
+  })
+
+  Context("KillOpRunHandler()", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(
+        new(core.FakeApi),
+      )
+
+      /* act */
+      actualKillOpRunHandler := objectUnderTest.KillOpRunHandler()
+
+      /* assert */
+      Expect(actualKillOpRunHandler).NotTo(BeNil())
+
+    })
+  })
+
+  Context("RunOpHandler()", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(
+        new(core.FakeApi),
+      )
+
+      /* act */
+      actualRunOpHandler := objectUnderTest.RunOpHandler()
+
+      /* assert */
+      Expect(actualRunOpHandler).NotTo(BeNil())
+
+    })
+  })
+
 })

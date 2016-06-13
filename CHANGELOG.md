@@ -4,3 +4,4 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Removed
 - set op description use case
+- add op use case

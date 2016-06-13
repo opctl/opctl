@@ -30,11 +30,6 @@ func (this _api) Start(
   router := mux.NewRouter()
 
   router.Handle(
-    addOpRelUrlTemplate,
-    this.compositionRoot.AddOpHandler(),
-  ).Methods(http.MethodPost)
-
-  router.Handle(
     addSubOpRelUrlTemplate,
     this.compositionRoot.AddSubOpHandler(),
   ).Methods(http.MethodPost)

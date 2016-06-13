@@ -214,52 +214,6 @@
             }
           }
         }
-      },
-      "post": {
-        "summary": "Add project op",
-        "tags": [
-          "projects"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "The body of the request",
-            "required": true,
-            "schema": {
-              "title": "AddOpReq",
-              "type": "object",
-              "required": [
-                "name"
-              ],
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
       }
     },
     "/projects/{projectUrl}/ops/{opName}/sub-ops": {

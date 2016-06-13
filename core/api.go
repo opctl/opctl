@@ -8,10 +8,6 @@ import (
 )
 
 type Api interface {
-  AddOp(
-  req models.AddOpReq,
-  ) (err error)
-
   AddSubOp(
   req models.AddSubOpReq,
   ) (err error)
@@ -66,15 +62,6 @@ filesys ports.Filesys,
 
 type _api struct {
   compositionRoot compositionRoot
-}
-
-func (this _api) AddOp(
-req models.AddOpReq,
-) (err error) {
-  return this.
-  compositionRoot.
-  AddOpUseCase().
-  Execute(req)
 }
 
 func (this _api) AddSubOp(

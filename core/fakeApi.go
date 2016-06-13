@@ -8,14 +8,6 @@ import (
 )
 
 type FakeApi struct {
-  AddOpStub                     func(req models.AddOpReq) (err error)
-  addOpMutex                    sync.RWMutex
-  addOpArgsForCall              []struct {
-    req models.AddOpReq
-  }
-  addOpReturns                  struct {
-                                  result1 error
-                                }
   AddSubOpStub                  func(req models.AddSubOpReq) (err error)
   addSubOpMutex                 sync.RWMutex
   addSubOpArgsForCall           []struct {
@@ -60,38 +52,6 @@ type FakeApi struct {
                                   result2 string
                                   result3 error
                                 }
-}
-
-func (fake *FakeApi) AddOp(req models.AddOpReq) (err error) {
-  fake.addOpMutex.Lock()
-  fake.addOpArgsForCall = append(fake.addOpArgsForCall, struct {
-    req models.AddOpReq
-  }{req})
-  fake.addOpMutex.Unlock()
-  if fake.AddOpStub != nil {
-    return fake.AddOpStub(req)
-  } else {
-    return fake.addOpReturns.result1
-  }
-}
-
-func (fake *FakeApi) AddOpCallCount() int {
-  fake.addOpMutex.RLock()
-  defer fake.addOpMutex.RUnlock()
-  return len(fake.addOpArgsForCall)
-}
-
-func (fake *FakeApi) AddOpArgsForCall(i int) models.AddOpReq {
-  fake.addOpMutex.RLock()
-  defer fake.addOpMutex.RUnlock()
-  return fake.addOpArgsForCall[i].req
-}
-
-func (fake *FakeApi) AddOpReturns(result1 error) {
-  fake.AddOpStub = nil
-  fake.addOpReturns = struct {
-    result1 error
-  }{result1}
 }
 
 func (fake *FakeApi) AddSubOp(req models.AddSubOpReq) (err error) {

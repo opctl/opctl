@@ -11,7 +11,6 @@ engine for running http://opspec.io compliant ops.
 [sdk-for-golang](https://github.com/opctl/sdk-for-golang)
 
 # Supported Use Cases
-- add op
 - add sub op
 - get event stream
 - get liveness

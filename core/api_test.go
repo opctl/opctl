@@ -7,31 +7,6 @@ import (
 )
 
 var _ = Describe("_api", func() {
-  Context(".AddOp() method", func() {
-    It("should invoke compositionRoot.addOpUseCase.Execute() with expected args & return result", func() {
-
-      /* arrange */
-      providedAddOpReq := models.NewAddOpReq(&models.Url{}, "", "")
-
-      // wire up fakes
-      fakeAddOpUseCase := new(fakeAddOpUseCase)
-
-      fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.AddOpUseCaseReturns(fakeAddOpUseCase)
-
-      objectUnderTest := &_api{
-        compositionRoot:fakeCompositionRoot,
-      }
-
-      /* act */
-      objectUnderTest.AddOp(*providedAddOpReq)
-
-      /* assert */
-      Expect(fakeAddOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddOpReq))
-      Expect(fakeAddOpUseCase.ExecuteCallCount()).To(Equal(1))
-
-    })
-  })
   Context(".AddSubOp() method", func() {
     It("should invoke compositionRoot.addSubOpUseCase.Execute() with expected args & return result", func() {
 

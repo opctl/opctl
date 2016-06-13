@@ -29,7 +29,6 @@ const (
 
 /* use cases */
 const (
-  addOpRelUrlTemplate string = projectOpsRelUrlTemplate
   addSubOpRelUrlTemplate string = projectOpSubOpsRelUrlTemplate
   getLivenessRelUrlTemplate string = livenessRelUrlTemplate
   getEventStreamRelUrlTemplate string = eventStreamRelUrlTemplate
