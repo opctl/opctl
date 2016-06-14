@@ -44,6 +44,56 @@ var _ = Describe("_sdk", func() {
 
     })
   })
+  Context(".GetCollection() method", func() {
+    It("should invoke compositionRoot.getCollectionUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedCollectionBundlePath := ""
+
+      // wire up fakes
+      fakeGetCollectionUseCase := new(fakeGetCollectionUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.GetCollectionUseCaseReturns(fakeGetCollectionUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.GetCollection(providedCollectionBundlePath)
+
+      /* assert */
+      Expect(fakeGetCollectionUseCase.ExecuteArgsForCall(0)).To(Equal(providedCollectionBundlePath))
+      Expect(fakeGetCollectionUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
+  Context(".GetOp() method", func() {
+    It("should invoke compositionRoot.getOpUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedCollectionBundlePath := ""
+
+      // wire up fakes
+      fakeGetOpUseCase := new(fakeGetOpUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.GetOpUseCaseReturns(fakeGetOpUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.GetOp(providedCollectionBundlePath)
+
+      /* assert */
+      Expect(fakeGetOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedCollectionBundlePath))
+      Expect(fakeGetOpUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
   Context(".SetCollectionDescription() method", func() {
     It("should invoke compositionRoot.setCollectionDescriptionUseCase.Execute() with expected args & return result", func() {
 

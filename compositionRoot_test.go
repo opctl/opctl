@@ -23,6 +23,34 @@ var _ = Describe("_compositionRoot", func() {
 
     })
   })
+  Context("GetCollectionUseCase", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeFilesystem)
+
+      /* act */
+      actualGetCollectionUseCase := objectUnderTest.GetCollectionUseCase()
+
+      /* assert */
+      Expect(actualGetCollectionUseCase).NotTo(BeNil())
+
+    })
+  })
+  Context("GetOpUseCase", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeFilesystem)
+
+      /* act */
+      actualGetOpUseCase := objectUnderTest.GetOpUseCase()
+
+      /* assert */
+      Expect(actualGetOpUseCase).NotTo(BeNil())
+
+    })
+  })
   Context("SetCollectionDescriptionUseCase", func() {
     It("should not return nil", func() {
 
