@@ -4,6 +4,8 @@ package opspec
 
 type compositionRoot interface {
   CreateOpUseCase() createOpUseCase
+  GetCollectionUseCase() getCollectionUseCase
+  GetOpUseCase() getOpUseCase
   SetCollectionDescriptionUseCase() setCollectionDescriptionUseCase
   SetOpDescriptionUseCase() setOpDescriptionUseCase
   TryResolveDefaultCollectionUseCase() tryResolveDefaultCollectionUseCase
@@ -15,10 +17,25 @@ filesystem Filesystem,
 
   yamlCodec := newYamlCodec()
 
+  opViewFactory := newOpViewFactory(
+    filesystem,
+    yamlCodec,
+  )
+
+  collectionViewFactory := newCollectionViewFactory(
+    filesystem,
+    opViewFactory,
+    yamlCodec,
+  )
+
   createOpUseCase := newCreateOpUseCase(
     filesystem,
     yamlCodec,
   )
+
+  getCollectionUseCase := newGetCollectionUseCase(collectionViewFactory)
+
+  getOpUseCase := newGetOpUseCase(opViewFactory)
 
   setCollectionDescriptionUseCase := newSetCollectionDescriptionUseCase(
     filesystem,
@@ -30,12 +47,12 @@ filesystem Filesystem,
     yamlCodec,
   )
 
-  tryResolveDefaultCollectionUseCase := newTryResolveDefaultCollectionUseCase(
-    filesystem,
-  )
+  tryResolveDefaultCollectionUseCase := newTryResolveDefaultCollectionUseCase(filesystem)
 
   compositionRoot = &_compositionRoot{
     createOpUseCase:createOpUseCase,
+    getCollectionUseCase:getCollectionUseCase,
+    getOpUseCase:getOpUseCase,
     setCollectionDescriptionUseCase:setCollectionDescriptionUseCase,
     setOpDescriptionUseCase: setOpDescriptionUseCase,
     tryResolveDefaultCollectionUseCase: tryResolveDefaultCollectionUseCase,
@@ -47,6 +64,8 @@ filesystem Filesystem,
 
 type _compositionRoot struct {
   createOpUseCase                    createOpUseCase
+  getCollectionUseCase               getCollectionUseCase
+  getOpUseCase                       getOpUseCase
   setCollectionDescriptionUseCase    setCollectionDescriptionUseCase
   setOpDescriptionUseCase            setOpDescriptionUseCase
   tryResolveDefaultCollectionUseCase tryResolveDefaultCollectionUseCase
@@ -55,6 +74,16 @@ type _compositionRoot struct {
 func (this _compositionRoot) CreateOpUseCase(
 ) createOpUseCase {
   return this.createOpUseCase
+}
+
+func (this _compositionRoot) GetCollectionUseCase(
+) getCollectionUseCase {
+  return this.getCollectionUseCase
+}
+
+func (this _compositionRoot) GetOpUseCase(
+) getOpUseCase {
+  return this.getOpUseCase
 }
 
 func (this _compositionRoot) SetCollectionDescriptionUseCase(

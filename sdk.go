@@ -9,6 +9,20 @@ type Sdk interface {
   req models.CreateOpReq,
   ) (err error)
 
+  GetCollection(
+  collectionBundlePath string,
+  ) (
+  collectionView models.CollectionView,
+  err error,
+  )
+
+  GetOp(
+  opBundlePath string,
+  ) (
+  opView models.OpView,
+  err error,
+  )
+
   SetCollectionDescription(
   req models.SetCollectionDescriptionReq,
   ) (err error)
@@ -59,6 +73,30 @@ req models.CreateOpReq,
   compositionRoot.
   CreateOpUseCase().
   Execute(req)
+}
+
+func (this _sdk) GetCollection(
+collectionBundlePath string,
+) (
+collectionView models.CollectionView,
+err error,
+) {
+  return this.
+  compositionRoot.
+  GetCollectionUseCase().
+  Execute(collectionBundlePath)
+}
+
+func (this _sdk) GetOp(
+opBundlePath string,
+) (
+opView models.OpView,
+err error,
+) {
+  return this.
+  compositionRoot.
+  GetOpUseCase().
+  Execute(opBundlePath)
 }
 
 func (this _sdk) SetCollectionDescription(

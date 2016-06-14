@@ -16,6 +16,24 @@ type FakeSdk struct {
   createOpReturns                        struct {
                                            result1 error
                                          }
+  GetCollectionStub                      func(collectionBundlePath string) (collectionView models.CollectionView, err error)
+  getCollectionMutex                     sync.RWMutex
+  getCollectionArgsForCall               []struct {
+    collectionBundlePath string
+  }
+  getCollectionReturns                   struct {
+                                           result1 models.CollectionView
+                                           result2 error
+                                         }
+  GetOpStub                              func(opBundlePath string) (opView models.OpView, err error)
+  getOpMutex                             sync.RWMutex
+  getOpArgsForCall                       []struct {
+    opBundlePath string
+  }
+  getOpReturns                           struct {
+                                           result1 models.OpView
+                                           result2 error
+                                         }
   SetCollectionDescriptionStub           func(req models.SetCollectionDescriptionReq) (err error)
   setCollectionDescriptionMutex          sync.RWMutex
   setCollectionDescriptionArgsForCall    []struct {
@@ -76,6 +94,74 @@ func (fake *FakeSdk) CreateOpReturns(result1 error) {
   fake.createOpReturns = struct {
     result1 error
   }{result1}
+}
+
+func (fake *FakeSdk) GetCollection(collectionBundlePath string) (collectionView models.CollectionView, err error) {
+  fake.getCollectionMutex.Lock()
+  fake.getCollectionArgsForCall = append(fake.getCollectionArgsForCall, struct {
+    collectionBundlePath string
+  }{collectionBundlePath})
+  fake.recordInvocation("GetCollection", []interface{}{collectionBundlePath})
+  fake.getCollectionMutex.Unlock()
+  if fake.GetCollectionStub != nil {
+    return fake.GetCollectionStub(collectionBundlePath)
+  } else {
+    return fake.getCollectionReturns.result1, fake.getCollectionReturns.result2
+  }
+}
+
+func (fake *FakeSdk) GetCollectionCallCount() int {
+  fake.getCollectionMutex.RLock()
+  defer fake.getCollectionMutex.RUnlock()
+  return len(fake.getCollectionArgsForCall)
+}
+
+func (fake *FakeSdk) GetCollectionArgsForCall(i int) string {
+  fake.getCollectionMutex.RLock()
+  defer fake.getCollectionMutex.RUnlock()
+  return fake.getCollectionArgsForCall[i].collectionBundlePath
+}
+
+func (fake *FakeSdk) GetCollectionReturns(result1 models.CollectionView, result2 error) {
+  fake.GetCollectionStub = nil
+  fake.getCollectionReturns = struct {
+    result1 models.CollectionView
+    result2 error
+  }{result1, result2}
+}
+
+func (fake *FakeSdk) GetOp(opBundlePath string) (opView models.OpView, err error) {
+  fake.getOpMutex.Lock()
+  fake.getOpArgsForCall = append(fake.getOpArgsForCall, struct {
+    opBundlePath string
+  }{opBundlePath})
+  fake.recordInvocation("GetOp", []interface{}{opBundlePath})
+  fake.getOpMutex.Unlock()
+  if fake.GetOpStub != nil {
+    return fake.GetOpStub(opBundlePath)
+  } else {
+    return fake.getOpReturns.result1, fake.getOpReturns.result2
+  }
+}
+
+func (fake *FakeSdk) GetOpCallCount() int {
+  fake.getOpMutex.RLock()
+  defer fake.getOpMutex.RUnlock()
+  return len(fake.getOpArgsForCall)
+}
+
+func (fake *FakeSdk) GetOpArgsForCall(i int) string {
+  fake.getOpMutex.RLock()
+  defer fake.getOpMutex.RUnlock()
+  return fake.getOpArgsForCall[i].opBundlePath
+}
+
+func (fake *FakeSdk) GetOpReturns(result1 models.OpView, result2 error) {
+  fake.GetOpStub = nil
+  fake.getOpReturns = struct {
+    result1 models.OpView
+    result2 error
+  }{result1, result2}
 }
 
 func (fake *FakeSdk) SetCollectionDescription(req models.SetCollectionDescriptionReq) (err error) {
@@ -183,6 +269,10 @@ func (fake *FakeSdk) Invocations() map[string][][]interface{} {
   defer fake.invocationsMutex.RUnlock()
   fake.createOpMutex.RLock()
   defer fake.createOpMutex.RUnlock()
+  fake.getCollectionMutex.RLock()
+  defer fake.getCollectionMutex.RUnlock()
+  fake.getOpMutex.RLock()
+  defer fake.getOpMutex.RUnlock()
   fake.setCollectionDescriptionMutex.RLock()
   defer fake.setCollectionDescriptionMutex.RUnlock()
   fake.setOpDescriptionMutex.RLock()

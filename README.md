@@ -13,6 +13,8 @@ be considered stable."*
 # Supported Use Cases
 
 - create op
+- get collection
+- get op
 - set collection description
 - set op description
 - try resolve default collection

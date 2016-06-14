@@ -11,5 +11,4 @@ services:
     build: ./
     environment:
       - "GOARCH=amd64"
-      - CGO_ENABLED=0
       - GOOS=linux
