@@ -5,3 +5,4 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - set op description use case
 - add op use case
+- list ops use case

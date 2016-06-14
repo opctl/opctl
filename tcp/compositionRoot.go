@@ -10,7 +10,6 @@ type compositionRoot interface {
   GetEventStreamHandler() http.Handler
   GetLivenessHandler() http.Handler
   KillOpRunHandler() http.Handler
-  ListOpsHandler() http.Handler
   RunOpHandler() http.Handler
 }
 
@@ -23,7 +22,6 @@ coreApi core.Api,
     getEventStreamHandler:newGetEventStreamHandler(coreApi),
     getLivenessHandler:newGetLivenessHandler(),
     killOpRunHandler:newKillOpRunHandler(coreApi),
-    listOpsHandler:newListOpsHandler(coreApi),
     runOpHandler:newRunOpHandler(coreApi),
   }
 
@@ -36,7 +34,6 @@ type _compositionRoot struct {
   getLivenessHandler    http.Handler
   getEventStreamHandler http.Handler
   killOpRunHandler      http.Handler
-  listOpsHandler        http.Handler
   runOpHandler          http.Handler
 }
 
@@ -58,11 +55,6 @@ func (this _compositionRoot) GetEventStreamHandler(
 func (this _compositionRoot) KillOpRunHandler(
 ) http.Handler {
   return this.killOpRunHandler
-}
-
-func (this _compositionRoot) ListOpsHandler(
-) http.Handler {
-  return this.listOpsHandler
 }
 
 func (this _compositionRoot) RunOpHandler(

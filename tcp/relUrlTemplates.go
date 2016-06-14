@@ -33,6 +33,5 @@ const (
   getLivenessRelUrlTemplate string = livenessRelUrlTemplate
   getEventStreamRelUrlTemplate string = eventStreamRelUrlTemplate
   killOpRunRelUrlTemplate string = opRunKillsRelUrlTemplate
-  listOpsRelUrlTemplate string = projectOpsRelUrlTemplate
   runOpRelUrlTemplate string = opRunsRelUrlTemplate
 )

@@ -50,11 +50,6 @@ func (this _api) Start(
   ).Methods(http.MethodPost)
 
   router.Handle(
-    listOpsRelUrlTemplate,
-    this.compositionRoot.ListOpsHandler(),
-  ).Methods(http.MethodGet)
-
-  router.Handle(
     runOpRelUrlTemplate,
     this.compositionRoot.RunOpHandler(),
   ).Methods(http.MethodPost)

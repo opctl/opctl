@@ -23,13 +23,6 @@ type Api interface {
   err error,
   )
 
-  ListOps(
-  projectUrl *models.Url,
-  ) (
-  ops []models.OpDetailedView,
-  err error,
-  )
-
   RunOp(
   req models.RunOpReq,
   ) (
@@ -92,18 +85,6 @@ err error,
   compositionRoot.
   KillOpRunUseCase().
   Execute(req)
-}
-
-func (this _api) ListOps(
-projectUrl *models.Url,
-) (
-ops []models.OpDetailedView,
-err error,
-) {
-  return this.
-  compositionRoot.
-  ListOpsUseCase().
-  Execute(projectUrl)
 }
 
 func (this _api) RunOp(

@@ -32,29 +32,53 @@ var _ = Describe("_api", func() {
 
     })
   })
-  Context(".ListOps() method", func() {
-    It("should invoke compositionRoot.listOpsUseCase.Execute() with expected args & return result", func() {
+  Context(".GetEventStream() method", func() {
+    It("should invoke compositionRoot.getEventStreamUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedProjectUrl := &models.Url{}
-      expectedReturnedOps := make([]models.OpDetailedView, 0)
+      providedGetEventStreamChannel := make(chan models.Event)
 
       // wire up fakes
-      fakeListOpsUseCase := new(fakeListOpsUseCase)
-      fakeListOpsUseCase.ExecuteReturns(expectedReturnedOps, nil)
+      fakeGetEventStreamUseCase := new(fakeGetEventStreamUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.ListOpsUseCaseReturns(fakeListOpsUseCase)
+      fakeCompositionRoot.GetEventStreamUseCaseReturns(fakeGetEventStreamUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      actualReturnedOps, _ := objectUnderTest.ListOps(providedProjectUrl)
+      objectUnderTest.GetEventStream(providedGetEventStreamChannel)
 
       /* assert */
-      Expect(actualReturnedOps).To(Equal(expectedReturnedOps))
+      Expect(fakeGetEventStreamUseCase.ExecuteArgsForCall(0)).To(Equal(providedGetEventStreamChannel))
+      Expect(fakeGetEventStreamUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
+  Context(".KillOpRun() method", func() {
+    It("should invoke compositionRoot.killOpRunUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedKillOpRunReq := models.NewKillOpRunReq("dummyOpRunId")
+
+      // wire up fakes
+      fakeKillOpRunUseCase := new(fakeKillOpRunUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.KillOpRunUseCaseReturns(fakeKillOpRunUseCase)
+
+      objectUnderTest := &_api{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.KillOpRun(*providedKillOpRunReq)
+
+      /* assert */
+      Expect(fakeKillOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(*providedKillOpRunReq))
+      Expect(fakeKillOpRunUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

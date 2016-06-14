@@ -33,15 +33,6 @@ type FakeApi struct {
                                   result1 string
                                   result2 error
                                 }
-  ListOpsStub                   func(projectUrl *models.Url) (ops []models.OpDetailedView, err error)
-  listOpsMutex                  sync.RWMutex
-  listOpsArgsForCall            []struct {
-    projectUrl *models.Url
-  }
-  listOpsReturns                struct {
-                                  result1 []models.OpDetailedView
-                                  result2 error
-                                }
   RunOpStub                     func(req models.RunOpReq) (opRunId string, correlationId string, err error)
   runOpMutex                    sync.RWMutex
   runOpArgsForCall              []struct {
@@ -147,39 +138,6 @@ func (fake *FakeApi) KillOpRunReturns(result1 string, result2 error) {
   fake.KillOpRunStub = nil
   fake.killOpRunReturns = struct {
     result1 string
-    result2 error
-  }{result1, result2}
-}
-
-func (fake *FakeApi) ListOps(projectUrl *models.Url) (ops []models.OpDetailedView, err error) {
-  fake.listOpsMutex.Lock()
-  fake.listOpsArgsForCall = append(fake.listOpsArgsForCall, struct {
-    projectUrl *models.Url
-  }{projectUrl})
-  fake.listOpsMutex.Unlock()
-  if fake.ListOpsStub != nil {
-    return fake.ListOpsStub(projectUrl)
-  } else {
-    return fake.listOpsReturns.result1, fake.listOpsReturns.result2
-  }
-}
-
-func (fake *FakeApi) ListOpsCallCount() int {
-  fake.listOpsMutex.RLock()
-  defer fake.listOpsMutex.RUnlock()
-  return len(fake.listOpsArgsForCall)
-}
-
-func (fake *FakeApi) ListOpsArgsForCall(i int) *models.Url {
-  fake.listOpsMutex.RLock()
-  defer fake.listOpsMutex.RUnlock()
-  return fake.listOpsArgsForCall[i].projectUrl
-}
-
-func (fake *FakeApi) ListOpsReturns(result1 []models.OpDetailedView, result2 error) {
-  fake.ListOpsStub = nil
-  fake.listOpsReturns = struct {
-    result1 []models.OpDetailedView
     result2 error
   }{result1, result2}
 }

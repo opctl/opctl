@@ -176,46 +176,6 @@
         }
       }
     },
-    "/projects/{projectUrl}/ops": {
-      "parameters": [
-        {
-          "name": "projectUrl",
-          "in": "path",
-          "description": "A projects url. For local projects use an absolute path",
-          "required": true,
-          "type": "string"
-        }
-      ],
-      "get": {
-        "summary": "List project ops",
-        "tags": [
-          "projects"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/OpDetailedView"
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "schema": {
-              "type": "string"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "/projects/{projectUrl}/ops/{opName}/sub-ops": {
       "parameters": [
         {
