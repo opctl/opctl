@@ -4,8 +4,9 @@ services:
     extends:
       file: ../.common/docker-compose.yml
       service: docker
-    entrypoint: .opspec/push-docker-image/entrypoint.sh
-    environment:
-      - DOCKER_REPO_NAME=opctl/engine
-      - DOCKER_PASSWORD
-      - DOCKER_USERNAME
+    entrypoint: |
+      sh -c "
+        echo $DOCKER_PASSWORD
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && \
+        docker push opctl/engine:$IMAGE_TAG
+      "

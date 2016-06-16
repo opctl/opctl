@@ -7,3 +7,5 @@ params:
   DOCKER_USERNAME:
     description: Username for docker registry
     isSecure: true
+  IMAGE_TAG:
+    description: The tag of the image to use

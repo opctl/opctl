@@ -10,7 +10,7 @@ be considered stable."*
 
 # Official SDK's
 
-[sdk-for-golang](https://github.com/opctl/sdk-for-golang)
+[engine-sdk-golang](https://github.com/opctl/engine-sdk-golang)
 
 # Supported Use Cases
 
@@ -25,7 +25,7 @@ be considered stable."*
 ### 1) Start dockerized engine
 
 ```SHELL
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 opctl/engine
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 opctl/engine:0.1.0
 ```
 
 explanation:

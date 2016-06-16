@@ -7,5 +7,5 @@ services:
     build:
       context: ../../
       dockerfile: .opspec/build-docker-image/Dockerfile
-    image: opctl/engine
+    image: opctl/engine:$IMAGE_TAG
     entrypoint: echo # noop
