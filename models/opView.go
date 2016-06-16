@@ -3,12 +3,14 @@ package models
 func NewOpView(
 description string,
 name string,
+params []OpParamView,
 subOps []OpSummaryView,
 ) *OpView {
 
   return &OpView{
     Description:description,
     Name:name,
+    Params:params,
     SubOps:subOps,
   }
 
@@ -17,5 +19,6 @@ subOps []OpSummaryView,
 type OpView struct {
   Description string
   Name        string
+  Params      []OpParamView
   SubOps      []OpSummaryView
 }

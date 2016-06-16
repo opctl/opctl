@@ -88,10 +88,20 @@ var _ = Describe("_opViewFactory", func() {
 
       /* arrange */
       expectedSubOpUrl := "subOpName"
+      expectedOpParamName := "opParamName"
+      expectedOpParamDescription := "opParamDescription"
+      expectedOpParamIsSecret := true
 
       expectedOpView := *models.NewOpView(
         "dummyDescription",
         "dummyName",
+        []models.OpParamView{
+          *models.NewOpParamView(
+            expectedOpParamName,
+            expectedOpParamDescription,
+            expectedOpParamIsSecret,
+          ),
+        },
         []models.OpSummaryView{
           *models.NewOpSummaryView(expectedSubOpUrl),
         },
@@ -105,6 +115,12 @@ var _ = Describe("_opViewFactory", func() {
         stubbedOpFile := models.OpFile{
           Name:expectedOpView.Name,
           Description:expectedOpView.Description,
+          Params:map[string]models.OpFileParam{
+            expectedOpParamName:models.OpFileParam{
+              Description:expectedOpParamDescription,
+              IsSecret:expectedOpParamIsSecret,
+            },
+          },
           SubOps:[]models.OpFileSubOp{
             models.OpFileSubOp{
               Url:expectedSubOpUrl,

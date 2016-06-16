@@ -8,3 +8,4 @@ All notable changes to this project will be documented in this file.
 - get op use case
 - set collection description use case
 - set op description use case
+- add params to op view

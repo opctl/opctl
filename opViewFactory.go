@@ -58,8 +58,19 @@ err error,
     return
   }
 
-  subOps := []models.OpSummaryView{}
+  params := []models.OpParamView{}
+  for paramName, opFileParam := range opFile.Params {
+    params = append(
+      params,
+      *models.NewOpParamView(
+        paramName,
+        opFileParam.Description,
+        opFileParam.IsSecret,
+      ),
+    )
+  }
 
+  subOps := []models.OpSummaryView{}
   for _, subOp := range opFile.SubOps {
     subOps = append(subOps, *models.NewOpSummaryView(subOp.Url))
   }
@@ -67,6 +78,7 @@ err error,
   opView = *models.NewOpView(
     opFile.Description,
     opFile.Name,
+    params,
     subOps,
   )
 

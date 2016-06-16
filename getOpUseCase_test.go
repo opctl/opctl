@@ -36,7 +36,9 @@ var _ = Describe("_getOpUseCase", func() {
       /* arrange */
       expectedOpView := *models.NewOpView(
         "dummy description",
-        "dummy name", []models.OpSummaryView{},
+        "dummy name",
+        []models.OpParamView{},
+        []models.OpSummaryView{},
       )
       expectedError := errors.New("ConstructError")
 

@@ -5,8 +5,8 @@ type OpFileSubOp struct {
 }
 
 type OpFileParam struct {
-  IsSecret    bool `yaml:"isSecret"`
   Description string `yaml:"description"`
+  IsSecret    bool `yaml:"isSecret"`
 }
 
 type OpFile struct {
