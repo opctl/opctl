@@ -19,6 +19,7 @@ type opRunner interface {
   Run(
   args map[string]string,
   correlationId string,
+  opNamespace string,
   opUrl string,
   parentOpRunId string,
   ) (
@@ -67,6 +68,7 @@ type _opRunner struct {
 func (this _opRunner) Run(
 args map[string]string,
 correlationId string,
+opNamespace string,
 opUrl string,
 parentOpRunId string,
 ) (
@@ -161,7 +163,7 @@ err error,
         correlationId,
         opUrl,
         _opFile.Name,
-        "",
+        opNamespace,
         this.logger,
       )
       if (nil != err) {
@@ -193,6 +195,7 @@ err error,
         subOpRunId, err = this.Run(
           args,
           correlationId,
+          opNamespace,
           subOpUrl,
           opRunId,
         )
@@ -283,54 +286,65 @@ err error,
 
   // get rootOpRunId
   this.unfinishedOpRunsByIdMapRWMutex.RLock()
-  rootOpRunId := this.unfinishedOpRunsByIdMap[opRunId].RootOpRunId()
+  opRun := this.unfinishedOpRunsByIdMap[opRunId]
   this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
+
+  opCollection, err := this.opspecSdk.GetCollection(
+    filepath.Dir(opRun.OpRunOpUrl()),
+  )
+  if (nil != err) {
+    return
+  }
 
   this.unfinishedOpRunsByIdMapRWMutex.Lock()
   for _, unfinishedOpRun := range this.unfinishedOpRunsByIdMap {
 
-    delete(this.unfinishedOpRunsByIdMap, unfinishedOpRun.OpRunId())
+    // remove all ops with this root
+    if (unfinishedOpRun.RootOpRunId() == opRun.RootOpRunId()) {
 
-    this.eventStream.Publish(
-      models.NewOpRunKilledEvent(
-        correlationId,
-        unfinishedOpRun.OpRunId(),
-        rootOpRunId,
-        time.Now(),
-      ),
-    )
-
-    go func() {
-
-      // @TODO: handle failure scenario; currently this can leak docker-compose resources
-      err := this.containerEngine.KillOpRun(
-        correlationId,
-        unfinishedOpRun.OpRunOpUrl(),
-        "",
-        this.logger,
-      )
-      if (nil != err) {
-        this.logger(
-          models.NewLogEntryEmittedEvent(
-            correlationId,
-            time.Now().UTC(),
-            err.Error(),
-            logging.StdErrStream,
-          ),
-        )
-      }
+      delete(this.unfinishedOpRunsByIdMap, unfinishedOpRun.OpRunId())
 
       this.eventStream.Publish(
-        models.NewOpRunFinishedEvent(
+        models.NewOpRunKilledEvent(
           correlationId,
-          138,
-          opRunId,
-          rootOpRunId,
-          time.Now().UTC(),
+          unfinishedOpRun.OpRunId(),
+          opRun.RootOpRunId(),
+          time.Now(),
         ),
       )
 
-    }()
+      go func() {
+
+        // @TODO: handle failure scenario; currently this can leak docker-compose resources
+        err := this.containerEngine.KillOpRun(
+          correlationId,
+          unfinishedOpRun.OpRunOpUrl(),
+          opCollection.Name,
+          this.logger,
+        )
+        if (nil != err) {
+          this.logger(
+            models.NewLogEntryEmittedEvent(
+              correlationId,
+              time.Now().UTC(),
+              err.Error(),
+              logging.StdErrStream,
+            ),
+          )
+        }
+
+        this.eventStream.Publish(
+          models.NewOpRunFinishedEvent(
+            correlationId,
+            138,
+            opRunId,
+            opRun.RootOpRunId(),
+            time.Now().UTC(),
+          ),
+        )
+
+      }()
+    }
 
   }
   this.unfinishedOpRunsByIdMapRWMutex.Unlock()

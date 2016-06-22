@@ -41,6 +41,7 @@ containerEngine ports.ContainerEngine,
   /* use cases */
   runOpUseCase := newRunOpUseCase(
     opRunner,
+    opspecSdk,
     uniqueStringFactory,
   )
 

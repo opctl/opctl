@@ -4,6 +4,8 @@ package core
 
 import (
   "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/sdk-golang"
+  "path/filepath"
 )
 
 type runOpUseCase interface {
@@ -18,11 +20,13 @@ type runOpUseCase interface {
 
 func newRunOpUseCase(
 opRunner opRunner,
+opspecSdk opspec.Sdk,
 uniqueStringFactory uniqueStringFactory,
 ) runOpUseCase {
 
   return &_runOpUseCase{
     opRunner:opRunner,
+    opspecSdk:opspecSdk,
     uniqueStringFactory:uniqueStringFactory,
   }
 
@@ -30,6 +34,7 @@ uniqueStringFactory uniqueStringFactory,
 
 type _runOpUseCase struct {
   opRunner            opRunner
+  opspecSdk           opspec.Sdk
   uniqueStringFactory uniqueStringFactory
 }
 
@@ -46,9 +51,17 @@ err error,
     return
   }
 
+  opCollection, err := this.opspecSdk.GetCollection(
+    filepath.Dir(req.OpUrl),
+  )
+  if (nil != err) {
+    return
+  }
+
   opRunId, err = this.opRunner.Run(
     req.Args,
     correlationId,
+    opCollection.Name,
     req.OpUrl,
     "",
   )
