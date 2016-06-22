@@ -6,9 +6,16 @@ subOps:
 - url: publish-coverage-to-codecov
 - url: push-docker-image
 params:
+  CODECOV_TOKEN:
+    description: A https://codecov.io/ auth token
+    isSecure: true
   DOCKER_PASSWORD:
     description: Password for docker registry
     isSecure: true
   DOCKER_USERNAME:
     description: Username for docker registry
     isSecure: true
+  GIT_BRANCH:
+    description: The git branch the coverage should be associated with
+  IMAGE_TAG:
+    description: The tag of the image to use
