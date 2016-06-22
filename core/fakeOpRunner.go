@@ -8,11 +8,11 @@ import (
 )
 
 type fakeOpRunner struct {
-	RunStub        func(correlationId string, opUrl *models.Url, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, err error)
+	RunStub        func(correlationId string, opUrl string, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, err error)
 	runMutex       sync.RWMutex
 	runArgsForCall []struct {
 		correlationId              string
-		opUrl                      *models.Url
+		opUrl                      string
 		ancestorOpRunStartedEvents []models.OpRunStartedEvent
 	}
 	runReturns struct {
@@ -30,13 +30,13 @@ type fakeOpRunner struct {
 	}
 }
 
-func (fake *fakeOpRunner) Run(correlationId string, opUrl *models.Url, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, err error) {
+func (fake *fakeOpRunner) Run(correlationId string, opUrl string, ancestorOpRunStartedEvents []models.OpRunStartedEvent) (opRunId string, err error) {
 	ancestorOpRunStartedEventsCopy := make([]models.OpRunStartedEvent, len(ancestorOpRunStartedEvents))
 	copy(ancestorOpRunStartedEventsCopy, ancestorOpRunStartedEvents)
 	fake.runMutex.Lock()
 	fake.runArgsForCall = append(fake.runArgsForCall, struct {
 		correlationId              string
-		opUrl                      *models.Url
+		opUrl                      string
 		ancestorOpRunStartedEvents []models.OpRunStartedEvent
 	}{correlationId, opUrl, ancestorOpRunStartedEventsCopy})
 	fake.runMutex.Unlock()
@@ -53,7 +53,7 @@ func (fake *fakeOpRunner) RunCallCount() int {
 	return len(fake.runArgsForCall)
 }
 
-func (fake *fakeOpRunner) RunArgsForCall(i int) (string, *models.Url, []models.OpRunStartedEvent) {
+func (fake *fakeOpRunner) RunArgsForCall(i int) (string, string, []models.OpRunStartedEvent) {
 	fake.runMutex.RLock()
 	defer fake.runMutex.RUnlock()
 	return fake.runArgsForCall[i].correlationId, fake.runArgsForCall[i].opUrl, fake.runArgsForCall[i].ancestorOpRunStartedEvents

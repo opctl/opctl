@@ -5,3 +5,10 @@ subOps:
 - url: test
 - url: publish-coverage-to-codecov
 - url: push-docker-image
+params:
+  DOCKER_PASSWORD:
+    description: Password for docker registry
+    isSecure: true
+  DOCKER_USERNAME:
+    description: Username for docker registry
+    isSecure: true

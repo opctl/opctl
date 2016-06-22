@@ -30,20 +30,13 @@ type Api interface {
 
 func New(
 containerEngine ports.ContainerEngine,
-filesys ports.Filesys,
-) (api Api, err error) {
-
-  var compositionRoot compositionRoot
-  compositionRoot, err = newCompositionRoot(
-    containerEngine,
-    filesys,
-  )
-  if (nil != err) {
-    return
-  }
+) (api Api) {
 
   api = &_api{
-    compositionRoot:compositionRoot,
+    compositionRoot:
+    newCompositionRoot(
+      containerEngine,
+    ),
   }
 
   return

@@ -1,7 +1,7 @@
 package models
 
 func NewRunOpReq(
-opUrl *Url,
+opUrl string,
 args map[string]string,
 ) *RunOpReq {
 
@@ -13,6 +13,6 @@ args map[string]string,
 }
 
 type RunOpReq struct {
-  OpUrl *Url
+  OpUrl string
   Args  map[string]string
 }

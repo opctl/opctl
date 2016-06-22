@@ -7,7 +7,7 @@ import (
 
 func NewOpRunStartedEvent(
 correlationId string,
-opRunOpUrl Url,
+opRunOpUrl string,
 opRunId string,
 parentOpRunId string,
 rootOpRunId string,
@@ -28,7 +28,7 @@ timestamp time.Time,
 type OpRunStartedEvent struct {
   correlationId string
   opRunId       string
-  opRunOpUrl    Url
+  opRunOpUrl    string
   parentOpRunId string
   rootOpRunId   string
   timestamp     time.Time
@@ -46,7 +46,7 @@ func (this OpRunStartedEvent) MarshalJSON() ([]byte, error) {
   }{
     CorrelationId:this.CorrelationId(),
     OpRunId:this.OpRunId(),
-    OpRunOpUrl:this.OpRunOpUrl().String(),
+    OpRunOpUrl:this.OpRunOpUrl(),
     ParentOpRunId:this.ParentOpRunId(),
     RootOpRunId:this.RootOpRunId(),
     Timestamp:this.Timestamp(),
@@ -63,7 +63,7 @@ func (this OpRunStartedEvent) OpRunId() string {
   return this.opRunId
 }
 
-func (this OpRunStartedEvent) OpRunOpUrl() Url {
+func (this OpRunStartedEvent) OpRunOpUrl() string {
   return this.opRunOpUrl
 }
 

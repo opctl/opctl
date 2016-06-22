@@ -10,7 +10,7 @@ var _ = Describe("compositionRoot", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest, _ := newCompositionRoot()
+      objectUnderTest,_ := newCompositionRoot()
 
       /* act */
       actualTcpApi := objectUnderTest.TcpApi()

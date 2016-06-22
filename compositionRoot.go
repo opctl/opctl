@@ -4,7 +4,6 @@ import (
   "github.com/opctl/engine/core"
   "github.com/opctl/engine/tcp"
   dockerComposeContainerEngine "github.com/opctl/engine/core/adapters/containerengine/dockercompose"
-  osFilesys "github.com/opctl/engine/core/adapters/filesys/os"
 )
 
 type compositionRoot interface {
@@ -19,18 +18,12 @@ func newCompositionRoot(
     return
   }
 
-  filesys := osFilesys.New()
-
-  coreApi, err := core.New(
-    containerEngine,
-    filesys,
-  )
-  if (nil != err) {
-    return
-  }
-
   compositionRoot = &_compositionRoot{
-    tcpApi:tcp.New(coreApi),
+    tcpApi:tcp.New(
+      core.New(
+        containerEngine,
+      ),
+    ),
   }
 
   return

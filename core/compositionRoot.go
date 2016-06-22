@@ -5,6 +5,7 @@ package core
 import (
   "github.com/opctl/engine/core/ports"
   "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/sdk-golang"
 )
 
 type compositionRoot interface {
@@ -15,8 +16,7 @@ type compositionRoot interface {
 
 func newCompositionRoot(
 containerEngine ports.ContainerEngine,
-filesys ports.Filesys,
-) (compositionRoot compositionRoot, err error) {
+) (compositionRoot compositionRoot) {
 
   /* factories */
   uniqueStringFactory := newUniqueStringFactory()
@@ -24,19 +24,18 @@ filesys ports.Filesys,
   /* components */
   eventStream := newEventStream()
 
-  yamlCodec := newYamlCodec()
-
   logger := func(logEntryEmittedEvent models.LogEntryEmittedEvent) {
     eventStream.Publish(logEntryEmittedEvent)
   }
 
+  opspecSdk:=opspec.New()
+
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
-    filesys,
     logger,
+    opspecSdk,
     uniqueStringFactory,
-    yamlCodec,
   )
 
   /* use cases */

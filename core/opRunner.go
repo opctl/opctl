@@ -6,6 +6,7 @@ import (
   "github.com/opctl/engine/core/models"
   "github.com/opctl/engine/core/ports"
   "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/sdk-golang"
   "path/filepath"
   "fmt"
   "path"
@@ -18,7 +19,7 @@ type opRunner interface {
   Run(
   args map[string]string,
   correlationId string,
-  opUrl *models.Url,
+  opUrl string,
   parentOpRunId string,
   ) (
   opRunId string,
@@ -36,19 +37,17 @@ type opRunner interface {
 func newOpRunner(
 containerEngine ports.ContainerEngine,
 eventStream eventStream,
-filesys ports.Filesys,
 logger logging.Logger,
+opspecSdk opspec.Sdk,
 uniqueStringFactory uniqueStringFactory,
-yamlCodec yamlCodec,
 ) opRunner {
 
   return &_opRunner{
     containerEngine: containerEngine,
     eventStream:eventStream,
-    filesys:filesys,
     logger:logger,
+    opspecSdk:opspecSdk,
     uniqueStringFactory:uniqueStringFactory,
-    yamlCodec:yamlCodec,
     unfinishedOpRunsByIdMap:make(map[string]models.OpRunStartedEvent),
   }
 
@@ -57,10 +56,9 @@ yamlCodec yamlCodec,
 type _opRunner struct {
   containerEngine                ports.ContainerEngine
   eventStream                    eventStream
-  filesys                        ports.Filesys
   logger                         logging.Logger
+  opspecSdk                      opspec.Sdk
   uniqueStringFactory            uniqueStringFactory
-  yamlCodec                      yamlCodec
 
   unfinishedOpRunsByIdMapRWMutex sync.RWMutex
   unfinishedOpRunsByIdMap        map[string]models.OpRunStartedEvent
@@ -69,7 +67,7 @@ type _opRunner struct {
 func (this _opRunner) Run(
 args map[string]string,
 correlationId string,
-opUrl *models.Url,
+opUrl string,
 parentOpRunId string,
 ) (
 opRunId string,
@@ -84,17 +82,8 @@ err error,
     return
   }
 
-  opFileBytes, err := this.filesys.GetBytesOfFile(
-    filepath.Join(opUrl.Path, "op.yml"),
-  )
-  if (nil != err) {
-    return
-  }
-
-  _opFile := &models.OpFile{}
-  err = this.yamlCodec.fromYaml(
-    opFileBytes,
-    _opFile,
+  _opFile, err := this.opspecSdk.GetOp(
+    opUrl,
   )
   if (nil != err) {
     return
@@ -122,7 +111,7 @@ err error,
 
   opRunStartedEvent := models.NewOpRunStartedEvent(
     correlationId,
-    *opUrl,
+    opUrl,
     opRunId,
     parentOpRunId,
     rootOpRunId,
@@ -170,7 +159,7 @@ err error,
       opRunExitCode, err = this.containerEngine.RunOp(
         args,
         correlationId,
-        opUrl.Path,
+        opUrl,
         _opFile.Name,
         this.logger,
       )
@@ -190,24 +179,10 @@ err error,
 
       for _, subOp := range _opFile.SubOps {
 
-        var subOpUrl *models.Url
-        subOpUrl, err = models.NewUrl(
-          // only support local relative urls for now...
-
-          path.Join(
-            filepath.Dir(opUrl.Path),
-            subOp.Url),
+        subOpUrl := path.Join(
+          filepath.Dir(opUrl),
+          subOp.Name,
         )
-        if (nil != err) {
-          this.logger(
-            models.NewLogEntryEmittedEvent(
-              correlationId,
-              time.Now().UTC(),
-              err.Error(),
-              logging.StdErrStream,
-            ),
-          )
-        }
 
         eventChannel := make(chan models.Event)
         this.eventStream.RegisterSubscriber(eventChannel)
@@ -267,7 +242,7 @@ err error,
 
 func (this _opRunner) guardOpRunNotRecursive(
 parentOpRunId string,
-opUrl *models.Url,
+opUrl string,
 ) (err error) {
 
   if ("" == parentOpRunId) {
@@ -280,7 +255,7 @@ opUrl *models.Url,
   parentOpRun := this.unfinishedOpRunsByIdMap[parentOpRunId]
   this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
 
-  if (*opUrl == parentOpRun.OpRunOpUrl()) {
+  if (opUrl == parentOpRun.OpRunOpUrl()) {
     // handle infinite recursion
 
     return errors.New(
@@ -329,7 +304,7 @@ err error,
       // @TODO: handle failure scenario; currently this can leak docker-compose resources
       err := this.containerEngine.KillOpRun(
         correlationId,
-        unfinishedOpRun.OpRunOpUrl().Path,
+        unfinishedOpRun.OpRunOpUrl(),
         this.logger,
       )
       if (nil != err) {
