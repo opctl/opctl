@@ -13,23 +13,10 @@ const (
 
   // resource: all op-runs
   opRunsRelUrlTemplate string = "/op-runs"
-
-  // resource: a single project
-  projectRelUrlTemplate string = "/projects/{projectUrl}"
-
-  // resource: all project ops
-  projectOpsRelUrlTemplate string = projectRelUrlTemplate + "/ops"
-
-  // resource: a single project op
-  projectOpRelUrlTemplate string = projectOpsRelUrlTemplate + "/{opName}"
-
-  // resource: all subOps of a project op
-  projectOpSubOpsRelUrlTemplate string = projectOpRelUrlTemplate + "/sub-ops"
 )
 
 /* use cases */
 const (
-  addSubOpRelUrlTemplate string = projectOpSubOpsRelUrlTemplate
   getLivenessRelUrlTemplate string = livenessRelUrlTemplate
   getEventStreamRelUrlTemplate string = eventStreamRelUrlTemplate
   killOpRunRelUrlTemplate string = opRunKillsRelUrlTemplate

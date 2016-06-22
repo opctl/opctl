@@ -12,12 +12,6 @@ type fakeCompositionRoot struct {
   runOpUseCaseReturns              struct {
                                      result1 runOpUseCase
                                    }
-  AddSubOpUseCaseStub              func() addSubOpUseCase
-  addSubOpUseCaseMutex             sync.RWMutex
-  addSubOpUseCaseArgsForCall       []struct{}
-  addSubOpUseCaseReturns           struct {
-                                     result1 addSubOpUseCase
-                                   }
   GetEventStreamUseCaseStub        func() getEventStreamUseCase
   getEventStreamUseCaseMutex       sync.RWMutex
   getEventStreamUseCaseArgsForCall []struct{}
@@ -53,30 +47,6 @@ func (fake *fakeCompositionRoot) RunOpUseCaseReturns(result1 runOpUseCase) {
   fake.RunOpUseCaseStub = nil
   fake.runOpUseCaseReturns = struct {
     result1 runOpUseCase
-  }{result1}
-}
-
-func (fake *fakeCompositionRoot) AddSubOpUseCase() addSubOpUseCase {
-  fake.addSubOpUseCaseMutex.Lock()
-  fake.addSubOpUseCaseArgsForCall = append(fake.addSubOpUseCaseArgsForCall, struct{}{})
-  fake.addSubOpUseCaseMutex.Unlock()
-  if fake.AddSubOpUseCaseStub != nil {
-    return fake.AddSubOpUseCaseStub()
-  } else {
-    return fake.addSubOpUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) AddSubOpUseCaseCallCount() int {
-  fake.addSubOpUseCaseMutex.RLock()
-  defer fake.addSubOpUseCaseMutex.RUnlock()
-  return len(fake.addSubOpUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) AddSubOpUseCaseReturns(result1 addSubOpUseCase) {
-  fake.AddSubOpUseCaseStub = nil
-  fake.addSubOpUseCaseReturns = struct {
-    result1 addSubOpUseCase
   }{result1}
 }
 

@@ -1,12 +1,12 @@
 package models
 
-func NewOpDetailedView(
+func NewOpView(
 description string,
 name string,
 subOps []OpSummaryView,
-) *OpDetailedView {
+) *OpView {
 
-  return &OpDetailedView{
+  return &OpView{
     Description:description,
     Name:name,
     SubOps:subOps,
@@ -14,7 +14,7 @@ subOps []OpSummaryView,
 
 }
 
-type OpDetailedView struct {
+type OpView struct {
   Description string `json:"description"`
   Name        string `json:"name"`
   SubOps      []OpSummaryView `json:"subOps,omitempty"`

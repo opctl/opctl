@@ -8,14 +8,6 @@ import (
 )
 
 type FakeApi struct {
-  AddSubOpStub                  func(req models.AddSubOpReq) (err error)
-  addSubOpMutex                 sync.RWMutex
-  addSubOpArgsForCall           []struct {
-    req models.AddSubOpReq
-  }
-  addSubOpReturns               struct {
-                                  result1 error
-                                }
   GetEventStreamStub            func(eventChannel chan models.Event) (err error)
   getEventStreamMutex           sync.RWMutex
   getEventStreamArgsForCall     []struct {
@@ -43,38 +35,6 @@ type FakeApi struct {
                                   result2 string
                                   result3 error
                                 }
-}
-
-func (fake *FakeApi) AddSubOp(req models.AddSubOpReq) (err error) {
-  fake.addSubOpMutex.Lock()
-  fake.addSubOpArgsForCall = append(fake.addSubOpArgsForCall, struct {
-    req models.AddSubOpReq
-  }{req})
-  fake.addSubOpMutex.Unlock()
-  if fake.AddSubOpStub != nil {
-    return fake.AddSubOpStub(req)
-  } else {
-    return fake.addSubOpReturns.result1
-  }
-}
-
-func (fake *FakeApi) AddSubOpCallCount() int {
-  fake.addSubOpMutex.RLock()
-  defer fake.addSubOpMutex.RUnlock()
-  return len(fake.addSubOpArgsForCall)
-}
-
-func (fake *FakeApi) AddSubOpArgsForCall(i int) models.AddSubOpReq {
-  fake.addSubOpMutex.RLock()
-  defer fake.addSubOpMutex.RUnlock()
-  return fake.addSubOpArgsForCall[i].req
-}
-
-func (fake *FakeApi) AddSubOpReturns(result1 error) {
-  fake.AddSubOpStub = nil
-  fake.addSubOpReturns = struct {
-    result1 error
-  }{result1}
 }
 
 func (fake *FakeApi) GetEventStream(eventChannel chan models.Event) (err error) {

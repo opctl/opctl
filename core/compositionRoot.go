@@ -9,7 +9,6 @@ import (
 
 type compositionRoot interface {
   RunOpUseCase() runOpUseCase
-  AddSubOpUseCase() addSubOpUseCase
   GetEventStreamUseCase() getEventStreamUseCase
   KillOpRunUseCase() killOpRunUseCase
 }
@@ -20,12 +19,6 @@ filesys ports.Filesys,
 ) (compositionRoot compositionRoot, err error) {
 
   /* factories */
-  pathToOpsDirFactory := newPathToOpsDirFactory()
-
-  pathToOpDirFactory := newPathToOpDirFactory(pathToOpsDirFactory)
-
-  pathToOpFileFactory := newPathToOpFileFactory(pathToOpDirFactory)
-
   uniqueStringFactory := newUniqueStringFactory()
 
   /* components */
@@ -52,12 +45,6 @@ filesys ports.Filesys,
     uniqueStringFactory,
   )
 
-  addSubOpUseCase := newAddSubOpUseCase(
-    filesys,
-    pathToOpFileFactory,
-    yamlCodec,
-  )
-
   getEventStreamUseCase := newGetEventStreamUseCase(
     eventStream,
   )
@@ -69,7 +56,6 @@ filesys ports.Filesys,
 
   compositionRoot = &_compositionRoot{
     runOpUseCase: runOpUseCase,
-    addSubOpUseCase: addSubOpUseCase,
     getEventStreamUseCase:getEventStreamUseCase,
     killOpRunUseCase:killOpRunUseCase,
   }
@@ -80,17 +66,12 @@ filesys ports.Filesys,
 
 type _compositionRoot struct {
   runOpUseCase          runOpUseCase
-  addSubOpUseCase       addSubOpUseCase
   getEventStreamUseCase getEventStreamUseCase
   killOpRunUseCase      killOpRunUseCase
 }
 
 func (this _compositionRoot) RunOpUseCase() runOpUseCase {
   return this.runOpUseCase
-}
-
-func (this _compositionRoot) AddSubOpUseCase() addSubOpUseCase {
-  return this.addSubOpUseCase
 }
 
 func (this _compositionRoot) GetEventStreamUseCase() getEventStreamUseCase {

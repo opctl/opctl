@@ -14,7 +14,6 @@ be considered stable."*
 
 # Supported Use Cases
 
-- add sub op
 - get event stream
 - get liveness
 - kill op run

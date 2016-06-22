@@ -8,10 +8,6 @@ import (
 )
 
 type Api interface {
-  AddSubOp(
-  req models.AddSubOpReq,
-  ) (err error)
-
   GetEventStream(
   eventChannel chan models.Event,
   ) (err error)
@@ -55,15 +51,6 @@ filesys ports.Filesys,
 
 type _api struct {
   compositionRoot compositionRoot
-}
-
-func (this _api) AddSubOp(
-req models.AddSubOpReq,
-) (err error) {
-  return this.
-  compositionRoot.
-  AddSubOpUseCase().
-  Execute(req)
 }
 
 func (this _api) GetEventStream(

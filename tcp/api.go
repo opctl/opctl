@@ -30,11 +30,6 @@ func (this _api) Start(
   router := mux.NewRouter()
 
   router.Handle(
-    addSubOpRelUrlTemplate,
-    this.compositionRoot.AddSubOpHandler(),
-  ).Methods(http.MethodPost)
-
-  router.Handle(
     getEventStreamRelUrlTemplate,
     this.compositionRoot.GetEventStreamHandler(),
   ).Methods(http.MethodGet)

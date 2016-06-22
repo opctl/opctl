@@ -7,31 +7,6 @@ import (
 )
 
 var _ = Describe("_api", func() {
-  Context(".AddSubOp() method", func() {
-    It("should invoke compositionRoot.addSubOpUseCase.Execute() with expected args & return result", func() {
-
-      /* arrange */
-      providedAddSubOpReq := models.NewAddSubOpReq(&models.Url{}, "", "", "")
-
-      // wire up fakes
-      fakeAddSubOpUseCase := new(fakeAddSubOpUseCase)
-
-      fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.AddSubOpUseCaseReturns(fakeAddSubOpUseCase)
-
-      objectUnderTest := &_api{
-        compositionRoot:fakeCompositionRoot,
-      }
-
-      /* act */
-      objectUnderTest.AddSubOp(*providedAddSubOpReq)
-
-      /* assert */
-      Expect(fakeAddSubOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedAddSubOpReq))
-      Expect(fakeAddSubOpUseCase.ExecuteCallCount()).To(Equal(1))
-
-    })
-  })
   Context(".GetEventStream() method", func() {
     It("should invoke compositionRoot.getEventStreamUseCase.Execute() with expected args & return result", func() {
 
