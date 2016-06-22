@@ -5,7 +5,7 @@ package dockercompose
 
 type initOpUseCase interface {
   Execute(
-  pathToOpDir string,
+  opBundlePath string,
   opDir string,
   ) (err error)
 }
@@ -28,7 +28,7 @@ type _initOpUseCase struct {
 }
 
 func (this _initOpUseCase) Execute(
-pathToOpDir string,
+opBundlePath string,
 opName string,
 ) (err error) {
 
@@ -47,7 +47,7 @@ opName string,
   dockerComposeFileBytes, err = this.yamlCodec.toYaml(&dockerComposeFile)
 
   err = this.filesys.saveOpDockerComposeFile(
-    pathToOpDir,
+    opBundlePath,
     dockerComposeFileBytes,
   )
 

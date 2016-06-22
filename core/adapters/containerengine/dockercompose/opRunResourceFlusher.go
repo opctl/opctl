@@ -10,7 +10,8 @@ import (
 type opRunResourceFlusher interface {
   flush(
   correlationId string,
-  pathToOpDir string,
+  opBundlePath string,
+  opNamespace string,
   logger logging.Logger,
   ) (err error)
 }
@@ -26,7 +27,8 @@ type _opRunResourceFlusher struct{}
 
 func (this _opRunResourceFlusher) flush(
 correlationId string,
-pathToOpDir string,
+opBundlePath string,
+opNamespace string,
 logger logging.Logger,
 ) (err error) {
 
@@ -34,6 +36,8 @@ logger logging.Logger,
   dockerComposeDownCmd :=
   exec.Command(
     "docker-compose",
+    "-p",
+    opNamespace,
     "down",
     "--rmi",
     "local",
@@ -41,7 +45,7 @@ logger logging.Logger,
     "--remove-orphans",
   )
 
-  dockerComposeDownCmd.Dir = pathToOpDir
+  dockerComposeDownCmd.Dir = opBundlePath
 
   dockerComposeDownCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
   dockerComposeDownCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)

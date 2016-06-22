@@ -30,24 +30,25 @@ type _containerEngine struct {
 }
 
 func (this _containerEngine) InitOp(
-pathToOpDir string,
+opBundlePath string,
 opName string,
 ) (err error) {
 
   return this.compositionRoot.
   InitOpUseCase().
   Execute(
-    pathToOpDir,
+    opBundlePath,
     opName,
   )
 
 }
 
 func (this _containerEngine) RunOp(
-args map[string]string,
+opArgs map[string]string,
 correlationId string,
-pathToOpDir string,
+opBundlePath string,
 opName string,
+opNamespace string,
 logger logging.Logger,
 ) (
 exitCode int,
@@ -57,10 +58,11 @@ err error,
   return this.compositionRoot.
   RunOpUseCase().
   Execute(
-    args,
+    opArgs,
     correlationId,
-    pathToOpDir,
+    opBundlePath,
     opName,
+    opNamespace,
     logger,
   )
 
@@ -68,7 +70,8 @@ err error,
 
 func (this _containerEngine) KillOpRun(
 correlationId string,
-pathToOpDir string,
+opBundlePath string,
+opNamespace string,
 logger logging.Logger,
 ) (err error) {
 
@@ -76,7 +79,8 @@ logger logging.Logger,
   KillOpRunUseCase().
   Execute(
     correlationId,
-    pathToOpDir,
+    opBundlePath,
+    opNamespace,
     logger,
   )
 

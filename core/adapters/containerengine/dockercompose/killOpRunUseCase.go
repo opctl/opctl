@@ -9,7 +9,8 @@ import (
 type killOpRunUseCase interface {
   Execute(
   correlationId string,
-  pathToOpDir string,
+  opBundlePath string,
+  opNamespace string,
   logger logging.Logger,
   ) (err error)
 }
@@ -33,15 +34,17 @@ type _killOpRunUseCase struct {
 
 func (this _killOpRunUseCase) Execute(
 correlationId string,
-pathToOpDir string,
+opBundlePath string,
+opNamespace string,
 logger logging.Logger,
 ) (err error) {
 
-  if (this.filesys.isDockerComposeFileExistent(pathToOpDir)) {
+  if (this.filesys.isDockerComposeFileExistent(opBundlePath)) {
 
     this.opRunResourceFlusher.flush(
       correlationId,
-      pathToOpDir,
+      opBundlePath,
+      opNamespace,
       logger,
     )
 

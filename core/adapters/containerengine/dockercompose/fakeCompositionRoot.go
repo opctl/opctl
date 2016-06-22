@@ -24,11 +24,14 @@ type fakeCompositionRoot struct {
   killOpRunUseCaseReturns     struct {
                                 result1 killOpRunUseCase
                               }
+  invocations                 map[string][][]interface{}
+  invocationsMutex            sync.RWMutex
 }
 
 func (fake *fakeCompositionRoot) InitOpUseCase() initOpUseCase {
   fake.initOpUseCaseMutex.Lock()
   fake.initOpUseCaseArgsForCall = append(fake.initOpUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("InitOpUseCase", []interface{}{})
   fake.initOpUseCaseMutex.Unlock()
   if fake.InitOpUseCaseStub != nil {
     return fake.InitOpUseCaseStub()
@@ -53,6 +56,7 @@ func (fake *fakeCompositionRoot) InitOpUseCaseReturns(result1 initOpUseCase) {
 func (fake *fakeCompositionRoot) RunOpUseCase() runOpUseCase {
   fake.runOpUseCaseMutex.Lock()
   fake.runOpUseCaseArgsForCall = append(fake.runOpUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("RunOpUseCase", []interface{}{})
   fake.runOpUseCaseMutex.Unlock()
   if fake.RunOpUseCaseStub != nil {
     return fake.RunOpUseCaseStub()
@@ -77,6 +81,7 @@ func (fake *fakeCompositionRoot) RunOpUseCaseReturns(result1 runOpUseCase) {
 func (fake *fakeCompositionRoot) KillOpRunUseCase() killOpRunUseCase {
   fake.killOpRunUseCaseMutex.Lock()
   fake.killOpRunUseCaseArgsForCall = append(fake.killOpRunUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("KillOpRunUseCase", []interface{}{})
   fake.killOpRunUseCaseMutex.Unlock()
   if fake.KillOpRunUseCaseStub != nil {
     return fake.KillOpRunUseCaseStub()
@@ -96,4 +101,28 @@ func (fake *fakeCompositionRoot) KillOpRunUseCaseReturns(result1 killOpRunUseCas
   fake.killOpRunUseCaseReturns = struct {
     result1 killOpRunUseCase
   }{result1}
+}
+
+func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.initOpUseCaseMutex.RLock()
+  defer fake.initOpUseCaseMutex.RUnlock()
+  fake.runOpUseCaseMutex.RLock()
+  defer fake.runOpUseCaseMutex.RUnlock()
+  fake.killOpRunUseCaseMutex.RLock()
+  defer fake.killOpRunUseCaseMutex.RUnlock()
+  return fake.invocations
+}
+
+func (fake *fakeCompositionRoot) recordInvocation(key string, args []interface{}) {
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }

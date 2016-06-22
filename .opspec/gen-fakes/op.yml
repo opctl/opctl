@@ -1,0 +1,2 @@
+description: generates fakes for interfaces using `go generate`
+name: gen-fakes

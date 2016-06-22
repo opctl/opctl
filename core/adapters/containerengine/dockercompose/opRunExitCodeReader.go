@@ -11,8 +11,9 @@ import (
 
 type opRunExitCodeReader interface {
   read(
+  opBundlePath string,
   opName string,
-  pathToOpDir string,
+  opNamespace string,
   ) (opExitCode int, err error)
 }
 
@@ -31,8 +32,9 @@ type _opRunExitCodeReader struct {
 }
 
 func (this _opRunExitCodeReader) read(
+opBundlePath string,
 opName string,
-pathToOpDir string,
+opNamespace string,
 ) (
 opExitCode int,
 err error,
@@ -47,7 +49,7 @@ err error,
     opName,
   )
 
-  dockerComposePsCmd.Dir = pathToOpDir
+  dockerComposePsCmd.Dir = opBundlePath
 
   var dockerComposePsCmdRawOutput []byte
   dockerComposePsCmdRawOutput, err = dockerComposePsCmd.Output()

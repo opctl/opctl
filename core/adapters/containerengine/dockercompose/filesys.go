@@ -12,11 +12,11 @@ type filesys interface {
   ) (pathToOpDockerComposeFile string)
 
   isDockerComposeFileExistent(
-  pathToOpDir string,
+  opBundlePath string,
   ) (isExistent bool)
 
   saveOpDockerComposeFile(
-  pathToOpDir string,
+  opBundlePath string,
   data []byte,
   ) (err error)
 }
@@ -34,10 +34,10 @@ pathToOp string,
 }
 
 func (this _filesys) isDockerComposeFileExistent(
-pathToOpDir string,
+opBundlePath string,
 ) (isExistent bool) {
 
-  pathToFile := this.getPathToOpDockerComposeFile(pathToOpDir)
+  pathToFile := this.getPathToOpDockerComposeFile(opBundlePath)
 
   if _, err := os.Stat(pathToFile); err == nil {
     return true
@@ -48,12 +48,12 @@ pathToOpDir string,
 }
 
 func (this _filesys)  saveOpDockerComposeFile(
-pathToOpDir string,
+opBundlePath string,
 data []byte,
 ) (err error) {
 
   err = ioutil.WriteFile(
-    this.getPathToOpDockerComposeFile(pathToOpDir),
+    this.getPathToOpDockerComposeFile(opBundlePath),
     data,
     0777,
   )

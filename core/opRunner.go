@@ -161,6 +161,7 @@ err error,
         correlationId,
         opUrl,
         _opFile.Name,
+        "",
         this.logger,
       )
       if (nil != err) {
@@ -305,6 +306,7 @@ err error,
       err := this.containerEngine.KillOpRun(
         correlationId,
         unfinishedOpRun.OpRunOpUrl(),
+        "",
         this.logger,
       )
       if (nil != err) {

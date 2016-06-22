@@ -11,7 +11,7 @@ var _ = Describe("containerEngine", func() {
     It("should invoke compositionRoot.initOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedPathToOpDir := ""
+      providedOpBundlePath := ""
       providedOpName := ""
 
       // wire up fakes
@@ -26,7 +26,7 @@ var _ = Describe("containerEngine", func() {
 
       /* act */
       objectUnderTest.InitOp(
-        providedPathToOpDir,
+        providedOpBundlePath,
         providedOpName,
       )
 
@@ -42,8 +42,9 @@ var _ = Describe("containerEngine", func() {
       /* arrange */
       providedArgs := map[string]string{}
       providedCorrelationId := ""
-      providedPathToOpDir := ""
+      providedOpBundlePath := ""
       providedOpName := ""
+      providedOpNamespace := ""
       providedLogger := new(logging.Logger)
 
       fakeRunOpUseCase := new(fakeRunOpUseCase)
@@ -59,21 +60,24 @@ var _ = Describe("containerEngine", func() {
       objectUnderTest.RunOp(
         providedArgs,
         providedCorrelationId,
-        providedPathToOpDir,
+        providedOpBundlePath,
         providedOpName,
+        providedOpNamespace,
         *providedLogger,
       )
 
       /* assert */
       receivedArgs,
       receivedCorrelationId,
-      receivedPathToOpDir,
+      receivedOpBundlePath,
       receivedOpName,
+      receivedOpNamespace,
       receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
       Expect(receivedArgs).To(Equal(providedArgs))
       Expect(receivedCorrelationId).To(Equal(providedCorrelationId))
-      Expect(receivedPathToOpDir).To(Equal(providedPathToOpDir))
+      Expect(receivedOpBundlePath).To(Equal(providedOpBundlePath))
       Expect(receivedOpName).To(Equal(providedOpName))
+      Expect(receivedOpNamespace).To(Equal(providedOpNamespace))
       Expect(receivedLogger).To(Equal(*providedLogger))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 

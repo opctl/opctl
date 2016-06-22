@@ -1,0 +1,11 @@
+version: "2"
+services:
+  gen-fakes:
+    extends:
+      service: go
+      file: ../.common/docker-compose.yml
+    entrypoint: |
+      sh -c "
+      go get github.com/maxbrunsfeld/counterfeiter && \
+      go generate ./...
+      "

@@ -11,10 +11,11 @@ import (
 
 type runOpUseCase interface {
   Execute(
-  args map[string]string,
+  opArgs map[string]string,
   correlationId string,
-  pathToOpDir string,
+  opBundlePath string,
   opName string,
+  opNamespace string,
   logger logging.Logger,
   ) (exitCode int, err error)
 }
@@ -37,10 +38,11 @@ type _runOpUseCase struct {
 }
 
 func (this _runOpUseCase) Execute(
-args map[string]string,
+opArgs map[string]string,
 correlationId string,
-pathToOpDir string,
+opBundlePath string,
 opName string,
+opNamespace string,
 logger logging.Logger,
 ) (exitCode int, err error) {
 
@@ -48,6 +50,8 @@ logger logging.Logger,
   dockerComposeUpCmd :=
   exec.Command(
     "docker-compose",
+    "-p",
+    opNamespace,
     "up",
     "--force-recreate",
     "--abort-on-container-exit",
@@ -55,12 +59,12 @@ logger logging.Logger,
     "--build",
   )
 
-  dockerComposeUpCmd.Dir = pathToOpDir
+  dockerComposeUpCmd.Dir = opBundlePath
 
   dockerComposeUpCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
   dockerComposeUpCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
 
-  for argName, argVal := range args {
+  for argName, argVal := range opArgs {
     dockerComposeUpCmd.Env = append(
       dockerComposeUpCmd.Env,
       fmt.Sprintf("%v=%v", argName, argVal),
@@ -73,15 +77,17 @@ logger logging.Logger,
   }
 
   exitCode, err = this.opRunExitCodeReader.read(
+    opBundlePath,
     opName,
-    pathToOpDir,
+    opNamespace,
   )
 
   defer func() {
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
       correlationId,
-      pathToOpDir,
+      opBundlePath,
+      opNamespace,
       logger,
     )
     if (nil != flushOpRunResourcesError) {
