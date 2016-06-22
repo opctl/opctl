@@ -6,7 +6,6 @@ services:
       service: docker
     entrypoint: |
       sh -c "
-        echo $DOCKER_PASSWORD
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && \
         docker push opctl/engine:$IMAGE_TAG
       "
