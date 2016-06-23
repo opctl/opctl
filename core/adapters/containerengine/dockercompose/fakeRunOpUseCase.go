@@ -2,85 +2,85 @@
 package dockercompose
 
 import (
-	"sync"
+  "sync"
 
-	"github.com/opctl/engine/core/logging"
+  "github.com/opctl/engine/core/logging"
 )
 
 type fakeRunOpUseCase struct {
-	ExecuteStub        func(opArgs map[string]string, correlationId string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		opArgs        map[string]string
-		correlationId string
-		opBundlePath  string
-		opName        string
-		opNamespace   string
-		logger        logging.Logger
-	}
-	executeReturns struct {
-		result1 int
-		result2 error
-	}
-	invocations      map[string][][]interface{}
-	invocationsMutex sync.RWMutex
+  ExecuteStub        func(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    correlationId string
+    opArgs        map[string]string
+    opBundlePath  string
+    opName        string
+    opNamespace   string
+    logger        logging.Logger
+  }
+  executeReturns     struct {
+                       result1 int
+                       result2 error
+                     }
+  invocations        map[string][][]interface{}
+  invocationsMutex   sync.RWMutex
 }
 
-func (fake *fakeRunOpUseCase) Execute(opArgs map[string]string, correlationId string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		opArgs        map[string]string
-		correlationId string
-		opBundlePath  string
-		opName        string
-		opNamespace   string
-		logger        logging.Logger
-	}{opArgs, correlationId, opBundlePath, opName, opNamespace, logger})
-	fake.recordInvocation("Execute", []interface{}{opArgs, correlationId, opBundlePath, opName, opNamespace, logger})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(opArgs, correlationId, opBundlePath, opName, opNamespace, logger)
-	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2
-	}
+func (fake *fakeRunOpUseCase) Execute(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error) {
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    correlationId string
+    opArgs        map[string]string
+    opBundlePath  string
+    opName        string
+    opNamespace   string
+    logger        logging.Logger
+  }{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
+  fake.recordInvocation("Execute", []interface{}{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(correlationId, opArgs, opBundlePath, opName, opNamespace, logger)
+  } else {
+    return fake.executeReturns.result1, fake.executeReturns.result2
+  }
 }
 
 func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (map[string]string, string, string, string, string, logging.Logger) {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].opArgs, fake.executeArgsForCall[i].correlationId, fake.executeArgsForCall[i].opBundlePath, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].opNamespace, fake.executeArgsForCall[i].logger
+func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, map[string]string, string, string, string, logging.Logger) {
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].correlationId, fake.executeArgsForCall[i].opArgs, fake.executeArgsForCall[i].opBundlePath, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].opNamespace, fake.executeArgsForCall[i].logger
 }
 
 func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 int
-		result2 error
-	}{result1, result2}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 int
+    result2 error
+  }{result1, result2}
 }
 
 func (fake *fakeRunOpUseCase) Invocations() map[string][][]interface{} {
-	fake.invocationsMutex.RLock()
-	defer fake.invocationsMutex.RUnlock()
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.invocations
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.invocations
 }
 
 func (fake *fakeRunOpUseCase) recordInvocation(key string, args []interface{}) {
-	fake.invocationsMutex.Lock()
-	defer fake.invocationsMutex.Unlock()
-	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
-	}
-	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
-	}
-	fake.invocations[key] = append(fake.invocations[key], args)
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }

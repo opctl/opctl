@@ -2,54 +2,77 @@
 package core
 
 import (
-	"sync"
+  "sync"
 
-	"github.com/opctl/engine/core/models"
+  "github.com/opctl/engine/core/models"
 )
 
 type fakeRunOpUseCase struct {
-	ExecuteStub        func(req models.RunOpReq) (opRunId string, correlationId string, err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		req models.RunOpReq
-	}
-	executeReturns struct {
-		result1 string
-		result2 string
-		result3 error
-	}
+  ExecuteStub        func(req models.RunOpReq) (opRunId string, correlationId string, err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    req models.RunOpReq
+  }
+  executeReturns     struct {
+                       result1 string
+                       result2 string
+                       result3 error
+                     }
+  invocations        map[string][][]interface{}
+  invocationsMutex   sync.RWMutex
 }
 
 func (fake *fakeRunOpUseCase) Execute(req models.RunOpReq) (opRunId string, correlationId string, err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		req models.RunOpReq
-	}{req})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(req)
-	} else {
-		return fake.executeReturns.result1, fake.executeReturns.result2, fake.executeReturns.result3
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    req models.RunOpReq
+  }{req})
+  fake.recordInvocation("Execute", []interface{}{req})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(req)
+  } else {
+    return fake.executeReturns.result1, fake.executeReturns.result2, fake.executeReturns.result3
+  }
 }
 
 func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) models.RunOpReq {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].req
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].req
 }
 
 func (fake *fakeRunOpUseCase) ExecuteReturns(result1 string, result2 string, result3 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 string
-		result2 string
-		result3 error
-	}{result1, result2, result3}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 string
+    result2 string
+    result3 error
+  }{result1, result2, result3}
+}
+
+func (fake *fakeRunOpUseCase) Invocations() map[string][][]interface{} {
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.invocations
+}
+
+func (fake *fakeRunOpUseCase) recordInvocation(key string, args []interface{}) {
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }

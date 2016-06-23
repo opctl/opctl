@@ -11,8 +11,8 @@ import (
 
 type runOpUseCase interface {
   Execute(
-  opArgs map[string]string,
   correlationId string,
+  opArgs map[string]string,
   opBundlePath string,
   opName string,
   opNamespace string,
@@ -38,8 +38,8 @@ type _runOpUseCase struct {
 }
 
 func (this _runOpUseCase) Execute(
-opArgs map[string]string,
 correlationId string,
+opArgs map[string]string,
 opBundlePath string,
 opName string,
 opNamespace string,
@@ -86,6 +86,7 @@ logger logging.Logger,
 
     flushOpRunResourcesError := this.opRunResourceFlusher.flush(
       correlationId,
+      opArgs,
       opBundlePath,
       opNamespace,
       logger,

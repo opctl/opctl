@@ -40,7 +40,7 @@ var _ = Describe("containerEngine", func() {
     It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedArgs := map[string]string{}
+      providedOpArgs := map[string]string{}
       providedCorrelationId := ""
       providedOpBundlePath := ""
       providedOpName := ""
@@ -58,8 +58,8 @@ var _ = Describe("containerEngine", func() {
 
       /* act */
       objectUnderTest.RunOp(
-        providedArgs,
         providedCorrelationId,
+        providedOpArgs,
         providedOpBundlePath,
         providedOpName,
         providedOpNamespace,
@@ -67,13 +67,13 @@ var _ = Describe("containerEngine", func() {
       )
 
       /* assert */
-      receivedArgs,
       receivedCorrelationId,
+      receivedArgs,
       receivedOpBundlePath,
       receivedOpName,
       receivedOpNamespace,
       receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
-      Expect(receivedArgs).To(Equal(providedArgs))
+      Expect(receivedArgs).To(Equal(providedOpArgs))
       Expect(receivedCorrelationId).To(Equal(providedCorrelationId))
       Expect(receivedOpBundlePath).To(Equal(providedOpBundlePath))
       Expect(receivedOpName).To(Equal(providedOpName))

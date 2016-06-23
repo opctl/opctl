@@ -11,8 +11,8 @@ type ContainerEngine interface {
   ) (err error)
 
   RunOp(
-  opArgs map[string]string,
   correlationId string,
+  opArgs map[string]string,
   opBundlePath string,
   opName string,
   opNamespace string,

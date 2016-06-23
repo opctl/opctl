@@ -17,8 +17,8 @@ import (
 
 type opRunner interface {
   Run(
-  args map[string]string,
   correlationId string,
+  opArgs map[string]string,
   opNamespace string,
   opUrl string,
   parentOpRunId string,
@@ -66,10 +66,10 @@ type _opRunner struct {
 }
 
 func (this _opRunner) Run(
-args map[string]string,
 correlationId string,
+opArgs map[string]string,
 opNamespace string,
-opUrl string,
+opBundleUrl string,
 parentOpRunId string,
 ) (
 opRunId string,
@@ -78,14 +78,14 @@ err error,
 
   err = this.guardOpRunNotRecursive(
     parentOpRunId,
-    opUrl,
+    opBundleUrl,
   )
   if (nil != err) {
     return
   }
 
   _opFile, err := this.opspecSdk.GetOp(
-    opUrl,
+    opBundleUrl,
   )
   if (nil != err) {
     return
@@ -113,7 +113,7 @@ err error,
 
   opRunStartedEvent := models.NewOpRunStartedEvent(
     correlationId,
-    opUrl,
+    opBundleUrl,
     opRunId,
     parentOpRunId,
     rootOpRunId,
@@ -159,9 +159,9 @@ err error,
       // run op
 
       opRunExitCode, err = this.containerEngine.RunOp(
-        args,
         correlationId,
-        opUrl,
+        opArgs,
+        opBundleUrl,
         _opFile.Name,
         opNamespace,
         this.logger,
@@ -183,7 +183,7 @@ err error,
       for _, subOp := range _opFile.SubOps {
 
         subOpUrl := path.Join(
-          filepath.Dir(opUrl),
+          filepath.Dir(opBundleUrl),
           subOp.Name,
         )
 
@@ -193,8 +193,8 @@ err error,
 
         var subOpRunId string
         subOpRunId, err = this.Run(
-          args,
           correlationId,
+          opArgs,
           opNamespace,
           subOpUrl,
           opRunId,

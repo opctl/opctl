@@ -8,33 +8,35 @@ import (
 )
 
 type FakeApi struct {
-  GetEventStreamStub            func(eventChannel chan models.Event) (err error)
-  getEventStreamMutex           sync.RWMutex
-  getEventStreamArgsForCall     []struct {
+  GetEventStreamStub        func(eventChannel chan models.Event) (err error)
+  getEventStreamMutex       sync.RWMutex
+  getEventStreamArgsForCall []struct {
     eventChannel chan models.Event
   }
-  getEventStreamReturns         struct {
-                                  result1 error
-                                }
-  KillOpRunStub                 func(req models.KillOpRunReq) (correlationId string, err error)
-  killOpRunMutex                sync.RWMutex
-  killOpRunArgsForCall          []struct {
+  getEventStreamReturns     struct {
+                              result1 error
+                            }
+  KillOpRunStub             func(req models.KillOpRunReq) (correlationId string, err error)
+  killOpRunMutex            sync.RWMutex
+  killOpRunArgsForCall      []struct {
     req models.KillOpRunReq
   }
-  killOpRunReturns              struct {
-                                  result1 string
-                                  result2 error
-                                }
-  RunOpStub                     func(req models.RunOpReq) (opRunId string, correlationId string, err error)
-  runOpMutex                    sync.RWMutex
-  runOpArgsForCall              []struct {
+  killOpRunReturns          struct {
+                              result1 string
+                              result2 error
+                            }
+  RunOpStub                 func(req models.RunOpReq) (opRunId string, correlationId string, err error)
+  runOpMutex                sync.RWMutex
+  runOpArgsForCall          []struct {
     req models.RunOpReq
   }
-  runOpReturns                  struct {
-                                  result1 string
-                                  result2 string
-                                  result3 error
-                                }
+  runOpReturns              struct {
+                              result1 string
+                              result2 string
+                              result3 error
+                            }
+  invocations               map[string][][]interface{}
+  invocationsMutex          sync.RWMutex
 }
 
 func (fake *FakeApi) GetEventStream(eventChannel chan models.Event) (err error) {
@@ -42,6 +44,7 @@ func (fake *FakeApi) GetEventStream(eventChannel chan models.Event) (err error) 
   fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
     eventChannel chan models.Event
   }{eventChannel})
+  fake.recordInvocation("GetEventStream", []interface{}{eventChannel})
   fake.getEventStreamMutex.Unlock()
   if fake.GetEventStreamStub != nil {
     return fake.GetEventStreamStub(eventChannel)
@@ -74,6 +77,7 @@ func (fake *FakeApi) KillOpRun(req models.KillOpRunReq) (correlationId string, e
   fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
     req models.KillOpRunReq
   }{req})
+  fake.recordInvocation("KillOpRun", []interface{}{req})
   fake.killOpRunMutex.Unlock()
   if fake.KillOpRunStub != nil {
     return fake.KillOpRunStub(req)
@@ -107,6 +111,7 @@ func (fake *FakeApi) RunOp(req models.RunOpReq) (opRunId string, correlationId s
   fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
     req models.RunOpReq
   }{req})
+  fake.recordInvocation("RunOp", []interface{}{req})
   fake.runOpMutex.Unlock()
   if fake.RunOpStub != nil {
     return fake.RunOpStub(req)
@@ -134,6 +139,30 @@ func (fake *FakeApi) RunOpReturns(result1 string, result2 string, result3 error)
     result2 string
     result3 error
   }{result1, result2, result3}
+}
+
+func (fake *FakeApi) Invocations() map[string][][]interface{} {
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.getEventStreamMutex.RLock()
+  defer fake.getEventStreamMutex.RUnlock()
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
+  fake.runOpMutex.RLock()
+  defer fake.runOpMutex.RUnlock()
+  return fake.invocations
+}
+
+func (fake *FakeApi) recordInvocation(key string, args []interface{}) {
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }
 
 var _ Api = new(FakeApi)

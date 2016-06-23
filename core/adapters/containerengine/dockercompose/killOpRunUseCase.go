@@ -43,6 +43,7 @@ logger logging.Logger,
 
     this.opRunResourceFlusher.flush(
       correlationId,
+      make(map[string]string),
       opBundlePath,
       opNamespace,
       logger,

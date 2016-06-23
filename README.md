@@ -24,7 +24,7 @@ be considered stable."*
 ### 1) Start dockerized engine
 
 ```SHELL
-docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 opctl/engine:0.1.1
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 opctl/engine:0.1.2
 ```
 
 explanation:
@@ -36,7 +36,7 @@ explanation:
 - `-v /Users:/Users` bind mount host `/Users` dir
 - `-p 42224:42224` expose container port `42224` via docker-machine port
   `42224`
-- `opctl/engine:0.1.1` use latest
+- `opctl/engine:0.1.2` use latest
   [opctl/engine](https://hub.docker.com/r/opctl/engine/) image
 
 ### 2) Explore the engine API via Swagger UI

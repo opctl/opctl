@@ -5,11 +5,13 @@ package dockercompose
 import (
   "os/exec"
   "github.com/opctl/engine/core/logging"
+  "fmt"
 )
 
 type opRunResourceFlusher interface {
   flush(
   correlationId string,
+  opArgs map[string]string,
   opBundlePath string,
   opNamespace string,
   logger logging.Logger,
@@ -27,6 +29,7 @@ type _opRunResourceFlusher struct{}
 
 func (this _opRunResourceFlusher) flush(
 correlationId string,
+opArgs map[string]string,
 opBundlePath string,
 opNamespace string,
 logger logging.Logger,
@@ -49,6 +52,13 @@ logger logging.Logger,
 
   dockerComposeDownCmd.Stdout = logging.NewLoggableIoWriter(correlationId, logging.StdOutStream, logger)
   dockerComposeDownCmd.Stderr = logging.NewLoggableIoWriter(correlationId, logging.StdErrStream, logger)
+
+  for argName, argVal := range opArgs {
+    dockerComposeDownCmd.Env = append(
+      dockerComposeDownCmd.Env,
+      fmt.Sprintf("%v=%v", argName, argVal),
+    )
+  }
 
   err = dockerComposeDownCmd.Run()
 

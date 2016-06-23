@@ -44,8 +44,8 @@ opName string,
 }
 
 func (this _containerEngine) RunOp(
-opArgs map[string]string,
 correlationId string,
+opArgs map[string]string,
 opBundlePath string,
 opName string,
 opNamespace string,
@@ -58,8 +58,8 @@ err error,
   return this.compositionRoot.
   RunOpUseCase().
   Execute(
-    opArgs,
     correlationId,
+    opArgs,
     opBundlePath,
     opName,
     opNamespace,

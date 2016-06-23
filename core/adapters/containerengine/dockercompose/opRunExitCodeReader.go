@@ -44,6 +44,8 @@ err error,
   dockerComposePsCmd :=
   exec.Command(
     "docker-compose",
+    "-p",
+    opNamespace,
     "ps",
     "-q",
     opName,

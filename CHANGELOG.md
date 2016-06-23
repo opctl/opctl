@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.2 - 2016-06-22
+### Fixed
+- [Missleading `variable is not set` message on op finish](https://github.com/opctl/engine/issues/5)
+- [Engine not observing exitcode of op entrypoint](https://github.com/opctl/engine/issues/9)
+
 ## 0.1.1 - 2016-06-22
 ### Changed
 

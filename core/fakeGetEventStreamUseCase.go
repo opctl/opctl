@@ -2,50 +2,73 @@
 package core
 
 import (
-	"sync"
+  "sync"
 
-	"github.com/opctl/engine/core/models"
+  "github.com/opctl/engine/core/models"
 )
 
 type fakeGetEventStreamUseCase struct {
-	ExecuteStub        func(subscriberEventChannel chan models.Event) (err error)
-	executeMutex       sync.RWMutex
-	executeArgsForCall []struct {
-		subscriberEventChannel chan models.Event
-	}
-	executeReturns struct {
-		result1 error
-	}
+  ExecuteStub        func(subscriberEventChannel chan models.Event) (err error)
+  executeMutex       sync.RWMutex
+  executeArgsForCall []struct {
+    subscriberEventChannel chan models.Event
+  }
+  executeReturns     struct {
+                       result1 error
+                     }
+  invocations        map[string][][]interface{}
+  invocationsMutex   sync.RWMutex
 }
 
 func (fake *fakeGetEventStreamUseCase) Execute(subscriberEventChannel chan models.Event) (err error) {
-	fake.executeMutex.Lock()
-	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
-		subscriberEventChannel chan models.Event
-	}{subscriberEventChannel})
-	fake.executeMutex.Unlock()
-	if fake.ExecuteStub != nil {
-		return fake.ExecuteStub(subscriberEventChannel)
-	} else {
-		return fake.executeReturns.result1
-	}
+  fake.executeMutex.Lock()
+  fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
+    subscriberEventChannel chan models.Event
+  }{subscriberEventChannel})
+  fake.recordInvocation("Execute", []interface{}{subscriberEventChannel})
+  fake.executeMutex.Unlock()
+  if fake.ExecuteStub != nil {
+    return fake.ExecuteStub(subscriberEventChannel)
+  } else {
+    return fake.executeReturns.result1
+  }
 }
 
 func (fake *fakeGetEventStreamUseCase) ExecuteCallCount() int {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return len(fake.executeArgsForCall)
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return len(fake.executeArgsForCall)
 }
 
 func (fake *fakeGetEventStreamUseCase) ExecuteArgsForCall(i int) chan models.Event {
-	fake.executeMutex.RLock()
-	defer fake.executeMutex.RUnlock()
-	return fake.executeArgsForCall[i].subscriberEventChannel
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.executeArgsForCall[i].subscriberEventChannel
 }
 
 func (fake *fakeGetEventStreamUseCase) ExecuteReturns(result1 error) {
-	fake.ExecuteStub = nil
-	fake.executeReturns = struct {
-		result1 error
-	}{result1}
+  fake.ExecuteStub = nil
+  fake.executeReturns = struct {
+    result1 error
+  }{result1}
+}
+
+func (fake *fakeGetEventStreamUseCase) Invocations() map[string][][]interface{} {
+  fake.invocationsMutex.RLock()
+  defer fake.invocationsMutex.RUnlock()
+  fake.executeMutex.RLock()
+  defer fake.executeMutex.RUnlock()
+  return fake.invocations
+}
+
+func (fake *fakeGetEventStreamUseCase) recordInvocation(key string, args []interface{}) {
+  fake.invocationsMutex.Lock()
+  defer fake.invocationsMutex.Unlock()
+  if fake.invocations == nil {
+    fake.invocations = map[string][][]interface{}{}
+  }
+  if fake.invocations[key] == nil {
+    fake.invocations[key] = [][]interface{}{}
+  }
+  fake.invocations[key] = append(fake.invocations[key], args)
 }
