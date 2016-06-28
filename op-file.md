@@ -44,9 +44,10 @@ attributes:
 
 attributes:
 
-| name | type                                    | constraints                                          |
-|:-----|:----------------------------------------|:-----------------------------------------------------|
-| url  | [string](http://yaml.org/type/str.html) | Required, [MUST](index.md#mustmay) be a valid op url |
+| name       | type                                    | constraints                                          |
+|:-----------|:----------------------------------------|:-----------------------------------------------------|
+| url        | [string](http://yaml.org/type/str.html) | Required, [MUST](index.md#mustmay) be a valid op url |
+| isParallel | [bool](http://yaml.org/type/bool.html)  | Optional (defaults to false)                         |
 
 # Example
 
