@@ -5,6 +5,10 @@ package opspec
 import "github.com/opspec-io/sdk-golang/models"
 
 type Sdk interface {
+  CreateCollection(
+  req models.CreateCollectionReq,
+  ) (err error)
+  
   CreateOp(
   req models.CreateOpReq,
   ) (err error)
@@ -64,6 +68,15 @@ filesystem Filesystem,
 
 type _sdk struct {
   compositionRoot compositionRoot
+}
+
+func (this _sdk) CreateCollection(
+req models.CreateCollectionReq,
+) (err error) {
+  return this.
+  compositionRoot.
+  CreateCollectionUseCase().
+  Execute(req)
 }
 
 func (this _sdk) CreateOp(

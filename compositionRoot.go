@@ -3,6 +3,7 @@ package opspec
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 type compositionRoot interface {
+  CreateCollectionUseCase() createCollectionUseCase
   CreateOpUseCase() createOpUseCase
   GetCollectionUseCase() getCollectionUseCase
   GetOpUseCase() getOpUseCase
@@ -28,6 +29,11 @@ filesystem Filesystem,
     yamlCodec,
   )
 
+  createCollectionUseCase := newCreateCollectionUseCase(
+    filesystem,
+    yamlCodec,
+  )
+
   createOpUseCase := newCreateOpUseCase(
     filesystem,
     yamlCodec,
@@ -50,6 +56,7 @@ filesystem Filesystem,
   tryResolveDefaultCollectionUseCase := newTryResolveDefaultCollectionUseCase(filesystem)
 
   compositionRoot = &_compositionRoot{
+    createCollectionUseCase:createCollectionUseCase,
     createOpUseCase:createOpUseCase,
     getCollectionUseCase:getCollectionUseCase,
     getOpUseCase:getOpUseCase,
@@ -63,12 +70,18 @@ filesystem Filesystem,
 }
 
 type _compositionRoot struct {
+  createCollectionUseCase            createCollectionUseCase
   createOpUseCase                    createOpUseCase
   getCollectionUseCase               getCollectionUseCase
   getOpUseCase                       getOpUseCase
   setCollectionDescriptionUseCase    setCollectionDescriptionUseCase
   setOpDescriptionUseCase            setOpDescriptionUseCase
   tryResolveDefaultCollectionUseCase tryResolveDefaultCollectionUseCase
+}
+
+func (this _compositionRoot) CreateCollectionUseCase(
+) createCollectionUseCase {
+  return this.createCollectionUseCase
 }
 
 func (this _compositionRoot) CreateOpUseCase(

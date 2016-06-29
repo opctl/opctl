@@ -4,7 +4,7 @@ func NewOpView(
 description string,
 name string,
 params []OpParamView,
-subOps []OpSummaryView,
+subOps []SubOpView,
 ) *OpView {
 
   return &OpView{
@@ -20,5 +20,5 @@ type OpView struct {
   Description string
   Name        string
   Params      []OpParamView
-  SubOps      []OpSummaryView
+  SubOps      []SubOpView
 }

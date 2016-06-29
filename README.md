@@ -12,6 +12,7 @@ be considered stable."*
 
 # Supported Use Cases
 
+- create collection
 - create op
 - get collection
 - get op

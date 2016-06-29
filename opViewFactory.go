@@ -70,9 +70,14 @@ err error,
     )
   }
 
-  subOps := []models.OpSummaryView{}
+  subOps := []models.SubOpView{}
   for _, subOp := range opFile.SubOps {
-    subOps = append(subOps, *models.NewOpSummaryView(subOp.Url))
+    subOps = append(
+      subOps,
+      *models.NewSubOpView(
+        subOp.IsParallel,
+        subOp.Url),
+    )
   }
 
   opView = *models.NewOpView(

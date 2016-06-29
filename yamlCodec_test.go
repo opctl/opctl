@@ -3,7 +3,7 @@ package opspec
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 var _ = Describe("_yamlCodec", func() {
@@ -40,8 +40,14 @@ var _ = Describe("_yamlCodec", func() {
       expectedOpFile := models.OpFile{
         Description:"op description",
         SubOps:[]models.OpFileSubOp{
-          models.OpFileSubOp{Url:"op1-name"},
-          models.OpFileSubOp{Url:"op2-name"},
+          models.OpFileSubOp{
+            Url:"op1-name",
+            IsParallel:true,
+          },
+          models.OpFileSubOp{
+            Url:"op2-name",
+            IsParallel:false,
+          },
         },
       }
       objectUnderTest := _yamlCodec{}

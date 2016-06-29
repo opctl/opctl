@@ -8,7 +8,21 @@ import (
 var _ = Describe("_compositionRoot", func() {
 
   var fakeFilesystem = new(FakeFilesystem)
+  
+  Context("CreateCollectionUseCase", func() {
+    It("should not return nil", func() {
 
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeFilesystem)
+
+      /* act */
+      actualCreateCollectionUseCase := objectUnderTest.CreateCollectionUseCase()
+
+      /* assert */
+      Expect(actualCreateCollectionUseCase).NotTo(BeNil())
+
+    })
+  })
   Context("CreateOpUseCase", func() {
     It("should not return nil", func() {
 

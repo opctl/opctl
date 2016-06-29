@@ -8,6 +8,14 @@ import (
 )
 
 type FakeSdk struct {
+  CreateCollectionStub                   func(req models.CreateCollectionReq) (err error)
+  createCollectionMutex                  sync.RWMutex
+  createCollectionArgsForCall            []struct {
+    req models.CreateCollectionReq
+  }
+  createCollectionReturns                struct {
+                                           result1 error
+                                         }
   CreateOpStub                           func(req models.CreateOpReq) (err error)
   createOpMutex                          sync.RWMutex
   createOpArgsForCall                    []struct {
@@ -61,6 +69,39 @@ type FakeSdk struct {
                                          }
   invocations                            map[string][][]interface{}
   invocationsMutex                       sync.RWMutex
+}
+
+func (fake *FakeSdk) CreateCollection(req models.CreateCollectionReq) (err error) {
+  fake.createCollectionMutex.Lock()
+  fake.createCollectionArgsForCall = append(fake.createCollectionArgsForCall, struct {
+    req models.CreateCollectionReq
+  }{req})
+  fake.recordInvocation("CreateCollection", []interface{}{req})
+  fake.createCollectionMutex.Unlock()
+  if fake.CreateCollectionStub != nil {
+    return fake.CreateCollectionStub(req)
+  } else {
+    return fake.createCollectionReturns.result1
+  }
+}
+
+func (fake *FakeSdk) CreateCollectionCallCount() int {
+  fake.createCollectionMutex.RLock()
+  defer fake.createCollectionMutex.RUnlock()
+  return len(fake.createCollectionArgsForCall)
+}
+
+func (fake *FakeSdk) CreateCollectionArgsForCall(i int) models.CreateCollectionReq {
+  fake.createCollectionMutex.RLock()
+  defer fake.createCollectionMutex.RUnlock()
+  return fake.createCollectionArgsForCall[i].req
+}
+
+func (fake *FakeSdk) CreateCollectionReturns(result1 error) {
+  fake.CreateCollectionStub = nil
+  fake.createCollectionReturns = struct {
+    result1 error
+  }{result1}
 }
 
 func (fake *FakeSdk) CreateOp(req models.CreateOpReq) (err error) {
@@ -267,6 +308,8 @@ func (fake *FakeSdk) TryResolveDefaultCollectionReturns(result1 string, result2 
 func (fake *FakeSdk) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
+  fake.createCollectionMutex.RLock()
+  defer fake.createCollectionMutex.RUnlock()
   fake.createOpMutex.RLock()
   defer fake.createOpMutex.RUnlock()
   fake.getCollectionMutex.RLock()

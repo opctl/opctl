@@ -4,6 +4,12 @@ package opspec
 import "sync"
 
 type fakeCompositionRoot struct {
+  CreateCollectionUseCaseStub                   func() createCollectionUseCase
+  createCollectionUseCaseMutex                  sync.RWMutex
+  createCollectionUseCaseArgsForCall            []struct{}
+  createCollectionUseCaseReturns                struct {
+                                                  result1 createCollectionUseCase
+                                                }
   CreateOpUseCaseStub                           func() createOpUseCase
   createOpUseCaseMutex                          sync.RWMutex
   createOpUseCaseArgsForCall                    []struct{}
@@ -42,6 +48,31 @@ type fakeCompositionRoot struct {
                                                 }
   invocations                                   map[string][][]interface{}
   invocationsMutex                              sync.RWMutex
+}
+
+func (fake *fakeCompositionRoot) CreateCollectionUseCase() createCollectionUseCase {
+  fake.createCollectionUseCaseMutex.Lock()
+  fake.createCollectionUseCaseArgsForCall = append(fake.createCollectionUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("CreateCollectionUseCase", []interface{}{})
+  fake.createCollectionUseCaseMutex.Unlock()
+  if fake.CreateCollectionUseCaseStub != nil {
+    return fake.CreateCollectionUseCaseStub()
+  } else {
+    return fake.createCollectionUseCaseReturns.result1
+  }
+}
+
+func (fake *fakeCompositionRoot) CreateCollectionUseCaseCallCount() int {
+  fake.createCollectionUseCaseMutex.RLock()
+  defer fake.createCollectionUseCaseMutex.RUnlock()
+  return len(fake.createCollectionUseCaseArgsForCall)
+}
+
+func (fake *fakeCompositionRoot) CreateCollectionUseCaseReturns(result1 createCollectionUseCase) {
+  fake.CreateCollectionUseCaseStub = nil
+  fake.createCollectionUseCaseReturns = struct {
+    result1 createCollectionUseCase
+  }{result1}
 }
 
 func (fake *fakeCompositionRoot) CreateOpUseCase() createOpUseCase {
@@ -197,6 +228,8 @@ func (fake *fakeCompositionRoot) TryResolveDefaultCollectionUseCaseReturns(resul
 func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
+  fake.createCollectionUseCaseMutex.RLock()
+  defer fake.createCollectionUseCaseMutex.RUnlock()
   fake.createOpUseCaseMutex.RLock()
   defer fake.createOpUseCaseMutex.RUnlock()
   fake.getCollectionUseCaseMutex.RLock()

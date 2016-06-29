@@ -2,6 +2,7 @@ package models
 
 type OpFileSubOp struct {
   Url string `yaml:"url"`
+  IsParallel bool `yaml:"isParallel"`
 }
 
 type OpFileParam struct {

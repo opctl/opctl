@@ -87,7 +87,8 @@ var _ = Describe("_opViewFactory", func() {
     It("should return expected opView", func() {
 
       /* arrange */
-      expectedSubOpUrl := "subOpName"
+      expectedSubOpUrl := "subOpUrl"
+      expectedSubOpIsParallel := true
       expectedOpParamName := "opParamName"
       expectedOpParamDescription := "opParamDescription"
       expectedOpParamIsSecret := true
@@ -102,8 +103,10 @@ var _ = Describe("_opViewFactory", func() {
             expectedOpParamIsSecret,
           ),
         },
-        []models.OpSummaryView{
-          *models.NewOpSummaryView(expectedSubOpUrl),
+        []models.SubOpView{
+          *models.NewSubOpView(
+            expectedSubOpIsParallel,
+            expectedSubOpUrl),
         },
       )
 
@@ -124,6 +127,7 @@ var _ = Describe("_opViewFactory", func() {
           SubOps:[]models.OpFileSubOp{
             models.OpFileSubOp{
               Url:expectedSubOpUrl,
+              IsParallel:expectedSubOpIsParallel,
             },
           },
         }
