@@ -19,6 +19,31 @@ var _ = Describe("_sdk", func() {
 
     })
   })
+  Context(".CreateCollection() method", func() {
+    It("should invoke compositionRoot.createCollectionUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedCreateCollectionReq := models.NewCreateCollectionReq("", "", "")
+
+      // wire up fakes
+      fakeCreateCollectionUseCase := new(fakeCreateCollectionUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.CreateCollectionUseCaseReturns(fakeCreateCollectionUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.CreateCollection(*providedCreateCollectionReq)
+
+      /* assert */
+      Expect(fakeCreateCollectionUseCase.ExecuteArgsForCall(0)).To(Equal(*providedCreateCollectionReq))
+      Expect(fakeCreateCollectionUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
   Context(".CreateOp() method", func() {
     It("should invoke compositionRoot.createOpUseCase.Execute() with expected args & return result", func() {
 

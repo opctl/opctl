@@ -6,4 +6,3 @@ params:
     isSecure: true
   GIT_BRANCH:
     description: The git branch the coverage should be associated with
-    isSecure: false

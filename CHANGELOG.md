@@ -1,8 +1,11 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
 ### Added
+
 - create collection use case
 - create op use case
 - get collection use case
