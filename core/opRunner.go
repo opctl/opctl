@@ -184,7 +184,7 @@ err error,
 
         subOpUrl := path.Join(
           filepath.Dir(opBundleUrl),
-          subOp.Name,
+          subOp.Url,
         )
 
         eventChannel := make(chan models.Event)
