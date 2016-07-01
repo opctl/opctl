@@ -8,10 +8,8 @@ import (
   "github.com/opctl/engine/core/logging"
   "github.com/opspec-io/sdk-golang"
   "path/filepath"
-  "fmt"
   "path"
   "time"
-  "errors"
   "sync"
 )
 
@@ -75,14 +73,6 @@ parentOpRunId string,
 opRunId string,
 err error,
 ) {
-
-  err = this.guardOpRunNotRecursive(
-    parentOpRunId,
-    opBundleUrl,
-  )
-  if (nil != err) {
-    return
-  }
 
   _opFile, err := this.opspecSdk.GetOp(
     opBundleUrl,
@@ -241,39 +231,6 @@ err error,
   }()
 
   return
-
-}
-
-func (this _opRunner) guardOpRunNotRecursive(
-parentOpRunId string,
-opUrl string,
-) (err error) {
-
-  if ("" == parentOpRunId) {
-    // handle root op run
-
-    return
-  }
-
-  this.unfinishedOpRunsByIdMapRWMutex.RLock()
-  parentOpRun := this.unfinishedOpRunsByIdMap[parentOpRunId]
-  this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
-
-  if (opUrl == parentOpRun.OpRunOpUrl()) {
-    // handle infinite recursion
-
-    return errors.New(
-      fmt.Sprintf(
-        "Unable to run op with url=`%v`. Found op recursion.",
-        opUrl,
-      ),
-    )
-  }
-
-  return this.guardOpRunNotRecursive(
-    parentOpRun.ParentOpRunId(),
-    opUrl,
-  )
 
 }
 
