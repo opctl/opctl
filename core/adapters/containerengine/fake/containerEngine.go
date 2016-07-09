@@ -9,35 +9,25 @@ import (
 )
 
 type FakeContainerEngine struct {
-	InitOpStub        func(opBundlePath string, name string) (err error)
-	initOpMutex       sync.RWMutex
-	initOpArgsForCall []struct {
-		opBundlePath string
-		name         string
-	}
-	initOpReturns struct {
-		result1 error
-	}
-	RunOpStub        func(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error)
+	RunOpStub        func(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opRunId string, logger logging.Logger) (err error)
 	runOpMutex       sync.RWMutex
 	runOpArgsForCall []struct {
 		correlationId string
 		opArgs        map[string]string
 		opBundlePath  string
 		opName        string
-		opNamespace   string
+		opRunId       string
 		logger        logging.Logger
 	}
 	runOpReturns struct {
-		result1 int
-		result2 error
+		result1 error
 	}
-	KillOpRunStub        func(correlationId string, opBundlePath string, opNamespace string, logger logging.Logger) (err error)
+	KillOpRunStub        func(correlationId string, opBundlePath string, opRunId string, logger logging.Logger) (err error)
 	killOpRunMutex       sync.RWMutex
 	killOpRunArgsForCall []struct {
 		correlationId string
 		opBundlePath  string
-		opNamespace   string
+		opRunId       string
 		logger        logging.Logger
 	}
 	killOpRunReturns struct {
@@ -47,56 +37,22 @@ type FakeContainerEngine struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeContainerEngine) InitOp(opBundlePath string, name string) (err error) {
-	fake.initOpMutex.Lock()
-	fake.initOpArgsForCall = append(fake.initOpArgsForCall, struct {
-		opBundlePath string
-		name         string
-	}{opBundlePath, name})
-	fake.recordInvocation("InitOp", []interface{}{opBundlePath, name})
-	fake.initOpMutex.Unlock()
-	if fake.InitOpStub != nil {
-		return fake.InitOpStub(opBundlePath, name)
-	} else {
-		return fake.initOpReturns.result1
-	}
-}
-
-func (fake *FakeContainerEngine) InitOpCallCount() int {
-	fake.initOpMutex.RLock()
-	defer fake.initOpMutex.RUnlock()
-	return len(fake.initOpArgsForCall)
-}
-
-func (fake *FakeContainerEngine) InitOpArgsForCall(i int) (string, string) {
-	fake.initOpMutex.RLock()
-	defer fake.initOpMutex.RUnlock()
-	return fake.initOpArgsForCall[i].opBundlePath, fake.initOpArgsForCall[i].name
-}
-
-func (fake *FakeContainerEngine) InitOpReturns(result1 error) {
-	fake.InitOpStub = nil
-	fake.initOpReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeContainerEngine) RunOp(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error) {
+func (fake *FakeContainerEngine) RunOp(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opRunId string, logger logging.Logger) (err error) {
 	fake.runOpMutex.Lock()
 	fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
 		correlationId string
 		opArgs        map[string]string
 		opBundlePath  string
 		opName        string
-		opNamespace   string
+		opRunId       string
 		logger        logging.Logger
-	}{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
-	fake.recordInvocation("RunOp", []interface{}{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
+	}{correlationId, opArgs, opBundlePath, opName, opRunId, logger})
+	fake.recordInvocation("RunOp", []interface{}{correlationId, opArgs, opBundlePath, opName, opRunId, logger})
 	fake.runOpMutex.Unlock()
 	if fake.RunOpStub != nil {
-		return fake.RunOpStub(correlationId, opArgs, opBundlePath, opName, opNamespace, logger)
+		return fake.RunOpStub(correlationId, opArgs, opBundlePath, opName, opRunId, logger)
 	} else {
-		return fake.runOpReturns.result1, fake.runOpReturns.result2
+		return fake.runOpReturns.result1
 	}
 }
 
@@ -109,29 +65,28 @@ func (fake *FakeContainerEngine) RunOpCallCount() int {
 func (fake *FakeContainerEngine) RunOpArgsForCall(i int) (string, map[string]string, string, string, string, logging.Logger) {
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
-	return fake.runOpArgsForCall[i].correlationId, fake.runOpArgsForCall[i].opArgs, fake.runOpArgsForCall[i].opBundlePath, fake.runOpArgsForCall[i].opName, fake.runOpArgsForCall[i].opNamespace, fake.runOpArgsForCall[i].logger
+	return fake.runOpArgsForCall[i].correlationId, fake.runOpArgsForCall[i].opArgs, fake.runOpArgsForCall[i].opBundlePath, fake.runOpArgsForCall[i].opName, fake.runOpArgsForCall[i].opRunId, fake.runOpArgsForCall[i].logger
 }
 
-func (fake *FakeContainerEngine) RunOpReturns(result1 int, result2 error) {
+func (fake *FakeContainerEngine) RunOpReturns(result1 error) {
 	fake.RunOpStub = nil
 	fake.runOpReturns = struct {
-		result1 int
-		result2 error
-	}{result1, result2}
+		result1 error
+	}{result1}
 }
 
-func (fake *FakeContainerEngine) KillOpRun(correlationId string, opBundlePath string, opNamespace string, logger logging.Logger) (err error) {
+func (fake *FakeContainerEngine) KillOpRun(correlationId string, opBundlePath string, opRunId string, logger logging.Logger) (err error) {
 	fake.killOpRunMutex.Lock()
 	fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
 		correlationId string
 		opBundlePath  string
-		opNamespace   string
+		opRunId       string
 		logger        logging.Logger
-	}{correlationId, opBundlePath, opNamespace, logger})
-	fake.recordInvocation("KillOpRun", []interface{}{correlationId, opBundlePath, opNamespace, logger})
+	}{correlationId, opBundlePath, opRunId, logger})
+	fake.recordInvocation("KillOpRun", []interface{}{correlationId, opBundlePath, opRunId, logger})
 	fake.killOpRunMutex.Unlock()
 	if fake.KillOpRunStub != nil {
-		return fake.KillOpRunStub(correlationId, opBundlePath, opNamespace, logger)
+		return fake.KillOpRunStub(correlationId, opBundlePath, opRunId, logger)
 	} else {
 		return fake.killOpRunReturns.result1
 	}
@@ -146,7 +101,7 @@ func (fake *FakeContainerEngine) KillOpRunCallCount() int {
 func (fake *FakeContainerEngine) KillOpRunArgsForCall(i int) (string, string, string, logging.Logger) {
 	fake.killOpRunMutex.RLock()
 	defer fake.killOpRunMutex.RUnlock()
-	return fake.killOpRunArgsForCall[i].correlationId, fake.killOpRunArgsForCall[i].opBundlePath, fake.killOpRunArgsForCall[i].opNamespace, fake.killOpRunArgsForCall[i].logger
+	return fake.killOpRunArgsForCall[i].correlationId, fake.killOpRunArgsForCall[i].opBundlePath, fake.killOpRunArgsForCall[i].opRunId, fake.killOpRunArgsForCall[i].logger
 }
 
 func (fake *FakeContainerEngine) KillOpRunReturns(result1 error) {
@@ -159,8 +114,6 @@ func (fake *FakeContainerEngine) KillOpRunReturns(result1 error) {
 func (fake *FakeContainerEngine) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.initOpMutex.RLock()
-	defer fake.initOpMutex.RUnlock()
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
 	fake.killOpRunMutex.RLock()

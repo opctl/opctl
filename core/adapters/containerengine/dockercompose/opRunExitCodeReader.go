@@ -34,7 +34,7 @@ type _opRunExitCodeReader struct {
 func (this _opRunExitCodeReader) read(
 opBundlePath string,
 opName string,
-opNamespace string,
+opRunId string,
 ) (
 opExitCode int,
 err error,
@@ -45,7 +45,7 @@ err error,
   exec.Command(
     "docker-compose",
     "-p",
-    opNamespace,
+    opRunId,
     "ps",
     "-q",
     opName,

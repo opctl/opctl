@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 import (
-  "github.com/opctl/engine/core/ports"
   "github.com/opctl/engine/core/models"
   "github.com/opspec-io/sdk-golang"
+  "github.com/opctl/engine/core/ports"
 )
 
 type compositionRoot interface {
@@ -28,20 +28,23 @@ containerEngine ports.ContainerEngine,
     eventStream.Publish(logEntryEmittedEvent)
   }
 
-  opspecSdk:=opspec.New()
+  opspecSdk := opspec.New()
+
+  storage := newStorage()
 
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
     logger,
     opspecSdk,
+    storage,
     uniqueStringFactory,
   )
 
   /* use cases */
   runOpUseCase := newRunOpUseCase(
     opRunner,
-    opspecSdk,
+    logger,
     uniqueStringFactory,
   )
 
@@ -50,7 +53,10 @@ containerEngine ports.ContainerEngine,
   )
 
   killOpRunUseCase := newKillOpRunUseCase(
-    opRunner,
+    containerEngine,
+    eventStream,
+    logger,
+    storage,
     uniqueStringFactory,
   )
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- [Support new opspec subop `isParallel` flag](https://github.com/opctl/engine/issues/11)
+
+### Fixed
+- [Unable to simultaneously run multiple ops from same collection](https://github.com/opctl/engine/issues/10)
+
 ## 0.1.2 - 2016-06-22
 ### Fixed
 - [Missleading `variable is not set` message on op finish](https://github.com/opctl/engine/issues/5)

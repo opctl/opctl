@@ -1,4 +1,4 @@
-FROM docker/compose:1.7.1
+FROM docker/compose:1.8.0-rc2
 
 EXPOSE 42224
 

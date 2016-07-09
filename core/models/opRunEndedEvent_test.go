@@ -5,7 +5,7 @@ import (
   "fmt"
 )
 
-var _ = Describe("OpRunFinishedEvent", func() {
+var _ = Describe("OpRunEndedEvent", func() {
   Context("an instance", func() {
     It("should implement models.Event interface", func() {
 
@@ -13,7 +13,7 @@ var _ = Describe("OpRunFinishedEvent", func() {
       var objectUnderTest Event
 
       /* act/assert */
-      objectUnderTest = OpRunFinishedEvent{}
+      objectUnderTest = OpRunEndedEvent{}
       fmt.Sprint(objectUnderTest)
 
     })

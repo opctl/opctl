@@ -7,35 +7,6 @@ import (
 )
 
 var _ = Describe("containerEngine", func() {
-  Context(".InitOp() method", func() {
-    It("should invoke compositionRoot.initOpUseCase.Execute() with expected args & return result", func() {
-
-      /* arrange */
-      providedOpBundlePath := ""
-      providedOpName := ""
-
-      // wire up fakes
-      fakeInitOpUseCase := new(fakeInitOpUseCase)
-
-      fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.InitOpUseCaseReturns(fakeInitOpUseCase)
-
-      objectUnderTest := &_containerEngine{
-        compositionRoot:fakeCompositionRoot,
-      }
-
-      /* act */
-      objectUnderTest.InitOp(
-        providedOpBundlePath,
-        providedOpName,
-      )
-
-      /* assert */
-      Expect(fakeInitOpUseCase.ExecuteArgsForCall(0)).To(Equal(providedOpName))
-      Expect(fakeInitOpUseCase.ExecuteCallCount()).To(Equal(1))
-
-    })
-  })
   Context(".RunOp() method", func() {
     It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
 
@@ -44,7 +15,7 @@ var _ = Describe("containerEngine", func() {
       providedCorrelationId := ""
       providedOpBundlePath := ""
       providedOpName := ""
-      providedOpNamespace := ""
+      providedOpRunId := ""
       providedLogger := new(logging.Logger)
 
       fakeRunOpUseCase := new(fakeRunOpUseCase)
@@ -62,7 +33,7 @@ var _ = Describe("containerEngine", func() {
         providedOpArgs,
         providedOpBundlePath,
         providedOpName,
-        providedOpNamespace,
+        providedOpRunId,
         *providedLogger,
       )
 
@@ -71,13 +42,13 @@ var _ = Describe("containerEngine", func() {
       receivedArgs,
       receivedOpBundlePath,
       receivedOpName,
-      receivedOpNamespace,
+      receivedOpRunId,
       receivedLogger := fakeRunOpUseCase.ExecuteArgsForCall(0)
       Expect(receivedArgs).To(Equal(providedOpArgs))
       Expect(receivedCorrelationId).To(Equal(providedCorrelationId))
       Expect(receivedOpBundlePath).To(Equal(providedOpBundlePath))
       Expect(receivedOpName).To(Equal(providedOpName))
-      Expect(receivedOpNamespace).To(Equal(providedOpNamespace))
+      Expect(receivedOpRunId).To(Equal(providedOpRunId))
       Expect(receivedLogger).To(Equal(*providedLogger))
       Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
 

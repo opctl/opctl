@@ -3,15 +3,10 @@ package dockercompose
 
 import (
   "sync"
+
 )
 
 type fakeCompositionRoot struct {
-  InitOpUseCaseStub           func() initOpUseCase
-  initOpUseCaseMutex          sync.RWMutex
-  initOpUseCaseArgsForCall    []struct{}
-  initOpUseCaseReturns        struct {
-                                result1 initOpUseCase
-                              }
   RunOpUseCaseStub            func() runOpUseCase
   runOpUseCaseMutex           sync.RWMutex
   runOpUseCaseArgsForCall     []struct{}
@@ -26,31 +21,6 @@ type fakeCompositionRoot struct {
                               }
   invocations                 map[string][][]interface{}
   invocationsMutex            sync.RWMutex
-}
-
-func (fake *fakeCompositionRoot) InitOpUseCase() initOpUseCase {
-  fake.initOpUseCaseMutex.Lock()
-  fake.initOpUseCaseArgsForCall = append(fake.initOpUseCaseArgsForCall, struct{}{})
-  fake.recordInvocation("InitOpUseCase", []interface{}{})
-  fake.initOpUseCaseMutex.Unlock()
-  if fake.InitOpUseCaseStub != nil {
-    return fake.InitOpUseCaseStub()
-  } else {
-    return fake.initOpUseCaseReturns.result1
-  }
-}
-
-func (fake *fakeCompositionRoot) InitOpUseCaseCallCount() int {
-  fake.initOpUseCaseMutex.RLock()
-  defer fake.initOpUseCaseMutex.RUnlock()
-  return len(fake.initOpUseCaseArgsForCall)
-}
-
-func (fake *fakeCompositionRoot) InitOpUseCaseReturns(result1 initOpUseCase) {
-  fake.InitOpUseCaseStub = nil
-  fake.initOpUseCaseReturns = struct {
-    result1 initOpUseCase
-  }{result1}
 }
 
 func (fake *fakeCompositionRoot) RunOpUseCase() runOpUseCase {
@@ -106,8 +76,6 @@ func (fake *fakeCompositionRoot) KillOpRunUseCaseReturns(result1 killOpRunUseCas
 func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
-  fake.initOpUseCaseMutex.RLock()
-  defer fake.initOpUseCaseMutex.RUnlock()
   fake.runOpUseCaseMutex.RLock()
   defer fake.runOpUseCaseMutex.RUnlock()
   fake.killOpRunUseCaseMutex.RLock()

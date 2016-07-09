@@ -15,10 +15,7 @@ var _ = Describe("uniqueStringFactory", func() {
       /* act/assert */
       for i := 0; i < 100000; i++ {
 
-        uniqueString, err := objectUnderTest.Construct()
-        if (nil != err) {
-          Fail(err.Error())
-        }
+        uniqueString := objectUnderTest.Construct()
 
         if _, ok := stringsReturnedFromConstruct[uniqueString]; ok {
           Fail("same string returned twice")

@@ -4,9 +4,11 @@ package dockercompose
 
 import (
   "os/exec"
-  "errors"
   "github.com/opctl/engine/core/logging"
   "fmt"
+  "github.com/opctl/engine/core/models"
+  "time"
+  "errors"
 )
 
 type runOpUseCase interface {
@@ -15,9 +17,9 @@ type runOpUseCase interface {
   opArgs map[string]string,
   opBundlePath string,
   opName string,
-  opNamespace string,
+  opRunId string,
   logger logging.Logger,
-  ) (exitCode int, err error)
+  ) (err error)
 }
 
 func newRunOpUseCase(
@@ -42,16 +44,16 @@ correlationId string,
 opArgs map[string]string,
 opBundlePath string,
 opName string,
-opNamespace string,
+opRunId string,
 logger logging.Logger,
-) (exitCode int, err error) {
+) (err error) {
 
   // up
   dockerComposeUpCmd :=
   exec.Command(
     "docker-compose",
     "-p",
-    opNamespace,
+    opRunId,
     "up",
     "--force-recreate",
     "--abort-on-container-exit",
@@ -71,36 +73,47 @@ logger logging.Logger,
     )
   }
 
-  err = dockerComposeUpCmd.Run()
-  if (nil != err) {
-    exitCode = 1
+  runError := dockerComposeUpCmd.Run()
+  if (nil != runError) {
+    logger(
+      models.NewLogEntryEmittedEvent(
+        correlationId,
+        time.Now().UTC(),
+        runError.Error(),
+        logging.StdErrStream,
+      ),
+    )
   }
 
-  exitCode, err = this.opRunExitCodeReader.read(
+  exitCode, exitCodeReadError := this.opRunExitCodeReader.read(
     opBundlePath,
     opName,
-    opNamespace,
+    opRunId,
   )
 
-  defer func() {
+  if (nil != exitCodeReadError) {
+    err = errors.New(fmt.Sprintf("unable to read op exit code. Error was: %v", exitCodeReadError))
+  } else if ( 0 != exitCode) {
+    err = errors.New(fmt.Sprintf("nonzero op exit code. Exit code was: %v", exitCode))
+  }
 
-    flushOpRunResourcesError := this.opRunResourceFlusher.flush(
+  defer func() {
+    flushError := this.opRunResourceFlusher.flush(
       correlationId,
       opArgs,
       opBundlePath,
-      opNamespace,
+      opRunId,
       logger,
     )
-    if (nil != flushOpRunResourcesError) {
-
-      if (nil == err) {
-        err = flushOpRunResourcesError
-      } else {
-        err = errors.New(err.Error() + "\n" + flushOpRunResourcesError.Error())
-      }
-
-      exitCode = 1
-
+    if (nil != flushError) {
+      logger(
+        models.NewLogEntryEmittedEvent(
+          correlationId,
+          time.Now().UTC(),
+          flushError.Error(),
+          logging.StdErrStream,
+        ),
+      )
     }
 
   }()

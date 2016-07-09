@@ -3,7 +3,6 @@ package core
 
 import (
   "sync"
-
   "github.com/opctl/engine/core/models"
 )
 

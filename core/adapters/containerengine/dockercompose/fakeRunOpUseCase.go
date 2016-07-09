@@ -8,40 +8,39 @@ import (
 )
 
 type fakeRunOpUseCase struct {
-  ExecuteStub        func(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error)
+  ExecuteStub        func(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opRunId string, logger logging.Logger) (err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
     correlationId string
     opArgs        map[string]string
     opBundlePath  string
     opName        string
-    opNamespace   string
+    opRunId       string
     logger        logging.Logger
   }
   executeReturns     struct {
-                       result1 int
-                       result2 error
+                       result1 error
                      }
   invocations        map[string][][]interface{}
   invocationsMutex   sync.RWMutex
 }
 
-func (fake *fakeRunOpUseCase) Execute(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opNamespace string, logger logging.Logger) (exitCode int, err error) {
+func (fake *fakeRunOpUseCase) Execute(correlationId string, opArgs map[string]string, opBundlePath string, opName string, opRunId string, logger logging.Logger) (err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
     correlationId string
     opArgs        map[string]string
     opBundlePath  string
     opName        string
-    opNamespace   string
+    opRunId       string
     logger        logging.Logger
-  }{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
-  fake.recordInvocation("Execute", []interface{}{correlationId, opArgs, opBundlePath, opName, opNamespace, logger})
+  }{correlationId, opArgs, opBundlePath, opName, opRunId, logger})
+  fake.recordInvocation("Execute", []interface{}{correlationId, opArgs, opBundlePath, opName, opRunId, logger})
   fake.executeMutex.Unlock()
   if fake.ExecuteStub != nil {
-    return fake.ExecuteStub(correlationId, opArgs, opBundlePath, opName, opNamespace, logger)
+    return fake.ExecuteStub(correlationId, opArgs, opBundlePath, opName, opRunId, logger)
   } else {
-    return fake.executeReturns.result1, fake.executeReturns.result2
+    return fake.executeReturns.result1
   }
 }
 
@@ -54,15 +53,14 @@ func (fake *fakeRunOpUseCase) ExecuteCallCount() int {
 func (fake *fakeRunOpUseCase) ExecuteArgsForCall(i int) (string, map[string]string, string, string, string, logging.Logger) {
   fake.executeMutex.RLock()
   defer fake.executeMutex.RUnlock()
-  return fake.executeArgsForCall[i].correlationId, fake.executeArgsForCall[i].opArgs, fake.executeArgsForCall[i].opBundlePath, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].opNamespace, fake.executeArgsForCall[i].logger
+  return fake.executeArgsForCall[i].correlationId, fake.executeArgsForCall[i].opArgs, fake.executeArgsForCall[i].opBundlePath, fake.executeArgsForCall[i].opName, fake.executeArgsForCall[i].opRunId, fake.executeArgsForCall[i].logger
 }
 
-func (fake *fakeRunOpUseCase) ExecuteReturns(result1 int, result2 error) {
+func (fake *fakeRunOpUseCase) ExecuteReturns(result1 error) {
   fake.ExecuteStub = nil
   fake.executeReturns = struct {
-    result1 int
-    result2 error
-  }{result1, result2}
+    result1 error
+  }{result1}
 }
 
 func (fake *fakeRunOpUseCase) Invocations() map[string][][]interface{} {

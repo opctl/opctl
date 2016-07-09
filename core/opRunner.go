@@ -7,27 +7,22 @@ import (
   "github.com/opctl/engine/core/ports"
   "github.com/opctl/engine/core/logging"
   "github.com/opspec-io/sdk-golang"
-  "path/filepath"
-  "path"
+  opspecModels "github.com/opspec-io/sdk-golang/models"
   "time"
   "sync"
+  "path"
+  "path/filepath"
+  "errors"
 )
 
 type opRunner interface {
   Run(
   correlationId string,
   opArgs map[string]string,
-  opNamespace string,
-  opUrl string,
+  opBundleUrl string,
+  opRunId string,
   parentOpRunId string,
-  ) (
-  opRunId string,
-  err error,
-  )
-
-  Kill(
-  correlationId string,
-  opRunId string,
+  rootOpRunId string,
   ) (
   err error,
   )
@@ -38,6 +33,7 @@ containerEngine ports.ContainerEngine,
 eventStream eventStream,
 logger logging.Logger,
 opspecSdk opspec.Sdk,
+storage storage,
 uniqueStringFactory uniqueStringFactory,
 ) opRunner {
 
@@ -46,59 +42,42 @@ uniqueStringFactory uniqueStringFactory,
     eventStream:eventStream,
     logger:logger,
     opspecSdk:opspecSdk,
+    storage:storage,
     uniqueStringFactory:uniqueStringFactory,
-    unfinishedOpRunsByIdMap:make(map[string]models.OpRunStartedEvent),
   }
 
 }
 
 type _opRunner struct {
-  containerEngine                ports.ContainerEngine
-  eventStream                    eventStream
-  logger                         logging.Logger
-  opspecSdk                      opspec.Sdk
-  uniqueStringFactory            uniqueStringFactory
-
-  unfinishedOpRunsByIdMapRWMutex sync.RWMutex
-  unfinishedOpRunsByIdMap        map[string]models.OpRunStartedEvent
+  containerEngine     ports.ContainerEngine
+  eventStream         eventStream
+  logger              logging.Logger
+  opspecSdk           opspec.Sdk
+  storage             storage
+  uniqueStringFactory uniqueStringFactory
 }
 
 func (this _opRunner) Run(
 correlationId string,
 opArgs map[string]string,
-opNamespace string,
 opBundleUrl string,
-parentOpRunId string,
-) (
 opRunId string,
+parentOpRunId string,
+rootOpRunId string,
+) (
 err error,
 ) {
 
-  _opFile, err := this.opspecSdk.GetOp(
+  if (rootOpRunId != opRunId && this.storage.isRootOpRunKilled(rootOpRunId)) {
+    // guard: root op run not killed out of band
+    return
+  }
+
+  op, err := this.opspecSdk.GetOp(
     opBundleUrl,
   )
   if (nil != err) {
     return
-  }
-
-  opRunId, err = this.uniqueStringFactory.Construct()
-  if (nil != err) {
-    return
-  }
-
-  var rootOpRunId string
-  if ("" == parentOpRunId) {
-    // handle root op run
-
-    rootOpRunId = opRunId
-
-  } else {
-    // handle sub op run
-
-    this.unfinishedOpRunsByIdMapRWMutex.RLock()
-    rootOpRunId = this.unfinishedOpRunsByIdMap[parentOpRunId].RootOpRunId()
-    this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
-
   }
 
   opRunStartedEvent := models.NewOpRunStartedEvent(
@@ -110,123 +89,53 @@ err error,
     time.Now().UTC(),
   )
 
+  this.storage.addOpRunStartedEvent(opRunStartedEvent)
+
   this.eventStream.Publish(opRunStartedEvent)
 
-  this.unfinishedOpRunsByIdMapRWMutex.Lock()
-  this.unfinishedOpRunsByIdMap[opRunId] = opRunStartedEvent
-  this.unfinishedOpRunsByIdMapRWMutex.Unlock()
+  if (len(op.SubOps) != 0) {
+    err = this.runSubOps(
+      correlationId,
+      opArgs,
+      opBundleUrl,
+      parentOpRunId,
+      rootOpRunId,
+      op.SubOps,
+    )
+  } else {
+    err = this.containerEngine.RunOp(
+      correlationId,
+      opArgs,
+      opBundleUrl,
+      op.Name,
+      opRunId,
+      this.logger,
+    )
+  }
 
-  go func() {
+  defer func() {
 
-    var opRunExitCode int
-    defer func() {
-
-      this.unfinishedOpRunsByIdMapRWMutex.RLock()
-      _, isUnfinishedOpRun := this.unfinishedOpRunsByIdMap[opRunId]
-      this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
-
-      if (isUnfinishedOpRun) {
-
-        this.unfinishedOpRunsByIdMapRWMutex.Lock()
-        delete(this.unfinishedOpRunsByIdMap, opRunId)
-        this.unfinishedOpRunsByIdMapRWMutex.Unlock()
-
-        this.eventStream.Publish(
-          models.NewOpRunFinishedEvent(
-            correlationId,
-            opRunExitCode,
-            opRunId,
-            rootOpRunId,
-            time.Now().UTC(),
-          ),
-        )
-
-      }
-
-    }()
-
-    if (len(_opFile.SubOps) == 0) {
-      // run op
-
-      opRunExitCode, err = this.containerEngine.RunOp(
-        correlationId,
-        opArgs,
-        opBundleUrl,
-        _opFile.Name,
-        opNamespace,
-        this.logger,
-      )
-      if (nil != err) {
-        this.logger(
-          models.NewLogEntryEmittedEvent(
-            correlationId,
-            time.Now().UTC(),
-            err.Error(),
-            logging.StdErrStream,
-          ),
-        )
-      }
-
-    } else {
-      // run sub ops
-
-      for _, subOp := range _opFile.SubOps {
-
-        subOpUrl := path.Join(
-          filepath.Dir(opBundleUrl),
-          subOp.Url,
-        )
-
-        eventChannel := make(chan models.Event)
-        this.eventStream.RegisterSubscriber(eventChannel)
-        defer this.eventStream.UnregisterSubscriber(eventChannel)
-
-        var subOpRunId string
-        subOpRunId, err = this.Run(
-          correlationId,
-          opArgs,
-          opNamespace,
-          subOpUrl,
-          opRunId,
-        )
-        if (nil != err) {
-          this.logger(
-            models.NewLogEntryEmittedEvent(
-              correlationId,
-              time.Now().UTC(),
-              err.Error(),
-              logging.StdErrStream,
-            ),
-          )
-        }
-
-        eventLoop:for {
-          event := <-eventChannel
-
-          switch event := event.(type) {
-          case models.OpRunFinishedEvent:
-            if (event.OpRunId() == subOpRunId) {
-
-              this.eventStream.UnregisterSubscriber(eventChannel)
-
-              if (event.OpRunExitCode() != 0) {
-                // if non-zero exit code return immediately
-
-                opRunExitCode = event.OpRunExitCode()
-                return
-
-              } else {
-                break eventLoop
-              }
-            }
-          default: // no op
-          }
-
-        }
-
-      }
-
+    if (this.storage.isRootOpRunKilled(rootOpRunId)) {
+      // ignore killed op runs; handled by killOpRunUseCase
+      return
     }
+
+    var opRunOutcome string
+    if (nil != err) {
+      opRunOutcome = models.OpRunOutcomeFailed
+    } else {
+      opRunOutcome = models.OpRunOutcomeSucceeded
+    }
+
+    this.eventStream.Publish(
+      models.NewOpRunEndedEvent(
+        correlationId,
+        opRunId,
+        opRunOutcome,
+        rootOpRunId,
+        time.Now().UTC(),
+      ),
+    )
 
   }()
 
@@ -234,77 +143,93 @@ err error,
 
 }
 
-func (this _opRunner) Kill(
+func (this _opRunner) runSubOps(
 correlationId string,
-opRunId string,
+opArgs map[string]string,
+opBundleUrl string,
+parentOpRunId string,
+rootOpRunId string,
+subOps []opspecModels.SubOpView,
 ) (
 err error,
 ) {
 
-  // get rootOpRunId
-  this.unfinishedOpRunsByIdMapRWMutex.RLock()
-  opRun := this.unfinishedOpRunsByIdMap[opRunId]
-  this.unfinishedOpRunsByIdMapRWMutex.RUnlock()
+  var wg sync.WaitGroup
+  var isSubOpRunErrors bool
 
-  opCollection, err := this.opspecSdk.GetCollection(
-    filepath.Dir(opRun.OpRunOpUrl()),
-  )
-  if (nil != err) {
-    return
-  }
+  // run sub ops
+  for _, subOp := range subOps {
 
-  this.unfinishedOpRunsByIdMapRWMutex.Lock()
-  for _, unfinishedOpRun := range this.unfinishedOpRunsByIdMap {
+    wg.Add(1)
 
-    // remove all ops with this root
-    if (unfinishedOpRun.RootOpRunId() == opRun.RootOpRunId()) {
+    // currently only support embedded sub ops
+    subOpBundleUrl := path.Join(
+      filepath.Dir(opBundleUrl),
+      subOp.Url,
+    )
 
-      delete(this.unfinishedOpRunsByIdMap, unfinishedOpRun.OpRunId())
+    subOpRunId := this.uniqueStringFactory.Construct()
 
-      this.eventStream.Publish(
-        models.NewOpRunKilledEvent(
-          correlationId,
-          unfinishedOpRun.OpRunId(),
-          opRun.RootOpRunId(),
-          time.Now(),
-        ),
-      )
-
+    if subOp.IsParallel {
+      // handle parallel
       go func() {
-
-        // @TODO: handle failure scenario; currently this can leak docker-compose resources
-        err := this.containerEngine.KillOpRun(
+        subOpRunErr := this.Run(
           correlationId,
-          unfinishedOpRun.OpRunOpUrl(),
-          opCollection.Name,
-          this.logger,
+          opArgs,
+          subOpBundleUrl,
+          subOpRunId,
+          parentOpRunId,
+          rootOpRunId,
         )
-        if (nil != err) {
+        if (nil != subOpRunErr) {
+          isSubOpRunErrors = true
           this.logger(
             models.NewLogEntryEmittedEvent(
               correlationId,
               time.Now().UTC(),
-              err.Error(),
+              subOpRunErr.Error(),
               logging.StdErrStream,
             ),
           )
         }
 
-        this.eventStream.Publish(
-          models.NewOpRunFinishedEvent(
+        wg.Done()
+      }()
+    } else {
+      // handle synchronous
+      subOpRunErr := this.Run(
+        correlationId,
+        opArgs,
+        subOpBundleUrl,
+        subOpRunId,
+        parentOpRunId,
+        rootOpRunId,
+      )
+      if (nil != subOpRunErr) {
+        isSubOpRunErrors = true
+        this.logger(
+          models.NewLogEntryEmittedEvent(
             correlationId,
-            138,
-            opRunId,
-            opRun.RootOpRunId(),
             time.Now().UTC(),
+            subOpRunErr.Error(),
+            logging.StdErrStream,
           ),
         )
+      }
 
-      }()
+      wg.Done()
     }
 
   }
-  this.unfinishedOpRunsByIdMapRWMutex.Unlock()
+
+  wg.Wait()
+
+  defer func() {
+    if (isSubOpRunErrors) {
+      err = errors.New("one or more sub op runs had errors")
+    }
+  }()
 
   return
+
 }

@@ -4,8 +4,8 @@ package core
 
 import (
   "github.com/opctl/engine/core/models"
-  "github.com/opspec-io/sdk-golang"
-  "path/filepath"
+  "github.com/opctl/engine/core/logging"
+  "time"
 )
 
 type runOpUseCase interface {
@@ -20,13 +20,13 @@ type runOpUseCase interface {
 
 func newRunOpUseCase(
 opRunner opRunner,
-opspecSdk opspec.Sdk,
+logger logging.Logger,
 uniqueStringFactory uniqueStringFactory,
 ) runOpUseCase {
 
   return &_runOpUseCase{
     opRunner:opRunner,
-    opspecSdk:opspecSdk,
+    logger:logger,
     uniqueStringFactory:uniqueStringFactory,
   }
 
@@ -34,7 +34,7 @@ uniqueStringFactory uniqueStringFactory,
 
 type _runOpUseCase struct {
   opRunner            opRunner
-  opspecSdk           opspec.Sdk
+  logger              logging.Logger
   uniqueStringFactory uniqueStringFactory
 }
 
@@ -46,25 +46,30 @@ correlationId string,
 err error,
 ) {
 
-  correlationId, err = this.uniqueStringFactory.Construct()
-  if (nil != err) {
-    return
-  }
+  correlationId = this.uniqueStringFactory.Construct()
 
-  opCollection, err := this.opspecSdk.GetCollection(
-    filepath.Dir(req.OpUrl),
-  )
-  if (nil != err) {
-    return
-  }
+  opRunId = this.uniqueStringFactory.Construct()
 
-  opRunId, err = this.opRunner.Run(
-    correlationId,
-    req.Args,
-    opCollection.Name,
-    req.OpUrl,
-    "",
-  )
+  go func() {
+    err = this.opRunner.Run(
+      correlationId,
+      req.Args,
+      req.OpUrl,
+      opRunId,
+      "",
+      opRunId,
+    )
+    if (nil != err) {
+      this.logger(
+        models.NewLogEntryEmittedEvent(
+          correlationId,
+          time.Now().UTC(),
+          err.Error(),
+          logging.StdErrStream,
+        ),
+      )
+    }
+  }()
 
   return
 

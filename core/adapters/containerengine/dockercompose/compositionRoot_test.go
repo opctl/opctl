@@ -7,21 +7,6 @@ import (
 
 var _ = Describe("compositionRoot", func() {
 
-  Context("InitOpUseCase", func() {
-    It("should not return nil", func() {
-
-      /* arrange */
-      objectUnderTest, _ := newCompositionRoot()
-
-      /* act */
-      actualInitOpUseCase := objectUnderTest.InitOpUseCase()
-
-      /* assert */
-      Expect(actualInitOpUseCase).NotTo(BeNil())
-
-    })
-  })
-
   Context("KillOpRunUseCase", func() {
     It("should return an instance of type killOpRunUseCase", func() {
 
@@ -51,5 +36,4 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-
 })
