@@ -1,5 +1,3 @@
-A manifest file for an op.
-
 # Name
 
 [MUST](index.md#mustmay) be named `op.yml`
