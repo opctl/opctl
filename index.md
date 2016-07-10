@@ -13,8 +13,12 @@
 
 Op Spec is an op specification format.
 
-Primary concerns of op spec are to make operations: - portable across
-runtimes - distributable - discoverable - versionable
+Primary concerns of op spec are to make operations: 
+- portable across runtimes 
+- distributable 
+- fully specified
+- discoverable 
+- versionable
 
 ## Terminology
 
