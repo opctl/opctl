@@ -17,6 +17,6 @@ attributes:
 
 ```YAML
 name: facebook-golang
-description: the default operations used in all golang projects at facebook 
+description: dev ops for golang projects at facebook 
 ```
 
