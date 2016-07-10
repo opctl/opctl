@@ -11,9 +11,9 @@
 
 ## Purpose
 
-Op Spec is an op specification format.
+Opspec is an op specification format.
 
-Primary concerns of op spec are to make operations: 
+Primary concerns of opspec are to make operations: 
 - portable (execution & distribution)
 - fully specified
 - discoverable 
