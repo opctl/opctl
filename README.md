@@ -24,19 +24,15 @@ be considered stable."*
 ### 1) Start dockerized engine
 
 ```SHELL
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock -v /Users:/Users -p 42224:42224 --name opctl_engine opctl/engine
+docker run \
+-d \ # run as daemon
+-v /var/run/docker.sock:/var/run/docker.sock \ # allow access to docker socket
+-v /Users:/Users \ # enable ops in host `/Users` dir
+-p 42224:42224 \ # expose engine TCP API
+--restart always \ # restart on failure
+--name opctl_engine \
+opctl/engine # unstable version of engine
 ```
-
-explanation:
-
-- `-d` run as daemon
-- `-v /var/run/docker.sock:/var/run/docker.sock` bind mount host docker
-  socket
-- `-v /Users:/Users` bind mount host `/Users` dir
-- `-p 42224:42224` expose container port `42224` via docker-machine port
-  `42224`
-- `opctl/engine` use `latest` version
-  [opctl/engine](https://hub.docker.com/r/opctl/engine/) image
 
 ### 2) Explore the engine API via Swagger UI
 
