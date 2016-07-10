@@ -5,7 +5,7 @@
     - [Terminology](#terminology)
 - [Op](#op)
 - [Collection](#collection)
-- [Default Collection](#default-op-collection)
+    - [Default Collection](#default-op-collection)
 
 # Introduction
 
@@ -73,11 +73,10 @@ adhering to the following criteria:
 
 ```TEXT
   |-- collection.yml
-  |-- .common
   ... (op bundles)
 ```
 
-# Default Collection
+## Default Collection
 
 A default collection may be designated for a directory according to the
 following rules:
