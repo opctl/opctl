@@ -79,7 +79,7 @@ adhering to the following criteria:
 ## Default Collection
 
 A default collection may be designated for a directory according to the
-following rules:
+following criteria:
 
 - [MUST](#mustmay) be contained by an `.opspec` directory
 
