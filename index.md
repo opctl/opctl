@@ -73,7 +73,7 @@ adhering to the following criteria:
 
 ```TEXT
   |-- collection.yml
-  ... (op bundles)
+  ... (embedded op bundles)
 ```
 
 ## Default Collection
