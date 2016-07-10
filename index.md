@@ -14,8 +14,7 @@
 Op Spec is an op specification format.
 
 Primary concerns of op spec are to make operations: 
-- portable across runtimes 
-- distributable 
+- portable (execution & distribution)
 - fully specified
 - discoverable 
 - versionable
