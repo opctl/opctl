@@ -1,5 +1,3 @@
-A manifest file for a collection.
-
 # Name
 
 [MUST](index.md#mustmay) be named `collection.yml`
