@@ -1,0 +1,134 @@
+swagger: '2.0'
+info:
+  version: '0.1'
+  title: opspec.registry
+  description: opspec registry api
+paths:
+  /repos/{name}: 
+    parameters:
+      - name: name
+        in: path
+        description: The [namespace qualified] name of a repo
+        required: true
+        type: string
+    get: 
+      tags:
+      - repos
+      description: Gets the repo with the provided name
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      responses:
+        '200':
+          description: A repo
+          schema:
+            $ref: '#/definitions/repoView'
+  /repos/{name}/versions:
+    parameters:
+      - name: name
+        in: path
+        description: The [namespace qualified] name of a repo
+        required: true
+        type: string
+    get: 
+      tags:
+      - repos
+      description: Lists versions of a repo
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      responses:
+        '200':
+          description: List of repo versions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/repoVersion'
+    post:
+      tags:
+      - repos
+      description: Adds a version
+      consumes:
+      - application/octet-stream
+      parameters:
+        - name: bundle
+          in: body
+          description: An opspec bundle
+          required: true
+          schema:
+            type: string
+            format: binary
+      responses:
+        '200':
+          description: Success
+  /repos/{name}/versions/{version}/bundle: 
+    parameters:
+      - name: name
+        in: path
+        description: A [namespace qualified] name of a repo
+        required: true
+        type: string
+      - name: version
+        in: path
+        description: A repo version
+        required: true
+        type: string
+    get: 
+      tags:
+      - repos
+      description: Gets the bundle for the provided repo version
+      produces:
+      - application/octet-stream
+      responses:
+        '200':
+          description: An opspec bundle
+          schema:
+            type: string
+            format: binary
+  /repos/{name}/versions/{version}/manifest: 
+    parameters:
+      - name: name
+        in: path
+        description: A [namespace qualified] name of a repo
+        required: true
+        type: string
+      - name: version
+        in: path
+        description: A repo version
+        required: true
+        type: string
+    get: 
+      tags:
+      - repos
+      description: Gets the manifest for the provided repo version
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: A manifest (op.yml or collection.yml)
+          schema:
+            type: string
+            format: binary
+definitions:
+  repoView:
+    type: object
+    required:
+    - latestVersion
+    properties:
+      latestVersion:
+        $ref: '#/definitions/repoVersion'
+  repoVersion:
+    type: object
+    required:
+    - version
+    - description
+    properties:
+      version:
+        description: A version adhering to the Semantic Versioning 2.0.0 spec
+        type: string
+      description:
+        type: string

@@ -1,0 +1,149 @@
+swagger: '2.0'
+info:
+  version: '0.1'
+  title: opspec.engine
+  description: opspec engine api
+consumes:
+  - application/json
+produces:
+  - application/json
+  - text/html
+paths:
+  /event-stream:
+    get:
+      summary: Get event stream
+      description: The connection will be upgraded to use the websocket protocol.
+      tags:
+        - event-stream
+      responses:
+        '101':
+          description: Switching Protocols
+          headers:
+            Upgrade:
+              type: string
+              enum:
+                - websocket
+            Connection:
+              type: string
+              enum:
+                - Upgrade
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EventMsg'
+        '400':
+          description: Bad Request
+          schema:
+            type: string
+  /liveness:
+    get:
+      summary: Get liveness of engine
+      tags:
+        - liveness
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Internal Server Error
+  /op-runs:
+    post:
+      summary: Run op
+      tags:
+        - op-runs
+      parameters:
+        - name: body
+          in: body
+          description: The body of the request
+          schema:
+            title: RunOpReq
+            type: object
+            required:
+              - opUrl
+            properties:
+              args:
+                type: object
+                additionalProperties:
+                  $ref: '#/definitions/OpRunArg'
+              opUrl:
+                type: string
+      responses:
+        '201':
+          description: Created
+          headers:
+            Correlation-Id:
+              type: string
+          schema:
+            description: The id of the op-run
+            type: string
+        '400':
+          description: Bad Request
+          schema:
+            type: string
+        '500':
+          description: Internal Server Error
+          schema:
+            type: string
+  /op-run-kills:
+    post:
+      summary: Kill op run
+      tags:
+        - op-run-kills
+      parameters:
+        - name: body
+          in: body
+          description: The body of the request
+          required: true
+          schema:
+            title: KillOpRunReq
+            type: object
+            required:
+              - opRunId
+            properties:
+              opRunId:
+                type: string
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          schema:
+            type: string
+        '500':
+          description: Internal Server Error
+          schema:
+            type: string
+definitions:
+  EventMsg:
+    title: EventMsg
+    description: A message containing event data
+    type: object
+    discriminator: type
+    required:
+      - type
+      - data
+    properties:
+      type:
+        type: string
+      data:
+        type: object
+        required:
+          - timestamp
+          - correlationId
+        properties:
+          timestamp:
+            type: string
+            format: dateTime
+          correlationId:
+            type: string
+  OpRunArg:
+    title: OpRunArg
+    description: An arg to be provided to the op
+    type: object
+    required:
+      - name
+      - value
+    properties:
+      name:
+        type: string
+      value:
+        type: string
