@@ -45,6 +45,7 @@ containerEngine ports.ContainerEngine,
   runOpUseCase := newRunOpUseCase(
     opRunner,
     logger,
+    newPathNormalizer(),
     uniqueStringFactory,
   )
 

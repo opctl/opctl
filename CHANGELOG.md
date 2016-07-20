@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.4 - 2016-07-20
+### Added
+- normalization of windows paths if provided to op run
+
 ## 0.1.3 - 2016-07-09
 ### Added
 - [Support new opspec subop `isParallel` flag](https://github.com/opctl/engine/issues/11)

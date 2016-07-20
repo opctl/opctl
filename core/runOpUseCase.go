@@ -21,12 +21,14 @@ type runOpUseCase interface {
 func newRunOpUseCase(
 opRunner opRunner,
 logger logging.Logger,
+pathNormalizer pathNormalizer,
 uniqueStringFactory uniqueStringFactory,
 ) runOpUseCase {
 
   return &_runOpUseCase{
     opRunner:opRunner,
     logger:logger,
+    pathNormalizer:pathNormalizer,
     uniqueStringFactory:uniqueStringFactory,
   }
 
@@ -35,6 +37,7 @@ uniqueStringFactory uniqueStringFactory,
 type _runOpUseCase struct {
   opRunner            opRunner
   logger              logging.Logger
+  pathNormalizer      pathNormalizer
   uniqueStringFactory uniqueStringFactory
 }
 
@@ -54,7 +57,7 @@ err error,
     err = this.opRunner.Run(
       correlationId,
       req.Args,
-      req.OpUrl,
+      this.pathNormalizer.Normalize(req.OpUrl),
       opRunId,
       "",
       opRunId,
