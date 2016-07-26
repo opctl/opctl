@@ -3,10 +3,9 @@
 - [Introduction](#introduction)
     - [Purpose](#purpose)
     - [Terminology](#terminology)
+- [Bundle](#bundle)
 - [Op](#op)
-    - [Op Bundle](#op-bundle)
 - [Collection](#collection)
-    - [Collection Bundle](#collection-bundle)
     - [Default Collection](#default-collection)
 - [Registry](#registry)
     - [Registry API](#registry-api)
@@ -23,9 +22,7 @@ Opspec is a framework for specifying, distributing, and executing ops
 Primary concerns of opspec are to make operations:
 
 - composable
-- containerized
-- distributable
-- fully specified
+- portable
 - versionable
 
 ## Terminology
@@ -34,67 +31,34 @@ Primary concerns of opspec are to make operations:
 
 a string matching the regex `^[a-zA-Z0-9][a-zA-Z0-9_.-]+$`
 
-### FILE_BUNDLE
-
-a file directory with a defined structure allowing related files to be
-grouped together as a conceptually single item (see <a
-href="https://en.wikipedia.org/wiki/Bundle_(OS_X)">Bundle_(OS_X)</a> for
-similar usage)
-
 ### MUST/MAY
 
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
 
+# Bundle
+
+Bundles are directories containing a manifest and artifacts (dependent
+files/folders).
+
+Once defined, **bundles**, can be distributed via any traditional means
+of file transfer or published to a [Registry](#registry)
+
 # Op
 
-An op is a process or task.
+A task; work.
 
+Ops are defined via a [Bundle](#bundle) containing an
+[op manifest](op-manifest.md).
 
-## Op Bundle
-
-Ops are defined in the form of a [FILE_BUNDLE](#file_bundle) adhering to
-the following criteria:
-
-- [MUST](#mustmay) contain an [op file](op-file.md) at the root of the
-  op directory.
-- [MUST](#mustmay) contain an
-  [op docker compose file](op-docker-compose-file.md) at the root of the
-  op directory.
-
-**example op bundle**  
-
-```TEXT
-  |-- op.yml
-  |-- docker-compose.yml
-  ... (op specific files/dirs)
-```
-
-Once defined, **op bundles**, can be distributed via any traditional
-means of file transfer.
 
 # Collection
 
-A collection groups one or more [op](#op)s together
+One or more [op](#op)s, grouped together physically (via embedding)
+and/or logically (via reference).
 
+Collections are defined via a [Bundle](#bundle) containing a
+[collection manifest](collection-manifest.md).
 
-## Collection Bundle
-
-Collections are defined in the form of a [FILE_BUNDLE](#file_bundle)
-adhering to the following criteria:
-
-- [MUST](#mustmay) contain an [collection file](collection-file.md) at
-  the root of the collection directory.
-- [MAY](#mustmay) contain one or more [op](#op)s at the root of the
-  collection directory.
-
-**example collection bundle**  
-
-```TEXT
-  |-- collection.yml
-  ... (embedded op bundles)
-```
-
-Once defined, **collection bundles**, can be published to
 
 ## Default Collection
 
@@ -109,9 +73,8 @@ nearest ancestor [MUST](#mustmay) be used as the effective default
 
 # Registry
 
-A registry allows publishing [op bundle](#op-bundle)s &
-[collection bundle](#collection-bundle)s to **repos**, enabling them to
-be centrally discovery & consumed.
+Registries store [bundle](#bundle)s, enabling centralized publication,
+discovery, and consumption.
 
 ## Registry API
 
@@ -121,7 +84,7 @@ Registries [MUST](#mustmay) implement the
 
 # Engine
 
-An engine runs ops.
+Engines run ops.
 
 ## Engine API
 
