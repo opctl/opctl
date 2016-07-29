@@ -5,4 +5,4 @@ services:
     volumes:
       - ../../schema:/working_dir
     working_dir: /working_dir
-    entrypoint: "ajv compile -s *"
+    entrypoint: "ajv compile -s * -r *"

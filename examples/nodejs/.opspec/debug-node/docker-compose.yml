@@ -1,8 +1,0 @@
-version: "2"
-services:
-  debug-node:
-    image: node:6.3.0
-    volumes: [ '../../:/working_dir' ]
-    working_dir: /working_dir
-    entrypoint: node --debug lib
-    ports: [ '3000:3000', '5858:5858' ]

@@ -2,13 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- `dir`, `file`, and `netSocket` parameter types
+- `pattern`, `minLength`, and `maxLength` validation attributes for
+  `string` parameters
+- `container` run declarations
+
+### Changed
+
+- Op run declaration changed from string to an object with `ref`, `arg`,
+  and `result` attributes. To migrate, replace string value with object
+  having `ref` attribute equal to existing string.
+- String inputs must now be declared as a key value pair where the key
+  is `string` and the value is its attributes. To migrate, just turn
+  existing inputs into a key value pair where the key is `string` and
+  existing attributes are the value.
+
 ## [0.1.2] - 2016-09-10
 
 ### Added 
 
 - typed run declarations; `serial`, `op`, and `parallel`
-- nested run declaration support (applies to `serial` &
-  `parallel` run declarations)
+- nested run declaration support (applies to `serial` & `parallel` run
+  declarations)
 - json schema
 
 ### Changed

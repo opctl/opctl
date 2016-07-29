@@ -4,7 +4,6 @@
     - [Purpose](#purpose)
     - [Examples](#examples)
 - [Bundles](#bundles)
-    - [Bundle Manifest](#bundle-manifest)
 - [Ops](#ops)
     - [Op Definitions](#op-definitions)
 - [Collections](#collections)

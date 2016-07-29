@@ -1,8 +1,0 @@
-version: "2"
-services:
-  test-style:
-    image: node:6.3.0
-    volumes:
-      - ../../:/working_dir
-    working_dir: /working_dir
-    entrypoint: node_modules/.bin/eslint lib

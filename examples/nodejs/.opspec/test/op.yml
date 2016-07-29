@@ -1,10 +1,13 @@
 name: test
 description: Runs all tests
 inputs:
-  - { name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
+  - string: { name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
+  - dir: { name: APP_DIR, description: Directory containing the app }
 run:
   serial:
-  - op: install-deps
-  - parallel:
-    - op: test-style
-    - op: test-unit
+    - op: { ref: install-deps, args: [ NPM_CONFIG_REGISTRY: ], results: [ APP_DIR: ] }
+    - parallel:
+      - op: { ref: debug-api, args: [ APP_DIR:, NPM_CONFIG_REGISTRY: ], results: [ API_SOCKET: ]}
+      - op: { ref: test-unit, args: [ APP_DIR: ] }
+      - op: { ref: test-style, args: [ APP_DIR: ] }
+      - op: { ref: test-acceptance, args: [ APP_DIR:, API_SOCKET: ] }

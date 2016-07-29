@@ -1,9 +1,0 @@
-version: "2"
-services:
-  test-unit:
-    image: node:6.3.0
-    volumes:
-      - ../../:/working_dir
-    working_dir: /working_dir
-    entrypoint: node_modules/.bin/mocha --recursive --reporter=spec tests/unit
-

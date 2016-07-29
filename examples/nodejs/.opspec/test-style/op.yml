@@ -1,2 +1,11 @@
 name: test-style
-description: Runs style test ops
+description: Runs style tests
+inputs:
+  - dir: { name: APP_DIR, description: Directory containing the app }
+run:
+  container:
+    cmd: node_modules/.bin/eslint lib
+    fs:
+      - { bind: APP_DIR, path: /opt/app }
+    image: node:7.1.0
+    workDir: /opt/app
