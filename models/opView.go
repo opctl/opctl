@@ -2,23 +2,29 @@ package models
 
 func NewOpView(
 description string,
+inputs []Parameter,
 name string,
-params []OpParamView,
-subOps []SubOpView,
+outputs []Parameter,
+run RunInstruction,
+version string,
 ) *OpView {
 
   return &OpView{
     Description:description,
+    Inputs:inputs,
     Name:name,
-    Params:params,
-    SubOps:subOps,
+    Outputs:outputs,
+    Run:run,
+    Version:version,
   }
 
 }
 
 type OpView struct {
   Description string
+  Inputs      []Parameter
   Name        string
-  Params      []OpParamView
-  SubOps      []SubOpView
+  Outputs     []Parameter
+  Run         RunInstruction
+  Version     string
 }

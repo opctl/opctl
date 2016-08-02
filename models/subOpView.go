@@ -1,10 +1,5 @@
 package models
 
-type SubOpView struct {
-  IsParallel bool
-  Url        string
-}
-
 func NewSubOpView(
 isParallel bool,
 url string,
@@ -16,3 +11,10 @@ url string,
   }
 
 }
+
+type SubOpView struct {
+  IsParallel bool
+  Url        string
+}
+
+

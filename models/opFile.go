@@ -1,18 +1,15 @@
 package models
 
-type OpFileSubOp struct {
-  Url string `yaml:"url"`
-  IsParallel bool `yaml:"isParallel"`
-}
-
-type OpFileParam struct {
-  Description string `yaml:"description"`
-  IsSecret    bool `yaml:"isSecret"`
+type OpFileRunInstruction struct {
+  Container *Container `yaml:"container,omitempty"`
+  SubOps    []SubOpRunInstruction `yaml:"subOps,omitempty"`
 }
 
 type OpFile struct {
   Name        string `yaml:"name"`
   Description string `yaml:"description"`
-  Params      map[string]OpFileParam `yaml:"params,omitempty"`
-  SubOps      []OpFileSubOp `yaml:"subOps,omitempty"`
+  Inputs      []Parameter `yaml:"inputs,omitempty"`
+  Outputs     []Parameter `yaml:"outputs,omitempty"`
+  Run         OpFileRunInstruction `yaml:"run,omitempty"`
+  Version     string `yaml:"version,omitempty"`
 }

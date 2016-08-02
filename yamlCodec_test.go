@@ -38,18 +38,29 @@ var _ = Describe("_yamlCodec", func() {
 
       /* arrange */
       expectedOpFile := models.OpFile{
-        Description:"op description",
-        SubOps:[]models.OpFileSubOp{
-          models.OpFileSubOp{
-            Url:"op1-name",
-            IsParallel:true,
-          },
-          models.OpFileSubOp{
-            Url:"op2-name",
-            IsParallel:false,
+        Name:"dummyName",
+        Description:"dummyDescription",
+        Inputs:[]models.Parameter{
+          *models.NewParameter("dummyName", "dummyDescription", false),
+        },
+        Outputs:[]models.Parameter{
+          *models.NewParameter("dummyName", "dummyDescription", false),
+        },
+        Run:models.OpFileRunInstruction{
+          SubOps:[]models.SubOpRunInstruction{
+            {
+              Url:"dummyUrl1",
+              IsParallel:true,
+            },
+            {
+              Url:"dummyUrl2",
+              IsParallel:false,
+            },
           },
         },
+        Version:"dummyVersion",
       }
+
       objectUnderTest := _yamlCodec{}
 
       /* act */

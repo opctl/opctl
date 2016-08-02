@@ -58,33 +58,20 @@ err error,
     return
   }
 
-  params := []models.OpParamView{}
-  for paramName, opFileParam := range opFile.Params {
-    params = append(
-      params,
-      *models.NewOpParamView(
-        paramName,
-        opFileParam.Description,
-        opFileParam.IsSecret,
-      ),
-    )
-  }
-
-  subOps := []models.SubOpView{}
-  for _, subOp := range opFile.SubOps {
-    subOps = append(
-      subOps,
-      *models.NewSubOpView(
-        subOp.IsParallel,
-        subOp.Url),
-    )
+  var run models.RunInstruction
+  if (nil != opFile.Run.Container) {
+    run = models.NewContainerRunInstruction(opFile.Run.Container)
+  } else if (len(opFile.Run.SubOps) > 0) {
+    run = models.NewSubOpsRunInstruction(opFile.Run.SubOps)
   }
 
   opView = *models.NewOpView(
     opFile.Description,
+    opFile.Inputs,
     opFile.Name,
-    params,
-    subOps,
+    opFile.Outputs,
+    run,
+    opFile.Version,
   )
 
   return
