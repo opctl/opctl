@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
-  version: 0.1.4
-  title: Engine API
+  version: 0.1.5
+  title: opspec.engine
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'

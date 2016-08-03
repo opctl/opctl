@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.5 - 2016-08-02
+### Added
+- support for [opspec 0.1.1](https://opspec.io)
+
+### Removed
+- support for [opspec 0.1.0](https://opspec.io)
+
 ## 0.1.4 - 2016-07-20
 ### Added
 - normalization of windows paths if provided to op run

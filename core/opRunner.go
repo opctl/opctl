@@ -93,16 +93,19 @@ err error,
 
   this.eventStream.Publish(opRunStartedEvent)
 
-  if (len(op.SubOps) != 0) {
+  switch runInstruction := op.Run.(type) {
+  case *opspecModels.SubOpsRunInstruction:
     err = this.runSubOps(
       correlationId,
       opArgs,
       opBundleUrl,
       parentOpRunId,
       rootOpRunId,
-      op.SubOps,
+      runInstruction.SubOps,
     )
-  } else {
+  case opspecModels.ContainerRunInstruction:
+    err = errors.New("Container run instructions not supported in this version of op engine.")
+  default:
     err = this.containerEngine.RunOp(
       correlationId,
       opArgs,
@@ -111,6 +114,9 @@ err error,
       opRunId,
       this.logger,
     )
+  }
+  if (nil != err) {
+    return
   }
 
   defer func() {
@@ -149,7 +155,7 @@ opArgs map[string]string,
 opBundleUrl string,
 parentOpRunId string,
 rootOpRunId string,
-subOps []opspecModels.SubOpView,
+subOps []opspecModels.SubOpRunInstruction,
 ) (
 err error,
 ) {
