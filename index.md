@@ -3,6 +3,7 @@
 - [Introduction](#introduction)
     - [Purpose](#purpose)
     - [Terminology](#terminology)
+    - [Examples](#examples)
 - [Bundle](#bundle)
 - [Op](#op)
 - [Collection](#collection)
@@ -34,6 +35,13 @@ a string matching the regex `^[a-zA-Z0-9][a-zA-Z0-9_.-]+$`
 ### MUST/MAY
 
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
+
+## Examples
+
+Self contained [examples](./examples) are included with this spec.
+
+It is RECOMMENDED integrators use them to document/demonstrate usage of
+their integrations.
 
 # Bundle
 

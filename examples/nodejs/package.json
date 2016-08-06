@@ -1,0 +1,10 @@
+{
+  "name": "opspec-example",
+  "version": "0.1.0",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "koa": "^2.0.0",
+    "nodent": "^2.6.3"
+  }
+}

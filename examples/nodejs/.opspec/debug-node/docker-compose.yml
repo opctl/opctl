@@ -1,0 +1,11 @@
+version: "2"
+services:
+  debug-node:
+    image: node:6.3.0
+    volumes:
+      - ../../:/working_dir
+    working_dir: /working_dir
+    entrypoint: node --debug ./index.js
+    ports:
+      - 3000:3000 # expose app
+      - 5858:5858 # expose debugger

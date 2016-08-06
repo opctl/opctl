@@ -1,0 +1,6 @@
+name: install-deps
+description: Performs an `npm install`
+inputs:
+  - name: NPM_CONFIG_REGISTRY
+    description: Registry npm will be configured to install from
+    isSecure: true
