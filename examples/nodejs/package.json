@@ -1,10 +1,18 @@
 {
-  "name": "opspec-example",
+  "name": "@opspec/nodejs-example",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "private": true,
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "koa": "^2.0.0",
     "nodent": "^2.6.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.3.1",
+    "mocha": "^3.0.2"
   }
 }

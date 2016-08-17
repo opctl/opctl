@@ -1,0 +1,13 @@
+name: test
+description: Runs all tests
+inputs:
+  - name: NPM_CONFIG_REGISTRY
+    description: Registry npm will be configured to install from
+    isSecure: true
+run:
+  subOps:
+  - url: install-deps
+  - url: test-style
+    isParallel: true
+  - url: test-unit
+    isParallel: true
