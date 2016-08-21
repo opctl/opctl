@@ -26,7 +26,8 @@ All releases will be
 [tagged](https://github.com/opspec-io/sdk-golang/tags) and made
 available on the
 [releases](https://github.com/opspec-io/sdk-golang/releases) page with
-release notes.
+links to the corresponding version of the [CHANGELOG.md](CHANGELOG.md)
+doc.
 
 # Versioning
 

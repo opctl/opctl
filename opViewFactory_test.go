@@ -60,7 +60,7 @@ var _ = Describe("_opViewFactory", func() {
       })
     })
 
-    Context("when opfile.Run.Container is nil and opfile.Run.SubOps is empty", func() {
+    PContext("when opfile.Run.Container is nil and opfile.Run.SubOps is empty", func() {
 
       It("should return err", func() {
 
