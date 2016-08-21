@@ -46,9 +46,10 @@ open your browser and navigate to 127.0.0.1:42224
 # Releases
 
 All releases will be [tagged](https://github.com/opctl/engine/tags) and
-made available on the
-[releases](https://github.com/opctl/engine/releases) page with release
-notes.
+made available on the [releases](https://github.com/opctl/engine/releases)
+page with links to the corresponding versions of the
+[INSTALLATION.md](INSTALLATION.md) and [CHANGELOG.md](CHANGELOG.md)
+docs.
 
 # Versioning
 
