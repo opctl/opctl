@@ -1,9 +1,10 @@
 name: build
 description: builds all artifacts
-subOps:
-- url: build-bin
-- url: build-docker-image
-params:
-  IMAGE_TAG:
-    description: The tag of the image to use
-    isSecure: false
+inputs:
+- name: IMAGE_TAG
+  description: The tag of the image to use
+  isSecure: false
+run:
+  subOps:
+  - url: build-bin
+  - url: build-docker-image
