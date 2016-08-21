@@ -116,11 +116,11 @@ var _ = Describe("_opViewFactory", func() {
 
       /* arrange */
       expectedInputs := []models.Parameter{
-        *models.NewParameter("dummyName", "dummyDescription", false),
+        *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
       }
 
       expectedOutputs := []models.Parameter{
-        *models.NewParameter("dummyName", "dummyDescription", false),
+        *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
       }
 
       expectedContainer := &models.Container{}

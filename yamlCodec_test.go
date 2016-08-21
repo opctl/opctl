@@ -41,10 +41,10 @@ var _ = Describe("_yamlCodec", func() {
         Name:"dummyName",
         Description:"dummyDescription",
         Inputs:[]models.Parameter{
-          *models.NewParameter("dummyName", "dummyDescription", false),
+          *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
         },
         Outputs:[]models.Parameter{
-          *models.NewParameter("dummyName", "dummyDescription", false),
+          *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
         },
         Run:models.OpFileRunInstruction{
           SubOps:[]models.SubOpRunInstruction{
