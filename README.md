@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/opctl/engine.svg?branch=master)](https://travis-ci.org/opctl/engine)
 [![codecov](https://codecov.io/gh/opctl/engine/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/engine)
 
-engine for running http://opspec.io compliant ops.
+[opspec](http://opspec.io) compliant engine.
 
 *Be advised: this project is currently at Major version zero. Per the
 semantic versioning spec: "Major version zero (0.y.z) is for initial
