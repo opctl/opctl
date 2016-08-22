@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 0.1.5
+  version: 0.1.6
   title: opspec.engine
   license:
     name: Apache 2.0
