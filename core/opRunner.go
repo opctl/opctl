@@ -115,9 +115,6 @@ err error,
       this.logger,
     )
   }
-  if (nil != err) {
-    return
-  }
 
   defer func() {
 
