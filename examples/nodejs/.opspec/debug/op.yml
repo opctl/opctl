@@ -5,7 +5,7 @@ inputs:
   description: Registry npm will be configured to install from
   isSecure: true
 run:
-  subOps:
-  - url: install-deps
-  - url: debug-node
+  serial:
+  - op: { url: install-deps }
+  - op: { url: debug-node }
 
