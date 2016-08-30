@@ -8,5 +8,7 @@ services:
       sh -c "
         go get -t ./... && \
         go get github.com/onsi/ginkgo/ginkgo && \
-        ginkgo -r -cover
+        ginkgo -r -cover -race
       "
+    environment:
+      - CGO_ENABLED=1

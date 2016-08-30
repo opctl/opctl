@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/opctl/engine.svg?branch=master)](https://travis-ci.org/opctl/engine)
-[![codecov](https://codecov.io/gh/opctl/engine/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/engine)
+[![Build Status](https://travis-ci.org/opspec-io/engine.svg?branch=master)](https://travis-ci.org/opspec-io/engine)
+[![codecov](https://codecov.io/gh/opspec-io/engine/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/engine)
 
 [opspec](http://opspec.io) compliant engine.
 
@@ -10,7 +10,7 @@ be considered stable."*
 
 # Official SDK's
 
-[engine-sdk-golang](https://github.com/opctl/engine-sdk-golang)
+[engine-sdk-golang](https://github.com/opspec-io/engine-sdk-golang)
 
 # Supported Use Cases
 
@@ -29,9 +29,10 @@ docker run \
 -v /var/run/docker.sock:/var/run/docker.sock \ # allow access to docker socket
 -v /Users:/Users \ # enable ops in host `/Users` dir
 -p 42224:42224 \ # expose engine TCP API
+--network host \ # use host network (performance enhancement)
 --restart always \ # restart on failure
 --name opctl_engine \
-opctl/engine # unstable version of engine
+opspec/engine # unstable version of engine
 ```
 
 ### 2) Explore the engine API via Swagger UI
@@ -45,8 +46,8 @@ open your browser and navigate to 127.0.0.1:42224
 
 # Releases
 
-All releases will be [tagged](https://github.com/opctl/engine/tags) and
-made available on the [releases](https://github.com/opctl/engine/releases)
+All releases will be [tagged](https://github.com/opspec-io/engine/tags) and
+made available on the [releases](https://github.com/opspec-io/engine/releases)
 page with links to the corresponding versions of the
 [INSTALLATION.md](INSTALLATION.md) and [CHANGELOG.md](CHANGELOG.md)
 docs.

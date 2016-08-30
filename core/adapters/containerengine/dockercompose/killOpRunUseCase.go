@@ -3,7 +3,7 @@ package dockercompose
 //go:generate counterfeiter -o ./fakeKillOpRunUseCase.go --fake-name fakeKillOpRunUseCase ./ killOpRunUseCase
 
 import (
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/logging"
 )
 
 type killOpRunUseCase interface {

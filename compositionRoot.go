@@ -1,9 +1,9 @@
 package main
 
 import (
-  "github.com/opctl/engine/core"
-  "github.com/opctl/engine/tcp"
-  dockerComposeContainerEngine "github.com/opctl/engine/core/adapters/containerengine/dockercompose"
+  "github.com/opspec-io/engine/core"
+  "github.com/opspec-io/engine/tcp"
+  dockerComposeContainerEngine "github.com/opspec-io/engine/core/adapters/containerengine/dockercompose"
 )
 
 type compositionRoot interface {

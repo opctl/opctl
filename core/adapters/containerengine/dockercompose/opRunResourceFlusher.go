@@ -4,7 +4,7 @@ package dockercompose
 
 import (
   "os/exec"
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/logging"
   "fmt"
 )
 

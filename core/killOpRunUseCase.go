@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeKillOpRunUseCase.go --fake-name fakeKillOpRunUseCase ./ killOpRunUseCase
 
 import (
-  "github.com/opctl/engine/core/models"
-  "github.com/opctl/engine/core/logging"
-  "github.com/opctl/engine/core/ports"
+  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/engine/core/logging"
+  "github.com/opspec-io/engine/core/ports"
   "time"
 )
 

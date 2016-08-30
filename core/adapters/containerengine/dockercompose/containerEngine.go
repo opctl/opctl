@@ -1,8 +1,8 @@
 package dockercompose
 
 import (
-  "github.com/opctl/engine/core/ports"
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/ports"
+  "github.com/opspec-io/engine/core/logging"
 )
 
 func New(

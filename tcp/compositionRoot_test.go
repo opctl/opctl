@@ -3,7 +3,7 @@ package tcp
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opctl/engine/core"
+  "github.com/opspec-io/engine/core"
 )
 
 var _ = Describe("compositionRoot", func() {

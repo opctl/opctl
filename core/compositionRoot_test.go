@@ -3,7 +3,7 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opctl/engine/core/adapters/containerengine/fake"
+  "github.com/opspec-io/engine/core/adapters/containerengine/fake"
 )
 
 var _ = Describe("compositionRoot", func() {
