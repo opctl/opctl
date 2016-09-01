@@ -3,10 +3,10 @@ package tcp
 import (
   "github.com/gorilla/websocket"
   "net/http"
-  "github.com/opctl/engine/core"
-  coreModels "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/engine/core"
+  coreModels "github.com/opspec-io/engine/core/models"
   "encoding/json"
-  "github.com/opctl/engine/tcp/models"
+  "github.com/opspec-io/engine/tcp/models"
 )
 
 func newGetEventStreamHandler(
@@ -15,25 +15,24 @@ coreApi core.Api,
 
   return &getEventStreamHandler{
     coreApi:coreApi,
+    upgrader:websocket.Upgrader{
+      ReadBufferSize:4096,
+      WriteBufferSize:4096,
+      CheckOrigin: func(r *http.Request) bool {
+        return true
+      },
+    },
   }
 
 }
 
 type getEventStreamHandler struct {
-  coreApi core.Api
+  coreApi  core.Api
+  upgrader websocket.Upgrader
 }
 
 func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-  upgrader := websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-      return true
-    },
-  }
-
-  conn, err := upgrader.Upgrade(w, r, nil)
+  conn, err := this.upgrader.Upgrade(w, r, nil)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return
@@ -57,11 +56,14 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
   go func() {
     for {
-
       select {
       case <-isWebsocketClosedChannel:
         return
-      case event := <-eventChannel:
+      case event, isEventChannelOpen := <-eventChannel:
+        if (!isEventChannelOpen) {
+          // guard event channel closed
+          return
+        }
 
         eventBytes, err := json.Marshal(models.NewEventMsg(event))
         if (nil != err) {
@@ -72,16 +74,14 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
         if (nil != err) {
           http.Error(w, err.Error(), http.StatusInternalServerError)
         }
-
-
       }
-
     }
   }()
 
   for {
     _, _, err := conn.ReadMessage()
     if (err != nil) {
+      // return on read error
       return
     }
   }

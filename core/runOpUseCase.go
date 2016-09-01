@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeRunOpUseCase.go --fake-name fakeRunOpUseCase ./ runOpUseCase
 
 import (
-  "github.com/opctl/engine/core/models"
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/engine/core/logging"
   "time"
 )
 

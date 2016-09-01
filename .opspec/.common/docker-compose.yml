@@ -3,10 +3,10 @@ services:
   working_dir:
     image: scratch
     volumes:
-      - ../../:/go/src/github.com/opctl/engine
-    working_dir: /go/src/github.com/opctl/engine
+      - ../../:/go/src/github.com/opspec-io/engine
+    working_dir: /go/src/github.com/opspec-io/engine
   go:
-    build: ./
+    image: golang:1.7
     extends:
       service: working_dir
     environment:

@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeApi.go --fake-name FakeApi ./ Api
 
 import (
-  "github.com/opctl/engine/core/models"
-  "github.com/opctl/engine/core/ports"
+  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/engine/core/ports"
 )
 
 type Api interface {

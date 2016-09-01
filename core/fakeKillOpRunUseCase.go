@@ -4,7 +4,7 @@ package core
 import (
   "sync"
 
-  "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/engine/core/models"
 )
 
 type fakeKillOpRunUseCase struct {

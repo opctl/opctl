@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 import (
-  "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/engine/core/models"
   "github.com/opspec-io/sdk-golang"
-  "github.com/opctl/engine/core/ports"
+  "github.com/opspec-io/engine/core/ports"
 )
 
 type compositionRoot interface {

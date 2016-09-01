@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
 
 import (
-  "github.com/opctl/engine/core/models"
-  "github.com/opctl/engine/core/ports"
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/engine/core/ports"
+  "github.com/opspec-io/engine/core/logging"
   "github.com/opspec-io/sdk-golang"
   opspecModels "github.com/opspec-io/sdk-golang/models"
   "time"
@@ -163,8 +163,6 @@ err error,
   // run sub ops
   for _, subOp := range subOps {
 
-    wg.Add(1)
-
     // currently only support embedded sub ops
     subOpBundleUrl := path.Join(
       filepath.Dir(opBundleUrl),
@@ -176,6 +174,7 @@ err error,
     if subOp.IsParallel {
       // handle parallel
       go func() {
+        wg.Add(1)
         subOpRunErr := this.Run(
           correlationId,
           opArgs,
@@ -196,9 +195,10 @@ err error,
           )
         }
 
-        wg.Done()
+        defer wg.Done()
       }()
     } else {
+      wg.Add(1)
       // handle synchronous
       subOpRunErr := this.Run(
         correlationId,
@@ -220,7 +220,7 @@ err error,
         )
       }
 
-      wg.Done()
+      defer wg.Done()
     }
 
   }

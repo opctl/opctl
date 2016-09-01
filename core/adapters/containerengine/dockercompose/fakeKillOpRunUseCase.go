@@ -4,7 +4,7 @@ package dockercompose
 import (
   "sync"
 
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/logging"
 )
 
 type fakeKillOpRunUseCase struct {

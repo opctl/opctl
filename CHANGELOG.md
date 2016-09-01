@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.7 - 2016-08-30
+### Fixed
+- [Many parallel ops crash engine](https://github.com/opspec-io/engine/issues/17)
+
 ## 0.1.6 - 2016-08-21
 ### Fixed
 - OpRunEnded event not sent on `Failed` outcome
@@ -19,15 +23,15 @@ All notable changes to this project will be documented in this file.
 
 ## 0.1.3 - 2016-07-09
 ### Added
-- [Support new opspec subop `isParallel` flag](https://github.com/opctl/engine/issues/11)
+- [Support new opspec subop `isParallel` flag](https://github.com/opspec-io/engine/issues/11)
 
 ### Fixed
-- [Unable to simultaneously run multiple ops from same collection](https://github.com/opctl/engine/issues/10)
+- [Unable to simultaneously run multiple ops from same collection](https://github.com/opspec-io/engine/issues/10)
 
 ## 0.1.2 - 2016-06-22
 ### Fixed
-- [Missleading `variable is not set` message on op finish](https://github.com/opctl/engine/issues/5)
-- [Engine not observing exitcode of op entrypoint](https://github.com/opctl/engine/issues/9)
+- [Missleading `variable is not set` message on op finish](https://github.com/opspec-io/engine/issues/5)
+- [Engine not observing exitcode of op entrypoint](https://github.com/opspec-io/engine/issues/9)
 
 ## 0.1.1 - 2016-06-22
 ### Changed
@@ -36,7 +40,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - kill op run use case killing all ops
-- [cannot run multiple ops with same name simultaneously](https://github.com/opctl/engine/issues/8)
+- [cannot run multiple ops with same name simultaneously](https://github.com/opspec-io/engine/issues/8)
 
 ### Removed
 

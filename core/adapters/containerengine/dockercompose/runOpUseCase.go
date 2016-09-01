@@ -4,9 +4,9 @@ package dockercompose
 
 import (
   "os/exec"
-  "github.com/opctl/engine/core/logging"
+  "github.com/opspec-io/engine/core/logging"
   "fmt"
-  "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/engine/core/models"
   "time"
   "errors"
 )

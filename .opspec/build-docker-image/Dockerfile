@@ -8,4 +8,4 @@ COPY engine ./
 COPY tcp/swagger ./swagger/
 
 ENTRYPOINT ["sh","-c"]
-CMD ["/opt/opctl/engine"]
+CMD ["/opt/opspec-io/engine"]

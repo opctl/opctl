@@ -1,7 +1,7 @@
 package tcp
 
 import (
-  "github.com/opctl/engine/core"
+  "github.com/opspec-io/engine/core"
   "net/http"
   "github.com/chrisdostert/mux"
 )

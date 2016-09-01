@@ -1,7 +1,7 @@
 package models
 
 import (
-  "github.com/opctl/engine/core/models"
+  "github.com/opspec-io/engine/core/models"
   "reflect"
   "strings"
 )
