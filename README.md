@@ -3,10 +3,10 @@
 
 [opspec](http://opspec.io) compliant engine.
 
-*Be advised: this project is currently at Major version zero. Per the
-semantic versioning spec: "Major version zero (0.y.z) is for initial
-development. Anything may change at any time. The public API should not
-be considered stable."*
+> *Be advised: this project is currently at Major version zero. Per the
+> semantic versioning spec: "Major version zero (0.y.z) is for initial
+> development. Anything may change at any time. The public API should
+> not be considered stable."*
 
 # Official SDK's
 
@@ -21,7 +21,7 @@ be considered stable."*
 
 # Example Usage
 
-### 1) Start dockerized engine
+### 1) Start containerized engine via docker
 
 ```SHELL
 docker run \
@@ -31,7 +31,7 @@ docker run \
 -p 42224:42224 \ # expose engine TCP API
 --network host \ # use host network (performance enhancement)
 --restart always \ # restart on failure
---name opctl_engine \
+--name opspec.engine \
 opspec/engine # unstable version of engine
 ```
 
@@ -46,11 +46,11 @@ open your browser and navigate to 127.0.0.1:42224
 
 # Releases
 
-All releases will be [tagged](https://github.com/opspec-io/engine/tags) and
-made available on the [releases](https://github.com/opspec-io/engine/releases)
-page with links to the corresponding versions of the
-[INSTALLATION.md](INSTALLATION.md) and [CHANGELOG.md](CHANGELOG.md)
-docs.
+All releases will be [tagged](https://github.com/opspec-io/engine/tags)
+and made available on the
+[releases](https://github.com/opspec-io/engine/releases) page with links
+to the corresponding versions of the [INSTALLATION.md](INSTALLATION.md)
+and [CHANGELOG.md](CHANGELOG.md) docs.
 
 # Versioning
 

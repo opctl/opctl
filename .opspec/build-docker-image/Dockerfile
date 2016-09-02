@@ -2,7 +2,7 @@ FROM docker/compose:1.8.0
 
 EXPOSE 42224
 
-WORKDIR /opt/opctl
+WORKDIR /opt/opspec-io
 
 COPY engine ./
 COPY tcp/swagger ./swagger/

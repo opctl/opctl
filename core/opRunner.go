@@ -162,6 +162,7 @@ err error,
 
   // run sub ops
   for _, subOp := range subOps {
+    wg.Add(1)
 
     // currently only support embedded sub ops
     subOpBundleUrl := path.Join(
@@ -174,7 +175,6 @@ err error,
     if subOp.IsParallel {
       // handle parallel
       go func() {
-        wg.Add(1)
         subOpRunErr := this.Run(
           correlationId,
           opArgs,
@@ -195,10 +195,9 @@ err error,
           )
         }
 
-        defer wg.Done()
+        wg.Done()
       }()
     } else {
-      wg.Add(1)
       // handle synchronous
       subOpRunErr := this.Run(
         correlationId,
@@ -220,9 +219,8 @@ err error,
         )
       }
 
-      defer wg.Done()
+      wg.Done()
     }
-
   }
 
   wg.Wait()
