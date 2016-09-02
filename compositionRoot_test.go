@@ -6,7 +6,7 @@ import (
 )
 
 var _ = Describe("compositionRoot", func() {
-  Context("RestApi()", func() {
+  Context("TcpApi()", func() {
     It("should not return nil", func() {
 
       /* arrange */

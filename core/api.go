@@ -51,8 +51,8 @@ eventChannel chan models.Event,
 ) (err error) {
   return this.
   compositionRoot.
-  GetEventStreamUseCase().
-  Execute(eventChannel)
+    GetEventStreamUseCase().
+    Execute(eventChannel)
 }
 
 func (this _api) KillOpRun(
@@ -63,8 +63,8 @@ err error,
 ) {
   return this.
   compositionRoot.
-  KillOpRunUseCase().
-  Execute(req)
+    KillOpRunUseCase().
+    Execute(req)
 }
 
 func (this _api) RunOp(
@@ -76,6 +76,6 @@ err error,
 ) {
   return this.
   compositionRoot.
-  RunOpUseCase().
-  Execute(req)
+    RunOpUseCase().
+    Execute(req)
 }
