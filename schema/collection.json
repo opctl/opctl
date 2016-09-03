@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://opspec.io/spec/schema/collection",
+  "description": "A collection manifest",
+  "title": "collection",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "ops": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/opRef"
+          }
+        ]
+      }
+    },
+    "version": {
+      "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/semVer"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
