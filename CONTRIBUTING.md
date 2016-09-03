@@ -1,3 +1,6 @@
-# Dev Ops
+# Acceptance criteria
 
-This project maintains an [op spec](http://opspec.io/)
+Contributions are subject to:
+
+- acceptance by 66% of the projects maintainers (see
+  [MAINTAINERS.md](MAINTAINERS.md))

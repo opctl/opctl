@@ -5,9 +5,8 @@ inputs:
     description: Registry npm will be configured to install from
     isSecure: true
 run:
-  subOps:
-  - url: install-deps
-  - url: test-style
-    isParallel: true
-  - url: test-unit
-    isParallel: true
+  serial:
+  - op: { url: install-deps }
+  - parallel:
+    - op: { url: test-style }
+    - op: { url: test-unit }

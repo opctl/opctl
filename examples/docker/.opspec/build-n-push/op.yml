@@ -5,6 +5,6 @@ inputs:
   - { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true }
   - { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
 run:
-  subOps:
-    - url: build-image
-    - url: push-image
+  serial:
+    - op: { url: build-image }
+    - op: { url: push-image }

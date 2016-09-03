@@ -4,7 +4,6 @@
     - [Purpose](#purpose)
     - [Terminology](#terminology)
     - [Examples](#examples)
-- [Bundle](#bundle)
 - [Op](#op)
 - [Collection](#collection)
     - [Default Collection](#default-collection)
@@ -28,6 +27,20 @@ Primary concerns of opspec are to make operations:
 
 ## Terminology
 
+### BUNDLE
+
+Bundles are directories containing a manifest and artifacts (dependent
+files/folders).
+
+### OP_REF
+
+A string matching regex
+`((registry_hostname/)?namespace/)?repo(:version)|PATH`
+
+### DOCKER_IMAGE_REF
+
+A string matching regex `((registry_hostname/)?namespace/)?repo(:tag)`
+
 ### FILE_SAFE_NAME
 
 a string matching the regex `^[a-zA-Z0-9][a-zA-Z0-9_.-]+$`
@@ -42,14 +55,6 @@ Self contained [examples](./examples) are included with this spec.
 
 It is RECOMMENDED integrators use them to document/demonstrate usage of
 their integrations.
-
-# Bundle
-
-Bundles are directories containing a manifest and artifacts (dependent
-files/folders).
-
-Once defined, **bundles**, can be distributed via any traditional means
-of file transfer or published to a [Registry](#registry)
 
 # Op
 
