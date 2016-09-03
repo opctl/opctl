@@ -32,11 +32,6 @@ Primary concerns of opspec are to make operations:
 Bundles are directories containing a manifest and artifacts (dependent
 files/folders).
 
-### OP_REF
-
-A string matching regex
-`((registry_hostname/)?namespace/)?repo(:version)|PATH`
-
 ### DOCKER_IMAGE_REF
 
 A string matching regex `((registry_hostname/)?namespace/)?repo(:tag)`

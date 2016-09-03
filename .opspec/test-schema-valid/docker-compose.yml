@@ -1,0 +1,8 @@
+version: "2"
+services:
+  test-schema-valid:
+    build: .
+    volumes:
+      - ../../schema:/working_dir
+    working_dir: /working_dir
+    entrypoint: "ajv compile -s '!(*defs.json)' -r '*defs.json'"

@@ -1,0 +1,5 @@
+description: runs all test ops
+name: test
+run:
+  subOps:
+  - url: test-schema-valid
