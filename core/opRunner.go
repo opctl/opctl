@@ -195,7 +195,7 @@ err error,
           )
         }
 
-        defer wg.Done()
+        wg.Done()
       }()
     } else {
       // handle synchronous
@@ -219,7 +219,7 @@ err error,
         )
       }
 
-      defer wg.Done()
+      wg.Done()
     }
   }
 
