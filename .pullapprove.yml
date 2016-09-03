@@ -1,0 +1,9 @@
+approve_by_comment: true
+approve_regex: ^[Aa]pproved
+reject_regex: ^[Rr]ejected
+reset_on_push: true
+reviewers:
+  teams:
+    - spec-maintainers
+  name: default
+  required: 1
