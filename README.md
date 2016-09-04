@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/opspec-io/spec.svg?branch=master)](https://travis-ci.org/opspec-io/spec)
+
 A specification for defining, distributing, and running ops (operations)
 
 > *Be advised: the op spec is currently at Major version zero. Per the
