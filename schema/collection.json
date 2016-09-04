@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/spec/schema/collection",
+  "id": "https://opspec.io/spec/0.1.2/schema/collection.json",
   "description": "A collection manifest",
   "title": "collection",
   "type": "object",
@@ -16,13 +16,13 @@
       "items": {
         "anyOf": [
           {
-            "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/opRef"
+            "$ref": "https://opspec.io/spec/0.1.2/schema/defs.json#/definitions/opRef"
           }
         ]
       }
     },
     "version": {
-      "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/semVer"
+      "$ref": "https://opspec.io/spec/0.1.2/schema/defs.json#/definitions/semVer"
     }
   },
   "required": [
