@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/spec/0.1.2/schema/defs.json",
+  "id": "http://opspec.io/spec/0.1.2/schema/defs.json",
   "description": "Common definitions",
   "definitions": {
     "dockerImageRef": {
