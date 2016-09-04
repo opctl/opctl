@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/spec/schema/op",
+  "id": "https://opspec.io/spec/0.1.2/schema/op.json",
   "description": "An op manifest",
   "title": "op",
   "type": "object",
@@ -25,7 +25,7 @@
     },
     "version": {
       "description": "Version of the op",
-      "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/semVer"
+      "$ref": "https://opspec.io/spec/0.1.2/schema/defs.json#/definitions/semVer"
     }
   },
   "required": [
@@ -85,7 +85,7 @@
       "type": "object",
       "properties": {
         "ref": {
-          "$ref": "https://opspec.io/spec/schema/common-defs#/definitions/opRef"
+          "$ref": "https://opspec.io/spec/0.1.2/schema/defs.json#/definitions/opRef"
         }
       },
       "required": [
