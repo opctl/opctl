@@ -5,4 +5,4 @@ services:
     volumes:
       - ../../schema:/working_dir
     working_dir: /working_dir
-    entrypoint: "ajv compile -s '!(*defs.json)' -r '*defs.json'"
+    entrypoint: "ajv compile -s *"
