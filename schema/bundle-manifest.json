@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://opspec.io/spec/0.1.2/schema/bundle-manifest.json",
+  "description": "Manifest for a bundle",
+  "oneOf": [
+    {
+      "$ref": "#/definitions/opBundleManifest"
+    },
+    {
+      "$ref": "#/definitions/collectionBundleManifest"
+    }
+  ],
+  "definitions": {
+    "collectionBundleManifest": {
+      "title": "collectionBundleManifest",
+      "description": "Manifest for a collection bundle",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/opRef"
+          }
+        },
+        "version": {
+          "$ref": "#/definitions/semVer"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "opBundleManifest": {
+      "title": "opBundleManifest",
+      "description": "Manifest for an op bundle",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the op",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the op",
+          "type": "string"
+        },
+        "inputs": {
+          "description": "Inputs to the op",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/param"
+          }
+        },
+        "run": {
+          "description": "What the op runs",
+          "$ref": "#/definitions/runStatement"
+        },
+        "version": {
+          "description": "Version of the op",
+          "$ref": "#/definitions/semVer"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "param": {
+      "title": "param",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/stringParam"
+        }
+      ]
+    },
+    "stringParam": {
+      "title": "stringParam",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of parameter",
+          "type": "string"
+        },
+        "isSecret": {
+          "description": "If the parameter is secret",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Name of the parameter",
+          "type": "string"
+        },
+        "default": {
+          "description": "Default value of the parameter",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "runStatement": {
+      "title": "runStatement",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/opRunStatement"
+        },
+        {
+          "$ref": "#/definitions/parallelRunStatement"
+        },
+        {
+          "$ref": "#/definitions/serialRunStatement"
+        }
+      ]
+    },
+    "opRunStatement": {
+      "title": "opRunStatement",
+      "description": "Op to be run",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "$ref": "#/definitions/opRef"
+        }
+      },
+      "required": [
+        "ref"
+      ]
+    },
+    "parallelRunStatement": {
+      "title": "parallelRunStatement",
+      "description": "Sequence of statements to run in parallel",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/runStatement"
+          }
+        ]
+      }
+    },
+    "serialRunStatement": {
+      "title": "serialRunStatement",
+      "description": "Sequence of statements to run serially",
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/runStatement"
+          }
+        ]
+      }
+    },
+    "dockerImageRef": {
+      "title": "dockerImageRef",
+      "description": "Reference to a docker image",
+      "type": "string",
+      "pattern": "^((registry_hostname/)?namespace/)?repo(:tag)$"
+    },
+    "opRef": {
+      "title": "opRef",
+      "description": "Reference to an op",
+      "type": "string"
+    },
+    "semVer": {
+      "title": "semVer",
+      "description": "v2.0.0 semantic version (see http://semver.org/spec/v2.0.0.html)",
+      "type": "string",
+      "pattern": "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:(\\-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\-\\.]+)?$"
+    }
+  }
+}

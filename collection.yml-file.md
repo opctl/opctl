@@ -9,5 +9,6 @@
 
 # Schema
 
-see [collection json schema](schema/collection.json)
+[MUST](index.md#mustmay) validate against
+[schema/bundle-manifest.json#definitions/collectionBundleManifest](schema/bundle-manifest.json#definitions/collectionBundleManifest)
 

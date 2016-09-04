@@ -11,4 +11,5 @@
 
 # Schema
 
-see [op json schema](schema/op.json)
+[MUST](index.md#mustmay) validate against
+[schema/bundle-manifest.json#definitions/opBundleManifest](schema/bundle-manifest.json#definitions/opBundleManifest)
