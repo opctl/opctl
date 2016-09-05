@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "http://opspec.io/spec/0.1.2/schema/bundle-manifest.json",
+  "title": "bundleManifest",
   "description": "Manifest for a bundle",
   "oneOf": [
     {
