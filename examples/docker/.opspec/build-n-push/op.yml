@@ -1,9 +1,9 @@
 name: build-n-push
 description: Builds an image, and pushes the image to a registry.
 inputs:
-  - { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true }
-  - { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true }
-  - { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
+  - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true }
+  - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true }
+  - string: { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
 run:
   serial:
     - op: { url: build-image }

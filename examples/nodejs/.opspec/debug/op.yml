@@ -1,9 +1,7 @@
 name: debug
 description: Ensures deps are installed and debugs the node app
 inputs:
-- name: NPM_CONFIG_REGISTRY
-  description: Registry npm will be configured to install from
-  isSecure: true
+  - string: { name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
 run:
   serial:
   - op: { url: install-deps }

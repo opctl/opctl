@@ -73,7 +73,6 @@
       "additionalProperties": false
     },
     "param": {
-      "title": "param",
       "oneOf": [
         {
           "$ref": "#/definitions/stringParam"
@@ -84,26 +83,31 @@
       "title": "stringParam",
       "type": "object",
       "properties": {
-        "type": {
-          "description": "Type of parameter",
-          "type": "string"
-        },
-        "isSecret": {
-          "description": "If the parameter is secret",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
-        },
-        "default": {
-          "description": "Default value of the parameter",
-          "type": "string"
+        "string": {
+          "type": "object",
+          "properties": {
+            "isSecret": {
+              "description": "If the parameter is secret",
+              "type": "boolean"
+            },
+            "name": {
+              "description": "Name of the parameter",
+              "type": "string"
+            },
+            "default": {
+              "description": "Default value of the parameter",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
         }
       },
       "required": [
-        "name"
-      ]
+        "string"
+      ],
+      "additionalProperties": false
     },
     "runStatement": {
       "oneOf": [
