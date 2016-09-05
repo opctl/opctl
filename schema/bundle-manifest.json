@@ -35,7 +35,8 @@
       },
       "required": [
         "name"
-      ]
+      ],
+      "additionalProperties": false
     },
     "opBundleManifest": {
       "title": "opBundleManifest",
@@ -68,7 +69,8 @@
       },
       "required": [
         "name"
-      ]
+      ],
+      "additionalProperties": false
     },
     "param": {
       "title": "param",
@@ -104,7 +106,6 @@
       ]
     },
     "runStatement": {
-      "title": "runStatement",
       "oneOf": [
         {
           "$ref": "#/definitions/opRunStatement"
@@ -122,37 +123,56 @@
       "description": "Op to be run",
       "type": "object",
       "properties": {
-        "ref": {
-          "$ref": "#/definitions/opRef"
+        "op": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "$ref": "#/definitions/opRef"
+            }
+          },
+          "required": [
+            "ref"
+          ]
         }
       },
       "required": [
-        "ref"
-      ]
+        "op"
+      ],
+      "additionalProperties": false
     },
     "parallelRunStatement": {
       "title": "parallelRunStatement",
       "description": "Sequence of statements to run in parallel",
-      "type": "array",
-      "items": {
-        "anyOf": [
-          {
+      "type": "object",
+      "properties": {
+        "parallel": {
+          "type": "array",
+          "items": {
             "$ref": "#/definitions/runStatement"
           }
-        ]
-      }
+        }
+      },
+      "required": [
+        "parallel"
+      ],
+      "additionalProperties": false
     },
     "serialRunStatement": {
       "title": "serialRunStatement",
       "description": "Sequence of statements to run serially",
-      "type": "array",
-      "items": {
-        "anyOf": [
-          {
+      "type": "object",
+      "properties": {
+        "serial": {
+          "type": "array",
+          "items": {
             "$ref": "#/definitions/runStatement"
           }
-        ]
-      }
+        }
+      },
+      "required": [
+        "serial"
+      ],
+      "additionalProperties": false
     },
     "dockerImageRef": {
       "title": "dockerImageRef",
