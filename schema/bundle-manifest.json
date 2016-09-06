@@ -128,15 +128,7 @@
       "type": "object",
       "properties": {
         "op": {
-          "type": "object",
-          "properties": {
-            "ref": {
-              "$ref": "#/definitions/opRef"
-            }
-          },
-          "required": [
-            "ref"
-          ]
+          "$ref": "#/definitions/opRef"
         }
       },
       "required": [
