@@ -86,17 +86,19 @@ var _ = Describe("_createCollectionUseCase", func() {
       })
     })
 
-    It("should call YamlCodec.ToYaml with expected collectionFile", func() {
+    It("should call YamlCodec.ToYaml with expected collectionBundleManifest", func() {
 
       /* arrange */
-      expectedCollectionFile := models.CollectionFile{
-        Name:"DummyName",
-        Description:"DummyDescription",
+      expectedCollectionBundleManifest := models.CollectionBundleManifest{
+        BundleManifest:models.BundleManifest{
+          Description:"DummyDescription",
+          Name:"DummyName",
+        },
       }
 
       fakeYamlCodec := new(fakeYamlCodec)
       fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionFile))
+        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionBundleManifest))
         return
       }
 
@@ -108,14 +110,14 @@ var _ = Describe("_createCollectionUseCase", func() {
       /* act */
       objectUnderTest.Execute(
         models.CreateCollectionReq{
-          Description:expectedCollectionFile.Description,
-          Name:expectedCollectionFile.Name,
+          Description:expectedCollectionBundleManifest.Description,
+          Name:expectedCollectionBundleManifest.Name,
         },
       )
 
       /* assert */
-      actualCollectionFile := fakeYamlCodec.ToYamlArgsForCall(0)
-      Expect(actualCollectionFile).To(Equal(&expectedCollectionFile))
+      actualCollectionBundleManifest := fakeYamlCodec.ToYamlArgsForCall(0)
+      Expect(actualCollectionBundleManifest).To(Equal(&expectedCollectionBundleManifest))
 
     })
 
@@ -123,7 +125,7 @@ var _ = Describe("_createCollectionUseCase", func() {
 
       /* arrange */
       providedPath := "/dummy/op/path"
-      expectedSaveFilePathArg := path.Join(providedPath, NameOfCollectionFile)
+      expectedSaveFilePathArg := path.Join(providedPath, NameOfCollectionBundleManifest)
       expectedSaveFileBytesArg := []byte{2, 3, 4}
 
       fakeFilesystem := new(FakeFilesystem)

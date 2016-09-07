@@ -60,34 +60,6 @@ var _ = Describe("_opViewFactory", func() {
       })
     })
 
-    PContext("when opfile.Run.Container is nil and opfile.Run.SubOps is empty", func() {
-
-      It("should return err", func() {
-
-        /* arrange */
-        fakeFilesystem := new(FakeFilesystem)
-
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
-
-          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(models.OpFile{}))
-          return
-        }
-
-        objectUnderTest := newOpViewFactory(
-          fakeFilesystem,
-          fakeYamlCodec,
-        )
-
-        /* act */
-        _, err := objectUnderTest.Construct("/dummy/op/path")
-
-        /* assert */
-        Expect(err).To(Not(BeNil()))
-
-      })
-    })
-
     It("should call YamlCodec.FromYaml with expected bytes", func() {
 
       /* arrange */
@@ -115,22 +87,24 @@ var _ = Describe("_opViewFactory", func() {
     It("should return expected opView", func() {
 
       /* arrange */
-      expectedInputs := []models.Parameter{
-        *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
+      expectedInputs := []models.Param{
+        {
+          String: &models.StringParam{
+            Name:"dummyName",
+            Default:"dummyDefault",
+            Description:"dummyDescription",
+            IsSecret:false,
+          },
+        },
       }
 
-      expectedOutputs := []models.Parameter{
-        *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
-      }
-
-      expectedContainer := &models.Container{}
+      expectedRunStatement := &models.RunStatement{Op:"dummyOpRef"}
 
       expectedOpView := *models.NewOpView(
         "dummyDescription",
         expectedInputs,
         "dummyName",
-        expectedOutputs,
-        models.NewContainerRunInstruction(expectedContainer),
+        expectedRunStatement,
         "dummyVersion",
       )
 
@@ -139,18 +113,17 @@ var _ = Describe("_opViewFactory", func() {
       fakeYamlCodec := new(fakeYamlCodec)
       fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-        stubbedOpFile := models.OpFile{
-          Name:expectedOpView.Name,
-          Description:expectedOpView.Description,
-          Inputs:expectedInputs,
-          Run:models.OpFileRunInstruction{
-            Container:expectedContainer,
+        stubbedOpBundleManifest := models.OpBundleManifest{
+          BundleManifest:models.BundleManifest{
+            Name:expectedOpView.Name,
+            Description:expectedOpView.Description,
+            Version:expectedOpView.Version,
           },
-          Outputs:expectedOutputs,
-          Version:expectedOpView.Version,
+          Inputs:expectedInputs,
+          Run:expectedRunStatement,
         }
 
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpFile))
+        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
         return
       }
 
@@ -167,25 +140,25 @@ var _ = Describe("_opViewFactory", func() {
 
     })
 
-    Context("when opFile.Run.Container is not nil", func() {
+    Context("when opBundleManifest.Run.Parallel is not nil", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
 
-        expectedRunInstruction := models.NewContainerRunInstruction(&models.Container{})
+        expectedRunStatement := &models.RunStatement{
+          Parallel: &models.ParallelRunStatement{},
+        }
 
         fakeFilesystem := new(FakeFilesystem)
 
         fakeYamlCodec := new(fakeYamlCodec)
         fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpFile := models.OpFile{
-            Run:models.OpFileRunInstruction{
-              Container:expectedRunInstruction.Container,
-            },
+          stubbedOpBundleManifest := models.OpBundleManifest{
+            Run:expectedRunStatement,
           }
 
-          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpFile))
+          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
           return
         }
 
@@ -198,39 +171,26 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedRunInstruction))
+        Expect(actualOpView.Run).To(Equal(expectedRunStatement))
 
       })
     })
-    Context("when opFile.Run.Container is nil", func() {
+    Context("when opBundleManifest.Run.Parallel is nil", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
-        expectedRunInstruction :=
-          models.NewSubOpsRunInstruction(
-            []models.SubOpRunInstruction{
-              {
-                Url:"dummyUrl1",
-                IsParallel:true,
-              },
-              {
-                Url:"dummyUrl2",
-                IsParallel:false,
-              },
-            })
+        expectedRunStatement := &models.RunStatement{Op:"dummyOpRef"}
 
         fakeFilesystem := new(FakeFilesystem)
 
         fakeYamlCodec := new(fakeYamlCodec)
         fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpFile := models.OpFile{
-            Run:models.OpFileRunInstruction{
-              SubOps:expectedRunInstruction.SubOps,
-            },
+          stubbedOpBundleManifest := models.OpBundleManifest{
+            Run:expectedRunStatement,
           }
 
-          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpFile))
+          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
           return
         }
 
@@ -243,7 +203,7 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedRunInstruction))
+        Expect(actualOpView.Run).To(Equal(expectedRunStatement))
 
       })
 

@@ -34,34 +34,34 @@ func (this _setCollectionDescriptionUseCase) Execute(
 req models.SetCollectionDescriptionReq,
 ) (err error) {
 
-  pathToCollectionFile := path.Join(req.PathToCollection, NameOfCollectionFile)
+  pathToCollectionBundleManifest := path.Join(req.PathToCollection, NameOfCollectionBundleManifest)
 
-  collectionFileBytes, err := this.filesystem.GetBytesOfFile(
-    pathToCollectionFile,
+  collectionBundleManifestBytes, err := this.filesystem.GetBytesOfFile(
+    pathToCollectionBundleManifest,
   )
   if (nil != err) {
     return
   }
 
-  collectionFile := models.CollectionFile{}
+  collectionBundleManifest := models.CollectionBundleManifest{}
   err = this.yamlCodec.FromYaml(
-    collectionFileBytes,
-    &collectionFile,
+    collectionBundleManifestBytes,
+    &collectionBundleManifest,
   )
   if (nil != err) {
     return
   }
 
-  collectionFile.Description = req.Description
+  collectionBundleManifest.Description = req.Description
 
-  collectionFileBytes, err = this.yamlCodec.ToYaml(&collectionFile)
+  collectionBundleManifestBytes, err = this.yamlCodec.ToYaml(&collectionBundleManifest)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
-    pathToCollectionFile,
-    collectionFileBytes,
+    pathToCollectionBundleManifest,
+    collectionBundleManifestBytes,
   )
 
   return

@@ -5,10 +5,10 @@ SDK for golang implementing common [opspec](http://opspec.io)
 integration scenarios such as creating, editing, and consuming opspec
 definitions.
 
-*Be advised: this project is currently at Major version zero. Per the
-semantic versioning spec: "Major version zero (0.y.z) is for initial
-development. Anything may change at any time. The public API should not
-be considered stable."*
+> *Be advised: this project is currently at Major version zero. Per the
+> semantic versioning spec: "Major version zero (0.y.z) is for initial
+> development. Anything may change at any time. The public API should
+> not be considered stable."*
 
 # Supported Use Cases
 

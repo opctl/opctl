@@ -1,14 +1,14 @@
 version: "2"
 services:
-  src:
+  working_dir:
     image: scratch
     volumes:
       - ../../:/go/src/github.com/opspec-io/sdk-golang
     working_dir: /go/src/github.com/opspec-io/sdk-golang
   go:
+    image: golang:1.7
     extends:
-      service: src
-    build: ./
+      service: working_dir
     environment:
-      - "GOARCH=amd64"
+      - GOARCH=amd64
       - GOOS=linux

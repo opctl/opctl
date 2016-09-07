@@ -34,33 +34,33 @@ func (this _setOpDescriptionUseCase) Execute(
 req models.SetOpDescriptionReq,
 ) (err error) {
 
-  pathToOpFile := path.Join(req.PathToOp, NameOfOpFile)
+  pathToOpBundleManifest := path.Join(req.PathToOp, NameOfOpBundleManifest)
 
   opBytes, err := this.filesystem.GetBytesOfFile(
-    pathToOpFile,
+    pathToOpBundleManifest,
   )
   if (nil != err) {
     return
   }
 
-  opFile := models.OpFile{}
+  opBundleManifest := models.OpBundleManifest{}
   err = this.yamlCodec.FromYaml(
     opBytes,
-    &opFile,
+    &opBundleManifest,
   )
   if (nil != err) {
     return
   }
 
-  opFile.Description = req.Description
+  opBundleManifest.Description = req.Description
 
-  opBytes, err = this.yamlCodec.ToYaml(&opFile)
+  opBytes, err = this.yamlCodec.ToYaml(&opBundleManifest)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
-    pathToOpFile,
+    pathToOpBundleManifest,
     opBytes,
   )
 

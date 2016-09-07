@@ -19,57 +19,37 @@ var _ = Describe("_yamlCodec", func() {
     })
   })
   Context("executing .toYaml() then .fromYaml", func() {
-    It("should roundtrip a opFile", func() {
+    It("should roundtrip an opBundleManifest", func() {
 
       /* arrange */
-      expectedOpFile := models.OpFile{Description:"op description"}
-      objectUnderTest := _yamlCodec{}
-
-      /* act */
-      opFileBytes, _ := objectUnderTest.ToYaml(&expectedOpFile)
-      actualOpFile := models.OpFile{}
-      objectUnderTest.FromYaml(opFileBytes, &actualOpFile)
-
-      /* assert */
-      Expect(actualOpFile).To(Equal(expectedOpFile))
-
-    })
-    It("should roundtrip a opFile", func() {
-
-      /* arrange */
-      expectedOpFile := models.OpFile{
-        Name:"dummyName",
-        Description:"dummyDescription",
-        Inputs:[]models.Parameter{
-          *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
+      expectedOpBundleManifest := models.OpBundleManifest{
+        BundleManifest:models.BundleManifest{
+          Name:"dummyName",
+          Description:"dummyDescription",
+          Version:"dummyVersion",
         },
-        Outputs:[]models.Parameter{
-          *models.NewParameter("dummyName", "dummyDefault", "dummyDescription", false),
-        },
-        Run:models.OpFileRunInstruction{
-          SubOps:[]models.SubOpRunInstruction{
-            {
-              Url:"dummyUrl1",
-              IsParallel:true,
-            },
-            {
-              Url:"dummyUrl2",
-              IsParallel:false,
+        Inputs:[]models.Param{
+          {
+            String: &models.StringParam{
+              Name:"dummyName",
+              Default:"dummyDefault",
+              Description:"dummyDescription",
+              IsSecret:false,
             },
           },
         },
-        Version:"dummyVersion",
+        Run:&models.RunStatement{Op:"dummyOpRef"},
       }
 
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      opFileBytes, _ := objectUnderTest.ToYaml(&expectedOpFile)
-      actualOpFile := models.OpFile{}
-      objectUnderTest.FromYaml(opFileBytes, &actualOpFile)
+      opBundleManifestBytes, _ := objectUnderTest.ToYaml(&expectedOpBundleManifest)
+      actualOpBundleManifest := models.OpBundleManifest{}
+      objectUnderTest.FromYaml(opBundleManifestBytes, &actualOpBundleManifest)
 
       /* assert */
-      Expect(actualOpFile).To(Equal(expectedOpFile))
+      Expect(actualOpBundleManifest).To(Equal(expectedOpBundleManifest))
 
     })
   })

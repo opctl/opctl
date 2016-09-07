@@ -90,17 +90,20 @@ var _ = Describe("_setOpDescriptionUseCase", func() {
       })
     })
 
-    It("should call YamlCodec.ToYaml with expected opFile", func() {
+    It("should call YamlCodec.ToYaml with expected opBundleManifest", func() {
 
       /* arrange */
-      expectedOpFile := models.OpFile{
-        Name:"DummyName",
-        Description:"DummyDescription",
+      expectedOpBundleManifest := models.OpBundleManifest{
+        BundleManifest: models.BundleManifest{
+          Name:"dummyName",
+          Description:"dummyDescription",
+          Version:"dummyVersion",
+        },
       }
 
       fakeYamlCodec := new(fakeYamlCodec)
       fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpFile))
+        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpBundleManifest))
         return
       }
 
@@ -111,12 +114,12 @@ var _ = Describe("_setOpDescriptionUseCase", func() {
 
       /* act */
       objectUnderTest.Execute(
-        models.SetOpDescriptionReq{Description:expectedOpFile.Description},
+        models.SetOpDescriptionReq{Description:expectedOpBundleManifest.Description},
       )
 
       /* assert */
-      actualOpFile := fakeYamlCodec.ToYamlArgsForCall(0)
-      Expect(actualOpFile).To(Equal(&expectedOpFile))
+      actualOpBundleManifest := fakeYamlCodec.ToYamlArgsForCall(0)
+      Expect(actualOpBundleManifest).To(Equal(&expectedOpBundleManifest))
 
     })
 
@@ -124,7 +127,7 @@ var _ = Describe("_setOpDescriptionUseCase", func() {
 
       /* arrange */
       providedPathToOp := "/dummy/op/path"
-      expectedSaveFilePathArg := path.Join(providedPathToOp, NameOfOpFile)
+      expectedSaveFilePathArg := path.Join(providedPathToOp, NameOfOpBundleManifest)
       expectedSaveFileBytesArg := []byte{2, 3, 4}
 
       fakeFilesystem := new(FakeFilesystem)
