@@ -7,16 +7,16 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - typed params; `string`
-- typed op run statements; `serial`, `op`, and `parallel`
-- nested op run statement support (applies to `serial` & `parallel` op
-  run statements)
+- typed run declarations; `serial`, `op`, and `parallel`
+- nested run declaration support (applies to `serial` &
+  `parallel` run declarations)
 - json schema
 
 ### Changed
 
 - params no longer support `type` attribute; use new `string` param type
-- op run statement no longer supports `subOps` attribute; use new `op`
-  run statement type
+- run declaration no longer supports `subOps` attribute; use new `op`
+  run declaration type
 
 ## [0.1.1] - 2016-08-03
 

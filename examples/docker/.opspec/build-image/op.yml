@@ -1,4 +1,4 @@
 name: build-image
 description: Builds a docker image
 inputs:
-  - string: { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
+  - { string:, name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }

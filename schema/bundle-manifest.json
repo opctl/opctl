@@ -60,7 +60,7 @@
         },
         "run": {
           "description": "What the op runs",
-          "$ref": "#/definitions/runStatement"
+          "$ref": "#/definitions/runDeclaration"
         },
         "version": {
           "description": "Version of the op",
@@ -73,11 +73,35 @@
       "additionalProperties": false
     },
     "param": {
+      "title": "param",
+      "type": "object",
       "oneOf": [
         {
           "$ref": "#/definitions/stringParam"
         }
-      ]
+      ],
+      "allOf": [
+        {
+          "properties": {
+            "description": {
+              "description": "Description of the parameter",
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the parameter is secret",
+              "type": "boolean"
+            },
+            "name": {
+              "description": "Name of the parameter",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      ],
+      "additionalProperties": false
     },
     "stringParam": {
       "title": "stringParam",
@@ -86,22 +110,11 @@
         "string": {
           "type": "object",
           "properties": {
-            "isSecret": {
-              "description": "If the parameter is secret",
-              "type": "boolean"
-            },
-            "name": {
-              "description": "Name of the parameter",
-              "type": "string"
-            },
             "default": {
               "description": "Default value of the parameter",
               "type": "string"
             }
-          },
-          "required": [
-            "name"
-          ]
+          }
         }
       },
       "required": [
@@ -109,21 +122,24 @@
       ],
       "additionalProperties": false
     },
-    "runStatement": {
+    "runDeclaration": {
+      "title": "runDeclaration",
+      "description": "What will be run",
       "oneOf": [
         {
-          "$ref": "#/definitions/opRunStatement"
+          "$ref": "#/definitions/opRunDeclaration"
         },
         {
-          "$ref": "#/definitions/parallelRunStatement"
+          "$ref": "#/definitions/parallelRunDeclaration"
         },
         {
-          "$ref": "#/definitions/serialRunStatement"
+          "$ref": "#/definitions/serialRunDeclaration"
         }
-      ]
+      ],
+      "additionalProperties": false
     },
-    "opRunStatement": {
-      "title": "opRunStatement",
+    "opRunDeclaration": {
+      "title": "opRunDeclaration",
       "description": "Op to be run",
       "type": "object",
       "properties": {
@@ -136,15 +152,15 @@
       ],
       "additionalProperties": false
     },
-    "parallelRunStatement": {
-      "title": "parallelRunStatement",
-      "description": "Sequence of statements to run in parallel",
+    "parallelRunDeclaration": {
+      "title": "parallelRunDeclaration",
+      "description": "Sequence of run declarations to run in parallel",
       "type": "object",
       "properties": {
         "parallel": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/runStatement"
+            "$ref": "#/definitions/runDeclaration"
           }
         }
       },
@@ -153,15 +169,15 @@
       ],
       "additionalProperties": false
     },
-    "serialRunStatement": {
-      "title": "serialRunStatement",
-      "description": "Sequence of statements to run serially",
+    "serialRunDeclaration": {
+      "title": "serialRunDeclaration",
+      "description": "Sequence of run declarations to run serially",
       "type": "object",
       "properties": {
         "serial": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/runStatement"
+            "$ref": "#/definitions/runDeclaration"
           }
         }
       },
@@ -173,8 +189,7 @@
     "dockerImageRef": {
       "title": "dockerImageRef",
       "description": "Reference to a docker image",
-      "type": "string",
-      "pattern": "^((registry_hostname/)?namespace/)?repo(:tag)$"
+      "type": "string"
     },
     "opRef": {
       "title": "opRef",

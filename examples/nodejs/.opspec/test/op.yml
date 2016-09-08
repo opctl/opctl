@@ -1,10 +1,10 @@
 name: test
 description: Runs all tests
 inputs:
-  - string: { name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
+  - { string:, name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
 run:
   serial:
-  - op: { url: install-deps }
+  - op: install-deps
   - parallel:
-    - op: { url: test-style }
-    - op: { url: test-unit }
+    - op: test-style
+    - op: test-unit
