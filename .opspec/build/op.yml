@@ -1,5 +1,4 @@
 description: runs all build ops
 name: build
 run:
-  subOps:
-  - url: test
+  op: test

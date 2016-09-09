@@ -49,7 +49,7 @@ files/folders).
 
 Bundle manifests [MUST](#mustmay) be in
 [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html) format and validate
-against the [bundle-manifest schema](schema/bundle-manifest.json)
+against the [manifest schema](schema/manifest.json)
 
 # Ops
 

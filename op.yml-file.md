@@ -12,4 +12,4 @@
 # Schema
 
 [MUST](index.md#mustmay) validate against
-[schema/bundle-manifest.json#definitions/opBundleManifest](schema/bundle-manifest.json#definitions/opBundleManifest)
+[schema/manifest.json#definitions/opManifest](schema/manifest.json#definitions/opManifest)
