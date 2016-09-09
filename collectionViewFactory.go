@@ -43,19 +43,19 @@ collectionView models.CollectionView,
 err error,
 ) {
 
-  collectionBundleManifestPath := path.Join(collectionBundlePath, NameOfCollectionBundleManifest)
+  collectionManifestPath := path.Join(collectionBundlePath, NameOfCollectionManifestFile)
 
-  collectionBundleManifestBytes, err := this.filesystem.GetBytesOfFile(
-    collectionBundleManifestPath,
+  collectionManifestBytes, err := this.filesystem.GetBytesOfFile(
+    collectionManifestPath,
   )
   if (nil != err) {
     return
   }
 
-  collectionBundleManifest := models.CollectionBundleManifest{}
+  collectionManifest := models.CollectionManifest{}
   err = this.yamlCodec.FromYaml(
-    collectionBundleManifestBytes,
-    &collectionBundleManifest,
+    collectionManifestBytes,
+    &collectionManifest,
   )
   if (nil != err) {
     return
@@ -77,8 +77,8 @@ err error,
   }
 
   collectionView = *models.NewCollectionView(
-    collectionBundleManifest.Description,
-    collectionBundleManifest.Name,
+    collectionManifest.Description,
+    collectionManifest.Name,
     opViews,
   )
 

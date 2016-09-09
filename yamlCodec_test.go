@@ -19,37 +19,37 @@ var _ = Describe("_yamlCodec", func() {
     })
   })
   Context("executing .toYaml() then .fromYaml", func() {
-    It("should roundtrip an opBundleManifest", func() {
+    It("should roundtrip an opManifest", func() {
 
       /* arrange */
-      expectedOpBundleManifest := models.OpBundleManifest{
-        BundleManifest:models.BundleManifest{
+      expectedOpManifest := models.OpManifest{
+        Manifest:models.Manifest{
           Name:"dummyName",
           Description:"dummyDescription",
           Version:"dummyVersion",
         },
         Inputs:[]models.Param{
           {
+            Name:"dummyName",
+            Description:"dummyDescription",
+            IsSecret:false,
             String: &models.StringParam{
-              Name:"dummyName",
               Default:"dummyDefault",
-              Description:"dummyDescription",
-              IsSecret:false,
             },
           },
         },
-        Run:&models.RunStatement{Op:"dummyOpRef"},
+        Run:&models.RunDeclaration{Op:"dummyOpRef"},
       }
 
       objectUnderTest := _yamlCodec{}
 
       /* act */
-      opBundleManifestBytes, _ := objectUnderTest.ToYaml(&expectedOpBundleManifest)
-      actualOpBundleManifest := models.OpBundleManifest{}
-      objectUnderTest.FromYaml(opBundleManifestBytes, &actualOpBundleManifest)
+      opManifestBytes, _ := objectUnderTest.ToYaml(&expectedOpManifest)
+      actualOpManifest := models.OpManifest{}
+      objectUnderTest.FromYaml(opManifestBytes, &actualOpManifest)
 
       /* assert */
-      Expect(actualOpBundleManifest).To(Equal(expectedOpBundleManifest))
+      Expect(actualOpManifest).To(Equal(expectedOpManifest))
 
     })
   })

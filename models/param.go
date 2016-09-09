@@ -1,5 +1,8 @@
 package models
 
 type Param struct {
-  String *StringParam `yaml:"string,omitempty"`
+  Name        string `yaml:"name"`
+  Description string `yaml:"description"`
+  IsSecret    bool `yaml:"isSecret"`
+  String      *StringParam `yaml:"string,omitempty"`
 }

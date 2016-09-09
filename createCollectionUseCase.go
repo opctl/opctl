@@ -41,21 +41,21 @@ req models.CreateCollectionReq,
     return
   }
 
-  var opCollection = models.CollectionBundleManifest{
-    BundleManifest:models.BundleManifest{
+  var opCollection = models.CollectionManifest{
+    Manifest:models.Manifest{
       Description:req.Description,
       Name:req.Name,
     },
   }
 
-  opBundleManifestBytes, err := this.yamlCodec.ToYaml(&opCollection)
+  opManifestBytes, err := this.yamlCodec.ToYaml(&opCollection)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
     path.Join(req.Path, "collection.yml"),
-    opBundleManifestBytes,
+    opManifestBytes,
   )
 
   return

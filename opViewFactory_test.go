@@ -89,22 +89,22 @@ var _ = Describe("_opViewFactory", func() {
       /* arrange */
       expectedInputs := []models.Param{
         {
+          Name:"dummyName",
+          Description:"dummyDescription",
+          IsSecret:false,
           String: &models.StringParam{
-            Name:"dummyName",
             Default:"dummyDefault",
-            Description:"dummyDescription",
-            IsSecret:false,
           },
         },
       }
 
-      expectedRunStatement := &models.RunStatement{Op:"dummyOpRef"}
+      expectedRunDeclaration := &models.RunDeclaration{Op:"dummyOpRef"}
 
       expectedOpView := *models.NewOpView(
         "dummyDescription",
         expectedInputs,
         "dummyName",
-        expectedRunStatement,
+        expectedRunDeclaration,
         "dummyVersion",
       )
 
@@ -113,17 +113,17 @@ var _ = Describe("_opViewFactory", func() {
       fakeYamlCodec := new(fakeYamlCodec)
       fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-        stubbedOpBundleManifest := models.OpBundleManifest{
-          BundleManifest:models.BundleManifest{
+        stubbedOpManifest := models.OpManifest{
+          Manifest:models.Manifest{
             Name:expectedOpView.Name,
             Description:expectedOpView.Description,
             Version:expectedOpView.Version,
           },
           Inputs:expectedInputs,
-          Run:expectedRunStatement,
+          Run:expectedRunDeclaration,
         }
 
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
+        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
         return
       }
 
@@ -140,13 +140,13 @@ var _ = Describe("_opViewFactory", func() {
 
     })
 
-    Context("when opBundleManifest.Run.Parallel is not nil", func() {
+    Context("when opManifest.Run.Parallel is not nil", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
 
-        expectedRunStatement := &models.RunStatement{
-          Parallel: &models.ParallelRunStatement{},
+        expectedRunDeclaration := &models.RunDeclaration{
+          Parallel: &models.ParallelRunDeclaration{},
         }
 
         fakeFilesystem := new(FakeFilesystem)
@@ -154,11 +154,11 @@ var _ = Describe("_opViewFactory", func() {
         fakeYamlCodec := new(fakeYamlCodec)
         fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpBundleManifest := models.OpBundleManifest{
-            Run:expectedRunStatement,
+          stubbedOpManifest := models.OpManifest{
+            Run:expectedRunDeclaration,
           }
 
-          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
+          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
           return
         }
 
@@ -171,26 +171,26 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedRunStatement))
+        Expect(actualOpView.Run).To(Equal(expectedRunDeclaration))
 
       })
     })
-    Context("when opBundleManifest.Run.Parallel is nil", func() {
+    Context("when opManifest.Run.Parallel is nil", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
-        expectedRunStatement := &models.RunStatement{Op:"dummyOpRef"}
+        expectedRunDeclaration := &models.RunDeclaration{Op:"dummyOpRef"}
 
         fakeFilesystem := new(FakeFilesystem)
 
         fakeYamlCodec := new(fakeYamlCodec)
         fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpBundleManifest := models.OpBundleManifest{
-            Run:expectedRunStatement,
+          stubbedOpManifest := models.OpManifest{
+            Run:expectedRunDeclaration,
           }
 
-          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpBundleManifest))
+          reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
           return
         }
 
@@ -203,7 +203,7 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedRunStatement))
+        Expect(actualOpView.Run).To(Equal(expectedRunDeclaration))
 
       })
 

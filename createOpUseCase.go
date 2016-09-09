@@ -41,21 +41,21 @@ req models.CreateOpReq,
     return
   }
 
-  var opBundleManifest = models.OpBundleManifest{
-    BundleManifest:models.BundleManifest{
+  var opManifest = models.OpManifest{
+    Manifest:models.Manifest{
       Description:req.Description,
       Name:req.Name,
     },
   }
 
-  opBundleManifestBytes, err := this.yamlCodec.ToYaml(&opBundleManifest)
+  opManifestBytes, err := this.yamlCodec.ToYaml(&opManifest)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
     path.Join(req.Path, "op.yml"),
-    opBundleManifestBytes,
+    opManifestBytes,
   )
 
   return

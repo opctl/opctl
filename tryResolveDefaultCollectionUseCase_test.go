@@ -124,14 +124,14 @@ var _ = Describe("_tryResolveDefaultCollectionUseCase", func() {
         fakeFilesystem.ListChildFileInfosOfDirReturns(
           []os.FileInfo{
             fileInfo{
-              name:NameOfDefaultOpCollection,
+              name:NameOfDefaultOpCollectionDir,
               isDir:true,
             },
           },
           nil,
         )
 
-        expectedPathToDefaultCollection := path.Join(providedPathToDir, NameOfDefaultOpCollection)
+        expectedPathToDefaultCollection := path.Join(providedPathToDir, NameOfDefaultOpCollectionDir)
 
         objectUnderTest := newTryResolveDefaultCollectionUseCase(
           fakeFilesystem,
@@ -156,7 +156,7 @@ var _ = Describe("_tryResolveDefaultCollectionUseCase", func() {
         fakeFilesystem.ListChildFileInfosOfDirReturns(
           []os.FileInfo{
             fileInfo{
-              name:NameOfDefaultOpCollection,
+              name:NameOfDefaultOpCollectionDir,
               isDir:true,
             },
           },

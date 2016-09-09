@@ -86,11 +86,11 @@ var _ = Describe("_createCollectionUseCase", func() {
       })
     })
 
-    It("should call YamlCodec.ToYaml with expected collectionBundleManifest", func() {
+    It("should call YamlCodec.ToYaml with expected collectionManifest", func() {
 
       /* arrange */
-      expectedCollectionBundleManifest := models.CollectionBundleManifest{
-        BundleManifest:models.BundleManifest{
+      expectedCollectionManifest := models.CollectionManifest{
+        Manifest:models.Manifest{
           Description:"DummyDescription",
           Name:"DummyName",
         },
@@ -98,7 +98,7 @@ var _ = Describe("_createCollectionUseCase", func() {
 
       fakeYamlCodec := new(fakeYamlCodec)
       fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionBundleManifest))
+        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionManifest))
         return
       }
 
@@ -110,14 +110,14 @@ var _ = Describe("_createCollectionUseCase", func() {
       /* act */
       objectUnderTest.Execute(
         models.CreateCollectionReq{
-          Description:expectedCollectionBundleManifest.Description,
-          Name:expectedCollectionBundleManifest.Name,
+          Description:expectedCollectionManifest.Description,
+          Name:expectedCollectionManifest.Name,
         },
       )
 
       /* assert */
-      actualCollectionBundleManifest := fakeYamlCodec.ToYamlArgsForCall(0)
-      Expect(actualCollectionBundleManifest).To(Equal(&expectedCollectionBundleManifest))
+      actualCollectionManifest := fakeYamlCodec.ToYamlArgsForCall(0)
+      Expect(actualCollectionManifest).To(Equal(&expectedCollectionManifest))
 
     })
 
@@ -125,7 +125,7 @@ var _ = Describe("_createCollectionUseCase", func() {
 
       /* arrange */
       providedPath := "/dummy/op/path"
-      expectedSaveFilePathArg := path.Join(providedPath, NameOfCollectionBundleManifest)
+      expectedSaveFilePathArg := path.Join(providedPath, NameOfCollectionManifestFile)
       expectedSaveFileBytesArg := []byte{2, 3, 4}
 
       fakeFilesystem := new(FakeFilesystem)

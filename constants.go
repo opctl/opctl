@@ -1,7 +1,7 @@
 package opspec
 
 const (
-  NameOfOpBundleManifest = "op.yml"
-  NameOfCollectionBundleManifest = "collection.yml"
-  NameOfDefaultOpCollection = ".opspec"
+  NameOfOpManifestFile = "op.yml"
+  NameOfCollectionManifestFile = "collection.yml"
+  NameOfDefaultOpCollectionDir = ".opspec"
 )

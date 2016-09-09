@@ -4,7 +4,7 @@ func NewOpView(
 description string,
 inputs []Param,
 name string,
-run *RunStatement,
+run *RunDeclaration,
 version string,
 ) *OpView {
 
@@ -22,6 +22,6 @@ type OpView struct {
   Description string
   Inputs      []Param
   Name        string
-  Run         *RunStatement
+  Run         *RunDeclaration
   Version     string
 }

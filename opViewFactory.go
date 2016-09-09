@@ -40,30 +40,30 @@ opView models.OpView,
 err error,
 ) {
 
-  opBundleManifestPath := path.Join(opBundlePath, NameOfOpBundleManifest)
+  opManifestPath := path.Join(opBundlePath, NameOfOpManifestFile)
 
-  opBundleManifestBytes, err := this.filesystem.GetBytesOfFile(
-    opBundleManifestPath,
+  opManifestBytes, err := this.filesystem.GetBytesOfFile(
+    opManifestPath,
   )
   if (nil != err) {
     return
   }
 
-  opBundleManifest := models.OpBundleManifest{}
+  opManifest := models.OpManifest{}
   err = this.yamlCodec.FromYaml(
-    opBundleManifestBytes,
-    &opBundleManifest,
+    opManifestBytes,
+    &opManifest,
   )
   if (nil != err) {
     return
   }
 
   opView = *models.NewOpView(
-    opBundleManifest.Description,
-    opBundleManifest.Inputs,
-    opBundleManifest.Name,
-    opBundleManifest.Run,
-    opBundleManifest.Version,
+    opManifest.Description,
+    opManifest.Inputs,
+    opManifest.Name,
+    opManifest.Run,
+    opManifest.Version,
   )
 
   return
