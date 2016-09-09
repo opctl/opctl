@@ -1,20 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://opspec.io/spec/0.1.2/schema/bundle-manifest.json",
-  "title": "bundleManifest",
-  "description": "Manifest for a bundle",
+  "id": "http://opspec.io/spec/0.1.2/schema/manifest.json",
+  "title": "manifest",
+  "description": "Manifest",
   "oneOf": [
     {
-      "$ref": "#/definitions/opBundleManifest"
+      "$ref": "#/definitions/opManifest"
     },
     {
-      "$ref": "#/definitions/collectionBundleManifest"
+      "$ref": "#/definitions/collectionManifest"
     }
   ],
   "definitions": {
-    "collectionBundleManifest": {
-      "title": "collectionBundleManifest",
-      "description": "Manifest for a collection bundle",
+    "collectionManifest": {
+      "title": "collectionManifest",
+      "description": "Manifest for a collection",
       "type": "object",
       "properties": {
         "name": {
@@ -38,9 +38,9 @@
       ],
       "additionalProperties": false
     },
-    "opBundleManifest": {
-      "title": "opBundleManifest",
-      "description": "Manifest for an op bundle",
+    "opManifest": {
+      "title": "opManifest",
+      "description": "Manifest for an op",
       "type": "object",
       "properties": {
         "name": {

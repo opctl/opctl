@@ -3,7 +3,7 @@ sudo: required
 before_script:
 - sudo apt-get remove --purge docker-engine
 - curl -fsSL https://get.docker.com/ | sh
-- sudo curl -L -o /usr/local/bin/opctl https://github.com/opspec-io/cli/releases/download/0.1.10/opctl-linux-x86_64
+- sudo curl -L -o /usr/local/bin/opctl https://github.com/opspec-io/cli/releases/download/0.1.11/opctl-linux-x86_64
 - sudo chmod +x /usr/local/bin/opctl
 services:
 - docker

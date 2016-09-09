@@ -10,5 +10,5 @@
 # Schema
 
 [MUST](index.md#mustmay) validate against
-[schema/bundle-manifest.json#definitions/collectionBundleManifest](schema/bundle-manifest.json#definitions/collectionBundleManifest)
+[schema/manifest.json#definitions/collectionManifest](schema/manifest.json#definitions/collectionManifest)
 
