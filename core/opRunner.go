@@ -111,6 +111,15 @@ err error,
       rootOpRunId,
       op.Run.Serial,
     )
+  } else if (nil != op.Run && "" != op.Run.Op) {
+    err = this.Run(
+      correlationId,
+      opArgs,
+      path.Join(filepath.Dir(opBundleUrl), string(op.Run.Op)),
+      this.uniqueStringFactory.Construct(),
+      parentOpRunId,
+      rootOpRunId,
+    )
   } else {
     err = this.containerEngine.RunOp(
       correlationId,
