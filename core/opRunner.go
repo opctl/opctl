@@ -119,7 +119,6 @@ err error,
       this.uniqueStringFactory.Construct(),
       parentOpRunId,
       rootOpRunId,
-      op.Run.Op,
     )
   }
 
@@ -160,19 +159,12 @@ opBundleUrl string,
 opRunId string,
 parentOpRunId string,
 rootOpRunId string,
-opRunDeclaration opspecModels.OpRunDeclaration,
 ) (
 err error,
 ) {
 
-  // currently only support embedded sub ops
-  opUrl := path.Join(
-    filepath.Dir(opBundleUrl),
-    string(opRunDeclaration),
-  )
-
   op, err := this.opspecSdk.GetOp(
-    opUrl,
+    opBundleUrl,
   )
   if (nil != err) {
     return
@@ -180,7 +172,7 @@ err error,
 
   opRunStartedEvent := models.NewOpRunStartedEvent(
     correlationId,
-    string(opRunDeclaration),
+    opBundleUrl,
     opRunId,
     parentOpRunId,
     rootOpRunId,
@@ -194,11 +186,37 @@ err error,
   err = this.containerEngine.RunOp(
     correlationId,
     opArgs,
-    opUrl,
+    opBundleUrl,
     op.Name,
     opRunId,
     this.logger,
   )
+
+  defer func() {
+
+    if (this.storage.isRootOpRunKilled(rootOpRunId)) {
+      // ignore killed op runs; handled by killOpRunUseCase
+      return
+    }
+
+    var opRunOutcome string
+    if (nil != err) {
+      opRunOutcome = models.OpRunOutcomeFailed
+    } else {
+      opRunOutcome = models.OpRunOutcomeSucceeded
+    }
+
+    this.eventStream.Publish(
+      models.NewOpRunEndedEvent(
+        correlationId,
+        opRunId,
+        opRunOutcome,
+        rootOpRunId,
+        time.Now().UTC(),
+      ),
+    )
+
+  }()
 
   return
 
@@ -239,11 +257,10 @@ err error,
       err = this.runOp(
         correlationId,
         opArgs,
-        opBundleUrl,
+        path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
         this.uniqueStringFactory.Construct(),
         parentOpRunId,
         rootOpRunId,
-        childRunDeclaration.Op,
       )
     }
 
@@ -309,11 +326,10 @@ err error,
         childRunDeclarationError = this.runOp(
           correlationId,
           opArgs,
-          opBundleUrl,
+          path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
           this.uniqueStringFactory.Construct(),
           parentOpRunId,
           rootOpRunId,
-          childRunDeclaration.Op,
         )
       }
 
@@ -329,7 +345,7 @@ err error,
         )
       }
 
-      wg.Done()
+      defer wg.Done()
     }(childRunDeclaration)
   }
 
