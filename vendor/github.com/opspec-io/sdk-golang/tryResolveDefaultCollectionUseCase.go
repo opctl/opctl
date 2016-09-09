@@ -51,7 +51,7 @@ err error,
 
   for _, x := range childDirFileInfos {
 
-    if x.IsDir() && x.Name() == NameOfDefaultOpCollection {
+    if x.IsDir() && x.Name() == NameOfDefaultOpCollectionDir {
       // handle default collection found
       pathToDefaultCollection = path.Join(pathToCurrentDir, x.Name())
       return

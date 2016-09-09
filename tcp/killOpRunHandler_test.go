@@ -5,7 +5,7 @@ import (
   . "github.com/onsi/gomega"
   "net/http/httptest"
   "net/http"
-  "github.com/chrisdostert/mux"
+  "github.com/gorilla/mux"
   "bytes"
 )
 

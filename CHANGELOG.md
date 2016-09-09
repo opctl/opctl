@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.8 - 2016-09-09
+### Added
+- support for [opspec 0.1.2](https://opspec.io)
+
+### Fixed
+- [failure of serial operation run does not immediately fail all following operations](https://github.com/opspec-io/cli/issues/5)
+
+### Removed
+- support for < [opspec 0.1.2](https://opspec.io)
+
 ## 0.1.7 - 2016-09-02
 ### Fixed
 - [opctl does not wait for parallel op containers to die before returning](https://github.com/opspec-io/cli/issues/8)

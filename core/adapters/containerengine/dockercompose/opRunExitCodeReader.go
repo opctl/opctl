@@ -7,6 +7,7 @@ import (
   "strings"
   dockerEngine "github.com/docker/engine-api/client"
   "golang.org/x/net/context"
+  "fmt"
 )
 
 type opRunExitCodeReader interface {
@@ -54,8 +55,14 @@ err error,
   dockerComposePsCmd.Dir = opBundlePath
 
   var dockerComposePsCmdRawOutput []byte
-  dockerComposePsCmdRawOutput, err = dockerComposePsCmd.Output()
-  if (nil != err) {
+  dockerComposePsCmdRawOutput, dockerComposePsCmdErr := dockerComposePsCmd.Output()
+  if (nil != dockerComposePsCmdErr) {
+    switch dockerComposeRmCmdErr := dockerComposePsCmdErr.(type){
+    case *exec.ExitError:
+      err = fmt.Errorf("docker-compose ps returned error:\n  %v", string(dockerComposeRmCmdErr.Stderr))
+    default:
+      err = dockerComposeRmCmdErr
+    }
     return
   }
 

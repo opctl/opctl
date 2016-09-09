@@ -10,9 +10,9 @@ import (
   opspecModels "github.com/opspec-io/sdk-golang/models"
   "time"
   "sync"
+  "errors"
   "path"
   "path/filepath"
-  "errors"
 )
 
 type opRunner interface {
@@ -93,26 +93,33 @@ err error,
 
   this.eventStream.Publish(opRunStartedEvent)
 
-  switch runInstruction := op.Run.(type) {
-  case *opspecModels.SubOpsRunInstruction:
-    err = this.runSubOps(
+  if (nil != op.Run && nil != op.Run.Parallel) {
+    err = this.runParallel(
       correlationId,
       opArgs,
       opBundleUrl,
       parentOpRunId,
       rootOpRunId,
-      runInstruction.SubOps,
+      op.Run.Parallel,
     )
-  case opspecModels.ContainerRunInstruction:
-    err = errors.New("Container run instructions not supported in this version of op engine.")
-  default:
-    err = this.containerEngine.RunOp(
+  } else if (nil != op.Run && nil != op.Run.Serial) {
+    err = this.runSerial(
       correlationId,
       opArgs,
       opBundleUrl,
-      op.Name,
-      opRunId,
-      this.logger,
+      parentOpRunId,
+      rootOpRunId,
+      op.Run.Serial,
+    )
+  } else {
+    err = this.runOp(
+      correlationId,
+      opArgs,
+      opBundleUrl,
+      this.uniqueStringFactory.Construct(),
+      parentOpRunId,
+      rootOpRunId,
+      op.Run.Op,
     )
   }
 
@@ -146,13 +153,126 @@ err error,
 
 }
 
-func (this _opRunner) runSubOps(
+func (this _opRunner) runOp(
+correlationId string,
+opArgs map[string]string,
+opBundleUrl string,
+opRunId string,
+parentOpRunId string,
+rootOpRunId string,
+opRunDeclaration opspecModels.OpRunDeclaration,
+) (
+err error,
+) {
+
+  // currently only support embedded sub ops
+  opUrl := path.Join(
+    filepath.Dir(opBundleUrl),
+    string(opRunDeclaration),
+  )
+
+  op, err := this.opspecSdk.GetOp(
+    opUrl,
+  )
+  if (nil != err) {
+    return
+  }
+
+  opRunStartedEvent := models.NewOpRunStartedEvent(
+    correlationId,
+    string(opRunDeclaration),
+    opRunId,
+    parentOpRunId,
+    rootOpRunId,
+    time.Now().UTC(),
+  )
+
+  this.storage.addOpRunStartedEvent(opRunStartedEvent)
+
+  this.eventStream.Publish(opRunStartedEvent)
+
+  err = this.containerEngine.RunOp(
+    correlationId,
+    opArgs,
+    opUrl,
+    op.Name,
+    opRunId,
+    this.logger,
+  )
+
+  return
+
+}
+
+func (this _opRunner) runSerial(
 correlationId string,
 opArgs map[string]string,
 opBundleUrl string,
 parentOpRunId string,
 rootOpRunId string,
-subOps []opspecModels.SubOpRunInstruction,
+serialRunDeclaration *opspecModels.SerialRunDeclaration,
+) (
+err error,
+) {
+
+  for _, childRunDeclaration := range *serialRunDeclaration {
+
+    if (nil != childRunDeclaration.Parallel) {
+      err = this.runParallel(
+        correlationId,
+        opArgs,
+        opBundleUrl,
+        parentOpRunId,
+        rootOpRunId,
+        childRunDeclaration.Parallel,
+      )
+    } else if (nil != childRunDeclaration.Serial) {
+      err = this.runSerial(
+        correlationId,
+        opArgs,
+        opBundleUrl,
+        parentOpRunId,
+        rootOpRunId,
+        childRunDeclaration.Serial,
+      )
+    } else {
+      err = this.runOp(
+        correlationId,
+        opArgs,
+        opBundleUrl,
+        this.uniqueStringFactory.Construct(),
+        parentOpRunId,
+        rootOpRunId,
+        childRunDeclaration.Op,
+      )
+    }
+
+    if (nil != err) {
+      this.logger(
+        models.NewLogEntryEmittedEvent(
+          correlationId,
+          time.Now().UTC(),
+          err.Error(),
+          logging.StdErrStream,
+        ),
+      )
+      // end run immediately on any error
+      return
+    }
+
+  }
+
+  return
+
+}
+
+func (this _opRunner) runParallel(
+correlationId string,
+opArgs map[string]string,
+opBundleUrl string,
+parentOpRunId string,
+rootOpRunId string,
+parallelRunDeclaration *opspecModels.ParallelRunDeclaration,
 ) (
 err error,
 ) {
@@ -161,66 +281,56 @@ err error,
   var isSubOpRunErrors bool
 
   // run sub ops
-  for _, subOp := range subOps {
+  for _, childRunDeclaration := range *parallelRunDeclaration {
     wg.Add(1)
 
-    // currently only support embedded sub ops
-    subOpBundleUrl := path.Join(
-      filepath.Dir(opBundleUrl),
-      subOp.Url,
-    )
+    var childRunDeclarationError error
 
-    subOpRunId := this.uniqueStringFactory.Construct()
-
-    if subOp.IsParallel {
-      // handle parallel
-      go func() {
-        subOpRunErr := this.Run(
+    go func(childRunDeclaration opspecModels.RunDeclaration) {
+      if (nil != childRunDeclaration.Parallel) {
+        childRunDeclarationError = this.runParallel(
           correlationId,
           opArgs,
-          subOpBundleUrl,
-          subOpRunId,
+          opBundleUrl,
           parentOpRunId,
           rootOpRunId,
+          childRunDeclaration.Parallel,
         )
-        if (nil != subOpRunErr) {
-          isSubOpRunErrors = true
-          this.logger(
-            models.NewLogEntryEmittedEvent(
-              correlationId,
-              time.Now().UTC(),
-              subOpRunErr.Error(),
-              logging.StdErrStream,
-            ),
-          )
-        }
+      } else if (nil != childRunDeclaration.Serial) {
+        childRunDeclarationError = this.runSerial(
+          correlationId,
+          opArgs,
+          opBundleUrl,
+          parentOpRunId,
+          rootOpRunId,
+          childRunDeclaration.Serial,
+        )
+      } else {
+        childRunDeclarationError = this.runOp(
+          correlationId,
+          opArgs,
+          opBundleUrl,
+          this.uniqueStringFactory.Construct(),
+          parentOpRunId,
+          rootOpRunId,
+          childRunDeclaration.Op,
+        )
+      }
 
-        wg.Done()
-      }()
-    } else {
-      // handle synchronous
-      subOpRunErr := this.Run(
-        correlationId,
-        opArgs,
-        subOpBundleUrl,
-        subOpRunId,
-        parentOpRunId,
-        rootOpRunId,
-      )
-      if (nil != subOpRunErr) {
+      if (nil != childRunDeclarationError) {
         isSubOpRunErrors = true
         this.logger(
           models.NewLogEntryEmittedEvent(
             correlationId,
             time.Now().UTC(),
-            subOpRunErr.Error(),
+            childRunDeclarationError.Error(),
             logging.StdErrStream,
           ),
         )
       }
 
       wg.Done()
-    }
+    }(childRunDeclaration)
   }
 
   wg.Wait()

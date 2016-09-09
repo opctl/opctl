@@ -5,7 +5,7 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     entrypoint: |
-      sh -c "
+      sh -ce "
         go get ./... && \
         go build
       "

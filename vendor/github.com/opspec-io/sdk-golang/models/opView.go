@@ -2,10 +2,9 @@ package models
 
 func NewOpView(
 description string,
-inputs []Parameter,
+inputs []Param,
 name string,
-outputs []Parameter,
-run RunInstruction,
+run *RunDeclaration,
 version string,
 ) *OpView {
 
@@ -13,7 +12,6 @@ version string,
     Description:description,
     Inputs:inputs,
     Name:name,
-    Outputs:outputs,
     Run:run,
     Version:version,
   }
@@ -22,9 +20,8 @@ version string,
 
 type OpView struct {
   Description string
-  Inputs      []Parameter
+  Inputs      []Param
   Name        string
-  Outputs     []Parameter
-  Run         RunInstruction
+  Run         *RunDeclaration
   Version     string
 }
