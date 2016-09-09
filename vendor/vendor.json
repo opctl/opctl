@@ -9,12 +9,6 @@
 			"revisionTime": "2016-04-13T12:47:20Z"
 		},
 		{
-			"checksumSHA1": "hXbq4BPLbC1QJPYpwTWf2hD9+kk=",
-			"path": "github.com/chrisdostert/mux",
-			"revision": "2f0c99a1a04b023bda5d9581bfaf4f3a16677891",
-			"revisionTime": "2015-11-24T23:37:51Z"
-		},
-		{
 			"checksumSHA1": "f1wARLDzsF/JoyN01yoxXEwFIp8=",
 			"path": "github.com/docker/distribution/digest",
 			"revision": "05b0ab0302ad33f61218e2ecf263cd102b368390",
@@ -133,6 +127,12 @@
 			"path": "github.com/gorilla/context",
 			"revision": "1ea25387ff6f684839d82767c1733ff4d4d15d0a",
 			"revisionTime": "2016-02-26T21:46:23Z"
+		},
+		{
+			"checksumSHA1": "oDsOWp1nBMGpQ9gCFnczGADwZTE=",
+			"path": "github.com/gorilla/mux",
+			"revision": "0a192a193177452756c362c20087ddafcf6829c4",
+			"revisionTime": "2016-09-02T15:33:43Z"
 		},
 		{
 			"checksumSHA1": "yc/AtS4YqKJrwaJTbHKmDYVrtVE=",
@@ -309,17 +309,16 @@
 			"revisionTime": "2016-03-05T21:39:52Z"
 		},
 		{
-			"checksumSHA1": "wpAIU6gCql4O+we9akWSOelYPWk=",
+			"checksumSHA1": "+WtnD+ERf39LKu458ZuRcoCVXrs=",
 			"path": "github.com/opspec-io/sdk-golang",
-			"revision": "2ce77140bbe05d0f92f55e644f93ce90d038ab22",
-			"revisionTime": "2016-08-02T07:39:40Z",
-			"tree": true
+			"revision": "07cfabb3895ca2979e79f916e9b1f75aa79f2b55",
+			"revisionTime": "2016-09-09T05:23:00Z"
 		},
 		{
-			"checksumSHA1": "NIVJGpm4d1wPho2U3K/c3zetr4E=",
+			"checksumSHA1": "WYmFjMpljYLk3T54TQKcyQqGp0w=",
 			"path": "github.com/opspec-io/sdk-golang/models",
-			"revision": "0c92639e1c89a63c4f9bcd27ae0b056c3d322e61",
-			"revisionTime": "2016-08-03T03:52:05Z"
+			"revision": "07cfabb3895ca2979e79f916e9b1f75aa79f2b55",
+			"revisionTime": "2016-09-09T05:23:00Z"
 		},
 		{
 			"checksumSHA1": "pancewZW3HwGvpDwfH5Imrbadc4=",
@@ -332,13 +331,6 @@
 			"path": "golang.org/x/net/proxy",
 			"revision": "fb93926129b8ec0056f2f458b1f519654814edf0",
 			"revisionTime": "2016-04-12T22:48:50Z"
-		},
-		{
-			"checksumSHA1": "+OgOXBoiQ+X+C2dsAeiOHwBIEH0=",
-			"origin": "github.com/opspec-io/sdk-golang/vendor/gopkg.in/yaml.v2",
-			"path": "gopkg.in/yaml.v2",
-			"revision": "0c92639e1c89a63c4f9bcd27ae0b056c3d322e61",
-			"revisionTime": "2016-08-03T03:52:05Z"
 		}
 	],
 	"rootPath": "github.com/opspec-io/engine"

@@ -4,7 +4,7 @@ package opspec
 import "sync"
 
 type fakeYamlCodec struct {
-  ToYamlStub          func(in interface{}) (opFileBytes []byte, err error)
+  ToYamlStub          func(in interface{}) (opManifestBytes []byte, err error)
   toYamlMutex         sync.RWMutex
   toYamlArgsForCall   []struct {
     in interface{}
@@ -26,7 +26,7 @@ type fakeYamlCodec struct {
   invocationsMutex    sync.RWMutex
 }
 
-func (fake *fakeYamlCodec) ToYaml(in interface{}) (opFileBytes []byte, err error) {
+func (fake *fakeYamlCodec) ToYaml(in interface{}) (opManifestBytes []byte, err error) {
   fake.toYamlMutex.Lock()
   fake.toYamlArgsForCall = append(fake.toYamlArgsForCall, struct {
     in interface{}

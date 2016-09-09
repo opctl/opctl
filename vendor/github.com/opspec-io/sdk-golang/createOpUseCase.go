@@ -41,19 +41,21 @@ req models.CreateOpReq,
     return
   }
 
-  var opFile = models.OpFile{
-    Description:req.Description,
-    Name:req.Name,
+  var opManifest = models.OpManifest{
+    Manifest:models.Manifest{
+      Description:req.Description,
+      Name:req.Name,
+    },
   }
 
-  opFileBytes, err := this.yamlCodec.ToYaml(&opFile)
+  opManifestBytes, err := this.yamlCodec.ToYaml(&opManifest)
   if (nil != err) {
     return
   }
 
   err = this.filesystem.SaveFile(
     path.Join(req.Path, "op.yml"),
-    opFileBytes,
+    opManifestBytes,
   )
 
   return

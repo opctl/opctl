@@ -60,7 +60,16 @@ logger logging.Logger,
     )
   }
 
-  err = dockerComposeDownCmd.Run()
+  dockerComposeDownCmdErr := dockerComposeDownCmd.Run()
+  if (nil != dockerComposeDownCmdErr) {
+    switch dockerComposeRmCmdErr := dockerComposeDownCmdErr.(type){
+    case *exec.ExitError:
+      err = fmt.Errorf("docker-compose down returned error:\n  %v", string(dockerComposeRmCmdErr.Stderr))
+    default:
+      err = dockerComposeRmCmdErr
+    }
+    return
+  }
 
   return
 

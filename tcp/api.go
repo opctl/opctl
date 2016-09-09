@@ -3,7 +3,7 @@ package tcp
 import (
   "github.com/opspec-io/engine/core"
   "net/http"
-  "github.com/chrisdostert/mux"
+  "github.com/gorilla/mux"
 )
 
 type Api interface {
