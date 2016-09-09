@@ -112,85 +112,15 @@ err error,
       op.Run.Serial,
     )
   } else {
-    err = this.runOp(
+    err = this.containerEngine.RunOp(
       correlationId,
       opArgs,
       opBundleUrl,
-      this.uniqueStringFactory.Construct(),
-      parentOpRunId,
-      rootOpRunId,
+      op.Name,
+      opRunId,
+      this.logger,
     )
   }
-
-  defer func() {
-
-    if (this.storage.isRootOpRunKilled(rootOpRunId)) {
-      // ignore killed op runs; handled by killOpRunUseCase
-      return
-    }
-
-    var opRunOutcome string
-    if (nil != err) {
-      opRunOutcome = models.OpRunOutcomeFailed
-    } else {
-      opRunOutcome = models.OpRunOutcomeSucceeded
-    }
-
-    this.eventStream.Publish(
-      models.NewOpRunEndedEvent(
-        correlationId,
-        opRunId,
-        opRunOutcome,
-        rootOpRunId,
-        time.Now().UTC(),
-      ),
-    )
-
-  }()
-
-  return
-
-}
-
-func (this _opRunner) runOp(
-correlationId string,
-opArgs map[string]string,
-opBundleUrl string,
-opRunId string,
-parentOpRunId string,
-rootOpRunId string,
-) (
-err error,
-) {
-
-  op, err := this.opspecSdk.GetOp(
-    opBundleUrl,
-  )
-  if (nil != err) {
-    return
-  }
-
-  opRunStartedEvent := models.NewOpRunStartedEvent(
-    correlationId,
-    opBundleUrl,
-    opRunId,
-    parentOpRunId,
-    rootOpRunId,
-    time.Now().UTC(),
-  )
-
-  this.storage.addOpRunStartedEvent(opRunStartedEvent)
-
-  this.eventStream.Publish(opRunStartedEvent)
-
-  err = this.containerEngine.RunOp(
-    correlationId,
-    opArgs,
-    opBundleUrl,
-    op.Name,
-    opRunId,
-    this.logger,
-  )
 
   defer func() {
 
@@ -254,7 +184,7 @@ err error,
         childRunDeclaration.Serial,
       )
     } else {
-      err = this.runOp(
+      err = this.Run(
         correlationId,
         opArgs,
         path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
@@ -323,7 +253,7 @@ err error,
           childRunDeclaration.Serial,
         )
       } else {
-        childRunDeclarationError = this.runOp(
+        childRunDeclarationError = this.Run(
           correlationId,
           opArgs,
           path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
