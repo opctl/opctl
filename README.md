@@ -29,7 +29,6 @@ docker run \
 -v /var/run/docker.sock:/var/run/docker.sock \ # allow access to docker socket
 -v /Users:/Users \ # enable ops in host `/Users` dir
 -p 42224:42224 \ # expose engine TCP API
---network host \ # use host network (performance enhancement)
 --restart always \ # restart on failure
 --name opspec.engine \
 opspec/engine # unstable version of engine
