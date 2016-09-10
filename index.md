@@ -45,12 +45,6 @@ their integrations.
 Bundles are directories containing a manifest and artifacts (dependent
 files/folders).
 
-## Bundle Manifest
-
-Bundle manifests [MUST](#mustmay) be in
-[v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html) format and validate
-against the [manifest schema](schema/manifest.json)
-
 # Ops
 
 An op is a runnable task.
