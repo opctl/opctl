@@ -2,11 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.2] - 2016-09-09
+## [0.1.2] - 2016-09-10
 
 ### Added 
 
-- typed params; `string`
 - typed run declarations; `serial`, `op`, and `parallel`
 - nested run declaration support (applies to `serial` &
   `parallel` run declarations)
@@ -14,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- params no longer support `type` attribute; use new `string` param type
+- params no longer support `type` attribute;
 - run declaration no longer supports `subOps` attribute; use new `op`
   run declaration type
 
