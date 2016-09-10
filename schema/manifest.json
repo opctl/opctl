@@ -75,50 +75,26 @@
     "param": {
       "title": "param",
       "type": "object",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/stringParam"
-        }
-      ],
-      "allOf": [
-        {
-          "properties": {
-            "description": {
-              "description": "Description of the parameter",
-              "type": "string"
-            },
-            "isSecret": {
-              "description": "If the parameter is secret",
-              "type": "boolean"
-            },
-            "name": {
-              "description": "Name of the parameter",
-              "type": "string"
-            }
-          },
-          "required": [
-            "name"
-          ]
-        }
-      ],
-      "additionalProperties": false
-    },
-    "stringParam": {
-      "title": "stringParam",
-      "type": "object",
       "properties": {
-        "string": {
-          "type": "object",
-          "properties": {
-            "default": {
-              "description": "Default value of the parameter",
-              "type": "string"
-            }
-          }
+        "description": {
+          "description": "Description of the parameter",
+          "type": "string"
+        },
+        "isSecret": {
+          "description": "If the parameter is secret",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "Name of the parameter",
+          "type": "string"
+        },
+        "default": {
+          "description": "Default value of the parameter",
+          "type": "string"
         }
       },
       "required": [
-        "string"
+        "name"
       ],
       "additionalProperties": false
     },
