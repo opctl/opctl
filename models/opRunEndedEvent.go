@@ -1,8 +1,8 @@
 package models
 
 type OpRunEndedEvent struct {
-  OpRunId       string `json:"opRunId"`
-  Outcome       string `json:"outcome"`
-  RootOpRunId   string `json:"rootOpRunId"`
+  Id      string `json:"id"`
+  Outcome string `json:"outcome"`
+  RootId  string `json:"rootId"`
 }
 

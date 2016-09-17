@@ -1,6 +1,6 @@
 package models
 
 type LogEntryEmittedEvent struct {
-  LogEntryMsg          string `json:"logEntryMsg"`
-  LogEntryOutputStream string `json:"logEntryOutputStream"`
+  Msg          string `json:"logEntryMsg"`
+  OutputStream string `json:"logEntryOutputStream"`
 }

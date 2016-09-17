@@ -1,8 +1,8 @@
 package models
 
 type OpRunStartedEvent struct {
-  OpRunId       string `json:"opRunId"`
-  OpRunOpUrl    string `json:"opRunOpUrl"`
-  ParentOpRunId string `json:"parentOpRunId"`
-  RootOpRunId   string `json:"rootOpRunId"`
+  Id       string `json:"id"`
+  OpRef    string `json:"opRef"`
+  ParentId string `json:"parentId"`
+  RootId   string `json:"rootId"`
 }
