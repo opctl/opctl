@@ -6,15 +6,14 @@ services:
       - ../../:/go/src/github.com/opspec-io/engine
     working_dir: /go/src/github.com/opspec-io/engine
   go:
-    image: golang:1.7
+    build: .
     extends:
       service: working_dir
     environment:
       - GOARCH=amd64
-      - CGO_ENABLED=0
       - GOOS=linux
   docker:
-    image: docker:1.11.1
+    image: docker:1.12.1
     extends:
       file: ../.common/docker-compose.yml
       service: working_dir

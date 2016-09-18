@@ -18,5 +18,5 @@ run:
   serial:
   - op: build
   - op: test
-  - op: publish-coverage-to-codecov
+  - op: publish-coverage
   - op: push-docker-image
