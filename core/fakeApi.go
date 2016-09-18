@@ -3,7 +3,8 @@ package core
 
 import (
   "sync"
-  "github.com/opspec-io/engine/core/models"
+
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 type FakeApi struct {
@@ -15,24 +16,22 @@ type FakeApi struct {
   getEventStreamReturns     struct {
                               result1 error
                             }
-  KillOpRunStub             func(req models.KillOpRunReq) (correlationId string, err error)
+  KillOpRunStub             func(req models.KillOpRunReq) (err error)
   killOpRunMutex            sync.RWMutex
   killOpRunArgsForCall      []struct {
     req models.KillOpRunReq
   }
   killOpRunReturns          struct {
+                              result1 error
+                            }
+  StartOpRunStub            func(req models.StartOpRunReq) (opRunId string, err error)
+  startOpRunMutex           sync.RWMutex
+  startOpRunArgsForCall     []struct {
+    req models.StartOpRunReq
+  }
+  startOpRunReturns         struct {
                               result1 string
                               result2 error
-                            }
-  RunOpStub                 func(req models.RunOpReq) (opRunId string, correlationId string, err error)
-  runOpMutex                sync.RWMutex
-  runOpArgsForCall          []struct {
-    req models.RunOpReq
-  }
-  runOpReturns              struct {
-                              result1 string
-                              result2 string
-                              result3 error
                             }
   invocations               map[string][][]interface{}
   invocationsMutex          sync.RWMutex
@@ -71,7 +70,7 @@ func (fake *FakeApi) GetEventStreamReturns(result1 error) {
   }{result1}
 }
 
-func (fake *FakeApi) KillOpRun(req models.KillOpRunReq) (correlationId string, err error) {
+func (fake *FakeApi) KillOpRun(req models.KillOpRunReq) (err error) {
   fake.killOpRunMutex.Lock()
   fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
     req models.KillOpRunReq
@@ -81,7 +80,7 @@ func (fake *FakeApi) KillOpRun(req models.KillOpRunReq) (correlationId string, e
   if fake.KillOpRunStub != nil {
     return fake.KillOpRunStub(req)
   } else {
-    return fake.killOpRunReturns.result1, fake.killOpRunReturns.result2
+    return fake.killOpRunReturns.result1
   }
 }
 
@@ -97,47 +96,45 @@ func (fake *FakeApi) KillOpRunArgsForCall(i int) models.KillOpRunReq {
   return fake.killOpRunArgsForCall[i].req
 }
 
-func (fake *FakeApi) KillOpRunReturns(result1 string, result2 error) {
+func (fake *FakeApi) KillOpRunReturns(result1 error) {
   fake.KillOpRunStub = nil
   fake.killOpRunReturns = struct {
-    result1 string
-    result2 error
-  }{result1, result2}
+    result1 error
+  }{result1}
 }
 
-func (fake *FakeApi) RunOp(req models.RunOpReq) (opRunId string, correlationId string, err error) {
-  fake.runOpMutex.Lock()
-  fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
-    req models.RunOpReq
+func (fake *FakeApi) StartOpRun(req models.StartOpRunReq) (opRunId string, err error) {
+  fake.startOpRunMutex.Lock()
+  fake.startOpRunArgsForCall = append(fake.startOpRunArgsForCall, struct {
+    req models.StartOpRunReq
   }{req})
-  fake.recordInvocation("RunOp", []interface{}{req})
-  fake.runOpMutex.Unlock()
-  if fake.RunOpStub != nil {
-    return fake.RunOpStub(req)
+  fake.recordInvocation("StartOpRun", []interface{}{req})
+  fake.startOpRunMutex.Unlock()
+  if fake.StartOpRunStub != nil {
+    return fake.StartOpRunStub(req)
   } else {
-    return fake.runOpReturns.result1, fake.runOpReturns.result2, fake.runOpReturns.result3
+    return fake.startOpRunReturns.result1, fake.startOpRunReturns.result2
   }
 }
 
-func (fake *FakeApi) RunOpCallCount() int {
-  fake.runOpMutex.RLock()
-  defer fake.runOpMutex.RUnlock()
-  return len(fake.runOpArgsForCall)
+func (fake *FakeApi) StartOpRunCallCount() int {
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
+  return len(fake.startOpRunArgsForCall)
 }
 
-func (fake *FakeApi) RunOpArgsForCall(i int) models.RunOpReq {
-  fake.runOpMutex.RLock()
-  defer fake.runOpMutex.RUnlock()
-  return fake.runOpArgsForCall[i].req
+func (fake *FakeApi) StartOpRunArgsForCall(i int) models.StartOpRunReq {
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
+  return fake.startOpRunArgsForCall[i].req
 }
 
-func (fake *FakeApi) RunOpReturns(result1 string, result2 string, result3 error) {
-  fake.RunOpStub = nil
-  fake.runOpReturns = struct {
+func (fake *FakeApi) StartOpRunReturns(result1 string, result2 error) {
+  fake.StartOpRunStub = nil
+  fake.startOpRunReturns = struct {
     result1 string
-    result2 string
-    result3 error
-  }{result1, result2, result3}
+    result2 error
+  }{result1, result2}
 }
 
 func (fake *FakeApi) Invocations() map[string][][]interface{} {
@@ -147,8 +144,8 @@ func (fake *FakeApi) Invocations() map[string][][]interface{} {
   defer fake.getEventStreamMutex.RUnlock()
   fake.killOpRunMutex.RLock()
   defer fake.killOpRunMutex.RUnlock()
-  fake.runOpMutex.RLock()
-  defer fake.runOpMutex.RUnlock()
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
   return fake.invocations
 }
 

@@ -6,11 +6,11 @@ import (
 )
 
 type fakeCompositionRoot struct {
-  RunOpUseCaseStub                 func() runOpUseCase
-  runOpUseCaseMutex                sync.RWMutex
-  runOpUseCaseArgsForCall          []struct{}
-  runOpUseCaseReturns              struct {
-                                     result1 runOpUseCase
+  StartOpRunUseCaseStub            func() startOpRunUseCase
+  startOpRunUseCaseMutex           sync.RWMutex
+  startOpRunUseCaseArgsForCall     []struct{}
+  startOpRunUseCaseReturns         struct {
+                                     result1 startOpRunUseCase
                                    }
   GetEventStreamUseCaseStub        func() getEventStreamUseCase
   getEventStreamUseCaseMutex       sync.RWMutex
@@ -28,28 +28,28 @@ type fakeCompositionRoot struct {
   invocationsMutex                 sync.RWMutex
 }
 
-func (fake *fakeCompositionRoot) RunOpUseCase() runOpUseCase {
-  fake.runOpUseCaseMutex.Lock()
-  fake.runOpUseCaseArgsForCall = append(fake.runOpUseCaseArgsForCall, struct{}{})
-  fake.recordInvocation("RunOpUseCase", []interface{}{})
-  fake.runOpUseCaseMutex.Unlock()
-  if fake.RunOpUseCaseStub != nil {
-    return fake.RunOpUseCaseStub()
+func (fake *fakeCompositionRoot) StartOpRunUseCase() startOpRunUseCase {
+  fake.startOpRunUseCaseMutex.Lock()
+  fake.startOpRunUseCaseArgsForCall = append(fake.startOpRunUseCaseArgsForCall, struct{}{})
+  fake.recordInvocation("StartOpRunUseCase", []interface{}{})
+  fake.startOpRunUseCaseMutex.Unlock()
+  if fake.StartOpRunUseCaseStub != nil {
+    return fake.StartOpRunUseCaseStub()
   } else {
-    return fake.runOpUseCaseReturns.result1
+    return fake.startOpRunUseCaseReturns.result1
   }
 }
 
-func (fake *fakeCompositionRoot) RunOpUseCaseCallCount() int {
-  fake.runOpUseCaseMutex.RLock()
-  defer fake.runOpUseCaseMutex.RUnlock()
-  return len(fake.runOpUseCaseArgsForCall)
+func (fake *fakeCompositionRoot) StartOpRunUseCaseCallCount() int {
+  fake.startOpRunUseCaseMutex.RLock()
+  defer fake.startOpRunUseCaseMutex.RUnlock()
+  return len(fake.startOpRunUseCaseArgsForCall)
 }
 
-func (fake *fakeCompositionRoot) RunOpUseCaseReturns(result1 runOpUseCase) {
-  fake.RunOpUseCaseStub = nil
-  fake.runOpUseCaseReturns = struct {
-    result1 runOpUseCase
+func (fake *fakeCompositionRoot) StartOpRunUseCaseReturns(result1 startOpRunUseCase) {
+  fake.StartOpRunUseCaseStub = nil
+  fake.startOpRunUseCaseReturns = struct {
+    result1 startOpRunUseCase
   }{result1}
 }
 
@@ -106,8 +106,8 @@ func (fake *fakeCompositionRoot) KillOpRunUseCaseReturns(result1 killOpRunUseCas
 func (fake *fakeCompositionRoot) Invocations() map[string][][]interface{} {
   fake.invocationsMutex.RLock()
   defer fake.invocationsMutex.RUnlock()
-  fake.runOpUseCaseMutex.RLock()
-  defer fake.runOpUseCaseMutex.RUnlock()
+  fake.startOpRunUseCaseMutex.RLock()
+  defer fake.startOpRunUseCaseMutex.RUnlock()
   fake.getEventStreamUseCaseMutex.RLock()
   defer fake.getEventStreamUseCaseMutex.RUnlock()
   fake.killOpRunUseCaseMutex.RLock()

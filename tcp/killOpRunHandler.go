@@ -4,7 +4,7 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 func newKillOpRunHandler(
@@ -31,13 +31,7 @@ func (this killOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  correlationId, err := this.coreApi.KillOpRun(killOpRunReq)
-  if (nil != err) {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-    return
-  }
-
-  w.Header().Set("Correlation-Id", correlationId)
+  this.coreApi.KillOpRun(killOpRunReq)
 
   w.WriteHeader(http.StatusCreated)
   w.Header().Set("Content-Type", "text/plain; charset=UTF-8")

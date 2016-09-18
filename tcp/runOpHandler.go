@@ -4,40 +4,38 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
-func newRunOpHandler(
+func newStartOpRunHandler(
 coreApi core.Api,
 ) http.Handler {
 
-  return &runOpHandler{
+  return &startOpRunHandler{
     coreApi:coreApi,
   }
 
 }
 
-type runOpHandler struct {
+type startOpRunHandler struct {
   coreApi core.Api
 }
 
-func (this runOpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (this startOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-  runOpReq := models.RunOpReq{}
+  startOpRunReq := models.StartOpRunReq{}
 
-  err := json.NewDecoder(r.Body).Decode(&runOpReq)
+  err := json.NewDecoder(r.Body).Decode(&startOpRunReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusBadRequest)
     return
   }
 
-  opRunId, correlationId, err := this.coreApi.RunOp(runOpReq)
+  opRunId, err := this.coreApi.StartOpRun(startOpRunReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return
   }
-
-  w.Header().Set("Correlation-Id", correlationId)
 
   w.WriteHeader(http.StatusCreated)
   w.Header().Set("Content-Type", "text/plain; charset=UTF-8")

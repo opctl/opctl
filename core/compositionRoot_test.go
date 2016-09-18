@@ -42,7 +42,7 @@ var _ = Describe("compositionRoot", func() {
     })
   })
 
-  Context("RunOpUseCase()", func() {
+  Context("StartOpRunUseCase()", func() {
     It("should not return nil", func() {
 
       /* arrange */
@@ -51,10 +51,10 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualRunOpUseCase := objectUnderTest.RunOpUseCase()
+      actualStartOpRunUseCase := objectUnderTest.StartOpRunUseCase()
 
       /* assert */
-      Expect(actualRunOpUseCase).NotTo(BeNil())
+      Expect(actualStartOpRunUseCase).NotTo(BeNil())
 
     })
   })

@@ -1,7 +1,7 @@
 package core
 
 import (
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
   "time"
 )
 
@@ -21,13 +21,17 @@ func newEventStream(
 
 }
 
-type eventStream interface {
-  RegisterSubscriber(
-  eventChannel chan models.Event,
-  )
-
+type EventPublisher interface {
   Publish(
   event models.Event,
+  )
+}
+
+type eventStream interface {
+  EventPublisher
+
+  RegisterSubscriber(
+  eventChannel chan models.Event,
   )
 
   UnregisterSubscriber(

@@ -1,7 +1,7 @@
 package core
 
 import (
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
   "sync"
 )
 

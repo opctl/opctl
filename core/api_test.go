@@ -3,7 +3,7 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 var _ = Describe("_api", func() {
@@ -57,28 +57,28 @@ var _ = Describe("_api", func() {
 
     })
   })
-  Context(".RunOp() method", func() {
-    It("should invoke compositionRoot.runOpUseCase.Execute() with expected args & return result", func() {
+  Context(".StartOpRun() method", func() {
+    It("should invoke compositionRoot.startOpRunUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedRunOpReq := models.NewRunOpReq("", map[string]string{})
+      providedStartOpRunReq := models.NewStartOpRunReq("", map[string]string{})
 
       // wire up fakes
-      fakeRunOpUseCase := new(fakeRunOpUseCase)
+      fakeStartOpRunUseCase := new(fakeStartOpRunUseCase)
 
       fakeCompositionRoot := new(fakeCompositionRoot)
-      fakeCompositionRoot.RunOpUseCaseReturns(fakeRunOpUseCase)
+      fakeCompositionRoot.StartOpRunUseCaseReturns(fakeStartOpRunUseCase)
 
       objectUnderTest := &_api{
         compositionRoot:fakeCompositionRoot,
       }
 
       /* act */
-      objectUnderTest.RunOp(*providedRunOpReq)
+      objectUnderTest.StartOpRun(*providedStartOpRunReq)
 
       /* assert */
-      Expect(fakeRunOpUseCase.ExecuteArgsForCall(0)).To(Equal(*providedRunOpReq))
-      Expect(fakeRunOpUseCase.ExecuteCallCount()).To(Equal(1))
+      Expect(fakeStartOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(*providedStartOpRunReq))
+      Expect(fakeStartOpRunUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

@@ -4,9 +4,8 @@ import (
   "github.com/gorilla/websocket"
   "net/http"
   "github.com/opspec-io/engine/core"
-  coreModels "github.com/opspec-io/engine/core/models"
   "encoding/json"
-  "github.com/opspec-io/engine/tcp/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 func newGetEventStreamHandler(
@@ -40,7 +39,7 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
   defer conn.Close()
 
-  eventChannel := make(chan coreModels.Event)
+  eventChannel := make(chan models.Event)
 
   err = this.coreApi.GetEventStream(
     eventChannel,
@@ -65,7 +64,7 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
           return
         }
 
-        eventBytes, err := json.Marshal(models.NewEventMsg(event))
+        eventBytes, err := json.Marshal(event)
         if (nil != err) {
           http.Error(w, err.Error(), http.StatusInternalServerError)
         }

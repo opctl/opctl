@@ -4,24 +4,23 @@ package core
 import (
   "sync"
 
-  "github.com/opspec-io/engine/core/models"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 type fakeKillOpRunUseCase struct {
-  ExecuteStub        func(req models.KillOpRunReq) (correlationId string, err error)
+  ExecuteStub        func(req models.KillOpRunReq) (err error)
   executeMutex       sync.RWMutex
   executeArgsForCall []struct {
     req models.KillOpRunReq
   }
   executeReturns     struct {
-                       result1 string
-                       result2 error
+                       result1 error
                      }
   invocations        map[string][][]interface{}
   invocationsMutex   sync.RWMutex
 }
 
-func (fake *fakeKillOpRunUseCase) Execute(req models.KillOpRunReq) (correlationId string, err error) {
+func (fake *fakeKillOpRunUseCase) Execute(req models.KillOpRunReq) (err error) {
   fake.executeMutex.Lock()
   fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
     req models.KillOpRunReq
@@ -31,7 +30,7 @@ func (fake *fakeKillOpRunUseCase) Execute(req models.KillOpRunReq) (correlationI
   if fake.ExecuteStub != nil {
     return fake.ExecuteStub(req)
   } else {
-    return fake.executeReturns.result1, fake.executeReturns.result2
+    return fake.executeReturns.result1
   }
 }
 
@@ -47,12 +46,11 @@ func (fake *fakeKillOpRunUseCase) ExecuteArgsForCall(i int) models.KillOpRunReq 
   return fake.executeArgsForCall[i].req
 }
 
-func (fake *fakeKillOpRunUseCase) ExecuteReturns(result1 string, result2 error) {
+func (fake *fakeKillOpRunUseCase) ExecuteReturns(result1 error) {
   fake.ExecuteStub = nil
   fake.executeReturns = struct {
-    result1 string
-    result2 error
-  }{result1, result2}
+    result1 error
+  }{result1}
 }
 
 func (fake *fakeKillOpRunUseCase) Invocations() map[string][][]interface{} {
