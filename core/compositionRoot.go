@@ -3,19 +3,17 @@ package core
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 import (
-  "github.com/opspec-io/engine/core/models"
   "github.com/opspec-io/sdk-golang"
-  "github.com/opspec-io/engine/core/ports"
 )
 
 type compositionRoot interface {
-  RunOpUseCase() runOpUseCase
+  StartOpRunUseCase() startOpRunUseCase
   GetEventStreamUseCase() getEventStreamUseCase
   KillOpRunUseCase() killOpRunUseCase
 }
 
 func newCompositionRoot(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 ) (compositionRoot compositionRoot) {
 
   /* factories */
@@ -24,10 +22,6 @@ containerEngine ports.ContainerEngine,
   /* components */
   eventStream := newEventStream()
 
-  logger := func(logEntryEmittedEvent models.LogEntryEmittedEvent) {
-    eventStream.Publish(logEntryEmittedEvent)
-  }
-
   opspecSdk := opspec.New()
 
   storage := newStorage()
@@ -35,16 +29,16 @@ containerEngine ports.ContainerEngine,
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
-    logger,
+    eventStream,
     opspecSdk,
     storage,
     uniqueStringFactory,
   )
 
   /* use cases */
-  runOpUseCase := newRunOpUseCase(
+  startOpRunUseCase := newStartOpRunUseCase(
     opRunner,
-    logger,
+    eventStream,
     newPathNormalizer(),
     uniqueStringFactory,
   )
@@ -56,13 +50,13 @@ containerEngine ports.ContainerEngine,
   killOpRunUseCase := newKillOpRunUseCase(
     containerEngine,
     eventStream,
-    logger,
+    eventStream,
     storage,
     uniqueStringFactory,
   )
 
   compositionRoot = &_compositionRoot{
-    runOpUseCase: runOpUseCase,
+    startOpRunUseCase: startOpRunUseCase,
     getEventStreamUseCase:getEventStreamUseCase,
     killOpRunUseCase:killOpRunUseCase,
   }
@@ -72,13 +66,13 @@ containerEngine ports.ContainerEngine,
 }
 
 type _compositionRoot struct {
-  runOpUseCase          runOpUseCase
+  startOpRunUseCase     startOpRunUseCase
   getEventStreamUseCase getEventStreamUseCase
   killOpRunUseCase      killOpRunUseCase
 }
 
-func (this _compositionRoot) RunOpUseCase() runOpUseCase {
-  return this.runOpUseCase
+func (this _compositionRoot) StartOpRunUseCase() startOpRunUseCase {
+  return this.startOpRunUseCase
 }
 
 func (this _compositionRoot) GetEventStreamUseCase() getEventStreamUseCase {

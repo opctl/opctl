@@ -59,7 +59,7 @@ var _ = Describe("compositionRoot", func() {
     })
   })
 
-  Context("RunOpHandler()", func() {
+  Context("StartOpRunHandler()", func() {
     It("should not return nil", func() {
 
       /* arrange */
@@ -68,10 +68,10 @@ var _ = Describe("compositionRoot", func() {
       )
 
       /* act */
-      actualRunOpHandler := objectUnderTest.RunOpHandler()
+      actualStartOpRunHandler := objectUnderTest.StartOpRunHandler()
 
       /* assert */
-      Expect(actualRunOpHandler).NotTo(BeNil())
+      Expect(actualStartOpRunHandler).NotTo(BeNil())
 
     })
   })

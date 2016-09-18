@@ -9,18 +9,18 @@ import (
   "bytes"
 )
 
-var _ = Describe("runOpHandler", func() {
+var _ = Describe("startOpRunHandler", func() {
 
   Context("ServeHTTP() method", func() {
     It("should return StatusCode of 400 if body of request is malformed", func() {
 
       /* arrange */
-      objectUnderTest := runOpHandler{}
+      objectUnderTest := startOpRunHandler{}
       recorder := httptest.NewRecorder()
       m := mux.NewRouter()
-      m.Handle(runOpRelUrlTemplate, objectUnderTest)
+      m.Handle(startOpRunRelUrlTemplate, objectUnderTest)
 
-      httpReq, err := http.NewRequest(http.MethodPost, runOpRelUrlTemplate, bytes.NewReader([]byte{}))
+      httpReq, err := http.NewRequest(http.MethodPost, startOpRunRelUrlTemplate, bytes.NewReader([]byte{}))
       if (nil != err) {
         Fail(err.Error())
       }

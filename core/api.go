@@ -3,8 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeApi.go --fake-name FakeApi ./ Api
 
 import (
-  "github.com/opspec-io/engine/core/models"
-  "github.com/opspec-io/engine/core/ports"
+  "github.com/opspec-io/sdk-golang/models"
 )
 
 type Api interface {
@@ -15,21 +14,19 @@ type Api interface {
   KillOpRun(
   req models.KillOpRunReq,
   ) (
-  correlationId string,
   err error,
   )
 
-  RunOp(
-  req models.RunOpReq,
+  StartOpRun(
+  req models.StartOpRunReq,
   ) (
   opRunId string,
-  correlationId string,
   err error,
   )
 }
 
 func New(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 ) (api Api) {
 
   api = &_api{
@@ -58,7 +55,6 @@ eventChannel chan models.Event,
 func (this _api) KillOpRun(
 req models.KillOpRunReq,
 ) (
-correlationId string,
 err error,
 ) {
   return this.
@@ -67,15 +63,14 @@ err error,
     Execute(req)
 }
 
-func (this _api) RunOp(
-req models.RunOpReq,
+func (this _api) StartOpRun(
+req models.StartOpRunReq,
 ) (
 opRunId string,
-correlationId string,
 err error,
 ) {
   return this.
   compositionRoot.
-    RunOpUseCase().
+    StartOpRunUseCase().
     Execute(req)
 }

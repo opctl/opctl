@@ -1,22 +1,22 @@
 name: release
 description: runs all ops necessary to perform a release
-run:
-  subOps:
-  - url: build
-  - url: test
-  - url: publish-coverage-to-codecov
-  - url: push-docker-image
 inputs:
 - name: CODECOV_TOKEN
   description: A https://codecov.io/ auth token
-  isSecure: true
+  isSecret: true
 - name: DOCKER_PASSWORD
   description: Password for docker registry
-  isSecure: true
+  isSecret: true
 - name: DOCKER_USERNAME
   description: Username for docker registry
-  isSecure: true
+  isSecret: true
 - name: GIT_BRANCH
   description: The git branch the coverage should be associated with
 - name: IMAGE_TAG
   description: The tag of the image to use
+run:
+  serial:
+  - op: build
+  - op: test
+  - op: publish-coverage-to-codecov
+  - op: push-docker-image

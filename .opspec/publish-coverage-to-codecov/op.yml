@@ -3,6 +3,6 @@ description: publishes code coverage to https://codecov.io
 inputs:
 - name: CODECOV_TOKEN
   description: A https://codecov.io/ auth token
-  isSecure: true
+  isSecret: true
 - name: GIT_BRANCH
   description: The git branch the coverage should be associated with

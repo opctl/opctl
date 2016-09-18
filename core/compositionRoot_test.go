@@ -3,7 +3,6 @@ package core
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opspec-io/engine/core/adapters/containerengine/fake"
 )
 
 var _ = Describe("compositionRoot", func() {
@@ -13,7 +12,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(fake.FakeContainerEngine),
+        new(FakeContainerEngine),
       )
 
       /* act */
@@ -30,7 +29,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(fake.FakeContainerEngine),
+        new(FakeContainerEngine),
       )
 
       /* act */
@@ -42,19 +41,19 @@ var _ = Describe("compositionRoot", func() {
     })
   })
 
-  Context("RunOpUseCase()", func() {
+  Context("StartOpRunUseCase()", func() {
     It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(fake.FakeContainerEngine),
+        new(FakeContainerEngine),
       )
 
       /* act */
-      actualRunOpUseCase := objectUnderTest.RunOpUseCase()
+      actualStartOpRunUseCase := objectUnderTest.StartOpRunUseCase()
 
       /* assert */
-      Expect(actualRunOpUseCase).NotTo(BeNil())
+      Expect(actualStartOpRunUseCase).NotTo(BeNil())
 
     })
   })

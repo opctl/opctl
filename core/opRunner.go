@@ -3,11 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
 
 import (
-  "github.com/opspec-io/engine/core/models"
-  "github.com/opspec-io/engine/core/ports"
-  "github.com/opspec-io/engine/core/logging"
   "github.com/opspec-io/sdk-golang"
-  opspecModels "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/models"
   "time"
   "sync"
   "errors"
@@ -17,11 +14,9 @@ import (
 
 type opRunner interface {
   Run(
-  correlationId string,
-  opArgs map[string]string,
-  opBundleUrl string,
   opRunId string,
-  parentOpRunId string,
+  opRunArgs map[string]string,
+  opRef string,
   rootOpRunId string,
   ) (
   err error,
@@ -29,9 +24,9 @@ type opRunner interface {
 }
 
 func newOpRunner(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 eventStream eventStream,
-logger logging.Logger,
+eventPublisher EventPublisher,
 opspecSdk opspec.Sdk,
 storage storage,
 uniqueStringFactory uniqueStringFactory,
@@ -40,7 +35,7 @@ uniqueStringFactory uniqueStringFactory,
   return &_opRunner{
     containerEngine: containerEngine,
     eventStream:eventStream,
-    logger:logger,
+    eventPublisher:eventPublisher,
     opspecSdk:opspecSdk,
     storage:storage,
     uniqueStringFactory:uniqueStringFactory,
@@ -49,20 +44,19 @@ uniqueStringFactory uniqueStringFactory,
 }
 
 type _opRunner struct {
-  containerEngine     ports.ContainerEngine
+  containerEngine     ContainerEngine
   eventStream         eventStream
-  logger              logging.Logger
+  eventPublisher      EventPublisher
   opspecSdk           opspec.Sdk
   storage             storage
   uniqueStringFactory uniqueStringFactory
 }
 
+// Runs an op
 func (this _opRunner) Run(
-correlationId string,
-opArgs map[string]string,
-opBundleUrl string,
 opRunId string,
-parentOpRunId string,
+opRunArgs map[string]string,
+opBundleUrl string,
 rootOpRunId string,
 ) (
 err error,
@@ -80,14 +74,14 @@ err error,
     return
   }
 
-  opRunStartedEvent := models.NewOpRunStartedEvent(
-    correlationId,
-    opBundleUrl,
-    opRunId,
-    parentOpRunId,
-    rootOpRunId,
-    time.Now().UTC(),
-  )
+  opRunStartedEvent := models.Event{
+    Timestamp:time.Now().UTC(),
+    OpRunStarted:&models.OpRunStartedEvent{
+      OpRef:opBundleUrl,
+      OpRunId:opRunId,
+      RootOpRunId:rootOpRunId,
+    },
+  }
 
   this.storage.addOpRunStartedEvent(opRunStartedEvent)
 
@@ -95,39 +89,35 @@ err error,
 
   if (nil != op.Run && nil != op.Run.Parallel) {
     err = this.runParallel(
-      correlationId,
-      opArgs,
+      opRunId,
+      opRunArgs,
       opBundleUrl,
-      parentOpRunId,
       rootOpRunId,
       op.Run.Parallel,
     )
   } else if (nil != op.Run && nil != op.Run.Serial) {
     err = this.runSerial(
-      correlationId,
-      opArgs,
+      opRunId,
+      opRunArgs,
       opBundleUrl,
-      parentOpRunId,
       rootOpRunId,
       op.Run.Serial,
     )
   } else if (nil != op.Run && "" != op.Run.Op) {
     err = this.Run(
-      correlationId,
-      opArgs,
-      path.Join(filepath.Dir(opBundleUrl), string(op.Run.Op)),
       this.uniqueStringFactory.Construct(),
-      parentOpRunId,
+      opRunArgs,
+      path.Join(filepath.Dir(opBundleUrl), string(op.Run.Op)),
       rootOpRunId,
     )
   } else {
-    err = this.containerEngine.RunOp(
-      correlationId,
-      opArgs,
+    err = this.containerEngine.StartContainer(
+      opRunArgs,
       opBundleUrl,
       op.Name,
       opRunId,
-      this.logger,
+      this.eventPublisher,
+      rootOpRunId,
     )
   }
 
@@ -146,13 +136,14 @@ err error,
     }
 
     this.eventStream.Publish(
-      models.NewOpRunEndedEvent(
-        correlationId,
-        opRunId,
-        opRunOutcome,
-        rootOpRunId,
-        time.Now().UTC(),
-      ),
+      models.Event{
+        Timestamp:time.Now().UTC(),
+        OpRunEnded:&models.OpRunEndedEvent{
+          OpRunId:opRunId,
+          Outcome:opRunOutcome,
+          RootOpRunId:rootOpRunId,
+        },
+      },
     )
 
   }()
@@ -162,12 +153,11 @@ err error,
 }
 
 func (this _opRunner) runSerial(
-correlationId string,
-opArgs map[string]string,
+opRunId string,
+opRunArgs map[string]string,
 opBundleUrl string,
-parentOpRunId string,
 rootOpRunId string,
-serialRunDeclaration *opspecModels.SerialRunDeclaration,
+serialRunDeclaration *models.SerialRunDeclaration,
 ) (
 err error,
 ) {
@@ -176,41 +166,39 @@ err error,
 
     if (nil != childRunDeclaration.Parallel) {
       err = this.runParallel(
-        correlationId,
-        opArgs,
+        opRunId,
+        opRunArgs,
         opBundleUrl,
-        parentOpRunId,
         rootOpRunId,
         childRunDeclaration.Parallel,
       )
     } else if (nil != childRunDeclaration.Serial) {
       err = this.runSerial(
-        correlationId,
-        opArgs,
+        opRunId,
+        opRunArgs,
         opBundleUrl,
-        parentOpRunId,
         rootOpRunId,
         childRunDeclaration.Serial,
       )
     } else {
       err = this.Run(
-        correlationId,
-        opArgs,
-        path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
         this.uniqueStringFactory.Construct(),
-        parentOpRunId,
+        opRunArgs,
+        path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
         rootOpRunId,
       )
     }
 
     if (nil != err) {
-      this.logger(
-        models.NewLogEntryEmittedEvent(
-          correlationId,
-          time.Now().UTC(),
-          err.Error(),
-          logging.StdErrStream,
-        ),
+      this.eventPublisher.Publish(
+        models.Event{
+          Timestamp:time.Now().UTC(),
+          OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
+            Msg:err.Error(),
+            OpRunId:opRunId,
+            RootOpRunId:rootOpRunId,
+          },
+        },
       )
       // end run immediately on any error
       return
@@ -223,12 +211,11 @@ err error,
 }
 
 func (this _opRunner) runParallel(
-correlationId string,
-opArgs map[string]string,
+opRunId string,
+opRunArgs map[string]string,
 opBundleUrl string,
-parentOpRunId string,
 rootOpRunId string,
-parallelRunDeclaration *opspecModels.ParallelRunDeclaration,
+parallelRunDeclaration *models.ParallelRunDeclaration,
 ) (
 err error,
 ) {
@@ -242,45 +229,43 @@ err error,
 
     var childRunDeclarationError error
 
-    go func(childRunDeclaration opspecModels.RunDeclaration) {
+    go func(childRunDeclaration models.RunDeclaration) {
       if (nil != childRunDeclaration.Parallel) {
         childRunDeclarationError = this.runParallel(
-          correlationId,
-          opArgs,
+          opRunId,
+          opRunArgs,
           opBundleUrl,
-          parentOpRunId,
           rootOpRunId,
           childRunDeclaration.Parallel,
         )
       } else if (nil != childRunDeclaration.Serial) {
         childRunDeclarationError = this.runSerial(
-          correlationId,
-          opArgs,
+          opRunId,
+          opRunArgs,
           opBundleUrl,
-          parentOpRunId,
           rootOpRunId,
           childRunDeclaration.Serial,
         )
       } else {
         childRunDeclarationError = this.Run(
-          correlationId,
-          opArgs,
-          path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
           this.uniqueStringFactory.Construct(),
-          parentOpRunId,
+          opRunArgs,
+          path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
           rootOpRunId,
         )
       }
 
       if (nil != childRunDeclarationError) {
         isSubOpRunErrors = true
-        this.logger(
-          models.NewLogEntryEmittedEvent(
-            correlationId,
-            time.Now().UTC(),
-            childRunDeclarationError.Error(),
-            logging.StdErrStream,
-          ),
+        this.eventPublisher.Publish(
+          models.Event{
+            Timestamp:time.Now().UTC(),
+            OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
+              Msg:childRunDeclarationError.Error(),
+              OpRunId:opRunId,
+              RootOpRunId:rootOpRunId,
+            },
+          },
         )
       }
 

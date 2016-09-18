@@ -4,15 +4,13 @@ package core
 import "sync"
 
 type fakeOpRunner struct {
-  RunStub          func(correlationId string, opArgs map[string]string, opBundleUrl string, opRunId string, parentOpRunId string, rootOpRunId string) (err error)
+  RunStub          func(opRunArgs map[string]string, opRef string, opRunId string, rootOpRunId string) (err error)
   runMutex         sync.RWMutex
   runArgsForCall   []struct {
-    correlationId string
-    opArgs        map[string]string
-    opBundleUrl   string
-    opRunId       string
-    parentOpRunId string
-    rootOpRunId   string
+    opRunArgs   map[string]string
+    opRef       string
+    opRunId     string
+    rootOpRunId string
   }
   runReturns       struct {
                      result1 error
@@ -21,20 +19,18 @@ type fakeOpRunner struct {
   invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpRunner) Run(correlationId string, opArgs map[string]string, opBundleUrl string, opRunId string, parentOpRunId string, rootOpRunId string) (err error) {
+func (fake *fakeOpRunner) Run(opRunArgs map[string]string, opRef string, opRunId string, rootOpRunId string) (err error) {
   fake.runMutex.Lock()
   fake.runArgsForCall = append(fake.runArgsForCall, struct {
-    correlationId string
-    opArgs        map[string]string
-    opBundleUrl   string
-    opRunId       string
-    parentOpRunId string
-    rootOpRunId   string
-  }{correlationId, opArgs, opBundleUrl, opRunId, parentOpRunId, rootOpRunId})
-  fake.recordInvocation("Run", []interface{}{correlationId, opArgs, opBundleUrl, opRunId, parentOpRunId, rootOpRunId})
+    opRunArgs   map[string]string
+    opRef       string
+    opRunId     string
+    rootOpRunId string
+  }{opRunArgs, opRef, opRunId, rootOpRunId})
+  fake.recordInvocation("Run", []interface{}{opRunArgs, opRef, opRunId, rootOpRunId})
   fake.runMutex.Unlock()
   if fake.RunStub != nil {
-    return fake.RunStub(correlationId, opArgs, opBundleUrl, opRunId, parentOpRunId, rootOpRunId)
+    return fake.RunStub(opRunArgs, opRef, opRunId, rootOpRunId)
   } else {
     return fake.runReturns.result1
   }
@@ -46,10 +42,10 @@ func (fake *fakeOpRunner) RunCallCount() int {
   return len(fake.runArgsForCall)
 }
 
-func (fake *fakeOpRunner) RunArgsForCall(i int) (string, map[string]string, string, string, string, string) {
+func (fake *fakeOpRunner) RunArgsForCall(i int) (map[string]string, string, string, string) {
   fake.runMutex.RLock()
   defer fake.runMutex.RUnlock()
-  return fake.runArgsForCall[i].correlationId, fake.runArgsForCall[i].opArgs, fake.runArgsForCall[i].opBundleUrl, fake.runArgsForCall[i].opRunId, fake.runArgsForCall[i].parentOpRunId, fake.runArgsForCall[i].rootOpRunId
+  return fake.runArgsForCall[i].opRunArgs, fake.runArgsForCall[i].opRef, fake.runArgsForCall[i].opRunId, fake.runArgsForCall[i].rootOpRunId
 }
 
 func (fake *fakeOpRunner) RunReturns(result1 error) {

@@ -12,6 +12,8 @@ definitions.
 
 # Supported Use Cases
 
+## Bundles
+
 - create collection
 - create op
 - get collection

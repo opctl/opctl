@@ -3,9 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeKillOpRunUseCase.go --fake-name fakeKillOpRunUseCase ./ killOpRunUseCase
 
 import (
-  "github.com/opspec-io/engine/core/models"
-  "github.com/opspec-io/engine/core/logging"
-  "github.com/opspec-io/engine/core/ports"
+  "github.com/opspec-io/sdk-golang/models"
   "time"
   "sort"
   "sync"
@@ -15,15 +13,14 @@ type killOpRunUseCase interface {
   Execute(
   req models.KillOpRunReq,
   ) (
-  correlationId string,
   err error,
   )
 }
 
 func newKillOpRunUseCase(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 eventStream eventStream,
-logger logging.Logger,
+eventPublisher EventPublisher,
 storage storage,
 uniqueStringFactory uniqueStringFactory,
 ) killOpRunUseCase {
@@ -31,7 +28,7 @@ uniqueStringFactory uniqueStringFactory,
   return _killOpRunUseCase{
     containerEngine:containerEngine,
     eventStream:eventStream,
-    logger:logger,
+    eventPublisher:eventPublisher,
     storage:storage,
     uniqueStringFactory:uniqueStringFactory,
   }
@@ -39,9 +36,9 @@ uniqueStringFactory uniqueStringFactory,
 }
 
 type _killOpRunUseCase struct {
-  containerEngine     ports.ContainerEngine
+  containerEngine     ContainerEngine
   eventStream         eventStream
-  logger              logging.Logger
+  eventPublisher      EventPublisher
   storage             storage
   uniqueStringFactory uniqueStringFactory
 }
@@ -49,12 +46,11 @@ type _killOpRunUseCase struct {
 func (this _killOpRunUseCase) Execute(
 req models.KillOpRunReq,
 ) (
-correlationId string,
 err error,
 ) {
 
-  opRunStartedEvents := this.storage.listOpRunStartedEventsWithRootId(req.OpRunId)
-  if (len(opRunStartedEvents) == 0) {
+  events := this.storage.listOpRunStartedEventsWithRootId(req.OpRunId)
+  if (len(events) == 0) {
     // guard no runs with provided root
     return
   }
@@ -62,57 +58,43 @@ err error,
   // delete here (right away) so other kills or end events don't preempt us
   this.storage.deleteOpRunsWithRootId(req.OpRunId)
 
-  correlationId = this.uniqueStringFactory.Construct()
-
   // perform async
   go func() {
 
     // want to operate in reverse of order started
-    sort.Sort(OpRunStartedEventDescSorter(opRunStartedEvents))
+    sort.Sort(EventDescSorter(events))
 
     var containerKillWaitGroup sync.WaitGroup
-    for _, opRunStartedEvent := range opRunStartedEvents {
+    for _, event := range events {
 
       containerKillWaitGroup.Add(1)
 
-      go func(opRunStartedEvent models.OpRunStartedEvent) {
+      go func(event models.Event) {
 
-        // @TODO: handle failure scenario; currently this can leak docker-compose resources
-        err := this.containerEngine.KillOpRun(
-          correlationId,
-          opRunStartedEvent.OpRunOpUrl(),
-          opRunStartedEvent.OpRunId(),
-          this.logger,
+        this.containerEngine.EnsureContainerRemoved(
+          event.OpRunStarted.OpRef,
+          event.OpRunStarted.OpRunId,
         )
-        if (nil != err) {
-          this.logger(
-            models.NewLogEntryEmittedEvent(
-              correlationId,
-              time.Now().UTC(),
-              err.Error(),
-              logging.StdErrStream,
-            ),
-          )
-        }
 
         defer containerKillWaitGroup.Done()
 
-      }(opRunStartedEvent)
+      }(event)
 
     }
     containerKillWaitGroup.Wait()
 
     // @TODO: make kill events publish in realtime rather than waiting for all resources within the root op run to be reclaimed;
-    for _, opRunStartedEvent := range opRunStartedEvents {
-      opRunEndedEvent := models.NewOpRunEndedEvent(
-        correlationId,
-        opRunStartedEvent.OpRunId(),
-        models.OpRunOutcomeKilled,
-        req.OpRunId,
-        time.Now().UTC(),
+    for _, event := range events {
+      this.eventStream.Publish(
+        models.Event{
+          Timestamp:time.Now().UTC(),
+          OpRunEnded:&models.OpRunEndedEvent{
+            OpRunId:event.OpRunStarted.OpRunId,
+            Outcome:models.OpRunOutcomeKilled,
+            RootOpRunId:event.OpRunStarted.RootOpRunId,
+          },
+        },
       )
-
-      this.eventStream.Publish(opRunEndedEvent)
     }
   }()
 

@@ -13,7 +13,7 @@ services:
         # generate aggregate coverage profile
         cat engine.coverprofile > coverage.txt
         cat core/core.coverprofile >> coverage.txt
-        cat core/adapters/containerengine/dockercompose/dockercompose.coverprofile >> coverage.txt
+        cat docker/docker.coverprofile >> coverage.txt
         cat tcp/tcp.coverprofile >> coverage.txt
 
         # strip fakes from coverage profile

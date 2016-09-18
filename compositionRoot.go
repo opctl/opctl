@@ -3,7 +3,7 @@ package main
 import (
   "github.com/opspec-io/engine/core"
   "github.com/opspec-io/engine/tcp"
-  dockerComposeContainerEngine "github.com/opspec-io/engine/core/adapters/containerengine/dockercompose"
+  dockerPkg "github.com/opspec-io/engine/docker"
 )
 
 type compositionRoot interface {
@@ -13,7 +13,7 @@ type compositionRoot interface {
 func newCompositionRoot(
 ) (compositionRoot compositionRoot, err error) {
 
-  containerEngine, err := dockerComposeContainerEngine.New()
+  containerEngine, err := dockerPkg.New()
   if (nil != err) {
     return
   }
