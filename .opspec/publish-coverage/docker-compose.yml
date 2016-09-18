@@ -1,8 +1,8 @@
 version: "2"
 services:
-  publish-coverage-to-codecov:
+  publish-coverage:
     extends:
-      service: working_dir
+      service: go
       file: ../.common/docker-compose.yml
     build: ./
     environment:

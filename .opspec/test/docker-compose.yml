@@ -4,10 +4,4 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: |
-      sh -c "
-        go get github.com/onsi/ginkgo/ginkgo && \
-        ginkgo --v -cover -race . core docker tcp
-      "
-    environment:
-      - CGO_ENABLED=1
+    entrypoint: ginkgo --v -cover -race -r

@@ -5,3 +5,5 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     entrypoint: go build
+    environment:
+      - CGO_ENABLED=0

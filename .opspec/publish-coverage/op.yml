@@ -1,5 +1,5 @@
-name: publish-coverage-to-codecov
-description: publishes code coverage to https://codecov.io
+name: publish-coverage
+description: publishes code coverage
 inputs:
 - name: CODECOV_TOKEN
   description: A https://codecov.io/ auth token
