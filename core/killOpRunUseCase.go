@@ -4,7 +4,6 @@ package core
 
 import (
   "github.com/opspec-io/sdk-golang/models"
-  "github.com/opspec-io/engine/core/ports"
   "time"
   "sort"
   "sync"
@@ -19,7 +18,7 @@ type killOpRunUseCase interface {
 }
 
 func newKillOpRunUseCase(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 eventStream eventStream,
 eventPublisher EventPublisher,
 storage storage,
@@ -37,7 +36,7 @@ uniqueStringFactory uniqueStringFactory,
 }
 
 type _killOpRunUseCase struct {
-  containerEngine     ports.ContainerEngine
+  containerEngine     ContainerEngine
   eventStream         eventStream
   eventPublisher      EventPublisher
   storage             storage
@@ -50,8 +49,8 @@ req models.KillOpRunReq,
 err error,
 ) {
 
-  opRunStartedEvents := this.storage.listOpRunStartedEventsWithRootId(req.OpRunId)
-  if (len(opRunStartedEvents) == 0) {
+  events := this.storage.listOpRunStartedEventsWithRootId(req.OpRunId)
+  if (len(events) == 0) {
     // guard no runs with provided root
     return
   }
@@ -63,36 +62,36 @@ err error,
   go func() {
 
     // want to operate in reverse of order started
-    sort.Sort(EventDescSorter(opRunStartedEvents))
+    sort.Sort(EventDescSorter(events))
 
     var containerKillWaitGroup sync.WaitGroup
-    for _, opRunStartedEvent := range opRunStartedEvents {
+    for _, event := range events {
 
       containerKillWaitGroup.Add(1)
 
-      go func(opRunStartedEvent models.OpRunStartedEvent) {
+      go func(event models.Event) {
 
         this.containerEngine.EnsureContainerRemoved(
-          opRunStartedEvent.OpRef,
-          opRunStartedEvent.OpRunId,
+          event.OpRunStarted.OpRef,
+          event.OpRunStarted.OpRunId,
         )
 
         defer containerKillWaitGroup.Done()
 
-      }(opRunStartedEvent)
+      }(event)
 
     }
     containerKillWaitGroup.Wait()
 
     // @TODO: make kill events publish in realtime rather than waiting for all resources within the root op run to be reclaimed;
-    for _, opRunStartedEvent := range opRunStartedEvents {
+    for _, event := range events {
       this.eventStream.Publish(
         models.Event{
           Timestamp:time.Now().UTC(),
           OpRunEnded:&models.OpRunEndedEvent{
-            OpRunId:opRunStartedEvent.OpRunId,
+            OpRunId:event.OpRunStarted.OpRunId,
             Outcome:models.OpRunOutcomeKilled,
-            RootOpRunId:opRunStartedEvent.RootOpRunId,
+            RootOpRunId:event.OpRunStarted.RootOpRunId,
           },
         },
       )

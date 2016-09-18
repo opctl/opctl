@@ -7,5 +7,5 @@ services:
     entrypoint: |
       sh -c "
       go get github.com/maxbrunsfeld/counterfeiter && \
-      go generate . ./tcp ./core/...
+      go generate . core docker tcp
       "

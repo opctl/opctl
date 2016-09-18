@@ -3,8 +3,7 @@ description: builds all artifacts
 inputs:
 - name: IMAGE_TAG
   description: The tag of the image to use
-  isSecure: false
 run:
-  subOps:
-  - url: build-bin
-  - url: build-docker-image
+  serial:
+  - op: build-bin
+  - op: build-docker-image

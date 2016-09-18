@@ -3,8 +3,6 @@ package core
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 import (
-  "github.com/opspec-io/engine/core/ports"
-  "github.com/opspec-io/sdk-golang/models"
   "github.com/opspec-io/sdk-golang"
 )
 
@@ -15,7 +13,7 @@ type compositionRoot interface {
 }
 
 func newCompositionRoot(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 ) (compositionRoot compositionRoot) {
 
   /* factories */
@@ -24,10 +22,6 @@ containerEngine ports.ContainerEngine,
   /* components */
   eventStream := newEventStream()
 
-  eventPublisher := func(logEntryEmittedEvent models.Event) {
-    eventStream.Publish(logEntryEmittedEvent)
-  }
-
   opspecSdk := opspec.New()
 
   storage := newStorage()
@@ -35,7 +29,7 @@ containerEngine ports.ContainerEngine,
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
-    eventPublisher,
+    eventStream,
     opspecSdk,
     storage,
     uniqueStringFactory,
@@ -44,7 +38,7 @@ containerEngine ports.ContainerEngine,
   /* use cases */
   startOpRunUseCase := newStartOpRunUseCase(
     opRunner,
-    eventPublisher,
+    eventStream,
     newPathNormalizer(),
     uniqueStringFactory,
   )
@@ -56,7 +50,7 @@ containerEngine ports.ContainerEngine,
   killOpRunUseCase := newKillOpRunUseCase(
     containerEngine,
     eventStream,
-    eventPublisher,
+    eventStream,
     storage,
     uniqueStringFactory,
   )

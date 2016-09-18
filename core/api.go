@@ -4,7 +4,6 @@ package core
 
 import (
   "github.com/opspec-io/sdk-golang/models"
-  "github.com/opspec-io/engine/core/ports"
 )
 
 type Api interface {
@@ -27,7 +26,7 @@ type Api interface {
 }
 
 func New(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 ) (api Api) {
 
   api = &_api{

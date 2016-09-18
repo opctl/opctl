@@ -6,8 +6,8 @@ import (
 )
 
 type storage interface {
-  addOpRunStartedEvent(opRunStartedEvent models.OpRunStartedEvent)
-  listOpRunStartedEventsWithRootId(rootOpId string) []models.OpRunStartedEvent
+  addOpRunStartedEvent(opRunStartedEvent models.Event)
+  listOpRunStartedEventsWithRootId(rootOpId string) []models.Event
   isRootOpRunKilled(rootOpRunId string) bool
   deleteOpRunsWithRootId(rootOpRunId string)
 }
@@ -16,27 +16,27 @@ func newStorage() storage {
 
   return &_storage{
     opRunStartedEventsByRootIdMutex:sync.RWMutex{},
-    opRunStartedEventsByRootId:make(map[string][]models.OpRunStartedEvent),
+    opRunStartedEventsByRootId:make(map[string][]models.Event),
   }
 
 }
 
 type _storage struct {
   opRunStartedEventsByRootIdMutex sync.RWMutex
-  opRunStartedEventsByRootId      map[string][]models.OpRunStartedEvent
+  opRunStartedEventsByRootId      map[string][]models.Event
 }
 
-func (this *_storage) addOpRunStartedEvent(opRunStartedEvent models.OpRunStartedEvent) {
+func (this *_storage) addOpRunStartedEvent(opRunStartedEvent models.Event) {
   this.opRunStartedEventsByRootIdMutex.Lock()
   defer this.opRunStartedEventsByRootIdMutex.Unlock()
 
-  this.opRunStartedEventsByRootId[opRunStartedEvent.RootOpRunId()] = append(
-    this.opRunStartedEventsByRootId[opRunStartedEvent.RootOpRunId()],
+  this.opRunStartedEventsByRootId[opRunStartedEvent.OpRunStarted.RootOpRunId] = append(
+    this.opRunStartedEventsByRootId[opRunStartedEvent.OpRunStarted.RootOpRunId],
     opRunStartedEvent,
   )
 }
 
-func (this *_storage) listOpRunStartedEventsWithRootId(rootId string) []models.OpRunStartedEvent {
+func (this *_storage) listOpRunStartedEventsWithRootId(rootId string) []models.Event {
   this.opRunStartedEventsByRootIdMutex.RLock()
   defer this.opRunStartedEventsByRootIdMutex.RUnlock()
 

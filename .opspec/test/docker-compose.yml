@@ -6,9 +6,8 @@ services:
       file: ../.common/docker-compose.yml
     entrypoint: |
       sh -c "
-        go get -t ./... && \
         go get github.com/onsi/ginkgo/ginkgo && \
-        ginkgo -r -cover -race
+        ginkgo --v -cover -race . core docker tcp
       "
     environment:
       - CGO_ENABLED=1

@@ -3,7 +3,6 @@ package core
 //go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
 
 import (
-  "github.com/opspec-io/engine/core/ports"
   "github.com/opspec-io/sdk-golang"
   "github.com/opspec-io/sdk-golang/models"
   "time"
@@ -15,9 +14,9 @@ import (
 
 type opRunner interface {
   Run(
+  opRunId string,
   opRunArgs map[string]string,
   opRef string,
-  opRunId string,
   rootOpRunId string,
   ) (
   err error,
@@ -25,7 +24,7 @@ type opRunner interface {
 }
 
 func newOpRunner(
-containerEngine ports.ContainerEngine,
+containerEngine ContainerEngine,
 eventStream eventStream,
 eventPublisher EventPublisher,
 opspecSdk opspec.Sdk,
@@ -45,7 +44,7 @@ uniqueStringFactory uniqueStringFactory,
 }
 
 type _opRunner struct {
-  containerEngine     ports.ContainerEngine
+  containerEngine     ContainerEngine
   eventStream         eventStream
   eventPublisher      EventPublisher
   opspecSdk           opspec.Sdk
@@ -191,7 +190,7 @@ err error,
     }
 
     if (nil != err) {
-      this.eventPublisher(
+      this.eventPublisher.Publish(
         models.Event{
           Timestamp:time.Now().UTC(),
           OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
@@ -258,7 +257,7 @@ err error,
 
       if (nil != childRunDeclarationError) {
         isSubOpRunErrors = true
-        this.eventPublisher(
+        this.eventPublisher.Publish(
           models.Event{
             Timestamp:time.Now().UTC(),
             OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{

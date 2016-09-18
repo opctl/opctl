@@ -51,14 +51,13 @@ err error,
 
   go func() {
     err = this.opRunner.Run(
+      opRunId,
       req.Args,
       this.pathNormalizer.Normalize(req.OpUrl),
-      opRunId,
-      "",
       rootOpRunId,
     )
     if (nil != err) {
-      this.eventPublisher(
+      this.eventPublisher.Publish(
         models.Event{
           Timestamp: time.Now().UTC(),
           OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{

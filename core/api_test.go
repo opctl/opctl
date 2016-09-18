@@ -36,7 +36,7 @@ var _ = Describe("_api", func() {
     It("should invoke compositionRoot.killOpRunUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedKillOpRunReq := models.NewKillOpRunReq("dummyOpRunId")
+      providedKillOpRunReq := models.KillOpRunReq{}
 
       // wire up fakes
       fakeKillOpRunUseCase := new(fakeKillOpRunUseCase)
@@ -49,10 +49,10 @@ var _ = Describe("_api", func() {
       }
 
       /* act */
-      objectUnderTest.KillOpRun(*providedKillOpRunReq)
+      objectUnderTest.KillOpRun(providedKillOpRunReq)
 
       /* assert */
-      Expect(fakeKillOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(*providedKillOpRunReq))
+      Expect(fakeKillOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(providedKillOpRunReq))
       Expect(fakeKillOpRunUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
@@ -61,7 +61,7 @@ var _ = Describe("_api", func() {
     It("should invoke compositionRoot.startOpRunUseCase.Execute() with expected args & return result", func() {
 
       /* arrange */
-      providedStartOpRunReq := models.NewStartOpRunReq("", map[string]string{})
+      providedStartOpRunReq := models.StartOpRunReq{}
 
       // wire up fakes
       fakeStartOpRunUseCase := new(fakeStartOpRunUseCase)
@@ -74,10 +74,10 @@ var _ = Describe("_api", func() {
       }
 
       /* act */
-      objectUnderTest.StartOpRun(*providedStartOpRunReq)
+      objectUnderTest.StartOpRun(providedStartOpRunReq)
 
       /* assert */
-      Expect(fakeStartOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(*providedStartOpRunReq))
+      Expect(fakeStartOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(providedStartOpRunReq))
       Expect(fakeStartOpRunUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
