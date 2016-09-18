@@ -4,6 +4,6 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: go build
+    entrypoint: govendor build
     environment:
       - CGO_ENABLED=0
