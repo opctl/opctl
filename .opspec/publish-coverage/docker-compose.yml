@@ -8,12 +8,13 @@ services:
       - CODECOV_TOKEN
       - GIT_BRANCH
     entrypoint: |
-      sh -c "
+      sh -ce "
         # generate aggregate coverage profile
-        cat **/*.coverprofile > coverage.txt && \
+        find . -name '*.coverprofile' | xargs cat > coverage.txt
 
         # strip fakes from coverage profile
-        sed -i '/fake/d' coverage.txt && \
+        sed -i '/fake/d' coverage.txt
 
+        # upload
         curl -s https://codecov.io/bash | bash -s
       "
