@@ -4,17 +4,13 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    build: ./
     environment:
       - CODECOV_TOKEN
       - GIT_BRANCH
     entrypoint: |
       sh -c "
         # generate aggregate coverage profile
-        cat engine.coverprofile > coverage.txt
-        cat core/core.coverprofile >> coverage.txt
-        cat docker/docker.coverprofile >> coverage.txt
-        cat tcp/tcp.coverprofile >> coverage.txt
+        cat **/*.coverprofile > coverage.txt && \
 
         # strip fakes from coverage profile
         sed -i '/fake/d' coverage.txt && \
