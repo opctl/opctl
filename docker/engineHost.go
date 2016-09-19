@@ -30,15 +30,15 @@ image string,
 
 }
 
-func (this _engineHost) GetEngineBaseUrl(
+func (this _engineHost) GetEngineProtocolRelativeBaseUrl(
 ) (
-baseUrl string,
+protocolRelativeBaseUrl string,
 err error,
 ) {
 
   return this.
   compositionRoot.
-    GetEngineBaseUrlUseCase().
+    GetEngineProtocolRelativeBaseUrlUseCase().
     Execute()
 
 }

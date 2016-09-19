@@ -2,7 +2,7 @@ package docker
 
 type compositionRoot interface {
   EnsureEngineRunningUseCase() ensureEngineRunningUseCase
-  GetEngineBaseUrlUseCase() getEngineBaseUrlUseCase
+  GetEngineProtocolRelativeBaseUrlUseCase() getEngineProtocolRelativeBaseUrlUseCase
 }
 
 func newCompositionRoot(
@@ -16,7 +16,7 @@ func newCompositionRoot(
 
   compositionRoot = &_compositionRoot{
     ensureEngineRunningUseCase:ensureEngineRunningUseCase,
-    getEngineBaseUrlUseCase:newGetEngineBaseUrlUseCase(),
+    getEngineProtocolRelativeBaseUrlUseCase:newGetEngineProtocolRelativeBaseUrlUseCase(),
   }
 
   return
@@ -25,7 +25,7 @@ func newCompositionRoot(
 
 type _compositionRoot struct {
   ensureEngineRunningUseCase ensureEngineRunningUseCase
-  getEngineBaseUrlUseCase    getEngineBaseUrlUseCase
+  getEngineProtocolRelativeBaseUrlUseCase    getEngineProtocolRelativeBaseUrlUseCase
 }
 
 func (this _compositionRoot) EnsureEngineRunningUseCase(
@@ -33,7 +33,7 @@ func (this _compositionRoot) EnsureEngineRunningUseCase(
   return this.ensureEngineRunningUseCase
 }
 
-func (this _compositionRoot) GetEngineBaseUrlUseCase(
-) getEngineBaseUrlUseCase {
-  return this.getEngineBaseUrlUseCase
+func (this _compositionRoot) GetEngineProtocolRelativeBaseUrlUseCase(
+) getEngineProtocolRelativeBaseUrlUseCase {
+  return this.getEngineProtocolRelativeBaseUrlUseCase
 }

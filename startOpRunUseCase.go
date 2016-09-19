@@ -47,7 +47,7 @@ opRunId string,
 err error,
 ) {
 
-  engineBaseUrl, err := this.engineHost.GetEngineBaseUrl()
+  engineProtocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }
@@ -59,7 +59,7 @@ err error,
 
   httpReq, err := http.NewRequest(
     "POST",
-    fmt.Sprintf("%v/op-runs", engineBaseUrl),
+    fmt.Sprintf("http:%v/op-runs", engineProtocolRelativeBaseUrl),
     bytes.NewBuffer(reqBytes),
   )
   if (nil != err) {

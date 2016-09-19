@@ -7,9 +7,9 @@ type EngineHost interface {
   image string,
   ) (err error)
 
-  GetEngineBaseUrl(
+  GetEngineProtocolRelativeBaseUrl(
   ) (
-  baseUrl string,
+  protocolRelativeBaseUrl string,
   err error,
   )
 }

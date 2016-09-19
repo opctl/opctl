@@ -20,17 +20,17 @@ var _ = Describe("compositionRoot", func() {
 
     })
   })
-  Context("GetEngineBaseUrlUseCase()", func() {
+  Context("GetEngineProtocolRelativeBaseUrlUseCase()", func() {
     It("should not return nil", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot()
 
       /* act */
-      actualGetEngineBaseUrlUseCase := objectUnderTest.GetEngineBaseUrlUseCase()
+      actualGetEngineProtocolRelativeBaseUrlUseCase := objectUnderTest.GetEngineProtocolRelativeBaseUrlUseCase()
 
       /* assert */
-      Expect(actualGetEngineBaseUrlUseCase).ShouldNot(BeNil())
+      Expect(actualGetEngineProtocolRelativeBaseUrlUseCase).ShouldNot(BeNil())
 
     })
   })

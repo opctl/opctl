@@ -36,14 +36,14 @@ type _engineLivenessChecker struct {
 func (this _engineLivenessChecker) Execute(
 ) (err error) {
 
-  engineBaseUrl, err := this.engineHost.GetEngineBaseUrl()
+  engineProtocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }
 
   httpReq, err := http.NewRequest(
     "GET",
-    fmt.Sprintf("%v/liveness", engineBaseUrl),
+    fmt.Sprintf("http:%v/liveness", engineProtocolRelativeBaseUrl),
     bytes.NewBuffer([]byte{}),
   )
   if (nil != err) {

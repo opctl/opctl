@@ -37,13 +37,13 @@ func (this _getEventStreamUseCase) Execute(
 
   eventStream = make(chan models.Event, 1000)
 
-  baseUrl, err := this.engineHost.GetEngineBaseUrl()
+  protocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }
 
   c, _, err := websocket.DefaultDialer.Dial(
-    fmt.Sprintf("%v/event-stream", baseUrl),
+    fmt.Sprintf("ws:%v/event-stream", protocolRelativeBaseUrl),
     nil,
   )
   if (err != nil) {

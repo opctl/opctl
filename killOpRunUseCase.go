@@ -45,7 +45,7 @@ req models.KillOpRunReq,
 err error,
 ) {
 
-  engineBaseUrl, err := this.engineHost.GetEngineBaseUrl()
+  engineProtocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }
@@ -57,7 +57,7 @@ err error,
 
   httpReq, err := http.NewRequest(
     "POST",
-    fmt.Sprintf("%v/op-run-kills", engineBaseUrl),
+    fmt.Sprintf("http:%v/op-run-kills", engineProtocolRelativeBaseUrl),
     bytes.NewBuffer(reqBytes),
   )
   if (nil != err) {
