@@ -18,7 +18,7 @@ var _ = Describe("_filesystem", func() {
       objectUnderTest := newFilesystem()
 
       /* assert */
-      _, ok := objectUnderTest.(Filesystem)
+      _, ok := objectUnderTest.(filesystem)
       if !ok {
         Fail("result not assignable to Filesystem")
       }

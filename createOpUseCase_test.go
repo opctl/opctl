@@ -23,7 +23,7 @@ var _ = Describe("_createOpUseCase", func() {
 
       objectUnderTest := newCreateOpUseCase(
         fakeFilesystem,
-        new(fakeYamlCodec),
+        new(fakeFormat),
       )
 
       /* act */
@@ -47,7 +47,7 @@ var _ = Describe("_createOpUseCase", func() {
 
         objectUnderTest := newCreateOpUseCase(
           fakeFilesystem,
-          new(fakeYamlCodec),
+          new(fakeFormat),
         )
 
         /* act */
@@ -61,18 +61,18 @@ var _ = Describe("_createOpUseCase", func() {
       })
     })
 
-    Context("when YamlCodec.ToYaml returns an error", func() {
+    Context("when YamlFormat.From returns an error", func() {
       It("should be returned", func() {
 
         /* arrange */
-        expectedError := errors.New("ToYamlError")
+        expectedError := errors.New("FromError")
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.ToYamlReturns(nil, expectedError)
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.FromReturns(nil, expectedError)
 
         objectUnderTest := newCreateOpUseCase(
           new(FakeFilesystem),
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */
@@ -86,7 +86,7 @@ var _ = Describe("_createOpUseCase", func() {
       })
     })
 
-    It("should call YamlCodec.ToYaml with expected opManifest", func() {
+    It("should call YamlFormat.From with expected opManifest", func() {
 
       /* arrange */
       expectedOpManifest := models.OpManifest{
@@ -96,15 +96,15 @@ var _ = Describe("_createOpUseCase", func() {
         },
       }
 
-      fakeYamlCodec := new(fakeYamlCodec)
-      fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
+      fakeYamlFormat := new(fakeFormat)
+      fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
         reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpManifest))
         return
       }
 
       objectUnderTest := newCreateOpUseCase(
         new(FakeFilesystem),
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
@@ -116,7 +116,7 @@ var _ = Describe("_createOpUseCase", func() {
       )
 
       /* assert */
-      actualOpManifest := fakeYamlCodec.ToYamlArgsForCall(0)
+      actualOpManifest := fakeYamlFormat.FromArgsForCall(0)
       Expect(actualOpManifest).To(Equal(&expectedOpManifest))
 
     })
@@ -130,12 +130,12 @@ var _ = Describe("_createOpUseCase", func() {
 
       fakeFilesystem := new(FakeFilesystem)
 
-      fakeYamlCodec := new(fakeYamlCodec)
-      fakeYamlCodec.ToYamlReturns(expectedSaveFileBytesArg, nil)
+      fakeYamlFormat := new(fakeFormat)
+      fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
       objectUnderTest := newCreateOpUseCase(
         fakeFilesystem,
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */

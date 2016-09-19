@@ -3,17 +3,19 @@ package opspec
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
+  "github.com/opspec-io/sdk-golang/adapters"
 )
 
 var _ = Describe("_compositionRoot", func() {
 
   var fakeFilesystem = new(FakeFilesystem)
-  
+  var fakeEngineHost = new(adapters.FakeEngineHost)
+
   Context("CreateCollectionUseCase", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualCreateCollectionUseCase := objectUnderTest.CreateCollectionUseCase()
@@ -27,7 +29,7 @@ var _ = Describe("_compositionRoot", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualCreateOpUseCase := objectUnderTest.CreateOpUseCase()
@@ -37,11 +39,25 @@ var _ = Describe("_compositionRoot", func() {
 
     })
   })
+  Context("GetEventStreamUseCase", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
+
+      /* act */
+      actualGetEventStreamUseCase := objectUnderTest.GetEventStreamUseCase()
+
+      /* assert */
+      Expect(actualGetEventStreamUseCase).NotTo(BeNil())
+
+    })
+  })
   Context("GetCollectionUseCase", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualGetCollectionUseCase := objectUnderTest.GetCollectionUseCase()
@@ -55,7 +71,7 @@ var _ = Describe("_compositionRoot", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualGetOpUseCase := objectUnderTest.GetOpUseCase()
@@ -65,11 +81,25 @@ var _ = Describe("_compositionRoot", func() {
 
     })
   })
+  Context("KillOpRunUseCase", func() {
+    It("should not return nil", func() {
+
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
+
+      /* act */
+      actualKillOpRunUseCase := objectUnderTest.KillOpRunUseCase()
+
+      /* assert */
+      Expect(actualKillOpRunUseCase).NotTo(BeNil())
+
+    })
+  })
   Context("SetCollectionDescriptionUseCase", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualSetCollectionDescriptionUseCase := objectUnderTest.SetCollectionDescriptionUseCase()
@@ -83,7 +113,7 @@ var _ = Describe("_compositionRoot", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualSetOpDescriptionUseCase := objectUnderTest.SetOpDescriptionUseCase()
@@ -93,12 +123,25 @@ var _ = Describe("_compositionRoot", func() {
 
     })
   })
+  Context("StartOpRunUseCase", func() {
+    It("should not return nil", func() {
 
+      /* arrange */
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
+
+      /* act */
+      actualStartOpRunUseCase := objectUnderTest.StartOpRunUseCase()
+
+      /* assert */
+      Expect(actualStartOpRunUseCase).NotTo(BeNil())
+
+    })
+  })
   Context("TryResolveDefaultCollectionUseCase", func() {
     It("should not return nil", func() {
 
       /* arrange */
-      objectUnderTest := newCompositionRoot(fakeFilesystem)
+      objectUnderTest := newCompositionRoot(fakeEngineHost, fakeFilesystem)
 
       /* act */
       actualTryResolveDefaultCollectionUseCase := objectUnderTest.TryResolveDefaultCollectionUseCase()

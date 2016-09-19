@@ -23,7 +23,7 @@ var _ = Describe("_collectionViewFactory", func() {
         objectUnderTest := newCollectionViewFactory(
           fakeFilesystem,
           new(fakeOpViewFactory),
-          new(fakeYamlCodec),
+          new(fakeFormat),
         )
 
         /* act */
@@ -36,19 +36,19 @@ var _ = Describe("_collectionViewFactory", func() {
 
     })
 
-    Context("when YamlCodec.FromYaml returns an error", func() {
+    Context("when YamlFormat.To returns an error", func() {
       It("should be returned", func() {
 
         /* arrange */
-        expectedError := errors.New("FromYamlError")
+        expectedError := errors.New("FromError")
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.FromYamlReturns(expectedError)
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.ToReturns(expectedError)
 
         objectUnderTest := newCollectionViewFactory(
           new(FakeFilesystem),
           new(fakeOpViewFactory),
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */
@@ -72,7 +72,7 @@ var _ = Describe("_collectionViewFactory", func() {
         objectUnderTest := newCollectionViewFactory(
           fakeFilesystem,
           new(fakeOpViewFactory),
-          new(fakeYamlCodec),
+          new(fakeFormat),
         )
 
         /* act */
@@ -84,7 +84,7 @@ var _ = Describe("_collectionViewFactory", func() {
       })
     })
 
-    It("should call YamlCodec.FromYaml with expected bytes", func() {
+    It("should call YamlFormat.To with expected bytes", func() {
 
       /* arrange */
       expectedBytes := []byte{0, 8, 10}
@@ -92,19 +92,19 @@ var _ = Describe("_collectionViewFactory", func() {
       fakeFilesystem := new(FakeFilesystem)
       fakeFilesystem.GetBytesOfFileReturns(expectedBytes, nil)
 
-      fakeYamlCodec := new(fakeYamlCodec)
+      fakeYamlFormat := new(fakeFormat)
 
       objectUnderTest := newCollectionViewFactory(
         fakeFilesystem,
         new(fakeOpViewFactory),
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
       objectUnderTest.Construct("/dummy/path")
 
       /* assert */
-      actualBytes, _ := fakeYamlCodec.FromYamlArgsForCall(0)
+      actualBytes, _ := fakeYamlFormat.ToArgsForCall(0)
       Expect(actualBytes).To(Equal(expectedBytes))
 
     })

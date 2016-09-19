@@ -3,7 +3,6 @@ package opspec
 
 import (
   "sync"
-
   "github.com/opspec-io/sdk-golang/models"
 )
 
@@ -33,6 +32,13 @@ type FakeSdk struct {
                                            result1 models.CollectionView
                                            result2 error
                                          }
+  GetEventStreamStub                     func() (stream chan models.Event, err error)
+  getEventStreamMutex                    sync.RWMutex
+  getEventStreamArgsForCall              []struct{}
+  getEventStreamReturns                  struct {
+                                           result1 chan models.Event
+                                           result2 error
+                                         }
   GetOpStub                              func(opBundlePath string) (opView models.OpView, err error)
   getOpMutex                             sync.RWMutex
   getOpArgsForCall                       []struct {
@@ -41,6 +47,14 @@ type FakeSdk struct {
   getOpReturns                           struct {
                                            result1 models.OpView
                                            result2 error
+                                         }
+  KillOpRunStub                          func(req models.KillOpRunReq) (err error)
+  killOpRunMutex                         sync.RWMutex
+  killOpRunArgsForCall                   []struct {
+    req models.KillOpRunReq
+  }
+  killOpRunReturns                       struct {
+                                           result1 error
                                          }
   SetCollectionDescriptionStub           func(req models.SetCollectionDescriptionReq) (err error)
   setCollectionDescriptionMutex          sync.RWMutex
@@ -57,6 +71,15 @@ type FakeSdk struct {
   }
   setOpDescriptionReturns                struct {
                                            result1 error
+                                         }
+  StartOpRunStub                         func(req models.StartOpRunReq) (opRunId string, err error)
+  startOpRunMutex                        sync.RWMutex
+  startOpRunArgsForCall                  []struct {
+    req models.StartOpRunReq
+  }
+  startOpRunReturns                      struct {
+                                           result1 string
+                                           result2 error
                                          }
   TryResolveDefaultCollectionStub        func(req models.TryResolveDefaultCollectionReq) (pathToDefaultCollection string, err error)
   tryResolveDefaultCollectionMutex       sync.RWMutex
@@ -171,6 +194,32 @@ func (fake *FakeSdk) GetCollectionReturns(result1 models.CollectionView, result2
   }{result1, result2}
 }
 
+func (fake *FakeSdk) GetEventStream() (stream chan models.Event, err error) {
+  fake.getEventStreamMutex.Lock()
+  fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct{}{})
+  fake.recordInvocation("GetEventStream", []interface{}{})
+  fake.getEventStreamMutex.Unlock()
+  if fake.GetEventStreamStub != nil {
+    return fake.GetEventStreamStub()
+  } else {
+    return fake.getEventStreamReturns.result1, fake.getEventStreamReturns.result2
+  }
+}
+
+func (fake *FakeSdk) GetEventStreamCallCount() int {
+  fake.getEventStreamMutex.RLock()
+  defer fake.getEventStreamMutex.RUnlock()
+  return len(fake.getEventStreamArgsForCall)
+}
+
+func (fake *FakeSdk) GetEventStreamReturns(result1 chan models.Event, result2 error) {
+  fake.GetEventStreamStub = nil
+  fake.getEventStreamReturns = struct {
+    result1 chan models.Event
+    result2 error
+  }{result1, result2}
+}
+
 func (fake *FakeSdk) GetOp(opBundlePath string) (opView models.OpView, err error) {
   fake.getOpMutex.Lock()
   fake.getOpArgsForCall = append(fake.getOpArgsForCall, struct {
@@ -203,6 +252,39 @@ func (fake *FakeSdk) GetOpReturns(result1 models.OpView, result2 error) {
     result1 models.OpView
     result2 error
   }{result1, result2}
+}
+
+func (fake *FakeSdk) KillOpRun(req models.KillOpRunReq) (err error) {
+  fake.killOpRunMutex.Lock()
+  fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
+    req models.KillOpRunReq
+  }{req})
+  fake.recordInvocation("KillOpRun", []interface{}{req})
+  fake.killOpRunMutex.Unlock()
+  if fake.KillOpRunStub != nil {
+    return fake.KillOpRunStub(req)
+  } else {
+    return fake.killOpRunReturns.result1
+  }
+}
+
+func (fake *FakeSdk) KillOpRunCallCount() int {
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
+  return len(fake.killOpRunArgsForCall)
+}
+
+func (fake *FakeSdk) KillOpRunArgsForCall(i int) models.KillOpRunReq {
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
+  return fake.killOpRunArgsForCall[i].req
+}
+
+func (fake *FakeSdk) KillOpRunReturns(result1 error) {
+  fake.KillOpRunStub = nil
+  fake.killOpRunReturns = struct {
+    result1 error
+  }{result1}
 }
 
 func (fake *FakeSdk) SetCollectionDescription(req models.SetCollectionDescriptionReq) (err error) {
@@ -271,6 +353,40 @@ func (fake *FakeSdk) SetOpDescriptionReturns(result1 error) {
   }{result1}
 }
 
+func (fake *FakeSdk) StartOpRun(req models.StartOpRunReq) (opRunId string, err error) {
+  fake.startOpRunMutex.Lock()
+  fake.startOpRunArgsForCall = append(fake.startOpRunArgsForCall, struct {
+    req models.StartOpRunReq
+  }{req})
+  fake.recordInvocation("StartOpRun", []interface{}{req})
+  fake.startOpRunMutex.Unlock()
+  if fake.StartOpRunStub != nil {
+    return fake.StartOpRunStub(req)
+  } else {
+    return fake.startOpRunReturns.result1, fake.startOpRunReturns.result2
+  }
+}
+
+func (fake *FakeSdk) StartOpRunCallCount() int {
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
+  return len(fake.startOpRunArgsForCall)
+}
+
+func (fake *FakeSdk) StartOpRunArgsForCall(i int) models.StartOpRunReq {
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
+  return fake.startOpRunArgsForCall[i].req
+}
+
+func (fake *FakeSdk) StartOpRunReturns(result1 string, result2 error) {
+  fake.StartOpRunStub = nil
+  fake.startOpRunReturns = struct {
+    result1 string
+    result2 error
+  }{result1, result2}
+}
+
 func (fake *FakeSdk) TryResolveDefaultCollection(req models.TryResolveDefaultCollectionReq) (pathToDefaultCollection string, err error) {
   fake.tryResolveDefaultCollectionMutex.Lock()
   fake.tryResolveDefaultCollectionArgsForCall = append(fake.tryResolveDefaultCollectionArgsForCall, struct {
@@ -314,12 +430,18 @@ func (fake *FakeSdk) Invocations() map[string][][]interface{} {
   defer fake.createOpMutex.RUnlock()
   fake.getCollectionMutex.RLock()
   defer fake.getCollectionMutex.RUnlock()
+  fake.getEventStreamMutex.RLock()
+  defer fake.getEventStreamMutex.RUnlock()
   fake.getOpMutex.RLock()
   defer fake.getOpMutex.RUnlock()
+  fake.killOpRunMutex.RLock()
+  defer fake.killOpRunMutex.RUnlock()
   fake.setCollectionDescriptionMutex.RLock()
   defer fake.setCollectionDescriptionMutex.RUnlock()
   fake.setOpDescriptionMutex.RLock()
   defer fake.setOpDescriptionMutex.RUnlock()
+  fake.startOpRunMutex.RLock()
+  defer fake.startOpRunMutex.RUnlock()
   fake.tryResolveDefaultCollectionMutex.RLock()
   defer fake.tryResolveDefaultCollectionMutex.RUnlock()
   return fake.invocations

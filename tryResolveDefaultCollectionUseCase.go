@@ -19,7 +19,7 @@ type tryResolveDefaultCollectionUseCase interface {
 }
 
 func newTryResolveDefaultCollectionUseCase(
-filesystem Filesystem,
+filesystem filesystem,
 ) tryResolveDefaultCollectionUseCase {
 
   return &_tryResolveDefaultCollectionUseCase{
@@ -29,7 +29,7 @@ filesystem Filesystem,
 }
 
 type _tryResolveDefaultCollectionUseCase struct {
-  filesystem Filesystem
+  filesystem filesystem
 }
 
 func (this _tryResolveDefaultCollectionUseCase) Execute(

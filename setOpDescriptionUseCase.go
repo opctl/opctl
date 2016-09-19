@@ -14,20 +14,20 @@ type setOpDescriptionUseCase interface {
 }
 
 func newSetOpDescriptionUseCase(
-filesystem Filesystem,
-yamlCodec yamlCodec,
+filesystem filesystem,
+yaml format,
 ) setOpDescriptionUseCase {
 
   return &_setOpDescriptionUseCase{
     filesystem:filesystem,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _setOpDescriptionUseCase struct {
-  filesystem Filesystem
-  yamlCodec  yamlCodec
+  filesystem filesystem
+  yaml       format
 }
 
 func (this _setOpDescriptionUseCase) Execute(
@@ -44,7 +44,7 @@ req models.SetOpDescriptionReq,
   }
 
   opManifest := models.OpManifest{}
-  err = this.yamlCodec.FromYaml(
+  err = this.yaml.To(
     opBytes,
     &opManifest,
   )
@@ -54,7 +54,7 @@ req models.SetOpDescriptionReq,
 
   opManifest.Description = req.Description
 
-  opBytes, err = this.yamlCodec.ToYaml(&opManifest)
+  opBytes, err = this.yaml.From(&opManifest)
   if (nil != err) {
     return
   }

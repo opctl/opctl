@@ -4,18 +4,19 @@ import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
   "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/adapters"
 )
 
 var _ = Describe("_sdk", func() {
 
-  Context("New()", func() {
-    It("should return an instance of _sdk", func() {
+  Context("newSdk()", func() {
+    It("should not return nil", func() {
 
       /* arrange/act */
-      objectUnderTest := New()
+      objectUnderTest := newSdk(new(FakeFilesystem), new(adapters.FakeEngineHost))
 
       /* assert */
-      Expect(objectUnderTest).To(BeAssignableToTypeOf(&_sdk{}))
+      Expect(objectUnderTest).To(Not(BeNil()))
 
     })
   })
@@ -69,6 +70,29 @@ var _ = Describe("_sdk", func() {
 
     })
   })
+  Context(".GetEventStream() method", func() {
+    It("should invoke compositionRoot.getEventStreamUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+
+      // wire up fakes
+      fakeGetEventStreamUseCase := new(fakeGetEventStreamUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.GetEventStreamUseCaseReturns(fakeGetEventStreamUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.GetEventStream()
+
+      /* assert */
+      Expect(fakeGetEventStreamUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
   Context(".GetCollection() method", func() {
     It("should invoke compositionRoot.getCollectionUseCase.Execute() with expected args & return result", func() {
 
@@ -119,6 +143,31 @@ var _ = Describe("_sdk", func() {
 
     })
   })
+  Context(".KillOpRun() method", func() {
+    It("should invoke compositionRoot.killOpRunUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedKillOpRunReq := models.KillOpRunReq{}
+
+      // wire up fakes
+      fakeKillOpRunUseCase := new(fakeKillOpRunUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.KillOpRunUseCaseReturns(fakeKillOpRunUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.KillOpRun(providedKillOpRunReq)
+
+      /* assert */
+      Expect(fakeKillOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(providedKillOpRunReq))
+      Expect(fakeKillOpRunUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
   Context(".SetCollectionDescription() method", func() {
     It("should invoke compositionRoot.setCollectionDescriptionUseCase.Execute() with expected args & return result", func() {
 
@@ -166,6 +215,31 @@ var _ = Describe("_sdk", func() {
       /* assert */
       Expect(fakeSetOpDescriptionUseCase.ExecuteArgsForCall(0)).To(Equal(*providedSetOpDescriptionReq))
       Expect(fakeSetOpDescriptionUseCase.ExecuteCallCount()).To(Equal(1))
+
+    })
+  })
+  Context(".StartOpRun() method", func() {
+    It("should invoke compositionRoot.startOpRunUseCase.Execute() with expected args & return result", func() {
+
+      /* arrange */
+      providedStartOpRunReq := models.StartOpRunReq{}
+
+      // wire up fakes
+      fakeStartOpRunUseCase := new(fakeStartOpRunUseCase)
+
+      fakeCompositionRoot := new(fakeCompositionRoot)
+      fakeCompositionRoot.StartOpRunUseCaseReturns(fakeStartOpRunUseCase)
+
+      objectUnderTest := &_sdk{
+        compositionRoot:fakeCompositionRoot,
+      }
+
+      /* act */
+      objectUnderTest.StartOpRun(providedStartOpRunReq)
+
+      /* assert */
+      Expect(fakeStartOpRunUseCase.ExecuteArgsForCall(0)).To(Equal(providedStartOpRunReq))
+      Expect(fakeStartOpRunUseCase.ExecuteCallCount()).To(Equal(1))
 
     })
   })

@@ -17,20 +17,20 @@ type opViewFactory interface {
 }
 
 func newOpViewFactory(
-filesystem Filesystem,
-yamlCodec yamlCodec,
+filesystem filesystem,
+yaml format,
 ) opViewFactory {
 
   return &_opViewFactory{
     filesystem:filesystem,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _opViewFactory struct {
-  filesystem Filesystem
-  yamlCodec  yamlCodec
+  filesystem filesystem
+  yaml       format
 }
 
 func (this _opViewFactory) Construct(
@@ -50,7 +50,7 @@ err error,
   }
 
   opManifest := models.OpManifest{}
-  err = this.yamlCodec.FromYaml(
+  err = this.yaml.To(
     opManifestBytes,
     &opManifest,
   )

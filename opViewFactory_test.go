@@ -24,7 +24,7 @@ var _ = Describe("_opViewFactory", func() {
 
         objectUnderTest := newOpViewFactory(
           fakeFilesystem,
-          new(fakeYamlCodec),
+          new(fakeFormat),
         )
 
         /* act */
@@ -37,18 +37,18 @@ var _ = Describe("_opViewFactory", func() {
 
     })
 
-    Context("when YamlCodec.FromYaml returns an error", func() {
+    Context("when YamlFormat.From returns an error", func() {
       It("should be returned", func() {
 
         /* arrange */
-        expectedError := errors.New("FromYamlError")
+        expectedError := errors.New("FromError")
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.FromYamlReturns(expectedError)
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.ToReturns(expectedError)
 
         objectUnderTest := newOpViewFactory(
           new(FakeFilesystem),
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */
@@ -60,7 +60,7 @@ var _ = Describe("_opViewFactory", func() {
       })
     })
 
-    It("should call YamlCodec.FromYaml with expected bytes", func() {
+    It("should call YamlFormat.From with expected bytes", func() {
 
       /* arrange */
       expectedBytes := []byte{0, 8, 10}
@@ -68,18 +68,18 @@ var _ = Describe("_opViewFactory", func() {
       fakeFilesystem := new(FakeFilesystem)
       fakeFilesystem.GetBytesOfFileReturns(expectedBytes, nil)
 
-      fakeYamlCodec := new(fakeYamlCodec)
+      fakeYamlFormat := new(fakeFormat)
 
       objectUnderTest := newOpViewFactory(
         fakeFilesystem,
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
       objectUnderTest.Construct("/dummy/path")
 
       /* assert */
-      actualBytes, _ := fakeYamlCodec.FromYamlArgsForCall(0)
+      actualBytes, _ := fakeYamlFormat.ToArgsForCall(0)
       Expect(actualBytes).To(Equal(expectedBytes))
 
     })
@@ -110,8 +110,8 @@ var _ = Describe("_opViewFactory", func() {
 
       fakeFilesystem := new(FakeFilesystem)
 
-      fakeYamlCodec := new(fakeYamlCodec)
-      fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
+      fakeYamlFormat := new(fakeFormat)
+      fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
         stubbedOpManifest := models.OpManifest{
           Manifest:models.Manifest{
@@ -129,7 +129,7 @@ var _ = Describe("_opViewFactory", func() {
 
       objectUnderTest := newOpViewFactory(
         fakeFilesystem,
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
@@ -151,8 +151,8 @@ var _ = Describe("_opViewFactory", func() {
 
         fakeFilesystem := new(FakeFilesystem)
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
           stubbedOpManifest := models.OpManifest{
             Run:expectedRunDeclaration,
@@ -164,7 +164,7 @@ var _ = Describe("_opViewFactory", func() {
 
         objectUnderTest := newOpViewFactory(
           fakeFilesystem,
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */
@@ -183,8 +183,8 @@ var _ = Describe("_opViewFactory", func() {
 
         fakeFilesystem := new(FakeFilesystem)
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
           stubbedOpManifest := models.OpManifest{
             Run:expectedRunDeclaration,
@@ -196,7 +196,7 @@ var _ = Describe("_opViewFactory", func() {
 
         objectUnderTest := newOpViewFactory(
           fakeFilesystem,
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */

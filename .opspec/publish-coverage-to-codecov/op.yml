@@ -1,8 +1,0 @@
-description: publishes a code coverage profile to https://codecov.io
-name: publish-coverage-to-codecov
-inputs:
-- name: CODECOV_TOKEN
-  description: A https://codecov.io/ auth token
-  isSecure: true
-- name: GIT_BRANCH
-  description: The git branch the coverage should be associated with

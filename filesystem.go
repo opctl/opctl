@@ -1,13 +1,13 @@
 package opspec
 
-//go:generate counterfeiter -o ./fakeFileSystem.go --fake-name FakeFilesystem ./ Filesystem
+//go:generate counterfeiter -o ./fakeFileSystem.go --fake-name fakeFilesystem ./ filesystem
 
 import (
   "io/ioutil"
   "os"
 )
 
-type Filesystem  interface {
+type filesystem  interface {
   AddDir(
   pathToDir string,
   ) (err error)
@@ -33,7 +33,7 @@ type Filesystem  interface {
 }
 
 func newFilesystem(
-) Filesystem {
+) filesystem {
   return &_filesystem{}
 }
 

@@ -14,20 +14,20 @@ type createOpUseCase interface {
 }
 
 func newCreateOpUseCase(
-filesystem Filesystem,
-yamlCodec yamlCodec,
+filesystem filesystem,
+yaml format,
 ) createOpUseCase {
 
   return &_createOpUseCase{
     filesystem:filesystem,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _createOpUseCase struct {
-  filesystem Filesystem
-  yamlCodec  yamlCodec
+  filesystem filesystem
+  yaml       format
 }
 
 func (this _createOpUseCase) Execute(
@@ -48,7 +48,7 @@ req models.CreateOpReq,
     },
   }
 
-  opManifestBytes, err := this.yamlCodec.ToYaml(&opManifest)
+  opManifestBytes, err := this.yaml.From(&opManifest)
   if (nil != err) {
     return
   }

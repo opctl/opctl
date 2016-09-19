@@ -212,4 +212,4 @@ func (fake *FakeFilesystem) recordInvocation(key string, args []interface{}) {
   fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Filesystem = new(FakeFilesystem)
+var _ filesystem = new(FakeFilesystem)

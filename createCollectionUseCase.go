@@ -14,20 +14,20 @@ type createCollectionUseCase interface {
 }
 
 func newCreateCollectionUseCase(
-filesystem Filesystem,
-yamlCodec yamlCodec,
+filesystem filesystem,
+yaml format,
 ) createCollectionUseCase {
 
   return &_createCollectionUseCase{
     filesystem:filesystem,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _createCollectionUseCase struct {
-  filesystem Filesystem
-  yamlCodec  yamlCodec
+  filesystem filesystem
+  yaml       format
 }
 
 func (this _createCollectionUseCase) Execute(
@@ -48,7 +48,7 @@ req models.CreateCollectionReq,
     },
   }
 
-  opManifestBytes, err := this.yamlCodec.ToYaml(&opCollection)
+  opManifestBytes, err := this.yaml.From(&opCollection)
   if (nil != err) {
     return
   }

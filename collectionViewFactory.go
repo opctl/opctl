@@ -17,23 +17,23 @@ type collectionViewFactory interface {
 }
 
 func newCollectionViewFactory(
-filesystem Filesystem,
+filesystem filesystem,
 opViewFactory opViewFactory,
-yamlCodec yamlCodec,
+yaml format,
 ) collectionViewFactory {
 
   return &_collectionViewFactory{
     filesystem:filesystem,
     opViewFactory:opViewFactory,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _collectionViewFactory struct {
-  filesystem    Filesystem
+  filesystem    filesystem
   opViewFactory opViewFactory
-  yamlCodec     yamlCodec
+  yaml          format
 }
 
 func (this _collectionViewFactory) Construct(
@@ -53,7 +53,7 @@ err error,
   }
 
   collectionManifest := models.CollectionManifest{}
-  err = this.yamlCodec.FromYaml(
+  err = this.yaml.To(
     collectionManifestBytes,
     &collectionManifest,
   )

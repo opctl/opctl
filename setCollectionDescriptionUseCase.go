@@ -14,20 +14,20 @@ type setCollectionDescriptionUseCase interface {
 }
 
 func newSetCollectionDescriptionUseCase(
-filesystem Filesystem,
-yamlCodec yamlCodec,
+filesystem filesystem,
+yaml format,
 ) setCollectionDescriptionUseCase {
 
   return &_setCollectionDescriptionUseCase{
     filesystem:filesystem,
-    yamlCodec:yamlCodec,
+    yaml:yaml,
   }
 
 }
 
 type _setCollectionDescriptionUseCase struct {
-  filesystem Filesystem
-  yamlCodec  yamlCodec
+  filesystem filesystem
+  yaml       format
 }
 
 func (this _setCollectionDescriptionUseCase) Execute(
@@ -44,7 +44,7 @@ req models.SetCollectionDescriptionReq,
   }
 
   collectionManifest := models.CollectionManifest{}
-  err = this.yamlCodec.FromYaml(
+  err = this.yaml.To(
     collectionManifestBytes,
     &collectionManifest,
   )
@@ -54,7 +54,7 @@ req models.SetCollectionDescriptionReq,
 
   collectionManifest.Description = req.Description
 
-  collectionManifestBytes, err = this.yamlCodec.ToYaml(&collectionManifest)
+  collectionManifestBytes, err = this.yaml.From(&collectionManifest)
   if (nil != err) {
     return
   }

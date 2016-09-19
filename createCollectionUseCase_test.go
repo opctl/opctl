@@ -23,7 +23,7 @@ var _ = Describe("_createCollectionUseCase", func() {
 
       objectUnderTest := newCreateCollectionUseCase(
         fakeFilesystem,
-        new(fakeYamlCodec),
+        new(fakeFormat),
       )
 
       /* act */
@@ -47,7 +47,7 @@ var _ = Describe("_createCollectionUseCase", func() {
 
         objectUnderTest := newCreateCollectionUseCase(
           fakeFilesystem,
-          new(fakeYamlCodec),
+          new(fakeFormat),
         )
 
         /* act */
@@ -61,18 +61,18 @@ var _ = Describe("_createCollectionUseCase", func() {
       })
     })
 
-    Context("when YamlCodec.ToYaml returns an error", func() {
+    Context("when YamlFormat.From returns an error", func() {
       It("should be returned", func() {
 
         /* arrange */
-        expectedError := errors.New("ToYamlError")
+        expectedError := errors.New("ToError")
 
-        fakeYamlCodec := new(fakeYamlCodec)
-        fakeYamlCodec.ToYamlReturns(nil, expectedError)
+        fakeYamlFormat := new(fakeFormat)
+        fakeYamlFormat.FromReturns(nil, expectedError)
 
         objectUnderTest := newCreateCollectionUseCase(
           new(FakeFilesystem),
-          fakeYamlCodec,
+          fakeYamlFormat,
         )
 
         /* act */
@@ -86,7 +86,7 @@ var _ = Describe("_createCollectionUseCase", func() {
       })
     })
 
-    It("should call YamlCodec.ToYaml with expected collectionManifest", func() {
+    It("should call YamlFormat.From with expected collectionManifest", func() {
 
       /* arrange */
       expectedCollectionManifest := models.CollectionManifest{
@@ -96,15 +96,15 @@ var _ = Describe("_createCollectionUseCase", func() {
         },
       }
 
-      fakeYamlCodec := new(fakeYamlCodec)
-      fakeYamlCodec.FromYamlStub = func(in []byte, out interface{}) (err error) {
+      fakeYamlFormat := new(fakeFormat)
+      fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
         reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionManifest))
         return
       }
 
       objectUnderTest := newCreateCollectionUseCase(
         new(FakeFilesystem),
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
@@ -116,7 +116,7 @@ var _ = Describe("_createCollectionUseCase", func() {
       )
 
       /* assert */
-      actualCollectionManifest := fakeYamlCodec.ToYamlArgsForCall(0)
+      actualCollectionManifest := fakeYamlFormat.FromArgsForCall(0)
       Expect(actualCollectionManifest).To(Equal(&expectedCollectionManifest))
 
     })
@@ -130,12 +130,12 @@ var _ = Describe("_createCollectionUseCase", func() {
 
       fakeFilesystem := new(FakeFilesystem)
 
-      fakeYamlCodec := new(fakeYamlCodec)
-      fakeYamlCodec.ToYamlReturns(expectedSaveFileBytesArg, nil)
+      fakeYamlFormat := new(fakeFormat)
+      fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
       objectUnderTest := newCreateCollectionUseCase(
         fakeFilesystem,
-        fakeYamlCodec,
+        fakeYamlFormat,
       )
 
       /* act */
