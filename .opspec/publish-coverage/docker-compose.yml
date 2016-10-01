@@ -18,3 +18,4 @@ services:
         # upload
         curl -s https://codecov.io/bash | bash -s
       "
+    network_mode: host

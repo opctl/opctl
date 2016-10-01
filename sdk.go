@@ -69,7 +69,7 @@ func New(
 engineHost adapters.EngineHost,
 ) Sdk {
 
-  err := engineHost.EnsureEngineRunning("opspec/engine:0.1.8")
+  err := engineHost.EnsureEngineRunning("opspec/engine:0.1.9")
   if (nil != err) {
     panic(err)
   }
