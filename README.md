@@ -38,7 +38,7 @@ opspec/engine # unstable version of engine
 
 All releases will be [tagged](https://github.com/opspec-io/engine/tags)
 and made available on the [releases](https://github.com/opspec-io/engine/releases) page with links
-to the corresponding versions of the docs.
+to docs.
 
 # Versioning
 
