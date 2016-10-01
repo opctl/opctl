@@ -9,3 +9,4 @@ services:
       dockerfile: .opspec/build-docker-image/Dockerfile
     image: opspec/engine:$IMAGE_TAG
     entrypoint: echo # noop
+    network_mode: host

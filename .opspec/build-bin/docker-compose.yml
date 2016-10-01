@@ -7,3 +7,4 @@ services:
     entrypoint: govendor build
     environment:
       - CGO_ENABLED=0
+    network_mode: none

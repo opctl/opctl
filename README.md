@@ -34,15 +34,6 @@ docker run \
 opspec/engine # unstable version of engine
 ```
 
-### 2) Explore the engine API via Swagger UI
-
-**On host with docker-machine**:  
-open your browser and navigate to the url returned from `echo
-$(docker-machine ip):42224`
-
-**On host with native docker**:  
-open your browser and navigate to 127.0.0.1:42224
-
 # Releases
 
 All releases will be [tagged](https://github.com/opspec-io/engine/tags)

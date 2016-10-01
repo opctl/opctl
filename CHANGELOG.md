@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+### Changed
+- refactored to use [opspec sdk](https://github.com/opspec-io/sdk-golang)
+
+### Fixed
+- [Emitted ContainerStd*WrittenToEvent.Data Incomplete](https://github.com/opspec-io/engine/issues/32)
+
 ## 0.1.8 - 2016-09-09
 ### Added
 - support for [opspec 0.1.2](https://opspec.io)
@@ -46,15 +53,13 @@ All notable changes to this project will be documented in this file.
 
 ## 0.1.1 - 2016-06-22
 ### Changed
-
-- refactored to use [opspec sdk](https://github.com/opspec-io/sdk-golang)
+- refactored to use opspec engine sdk
 
 ### Fixed
 - kill op run use case killing all ops
 - [cannot run multiple ops with same name simultaneously](https://github.com/opspec-io/engine/issues/8)
 
 ### Removed
-
 - add sub-op use case
 
 ## 0.1.0 - 2016-06-16
