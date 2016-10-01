@@ -10,7 +10,7 @@
 
 # Official SDK's
 
-[engine-sdk-golang](https://github.com/opspec-io/engine-sdk-golang)
+[sdk-golang](https://github.com/opspec-io/sdk-golang)
 
 # Supported Use Cases
 
@@ -37,10 +37,8 @@ opspec/engine # unstable version of engine
 # Releases
 
 All releases will be [tagged](https://github.com/opspec-io/engine/tags)
-and made available on the
-[releases](https://github.com/opspec-io/engine/releases) page with links
-to the corresponding versions of the [INSTALLATION.md](INSTALLATION.md)
-and [CHANGELOG.md](CHANGELOG.md) docs.
+and made available on the [releases](https://github.com/opspec-io/engine/releases) page with links
+to the corresponding versions of the docs.
 
 # Versioning
 
