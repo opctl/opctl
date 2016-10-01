@@ -5,3 +5,4 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     entrypoint: govendor generate ./...
+    network_mode: none

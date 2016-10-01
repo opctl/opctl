@@ -5,3 +5,4 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     entrypoint: ginkgo --v -cover -race -r
+    network_mode: none

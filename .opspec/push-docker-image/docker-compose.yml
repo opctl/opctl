@@ -9,3 +9,4 @@ services:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && \
         docker push opspec/engine:$IMAGE_TAG
       "
+    network_mode: host
