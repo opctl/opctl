@@ -11,8 +11,6 @@ integration scenarios.
 
 # Supported Use Cases
 
-## Bundles
-
 - create collection
 - create op
 - get event stream
@@ -30,8 +28,7 @@ All releases will be
 [tagged](https://github.com/opspec-io/sdk-golang/tags) and made
 available on the
 [releases](https://github.com/opspec-io/sdk-golang/releases) page with
-links to the corresponding version of the [CHANGELOG.md](CHANGELOG.md)
-doc.
+links to docs.
 
 # Versioning
 
