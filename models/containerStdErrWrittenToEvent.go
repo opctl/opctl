@@ -1,7 +1,6 @@
 package models
 
 type ContainerStdErrWrittenToEvent struct {
-  RootOpRunId string `json:"rootOpRunId"`
-  OpRunId     string `json:"opRunId"`
+  OpRunDescriptor *OpRunDescriptor `json:"opRunDescriptor"`
   Data        []byte `json:"data"`
 }
