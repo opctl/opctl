@@ -1,5 +1,7 @@
 package models
 
 type OpRunStartedEvent struct {
-  Descriptor *OpRunDescriptor `json:"descriptor"`
+  OpRunId       string `json:"opRunId"`
+  OpRef         string `json:"opRef"`
+  RootOpRunId   string `json:"rootOpRunId"`
 }

@@ -7,7 +7,8 @@ const (
 )
 
 type OpRunEndedEvent struct {
-  Descriptor *OpRunDescriptor `json:"descriptor"`
-  Outcome    string `json:"outcome"`
+  OpRunId       string `json:"opRunId"`
+  Outcome       string `json:"outcome"`
+  RootOpRunId   string `json:"rootOpRunId"`
 }
 

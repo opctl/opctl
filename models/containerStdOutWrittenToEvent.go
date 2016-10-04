@@ -1,6 +1,7 @@
 package models
 
 type ContainerStdOutWrittenToEvent struct {
-  OpRunDescriptor *OpRunDescriptor `json:"opRunDescriptor"`
+  RootOpRunId string `json:"rootOpRunId"`
+  OpRunId     string `json:"opRunId"`
   Data        []byte `json:"data"`
 }
