@@ -3,7 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeCompositionRoot.go --fake-name fakeCompositionRoot ./ compositionRoot
 
 import (
-  "github.com/opspec-io/sdk-golang"
+  "github.com/opspec-io/sdk-golang/pkg/bundle"
 )
 
 type compositionRoot interface {
@@ -22,7 +22,7 @@ containerEngine ContainerEngine,
   /* components */
   eventStream := newEventStream()
 
-  opspecSdk := opspec.New()
+  opspecSdk :=  bundle.New()
 
   storage := newStorage()
 

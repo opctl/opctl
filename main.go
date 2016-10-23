@@ -7,7 +7,8 @@ import (
 
 func main() {
 
-  compositionRoot, err := newCompositionRoot()
+  compositionRoot, err := newCompositionRoot(
+  )
   if (nil != err) {
     fmt.Fprint(os.Stderr, err)
     os.Exit(1)
