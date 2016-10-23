@@ -9,18 +9,10 @@ integration scenarios.
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-# Supported Use Cases
+# Packages
 
-- create collection
-- create op
-- get event stream
-- get collection
-- get op
-- kill op run
-- set collection description
-- set op description
-- start op run
-- try resolve default collection
+The `/pkg` dir contains all packages distributed by this SDK. Rather
+than provide one huge package, there are several smaller packages.
 
 # Releases
 

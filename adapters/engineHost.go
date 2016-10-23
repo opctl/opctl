@@ -4,7 +4,6 @@ package adapters
 
 type EngineHost interface {
   EnsureEngineRunning(
-  image string,
   ) (err error)
 
   GetEngineProtocolRelativeBaseUrl(
