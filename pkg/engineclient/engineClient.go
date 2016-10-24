@@ -4,7 +4,7 @@ package engineclient
 
 import (
   "github.com/opspec-io/sdk-golang/models"
-  "github.com/opspec-io/sdk-golang/adapters"
+  "github.com/opspec-io/sdk-golang/pkg/engineprovider"
   "github.com/opspec-io/sdk-golang/util/format"
   "github.com/opspec-io/sdk-golang/util/http"
 )
@@ -31,17 +31,17 @@ type EngineClient interface {
 }
 
 func New(
-engineHost adapters.EngineHost,
+engineProvider engineprovider.EngineProvider,
 ) EngineClient {
   return &_engineClient{
-    engineHost:engineHost,
+    engineProvider:engineProvider,
     jsonFormat: format.NewJsonFormat(),
     yamlFormat:format.NewYamlFormat(),
   }
 }
 
 type _engineClient struct {
-  engineHost adapters.EngineHost
+  engineProvider engineprovider.EngineProvider
   httpClient http.Client
   jsonFormat format.Format
   yamlFormat format.Format

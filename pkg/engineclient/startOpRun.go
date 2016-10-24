@@ -15,7 +15,7 @@ opRunId string,
 err error,
 ) {
 
-  engineProtocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
+  engineProtocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }

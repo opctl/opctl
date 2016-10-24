@@ -13,7 +13,7 @@ req models.KillOpRunReq,
 err error,
 ) {
 
-  engineProtocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
+  engineProtocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }

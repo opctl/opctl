@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "opspec/pkg/docker")
+  RunSpecs(t, "opspec/pkg/engineprovider/docker")
 }

@@ -12,7 +12,7 @@ func (this _engineClient) GetEventStream(
 
   eventStream = make(chan models.Event, 1000)
 
-  protocolRelativeBaseUrl, err := this.engineHost.GetEngineProtocolRelativeBaseUrl()
+  protocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
     return
   }
