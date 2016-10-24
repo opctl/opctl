@@ -3,9 +3,11 @@ package fake
 
 import (
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/pkg/engineprovider"
 )
 
-type FakeEngineProvider struct {
+type EngineProvider struct {
 	EnsureEngineRunningStub        func() (err error)
 	ensureEngineRunningMutex       sync.RWMutex
 	ensureEngineRunningArgsForCall []struct{}
@@ -19,14 +21,11 @@ type FakeEngineProvider struct {
 		result1 string
 		result2 error
 	}
-	invocations      map[string][][]interface{}
-	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEngineProvider) EnsureEngineRunning() (err error) {
+func (fake *EngineProvider) EnsureEngineRunning() (err error) {
 	fake.ensureEngineRunningMutex.Lock()
 	fake.ensureEngineRunningArgsForCall = append(fake.ensureEngineRunningArgsForCall, struct{}{})
-	fake.recordInvocation("EnsureEngineRunning", []interface{}{})
 	fake.ensureEngineRunningMutex.Unlock()
 	if fake.EnsureEngineRunningStub != nil {
 		return fake.EnsureEngineRunningStub()
@@ -35,23 +34,22 @@ func (fake *FakeEngineProvider) EnsureEngineRunning() (err error) {
 	}
 }
 
-func (fake *FakeEngineProvider) EnsureEngineRunningCallCount() int {
+func (fake *EngineProvider) EnsureEngineRunningCallCount() int {
 	fake.ensureEngineRunningMutex.RLock()
 	defer fake.ensureEngineRunningMutex.RUnlock()
 	return len(fake.ensureEngineRunningArgsForCall)
 }
 
-func (fake *FakeEngineProvider) EnsureEngineRunningReturns(result1 error) {
+func (fake *EngineProvider) EnsureEngineRunningReturns(result1 error) {
 	fake.EnsureEngineRunningStub = nil
 	fake.ensureEngineRunningReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeEngineProvider) GetEngineProtocolRelativeBaseUrl() (protocolRelativeBaseUrl string, err error) {
+func (fake *EngineProvider) GetEngineProtocolRelativeBaseUrl() (protocolRelativeBaseUrl string, err error) {
 	fake.getEngineProtocolRelativeBaseUrlMutex.Lock()
 	fake.getEngineProtocolRelativeBaseUrlArgsForCall = append(fake.getEngineProtocolRelativeBaseUrlArgsForCall, struct{}{})
-	fake.recordInvocation("GetEngineProtocolRelativeBaseUrl", []interface{}{})
 	fake.getEngineProtocolRelativeBaseUrlMutex.Unlock()
 	if fake.GetEngineProtocolRelativeBaseUrlStub != nil {
 		return fake.GetEngineProtocolRelativeBaseUrlStub()
@@ -60,13 +58,13 @@ func (fake *FakeEngineProvider) GetEngineProtocolRelativeBaseUrl() (protocolRela
 	}
 }
 
-func (fake *FakeEngineProvider) GetEngineProtocolRelativeBaseUrlCallCount() int {
+func (fake *EngineProvider) GetEngineProtocolRelativeBaseUrlCallCount() int {
 	fake.getEngineProtocolRelativeBaseUrlMutex.RLock()
 	defer fake.getEngineProtocolRelativeBaseUrlMutex.RUnlock()
 	return len(fake.getEngineProtocolRelativeBaseUrlArgsForCall)
 }
 
-func (fake *FakeEngineProvider) GetEngineProtocolRelativeBaseUrlReturns(result1 string, result2 error) {
+func (fake *EngineProvider) GetEngineProtocolRelativeBaseUrlReturns(result1 string, result2 error) {
 	fake.GetEngineProtocolRelativeBaseUrlStub = nil
 	fake.getEngineProtocolRelativeBaseUrlReturns = struct {
 		result1 string
@@ -74,26 +72,4 @@ func (fake *FakeEngineProvider) GetEngineProtocolRelativeBaseUrlReturns(result1 
 	}{result1, result2}
 }
 
-func (fake *FakeEngineProvider) Invocations() map[string][][]interface{} {
-	fake.invocationsMutex.RLock()
-	defer fake.invocationsMutex.RUnlock()
-	fake.ensureEngineRunningMutex.RLock()
-	defer fake.ensureEngineRunningMutex.RUnlock()
-	fake.getEngineProtocolRelativeBaseUrlMutex.RLock()
-	defer fake.getEngineProtocolRelativeBaseUrlMutex.RUnlock()
-	return fake.invocations
-}
-
-func (fake *FakeEngineProvider) recordInvocation(key string, args []interface{}) {
-	fake.invocationsMutex.Lock()
-	defer fake.invocationsMutex.Unlock()
-	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
-	}
-	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
-	}
-	fake.invocations[key] = append(fake.invocations[key], args)
-}
-
-var _ = new(FakeEngineProvider)
+var _ engineprovider.EngineProvider = new(EngineProvider)

@@ -1,6 +1,6 @@
 package engineprovider
 
-//go:generate counterfeiter -o providers/fake/engineProvider.go --fake-name FakeEngineProvider ./ EngineProvider
+//go:generate counterfeiter -o providers/fake/engineProvider.go --fake-name EngineProvider ./ EngineProvider
 
 type EngineProvider interface {
   EnsureEngineRunning(
