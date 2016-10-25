@@ -333,16 +333,16 @@
 			"revisionTime": "2016-09-18T03:18:07Z"
 		},
 		{
-			"checksumSHA1": "Z+PHAIgTa9S/guebadJqTyzihAA=",
+			"checksumSHA1": "q9vTA2PPi+8KOBAreCsIsFQnZEc=",
 			"path": "github.com/opspec-io/sdk-golang",
-			"revision": "6e4ae691468d84fd724a820c39848b94004958ca",
-			"revisionTime": "2016-09-18T03:42:06Z"
+			"revision": "6714f507178bdfef84f80605847b008e5246b880",
+			"revisionTime": "2016-10-25T13:07:33Z"
 		},
 		{
-			"checksumSHA1": "QsjqURv49mp18041NZQJH+2STxU=",
+			"checksumSHA1": "wDTo//uhVg4fUKSrY5kHmqXY1/E=",
 			"path": "github.com/opspec-io/sdk-golang/models",
-			"revision": "6e4ae691468d84fd724a820c39848b94004958ca",
-			"revisionTime": "2016-09-18T03:42:06Z"
+			"revision": "6714f507178bdfef84f80605847b008e5246b880",
+			"revisionTime": "2016-10-25T13:07:33Z"
 		},
 		{
 			"checksumSHA1": "Hky3u+8Rqum+wB5BHMj0A8ZmT4g=",
