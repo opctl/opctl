@@ -55,6 +55,7 @@ func New() Bundle {
   return &_bundle{
     collectionViewFactory:newCollectionViewFactory(fileSystem,opViewFactory,yaml),
     fileSystem: fileSystem,
+    opViewFactory:opViewFactory,
     yaml: yaml,
   }
 }

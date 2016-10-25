@@ -7,6 +7,7 @@ import (
   "github.com/opspec-io/sdk-golang/pkg/engineprovider"
   "github.com/opspec-io/sdk-golang/util/format"
   "github.com/opspec-io/sdk-golang/util/http"
+  netHttp "net/http"
 )
 
 type EngineClient interface {
@@ -35,6 +36,7 @@ engineProvider engineprovider.EngineProvider,
 ) EngineClient {
   return &_engineClient{
     engineProvider:engineProvider,
+    httpClient:netHttp.DefaultClient,
     jsonFormat: format.NewJsonFormat(),
     yamlFormat:format.NewYamlFormat(),
   }
