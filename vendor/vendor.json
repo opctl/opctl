@@ -159,13 +159,6 @@
 			"revisionTime": "2016-03-13T18:57:37Z"
 		},
 		{
-			"checksumSHA1": "AXacfEchaUqT5RGmPmMXsOWRhv8=",
-			"origin": "github.com/opspec-io/sdk-golang/vendor/github.com/mitchellh/go-homedir",
-			"path": "github.com/mitchellh/go-homedir",
-			"revision": "bf6443bf43df0ed5c7e4246d8fd0396238c8bfed",
-			"revisionTime": "2016-10-03T18:33:13Z"
-		},
-		{
 			"checksumSHA1": "gcLub3oB+u4QrOJZcYmk/y2AP4k=",
 			"path": "github.com/nu7hatch/gouuid",
 			"revision": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3",
@@ -346,18 +339,6 @@
 			"revisionTime": "2016-10-03T18:33:13Z"
 		},
 		{
-			"checksumSHA1": "7VND6vAlYJVpmGJCxcGHEK51N5w=",
-			"path": "github.com/opspec-io/sdk-golang/adapters",
-			"revision": "31a23d0e4f84563eb18f0eed9cb58e45f26ecb68",
-			"revisionTime": "2016-10-23T08:55:14Z"
-		},
-		{
-			"checksumSHA1": "YSyxRh16c7Y9LMXObV8rEXbmOAc=",
-			"path": "github.com/opspec-io/sdk-golang/docker",
-			"revision": "bf6443bf43df0ed5c7e4246d8fd0396238c8bfed",
-			"revisionTime": "2016-10-03T18:33:13Z"
-		},
-		{
 			"checksumSHA1": "wDTo//uhVg4fUKSrY5kHmqXY1/E=",
 			"path": "github.com/opspec-io/sdk-golang/models",
 			"revision": "6714f507178bdfef84f80605847b008e5246b880",
@@ -376,12 +357,6 @@
 			"revisionTime": "2016-10-23T08:55:14Z"
 		},
 		{
-			"checksumSHA1": "LDdiG4jPvPA2UEZ71JaQSy6wmq0=",
-			"path": "github.com/opspec-io/sdk-golang/util/docker",
-			"revision": "31a23d0e4f84563eb18f0eed9cb58e45f26ecb68",
-			"revisionTime": "2016-10-23T08:55:14Z"
-		},
-		{
 			"checksumSHA1": "89jcSyniYjo4WRJXe1CmtmmanmI=",
 			"path": "github.com/opspec-io/sdk-golang/util/format",
 			"revision": "6714f507178bdfef84f80605847b008e5246b880",
@@ -392,12 +367,6 @@
 			"path": "github.com/opspec-io/sdk-golang/util/fs",
 			"revision": "6714f507178bdfef84f80605847b008e5246b880",
 			"revisionTime": "2016-10-25T13:07:33Z"
-		},
-		{
-			"checksumSHA1": "pyp/1UbWtJYScBYAKfTBXKZ68sg=",
-			"path": "github.com/opspec-io/sdk-golang/util/http",
-			"revision": "31a23d0e4f84563eb18f0eed9cb58e45f26ecb68",
-			"revisionTime": "2016-10-23T08:55:14Z"
 		},
 		{
 			"checksumSHA1": "ynJSWoF6v+3zMnh9R0QmmG6iGV8=",
