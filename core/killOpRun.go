@@ -1,7 +1,5 @@
 package core
 
-//go:generate counterfeiter -o ./fakeKillOpRunUseCase.go --fake-name fakeKillOpRunUseCase ./ killOpRunUseCase
-
 import (
   "github.com/opspec-io/sdk-golang/models"
   "time"
@@ -9,41 +7,7 @@ import (
   "sync"
 )
 
-type killOpRunUseCase interface {
-  Execute(
-  req models.KillOpRunReq,
-  ) (
-  err error,
-  )
-}
-
-func newKillOpRunUseCase(
-containerEngine ContainerEngine,
-eventStream eventStream,
-eventPublisher EventPublisher,
-storage storage,
-uniqueStringFactory uniqueStringFactory,
-) killOpRunUseCase {
-
-  return _killOpRunUseCase{
-    containerEngine:containerEngine,
-    eventStream:eventStream,
-    eventPublisher:eventPublisher,
-    storage:storage,
-    uniqueStringFactory:uniqueStringFactory,
-  }
-
-}
-
-type _killOpRunUseCase struct {
-  containerEngine     ContainerEngine
-  eventStream         eventStream
-  eventPublisher      EventPublisher
-  storage             storage
-  uniqueStringFactory uniqueStringFactory
-}
-
-func (this _killOpRunUseCase) Execute(
+func (this _api) KillOpRun(
 req models.KillOpRunReq,
 ) (
 err error,

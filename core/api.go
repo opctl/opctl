@@ -4,6 +4,7 @@ package core
 
 import (
   "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/bundle"
 )
 
 type Api interface {
@@ -29,48 +30,44 @@ func New(
 containerEngine ContainerEngine,
 ) (api Api) {
 
+  /* factories */
+  uniqueStringFactory := newUniqueStringFactory()
+
+  /* components */
+  eventStream := newEventStream()
+
+  opspecSdk :=  bundle.New()
+
+  storage := newStorage()
+
+  opRunner := newOpRunner(
+    containerEngine,
+    eventStream,
+    eventStream,
+    opspecSdk,
+    storage,
+    uniqueStringFactory,
+  )
+
   api = &_api{
-    compositionRoot:
-    newCompositionRoot(
-      containerEngine,
-    ),
+    bundle:bundle.New(),
+    containerEngine:containerEngine,
+    eventStream:eventStream,
+    opRunner:opRunner,
+    pathNormalizer:newPathNormalizer(),
+    storage:storage,
+    uniqueStringFactory:uniqueStringFactory,
   }
 
   return
 }
 
 type _api struct {
-  compositionRoot compositionRoot
-}
-
-func (this _api) GetEventStream(
-eventChannel chan models.Event,
-) (err error) {
-  return this.
-  compositionRoot.
-    GetEventStreamUseCase().
-    Execute(eventChannel)
-}
-
-func (this _api) KillOpRun(
-req models.KillOpRunReq,
-) (
-err error,
-) {
-  return this.
-  compositionRoot.
-    KillOpRunUseCase().
-    Execute(req)
-}
-
-func (this _api) StartOpRun(
-req models.StartOpRunReq,
-) (
-opRunId string,
-err error,
-) {
-  return this.
-  compositionRoot.
-    StartOpRunUseCase().
-    Execute(req)
+  bundle bundle.Bundle
+  containerEngine ContainerEngine
+  eventStream eventStream
+  opRunner opRunner
+  pathNormalizer pathNormalizer
+  storage storage
+  uniqueStringFactory uniqueStringFactory
 }
