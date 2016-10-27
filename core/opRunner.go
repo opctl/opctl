@@ -3,7 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
 
 import (
-  "github.com/opspec-io/sdk-golang"
+  "github.com/opspec-io/sdk-golang/pkg/bundle"
   "github.com/opspec-io/sdk-golang/models"
   "time"
   "sync"
@@ -27,7 +27,7 @@ func newOpRunner(
 containerEngine ContainerEngine,
 eventStream eventStream,
 eventPublisher EventPublisher,
-opspecSdk opspec.Sdk,
+bundle bundle.Bundle,
 storage storage,
 uniqueStringFactory uniqueStringFactory,
 ) opRunner {
@@ -36,7 +36,7 @@ uniqueStringFactory uniqueStringFactory,
     containerEngine: containerEngine,
     eventStream:eventStream,
     eventPublisher:eventPublisher,
-    opspecSdk:opspecSdk,
+    bundle:bundle,
     storage:storage,
     uniqueStringFactory:uniqueStringFactory,
   }
@@ -47,7 +47,7 @@ type _opRunner struct {
   containerEngine     ContainerEngine
   eventStream         eventStream
   eventPublisher      EventPublisher
-  opspecSdk           opspec.Sdk
+  bundle              bundle.Bundle
   storage             storage
   uniqueStringFactory uniqueStringFactory
 }
@@ -67,7 +67,7 @@ err error,
     return
   }
 
-  op, err := this.opspecSdk.GetOp(
+  op, err := this.bundle.GetOp(
     opBundleUrl,
   )
   if (nil != err) {
