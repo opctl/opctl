@@ -333,10 +333,8 @@
 			"revisionTime": "2016-10-03T16:42:46Z"
 		},
 		{
-			"checksumSHA1": "iolxAhRl73CH1TryP89RPA8l+vM=",
-			"path": "github.com/opspec-io/sdk-golang",
-			"revision": "bf6443bf43df0ed5c7e4246d8fd0396238c8bfed",
-			"revisionTime": "2016-10-03T18:33:13Z"
+			"path": "github.com/opspec-io/sdk-golang/adapters",
+			"revision": ""
 		},
 		{
 			"checksumSHA1": "wDTo//uhVg4fUKSrY5kHmqXY1/E=",
@@ -351,10 +349,16 @@
 			"revisionTime": "2016-10-25T13:07:33Z"
 		},
 		{
-			"checksumSHA1": "jlH/2XZhyyM6cDk0zXRJLcdiZ+E=",
+			"checksumSHA1": "qtdZNNsW7t9s979fcz0PvKHY/pY=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/engineclient",
-			"revision": "31a23d0e4f84563eb18f0eed9cb58e45f26ecb68",
-			"revisionTime": "2016-10-23T08:55:14Z"
+			"revision": "6714f507178bdfef84f80605847b008e5246b880",
+			"revisionTime": "2016-10-25T13:07:33Z"
+		},
+		{
+			"checksumSHA1": "CJ/uqR9yUlfEEgW5z+LniNKygQ4=",
+			"path": "github.com/opspec-io/sdk-golang/pkg/engineprovider",
+			"revision": "6714f507178bdfef84f80605847b008e5246b880",
+			"revisionTime": "2016-10-25T13:07:33Z"
 		},
 		{
 			"checksumSHA1": "89jcSyniYjo4WRJXe1CmtmmanmI=",
@@ -365,6 +369,12 @@
 		{
 			"checksumSHA1": "rkBK5caH9bPV6Oy73xB/4YyPOBk=",
 			"path": "github.com/opspec-io/sdk-golang/util/fs",
+			"revision": "6714f507178bdfef84f80605847b008e5246b880",
+			"revisionTime": "2016-10-25T13:07:33Z"
+		},
+		{
+			"checksumSHA1": "pyp/1UbWtJYScBYAKfTBXKZ68sg=",
+			"path": "github.com/opspec-io/sdk-golang/util/http",
 			"revision": "6714f507178bdfef84f80605847b008e5246b880",
 			"revisionTime": "2016-10-25T13:07:33Z"
 		},
@@ -405,11 +415,10 @@
 			"revisionTime": "2016-09-14T20:33:16Z"
 		},
 		{
-			"checksumSHA1": "SPMXWeoFQa5z0pLPmqpcFzyHqQQ=",
-			"origin": "github.com/opspec-io/sdk-golang/vendor/gopkg.in/yaml.v2",
+			"checksumSHA1": "12GqsW8PiRPnezDDy0v4brZrndM=",
 			"path": "gopkg.in/yaml.v2",
-			"revision": "bf6443bf43df0ed5c7e4246d8fd0396238c8bfed",
-			"revisionTime": "2016-10-03T18:33:13Z"
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"revisionTime": "2016-09-28T15:37:09Z"
 		}
 	],
 	"rootPath": "github.com/opspec-io/engine"
