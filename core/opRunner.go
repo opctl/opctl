@@ -7,7 +7,6 @@ import (
   "github.com/opspec-io/sdk-golang/models"
   "time"
   "sync"
-  "errors"
   "path"
   "path/filepath"
 )
@@ -26,7 +25,6 @@ type opRunner interface {
 func newOpRunner(
 containerEngine ContainerEngine,
 eventStream eventStream,
-eventPublisher EventPublisher,
 bundle bundle.Bundle,
 storage storage,
 uniqueStringFactory uniqueStringFactory,
@@ -35,7 +33,6 @@ uniqueStringFactory uniqueStringFactory,
   return &_opRunner{
     containerEngine: containerEngine,
     eventStream:eventStream,
-    eventPublisher:eventPublisher,
     bundle:bundle,
     storage:storage,
     uniqueStringFactory:uniqueStringFactory,
@@ -46,7 +43,6 @@ uniqueStringFactory uniqueStringFactory,
 type _opRunner struct {
   containerEngine     ContainerEngine
   eventStream         eventStream
-  eventPublisher      EventPublisher
   bundle              bundle.Bundle
   storage             storage
   uniqueStringFactory uniqueStringFactory
@@ -116,12 +112,12 @@ err error,
       opBundleUrl,
       op.Name,
       opRunId,
-      this.eventPublisher,
+      this.eventStream,
       rootOpRunId,
     )
   }
 
-  defer func() {
+  defer func(err error) {
 
     if (this.storage.isRootOpRunKilled(rootOpRunId)) {
       // ignore killed op runs; handled by killOpRunUseCase
@@ -131,6 +127,17 @@ err error,
     var opRunOutcome string
     if (nil != err) {
       opRunOutcome = models.OpRunOutcomeFailed
+      this.eventStream.Publish(
+        models.Event{
+          Timestamp:time.Now().UTC(),
+          OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
+            Msg:err.Error(),
+            OpRunId:opRunId,
+            OpRef:opBundleUrl,
+            RootOpRunId:rootOpRunId,
+          },
+        },
+      )
     } else {
       opRunOutcome = models.OpRunOutcomeSucceeded
     }
@@ -146,7 +153,7 @@ err error,
       },
     )
 
-  }()
+  }(err)
 
   return
 
@@ -190,16 +197,6 @@ err error,
     }
 
     if (nil != err) {
-      this.eventPublisher.Publish(
-        models.Event{
-          Timestamp:time.Now().UTC(),
-          OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
-            Msg:err.Error(),
-            OpRunId:opRunId,
-            RootOpRunId:rootOpRunId,
-          },
-        },
-      )
       // end run immediately on any error
       return
     }
@@ -257,16 +254,6 @@ err error,
 
       if (nil != childRunDeclarationError) {
         isSubOpRunErrors = true
-        this.eventPublisher.Publish(
-          models.Event{
-            Timestamp:time.Now().UTC(),
-            OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
-              Msg:childRunDeclarationError.Error(),
-              OpRunId:opRunId,
-              RootOpRunId:rootOpRunId,
-            },
-          },
-        )
       }
 
       defer wg.Done()
@@ -274,12 +261,6 @@ err error,
   }
 
   wg.Wait()
-
-  defer func() {
-    if (isSubOpRunErrors) {
-      err = errors.New("one or more sub op runs had errors")
-    }
-  }()
 
   return
 

@@ -4,5 +4,5 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: git clean -fXd
+    entrypoint: git clean -fXd -e !.idea/
     network_mode: none

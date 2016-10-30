@@ -43,7 +43,6 @@ containerEngine ContainerEngine,
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
-    eventStream,
     opspecSdk,
     storage,
     uniqueStringFactory,

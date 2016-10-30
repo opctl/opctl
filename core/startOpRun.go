@@ -2,7 +2,6 @@ package core
 
 import (
   "github.com/opspec-io/sdk-golang/models"
-  "time"
 )
 
 func (this _api) StartOpRun(
@@ -22,18 +21,6 @@ err error,
       this.pathNormalizer.Normalize(req.OpUrl),
       rootOpRunId,
     )
-    if (nil != err) {
-      this.eventStream.Publish(
-        models.Event{
-          Timestamp: time.Now().UTC(),
-          OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
-            Msg: err.Error(),
-            OpRunId:opRunId,
-            RootOpRunId:rootOpRunId,
-          },
-        },
-      )
-    }
   }()
 
   return
