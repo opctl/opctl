@@ -8,3 +8,6 @@ engine
 ### codecov.io
 coverage.txt
 *.coverprofile
+
+### vendor
+vendor/*/

@@ -8,7 +8,7 @@ before_script:
 services:
 - docker
 script:
-- opctl run -a GIT_BRANCH=$TRAVIS_BRANCH -a IMAGE_TAG=latest release
+- opctl run -a GIT_BRANCH=$TRAVIS_BRANCH -a IMAGE_TAG=latest build
 env:
   global:
   - secure: ppW5GYzuKvksOT0cwB37Xx4p3FSGS0b74KgKMG/SHx28rtFN5PjbrGsBo5x0v6026Nao1HvAquOnCYWQbg3dWkQEblus4Tg65NA6ktdhA5pPMeISzRpO8zFNNzHOo76VogxLZ2iOKk2dN4WW+JD5q/Cz3XCypz+NPaFGdcgtnz0FuFAI3XKrijxbYk4wFSz9A6F/sMeqQaCiHj5Bf5lLvB9ZY1mkuZw65q82EEIuJhbqRuVwtjSLDm/i5Vw0ztMLQsJJhkb/f9R0m3Dv0UnV2OcFz8qKQvV3RslHEfH1t6vSrAjHF44eFnzGoPeVOS7Np7mxHu89nRIdNrzit813nirKPpqetzhZUczXmoOmcNXiRwgKVXIgiOqacdIpyFN49ehPBesAVlBCApogT/2D55XQB5V+oBGJrR4ddLXWpjdfrCp6lYSps4hIDtxkDF5dD/0iO+/PUjWCam2MJvy3HeDwDd++wsYL7gaQy8f/mGNAU7YC5M3KxUb0aqKTeqPPexNggbmArfRzDJtQXA8Wzwya7uq3s9ydWLHSw7WrojYv/nlFTav8whYYYXxOPnIYQ++ZM/aMQGUxdZ9cDtMys840ueAwhFhGZpImYRk3Em8xdC6u4F67RTWq68/vghWwCIaVDKQAf2LGpyVVNI1guzzNCGhfpbYfzknf/Pn8LTI=

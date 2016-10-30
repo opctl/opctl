@@ -1,2 +1,0 @@
-name: build-bin
-description: runs `go build`

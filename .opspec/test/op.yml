@@ -1,2 +1,6 @@
 name: test
-description: performs a `go test`
+description: runs all tests
+run:
+  serial:
+  - op: init
+  - op: test-unit
