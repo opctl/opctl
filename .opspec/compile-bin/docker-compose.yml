@@ -1,0 +1,10 @@
+version: "2"
+services:
+  compile-bin:
+    extends:
+      service: go
+      file: ../.common/docker-compose.yml
+    entrypoint: govendor build
+    environment:
+      - CGO_ENABLED=0
+    network_mode: none
