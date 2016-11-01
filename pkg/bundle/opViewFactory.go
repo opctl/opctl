@@ -3,7 +3,7 @@ package bundle
 //go:generate counterfeiter -o ./fakeOpViewFactory.go --fake-name fakeOpViewFactory ./ opViewFactory
 
 import (
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "path"
   "github.com/opspec-io/sdk-golang/util/fs"
   "github.com/opspec-io/sdk-golang/util/format"

@@ -5,3 +5,6 @@
 ### codecov.io
 *.coverprofile
 coverage.txt
+
+### vendor
+vendor/*/

@@ -2,7 +2,7 @@ package engineclient
 
 import (
   "bytes"
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "net/http"
   "fmt"
   "io/ioutil"

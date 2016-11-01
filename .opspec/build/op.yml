@@ -1,5 +1,10 @@
-description: runs all build ops
+description: runs a build
 name: build
+inputs:
+- { name: CODECOV_TOKEN, description: 'A https://codecov.io/ auth token', isSecret: true }
+- { name: GIT_BRANCH, description: 'The git branch the coverage should be associated with' }
 run:
   serial:
+  - op: clean
   - op: test
+  - op: publish-coverage

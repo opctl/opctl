@@ -1,7 +1,7 @@
 package bundle
 
 import (
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "path"
 )
 

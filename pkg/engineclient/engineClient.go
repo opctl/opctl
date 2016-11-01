@@ -3,7 +3,7 @@ package engineclient
 //go:generate counterfeiter -o ./fakeEngineClient.go --fake-name FakeEngineClient ./ EngineClient
 
 import (
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "github.com/opspec-io/sdk-golang/pkg/engineprovider"
   "github.com/opspec-io/sdk-golang/util/format"
   "github.com/opspec-io/sdk-golang/util/http"

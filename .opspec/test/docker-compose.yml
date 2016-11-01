@@ -1,8 +1,0 @@
-version: "2"
-services:
-  test:
-    extends:
-      service: go
-      file: ../.common/docker-compose.yml
-    entrypoint: ginkgo --v -cover -race -r
-    network_mode: none
