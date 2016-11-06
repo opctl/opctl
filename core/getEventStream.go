@@ -1,8 +1,8 @@
 package core
 
-import "github.com/opspec-io/sdk-golang/models"
+import "github.com/opspec-io/sdk-golang/pkg/models"
 
-func (this _api) GetEventStream(
+func (this _core) GetEventStream(
 subscriberEventChannel chan models.Event,
 ) (err error) {
 

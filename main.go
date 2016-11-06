@@ -1,19 +1,22 @@
 package main
 
 import (
-  "os"
-  "fmt"
+  dockercontainerengine "github.com/opspec-io/engine/pkg/containerengine/engines/docker"
+  "github.com/opspec-io/engine/tcp"
+  "github.com/opspec-io/engine/core"
 )
 
 func main() {
 
-  compositionRoot, err := newCompositionRoot(
-  )
+  containerEngine, err := dockercontainerengine.New()
   if (nil != err) {
-    fmt.Fprint(os.Stderr, err)
-    os.Exit(1)
+    panic(err)
   }
 
-  compositionRoot.TcpApi().Start()
+  tcp.New(
+    core.New(
+      containerEngine,
+    ),
+  ).Start()
 
 }

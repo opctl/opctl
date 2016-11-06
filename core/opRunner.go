@@ -4,11 +4,14 @@ package core
 
 import (
   "github.com/opspec-io/sdk-golang/pkg/bundle"
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "time"
   "sync"
   "path"
   "path/filepath"
+  "github.com/opspec-io/engine/util/eventing"
+  "github.com/opspec-io/engine/pkg/containerengine"
+  "github.com/opspec-io/engine/util/uniquestring"
 )
 
 type opRunner interface {
@@ -23,11 +26,11 @@ type opRunner interface {
 }
 
 func newOpRunner(
-containerEngine ContainerEngine,
-eventStream eventStream,
+containerEngine containerengine.ContainerEngine,
+eventStream eventing.EventStream,
 bundle bundle.Bundle,
 storage storage,
-uniqueStringFactory uniqueStringFactory,
+uniqueStringFactory uniquestring.UniqueStringFactory,
 ) opRunner {
 
   return &_opRunner{
@@ -41,11 +44,11 @@ uniqueStringFactory uniqueStringFactory,
 }
 
 type _opRunner struct {
-  containerEngine     ContainerEngine
-  eventStream         eventStream
+  containerEngine     containerengine.ContainerEngine
+  eventStream         eventing.EventStream
   bundle              bundle.Bundle
   storage             storage
-  uniqueStringFactory uniqueStringFactory
+  uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 // Runs an op

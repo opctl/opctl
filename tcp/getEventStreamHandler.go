@@ -5,11 +5,11 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
 )
 
 func newGetEventStreamHandler(
-coreApi core.Api,
+coreApi core.Core,
 ) http.Handler {
 
   return &getEventStreamHandler{
@@ -26,7 +26,7 @@ coreApi core.Api,
 }
 
 type getEventStreamHandler struct {
-  coreApi  core.Api
+  coreApi  core.Core
   upgrader websocket.Upgrader
 }
 

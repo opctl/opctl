@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.1.9 - 2016-10-27
+## 0.1.9 - 2016-11-06
 ### Changed
 - refactored to use [opspec sdk](https://github.com/opspec-io/sdk-golang)
 
