@@ -1,13 +1,14 @@
 package core
 
 import (
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
   "time"
   "sort"
   "sync"
+  "github.com/opspec-io/engine/util/eventing"
 )
 
-func (this _api) KillOpRun(
+func (this _core) KillOpRun(
 req models.KillOpRunReq,
 ) (
 err error,
@@ -26,7 +27,7 @@ err error,
   go func() {
 
     // want to operate in reverse of order started
-    sort.Sort(EventDescSorter(events))
+    sort.Sort(eventing.EventDescSorter(events))
 
     var containerKillWaitGroup sync.WaitGroup
     for _, event := range events {

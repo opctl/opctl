@@ -1,10 +1,10 @@
 package core
 
 import (
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
 )
 
-func (this _api) StartOpRun(
+func (this _core) StartOpRun(
 req models.StartOpRunReq,
 ) (
 opRunId string,

@@ -4,11 +4,11 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/sdk-golang/models"
+  "github.com/opspec-io/sdk-golang/pkg/models"
 )
 
 func newStartOpRunHandler(
-coreApi core.Api,
+coreApi core.Core,
 ) http.Handler {
 
   return &startOpRunHandler{
@@ -18,7 +18,7 @@ coreApi core.Api,
 }
 
 type startOpRunHandler struct {
-  coreApi core.Api
+  coreApi core.Core
 }
 
 func (this startOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

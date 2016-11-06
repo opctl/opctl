@@ -13,7 +13,7 @@ type compositionRoot interface {
 }
 
 func newCompositionRoot(
-coreApi core.Api,
+coreApi core.Core,
 ) (compositionRoot compositionRoot) {
 
   compositionRoot = &_compositionRoot{

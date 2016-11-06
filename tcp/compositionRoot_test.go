@@ -13,7 +13,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(core.FakeApi),
+        new(core.FakeCore),
       )
 
       /* act */
@@ -30,7 +30,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(core.FakeApi),
+        new(core.FakeCore),
       )
 
       /* act */
@@ -47,7 +47,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(core.FakeApi),
+        new(core.FakeCore),
       )
 
       /* act */
@@ -64,7 +64,7 @@ var _ = Describe("compositionRoot", func() {
 
       /* arrange */
       objectUnderTest := newCompositionRoot(
-        new(core.FakeApi),
+        new(core.FakeCore),
       )
 
       /* act */
