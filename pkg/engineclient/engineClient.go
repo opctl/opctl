@@ -7,7 +7,7 @@ import (
   "github.com/opspec-io/sdk-golang/pkg/engineprovider"
   "github.com/opspec-io/sdk-golang/util/format"
   "github.com/opspec-io/sdk-golang/util/http"
-  netHttp "net/http"
+  "github.com/sethgrid/pester"
 )
 
 type EngineClient interface {
@@ -34,11 +34,14 @@ type EngineClient interface {
 func New(
 engineProvider engineprovider.EngineProvider,
 ) EngineClient {
+
+  httpClient := pester.New()
+  httpClient.Backoff = pester.ExponentialBackoff
+
   return &_engineClient{
     engineProvider:engineProvider,
-    httpClient:netHttp.DefaultClient,
+    httpClient:httpClient,
     jsonFormat: format.NewJsonFormat(),
-    yamlFormat:format.NewYamlFormat(),
   }
 }
 
@@ -46,5 +49,4 @@ type _engineClient struct {
   engineProvider engineprovider.EngineProvider
   httpClient http.Client
   jsonFormat format.Format
-  yamlFormat format.Format
 }

@@ -183,6 +183,12 @@
 			"revisionTime": "2016-09-11T05:10:23Z"
 		},
 		{
+			"checksumSHA1": "Qm7DuiE3Cn0+CelfV9tggSPNG0k=",
+			"path": "github.com/sethgrid/pester",
+			"revision": "2a102734c18c43c74fd0664e06cd414cf9602b93",
+			"revisionTime": "2016-09-16T18:34:45Z"
+		},
+		{
 			"checksumSHA1": "vu7njn8O4vhFtmgGWntwjA2NAbk=",
 			"path": "golang.org/x/sys/unix",
 			"revision": "8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9",

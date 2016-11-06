@@ -22,7 +22,7 @@ func (this _engineClient) GetEventStream(
     nil,
   )
   if (err != nil) {
-    fmt.Println(err)
+    return
   }
 
   go func() {
