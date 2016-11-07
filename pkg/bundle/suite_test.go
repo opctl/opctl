@@ -8,5 +8,5 @@ import (
 
 func TestSdk(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "/pkg/bundle")
+  RunSpecs(t, "sdk-golang/pkg/bundle")
 }

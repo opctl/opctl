@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
   RegisterFailHandler(Fail)
-  RunSpecs(t, "opspec/pkg/fs")
+  RunSpecs(t, "sdk-golang/util/fs")
 }
