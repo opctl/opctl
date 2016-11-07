@@ -3,7 +3,7 @@ package bundle
 import (
   . "github.com/onsi/ginkgo"
   . "github.com/onsi/gomega"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "errors"
   "reflect"
   "path"

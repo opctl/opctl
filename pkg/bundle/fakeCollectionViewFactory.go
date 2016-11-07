@@ -4,7 +4,7 @@ package bundle
 import (
 	"sync"
 
-	"github.com/opspec-io/sdk-golang/pkg/models"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type fakeCollectionViewFactory struct {

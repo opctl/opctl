@@ -4,7 +4,7 @@ import (
   "fmt"
   "log"
   "github.com/gorilla/websocket"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func (this _engineClient) GetEventStream(
