@@ -3,7 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeCore.go --fake-name FakeCore ./ Core
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "github.com/opspec-io/sdk-golang/pkg/bundle"
   "github.com/opspec-io/engine/pkg/containerengine"
   "github.com/opspec-io/engine/util/eventing"
@@ -13,17 +13,15 @@ import (
 
 type Core interface {
   GetEventStream(
-  eventChannel chan models.Event,
+  eventChannel chan model.Event,
   ) (err error)
 
   KillOpRun(
-  req models.KillOpRunReq,
-  ) (
-  err error,
+  req model.KillOpRunReq,
   )
 
   StartOpRun(
-  req models.StartOpRunReq,
+  req model.StartOpRunReq,
   ) (
   opRunId string,
   err error,
@@ -40,25 +38,25 @@ containerEngine containerengine.ContainerEngine,
   /* components */
   eventStream := eventing.NewEventStream()
 
-  opspecSdk := bundle.New()
+  _bundle := bundle.New()
 
-  storage := newStorage()
+  opRunRepo := newOpRunRepo()
 
   opRunner := newOpRunner(
     containerEngine,
     eventStream,
-    opspecSdk,
-    storage,
+    _bundle,
+    opRunRepo,
     uniqueStringFactory,
   )
 
   core = &_core{
-    bundle:bundle.New(),
+    bundle:_bundle,
     containerEngine:containerEngine,
     eventStream:eventStream,
     opRunner:opRunner,
     pathNormalizer:pathnormalizer.NewPathNormalizer(),
-    storage:storage,
+    opRunRepo:opRunRepo,
     uniqueStringFactory:uniqueStringFactory,
   }
 
@@ -71,6 +69,6 @@ type _core struct {
   eventStream         eventing.EventStream
   opRunner            opRunner
   pathNormalizer      pathnormalizer.PathNormalizer
-  storage             storage
+  opRunRepo           opRunRepo
   uniqueStringFactory uniquestring.UniqueStringFactory
 }

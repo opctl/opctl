@@ -1,68 +1,64 @@
 package core
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "time"
-  "sort"
   "sync"
-  "github.com/opspec-io/engine/util/eventing"
 )
 
 func (this _core) KillOpRun(
-req models.KillOpRunReq,
-) (
-err error,
+req model.KillOpRunReq,
 ) {
 
-  events := this.storage.listOpRunStartedEventsWithRootId(req.OpRunId)
-  if (len(events) == 0) {
-    // guard no runs with provided root
+  this.KillOpRunsRecursively(req.OpRunId)
+
+}
+
+func (this _core) KillOpRunsRecursively(sourceOpRunId string) {
+
+  var waitGroup sync.WaitGroup
+
+  opRun := this.opRunRepo.tryGet(sourceOpRunId)
+  // guard opRun found
+  if (nil == opRun) {
     return
   }
 
-  // delete here (right away) so other kills or end events don't preempt us
-  this.storage.deleteOpRunsWithRootId(req.OpRunId)
+  // order of the following matters (hence the numbering)
+  // 1) delete from storage (done first to ensure we're not preempted by another kill request or run completion)
+  this.opRunRepo.delete(sourceOpRunId)
 
-  // perform async
+  // 2) recover resources
   go func() {
-
-    // want to operate in reverse of order started
-    sort.Sort(eventing.EventDescSorter(events))
-
-    var containerKillWaitGroup sync.WaitGroup
-    for _, event := range events {
-
-      containerKillWaitGroup.Add(1)
-
-      go func(event models.Event) {
-
-        this.containerEngine.EnsureContainerRemoved(
-          event.OpRunStarted.OpRef,
-          event.OpRunStarted.OpRunId,
-        )
-
-        defer containerKillWaitGroup.Done()
-
-      }(event)
-
-    }
-    containerKillWaitGroup.Wait()
-
-    // @TODO: make kill events publish in realtime rather than waiting for all resources within the root op run to be reclaimed;
-    for _, event := range events {
-      this.eventStream.Publish(
-        models.Event{
-          Timestamp:time.Now().UTC(),
-          OpRunEnded:&models.OpRunEndedEvent{
-            OpRunId:event.OpRunStarted.OpRunId,
-            Outcome:models.OpRunOutcomeKilled,
-            RootOpRunId:event.OpRunStarted.RootOpRunId,
-          },
-        },
-      )
-    }
+    waitGroup.Add(1)
+    this.containerEngine.EnsureContainerRemoved(
+      opRun.OpRef,
+      opRun.Id,
+    )
+    defer waitGroup.Done()
   }()
 
-  return
+  // 3) kill children
+  for _, childOpRun := range this.opRunRepo.listWithParentId(sourceOpRunId) {
+    go func(childOpRunId string) {
+      waitGroup.Add(1)
+      this.KillOpRunsRecursively(childOpRunId)
+      defer waitGroup.Done()
+    }(childOpRun.Id)
+  }
+
+  // 4) wait for 2 & 3
+  waitGroup.Wait()
+
+  // 5) send OpRunEndedEvent last to ensure OpRunEndedEvent's send in reverse order of OpRunStartedEvent's
+  this.eventStream.Publish(
+    model.Event{
+      Timestamp:time.Now().UTC(),
+      OpRunEnded:&model.OpRunEndedEvent{
+        OpRunId:opRun.Id,
+        Outcome:model.OpRunOutcomeKilled,
+      },
+    },
+  )
 
 }

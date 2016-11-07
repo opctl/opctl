@@ -1,7 +1,7 @@
 package eventing
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "time"
 )
 
@@ -9,10 +9,10 @@ func NewEventStream(
 ) EventStream {
 
   objectUnderConstruction := &eventStream{
-    pendingPublishesChannel:make(chan models.Event),
-    pendingSubscribesChannel:make(chan chan models.Event),
-    pendingUnsubscribesChannel:make(chan chan models.Event),
-    subscribers:make(map[chan models.Event]bool),
+    pendingPublishesChannel:make(chan model.Event),
+    pendingSubscribesChannel:make(chan chan model.Event),
+    pendingUnsubscribesChannel:make(chan chan model.Event),
+    subscribers:make(map[chan model.Event]bool),
   }
 
   go objectUnderConstruction.init()
@@ -23,7 +23,7 @@ func NewEventStream(
 
 type EventPublisher interface {
   Publish(
-  event models.Event,
+  event model.Event,
   )
 }
 
@@ -31,22 +31,22 @@ type EventStream interface {
   EventPublisher
 
   RegisterSubscriber(
-  eventChannel chan models.Event,
+  eventChannel chan model.Event,
   )
 
   UnregisterSubscriber(
-  eventChannel chan models.Event,
+  eventChannel chan model.Event,
   )
 }
 
 type eventStream struct {
-  pendingPublishesChannel    chan models.Event
+  pendingPublishesChannel    chan model.Event
 
-  pendingSubscribesChannel   chan chan models.Event
+  pendingSubscribesChannel   chan chan model.Event
 
-  pendingUnsubscribesChannel chan chan models.Event
+  pendingUnsubscribesChannel chan chan model.Event
 
-  subscribers                map[chan models.Event]bool
+  subscribers                map[chan model.Event]bool
 }
 
 func (this *eventStream) init(
@@ -82,7 +82,7 @@ func (this *eventStream) init(
 }
 
 func (this *eventStream) RegisterSubscriber(
-eventChannel chan models.Event,
+eventChannel chan model.Event,
 ) {
 
   this.pendingSubscribesChannel <- eventChannel
@@ -90,7 +90,7 @@ eventChannel chan models.Event,
 }
 
 func (this *eventStream) Publish(
-event models.Event,
+event model.Event,
 ) {
 
   this.pendingPublishesChannel <- event
@@ -98,7 +98,7 @@ event models.Event,
 }
 
 func (this *eventStream)   UnregisterSubscriber(
-eventChannel chan models.Event,
+eventChannel chan model.Event,
 ) {
 
   this.pendingUnsubscribesChannel <- eventChannel

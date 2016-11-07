@@ -1,10 +1,8 @@
 package core
 
-//go:generate counterfeiter -o ./fakeOpRunner.go --fake-name fakeOpRunner ./ opRunner
-
 import (
   "github.com/opspec-io/sdk-golang/pkg/bundle"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "time"
   "sync"
   "path"
@@ -12,6 +10,7 @@ import (
   "github.com/opspec-io/engine/util/eventing"
   "github.com/opspec-io/engine/pkg/containerengine"
   "github.com/opspec-io/engine/util/uniquestring"
+  "github.com/pkg/errors"
 )
 
 type opRunner interface {
@@ -19,7 +18,7 @@ type opRunner interface {
   opRunId string,
   opRunArgs map[string]string,
   opRef string,
-  rootOpRunId string,
+  parentOpRunId string,
   ) (
   err error,
   )
@@ -29,7 +28,7 @@ func newOpRunner(
 containerEngine containerengine.ContainerEngine,
 eventStream eventing.EventStream,
 bundle bundle.Bundle,
-storage storage,
+opRunRepo opRunRepo,
 uniqueStringFactory uniquestring.UniqueStringFactory,
 ) opRunner {
 
@@ -37,7 +36,7 @@ uniqueStringFactory uniquestring.UniqueStringFactory,
     containerEngine: containerEngine,
     eventStream:eventStream,
     bundle:bundle,
-    storage:storage,
+    opRunRepo:opRunRepo,
     uniqueStringFactory:uniqueStringFactory,
   }
 
@@ -47,7 +46,7 @@ type _opRunner struct {
   containerEngine     containerengine.ContainerEngine
   eventStream         eventing.EventStream
   bundle              bundle.Bundle
-  storage             storage
+  opRunRepo           opRunRepo
   uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
@@ -55,64 +54,86 @@ type _opRunner struct {
 func (this _opRunner) Run(
 opRunId string,
 opRunArgs map[string]string,
-opBundleUrl string,
-rootOpRunId string,
+opRef string,
+parentOpRunId string,
 ) (
 err error,
 ) {
 
-  if (rootOpRunId != opRunId && this.storage.isRootOpRunKilled(rootOpRunId)) {
-    // guard: root op run not killed out of band
+  parentOpRun := this.opRunRepo.tryGet(parentOpRunId)
+  if ("" != parentOpRunId && nil == parentOpRun) {
+    // parent op killed (we got preempted)
     return
   }
 
+  // determine rootId
+  var rootOpRunId string
+  if ("" == parentOpRunId) {
+    // op is root
+    rootOpRunId = opRunId
+  } else{
+    rootOpRunId = parentOpRun.RootId
+  }
+
   op, err := this.bundle.GetOp(
-    opBundleUrl,
+    opRef,
   )
   if (nil != err) {
     return
   }
 
-  opRunStartedEvent := models.Event{
+  // apply input param defaults
+  for _, input := range op.Inputs {
+    if _, isArgForInput := opRunArgs[input.Name]; !isArgForInput {
+      opRunArgs[input.Name] = input.Default
+    }
+  }
+
+  opRunStartedEvent := model.Event{
     Timestamp:time.Now().UTC(),
-    OpRunStarted:&models.OpRunStartedEvent{
-      OpRef:opBundleUrl,
+    OpRunStarted:&model.OpRunStartedEvent{
+      OpRef:opRef,
       OpRunId:opRunId,
       RootOpRunId:rootOpRunId,
     },
   }
-
-  this.storage.addOpRunStartedEvent(opRunStartedEvent)
-
   this.eventStream.Publish(opRunStartedEvent)
+
+  opRun := &model.OpRun{
+    Id:opRunId,
+    OpRef:opRef,
+    ParentId:parentOpRunId,
+    RootId:rootOpRunId,
+  }
+  this.opRunRepo.add(opRun)
 
   if (nil != op.Run && nil != op.Run.Parallel) {
     err = this.runParallel(
       opRunId,
       opRunArgs,
-      opBundleUrl,
-      rootOpRunId,
+      opRef,
+      parentOpRunId,
       op.Run.Parallel,
     )
   } else if (nil != op.Run && nil != op.Run.Serial) {
     err = this.runSerial(
       opRunId,
       opRunArgs,
-      opBundleUrl,
-      rootOpRunId,
+      opRef,
+      parentOpRunId,
       op.Run.Serial,
     )
   } else if (nil != op.Run && "" != op.Run.Op) {
     err = this.Run(
       this.uniqueStringFactory.Construct(),
       opRunArgs,
-      path.Join(filepath.Dir(opBundleUrl), string(op.Run.Op)),
-      rootOpRunId,
+      path.Join(filepath.Dir(opRef), string(op.Run.Op)),
+      opRunId,
     )
   } else {
     err = this.containerEngine.StartContainer(
       opRunArgs,
-      opBundleUrl,
+      opRef,
       op.Name,
       opRunId,
       this.eventStream,
@@ -122,33 +143,33 @@ err error,
 
   defer func(err error) {
 
-    if (this.storage.isRootOpRunKilled(rootOpRunId)) {
-      // ignore killed op runs; handled by killOpRunUseCase
+    if ("" != parentOpRunId && nil == this.opRunRepo.tryGet(parentOpRunId)) {
+      // guard: parent op killed (we got preempted)
       return
     }
 
     var opRunOutcome string
     if (nil != err) {
-      opRunOutcome = models.OpRunOutcomeFailed
+      opRunOutcome = model.OpRunOutcomeFailed
       this.eventStream.Publish(
-        models.Event{
+        model.Event{
           Timestamp:time.Now().UTC(),
-          OpRunEncounteredError: &models.OpRunEncounteredErrorEvent{
+          OpRunEncounteredError: &model.OpRunEncounteredErrorEvent{
             Msg:err.Error(),
             OpRunId:opRunId,
-            OpRef:opBundleUrl,
+            OpRef:opRef,
             RootOpRunId:rootOpRunId,
           },
         },
       )
     } else {
-      opRunOutcome = models.OpRunOutcomeSucceeded
+      opRunOutcome = model.OpRunOutcomeSucceeded
     }
 
     this.eventStream.Publish(
-      models.Event{
+      model.Event{
         Timestamp:time.Now().UTC(),
-        OpRunEnded:&models.OpRunEndedEvent{
+        OpRunEnded:&model.OpRunEndedEvent{
           OpRunId:opRunId,
           Outcome:opRunOutcome,
           RootOpRunId:rootOpRunId,
@@ -166,8 +187,8 @@ func (this _opRunner) runSerial(
 opRunId string,
 opRunArgs map[string]string,
 opBundleUrl string,
-rootOpRunId string,
-serialRunDeclaration *models.SerialRunDeclaration,
+parentOpRunId string,
+serialRunDeclaration *model.SerialRunDeclaration,
 ) (
 err error,
 ) {
@@ -179,7 +200,7 @@ err error,
         opRunId,
         opRunArgs,
         opBundleUrl,
-        rootOpRunId,
+        parentOpRunId,
         childRunDeclaration.Parallel,
       )
     } else if (nil != childRunDeclaration.Serial) {
@@ -187,7 +208,7 @@ err error,
         opRunId,
         opRunArgs,
         opBundleUrl,
-        rootOpRunId,
+        parentOpRunId,
         childRunDeclaration.Serial,
       )
     } else {
@@ -195,7 +216,7 @@ err error,
         this.uniqueStringFactory.Construct(),
         opRunArgs,
         path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
-        rootOpRunId,
+        opRunId,
       )
     }
 
@@ -214,8 +235,8 @@ func (this _opRunner) runParallel(
 opRunId string,
 opRunArgs map[string]string,
 opBundleUrl string,
-rootOpRunId string,
-parallelRunDeclaration *models.ParallelRunDeclaration,
+parentOpRunId string,
+parallelRunDeclaration *model.ParallelRunDeclaration,
 ) (
 err error,
 ) {
@@ -229,13 +250,13 @@ err error,
 
     var childRunDeclarationError error
 
-    go func(childRunDeclaration models.RunDeclaration) {
+    go func(childRunDeclaration model.RunDeclaration) {
       if (nil != childRunDeclaration.Parallel) {
         childRunDeclarationError = this.runParallel(
           opRunId,
           opRunArgs,
           opBundleUrl,
-          rootOpRunId,
+          parentOpRunId,
           childRunDeclaration.Parallel,
         )
       } else if (nil != childRunDeclaration.Serial) {
@@ -243,7 +264,7 @@ err error,
           opRunId,
           opRunArgs,
           opBundleUrl,
-          rootOpRunId,
+          parentOpRunId,
           childRunDeclaration.Serial,
         )
       } else {
@@ -251,7 +272,7 @@ err error,
           this.uniqueStringFactory.Construct(),
           opRunArgs,
           path.Join(filepath.Dir(opBundleUrl), string(childRunDeclaration.Op)),
-          rootOpRunId,
+          opRunId,
         )
       }
 
@@ -262,8 +283,11 @@ err error,
       defer wg.Done()
     }(childRunDeclaration)
   }
-
   wg.Wait()
+
+  if (isSubOpRunErrors) {
+    err = errors.New("One or more errors encountered in parallel run block")
+  }
 
   return
 

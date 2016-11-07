@@ -5,15 +5,15 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func newGetEventStreamHandler(
-coreApi core.Core,
+core core.Core,
 ) http.Handler {
 
   return &getEventStreamHandler{
-    coreApi:coreApi,
+    core:core,
     upgrader:websocket.Upgrader{
       ReadBufferSize:4096,
       WriteBufferSize:4096,
@@ -26,7 +26,7 @@ coreApi core.Core,
 }
 
 type getEventStreamHandler struct {
-  coreApi  core.Core
+  core     core.Core
   upgrader websocket.Upgrader
 }
 
@@ -39,9 +39,9 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
   defer conn.Close()
 
-  eventChannel := make(chan models.Event)
+  eventChannel := make(chan model.Event)
 
-  err = this.coreApi.GetEventStream(
+  err = this.core.GetEventStream(
     eventChannel,
   )
   if (nil != err) {

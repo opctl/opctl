@@ -1,7 +1,5 @@
 package pathnormalizer
 
-//go:generate counterfeiter -o ./fakePathNormalizer.go --fake-name fakePathNormalizer ./ pathNormalizer
-
 import (
   "strings"
   "regexp"

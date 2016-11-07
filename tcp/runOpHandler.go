@@ -4,26 +4,26 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func newStartOpRunHandler(
-coreApi core.Core,
+core core.Core,
 ) http.Handler {
 
   return &startOpRunHandler{
-    coreApi:coreApi,
+    core:core,
   }
 
 }
 
 type startOpRunHandler struct {
-  coreApi core.Core
+  core core.Core
 }
 
 func (this startOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-  startOpRunReq := models.StartOpRunReq{}
+  startOpRunReq := model.StartOpRunReq{}
 
   err := json.NewDecoder(r.Body).Decode(&startOpRunReq)
   if (nil != err) {
@@ -31,7 +31,7 @@ func (this startOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
     return
   }
 
-  opRunId, err := this.coreApi.StartOpRun(startOpRunReq)
+  opRunId, err := this.core.StartOpRun(startOpRunReq)
   if (nil != err) {
     http.Error(w, err.Error(), http.StatusInternalServerError)
     return

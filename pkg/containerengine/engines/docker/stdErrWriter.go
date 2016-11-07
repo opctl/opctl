@@ -3,7 +3,7 @@ package docker
 import (
   "time"
   "io"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
   "bufio"
   "github.com/opspec-io/engine/util/eventing"
 )
@@ -20,9 +20,9 @@ rootOpRunId string,
   go func() {
     for scanner.Scan() {
       eventPublisher.Publish(
-        models.Event{
+        model.Event{
           Timestamp:time.Now().UTC(),
-          ContainerStdErrWrittenTo:&models.ContainerStdErrWrittenToEvent{
+          ContainerStdErrWrittenTo:&model.ContainerStdErrWrittenToEvent{
             Data:scanner.Bytes(),
             OpRunId:opRunId,
             RootOpRunId:rootOpRunId,
