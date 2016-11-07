@@ -36,10 +36,10 @@ var _ = Describe("_getCollection", func() {
     It("should return result of collectionViewFactory.Construct", func() {
 
       /* arrange */
-      expectedCollectionView := *models.NewCollectionView(
+      expectedCollectionView := *model.NewCollectionView(
         "dummy description",
         "dummy name",
-        []models.OpView{},
+        []model.OpView{},
       )
       expectedError := errors.New("ConstructError")
 

@@ -13,7 +13,7 @@ type opViewFactory interface {
   Construct(
   opBundlePath string,
   ) (
-  opView models.OpView,
+  opView model.OpView,
   err error,
   )
 }
@@ -38,7 +38,7 @@ type _opViewFactory struct {
 func (this _opViewFactory) Construct(
 opBundlePath string,
 ) (
-opView models.OpView,
+opView model.OpView,
 err error,
 ) {
 
@@ -51,7 +51,7 @@ err error,
     return
   }
 
-  opManifest := models.OpManifest{}
+  opManifest := model.OpManifest{}
   err = this.yaml.To(
     opManifestBytes,
     &opManifest,
@@ -60,7 +60,7 @@ err error,
     return
   }
 
-  opView = *models.NewOpView(
+  opView = *model.NewOpView(
     opManifest.Description,
     opManifest.Inputs,
     opManifest.Name,

@@ -1,4 +1,4 @@
-package models
+package model
 
 type OpRunStartedEvent struct {
   OpRunId       string `json:"opRunId"`

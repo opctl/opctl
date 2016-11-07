@@ -7,7 +7,7 @@ import (
 func (this _bundle) GetOp(
 opBundlePath string,
 ) (
-opView models.OpView,
+opView model.OpView,
 err error,
 ) {
 

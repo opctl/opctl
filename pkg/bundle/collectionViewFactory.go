@@ -13,7 +13,7 @@ type collectionViewFactory interface {
   Construct(
   collectionBundlePath string,
   ) (
-  collectionView models.CollectionView,
+  collectionView model.CollectionView,
   err error,
   )
 }
@@ -41,7 +41,7 @@ type _collectionViewFactory struct {
 func (this _collectionViewFactory) Construct(
 collectionBundlePath string,
 ) (
-collectionView models.CollectionView,
+collectionView model.CollectionView,
 err error,
 ) {
 
@@ -54,7 +54,7 @@ err error,
     return
   }
 
-  collectionManifest := models.CollectionManifest{}
+  collectionManifest := model.CollectionManifest{}
   err = this.yaml.To(
     collectionManifestBytes,
     &collectionManifest,
@@ -63,7 +63,7 @@ err error,
     return
   }
 
-  var opViews []models.OpView
+  var opViews []model.OpView
   childFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(collectionBundlePath)
   if (nil != err) {
     return
@@ -78,7 +78,7 @@ err error,
     }
   }
 
-  collectionView = *models.NewCollectionView(
+  collectionView = *model.NewCollectionView(
     collectionManifest.Description,
     collectionManifest.Name,
     opViews,

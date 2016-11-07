@@ -1,4 +1,4 @@
-package models
+package model
 
 func NewCreateCollectionReq(
 path string,

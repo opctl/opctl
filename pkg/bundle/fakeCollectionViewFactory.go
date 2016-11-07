@@ -8,20 +8,20 @@ import (
 )
 
 type fakeCollectionViewFactory struct {
-	ConstructStub        func(collectionBundlePath string) (collectionView models.CollectionView, err error)
+	ConstructStub        func(collectionBundlePath string) (collectionView model.CollectionView, err error)
 	constructMutex       sync.RWMutex
 	constructArgsForCall []struct {
 		collectionBundlePath string
 	}
 	constructReturns struct {
-		result1 models.CollectionView
+		result1 model.CollectionView
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCollectionViewFactory) Construct(collectionBundlePath string) (collectionView models.CollectionView, err error) {
+func (fake *fakeCollectionViewFactory) Construct(collectionBundlePath string) (collectionView model.CollectionView, err error) {
 	fake.constructMutex.Lock()
 	fake.constructArgsForCall = append(fake.constructArgsForCall, struct {
 		collectionBundlePath string
@@ -47,10 +47,10 @@ func (fake *fakeCollectionViewFactory) ConstructArgsForCall(i int) string {
 	return fake.constructArgsForCall[i].collectionBundlePath
 }
 
-func (fake *fakeCollectionViewFactory) ConstructReturns(result1 models.CollectionView, result2 error) {
+func (fake *fakeCollectionViewFactory) ConstructReturns(result1 model.CollectionView, result2 error) {
 	fake.ConstructStub = nil
 	fake.constructReturns = struct {
-		result1 models.CollectionView
+		result1 model.CollectionView
 		result2 error
 	}{result1, result2}
 }

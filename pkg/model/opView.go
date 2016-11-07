@@ -1,4 +1,4 @@
-package models
+package model
 
 func NewOpView(
 description string,

@@ -1,4 +1,4 @@
-package models
+package model
 
 type Param struct {
   Name        string `yaml:"name"`

@@ -89,20 +89,20 @@ var _ = Describe("_opViewFactory", func() {
     It("should return expected opView", func() {
 
       /* arrange */
-      expectedInputs := []models.Param{
+      expectedInputs := []model.Param{
         {
           Name:"dummyName",
           Description:"dummyDescription",
           IsSecret:false,
-          String: &models.StringParam{
+          String: &model.StringParam{
             Default:"dummyDefault",
           },
         },
       }
 
-      expectedRunDeclaration := &models.RunDeclaration{Op:"dummyOpRef"}
+      expectedRunDeclaration := &model.RunDeclaration{Op:"dummyOpRef"}
 
-      expectedOpView := *models.NewOpView(
+      expectedOpView := *model.NewOpView(
         "dummyDescription",
         expectedInputs,
         "dummyName",
@@ -115,8 +115,8 @@ var _ = Describe("_opViewFactory", func() {
       fakeYamlFormat := new(format.FakeFormat)
       fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-        stubbedOpManifest := models.OpManifest{
-          Manifest:models.Manifest{
+        stubbedOpManifest := model.OpManifest{
+          Manifest:model.Manifest{
             Name:expectedOpView.Name,
             Description:expectedOpView.Description,
             Version:expectedOpView.Version,
@@ -147,8 +147,8 @@ var _ = Describe("_opViewFactory", func() {
 
         /* arrange */
 
-        expectedRunDeclaration := &models.RunDeclaration{
-          Parallel: &models.ParallelRunDeclaration{},
+        expectedRunDeclaration := &model.RunDeclaration{
+          Parallel: &model.ParallelRunDeclaration{},
         }
 
         fakeFileSystem := new(fs.FakeFileSystem)
@@ -156,7 +156,7 @@ var _ = Describe("_opViewFactory", func() {
         fakeYamlFormat := new(format.FakeFormat)
         fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpManifest := models.OpManifest{
+          stubbedOpManifest := model.OpManifest{
             Run:expectedRunDeclaration,
           }
 
@@ -181,14 +181,14 @@ var _ = Describe("_opViewFactory", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
-        expectedRunDeclaration := &models.RunDeclaration{Op:"dummyOpRef"}
+        expectedRunDeclaration := &model.RunDeclaration{Op:"dummyOpRef"}
 
         fakeFileSystem := new(fs.FakeFileSystem)
 
         fakeYamlFormat := new(format.FakeFormat)
         fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-          stubbedOpManifest := models.OpManifest{
+          stubbedOpManifest := model.OpManifest{
             Run:expectedRunDeclaration,
           }
 

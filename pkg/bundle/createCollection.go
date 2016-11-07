@@ -6,7 +6,7 @@ import (
 )
 
 func (this _bundle) CreateCollection(
-req models.CreateCollectionReq,
+req model.CreateCollectionReq,
 ) (err error) {
 
   err = this.fileSystem.AddDir(
@@ -16,8 +16,8 @@ req models.CreateCollectionReq,
     return
   }
 
-  var opCollection = models.CollectionManifest{
-    Manifest:models.Manifest{
+  var opCollection = model.CollectionManifest{
+    Manifest:model.Manifest{
       Description:req.Description,
       Name:req.Name,
     },

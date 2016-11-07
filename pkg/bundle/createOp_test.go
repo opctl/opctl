@@ -19,7 +19,7 @@ var _ = Describe("_createOp", func() {
 
       /* arrange */
 
-      providedCreateOpReq := models.CreateOpReq{Path:"/dummy/path"}
+      providedCreateOpReq := model.CreateOpReq{Path:"/dummy/path"}
 
       fakeFileSystem := new(fs.FakeFileSystem)
 
@@ -54,7 +54,7 @@ var _ = Describe("_createOp", func() {
 
         /* act */
         actualError := objectUnderTest.CreateOp(
-          models.CreateOpReq{},
+          model.CreateOpReq{},
         )
 
         /* assert */
@@ -79,7 +79,7 @@ var _ = Describe("_createOp", func() {
 
         /* act */
         actualError := objectUnderTest.CreateOp(
-          models.CreateOpReq{},
+          model.CreateOpReq{},
         )
 
         /* assert */
@@ -91,8 +91,8 @@ var _ = Describe("_createOp", func() {
     It("should call YamlFormat.From with expected opManifest", func() {
 
       /* arrange */
-      expectedOpManifest := models.OpManifest{
-        Manifest:models.Manifest{
+      expectedOpManifest := model.OpManifest{
+        Manifest:model.Manifest{
           Description:"DummyDescription",
           Name:"DummyName",
         },
@@ -111,7 +111,7 @@ var _ = Describe("_createOp", func() {
 
       /* act */
       objectUnderTest.CreateOp(
-        models.CreateOpReq{
+        model.CreateOpReq{
           Description:expectedOpManifest.Description,
           Name:expectedOpManifest.Name,
         },
@@ -142,7 +142,7 @@ var _ = Describe("_createOp", func() {
 
       /* act */
       objectUnderTest.CreateOp(
-        models.CreateOpReq{Path:providedPath},
+        model.CreateOpReq{Path:providedPath},
       )
 
       /* assert */

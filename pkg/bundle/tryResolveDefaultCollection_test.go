@@ -61,7 +61,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
         /* act */
         _, actualError := objectUnderTest.TryResolveDefaultCollection(
-          models.TryResolveDefaultCollectionReq{},
+          model.TryResolveDefaultCollectionReq{},
         )
 
         /* assert */
@@ -85,7 +85,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
         /* act */
         pathToDefaultCollection, _ := objectUnderTest.TryResolveDefaultCollection(
-          models.TryResolveDefaultCollectionReq{},
+          model.TryResolveDefaultCollectionReq{},
         )
 
         /* assert */
@@ -105,7 +105,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
         /* act */
         _, err := objectUnderTest.TryResolveDefaultCollection(
-          models.TryResolveDefaultCollectionReq{},
+          model.TryResolveDefaultCollectionReq{},
         )
 
         /* assert */
@@ -140,7 +140,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
         /* act */
         actualPathToDefaultCollection, _ := objectUnderTest.TryResolveDefaultCollection(
-          models.TryResolveDefaultCollectionReq{
+          model.TryResolveDefaultCollectionReq{
             PathToDir:providedPathToDir,
           },
         )
@@ -170,7 +170,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
         /* act */
         _, err := objectUnderTest.TryResolveDefaultCollection(
-          models.TryResolveDefaultCollectionReq{},
+          model.TryResolveDefaultCollectionReq{},
         )
 
         /* assert */
@@ -194,7 +194,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 
       /* act */
       objectUnderTest.TryResolveDefaultCollection(
-        models.TryResolveDefaultCollectionReq{
+        model.TryResolveDefaultCollectionReq{
           PathToDir:expectedListChildFileInfosOfDirArg,
         },
       )

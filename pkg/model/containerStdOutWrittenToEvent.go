@@ -1,4 +1,4 @@
-package models
+package model
 
 type ContainerStdOutWrittenToEvent struct {
   RootOpRunId string `json:"rootOpRunId"`

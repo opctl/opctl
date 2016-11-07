@@ -8,7 +8,7 @@ import (
 )
 
 func (this _engineClient) KillOpRun(
-req models.KillOpRunReq,
+req model.KillOpRunReq,
 ) (
 err error,
 ) {

@@ -1,4 +1,4 @@
-package models
+package model
 
 type ContainerStdErrWrittenToEvent struct {
   RootOpRunId string `json:"rootOpRunId"`

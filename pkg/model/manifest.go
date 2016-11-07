@@ -1,4 +1,4 @@
-package models
+package model
 
 type Manifest struct {
   Name        string `yaml:"name"`

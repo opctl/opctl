@@ -1,4 +1,4 @@
-package models
+package model
 
 type RunDeclaration struct {
   Op OpRunDeclaration `yaml:"op,omitempty"`

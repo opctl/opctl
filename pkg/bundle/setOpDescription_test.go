@@ -32,7 +32,7 @@ var _ = Describe("_setOpDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetOpDescription(
-          models.SetOpDescriptionReq{},
+          model.SetOpDescriptionReq{},
         )
 
         /* assert */
@@ -58,7 +58,7 @@ var _ = Describe("_setOpDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetOpDescription(
-          models.SetOpDescriptionReq{},
+          model.SetOpDescriptionReq{},
         )
 
         /* assert */
@@ -83,7 +83,7 @@ var _ = Describe("_setOpDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetOpDescription(
-          models.SetOpDescriptionReq{},
+          model.SetOpDescriptionReq{},
         )
 
         /* assert */
@@ -95,8 +95,8 @@ var _ = Describe("_setOpDescription", func() {
     It("should call YamlFormat.From with expected opManifest", func() {
 
       /* arrange */
-      expectedOpManifest := models.OpManifest{
-        Manifest: models.Manifest{
+      expectedOpManifest := model.OpManifest{
+        Manifest: model.Manifest{
           Name:"dummyName",
           Description:"dummyDescription",
           Version:"dummyVersion",
@@ -116,7 +116,7 @@ var _ = Describe("_setOpDescription", func() {
 
       /* act */
       objectUnderTest.SetOpDescription(
-        models.SetOpDescriptionReq{Description:expectedOpManifest.Description},
+        model.SetOpDescriptionReq{Description:expectedOpManifest.Description},
       )
 
       /* assert */
@@ -144,7 +144,7 @@ var _ = Describe("_setOpDescription", func() {
 
       /* act */
       objectUnderTest.SetOpDescription(
-        models.SetOpDescriptionReq{PathToOp:providedPathToOp},
+        model.SetOpDescriptionReq{PathToOp:providedPathToOp},
       )
 
       /* assert */

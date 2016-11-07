@@ -8,9 +8,9 @@ import (
 )
 
 func (this _engineClient) GetEventStream(
-) (eventStream chan models.Event, err error) {
+) (eventStream chan model.Event, err error) {
 
-  eventStream = make(chan models.Event, 1000)
+  eventStream = make(chan model.Event, 1000)
 
   protocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
   if (nil != err) {
@@ -35,7 +35,7 @@ func (this _engineClient) GetEventStream(
         return
       }
 
-      var event models.Event
+      var event model.Event
       err = this.jsonFormat.To(bytes, &event)
       if (nil != err) {
         fmt.Printf("json.Unmarshal err: %v \n", err)

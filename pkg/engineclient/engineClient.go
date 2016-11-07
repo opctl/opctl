@@ -13,18 +13,18 @@ import (
 type EngineClient interface {
   GetEventStream(
   ) (
-  stream chan models.Event,
+  stream chan model.Event,
   err error,
   )
 
   KillOpRun(
-  req models.KillOpRunReq,
+  req model.KillOpRunReq,
   ) (
   err error,
   )
 
   StartOpRun(
-  req models.StartOpRunReq,
+  req model.StartOpRunReq,
   ) (
   opRunId string,
   err error,

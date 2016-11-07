@@ -10,37 +10,37 @@ import (
 
 type Bundle interface {
   CreateCollection(
-  req models.CreateCollectionReq,
+  req model.CreateCollectionReq,
   ) (err error)
 
   CreateOp(
-  req models.CreateOpReq,
+  req model.CreateOpReq,
   ) (err error)
 
   GetCollection(
   collectionBundlePath string,
   ) (
-  collectionView models.CollectionView,
+  collectionView model.CollectionView,
   err error,
   )
 
   GetOp(
   opBundlePath string,
   ) (
-  opView models.OpView,
+  opView model.OpView,
   err error,
   )
 
   SetCollectionDescription(
-  req models.SetCollectionDescriptionReq,
+  req model.SetCollectionDescriptionReq,
   ) (err error)
 
   SetOpDescription(
-  req models.SetOpDescriptionReq,
+  req model.SetOpDescriptionReq,
   ) (err error)
 
   TryResolveDefaultCollection(
-  req models.TryResolveDefaultCollectionReq,
+  req model.TryResolveDefaultCollectionReq,
   ) (
   pathToDefaultCollection string,
   err error,

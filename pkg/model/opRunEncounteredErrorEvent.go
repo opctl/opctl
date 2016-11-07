@@ -1,4 +1,4 @@
-package models
+package model
 
 type OpRunEncounteredErrorEvent struct {
   OpRunId       string `json:"opRunId"`

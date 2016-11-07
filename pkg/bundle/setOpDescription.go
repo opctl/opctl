@@ -6,7 +6,7 @@ import (
 )
 
 func (this _bundle) SetOpDescription(
-req models.SetOpDescriptionReq,
+req model.SetOpDescriptionReq,
 ) (err error) {
 
   pathToOpManifest := path.Join(req.PathToOp, NameOfOpManifestFile)
@@ -18,7 +18,7 @@ req models.SetOpDescriptionReq,
     return
   }
 
-  opManifest := models.OpManifest{}
+  opManifest := model.OpManifest{}
   err = this.yaml.To(
     opBytes,
     &opManifest,

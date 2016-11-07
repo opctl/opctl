@@ -1,3 +1,3 @@
-package models
+package model
 
 type SerialRunDeclaration []RunDeclaration

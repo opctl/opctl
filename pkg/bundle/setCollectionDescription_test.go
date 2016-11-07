@@ -32,7 +32,7 @@ var _ = Describe("_setCollectionDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetCollectionDescription(
-          models.SetCollectionDescriptionReq{},
+          model.SetCollectionDescriptionReq{},
         )
 
         /* assert */
@@ -58,7 +58,7 @@ var _ = Describe("_setCollectionDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetCollectionDescription(
-          models.SetCollectionDescriptionReq{},
+          model.SetCollectionDescriptionReq{},
         )
 
         /* assert */
@@ -83,7 +83,7 @@ var _ = Describe("_setCollectionDescription", func() {
 
         /* act */
         actualError := objectUnderTest.SetCollectionDescription(
-          models.SetCollectionDescriptionReq{},
+          model.SetCollectionDescriptionReq{},
         )
 
         /* assert */
@@ -95,8 +95,8 @@ var _ = Describe("_setCollectionDescription", func() {
     It("should call YamlFormat.From with expected collectionManifest", func() {
 
       /* arrange */
-      expectedCollectionManifest := models.CollectionManifest{
-        Manifest: models.Manifest{
+      expectedCollectionManifest := model.CollectionManifest{
+        Manifest: model.Manifest{
           Name:"dummyName",
           Description:"dummyDescription",
           Version:"dummyVersion",
@@ -116,7 +116,7 @@ var _ = Describe("_setCollectionDescription", func() {
 
       /* act */
       objectUnderTest.SetCollectionDescription(
-        models.SetCollectionDescriptionReq{Description:expectedCollectionManifest.Description},
+        model.SetCollectionDescriptionReq{Description:expectedCollectionManifest.Description},
       )
 
       /* assert */
@@ -144,7 +144,7 @@ var _ = Describe("_setCollectionDescription", func() {
 
       /* act */
       objectUnderTest.SetCollectionDescription(
-        models.SetCollectionDescriptionReq{PathToCollection:providedPathToCollection},
+        model.SetCollectionDescriptionReq{PathToCollection:providedPathToCollection},
       )
 
       /* assert */

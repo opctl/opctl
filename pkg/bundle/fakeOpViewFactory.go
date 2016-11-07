@@ -8,20 +8,20 @@ import (
 )
 
 type fakeOpViewFactory struct {
-	ConstructStub        func(opBundlePath string) (opView models.OpView, err error)
+	ConstructStub        func(opBundlePath string) (opView model.OpView, err error)
 	constructMutex       sync.RWMutex
 	constructArgsForCall []struct {
 		opBundlePath string
 	}
 	constructReturns struct {
-		result1 models.OpView
+		result1 model.OpView
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpViewFactory) Construct(opBundlePath string) (opView models.OpView, err error) {
+func (fake *fakeOpViewFactory) Construct(opBundlePath string) (opView model.OpView, err error) {
 	fake.constructMutex.Lock()
 	fake.constructArgsForCall = append(fake.constructArgsForCall, struct {
 		opBundlePath string
@@ -47,10 +47,10 @@ func (fake *fakeOpViewFactory) ConstructArgsForCall(i int) string {
 	return fake.constructArgsForCall[i].opBundlePath
 }
 
-func (fake *fakeOpViewFactory) ConstructReturns(result1 models.OpView, result2 error) {
+func (fake *fakeOpViewFactory) ConstructReturns(result1 model.OpView, result2 error) {
 	fake.ConstructStub = nil
 	fake.constructReturns = struct {
-		result1 models.OpView
+		result1 model.OpView
 		result2 error
 	}{result1, result2}
 }

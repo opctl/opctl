@@ -7,7 +7,7 @@ import (
 func (this _bundle) GetCollection(
 collectionBundlePath string,
 ) (
-collectionView models.CollectionView,
+collectionView model.CollectionView,
 err error,
 ) {
 

@@ -6,7 +6,7 @@ import (
 )
 
 func (this _bundle) SetCollectionDescription(
-req models.SetCollectionDescriptionReq,
+req model.SetCollectionDescriptionReq,
 ) (err error) {
 
   pathToCollectionManifest := path.Join(req.PathToCollection, NameOfCollectionManifestFile)
@@ -18,7 +18,7 @@ req models.SetCollectionDescriptionReq,
     return
   }
 
-  collectionManifest := models.CollectionManifest{}
+  collectionManifest := model.CollectionManifest{}
   err = this.yaml.To(
     collectionManifestBytes,
     &collectionManifest,

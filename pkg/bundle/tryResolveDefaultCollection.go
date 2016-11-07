@@ -8,7 +8,7 @@ import (
 )
 
 func (this _bundle) TryResolveDefaultCollection(
-req models.TryResolveDefaultCollectionReq,
+req model.TryResolveDefaultCollectionReq,
 ) (
 pathToDefaultCollection string,
 err error,
@@ -38,7 +38,7 @@ err error,
     // handle non root path
     pathToParentDir := filepath.Dir(pathToCurrentDir)
     return this.TryResolveDefaultCollection(
-      *models.NewTryResolveDefaultCollectionReq(pathToParentDir),
+      *model.NewTryResolveDefaultCollectionReq(pathToParentDir),
     )
   }
 

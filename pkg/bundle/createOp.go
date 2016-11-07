@@ -6,7 +6,7 @@ import (
 )
 
 func (this _bundle) CreateOp(
-req models.CreateOpReq,
+req model.CreateOpReq,
 ) (err error) {
 
   err = this.fileSystem.AddDir(
@@ -16,8 +16,8 @@ req models.CreateOpReq,
     return
   }
 
-  var opManifest = models.OpManifest{
-    Manifest:models.Manifest{
+  var opManifest = model.OpManifest{
+    Manifest:model.Manifest{
       Description:req.Description,
       Name:req.Name,
     },

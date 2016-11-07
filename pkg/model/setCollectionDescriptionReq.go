@@ -1,4 +1,4 @@
-package models
+package model
 
 func NewSetCollectionDescriptionReq(
 pathToCollection string,

@@ -1,4 +1,4 @@
-package models
+package model
 
 func NewSetOpDescriptionReq(
 pathToOp string,

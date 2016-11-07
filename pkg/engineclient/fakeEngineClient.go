@@ -8,25 +8,25 @@ import (
 )
 
 type FakeEngineClient struct {
-	GetEventStreamStub        func() (stream chan models.Event, err error)
+	GetEventStreamStub        func() (stream chan model.Event, err error)
 	getEventStreamMutex       sync.RWMutex
 	getEventStreamArgsForCall []struct{}
 	getEventStreamReturns     struct {
-		result1 chan models.Event
+		result1 chan model.Event
 		result2 error
 	}
-	KillOpRunStub        func(req models.KillOpRunReq) (err error)
+	KillOpRunStub        func(req model.KillOpRunReq) (err error)
 	killOpRunMutex       sync.RWMutex
 	killOpRunArgsForCall []struct {
-		req models.KillOpRunReq
+		req model.KillOpRunReq
 	}
 	killOpRunReturns struct {
 		result1 error
 	}
-	StartOpRunStub        func(req models.StartOpRunReq) (opRunId string, err error)
+	StartOpRunStub        func(req model.StartOpRunReq) (opRunId string, err error)
 	startOpRunMutex       sync.RWMutex
 	startOpRunArgsForCall []struct {
-		req models.StartOpRunReq
+		req model.StartOpRunReq
 	}
 	startOpRunReturns struct {
 		result1 string
@@ -36,7 +36,7 @@ type FakeEngineClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEngineClient) GetEventStream() (stream chan models.Event, err error) {
+func (fake *FakeEngineClient) GetEventStream() (stream chan model.Event, err error) {
 	fake.getEventStreamMutex.Lock()
 	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct{}{})
 	fake.recordInvocation("GetEventStream", []interface{}{})
@@ -54,18 +54,18 @@ func (fake *FakeEngineClient) GetEventStreamCallCount() int {
 	return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *FakeEngineClient) GetEventStreamReturns(result1 chan models.Event, result2 error) {
+func (fake *FakeEngineClient) GetEventStreamReturns(result1 chan model.Event, result2 error) {
 	fake.GetEventStreamStub = nil
 	fake.getEventStreamReturns = struct {
-		result1 chan models.Event
+		result1 chan model.Event
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeEngineClient) KillOpRun(req models.KillOpRunReq) (err error) {
+func (fake *FakeEngineClient) KillOpRun(req model.KillOpRunReq) (err error) {
 	fake.killOpRunMutex.Lock()
 	fake.killOpRunArgsForCall = append(fake.killOpRunArgsForCall, struct {
-		req models.KillOpRunReq
+		req model.KillOpRunReq
 	}{req})
 	fake.recordInvocation("KillOpRun", []interface{}{req})
 	fake.killOpRunMutex.Unlock()
@@ -82,7 +82,7 @@ func (fake *FakeEngineClient) KillOpRunCallCount() int {
 	return len(fake.killOpRunArgsForCall)
 }
 
-func (fake *FakeEngineClient) KillOpRunArgsForCall(i int) models.KillOpRunReq {
+func (fake *FakeEngineClient) KillOpRunArgsForCall(i int) model.KillOpRunReq {
 	fake.killOpRunMutex.RLock()
 	defer fake.killOpRunMutex.RUnlock()
 	return fake.killOpRunArgsForCall[i].req
@@ -95,10 +95,10 @@ func (fake *FakeEngineClient) KillOpRunReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeEngineClient) StartOpRun(req models.StartOpRunReq) (opRunId string, err error) {
+func (fake *FakeEngineClient) StartOpRun(req model.StartOpRunReq) (opRunId string, err error) {
 	fake.startOpRunMutex.Lock()
 	fake.startOpRunArgsForCall = append(fake.startOpRunArgsForCall, struct {
-		req models.StartOpRunReq
+		req model.StartOpRunReq
 	}{req})
 	fake.recordInvocation("StartOpRun", []interface{}{req})
 	fake.startOpRunMutex.Unlock()
@@ -115,7 +115,7 @@ func (fake *FakeEngineClient) StartOpRunCallCount() int {
 	return len(fake.startOpRunArgsForCall)
 }
 
-func (fake *FakeEngineClient) StartOpRunArgsForCall(i int) models.StartOpRunReq {
+func (fake *FakeEngineClient) StartOpRunArgsForCall(i int) model.StartOpRunReq {
 	fake.startOpRunMutex.RLock()
 	defer fake.startOpRunMutex.RUnlock()
 	return fake.startOpRunArgsForCall[i].req

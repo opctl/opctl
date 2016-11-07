@@ -1,4 +1,4 @@
-package models
+package model
 
 type OpManifest struct {
   Manifest `yaml:",inline"`

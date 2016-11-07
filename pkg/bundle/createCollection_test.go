@@ -19,7 +19,7 @@ var _ = Describe("_createCollection", func() {
 
       /* arrange */
 
-      providedCreateCollectionReq := models.CreateCollectionReq{Path:"/dummy/path"}
+      providedCreateCollectionReq := model.CreateCollectionReq{Path:"/dummy/path"}
 
       fakeFileSystem := new(fs.FakeFileSystem)
 
@@ -54,7 +54,7 @@ var _ = Describe("_createCollection", func() {
 
         /* act */
         actualError := objectUnderTest.CreateCollection(
-          models.CreateCollectionReq{},
+          model.CreateCollectionReq{},
         )
 
         /* assert */
@@ -79,7 +79,7 @@ var _ = Describe("_createCollection", func() {
 
         /* act */
         actualError := objectUnderTest.CreateCollection(
-          models.CreateCollectionReq{},
+          model.CreateCollectionReq{},
         )
 
         /* assert */
@@ -91,8 +91,8 @@ var _ = Describe("_createCollection", func() {
     It("should call YamlFormat.From with expected collectionManifest", func() {
 
       /* arrange */
-      expectedCollectionManifest := models.CollectionManifest{
-        Manifest:models.Manifest{
+      expectedCollectionManifest := model.CollectionManifest{
+        Manifest:model.Manifest{
           Description:"DummyDescription",
           Name:"DummyName",
         },
@@ -111,7 +111,7 @@ var _ = Describe("_createCollection", func() {
 
       /* act */
       objectUnderTest.CreateCollection(
-        models.CreateCollectionReq{
+        model.CreateCollectionReq{
           Description:expectedCollectionManifest.Description,
           Name:expectedCollectionManifest.Name,
         },
@@ -142,7 +142,7 @@ var _ = Describe("_createCollection", func() {
 
       /* act */
       objectUnderTest.CreateCollection(
-        models.CreateCollectionReq{Path:providedPath},
+        model.CreateCollectionReq{Path:providedPath},
       )
 
       /* assert */

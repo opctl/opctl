@@ -1,4 +1,4 @@
-package models
+package model
 
 func NewCollectionView(
 description string,
