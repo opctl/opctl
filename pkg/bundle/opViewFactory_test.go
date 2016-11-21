@@ -94,9 +94,7 @@ var _ = Describe("_opViewFactory", func() {
           Name:"dummyName",
           Description:"dummyDescription",
           IsSecret:false,
-          String: &model.StringParam{
-            Default:"dummyDefault",
-          },
+          Default:"dummyDefault",
         },
       }
 
