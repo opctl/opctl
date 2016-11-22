@@ -11,6 +11,7 @@ inputs:
   description: Username for docker registry
   isSecret: true
 - name: GIT_BRANCH
+  default: master
   description: The git branch the coverage should be associated with
 - name: IMAGE_TAG
   description: The tag of the image to use
