@@ -1,7 +1,5 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeContainerRemover.go --fake-name fakeContainerRemover ./ containerRemover
-
 import (
   "os/exec"
 )

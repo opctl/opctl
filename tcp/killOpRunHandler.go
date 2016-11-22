@@ -4,26 +4,26 @@ import (
   "net/http"
   "github.com/opspec-io/engine/core"
   "encoding/json"
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func newKillOpRunHandler(
-coreApi core.Core,
+core core.Core,
 ) http.Handler {
 
   return &killOpRunHandler{
-    coreApi:coreApi,
+    core:core,
   }
 
 }
 
 type killOpRunHandler struct {
-  coreApi core.Core
+  core core.Core
 }
 
 func (this killOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-  killOpRunReq := models.KillOpRunReq{}
+  killOpRunReq := model.KillOpRunReq{}
 
   err := json.NewDecoder(r.Body).Decode(&killOpRunReq)
   if (nil != err) {
@@ -31,7 +31,7 @@ func (this killOpRunHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  this.coreApi.KillOpRun(killOpRunReq)
+  this.core.KillOpRun(killOpRunReq)
 
   w.WriteHeader(http.StatusCreated)
   w.Header().Set("Content-Type", "text/plain; charset=UTF-8")

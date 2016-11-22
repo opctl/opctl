@@ -1,7 +1,5 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeStartContainerUseCase.go --fake-name fakeStartContainerUseCase ./ startContainerUseCase
-
 import (
   "os/exec"
   "fmt"

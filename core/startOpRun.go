@@ -1,25 +1,24 @@
 package core
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/models"
+  "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func (this _core) StartOpRun(
-req models.StartOpRunReq,
+req model.StartOpRunReq,
 ) (
 opRunId string,
 err error,
 ) {
 
   opRunId = this.uniqueStringFactory.Construct()
-  rootOpRunId := opRunId // this is root
 
   go func() {
     err = this.opRunner.Run(
       opRunId,
       req.Args,
       this.pathNormalizer.Normalize(req.OpUrl),
-      rootOpRunId,
+      "",
     )
   }()
 
