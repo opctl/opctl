@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.10 - 2016-11-21
+### Added
+- [Add support for "default" input values](https://github.com/opspec-io/opctl/issues/41)
+
 ## 0.1.9 - 2016-11-06
 ### Changed
 - refactored to use [opspec sdk](https://github.com/opspec-io/sdk-golang)
