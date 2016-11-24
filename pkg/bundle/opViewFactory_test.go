@@ -91,10 +91,12 @@ var _ = Describe("_opViewFactory", func() {
       /* arrange */
       expectedInputs := []model.Param{
         {
-          Name:"dummyName",
-          Description:"dummyDescription",
-          IsSecret:false,
-          Default:"dummyDefault",
+          V0_1_2Param: model.V0_1_2Param{
+            Name:"dummyName",
+            Description:"dummyDescription",
+            IsSecret:false,
+            Default:"dummyDefault",
+          },
         },
       }
 
