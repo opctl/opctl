@@ -1,5 +1,4 @@
 name: compile-docker-image
 description: compiles the engine docker image and stores it in the local registry
 inputs:
-- name: IMAGE_TAG
-  description: The tag of the image to use
+- { name: IMAGE_TAG, description: 'The tag of the image to use' }
