@@ -1,20 +1,11 @@
 name: build
 description: runs a complete build
 inputs:
-- name: CODECOV_TOKEN
-  description: A https://codecov.io/ auth token
-  isSecret: true
-- name: DOCKER_PASSWORD
-  description: Password for docker registry
-  isSecret: true
-- name: DOCKER_USERNAME
-  description: Username for docker registry
-  isSecret: true
-- name: GIT_BRANCH
-  default: master
-  description: The git branch the coverage should be associated with
-- name: IMAGE_TAG
-  description: The tag of the image to use
+- { name: CODECOV_TOKEN, description: 'A https://codecov.io/ auth token', isSecret: true }
+- { name: DOCKER_PASSWORD, description: 'Password for docker registry', isSecret: true }
+- { name: DOCKER_USERNAME, description: 'Username for docker registry', isSecret: true }
+- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
+- { name: IMAGE_TAG, description: 'The tag of the image to use' }
 run:
   serial:
   - op: clean

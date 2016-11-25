@@ -1,8 +1,7 @@
 name: compile
 description: compiles all artifacts
 inputs:
-- name: IMAGE_TAG
-  description: The tag of the image to use
+- { name: IMAGE_TAG, description: 'The tag of the image to use' }
 run:
   serial:
   - op: init
