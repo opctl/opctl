@@ -36,13 +36,13 @@ var _ = Describe("_getOp", func() {
     It("should return result of opViewFactory.Construct", func() {
 
       /* arrange */
-      expectedOpView := *model.NewOpView(
-        "dummy description",
-        []model.Param{},
-        "dummy name",
-        &model.RunDeclaration{Op:"dummyOpRef"},
-        "",
-      )
+      expectedOpView := model.OpView{
+        Description: "dummyDescription",
+        Inputs:[]model.Param{},
+        Name: "dummyName",
+        Run: &model.RunDeclaration{Op:"dummyOpRef"},
+        Version: "",
+      }
       expectedError := errors.New("ConstructError")
 
       fakeOpViewFactory := new(fakeOpViewFactory)

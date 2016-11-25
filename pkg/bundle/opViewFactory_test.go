@@ -102,13 +102,13 @@ var _ = Describe("_opViewFactory", func() {
 
       expectedRunDeclaration := &model.RunDeclaration{Op:"dummyOpRef"}
 
-      expectedOpView := *model.NewOpView(
-        "dummyDescription",
-        expectedInputs,
-        "dummyName",
-        expectedRunDeclaration,
-        "dummyVersion",
-      )
+      expectedOpView := model.OpView{
+        Description: "dummyDescription",
+        Inputs: expectedInputs,
+        Name: "dummyName",
+        Run: expectedRunDeclaration,
+        Version: "dummyVersion",
+      }
 
       fakeFileSystem := new(fs.FakeFileSystem)
 

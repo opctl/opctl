@@ -38,7 +38,9 @@ err error,
     // handle non root path
     pathToParentDir := filepath.Dir(pathToCurrentDir)
     return this.TryResolveDefaultCollection(
-      *model.NewTryResolveDefaultCollectionReq(pathToParentDir),
+      model.TryResolveDefaultCollectionReq{
+        PathToDir: pathToParentDir,
+      },
     )
   }
 

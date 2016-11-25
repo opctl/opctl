@@ -78,11 +78,11 @@ err error,
     }
   }
 
-  collectionView = *model.NewCollectionView(
-    collectionManifest.Description,
-    collectionManifest.Name,
-    opViews,
-  )
+  collectionView = model.CollectionView{
+    Description: collectionManifest.Description,
+    Name: collectionManifest.Name,
+    Ops: opViews,
+  }
 
   return
 

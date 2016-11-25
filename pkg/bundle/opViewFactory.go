@@ -60,13 +60,13 @@ err error,
     return
   }
 
-  opView = *model.NewOpView(
-    opManifest.Description,
-    opManifest.Inputs,
-    opManifest.Name,
-    opManifest.Run,
-    opManifest.Version,
-  )
+  opView = model.OpView{
+    Description: opManifest.Description,
+    Inputs: opManifest.Inputs,
+    Name: opManifest.Name,
+    Run: opManifest.Run,
+    Version: opManifest.Version,
+  }
 
   return
 

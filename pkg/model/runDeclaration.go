@@ -5,3 +5,9 @@ type RunDeclaration struct {
   Parallel *ParallelRunDeclaration `yaml:"parallel,omitempty"`
   Serial   *SerialRunDeclaration `yaml:"serial,omitempty"`
 }
+
+type OpRunDeclaration string
+
+type ParallelRunDeclaration []RunDeclaration
+
+type SerialRunDeclaration []RunDeclaration

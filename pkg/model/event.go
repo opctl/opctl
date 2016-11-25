@@ -10,3 +10,40 @@ type Event struct {
   ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
   ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitEmpty"`
 }
+
+const (
+  OpRunOutcomeSucceeded = "SUCCEEDED"
+  OpRunOutcomeFailed = "FAILED"
+  OpRunOutcomeKilled = "KILLED"
+)
+
+type OpRunEndedEvent struct {
+  OpRunId       string `json:"opRunId"`
+  Outcome       string `json:"outcome"`
+  RootOpRunId   string `json:"rootOpRunId"`
+}
+
+type OpRunStartedEvent struct {
+  OpRef         string `json:"opRef"`
+  OpRunId       string `json:"opRunId"`
+  RootOpRunId   string `json:"rootOpRunId"`
+}
+
+type OpRunEncounteredErrorEvent struct {
+  Msg           string `json:"msg"`
+  OpRef         string `json:"opRef"`
+  OpRunId       string `json:"opRunId"`
+  RootOpRunId   string `json:"rootOpRunId"`
+}
+
+type ContainerStdErrWrittenToEvent struct {
+  Data        []byte `json:"data"`
+  OpRunId     string `json:"opRunId"`
+  RootOpRunId string `json:"rootOpRunId"`
+}
+
+type ContainerStdOutWrittenToEvent struct {
+  Data        []byte `json:"data"`
+  OpRunId     string `json:"opRunId"`
+  RootOpRunId string `json:"rootOpRunId"`
+}
