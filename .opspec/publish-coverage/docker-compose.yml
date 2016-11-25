@@ -5,16 +5,17 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     environment:
-      - CODECOV_TOKEN
+      - CODECOV_TOKEN="b432a3b8-8220-4c1d-bcee-db76e68d0128"
       - GIT_BRANCH
     entrypoint: |
       sh -ce "
-        # generate aggregate coverage profile
+        ### GENERATE AGGREGATE COVERAGE PROFILE
         find . -name '*.coverprofile' | xargs cat > coverage.txt
 
-        # strip fakes from coverage profile
+        ### STRIP FAKES
         sed -i '/fake/d' coverage.txt
 
-        # upload
+        ### UPLOAD
         curl -s https://codecov.io/bash | bash -s
       "
+    network_mode: host
