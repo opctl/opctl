@@ -11,36 +11,6 @@ var _ = Describe("Param", func() {
 
   Context("when formatting to/from yaml", func() {
 
-    Context("with nil $.dir, $.file, $.netSocket, and $.string", func() {
-
-      It("should have expected attributes", func() {
-
-        /* arrange */
-        expectedParam := Param{
-          V0_1_2Param: V0_1_2Param{
-            Name:"dummyName",
-            Description:"dummyDescription",
-            IsSecret:true,
-            Default:"dummyDefault",
-          },
-        }
-
-        /* act */
-        providedYaml, err := yaml.From(expectedParam)
-        if (nil != err) {
-          panic(err)
-        }
-
-        actualParam := Param{}
-        yaml.To(providedYaml, &actualParam)
-
-        /* assert */
-        Expect(actualParam).To(Equal(expectedParam))
-
-      })
-
-    })
-
     Context("with non-nil $.dir", func() {
 
       It("should have expected attributes", func() {
@@ -134,11 +104,14 @@ var _ = Describe("Param", func() {
 
         /* arrange */
         expectedParam := Param{
-          String:&StringParam{
-            Name:"dummyName",
-            Description:"dummyDescription",
-            IsSecret:true,
+          String: &StringParam{
             Default:"dummyDefault",
+            Description:"dummyDescription",
+            MinLength:0,
+            MaxLength:1000,
+            Name:"dummyName",
+            Pattern:".*",
+            IsSecret:true,
           },
         }
 

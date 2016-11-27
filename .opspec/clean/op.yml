@@ -1,2 +1,2 @@
-name: clean
 description: removes files & dirs ignored by git
+name: clean

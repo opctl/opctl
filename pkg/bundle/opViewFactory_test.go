@@ -91,16 +91,23 @@ var _ = Describe("_opViewFactory", func() {
       /* arrange */
       expectedInputs := []model.Param{
         {
-          V0_1_2Param: model.V0_1_2Param{
-            Name:"dummyName",
-            Description:"dummyDescription",
-            IsSecret:false,
+          String: &model.StringParam{
             Default:"dummyDefault",
+            Description:"dummyDescription",
+            MinLength:0,
+            MaxLength:1000,
+            Name:"dummyName",
+            Pattern:".*",
+            IsSecret:true,
           },
         },
       }
 
-      expectedRunDeclaration := &model.RunDeclaration{Op:"dummyOpRef"}
+      expectedRunDeclaration := &model.RunDeclaration{
+        Op:&model.OpRunDeclaration{
+          Ref:"dummyOpRef",
+        },
+      }
 
       expectedOpView := model.OpView{
         Description: "dummyDescription",
@@ -181,7 +188,11 @@ var _ = Describe("_opViewFactory", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
-        expectedRunDeclaration := &model.RunDeclaration{Op:"dummyOpRef"}
+        expectedRunDeclaration := &model.RunDeclaration{
+          Op:&model.OpRunDeclaration{
+            Ref:"dummyOpRef",
+          },
+        }
 
         fakeFileSystem := new(fs.FakeFileSystem)
 

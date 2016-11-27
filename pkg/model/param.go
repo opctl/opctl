@@ -1,20 +1,10 @@
 package model
 
 type Param struct {
-  // backwards compatibility w/ opspec v 0.1.2
-  V0_1_2Param `yaml:",inline,omitempty"`
-
   Dir       *DirParam `yaml:",omitempty"`
   File      *FileParam `yaml:",omitempty"`
   NetSocket *NetSocketParam `yaml:",omitempty"`
   String    *StringParam `yaml:",omitempty"`
-}
-
-type V0_1_2Param struct {
-  Name        string `yaml:"name,omitempty"`
-  Description string `yaml:"description,omitempty"`
-  IsSecret    bool `yaml:"isSecret,omitempty"`
-  Default     string `yaml:"default,omitempty"`
 }
 
 type DirParam struct {
@@ -36,8 +26,11 @@ type NetSocketParam struct {
 }
 
 type StringParam struct {
-  Name        string `yaml:"name"`
+  Default     string `yaml:"default,omitempty"`
   Description string `yaml:"description"`
   IsSecret    bool `yaml:"isSecret"`
-  Default     string `yaml:"default,omitempty"`
+  MaxLength   int `yaml:"maxLength,omitempty"`
+  MinLength   int `yaml:"minLength,omitempty"`
+  Name        string `yaml:"name"`
+  Pattern     string `yaml:"pattern,omitempty"`
 }

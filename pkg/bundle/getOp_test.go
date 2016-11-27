@@ -40,7 +40,11 @@ var _ = Describe("_getOp", func() {
         Description: "dummyDescription",
         Inputs:[]model.Param{},
         Name: "dummyName",
-        Run: &model.RunDeclaration{Op:"dummyOpRef"},
+        Run: &model.RunDeclaration{
+          Op:&model.OpRunDeclaration{
+            Ref:"dummyOpRef",
+          },
+        },
         Version: "",
       }
       expectedError := errors.New("ConstructError")

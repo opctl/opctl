@@ -18,6 +18,7 @@ const (
 )
 
 type OpRunEndedEvent struct {
+  OpRef         string `json:"opRef"`
   OpRunId       string `json:"opRunId"`
   Outcome       string `json:"outcome"`
   RootOpRunId   string `json:"rootOpRunId"`
@@ -38,12 +39,14 @@ type OpRunEncounteredErrorEvent struct {
 
 type ContainerStdErrWrittenToEvent struct {
   Data        []byte `json:"data"`
+  OpRef         string `json:"opRef"`
   OpRunId     string `json:"opRunId"`
   RootOpRunId string `json:"rootOpRunId"`
 }
 
 type ContainerStdOutWrittenToEvent struct {
   Data        []byte `json:"data"`
+  OpRef         string `json:"opRef"`
   OpRunId     string `json:"opRunId"`
   RootOpRunId string `json:"rootOpRunId"`
 }

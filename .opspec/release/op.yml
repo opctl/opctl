@@ -1,11 +1,7 @@
 description: runs all ops necessary to perform a release
 name: release
 inputs:
-- name: CODECOV_TOKEN
-  description: A https://codecov.io/ auth token
-  isSecret: true
-- name: GIT_BRANCH
-  description: The git branch the coverage should be associated with
+- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
 run:
   serial:
   - op: build

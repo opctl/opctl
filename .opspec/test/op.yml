@@ -1,5 +1,5 @@
-name: test
 description: runs all tests
+name: test
 run:
   serial:
   - op: init

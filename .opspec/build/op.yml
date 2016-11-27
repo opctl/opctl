@@ -1,8 +1,7 @@
 description: runs a build
 name: build
 inputs:
-- { name: CODECOV_TOKEN, description: 'A https://codecov.io/ auth token', isSecret: true }
-- { name: GIT_BRANCH, default: master, git description: 'The git branch the coverage should be associated with' }
+- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
 run:
   serial:
   - op: clean

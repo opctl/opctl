@@ -17,7 +17,9 @@ var _ = Describe("RunDeclaration", func() {
 
         /* arrange */
         expectedRunDeclaration := RunDeclaration{
-          Op:"dummyOpRunDeclaration",
+          Op:&OpRunDeclaration{
+            Ref:"dummyOpRef",
+          },
         }
 
         /* act */
@@ -44,7 +46,9 @@ var _ = Describe("RunDeclaration", func() {
         expectedRunDeclaration := RunDeclaration{
           Parallel:&ParallelRunDeclaration{
             {
-              Op:"dummyOpRunDeclaration",
+              Op:&OpRunDeclaration{
+                Ref:"dummyOpRef",
+              },
             },
           },
         }
@@ -74,7 +78,9 @@ var _ = Describe("RunDeclaration", func() {
       expectedRunDeclaration := RunDeclaration{
         Serial:&SerialRunDeclaration{
           {
-            Op:"dummyOpRunDeclaration",
+            Op:&OpRunDeclaration{
+              Ref:"dummyOpRef",
+            },
           },
         },
       }

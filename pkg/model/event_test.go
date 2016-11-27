@@ -19,8 +19,9 @@ var _ = Describe("Event", func() {
         /* arrange */
         expectedEvent := Event{
           OpRunEnded:&OpRunEndedEvent{
-            Outcome:"dummyOutcome",
+            OpRef:"dummyOpRef",
             OpRunId:"dummyOpRunId",
+            Outcome:"dummyOutcome",
             RootOpRunId:"dummyRootOpRunId",
           },
           Timestamp:time.Now().UTC(),
@@ -111,6 +112,7 @@ var _ = Describe("Event", func() {
         expectedEvent := Event{
           ContainerStdErrWrittenTo:&ContainerStdErrWrittenToEvent{
             Data:[]byte("dummyData"),
+            OpRef:"dummyOpRef",
             OpRunId:"dummyOpRunId",
             RootOpRunId:"dummyRootOpRunId",
           },
@@ -141,6 +143,7 @@ var _ = Describe("Event", func() {
         expectedEvent := Event{
           ContainerStdOutWrittenTo:&ContainerStdOutWrittenToEvent{
             Data: []byte("dummyData"),
+            OpRef:"dummyOpRef",
             OpRunId:"dummyOpRunId",
             RootOpRunId:"dummyRootOpRunId",
           },
