@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - `pattern`, `minLength`, and `maxLength` validation attributes for
   `string` parameters
 - `container` run declarations
+- `designated collections`
 
 ### Changed
 
@@ -20,6 +21,9 @@ All notable changes to this project will be documented in this file.
   is `string` and the value is its attributes. To migrate, just turn
   existing inputs into a key value pair where the key is `string` and
   existing attributes are the value.
+
+### Removed
+- `default collections`. Replaced with `designated collections`
 
 ## [0.1.2] - 2016-09-10
 
