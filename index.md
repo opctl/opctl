@@ -66,7 +66,7 @@ Collections are defined via a [Bundle](#bundles). Collection bundles
 at their root.
 
 
-# Designated Collections
+## Designated Collections
 
 Directories within hierarchical filesystems, [MAY](#mustmay) contain a
 collection bundle named `.opspec` which if present, [MUST](#mustmay) be
