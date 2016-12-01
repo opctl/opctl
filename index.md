@@ -8,7 +8,7 @@
     - [Op Definitions](#op-definitions)
 - [Collections](#collections)
     - [Collection Definitions](#collection-definitions)
-    - [Default Collection](#default-collection)
+    - [Designated Collections](#designated-collections)
 - [Registry](#registry)
     - [Registry API](#registry-api)
 - [Engine](#engine)
@@ -50,9 +50,8 @@ An op is a runnable task.
 
 ## Op Definitions
 
-Ops are defined via a [Bundle](#bundles). Op bundles
-[MUST](#mustmay) contain an [op.yml file](op.yml-file.md) and
-optionally a [docker-compose.yml file](docker-compose.yml.md).
+Ops are defined via a [Bundle](#bundles). Op bundles [MUST](#mustmay)
+contain an [op.yml file](op.yml-file.md) at their root.
 
 
 # Collections
@@ -63,19 +62,15 @@ and/or logically (via reference).
 ## Collection Definitions
 
 Collections are defined via a [Bundle](#bundles). Collection bundles
-[MUST](#mustmay) contain a
-[collection.yml file](collection.yml-file.md).
+[MUST](#mustmay) contain a [collection.yml file](collection.yml-file.md)
+at their root.
 
 
-## Default Collection
+# Designated Collections
 
-A default collection may be designated for a directory according to the
-following criteria:
-
-- [MUST](#mustmay) be contained by an `.opspec` directory
-
-In the event a default collection is not present in a directory, its
-nearest ancestor [MUST](#mustmay) be used as the effective default
+Directories within hierarchical filesystems, [MAY](#mustmay) contain a
+collection bundle named `.opspec` which if present, [MUST](#mustmay) be
+treated as their designated collection.
 
 
 # Registry
