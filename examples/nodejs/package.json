@@ -1,14 +1,13 @@
 {
   "name": "@opspec/nodejs-example",
   "version": "0.1.0",
-  "main": "./lib/index.js",
+  "main": "./app/index.js",
   "private": true,
   "files": [
-    "lib"
+    "app"
   ],
   "dependencies": {
-    "koa": "^2.0.0",
-    "nodent": "^2.6.3"
+    "koa": "^2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^6.1.2",

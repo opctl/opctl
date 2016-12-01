@@ -1,4 +1,16 @@
 name: install-deps
-description: Performs an `npm install`
+description: installs npm packages
 inputs:
-  - { name: NPM_CONFIG_REGISTRY, description: 'Registry npm will be configured to install from', isSecure: true }
+  - string: { name: NPM_CONFIG_REGISTRY, isSecret: true }
+  - dir: { name: APP_DIR, description: Directory containing the app }
+outputs:
+  - dir: { name: APP_DIR, description: Directory containing the app }
+run:
+  container:
+    cmd: npm install
+    env:
+      - { bind: NPM_CONFIG_REGISTRY }
+    fs:
+      - { bind: APP_DIR, path: /opt/app }
+    image: node:7.1.0
+    workDir: /opt/app

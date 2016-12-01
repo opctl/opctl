@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://opspec.io/spec/0.1.2/schema/manifest.json",
+  "id": "http://opspec.io/spec/0.1.3/schema/manifest.json",
   "title": "manifest",
   "description": "Manifest",
   "oneOf": [
@@ -55,12 +55,19 @@
           "description": "Inputs to the op",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/param"
+            "$ref": "param.json"
+          }
+        },
+        "outputs": {
+          "description": "Outputs from the op",
+          "type": "array",
+          "items": {
+            "$ref": "param.json"
           }
         },
         "run": {
           "description": "What the op runs",
-          "$ref": "#/definitions/runDeclaration"
+          "$ref": "run-declaration.json"
         },
         "version": {
           "description": "Version of the op",
@@ -71,101 +78,6 @@
         "name"
       ],
       "additionalProperties": false
-    },
-    "param": {
-      "title": "param",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Description of the parameter",
-          "type": "string"
-        },
-        "isSecret": {
-          "description": "If the parameter is secret",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
-        },
-        "default": {
-          "description": "Default value of the parameter",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
-      "additionalProperties": false
-    },
-    "runDeclaration": {
-      "title": "runDeclaration",
-      "description": "What will be run",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/opRunDeclaration"
-        },
-        {
-          "$ref": "#/definitions/parallelRunDeclaration"
-        },
-        {
-          "$ref": "#/definitions/serialRunDeclaration"
-        }
-      ],
-      "additionalProperties": false
-    },
-    "opRunDeclaration": {
-      "title": "opRunDeclaration",
-      "description": "Op to be run",
-      "type": "object",
-      "properties": {
-        "op": {
-          "$ref": "#/definitions/opRef"
-        }
-      },
-      "required": [
-        "op"
-      ],
-      "additionalProperties": false
-    },
-    "parallelRunDeclaration": {
-      "title": "parallelRunDeclaration",
-      "description": "Sequence of run declarations to run in parallel",
-      "type": "object",
-      "properties": {
-        "parallel": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/runDeclaration"
-          }
-        }
-      },
-      "required": [
-        "parallel"
-      ],
-      "additionalProperties": false
-    },
-    "serialRunDeclaration": {
-      "title": "serialRunDeclaration",
-      "description": "Sequence of run declarations to run serially",
-      "type": "object",
-      "properties": {
-        "serial": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/runDeclaration"
-          }
-        }
-      },
-      "required": [
-        "serial"
-      ],
-      "additionalProperties": false
-    },
-    "dockerImageRef": {
-      "title": "dockerImageRef",
-      "description": "Reference to a docker image",
-      "type": "string"
     },
     "opRef": {
       "title": "opRef",

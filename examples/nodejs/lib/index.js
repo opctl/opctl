@@ -1,2 +1,0 @@
-require('nodent')();
-require('./http');
