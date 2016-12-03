@@ -5,3 +5,14 @@ type Manifest struct {
   Description string `yaml:"description"`
   Version string `yaml:"version,omitempty"`
 }
+
+type CollectionManifest struct {
+  Manifest `yaml:",inline"`
+}
+
+type OpManifest struct {
+  Manifest `yaml:",inline"`
+  Inputs  []Param `yaml:"inputs,omitempty"`
+  Outputs []Param `yaml:"outputs,omitempty"`
+  Run     *RunDeclaration `yaml:"run,omitempty"`
+}
