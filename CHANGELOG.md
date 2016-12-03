@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
   existing attributes are the value.
 
 ### Removed
-- `default collections`. Replaced with `designated collections`
+- bubbling of default collection lookup
 
 ## [0.1.2] - 2016-09-10
 
