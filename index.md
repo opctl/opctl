@@ -8,7 +8,7 @@
     - [Op Definitions](#op-definitions)
 - [Collections](#collections)
     - [Collection Definitions](#collection-definitions)
-    - [Designated Collections](#designated-collections)
+    - [Default Collections](#default-collections)
 - [Registry](#registry)
     - [Registry API](#registry-api)
 - [Engine](#engine)
@@ -27,7 +27,7 @@ Primary concerns of opspec are to make operations:
 - portable
 - versionable
 
-## MUST/MAY
+## MUST/MAY/RECOMMENDED
 
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
 
@@ -35,8 +35,8 @@ as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)
 
 Self contained [examples](examples/) are included with this spec.
 
-It is RECOMMENDED integrators use them to document/demonstrate usage of
-their integrations.
+It is [RECOMMENDED](#mustmayrecommended) integrators use them to
+document/demonstrate usage of their integrations.
 
 
 # Bundles
@@ -50,27 +50,39 @@ An op is a runnable task.
 
 ## Op Definitions
 
-Ops are defined via a [Bundle](#bundles). Op bundles [MUST](#mustmay)
-contain an [op.yml file](op.yml-file.md) at their root.
+Ops are defined via [Bundles](#bundles). Valid op bundles meet the
+following criteria:
+
+- [MUST](#mustmayrecommended) contain a
+  [collection.yml file](op.yml-file.md) at their root.
+- Name [MUST](#mustmayrecommended) match that of the op they contain.
 
 
 # Collections
 
-One or more [op](#ops), grouped together physically (via embedding)
+One or more [ops](#ops), grouped together physically (via embedding)
 and/or logically (via reference).
 
 ## Collection Definitions
 
-Collections are defined via a [Bundle](#bundles). Collection bundles
-[MUST](#mustmay) contain a [collection.yml file](collection.yml-file.md)
-at their root.
+Collection are defined via [Bundles](#bundles). Valid collection bundles
+meet the following criteria:
+
+- [MUST](#mustmayrecommended) contain a
+  [collection.yml file](collection.yml-file.md) at their root.
+- Name [MUST](#mustmayrecommended) match that of the collection they
+  contain unless [designated as default](#default-collections)
 
 
-## Designated Collections
+# Default Collections
 
-Directories within hierarchical filesystems, [MAY](#mustmay) contain a
-collection bundle named `.opspec` which if present, [MUST](#mustmay) be
-treated as their designated collection.
+Directories within hierarchical filesystems, [MAY](#mustmayrecommended)
+contain [default collections](#default-collections). For a collection to
+be designated as default, it's bundle [MUST](#mustmayrecommended) be
+named `.opspec`.
+
+[default collections](#default-collections) [MUST](#mustmayrecommended),
+by default, be effective within their containing directory.
 
 
 # Registry
@@ -80,7 +92,7 @@ discovery, and consumption.
 
 ## Registry API
 
-Registries [MUST](#mustmay) implement the
+Registries [MUST](#mustmayrecommended) implement the
 [registry api](registry-oai_spec.yaml)
 
 
@@ -90,5 +102,5 @@ Engines run ops.
 
 ## Engine API
 
-Engines [MUST](#mustmay) implement the
+Engines [MUST](#mustmayrecommended) implement the
 [engine api](engine-oai_spec.yaml)
