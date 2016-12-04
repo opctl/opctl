@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://opspec.io/spec/0.1.3/schema/run-declaration.json",
+  "id": "https://spec.opspec.io/0.1.3/schema/run-declaration.json",
   "title": "runDeclaration",
   "description": "What to run",
   "oneOf": [

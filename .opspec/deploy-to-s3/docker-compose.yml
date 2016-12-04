@@ -1,0 +1,16 @@
+version: "2"
+services:
+  deploy-to-s3:
+    build: .
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION=us-west-2
+    entrypoint: >
+      aws s3 sync .
+      s3://spec.opspec.io/"$SPEC_VERSION" --delete --exclude "*"
+      --include "index.md" --include "*spec.yml" --include "schema/*"
+    network_mode: host
+    volumes:
+      - ../../:/working_dir
+    working_dir: /working_dir

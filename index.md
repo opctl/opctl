@@ -5,9 +5,11 @@
     - [Examples](#examples)
 - [Bundles](#bundles)
 - [Ops](#ops)
-    - [Op Definitions](#op-definitions)
+    - [Op Bundles](#op-bundles)
+        - [op.yml file](#opyml-file)
 - [Collections](#collections)
-    - [Collection Definitions](#collection-definitions)
+    - [Collection Bundles](#collection-bundles)
+        - [collection.yml file](#collectionyml-file)
     - [Default Collections](#default-collections)
 - [Registry](#registry)
     - [Registry API](#registry-api)
@@ -41,21 +43,32 @@ document/demonstrate usage of their integrations.
 
 # Bundles
 
-Bundles are directories containing a manifest and artifacts (dependent
-files/folders).
+Bundles are directories containing a manifest (at their root) and
+optional artifacts (dependent files/folders).
 
 # Ops
 
-An op is a runnable task.
+A runnable task.
 
-## Op Definitions
+## Op Bundles
 
 Ops are defined via [Bundles](#bundles). Valid op bundles meet the
 following criteria:
 
-- [MUST](#mustmayrecommended) contain a
-  [collection.yml file](op.yml-file.md) at their root.
+- [MUST](#mustmayrecommended) contain an [op.yml file](#opyml-file) at
+  their root.
 - Name [MUST](#mustmayrecommended) match that of the op they contain.
+
+## op.yml file
+
+`op.yml` files are the manifest for op bundles. Valid `op.yml`
+files meet the following criteria:
+
+- [MUST](index.md#mustmayrecommended) be named `op.yml`
+- [MUST](index.md#mustmayrecommended) be
+  [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html)
+- [MUST](index.md#mustmayrecommended) validate against
+  [schema/manifest.json#definitions/opManifest](schema/manifest.json#definitions/opManifest)
 
 
 # Collections
@@ -63,18 +76,29 @@ following criteria:
 One or more [ops](#ops), grouped together physically (via embedding)
 and/or logically (via reference).
 
-## Collection Definitions
+## Collection Bundles
 
 Collection are defined via [Bundles](#bundles). Valid collection bundles
 meet the following criteria:
 
 - [MUST](#mustmayrecommended) contain a
-  [collection.yml file](collection.yml-file.md) at their root.
+  [collection.yml file](#collectionyml-file) at their root.
 - Name [MUST](#mustmayrecommended) match that of the collection they
   contain unless [designated as default](#default-collections)
 
+## collection.yml file
 
-# Default Collections
+`collection.yml` files are the manifest for collection bundles. Valid
+`collection.yml` files meet the following criteria:
+
+- [MUST](index.md#mustmayrecommended) be named `collection.yml`
+- [MUST](index.md#mustmayrecommended) be
+  [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html)
+- [MUST](index.md#mustmayrecommended) validate against
+  [schema/manifest.json#definitions/collectionManifest](schema/manifest.json#definitions/collectionManifest)
+
+
+## Default Collections
 
 Directories within hierarchical filesystems, [MAY](#mustmayrecommended)
 contain [default collections](#default-collections). For a collection to
@@ -93,7 +117,7 @@ discovery, and consumption.
 ## Registry API
 
 Registries [MUST](#mustmayrecommended) implement the
-[registry api](registry-oai_spec.yaml)
+[registry api](registry-oai_spec.yml)
 
 
 # Engine
@@ -103,4 +127,5 @@ Engines run ops.
 ## Engine API
 
 Engines [MUST](#mustmayrecommended) implement the
-[engine api](engine-oai_spec.yaml)
+[engine api](engine-oai_spec.yml)
+
