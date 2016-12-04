@@ -1,0 +1,6 @@
+description: deploys to aws s3
+name: deploy-to-s3
+inputs:
+  - { name: AWS_ACCESS_KEY_ID, description: Access key for AWS, isSecret: true }
+  - { name: AWS_SECRET_ACCESS_KEY, description: Secret access key for AWS, isSecret: true }
+  - { name: SPEC_VERSION, description: Version of the spec being deploy }
