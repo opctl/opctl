@@ -17,8 +17,8 @@ type KillOpRunReq struct {
 }
 
 type SetCollectionDescriptionReq struct {
-PathToCollection string
-Description  string
+  PathToCollection string
+  Description  string
 }
 
 type SetOpDescriptionReq struct {
