@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://spec.opspec.io/0.1.3/schema/param.json",
+  "id": "https://spec.opspec.io/0.1.3/schema/param-declaration.json",
   "title": "paramDeclaration",
-  "description": "Parameter of an op",
+  "description": "Declaration of a parameter",
   "oneOf": [
     {
       "$ref": "#/definitions/dirParamDeclaration"
@@ -20,7 +20,7 @@
   "definitions": {
     "dirParamDeclaration": {
       "title": "dirParamDeclaration",
-      "description": "Directory parameter",
+      "description": "Declaration of a directory parameter",
       "type": "object",
       "properties": {
         "description": {
@@ -43,7 +43,7 @@
     },
     "fileParamDeclaration": {
       "title": "fileParamDeclaration",
-      "description": "File parameter",
+      "description": "Declaration of a file parameter",
       "type": "object",
       "properties": {
         "description": {
@@ -66,7 +66,7 @@
     },
     "netSocketParamDeclaration": {
       "title": "netSocketParamDeclaration",
-      "description": "Network socket parameter",
+      "description": "Declaration of a network socket parameter",
       "type": "object",
       "properties": {
         "description": {
@@ -85,7 +85,7 @@
     },
     "stringParamDeclaration": {
       "title": "stringParamDeclaration",
-      "description": "String parameter",
+      "description": "Declaration of a string parameter",
       "type": "object",
       "properties": {
         "default": {

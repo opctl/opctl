@@ -55,19 +55,19 @@
           "description": "Inputs to the op",
           "type": "array",
           "items": {
-            "$ref": "param.json"
+            "$ref": "param-declaration.json"
           }
         },
         "outputs": {
           "description": "Outputs from the op",
           "type": "array",
           "items": {
-            "$ref": "param.json"
+            "$ref": "param-declaration.json"
           }
         },
         "run": {
-          "description": "What the op runs",
-          "$ref": "run-declaration.json"
+          "description": "Call graph run when the op is instantiated",
+          "$ref": "call-graph-declaration.json"
         },
         "version": {
           "description": "Version of the op",

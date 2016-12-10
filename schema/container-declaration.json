@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://spec.opspec.io/0.1.3/schema/container-declaration.json",
+  "definitions": {
+    "envEntryDeclaration": {
+      "title": "envEntryDeclaration",
+      "description": "Declaration of an entry in an environment; an environment variable",
+      "type": "object",
+      "properties": {
+        "bind": {
+          "description": "Op parameter to bind the env variable to",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the env variable",
+          "type": "string"
+        }
+      }
+    },
+    "fsEntryDeclaration": {
+      "title": "fsEntryDeclaration",
+      "description": "Declaration of an entry in a filesystem; a file/directory",
+      "type": "object",
+      "properties": {
+        "bind": {
+          "description": "Op parameter to bind the file/directory to",
+          "type": "string"
+        },
+        "path": {
+          "description": "Path of the file/directory",
+          "type": "string"
+        }
+      }
+    },
+    "netEntryDeclaration": {
+      "title": "netEntryDeclaration",
+      "description": "Declaration of an entry in a network; a network socket",
+      "type": "object",
+      "properties": {
+        "bind": {
+          "description": "Op parameter to bind the network socket to",
+          "type": "string"
+        },
+        "port": {
+          "description": "Port number of the socket",
+          "type": "string"
+        }
+      }
+    },
+    "dockerImageRef": {
+      "title": "dockerImageRef",
+      "description": "Reference to a docker image",
+      "type": "string"
+    }
+  }
+}
