@@ -9,20 +9,24 @@ All notable changes to this project will be documented in this file.
 - `dir`, `file`, and `netSocket` parameter types
 - `pattern`, `minLength`, and `maxLength` validation attributes for
   `string` parameters
-- `container` run declarations
-- `designated collections`
+- [./schema/call-graph-declaration.json#definitions/containerCallDeclaration](./schema/call-graph-declaration.json#definitions/containerCallDeclaration)
 
 ### Changed
 
-- Op run declaration changed from string to an object with `ref`, `arg`,
-  and `result` attributes. To migrate, replace string value with object
-  having `ref` attribute equal to existing string.
+- Rename from `run` to `call graph` for consistency with established
+  terminology.
+- [./schema/call-graph-declaration.json#definitions/opCallDeclaration](./schema/call-graph-declaration.json#definitions/opCallDeclaration)
+  changed from string to object with `ref`, `arg`, and `result`
+  attributes. To migrate, replace string value with object having `ref`
+  attribute equal to existing string and add `arg`/`result` values as
+  applicable.
 - String inputs must now be declared as a key value pair where the key
   is `string` and the value is its attributes. To migrate, just turn
   existing inputs into a key value pair where the key is `string` and
   existing attributes are the value.
 
 ### Removed
+
 - bubbling of default collection lookup
 
 ## [0.1.2] - 2016-09-10

@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://spec.opspec.io/0.1.3/schema/call-graph-declaration.json",
+  "title": "callGraphDeclaration",
+  "description": "Declaration of a call graph",
+  "oneOf": [
+    {
+      "$ref": "#/definitions/containerCallDeclaration"
+    },
+    {
+      "$ref": "#/definitions/opCallDeclaration"
+    },
+    {
+      "$ref": "#/definitions/parallelCallDeclaration"
+    },
+    {
+      "$ref": "#/definitions/serialCallDeclaration"
+    }
+  ],
+  "definitions": {
+    "containerCallDeclaration": {
+      "title": "containerCallDeclaration",
+      "description": "Declaration of a container call",
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "description": "Command to run (overrides any defined by image)",
+          "type": "string"
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "$ref": "container-declaration.json#/definitions/envEntryDeclaration"
+          }
+        },
+        "fs": {
+          "type": "array",
+          "items": {
+            "$ref": "container-declaration.json#/definitions/fsEntryDeclaration"
+          }
+        },
+        "image": {
+          "$ref": "container-declaration.json#/definitions/dockerImageRef"
+        },
+        "net": {
+          "type": "array",
+          "items": {
+            "$ref": "container-declaration.json#/definitions/netEntryDeclaration"
+          }
+        },
+        "workDir": {
+          "description": "Working directory path (overrides any defined by image)",
+          "type": "string"
+        }
+      }
+    },
+    "opCallDeclaration": {
+      "title": "opCallDeclaration",
+      "description": "Declaration of an op call",
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "$ref": "#/definitions/opRef"
+            },
+            "args": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "results": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "ref"
+          ]
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "additionalProperties": false
+    },
+    "parallelCallDeclaration": {
+      "title": "parallelCallDeclaration",
+      "description": "Declaration of parallel calls",
+      "type": "object",
+      "properties": {
+        "parallel": {
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          }
+        }
+      },
+      "required": [
+        "parallel"
+      ],
+      "additionalProperties": false
+    },
+    "serialCallDeclaration": {
+      "title": "serialCallDeclaration",
+      "description": "Declaration of serial calls",
+      "type": "object",
+      "properties": {
+        "serial": {
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          }
+        }
+      },
+      "required": [
+        "serial"
+      ],
+      "additionalProperties": false
+    },
+    "opRef": {
+      "title": "opRef",
+      "description": "Reference to an op",
+      "type": "string"
+    }
+  }
+}
