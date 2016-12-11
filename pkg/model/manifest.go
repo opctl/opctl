@@ -3,7 +3,7 @@ package model
 type Manifest struct {
   Name        string `yaml:"name"`
   Description string `yaml:"description"`
-  Version string `yaml:"version,omitempty"`
+  Version     string `yaml:"version,omitempty"`
 }
 
 type CollectionManifest struct {

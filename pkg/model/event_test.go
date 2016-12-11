@@ -12,13 +12,13 @@ var _ = Describe("Event", func() {
 
   Context("when formatting to/from json", func() {
 
-    Context("with non-nil $.opInstanceFailed", func() {
+    Context("with non-nil $.opEnded", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpInstanceFailed:&OpInstanceEndedEvent{
+          OpEnded:&OpEndedEvent{
             OpRef:"dummyOpRef",
             OpInstanceId:"dummyOpInstanceId",
             Outcome:"dummyOutcome",
@@ -43,13 +43,13 @@ var _ = Describe("Event", func() {
 
     })
 
-    Context("with non-nil $.opInstanceStarted", func() {
+    Context("with non-nil $.opStarted", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpInstanceStarted:&OpInstanceStartedEvent{
+          OpStarted:&OpStartedEvent{
             OpRef:"dummyOpRef",
             OpInstanceId:"dummyOpInstanceId",
             RootOpInstanceId:"dummyRootOpInstanceId",
@@ -73,13 +73,13 @@ var _ = Describe("Event", func() {
 
     })
 
-    Context("with non-nil $.opInstanceEncounteredError", func() {
+    Context("with non-nil $.opEncounteredError", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpInstanceEncounteredError:&OpInstanceEncounteredErrorEvent{
+          OpEncounteredError:&OpEncounteredErrorEvent{
             Msg:"dummyMsg",
             OpRef:"dummyOpRef",
             OpInstanceId:"dummyOpInstanceId",

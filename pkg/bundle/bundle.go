@@ -50,10 +50,10 @@ type Bundle interface {
 func New() Bundle {
   fileSystem := fs.NewFileSystem()
   yaml := format.NewYamlFormat()
-  opViewFactory := newOpViewFactory(fileSystem,yaml)
+  opViewFactory := newOpViewFactory(fileSystem, yaml)
 
   return &_bundle{
-    collectionViewFactory:newCollectionViewFactory(fileSystem,opViewFactory,yaml),
+    collectionViewFactory:newCollectionViewFactory(fileSystem, opViewFactory, yaml),
     fileSystem: fileSystem,
     opViewFactory:opViewFactory,
     yaml: yaml,
@@ -62,7 +62,7 @@ func New() Bundle {
 
 type _bundle struct {
   collectionViewFactory collectionViewFactory
-  fileSystem fs.FileSystem
-  opViewFactory opViewFactory
-  yaml       format.Format
+  fileSystem            fs.FileSystem
+  opViewFactory         opViewFactory
+  yaml                  format.Format
 }

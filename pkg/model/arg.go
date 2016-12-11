@@ -5,10 +5,10 @@ import (
 )
 
 type Arg struct {
-  Dir *DirArg
-  File *FileArg
+  Dir       *DirArg
+  File      *FileArg
   NetSocket *NetSocketArg
-  String string
+  String    string
 }
 
 type DirArg struct {

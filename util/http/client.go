@@ -7,7 +7,6 @@ import (
 )
 
 type Client interface {
-
   // Do is implemented by net/http/Client
   Do(
   req *http.Request,
@@ -15,5 +14,4 @@ type Client interface {
   *http.Response,
   error,
   )
-
 }

@@ -17,13 +17,13 @@ type KillOpReq struct {
 }
 
 type SetCollectionDescriptionReq struct {
-PathToCollection string
-Description  string
+  PathToCollection string
+  Description      string
 }
 
 type SetOpDescriptionReq struct {
-  PathToOp string
-  Description  string
+  PathToOp    string
+  Description string
 }
 
 type StartOpReq struct {
