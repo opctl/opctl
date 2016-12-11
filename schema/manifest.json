@@ -67,7 +67,7 @@
         },
         "run": {
           "description": "Call graph run when the op is instantiated",
-          "$ref": "call-graph-declaration.json"
+          "$ref": "call-graph.json"
         },
         "version": {
           "description": "Version of the op",
