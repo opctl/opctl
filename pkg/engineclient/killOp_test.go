@@ -18,9 +18,7 @@ var _ = Describe("KillOp", func() {
 
     /* arrange */
     providedKillOpReq := model.KillOpReq{
-      OpInstanceIds:[]string{
-        "dummyOpInstanceId",
-      },
+      OpInstanceId:"dummyOpInstanceId",
     }
 
     expectedBytes, _ := format.NewJsonFormat().From(providedKillOpReq)
