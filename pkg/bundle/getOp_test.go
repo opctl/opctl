@@ -40,8 +40,8 @@ var _ = Describe("_getOp", func() {
         Description: "dummyDescription",
         Inputs:[]model.Param{},
         Name: "dummyName",
-        Run: &model.CallGraphDeclaration{
-          Op:&model.OpCallDeclaration{
+        Run: &model.CallGraph{
+          Op:&model.OpCall{
             Ref:"dummyOpRef",
           },
         },

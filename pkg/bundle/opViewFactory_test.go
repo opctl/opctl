@@ -103,8 +103,8 @@ var _ = Describe("_opViewFactory", func() {
         },
       }
 
-      expectedCallGraphDeclaration := &model.CallGraphDeclaration{
-        Op:&model.OpCallDeclaration{
+      expectedCallGraph := &model.CallGraph{
+        Op:&model.OpCall{
           Ref:"dummyOpRef",
         },
       }
@@ -113,7 +113,7 @@ var _ = Describe("_opViewFactory", func() {
         Description: "dummyDescription",
         Inputs: expectedInputs,
         Name: "dummyName",
-        Run: expectedCallGraphDeclaration,
+        Run: expectedCallGraph,
         Version: "dummyVersion",
       }
 
@@ -129,7 +129,7 @@ var _ = Describe("_opViewFactory", func() {
             Version:expectedOpView.Version,
           },
           Inputs:expectedInputs,
-          Run:expectedCallGraphDeclaration,
+          Run:expectedCallGraph,
         }
 
         reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
@@ -154,8 +154,8 @@ var _ = Describe("_opViewFactory", func() {
 
         /* arrange */
 
-        expectedCallGraphDeclaration := &model.CallGraphDeclaration{
-          Parallel: &model.ParallelCallDeclaration{},
+        expectedCallGraph := &model.CallGraph{
+          Parallel: &model.ParallelCall{},
         }
 
         fakeFileSystem := new(fs.FakeFileSystem)
@@ -164,7 +164,7 @@ var _ = Describe("_opViewFactory", func() {
         fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
           stubbedOpManifest := model.OpManifest{
-            Run:expectedCallGraphDeclaration,
+            Run:expectedCallGraph,
           }
 
           reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
@@ -180,7 +180,7 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedCallGraphDeclaration))
+        Expect(actualOpView.Run).To(Equal(expectedCallGraph))
 
       })
     })
@@ -188,8 +188,8 @@ var _ = Describe("_opViewFactory", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
-        expectedCallGraphDeclaration := &model.CallGraphDeclaration{
-          Op:&model.OpCallDeclaration{
+        expectedCallGraph := &model.CallGraph{
+          Op:&model.OpCall{
             Ref:"dummyOpRef",
           },
         }
@@ -200,7 +200,7 @@ var _ = Describe("_opViewFactory", func() {
         fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
           stubbedOpManifest := model.OpManifest{
-            Run:expectedCallGraphDeclaration,
+            Run:expectedCallGraph,
           }
 
           reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
@@ -216,7 +216,7 @@ var _ = Describe("_opViewFactory", func() {
         actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
 
         /* assert */
-        Expect(actualOpView.Run).To(Equal(expectedCallGraphDeclaration))
+        Expect(actualOpView.Run).To(Equal(expectedCallGraph))
 
       })
 

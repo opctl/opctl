@@ -4,6 +4,6 @@ type OpView struct {
   Description string
   Inputs      []Param
   Name        string
-  Run         *CallGraphDeclaration
+  Run         *CallGraph
   Version     string
 }

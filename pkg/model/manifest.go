@@ -14,5 +14,5 @@ type OpManifest struct {
   Manifest `yaml:",inline"`
   Inputs  []Param `yaml:"inputs,omitempty"`
   Outputs []Param `yaml:"outputs,omitempty"`
-  Run     *CallGraphDeclaration `yaml:"run,omitempty"`
+  Run     *CallGraph `yaml:"run,omitempty"`
 }
