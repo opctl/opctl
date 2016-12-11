@@ -12,17 +12,17 @@ var _ = Describe("Event", func() {
 
   Context("when formatting to/from json", func() {
 
-    Context("with non-nil $.opRunEnded", func() {
+    Context("with non-nil $.opInstanceFailed", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpRunEnded:&OpRunEndedEvent{
+          OpInstanceFailed:&OpInstanceEndedEvent{
             OpRef:"dummyOpRef",
-            OpRunId:"dummyOpRunId",
+            OpInstanceId:"dummyOpInstanceId",
             Outcome:"dummyOutcome",
-            RootOpRunId:"dummyRootOpRunId",
+            RootOpInstanceId:"dummyRootOpInstanceId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -43,16 +43,16 @@ var _ = Describe("Event", func() {
 
     })
 
-    Context("with non-nil $.opRunStarted", func() {
+    Context("with non-nil $.opInstanceStarted", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpRunStarted:&OpRunStartedEvent{
+          OpInstanceStarted:&OpInstanceStartedEvent{
             OpRef:"dummyOpRef",
-            OpRunId:"dummyOpRunId",
-            RootOpRunId:"dummyRootOpRunId",
+            OpInstanceId:"dummyOpInstanceId",
+            RootOpInstanceId:"dummyRootOpInstanceId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -73,17 +73,17 @@ var _ = Describe("Event", func() {
 
     })
 
-    Context("with non-nil $.opRunEncounteredError", func() {
+    Context("with non-nil $.opInstanceEncounteredError", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedEvent := Event{
-          OpRunEncounteredError:&OpRunEncounteredErrorEvent{
+          OpInstanceEncounteredError:&OpInstanceEncounteredErrorEvent{
             Msg:"dummyMsg",
             OpRef:"dummyOpRef",
-            OpRunId:"dummyOpRunId",
-            RootOpRunId:"dummyRootOpRunId",
+            OpInstanceId:"dummyOpInstanceId",
+            RootOpInstanceId:"dummyRootOpInstanceId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -113,8 +113,8 @@ var _ = Describe("Event", func() {
           ContainerStdErrWrittenTo:&ContainerStdErrWrittenToEvent{
             Data:[]byte("dummyData"),
             OpRef:"dummyOpRef",
-            OpRunId:"dummyOpRunId",
-            RootOpRunId:"dummyRootOpRunId",
+            OpInstanceId:"dummyOpInstanceId",
+            RootOpInstanceId:"dummyRootOpInstanceId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -144,8 +144,8 @@ var _ = Describe("Event", func() {
           ContainerStdOutWrittenTo:&ContainerStdOutWrittenToEvent{
             Data: []byte("dummyData"),
             OpRef:"dummyOpRef",
-            OpRunId:"dummyOpRunId",
-            RootOpRunId:"dummyRootOpRunId",
+            OpInstanceId:"dummyOpInstanceId",
+            RootOpInstanceId:"dummyRootOpInstanceId",
           },
           Timestamp:time.Now().UTC(),
         }

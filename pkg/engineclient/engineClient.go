@@ -17,16 +17,16 @@ type EngineClient interface {
   err error,
   )
 
-  KillOpRun(
-  req model.KillOpRunReq,
+  KillOp(
+  req model.KillOpReq,
   ) (
   err error,
   )
 
-  StartOpRun(
-  req model.StartOpRunReq,
+  StartOp(
+  req model.StartOpReq,
   ) (
-  opRunId string,
+  opInstanceId string,
   err error,
   )
 }
@@ -47,6 +47,6 @@ engineProvider engineprovider.EngineProvider,
 
 type _engineClient struct {
   engineProvider engineprovider.EngineProvider
-  httpClient http.Client
-  jsonFormat format.Format
+  httpClient     http.Client
+  jsonFormat     format.Format
 }

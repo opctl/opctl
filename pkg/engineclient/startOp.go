@@ -1,15 +1,17 @@
 package engineclient
 
 import (
+  "bytes"
   "github.com/opspec-io/sdk-golang/pkg/model"
   "net/http"
   "fmt"
-  "bytes"
+  "io/ioutil"
 )
 
-func (this _engineClient) KillOpRun(
-req model.KillOpRunReq,
+func (this _engineClient) StartOp(
+req model.StartOpReq,
 ) (
+opInstanceId string,
 err error,
 ) {
 
@@ -25,14 +27,25 @@ err error,
 
   httpReq, err := http.NewRequest(
     "POST",
-    fmt.Sprintf("http:%v/op-run-kills", engineProtocolRelativeBaseUrl),
+    fmt.Sprintf("http:%v/instances/starts", engineProtocolRelativeBaseUrl),
     bytes.NewBuffer(reqBytes),
   )
   if (nil != err) {
     return
   }
 
-  _, err = this.httpClient.Do(httpReq)
+  httpResp, err := this.httpClient.Do(httpReq)
+  if (nil != err) {
+    return
+  }
+
+  opInstanceIdBuffer, err := ioutil.ReadAll(httpResp.Body)
+  if (nil != err) {
+    return
+  }
+
+  opInstanceId = string(opInstanceIdBuffer)
+
   return
 
 }

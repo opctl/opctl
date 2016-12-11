@@ -12,13 +12,13 @@ type CreateOpReq struct {
   Description string
 }
 
-type KillOpRunReq struct {
-  OpRunId string
+type KillOpReq struct {
+  OpInstanceIds []string
 }
 
 type SetCollectionDescriptionReq struct {
-  PathToCollection string
-  Description  string
+PathToCollection string
+Description  string
 }
 
 type SetOpDescriptionReq struct {
@@ -26,8 +26,8 @@ type SetOpDescriptionReq struct {
   Description  string
 }
 
-type StartOpRunReq struct {
+type StartOpReq struct {
   // map of args keyed by param name
   Args  map[string]*Arg `json:"args"`
-  OpUrl string `json:"opUrl"`
+  OpRef string `json:"opRef"`
 }
