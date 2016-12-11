@@ -9,13 +9,13 @@ All notable changes to this project will be documented in this file.
 - `dir`, `file`, and `netSocket` parameter types
 - `pattern`, `minLength`, and `maxLength` validation attributes for
   `string` parameters
-- [./schema/call-graph-declaration.json#definitions/containerCallDeclaration](./schema/call-graph-declaration.json#definitions/containerCallDeclaration)
+- [./schema/call-graph.json#definitions/containerCall](schema/call-graph.json#definitions/containerCall)
 
 ### Changed
 
 - Rename from `run` to `call graph` for consistency with established
   terminology.
-- [./schema/call-graph-declaration.json#definitions/opCallDeclaration](./schema/call-graph-declaration.json#definitions/opCallDeclaration)
+- [./schema/call-graph.json#definitions/opCall](schema/call-graph.json#definitions/opCall)
   changed from string to object with `ref`, `arg`, and `result`
   attributes. To migrate, replace string value with object having `ref`
   attribute equal to existing string and add `arg`/`result` values as
