@@ -12,7 +12,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Name of the env variable",
+          "description": "Name of the env variable in the container",
           "type": "string"
         }
       }
@@ -27,7 +27,7 @@
           "type": "string"
         },
         "path": {
-          "description": "Path of the file/directory",
+          "description": "Path of the file/directory in the container",
           "type": "string"
         }
       }
@@ -41,8 +41,8 @@
           "description": "Op parameter to bind the network socket to",
           "type": "string"
         },
-        "port": {
-          "description": "Port number of the socket",
+        "hostAliases": {
+          "description": "Aliases to give the network socket host in the container",
           "type": "string"
         }
       }
