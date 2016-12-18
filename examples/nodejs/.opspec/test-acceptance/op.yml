@@ -2,7 +2,7 @@ name: test-acceptance
 description: Runs acceptance tests
 inputs:
   - dir: { name: APP_DIR, description: Directory containing the app }
-  - netSocket: { name: API_SOCKET, description: Network socket for the API under test}
+  - netSocket: { name: API_SOCKET, description: Network socket for the API under test, constraints: [ port: 80 ] }
 run:
   container:
     cmd: node_modules/.bin/mocha --recursive --reporter=spec tests/unit
