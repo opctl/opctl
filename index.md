@@ -5,10 +5,10 @@
     - [Examples](#examples)
 - [Ops](#ops)
     - [Op Dir Structure](#op-dir-structure)
-        - [op.yml file](#opyml-file)
+    - [op.yml File](#opyml-file)
 - [Collections](#collections)
     - [Collection Dir Structure](#collection-dir-structure)
-        - [collection.yml file](#collectionyml-file)
+    - [collection.yml File](#collectionyml-file)
     - [Default Collections](#default-collections)
 - [Registry](#registry)
     - [Registry API](#registry-api)
@@ -59,7 +59,7 @@ Ops are defined via directories meeting the following criteria:
   their root.
 - Name [MUST](#mustmayrecommended) match that of the op they contain.
 
-## op.yml file
+## op.yml File
 
 `op.yml` files are the manifest for ops. Valid `op.yml` files meet the
 following criteria:
@@ -91,7 +91,7 @@ Collection are defined via directories meeting the following criteria:
 - Name [MUST](#mustmayrecommended) match that of the collection they
   contain unless [designated as default](#default-collections)
 
-## collection.yml file
+## collection.yml File
 
 `collection.yml` files are the manifest for collections. Valid
 `collection.yml` files meet the following criteria:
