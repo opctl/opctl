@@ -94,10 +94,20 @@ var _ = Describe("_opViewFactory", func() {
           String: &model.StringParam{
             Default:"dummyDefault",
             Description:"dummyDescription",
-            MinLength:0,
-            MaxLength:1000,
+            Constraints:&model.StringConstraints{
+              Length: &model.StringLengthConstraint{
+                Min: 0,
+                Max: 1000,
+                Description:"dummyStringLengthConstraintDescription",
+              },
+              Patterns:[]*model.StringPatternConstraint{
+                {
+                  Regex:".*",
+                  Description:"dummyStringPatternConstraintDescription",
+                },
+              },
+            },
             Name:"dummyName",
-            Pattern:".*",
             IsSecret:true,
           },
         },

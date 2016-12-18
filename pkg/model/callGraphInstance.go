@@ -10,36 +10,12 @@ type CallGraphInstance struct {
 
 // instance of a container call
 type ContainerCallInstance struct {
-  Cmd     string
-  Env     []*EnvEntryInstance
-  Fs      []*FsEntryInstance
+  Cmd     []string
+  Env     []*ContainerInstanceEnvEntry
+  Fs      []*ContainerInstanceFsEntry
   Image   string
-  Net     []*NetEntryInstance
+  Net     []*ContainerInstanceNetEntry
   WorkDir string
-}
-
-// instance of an entry in an env; an env var
-type EnvEntryInstance struct {
-  // name of env var
-  Name  string
-  // value of env var
-  Value string
-}
-
-// instance of an entry in a fs; a file/directory
-type FsEntryInstance struct {
-  // id of volume
-  VolumeId string
-  // path in container
-  Path     string
-}
-
-// instance of an entry in a network; a host
-type NetEntryInstance struct {
-  // id of network
-  NetworkId string
-  // hostname of container on network
-  Hostname  string
 }
 
 // instance of an op call

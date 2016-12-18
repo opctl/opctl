@@ -8,30 +8,12 @@ type CallGraph struct {
 }
 
 type ContainerCall struct {
-  Cmd     string `yaml:"cmd,omitempty"`
-  Env     []*EnvEntry `yaml:"env,omitempty"`
-  Fs      []*FsEntry `yaml:"fs,omitempty"`
+  Cmd     []string `yaml:"cmd,omitempty"`
+  Env     []*ContainerEnvEntry `yaml:"env,omitempty"`
+  Fs      []*ContainerFsEntry `yaml:"fs,omitempty"`
   Image   string `yaml:"image"`
-  Net     []*NetEntry `yaml:"net,omitempty"`
+  Net     []*ContainerNetEntry `yaml:"net,omitempty"`
   WorkDir string `yaml:"workDir,omitempty"`
-}
-
-// entry in an env; an env var
-type EnvEntry struct {
-  Bind string `yaml:"bind,omitempty"`
-  Name string `yaml:"name,omitempty"`
-}
-
-// entry in a fs; a file/directory
-type FsEntry struct {
-  Bind string `yaml:"bind,omitempty"`
-  Path string `yaml:"path"`
-}
-
-// entry in a network; a host
-type NetEntry struct {
-  Bind string `yaml:"bind,omitempty"`
-  Port int `yaml:"port,omitempty"`
 }
 
 type OpCall struct {

@@ -7,9 +7,9 @@ import (
 )
 
 var _ = Describe("Param", func() {
-  yaml := format.NewYamlFormat()
 
   Context("when formatting to/from yaml", func() {
+    yaml := format.NewYamlFormat()
 
     Context("with non-nil $.dir", func() {
 
@@ -107,10 +107,20 @@ var _ = Describe("Param", func() {
           String: &StringParam{
             Default:"dummyDefault",
             Description:"dummyDescription",
-            MinLength:0,
-            MaxLength:1000,
+            Constraints:&StringConstraints{
+              Length: &StringLengthConstraint{
+                Min: 0,
+                Max: 1000,
+                Description:"dummyStringLengthConstraintDescription",
+              },
+              Patterns:[]*StringPatternConstraint{
+                {
+                  Regex:".*",
+                  Description:"dummyStringPatternConstraintDescription",
+                },
+              },
+            },
             Name:"dummyName",
-            Pattern:".*",
             IsSecret:true,
           },
         }
