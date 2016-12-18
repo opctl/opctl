@@ -7,8 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - `dir`, `file`, and `netSocket` parameter types
-- `pattern`, `minLength`, and `maxLength` validation attributes for
-  `string` parameters
+- `constraints` attribute for `string` and `netSocket` parameter types
 - [./schema/call-graph.json#definitions/containerCall](schema/call-graph.json#definitions/containerCall)
 
 ### Changed
