@@ -3,12 +3,11 @@
 - [Introduction](#introduction)
     - [Purpose](#purpose)
     - [Examples](#examples)
-- [Bundles](#bundles)
 - [Ops](#ops)
-    - [Op Bundles](#op-bundles)
+    - [Op Dir Structure](#op-dir-structure)
         - [op.yml file](#opyml-file)
 - [Collections](#collections)
-    - [Collection Bundles](#collection-bundles)
+    - [Collection Dir Structure](#collection-dir-structure)
         - [collection.yml file](#collectionyml-file)
     - [Default Collections](#default-collections)
 - [Registry](#registry)
@@ -23,10 +22,11 @@
 Opspec is a specification for defining, distributing, and running ops
 (operations).
 
-Primary concerns of opspec are to make operations:
+Primary concerns of opspec are to make ops:
 
 - composable
 - portable
+- side-effect free
 - versionable
 
 ## MUST/MAY/RECOMMENDED
@@ -41,19 +41,19 @@ It is [RECOMMENDED](#mustmayrecommended) integrators use them to
 document/demonstrate usage of their integrations.
 
 
-# Bundles
-
-Bundles are directories containing a manifest (at their root) and
-optional artifacts (dependent files/folders).
-
 # Ops
 
-A runnable task.
+Ops are orchestrations of containerized workloads.
 
-## Op Bundles
+## Op Dir Structure
 
-Ops are defined via [Bundles](#bundles). Valid op bundles meet the
-following criteria:
+```
+my-op
+  |-- op.yml
+  ... (op specific files/dirs)
+```
+
+Ops are defined via directories meeting the following criteria:
 
 - [MUST](#mustmayrecommended) contain an [op.yml file](#opyml-file) at
   their root.
@@ -61,8 +61,8 @@ following criteria:
 
 ## op.yml file
 
-`op.yml` files are the manifest for op bundles. Valid `op.yml`
-files meet the following criteria:
+`op.yml` files are the manifest for ops. Valid `op.yml` files meet the
+following criteria:
 
 - [MUST](index.md#mustmayrecommended) be named `op.yml`
 - [MUST](index.md#mustmayrecommended) be
@@ -76,10 +76,15 @@ files meet the following criteria:
 One or more [ops](#ops), grouped together physically (via embedding)
 and/or logically (via reference).
 
-## Collection Bundles
+## Collection Dir Structure
 
-Collection are defined via [Bundles](#bundles). Valid collection bundles
-meet the following criteria:
+```
+my-collection
+  |-- collection.yml
+  ... (embedded ops)
+```
+
+Collection are defined via directories meeting the following criteria:
 
 - [MUST](#mustmayrecommended) contain a
   [collection.yml file](#collectionyml-file) at their root.
@@ -88,7 +93,7 @@ meet the following criteria:
 
 ## collection.yml file
 
-`collection.yml` files are the manifest for collection bundles. Valid
+`collection.yml` files are the manifest for collections. Valid
 `collection.yml` files meet the following criteria:
 
 - [MUST](index.md#mustmayrecommended) be named `collection.yml`
@@ -98,11 +103,18 @@ meet the following criteria:
   [schema/manifest.json#definitions/collectionManifest](schema/manifest.json#definitions/collectionManifest)
 
 
+
 ## Default Collections
+
+```
+.opspec
+  |-- collection.yml
+  ... (embedded ops)
+```
 
 Directories within hierarchical filesystems, [MAY](#mustmayrecommended)
 contain [default collections](#default-collections). For a collection to
-be designated as default, it's bundle [MUST](#mustmayrecommended) be
+be designated as default, it's directory [MUST](#mustmayrecommended) be
 named `.opspec`.
 
 [default collections](#default-collections) [MUST](#mustmayrecommended),
@@ -111,8 +123,7 @@ by default, be effective within their containing directory.
 
 # Registry
 
-Registries store [bundle](#bundles), enabling centralized publication,
-discovery, and consumption.
+Released versions of ops & collections are distributed via repositories.
 
 ## Registry API
 
