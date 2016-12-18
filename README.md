@@ -30,3 +30,14 @@ see [CONTRIBUTING.md](CONTRIBUTING.md)
 # Changelog
 
 see [CHANGELOG.md](CHANGELOG.md)
+
+# Influences
+
+[App Container](https://github.com/appc)
+[Docker](https://github.com/docker)
+[Inter Planetary Filesystem (IPFS)](https://github.com/ipfs)
+[JSON Schema](https://github.com/json-schema)
+[Kubernetes](https://github.com/kubernetes)
+[Open Container Initiative (OCI)](https://github.com/opencontainers)
+[Openstack Heat Orchestration Template (HOT) spec](http://docs.openstack.org/developer/heat/template_guide/hot_spec.html#hot-spec)
+[Wercker](https://github.com/wercker)
