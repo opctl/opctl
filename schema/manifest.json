@@ -55,14 +55,14 @@
           "description": "Inputs to the op",
           "type": "array",
           "items": {
-            "$ref": "param-declaration.json"
+            "$ref": "param.json"
           }
         },
         "outputs": {
           "description": "Outputs from the op",
           "type": "array",
           "items": {
-            "$ref": "param-declaration.json"
+            "$ref": "param.json"
           }
         },
         "run": {
