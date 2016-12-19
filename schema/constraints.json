@@ -59,7 +59,7 @@
           "type": "string"
         },
         "max": {
-          "description": "Minimum valid length",
+          "description": "Maximum valid length",
           "type": "integer",
           "minimum": 1
         },
@@ -73,7 +73,7 @@
       "additionalProperties": false
     },
     "stringPatternConstraint": {
-      "title": "stringLengthConstraint",
+      "title": "stringPatternConstraint",
       "description": "Constrains a string to match a pattern",
       "type": "object",
       "properties": {
