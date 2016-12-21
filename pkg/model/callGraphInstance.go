@@ -22,9 +22,9 @@ type ContainerCallInstance struct {
 type OpCallInstance struct {
   Ref     string
   // binds inputs of referenced op to in scope variables
-  Args    *map[string]string
+  Args    map[string]string
   // binds in scope variables to outputs of referenced op
-  Results *map[string]string
+  Results map[string]string
 }
 
 // instance of a parallel call

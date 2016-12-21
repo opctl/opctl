@@ -13,7 +13,6 @@ type DirParam struct {
   Description string `yaml:"description"`
   IsSecret    bool `yaml:"isSecret"`
   Name        string `yaml:"name"`
-  Value       string `yaml:"-"`
 }
 
 // File parameter of an op
@@ -21,7 +20,6 @@ type FileParam struct {
   Description string `yaml:"description"`
   IsSecret    bool `yaml:"isSecret"`
   Name        string `yaml:"name"`
-  Value       string `yaml:"-"`
 }
 
 // Network socket parameter of an op
@@ -30,12 +28,6 @@ type NetSocketParam struct {
   Description string `yaml:"description"`
   IsSecret    bool `yaml:"isSecret"`
   Name        string `yaml:"name"`
-  Value       *NetSocketParamValue `yaml:"-"`
-}
-
-type NetSocketParamValue struct {
-  Host string `json:"host"`
-  Port uint `json:"port"`
 }
 
 // String parameter of an op
@@ -45,5 +37,4 @@ type StringParam struct {
   Description string `yaml:"description"`
   IsSecret    bool `yaml:"isSecret"`
   Name        string `yaml:"name"`
-  Value       string `yaml:"-"`
 }

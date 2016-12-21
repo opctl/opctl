@@ -19,7 +19,7 @@ var _ = Describe("StartOp", func() {
 
     /* arrange */
     providedStartOpReq := model.StartOpReq{
-      Args:map[string]interface{}{},
+      Args:map[string]*model.Arg{},
       OpRef:"dummyOpRef",
     }
 

@@ -17,11 +17,11 @@ type ContainerCall struct {
 }
 
 type OpCall struct {
-  Ref     string `yaml:ref`
+  Ref     string `yaml:"ref"`
   // binds inputs of referenced op to in scope variables
-  Args    *map[string]string `yaml:args,omitempty`
+  Args    map[string]string `yaml:"args,omitempty"`
   // binds in scope variables to outputs of referenced op
-  Results *map[string]string `yaml:results:omitempty`
+  Results map[string]string `yaml:"results,omitempty"`
 }
 
 type ParallelCall []CallGraph

@@ -5,7 +5,10 @@ import (
 )
 
 type Validate interface {
-  Param(param *model.Param) (errors []error)
+  Param(
+  arg *model.Arg,
+  param *model.Param,
+  ) (errors []error)
 }
 
 func New() Validate {

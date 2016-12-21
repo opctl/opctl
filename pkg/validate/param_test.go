@@ -11,29 +11,280 @@ import (
 var _ = Describe("Param", func() {
 
   objectUnderTest := New()
-  Context("invoked w/ non nil param.String", func() {
-    Context("w/ non-empty Value", func() {
+  Context("invoked w/ non-empty arg.String", func() {
+    Context("equal-length to non-zero param.Constraints.Length.Max", func() {
+
+      It("returns no errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Max:len(providedArg.String),
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{}
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("longer than non-zero param.Constraints.Length.Max", func() {
+
+      It("returns expected errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Max:len(providedArg.String) - 1,
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{
+          fmt.Errorf(
+            "%v must be <= %v characters",
+            providedParam.String.Name,
+            providedParam.String.Constraints.Length.Max,
+          ),
+        }
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("shorter than non-zero param.Constraints.Length.Max", func() {
+
+      It("returns no errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Max:len(providedArg.String) + 1,
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{}
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("equal-length to non-zero param.Constraints.Length.Min", func() {
+
+      It("should return no errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Min:len(providedArg.String),
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{}
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("shorter than non-zero param.Constraints.Length.Min", func() {
+
+      It("should return expected errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Min:len(providedArg.String) + 1,
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{
+          fmt.Errorf(
+            "%v must be >= %v characters",
+            providedParam.String.Name,
+            providedParam.String.Constraints.Length.Min,
+          ),
+        }
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("longer than non-zero param.Constraints.Length.Min", func() {
+
+      It("should return no errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Length:&model.StringLengthConstraint{
+                Min:len(providedArg.String) - 1,
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{}
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("not matching non-empty param.Constraints.Patterns", func() {
+
+      It("should return expected errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Patterns:[]*model.StringPatternConstraint{
+                {
+                  Regex:"^$",
+                },
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{
+          fmt.Errorf(
+            "%v must match pattern %v",
+            providedParam.String.Name,
+            providedParam.String.Constraints.Patterns[0].Regex,
+          ),
+        }
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("matching non-empty param.Constraints.Patterns", func() {
+
+      It("should return no errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          String:"dummyValue",
+        }
+        providedParam := &model.Param{
+          String:&model.StringParam{
+            Constraints: &model.StringConstraints{
+              Patterns:[]*model.StringPatternConstraint{
+                {
+                  Regex:".$",
+                },
+              },
+            },
+          },
+        }
+
+        expectedErrors := []error{}
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+  })
+  Context("invoked w/ empty arg.String", func() {
+    Context("and non empty Default", func() {
       Context("equal-length to non-zero param.Constraints.Length.Max", func() {
 
         It("returns no errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Max:len(providedValue),
+                  Max:len(providedDefault),
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
           expectedErrors := []error{}
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -45,15 +296,18 @@ var _ = Describe("Param", func() {
         It("returns expected errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Max:len(providedValue) - 1,
+                  Max:len(providedDefault) - 1,
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
@@ -66,7 +320,7 @@ var _ = Describe("Param", func() {
           }
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -78,22 +332,25 @@ var _ = Describe("Param", func() {
         It("returns no errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Max:len(providedValue) + 1,
+                  Max:len(providedDefault) + 1,
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
           expectedErrors := []error{}
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -105,22 +362,25 @@ var _ = Describe("Param", func() {
         It("should return no errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Min:len(providedValue),
+                  Min:len(providedDefault),
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
           expectedErrors := []error{}
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -132,15 +392,18 @@ var _ = Describe("Param", func() {
         It("should return expected errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Min:len(providedValue) + 1,
+                  Min:len(providedDefault) + 1,
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
@@ -153,7 +416,7 @@ var _ = Describe("Param", func() {
           }
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -165,22 +428,25 @@ var _ = Describe("Param", func() {
         It("should return no errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
                 Length:&model.StringLengthConstraint{
-                  Min:len(providedValue) - 1,
+                  Min:len(providedDefault) - 1,
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
           expectedErrors := []error{}
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -192,7 +458,10 @@ var _ = Describe("Param", func() {
         It("should return expected errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
@@ -202,7 +471,7 @@ var _ = Describe("Param", func() {
                   },
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
@@ -215,7 +484,7 @@ var _ = Describe("Param", func() {
           }
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -227,7 +496,10 @@ var _ = Describe("Param", func() {
         It("should return no errors", func() {
 
           /* arrange */
-          providedValue := "dummyValue"
+          providedArg := &model.Arg{
+            String:"",
+          }
+          providedDefault := "dummyDefault"
           providedParam := &model.Param{
             String:&model.StringParam{
               Constraints: &model.StringConstraints{
@@ -237,14 +509,14 @@ var _ = Describe("Param", func() {
                   },
                 },
               },
-              Value: providedValue,
+              Default: providedDefault,
             },
           }
 
           expectedErrors := []error{}
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -252,263 +524,21 @@ var _ = Describe("Param", func() {
         })
       })
     })
-    Context("w/ empty Value", func() {
-      Context("and non empty Default", func() {
-        Context("equal-length to non-zero param.Constraints.Length.Max", func() {
-
-          It("returns no errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Max:len(providedDefault),
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{}
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("longer than non-zero param.Constraints.Length.Max", func() {
-
-          It("returns expected errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Max:len(providedDefault) - 1,
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{
-              fmt.Errorf(
-                "%v must be <= %v characters",
-                providedParam.String.Name,
-                providedParam.String.Constraints.Length.Max,
-              ),
-            }
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("shorter than non-zero param.Constraints.Length.Max", func() {
-
-          It("returns no errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Max:len(providedDefault) + 1,
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{}
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("equal-length to non-zero param.Constraints.Length.Min", func() {
-
-          It("should return no errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Min:len(providedDefault),
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{}
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("shorter than non-zero param.Constraints.Length.Min", func() {
-
-          It("should return expected errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Min:len(providedDefault) + 1,
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{
-              fmt.Errorf(
-                "%v must be >= %v characters",
-                providedParam.String.Name,
-                providedParam.String.Constraints.Length.Min,
-              ),
-            }
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("longer than non-zero param.Constraints.Length.Min", func() {
-
-          It("should return no errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Length:&model.StringLengthConstraint{
-                    Min:len(providedDefault) - 1,
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{}
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("not matching non-empty param.Constraints.Patterns", func() {
-
-          It("should return expected errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Patterns:[]*model.StringPatternConstraint{
-                    {
-                      Regex:"^$",
-                    },
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{
-              fmt.Errorf(
-                "%v must match pattern %v",
-                providedParam.String.Name,
-                providedParam.String.Constraints.Patterns[0].Regex,
-              ),
-            }
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-        Context("matching non-empty param.Constraints.Patterns", func() {
-
-          It("should return no errors", func() {
-
-            /* arrange */
-            providedDefault := "dummyDefault"
-            providedParam := &model.Param{
-              String:&model.StringParam{
-                Constraints: &model.StringConstraints{
-                  Patterns:[]*model.StringPatternConstraint{
-                    {
-                      Regex:".$",
-                    },
-                  },
-                },
-                Default: providedDefault,
-              },
-            }
-
-            expectedErrors := []error{}
-
-            /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
-
-            /* assert */
-            Expect(actualErrors).To(Equal(expectedErrors))
-
-          })
-        })
-      })
-    })
   })
-  Context("invoked w/ non nil param.NetSocket", func() {
-    Context("w/ non-empty Value.Port", func() {
+  Context("invoked w/ non nil arg.NetSocket", func() {
+    Context("w/ non-empty Port", func() {
       Context("equal to 0", func() {
         It("should return expected errors", func() {
 
           /* arrange */
-          providedValue := &model.NetSocketParamValue{
-            Host:"dummyHost",
-            Port: 0,
+          providedArg := &model.Arg{
+            NetSocket:&model.NetSocketArg{
+              Host:"dummyHost",
+              Port: 0,
+            },
           }
           providedParam := &model.Param{
-            NetSocket:&model.NetSocketParam{
-              Value: providedValue,
-            },
+            NetSocket:&model.NetSocketParam{},
           }
 
           expectedErrors := []error{
@@ -516,7 +546,7 @@ var _ = Describe("Param", func() {
           }
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -529,20 +559,20 @@ var _ = Describe("Param", func() {
           for i < 65536 {
 
             /* arrange */
-            providedValue := &model.NetSocketParamValue{
-              Host:"dummyHost",
-              Port: i,
+            providedArg := &model.Arg{
+              NetSocket:&model.NetSocketArg{
+                Host:"dummyHost",
+                Port: i,
+              },
             }
             providedParam := &model.Param{
-              NetSocket:&model.NetSocketParam{
-                Value: providedValue,
-              },
+              NetSocket:&model.NetSocketParam{},
             }
 
             expectedErrors := []error{}
 
             /* act */
-            actualErrors := objectUnderTest.Param(providedParam)
+            actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
             /* assert */
             Expect(actualErrors).To(Equal(expectedErrors))
@@ -556,14 +586,14 @@ var _ = Describe("Param", func() {
         It("should return expected errors", func() {
 
           /* arrange */
-          providedValue := &model.NetSocketParamValue{
-            Host:"dummyHost",
-            Port: 65536,
+          providedArg := &model.Arg{
+            NetSocket:&model.NetSocketArg{
+              Host:"dummyHost",
+              Port: 65536,
+            },
           }
           providedParam := &model.Param{
-            NetSocket:&model.NetSocketParam{
-              Value: providedValue,
-            },
+            NetSocket:&model.NetSocketParam{},
           }
 
           expectedErrors := []error{
@@ -571,7 +601,142 @@ var _ = Describe("Param", func() {
           }
 
           /* act */
-          actualErrors := objectUnderTest.Param(providedParam)
+          actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+          /* assert */
+          Expect(actualErrors).To(Equal(expectedErrors))
+
+        })
+      })
+    })
+    Context("w/ empty Port", func() {
+      It("should return expected errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          NetSocket:&model.NetSocketArg{
+            Host:"dummyHost",
+          },
+        }
+        providedParam := &model.Param{
+          NetSocket:&model.NetSocketParam{},
+        }
+
+        expectedErrors := []error{
+          errors.New("Port must be > 0"),
+        }
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+    Context("w/ empty Host", func() {
+      It("should return expected errors", func() {
+
+        /* arrange */
+        providedArg := &model.Arg{
+          NetSocket:&model.NetSocketArg{
+            Port: 80,
+          },
+        }
+        providedParam := &model.Param{
+          NetSocket:&model.NetSocketParam{},
+        }
+
+        expectedErrors := []error{
+          errors.New("Host required"),
+        }
+
+        /* act */
+        actualErrors := objectUnderTest.Param(providedArg, providedParam)
+
+        /* assert */
+        Expect(actualErrors).To(Equal(expectedErrors))
+
+      })
+    })
+  })
+  Context("invoked w/ non nil param.NetSocket", func() {
+    Context("w/ non-empty Value.Port", func() {
+      Context("equal to 0", func() {
+        It("should return expected errors", func() {
+
+          /* arrange */
+          providedValue := &model.Arg{
+            NetSocket:&model.NetSocketArg{
+              Host:"dummyHost",
+              Port: 0,
+            },
+          }
+          providedParam := &model.Param{
+            NetSocket:&model.NetSocketParam{},
+          }
+
+          expectedErrors := []error{
+            errors.New("Port must be > 0"),
+          }
+
+          /* act */
+          actualErrors := objectUnderTest.Param(providedValue, providedParam)
+
+          /* assert */
+          Expect(actualErrors).To(Equal(expectedErrors))
+
+        })
+      })
+      Context("between 0 and 65536", func() {
+        It("should return no errors", func() {
+          var i uint = 1
+          for i < 65536 {
+
+            /* arrange */
+            providedValue := &model.Arg{
+              NetSocket:&model.NetSocketArg{
+                Host:"dummyHost",
+                Port: i,
+              },
+            }
+            providedParam := &model.Param{
+              NetSocket:&model.NetSocketParam{},
+            }
+
+            expectedErrors := []error{}
+
+            /* act */
+            actualErrors := objectUnderTest.Param(providedValue, providedParam)
+
+            /* assert */
+            Expect(actualErrors).To(Equal(expectedErrors))
+
+            i += i
+          }
+
+        })
+      })
+      Context("equal to 65536", func() {
+        It("should return expected errors", func() {
+
+          /* arrange */
+          providedValue := &model.Arg{
+            NetSocket:&model.NetSocketArg{
+              Host:"dummyHost",
+              Port: 65536,
+            },
+          }
+          providedParam := &model.Param{
+            NetSocket:&model.NetSocketParam{},
+          }
+
+          expectedErrors := []error{
+            errors.New("Port must be <= 65535"),
+          }
+
+          /* act */
+          actualErrors := objectUnderTest.Param(providedValue, providedParam)
 
           /* assert */
           Expect(actualErrors).To(Equal(expectedErrors))
@@ -583,13 +748,13 @@ var _ = Describe("Param", func() {
       It("should return expected errors", func() {
 
         /* arrange */
-        providedValue := &model.NetSocketParamValue{
-          Host:"dummyHost",
+        providedValue := &model.Arg{
+          NetSocket:&model.NetSocketArg{
+            Host:"dummyHost",
+          },
         }
         providedParam := &model.Param{
-          NetSocket:&model.NetSocketParam{
-            Value: providedValue,
-          },
+          NetSocket:&model.NetSocketParam{},
         }
 
         expectedErrors := []error{
@@ -597,7 +762,7 @@ var _ = Describe("Param", func() {
         }
 
         /* act */
-        actualErrors := objectUnderTest.Param(providedParam)
+        actualErrors := objectUnderTest.Param(providedValue, providedParam)
 
         /* assert */
         Expect(actualErrors).To(Equal(expectedErrors))
@@ -608,13 +773,13 @@ var _ = Describe("Param", func() {
       It("should return expected errors", func() {
 
         /* arrange */
-        providedValue := &model.NetSocketParamValue{
-          Port: 80,
+        providedValue := &model.Arg{
+          NetSocket:&model.NetSocketArg{
+            Port: 80,
+          },
         }
         providedParam := &model.Param{
-          NetSocket:&model.NetSocketParam{
-            Value: providedValue,
-          },
+          NetSocket:&model.NetSocketParam{},
         }
 
         expectedErrors := []error{
@@ -622,7 +787,7 @@ var _ = Describe("Param", func() {
         }
 
         /* act */
-        actualErrors := objectUnderTest.Param(providedParam)
+        actualErrors := objectUnderTest.Param(providedValue, providedParam)
 
         /* assert */
         Expect(actualErrors).To(Equal(expectedErrors))
