@@ -9,13 +9,3 @@ services:
     build: .
     extends:
       service: working_dir
-    environment:
-      - GOARCH=amd64
-      - GOOS=linux
-  docker:
-    image: docker:1.12.1
-    extends:
-      file: ../.common/docker-compose.yml
-      service: working_dir
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock

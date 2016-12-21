@@ -5,47 +5,73 @@ import (
 	"sync"
 
 	"github.com/opspec-io/engine/pkg/containerengine"
-	"github.com/opspec-io/engine/util/eventing"
+	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type ContainerEngine struct {
-	StartContainerStub        func(opRunArgs map[string]string, opBundlePath string, opName string, opRunId string, eventPublisher eventing.EventPublisher, rootOpRunId string) (err error)
+	StartContainerStub        func(cmd []string, env []*model.ContainerInstanceEnvEntry, fs []*model.ContainerInstanceFsEntry, image string, net []*model.ContainerInstanceNetEntry, workDir string, containerId string, eventPublisher eventbus.EventPublisher, opGraphId string) (err error)
 	startContainerMutex       sync.RWMutex
 	startContainerArgsForCall []struct {
-		opRunArgs      map[string]string
-		opBundlePath   string
-		opName         string
-		opRunId        string
-		eventPublisher eventing.EventPublisher
-		rootOpRunId    string
+		cmd            []string
+		env            []*model.ContainerInstanceEnvEntry
+		fs             []*model.ContainerInstanceFsEntry
+		image          string
+		net            []*model.ContainerInstanceNetEntry
+		workDir        string
+		containerId    string
+		eventPublisher eventbus.EventPublisher
+		opGraphId      string
 	}
 	startContainerReturns struct {
 		result1 error
 	}
-	EnsureContainerRemovedStub        func(opBundlePath string, opRunId string)
-	ensureContainerRemovedMutex       sync.RWMutex
-	ensureContainerRemovedArgsForCall []struct {
-		opBundlePath string
-		opRunId      string
+	DeleteContainerIfExistsStub        func(containerId string)
+	deleteContainerIfExistsMutex       sync.RWMutex
+	deleteContainerIfExistsArgsForCall []struct {
+		containerId string
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *ContainerEngine) StartContainer(opRunArgs map[string]string, opBundlePath string, opName string, opRunId string, eventPublisher eventing.EventPublisher, rootOpRunId string) (err error) {
+func (fake *ContainerEngine) StartContainer(cmd []string, env []*model.ContainerInstanceEnvEntry, fs []*model.ContainerInstanceFsEntry, image string, net []*model.ContainerInstanceNetEntry, workDir string, containerId string, eventPublisher eventbus.EventPublisher, opGraphId string) (err error) {
+	var cmdCopy []string
+	if cmd != nil {
+		cmdCopy = make([]string, len(cmd))
+		copy(cmdCopy, cmd)
+	}
+	var envCopy []*model.ContainerInstanceEnvEntry
+	if env != nil {
+		envCopy = make([]*model.ContainerInstanceEnvEntry, len(env))
+		copy(envCopy, env)
+	}
+	var fsCopy []*model.ContainerInstanceFsEntry
+	if fs != nil {
+		fsCopy = make([]*model.ContainerInstanceFsEntry, len(fs))
+		copy(fsCopy, fs)
+	}
+	var netCopy []*model.ContainerInstanceNetEntry
+	if net != nil {
+		netCopy = make([]*model.ContainerInstanceNetEntry, len(net))
+		copy(netCopy, net)
+	}
 	fake.startContainerMutex.Lock()
 	fake.startContainerArgsForCall = append(fake.startContainerArgsForCall, struct {
-		opRunArgs      map[string]string
-		opBundlePath   string
-		opName         string
-		opRunId        string
-		eventPublisher eventing.EventPublisher
-		rootOpRunId    string
-	}{opRunArgs, opBundlePath, opName, opRunId, eventPublisher, rootOpRunId})
-	fake.recordInvocation("StartContainer", []interface{}{opRunArgs, opBundlePath, opName, opRunId, eventPublisher, rootOpRunId})
+		cmd            []string
+		env            []*model.ContainerInstanceEnvEntry
+		fs             []*model.ContainerInstanceFsEntry
+		image          string
+		net            []*model.ContainerInstanceNetEntry
+		workDir        string
+		containerId    string
+		eventPublisher eventbus.EventPublisher
+		opGraphId      string
+	}{cmdCopy, envCopy, fsCopy, image, netCopy, workDir, containerId, eventPublisher, opGraphId})
+	fake.recordInvocation("StartContainer", []interface{}{cmdCopy, envCopy, fsCopy, image, netCopy, workDir, containerId, eventPublisher, opGraphId})
 	fake.startContainerMutex.Unlock()
 	if fake.StartContainerStub != nil {
-		return fake.StartContainerStub(opRunArgs, opBundlePath, opName, opRunId, eventPublisher, rootOpRunId)
+		return fake.StartContainerStub(cmd, env, fs, image, net, workDir, containerId, eventPublisher, opGraphId)
 	} else {
 		return fake.startContainerReturns.result1
 	}
@@ -57,10 +83,10 @@ func (fake *ContainerEngine) StartContainerCallCount() int {
 	return len(fake.startContainerArgsForCall)
 }
 
-func (fake *ContainerEngine) StartContainerArgsForCall(i int) (map[string]string, string, string, string, eventing.EventPublisher, string) {
+func (fake *ContainerEngine) StartContainerArgsForCall(i int) ([]string, []*model.ContainerInstanceEnvEntry, []*model.ContainerInstanceFsEntry, string, []*model.ContainerInstanceNetEntry, string, string, eventbus.EventPublisher, string) {
 	fake.startContainerMutex.RLock()
 	defer fake.startContainerMutex.RUnlock()
-	return fake.startContainerArgsForCall[i].opRunArgs, fake.startContainerArgsForCall[i].opBundlePath, fake.startContainerArgsForCall[i].opName, fake.startContainerArgsForCall[i].opRunId, fake.startContainerArgsForCall[i].eventPublisher, fake.startContainerArgsForCall[i].rootOpRunId
+	return fake.startContainerArgsForCall[i].cmd, fake.startContainerArgsForCall[i].env, fake.startContainerArgsForCall[i].fs, fake.startContainerArgsForCall[i].image, fake.startContainerArgsForCall[i].net, fake.startContainerArgsForCall[i].workDir, fake.startContainerArgsForCall[i].containerId, fake.startContainerArgsForCall[i].eventPublisher, fake.startContainerArgsForCall[i].opGraphId
 }
 
 func (fake *ContainerEngine) StartContainerReturns(result1 error) {
@@ -70,29 +96,28 @@ func (fake *ContainerEngine) StartContainerReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *ContainerEngine) EnsureContainerRemoved(opBundlePath string, opRunId string) {
-	fake.ensureContainerRemovedMutex.Lock()
-	fake.ensureContainerRemovedArgsForCall = append(fake.ensureContainerRemovedArgsForCall, struct {
-		opBundlePath string
-		opRunId      string
-	}{opBundlePath, opRunId})
-	fake.recordInvocation("EnsureContainerRemoved", []interface{}{opBundlePath, opRunId})
-	fake.ensureContainerRemovedMutex.Unlock()
-	if fake.EnsureContainerRemovedStub != nil {
-		fake.EnsureContainerRemovedStub(opBundlePath, opRunId)
+func (fake *ContainerEngine) DeleteContainerIfExists(containerId string) {
+	fake.deleteContainerIfExistsMutex.Lock()
+	fake.deleteContainerIfExistsArgsForCall = append(fake.deleteContainerIfExistsArgsForCall, struct {
+		containerId string
+	}{containerId})
+	fake.recordInvocation("DeleteContainerIfExists", []interface{}{containerId})
+	fake.deleteContainerIfExistsMutex.Unlock()
+	if fake.DeleteContainerIfExistsStub != nil {
+		fake.DeleteContainerIfExistsStub(containerId)
 	}
 }
 
-func (fake *ContainerEngine) EnsureContainerRemovedCallCount() int {
-	fake.ensureContainerRemovedMutex.RLock()
-	defer fake.ensureContainerRemovedMutex.RUnlock()
-	return len(fake.ensureContainerRemovedArgsForCall)
+func (fake *ContainerEngine) DeleteContainerIfExistsCallCount() int {
+	fake.deleteContainerIfExistsMutex.RLock()
+	defer fake.deleteContainerIfExistsMutex.RUnlock()
+	return len(fake.deleteContainerIfExistsArgsForCall)
 }
 
-func (fake *ContainerEngine) EnsureContainerRemovedArgsForCall(i int) (string, string) {
-	fake.ensureContainerRemovedMutex.RLock()
-	defer fake.ensureContainerRemovedMutex.RUnlock()
-	return fake.ensureContainerRemovedArgsForCall[i].opBundlePath, fake.ensureContainerRemovedArgsForCall[i].opRunId
+func (fake *ContainerEngine) DeleteContainerIfExistsArgsForCall(i int) string {
+	fake.deleteContainerIfExistsMutex.RLock()
+	defer fake.deleteContainerIfExistsMutex.RUnlock()
+	return fake.deleteContainerIfExistsArgsForCall[i].containerId
 }
 
 func (fake *ContainerEngine) Invocations() map[string][][]interface{} {
@@ -100,8 +125,8 @@ func (fake *ContainerEngine) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.startContainerMutex.RLock()
 	defer fake.startContainerMutex.RUnlock()
-	fake.ensureContainerRemovedMutex.RLock()
-	defer fake.ensureContainerRemovedMutex.RUnlock()
+	fake.deleteContainerIfExistsMutex.RLock()
+	defer fake.deleteContainerIfExistsMutex.RUnlock()
 	return fake.invocations
 }
 

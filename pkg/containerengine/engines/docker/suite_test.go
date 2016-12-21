@@ -1,13 +1,13 @@
 package docker
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-  "testing"
+	"testing"
 )
 
 func Test(t *testing.T) {
-  RegisterFailHandler(Fail)
-  RunSpecs(t, "engine/pkg/containerengine/engines/docker")
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "engine/pkg/containerengine/engines/docker")
 }

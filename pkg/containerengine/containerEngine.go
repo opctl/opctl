@@ -3,21 +3,24 @@ package containerengine
 //go:generate counterfeiter -o engines/fake/containerEngine.go --fake-name ContainerEngine ./ ContainerEngine
 
 import (
-  "github.com/opspec-io/engine/util/eventing"
+	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type ContainerEngine interface {
-  StartContainer(
-  opRunArgs map[string]string,
-  opBundlePath string,
-  opName string,
-  opRunId string,
-  eventPublisher eventing.EventPublisher,
-  rootOpRunId string,
-  ) (err error)
+	StartContainer(
+		cmd []string,
+		env []*model.ContainerInstanceEnvEntry,
+		fs []*model.ContainerInstanceFsEntry,
+		image string,
+		net []*model.ContainerInstanceNetEntry,
+		workDir string,
+		containerId string,
+		eventPublisher eventbus.EventPublisher,
+		opGraphId string,
+	) (err error)
 
-  EnsureContainerRemoved(
-  opBundlePath string,
-  opRunId string,
-  )
+	DeleteContainerIfExists(
+		containerId string,
+	)
 }

@@ -1,37 +1,37 @@
 package docker
 
 import (
-  "time"
-  "io"
-  "github.com/opspec-io/sdk-golang/pkg/model"
-  "bufio"
-  "github.com/opspec-io/engine/util/eventing"
+	"bufio"
+	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/sdk-golang/pkg/model"
+	"io"
+	"time"
 )
 
 func NewStdOutWriter(
-eventPublisher eventing.EventPublisher,
-opRunId string,
-rootOpRunId string,
+	eventPublisher eventbus.EventPublisher,
+	containerId string,
+	opGraphId string,
 ) io.Writer {
 
-  reader, writer := io.Pipe()
-  scanner := bufio.NewScanner(reader)
+	reader, writer := io.Pipe()
+	scanner := bufio.NewScanner(reader)
 
-  go func() {
-    for scanner.Scan() {
-      eventPublisher.Publish(
-        model.Event{
-          Timestamp:time.Now().UTC(),
-          ContainerStdOutWrittenTo:&model.ContainerStdOutWrittenToEvent{
-            Data:scanner.Bytes(),
-            OpRunId:opRunId,
-            RootOpRunId:rootOpRunId,
-          },
-        },
-      )
-    }
-  }()
+	go func() {
+		for scanner.Scan() {
+			eventPublisher.Publish(
+				model.Event{
+					Timestamp: time.Now().UTC(),
+					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+						Data:        scanner.Bytes(),
+						ContainerId: containerId,
+						OpGraphId:   opGraphId,
+					},
+				},
+			)
+		}
+	}()
 
-  return writer
+	return writer
 
 }

@@ -1,13 +1,13 @@
 package uniquestring
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-  "testing"
+	"testing"
 )
 
 func Test(t *testing.T) {
-  RegisterFailHandler(Fail)
-  RunSpecs(t, "engine/util/uniquestring")
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "engine/util/uniquestring")
 }

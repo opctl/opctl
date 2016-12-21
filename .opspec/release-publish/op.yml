@@ -1,0 +1,6 @@
+description: publishes a release by compiling binaries and distributing them to equinox.io
+name: release-publish
+inputs:
+- { name: EQUINOX_TOKEN, description: 'An https://equinox.io/ auth token', isSecret: true }
+- { name: EQUINOX_SIGNING_KEY, description: 'signing key for artifacts published to https://equinox.io/', isSecret: true }
+- { name: VERSION, description: 'Version to set' }

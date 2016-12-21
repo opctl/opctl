@@ -1,8 +1,8 @@
 # Dev Ops
 
-This project maintains an [op spec](http://opspec.io/).
+This project maintains an [op spec](https://opspec.io/).
 
-It can be consumed via tools like [opctl](https://github.com/opspec-io/cli).
+It can be consumed via tools like [opctl](https://opctl.io).
 
 # Acceptance criteria
 

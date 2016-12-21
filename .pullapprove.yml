@@ -4,6 +4,6 @@ reject_regex: ^[Rr]ejected
 reset_on_push: true
 reviewers:
   teams:
-    - engine-maintainers
+    - opctl-maintainers
   name: default
   required: 1

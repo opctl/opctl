@@ -1,29 +1,36 @@
 package docker
 
 import (
-  dockerClientPkg "github.com/docker/docker/client"
-  "github.com/opspec-io/engine/pkg/containerengine"
+	dockerClientPkg "github.com/docker/docker/client"
+	"github.com/opspec-io/engine/pkg/containerengine"
+	"golang.org/x/net/context"
 )
 
-func New(
-) (
-containerEngine containerengine.ContainerEngine,
-err error,
+func New() (
+	containerEngine containerengine.ContainerEngine,
+	err error,
 ) {
 
-  dockerClient, err := dockerClientPkg.NewEnvClient()
-  if (nil != err) {
-    return
-  }
+	dockerEngine, err := dockerClientPkg.NewEnvClient()
+	if nil != err {
+		return
+	}
 
-  containerEngine = _containerEngine{
-    containerExitCodeReader :newContainerExitCodeReader(dockerClient),
-  }
+	// degrade client version to version of server
+	pingInfo, err := dockerEngine.Ping(context.Background())
+	if nil != err {
+		return
+	}
+	dockerEngine.UpdateClientVersion(pingInfo.APIVersion)
 
-  return
+	containerEngine = _containerEngine{
+		dockerEngine: dockerEngine,
+	}
+
+	return
 
 }
 
 type _containerEngine struct {
-  containerExitCodeReader containerExitCodeReader
+	dockerEngine dockerEngine
 }
