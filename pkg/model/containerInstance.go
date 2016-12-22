@@ -22,5 +22,5 @@ type ContainerInstanceNetEntry struct {
   Host        string `json:"host"`
   // aliases to give the network socket host in the container
   HostAliases string `json:"hostAliases"`
-  Port        string `json:"port"`
+  Port        uint `json:"port"`
 }
