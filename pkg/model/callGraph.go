@@ -8,7 +8,7 @@ type CallGraph struct {
 }
 
 type ContainerCall struct {
-  Cmd     string `yaml:"cmd,omitempty"`
+  Cmd     []string `yaml:"cmd,omitempty"`
   Env     []*ContainerEnvEntry `yaml:"env,omitempty"`
   Fs      []*ContainerFsEntry `yaml:"fs,omitempty"`
   Image   string `yaml:"image"`

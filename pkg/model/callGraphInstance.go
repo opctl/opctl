@@ -10,7 +10,7 @@ type CallGraphInstance struct {
 
 // instance of a container call
 type ContainerCallInstance struct {
-  Cmd     string
+  Cmd     []string
   Env     []*ContainerInstanceEnvEntry
   Fs      []*ContainerInstanceFsEntry
   Image   string
