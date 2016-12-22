@@ -18,5 +18,5 @@ type ContainerFsEntry struct {
 type ContainerNetEntry struct {
   Bind        string `yaml:"bind,omitempty"`
   // aliases to give the network socket host in the container
-  HostAliases string `yaml:"hostAliases"`
+  HostAliases []string `yaml:"hostAliases"`
 }
