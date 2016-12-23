@@ -4,8 +4,8 @@ type CallGraphInstance struct {
   CallGraphInstanceId string
   Container           *ContainerCallInstance
   Op                  *OpCallInstance
-  Parallel            *ParallelCallInstance
-  Serial              *SerialCallInstance
+  Parallel            []*CallGraphInstance
+  Serial              []*CallGraphInstance
 }
 
 // instance of a container call
@@ -26,9 +26,3 @@ type OpCallInstance struct {
   // binds in scope variables to outputs of referenced op
   Results map[string]string
 }
-
-// instance of a parallel call
-type ParallelCallInstance []CallGraphInstance
-
-// instance of a serial call
-type SerialCallInstance []CallGraphInstance

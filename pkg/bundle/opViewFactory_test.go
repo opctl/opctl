@@ -159,13 +159,13 @@ var _ = Describe("_opViewFactory", func() {
 
     })
 
-    Context("when opManifest.Run.Parallel is not nil", func() {
+    Context("when opManifest.Run.Parallel is not empty", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */
 
         expectedCallGraph := &model.CallGraph{
-          Parallel: &model.ParallelCall{},
+          Parallel: []*model.CallGraph{},
         }
 
         fakeFileSystem := new(fs.FakeFileSystem)
@@ -194,7 +194,7 @@ var _ = Describe("_opViewFactory", func() {
 
       })
     })
-    Context("when opManifest.Run.Parallel is nil", func() {
+    Context("when opManifest.Run.Parallel is empty", func() {
       It("should return expected opView.Run", func() {
 
         /* arrange */

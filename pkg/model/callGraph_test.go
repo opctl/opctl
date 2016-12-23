@@ -19,6 +19,12 @@ var _ = Describe("CallGraph", func() {
         expectedCallGraph := CallGraph{
           Op:&OpCall{
             Ref:"dummyOpRef",
+            Args:map[string]string{
+              "dummyArg1Name":"dummyArg1Value",
+            },
+            Results:map[string]string{
+              "dummyResult1Name":"dummyResult1Value",
+            },
           },
         }
 
@@ -38,13 +44,13 @@ var _ = Describe("CallGraph", func() {
 
     })
 
-    Context("with non-nil $.parallel", func() {
+    Context("with non-empty $.parallel", func() {
 
       It("should have expected attributes", func() {
 
         /* arrange */
         expectedCallGraph := CallGraph{
-          Parallel:&ParallelCall{
+          Parallel:[]*CallGraph{
             {
               Op:&OpCall{
                 Ref:"dummyOpRef",
@@ -70,13 +76,13 @@ var _ = Describe("CallGraph", func() {
     })
   })
 
-  Context("with non-nil $.serial", func() {
+  Context("with non-empty $.serial", func() {
 
     It("should have expected attributes", func() {
 
       /* arrange */
       expectedCallGraph := CallGraph{
-        Serial:&SerialCall{
+        Serial:[]*CallGraph{
           {
             Op:&OpCall{
               Ref:"dummyOpRef",

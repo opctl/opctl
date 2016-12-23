@@ -3,8 +3,8 @@ package model
 type CallGraph struct {
   Container *ContainerCall `yaml:"container,omitempty"`
   Op        *OpCall `yaml:"op:omitempty"`
-  Parallel  *ParallelCall `yaml:"parallel,omitempty"`
-  Serial    *SerialCall `yaml:"serial,omitempty"`
+  Parallel  []*CallGraph `yaml:"parallel,omitempty"`
+  Serial    []*CallGraph `yaml:"serial,omitempty"`
 }
 
 type ContainerCall struct {
@@ -23,7 +23,3 @@ type OpCall struct {
   // binds in scope variables to outputs of referenced op
   Results map[string]string `yaml:"results,omitempty"`
 }
-
-type ParallelCall []CallGraph
-
-type SerialCall []CallGraph
