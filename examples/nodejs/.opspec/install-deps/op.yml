@@ -7,10 +7,10 @@ outputs:
   - dir: { name: APP_DIR, description: Directory containing the app }
 run:
   container:
-    cmd: npm install
+    cmd: [ npm, install ]
     env:
       - { bind: NPM_CONFIG_REGISTRY }
     fs:
       - { bind: APP_DIR, path: /opt/app }
-    image: node:7.1.0
+    image: node:7.2
     workDir: /opt/app

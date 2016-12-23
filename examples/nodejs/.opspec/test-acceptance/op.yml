@@ -5,7 +5,7 @@ inputs:
   - netSocket: { name: API_SOCKET, description: Network socket for the API under test, constraints: [ port: 80 ] }
 run:
   container:
-    cmd: node_modules/.bin/mocha --recursive --reporter=spec tests/unit
+    cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     fs:
       - { bind: APP_DIR, path: /opt/app }
     image: node:7.1.0

@@ -5,7 +5,7 @@ inputs:
   - file: { name: DOCKER_CONFIG, description: Docker config.json file, isSecret: true}
 run:
   container:
-    cmd: docker push $IMAGE_REF
+    cmd: [ docker, push, $IMAGE_REF ]
     env:
       - { bind: IMAGE_REF }
     fs:

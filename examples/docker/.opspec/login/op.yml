@@ -8,7 +8,7 @@ outputs:
   - file: { name: DOCKER_CONFIG, description: Can be used for caching, isSecret: true}
 run:
   container:
-    cmd: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    cmd: [ docker, login, -u, $DOCKER_USERNAME, -p, $DOCKER_PASSWORD ]
     env:
       - { bind: DOCKER_PASSWORD }
       - { bind: DOCKER_USERNAME }

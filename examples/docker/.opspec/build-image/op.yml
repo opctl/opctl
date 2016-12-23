@@ -5,7 +5,7 @@ inputs:
   - dir: { name: BUILD_CONTEXT }
 run:
   container:
-    cmd: docker build -t $IMAGE_REF .
+    cmd: [ docker, build, -t, $IMAGE_REF, . ]
     fs:
       - { bind: BUILD_CONTEXT, path: /opt/app }
     image: docker:1.12.0
