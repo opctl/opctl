@@ -38,7 +38,8 @@ var _ = Describe("_getOp", func() {
       /* arrange */
       expectedOpView := model.OpView{
         Description: "dummyDescription",
-        Inputs:[]model.Param{},
+        Inputs:[]*model.Param{},
+        Outputs:[]*model.Param{},
         Name: "dummyName",
         Run: &model.CallGraph{
           Op:&model.OpCall{

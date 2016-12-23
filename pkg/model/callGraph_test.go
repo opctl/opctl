@@ -7,9 +7,9 @@ import (
 )
 
 var _ = Describe("CallGraph", func() {
-  yaml := format.NewYamlFormat()
 
   Context("when formatting to/from yaml", func() {
+    yaml := format.NewYamlFormat()
 
     Context("with non-nil $.op", func() {
 
@@ -74,36 +74,36 @@ var _ = Describe("CallGraph", func() {
       })
 
     })
-  })
 
-  Context("with non-empty $.serial", func() {
+    Context("with non-empty $.serial", func() {
 
-    It("should have expected attributes", func() {
+      It("should have expected attributes", func() {
 
-      /* arrange */
-      expectedCallGraph := CallGraph{
-        Serial:[]*CallGraph{
-          {
-            Op:&OpCall{
-              Ref:"dummyOpRef",
+        /* arrange */
+        expectedCallGraph := CallGraph{
+          Serial:[]*CallGraph{
+            {
+              Op:&OpCall{
+                Ref:"dummyOpRef",
+              },
             },
           },
-        },
-      }
+        }
 
-      /* act */
-      providedYaml, err := yaml.From(expectedCallGraph)
-      if (nil != err) {
-        panic(err)
-      }
+        /* act */
+        providedYaml, err := yaml.From(expectedCallGraph)
+        if (nil != err) {
+          panic(err)
+        }
 
-      actualCallGraph := CallGraph{}
-      yaml.To(providedYaml, &actualCallGraph)
+        actualCallGraph := CallGraph{}
+        yaml.To(providedYaml, &actualCallGraph)
 
-      /* assert */
-      Expect(actualCallGraph).To(Equal(expectedCallGraph))
+        /* assert */
+        Expect(actualCallGraph).To(Equal(expectedCallGraph))
+
+      })
 
     })
-
   })
 })

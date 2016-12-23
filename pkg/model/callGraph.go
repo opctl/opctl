@@ -2,7 +2,7 @@ package model
 
 type CallGraph struct {
   Container *ContainerCall `yaml:"container,omitempty"`
-  Op        *OpCall `yaml:"op:omitempty"`
+  Op        *OpCall `yaml:"op,omitempty"`
   Parallel  []*CallGraph `yaml:"parallel,omitempty"`
   Serial    []*CallGraph `yaml:"serial,omitempty"`
 }

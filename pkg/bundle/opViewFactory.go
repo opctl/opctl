@@ -64,6 +64,7 @@ err error,
     Description: opManifest.Description,
     Inputs: opManifest.Inputs,
     Name: opManifest.Name,
+    Outputs: opManifest.Outputs,
     Run: opManifest.Run,
     Version: opManifest.Version,
   }

@@ -8,6 +8,8 @@ import (
   "reflect"
   "github.com/opspec-io/sdk-golang/util/fs"
   "github.com/opspec-io/sdk-golang/util/format"
+  "os"
+  "fmt"
 )
 
 var _ = Describe("_opViewFactory", func() {
@@ -89,7 +91,7 @@ var _ = Describe("_opViewFactory", func() {
     It("should return expected opView", func() {
 
       /* arrange */
-      expectedInputs := []model.Param{
+      dummyParams := []*model.Param{
         {
           String: &model.StringParam{
             Default:"dummyDefault",
@@ -121,8 +123,9 @@ var _ = Describe("_opViewFactory", func() {
 
       expectedOpView := model.OpView{
         Description: "dummyDescription",
-        Inputs: expectedInputs,
+        Inputs: dummyParams,
         Name: "dummyName",
+        Outputs: dummyParams,
         Run: expectedCallGraph,
         Version: "dummyVersion",
       }
@@ -138,7 +141,8 @@ var _ = Describe("_opViewFactory", func() {
             Description:expectedOpView.Description,
             Version:expectedOpView.Version,
           },
-          Inputs:expectedInputs,
+          Inputs:dummyParams,
+          Outputs:dummyParams,
           Run:expectedCallGraph,
         }
 
@@ -165,7 +169,13 @@ var _ = Describe("_opViewFactory", func() {
         /* arrange */
 
         expectedCallGraph := &model.CallGraph{
-          Parallel: []*model.CallGraph{},
+          Parallel: []*model.CallGraph{
+            {
+              Op: &model.OpCall{
+                Ref:"dummyRef",
+              },
+            },
+          },
         }
 
         fakeFileSystem := new(fs.FakeFileSystem)
@@ -229,8 +239,124 @@ var _ = Describe("_opViewFactory", func() {
         Expect(actualOpView.Run).To(Equal(expectedCallGraph))
 
       })
+      Context("when opManifest.Run.Serial is not empty", func() {
+        It("should return expected opView.Run", func() {
+
+          /* arrange */
+          expectedCallGraph := &model.CallGraph{
+            Serial: []*model.CallGraph{
+              {
+                Op: &model.OpCall{
+                  Ref:"dummyRef",
+                },
+              },
+            },
+          }
+
+          fakeFileSystem := new(fs.FakeFileSystem)
+
+          fakeYamlFormat := new(format.FakeFormat)
+          fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
+
+            stubbedOpManifest := model.OpManifest{
+              Run:expectedCallGraph,
+            }
+
+            reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
+            return
+          }
+
+          objectUnderTest := newOpViewFactory(
+            fakeFileSystem,
+            fakeYamlFormat,
+          )
+
+          /* act */
+          actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
+
+          /* assert */
+          Expect(actualOpView.Run).To(Equal(expectedCallGraph))
+
+        })
+      })
 
     })
-  })
+    Context("when passed ./testdata/opspec-0.1.3/examples/nodejs/.opspec/debug", func() {
+      wd, err := os.Getwd()
+      if (nil != err) {
+        panic(err)
+      }
+      It("should return expected opView", func() {
 
+        /* arrange */
+        expectedOpView := model.OpView{
+          Description:"Ensures deps are installed and debugs the node app",
+          Name:"debug",
+          Inputs:[]*model.Param{
+            {
+              String:&model.StringParam{
+                Name:"NPM_CONFIG_REGISTRY",
+                IsSecret:true,
+              },
+            },
+            {
+              Dir:&model.DirParam{
+                Name:"APP_DIR",
+                Description:"Directory containing the app",
+              },
+            },
+          },
+          Outputs:[]*model.Param{
+            {
+              Dir:&model.DirParam{
+                Name:"APP_DIR",
+                Description:"Directory containing the app (returned to support caching)",
+              },
+            },
+          },
+          Run:&model.CallGraph{
+            Serial:[]*model.CallGraph{
+              {
+                Op: &model.OpCall{
+                  Ref:"install-deps",
+                  Args:map[string]string{
+                    "NPM_CONFIG_REGISTRY":"",
+                    "APP_DIR":"",
+                  },
+                  Results:map[string]string{
+                    "APP_DIR":"",
+                  },
+                },
+              },
+              {
+                Op: &model.OpCall{
+                  Ref: "debug-api",
+                  Args:map[string]string{
+                    "APP_DIR":"",
+                  },
+                },
+              },
+            },
+          },
+        }
+
+        objectUnderTest := newOpViewFactory(
+          fs.NewFileSystem(),
+          format.NewYamlFormat(),
+        )
+
+        /* act */
+        actualOpView, err :=
+          objectUnderTest.Construct(
+            fmt.Sprintf("%v/../../testdata/opspec-0.1.3/examples/nodejs/.opspec/debug", wd))
+        if (nil != err) {
+          panic(err)
+        }
+
+        /* assert */
+        Expect(actualOpView).To(Equal(expectedOpView))
+
+      })
+    })
+  })
 })

@@ -1,0 +1,13 @@
+name: push-image
+description: Pushes a local image to a registry
+inputs:
+  - string: { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
+  - file: { name: DOCKER_CONFIG, description: Docker config.json file, isSecret: true}
+run:
+  container:
+    cmd: [ docker, push, $IMAGE_REF ]
+    env:
+      - { bind: IMAGE_REF }
+    fs:
+      - { bind: DOCKER_CONFIG, path: /root/.docker/config.json }
+    image: docker:1.12.0

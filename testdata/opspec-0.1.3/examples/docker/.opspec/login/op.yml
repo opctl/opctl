@@ -1,0 +1,17 @@
+name: login
+description: Logs in to a docker registry
+inputs:
+  - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true}
+  - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true}
+  - file: { name: DOCKER_CONFIG, description: Existing config to add login to; by default a new config is generated, isSecret: true}
+outputs:
+  - file: { name: DOCKER_CONFIG, description: Can be used for caching, isSecret: true}
+run:
+  container:
+    cmd: [ docker, login, -u, $DOCKER_USERNAME, -p, $DOCKER_PASSWORD ]
+    env:
+      - { bind: DOCKER_PASSWORD }
+      - { bind: DOCKER_USERNAME }
+    fs:
+      - { bind: DOCKER_CONFIG, path: /root/.docker/config.json }
+    image: docker:1.12.0

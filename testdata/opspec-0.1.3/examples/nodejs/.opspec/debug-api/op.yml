@@ -1,0 +1,17 @@
+name: debug-api
+description: Debugs the apps api by starting it and exposing a remote debugger
+inputs:
+  - dir: { name: APP_DIR, description: Directory containing the app }
+outputs:
+  - netSocket: { name: API_SOCKET, description: Network socket for the API }
+  - netSocket: { name: API_DEBUG_SOCKET, description: Network socket for the API remote debugger }
+run:
+  container:
+    cmd: [ node, --debug, --harmony-async-await, ./index.js ]
+    fs:
+      - { bind: APP_DIR, path: /opt/app }
+    image: node:7.1.0
+    net:
+      - { bind: API_SOCKET, port: 80}
+      - { bind: API_DEBUG_SOCKET, port: 5858 }
+    workDir: /opt/app
