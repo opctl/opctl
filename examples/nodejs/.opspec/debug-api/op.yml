@@ -7,7 +7,7 @@ outputs:
   - netSocket: { name: API_DEBUG_SOCKET, description: Network socket for the API remote debugger }
 run:
   container:
-    cmd: node  --debug --harmony-async-await ./index.js
+    cmd: [ node, --debug, --harmony-async-await, app/index.js ]
     fs:
       - { bind: APP_DIR, path: /opt/app }
     image: node:7.1.0

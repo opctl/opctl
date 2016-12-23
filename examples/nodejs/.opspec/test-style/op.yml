@@ -4,7 +4,7 @@ inputs:
   - dir: { name: APP_DIR, description: Directory containing the app }
 run:
   container:
-    cmd: node_modules/.bin/eslint lib
+    cmd: [ node_modules/.bin/eslint, lib ]
     fs:
       - { bind: APP_DIR, path: /opt/app }
     image: node:7.1.0

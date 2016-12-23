@@ -1,11 +1,9 @@
-const koaApp = new require('koa')();
-const koaRouter = require('koa-router');
+const Koa = require('koa');
+const app = new Koa();
 
-koaApp.use(
-  koaRouter()
-    .get('/', async koaContext => {
-      koaContext.response.body = 'Ok';
-    })
-);
+// response
+app.use(ctx => {
+  ctx.body = 'Hello opspec';
+});
 
-return koaApp.listen(80);
+app.listen(80);
