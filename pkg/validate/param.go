@@ -97,7 +97,7 @@ param *model.NetSocketParam,
       errs = append(errs, fmt.Errorf(
         "%v Port must be %v",
         param.Name,
-        arg.Port,
+        param.Constraints.PortNumber.Number,
       ))
     }
   }
