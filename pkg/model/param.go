@@ -2,10 +2,10 @@ package model
 
 // Parameter of an op
 type Param struct {
-  Dir       *DirParam `yaml:",omitempty"`
-  File      *FileParam `yaml:",omitempty"`
-  NetSocket *NetSocketParam `yaml:",omitempty"`
-  String    *StringParam `yaml:",omitempty"`
+  Dir       *DirParam `yaml:"dir,omitempty"`
+  File      *FileParam `yaml:"file,omitempty"`
+  NetSocket *NetSocketParam `yaml:"netSocket,omitempty"`
+  String    *StringParam `yaml:"string,omitempty"`
 }
 
 // Directory parameter of an op

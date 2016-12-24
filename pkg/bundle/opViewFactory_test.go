@@ -358,5 +358,78 @@ var _ = Describe("_opViewFactory", func() {
 
       })
     })
+    Context("when passed ./testdata/opspec-0.1.3/examples/nodejs/.opspec/test-acceptance", func() {
+      wd, err := os.Getwd()
+      if (nil != err) {
+        panic(err)
+      }
+      It("should return expected opView", func() {
+
+        /* arrange */
+        expectedOpView := model.OpView{
+          Description:"Runs acceptance tests",
+          Name:"test-acceptance",
+          Inputs:[]*model.Param{
+            {
+              Dir:&model.DirParam{
+                Name:"APP_DIR",
+                Description:"Directory containing the app",
+              },
+            },
+            {
+              NetSocket:&model.NetSocketParam{
+                Name:"API_SOCKET",
+                Description:"Network socket for the API under test",
+                Constraints:&model.NetSocketConstraints{
+                  PortNumber:&model.PortNumberNetSocketConstraint{
+                    Number:80,
+                  },
+                },
+              },
+            },
+          },
+          Run:&model.CallGraph{
+            Container:&model.ContainerCall{
+              Cmd:[]string{
+                "node_modules/.bin/mocha",
+                "--recursive",
+                "--reporter=spec",
+                "tests/unit",
+              },
+              Fs:[]*model.ContainerFsEntry{
+                {
+                  Bind:"APP_DIR",
+                  Path: "/opt/app",
+                },
+              },
+              Image:"node:7.1.0",
+              Net:[]*model.ContainerNetEntry{
+                {
+                  Bind: "API_SOCKET",
+                },
+              },
+              WorkDir:"/opt/app",
+            },
+          },
+        }
+
+        objectUnderTest := newOpViewFactory(
+          fs.NewFileSystem(),
+          format.NewYamlFormat(),
+        )
+
+        /* act */
+        actualOpView, err :=
+          objectUnderTest.Construct(
+            fmt.Sprintf("%v/../../testdata/opspec-0.1.3/examples/nodejs/.opspec/test-acceptance", wd))
+        if (nil != err) {
+          panic(err)
+        }
+
+        /* assert */
+        Expect(actualOpView).To(Equal(expectedOpView))
+
+      })
+    })
   })
 })
