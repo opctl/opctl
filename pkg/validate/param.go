@@ -5,29 +5,40 @@ import (
   "github.com/opspec-io/sdk-golang/pkg/model"
   "fmt"
   "unicode/utf8"
-  "errors"
 )
 
-// validates the provided parameter
+// validates an arg against a parameter
 func (this validate) Param(
 arg *model.Arg,
 param *model.Param,
 ) (errs []error) {
-  if (nil != param.String) {
-    errs = this.stringParam(arg.String, param.String)
-  } else if (nil != param.NetSocket) {
-    errs = this.netSocketParam(arg.NetSocket, param.NetSocket)
+  if (nil == param) {
+    panic("param required")
+  }
+
+  switch{
+  case nil != param.String:
+    errs = this.stringParam(arg, param.String)
+  case nil != param.NetSocket:
+    errs = this.netSocketParam(arg, param.NetSocket)
   }
   return
 }
 
-// validates the provided string parameter
+// validates an arg against a string parameter
 func (this validate) stringParam(
-arg string,
+rawArg *model.Arg,
 param *model.StringParam,
 ) (errs []error) {
   errs = []error{}
 
+  // handle no arg passed
+  if (nil == rawArg) {
+    errs = append(errs, fmt.Errorf("%v required", param.Name))
+    return
+  }
+
+  arg := rawArg.String
   if ("" == arg && "" != param.Default) {
     // apply default if arg not set
     arg = param.Default
@@ -71,20 +82,28 @@ param *model.StringParam,
   return
 }
 
-// validates the provided network socket parameter
+// validates an arg against a network socket parameter
 func (this validate) netSocketParam(
-arg *model.NetSocketArg,
+rawArg *model.Arg,
 param *model.NetSocketParam,
 ) (errs []error) {
   errs = []error{}
+
+  // handle no arg passed
+  if (nil == rawArg || nil == rawArg.NetSocket) {
+    errs = append(errs, fmt.Errorf("%v required", param.Name))
+    return
+  }
+
+  arg := rawArg.NetSocket
   if ("" == arg.Host) {
-    errs = append(errs, errors.New("Host required"))
+    errs = append(errs, fmt.Errorf("%v.host required", param.Name))
   }
   if (0 >= arg.Port) {
-    errs = append(errs, errors.New("Port must be > 0"))
+    errs = append(errs, fmt.Errorf("%v.port must be > 0", param.Name))
   }
   if (65536 <= arg.Port) {
-    errs = append(errs, errors.New("Port must be <= 65535"))
+    errs = append(errs, fmt.Errorf("%v.port must be <= 65535", param.Name))
   }
 
   // guard no constraints
@@ -95,7 +114,7 @@ param *model.NetSocketParam,
   if ( nil != portNumberConstraint) {
     if (portNumberConstraint.Number != arg.Port) {
       errs = append(errs, fmt.Errorf(
-        "%v Port must be %v",
+        "%v.port must be %v",
         param.Name,
         param.Constraints.PortNumber.Number,
       ))
