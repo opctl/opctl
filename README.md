@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)
-[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/opspec-io)[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
 
 SDK for golang implementing common [opspec](http://opspec.io)
 integration scenarios.

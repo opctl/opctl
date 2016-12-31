@@ -13,7 +13,7 @@ type CreateOpReq struct {
 }
 
 type KillOpReq struct {
-  OpInstanceId string
+  OpId string
 }
 
 type SetCollectionDescriptionReq struct {

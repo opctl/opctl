@@ -26,7 +26,7 @@ type EngineClient interface {
   StartOp(
   req model.StartOpReq,
   ) (
-  opInstanceId string,
+  opId string,
   err error,
   )
 }

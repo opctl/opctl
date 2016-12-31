@@ -11,7 +11,7 @@ import (
 func (this _engineClient) StartOp(
 req model.StartOpReq,
 ) (
-opInstanceId string,
+opId string,
 err error,
 ) {
 
@@ -39,12 +39,12 @@ err error,
     return
   }
 
-  opInstanceIdBuffer, err := ioutil.ReadAll(httpResp.Body)
+  opIdBuffer, err := ioutil.ReadAll(httpResp.Body)
   if (nil != err) {
     return
   }
 
-  opInstanceId = string(opInstanceIdBuffer)
+  opId = string(opIdBuffer)
 
   return
 

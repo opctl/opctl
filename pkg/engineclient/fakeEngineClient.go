@@ -22,7 +22,7 @@ type FakeEngineClient struct {
   killOpReturns             struct {
                               result1 error
                             }
-  StartOpStub               func(req model.StartOpReq) (opInstanceId string, err error)
+  StartOpStub               func(req model.StartOpReq) (opId string, err error)
   startOpMutex              sync.RWMutex
   startOpArgsForCall        []struct {
     req model.StartOpReq
@@ -94,7 +94,7 @@ func (fake *FakeEngineClient) KillOpReturns(result1 error) {
   }{result1}
 }
 
-func (fake *FakeEngineClient) StartOp(req model.StartOpReq) (opInstanceId string, err error) {
+func (fake *FakeEngineClient) StartOp(req model.StartOpReq) (opId string, err error) {
   fake.startOpMutex.Lock()
   fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {
     req model.StartOpReq

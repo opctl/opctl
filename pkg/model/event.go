@@ -3,6 +3,8 @@ package model
 import "time"
 
 type Event struct {
+  ContainerExited          *ContainerExitedEvent `json:"containerExitedEvent,omitempty"`
+  ContainerStarted         *ContainerStartedEvent `json:"containerStartedEvent,omitempty"`
   ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
   ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitEmpty"`
   OpEnded                  *OpEndedEvent `json:"opEnded,omitempty"`
@@ -17,36 +19,53 @@ const (
   OpOutcomeKilled = "KILLED"
 )
 
+type ContainerExitedEvent struct {
+  ContainerRef string `json:"containerRef"`
+  ExitCode     int `json:"exitCode"`
+  RootOpId     string `json:"rootOpId"`
+  ContainerId  string `json:"containerId"`
+  OpRef        string `json:"opRef"`
+}
+
+type ContainerStartedEvent struct {
+  ContainerRef string `json:"containerRef"`
+  RootOpId     string `json:"rootOpId"`
+  ContainerId  string `json:"containerId"`
+  OpRef        string `json:"opRef"`
+}
+
 type ContainerStdErrWrittenToEvent struct {
-  Data             []byte `json:"data"`
-  OpRef            string `json:"opRef"`
-  OpInstanceId     string `json:"opInstanceId"`
-  RootOpInstanceId string `json:"rootOpInstanceId"`
+  ContainerRef string `json:"containerRef"`
+  Data         []byte `json:"data"`
+  RootOpId     string `json:"rootOpId"`
+  ContainerId  string `json:"containerId"`
+  OpRef        string `json:"opRef"`
 }
 
 type ContainerStdOutWrittenToEvent struct {
-  Data             []byte `json:"data"`
-  OpRef            string `json:"opRef"`
-  OpInstanceId     string `json:"opInstanceId"`
-  RootOpInstanceId string `json:"rootOpInstanceId"`
+  ContainerRef string `json:"containerRef"`
+  Data         []byte `json:"data"`
+  RootOpId     string `json:"rootOpId"`
+  ContainerId  string `json:"containerId"`
+  OpRef        string `json:"opRef"`
 }
 
 type OpEncounteredErrorEvent struct {
-  Msg              string `json:"msg"`
-  OpRef            string `json:"opRef"`
-  OpInstanceId     string `json:"opInstanceId"`
-  RootOpInstanceId string `json:"rootOpInstanceId"`
+  RootOpId string `json:"rootOpId"`
+  Msg      string `json:"msg"`
+  OpId     string `json:"opId"`
+  OpRef    string `json:"opRef"`
 }
 
 type OpEndedEvent struct {
-  OpRef            string `json:"opRef"`
-  OpInstanceId     string `json:"opInstanceId"`
-  Outcome          string `json:"outcome"`
-  RootOpInstanceId string `json:"rootOpInstanceId"`
+  RootOpId string `json:"rootOpId"`
+  OpId     string `json:"opId"`
+  OpRef    string `json:"opRef"`
+  Outcome  string `json:"outcome"`
 }
 
 type OpStartedEvent struct {
-  OpRef            string `json:"opRef"`
-  OpInstanceId     string `json:"opInstanceId"`
-  RootOpInstanceId string `json:"rootOpInstanceId"`
+  RootOpId string `json:"rootOpId"`
+  OpId     string `json:"opId"`
+  OpRef    string `json:"opRef"`
 }

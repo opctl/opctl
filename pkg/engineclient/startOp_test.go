@@ -25,7 +25,7 @@ var _ = Describe("StartOp", func() {
 
     expectedReqBytes, _ := format.NewJsonFormat().From(providedStartOpReq)
     engineProtocolRelativeBaseUrl := "dummyEngineProtocolBaseUrl"
-    expectedResult := "dummyOpInstanceId"
+    expectedResult := "dummyOpId"
 
     expectedHttpReq, _ := netHttp.NewRequest(
       "POST",
