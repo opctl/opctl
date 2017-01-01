@@ -21,7 +21,7 @@ var _ = Describe("Event", func() {
           ContainerExited:&ContainerExitedEvent{
             ContainerRef:"dummyContainerRef",
             ExitCode:1,
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
             ContainerId:"dummyContainerId",
             OpRef:"dummyOpRef",
           },
@@ -54,7 +54,7 @@ var _ = Describe("Event", func() {
             ContainerRef:"dummyContainerRef",
             OpRef:"dummyOpRef",
             ContainerId:"dummyContainerId",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -85,7 +85,7 @@ var _ = Describe("Event", func() {
             Data:[]byte("dummyData"),
             OpRef:"dummyOpRef",
             ContainerId:"dummyContainerId",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -116,7 +116,7 @@ var _ = Describe("Event", func() {
             Data: []byte("dummyData"),
             OpRef:"dummyOpRef",
             ContainerId:"dummyContainerId",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -147,7 +147,7 @@ var _ = Describe("Event", func() {
             OpRef:"dummyOpRef",
             OpId:"dummyOpId",
             Outcome:"dummyOutcome",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -177,7 +177,7 @@ var _ = Describe("Event", func() {
           OpStarted:&OpStartedEvent{
             OpRef:"dummyOpRef",
             OpId:"dummyOpId",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }
@@ -208,7 +208,7 @@ var _ = Describe("Event", func() {
             Msg:"dummyMsg",
             OpRef:"dummyOpRef",
             OpId:"dummyOpId",
-            RootOpId:"dummyRootOpId",
+            OpGraphId:"dummyOpGraphId",
           },
           Timestamp:time.Now().UTC(),
         }

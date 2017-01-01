@@ -12,6 +12,7 @@ import (
 
 type EngineClient interface {
   GetEventStream(
+  req *model.GetEventStreamReq,
   ) (
   stream chan model.Event,
   err error,

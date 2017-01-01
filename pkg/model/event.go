@@ -22,14 +22,14 @@ const (
 type ContainerExitedEvent struct {
   ContainerRef string `json:"containerRef"`
   ExitCode     int `json:"exitCode"`
-  RootOpId     string `json:"rootOpId"`
+  OpGraphId     string `json:"opGraphId"`
   ContainerId  string `json:"containerId"`
   OpRef        string `json:"opRef"`
 }
 
 type ContainerStartedEvent struct {
   ContainerRef string `json:"containerRef"`
-  RootOpId     string `json:"rootOpId"`
+  OpGraphId     string `json:"opGraphId"`
   ContainerId  string `json:"containerId"`
   OpRef        string `json:"opRef"`
 }
@@ -37,7 +37,7 @@ type ContainerStartedEvent struct {
 type ContainerStdErrWrittenToEvent struct {
   ContainerRef string `json:"containerRef"`
   Data         []byte `json:"data"`
-  RootOpId     string `json:"rootOpId"`
+  OpGraphId     string `json:"opGraphId"`
   ContainerId  string `json:"containerId"`
   OpRef        string `json:"opRef"`
 }
@@ -45,27 +45,27 @@ type ContainerStdErrWrittenToEvent struct {
 type ContainerStdOutWrittenToEvent struct {
   ContainerRef string `json:"containerRef"`
   Data         []byte `json:"data"`
-  RootOpId     string `json:"rootOpId"`
+  OpGraphId     string `json:"opGraphId"`
   ContainerId  string `json:"containerId"`
   OpRef        string `json:"opRef"`
 }
 
 type OpEncounteredErrorEvent struct {
-  RootOpId string `json:"rootOpId"`
+  OpGraphId string `json:"opGraphId"`
   Msg      string `json:"msg"`
   OpId     string `json:"opId"`
   OpRef    string `json:"opRef"`
 }
 
 type OpEndedEvent struct {
-  RootOpId string `json:"rootOpId"`
+  OpGraphId string `json:"opGraphId"`
   OpId     string `json:"opId"`
   OpRef    string `json:"opRef"`
   Outcome  string `json:"outcome"`
 }
 
 type OpStartedEvent struct {
-  RootOpId string `json:"rootOpId"`
+  OpGraphId string `json:"opGraphId"`
   OpId     string `json:"opId"`
   OpRef    string `json:"opRef"`
 }

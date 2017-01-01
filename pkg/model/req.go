@@ -12,8 +12,16 @@ type CreateOpReq struct {
   Description string
 }
 
+type EventFilter struct {
+  OpGraphIds []string
+}
+
+type GetEventStreamReq struct {
+  Filters []*EventFilter
+}
+
 type KillOpReq struct {
-  OpId string
+  OpGraphId string
 }
 
 type SetCollectionDescriptionReq struct {

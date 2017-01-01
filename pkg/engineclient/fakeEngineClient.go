@@ -3,13 +3,16 @@ package engineclient
 
 import (
   "sync"
+
   "github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type FakeEngineClient struct {
-  GetEventStreamStub        func() (stream chan model.Event, err error)
+  GetEventStreamStub        func(req *model.GetEventStreamReq) (stream chan model.Event, err error)
   getEventStreamMutex       sync.RWMutex
-  getEventStreamArgsForCall []struct{}
+  getEventStreamArgsForCall []struct {
+    req *model.GetEventStreamReq
+  }
   getEventStreamReturns     struct {
                               result1 chan model.Event
                               result2 error
@@ -35,13 +38,15 @@ type FakeEngineClient struct {
   invocationsMutex          sync.RWMutex
 }
 
-func (fake *FakeEngineClient) GetEventStream() (stream chan model.Event, err error) {
+func (fake *FakeEngineClient) GetEventStream(req *model.GetEventStreamReq) (stream chan model.Event, err error) {
   fake.getEventStreamMutex.Lock()
-  fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct{}{})
-  fake.recordInvocation("GetEventStream", []interface{}{})
+  fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
+    req *model.GetEventStreamReq
+  }{req})
+  fake.recordInvocation("GetEventStream", []interface{}{req})
   fake.getEventStreamMutex.Unlock()
   if fake.GetEventStreamStub != nil {
-    return fake.GetEventStreamStub()
+    return fake.GetEventStreamStub(req)
   } else {
     return fake.getEventStreamReturns.result1, fake.getEventStreamReturns.result2
   }
@@ -51,6 +56,12 @@ func (fake *FakeEngineClient) GetEventStreamCallCount() int {
   fake.getEventStreamMutex.RLock()
   defer fake.getEventStreamMutex.RUnlock()
   return len(fake.getEventStreamArgsForCall)
+}
+
+func (fake *FakeEngineClient) GetEventStreamArgsForCall(i int) *model.GetEventStreamReq {
+  fake.getEventStreamMutex.RLock()
+  defer fake.getEventStreamMutex.RUnlock()
+  return fake.getEventStreamArgsForCall[i].req
 }
 
 func (fake *FakeEngineClient) GetEventStreamReturns(result1 chan model.Event, result2 error) {
