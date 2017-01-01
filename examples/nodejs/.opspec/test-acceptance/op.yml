@@ -1,7 +1,7 @@
 name: test-acceptance
 description: Runs acceptance tests
 inputs:
-  - dir: { name: APP_DIR, default: ., description: Directory containing the app }
+  - dir: { name: APP_DIR, description: Directory containing the app }
   - netSocket: { name: API_SOCKET, description: Network socket for the API under test, constraints: { port: { number: 80 } } }
 run:
   container:
