@@ -3,7 +3,7 @@ description: Builds an image, logs in to a docker registry, and pushes the image
 inputs:
   - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true}
   - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true}
-  - string: { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
+  - string: { name: IMAGE_REF, description: 'Docker image reference. pseudo regex: "((registry/)?namespace/)?repo(:tag)?)"' }
   - dir: { name: BUILD_CONTEXT }
 run:
   serial:
