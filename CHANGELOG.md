@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - `dir`, `file`, and `netSocket` parameter types
 - `constraints` attribute for `string` and `netSocket` parameter types
 - [./schema/call-graph.json#definitions/containerCall](schema/call-graph.json#definitions/containerCall)
+- `filter` to engine API `/event-stream` resource
 
 ### Changed
 
