@@ -10,6 +10,18 @@ produces:
   - text/html
 paths:
   /event-stream:
+    parameters:
+      - name: filter
+        in: query
+        description: |
+          A json encoded object supporting the following:
+
+          |attribute|type|description|
+          |--|--|--|
+          |opGraphIds|array of strings|events must have one of these op graph ids|
+        required: false
+        type: string
+        format: json
     get:
       summary: Get event stream
       description: The connection will be upgraded to use the websocket protocol.
