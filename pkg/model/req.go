@@ -17,7 +17,7 @@ type EventFilter struct {
 }
 
 type GetEventStreamReq struct {
-  Filters []*EventFilter
+  Filter *EventFilter
 }
 
 type KillOpReq struct {

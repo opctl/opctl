@@ -22,15 +22,15 @@ req *model.GetEventStreamReq,
 
   // construct query params
   queryParams := []string{}
-  if filters := req.Filters; nil != req.Filters {
-    var filtersBytes []byte
-    filtersBytes, err = this.jsonFormat.From(filters)
+  if filter := req.Filter; nil != filter {
+    var filterBytes []byte
+    filterBytes, err = this.jsonFormat.From(filter)
     if (nil != err) {
       return
     }
     queryParams = append(
       queryParams,
-      fmt.Sprintf("filters=%v", url.QueryEscape(string(filtersBytes))),
+      fmt.Sprintf("filter=%v", url.QueryEscape(string(filterBytes))),
     )
   }
 
