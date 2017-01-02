@@ -6,6 +6,7 @@ import (
   "github.com/gorilla/websocket"
   "github.com/opspec-io/sdk-golang/pkg/model"
   "strings"
+  "net/url"
 )
 
 func (this _engineClient) GetEventStream(
@@ -27,7 +28,10 @@ req *model.GetEventStreamReq,
     if (nil != err) {
       return
     }
-    queryParams = append(queryParams, fmt.Sprintf("filters=%v", string(filtersBytes)))
+    queryParams = append(
+      queryParams,
+      fmt.Sprintf("filters=%v", url.QueryEscape(string(filtersBytes))),
+    )
   }
 
   c, _, err := websocket.DefaultDialer.Dial(
