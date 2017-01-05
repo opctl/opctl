@@ -7,6 +7,6 @@ inputs:
   - dir: { name: BUILD_CONTEXT }
 run:
   serial:
-    - op: { ref: build-image, args: { BUILD_CONTEXT: ~, IMAGE_REF: ~ } }
-    - op: { ref: login, args: { DOCKER_PASSWORD: ~, DOCKER_USERNAME: ~ }, results: { DOCKER_CONFIG: ~ } }
-    - op: { ref: push-image, args: { DOCKER_CONFIG: ~, IMAGE_REF: ~ } }
+    - op: { ref: build-image, inputs: { BUILD_CONTEXT: ~, IMAGE_REF: ~ } }
+    - op: { ref: login, inputs: { DOCKER_PASSWORD: ~, DOCKER_USERNAME: ~ }, outputs: { DOCKER_CONFIG: ~ } }
+    - op: { ref: push-image, inputs: { DOCKER_CONFIG: ~, IMAGE_REF: ~ } }

@@ -10,7 +10,7 @@ run:
     cmd: [ node, --debug, --harmony-async-await, app/index.js ]
     fs:
       - { bind: APP_DIR, path: /opt/app }
-    image: node:7.1.0
+    image: node:7.3
     net:
       - { bind: API_SOCKET, port: 80}
       - { bind: API_DEBUG_SOCKET, port: 5858 }

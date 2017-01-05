@@ -65,13 +65,13 @@
             "ref": {
               "$ref": "#/definitions/opRef"
             },
-            "args": {
+            "inputs": {
               "type": "object",
               "additionalProperties": {
                 "type": "string"
               }
             },
-            "results": {
+            "outputs": {
               "type": "object",
               "additionalProperties": {
                 "type": "string"

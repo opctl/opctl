@@ -72,13 +72,13 @@ paths:
             title: RunOpReq
             type: object
             required:
-              - opUrl
+              - opRef
             properties:
               args:
                 type: object
                 additionalProperties:
                   $ref: '#/definitions/OpRunArg'
-              opUrl:
+              opRef:
                 type: string
       responses:
         '201':
@@ -87,7 +87,7 @@ paths:
             Correlation-Id:
               type: string
           schema:
-            description: The id of the op-run
+            description: The id of the op graph
             type: string
         '400':
           description: Bad Request
