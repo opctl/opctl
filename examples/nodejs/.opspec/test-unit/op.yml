@@ -7,5 +7,5 @@ run:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     fs:
       - { bind: APP_DIR, path: /opt/app }
-    image: node:7.1.0
+    image: node:7.3
     workDir: /opt/app
