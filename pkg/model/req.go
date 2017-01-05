@@ -1,41 +1,41 @@
 package model
 
 type CreateCollectionReq struct {
-  Path        string
-  Name        string
-  Description string
+	Path        string
+	Name        string
+	Description string
 }
 
 type CreateOpReq struct {
-  Path        string
-  Name        string
-  Description string
+	Path        string
+	Name        string
+	Description string
 }
 
 type EventFilter struct {
-  OpGraphIds []string
+	OpGraphIds []string
 }
 
 type GetEventStreamReq struct {
-  Filter *EventFilter
+	Filter *EventFilter
 }
 
 type KillOpReq struct {
-  OpGraphId string
+	OpGraphId string
 }
 
 type SetCollectionDescriptionReq struct {
-  PathToCollection string
-  Description      string
+	PathToCollection string
+	Description      string
 }
 
 type SetOpDescriptionReq struct {
-  PathToOp    string
-  Description string
+	PathToOp    string
+	Description string
 }
 
 type StartOpReq struct {
-  // map of args keyed by param name
-  Args  map[string]*Arg `json:"args"`
-  OpRef string `json:"opRef"`
+	// map of args keyed by param name
+	Args  map[string]*Arg `json:"args"`
+	OpRef string          `json:"opRef"`
 }

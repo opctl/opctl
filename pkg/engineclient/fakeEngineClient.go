@@ -2,165 +2,165 @@
 package engineclient
 
 import (
-  "sync"
+	"sync"
 
-  "github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type FakeEngineClient struct {
-  GetEventStreamStub        func(req *model.GetEventStreamReq) (stream chan model.Event, err error)
-  getEventStreamMutex       sync.RWMutex
-  getEventStreamArgsForCall []struct {
-    req *model.GetEventStreamReq
-  }
-  getEventStreamReturns     struct {
-                              result1 chan model.Event
-                              result2 error
-                            }
-  KillOpStub                func(req model.KillOpReq) (err error)
-  killOpMutex               sync.RWMutex
-  killOpArgsForCall         []struct {
-    req model.KillOpReq
-  }
-  killOpReturns             struct {
-                              result1 error
-                            }
-  StartOpStub               func(req model.StartOpReq) (opId string, err error)
-  startOpMutex              sync.RWMutex
-  startOpArgsForCall        []struct {
-    req model.StartOpReq
-  }
-  startOpReturns            struct {
-                              result1 string
-                              result2 error
-                            }
-  invocations               map[string][][]interface{}
-  invocationsMutex          sync.RWMutex
+	GetEventStreamStub        func(req *model.GetEventStreamReq) (stream chan model.Event, err error)
+	getEventStreamMutex       sync.RWMutex
+	getEventStreamArgsForCall []struct {
+		req *model.GetEventStreamReq
+	}
+	getEventStreamReturns struct {
+		result1 chan model.Event
+		result2 error
+	}
+	KillOpStub        func(req model.KillOpReq) (err error)
+	killOpMutex       sync.RWMutex
+	killOpArgsForCall []struct {
+		req model.KillOpReq
+	}
+	killOpReturns struct {
+		result1 error
+	}
+	StartOpStub        func(req model.StartOpReq) (opId string, err error)
+	startOpMutex       sync.RWMutex
+	startOpArgsForCall []struct {
+		req model.StartOpReq
+	}
+	startOpReturns struct {
+		result1 string
+		result2 error
+	}
+	invocations      map[string][][]interface{}
+	invocationsMutex sync.RWMutex
 }
 
 func (fake *FakeEngineClient) GetEventStream(req *model.GetEventStreamReq) (stream chan model.Event, err error) {
-  fake.getEventStreamMutex.Lock()
-  fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
-    req *model.GetEventStreamReq
-  }{req})
-  fake.recordInvocation("GetEventStream", []interface{}{req})
-  fake.getEventStreamMutex.Unlock()
-  if fake.GetEventStreamStub != nil {
-    return fake.GetEventStreamStub(req)
-  } else {
-    return fake.getEventStreamReturns.result1, fake.getEventStreamReturns.result2
-  }
+	fake.getEventStreamMutex.Lock()
+	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
+		req *model.GetEventStreamReq
+	}{req})
+	fake.recordInvocation("GetEventStream", []interface{}{req})
+	fake.getEventStreamMutex.Unlock()
+	if fake.GetEventStreamStub != nil {
+		return fake.GetEventStreamStub(req)
+	} else {
+		return fake.getEventStreamReturns.result1, fake.getEventStreamReturns.result2
+	}
 }
 
 func (fake *FakeEngineClient) GetEventStreamCallCount() int {
-  fake.getEventStreamMutex.RLock()
-  defer fake.getEventStreamMutex.RUnlock()
-  return len(fake.getEventStreamArgsForCall)
+	fake.getEventStreamMutex.RLock()
+	defer fake.getEventStreamMutex.RUnlock()
+	return len(fake.getEventStreamArgsForCall)
 }
 
 func (fake *FakeEngineClient) GetEventStreamArgsForCall(i int) *model.GetEventStreamReq {
-  fake.getEventStreamMutex.RLock()
-  defer fake.getEventStreamMutex.RUnlock()
-  return fake.getEventStreamArgsForCall[i].req
+	fake.getEventStreamMutex.RLock()
+	defer fake.getEventStreamMutex.RUnlock()
+	return fake.getEventStreamArgsForCall[i].req
 }
 
 func (fake *FakeEngineClient) GetEventStreamReturns(result1 chan model.Event, result2 error) {
-  fake.GetEventStreamStub = nil
-  fake.getEventStreamReturns = struct {
-    result1 chan model.Event
-    result2 error
-  }{result1, result2}
+	fake.GetEventStreamStub = nil
+	fake.getEventStreamReturns = struct {
+		result1 chan model.Event
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeEngineClient) KillOp(req model.KillOpReq) (err error) {
-  fake.killOpMutex.Lock()
-  fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
-    req model.KillOpReq
-  }{req})
-  fake.recordInvocation("KillOp", []interface{}{req})
-  fake.killOpMutex.Unlock()
-  if fake.KillOpStub != nil {
-    return fake.KillOpStub(req)
-  } else {
-    return fake.killOpReturns.result1
-  }
+	fake.killOpMutex.Lock()
+	fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
+		req model.KillOpReq
+	}{req})
+	fake.recordInvocation("KillOp", []interface{}{req})
+	fake.killOpMutex.Unlock()
+	if fake.KillOpStub != nil {
+		return fake.KillOpStub(req)
+	} else {
+		return fake.killOpReturns.result1
+	}
 }
 
 func (fake *FakeEngineClient) KillOpCallCount() int {
-  fake.killOpMutex.RLock()
-  defer fake.killOpMutex.RUnlock()
-  return len(fake.killOpArgsForCall)
+	fake.killOpMutex.RLock()
+	defer fake.killOpMutex.RUnlock()
+	return len(fake.killOpArgsForCall)
 }
 
 func (fake *FakeEngineClient) KillOpArgsForCall(i int) model.KillOpReq {
-  fake.killOpMutex.RLock()
-  defer fake.killOpMutex.RUnlock()
-  return fake.killOpArgsForCall[i].req
+	fake.killOpMutex.RLock()
+	defer fake.killOpMutex.RUnlock()
+	return fake.killOpArgsForCall[i].req
 }
 
 func (fake *FakeEngineClient) KillOpReturns(result1 error) {
-  fake.KillOpStub = nil
-  fake.killOpReturns = struct {
-    result1 error
-  }{result1}
+	fake.KillOpStub = nil
+	fake.killOpReturns = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeEngineClient) StartOp(req model.StartOpReq) (opId string, err error) {
-  fake.startOpMutex.Lock()
-  fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {
-    req model.StartOpReq
-  }{req})
-  fake.recordInvocation("StartOp", []interface{}{req})
-  fake.startOpMutex.Unlock()
-  if fake.StartOpStub != nil {
-    return fake.StartOpStub(req)
-  } else {
-    return fake.startOpReturns.result1, fake.startOpReturns.result2
-  }
+	fake.startOpMutex.Lock()
+	fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {
+		req model.StartOpReq
+	}{req})
+	fake.recordInvocation("StartOp", []interface{}{req})
+	fake.startOpMutex.Unlock()
+	if fake.StartOpStub != nil {
+		return fake.StartOpStub(req)
+	} else {
+		return fake.startOpReturns.result1, fake.startOpReturns.result2
+	}
 }
 
 func (fake *FakeEngineClient) StartOpCallCount() int {
-  fake.startOpMutex.RLock()
-  defer fake.startOpMutex.RUnlock()
-  return len(fake.startOpArgsForCall)
+	fake.startOpMutex.RLock()
+	defer fake.startOpMutex.RUnlock()
+	return len(fake.startOpArgsForCall)
 }
 
 func (fake *FakeEngineClient) StartOpArgsForCall(i int) model.StartOpReq {
-  fake.startOpMutex.RLock()
-  defer fake.startOpMutex.RUnlock()
-  return fake.startOpArgsForCall[i].req
+	fake.startOpMutex.RLock()
+	defer fake.startOpMutex.RUnlock()
+	return fake.startOpArgsForCall[i].req
 }
 
 func (fake *FakeEngineClient) StartOpReturns(result1 string, result2 error) {
-  fake.StartOpStub = nil
-  fake.startOpReturns = struct {
-    result1 string
-    result2 error
-  }{result1, result2}
+	fake.StartOpStub = nil
+	fake.startOpReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeEngineClient) Invocations() map[string][][]interface{} {
-  fake.invocationsMutex.RLock()
-  defer fake.invocationsMutex.RUnlock()
-  fake.getEventStreamMutex.RLock()
-  defer fake.getEventStreamMutex.RUnlock()
-  fake.killOpMutex.RLock()
-  defer fake.killOpMutex.RUnlock()
-  fake.startOpMutex.RLock()
-  defer fake.startOpMutex.RUnlock()
-  return fake.invocations
+	fake.invocationsMutex.RLock()
+	defer fake.invocationsMutex.RUnlock()
+	fake.getEventStreamMutex.RLock()
+	defer fake.getEventStreamMutex.RUnlock()
+	fake.killOpMutex.RLock()
+	defer fake.killOpMutex.RUnlock()
+	fake.startOpMutex.RLock()
+	defer fake.startOpMutex.RUnlock()
+	return fake.invocations
 }
 
 func (fake *FakeEngineClient) recordInvocation(key string, args []interface{}) {
-  fake.invocationsMutex.Lock()
-  defer fake.invocationsMutex.Unlock()
-  if fake.invocations == nil {
-    fake.invocations = map[string][][]interface{}{}
-  }
-  if fake.invocations[key] == nil {
-    fake.invocations[key] = [][]interface{}{}
-  }
-  fake.invocations[key] = append(fake.invocations[key], args)
+	fake.invocationsMutex.Lock()
+	defer fake.invocationsMutex.Unlock()
+	if fake.invocations == nil {
+		fake.invocations = map[string][][]interface{}{}
+	}
+	if fake.invocations[key] == nil {
+		fake.invocations[key] = [][]interface{}{}
+	}
+	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
 var _ EngineClient = new(FakeEngineClient)

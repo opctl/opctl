@@ -1,16 +1,16 @@
 package bundle
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func (this _bundle) GetOp(
-opBundlePath string,
+	opBundlePath string,
 ) (
-opView model.OpView,
-err error,
+	opView model.OpView,
+	err error,
 ) {
 
-  return this.opViewFactory.Construct(opBundlePath)
+	return this.opViewFactory.Construct(opBundlePath)
 
 }

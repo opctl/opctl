@@ -1,24 +1,23 @@
 package docker
 
 import (
-  "github.com/opspec-io/sdk-golang/pkg/engineprovider"
+	"github.com/opspec-io/sdk-golang/pkg/engineprovider"
 )
 
-func New(
-) (engineProvider engineprovider.EngineProvider) {
+func New() (engineProvider engineprovider.EngineProvider) {
 
-  engineProvider = &_engineProvider{
-    containerChecker:newContainerChecker(),
-    containerRemover:newContainerRemover(),
-    containerStarter:newContainerStarter(newPathNormalizer()),
-  }
+	engineProvider = &_engineProvider{
+		containerChecker: newContainerChecker(),
+		containerRemover: newContainerRemover(),
+		containerStarter: newContainerStarter(newPathNormalizer()),
+	}
 
-  return
+	return
 
 }
 
 type _engineProvider struct {
-  containerChecker containerChecker
-  containerRemover containerRemover
-  containerStarter containerStarter
+	containerChecker containerChecker
+	containerRemover containerRemover
+	containerStarter containerStarter
 }

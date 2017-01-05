@@ -7,5 +7,5 @@ outputs:
   - dir: { name: APP_DIR, description: Directory containing the app (returned to support caching) }
 run:
   serial:
-    - op: { ref: install-deps, args: { NPM_CONFIG_REGISTRY: , APP_DIR: }, results: { APP_DIR: } }
-    - op: { ref: debug-api, args: { APP_DIR: } }
+    - op: { ref: install-deps, inputs: { NPM_CONFIG_REGISTRY: , APP_DIR: }, outputs: { APP_DIR: } }
+    - op: { ref: debug-api, inputs: { APP_DIR: } }

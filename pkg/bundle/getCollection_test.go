@@ -1,64 +1,64 @@
 package bundle
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
-  "github.com/opspec-io/sdk-golang/pkg/model"
-  "errors"
+	"errors"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 var _ = Describe("_getCollection", func() {
 
-  Context("Execute", func() {
+	Context("Execute", func() {
 
-    It("should call collectionViewFactory.Construct with expected args", func() {
+		It("should call collectionViewFactory.Construct with expected args", func() {
 
-      /* arrange */
+			/* arrange */
 
-      providedCollectionBundlePath := "/dummy/path"
+			providedCollectionBundlePath := "/dummy/path"
 
-      fakeCollectionViewFactory := new(fakeCollectionViewFactory)
+			fakeCollectionViewFactory := new(fakeCollectionViewFactory)
 
-      objectUnderTest := &_bundle{
-        collectionViewFactory:fakeCollectionViewFactory,
-      }
+			objectUnderTest := &_bundle{
+				collectionViewFactory: fakeCollectionViewFactory,
+			}
 
-      /* act */
-      objectUnderTest.GetCollection(
-        providedCollectionBundlePath,
-      )
+			/* act */
+			objectUnderTest.GetCollection(
+				providedCollectionBundlePath,
+			)
 
-      /* assert */
-      Expect(fakeCollectionViewFactory.ConstructArgsForCall(0)).To(Equal(providedCollectionBundlePath))
+			/* assert */
+			Expect(fakeCollectionViewFactory.ConstructArgsForCall(0)).To(Equal(providedCollectionBundlePath))
 
-    })
+		})
 
-    It("should return result of collectionViewFactory.Construct", func() {
+		It("should return result of collectionViewFactory.Construct", func() {
 
-      /* arrange */
-      expectedCollectionView := model.CollectionView{
-        Description:"dummyDescription",
-        Name: "dummyName",
-        Ops: []model.OpView{},
-      }
-      expectedError := errors.New("ConstructError")
+			/* arrange */
+			expectedCollectionView := model.CollectionView{
+				Description: "dummyDescription",
+				Name:        "dummyName",
+				Ops:         []model.OpView{},
+			}
+			expectedError := errors.New("ConstructError")
 
-      fakeCollectionViewFactory := new(fakeCollectionViewFactory)
-      fakeCollectionViewFactory.ConstructReturns(expectedCollectionView, expectedError)
+			fakeCollectionViewFactory := new(fakeCollectionViewFactory)
+			fakeCollectionViewFactory.ConstructReturns(expectedCollectionView, expectedError)
 
-      objectUnderTest := &_bundle{
-        collectionViewFactory:fakeCollectionViewFactory,
-      }
+			objectUnderTest := &_bundle{
+				collectionViewFactory: fakeCollectionViewFactory,
+			}
 
-      /* act */
-      actualCollectionView, actualError := objectUnderTest.GetCollection("/dummy/path")
+			/* act */
+			actualCollectionView, actualError := objectUnderTest.GetCollection("/dummy/path")
 
-      /* assert */
-      Expect(actualCollectionView).To(Equal(expectedCollectionView))
-      Expect(actualError).To(Equal(expectedError))
+			/* assert */
+			Expect(actualCollectionView).To(Equal(expectedCollectionView))
+			Expect(actualError).To(Equal(expectedError))
 
-    })
+		})
 
-  })
+	})
 
 })

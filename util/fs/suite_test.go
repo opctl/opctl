@@ -1,12 +1,12 @@
 package fs
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
-  "testing"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"testing"
 )
 
 func Test(t *testing.T) {
-  RegisterFailHandler(Fail)
-  RunSpecs(t, "sdk-golang/util/fs")
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "sdk-golang/util/fs")
 }

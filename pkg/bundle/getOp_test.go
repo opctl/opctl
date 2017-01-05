@@ -1,71 +1,71 @@
 package bundle
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
-  "github.com/opspec-io/sdk-golang/pkg/model"
-  "errors"
+	"errors"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 var _ = Describe("_getOp", func() {
 
-  Context("Execute", func() {
+	Context("Execute", func() {
 
-    It("should call opViewFactory.Construct with expected args", func() {
+		It("should call opViewFactory.Construct with expected inputs", func() {
 
-      /* arrange */
+			/* arrange */
 
-      providedOpBundlePath := "/dummy/path"
+			providedOpBundlePath := "/dummy/path"
 
-      fakeOpViewFactory := new(fakeOpViewFactory)
+			fakeOpViewFactory := new(fakeOpViewFactory)
 
-      objectUnderTest := &_bundle{
-        opViewFactory:fakeOpViewFactory,
-      }
+			objectUnderTest := &_bundle{
+				opViewFactory: fakeOpViewFactory,
+			}
 
-      /* act */
-      objectUnderTest.GetOp(
-        providedOpBundlePath,
-      )
+			/* act */
+			objectUnderTest.GetOp(
+				providedOpBundlePath,
+			)
 
-      /* assert */
-      Expect(fakeOpViewFactory.ConstructArgsForCall(0)).To(Equal(providedOpBundlePath))
+			/* assert */
+			Expect(fakeOpViewFactory.ConstructArgsForCall(0)).To(Equal(providedOpBundlePath))
 
-    })
+		})
 
-    It("should return result of opViewFactory.Construct", func() {
+		It("should return result of opViewFactory.Construct", func() {
 
-      /* arrange */
-      expectedOpView := model.OpView{
-        Description: "dummyDescription",
-        Inputs:[]*model.Param{},
-        Outputs:[]*model.Param{},
-        Name: "dummyName",
-        Run: &model.CallGraph{
-          Op:&model.OpCall{
-            Ref:"dummyOpRef",
-          },
-        },
-        Version: "",
-      }
-      expectedError := errors.New("ConstructError")
+			/* arrange */
+			expectedOpView := model.OpView{
+				Description: "dummyDescription",
+				Inputs:      []*model.Param{},
+				Outputs:     []*model.Param{},
+				Name:        "dummyName",
+				Run: &model.CallGraph{
+					Op: &model.OpCall{
+						Ref: "dummyOpRef",
+					},
+				},
+				Version: "",
+			}
+			expectedError := errors.New("ConstructError")
 
-      fakeOpViewFactory := new(fakeOpViewFactory)
-      fakeOpViewFactory.ConstructReturns(expectedOpView, expectedError)
+			fakeOpViewFactory := new(fakeOpViewFactory)
+			fakeOpViewFactory.ConstructReturns(expectedOpView, expectedError)
 
-      objectUnderTest := &_bundle{
-        opViewFactory:fakeOpViewFactory,
-      }
+			objectUnderTest := &_bundle{
+				opViewFactory: fakeOpViewFactory,
+			}
 
-      /* act */
-      actualOpView, actualError := objectUnderTest.GetOp("/dummy/path")
+			/* act */
+			actualOpView, actualError := objectUnderTest.GetOp("/dummy/path")
 
-      /* assert */
-      Expect(actualOpView).To(Equal(expectedOpView))
-      Expect(actualError).To(Equal(expectedError))
+			/* assert */
+			Expect(actualOpView).To(Equal(expectedOpView))
+			Expect(actualError).To(Equal(expectedError))
 
-    })
+		})
 
-  })
+	})
 
 })

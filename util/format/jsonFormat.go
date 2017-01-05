@@ -1,34 +1,33 @@
 package format
 
 import (
-  "encoding/json"
+	"encoding/json"
 )
 
-func NewJsonFormat(
-) Format {
+func NewJsonFormat() Format {
 
-  return &_jsonFormat{}
+	return &_jsonFormat{}
 
 }
 
 type _jsonFormat struct{}
 
 func (this _jsonFormat) From(
-in interface{},
+	in interface{},
 ) (out []byte, err error) {
 
-  out, err = json.Marshal(in)
-  return
+	out, err = json.Marshal(in)
+	return
 
 }
 
-func (this _jsonFormat)  To(
-in []byte,
-out interface{},
+func (this _jsonFormat) To(
+	in []byte,
+	out interface{},
 ) (err error) {
 
-  err = json.Unmarshal(in, out)
+	err = json.Unmarshal(in, out)
 
-  return
+	return
 
 }

@@ -1,157 +1,157 @@
 package bundle
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
-  "github.com/opspec-io/sdk-golang/pkg/model"
-  "errors"
-  "reflect"
-  "path"
-  "github.com/opspec-io/sdk-golang/util/fs"
-  "github.com/opspec-io/sdk-golang/util/format"
+	"errors"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/util/format"
+	"github.com/opspec-io/sdk-golang/util/fs"
+	"path"
+	"reflect"
 )
 
 var _ = Describe("_createOp", func() {
 
-  Context("Execute", func() {
+	Context("Execute", func() {
 
-    It("should call FileSystem.AddDir with expected args", func() {
+		It("should call FileSystem.AddDir with expected args", func() {
 
-      /* arrange */
+			/* arrange */
 
-      providedCreateOpReq := model.CreateOpReq{Path:"/dummy/path"}
+			providedCreateOpReq := model.CreateOpReq{Path: "/dummy/path"}
 
-      fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.FakeFileSystem)
 
-      objectUnderTest := &_bundle{
-        fileSystem: fakeFileSystem,
-        yaml: format.NewYamlFormat(),
-      }
+			objectUnderTest := &_bundle{
+				fileSystem: fakeFileSystem,
+				yaml:       format.NewYamlFormat(),
+			}
 
-      /* act */
-      objectUnderTest.CreateOp(
-        providedCreateOpReq,
-      )
+			/* act */
+			objectUnderTest.CreateOp(
+				providedCreateOpReq,
+			)
 
-      /* assert */
-      Expect(fakeFileSystem.AddDirArgsForCall(0)).To(Equal(providedCreateOpReq.Path))
+			/* assert */
+			Expect(fakeFileSystem.AddDirArgsForCall(0)).To(Equal(providedCreateOpReq.Path))
 
-    })
+		})
 
-    Context("when FileSystem.AddDir returns an error", func() {
-      It("should be returned", func() {
+		Context("when FileSystem.AddDir returns an error", func() {
+			It("should be returned", func() {
 
-        /* arrange */
-        expectedError := errors.New("AddDirError")
+				/* arrange */
+				expectedError := errors.New("AddDirError")
 
-        fakeFileSystem := new(fs.FakeFileSystem)
-        fakeFileSystem.AddDirReturns(expectedError)
+				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem.AddDirReturns(expectedError)
 
-        objectUnderTest := &_bundle{
-          fileSystem: fakeFileSystem,
-          yaml: format.NewYamlFormat(),
-        }
+				objectUnderTest := &_bundle{
+					fileSystem: fakeFileSystem,
+					yaml:       format.NewYamlFormat(),
+				}
 
-        /* act */
-        actualError := objectUnderTest.CreateOp(
-          model.CreateOpReq{},
-        )
+				/* act */
+				actualError := objectUnderTest.CreateOp(
+					model.CreateOpReq{},
+				)
 
-        /* assert */
-        Expect(actualError).To(Equal(expectedError))
+				/* assert */
+				Expect(actualError).To(Equal(expectedError))
 
-      })
-    })
+			})
+		})
 
-    Context("when YamlFormat.From returns an error", func() {
-      It("should be returned", func() {
+		Context("when YamlFormat.From returns an error", func() {
+			It("should be returned", func() {
 
-        /* arrange */
-        expectedError := errors.New("FromError")
+				/* arrange */
+				expectedError := errors.New("FromError")
 
-        fakeYamlFormat := new(format.FakeFormat)
-        fakeYamlFormat.FromReturns(nil, expectedError)
+				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat.FromReturns(nil, expectedError)
 
-        objectUnderTest := &_bundle{
-          fileSystem: new(fs.FakeFileSystem),
-          yaml: fakeYamlFormat,
-        }
+				objectUnderTest := &_bundle{
+					fileSystem: new(fs.FakeFileSystem),
+					yaml:       fakeYamlFormat,
+				}
 
-        /* act */
-        actualError := objectUnderTest.CreateOp(
-          model.CreateOpReq{},
-        )
+				/* act */
+				actualError := objectUnderTest.CreateOp(
+					model.CreateOpReq{},
+				)
 
-        /* assert */
-        Expect(actualError).To(Equal(expectedError))
+				/* assert */
+				Expect(actualError).To(Equal(expectedError))
 
-      })
-    })
+			})
+		})
 
-    It("should call YamlFormat.From with expected opManifest", func() {
+		It("should call YamlFormat.From with expected opManifest", func() {
 
-      /* arrange */
-      expectedOpManifest := model.OpManifest{
-        Manifest:model.Manifest{
-          Description:"DummyDescription",
-          Name:"DummyName",
-        },
-      }
+			/* arrange */
+			expectedOpManifest := model.OpManifest{
+				Manifest: model.Manifest{
+					Description: "DummyDescription",
+					Name:        "DummyName",
+				},
+			}
 
-      fakeYamlFormat := new(format.FakeFormat)
-      fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
-        reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpManifest))
-        return
-      }
+			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
+				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpManifest))
+				return
+			}
 
-      objectUnderTest := &_bundle{
-        fileSystem: new(fs.FakeFileSystem),
-        yaml: fakeYamlFormat,
-      }
+			objectUnderTest := &_bundle{
+				fileSystem: new(fs.FakeFileSystem),
+				yaml:       fakeYamlFormat,
+			}
 
-      /* act */
-      objectUnderTest.CreateOp(
-        model.CreateOpReq{
-          Description:expectedOpManifest.Description,
-          Name:expectedOpManifest.Name,
-        },
-      )
+			/* act */
+			objectUnderTest.CreateOp(
+				model.CreateOpReq{
+					Description: expectedOpManifest.Description,
+					Name:        expectedOpManifest.Name,
+				},
+			)
 
-      /* assert */
-      actualOpManifest := fakeYamlFormat.FromArgsForCall(0)
-      Expect(actualOpManifest).To(Equal(&expectedOpManifest))
+			/* assert */
+			actualOpManifest := fakeYamlFormat.FromArgsForCall(0)
+			Expect(actualOpManifest).To(Equal(&expectedOpManifest))
 
-    })
+		})
 
-    It("should call FileSystem.SaveFile with expected args", func() {
+		It("should call FileSystem.SaveFile with expected args", func() {
 
-      /* arrange */
-      providedPath := "/dummy/op/path"
-      expectedSaveFilePathArg := path.Join(providedPath, NameOfOpManifestFile)
-      expectedSaveFileBytesArg := []byte{2, 3, 4}
+			/* arrange */
+			providedPath := "/dummy/op/path"
+			expectedSaveFilePathArg := path.Join(providedPath, NameOfOpManifestFile)
+			expectedSaveFileBytesArg := []byte{2, 3, 4}
 
-      fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.FakeFileSystem)
 
-      fakeYamlFormat := new(format.FakeFormat)
-      fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
+			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
-      objectUnderTest := &_bundle{
-        fileSystem: fakeFileSystem,
-        yaml: fakeYamlFormat,
-      }
+			objectUnderTest := &_bundle{
+				fileSystem: fakeFileSystem,
+				yaml:       fakeYamlFormat,
+			}
 
-      /* act */
-      objectUnderTest.CreateOp(
-        model.CreateOpReq{Path:providedPath},
-      )
+			/* act */
+			objectUnderTest.CreateOp(
+				model.CreateOpReq{Path: providedPath},
+			)
 
-      /* assert */
-      actualSaveFilePathArg, actualSaveFileBytesArg := fakeFileSystem.SaveFileArgsForCall(0)
-      Expect(actualSaveFilePathArg).To(Equal(expectedSaveFilePathArg))
-      Expect(actualSaveFileBytesArg).To(Equal(expectedSaveFileBytesArg))
+			/* assert */
+			actualSaveFilePathArg, actualSaveFileBytesArg := fakeFileSystem.SaveFileArgsForCall(0)
+			Expect(actualSaveFilePathArg).To(Equal(expectedSaveFilePathArg))
+			Expect(actualSaveFileBytesArg).To(Equal(expectedSaveFileBytesArg))
 
-    })
+		})
 
-  })
+	})
 
 })

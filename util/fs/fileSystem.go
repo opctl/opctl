@@ -3,81 +3,80 @@ package fs
 //go:generate counterfeiter -o ./fakeFileSystem.go --fake-name FakeFileSystem ./ FileSystem
 
 import (
-  "io/ioutil"
-  "os"
+	"io/ioutil"
+	"os"
 )
 
-type FileSystem  interface {
-  AddDir(
-  pathToDir string,
-  ) (err error)
+type FileSystem interface {
+	AddDir(
+		pathToDir string,
+	) (err error)
 
-  GetBytesOfFile(
-  pathToFile string,
-  ) (
-  bytesOfFile []byte,
-  err error,
-  )
+	GetBytesOfFile(
+		pathToFile string,
+	) (
+		bytesOfFile []byte,
+		err error,
+	)
 
-  ListChildFileInfosOfDir(
-  pathToDir string,
-  ) (
-  childFileInfos []os.FileInfo,
-  err error,
-  )
+	ListChildFileInfosOfDir(
+		pathToDir string,
+	) (
+		childFileInfos []os.FileInfo,
+		err error,
+	)
 
-  SaveFile(
-  pathToFile string,
-  bytesOfFile []byte,
-  ) (err error)
+	SaveFile(
+		pathToFile string,
+		bytesOfFile []byte,
+	) (err error)
 }
 
-func NewFileSystem(
-) FileSystem {
-  return &_fileSystem{}
+func NewFileSystem() FileSystem {
+	return &_fileSystem{}
 }
 
 type _fileSystem struct{}
 
-func (this _fileSystem)  AddDir(
-pathToDir string,
+func (this _fileSystem) AddDir(
+	pathToDir string,
 ) (err error) {
 
-  err = os.MkdirAll(pathToDir, 0777)
+	err = os.MkdirAll(pathToDir, 0777)
 
-  return
+	return
 
 }
 
 func (this _fileSystem) GetBytesOfFile(
-pathToFile string,
+	pathToFile string,
 ) (bytesOfFile []byte, err error) {
 
-  bytesOfFile, err = ioutil.ReadFile(pathToFile)
+	bytesOfFile, err = ioutil.ReadFile(pathToFile)
 
-  return
+	return
 }
 
 func (this _fileSystem) ListChildFileInfosOfDir(
-pathToDir string,
+	pathToDir string,
 ) (
-childFileInfos []os.FileInfo,
-err error,
+	childFileInfos []os.FileInfo,
+	err error,
 ) {
-  childFileInfos, err = ioutil.ReadDir(pathToDir)
-  return
+	childFileInfos, err = ioutil.ReadDir(pathToDir)
+	return
 }
 
 func (this _fileSystem) SaveFile(
-pathToFile string,
-bytesOfFile []byte,
+	pathToFile string,
+	bytesOfFile []byte,
 ) (err error) {
 
-  err = ioutil.WriteFile(
-    pathToFile,
-    bytesOfFile,
-    0777,
-  )
+	err = ioutil.WriteFile(
+		pathToFile,
+		bytesOfFile,
+		0777,
+	)
 
-  return
+	return
 }
