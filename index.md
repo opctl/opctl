@@ -10,10 +10,10 @@
     - [Collection Dir Structure](#collection-dir-structure)
     - [collection.yml File](#collectionyml-file)
     - [Default Collections](#default-collections)
-- [Registry](#registry)
-    - [Registry API](#registry-api)
-- [Engine](#engine)
-    - [Engine API](#engine-api)
+- [Distribution](#distribution)
+    - [Distribution API](#distribution-api)
+- [Runtime](#runtime)
+    - [Runtime API](#runtime-api)
 
 # Introduction
 
@@ -121,22 +121,22 @@ named `.opspec`.
 by default, be effective within their containing directory.
 
 
-# Registry
+# Distribution
 
 Released versions of ops & collections are distributed via repositories.
 
-## Registry API
+## Distribution API
 
-Registries [MUST](#mustmayrecommended) implement the
-[registry api](registry-oai_spec.yml)
+Distribution implementations [MUST](#mustmayrecommended) implement the
+[distribution api](distribution-oai_spec.yml)
 
 
-# Engine
+# Runtime
 
-Engines run ops.
+Runtimes run ops.
 
-## Engine API
+## Runtime API
 
-Engines [MUST](#mustmayrecommended) implement the
-[engine api](engine-oai_spec.yml)
+Runtime implementations [MUST](#mustmayrecommended) implement the
+[runtime api](runtime-oai_spec.yml)
 
