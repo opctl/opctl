@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
   version: '0.1'
-  title: opspec.engine
-  description: opspec engine api
+  title: opspec.runtime
+  description: opspec runtime api
 consumes:
   - application/json
 produces:
@@ -51,7 +51,7 @@ paths:
             type: string
   /liveness:
     get:
-      summary: Get liveness of engine
+      summary: Get liveness of runtime
       tags:
         - liveness
       responses:

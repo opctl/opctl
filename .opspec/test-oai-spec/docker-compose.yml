@@ -7,7 +7,7 @@ services:
     working_dir: /working_dir
     entrypoint: |
       sh -c "
-        swagger validate engine-oai_spec.yml
-        swagger validate registry-oai_spec.yml
+        swagger validate runtime-oai_spec.yml
+        swagger validate distribution-oai_spec.yml
       "
 

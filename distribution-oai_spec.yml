@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
   version: '0.1'
-  title: opspec.registry
-  description: opspec registry api
+  title: opspec.distribution
+  description: opspec distribution api
 paths:
   /repos/{name}: 
     parameters:
