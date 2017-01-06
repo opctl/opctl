@@ -1,4 +1,5 @@
 description: runs all test ops
 name: test
 run:
-  op: test-schema-valid
+  op: test-json-schema
+  op: test-oai-spec

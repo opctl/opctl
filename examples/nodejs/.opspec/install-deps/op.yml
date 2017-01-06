@@ -12,5 +12,5 @@ run:
       - { bind: NPM_CONFIG_REGISTRY }
     fs:
       - { bind: APP_DIR, path: /opt/app }
-    image: node:7.2
+    image: node:7.3
     workDir: /opt/app

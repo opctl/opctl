@@ -1,6 +1,6 @@
 version: "2"
 services:
-  test-schema-valid:
+  test-json-schema:
     build: .
     volumes:
       - ../../schema:/working_dir
