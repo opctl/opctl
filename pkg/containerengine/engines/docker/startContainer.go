@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 )

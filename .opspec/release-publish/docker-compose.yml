@@ -20,7 +20,7 @@ services:
         --platforms="darwin_amd64 linux_amd64 windows_amd64" \
         --app="app_kNrDsPk2bis" \
         --token="${EQUINOX_TOKEN}" \
-        -- -a github.com/opspec-io/engine/cli
+        -- -a github.com/opspec-io/opctl/cli
       '
     environment:
     - EQUINOX_SIGNING_KEY

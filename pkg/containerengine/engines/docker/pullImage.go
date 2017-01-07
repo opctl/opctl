@@ -6,7 +6,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/reference"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/opctl/util/eventbus"
 	"golang.org/x/net/context"
 	"io"
 )

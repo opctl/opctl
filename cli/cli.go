@@ -4,9 +4,9 @@ package main
 
 import (
 	mow "github.com/jawher/mow.cli"
-	"github.com/opspec-io/engine/cli/core"
-	"github.com/opspec-io/engine/daemon"
-	"github.com/opspec-io/engine/util/colorer"
+	"github.com/opspec-io/opctl/cli/core"
+	"github.com/opspec-io/opctl/daemon"
+	"github.com/opspec-io/opctl/util/colorer"
 )
 
 type cli interface {
@@ -19,7 +19,7 @@ func newCli(
 	colorer colorer.Colorer,
 ) cli {
 
-	cli := mow.App("opctl", "https://opspec.io compliant runtime")
+	cli := mow.App("opctl", "Cross platform runtime for https://opspec.io")
 	cli.Version("v version", version)
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
@@ -65,8 +65,8 @@ func newCli(
 		}
 	})
 
-	cli.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-		opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
+	cli.Command("kill", "Kill an op graph", func(killCmd *mow.Cmd) {
+		opId := killCmd.StringArg("OP_GRAPH_ID", "", "Id of the op graph to kill")
 
 		killCmd.Action = func() {
 			core.KillOp(*opId)

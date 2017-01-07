@@ -3,7 +3,7 @@ package containerengine
 //go:generate counterfeiter -o engines/fake/containerEngine.go --fake-name ContainerEngine ./ ContainerEngine
 
 import (
-	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 

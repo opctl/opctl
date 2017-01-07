@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/opspec-io/engine/util/uniquestring"
+	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/pkg/errors"
 	"sync"
