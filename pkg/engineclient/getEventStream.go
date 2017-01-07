@@ -30,7 +30,7 @@ func (this _engineClient) GetEventStream(
 	}
 
 	c, _, err := websocket.DefaultDialer.Dial(
-		fmt.Sprintf("ws://%v/event-stream?%v", "localhost", strings.Join(queryParams, "&")),
+		fmt.Sprintf("ws://%v/event-stream?%v", "localhost:42224", strings.Join(queryParams, "&")),
 		nil,
 	)
 	if err != nil {
