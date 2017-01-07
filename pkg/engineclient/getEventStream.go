@@ -15,11 +15,6 @@ func (this _engineClient) GetEventStream(
 
 	eventStream = make(chan model.Event, 1000)
 
-	protocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
-	if nil != err {
-		return
-	}
-
 	// construct query params
 	queryParams := []string{}
 	if filter := req.Filter; nil != filter {
@@ -35,7 +30,7 @@ func (this _engineClient) GetEventStream(
 	}
 
 	c, _, err := websocket.DefaultDialer.Dial(
-		fmt.Sprintf("ws:%v/event-stream?%v", protocolRelativeBaseUrl, strings.Join(queryParams, "&")),
+		fmt.Sprintf("ws:%v/event-stream?%v", "localhost", strings.Join(queryParams, "&")),
 		nil,
 	)
 	if err != nil {

@@ -10,8 +10,7 @@ integration scenarios.
 
 # Packages
 
-The `/pkg` dir contains all packages distributed by this SDK. Rather
-than provide one huge package, there are several smaller packages.
+`/pkg` contains all packages distributed by this SDK.
 
 # Releases
 

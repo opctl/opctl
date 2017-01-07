@@ -13,11 +13,6 @@ func (this _engineClient) KillOp(
 	err error,
 ) {
 
-	engineProtocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
-	if nil != err {
-		return
-	}
-
 	reqBytes, err := this.jsonFormat.From(req)
 	if nil != err {
 		return
@@ -25,7 +20,7 @@ func (this _engineClient) KillOp(
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http:%v/instances/kills", engineProtocolRelativeBaseUrl),
+		fmt.Sprintf("http:%v/instances/kills", "localhost"),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {

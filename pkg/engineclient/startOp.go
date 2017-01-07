@@ -15,11 +15,6 @@ func (this _engineClient) StartOp(
 	err error,
 ) {
 
-	engineProtocolRelativeBaseUrl, err := this.engineProvider.GetEngineProtocolRelativeBaseUrl()
-	if nil != err {
-		return
-	}
-
 	reqBytes, err := this.jsonFormat.From(req)
 	if nil != err {
 		return
@@ -27,7 +22,7 @@ func (this _engineClient) StartOp(
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http:%v/instances/starts", engineProtocolRelativeBaseUrl),
+		fmt.Sprintf("http:%v/instances/starts", "localhost"),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {
