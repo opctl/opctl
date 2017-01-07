@@ -27,7 +27,7 @@ var _ = Describe("StartOp", func() {
 
 		expectedHttpReq, _ := netHttp.NewRequest(
 			"POST",
-			fmt.Sprintf("http:%v/instances/starts", "localhost"),
+			fmt.Sprintf("http://%v/instances/starts", "localhost"),
 			bytes.NewBuffer(expectedReqBytes),
 		)
 

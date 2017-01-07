@@ -24,7 +24,7 @@ var _ = Describe("KillOp", func() {
 
 		expectedHttpReq, _ := netHttp.NewRequest(
 			"POST",
-			fmt.Sprintf("http:%v/instances/kills", "localhost"),
+			fmt.Sprintf("http://%v/instances/kills", "localhost"),
 			bytes.NewBuffer(expectedBytes),
 		)
 

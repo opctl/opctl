@@ -22,7 +22,7 @@ func (this _engineClient) StartOp(
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http:%v/instances/starts", "localhost"),
+		fmt.Sprintf("http://%v/instances/starts", "localhost"),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {

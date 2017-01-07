@@ -20,7 +20,7 @@ func (this _engineClient) KillOp(
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http:%v/instances/kills", "localhost"),
+		fmt.Sprintf("http://%v/instances/kills", "localhost"),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {
