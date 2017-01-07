@@ -1,0 +1,2 @@
+description: formats code using `go fmt`
+name: fmt-code

@@ -1,14 +1,10 @@
+description: runs a build
 name: build
-description: runs a complete build
 inputs:
-- { name: DOCKER_PASSWORD, description: 'Password for docker registry', isSecret: true }
-- { name: DOCKER_USERNAME, description: 'Username for docker registry', isSecret: true }
-- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
-- { name: IMAGE_TAG, description: 'The tag of the image to use' }
+- { name: GIT_BRANCH, default: 'master', description: 'The git branch the coverage should be associated with' }
 run:
   serial:
   - op: clean
-  - op: compile
+  - op: fmt-code
   - op: test
   - op: publish-coverage
-  - op: push-docker-image

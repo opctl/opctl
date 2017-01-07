@@ -1,0 +1,12 @@
+description: performs a release
+name: release
+inputs:
+- { name: EQUINOX_TOKEN, description: 'An https://equinox.io/ auth token', isSecret: true }
+- { name: EQUINOX_SIGNING_KEY, description: 'signing key for artifacts published to https://equinox.io/', isSecret: true }
+- { name: GIT_BRANCH, default: 'master', description: 'The git branch the coverage should be associated with' }
+- { name: VERSION, description: 'Version to set' }
+run:
+  serial:
+  - op: set-version
+  - op: build
+  - op: release-publish

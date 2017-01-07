@@ -1,0 +1,4 @@
+description: Sets the version by re-generating the version.go file
+name: set-version
+inputs:
+- { name: VERSION, description: 'Version to set' }
