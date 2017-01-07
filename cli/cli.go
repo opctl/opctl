@@ -59,7 +59,7 @@ func newCli(
 		}
 	})
 
-	cli.Command("events", "Stream events from the engine", func(eventsCmd *mow.Cmd) {
+	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
 			core.StreamEvents()
 		}

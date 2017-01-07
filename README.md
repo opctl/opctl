@@ -8,10 +8,39 @@
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
+# Usage
+
+for usage guidance simply execute without any arguments:
+
+```SHELL
+opctl
+
+Usage: opctl [OPTIONS] COMMAND [arg...]
+
+https://opspec.io compliant runtime
+
+Options:
+  -v, --version            Show the version and exit
+  --nc, --no-color=false   Disable output coloring
+
+Commands:
+  collection    Collection related actions
+  daemon        Run the opctl daemon
+  events        Stream events
+  kill          Kill an op
+  ls            List ops in a collection
+  op            Op related actions
+  run           Run an op
+  self-update   Update opctl
+
+Run 'opctl COMMAND --help' for more information on a command.
+```
+
 # Releases
 
-Source code for each release will be [tagged](https://github.com/opspec-io/opctl/tags)
-and platform specific binaries/installers will be made available on [opctl.io](https://opctl.io)
+for every release:
+- source code will be [tagged](https://github.com/opspec-io/opctl/tags).
+- platform specific binaries/installers will be made available on [opctl.io](https://opctl.io)
 
 # Versioning
 
