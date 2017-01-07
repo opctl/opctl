@@ -3,10 +3,10 @@ package core
 //go:generate counterfeiter -o ./fakeCore.go --fake-name FakeCore ./ Core
 
 import (
-	"github.com/opspec-io/engine/pkg/containerengine"
-	"github.com/opspec-io/engine/util/eventbus"
-	"github.com/opspec-io/engine/util/pathnormalizer"
-	"github.com/opspec-io/engine/util/uniquestring"
+	"github.com/opspec-io/opctl/pkg/containerengine"
+	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pathnormalizer"
+	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"

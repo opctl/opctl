@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[opspec-io/engine](https://github.com/opspec-io/opctl) is an
+[opspec-io/opctl](https://github.com/opspec-io/opctl) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[opspec-io/engine](https://github.com/opspec-io/opctl), big and
+[opspec-io/opctl](https://github.com/opspec-io/opctl), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

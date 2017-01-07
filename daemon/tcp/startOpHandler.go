@@ -2,7 +2,7 @@ package tcp
 
 import (
 	"encoding/json"
-	"github.com/opspec-io/engine/daemon/core"
+	"github.com/opspec-io/opctl/daemon/core"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"net/http"
 )

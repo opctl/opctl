@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/opspec-io/engine/util/colorer"
+	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"os"
 	"time"

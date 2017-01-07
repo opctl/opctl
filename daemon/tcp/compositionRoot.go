@@ -1,7 +1,7 @@
 package tcp
 
 import (
-	"github.com/opspec-io/engine/daemon/core"
+	"github.com/opspec-io/opctl/daemon/core"
 	"net/http"
 )
 

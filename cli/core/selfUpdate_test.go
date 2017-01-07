@@ -5,7 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/engine/util/updater"
+	"github.com/opspec-io/opctl/util/updater"
 )
 
 var _ = Describe("selfUpdate", func() {

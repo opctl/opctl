@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/opspec-io/engine/util/colorer"
-	"github.com/opspec-io/engine/util/updater"
+	"github.com/opspec-io/opctl/util/colorer"
+	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/validate"

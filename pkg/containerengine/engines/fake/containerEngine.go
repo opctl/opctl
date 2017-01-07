@@ -4,8 +4,8 @@ package fake
 import (
 	"sync"
 
-	"github.com/opspec-io/engine/pkg/containerengine"
-	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/opctl/pkg/containerengine"
+	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 

@@ -2,7 +2,7 @@ package tcp
 
 import (
 	. "github.com/onsi/ginkgo"
-	"github.com/opspec-io/engine/daemon/core"
+	"github.com/opspec-io/opctl/daemon/core"
 )
 
 var _ = Describe("tcp", func() {

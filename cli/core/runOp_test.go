@@ -5,7 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/engine/util/colorer"
+	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"

@@ -2,9 +2,9 @@ package core
 
 import (
 	"fmt"
-	"github.com/opspec-io/engine/pkg/containerengine"
-	"github.com/opspec-io/engine/util/eventbus"
-	"github.com/opspec-io/engine/util/interpolater"
+	"github.com/opspec-io/opctl/pkg/containerengine"
+	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/interpolater"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"time"

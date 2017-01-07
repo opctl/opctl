@@ -2,7 +2,7 @@ package docker
 
 import (
 	"bufio"
-	"github.com/opspec-io/engine/util/eventbus"
+	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"io"
 	"time"

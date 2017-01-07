@@ -3,8 +3,8 @@ package main
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/engine/cli/core"
-	"github.com/opspec-io/engine/util/colorer"
+	"github.com/opspec-io/opctl/cli/core"
+	"github.com/opspec-io/opctl/util/colorer"
 )
 
 var _ = Describe("cli", func() {

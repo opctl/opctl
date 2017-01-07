@@ -3,7 +3,7 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"github.com/opspec-io/engine/util/colorer"
+	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/peterh/liner"

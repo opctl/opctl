@@ -1,4 +1,4 @@
-util/ contains utility packages used by the opspec-io/engine project.
+util/ contains utility packages used by the opspec-io/opctl project.
 
 External consumers should not depend on utility packages as they may
 have breaking changes or cease to exist without notice.

@@ -2,7 +2,7 @@ package docker
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/opspec-io/engine/pkg/containerengine"
+	"github.com/opspec-io/opctl/pkg/containerengine"
 	"golang.org/x/net/context"
 )
 
