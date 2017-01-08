@@ -16,7 +16,7 @@ var _ = Describe("CallGraph", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := CallGraph{
+				expectedCallGraph := Scg{
 					Op: &OpCall{
 						Ref: "dummyOpRef",
 						Inputs: map[string]string{
@@ -34,7 +34,7 @@ var _ = Describe("CallGraph", func() {
 					panic(err)
 				}
 
-				actualCallGraph := CallGraph{}
+				actualCallGraph := Scg{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */
@@ -49,8 +49,8 @@ var _ = Describe("CallGraph", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := CallGraph{
-					Parallel: []*CallGraph{
+				expectedCallGraph := Scg{
+					Parallel: []*Scg{
 						{
 							Op: &OpCall{
 								Ref: "dummyOpRef",
@@ -65,7 +65,7 @@ var _ = Describe("CallGraph", func() {
 					panic(err)
 				}
 
-				actualCallGraph := CallGraph{}
+				actualCallGraph := Scg{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */
@@ -80,8 +80,8 @@ var _ = Describe("CallGraph", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := CallGraph{
-					Serial: []*CallGraph{
+				expectedCallGraph := Scg{
+					Serial: []*Scg{
 						{
 							Op: &OpCall{
 								Ref: "dummyOpRef",
@@ -96,7 +96,7 @@ var _ = Describe("CallGraph", func() {
 					panic(err)
 				}
 
-				actualCallGraph := CallGraph{}
+				actualCallGraph := Scg{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */

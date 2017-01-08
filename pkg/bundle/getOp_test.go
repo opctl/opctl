@@ -41,7 +41,7 @@ var _ = Describe("_getOp", func() {
 				Inputs:      []*model.Param{},
 				Outputs:     []*model.Param{},
 				Name:        "dummyName",
-				Run: &model.CallGraph{
+				Run: &model.Scg{
 					Op: &model.OpCall{
 						Ref: "dummyOpRef",
 					},

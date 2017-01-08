@@ -5,6 +5,6 @@ type OpView struct {
 	Inputs      []*Param
 	Name        string
 	Outputs     []*Param
-	Run         *CallGraph
+	Run         *Scg
 	Version     string
 }

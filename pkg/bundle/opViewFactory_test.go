@@ -115,7 +115,7 @@ var _ = Describe("_opViewFactory", func() {
 				},
 			}
 
-			expectedCallGraph := &model.CallGraph{
+			expectedCallGraph := &model.Scg{
 				Op: &model.OpCall{
 					Ref: "dummyOpRef",
 				},
@@ -168,8 +168,8 @@ var _ = Describe("_opViewFactory", func() {
 
 				/* arrange */
 
-				expectedCallGraph := &model.CallGraph{
-					Parallel: []*model.CallGraph{
+				expectedCallGraph := &model.Scg{
+					Parallel: []*model.Scg{
 						{
 							Op: &model.OpCall{
 								Ref: "dummyRef",
@@ -208,7 +208,7 @@ var _ = Describe("_opViewFactory", func() {
 			It("should return expected opView.Run", func() {
 
 				/* arrange */
-				expectedCallGraph := &model.CallGraph{
+				expectedCallGraph := &model.Scg{
 					Op: &model.OpCall{
 						Ref: "dummyOpRef",
 					},
@@ -243,8 +243,8 @@ var _ = Describe("_opViewFactory", func() {
 				It("should return expected opView.Run", func() {
 
 					/* arrange */
-					expectedCallGraph := &model.CallGraph{
-						Serial: []*model.CallGraph{
+					expectedCallGraph := &model.Scg{
+						Serial: []*model.Scg{
 							{
 								Op: &model.OpCall{
 									Ref: "dummyRef",
@@ -314,8 +314,8 @@ var _ = Describe("_opViewFactory", func() {
 							},
 						},
 					},
-					Run: &model.CallGraph{
-						Serial: []*model.CallGraph{
+					Run: &model.Scg{
+						Serial: []*model.Scg{
 							{
 								Op: &model.OpCall{
 									Ref: "install-deps",
@@ -388,7 +388,7 @@ var _ = Describe("_opViewFactory", func() {
 							},
 						},
 					},
-					Run: &model.CallGraph{
+					Run: &model.Scg{
 						Container: &model.ContainerCall{
 							Cmd: []string{
 								"node_modules/.bin/mocha",
@@ -396,14 +396,14 @@ var _ = Describe("_opViewFactory", func() {
 								"--reporter=spec",
 								"tests/unit",
 							},
-							Fs: []*model.ContainerFsEntry{
+							Fs: []*model.ContainerCallFsEntry{
 								{
 									Bind: "APP_DIR",
 									Path: "/opt/app",
 								},
 							},
 							Image: "node:7.1.0",
-							Net: []*model.ContainerNetEntry{
+							Net: []*model.ContainerCallNetEntry{
 								{
 									Bind: "API_SOCKET",
 								},
