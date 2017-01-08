@@ -15,7 +15,7 @@ var _ = Describe("Param", func() {
 			/* arrange/act/assert */
 			Expect(
 				func() {
-					objectUnderTest.Param(&model.Arg{}, nil)
+					objectUnderTest.Param(&model.Data{}, nil)
 				},
 			).To(Panic())
 		})
@@ -27,7 +27,7 @@ var _ = Describe("Param", func() {
 				It("returns no errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -55,7 +55,7 @@ var _ = Describe("Param", func() {
 				It("returns expected errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -89,7 +89,7 @@ var _ = Describe("Param", func() {
 				It("returns no errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -117,7 +117,7 @@ var _ = Describe("Param", func() {
 				It("should return no errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -145,7 +145,7 @@ var _ = Describe("Param", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -179,7 +179,7 @@ var _ = Describe("Param", func() {
 				It("should return no errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -207,7 +207,7 @@ var _ = Describe("Param", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -243,7 +243,7 @@ var _ = Describe("Param", func() {
 				It("should return no errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
+					providedArg := &model.Data{
 						String: "dummyValue",
 					}
 					providedParam := &model.Param{
@@ -276,7 +276,7 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -306,7 +306,7 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -342,7 +342,7 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -372,7 +372,7 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -402,7 +402,7 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -438,7 +438,7 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -468,7 +468,7 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -506,7 +506,7 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
+						providedArg := &model.Data{
 							String: "",
 						}
 						providedDefault := "dummyDefault"
@@ -563,8 +563,8 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
-							NetSocket: &model.NetSocketArg{
+						providedArg := &model.Data{
+							NetSocket: &model.NetSocketData{
 								Host: "dummyHost",
 								Port: 0,
 							},
@@ -591,8 +591,8 @@ var _ = Describe("Param", func() {
 						for i < 65536 {
 
 							/* arrange */
-							providedArg := &model.Arg{
-								NetSocket: &model.NetSocketArg{
+							providedArg := &model.Data{
+								NetSocket: &model.NetSocketData{
 									Host: "dummyHost",
 									Port: i,
 								},
@@ -618,8 +618,8 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
-						providedArg := &model.Arg{
-							NetSocket: &model.NetSocketArg{
+						providedArg := &model.Data{
+							NetSocket: &model.NetSocketData{
 								Host: "dummyHost",
 								Port: 65536,
 							},
@@ -645,8 +645,8 @@ var _ = Describe("Param", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
-						NetSocket: &model.NetSocketArg{
+					providedArg := &model.Data{
+						NetSocket: &model.NetSocketData{
 							Host: "dummyHost",
 						},
 					}
@@ -670,8 +670,8 @@ var _ = Describe("Param", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
-					providedArg := &model.Arg{
-						NetSocket: &model.NetSocketArg{
+					providedArg := &model.Data{
+						NetSocket: &model.NetSocketData{
 							Port: 80,
 						},
 					}
@@ -696,7 +696,7 @@ var _ = Describe("Param", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Arg{}
+				providedValue := &model.Data{}
 				providedParam := &model.Param{
 					NetSocket: &model.NetSocketParam{},
 				}

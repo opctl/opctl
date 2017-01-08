@@ -36,6 +36,6 @@ type SetOpDescriptionReq struct {
 
 type StartOpReq struct {
 	// map of args keyed by param name
-	Args  map[string]*Arg `json:"args"`
+	Args  map[string]*Data `json:"args"`
 	OpRef string          `json:"opRef"`
 }

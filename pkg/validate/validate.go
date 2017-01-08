@@ -7,7 +7,7 @@ import (
 type Validate interface {
 	// validates an arg against a parameter
 	Param(
-		arg *model.Arg,
+		arg *model.Data,
 		param *model.Param,
 	) (errors []error)
 }

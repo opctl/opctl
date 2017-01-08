@@ -9,7 +9,7 @@ import (
 
 // validates an arg against a parameter
 func (this validate) Param(
-	arg *model.Arg,
+	arg *model.Data,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {
@@ -27,7 +27,7 @@ func (this validate) Param(
 
 // validates an arg against a string parameter
 func (this validate) stringParam(
-	rawArg *model.Arg,
+	rawArg *model.Data,
 	param *model.StringParam,
 ) (errs []error) {
 	errs = []error{}
@@ -84,7 +84,7 @@ func (this validate) stringParam(
 
 // validates an arg against a network socket parameter
 func (this validate) netSocketParam(
-	rawArg *model.Arg,
+	rawArg *model.Data,
 	param *model.NetSocketParam,
 ) (errs []error) {
 	errs = []error{}

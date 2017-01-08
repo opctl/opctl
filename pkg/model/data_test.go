@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/format"
 )
 
-var _ = Describe("Arg", func() {
+var _ = Describe("Data", func() {
 
 	Context("when formatting to/from json", func() {
 		json := format.NewJsonFormat()
@@ -16,21 +16,21 @@ var _ = Describe("Arg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedArg := Arg{
+				expectedData := Data{
 					Dir: "dummyDirRef",
 				}
 
 				/* act */
-				providedJson, err := json.From(expectedArg)
+				providedJson, err := json.From(expectedData)
 				if nil != err {
 					panic(err)
 				}
 
-				actualArg := Arg{}
-				json.To(providedJson, &actualArg)
+				actualData := Data{}
+				json.To(providedJson, &actualData)
 
 				/* assert */
-				Expect(actualArg).To(Equal(expectedArg))
+				Expect(actualData).To(Equal(expectedData))
 
 			})
 
@@ -41,21 +41,21 @@ var _ = Describe("Arg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedArg := Arg{
+				expectedData := Data{
 					File: "dummyFileRef",
 				}
 
 				/* act */
-				providedJson, err := json.From(expectedArg)
+				providedJson, err := json.From(expectedData)
 				if nil != err {
 					panic(err)
 				}
 
-				actualArg := Arg{}
-				json.To(providedJson, &actualArg)
+				actualData := Data{}
+				json.To(providedJson, &actualData)
 
 				/* assert */
-				Expect(actualArg).To(Equal(expectedArg))
+				Expect(actualData).To(Equal(expectedData))
 
 			})
 
@@ -66,24 +66,24 @@ var _ = Describe("Arg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedArg := Arg{
-					NetSocket: &NetSocketArg{
+				expectedData := Data{
+					NetSocket: &NetSocketData{
 						Host: "dummyName",
 						Port: 1,
 					},
 				}
 
 				/* act */
-				providedJson, err := json.From(expectedArg)
+				providedJson, err := json.From(expectedData)
 				if nil != err {
 					panic(err)
 				}
 
-				actualArg := Arg{}
-				json.To(providedJson, &actualArg)
+				actualData := Data{}
+				json.To(providedJson, &actualData)
 
 				/* assert */
-				Expect(actualArg).To(Equal(expectedArg))
+				Expect(actualData).To(Equal(expectedData))
 
 			})
 
@@ -94,21 +94,21 @@ var _ = Describe("Arg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedArg := Arg{
+				expectedData := Data{
 					String: "dummyString",
 				}
 
 				/* act */
-				providedJson, err := json.From(expectedArg)
+				providedJson, err := json.From(expectedData)
 				if nil != err {
 					panic(err)
 				}
 
-				actualArg := Arg{}
-				json.To(providedJson, &actualArg)
+				actualData := Data{}
+				json.To(providedJson, &actualData)
 
 				/* assert */
-				Expect(actualArg).To(Equal(expectedArg))
+				Expect(actualData).To(Equal(expectedData))
 
 			})
 
