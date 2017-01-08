@@ -7,39 +7,39 @@ import (
 	"sync"
 )
 
-type parallelOrchestrator interface {
-	Execute(
-		args map[string]*model.Arg,
+type parallelCaller interface {
+	Call(
+		args map[string]*model.Data,
 		opGraphId string,
 		opRef string,
-		parallelCall []*model.CallGraph,
+		parallelCall []*model.Scg,
 	) (
 		err error,
 	)
 }
 
-func newParallelOrchestrator(
-	orchestrator orchestrator,
+func newParallelCaller(
+	caller caller,
 	uniqueStringFactory uniquestring.UniqueStringFactory,
-) parallelOrchestrator {
+) parallelCaller {
 
-	return &_parallelOrchestrator{
-		orchestrator:        orchestrator,
+	return &_parallelCaller{
+		caller:              caller,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 
 }
 
-type _parallelOrchestrator struct {
-	orchestrator        orchestrator
+type _parallelCaller struct {
+	caller              caller
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
-func (this _parallelOrchestrator) Execute(
-	args map[string]*model.Arg,
+func (this _parallelCaller) Call(
+	args map[string]*model.Data,
 	opGraphId string,
 	opRef string,
-	parallelCall []*model.CallGraph,
+	parallelCall []*model.Scg,
 ) (
 	err error,
 ) {
@@ -53,8 +53,9 @@ func (this _parallelOrchestrator) Execute(
 
 		var childCallError error
 
-		go func(childCall *model.CallGraph) {
-			err = this.orchestrator.Execute(
+		go func(childCall *model.Scg) {
+			// @TODO: handle netSockets
+			_, err = this.caller.Call(
 				this.uniqueStringFactory.Construct(),
 				args,
 				childCall,
