@@ -44,7 +44,7 @@ func New(
 
 	nodeRepo := newNodeRepo()
 
-	opOrchestrator := &_opOrchestrator{
+	opCaller := &_opCaller{
 		bundle:              _bundle,
 		eventBus:            eventBus,
 		nodeRepo:            nodeRepo,
@@ -52,19 +52,19 @@ func New(
 		validate:            validate.New(),
 	}
 
-	opOrchestrator.orchestrator = newOrchestrator(
+	opCaller.caller = newCaller(
 		_bundle,
 		containerEngine,
 		eventBus,
 		nodeRepo,
-		opOrchestrator,
+		opCaller,
 		uniqueStringFactory,
 	)
 
 	core = &_core{
 		containerEngine:     containerEngine,
 		eventBus:            eventBus,
-		opOrchestrator:      opOrchestrator,
+		opCaller:            opCaller,
 		pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 		nodeRepo:            nodeRepo,
 		uniqueStringFactory: uniqueStringFactory,
@@ -76,9 +76,9 @@ func New(
 type _core struct {
 	containerEngine     containerengine.ContainerEngine
 	eventBus            eventbus.EventBus
-	orchestrator        orchestrator
+	caller              caller
 	pathNormalizer      pathnormalizer.PathNormalizer
 	nodeRepo            nodeRepo
 	uniqueStringFactory uniquestring.UniqueStringFactory
-	opOrchestrator      opOrchestrator
+	opCaller            opCaller
 }

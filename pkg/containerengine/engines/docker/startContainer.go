@@ -7,31 +7,24 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/opctl/util/eventbus"
-	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 )
 
 func (this _containerEngine) StartContainer(
-	cmd []string,
-	env []*model.ContainerInstanceEnvEntry,
-	fs []*model.ContainerInstanceFsEntry,
-	image string,
-	net []*model.ContainerInstanceNetEntry,
-	workDir string,
-	containerId string,
+	req *containerengine.StartContainerReq,
 	eventPublisher eventbus.EventPublisher,
-	opGraphId string,
 ) (err error) {
 
 	// construct container config
 	containerConfig := &container.Config{
-		Entrypoint: cmd,
-		Image:      image,
-		WorkingDir: workDir,
+		Entrypoint: req.Cmd,
+		Image:      req.Image,
+		WorkingDir: req.WorkDir,
 		Tty:        true,
 	}
-	for _, envEntry := range env {
+	for _, envEntry := range req.Env {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envEntry.Name, envEntry.Value))
 	}
 
@@ -42,10 +35,10 @@ func (this _containerEngine) StartContainer(
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
 		Privileged: true,
 	}
-	for _, fsEntry := range fs {
+	for _, fsEntry := range req.Fs {
 		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", fsEntry.SrcRef, fsEntry.Path))
 	}
-	for _, netEntry := range net {
+	for _, netEntry := range req.Net {
 		for _, hostAlias := range netEntry.HostAliases {
 			hostConfig.ExtraHosts = append(hostConfig.ExtraHosts, fmt.Sprintf("%v:%v", hostAlias, netEntry.Host))
 		}
@@ -58,16 +51,16 @@ func (this _containerEngine) StartContainer(
 		containerConfig,
 		hostConfig,
 		&network.NetworkingConfig{},
-		containerId,
+		req.ContainerId,
 	)
 
 	if nil != err {
 		//if image not found try to pull it
 		if client.IsErrImageNotFound(err) {
 			err = nil
-			fmt.Printf("Unable to find image '%s' locally\n", image)
+			fmt.Printf("Unable to find image '%s' locally\n", req.Image)
 
-			err = this.pullImage(image, containerId, opGraphId, eventPublisher)
+			err = this.pullImage(req.Image, req.ContainerId, req.OpGraphId, eventPublisher)
 			if nil != err {
 				return
 			}
@@ -78,7 +71,7 @@ func (this _containerEngine) StartContainer(
 				containerConfig,
 				hostConfig,
 				&network.NetworkingConfig{},
-				containerId,
+				req.ContainerId,
 			)
 			if nil != err {
 				return
@@ -98,22 +91,22 @@ func (this _containerEngine) StartContainer(
 		return
 	}
 
-	err = this.stdErrLogger(eventPublisher, containerId, opGraphId)
+	err = this.stdErrLogger(eventPublisher, req.ContainerId, req.OpGraphId)
 	if nil != err {
 		return
 	}
-	err = this.stdOutLogger(eventPublisher, containerId, opGraphId)
+	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
 	if nil != err {
 		return
 	}
 
 	// wait for exit
-	exitCode, exitCodeReadError := this.dockerEngine.ContainerWait(
+	exitCode, waitError := this.dockerEngine.ContainerWait(
 		context.Background(),
-		containerId,
+		req.ContainerId,
 	)
-	if nil != exitCodeReadError {
-		err = errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", exitCodeReadError))
+	if nil != waitError {
+		err = errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
 	} else if 0 != exitCode {
 		err = errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
 	}

@@ -8,19 +8,16 @@ import (
 )
 
 type ContainerEngine interface {
-	StartContainer(
-		cmd []string,
-		env []*model.ContainerInstanceEnvEntry,
-		fs []*model.ContainerInstanceFsEntry,
-		image string,
-		net []*model.ContainerInstanceNetEntry,
-		workDir string,
+	InspectContainerIfExists(
 		containerId string,
-		eventPublisher eventbus.EventPublisher,
-		opGraphId string,
-	) (err error)
+	) (container *model.Container, err error)
 
 	DeleteContainerIfExists(
 		containerId string,
 	)
+
+	StartContainer(
+		req *StartContainerReq,
+		eventPublisher eventbus.EventPublisher,
+	) (err error)
 }

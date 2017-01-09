@@ -10,33 +10,35 @@ import (
 	"time"
 )
 
-type opOrchestrator interface {
-	Execute(
-		args map[string]*model.Arg,
+type opCaller interface {
+	Call(
+		args map[string]*model.Data,
 		opId string,
 		opRef string,
 		opGraphId string,
 	) (
+		outputs map[string]*model.Data,
 		err error,
 	)
 }
 
-type _opOrchestrator struct {
+type _opCaller struct {
 	bundle              bundle.Bundle
 	eventBus            eventbus.EventBus
 	nodeRepo            nodeRepo
-	orchestrator        orchestrator
+	caller              caller
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	validate            validate.Validate
 }
 
-// Starts an op
-func (this _opOrchestrator) Execute(
-	args map[string]*model.Arg,
+// Calls an op
+func (this _opCaller) Call(
+	args map[string]*model.Data,
 	opId string,
 	opRef string,
 	opGraphId string,
 ) (
+	outputs map[string]*model.Data,
 	err error,
 ) {
 
@@ -70,7 +72,7 @@ func (this _opOrchestrator) Execute(
 	// validate args
 	errs := []error{}
 	for _, input := range op.Inputs {
-		var arg *model.Arg
+		var arg *model.Data
 
 		switch {
 		case nil != input.String:
@@ -113,7 +115,7 @@ func (this _opOrchestrator) Execute(
 	}
 	this.eventBus.Publish(opStartedEvent)
 
-	err = this.orchestrator.Execute(
+	outputs, err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
 		args,
 		op.Run,

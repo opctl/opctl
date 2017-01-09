@@ -112,7 +112,7 @@ var _ = Describe("runOp", func() {
 					/* arrange */
 					fakeExiter := new(fakeExiter)
 					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Arg{String: "dummyParam1Value"}
+					param1Value := &model.Data{String: "dummyParam1Value"}
 
 					fakeBundle := new(bundle.FakeBundle)
 					fakeBundle.GetOpReturns(
@@ -139,7 +139,7 @@ var _ = Describe("runOp", func() {
 						workDirPathGetter: new(fakeWorkDirPathGetter),
 					}
 
-					expectedArgs := map[string]*model.Arg{param1Name: param1Value}
+					expectedArgs := map[string]*model.Data{param1Name: param1Value}
 					providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
 
 					/* act */
@@ -154,7 +154,7 @@ var _ = Describe("runOp", func() {
 					/* arrange */
 					fakeExiter := new(fakeExiter)
 					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Arg{String: "dummyParam1Value"}
+					param1Value := &model.Data{String: "dummyParam1Value"}
 
 					os.Setenv(param1Name, param1Value.String)
 
@@ -183,7 +183,7 @@ var _ = Describe("runOp", func() {
 						workDirPathGetter: new(fakeWorkDirPathGetter),
 					}
 
-					expectedArgs := map[string]*model.Arg{param1Name: param1Value}
+					expectedArgs := map[string]*model.Data{param1Name: param1Value}
 					providedArgs := []string{param1Name}
 
 					/* act */
@@ -199,7 +199,7 @@ var _ = Describe("runOp", func() {
 						/* arrange */
 						fakeExiter := new(fakeExiter)
 						param1Name := "DUMMY_PARAM1_NAME"
-						param1Value := &model.Arg{String: "dummyParam1Value"}
+						param1Value := &model.Data{String: "dummyParam1Value"}
 
 						os.Setenv(param1Name, param1Value.String)
 
@@ -228,7 +228,7 @@ var _ = Describe("runOp", func() {
 							workDirPathGetter: new(fakeWorkDirPathGetter),
 						}
 
-						expectedArgs := map[string]*model.Arg{param1Name: param1Value}
+						expectedArgs := map[string]*model.Data{param1Name: param1Value}
 						providedArgs := []string{}
 
 						/* act */
@@ -271,7 +271,7 @@ var _ = Describe("runOp", func() {
 							workDirPathGetter: new(fakeWorkDirPathGetter),
 						}
 
-						expectedArgs := map[string]*model.Arg{}
+						expectedArgs := map[string]*model.Data{}
 						providedArgs := []string{}
 
 						/* act */

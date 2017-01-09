@@ -22,7 +22,7 @@ type paramSatisfier interface {
 	Satisfy(
 		options []string,
 		params []*model.Param,
-	) (argMap map[string]*model.Arg)
+	) (argMap map[string]*model.Data)
 }
 
 func newParamSatisfier(
@@ -47,7 +47,7 @@ type _paramSatisfier struct {
 func (this _paramSatisfier) Satisfy(
 	options []string,
 	params []*model.Param,
-) (argMap map[string]*model.Arg) {
+) (argMap map[string]*model.Data) {
 
 	rawArgMap := make(map[string]string)
 	for _, rawArg := range options {
@@ -64,13 +64,13 @@ func (this _paramSatisfier) Satisfy(
 		rawArgMap[argName] = argValue
 	}
 
-	argMap = make(map[string]*model.Arg)
+	argMap = make(map[string]*model.Data)
 	paramIndex := 0
 paramLoop:
 	for paramIndex < len(params) {
 		param := params[paramIndex]
 		var paramName, rawArg string
-		var arg *model.Arg
+		var arg *model.Data
 		var argErrors []error
 
 		switch {
@@ -90,7 +90,7 @@ paramLoop:
 			} else {
 				rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
 			}
-			arg = &model.Arg{String: rawArg}
+			arg = &model.Data{String: rawArg}
 		case nil != param.Dir:
 			// obtain raw value
 			dirParam := param.Dir
@@ -103,7 +103,7 @@ paramLoop:
 			} else {
 				rawArg = this.promptForArg(paramName, dirParam.Description, false)
 			}
-			arg = &model.Arg{Dir: rawArg}
+			arg = &model.Data{Dir: rawArg}
 		case nil != param.File:
 			// obtain raw value
 			fileParam := param.File
@@ -116,7 +116,7 @@ paramLoop:
 			} else {
 				rawArg = this.promptForArg(paramName, fileParam.Description, false)
 			}
-			arg = &model.Arg{File: rawArg}
+			arg = &model.Data{File: rawArg}
 		case nil != param.NetSocket:
 			netSocketParam := param.NetSocket
 			paramName = netSocketParam.Name
@@ -128,7 +128,7 @@ paramLoop:
 			} else {
 				rawArg = this.promptForArg(paramName, netSocketParam.Description, false)
 			}
-			arg = &model.Arg{NetSocket: &model.NetSocketArg{}}
+			arg = &model.Data{NetSocket: &model.NetSocketData{}}
 			if err := yaml.Unmarshal([]byte(rawArg), arg.NetSocket); nil != err {
 				argErrors = append(argErrors, err)
 			}
