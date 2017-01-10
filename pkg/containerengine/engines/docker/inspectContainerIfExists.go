@@ -41,13 +41,12 @@ func (this _containerEngine) InspectContainerIfExists(
 		)
 	}
 	// construct fs
-	for _, rawFsEntry := range rawContainer.HostConfig.Binds {
-		rawFsEntryParts := strings.SplitN(rawFsEntry, ":", 2)
+	for _, rawFsEntry := range rawContainer.Mounts {
 		container.Fs = append(
 			container.Fs,
 			&model.ContainerFsEntry{
-				SrcRef: rawFsEntryParts[0],
-				Path:   rawFsEntryParts[1],
+				SrcRef: rawFsEntry.Source,
+				Path:   rawFsEntry.Destination,
 			},
 		)
 	}

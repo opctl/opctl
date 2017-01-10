@@ -20,6 +20,25 @@ func newContainerStartReq(
 	fs := []*model.ContainerFsEntry{}
 	net := []*model.ContainerNetEntry{}
 
+	// construct fs
+	for _, staticCallFsEntry := range containerCall.Fs {
+		srcRef := ""
+		if srcRefData, ok := args[staticCallFsEntry.Bind]; ok {
+			switch {
+			case "" != srcRefData.Dir:
+				srcRef = srcRefData.Dir
+			case "" != srcRefData.File:
+				srcRef = srcRefData.File
+			}
+		}
+		fsEntry := &model.ContainerFsEntry{
+			Path:   staticCallFsEntry.Path,
+			SrcRef: srcRef,
+		}
+		fs = append(fs, fsEntry)
+	}
+	fmt.Printf("startFactory: containerFs\n%#v\n", fs)
+
 	for _, input := range inputs {
 		fmt.Printf("containerStartReqFactory.input:\n%#v\n", input)
 		switch {
@@ -44,36 +63,6 @@ func newContainerStartReq(
 						&model.ContainerEnvEntry{
 							Name:  stringInput.Name,
 							Value: inputValue,
-						},
-					)
-					break
-				}
-			}
-		case nil != input.Dir:
-			dirInput := input.Dir
-			for _, fsEntry := range containerCall.Fs {
-				// append bound dirs to fs
-				if fsEntry.Bind == dirInput.Name {
-					fs = append(
-						fs,
-						&model.ContainerFsEntry{
-							SrcRef: args[dirInput.Name].Dir,
-							Path:   fsEntry.Path,
-						},
-					)
-					break
-				}
-			}
-		case nil != input.File:
-			fileInput := input.File
-			for _, fsEntry := range containerCall.Fs {
-				// append bound files to fs
-				if fsEntry.Bind == fileInput.Name {
-					fs = append(
-						fs,
-						&model.ContainerFsEntry{
-							SrcRef: args[fileInput.Name].File,
-							Path:   fsEntry.Path,
 						},
 					)
 					break

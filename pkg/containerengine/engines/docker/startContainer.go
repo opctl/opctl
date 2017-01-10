@@ -23,6 +23,7 @@ func (this _containerEngine) StartContainer(
 		Image:      req.Image,
 		WorkingDir: req.WorkDir,
 		Tty:        true,
+		Volumes:    map[string]struct{}{},
 	}
 	for _, envEntry := range req.Env {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envEntry.Name, envEntry.Value))
@@ -36,13 +37,21 @@ func (this _containerEngine) StartContainer(
 		Privileged: true,
 	}
 	for _, fsEntry := range req.Fs {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", fsEntry.SrcRef, fsEntry.Path))
+		if "" != fsEntry.SrcRef {
+			// bind mount
+			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", fsEntry.SrcRef, fsEntry.Path))
+		} else {
+			// anonymous volume
+			containerConfig.Volumes[fsEntry.Path] = struct{}{}
+		}
 	}
 	for _, netEntry := range req.Net {
 		for _, hostAlias := range netEntry.HostAliases {
 			hostConfig.ExtraHosts = append(hostConfig.ExtraHosts, fmt.Sprintf("%v:%v", hostAlias, netEntry.Host))
 		}
 	}
+
+	fmt.Printf("startContainer: hostConfig\n%#v\n", hostConfig)
 
 	// create container
 	var containerCreatedResponse container.ContainerCreateCreatedBody
