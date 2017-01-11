@@ -3,4 +3,6 @@ description: runs all tests
 run:
   serial:
   - op: init
-  - op: test-unit
+  - parallel:
+    - op: test-lint
+    - op: test-unit

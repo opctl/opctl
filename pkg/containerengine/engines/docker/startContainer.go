@@ -37,8 +37,9 @@ func (this _containerEngine) StartContainer(
 		Privileged: true,
 	}
 	for _, fsEntry := range req.Fs {
+		// see https://success.docker.com/Datacenter/Solve/Different_Types_of_Volumes
 		if "" != fsEntry.SrcRef {
-			// bind mount
+			// host volume
 			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", fsEntry.SrcRef, fsEntry.Path))
 		} else {
 			// anonymous volume
