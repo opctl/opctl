@@ -5,7 +5,7 @@ services:
       service: go
       file: ../.common/docker-compose.yml
     environment:
-      - CODECOV_TOKEN="b432a3b8-8220-4c1d-bcee-db76e68d0128"
+      - CODECOV_TOKEN=b432a3b8-8220-4c1d-bcee-db76e68d0128
       - GIT_BRANCH
     entrypoint: |
       sh -ce "
