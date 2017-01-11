@@ -259,6 +259,10 @@
 			"revisionTime": "2016-11-23T14:36:37Z"
 		},
 		{
+			"path": "github.com/mitchelh/go-homedir",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "V/quM7+em2ByJbWBLOsEwnY3j/Q=",
 			"path": "github.com/mitchellh/go-homedir",
 			"revision": "b8bc1bf767474819792c23f32d8286a45736f1c6",

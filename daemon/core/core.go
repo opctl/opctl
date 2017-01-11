@@ -33,11 +33,8 @@ type Core interface {
 func New(
 	containerEngine containerengine.ContainerEngine,
 ) (core Core) {
-
-	/* factories */
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	/* components */
 	eventBus := eventbus.NewEventBus()
 
 	_bundle := bundle.New()
