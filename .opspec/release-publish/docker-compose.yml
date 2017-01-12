@@ -4,8 +4,10 @@ services:
     extends:
       service: go
       file: ../.common/docker-compose.yml
-    entrypoint: |
-      sh -ce '
+    entrypoint:
+      - sh
+      - -ce
+      - |
         ### DETERMINE CHANNEL
         if echo "$VERSION" | grep -Eq "*.-beta\.*."; then
           channel=beta
@@ -21,7 +23,6 @@ services:
         --app="app_kNrDsPk2bis" \
         --token="${EQUINOX_TOKEN}" \
         -- -a github.com/opspec-io/opctl/cli
-      '
     environment:
     - EQUINOX_SIGNING_KEY
     - CGO_ENABLED=0
