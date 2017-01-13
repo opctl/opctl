@@ -3,10 +3,10 @@ description: Builds an image, logs in to a docker registry, and pushes the image
 inputs:
   - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true}
   - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true}
-  - string: { name: IMAGE_REF, description: 'Docker image reference (regex: `((registry/)?namespace/)?repo(:tag)?`)' }
+  - string: { name: IMAGE_REF, description: 'Docker image reference. pseudo regex: "((registry/)?namespace/)?repo(:tag)?)"' }
   - dir: { name: BUILD_CONTEXT }
 run:
   serial:
-    - op: { ref: build-image, inputs: { BUILD_CONTEXT: , IMAGE_REF: } }
-    - op: { ref: login, inputs: { DOCKER_PASSWORD: , DOCKER_USERNAME: }, outputs: { DOCKER_CONFIG: } }
-    - op: { ref: push-image, inputs: { DOCKER_CONFIG:, IMAGE_REF: } }
+    - op: { ref: build-image, inputs: { BUILD_CONTEXT: ~, IMAGE_REF: ~ } }
+    - op: { ref: login, inputs: { DOCKER_PASSWORD: ~, DOCKER_USERNAME: ~ }, outputs: { DOCKER_CONFIG: ~ } }
+    - op: { ref: push-image, inputs: { DOCKER_CONFIG: ~, IMAGE_REF: ~ } }

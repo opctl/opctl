@@ -1,0 +1,17 @@
+{
+  "name": "@opspec/nodejs-example",
+  "version": "0.1.0",
+  "main": "./app/index.js",
+  "private": true,
+  "files": [
+    "app"
+  ],
+  "dependencies": {
+    "koa": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.3.1",
+    "mocha": "^3.0.2"
+  }
+}
