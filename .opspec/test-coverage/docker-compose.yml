@@ -1,0 +1,48 @@
+version: "2"
+services:
+  test-coverage:
+    extends:
+      service: go
+      file: ../.common/docker-compose.yml
+    entrypoint:
+    - bash
+    - -ce
+    - |
+      ### GENERATE AGGREGATE COVERAGE PROFILE
+      find . -name '*.coverprofile' | xargs cat > coverage.txt
+
+      ### STRIP FAKES
+      sed -i '/fake/d' coverage.txt
+
+      ### DETERMINE AGGREGATE COVERAGE
+      declare -i total_statements total_hits line_statements line_hits
+      # lines in form: "location statement_count hit_count"
+      while read -r line; do
+        # ignore mode lines
+        if [[ $$line != mode* ]] ;
+        then
+          IFS=' ' read -ra line_parts <<< "$$line"
+          line_statements=$${line_parts[1]}
+          line_hits=$${line_parts[2]}
+
+          # increment statements
+          total_statements=$$total_statements+$$line_statements
+
+          if [[ $$line_statements -gt $$line_hits ]] ;
+          then
+            total_hits=$$total_hits+$$line_hits
+          else
+            total_hits=$$total_hits+$$line_statements
+          fi
+        fi
+      done < coverage.txt
+
+      ### ENFORCE MINIMUM_COVERAGE
+      coverage=$$(($$total_hits*100 / $$total_statements))
+      if [[ $$coverage -lt $$MINIMUM_COVERAGE ]] ;
+      then
+        echo "Insufficient test coverage! Actual: $$coverage%, Expected: >= $$MINIMUM_COVERAGE%" 1>&2
+        exit 1
+      fi
+    environment:
+      - MINIMUM_COVERAGE=67

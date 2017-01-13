@@ -1,10 +1,6 @@
 ### JetBrains
-*.iml
 .idea/
 
 ### codecov.io
-*.coverprofile
 coverage.txt
-
-### vendor
-vendor/*/
+*.coverprofile

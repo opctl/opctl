@@ -7,15 +7,9 @@ services:
     environment:
       - CODECOV_TOKEN=5f64e6aa-5117-410b-aceb-3188c58e4a18
       - GIT_BRANCH
-    entrypoint: |
-      sh -ce "
-        ### GENERATE AGGREGATE COVERAGE PROFILE
-        find . -name '*.coverprofile' | xargs cat > coverage.txt
-
-        ### STRIP FAKES
-        sed -i '/fake/d' coverage.txt
-
-        ### UPLOAD
+    entrypoint:
+      - sh
+      - -ce
+      - |
         curl -s https://codecov.io/bash | bash -s
-      "
     network_mode: host

@@ -3,4 +3,7 @@ name: test
 run:
   serial:
   - op: init
-  - op: test-unit
+  - parallel:
+    - op: test-lint
+    - op: test-unit
+  - op: test-coverage
