@@ -6,3 +6,4 @@ run:
   - parallel:
     - op: test-lint
     - op: test-unit
+  - op: test-coverage
