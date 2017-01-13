@@ -20,10 +20,28 @@ func newContainerStartReq(
 	fs := []*model.ContainerFsEntry{}
 	net := []*model.ContainerNetEntry{}
 
-	// construct fs
-	for _, staticCallFsEntry := range containerCall.Fs {
+  // construct files
+  for containerFilePath, containerFile := range containerCall.Files {
+    srcRef := ""
+    if srcRefData, ok := args[containerFile.Bind]; ok {
+      switch {
+      case "" != srcRefData.Dir:
+        srcRef = srcRefData.Dir
+      case "" != srcRefData.File:
+        srcRef = srcRefData.File
+      }
+    }
+    fsEntry := &model.ContainerFsEntry{
+      Path:   containerFilePath,
+      SrcRef: srcRef,
+    }
+    fs = append(fs, fsEntry)
+  }
+
+	// construct dirs
+	for containerDirPath, containerDir := range containerCall.Dirs {
 		srcRef := ""
-		if srcRefData, ok := args[staticCallFsEntry.Bind]; ok {
+		if srcRefData, ok := args[containerDir.Bind]; ok {
 			switch {
 			case "" != srcRefData.Dir:
 				srcRef = srcRefData.Dir
@@ -32,7 +50,7 @@ func newContainerStartReq(
 			}
 		}
 		fsEntry := &model.ContainerFsEntry{
-			Path:   staticCallFsEntry.Path,
+			Path:   containerDirPath,
 			SrcRef: srcRef,
 		}
 		fs = append(fs, fsEntry)
