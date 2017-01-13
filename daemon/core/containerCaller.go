@@ -95,14 +95,23 @@ func (this _containerCaller) Call(
 	container, err := this.containerEngine.InspectContainerIfExists(containerId)
 	fmt.Println(opRef)
 	fmt.Printf("containerCaller.container:\n %#v\n", container)
-	// construct
-	for _, fsEntry := range containerCall.Fs {
-		for _, rawFsEntry := range container.Fs {
-			if fsEntry.Path == rawFsEntry.Path {
-				outputs[fsEntry.Bind] = &model.Data{File: rawFsEntry.SrcRef}
-			}
-		}
-	}
+  // construct files
+  for containerFilePath, containerFile := range containerCall.Files {
+    for _, rawFsEntry := range container.Fs {
+      if containerFilePath == rawFsEntry.Path {
+        outputs[containerFile.Bind] = &model.Data{File: rawFsEntry.SrcRef}
+      }
+    }
+  }
+  // construct dirs
+  for containerDirPath, containerDir := range containerCall.Dirs {
+    for _, rawFsEntry := range container.Fs {
+      if containerDirPath == rawFsEntry.Path {
+        outputs[containerDir.Bind] = &model.Data{File: rawFsEntry.SrcRef}
+      }
+    }
+  }
+  // construct strings
 	for _, envEntry := range containerCall.Env {
 		for _, rawEnvEntry := range container.Env {
 			if envEntry.Name == rawEnvEntry.Name {
