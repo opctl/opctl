@@ -6,8 +6,8 @@ inputs:
 run:
   container:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
-    fs:
-      - { bind: APP_DIR, path: /opt/app }
+    dirs:
+      /opt/app: { bind: APP_DIR }
     image: node:7.3
     net:
       - { bind: API_SOCKET }

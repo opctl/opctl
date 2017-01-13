@@ -8,6 +8,6 @@ run:
     cmd: [ docker, push, $(IMAGE_REF) ]
     env:
       - { bind: IMAGE_REF }
-    fs:
-      - { bind: DOCKER_CONFIG, path: /root/.docker/config.json }
+    files:
+      /root/.docker/config.json: { bind: DOCKER_CONFIG }
     image: docker:1.12-dind

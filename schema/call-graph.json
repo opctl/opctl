@@ -28,17 +28,33 @@
             "type": "string"
           }
         },
+        "dirs": {
+          "type": "object",
+          "patternProperties": {
+            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+              "$ref": "container.json#/definitions/containerDir"
+            }
+          },
+          "additionalProperties": false,
+          "maxProperties": 1,
+          "minProperties": 1
+        },
         "env": {
           "type": "array",
           "items": {
             "$ref": "container.json#/definitions/containerEnvEntry"
           }
         },
-        "fs": {
-          "type": "array",
-          "items": {
-            "$ref": "container.json#/definitions/containerFsEntry"
-          }
+        "files": {
+          "type": "object",
+          "patternProperties": {
+            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+              "$ref": "container.json#/definitions/containerFile"
+            }
+          },
+          "additionalProperties": false,
+          "maxProperties": 1,
+          "minProperties": 1
         },
         "image": {
           "$ref": "container.json#/definitions/containerImageRef"

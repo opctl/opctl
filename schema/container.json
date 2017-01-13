@@ -2,13 +2,24 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://spec.opspec.io/0.1.3/schema/container.json",
   "definitions": {
+    "containerDir": {
+      "title": "containerDir",
+      "description": "A directory in the container",
+      "type": "object",
+      "properties": {
+        "bind": {
+          "description": "Variable to bind the directory to",
+          "type": "string"
+        }
+      }
+    },
     "containerEnvEntry": {
       "title": "containerEnvEntry",
       "description": "Entry in a containers environment; an environment variable",
       "type": "object",
       "properties": {
         "bind": {
-          "description": "Op parameter to bind the env variable to",
+          "description": "Variable to bind the env variable to",
           "type": "string"
         },
         "name": {
@@ -17,17 +28,13 @@
         }
       }
     },
-    "containerFsEntry": {
-      "title": "containerFsEntry",
-      "description": "Entry in a containers filesystem; a file/directory",
+    "containerFile": {
+      "title": "containerFile",
+      "description": "A file in the container",
       "type": "object",
       "properties": {
         "bind": {
-          "description": "Op parameter to bind the file/directory to",
-          "type": "string"
-        },
-        "path": {
-          "description": "Path of the file/directory in the container",
+          "description": "Variable to bind the file to",
           "type": "string"
         }
       }
@@ -38,7 +45,7 @@
       "type": "object",
       "properties": {
         "bind": {
-          "description": "Op parameter to bind the network socket to",
+          "description": "Variable to bind the network socket to",
           "type": "string"
         },
         "hostAliases": {

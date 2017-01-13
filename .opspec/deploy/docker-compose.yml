@@ -1,6 +1,6 @@
 version: "2"
 services:
-  deploy-to-s3:
+  deploy:
     build: .
     environment:
       - AWS_ACCESS_KEY_ID

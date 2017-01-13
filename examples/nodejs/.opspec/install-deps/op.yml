@@ -10,7 +10,7 @@ run:
     cmd: [ npm, install ]
     env:
       - { bind: NPM_CONFIG_REGISTRY }
-    fs:
-      - { bind: APP_DIR, path: /opt/app }
+    dirs:
+      /opt/app: { bind: APP_DIR }
     image: node:7.3
     workDir: /opt/app
