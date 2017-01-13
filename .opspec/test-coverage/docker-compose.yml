@@ -41,7 +41,7 @@ services:
       coverage=$$(($$total_hits*100 / $$total_statements))
       if [[ $$coverage -lt $$MINIMUM_COVERAGE ]] ;
       then
-        echo Insufficient test coverage. Coverage must be >= $$MINIMUM_COVERAGE 1>&2
+        echo "Insufficient test coverage! Actual: $$coverage%, Expected: >= $$MINIMUM_COVERAGE%" 1>&2
         exit 1
       fi
     environment:
