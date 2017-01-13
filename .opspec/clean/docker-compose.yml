@@ -1,0 +1,8 @@
+version: "2"
+services:
+  clean:
+    entrypoint: git clean -fXd -e !.idea/
+    image: node
+    volumes:
+      - ../../:/working_dir
+    working_dir: /working_dir
