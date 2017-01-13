@@ -1,4 +1,6 @@
 description: runs all build ops
 name: build
 run:
-  op: test
+  serial:
+    - op: clean
+    - op: test
