@@ -17,7 +17,7 @@ run:
 
         # build image
         docker build -t $(IMAGE_REF) .
-    fs:
-      - { bind: BUILD_CONTEXT, path: /opt/app }
+    dirs:
+      /opt/app: { bind: BUILD_CONTEXT }
     image: docker:1.12-dind
     workDir: /opt/app
