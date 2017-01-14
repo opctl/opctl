@@ -5,6 +5,5 @@ inputs:
 run:
   serial:
   - op: clean
-  - op: fmt-code
   - op: test
   - op: publish-coverage

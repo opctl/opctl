@@ -31,8 +31,8 @@ var _ = Describe("KillOp", func() {
 		fakeHttpClient := new(http.FakeClient)
 
 		objectUnderTest := _engineClient{
-			httpClient:     fakeHttpClient,
-			jsonFormat:     format.NewJsonFormat(),
+			httpClient: fakeHttpClient,
+			jsonFormat: format.NewJsonFormat(),
 		}
 
 		/* act */

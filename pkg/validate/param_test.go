@@ -8,7 +8,6 @@ import (
 )
 
 var _ = Describe("Param", func() {
-
 	objectUnderTest := New()
 	Context("invoked w/ nil param", func() {
 		It("should panic", func() {

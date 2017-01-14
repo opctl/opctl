@@ -35,8 +35,8 @@ var _ = Describe("StartOp", func() {
 		fakeHttpClient.DoReturns(&netHttp.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
 		objectUnderTest := _engineClient{
-			httpClient:     fakeHttpClient,
-			jsonFormat:     format.NewJsonFormat(),
+			httpClient: fakeHttpClient,
+			jsonFormat: format.NewJsonFormat(),
 		}
 
 		/* act */

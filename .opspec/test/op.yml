@@ -3,6 +3,7 @@ name: test
 run:
   serial:
   - op: init
+  - op: fmt-code
   - parallel:
     - op: test-lint
     - op: test-unit
