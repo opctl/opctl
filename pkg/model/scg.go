@@ -2,47 +2,47 @@ package model
 
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type Scg struct {
-  Container *ContainerCall `yaml:"container,omitempty"`
-  Op        *OpCall        `yaml:"op,omitempty"`
+  Container *ScgContainer `yaml:"container,omitempty"`
+  Op        *ScgOp        `yaml:"op,omitempty"`
   Parallel  []*Scg   `yaml:"parallel,omitempty"`
   Serial    []*Scg   `yaml:"serial,omitempty"`
 }
 
-type ContainerCall struct {
+type ScgContainer struct {
   Cmd     []string             `yaml:"cmd,omitempty"`
-  Env     []*ContainerCallEnvEntry `yaml:"env,omitempty"`
-  Files   map[string]*ContainerFile `yaml:"files,omitempty"`
-  Dirs    map[string]*ContainerDir `yaml:"dirs,omitempty"`
+  Env     []*ScgContainerEnvEntry `yaml:"env,omitempty"`
+  Files   map[string]*ScgContainerFile `yaml:"files,omitempty"`
+  Dirs    map[string]*ScgContainerDir `yaml:"dirs,omitempty"`
   Image   string               `yaml:"image"`
-  Net     []*ContainerCallNetEntry `yaml:"net,omitempty"`
+  Net     []*ScgContainerNetEntry `yaml:"net,omitempty"`
   WorkDir string               `yaml:"workDir,omitempty"`
 }
 
 // entry in a containers env; an env var
-type ContainerCallEnvEntry struct {
+type ScgContainerEnvEntry struct {
   Bind string `yaml:"bind,omitempty"`
   // name of the env var in the container
   Name string `yaml:"name,omitempty"`
 }
 
 // file in a container
-type ContainerFile struct {
+type ScgContainerFile struct {
   Bind string `yaml:"bind,omitempty"`
 }
 
 // dir in a container
-type ContainerDir struct {
+type ScgContainerDir struct {
   Bind string `yaml:"bind,omitempty"`
 }
 
 // entry in a containers network; a network socket
-type ContainerCallNetEntry struct {
+type ScgContainerNetEntry struct {
   Bind        string `yaml:"bind,omitempty"`
   // aliases to give the network socket host in the container
   HostAliases []string `yaml:"hostAliases"`
 }
 
-type OpCall struct {
+type ScgOp struct {
   Ref     string `yaml:"ref"`
   // binds in scope variables to inputs of referenced op
   Inputs  map[string]string `yaml:"inputs,omitempty"`

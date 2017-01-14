@@ -564,7 +564,7 @@ var _ = Describe("Param", func() {
 
 						/* arrange */
 						providedArg := &model.Data{
-							NetSocket: &model.NetSocketData{
+							NetSocket: &model.NetSocket{
 								Host: "dummyHost",
 								Port: 0,
 							},
@@ -592,7 +592,7 @@ var _ = Describe("Param", func() {
 
 							/* arrange */
 							providedArg := &model.Data{
-								NetSocket: &model.NetSocketData{
+								NetSocket: &model.NetSocket{
 									Host: "dummyHost",
 									Port: i,
 								},
@@ -619,7 +619,7 @@ var _ = Describe("Param", func() {
 
 						/* arrange */
 						providedArg := &model.Data{
-							NetSocket: &model.NetSocketData{
+							NetSocket: &model.NetSocket{
 								Host: "dummyHost",
 								Port: 65536,
 							},
@@ -646,7 +646,7 @@ var _ = Describe("Param", func() {
 
 					/* arrange */
 					providedArg := &model.Data{
-						NetSocket: &model.NetSocketData{
+						NetSocket: &model.NetSocket{
 							Host: "dummyHost",
 						},
 					}
@@ -671,7 +671,7 @@ var _ = Describe("Param", func() {
 
 					/* arrange */
 					providedArg := &model.Data{
-						NetSocket: &model.NetSocketData{
+						NetSocket: &model.NetSocket{
 							Port: 80,
 						},
 					}

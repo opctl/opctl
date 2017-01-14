@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/format"
 )
 
-var _ = Describe("CallGraph", func() {
+var _ = Describe("Scg", func() {
 
 	Context("when formatting to/from yaml", func() {
 		yaml := format.NewYamlFormat()
@@ -17,7 +17,7 @@ var _ = Describe("CallGraph", func() {
 
 				/* arrange */
 				expectedCallGraph := Scg{
-					Op: &OpCall{
+					Op: &ScgOp{
 						Ref: "dummyOpRef",
 						Inputs: map[string]string{
 							"dummyArg1Name": "dummyArg1Value",
@@ -52,7 +52,7 @@ var _ = Describe("CallGraph", func() {
 				expectedCallGraph := Scg{
 					Parallel: []*Scg{
 						{
-							Op: &OpCall{
+							Op: &ScgOp{
 								Ref: "dummyOpRef",
 							},
 						},
@@ -83,7 +83,7 @@ var _ = Describe("CallGraph", func() {
 				expectedCallGraph := Scg{
 					Serial: []*Scg{
 						{
-							Op: &OpCall{
+							Op: &ScgOp{
 								Ref: "dummyOpRef",
 							},
 						},

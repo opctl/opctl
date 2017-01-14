@@ -67,7 +67,7 @@ var _ = Describe("Data", func() {
 
 				/* arrange */
 				expectedData := Data{
-					NetSocket: &NetSocketData{
+					NetSocket: &NetSocket{
 						Host: "dummyName",
 						Port: 1,
 					},

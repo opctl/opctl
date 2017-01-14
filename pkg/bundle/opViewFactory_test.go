@@ -116,7 +116,7 @@ var _ = Describe("_opViewFactory", func() {
       }
 
       expectedCallGraph := &model.Scg{
-        Op: &model.OpCall{
+        Op: &model.ScgOp{
           Ref: "dummyOpRef",
         },
       }
@@ -171,7 +171,7 @@ var _ = Describe("_opViewFactory", func() {
         expectedCallGraph := &model.Scg{
           Parallel: []*model.Scg{
             {
-              Op: &model.OpCall{
+              Op: &model.ScgOp{
                 Ref: "dummyRef",
               },
             },
@@ -209,7 +209,7 @@ var _ = Describe("_opViewFactory", func() {
 
         /* arrange */
         expectedCallGraph := &model.Scg{
-          Op: &model.OpCall{
+          Op: &model.ScgOp{
             Ref: "dummyOpRef",
           },
         }
@@ -246,7 +246,7 @@ var _ = Describe("_opViewFactory", func() {
           expectedCallGraph := &model.Scg{
             Serial: []*model.Scg{
               {
-                Op: &model.OpCall{
+                Op: &model.ScgOp{
                   Ref: "dummyRef",
                 },
               },
@@ -318,7 +318,7 @@ var _ = Describe("_opViewFactory", func() {
             },
           },
           Run: &model.Scg{
-            Container: &model.ContainerCall{
+            Container: &model.ScgContainer{
               Cmd: []string{
                 "sh",
                 "-c",
@@ -331,7 +331,7 @@ sleep 2
 docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 `,
               },
-              Files: map[string]*model.ContainerFile{
+              Files: map[string]*model.ScgContainerFile{
                 "/root/.docker/config.json":{
                   Bind: "DOCKER_CONFIG",
                 },
@@ -395,7 +395,7 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
           Run: &model.Scg{
             Serial: []*model.Scg{
               {
-                Op: &model.OpCall{
+                Op: &model.ScgOp{
                   Ref: "install-deps",
                   Inputs: map[string]string{
                     "NPM_CONFIG_REGISTRY": "",
@@ -407,7 +407,7 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
                 },
               },
               {
-                Op: &model.OpCall{
+                Op: &model.ScgOp{
                   Ref: "debug-api",
                   Inputs: map[string]string{
                     "APP_DIR": "",
@@ -467,20 +467,20 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
             },
           },
           Run: &model.Scg{
-            Container: &model.ContainerCall{
+            Container: &model.ScgContainer{
               Cmd: []string{
                 "node_modules/.bin/mocha",
                 "--recursive",
                 "--reporter=spec",
                 "tests/unit",
               },
-              Dirs: map[string]*model.ContainerDir{
+              Dirs: map[string]*model.ScgContainerDir{
                 "/opt/app":{
                   Bind: "APP_DIR",
                 },
               },
               Image: "node:7.3",
-              Net: []*model.ContainerCallNetEntry{
+              Net: []*model.ScgContainerNetEntry{
                 {
                   Bind: "API_SOCKET",
                 },
