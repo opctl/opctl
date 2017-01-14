@@ -54,7 +54,7 @@ func (this _parallelCaller) Call(
 		var childCallError error
 
 		go func(childCall *model.Scg) {
-			// @TODO: handle netSockets
+			// @TODO: handle sockets
 			_, err = this.caller.Call(
 				this.uniqueStringFactory.Construct(),
 				args,

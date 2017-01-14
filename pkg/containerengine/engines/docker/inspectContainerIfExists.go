@@ -1,15 +1,17 @@
 package docker
 
 import (
+	"fmt"
 	"github.com/docker/docker/client"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
+	"os"
 	"strings"
 )
 
 func (this _containerEngine) InspectContainerIfExists(
 	containerId string,
-) (container *model.Container, err error) {
+) (container *model.DcgContainerCall, err error) {
 	rawContainer, err := this.dockerEngine.ContainerInspect(
 		context.Background(),
 		containerId,
@@ -24,33 +26,35 @@ func (this _containerEngine) InspectContainerIfExists(
 	}
 
 	// construct container from rawContainer
-	container = &model.Container{
+	container = &model.DcgContainerCall{
 		Cmd:     rawContainer.Config.Entrypoint,
+		EnvVars: map[string]string{},
+		Dirs:    map[string]string{},
+		Files:   map[string]string{},
 		WorkDir: rawContainer.Config.WorkingDir,
 		Image:   rawContainer.Image,
 	}
-	// construct env
-	for _, rawEnvEntry := range rawContainer.Config.Env {
-		rawEnvEntryParts := strings.SplitN(rawEnvEntry, "=", 2)
-		container.Env = append(
-			container.Env,
-			&model.ContainerEnvEntry{
-				Name:  rawEnvEntryParts[0],
-				Value: rawEnvEntryParts[1],
-			},
-		)
+	// construct envVars
+	for _, rawEnvVar := range rawContainer.Config.Env {
+		rawEnvVarParts := strings.SplitN(rawEnvVar, "=", 2)
+		container.EnvVars[rawEnvVarParts[0]] = rawEnvVarParts[1]
 	}
-	// construct fs
-	for _, rawFsEntry := range rawContainer.Mounts {
-		container.Fs = append(
-			container.Fs,
-			&model.ContainerFsEntry{
-				SrcRef: rawFsEntry.Source,
-				Path:   rawFsEntry.Destination,
-			},
-		)
+	// construct files & dirs
+	for _, mount := range rawContainer.Mounts {
+		var fileInfo os.FileInfo
+		fileInfo, err = this.fs.Stat(mount.Source)
+		if nil != err {
+			err = nil
+			fmt.Printf("Mount not available on opctl host and will be ignored. Mount was: %v \n", mount.Source)
+			continue
+		}
+		if fileInfo.IsDir() {
+			container.Dirs[mount.Destination] = mount.Source
+		} else {
+			container.Files[mount.Destination] = mount.Source
+		}
 	}
-	// @todo: construct net
+	// @todo: construct sockets
 
 	return
 }

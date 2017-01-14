@@ -1,37 +1,37 @@
 package appdata
 
 import (
-  . "github.com/onsi/ginkgo"
-  . "github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("appdata", func() {
-  Context("GlobalPath", func() {
-    It("should return expected path", func() {
-      /* arrange */
-      expected := os.Getenv("PROGRAMDATA")
+	Context("GlobalPath", func() {
+		It("should return expected path", func() {
+			/* arrange */
+			expected := os.Getenv("PROGRAMDATA")
 
-      objectUnderTest := New()
+			objectUnderTest := New()
 
-      /* act */
-      result := objectUnderTest.GlobalPath()
+			/* act */
+			result := objectUnderTest.GlobalPath()
 
-      /* assert */
-      Expect(result).To(Equal(expected))
-    })
-  })
-  Context("PerUserPath", func() {
-    It("should return expected path", func() {
-      /* arrange */
-      expected := os.Getenv("LOCALAPPDATA")
+			/* assert */
+			Expect(result).To(Equal(expected))
+		})
+	})
+	Context("PerUserPath", func() {
+		It("should return expected path", func() {
+			/* arrange */
+			expected := os.Getenv("LOCALAPPDATA")
 
-      objectUnderTest := New()
+			objectUnderTest := New()
 
-      /* act */
-      result := objectUnderTest.PerUserPath()
+			/* act */
+			result := objectUnderTest.PerUserPath()
 
-      /* assert */
-      Expect(result).To(Equal(expected))
-    })
-  })
+			/* assert */
+			Expect(result).To(Equal(expected))
+		})
+	})
 })

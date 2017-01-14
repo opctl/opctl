@@ -13,7 +13,7 @@ type containerCaller interface {
 	Call(
 		args map[string]*model.Data,
 		containerId string,
-		containerCall *model.ContainerCall,
+		containerCall *model.ScgContainerCall,
 		opRef string,
 		opGraphId string,
 	) (
@@ -48,7 +48,7 @@ type _containerCaller struct {
 func (this _containerCaller) Call(
 	args map[string]*model.Data,
 	containerId string,
-	containerCall *model.ContainerCall,
+	containerCall *model.ScgContainerCall,
 	opRef string,
 	opGraphId string,
 ) (
@@ -95,27 +95,27 @@ func (this _containerCaller) Call(
 	container, err := this.containerEngine.InspectContainerIfExists(containerId)
 	fmt.Println(opRef)
 	fmt.Printf("containerCaller.container:\n %#v\n", container)
-  // construct files
-  for containerFilePath, containerFile := range containerCall.Files {
-    for _, rawFsEntry := range container.Fs {
-      if containerFilePath == rawFsEntry.Path {
-        outputs[containerFile.Bind] = &model.Data{File: rawFsEntry.SrcRef}
-      }
-    }
-  }
-  // construct dirs
-  for containerDirPath, containerDir := range containerCall.Dirs {
-    for _, rawFsEntry := range container.Fs {
-      if containerDirPath == rawFsEntry.Path {
-        outputs[containerDir.Bind] = &model.Data{File: rawFsEntry.SrcRef}
-      }
-    }
-  }
-  // construct strings
-	for _, envEntry := range containerCall.Env {
-		for _, rawEnvEntry := range container.Env {
-			if envEntry.Name == rawEnvEntry.Name {
-				outputs[envEntry.Bind] = &model.Data{String: rawEnvEntry.Value}
+	// construct files
+	for scgContainerFilePath, scgContainerFile := range containerCall.Files {
+		for containerFilePath, hostFilePath := range container.Files {
+			if scgContainerFilePath == containerFilePath {
+				outputs[scgContainerFile.Bind] = &model.Data{File: hostFilePath}
+			}
+		}
+	}
+	// construct dirs
+	for scgContainerDirPath, scgContainerDir := range containerCall.Dirs {
+		for containerDirPath, hostDirPath := range container.Dirs {
+			if scgContainerDirPath == containerDirPath {
+				outputs[scgContainerDir.Bind] = &model.Data{Dir: hostDirPath}
+			}
+		}
+	}
+	// construct strings
+	for scgContainerEnvVarName, scgContainerEnvVar := range containerCall.EnvVars {
+		for containerEnvVarName, containerEnvVarValue := range container.EnvVars {
+			if scgContainerEnvVarName == containerEnvVarName {
+				outputs[scgContainerEnvVar.Bind] = &model.Data{String: containerEnvVarValue}
 			}
 		}
 	}

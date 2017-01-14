@@ -10,7 +10,7 @@ import (
 type ContainerEngine interface {
 	InspectContainerIfExists(
 		containerId string,
-	) (container *model.Container, err error)
+	) (container *model.DcgContainerCall, err error)
 
 	DeleteContainerIfExists(
 		containerId string,

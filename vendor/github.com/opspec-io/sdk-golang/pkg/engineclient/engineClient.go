@@ -31,19 +31,18 @@ type EngineClient interface {
 	)
 }
 
-func New(
-) EngineClient {
+func New() EngineClient {
 
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
 
 	return &_engineClient{
-		httpClient:     httpClient,
-		jsonFormat:     format.NewJsonFormat(),
+		httpClient: httpClient,
+		jsonFormat: format.NewJsonFormat(),
 	}
 }
 
 type _engineClient struct {
-	httpClient     http.Client
-	jsonFormat     format.Format
+	httpClient http.Client
+	jsonFormat format.Format
 }
