@@ -4,7 +4,7 @@
   "definitions": {
     "containerDir": {
       "title": "containerDir",
-      "description": "A directory in the container",
+      "description": "A directory in a container",
       "type": "object",
       "properties": {
         "bind": {
@@ -30,7 +30,7 @@
     },
     "containerFile": {
       "title": "containerFile",
-      "description": "A file in the container",
+      "description": "A file in a container",
       "type": "object",
       "properties": {
         "bind": {
@@ -39,17 +39,13 @@
         }
       }
     },
-    "containerNetEntry": {
-      "title": "containerNetEntry",
-      "description": "Entry in a containers network; a network socket",
+    "containerSocket": {
+      "title": "containerSocket",
+      "description": "A socket in a container",
       "type": "object",
       "properties": {
         "bind": {
-          "description": "Variable to bind the network socket to",
-          "type": "string"
-        },
-        "hostAliases": {
-          "description": "Aliases to give the network socket host in the container",
+          "description": "Variable to bind the socket to",
           "type": "string"
         }
       }
