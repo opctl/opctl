@@ -9,6 +9,6 @@ run:
     dirs:
       /opt/app: { bind: APP_DIR }
     image: node:7.3
-    net:
-      - { bind: API_SOCKET }
+    sockets:
+      api:80: { bind: API_SOCKET }
     workDir: /opt/app

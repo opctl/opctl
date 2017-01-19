@@ -35,9 +35,7 @@
               "$ref": "container.json#/definitions/containerDir"
             }
           },
-          "additionalProperties": false,
-          "maxProperties": 1,
-          "minProperties": 1
+          "additionalProperties": false
         },
         "env": {
           "type": "array",
@@ -52,18 +50,19 @@
               "$ref": "container.json#/definitions/containerFile"
             }
           },
-          "additionalProperties": false,
-          "maxProperties": 1,
-          "minProperties": 1
+          "additionalProperties": false
         },
         "image": {
           "$ref": "container.json#/definitions/containerImageRef"
         },
-        "net": {
-          "type": "array",
-          "items": {
-            "$ref": "container.json#/definitions/containerNetEntry"
-          }
+        "sockets": {
+          "type": "object",
+          "patternProperties": {
+            "[:a-zA-Z0-9]+": {
+              "$ref": "container.json#/definitions/containerSocket"
+            }
+          },
+          "additionalProperties": false
         },
         "workDir": {
           "description": "Working directory path (overrides any defined by image)",
