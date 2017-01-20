@@ -36,7 +36,7 @@ type Colorer interface {
 }
 
 func New() Colorer {
-  color.NoColor = false
+	color.NoColor = false
 	return &colorer{
 		attentionColorer: color.New(color.FgHiYellow, color.Bold).SprintfFunc(),
 		errorColorer:     color.New(color.FgHiRed, color.Bold).SprintfFunc(),

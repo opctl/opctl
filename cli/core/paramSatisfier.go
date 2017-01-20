@@ -7,7 +7,6 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/peterh/liner"
-	"gopkg.in/yaml.v2"
 	"os"
 	"strings"
 )
@@ -117,21 +116,18 @@ paramLoop:
 				rawArg = this.promptForArg(paramName, fileParam.Description, false)
 			}
 			arg = &model.Data{File: rawArg}
-		case nil != param.NetSocket:
-			netSocketParam := param.NetSocket
-			paramName = netSocketParam.Name
+		case nil != param.Socket:
+			socketParam := param.Socket
+			paramName = socketParam.Name
 
 			if providedArg, ok := rawArgMap[paramName]; ok {
 				rawArg = providedArg
 			} else if "" != os.Getenv(paramName) {
 				rawArg = os.Getenv(paramName)
 			} else {
-				rawArg = this.promptForArg(paramName, netSocketParam.Description, false)
+				rawArg = this.promptForArg(paramName, socketParam.Description, false)
 			}
-			arg = &model.Data{NetSocket: &model.NetSocketData{}}
-			if err := yaml.Unmarshal([]byte(rawArg), arg.NetSocket); nil != err {
-				argErrors = append(argErrors, err)
-			}
+			arg = &model.Data{Socket: rawArg}
 		}
 
 		// only perform semantic validation if no syntax errors exist

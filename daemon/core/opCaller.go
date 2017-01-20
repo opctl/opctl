@@ -79,8 +79,8 @@ func (this _opCaller) Call(
 			if providedArg := args[input.String.Name]; nil != providedArg {
 				arg = providedArg
 			}
-		case nil != input.NetSocket:
-			if providedArg := args[input.NetSocket.Name]; nil != providedArg {
+		case nil != input.Socket:
+			if providedArg := args[input.Socket.Name]; nil != providedArg {
 				arg = providedArg
 			}
 		}

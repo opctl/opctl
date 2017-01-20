@@ -1,13 +1,12 @@
 package containerengine
 
-import "github.com/opspec-io/sdk-golang/pkg/model"
-
 type StartContainerReq struct {
 	Cmd         []string
-	Env         []*model.ContainerEnvEntry
-	Fs          []*model.ContainerFsEntry
+	Dirs        map[string]string
+	Env         map[string]string
+	Files       map[string]string
 	Image       string
-	Net         []*model.ContainerNetEntry
+	Net         map[string]string
 	WorkDir     string
 	ContainerId string
 	OpGraphId   string

@@ -3,6 +3,8 @@ package docker
 import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opspec-io/opctl/pkg/containerengine"
+	"github.com/opspec-io/opctl/util/fs"
+	"github.com/opspec-io/opctl/util/fs/os"
 	"golang.org/x/net/context"
 )
 
@@ -25,6 +27,7 @@ func New() (
 
 	containerEngine = _containerEngine{
 		dockerEngine: dockerEngine,
+		fs:           os.New(),
 	}
 
 	return
@@ -33,4 +36,5 @@ func New() (
 
 type _containerEngine struct {
 	dockerEngine dockerEngine
+	fs           fs.Fs
 }

@@ -25,8 +25,8 @@ func (this _containerEngine) StartContainer(
 		Tty:        true,
 		Volumes:    map[string]struct{}{},
 	}
-	for _, envEntry := range req.Env {
-		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envEntry.Name, envEntry.Value))
+	for envVarName, envVarValue := range req.Env {
+		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
 	}
 
 	// construct host config
@@ -36,21 +36,15 @@ func (this _containerEngine) StartContainer(
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
 		Privileged: true,
 	}
-	for _, fsEntry := range req.Fs {
-		// see https://success.docker.com/Datacenter/Solve/Different_Types_of_Volumes
-		if "" != fsEntry.SrcRef {
-			// host volume
-			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", fsEntry.SrcRef, fsEntry.Path))
-		} else {
-			// anonymous volume
-			containerConfig.Volumes[fsEntry.Path] = struct{}{}
-		}
+	for containerPath, hostPath := range req.Files {
+		// host volume
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostPath, containerPath))
 	}
-	for _, netEntry := range req.Net {
-		for _, hostAlias := range netEntry.HostAliases {
-			hostConfig.ExtraHosts = append(hostConfig.ExtraHosts, fmt.Sprintf("%v:%v", hostAlias, netEntry.Host))
-		}
+	for containerPath, hostPath := range req.Dirs {
+		// host volume
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostPath, containerPath))
 	}
+	// @TODO: handle sockets
 
 	fmt.Printf("startContainer: hostConfig\n%#v\n", hostConfig)
 

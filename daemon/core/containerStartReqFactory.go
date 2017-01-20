@@ -9,59 +9,64 @@ import (
 
 func newContainerStartReq(
 	args map[string]*model.Data,
-	containerCall *model.ContainerCall,
+	containerCall *model.ScgContainerCall,
 	containerId string,
 	inputs []*model.Param,
 	opGraphId string,
 ) *containerengine.StartContainerReq {
 
+	// create new slice so we don't mutate containerCall.Cmd @ caller
 	cmd := append([]string{}, containerCall.Cmd...)
-	env := []*model.ContainerEnvEntry{}
-	fs := []*model.ContainerFsEntry{}
-	net := []*model.ContainerNetEntry{}
+	dirs := map[string]string{}
+	envVars := map[string]string{}
+	files := map[string]string{}
+	sockets := map[string]string{}
 
-  // construct files
-  for containerFilePath, containerFile := range containerCall.Files {
-    srcRef := ""
-    if srcRefData, ok := args[containerFile.Bind]; ok {
-      switch {
-      case "" != srcRefData.Dir:
-        srcRef = srcRefData.Dir
-      case "" != srcRefData.File:
-        srcRef = srcRefData.File
-      }
-    }
-    fsEntry := &model.ContainerFsEntry{
-      Path:   containerFilePath,
-      SrcRef: srcRef,
-    }
-    fs = append(fs, fsEntry)
-  }
+	// construct envVars
+	for scgContainerEnvVarName, scgContainerEnvVar := range containerCall.EnvVars {
+		envVars[scgContainerEnvVarName] = scgContainerEnvVar.Value
+	}
 
-	// construct dirs
-	for containerDirPath, containerDir := range containerCall.Dirs {
-		srcRef := ""
-		if srcRefData, ok := args[containerDir.Bind]; ok {
+	// construct files
+	for scgContainerFilePath, scgContainerFile := range containerCall.Files {
+		if boundArg, ok := args[scgContainerFile.Bind]; ok {
 			switch {
-			case "" != srcRefData.Dir:
-				srcRef = srcRefData.Dir
-			case "" != srcRefData.File:
-				srcRef = srcRefData.File
+			case "" != boundArg.File:
+				files[scgContainerFilePath] = boundArg.File
 			}
 		}
-		fsEntry := &model.ContainerFsEntry{
-			Path:   containerDirPath,
-			SrcRef: srcRef,
-		}
-		fs = append(fs, fsEntry)
 	}
-	fmt.Printf("startFactory: containerFs\n%#v\n", fs)
+	fmt.Printf("startFactory: req.files\n%#v\n", files)
+
+	// construct dirs
+	for scgContainerDirPath, scgContainerDir := range containerCall.Dirs {
+		if boundArg, ok := args[scgContainerDir.Bind]; ok {
+			switch {
+			case "" != boundArg.Dir:
+				dirs[scgContainerDirPath] = boundArg.Dir
+			}
+		}
+	}
+	fmt.Printf("startFactory: req.dirs\n%#v\n", dirs)
+
+	// construct sockets
+	for scgContainerSocketAddress, scgContainerSocket := range containerCall.Sockets {
+		if boundArg, ok := args[scgContainerSocket.Bind]; ok {
+			switch {
+			case "" != boundArg.Socket:
+				sockets[scgContainerSocketAddress] = boundArg.Dir
+			}
+		}
+	}
+	fmt.Printf("startFactory: req.sockets\n%#v\n", sockets)
 
 	for _, input := range inputs {
 		fmt.Printf("containerStartReqFactory.input:\n%#v\n", input)
 		switch {
 		case nil != input.String:
 			stringInput := input.String
+
+			// obtain inputValue
 			inputValue := ""
 			if _, isArgForInput := args[stringInput.Name]; isArgForInput {
 				// use provided arg for param
@@ -70,47 +75,23 @@ func newContainerStartReq(
 				// no provided arg for param; fallback to default
 				inputValue = stringInput.Default
 			}
+
+			// interpolate interpolatedStrings w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
 				cmd[cmdEntryIndex] = interpolater.Interpolate(cmdEntry, stringInput.Name, inputValue)
 			}
-			for _, envEntry := range containerCall.Env {
-				// append bound strings to env
-				if envEntry.Bind == stringInput.Name {
-					env = append(
-						env,
-						&model.ContainerEnvEntry{
-							Name:  stringInput.Name,
-							Value: inputValue,
-						},
-					)
-					break
-				}
-			}
-		case nil != input.NetSocket:
-			netSocketInput := input.NetSocket
-			netSocketArg := args[netSocketInput.Name].NetSocket
-			for _, netEntry := range containerCall.Net {
-				// append bound sockets to net
-				if netEntry.Bind == netSocketInput.Name {
-					net = append(
-						net,
-						&model.ContainerNetEntry{
-							Host:        netSocketArg.Host,
-							Port:        netSocketArg.Port,
-							HostAliases: netEntry.HostAliases,
-						},
-					)
-					break
-				}
+			for containerEnvVarName, containerEnvVar := range envVars {
+				envVars[containerEnvVarName] = interpolater.Interpolate(containerEnvVar, stringInput.Name, inputValue)
 			}
 		}
 	}
 	return &containerengine.StartContainerReq{
 		Cmd:         cmd,
-		Env:         env,
-		Fs:          fs,
+		Dirs:        dirs,
+		Env:         envVars,
+		Files:       files,
 		Image:       containerCall.Image,
-		Net:         net,
+		Net:         sockets,
 		WorkDir:     containerCall.WorkDir,
 		ContainerId: containerId,
 		OpGraphId:   opGraphId,
