@@ -17,7 +17,7 @@ func (this _containerEngine) stdErrLogger(
 ) (err error) {
 
 	var readCloser io.ReadCloser
-	readCloser, err = this.dockerEngine.ContainerLogs(
+	readCloser, err = this.dockerClient.ContainerLogs(
 		context.Background(),
 		containerId,
 		types.ContainerLogsOptions{

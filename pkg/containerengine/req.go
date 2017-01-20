@@ -6,7 +6,7 @@ type StartContainerReq struct {
 	Env         map[string]string
 	Files       map[string]string
 	Image       string
-	Net         map[string]string
+	Sockets     map[string]string
 	WorkDir     string
 	ContainerId string
 	OpGraphId   string

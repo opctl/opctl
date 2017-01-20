@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/opctl/util/eventbus"
 	"golang.org/x/net/context"
+	"strings"
 )
 
 func (this _containerEngine) StartContainer(
@@ -36,21 +37,28 @@ func (this _containerEngine) StartContainer(
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
 		Privileged: true,
 	}
-	for containerPath, hostPath := range req.Files {
-		// host volume
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostPath, containerPath))
+	for containerFilePath, hostFilePath := range req.Files {
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostFilePath, containerFilePath))
 	}
-	for containerPath, hostPath := range req.Dirs {
-		// host volume
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostPath, containerPath))
+	for containerDirPath, hostDirPath := range req.Dirs {
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostDirPath, containerDirPath))
 	}
-	// @TODO: handle sockets
+	for containerSocketAddress, hostSocketAddress := range req.Sockets {
+		const unixSocketAddressDiscriminationChars = `/\`
+		switch {
+		// note: this mechanism for determining the type of socket is naive; higher level of sophistication may be required
+		case strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars):
+			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostSocketAddress, containerSocketAddress))
+		default:
+			// @TODO: handle network sockets
+		}
+	}
 
 	fmt.Printf("startContainer: hostConfig\n%#v\n", hostConfig)
 
 	// create container
 	var containerCreatedResponse container.ContainerCreateCreatedBody
-	containerCreatedResponse, err = this.dockerEngine.ContainerCreate(
+	containerCreatedResponse, err = this.dockerClient.ContainerCreate(
 		context.Background(),
 		containerConfig,
 		hostConfig,
@@ -70,7 +78,7 @@ func (this _containerEngine) StartContainer(
 			}
 
 			// Retry
-			containerCreatedResponse, err = this.dockerEngine.ContainerCreate(
+			containerCreatedResponse, err = this.dockerClient.ContainerCreate(
 				context.Background(),
 				containerConfig,
 				hostConfig,
@@ -86,7 +94,7 @@ func (this _containerEngine) StartContainer(
 	}
 
 	// start container
-	err = this.dockerEngine.ContainerStart(
+	err = this.dockerClient.ContainerStart(
 		context.Background(),
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
@@ -105,7 +113,7 @@ func (this _containerEngine) StartContainer(
 	}
 
 	// wait for exit
-	exitCode, waitError := this.dockerEngine.ContainerWait(
+	exitCode, waitError := this.dockerClient.ContainerWait(
 		context.Background(),
 		req.ContainerId,
 	)

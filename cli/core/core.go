@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/opctl/util/updater"
+	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
@@ -67,7 +68,7 @@ func New(
 		exiter:            exiter,
 		engineClient:      engineclient.New(),
 		output:            newOutput(colorer),
-		paramSatisfier:    newParamSatisfier(colorer, exiter, validate.New()),
+		paramSatisfier:    newParamSatisfier(colorer, exiter, validate.New(), vos.New()),
 		updater:           updater.New(),
 		workDirPathGetter: newWorkDirPathGetter(),
 		writer:            os.Stdout,

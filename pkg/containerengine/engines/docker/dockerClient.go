@@ -8,8 +8,8 @@ import (
 	"io"
 )
 
-// interface for the docker engine
-type dockerEngine interface {
+// client interface for docker
+type dockerClient interface {
 	// ContainerCreate creates a new container based in the given configuration.
 	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, containerName string,
 	) (container.ContainerCreateCreatedBody, error)

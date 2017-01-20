@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func NewEventBus() EventBus {
+func New() EventBus {
 
 	objectUnderConstruction := &eventBus{
 		pendingPublishesChannel: make(chan model.Event),

@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/opspec-io/opctl/util/colorer"
+	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/peterh/liner"
-	"os"
 	"strings"
 )
 
@@ -28,12 +28,14 @@ func newParamSatisfier(
 	colorer colorer.Colorer,
 	exiter exiter,
 	validate validate.Validate,
+	vos vos.Vos,
 ) paramSatisfier {
 
 	return &_paramSatisfier{
 		colorer:  colorer,
 		exiter:   exiter,
 		validate: validate,
+		vos:      vos,
 	}
 }
 
@@ -41,6 +43,7 @@ type _paramSatisfier struct {
 	colorer  colorer.Colorer
 	exiter   exiter
 	validate validate.Validate
+	vos      vos.Vos
 }
 
 func (this _paramSatisfier) Satisfy(
@@ -57,7 +60,7 @@ func (this _paramSatisfier) Satisfy(
 		if len(argParts) > 1 {
 			argValue = argParts[1]
 		} else {
-			argValue = os.Getenv(rawArg)
+			argValue = this.vos.Getenv(rawArg)
 		}
 
 		rawArgMap[argName] = argValue
@@ -80,8 +83,8 @@ paramLoop:
 
 			if providedArg, ok := rawArgMap[paramName]; ok {
 				rawArg = providedArg
-			} else if "" != os.Getenv(paramName) {
-				rawArg = os.Getenv(paramName)
+			} else if "" != this.vos.Getenv(paramName) {
+				rawArg = this.vos.Getenv(paramName)
 			} else if "" != stringParam.Default {
 				// default value exists
 				paramIndex++
@@ -97,8 +100,8 @@ paramLoop:
 
 			if providedArg, ok := rawArgMap[paramName]; ok {
 				rawArg = providedArg
-			} else if "" != os.Getenv(paramName) {
-				rawArg = os.Getenv(paramName)
+			} else if "" != this.vos.Getenv(paramName) {
+				rawArg = this.vos.Getenv(paramName)
 			} else {
 				rawArg = this.promptForArg(paramName, dirParam.Description, false)
 			}
@@ -110,8 +113,8 @@ paramLoop:
 
 			if providedArg, ok := rawArgMap[paramName]; ok {
 				rawArg = providedArg
-			} else if "" != os.Getenv(paramName) {
-				rawArg = os.Getenv(paramName)
+			} else if "" != this.vos.Getenv(paramName) {
+				rawArg = this.vos.Getenv(paramName)
 			} else {
 				rawArg = this.promptForArg(paramName, fileParam.Description, false)
 			}
@@ -122,8 +125,8 @@ paramLoop:
 
 			if providedArg, ok := rawArgMap[paramName]; ok {
 				rawArg = providedArg
-			} else if "" != os.Getenv(paramName) {
-				rawArg = os.Getenv(paramName)
+			} else if "" != this.vos.Getenv(paramName) {
+				rawArg = this.vos.Getenv(paramName)
 			} else {
 				rawArg = this.promptForArg(paramName, socketParam.Description, false)
 			}

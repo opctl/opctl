@@ -4,6 +4,5 @@ inputs:
 - { name: GIT_BRANCH, default: 'master', description: 'The git branch the coverage should be associated with' }
 run:
   serial:
-  - op: clean
   - op: test
   - op: publish-coverage

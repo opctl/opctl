@@ -1,11 +1,11 @@
-package fs
+package vfs
 
-//go:generate counterfeiter -o ./fake/fs.go --fake-name Fs ./ Fs
+//go:generate counterfeiter -o ./fake/vfs.go --fake-name Vfs ./ Vfs
 
 import "os"
 
 // virtual filesystem interface
-type Fs interface {
+type Vfs interface {
 	// Create creates the named file with mode 0666 (before umask), truncating
 	// it if it already exists. If successful, methods on the returned
 	// File can be used for I/O; the associated file descriptor has mode

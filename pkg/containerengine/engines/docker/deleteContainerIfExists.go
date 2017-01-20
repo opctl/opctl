@@ -9,7 +9,7 @@ import (
 func (this _containerEngine) DeleteContainerIfExists(
 	containerId string,
 ) {
-	err := this.dockerEngine.ContainerRemove(
+	err := this.dockerClient.ContainerRemove(
 		context.Background(),
 		containerId,
 		types.ContainerRemoveOptions{

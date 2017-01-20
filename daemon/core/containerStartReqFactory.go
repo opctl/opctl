@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/interpolater"
+	"github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
@@ -29,32 +29,29 @@ func newContainerStartReq(
 
 	// construct files
 	for scgContainerFilePath, scgContainerFile := range containerCall.Files {
+		// @TODO: handle unbound files; (create temp file & pass path)
 		if boundArg, ok := args[scgContainerFile.Bind]; ok {
-			switch {
-			case "" != boundArg.File:
-				files[scgContainerFilePath] = boundArg.File
-			}
+			files[scgContainerFilePath] = boundArg.File
 		}
 	}
 	fmt.Printf("startFactory: req.files\n%#v\n", files)
 
 	// construct dirs
 	for scgContainerDirPath, scgContainerDir := range containerCall.Dirs {
+		// @TODO: handle unbound dirs; (create temp dir & pass path)
 		if boundArg, ok := args[scgContainerDir.Bind]; ok {
-			switch {
-			case "" != boundArg.Dir:
-				dirs[scgContainerDirPath] = boundArg.Dir
-			}
+			dirs[scgContainerDirPath] = boundArg.Dir
 		}
 	}
 	fmt.Printf("startFactory: req.dirs\n%#v\n", dirs)
 
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocket := range containerCall.Sockets {
+		// @TODO: handle unbound (unix) sockets; (create temp unix socket & pass path)
 		if boundArg, ok := args[scgContainerSocket.Bind]; ok {
 			switch {
 			case "" != boundArg.Socket:
-				sockets[scgContainerSocketAddress] = boundArg.Dir
+				sockets[scgContainerSocketAddress] = boundArg.Socket
 			}
 		}
 	}
@@ -78,10 +75,10 @@ func newContainerStartReq(
 
 			// interpolate interpolatedStrings w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolater.Interpolate(cmdEntry, stringInput.Name, inputValue)
+				cmd[cmdEntryIndex] = interpolate.Interpolate(cmdEntry, stringInput.Name, inputValue)
 			}
 			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolater.Interpolate(containerEnvVar, stringInput.Name, inputValue)
+				envVars[containerEnvVarName] = interpolate.Interpolate(containerEnvVar, stringInput.Name, inputValue)
 			}
 		}
 	}
@@ -91,7 +88,7 @@ func newContainerStartReq(
 		Env:         envVars,
 		Files:       files,
 		Image:       containerCall.Image,
-		Net:         sockets,
+		Sockets:     sockets,
 		WorkDir:     containerCall.WorkDir,
 		ContainerId: containerId,
 		OpGraphId:   opGraphId,

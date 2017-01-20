@@ -5,11 +5,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("updater", func() {
+var _ = Describe("equinoxClient", func() {
 	Context("New", func() {
-		It("should return Updater", func() {
+		It("should return equinoxClient", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(newEquinoxClient()).Should(Not(BeNil()))
 		})
 	})
 })

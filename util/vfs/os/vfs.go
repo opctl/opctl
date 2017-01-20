@@ -1,0 +1,28 @@
+package os
+
+import (
+	"github.com/opspec-io/opctl/util/vfs"
+	"os"
+)
+
+func New() vfs.Vfs {
+	return _vfs{}
+}
+
+type _vfs struct{}
+
+func (this _vfs) Create(name string) (*os.File, error) {
+	return os.Create(name)
+}
+
+func (this _vfs) MkdirAll(path string, perm os.FileMode) error {
+	return os.MkdirAll(path, perm)
+}
+
+func (this _vfs) RemoveAll(path string) error {
+	return os.RemoveAll(path)
+}
+
+func (this _vfs) Stat(name string) (os.FileInfo, error) {
+	return os.Stat(name)
+}

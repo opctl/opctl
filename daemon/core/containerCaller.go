@@ -119,8 +119,15 @@ func (this _containerCaller) Call(
 			}
 		}
 	}
+	// construct sockets
+	for scgContainerSocketAddress, scgContainerSocket := range containerCall.Sockets {
+		for containerSocketAddress, hostSocketAddress := range container.Sockets {
+			if scgContainerSocketAddress == containerSocketAddress {
+				outputs[scgContainerSocket.Bind] = &model.Data{Socket: hostSocketAddress}
+			}
+		}
+	}
 	fmt.Printf("containerCaller.outputs:\n %#v\n", outputs)
-	// @todo: handle containerCall.Net
 
 	defer func() {
 

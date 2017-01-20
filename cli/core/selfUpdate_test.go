@@ -29,13 +29,13 @@ var _ = Describe("selfUpdate", func() {
 					"%v is not an available release channel. "+
 						"Available release channels are 'beta' 'stable'. \n", providedReleaseChannel), Code: 1}))
 		})
-		It("should call exiter with expected args when updater.TryGetUpdate returns error", func() {
+		It("should call exiter with expected args when updater.GetUpdateIfExists returns error", func() {
 			/* arrange */
 			fakeExiter := new(fakeExiter)
 			returnedError := errors.New("dummyError")
 
 			fakeUpdater := new(updater.FakeUpdater)
-			fakeUpdater.TryGetUpdateReturns(&updater.Update{}, returnedError)
+			fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{}, returnedError)
 
 			objectUnderTest := _core{
 				updater: fakeUpdater,
@@ -49,7 +49,7 @@ var _ = Describe("selfUpdate", func() {
 			Expect(fakeExiter.ExitArgsForCall(0)).
 				Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
 		})
-		It("should call updater.TryGetUpdate with expected args", func() {
+		It("should call updater.GetUpdateIfExists with expected args", func() {
 			/* arrange */
 			fakeUpdater := new(updater.FakeUpdater)
 
@@ -64,15 +64,15 @@ var _ = Describe("selfUpdate", func() {
 			objectUnderTest.SelfUpdate(providedChannel)
 
 			/* assert */
-			Expect(fakeUpdater.TryGetUpdateArgsForCall(0)).Should(Equal(providedChannel))
+			Expect(fakeUpdater.GetUpdateIfExistsArgsForCall(0)).Should(Equal(providedChannel))
 		})
-		Describe("when updater.TryGetUpdate returns no update", func() {
+		Describe("when updater.GetUpdateIfExists returns no update", func() {
 			It("should call exiter with expected args", func() {
 				/* arrange */
 				fakeExiter := new(fakeExiter)
 
 				fakeUpdater := new(updater.FakeUpdater)
-				fakeUpdater.TryGetUpdateReturns(nil, nil)
+				fakeUpdater.GetUpdateIfExistsReturns(nil, nil)
 
 				objectUnderTest := _core{
 					updater: fakeUpdater,
@@ -87,7 +87,7 @@ var _ = Describe("selfUpdate", func() {
 					Should(Equal(ExitReq{Message: "No update available, already at the latest version!", Code: 0}))
 			})
 		})
-		Describe("when update.TryGetUpdate returns an update", func() {
+		Describe("when update.GetUpdateIfExists returns an update", func() {
 			Describe("and updater.ApplyUpdate is successful", func() {
 				It("should call exiter with expected args", func() {
 					/* arrange */
@@ -96,7 +96,7 @@ var _ = Describe("selfUpdate", func() {
 					fakeUpdater := new(updater.FakeUpdater)
 					returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
-					fakeUpdater.TryGetUpdateReturns(returnedUpdate, nil)
+					fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
 
 					objectUnderTest := _core{
 						updater: fakeUpdater,
@@ -122,7 +122,7 @@ var _ = Describe("selfUpdate", func() {
 
 					fakeUpdater := new(updater.FakeUpdater)
 
-					fakeUpdater.TryGetUpdateReturns(&updater.Update{Version: "dummyVersion"}, nil)
+					fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{Version: "dummyVersion"}, nil)
 
 					fakeUpdater.ApplyUpdateReturns(returnedError)
 

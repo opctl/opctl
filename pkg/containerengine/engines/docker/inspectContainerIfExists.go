@@ -12,7 +12,7 @@ import (
 func (this _containerEngine) InspectContainerIfExists(
 	containerId string,
 ) (container *model.DcgContainerCall, err error) {
-	rawContainer, err := this.dockerEngine.ContainerInspect(
+	dockerContainer, err := this.dockerClient.ContainerInspect(
 		context.Background(),
 		containerId,
 	)
@@ -25,24 +25,25 @@ func (this _containerEngine) InspectContainerIfExists(
 		}
 	}
 
-	// construct container from rawContainer
+	// construct dynamic call graph container from docker container
 	container = &model.DcgContainerCall{
-		Cmd:     rawContainer.Config.Entrypoint,
-		EnvVars: map[string]string{},
+		Cmd:     dockerContainer.Config.Entrypoint,
 		Dirs:    map[string]string{},
+		EnvVars: map[string]string{},
 		Files:   map[string]string{},
-		WorkDir: rawContainer.Config.WorkingDir,
-		Image:   rawContainer.Image,
+		Image:   dockerContainer.Image,
+		Sockets: map[string]string{},
+		WorkDir: dockerContainer.Config.WorkingDir,
 	}
 	// construct envVars
-	for _, rawEnvVar := range rawContainer.Config.Env {
+	for _, rawEnvVar := range dockerContainer.Config.Env {
 		rawEnvVarParts := strings.SplitN(rawEnvVar, "=", 2)
 		container.EnvVars[rawEnvVarParts[0]] = rawEnvVarParts[1]
 	}
-	// construct files & dirs
-	for _, mount := range rawContainer.Mounts {
+	// construct dirs, sockets backed by unix sockets, & files
+	for _, mount := range dockerContainer.Mounts {
 		var fileInfo os.FileInfo
-		fileInfo, err = this.fs.Stat(mount.Source)
+		fileInfo, err = this.vfs.Stat(mount.Source)
 		if nil != err {
 			err = nil
 			fmt.Printf("Mount not available on opctl host and will be ignored. Mount was: %v \n", mount.Source)
@@ -50,11 +51,12 @@ func (this _containerEngine) InspectContainerIfExists(
 		}
 		if fileInfo.IsDir() {
 			container.Dirs[mount.Destination] = mount.Source
+		} else if (fileInfo.Mode() & (os.ModeSocket | os.ModeNamedPipe)) != 0 {
+			container.Sockets[mount.Destination] = mount.Source
 		} else {
 			container.Files[mount.Destination] = mount.Source
 		}
 	}
-	// @todo: construct sockets
 
 	return
 }

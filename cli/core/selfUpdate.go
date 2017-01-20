@@ -20,7 +20,7 @@ func (this _core) SelfUpdate(
 		return // support fake exiter
 	}
 
-	update, err := this.updater.TryGetUpdate(releaseChannel)
+	update, err := this.updater.GetUpdateIfExists(releaseChannel)
 	if nil != err {
 		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter

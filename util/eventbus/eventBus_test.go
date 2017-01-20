@@ -1,13 +1,13 @@
-package appdata
+package eventbus
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("appdata", func() {
+var _ = Describe("eventBus", func() {
 	Context("New", func() {
-		It("should return AppData", func() {
+		It("should return EventBus", func() {
 			/* arrange/act/assert */
 			Expect(New()).Should(Not(BeNil()))
 		})

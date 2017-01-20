@@ -12,7 +12,7 @@ type Update struct {
 }
 
 type Updater interface {
-	TryGetUpdate(
+	GetUpdateIfExists(
 		releaseChannel string,
 	) (
 		update *Update,
@@ -26,35 +26,44 @@ type Updater interface {
 }
 
 func New() Updater {
-	return _updater{}
+	return _new(newEquinoxClient())
+}
+
+// constructs an Updater w/ provided equinoxClient to enable unit testing
+func _new(
+	equinoxClient equinoxClient,
+) Updater {
+	return _updater{
+		publicKey: []byte(`
+-----BEGIN ECDSA PUBLIC KEY-----
+MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEf6wRkF8+1yEmOm/SwMfVUzF+Ouf3JkjH
+kLhSsetGPdgalqErhAfgaYXlKKCU9lOinLmmrjm6pTaGgl1vwCOjlj9QjGQMYpOF
+NpxANJQvIwvHHHGb1VgCLj2kYOeyIa6D
+-----END ECDSA PUBLIC KEY-----
+`),
+		equinoxClient: equinoxClient,
+	}
 }
 
 type _updater struct {
-	publicKey []byte
+	publicKey     []byte
+	equinoxClient equinoxClient
 }
 
-func (this _updater) TryGetUpdate(
+func (this _updater) GetUpdateIfExists(
 	releaseChannel string,
 ) (
 	update *Update,
 	err error,
 ) {
 
-	publicKey := []byte(`
------BEGIN ECDSA PUBLIC KEY-----
-MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEf6wRkF8+1yEmOm/SwMfVUzF+Ouf3JkjH
-kLhSsetGPdgalqErhAfgaYXlKKCU9lOinLmmrjm6pTaGgl1vwCOjlj9QjGQMYpOF
-NpxANJQvIwvHHHGb1VgCLj2kYOeyIa6D
------END ECDSA PUBLIC KEY-----
-`)
-
 	opts := equinox.Options{Channel: releaseChannel}
-	if err = opts.SetPublicKeyPEM(publicKey); err != nil {
+	if err = opts.SetPublicKeyPEM(this.publicKey); err != nil {
 		return
 	}
 
-	// check for the update
-	equinoxResponse, err := equinox.Check("app_kNrDsPk2bis", opts)
+	// check for an update
+	equinoxResponse, err := this.equinoxClient.Check("app_kNrDsPk2bis", opts)
 	switch {
 	case err == equinox.NotAvailableErr:
 		err = nil
@@ -75,7 +84,7 @@ func (this _updater) ApplyUpdate(
 ) (err error) {
 
 	// fetch the update and apply it
-	err = update.equinoxResponse.Apply()
+	err = this.equinoxClient.Apply(*update.equinoxResponse)
 	if err != nil {
 		return
 	}

@@ -6,12 +6,12 @@ import (
 )
 
 type FakeUpdater struct {
-	TryGetUpdateStub        func(releaseChannel string) (update *Update, err error)
-	tryGetUpdateMutex       sync.RWMutex
-	tryGetUpdateArgsForCall []struct {
+	GetUpdateIfExistsStub        func(releaseChannel string) (update *Update, err error)
+	getUpdateIfExistsMutex       sync.RWMutex
+	getUpdateIfExistsArgsForCall []struct {
 		releaseChannel string
 	}
-	tryGetUpdateReturns struct {
+	getUpdateIfExistsReturns struct {
 		result1 *Update
 		result2 error
 	}
@@ -27,35 +27,35 @@ type FakeUpdater struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUpdater) TryGetUpdate(releaseChannel string) (update *Update, err error) {
-	fake.tryGetUpdateMutex.Lock()
-	fake.tryGetUpdateArgsForCall = append(fake.tryGetUpdateArgsForCall, struct {
+func (fake *FakeUpdater) GetUpdateIfExists(releaseChannel string) (update *Update, err error) {
+	fake.getUpdateIfExistsMutex.Lock()
+	fake.getUpdateIfExistsArgsForCall = append(fake.getUpdateIfExistsArgsForCall, struct {
 		releaseChannel string
 	}{releaseChannel})
-	fake.recordInvocation("TryGetUpdate", []interface{}{releaseChannel})
-	fake.tryGetUpdateMutex.Unlock()
-	if fake.TryGetUpdateStub != nil {
-		return fake.TryGetUpdateStub(releaseChannel)
+	fake.recordInvocation("GetUpdateIfExists", []interface{}{releaseChannel})
+	fake.getUpdateIfExistsMutex.Unlock()
+	if fake.GetUpdateIfExistsStub != nil {
+		return fake.GetUpdateIfExistsStub(releaseChannel)
 	} else {
-		return fake.tryGetUpdateReturns.result1, fake.tryGetUpdateReturns.result2
+		return fake.getUpdateIfExistsReturns.result1, fake.getUpdateIfExistsReturns.result2
 	}
 }
 
-func (fake *FakeUpdater) TryGetUpdateCallCount() int {
-	fake.tryGetUpdateMutex.RLock()
-	defer fake.tryGetUpdateMutex.RUnlock()
-	return len(fake.tryGetUpdateArgsForCall)
+func (fake *FakeUpdater) GetUpdateIfExistsCallCount() int {
+	fake.getUpdateIfExistsMutex.RLock()
+	defer fake.getUpdateIfExistsMutex.RUnlock()
+	return len(fake.getUpdateIfExistsArgsForCall)
 }
 
-func (fake *FakeUpdater) TryGetUpdateArgsForCall(i int) string {
-	fake.tryGetUpdateMutex.RLock()
-	defer fake.tryGetUpdateMutex.RUnlock()
-	return fake.tryGetUpdateArgsForCall[i].releaseChannel
+func (fake *FakeUpdater) GetUpdateIfExistsArgsForCall(i int) string {
+	fake.getUpdateIfExistsMutex.RLock()
+	defer fake.getUpdateIfExistsMutex.RUnlock()
+	return fake.getUpdateIfExistsArgsForCall[i].releaseChannel
 }
 
-func (fake *FakeUpdater) TryGetUpdateReturns(result1 *Update, result2 error) {
-	fake.TryGetUpdateStub = nil
-	fake.tryGetUpdateReturns = struct {
+func (fake *FakeUpdater) GetUpdateIfExistsReturns(result1 *Update, result2 error) {
+	fake.GetUpdateIfExistsStub = nil
+	fake.getUpdateIfExistsReturns = struct {
 		result1 *Update
 		result2 error
 	}{result1, result2}
@@ -97,8 +97,8 @@ func (fake *FakeUpdater) ApplyUpdateReturns(result1 error) {
 func (fake *FakeUpdater) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.tryGetUpdateMutex.RLock()
-	defer fake.tryGetUpdateMutex.RUnlock()
+	fake.getUpdateIfExistsMutex.RLock()
+	defer fake.getUpdateIfExistsMutex.RUnlock()
 	fake.applyUpdateMutex.RLock()
 	defer fake.applyUpdateMutex.RUnlock()
 	return fake.invocations
@@ -116,4 +116,4 @@ func (fake *FakeUpdater) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ = new(FakeUpdater)
+var _ Updater = new(FakeUpdater)
