@@ -11,7 +11,7 @@
       "$ref": "#/definitions/fileParam"
     },
     {
-      "$ref": "#/definitions/netSocketParam"
+      "$ref": "#/definitions/socketParam"
     },
     {
       "$ref": "#/definitions/stringParam"
@@ -64,14 +64,11 @@
       ],
       "additionalProperties": false
     },
-    "netSocketParam": {
-      "title": "netSocketParam",
-      "description": "Network socket parameter of an op",
+    "socketParam": {
+      "title": "socketParam",
+      "description": "Socket parameter of an op",
       "type": "object",
       "properties": {
-        "constraints": {
-          "$ref": "constraints.json#/definitions/netSocketConstraints"
-        },
         "description": {
           "description": "Description of the parameter",
           "type": "string"

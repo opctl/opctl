@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- `dir`, `file`, and `netSocket` parameter types
-- `constraints` attribute for `string` and `netSocket` parameter types
+- `dir`, `file`, and `socket` parameter types
+- `constraints` attribute for `string` parameter type
 - [./schema/call-graph.json#definitions/containerCall](schema/call-graph.json#definitions/containerCall)
 - `filter` to engine API `/event-stream` resource
 
@@ -16,9 +16,9 @@ All notable changes to this project will be documented in this file.
 - Rename from `run` to `call graph` for consistency with established
   terminology.
 - [./schema/call-graph.json#definitions/opCall](schema/call-graph.json#definitions/opCall)
-  changed from string to object with `ref`, `arg`, and `result`
+  changed from string to object with `ref`, `inputs`, and `outputs`
   attributes. To migrate, replace string value with object having `ref`
-  attribute equal to existing string and add `arg`/`result` values as
+  attribute equal to existing string and add `inputs`/`outputs` values as
   applicable.
 - String inputs must now be declared as a key value pair where the key
   is `string` and the value is its attributes. To migrate, just turn
