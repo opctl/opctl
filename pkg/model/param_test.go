@@ -69,13 +69,13 @@ var _ = Describe("Param", func() {
 
 		})
 
-		Context("with non-nil $.netSocket", func() {
+		Context("with non-nil $.socket", func() {
 
 			It("should have expected attributes", func() {
 
 				/* arrange */
 				expectedParam := Param{
-					NetSocket: &NetSocketParam{
+					Socket: &SocketParam{
 						Name:        "dummyName",
 						Description: "dummyDescription",
 						IsSecret:    true,

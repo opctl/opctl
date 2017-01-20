@@ -555,153 +555,39 @@ var _ = Describe("Param", func() {
 			})
 		})
 	})
-	Context("invoked w/ non-nil param.NetSocket", func() {
-		Context("& non-nil arg.NetSocket", func() {
-			Context("w/ non-empty Port", func() {
-				Context("equal to 0", func() {
-					It("should return expected errors", func() {
+	Context("invoked w/ non-nil param.Socket", func() {
+		Context("& non-empty arg.Socket", func() {
+			It("should return no errors", func() {
 
-						/* arrange */
-						providedArg := &model.Data{
-							NetSocket: &model.NetSocket{
-								Host: "dummyHost",
-								Port: 0,
-							},
-						}
-						providedParam := &model.Param{
-							NetSocket: &model.NetSocketParam{},
-						}
+				/* arrange */
+				providedArg := &model.Data{
+					Socket: "dummyValue",
+				}
+				providedParam := &model.Param{
+					Socket: &model.SocketParam{},
+				}
 
-						expectedErrors := []error{
-							fmt.Errorf("%v.port must be > 0", providedParam.NetSocket.Name),
-						}
+				expectedErrors := []error{}
 
-						/* act */
-						actualErrors := objectUnderTest.Param(providedArg, providedParam)
+				/* act */
+				actualErrors := objectUnderTest.Param(providedArg, providedParam)
 
-						/* assert */
-						Expect(actualErrors).To(Equal(expectedErrors))
+				/* assert */
+				Expect(actualErrors).To(Equal(expectedErrors))
 
-					})
-				})
-				Context("between 0 and 65536", func() {
-					It("should return no errors", func() {
-						var i uint = 1
-						for i < 65536 {
-
-							/* arrange */
-							providedArg := &model.Data{
-								NetSocket: &model.NetSocket{
-									Host: "dummyHost",
-									Port: i,
-								},
-							}
-							providedParam := &model.Param{
-								NetSocket: &model.NetSocketParam{},
-							}
-
-							expectedErrors := []error{}
-
-							/* act */
-							actualErrors := objectUnderTest.Param(providedArg, providedParam)
-
-							/* assert */
-							Expect(actualErrors).To(Equal(expectedErrors))
-
-							i += i
-						}
-
-					})
-				})
-				Context("equal to 65536", func() {
-					It("should return expected errors", func() {
-
-						/* arrange */
-						providedArg := &model.Data{
-							NetSocket: &model.NetSocket{
-								Host: "dummyHost",
-								Port: 65536,
-							},
-						}
-						providedParam := &model.Param{
-							NetSocket: &model.NetSocketParam{},
-						}
-
-						expectedErrors := []error{
-							fmt.Errorf("%v.port must be <= 65535", providedParam.NetSocket.Name),
-						}
-
-						/* act */
-						actualErrors := objectUnderTest.Param(providedArg, providedParam)
-
-						/* assert */
-						Expect(actualErrors).To(Equal(expectedErrors))
-
-					})
-				})
-			})
-			Context("w/ empty Port", func() {
-				It("should return expected errors", func() {
-
-					/* arrange */
-					providedArg := &model.Data{
-						NetSocket: &model.NetSocket{
-							Host: "dummyHost",
-						},
-					}
-					providedParam := &model.Param{
-						NetSocket: &model.NetSocketParam{},
-					}
-
-					expectedErrors := []error{
-						fmt.Errorf("%v.port must be > 0", providedParam.NetSocket.Name),
-					}
-
-					/* act */
-					actualErrors := objectUnderTest.Param(providedArg, providedParam)
-
-					/* assert */
-					Expect(actualErrors).To(Equal(expectedErrors))
-
-				})
-			})
-			Context("w/ empty Host", func() {
-				It("should return expected errors", func() {
-
-					/* arrange */
-					providedArg := &model.Data{
-						NetSocket: &model.NetSocket{
-							Port: 80,
-						},
-					}
-					providedParam := &model.Param{
-						NetSocket: &model.NetSocketParam{},
-					}
-
-					expectedErrors := []error{
-						fmt.Errorf("%v.host required", providedParam.NetSocket.Name),
-					}
-
-					/* act */
-					actualErrors := objectUnderTest.Param(providedArg, providedParam)
-
-					/* assert */
-					Expect(actualErrors).To(Equal(expectedErrors))
-
-				})
 			})
 		})
-		Context("& nil arg.NetSocket", func() {
+		Context("& empty arg.Socket", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
 				providedValue := &model.Data{}
 				providedParam := &model.Param{
-					NetSocket: &model.NetSocketParam{},
+					Socket: &model.SocketParam{},
 				}
 
 				expectedErrors := []error{
-					fmt.Errorf("%v required", providedParam.NetSocket.Name),
+					fmt.Errorf("%v required", providedParam.Socket.Name),
 				}
 
 				/* act */
@@ -717,11 +603,11 @@ var _ = Describe("Param", func() {
 
 				/* arrange */
 				providedParam := &model.Param{
-					NetSocket: &model.NetSocketParam{},
+					Socket: &model.SocketParam{},
 				}
 
 				expectedErrors := []error{
-					fmt.Errorf("%v required", providedParam.NetSocket.Name),
+					fmt.Errorf("%v required", providedParam.Socket.Name),
 				}
 
 				/* act */

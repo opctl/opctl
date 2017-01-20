@@ -7,5 +7,5 @@ run:
     cmd: [ node_modules/.bin/eslint, lib ]
     dirs:
       /opt/app: { bind: APP_DIR }
-    image: node:7.3
+    image: node:7.4
     workDir: /opt/app

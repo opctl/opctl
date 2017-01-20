@@ -373,7 +373,12 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 					Inputs: []*model.Param{
 						{
 							String: &model.StringParam{
-								Name:     "NPM_CONFIG_REGISTRY",
+								Name: "NPM_REGISTRY_ADDRESS",
+							},
+						},
+						{
+							String: &model.StringParam{
+								Name:     "NPM_REGISTRY_PATH",
 								IsSecret: true,
 							},
 						},
@@ -398,8 +403,9 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 								Op: &model.ScgOpCall{
 									Ref: "install-deps",
 									Inputs: map[string]string{
-										"NPM_CONFIG_REGISTRY": "",
-										"APP_DIR":             "",
+										"NPM_REGISTRY_ADDRESS": "",
+										"NPM_REGISTRY_PATH":    "",
+										"APP_DIR":              "",
 									},
 									Outputs: map[string]string{
 										"APP_DIR": "",
@@ -455,14 +461,9 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 							},
 						},
 						{
-							NetSocket: &model.NetSocketParam{
+							Socket: &model.SocketParam{
 								Name:        "API_SOCKET",
-								Description: "Network socket for the API under test",
-								Constraints: &model.NetSocketConstraints{
-									PortNumber: &model.PortNumberNetSocketConstraint{
-										Number: 80,
-									},
-								},
+								Description: "Socket for the API under test",
 							},
 						},
 					},
@@ -479,9 +480,9 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 									Bind: "APP_DIR",
 								},
 							},
-							Image: "node:7.3",
-							Net: []*model.ScgContainerNetEntry{
-								{
+							Image: "node:7.4",
+							Sockets: map[string]*model.ScgContainerSocket{
+								"api:80": {
 									Bind: "API_SOCKET",
 								},
 							},

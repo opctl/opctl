@@ -19,8 +19,8 @@ func (this validate) Param(
 	switch {
 	case nil != param.String:
 		errs = this.stringParam(arg, param.String)
-	case nil != param.NetSocket:
-		errs = this.netSocketParam(arg, param.NetSocket)
+	case nil != param.Socket:
+		errs = this.socketParam(arg, param.Socket)
 	}
 	return
 }
@@ -83,42 +83,15 @@ func (this validate) stringParam(
 }
 
 // validates an arg against a network socket parameter
-func (this validate) netSocketParam(
+func (this validate) socketParam(
 	rawArg *model.Data,
-	param *model.NetSocketParam,
+	param *model.SocketParam,
 ) (errs []error) {
 	errs = []error{}
 
 	// handle no arg passed
-	if nil == rawArg || nil == rawArg.NetSocket {
+	if nil == rawArg || "" == rawArg.Socket {
 		errs = append(errs, fmt.Errorf("%v required", param.Name))
-		return
-	}
-
-	arg := rawArg.NetSocket
-	if "" == arg.Host {
-		errs = append(errs, fmt.Errorf("%v.host required", param.Name))
-	}
-	if 0 >= arg.Port {
-		errs = append(errs, fmt.Errorf("%v.port must be > 0", param.Name))
-	}
-	if 65536 <= arg.Port {
-		errs = append(errs, fmt.Errorf("%v.port must be <= 65535", param.Name))
-	}
-
-	// guard no constraints
-	if nil == param.Constraints {
-		return
-	}
-	portNumberConstraint := param.Constraints.PortNumber
-	if nil != portNumberConstraint {
-		if portNumberConstraint.Number != arg.Port {
-			errs = append(errs, fmt.Errorf(
-				"%v.port must be %v",
-				param.Name,
-				param.Constraints.PortNumber.Number,
-			))
-		}
 	}
 	return
 }

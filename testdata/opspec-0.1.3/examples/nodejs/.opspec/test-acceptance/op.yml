@@ -2,13 +2,13 @@ name: test-acceptance
 description: Runs acceptance tests
 inputs:
   - dir: { name: APP_DIR, description: Directory containing the app }
-  - netSocket: { name: API_SOCKET, description: Network socket for the API under test, constraints: { port: { number: 80 } } }
+  - socket: { name: API_SOCKET, description: Socket for the API under test }
 run:
   container:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     dirs:
       /opt/app: { bind: APP_DIR }
-    image: node:7.3
-    net:
-      - { bind: API_SOCKET }
+    image: node:7.4
+    sockets:
+      api:80: { bind: API_SOCKET }
     workDir: /opt/app

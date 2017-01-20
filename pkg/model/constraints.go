@@ -15,12 +15,3 @@ type StringPatternConstraint struct {
 	Regex       string `yaml:"regex"`
 	Description string `yaml:"description,omitempty"`
 }
-
-type NetSocketConstraints struct {
-	PortNumber *PortNumberNetSocketConstraint `yaml:"port"`
-}
-
-type PortNumberNetSocketConstraint struct {
-	Number      uint   `yaml:"number"`
-	Description string `yaml:"description"`
-}

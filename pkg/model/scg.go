@@ -9,20 +9,21 @@ type Scg struct {
 }
 
 type ScgContainerCall struct {
-	Cmd     []string                     `yaml:"cmd,omitempty"`
-	Env     []*ScgContainerEnvEntry      `yaml:"env,omitempty"`
-	Files   map[string]*ScgContainerFile `yaml:"files,omitempty"`
-	Dirs    map[string]*ScgContainerDir  `yaml:"dirs,omitempty"`
-	Image   string                       `yaml:"image"`
-	Net     []*ScgContainerNetEntry      `yaml:"net,omitempty"`
-	WorkDir string                       `yaml:"workDir,omitempty"`
+	// cmd strings will be interpolated
+	Cmd     []string                       `yaml:"cmd,omitempty"`
+	EnvVars map[string]*ScgContainerEnvVar `yaml:"envVars,omitempty"`
+	Files   map[string]*ScgContainerFile   `yaml:"files,omitempty"`
+	Dirs    map[string]*ScgContainerDir    `yaml:"dirs,omitempty"`
+	Image   string                         `yaml:"image"`
+	Sockets map[string]*ScgContainerSocket `yaml:"sockets,omitempty"`
+	WorkDir string                         `yaml:"workDir,omitempty"`
 }
 
 // entry in a containers env; an env var
-type ScgContainerEnvEntry struct {
+type ScgContainerEnvVar struct {
 	Bind string `yaml:"bind,omitempty"`
-	// name of the env var in the container
-	Name string `yaml:"name,omitempty"`
+	// value string will be interpolated
+	Value string `yaml:"value,omitempty"`
 }
 
 // file in a container
@@ -35,11 +36,9 @@ type ScgContainerDir struct {
 	Bind string `yaml:"bind,omitempty"`
 }
 
-// entry in a containers network; a network socket
-type ScgContainerNetEntry struct {
+// socket in a container
+type ScgContainerSocket struct {
 	Bind string `yaml:"bind,omitempty"`
-	// aliases to give the network socket host in the container
-	HostAliases []string `yaml:"hostAliases"`
 }
 
 type ScgOpCall struct {

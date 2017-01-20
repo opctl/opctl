@@ -61,16 +61,13 @@ var _ = Describe("Data", func() {
 
 		})
 
-		Context("with non-nil $.netSocket", func() {
+		Context("with non-nil $.socket", func() {
 
 			It("should have expected attributes", func() {
 
 				/* arrange */
 				expectedData := Data{
-					NetSocket: &NetSocket{
-						Host: "dummyName",
-						Port: 1,
-					},
+					Socket: "dummySocket",
 				}
 
 				/* act */
