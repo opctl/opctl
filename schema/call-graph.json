@@ -22,11 +22,7 @@
       "type": "object",
       "properties": {
         "cmd": {
-          "description": "Command to run (overrides any defined by image)",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "$ref": "container.json#/definitions/containerCmd"
         },
         "dirs": {
           "type": "object",
@@ -37,11 +33,14 @@
           },
           "additionalProperties": false
         },
-        "env": {
-          "type": "array",
-          "items": {
-            "$ref": "container.json#/definitions/containerEnvEntry"
-          }
+        "envVars": {
+          "type": "object",
+          "patternProperties": {
+            "^[^=]+(=.+)?$": {
+              "$ref": "container.json#/definitions/containerEnvVar"
+            }
+          },
+          "additionalProperties": false
         },
         "files": {
           "type": "object",

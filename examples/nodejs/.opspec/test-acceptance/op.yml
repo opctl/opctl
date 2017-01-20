@@ -8,7 +8,7 @@ run:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     dirs:
       /opt/app: { bind: APP_DIR }
-    image: node:7.3
+    image: node:7.4
     sockets:
       api:80: { bind: API_SOCKET }
     workDir: /opt/app

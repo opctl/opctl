@@ -2,6 +2,13 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://spec.opspec.io/0.1.3/schema/container.json",
   "definitions": {
+    "containerCmd": {
+      "description": "Command run by a container; overrides any set at the image level",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/interpolatedString"
+      }
+    },
     "containerDir": {
       "title": "containerDir",
       "description": "A directory in a container",
@@ -13,18 +20,18 @@
         }
       }
     },
-    "containerEnvEntry": {
-      "title": "containerEnvEntry",
-      "description": "Entry in a containers environment; an environment variable",
+    "containerEnvVar": {
+      "title": "containerEnvVar",
+      "description": "An environment variable in a container",
       "type": "object",
       "properties": {
         "bind": {
-          "description": "Variable to bind the env variable to",
+          "description": "Variable to bind the environment variable to",
           "type": "string"
         },
-        "name": {
-          "description": "Name of the env variable in the container",
-          "type": "string"
+        "value": {
+          "description": "Value of the env var",
+          "type": "#/definitions/interpolatedString"
         }
       }
     },
@@ -53,6 +60,11 @@
     "containerImageRef": {
       "title": "containerImageRef",
       "description": "Reference to a container image",
+      "type": "string"
+    },
+    "interpolatedString":{
+      "title": "interpolatedString",
+      "description": "String supporting $(IN_SCOPE_VAR) substitution syntax where $(IN_SCOPE_VAR) will be replaced by the value of IN_SCOPE_VAR at runtime.",
       "type": "string"
     }
   }
