@@ -10,6 +10,6 @@ run:
   serial:
     - op:
         ref: install-deps
-        inputs: { NPM_REGISTRY_ADDRESS: ~, NPM_REGISTRY_PATH: ~, APP_DIR: ~ }
-        outputs: { APP_DIR: ~ }
-    - op: { ref: debug-api, inputs: { APP_DIR: ~ } }
+        inputs: { NPM_REGISTRY_ADDRESS, NPM_REGISTRY_PATH, APP_DIR }
+        outputs: { APP_DIR }
+    - op: { ref: debug-api, inputs: { APP_DIR } }
