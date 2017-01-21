@@ -10,7 +10,7 @@ run:
   container:
     cmd: [ npm, install ]
     envVars:
-      NPM_CONFIG_REGISTRY: { value: https://$(NPM_REGISTRY_ADDRESS)$(NPM_REGISTRY_PATH) }
+      NPM_CONFIG_REGISTRY: { value: 'https://$(NPM_REGISTRY_ADDRESS)$(NPM_REGISTRY_PATH)' }
     dirs:
       /opt/app: { bind: APP_DIR }
     image: node:7.4
