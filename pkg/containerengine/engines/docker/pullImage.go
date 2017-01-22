@@ -28,7 +28,7 @@ func (this _containerEngine) pullImage(
 	}
 
 	var imagePullResp io.ReadCloser
-	imagePullResp, err = this.dockerEngine.ImagePull(
+	imagePullResp, err = this.dockerClient.ImagePull(
 		context.Background(),
 		imageRef,
 		types.ImagePullOptions{},

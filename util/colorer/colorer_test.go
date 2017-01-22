@@ -13,10 +13,25 @@ var _ = Describe("colorer", func() {
 			Expect(New()).Should(Not(BeNil()))
 		})
 	})
-	objectUnderTest := New()
+	Context("Disable", func() {
+		It("should cause calls to Attention() to not color string", func() {
+			/* arrange */
+			objectUnderTest := New()
+			providedFormatString := "%v"
+			providedValue1 := "dummyString"
+			expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+
+			/* act */
+			objectUnderTest.Disable()
+
+			/* assert */
+			Expect(objectUnderTest.Attention(providedFormatString, providedValue1)).To(Equal(expectedString))
+		})
+	})
 	Context("Attention", func() {
 		It("should return expected string", func() {
 			/* arrange */
+			objectUnderTest := New()
 			providedFormatString := "%v"
 			providedValue1 := "dummyString"
 			expectedString := fmt.Sprintf("\x1b[93;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
@@ -31,6 +46,7 @@ var _ = Describe("colorer", func() {
 	Context("Error", func() {
 		It("should return expected string", func() {
 			/* arrange */
+			objectUnderTest := New()
 			providedFormatString := "%v"
 			providedValue1 := "dummyString"
 			expectedString := fmt.Sprintf("\x1b[91;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
@@ -45,6 +61,7 @@ var _ = Describe("colorer", func() {
 	Context("Info", func() {
 		It("should return expected string", func() {
 			/* arrange */
+			objectUnderTest := New()
 			providedFormatString := "%v"
 			providedValue1 := "dummyString"
 			expectedString := fmt.Sprintf("\x1b[96;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))
@@ -59,6 +76,7 @@ var _ = Describe("colorer", func() {
 	Context("Success", func() {
 		It("should return expected string", func() {
 			/* arrange */
+			objectUnderTest := New()
 			providedFormatString := "%v"
 			providedValue1 := "dummyString"
 			expectedString := fmt.Sprintf("\x1b[92;1m%s\x1b[0m", fmt.Sprintf(providedFormatString, providedValue1))

@@ -1,1 +1,1 @@
-EventBus interfaces and implementations
+EventBus interfaces & implementation

@@ -1,4 +1,4 @@
-package interpolater
+package vos
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestCli(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "engine/util/interpolater")
+	RunSpecs(t, "opctl/util/vos")
 }

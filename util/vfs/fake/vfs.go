@@ -5,10 +5,10 @@ import (
 	"os"
 	"sync"
 
-	"github.com/opspec-io/opctl/util/fs"
+	"github.com/opspec-io/opctl/util/vfs"
 )
 
-type Fs struct {
+type Vfs struct {
 	CreateStub        func(name string) (*os.File, error)
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
@@ -48,7 +48,7 @@ type Fs struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fs) Create(name string) (*os.File, error) {
+func (fake *Vfs) Create(name string) (*os.File, error) {
 	fake.createMutex.Lock()
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
 		name string
@@ -62,19 +62,19 @@ func (fake *Fs) Create(name string) (*os.File, error) {
 	}
 }
 
-func (fake *Fs) CreateCallCount() int {
+func (fake *Vfs) CreateCallCount() int {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	return len(fake.createArgsForCall)
 }
 
-func (fake *Fs) CreateArgsForCall(i int) string {
+func (fake *Vfs) CreateArgsForCall(i int) string {
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	return fake.createArgsForCall[i].name
 }
 
-func (fake *Fs) CreateReturns(result1 *os.File, result2 error) {
+func (fake *Vfs) CreateReturns(result1 *os.File, result2 error) {
 	fake.CreateStub = nil
 	fake.createReturns = struct {
 		result1 *os.File
@@ -82,7 +82,7 @@ func (fake *Fs) CreateReturns(result1 *os.File, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fs) MkdirAll(path string, perm os.FileMode) error {
+func (fake *Vfs) MkdirAll(path string, perm os.FileMode) error {
 	fake.mkdirAllMutex.Lock()
 	fake.mkdirAllArgsForCall = append(fake.mkdirAllArgsForCall, struct {
 		path string
@@ -97,26 +97,26 @@ func (fake *Fs) MkdirAll(path string, perm os.FileMode) error {
 	}
 }
 
-func (fake *Fs) MkdirAllCallCount() int {
+func (fake *Vfs) MkdirAllCallCount() int {
 	fake.mkdirAllMutex.RLock()
 	defer fake.mkdirAllMutex.RUnlock()
 	return len(fake.mkdirAllArgsForCall)
 }
 
-func (fake *Fs) MkdirAllArgsForCall(i int) (string, os.FileMode) {
+func (fake *Vfs) MkdirAllArgsForCall(i int) (string, os.FileMode) {
 	fake.mkdirAllMutex.RLock()
 	defer fake.mkdirAllMutex.RUnlock()
 	return fake.mkdirAllArgsForCall[i].path, fake.mkdirAllArgsForCall[i].perm
 }
 
-func (fake *Fs) MkdirAllReturns(result1 error) {
+func (fake *Vfs) MkdirAllReturns(result1 error) {
 	fake.MkdirAllStub = nil
 	fake.mkdirAllReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *Fs) RemoveAll(path string) error {
+func (fake *Vfs) RemoveAll(path string) error {
 	fake.removeAllMutex.Lock()
 	fake.removeAllArgsForCall = append(fake.removeAllArgsForCall, struct {
 		path string
@@ -130,26 +130,26 @@ func (fake *Fs) RemoveAll(path string) error {
 	}
 }
 
-func (fake *Fs) RemoveAllCallCount() int {
+func (fake *Vfs) RemoveAllCallCount() int {
 	fake.removeAllMutex.RLock()
 	defer fake.removeAllMutex.RUnlock()
 	return len(fake.removeAllArgsForCall)
 }
 
-func (fake *Fs) RemoveAllArgsForCall(i int) string {
+func (fake *Vfs) RemoveAllArgsForCall(i int) string {
 	fake.removeAllMutex.RLock()
 	defer fake.removeAllMutex.RUnlock()
 	return fake.removeAllArgsForCall[i].path
 }
 
-func (fake *Fs) RemoveAllReturns(result1 error) {
+func (fake *Vfs) RemoveAllReturns(result1 error) {
 	fake.RemoveAllStub = nil
 	fake.removeAllReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *Fs) Stat(name string) (os.FileInfo, error) {
+func (fake *Vfs) Stat(name string) (os.FileInfo, error) {
 	fake.statMutex.Lock()
 	fake.statArgsForCall = append(fake.statArgsForCall, struct {
 		name string
@@ -163,19 +163,19 @@ func (fake *Fs) Stat(name string) (os.FileInfo, error) {
 	}
 }
 
-func (fake *Fs) StatCallCount() int {
+func (fake *Vfs) StatCallCount() int {
 	fake.statMutex.RLock()
 	defer fake.statMutex.RUnlock()
 	return len(fake.statArgsForCall)
 }
 
-func (fake *Fs) StatArgsForCall(i int) string {
+func (fake *Vfs) StatArgsForCall(i int) string {
 	fake.statMutex.RLock()
 	defer fake.statMutex.RUnlock()
 	return fake.statArgsForCall[i].name
 }
 
-func (fake *Fs) StatReturns(result1 os.FileInfo, result2 error) {
+func (fake *Vfs) StatReturns(result1 os.FileInfo, result2 error) {
 	fake.StatStub = nil
 	fake.statReturns = struct {
 		result1 os.FileInfo
@@ -183,7 +183,7 @@ func (fake *Fs) StatReturns(result1 os.FileInfo, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fs) Invocations() map[string][][]interface{} {
+func (fake *Vfs) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.createMutex.RLock()
@@ -197,7 +197,7 @@ func (fake *Fs) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *Fs) recordInvocation(key string, args []interface{}) {
+func (fake *Vfs) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -209,4 +209,4 @@ func (fake *Fs) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ fs.Fs = new(Fs)
+var _ vfs.Vfs = new(Vfs)

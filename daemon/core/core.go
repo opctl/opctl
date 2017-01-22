@@ -35,7 +35,7 @@ func New(
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	eventBus := eventbus.NewEventBus()
+	eventBus := eventbus.New()
 
 	_bundle := bundle.New()
 

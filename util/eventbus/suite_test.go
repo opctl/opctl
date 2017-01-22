@@ -1,4 +1,4 @@
-package appdata
+package eventbus
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestCli(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/util/appdata")
+	RunSpecs(t, "opctl/util/eventbus")
 }

@@ -6,11 +6,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/colorer"
+	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
-	"os"
 	"path"
 	"time"
 )
@@ -35,7 +35,7 @@ var _ = Describe("runOp", func() {
 				bundle:            fakeBundle,
 				engineClient:      fakeEngineClient,
 				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 				workDirPathGetter: new(fakeWorkDirPathGetter),
 			}
 
@@ -70,7 +70,7 @@ var _ = Describe("runOp", func() {
 				bundle:            fakeBundle,
 				engineClient:      fakeEngineClient,
 				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 				workDirPathGetter: fakeWorkDirPathGetter,
 			}
 
@@ -95,7 +95,7 @@ var _ = Describe("runOp", func() {
 				bundle:            fakeBundle,
 				engineClient:      fakeEngineClient,
 				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 				workDirPathGetter: new(fakeWorkDirPathGetter),
 			}
 
@@ -135,7 +135,7 @@ var _ = Describe("runOp", func() {
 						bundle:            fakeBundle,
 						engineClient:      fakeEngineClient,
 						exiter:            fakeExiter,
-						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 						workDirPathGetter: new(fakeWorkDirPathGetter),
 					}
 
@@ -156,7 +156,8 @@ var _ = Describe("runOp", func() {
 					param1Name := "DUMMY_PARAM1_NAME"
 					param1Value := &model.Data{String: "dummyParam1Value"}
 
-					os.Setenv(param1Name, param1Value.String)
+					fakeVos := new(vos.FakeVos)
+					fakeVos.GetenvReturns(param1Value.String)
 
 					fakeBundle := new(bundle.FakeBundle)
 					fakeBundle.GetOpReturns(
@@ -179,7 +180,7 @@ var _ = Describe("runOp", func() {
 						bundle:            fakeBundle,
 						engineClient:      fakeEngineClient,
 						exiter:            fakeExiter,
-						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
 						workDirPathGetter: new(fakeWorkDirPathGetter),
 					}
 
@@ -201,7 +202,8 @@ var _ = Describe("runOp", func() {
 						param1Name := "DUMMY_PARAM1_NAME"
 						param1Value := &model.Data{String: "dummyParam1Value"}
 
-						os.Setenv(param1Name, param1Value.String)
+						fakeVos := new(vos.FakeVos)
+						fakeVos.GetenvReturns(param1Value.String)
 
 						fakeBundle := new(bundle.FakeBundle)
 						fakeBundle.GetOpReturns(
@@ -224,7 +226,7 @@ var _ = Describe("runOp", func() {
 							bundle:            fakeBundle,
 							engineClient:      fakeEngineClient,
 							exiter:            fakeExiter,
-							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
 							workDirPathGetter: new(fakeWorkDirPathGetter),
 						}
 
@@ -267,7 +269,7 @@ var _ = Describe("runOp", func() {
 							bundle:            fakeBundle,
 							engineClient:      fakeEngineClient,
 							exiter:            fakeExiter,
-							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 							workDirPathGetter: new(fakeWorkDirPathGetter),
 						}
 
@@ -298,7 +300,7 @@ var _ = Describe("runOp", func() {
 				bundle:            fakeBundle,
 				engineClient:      fakeEngineClient,
 				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 				workDirPathGetter: new(fakeWorkDirPathGetter),
 			}
 
@@ -325,7 +327,7 @@ var _ = Describe("runOp", func() {
 				bundle:            fakeBundle,
 				engineClient:      fakeEngineClient,
 				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 				workDirPathGetter: new(fakeWorkDirPathGetter),
 			}
 
@@ -368,7 +370,7 @@ var _ = Describe("runOp", func() {
 					engineClient:      fakeEngineClient,
 					exiter:            fakeExiter,
 					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 					workDirPathGetter: new(fakeWorkDirPathGetter),
 				}
 
@@ -407,7 +409,7 @@ var _ = Describe("runOp", func() {
 					engineClient:      fakeEngineClient,
 					exiter:            fakeExiter,
 					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 					workDirPathGetter: new(fakeWorkDirPathGetter),
 				}
 
@@ -446,7 +448,7 @@ var _ = Describe("runOp", func() {
 					engineClient:      fakeEngineClient,
 					exiter:            fakeExiter,
 					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New()),
+					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
 					workDirPathGetter: new(fakeWorkDirPathGetter),
 				}
 

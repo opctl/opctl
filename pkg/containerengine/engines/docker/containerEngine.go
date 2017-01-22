@@ -3,8 +3,8 @@ package docker
 import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/fs"
-	"github.com/opspec-io/opctl/util/fs/os"
+	"github.com/opspec-io/opctl/util/vfs"
+	"github.com/opspec-io/opctl/util/vfs/os"
 	"golang.org/x/net/context"
 )
 
@@ -13,21 +13,21 @@ func New() (
 	err error,
 ) {
 
-	dockerEngine, err := dockerClientPkg.NewEnvClient()
+	dockerClient, err := dockerClientPkg.NewEnvClient()
 	if nil != err {
 		return
 	}
 
 	// degrade client version to version of server
-	pingInfo, err := dockerEngine.Ping(context.Background())
+	pingInfo, err := dockerClient.Ping(context.Background())
 	if nil != err {
 		return
 	}
-	dockerEngine.UpdateClientVersion(pingInfo.APIVersion)
+	dockerClient.UpdateClientVersion(pingInfo.APIVersion)
 
 	containerEngine = _containerEngine{
-		dockerEngine: dockerEngine,
-		fs:           os.New(),
+		dockerClient: dockerClient,
+		vfs:          os.New(),
 	}
 
 	return
@@ -35,6 +35,6 @@ func New() (
 }
 
 type _containerEngine struct {
-	dockerEngine dockerEngine
-	fs           fs.Fs
+	dockerClient dockerClient
+	vfs          vfs.Vfs
 }
