@@ -10,9 +10,15 @@ func (this _core) SetOpDescription(
 	description string,
 	name string,
 ) {
-	err := this.bundle.SetOpDescription(
+	pwd, err := this.vos.Getwd()
+	if nil != err {
+		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	err = this.bundle.SetOpDescription(
 		model.SetOpDescriptionReq{
-			PathToOp:    path.Join(this.workDirPathGetter.Get(), collection, name),
+			PathToOp:    path.Join(pwd, collection, name),
 			Description: description,
 		},
 	)

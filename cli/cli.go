@@ -14,7 +14,6 @@ type cli interface {
 }
 
 func newCli(
-
 	core core.Core,
 	colorer colorer.Colorer,
 ) cli {

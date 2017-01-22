@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 	"text/tabwriter"
 )
 
@@ -15,8 +15,14 @@ func (this _core) ListOpsInCollection(
 
 	fmt.Fprintln(_tabWriter, "NAME\tDESCRIPTION")
 
+	pwd, err := this.vos.Getwd()
+	if nil != err {
+		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
 	ops, err := this.bundle.GetCollection(
-		path.Join(this.workDirPathGetter.Get(), collection),
+		filepath.Join(pwd, collection),
 	)
 	if nil != err {
 		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})

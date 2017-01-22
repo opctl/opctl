@@ -8,9 +8,15 @@ import (
 func (this _core) SetCollectionDescription(
 	description string,
 ) {
-	err := this.bundle.SetCollectionDescription(
+	pwd, err := this.vos.Getwd()
+	if nil != err {
+		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	err = this.bundle.SetCollectionDescription(
 		model.SetCollectionDescriptionReq{
-			PathToCollection: path.Join(this.workDirPathGetter.Get(), ".opspec"),
+			PathToCollection: path.Join(pwd, ".opspec"),
 			Description:      description,
 		},
 	)

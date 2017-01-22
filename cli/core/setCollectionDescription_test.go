@@ -4,59 +4,86 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"path"
+	"path/filepath"
 )
 
 var _ = Describe("setCollectionDescription", func() {
-
-	fakeWorkDirPathGetter := new(fakeWorkDirPathGetter)
-	workDirPath := ""
-	fakeWorkDirPathGetter.GetReturns(workDirPath)
-
 	Context("Execute", func() {
-		It("should invoke bundle.SetCollectionDescription with expected args", func() {
-			/* arrange */
-			fakeBundle := new(bundle.FakeBundle)
+		Context("vos.Getwd errors", func() {
+			It("should call exiter w/ expected args", func() {
+				/* arrange */
+				fakeVos := new(vos.FakeVos)
+				expectedError := errors.New("dummyError")
+				fakeVos.GetwdReturns("", expectedError)
 
-			expectedReq := model.SetCollectionDescriptionReq{
-				PathToCollection: path.Join(workDirPath, ".opspec"),
-				Description:      "dummyOpDescription",
-			}
+				fakeExiter := new(fakeExiter)
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				workDirPathGetter: fakeWorkDirPathGetter,
-			}
+				objectUnderTest := _core{
+					bundle: new(bundle.FakeBundle),
+					exiter: fakeExiter,
+					vos:    fakeVos,
+				}
 
-			/* act */
-			objectUnderTest.SetCollectionDescription(expectedReq.Description)
+				/* act */
+				objectUnderTest.SetCollectionDescription("")
 
-			/* assert */
-
-			Expect(fakeBundle.SetCollectionDescriptionArgsForCall(0)).Should(Equal(expectedReq))
+				/* assert */
+				Expect(fakeExiter.ExitArgsForCall(0)).
+					Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+			})
 		})
-		It("should return errors from bundle.SetCollectionDescription", func() {
-			/* arrange */
-			fakeBundle := new(bundle.FakeBundle)
-			expectedError := errors.New("dummyError")
-			fakeBundle.SetCollectionDescriptionReturns(expectedError)
+		Context("vos.Getwd doesn't error", func() {
+			It("should call bundle.SetCollectionDescription with expected args", func() {
+				/* arrange */
+				fakeBundle := new(bundle.FakeBundle)
+				wdReturnedFromVos := "dummyWorkDir"
 
-			fakeExiter := new(fakeExiter)
+				fakeVos := new(vos.FakeVos)
+				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				exiter:            fakeExiter,
-				workDirPathGetter: fakeWorkDirPathGetter,
-			}
+				expectedReq := model.SetCollectionDescriptionReq{
+					PathToCollection: filepath.Join(wdReturnedFromVos, ".opspec"),
+					Description:      "dummyOpDescription",
+				}
 
-			/* act */
-			objectUnderTest.SetCollectionDescription("")
+				objectUnderTest := _core{
+					bundle: fakeBundle,
+					vos:    fakeVos,
+				}
 
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+				/* act */
+				objectUnderTest.SetCollectionDescription(expectedReq.Description)
+
+				/* assert */
+
+				Expect(fakeBundle.SetCollectionDescriptionArgsForCall(0)).Should(Equal(expectedReq))
+			})
+			Context("bundle.SetCollectionDescription errors", func() {
+				It("should call exiter w/ expected args", func() {
+					/* arrange */
+					fakeBundle := new(bundle.FakeBundle)
+					expectedError := errors.New("dummyError")
+					fakeBundle.SetCollectionDescriptionReturns(expectedError)
+
+					fakeExiter := new(fakeExiter)
+
+					objectUnderTest := _core{
+						bundle: fakeBundle,
+						exiter: fakeExiter,
+						vos:    new(vos.FakeVos),
+					}
+
+					/* act */
+					objectUnderTest.SetCollectionDescription("")
+
+					/* assert */
+					Expect(fakeExiter.ExitArgsForCall(0)).
+						Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+				})
+			})
 		})
 	})
 })

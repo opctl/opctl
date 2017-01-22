@@ -6,6 +6,11 @@ import (
 )
 
 type FakeVos struct {
+	ExitStub        func(code int)
+	exitMutex       sync.RWMutex
+	exitArgsForCall []struct {
+		code int
+	}
 	GetenvStub        func(key string) string
 	getenvMutex       sync.RWMutex
 	getenvArgsForCall []struct {
@@ -13,6 +18,13 @@ type FakeVos struct {
 	}
 	getenvReturns struct {
 		result1 string
+	}
+	GetwdStub        func() (string, error)
+	getwdMutex       sync.RWMutex
+	getwdArgsForCall []struct{}
+	getwdReturns     struct {
+		result1 string
+		result2 error
 	}
 	SetenvStub        func(key, value string) error
 	setenvMutex       sync.RWMutex
@@ -25,6 +37,30 @@ type FakeVos struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeVos) Exit(code int) {
+	fake.exitMutex.Lock()
+	fake.exitArgsForCall = append(fake.exitArgsForCall, struct {
+		code int
+	}{code})
+	fake.recordInvocation("Exit", []interface{}{code})
+	fake.exitMutex.Unlock()
+	if fake.ExitStub != nil {
+		fake.ExitStub(code)
+	}
+}
+
+func (fake *FakeVos) ExitCallCount() int {
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
+	return len(fake.exitArgsForCall)
+}
+
+func (fake *FakeVos) ExitArgsForCall(i int) int {
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
+	return fake.exitArgsForCall[i].code
 }
 
 func (fake *FakeVos) Getenv(key string) string {
@@ -58,6 +94,32 @@ func (fake *FakeVos) GetenvReturns(result1 string) {
 	fake.getenvReturns = struct {
 		result1 string
 	}{result1}
+}
+
+func (fake *FakeVos) Getwd() (string, error) {
+	fake.getwdMutex.Lock()
+	fake.getwdArgsForCall = append(fake.getwdArgsForCall, struct{}{})
+	fake.recordInvocation("Getwd", []interface{}{})
+	fake.getwdMutex.Unlock()
+	if fake.GetwdStub != nil {
+		return fake.GetwdStub()
+	} else {
+		return fake.getwdReturns.result1, fake.getwdReturns.result2
+	}
+}
+
+func (fake *FakeVos) GetwdCallCount() int {
+	fake.getwdMutex.RLock()
+	defer fake.getwdMutex.RUnlock()
+	return len(fake.getwdArgsForCall)
+}
+
+func (fake *FakeVos) GetwdReturns(result1 string, result2 error) {
+	fake.GetwdStub = nil
+	fake.getwdReturns = struct {
+		result1 string
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeVos) Setenv(key string, value string) error {
@@ -97,8 +159,12 @@ func (fake *FakeVos) SetenvReturns(result1 error) {
 func (fake *FakeVos) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.exitMutex.RLock()
+	defer fake.exitMutex.RUnlock()
 	fake.getenvMutex.RLock()
 	defer fake.getenvMutex.RUnlock()
+	fake.getwdMutex.RLock()
+	defer fake.getwdMutex.RUnlock()
 	fake.setenvMutex.RLock()
 	defer fake.setenvMutex.RUnlock()
 	return fake.invocations
