@@ -11,451 +11,568 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
-	"path"
+	"path/filepath"
 	"time"
 )
 
 var _ = Describe("runOp", func() {
-
 	Context("Execute", func() {
-		It("should call exiter with expected args when bundle.GetOp returns error", func() {
-			/* arrange */
-			fakeExiter := new(fakeExiter)
-			returnedError := errors.New("dummyError")
+		Context("vos.Getwd errors", func() {
+			It("should call exiter w/ expected args", func() {
+				/* arrange */
+				fakeVos := new(vos.FakeVos)
+				expectedError := errors.New("dummyError")
+				fakeVos.GetwdReturns("", expectedError)
 
-			fakeBundle := new(bundle.FakeBundle)
-			fakeBundle.GetOpReturns(model.OpView{}, returnedError)
+				fakeExiter := new(fakeExiter)
 
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			eventChannel := make(chan model.Event)
-			close(eventChannel)
-			fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+				objectUnderTest := _core{
+					bundle: new(bundle.FakeBundle),
+					exiter: fakeExiter,
+					vos:    fakeVos,
+				}
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				engineClient:      fakeEngineClient,
-				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-				workDirPathGetter: new(fakeWorkDirPathGetter),
-			}
+				/* act */
+				objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyName")
 
-			/* act */
-			objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyName")
-
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
+				/* assert */
+				Expect(fakeExiter.ExitArgsForCall(0)).
+					Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+			})
 		})
-		It("should call bundle.GetOp with expected args", func() {
-			/* arrange */
-			fakeBundle := new(bundle.FakeBundle)
+		Context("vos.Getwd doesn't error", func() {
+			It("should call bundle.GetOp with expected args", func() {
+				/* arrange */
+				fakeBundle := new(bundle.FakeBundle)
 
-			fakeWorkDirPathGetter := new(fakeWorkDirPathGetter)
-			workDirPath := "dummyWorkDirPath"
-			fakeWorkDirPathGetter.GetReturns(workDirPath)
+				fakeEngineClient := new(engineclient.FakeEngineClient)
+				eventChannel := make(chan model.Event)
+				close(eventChannel)
+				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
 
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			eventChannel := make(chan model.Event)
-			close(eventChannel)
-			fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+				fakeExiter := new(fakeExiter)
 
-			fakeExiter := new(fakeExiter)
+				providedName := "dummyOpName"
+				providedCollection := "dummyCollection"
+				wdReturnedFromVos := "dummyWorkDir"
 
-			providedName := "dummyOpName"
-			providedCollection := "dummyCollection"
+				fakeVos := new(vos.FakeVos)
+				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
+				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection, providedName)
 
-			expectedPath := path.Join(workDirPath, providedCollection, providedName)
+				objectUnderTest := _core{
+					bundle:         fakeBundle,
+					engineClient:   fakeEngineClient,
+					exiter:         fakeExiter,
+					paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+					vos:            fakeVos,
+				}
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				engineClient:      fakeEngineClient,
-				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-				workDirPathGetter: fakeWorkDirPathGetter,
-			}
+				/* act */
+				objectUnderTest.RunOp([]string{}, providedCollection, providedName)
 
-			/* act */
-			objectUnderTest.RunOp([]string{}, providedCollection, providedName)
-
-			/* assert */
-			Expect(fakeBundle.GetOpArgsForCall(0)).Should(Equal(expectedPath))
-		})
-		It("should call exiter with expected args when bundle.GetEventStream returns error", func() {
-			/* arrange */
-			fakeExiter := new(fakeExiter)
-			returnedError := errors.New("dummyError")
-
-			fakeBundle := new(bundle.FakeBundle)
-			fakeBundle.GetOpReturns(model.OpView{}, nil)
-
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			fakeEngineClient.GetEventStreamReturns(nil, returnedError)
-
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				engineClient:      fakeEngineClient,
-				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-				workDirPathGetter: new(fakeWorkDirPathGetter),
-			}
-
-			/* act */
-			objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
-
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
-		})
-		Describe("when op has params defined", func() {
-			Describe("and corresponding args are provided explicitly with values", func() {
-				It("should call engineClient.StartOp with provided arg values", func() {
+				/* assert */
+				Expect(fakeBundle.GetOpArgsForCall(0)).Should(Equal(expectedPath))
+			})
+			Context("bundle.GetOp errors", func() {
+				It("should call exiter with expected args", func() {
 					/* arrange */
 					fakeExiter := new(fakeExiter)
-					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Data{String: "dummyParam1Value"}
+					returnedError := errors.New("dummyError")
 
 					fakeBundle := new(bundle.FakeBundle)
-					fakeBundle.GetOpReturns(
-						model.OpView{
-							Inputs: []*model.Param{
-								{
-									String: &model.StringParam{
-										Name: param1Name,
-									},
-								},
-							},
-						},
-						nil,
-					)
-
-					fakeEngineClient := new(engineclient.FakeEngineClient)
-					fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+					fakeBundle.GetOpReturns(model.OpView{}, returnedError)
 
 					objectUnderTest := _core{
-						bundle:            fakeBundle,
-						engineClient:      fakeEngineClient,
-						exiter:            fakeExiter,
-						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-						workDirPathGetter: new(fakeWorkDirPathGetter),
+						bundle:         fakeBundle,
+						exiter:         fakeExiter,
+						paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+						vos:            new(vos.FakeVos),
 					}
 
-					expectedArgs := map[string]*model.Data{param1Name: param1Value}
-					providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
-
 					/* act */
-					objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+					objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyName")
 
 					/* assert */
-					Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+					Expect(fakeExiter.ExitArgsForCall(0)).
+						Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
 				})
 			})
-			Describe("and corresponding args are provided explicitly without values", func() {
-				It("should call engineClient.StartOp with arg values obtained from the environment", func() {
-					/* arrange */
-					fakeExiter := new(fakeExiter)
-					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Data{String: "dummyParam1Value"}
+			Context("bundle.GetOp doesn't error", func() {
+				Context("op has params", func() {
+					Context("op args provided explicitly w/ values", func() {
+						It("should call engineClient.StartOp with provided arg values", func() {
+							/* arrange */
+							fakeExiter := new(fakeExiter)
+							param1Name := "DUMMY_PARAM1_NAME"
+							param1Value := &model.Data{String: "dummyParam1Value"}
 
-					fakeVos := new(vos.FakeVos)
-					fakeVos.GetenvReturns(param1Value.String)
-
-					fakeBundle := new(bundle.FakeBundle)
-					fakeBundle.GetOpReturns(
-						model.OpView{
-							Inputs: []*model.Param{
-								{
-									String: &model.StringParam{
-										Name: param1Name,
-									},
-								},
-							},
-						},
-						nil,
-					)
-
-					fakeEngineClient := new(engineclient.FakeEngineClient)
-					fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
-
-					objectUnderTest := _core{
-						bundle:            fakeBundle,
-						engineClient:      fakeEngineClient,
-						exiter:            fakeExiter,
-						paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
-						workDirPathGetter: new(fakeWorkDirPathGetter),
-					}
-
-					expectedArgs := map[string]*model.Data{param1Name: param1Value}
-					providedArgs := []string{param1Name}
-
-					/* act */
-					objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
-
-					/* assert */
-					Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
-				})
-			})
-			Describe("and corresponding args are not provided", func() {
-				Describe("and defaults don't exist", func() {
-					It("should call bundle.RunOp with arg values obtained from the environment", func() {
-						/* arrange */
-						fakeExiter := new(fakeExiter)
-						param1Name := "DUMMY_PARAM1_NAME"
-						param1Value := &model.Data{String: "dummyParam1Value"}
-
-						fakeVos := new(vos.FakeVos)
-						fakeVos.GetenvReturns(param1Value.String)
-
-						fakeBundle := new(bundle.FakeBundle)
-						fakeBundle.GetOpReturns(
-							model.OpView{
-								Inputs: []*model.Param{
-									{
-										String: &model.StringParam{
-											Name: param1Name,
+							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle.GetOpReturns(
+								model.OpView{
+									Inputs: []*model.Param{
+										{
+											String: &model.StringParam{
+												Name: param1Name,
+											},
 										},
 									},
 								},
-							},
-							nil,
-						)
+								nil,
+							)
 
-						fakeEngineClient := new(engineclient.FakeEngineClient)
-						fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
-						objectUnderTest := _core{
-							bundle:            fakeBundle,
-							engineClient:      fakeEngineClient,
-							exiter:            fakeExiter,
-							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
-							workDirPathGetter: new(fakeWorkDirPathGetter),
-						}
+							objectUnderTest := _core{
+								bundle:         fakeBundle,
+								engineClient:   fakeEngineClient,
+								exiter:         fakeExiter,
+								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+								vos:            new(vos.FakeVos),
+							}
 
-						expectedArgs := map[string]*model.Data{param1Name: param1Value}
-						providedArgs := []string{}
+							expectedArgs := map[string]*model.Data{param1Name: param1Value}
+							providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
 
-						/* act */
-						objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+							/* act */
+							objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
 
-						/* assert */
-						Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+							/* assert */
+							Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+						})
 					})
-				})
-				Describe("but defaults exist", func() {
-					It("should call bundle.RunOp without args for defaulted params", func() {
-						/* arrange */
-						fakeExiter := new(fakeExiter)
-						// unique name to ensure conflicting env var not present
-						param1Name := string(time.Now().Unix())
+					Context("op args provided explicitly w/out values", func() {
+						It("should call engineClient.StartOp with arg values obtained from the environment", func() {
+							/* arrange */
+							fakeExiter := new(fakeExiter)
+							param1Name := "DUMMY_PARAM1_NAME"
+							param1Value := &model.Data{String: "dummyParam1Value"}
 
-						fakeBundle := new(bundle.FakeBundle)
-						fakeBundle.GetOpReturns(
-							model.OpView{
-								Inputs: []*model.Param{
-									{
-										String: &model.StringParam{
-											Name:    param1Name,
-											Default: "dummyDefault",
+							fakeVos := new(vos.FakeVos)
+							fakeVos.GetenvReturns(param1Value.String)
+
+							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle.GetOpReturns(
+								model.OpView{
+									Inputs: []*model.Param{
+										{
+											String: &model.StringParam{
+												Name: param1Name,
+											},
 										},
 									},
 								},
-							},
-							nil,
-						)
+								nil,
+							)
 
-						fakeEngineClient := new(engineclient.FakeEngineClient)
-						fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
-						objectUnderTest := _core{
-							bundle:            fakeBundle,
-							engineClient:      fakeEngineClient,
-							exiter:            fakeExiter,
-							paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-							workDirPathGetter: new(fakeWorkDirPathGetter),
-						}
+							objectUnderTest := _core{
+								bundle:         fakeBundle,
+								engineClient:   fakeEngineClient,
+								exiter:         fakeExiter,
+								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
+								vos:            new(vos.FakeVos),
+							}
 
-						expectedArgs := map[string]*model.Data{}
-						providedArgs := []string{}
+							expectedArgs := map[string]*model.Data{param1Name: param1Value}
+							providedArgs := []string{param1Name}
 
-						/* act */
-						objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+							/* act */
+							objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
 
-						/* assert */
-						Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+							/* assert */
+							Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+						})
+					})
+					Context("op args not provided", func() {
+						Context("op params don't have defaults", func() {
+							It("should call bundle.RunOp with arg values obtained from the environment", func() {
+								/* arrange */
+								fakeExiter := new(fakeExiter)
+								param1Name := "DUMMY_PARAM1_NAME"
+								param1Value := &model.Data{String: "dummyParam1Value"}
+
+								fakeVos := new(vos.FakeVos)
+								fakeVos.GetenvReturns(param1Value.String)
+
+								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle.GetOpReturns(
+									model.OpView{
+										Inputs: []*model.Param{
+											{
+												String: &model.StringParam{
+													Name: param1Name,
+												},
+											},
+										},
+									},
+									nil,
+								)
+
+								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+
+								objectUnderTest := _core{
+									bundle:         fakeBundle,
+									engineClient:   fakeEngineClient,
+									exiter:         fakeExiter,
+									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
+									vos:            new(vos.FakeVos),
+								}
+
+								expectedArgs := map[string]*model.Data{param1Name: param1Value}
+								providedArgs := []string{}
+
+								/* act */
+								objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+
+								/* assert */
+								Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+							})
+						})
+						Context("op params have defaults", func() {
+							It("should call bundle.RunOp without args for defaulted params", func() {
+								/* arrange */
+								fakeExiter := new(fakeExiter)
+								// unique name to ensure conflicting env var not present
+								param1Name := string(time.Now().Unix())
+
+								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle.GetOpReturns(
+									model.OpView{
+										Inputs: []*model.Param{
+											{
+												String: &model.StringParam{
+													Name:    param1Name,
+													Default: "dummyDefault",
+												},
+											},
+										},
+									},
+									nil,
+								)
+
+								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+
+								objectUnderTest := _core{
+									bundle:         fakeBundle,
+									engineClient:   fakeEngineClient,
+									exiter:         fakeExiter,
+									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+									vos:            new(vos.FakeVos),
+								}
+
+								expectedArgs := map[string]*model.Data{}
+								providedArgs := []string{}
+
+								/* act */
+								objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+
+								/* assert */
+								Expect(fakeEngineClient.StartOpArgsForCall(0).Args).To(BeEquivalentTo(expectedArgs))
+							})
+						})
 					})
 				})
-			})
-		})
-		It("should call exiter with expected args when engineClient.StartOp returns error", func() {
-			/* arrange */
-			fakeExiter := new(fakeExiter)
-			returnedError := errors.New("dummyError")
+				Context("op doesn't have params", func() {
+					Context("engineClient.StartOp errors", func() {
+						It("should call exiter with expected args", func() {
+							/* arrange */
+							fakeExiter := new(fakeExiter)
+							returnedError := errors.New("dummyError")
 
-			fakeBundle := new(bundle.FakeBundle)
-			fakeBundle.GetOpReturns(model.OpView{}, nil)
+							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			fakeEngineClient.StartOpReturns("dummyOpId", returnedError)
+							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient.StartOpReturns("dummyOpId", returnedError)
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				engineClient:      fakeEngineClient,
-				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-				workDirPathGetter: new(fakeWorkDirPathGetter),
-			}
+							objectUnderTest := _core{
+								bundle:         fakeBundle,
+								engineClient:   fakeEngineClient,
+								exiter:         fakeExiter,
+								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+								vos:            new(vos.FakeVos),
+							}
 
-			/* act */
-			objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+							/* act */
+							objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
-		})
-		It("should call exiter with expected args when event channel closes unexpectedly", func() {
-			/* arrange */
-			fakeExiter := new(fakeExiter)
+							/* assert */
+							Expect(fakeExiter.ExitArgsForCall(0)).
+								Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
+						})
+					})
+					Context("engineClient.StartOp doesn't error", func() {
+						It("should call engineClient.GetEventStream w/ expected args", func() {
+							/* arrange */
+							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle.GetOpReturns(model.OpView{}, nil)
+							opGraphIdReturnedFromStartOp := "dummyOpGraphId"
+							expectedEventFilter := &model.GetEventStreamReq{
+								Filter: &model.EventFilter{
+									OpGraphIds: []string{opGraphIdReturnedFromStartOp},
+								},
+							}
 
-			fakeBundle := new(bundle.FakeBundle)
-			fakeBundle.GetOpReturns(model.OpView{}, nil)
+							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient.StartOpReturns(opGraphIdReturnedFromStartOp, nil)
+							eventChannel := make(chan model.Event)
+							close(eventChannel)
+							fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
 
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			eventChannel := make(chan model.Event)
-			close(eventChannel)
-			fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+							objectUnderTest := _core{
+								bundle:         fakeBundle,
+								engineClient:   fakeEngineClient,
+								exiter:         new(fakeExiter),
+								paramSatisfier: newParamSatisfier(colorer.New(), new(fakeExiter), validate.New(), new(vos.FakeVos)),
+								vos:            new(vos.FakeVos),
+							}
 
-			objectUnderTest := _core{
-				bundle:            fakeBundle,
-				engineClient:      fakeEngineClient,
-				exiter:            fakeExiter,
-				paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-				workDirPathGetter: new(fakeWorkDirPathGetter),
-			}
+							/* act */
+							objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
-			/* act */
-			objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+							/* assert */
+							Expect(fakeEngineClient.GetEventStreamArgsForCall(0)).
+								Should(Equal(expectedEventFilter))
+						})
+						Context("engineClient.GetEventStream errors", func() {
+							It("should call exiter with expected args", func() {
+								/* arrange */
+								fakeExiter := new(fakeExiter)
+								returnedError := errors.New("dummyError")
 
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
-		})
-		Describe("when an OpEndedEvent is received for our root op run", func() {
-			opGraphId := "dummyOpGraphId"
-			It("should call exiter with expected args when it's Outcome is SUCCEEDED", func() {
-				/* arrange */
-				opEndedEvent := model.Event{
-					Timestamp: time.Now(),
-					OpEnded: &model.OpEndedEvent{
-						OpId:      opGraphId,
-						OpRef:     "dummyOpRef",
-						Outcome:   model.OpOutcomeSucceeded,
-						OpGraphId: opGraphId,
-					},
-				}
+								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-				fakeExiter := new(fakeExiter)
+								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient.GetEventStreamReturns(nil, returnedError)
 
-				fakeBundle := new(bundle.FakeBundle)
-				fakeBundle.GetOpReturns(model.OpView{}, nil)
+								objectUnderTest := _core{
+									bundle:         fakeBundle,
+									engineClient:   fakeEngineClient,
+									exiter:         fakeExiter,
+									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+									vos:            new(vos.FakeVos),
+								}
 
-				fakeEngineClient := new(engineclient.FakeEngineClient)
-				eventChannel := make(chan model.Event, 10)
-				eventChannel <- opEndedEvent
-				defer close(eventChannel)
-				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-				fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+								/* act */
+								objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
-				objectUnderTest := _core{
-					bundle:            fakeBundle,
-					colorer:           colorer.New(),
-					engineClient:      fakeEngineClient,
-					exiter:            fakeExiter,
-					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-					workDirPathGetter: new(fakeWorkDirPathGetter),
-				}
+								/* assert */
+								Expect(fakeExiter.ExitArgsForCall(0)).
+									Should(Equal(ExitReq{Message: returnedError.Error(), Code: 1}))
+							})
+						})
+						Context("engineClient.GetEventStream doesn't error", func() {
+							Context("event channel closes", func() {
+								It("should call exiter with expected args", func() {
+									/* arrange */
+									fakeExiter := new(fakeExiter)
 
-				/* act/assert */
-				objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
-				Expect(fakeExiter.ExitArgsForCall(0)).
-					Should(Equal(ExitReq{Code: 0}))
-			})
-			It("should call exiter with expected args when it's Outcome is KILLED", func() {
-				/* arrange */
-				opEndedEvent := model.Event{
-					Timestamp: time.Now(),
-					OpEnded: &model.OpEndedEvent{
-						OpId:      opGraphId,
-						OpRef:     "dummyOpRef",
-						Outcome:   model.OpOutcomeKilled,
-						OpGraphId: opGraphId,
-					},
-				}
+									fakeBundle := new(bundle.FakeBundle)
+									fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-				fakeExiter := new(fakeExiter)
+									fakeEngineClient := new(engineclient.FakeEngineClient)
+									eventChannel := make(chan model.Event)
+									close(eventChannel)
+									fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
 
-				fakeBundle := new(bundle.FakeBundle)
-				fakeBundle.GetOpReturns(model.OpView{}, nil)
+									objectUnderTest := _core{
+										bundle:         fakeBundle,
+										engineClient:   fakeEngineClient,
+										exiter:         fakeExiter,
+										paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+										vos:            new(vos.FakeVos),
+									}
 
-				fakeEngineClient := new(engineclient.FakeEngineClient)
-				eventChannel := make(chan model.Event, 10)
-				eventChannel <- opEndedEvent
-				defer close(eventChannel)
-				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-				fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+									/* act */
+									objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
-				objectUnderTest := _core{
-					bundle:            fakeBundle,
-					colorer:           colorer.New(),
-					engineClient:      fakeEngineClient,
-					exiter:            fakeExiter,
-					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-					workDirPathGetter: new(fakeWorkDirPathGetter),
-				}
+									/* assert */
+									Expect(fakeExiter.ExitArgsForCall(0)).
+										Should(Equal(ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+								})
+							})
+							Context("event channel doesn't close", func() {
+								Context("event received", func() {
+									opGraphId := "dummyOpGraphId"
+									Context("OpEndedEvent", func() {
+										Context("Outcome==SUCCEEDED", func() {
+											It("should call exiter with expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:      opGraphId,
+														OpRef:     "dummyOpRef",
+														Outcome:   model.OpOutcomeSucceeded,
+														OpGraphId: opGraphId,
+													},
+												}
 
-				/* act/assert */
-				objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
-				Expect(fakeExiter.ExitArgsForCall(0)).
-					Should(Equal(ExitReq{Code: 137}))
-			})
-			It("should call exiter with expected args when it's Outcome is unexpected", func() {
-				/* arrange */
-				opEndedEvent := model.Event{
-					Timestamp: time.Now(),
-					OpEnded: &model.OpEndedEvent{
-						OpId:      opGraphId,
-						OpRef:     "dummyOpRef",
-						Outcome:   "some unexpected outcome",
-						OpGraphId: opGraphId,
-					},
-				}
+												fakeExiter := new(fakeExiter)
 
-				fakeExiter := new(fakeExiter)
+												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-				fakeBundle := new(bundle.FakeBundle)
-				fakeBundle.GetOpReturns(model.OpView{}, nil)
+												fakeEngineClient := new(engineclient.FakeEngineClient)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+												fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
 
-				fakeEngineClient := new(engineclient.FakeEngineClient)
-				eventChannel := make(chan model.Event, 10)
-				eventChannel <- opEndedEvent
-				defer close(eventChannel)
-				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-				fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+												objectUnderTest := _core{
+													bundle:         fakeBundle,
+													colorer:        colorer.New(),
+													engineClient:   fakeEngineClient,
+													exiter:         fakeExiter,
+													output:         new(fakeOutput),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+													vos:            new(vos.FakeVos),
+												}
 
-				objectUnderTest := _core{
-					bundle:            fakeBundle,
-					colorer:           colorer.New(),
-					engineClient:      fakeEngineClient,
-					exiter:            fakeExiter,
-					output:            newOutput(colorer.New()),
-					paramSatisfier:    newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-					workDirPathGetter: new(fakeWorkDirPathGetter),
-				}
+												/* act/assert */
+												objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+												Expect(fakeExiter.ExitArgsForCall(0)).
+													Should(Equal(ExitReq{Code: 0}))
+											})
+										})
+										Context("Outcome==KILLED", func() {
+											It("should call exiter with expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:      opGraphId,
+														OpRef:     "dummyOpRef",
+														Outcome:   model.OpOutcomeKilled,
+														OpGraphId: opGraphId,
+													},
+												}
 
-				/* act/assert */
-				objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
-				Expect(fakeExiter.ExitArgsForCall(0)).
-					Should(Equal(ExitReq{Code: 1}))
+												fakeExiter := new(fakeExiter)
+
+												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle.GetOpReturns(model.OpView{}, nil)
+
+												fakeEngineClient := new(engineclient.FakeEngineClient)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+												fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+
+												objectUnderTest := _core{
+													bundle:         fakeBundle,
+													colorer:        colorer.New(),
+													engineClient:   fakeEngineClient,
+													exiter:         fakeExiter,
+													output:         new(fakeOutput),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+													vos:            new(vos.FakeVos),
+												}
+
+												/* act/assert */
+												objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+												Expect(fakeExiter.ExitArgsForCall(0)).
+													Should(Equal(ExitReq{Code: 137}))
+											})
+
+										})
+										Context("Outcome==FAILED", func() {
+											It("should call exiter with expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:      opGraphId,
+														OpRef:     "dummyOpRef",
+														Outcome:   model.OpOutcomeFailed,
+														OpGraphId: opGraphId,
+													},
+												}
+
+												fakeExiter := new(fakeExiter)
+
+												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle.GetOpReturns(model.OpView{}, nil)
+
+												fakeEngineClient := new(engineclient.FakeEngineClient)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+												fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+
+												objectUnderTest := _core{
+													bundle:         fakeBundle,
+													colorer:        colorer.New(),
+													engineClient:   fakeEngineClient,
+													exiter:         fakeExiter,
+													output:         new(fakeOutput),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+													vos:            new(vos.FakeVos),
+												}
+
+												/* act/assert */
+												objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+												Expect(fakeExiter.ExitArgsForCall(0)).
+													Should(Equal(ExitReq{Code: 1}))
+											})
+										})
+										Context("Outcome==?", func() {
+											It("should call exiter with expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:      opGraphId,
+														OpRef:     "dummyOpRef",
+														Outcome:   "some unexpected outcome",
+														OpGraphId: opGraphId,
+													},
+												}
+
+												fakeExiter := new(fakeExiter)
+
+												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle.GetOpReturns(model.OpView{}, nil)
+
+												fakeEngineClient := new(engineclient.FakeEngineClient)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+												fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+
+												objectUnderTest := _core{
+													bundle:         fakeBundle,
+													colorer:        colorer.New(),
+													engineClient:   fakeEngineClient,
+													exiter:         fakeExiter,
+													output:         new(fakeOutput),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+													vos:            new(vos.FakeVos),
+												}
+
+												/* act/assert */
+												objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+												Expect(fakeExiter.ExitArgsForCall(0)).
+													Should(Equal(ExitReq{Code: 1}))
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
 			})
 		})
 	})

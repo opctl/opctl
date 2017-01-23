@@ -1,5 +1,7 @@
 package docker
 
+//go:generate counterfeiter -o ./fakeDockerClient.go --fake-name fakeDockerClient ./ dockerClient
+
 import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -33,4 +35,12 @@ type dockerClient interface {
 	// It executes the privileged function if the operation is unauthorized
 	// and it tries one more time.
 	ImagePull(ctx context.Context, ref string, options types.ImagePullOptions) (io.ReadCloser, error)
+}
+
+type dockerNotFoundError struct {
+	error
+}
+
+func (this dockerNotFoundError) NotFound() bool {
+	return true
 }

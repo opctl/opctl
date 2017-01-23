@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"path"
+	"path/filepath"
 )
 
 func (this _core) CreateOp(
@@ -10,9 +10,15 @@ func (this _core) CreateOp(
 	description string,
 	name string,
 ) {
-	err := this.bundle.CreateOp(
+	pwd, err := this.vos.Getwd()
+	if nil != err {
+		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	err = this.bundle.CreateOp(
 		model.CreateOpReq{
-			Path:        path.Join(this.workDirPathGetter.Get(), collection, name),
+			Path:        filepath.Join(pwd, collection, name),
 			Name:        name,
 			Description: description,
 		},

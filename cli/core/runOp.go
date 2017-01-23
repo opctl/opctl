@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"syscall"
 )
 
@@ -14,8 +15,13 @@ func (this _core) RunOp(
 	collection string,
 	name string,
 ) {
+	pwd, err := this.vos.Getwd()
+	if nil != err {
+		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
 
-	opPath := path.Join(this.workDirPathGetter.Get(), collection, name)
+	opPath := path.Join(filepath.Join(pwd, collection, name))
 	opView, err := this.bundle.GetOp(opPath)
 	if nil != err {
 		this.exiter.Exit(ExitReq{Message: err.Error(), Code: 1})

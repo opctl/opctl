@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("killOp", func() {
 	Context("Execute", func() {
-		It("should invoke engineClient.KillOp with expected args", func() {
+		It("should call engineClient.KillOp with expected args", func() {
 			/* arrange */
 			fakeEngineClient := new(engineclient.FakeEngineClient)
 
@@ -29,25 +29,27 @@ var _ = Describe("killOp", func() {
 
 			Expect(fakeEngineClient.KillOpArgsForCall(0)).Should(BeEquivalentTo(expectedReq))
 		})
-		It("should return error from bundle.KillOp", func() {
-			/* arrange */
-			fakeEngineClient := new(engineclient.FakeEngineClient)
-			expectedError := errors.New("dummyError")
-			fakeEngineClient.KillOpReturns(expectedError)
+		Context("engineClient.KillOp errors", func() {
+			It("should call exiter w/ expected args", func() {
+				/* arrange */
+				fakeEngineClient := new(engineclient.FakeEngineClient)
+				expectedError := errors.New("dummyError")
+				fakeEngineClient.KillOpReturns(expectedError)
 
-			fakeExiter := new(fakeExiter)
+				fakeExiter := new(fakeExiter)
 
-			objectUnderTest := _core{
-				engineClient: fakeEngineClient,
-				exiter:       fakeExiter,
-			}
+				objectUnderTest := _core{
+					engineClient: fakeEngineClient,
+					exiter:       fakeExiter,
+				}
 
-			/* act */
-			objectUnderTest.KillOp("")
+				/* act */
+				objectUnderTest.KillOp("")
 
-			/* assert */
-			Expect(fakeExiter.ExitArgsForCall(0)).
-				Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+				/* assert */
+				Expect(fakeExiter.ExitArgsForCall(0)).
+					Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
+			})
 		})
 	})
 })

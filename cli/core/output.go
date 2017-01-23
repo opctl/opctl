@@ -1,28 +1,50 @@
 package core
 
+//go:generate counterfeiter -o ./fakeOutput.go --fake-name fakeOutput ./ output
+
 import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"os"
+	"io"
 	"time"
 )
 
-// allows mocking output
+// allows mocking/faking output
 type output interface {
+	// outputs an error msg
+	Error(format string, values ...interface{})
+
+	// outputs an event
 	Event(event *model.Event)
+
+	// outputs an info msg
+	Info(format string, values ...interface{})
+
+	// outputs a success msg
+	Success(format string, values ...interface{})
 }
 
 func newOutput(
 	colorer colorer.Colorer,
+	errWriter io.Writer,
+	stdWriter io.Writer,
 ) output {
 	return &_output{
-		colorer: colorer,
+		colorer:   colorer,
+		errWriter: errWriter,
+		stdWriter: stdWriter,
 	}
 }
 
 type _output struct {
-	colorer colorer.Colorer
+	colorer   colorer.Colorer
+	errWriter io.Writer
+	stdWriter io.Writer
+}
+
+func (this _output) Error(format string, values ...interface{}) {
+	fmt.Fprint(this.errWriter, this.colorer.Error(format, values...))
 }
 
 func (this _output) Event(event *model.Event) {
@@ -45,45 +67,39 @@ func (this _output) Event(event *model.Event) {
 }
 
 func (this _output) containerExited(event *model.Event) {
-	fmt.Print(
-		this.colorer.Info(
-			"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
-			event.ContainerExited.ContainerId,
-			event.ContainerExited.OpRef,
-			event.ContainerExited.ExitCode,
-			event.Timestamp.Format(time.RFC3339),
-		),
+	this.Info(
+		"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
+		event.ContainerExited.ContainerId,
+		event.ContainerExited.OpRef,
+		event.ContainerExited.ExitCode,
+		event.Timestamp.Format(time.RFC3339),
 	)
 }
 
 func (this _output) containerStarted(event *model.Event) {
-	fmt.Print(
-		this.colorer.Info(
-			"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.ContainerStarted.ContainerId,
-			event.ContainerStarted.OpRef,
-			event.Timestamp.Format(time.RFC3339),
-		),
+	this.Info(
+		"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+		event.ContainerStarted.ContainerId,
+		event.ContainerStarted.OpRef,
+		event.Timestamp.Format(time.RFC3339),
 	)
 }
 
 func (this _output) containerStdErrWrittenTo(event *model.Event) {
-	fmt.Fprintf(os.Stderr, "%v \n", string(event.ContainerStdErrWrittenTo.Data))
+	fmt.Fprintf(this.errWriter, "%v \n", string(event.ContainerStdErrWrittenTo.Data))
 }
 
 func (this _output) containerStdOutWrittenTo(event *model.Event) {
-	fmt.Fprintf(os.Stdout, "%v \n", string(event.ContainerStdOutWrittenTo.Data))
+	fmt.Fprintf(this.stdWriter, "%v \n", string(event.ContainerStdOutWrittenTo.Data))
 }
 
 func (this _output) opEncounteredError(event *model.Event) {
-	fmt.Print(
-		this.colorer.Error(
-			"OpEncounteredError Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
-			event.OpEncounteredError.OpId,
-			event.OpEncounteredError.OpRef,
-			event.Timestamp.Format(time.RFC3339),
-			event.OpEncounteredError.Msg,
-		),
+	this.Error(
+		"OpEncounteredError Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
+		event.OpEncounteredError.OpId,
+		event.OpEncounteredError.OpRef,
+		event.Timestamp.Format(time.RFC3339),
+		event.OpEncounteredError.Msg,
 	)
 }
 
@@ -97,21 +113,27 @@ func (this _output) opEnded(event *model.Event) {
 	)
 	switch event.OpEnded.Outcome {
 	case model.OpOutcomeSucceeded:
-		fmt.Print(this.colorer.Success(message))
+		this.Success(message)
 	case model.OpOutcomeKilled:
-		fmt.Print(this.colorer.Info(message))
+		this.Info(message)
 	default:
-		fmt.Print(this.colorer.Error(message))
+		this.Error(message)
 	}
 }
 
 func (this _output) opStarted(event *model.Event) {
-	fmt.Print(
-		this.colorer.Info(
-			"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
-			event.OpStarted.OpId,
-			event.OpStarted.OpRef,
-			event.Timestamp.Format(time.RFC3339),
-		),
+	this.Info(
+		"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+		event.OpStarted.OpId,
+		event.OpStarted.OpRef,
+		event.Timestamp.Format(time.RFC3339),
 	)
+}
+
+func (this _output) Info(format string, values ...interface{}) {
+	fmt.Fprint(this.stdWriter, this.colorer.Info(format, values...))
+}
+
+func (this _output) Success(format string, values ...interface{}) {
+	fmt.Fprint(this.stdWriter, this.colorer.Success(format, values...))
 }

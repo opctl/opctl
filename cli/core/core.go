@@ -60,30 +60,31 @@ func New(
 	colorer colorer.Colorer,
 ) Core {
 
-	exiter := newExiter()
+	output := newOutput(colorer, os.Stderr, os.Stdout)
+	exiter := newExiter(output, vos.New())
 
 	return &_core{
-		bundle:            bundle.New(),
-		colorer:           colorer,
-		exiter:            exiter,
-		engineClient:      engineclient.New(),
-		output:            newOutput(colorer),
-		paramSatisfier:    newParamSatisfier(colorer, exiter, validate.New(), vos.New()),
-		updater:           updater.New(),
-		workDirPathGetter: newWorkDirPathGetter(),
-		writer:            os.Stdout,
+		bundle:         bundle.New(),
+		colorer:        colorer,
+		exiter:         exiter,
+		engineClient:   engineclient.New(),
+		output:         output,
+		paramSatisfier: newParamSatisfier(colorer, exiter, validate.New(), vos.New()),
+		updater:        updater.New(),
+		vos:            vos.New(),
+		writer:         os.Stdout,
 	}
 
 }
 
 type _core struct {
-	bundle            bundle.Bundle
-	colorer           colorer.Colorer
-	exiter            exiter
-	engineClient      engineclient.EngineClient
-	output            output
-	paramSatisfier    paramSatisfier
-	updater           updater.Updater
-	workDirPathGetter workDirPathGetter
-	writer            io.Writer
+	bundle         bundle.Bundle
+	colorer        colorer.Colorer
+	exiter         exiter
+	engineClient   engineclient.EngineClient
+	output         output
+	paramSatisfier paramSatisfier
+	updater        updater.Updater
+	vos            vos.Vos
+	writer         io.Writer
 }
