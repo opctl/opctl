@@ -19,20 +19,21 @@ func (this _containerEngine) pullImage(
 ) (err error) {
 	// ensure tag present in image string.
 	// if not present, docker defaults to downloading all tags
-	var tag string
-	_, tag, err = reference.Parse(imageRef)
+	imageName, tag, err := reference.Parse(imageRef)
 	if err != nil {
 		return
-	} else if "" == tag {
-		imageRef = fmt.Sprintf("%v:latest", imageRef)
 	}
+	imageRef = fmt.Sprintf("%v:%v", imageName, tag)
 
-	var imagePullResp io.ReadCloser
-	imagePullResp, err = this.dockerClient.ImagePull(
+	imagePullResp, err := this.dockerClient.ImagePull(
 		context.Background(),
 		imageRef,
 		types.ImagePullOptions{},
 	)
+	if nil != err {
+		return
+	}
+
 	defer imagePullResp.Close()
 
 	stdOutWriter := NewStdOutWriter(eventPublisher, containerId, opGraphId)
