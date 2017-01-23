@@ -1,5 +1,7 @@
 package eventbus
 
+//go:generate counterfeiter -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
+
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/pkg/model"
