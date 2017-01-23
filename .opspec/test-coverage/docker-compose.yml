@@ -37,12 +37,17 @@ services:
         fi
       done < coverage.txt
 
-      ### ENFORCE MINIMUM_COVERAGE
+      ### CALCULATE COVERAGE
       coverage=$$(($$total_hits*100 / $$total_statements))
+
+      ### ECHO COVERAGE
+      echo "Coverage info => Actual: $$coverage%, Expected: >= $$MINIMUM_COVERAGE%"
+
+      ### ENFORCE MINIMUM_COVERAGE
       if [[ $$coverage -lt $$MINIMUM_COVERAGE ]] ;
       then
-        echo "Insufficient test coverage! Actual: $$coverage%, Expected: >= $$MINIMUM_COVERAGE%" 1>&2
+        echo "Insufficient test coverage!" 1>&2
         exit 1
       fi
     environment:
-      - MINIMUM_COVERAGE=67
+      - MINIMUM_COVERAGE=69
