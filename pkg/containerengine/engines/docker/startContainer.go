@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/opctl/util/eventbus"
 	"golang.org/x/net/context"
+	"sort"
 	"strings"
 )
 
@@ -24,11 +25,12 @@ func (this _containerEngine) StartContainer(
 		Image:      req.Image,
 		WorkingDir: req.WorkDir,
 		Tty:        true,
-		Volumes:    map[string]struct{}{},
 	}
 	for envVarName, envVarValue := range req.Env {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
 	}
+	// sort binds to make order deterministic; useful for testing
+	sort.Strings(containerConfig.Env)
 
 	// construct host config
 	hostConfig := &container.HostConfig{
@@ -53,12 +55,13 @@ func (this _containerEngine) StartContainer(
 			// @TODO: handle network sockets
 		}
 	}
+	// sort binds to make order deterministic; useful for testing
+	sort.Strings(hostConfig.Binds)
 
 	fmt.Printf("startContainer: hostConfig\n%#v\n", hostConfig)
 
 	// create container
-	var containerCreatedResponse container.ContainerCreateCreatedBody
-	containerCreatedResponse, err = this.dockerClient.ContainerCreate(
+	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
 		context.Background(),
 		containerConfig,
 		hostConfig,
@@ -107,7 +110,7 @@ func (this _containerEngine) StartContainer(
 	if nil != err {
 		return
 	}
-	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
+	//err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
 	if nil != err {
 		return
 	}
