@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeNodeRepo.go --fake-name fakeNodeRepo ./ nodeRepo
+
 import (
 	"sync"
 )

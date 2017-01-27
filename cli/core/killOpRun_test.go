@@ -10,7 +10,7 @@ import (
 
 var _ = Describe("killOp", func() {
 	Context("Execute", func() {
-		It("should call engineClient.KillOp with expected args", func() {
+		It("should call engineClient.KillOp w/ expected args", func() {
 			/* arrange */
 			fakeEngineClient := new(engineclient.FakeEngineClient)
 

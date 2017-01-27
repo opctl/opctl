@@ -18,7 +18,7 @@ var _ = Describe("_exiter", func() {
 	})
 	Context("Exit", func() {
 		Context("req.Code > 0", func() {
-			It("should call output with expected args", func() {
+			It("should call output w/ expected args", func() {
 				/* arrange */
 				providedExitReq := ExitReq{
 					Code:    3,
@@ -38,7 +38,7 @@ var _ = Describe("_exiter", func() {
 				Expect(fakeOutput.ErrorArgsForCall(0)).
 					Should(Equal(providedExitReq.Message))
 			})
-			It("should call vos.Exit with expected args", func() {
+			It("should call vos.Exit w/ expected args", func() {
 				/* arrange */
 				providedExitReq := ExitReq{
 					Code: 3,
@@ -57,7 +57,7 @@ var _ = Describe("_exiter", func() {
 			})
 		})
 		Context("req.Code <= 0", func() {
-			It("should call output with expected args", func() {
+			It("should call output w/ expected args", func() {
 				/* arrange */
 				providedExitReq := ExitReq{
 					Message: "dummyMessage",

@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
+
 import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/uniquestring"

@@ -32,7 +32,7 @@ var _ = Describe("selfUpdate", func() {
 			})
 		})
 		Context("valid channel", func() {
-			It("should call updater.GetUpdateIfExists with expected args", func() {
+			It("should call updater.GetUpdateIfExists w/ expected args", func() {
 				/* arrange */
 				fakeUpdater := new(updater.FakeUpdater)
 
@@ -73,7 +73,7 @@ var _ = Describe("selfUpdate", func() {
 			})
 			Context("updater.GetUpdateIfExists doesn't error", func() {
 				Context("update doesn't exist", func() {
-					It("should call exiter with expected args", func() {
+					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						fakeExiter := new(fakeExiter)
 
@@ -94,7 +94,7 @@ var _ = Describe("selfUpdate", func() {
 					})
 				})
 				Context("update exists", func() {
-					It("should call updater.ApplyUpdate with expected args", func() {
+					It("should call updater.ApplyUpdate w/ expected args", func() {
 						/* arrange */
 						fakeExiter := new(fakeExiter)
 
@@ -116,7 +116,7 @@ var _ = Describe("selfUpdate", func() {
 							Should(Equal(returnedUpdate))
 					})
 					Context("updater.ApplyUpdate errors", func() {
-						It("should call exiter with expected args", func() {
+						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeExiter := new(fakeExiter)
 							returnedError := errors.New("dummyError")
@@ -141,7 +141,7 @@ var _ = Describe("selfUpdate", func() {
 						})
 					})
 					Context("updater.ApplyUpdate doesn't error", func() {
-						It("should call exiter with expected args", func() {
+						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeExiter := new(fakeExiter)
 

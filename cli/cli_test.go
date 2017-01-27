@@ -30,7 +30,7 @@ var _ = Describe("cli", func() {
 			Context("create", func() {
 
 				Context("with description", func() {
-					It("should call core.CreateCollection with expected args", func() {
+					It("should call core.CreateCollection w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -51,7 +51,7 @@ var _ = Describe("cli", func() {
 				})
 
 				Context("with no description", func() {
-					It("should call core.CreateCollectionUseCase with expected args", func() {
+					It("should call core.CreateCollectionUseCase w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -74,7 +74,7 @@ var _ = Describe("cli", func() {
 			Context("set", func() {
 
 				Context("description", func() {
-					It("should call core.SetCollectionDescription with expected args", func() {
+					It("should call core.SetCollectionDescription w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -96,7 +96,7 @@ var _ = Describe("cli", func() {
 		})
 
 		Context("events", func() {
-			It("should call core.StreamEvents with expected args", func() {
+			It("should call core.StreamEvents w/ expected args", func() {
 				/* arrange */
 				fakeCore := new(core.FakeCore)
 
@@ -111,7 +111,7 @@ var _ = Describe("cli", func() {
 		})
 
 		Context("kill", func() {
-			It("should call core.KillOp with expected args", func() {
+			It("should call core.KillOp w/ expected args", func() {
 				/* arrange */
 				fakeCore := new(core.FakeCore)
 
@@ -131,7 +131,7 @@ var _ = Describe("cli", func() {
 		Context("ls", func() {
 			Context("with collection", func() {
 
-				It("should call core.ListOpsInCollection with expected args", func() {
+				It("should call core.ListOpsInCollection w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.FakeCore)
 
@@ -149,7 +149,7 @@ var _ = Describe("cli", func() {
 			})
 			Context("without collection", func() {
 
-				It("should call core.ListOpsInCollection with expected args", func() {
+				It("should call core.ListOpsInCollection w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.FakeCore)
 
@@ -171,7 +171,7 @@ var _ = Describe("cli", func() {
 
 			Context("create", func() {
 				Context("with collection", func() {
-					It("should call core.CreateOp with expected args", func() {
+					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -193,7 +193,7 @@ var _ = Describe("cli", func() {
 				})
 
 				Context("with no collection", func() {
-					It("should call core.CreateOp with expected args", func() {
+					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -214,7 +214,7 @@ var _ = Describe("cli", func() {
 					})
 				})
 				Context("with description", func() {
-					It("should call core.CreateOp with expected args", func() {
+					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -237,7 +237,7 @@ var _ = Describe("cli", func() {
 				})
 
 				Context("with no description", func() {
-					It("should call core.CreateOp with expected args", func() {
+					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.FakeCore)
 
@@ -263,7 +263,7 @@ var _ = Describe("cli", func() {
 
 				Context("description", func() {
 					Context("with collection", func() {
-						It("should call core.SetOpDescription with expected args", func() {
+						It("should call core.SetOpDescription w/ expected args", func() {
 							/* arrange */
 							fakeCore := new(core.FakeCore)
 
@@ -286,7 +286,7 @@ var _ = Describe("cli", func() {
 					})
 
 					Context("with no collection", func() {
-						It("should call core.SetOpDescription with expected args", func() {
+						It("should call core.SetOpDescription w/ expected args", func() {
 							/* arrange */
 							fakeCore := new(core.FakeCore)
 
@@ -315,7 +315,7 @@ var _ = Describe("cli", func() {
 
 		Context("run", func() {
 			Context("with collection", func() {
-				It("should call core.RunOp with expected args", func() {
+				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.FakeCore)
 
@@ -336,7 +336,7 @@ var _ = Describe("cli", func() {
 				})
 			})
 			Context("with two op run args", func() {
-				It("should call core.RunOp with expected args", func() {
+				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.FakeCore)
 
@@ -359,7 +359,7 @@ var _ = Describe("cli", func() {
 			})
 
 			Context("with zero op run args", func() {
-				It("should call core.RunOp with expected args", func() {
+				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.FakeCore)
 

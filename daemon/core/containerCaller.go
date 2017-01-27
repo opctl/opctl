@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
+
 import (
 	"fmt"
 	"github.com/opspec-io/opctl/pkg/containerengine"

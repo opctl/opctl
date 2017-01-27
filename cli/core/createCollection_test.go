@@ -36,7 +36,7 @@ var _ = Describe("createCollection", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.CreateCollection with expected args", func() {
+			It("should call bundle.CreateCollection w/ expected args", func() {
 				/* arrange */
 				fakeBundle := new(bundle.FakeBundle)
 

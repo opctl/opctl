@@ -10,13 +10,13 @@ import (
 )
 
 type ContainerEngine struct {
-	InspectContainerIfExistsStub        func(containerId string) (container *model.Container, err error)
+	InspectContainerIfExistsStub        func(containerId string) (container *model.DcgContainerCall, err error)
 	inspectContainerIfExistsMutex       sync.RWMutex
 	inspectContainerIfExistsArgsForCall []struct {
 		containerId string
 	}
 	inspectContainerIfExistsReturns struct {
-		result1 *model.Container
+		result1 *model.DcgContainerCall
 		result2 error
 	}
 	DeleteContainerIfExistsStub        func(containerId string)
@@ -37,7 +37,7 @@ type ContainerEngine struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *ContainerEngine) InspectContainerIfExists(containerId string) (container *model.Container, err error) {
+func (fake *ContainerEngine) InspectContainerIfExists(containerId string) (container *model.DcgContainerCall, err error) {
 	fake.inspectContainerIfExistsMutex.Lock()
 	fake.inspectContainerIfExistsArgsForCall = append(fake.inspectContainerIfExistsArgsForCall, struct {
 		containerId string
@@ -63,10 +63,10 @@ func (fake *ContainerEngine) InspectContainerIfExistsArgsForCall(i int) string {
 	return fake.inspectContainerIfExistsArgsForCall[i].containerId
 }
 
-func (fake *ContainerEngine) InspectContainerIfExistsReturns(result1 *model.Container, result2 error) {
+func (fake *ContainerEngine) InspectContainerIfExistsReturns(result1 *model.DcgContainerCall, result2 error) {
 	fake.InspectContainerIfExistsStub = nil
 	fake.inspectContainerIfExistsReturns = struct {
-		result1 *model.Container
+		result1 *model.DcgContainerCall
 		result2 error
 	}{result1, result2}
 }

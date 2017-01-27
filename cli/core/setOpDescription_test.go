@@ -35,7 +35,7 @@ var _ = Describe("setOpDescription", func() {
 					Should(Equal(ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		It("should call bundle.SetOpDescription with expected args", func() {
+		It("should call bundle.SetOpDescription w/ expected args", func() {
 			/* arrange */
 			fakeBundle := new(bundle.FakeBundle)
 

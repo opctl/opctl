@@ -41,24 +41,43 @@ func New(
 
 	nodeRepo := newNodeRepo()
 
-	opCaller := &_opCaller{
-		bundle:              _bundle,
-		eventBus:            eventBus,
-		nodeRepo:            nodeRepo,
-		uniqueStringFactory: uniqueStringFactory,
-		validate:            validate.New(),
-	}
-
-	opCaller.caller = newCaller(
-		_bundle,
-		containerEngine,
-		eventBus,
-		nodeRepo,
-		opCaller,
-		uniqueStringFactory,
+	caller := newCaller(
+		newContainerCaller(
+			_bundle,
+			containerEngine,
+			eventBus,
+			nodeRepo,
+		),
 	)
 
-	core = &_core{
+	caller.setParallelCaller(
+		newParallelCaller(
+			caller,
+			uniqueStringFactory,
+		),
+	)
+
+	caller.setSerialCaller(
+		newSerialCaller(
+			caller,
+			uniqueStringFactory,
+		),
+	)
+
+	opCaller := newOpCaller(
+		_bundle,
+		eventBus,
+		nodeRepo,
+		caller,
+		uniqueStringFactory,
+		validate.New(),
+	)
+
+	caller.setOpCaller(
+		opCaller,
+	)
+
+	core = _core{
 		containerEngine:     containerEngine,
 		eventBus:            eventBus,
 		opCaller:            opCaller,

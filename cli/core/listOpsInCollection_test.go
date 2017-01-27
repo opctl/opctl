@@ -38,7 +38,7 @@ var _ = Describe("listOpsInCollection", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.GetCollection with expected args", func() {
+			It("should call bundle.GetCollection w/ expected args", func() {
 				/* arrange */
 				fakeBundle := new(bundle.FakeBundle)
 
