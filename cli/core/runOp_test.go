@@ -41,7 +41,7 @@ var _ = Describe("runOp", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.GetOp with expected args", func() {
+			It("should call bundle.GetOp w/ expected args", func() {
 				/* arrange */
 				fakeBundle := new(bundle.FakeBundle)
 
@@ -75,7 +75,7 @@ var _ = Describe("runOp", func() {
 				Expect(fakeBundle.GetOpArgsForCall(0)).Should(Equal(expectedPath))
 			})
 			Context("bundle.GetOp errors", func() {
-				It("should call exiter with expected args", func() {
+				It("should call exiter w/ expected args", func() {
 					/* arrange */
 					fakeExiter := new(fakeExiter)
 					returnedError := errors.New("dummyError")
@@ -280,7 +280,7 @@ var _ = Describe("runOp", func() {
 				})
 				Context("op doesn't have params", func() {
 					Context("engineClient.StartOp errors", func() {
-						It("should call exiter with expected args", func() {
+						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeExiter := new(fakeExiter)
 							returnedError := errors.New("dummyError")
@@ -341,7 +341,7 @@ var _ = Describe("runOp", func() {
 								Should(Equal(expectedEventFilter))
 						})
 						Context("engineClient.GetEventStream errors", func() {
-							It("should call exiter with expected args", func() {
+							It("should call exiter w/ expected args", func() {
 								/* arrange */
 								fakeExiter := new(fakeExiter)
 								returnedError := errors.New("dummyError")
@@ -370,7 +370,7 @@ var _ = Describe("runOp", func() {
 						})
 						Context("engineClient.GetEventStream doesn't error", func() {
 							Context("event channel closes", func() {
-								It("should call exiter with expected args", func() {
+								It("should call exiter w/ expected args", func() {
 									/* arrange */
 									fakeExiter := new(fakeExiter)
 
@@ -403,7 +403,7 @@ var _ = Describe("runOp", func() {
 									opGraphId := "dummyOpGraphId"
 									Context("OpEndedEvent", func() {
 										Context("Outcome==SUCCEEDED", func() {
-											It("should call exiter with expected args", func() {
+											It("should call exiter w/ expected args", func() {
 												/* arrange */
 												opEndedEvent := model.Event{
 													Timestamp: time.Now(),
@@ -444,7 +444,7 @@ var _ = Describe("runOp", func() {
 											})
 										})
 										Context("Outcome==KILLED", func() {
-											It("should call exiter with expected args", func() {
+											It("should call exiter w/ expected args", func() {
 												/* arrange */
 												opEndedEvent := model.Event{
 													Timestamp: time.Now(),
@@ -486,7 +486,7 @@ var _ = Describe("runOp", func() {
 
 										})
 										Context("Outcome==FAILED", func() {
-											It("should call exiter with expected args", func() {
+											It("should call exiter w/ expected args", func() {
 												/* arrange */
 												opEndedEvent := model.Event{
 													Timestamp: time.Now(),
@@ -527,7 +527,7 @@ var _ = Describe("runOp", func() {
 											})
 										})
 										Context("Outcome==?", func() {
-											It("should call exiter with expected args", func() {
+											It("should call exiter w/ expected args", func() {
 												/* arrange */
 												opEndedEvent := model.Event{
 													Timestamp: time.Now(),

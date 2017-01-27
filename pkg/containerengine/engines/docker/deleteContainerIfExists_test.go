@@ -8,7 +8,7 @@ import (
 )
 
 var _ = Describe("DeleteContainerIfExists", func() {
-	It("should call dockerClient.ContainerRemove with expected args", func() {
+	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
 		_fakeDockerClient := new(fakeDockerClient)
 

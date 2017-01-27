@@ -24,7 +24,7 @@ var _ = Describe("output", func() {
 	Context("Error", func() {
 		providedFormat := "dummyFormat %v %v"
 		providedValues := []interface{}{"v1", "v2"}
-		It("should call errWriter with expected args", func() {
+		It("should call errWriter w/ expected args", func() {
 			/* arrange */
 			expectedWriteArg := []byte(_colorer.Error(providedFormat, providedValues...))
 

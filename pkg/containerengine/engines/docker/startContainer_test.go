@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Describe("StartContainer", func() {
-	It("should call dockerClient.ContainerCreate with expected args", func() {
+	It("should call dockerClient.ContainerCreate w/ expected args", func() {
 		/* arrange */
 		providedReq := &containerengine.StartContainerReq{
 			ContainerId: "dummyContainerId",

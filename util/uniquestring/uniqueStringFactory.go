@@ -1,5 +1,7 @@
 package uniquestring
 
+//go:generate counterfeiter -o ./fakeUniqueStringFactory.go --fake-name FakeUniqueStringFactory ./ UniqueStringFactory
+
 import (
 	"github.com/nu7hatch/gouuid"
 	"strings"

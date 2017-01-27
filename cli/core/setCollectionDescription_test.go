@@ -36,7 +36,7 @@ var _ = Describe("setCollectionDescription", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.SetCollectionDescription with expected args", func() {
+			It("should call bundle.SetCollectionDescription w/ expected args", func() {
 				/* arrange */
 				fakeBundle := new(bundle.FakeBundle)
 				wdReturnedFromVos := "dummyWorkDir"

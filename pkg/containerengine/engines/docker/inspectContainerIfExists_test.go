@@ -44,7 +44,7 @@ func (this fileInfo) Sys() interface{} {
 }
 
 var _ = Describe("InspectContainerIfExists", func() {
-	It("should call dockerClient.ContainerInspect with expected args", func() {
+	It("should call dockerClient.ContainerInspect w/ expected args", func() {
 		/* arrange */
 		_fakeDockerClient := new(fakeDockerClient)
 

@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
+
 import (
 	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/opctl/util/uniquestring"
@@ -20,6 +22,24 @@ type opCaller interface {
 		outputs map[string]*model.Data,
 		err error,
 	)
+}
+
+func newOpCaller(
+	bundle bundle.Bundle,
+	eventBus eventbus.EventBus,
+	nodeRepo nodeRepo,
+	caller caller,
+	uniqueStringFactory uniquestring.UniqueStringFactory,
+	validate validate.Validate,
+) opCaller {
+	return _opCaller{
+		bundle:              bundle,
+		eventBus:            eventBus,
+		nodeRepo:            nodeRepo,
+		caller:              caller,
+		uniqueStringFactory: uniqueStringFactory,
+		validate:            validate,
+	}
 }
 
 type _opCaller struct {

@@ -1,11 +1,9 @@
 package core
 
+//go:generate counterfeiter -o ./fakeCaller.go --fake-name fakeCaller ./ caller
+
 import (
 	"fmt"
-	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
-	"github.com/opspec-io/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"path"
 	"path/filepath"
@@ -25,31 +23,11 @@ type caller interface {
 }
 
 func newCaller(
-	bundle bundle.Bundle,
-	containerEngine containerengine.ContainerEngine,
-	eventBus eventbus.EventBus,
-	nodeRepo nodeRepo,
-	opCaller opCaller,
-	uniqueStringFactory uniquestring.UniqueStringFactory,
-) caller {
-
-	objectUnderConstruction := &_caller{
-		containerCaller: newContainerCaller(bundle, containerEngine, eventBus, nodeRepo),
-		opCaller:        opCaller,
+	containerCaller containerCaller,
+) _caller {
+	return _caller{
+		containerCaller: containerCaller,
 	}
-
-	objectUnderConstruction.parallelCaller = newParallelCaller(
-		objectUnderConstruction,
-		uniqueStringFactory,
-	)
-
-	objectUnderConstruction.serialCaller = newSerialCaller(
-		objectUnderConstruction,
-		uniqueStringFactory,
-	)
-
-	return objectUnderConstruction
-
 }
 
 type _caller struct {
@@ -80,6 +58,13 @@ func (this _caller) Call(
 			opRef,
 			opGraphId,
 		)
+	case nil != scg.Op:
+		outputs, err = this.opCaller.Call(
+			args,
+			nodeId,
+			path.Join(filepath.Dir(opRef), scg.Op.Ref),
+			opGraphId,
+		)
 	case len(scg.Parallel) > 0:
 		err = this.parallelCaller.Call(
 			args,
@@ -94,17 +79,28 @@ func (this _caller) Call(
 			opRef,
 			scg.Serial,
 		)
-	case nil != scg.Op:
-		outputs, err = this.opCaller.Call(
-			args,
-			nodeId,
-			path.Join(filepath.Dir(opRef), scg.Op.Ref),
-			opGraphId,
-		)
 	default:
 		err = fmt.Errorf("Invalid call graph %+v\n", scg)
 	}
 
 	return
 
+}
+
+func (this *_caller) setOpCaller(
+	opCaller opCaller,
+) {
+	this.opCaller = opCaller
+}
+
+func (this *_caller) setParallelCaller(
+	parallelCaller parallelCaller,
+) {
+	this.parallelCaller = parallelCaller
+}
+
+func (this *_caller) setSerialCaller(
+	serialCaller serialCaller,
+) {
+	this.serialCaller = serialCaller
 }
