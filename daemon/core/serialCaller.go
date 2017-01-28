@@ -10,7 +10,7 @@ import (
 
 type serialCaller interface {
 	Call(
-		inputs map[string]*model.Data,
+		parentScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
 		serialCall []*model.Scg,
@@ -24,7 +24,7 @@ func newSerialCaller(
 	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) serialCaller {
 
-	return &_serialCaller{
+	return _serialCaller{
 		caller:              caller,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -37,26 +37,24 @@ type _serialCaller struct {
 }
 
 func (this _serialCaller) Call(
-	inputs map[string]*model.Data,
+	parentScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
 	serialCall []*model.Scg,
 ) (
 	err error,
 ) {
-	// construct scope
-	// Why not just use inputs directly? maps passed by ref in go.. mutating parent scope would be invalid
-	scope := map[string]*model.Data{}
-	for inputName, inputValue := range inputs {
-		scope[inputName] = inputValue
+	currentScope := map[string]*model.Data{}
+	for varName, varData := range parentScope {
+		currentScope[varName] = varData
 	}
 
-	var outputs map[string]*model.Data
+	var childScope map[string]*model.Data
 	for _, call := range serialCall {
-		fmt.Printf("serialCaller.scope:\n %#v\n", scope)
-		outputs, err = this.caller.Call(
+		fmt.Printf("serialCaller.scope:\n %#v\n", currentScope)
+		childScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
-			scope,
+			currentScope,
 			call,
 			opRef,
 			opGraphId,
@@ -67,8 +65,8 @@ func (this _serialCaller) Call(
 		}
 
 		// apply outputs to current scope
-		for outputName, outputValue := range outputs {
-			scope[outputName] = outputValue
+		for varName, varData := range childScope {
+			currentScope[varName] = varData
 		}
 	}
 
