@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeParallelCaller.go --fake-name fakeParallelCaller ./ parallelCaller
 
 import (
+	"errors"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/pkg/errors"
 	"sync"
 )
 
@@ -47,33 +47,30 @@ func (this _parallelCaller) Call(
 ) {
 
 	var wg sync.WaitGroup
-	var isSubOpRunErrors bool
+	childCallErrorChannel := make(chan error, len(parallelCall))
 
-	// run sub ops
 	for _, childCall := range parallelCall {
 		wg.Add(1)
 
-		var childCallError error
-
 		go func(childCall *model.Scg) {
+			wg.Done()
 			// @TODO: handle sockets
-			_, err = this.caller.Call(
+			_, childCallErr := this.caller.Call(
 				this.uniqueStringFactory.Construct(),
 				parentScope,
 				childCall,
 				opRef,
 				opGraphId,
 			)
-			if nil != childCallError {
-				isSubOpRunErrors = true
+			if nil != childCallErr {
+				childCallErrorChannel <- childCallErr
 			}
-
-			defer wg.Done()
 		}(childCall)
 	}
 	wg.Wait()
 
-	if isSubOpRunErrors {
+	if len(childCallErrorChannel) > 0 {
+		// @TODO: consider including actual errors
 		err = errors.New("One or more errors encountered in parallel run block")
 	}
 
