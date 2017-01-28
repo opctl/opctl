@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-type FakeValidate struct {
+type Fake struct {
 	ParamStub        func(arg *model.Data, param *model.Param) (errors []error)
 	paramMutex       sync.RWMutex
 	paramArgsForCall []struct {
@@ -21,7 +21,7 @@ type FakeValidate struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeValidate) Param(arg *model.Data, param *model.Param) (errors []error) {
+func (fake *Fake) Param(arg *model.Data, param *model.Param) (errors []error) {
 	fake.paramMutex.Lock()
 	fake.paramArgsForCall = append(fake.paramArgsForCall, struct {
 		arg   *model.Data
@@ -36,26 +36,26 @@ func (fake *FakeValidate) Param(arg *model.Data, param *model.Param) (errors []e
 	}
 }
 
-func (fake *FakeValidate) ParamCallCount() int {
+func (fake *Fake) ParamCallCount() int {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
 	return len(fake.paramArgsForCall)
 }
 
-func (fake *FakeValidate) ParamArgsForCall(i int) (*model.Data, *model.Param) {
+func (fake *Fake) ParamArgsForCall(i int) (*model.Data, *model.Param) {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
 	return fake.paramArgsForCall[i].arg, fake.paramArgsForCall[i].param
 }
 
-func (fake *FakeValidate) ParamReturns(result1 []error) {
+func (fake *Fake) ParamReturns(result1 []error) {
 	fake.ParamStub = nil
 	fake.paramReturns = struct {
 		result1 []error
 	}{result1}
 }
 
-func (fake *FakeValidate) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.paramMutex.RLock()
@@ -63,7 +63,7 @@ func (fake *FakeValidate) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeValidate) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -75,4 +75,4 @@ func (fake *FakeValidate) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Validate = new(FakeValidate)
+var _ Validate = new(Fake)

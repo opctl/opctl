@@ -23,12 +23,12 @@ var _ = Describe("_opViewFactory", func() {
 				/* arrange */
 				expectedError := errors.New("GetBytesOfFileError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
 				objectUnderTest := newOpViewFactory(
 					fakeFileSystem,
-					new(format.FakeFormat),
+					new(format.Fake),
 				)
 
 				/* act */
@@ -47,11 +47,11 @@ var _ = Describe("_opViewFactory", func() {
 				/* arrange */
 				expectedError := errors.New("FromError")
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToReturns(expectedError)
 
 				objectUnderTest := newOpViewFactory(
-					new(fs.FakeFileSystem),
+					new(fs.Fake),
 					fakeYamlFormat,
 				)
 
@@ -69,10 +69,10 @@ var _ = Describe("_opViewFactory", func() {
 			/* arrange */
 			expectedBytes := []byte{0, 8, 10}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 			fakeFileSystem.GetBytesOfFileReturns(expectedBytes, nil)
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 
 			objectUnderTest := newOpViewFactory(
 				fakeFileSystem,
@@ -130,9 +130,9 @@ var _ = Describe("_opViewFactory", func() {
 				Version:     "dummyVersion",
 			}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
 				stubbedOpManifest := model.OpManifest{
@@ -178,9 +178,9 @@ var _ = Describe("_opViewFactory", func() {
 					},
 				}
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
 					stubbedOpManifest := model.OpManifest{
@@ -214,9 +214,9 @@ var _ = Describe("_opViewFactory", func() {
 					},
 				}
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
 					stubbedOpManifest := model.OpManifest{
@@ -253,9 +253,9 @@ var _ = Describe("_opViewFactory", func() {
 						},
 					}
 
-					fakeFileSystem := new(fs.FakeFileSystem)
+					fakeFileSystem := new(fs.Fake)
 
-					fakeYamlFormat := new(format.FakeFormat)
+					fakeYamlFormat := new(format.Fake)
 					fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
 						stubbedOpManifest := model.OpManifest{

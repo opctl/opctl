@@ -28,7 +28,7 @@ var _ = Describe("KillOp", func() {
 			bytes.NewBuffer(expectedBytes),
 		)
 
-		fakeHttpClient := new(http.FakeClient)
+		fakeHttpClient := new(http.Fake)
 
 		objectUnderTest := _engineClient{
 			httpClient: fakeHttpClient,

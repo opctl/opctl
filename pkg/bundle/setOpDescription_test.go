@@ -22,7 +22,7 @@ var _ = Describe("_setOpDescription", func() {
 				/* arrange */
 				expectedError := errors.New("GetBytesOfFileError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
 				objectUnderTest := &_bundle{
@@ -48,11 +48,11 @@ var _ = Describe("_setOpDescription", func() {
 				/* arrange */
 				expectedError := errors.New("FromError")
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToReturns(expectedError)
 
 				objectUnderTest := &_bundle{
-					fileSystem: new(fs.FakeFileSystem),
+					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
@@ -73,11 +73,11 @@ var _ = Describe("_setOpDescription", func() {
 				/* arrange */
 				expectedError := errors.New("ToError")
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.FromReturns(nil, expectedError)
 
 				objectUnderTest := &_bundle{
-					fileSystem: new(fs.FakeFileSystem),
+					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
@@ -103,14 +103,14 @@ var _ = Describe("_setOpDescription", func() {
 				},
 			}
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpManifest))
 				return
 			}
 
 			objectUnderTest := &_bundle{
-				fileSystem: new(fs.FakeFileSystem),
+				fileSystem: new(fs.Fake),
 				yaml:       fakeYamlFormat,
 			}
 
@@ -132,9 +132,9 @@ var _ = Describe("_setOpDescription", func() {
 			expectedSaveFilePathArg := path.Join(providedPathToOp, NameOfOpManifestFile)
 			expectedSaveFileBytesArg := []byte{2, 3, 4}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
 			objectUnderTest := &_bundle{

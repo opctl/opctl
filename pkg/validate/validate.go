@@ -1,6 +1,6 @@
 package validate
 
-//go:generate counterfeiter -o ./fakeValidate.go --fake-name FakeValidate ./ Validate
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Validate
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"

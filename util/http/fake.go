@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-type FakeClient struct {
+type Fake struct {
 	DoStub        func(req *httpnet.Request) (*httpnet.Response, error)
 	doMutex       sync.RWMutex
 	doArgsForCall []struct {
@@ -20,7 +20,7 @@ type FakeClient struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeClient) Do(req *httpnet.Request) (*httpnet.Response, error) {
+func (fake *Fake) Do(req *httpnet.Request) (*httpnet.Response, error) {
 	fake.doMutex.Lock()
 	fake.doArgsForCall = append(fake.doArgsForCall, struct {
 		req *httpnet.Request
@@ -34,19 +34,19 @@ func (fake *FakeClient) Do(req *httpnet.Request) (*httpnet.Response, error) {
 	}
 }
 
-func (fake *FakeClient) DoCallCount() int {
+func (fake *Fake) DoCallCount() int {
 	fake.doMutex.RLock()
 	defer fake.doMutex.RUnlock()
 	return len(fake.doArgsForCall)
 }
 
-func (fake *FakeClient) DoArgsForCall(i int) *httpnet.Request {
+func (fake *Fake) DoArgsForCall(i int) *httpnet.Request {
 	fake.doMutex.RLock()
 	defer fake.doMutex.RUnlock()
 	return fake.doArgsForCall[i].req
 }
 
-func (fake *FakeClient) DoReturns(result1 *httpnet.Response, result2 error) {
+func (fake *Fake) DoReturns(result1 *httpnet.Response, result2 error) {
 	fake.DoStub = nil
 	fake.doReturns = struct {
 		result1 *httpnet.Response
@@ -54,7 +54,7 @@ func (fake *FakeClient) DoReturns(result1 *httpnet.Response, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *FakeClient) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.doMutex.RLock()
@@ -62,7 +62,7 @@ func (fake *FakeClient) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeClient) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -74,4 +74,4 @@ func (fake *FakeClient) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Client = new(FakeClient)
+var _ Client = new(Fake)

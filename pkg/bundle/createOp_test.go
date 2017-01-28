@@ -21,7 +21,7 @@ var _ = Describe("_createOp", func() {
 
 			providedCreateOpReq := model.CreateOpReq{Path: "/dummy/path"}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 
 			objectUnderTest := &_bundle{
 				fileSystem: fakeFileSystem,
@@ -44,7 +44,7 @@ var _ = Describe("_createOp", func() {
 				/* arrange */
 				expectedError := errors.New("AddDirError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.AddDirReturns(expectedError)
 
 				objectUnderTest := &_bundle{
@@ -69,11 +69,11 @@ var _ = Describe("_createOp", func() {
 				/* arrange */
 				expectedError := errors.New("FromError")
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.FromReturns(nil, expectedError)
 
 				objectUnderTest := &_bundle{
-					fileSystem: new(fs.FakeFileSystem),
+					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
@@ -98,14 +98,14 @@ var _ = Describe("_createOp", func() {
 				},
 			}
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedOpManifest))
 				return
 			}
 
 			objectUnderTest := &_bundle{
-				fileSystem: new(fs.FakeFileSystem),
+				fileSystem: new(fs.Fake),
 				yaml:       fakeYamlFormat,
 			}
 
@@ -130,9 +130,9 @@ var _ = Describe("_createOp", func() {
 			expectedSaveFilePathArg := path.Join(providedPath, NameOfOpManifestFile)
 			expectedSaveFileBytesArg := []byte{2, 3, 4}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
 			objectUnderTest := &_bundle{

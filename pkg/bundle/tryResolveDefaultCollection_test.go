@@ -52,7 +52,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 				/* arrange */
 				expectedError := errors.New("ListChildFileInfosOfDirError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, expectedError)
 
 				objectUnderTest := &_bundle{
@@ -76,7 +76,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 			It("should return an empty pathToDefaultCollection", func() {
 
 				/* arrange */
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, nil)
 
 				objectUnderTest := &_bundle{
@@ -96,7 +96,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 			It("should return a nil err", func() {
 
 				/* arrange */
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, nil)
 
 				objectUnderTest := &_bundle{
@@ -121,7 +121,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 				/* arrange */
 				providedPathToDir := "/dummy/path"
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(
 					[]os.FileInfo{
 						fileInfo{
@@ -153,7 +153,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 			It("should return a nil err", func() {
 
 				/* arrange */
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(
 					[]os.FileInfo{
 						fileInfo{
@@ -185,7 +185,7 @@ var _ = Describe("_tryResolveDefaultCollection", func() {
 			/* arrange */
 			expectedListChildFileInfosOfDirArg := "/dummy/path"
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 			fakeFileSystem.ListChildFileInfosOfDirReturns(nil, nil)
 
 			objectUnderTest := &_bundle{

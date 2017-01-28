@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-type FakeFileSystem struct {
+type Fake struct {
 	AddDirStub        func(pathToDir string) (err error)
 	addDirMutex       sync.RWMutex
 	addDirArgsForCall []struct {
@@ -46,7 +46,7 @@ type FakeFileSystem struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFileSystem) AddDir(pathToDir string) (err error) {
+func (fake *Fake) AddDir(pathToDir string) (err error) {
 	fake.addDirMutex.Lock()
 	fake.addDirArgsForCall = append(fake.addDirArgsForCall, struct {
 		pathToDir string
@@ -60,26 +60,26 @@ func (fake *FakeFileSystem) AddDir(pathToDir string) (err error) {
 	}
 }
 
-func (fake *FakeFileSystem) AddDirCallCount() int {
+func (fake *Fake) AddDirCallCount() int {
 	fake.addDirMutex.RLock()
 	defer fake.addDirMutex.RUnlock()
 	return len(fake.addDirArgsForCall)
 }
 
-func (fake *FakeFileSystem) AddDirArgsForCall(i int) string {
+func (fake *Fake) AddDirArgsForCall(i int) string {
 	fake.addDirMutex.RLock()
 	defer fake.addDirMutex.RUnlock()
 	return fake.addDirArgsForCall[i].pathToDir
 }
 
-func (fake *FakeFileSystem) AddDirReturns(result1 error) {
+func (fake *Fake) AddDirReturns(result1 error) {
 	fake.AddDirStub = nil
 	fake.addDirReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeFileSystem) GetBytesOfFile(pathToFile string) (bytesOfFile []byte, err error) {
+func (fake *Fake) GetBytesOfFile(pathToFile string) (bytesOfFile []byte, err error) {
 	fake.getBytesOfFileMutex.Lock()
 	fake.getBytesOfFileArgsForCall = append(fake.getBytesOfFileArgsForCall, struct {
 		pathToFile string
@@ -93,19 +93,19 @@ func (fake *FakeFileSystem) GetBytesOfFile(pathToFile string) (bytesOfFile []byt
 	}
 }
 
-func (fake *FakeFileSystem) GetBytesOfFileCallCount() int {
+func (fake *Fake) GetBytesOfFileCallCount() int {
 	fake.getBytesOfFileMutex.RLock()
 	defer fake.getBytesOfFileMutex.RUnlock()
 	return len(fake.getBytesOfFileArgsForCall)
 }
 
-func (fake *FakeFileSystem) GetBytesOfFileArgsForCall(i int) string {
+func (fake *Fake) GetBytesOfFileArgsForCall(i int) string {
 	fake.getBytesOfFileMutex.RLock()
 	defer fake.getBytesOfFileMutex.RUnlock()
 	return fake.getBytesOfFileArgsForCall[i].pathToFile
 }
 
-func (fake *FakeFileSystem) GetBytesOfFileReturns(result1 []byte, result2 error) {
+func (fake *Fake) GetBytesOfFileReturns(result1 []byte, result2 error) {
 	fake.GetBytesOfFileStub = nil
 	fake.getBytesOfFileReturns = struct {
 		result1 []byte
@@ -113,7 +113,7 @@ func (fake *FakeFileSystem) GetBytesOfFileReturns(result1 []byte, result2 error)
 	}{result1, result2}
 }
 
-func (fake *FakeFileSystem) ListChildFileInfosOfDir(pathToDir string) (childFileInfos []os.FileInfo, err error) {
+func (fake *Fake) ListChildFileInfosOfDir(pathToDir string) (childFileInfos []os.FileInfo, err error) {
 	fake.listChildFileInfosOfDirMutex.Lock()
 	fake.listChildFileInfosOfDirArgsForCall = append(fake.listChildFileInfosOfDirArgsForCall, struct {
 		pathToDir string
@@ -127,19 +127,19 @@ func (fake *FakeFileSystem) ListChildFileInfosOfDir(pathToDir string) (childFile
 	}
 }
 
-func (fake *FakeFileSystem) ListChildFileInfosOfDirCallCount() int {
+func (fake *Fake) ListChildFileInfosOfDirCallCount() int {
 	fake.listChildFileInfosOfDirMutex.RLock()
 	defer fake.listChildFileInfosOfDirMutex.RUnlock()
 	return len(fake.listChildFileInfosOfDirArgsForCall)
 }
 
-func (fake *FakeFileSystem) ListChildFileInfosOfDirArgsForCall(i int) string {
+func (fake *Fake) ListChildFileInfosOfDirArgsForCall(i int) string {
 	fake.listChildFileInfosOfDirMutex.RLock()
 	defer fake.listChildFileInfosOfDirMutex.RUnlock()
 	return fake.listChildFileInfosOfDirArgsForCall[i].pathToDir
 }
 
-func (fake *FakeFileSystem) ListChildFileInfosOfDirReturns(result1 []os.FileInfo, result2 error) {
+func (fake *Fake) ListChildFileInfosOfDirReturns(result1 []os.FileInfo, result2 error) {
 	fake.ListChildFileInfosOfDirStub = nil
 	fake.listChildFileInfosOfDirReturns = struct {
 		result1 []os.FileInfo
@@ -147,7 +147,7 @@ func (fake *FakeFileSystem) ListChildFileInfosOfDirReturns(result1 []os.FileInfo
 	}{result1, result2}
 }
 
-func (fake *FakeFileSystem) SaveFile(pathToFile string, bytesOfFile []byte) (err error) {
+func (fake *Fake) SaveFile(pathToFile string, bytesOfFile []byte) (err error) {
 	var bytesOfFileCopy []byte
 	if bytesOfFile != nil {
 		bytesOfFileCopy = make([]byte, len(bytesOfFile))
@@ -167,26 +167,26 @@ func (fake *FakeFileSystem) SaveFile(pathToFile string, bytesOfFile []byte) (err
 	}
 }
 
-func (fake *FakeFileSystem) SaveFileCallCount() int {
+func (fake *Fake) SaveFileCallCount() int {
 	fake.saveFileMutex.RLock()
 	defer fake.saveFileMutex.RUnlock()
 	return len(fake.saveFileArgsForCall)
 }
 
-func (fake *FakeFileSystem) SaveFileArgsForCall(i int) (string, []byte) {
+func (fake *Fake) SaveFileArgsForCall(i int) (string, []byte) {
 	fake.saveFileMutex.RLock()
 	defer fake.saveFileMutex.RUnlock()
 	return fake.saveFileArgsForCall[i].pathToFile, fake.saveFileArgsForCall[i].bytesOfFile
 }
 
-func (fake *FakeFileSystem) SaveFileReturns(result1 error) {
+func (fake *Fake) SaveFileReturns(result1 error) {
 	fake.SaveFileStub = nil
 	fake.saveFileReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeFileSystem) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.addDirMutex.RLock()
@@ -200,7 +200,7 @@ func (fake *FakeFileSystem) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeFileSystem) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -212,4 +212,4 @@ func (fake *FakeFileSystem) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ FileSystem = new(FakeFileSystem)
+var _ FileSystem = new(Fake)

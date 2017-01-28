@@ -19,13 +19,13 @@ var _ = Describe("_collectionViewFactory", func() {
 				/* arrange */
 				expectedError := errors.New("GetBytesOfFileError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
 				objectUnderTest := newCollectionViewFactory(
 					fakeFileSystem,
 					new(fakeOpViewFactory),
-					new(format.FakeFormat),
+					new(format.Fake),
 				)
 
 				/* act */
@@ -44,11 +44,11 @@ var _ = Describe("_collectionViewFactory", func() {
 				/* arrange */
 				expectedError := errors.New("FromError")
 
-				fakeYamlFormat := new(format.FakeFormat)
+				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToReturns(expectedError)
 
 				objectUnderTest := newCollectionViewFactory(
-					new(fs.FakeFileSystem),
+					new(fs.Fake),
 					new(fakeOpViewFactory),
 					fakeYamlFormat,
 				)
@@ -68,13 +68,13 @@ var _ = Describe("_collectionViewFactory", func() {
 				/* arrange */
 				expectedError := errors.New("ListChildFileInfosOfDirError")
 
-				fakeFileSystem := new(fs.FakeFileSystem)
+				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, expectedError)
 
 				objectUnderTest := newCollectionViewFactory(
 					fakeFileSystem,
 					new(fakeOpViewFactory),
-					new(format.FakeFormat),
+					new(format.Fake),
 				)
 
 				/* act */
@@ -91,10 +91,10 @@ var _ = Describe("_collectionViewFactory", func() {
 			/* arrange */
 			expectedBytes := []byte{0, 8, 10}
 
-			fakeFileSystem := new(fs.FakeFileSystem)
+			fakeFileSystem := new(fs.Fake)
 			fakeFileSystem.GetBytesOfFileReturns(expectedBytes, nil)
 
-			fakeYamlFormat := new(format.FakeFormat)
+			fakeYamlFormat := new(format.Fake)
 
 			objectUnderTest := newCollectionViewFactory(
 				fakeFileSystem,

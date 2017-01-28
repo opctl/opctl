@@ -31,7 +31,7 @@ var _ = Describe("StartOp", func() {
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
-		fakeHttpClient := new(http.FakeClient)
+		fakeHttpClient := new(http.Fake)
 		fakeHttpClient.DoReturns(&netHttp.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
 		objectUnderTest := _engineClient{

@@ -1,6 +1,6 @@
 package http
 
-//go:generate counterfeiter -o fakeClient.go --fake-name FakeClient ./ Client
+//go:generate counterfeiter -o fake.go --fake-name Fake ./ Client
 
 import (
 	"net/http"

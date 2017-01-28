@@ -1,6 +1,6 @@
 package fs
 
-//go:generate counterfeiter -o ./fakeFileSystem.go --fake-name FakeFileSystem ./ FileSystem
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FileSystem
 
 import (
 	"io/ioutil"
