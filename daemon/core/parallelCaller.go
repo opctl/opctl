@@ -11,7 +11,7 @@ import (
 
 type parallelCaller interface {
 	Call(
-		args map[string]*model.Data,
+		parentScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
 		parallelCall []*model.Scg,
@@ -25,7 +25,7 @@ func newParallelCaller(
 	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) parallelCaller {
 
-	return &_parallelCaller{
+	return _parallelCaller{
 		caller:              caller,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -38,7 +38,7 @@ type _parallelCaller struct {
 }
 
 func (this _parallelCaller) Call(
-	args map[string]*model.Data,
+	parentScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
 	parallelCall []*model.Scg,
@@ -59,7 +59,7 @@ func (this _parallelCaller) Call(
 			// @TODO: handle sockets
 			_, err = this.caller.Call(
 				this.uniqueStringFactory.Construct(),
-				args,
+				parentScope,
 				childCall,
 				opRef,
 				opGraphId,
