@@ -3,7 +3,6 @@ package core
 //go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
-	"fmt"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
@@ -51,7 +50,6 @@ func (this _serialCaller) Call(
 
 	var childScope map[string]*model.Data
 	for _, call := range serialCall {
-		fmt.Printf("serialCaller.scope:\n %#v\n", currentScope)
 		childScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
 			currentScope,

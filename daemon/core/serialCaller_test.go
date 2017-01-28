@@ -25,7 +25,7 @@ var _ = Describe("serialCaller", func() {
 			providedParentScope := map[string]*model.Data{}
 			providedOpGraphId := "dummyOpGraphId"
 			providedOpRef := "dummyOpRef"
-			providedSerialCall := []*model.Scg{
+			providedSerialCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
 				},
@@ -58,17 +58,18 @@ var _ = Describe("serialCaller", func() {
 				providedParentScope,
 				providedOpGraphId,
 				providedOpRef,
-				providedSerialCall,
+				providedSerialCalls,
 			)
 
 			/* assert */
-			for expectedScgIndex, expectedScg := range providedSerialCall {
+			for expectedScgIndex, expectedScg := range providedSerialCalls {
 				actualNodeId,
-					_, // actualArgs,
+					actualChildScope,
 					actualScg,
 					actualOpRef,
 					actualOpGraphId := fakeCaller.CallArgsForCall(expectedScgIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
+				Expect(actualChildScope).To(Equal(providedParentScope))
 				Expect(actualScg).To(Equal(expectedScg))
 				Expect(actualOpRef).To(Equal(providedOpRef))
 				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
@@ -80,7 +81,7 @@ var _ = Describe("serialCaller", func() {
 				providedParentScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
-				providedSerialCall := []*model.Scg{
+				providedSerialCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
 					},
@@ -97,7 +98,7 @@ var _ = Describe("serialCaller", func() {
 					providedParentScope,
 					providedOpGraphId,
 					providedOpRef,
-					providedSerialCall,
+					providedSerialCalls,
 				)
 
 				/* assert */
@@ -115,7 +116,7 @@ var _ = Describe("serialCaller", func() {
 					expectedScopePassedToGrandchild := providedParentScope
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
-					providedSerialCall := []*model.Scg{
+					providedSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
 						},
@@ -133,7 +134,7 @@ var _ = Describe("serialCaller", func() {
 						providedParentScope,
 						providedOpGraphId,
 						providedOpRef,
-						providedSerialCall,
+						providedSerialCalls,
 					)
 
 					/* assert */
@@ -160,7 +161,7 @@ var _ = Describe("serialCaller", func() {
 					}
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
-					providedSerialCall := []*model.Scg{
+					providedSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
 						},
@@ -179,7 +180,7 @@ var _ = Describe("serialCaller", func() {
 						providedParentScope,
 						providedOpGraphId,
 						providedOpRef,
-						providedSerialCall,
+						providedSerialCalls,
 					)
 
 					/* assert */
