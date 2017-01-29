@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeUniqueStringFactory struct {
+type Fake struct {
 	ConstructStub        func() (uniqueString string)
 	constructMutex       sync.RWMutex
 	constructArgsForCall []struct{}
@@ -16,7 +16,7 @@ type FakeUniqueStringFactory struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUniqueStringFactory) Construct() (uniqueString string) {
+func (fake *Fake) Construct() (uniqueString string) {
 	fake.constructMutex.Lock()
 	fake.constructArgsForCall = append(fake.constructArgsForCall, struct{}{})
 	fake.recordInvocation("Construct", []interface{}{})
@@ -28,20 +28,20 @@ func (fake *FakeUniqueStringFactory) Construct() (uniqueString string) {
 	}
 }
 
-func (fake *FakeUniqueStringFactory) ConstructCallCount() int {
+func (fake *Fake) ConstructCallCount() int {
 	fake.constructMutex.RLock()
 	defer fake.constructMutex.RUnlock()
 	return len(fake.constructArgsForCall)
 }
 
-func (fake *FakeUniqueStringFactory) ConstructReturns(result1 string) {
+func (fake *Fake) ConstructReturns(result1 string) {
 	fake.ConstructStub = nil
 	fake.constructReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeUniqueStringFactory) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.constructMutex.RLock()
@@ -49,7 +49,7 @@ func (fake *FakeUniqueStringFactory) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeUniqueStringFactory) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -61,4 +61,4 @@ func (fake *FakeUniqueStringFactory) recordInvocation(key string, args []interfa
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ UniqueStringFactory = new(FakeUniqueStringFactory)
+var _ UniqueStringFactory = new(Fake)

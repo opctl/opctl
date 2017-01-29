@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-//go:generate counterfeiter -o ./fakeCore.go --fake-name FakeCore ./ Core
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 type Core interface {
 	CreateCollection(

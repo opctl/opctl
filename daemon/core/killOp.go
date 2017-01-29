@@ -8,14 +8,14 @@ import (
 func (this _core) KillOp(
 	req model.KillOpReq,
 ) {
-	this.nodeRepo.deleteIfExists(req.OpGraphId)
+	this.dcgNodeRepo.DeleteIfExists(req.OpGraphId)
 
 	var waitGroup sync.WaitGroup
 
-	for _, childNode := range this.nodeRepo.listWithOpGraphId(req.OpGraphId) {
-		go func(childNode *nodeDescriptor) {
+	for _, childNode := range this.dcgNodeRepo.ListWithOpGraphId(req.OpGraphId) {
+		go func(childNode *dcgNodeDescriptor) {
 			waitGroup.Add(1)
-			this.nodeRepo.deleteIfExists(childNode.Id)
+			this.dcgNodeRepo.DeleteIfExists(childNode.Id)
 
 			if nil != childNode.Container {
 				this.containerEngine.DeleteContainerIfExists(

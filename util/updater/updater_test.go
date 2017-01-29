@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Describe("updater", func() {
+var _ = Context("updater", func() {
 	Context("New", func() {
 		It("should return Updater", func() {
 			/* arrange/act/assert */

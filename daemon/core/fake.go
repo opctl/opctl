@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-type FakeCore struct {
+type Fake struct {
 	GetEventStreamStub        func(req *model.GetEventStreamReq, eventChannel chan model.Event) (err error)
 	getEventStreamMutex       sync.RWMutex
 	getEventStreamArgsForCall []struct {
@@ -35,7 +35,7 @@ type FakeCore struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCore) GetEventStream(req *model.GetEventStreamReq, eventChannel chan model.Event) (err error) {
+func (fake *Fake) GetEventStream(req *model.GetEventStreamReq, eventChannel chan model.Event) (err error) {
 	fake.getEventStreamMutex.Lock()
 	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
 		req          *model.GetEventStreamReq
@@ -50,26 +50,26 @@ func (fake *FakeCore) GetEventStream(req *model.GetEventStreamReq, eventChannel 
 	}
 }
 
-func (fake *FakeCore) GetEventStreamCallCount() int {
+func (fake *Fake) GetEventStreamCallCount() int {
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
 	return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *FakeCore) GetEventStreamArgsForCall(i int) (*model.GetEventStreamReq, chan model.Event) {
+func (fake *Fake) GetEventStreamArgsForCall(i int) (*model.GetEventStreamReq, chan model.Event) {
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
 	return fake.getEventStreamArgsForCall[i].req, fake.getEventStreamArgsForCall[i].eventChannel
 }
 
-func (fake *FakeCore) GetEventStreamReturns(result1 error) {
+func (fake *Fake) GetEventStreamReturns(result1 error) {
 	fake.GetEventStreamStub = nil
 	fake.getEventStreamReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeCore) KillOp(req model.KillOpReq) {
+func (fake *Fake) KillOp(req model.KillOpReq) {
 	fake.killOpMutex.Lock()
 	fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
 		req model.KillOpReq
@@ -81,19 +81,19 @@ func (fake *FakeCore) KillOp(req model.KillOpReq) {
 	}
 }
 
-func (fake *FakeCore) KillOpCallCount() int {
+func (fake *Fake) KillOpCallCount() int {
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	return len(fake.killOpArgsForCall)
 }
 
-func (fake *FakeCore) KillOpArgsForCall(i int) model.KillOpReq {
+func (fake *Fake) KillOpArgsForCall(i int) model.KillOpReq {
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	return fake.killOpArgsForCall[i].req
 }
 
-func (fake *FakeCore) StartOp(req model.StartOpReq) (callId string, err error) {
+func (fake *Fake) StartOp(req model.StartOpReq) (callId string, err error) {
 	fake.startOpMutex.Lock()
 	fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {
 		req model.StartOpReq
@@ -107,19 +107,19 @@ func (fake *FakeCore) StartOp(req model.StartOpReq) (callId string, err error) {
 	}
 }
 
-func (fake *FakeCore) StartOpCallCount() int {
+func (fake *Fake) StartOpCallCount() int {
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
 	return len(fake.startOpArgsForCall)
 }
 
-func (fake *FakeCore) StartOpArgsForCall(i int) model.StartOpReq {
+func (fake *Fake) StartOpArgsForCall(i int) model.StartOpReq {
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
 	return fake.startOpArgsForCall[i].req
 }
 
-func (fake *FakeCore) StartOpReturns(result1 string, result2 error) {
+func (fake *Fake) StartOpReturns(result1 string, result2 error) {
 	fake.StartOpStub = nil
 	fake.startOpReturns = struct {
 		result1 string
@@ -127,7 +127,7 @@ func (fake *FakeCore) StartOpReturns(result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *FakeCore) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.getEventStreamMutex.RLock()
@@ -139,7 +139,7 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeCore) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -151,4 +151,4 @@ func (fake *FakeCore) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Core = new(FakeCore)
+var _ Core = new(Fake)

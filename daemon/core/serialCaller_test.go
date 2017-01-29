@@ -9,20 +9,20 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Describe("serialCaller", func() {
+var _ = Context("serialCaller", func() {
 	Context("newSerialCaller", func() {
 		It("should return serialCaller", func() {
 			/* arrange/act/assert */
 			Expect(newSerialCaller(
 				new(fakeCaller),
-				new(uniquestring.FakeUniqueStringFactory),
+				new(uniquestring.Fake),
 			)).Should(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
-			providedParentScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Data{}
 			providedOpGraphId := "dummyOpGraphId"
 			providedOpRef := "dummyOpRef"
 			providedSerialCalls := []*model.Scg{
@@ -42,7 +42,7 @@ var _ = Describe("serialCaller", func() {
 
 			fakeCaller := new(fakeCaller)
 
-			fakeUniqueStringFactory := new(uniquestring.FakeUniqueStringFactory)
+			fakeUniqueStringFactory := new(uniquestring.Fake)
 			uniqueStringCallIndex := 0
 			fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
 				defer func() {
@@ -55,7 +55,7 @@ var _ = Describe("serialCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedParentScope,
+				providedInboundScope,
 				providedOpGraphId,
 				providedOpRef,
 				providedSerialCalls,
@@ -64,21 +64,21 @@ var _ = Describe("serialCaller", func() {
 			/* assert */
 			for expectedScgIndex, expectedScg := range providedSerialCalls {
 				actualNodeId,
-					actualChildScope,
+					actualChildOutboundScope,
 					actualScg,
 					actualOpRef,
 					actualOpGraphId := fakeCaller.CallArgsForCall(expectedScgIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
-				Expect(actualChildScope).To(Equal(providedParentScope))
+				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualScg).To(Equal(expectedScg))
 				Expect(actualOpRef).To(Equal(providedOpRef))
 				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
 			}
 		})
-		Describe("caller errors", func() {
+		Context("caller errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
-				providedParentScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
 				providedSerialCalls := []*model.Scg{
@@ -91,11 +91,11 @@ var _ = Describe("serialCaller", func() {
 				fakeCaller := new(fakeCaller)
 				fakeCaller.CallReturns(map[string]*model.Data{}, expectedError)
 
-				objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.FakeUniqueStringFactory))
+				objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
 
 				/* act */
 				actualErr := objectUnderTest.Call(
-					providedParentScope,
+					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
 					providedSerialCalls,
@@ -105,15 +105,15 @@ var _ = Describe("serialCaller", func() {
 				Expect(actualErr).To(Equal(expectedError))
 			})
 		})
-		Describe("caller doesn't error", func() {
-			Describe("childScope empty", func() {
-				It("should call grandchild w/ parentScope", func() {
+		Context("caller doesn't error", func() {
+			Context("childOutboundScope empty", func() {
+				It("should call grandchild w/ inboundScope", func() {
 					/* arrange */
-					providedParentScope := map[string]*model.Data{
+					providedInboundScope := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 					}
-					expectedScopePassedToGrandchild := providedParentScope
+					expectedScopePassedToGrandchild := providedInboundScope
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
 					providedSerialCalls := []*model.Scg{
@@ -127,11 +127,11 @@ var _ = Describe("serialCaller", func() {
 
 					fakeCaller := new(fakeCaller)
 
-					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.FakeUniqueStringFactory))
+					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
 
 					/* act */
 					objectUnderTest.Call(
-						providedParentScope,
+						providedInboundScope,
 						providedOpGraphId,
 						providedOpRef,
 						providedSerialCalls,
@@ -142,22 +142,22 @@ var _ = Describe("serialCaller", func() {
 					Expect(actualScopePassedToGranchild).To(Equal(expectedScopePassedToGrandchild))
 				})
 			})
-			Describe("childScope not empty", func() {
-				It("should call grandchild w/ childScope overlaying parentScope", func() {
+			Context("childOutboundScope not empty", func() {
+				It("should call grandchild w/ childOutboundScope overlaying inboundScope", func() {
 					/* arrange */
-					providedParentScope := map[string]*model.Data{
+					providedInboundScope := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 						"dummyVar3Name": {File: "dummyParentVar3Data"},
 					}
-					childScope := map[string]*model.Data{
+					childOutboundScope := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyChildVar1Data"},
 						"dummyVar2Name": {Dir: "dummyChildVar2Data"},
 					}
 					expectedScopePassedToGrandchild := map[string]*model.Data{
-						"dummyVar1Name": childScope["dummyVar1Name"],
-						"dummyVar2Name": childScope["dummyVar2Name"],
-						"dummyVar3Name": providedParentScope["dummyVar3Name"],
+						"dummyVar1Name": childOutboundScope["dummyVar1Name"],
+						"dummyVar2Name": childOutboundScope["dummyVar2Name"],
+						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
@@ -171,13 +171,13 @@ var _ = Describe("serialCaller", func() {
 					}
 
 					fakeCaller := new(fakeCaller)
-					fakeCaller.CallReturns(childScope, nil)
+					fakeCaller.CallReturns(childOutboundScope, nil)
 
-					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.FakeUniqueStringFactory))
+					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
 
 					/* act */
 					objectUnderTest.Call(
-						providedParentScope,
+						providedInboundScope,
 						providedOpGraphId,
 						providedOpRef,
 						providedSerialCalls,

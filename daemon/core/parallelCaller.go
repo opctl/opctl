@@ -10,8 +10,9 @@ import (
 )
 
 type parallelCaller interface {
+	// Executes a parallel call
 	Call(
-		parentScope map[string]*model.Data,
+		inboundScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
 		parallelCall []*model.Scg,
@@ -38,7 +39,7 @@ type _parallelCaller struct {
 }
 
 func (this _parallelCaller) Call(
-	parentScope map[string]*model.Data,
+	inboundScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
 	parallelCall []*model.Scg,
@@ -47,7 +48,7 @@ func (this _parallelCaller) Call(
 ) {
 
 	var wg sync.WaitGroup
-	childCallErrorChannel := make(chan error, len(parallelCall))
+	childErrChannel := make(chan error, len(parallelCall))
 
 	for _, childCall := range parallelCall {
 		wg.Add(1)
@@ -55,21 +56,21 @@ func (this _parallelCaller) Call(
 		go func(childCall *model.Scg) {
 			wg.Done()
 			// @TODO: handle sockets
-			_, childCallErr := this.caller.Call(
+			_, childErr := this.caller.Call(
 				this.uniqueStringFactory.Construct(),
-				parentScope,
+				inboundScope,
 				childCall,
 				opRef,
 				opGraphId,
 			)
-			if nil != childCallErr {
-				childCallErrorChannel <- childCallErr
+			if nil != childErr {
+				childErrChannel <- childErr
 			}
 		}(childCall)
 	}
 	wg.Wait()
 
-	if len(childCallErrorChannel) > 0 {
+	if len(childErrChannel) > 0 {
 		// @TODO: consider including actual errors
 		err = errors.New("One or more errors encountered in parallel run block")
 	}

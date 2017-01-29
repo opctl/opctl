@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeVos struct {
+type Fake struct {
 	ExitStub        func(code int)
 	exitMutex       sync.RWMutex
 	exitArgsForCall []struct {
@@ -39,7 +39,7 @@ type FakeVos struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeVos) Exit(code int) {
+func (fake *Fake) Exit(code int) {
 	fake.exitMutex.Lock()
 	fake.exitArgsForCall = append(fake.exitArgsForCall, struct {
 		code int
@@ -51,19 +51,19 @@ func (fake *FakeVos) Exit(code int) {
 	}
 }
 
-func (fake *FakeVos) ExitCallCount() int {
+func (fake *Fake) ExitCallCount() int {
 	fake.exitMutex.RLock()
 	defer fake.exitMutex.RUnlock()
 	return len(fake.exitArgsForCall)
 }
 
-func (fake *FakeVos) ExitArgsForCall(i int) int {
+func (fake *Fake) ExitArgsForCall(i int) int {
 	fake.exitMutex.RLock()
 	defer fake.exitMutex.RUnlock()
 	return fake.exitArgsForCall[i].code
 }
 
-func (fake *FakeVos) Getenv(key string) string {
+func (fake *Fake) Getenv(key string) string {
 	fake.getenvMutex.Lock()
 	fake.getenvArgsForCall = append(fake.getenvArgsForCall, struct {
 		key string
@@ -77,26 +77,26 @@ func (fake *FakeVos) Getenv(key string) string {
 	}
 }
 
-func (fake *FakeVos) GetenvCallCount() int {
+func (fake *Fake) GetenvCallCount() int {
 	fake.getenvMutex.RLock()
 	defer fake.getenvMutex.RUnlock()
 	return len(fake.getenvArgsForCall)
 }
 
-func (fake *FakeVos) GetenvArgsForCall(i int) string {
+func (fake *Fake) GetenvArgsForCall(i int) string {
 	fake.getenvMutex.RLock()
 	defer fake.getenvMutex.RUnlock()
 	return fake.getenvArgsForCall[i].key
 }
 
-func (fake *FakeVos) GetenvReturns(result1 string) {
+func (fake *Fake) GetenvReturns(result1 string) {
 	fake.GetenvStub = nil
 	fake.getenvReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeVos) Getwd() (string, error) {
+func (fake *Fake) Getwd() (string, error) {
 	fake.getwdMutex.Lock()
 	fake.getwdArgsForCall = append(fake.getwdArgsForCall, struct{}{})
 	fake.recordInvocation("Getwd", []interface{}{})
@@ -108,13 +108,13 @@ func (fake *FakeVos) Getwd() (string, error) {
 	}
 }
 
-func (fake *FakeVos) GetwdCallCount() int {
+func (fake *Fake) GetwdCallCount() int {
 	fake.getwdMutex.RLock()
 	defer fake.getwdMutex.RUnlock()
 	return len(fake.getwdArgsForCall)
 }
 
-func (fake *FakeVos) GetwdReturns(result1 string, result2 error) {
+func (fake *Fake) GetwdReturns(result1 string, result2 error) {
 	fake.GetwdStub = nil
 	fake.getwdReturns = struct {
 		result1 string
@@ -122,7 +122,7 @@ func (fake *FakeVos) GetwdReturns(result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *FakeVos) Setenv(key string, value string) error {
+func (fake *Fake) Setenv(key string, value string) error {
 	fake.setenvMutex.Lock()
 	fake.setenvArgsForCall = append(fake.setenvArgsForCall, struct {
 		key   string
@@ -137,26 +137,26 @@ func (fake *FakeVos) Setenv(key string, value string) error {
 	}
 }
 
-func (fake *FakeVos) SetenvCallCount() int {
+func (fake *Fake) SetenvCallCount() int {
 	fake.setenvMutex.RLock()
 	defer fake.setenvMutex.RUnlock()
 	return len(fake.setenvArgsForCall)
 }
 
-func (fake *FakeVos) SetenvArgsForCall(i int) (string, string) {
+func (fake *Fake) SetenvArgsForCall(i int) (string, string) {
 	fake.setenvMutex.RLock()
 	defer fake.setenvMutex.RUnlock()
 	return fake.setenvArgsForCall[i].key, fake.setenvArgsForCall[i].value
 }
 
-func (fake *FakeVos) SetenvReturns(result1 error) {
+func (fake *Fake) SetenvReturns(result1 error) {
 	fake.SetenvStub = nil
 	fake.setenvReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeVos) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.exitMutex.RLock()
@@ -170,7 +170,7 @@ func (fake *FakeVos) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeVos) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -182,4 +182,4 @@ func (fake *FakeVos) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Vos = new(FakeVos)
+var _ Vos = new(Fake)

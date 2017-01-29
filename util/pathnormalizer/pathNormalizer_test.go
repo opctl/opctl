@@ -5,9 +5,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("pathNormalizer", func() {
+var _ = Context("pathNormalizer", func() {
 	Context("Normalize()", func() {
-		Describe("when path contains drive letter", func() {
+		Context("when path contains drive letter", func() {
 			It("should prepend a slash", func() {
 				/* arrange */
 				expected := "/c/DummyPath"
@@ -71,7 +71,7 @@ var _ = Describe("pathNormalizer", func() {
 				Expect(actual).To(Equal(expected))
 			})
 		})
-		Describe("when path doesn't contain a drive letter", func() {
+		Context("when path doesn't contain a drive letter", func() {
 			It("should replace single backslashes with single forward slashes", func() {
 				/* arrange */
 				pathWithMultipleBackslashes := `\dummy\path`

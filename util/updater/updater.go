@@ -1,6 +1,6 @@
 package updater
 
-//go:generate counterfeiter -o ./fakeUpdater.go --fake-name FakeUpdater ./ Updater
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Updater
 
 import (
 	"github.com/equinox-io/equinox"

@@ -7,15 +7,15 @@ import (
 	"github.com/opspec-io/opctl/util/colorer"
 )
 
-var _ = Describe("cli", func() {
+var _ = Context("cli", func() {
 	Context("Run", func() {
 
 		Context("--no-color", func() {
 			It("should set color.NoColor", func() {
 				/* arrange */
-				fakeColorer := new(colorer.FakeColorer)
+				fakeColorer := new(colorer.Fake)
 
-				objectUnderTest := newCli(new(core.FakeCore), fakeColorer)
+				objectUnderTest := newCli(new(core.Fake), fakeColorer)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "--no-color", "-v"})
@@ -32,12 +32,12 @@ var _ = Describe("cli", func() {
 				Context("with description", func() {
 					It("should call core.CreateCollection w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedCollectionName := "dummyCollectionName"
 						expectedCollectionDescription := "dummyCollectionDescription"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "collection", "create", "-d", expectedCollectionDescription, expectedCollectionName})
@@ -53,11 +53,11 @@ var _ = Describe("cli", func() {
 				Context("with no description", func() {
 					It("should call core.CreateCollectionUseCase w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedCollectionName := "dummyCollectionName"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "collection", "create", expectedCollectionName})
@@ -76,11 +76,11 @@ var _ = Describe("cli", func() {
 				Context("description", func() {
 					It("should call core.SetCollectionDescription w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedCollectionDescription := "dummyCollectionDescription"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "collection", "set", "description", expectedCollectionDescription})
@@ -98,9 +98,9 @@ var _ = Describe("cli", func() {
 		Context("events", func() {
 			It("should call core.StreamEvents w/ expected args", func() {
 				/* arrange */
-				fakeCore := new(core.FakeCore)
+				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+				objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "events"})
@@ -113,11 +113,11 @@ var _ = Describe("cli", func() {
 		Context("kill", func() {
 			It("should call core.KillOp w/ expected args", func() {
 				/* arrange */
-				fakeCore := new(core.FakeCore)
+				fakeCore := new(core.Fake)
 
 				expectedOpId := "dummyOpId"
 
-				objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+				objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "kill", expectedOpId})
@@ -133,10 +133,10 @@ var _ = Describe("cli", func() {
 
 				It("should call core.ListOpsInCollection w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.FakeCore)
+					fakeCore := new(core.Fake)
 
 					expectedCollection := "dummyCollection"
-					objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+					objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "ls", "-c", expectedCollection})
@@ -151,10 +151,10 @@ var _ = Describe("cli", func() {
 
 				It("should call core.ListOpsInCollection w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.FakeCore)
+					fakeCore := new(core.Fake)
 
 					expectedCollection := ".opspec"
-					objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+					objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "ls"})
@@ -173,12 +173,12 @@ var _ = Describe("cli", func() {
 				Context("with collection", func() {
 					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedOpName := "dummyOpName"
 						expectedCollection := "dummyCollection"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "-c", expectedCollection, expectedOpName})
@@ -195,12 +195,12 @@ var _ = Describe("cli", func() {
 				Context("with no collection", func() {
 					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedOpName := "dummyOpName"
 						expectedCollection := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedOpName})
@@ -216,13 +216,13 @@ var _ = Describe("cli", func() {
 				Context("with description", func() {
 					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedOpName := "dummyOpName"
 						expectedOpDescription := "dummyOpDescription"
 						expectedCollection := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "-d", expectedOpDescription, expectedOpName})
@@ -239,12 +239,12 @@ var _ = Describe("cli", func() {
 				Context("with no description", func() {
 					It("should call core.CreateOp w/ expected args", func() {
 						/* arrange */
-						fakeCore := new(core.FakeCore)
+						fakeCore := new(core.Fake)
 
 						expectedName := "dummyOpName"
 						expectedCollection := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+						objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedName})
@@ -265,13 +265,13 @@ var _ = Describe("cli", func() {
 					Context("with collection", func() {
 						It("should call core.SetOpDescription w/ expected args", func() {
 							/* arrange */
-							fakeCore := new(core.FakeCore)
+							fakeCore := new(core.Fake)
 
 							expectedName := "dummyOpName"
 							expectedDescription := "dummyOpDescription"
 							expectedCollection := "dummyCollection"
 
-							objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+							objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 							/* act */
 							objectUnderTest.Run([]string{"opctl", "op", "set", "description", "-c", expectedCollection, expectedDescription, expectedName})
@@ -288,13 +288,13 @@ var _ = Describe("cli", func() {
 					Context("with no collection", func() {
 						It("should call core.SetOpDescription w/ expected args", func() {
 							/* arrange */
-							fakeCore := new(core.FakeCore)
+							fakeCore := new(core.Fake)
 
 							expectedName := "dummyOpName"
 							expectedDescription := "dummyOpDescription"
 							expectedCollection := ".opspec"
 
-							objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+							objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 							/* act */
 							objectUnderTest.Run([]string{"opctl", "op", "set", "description", expectedDescription, expectedName})
@@ -317,12 +317,12 @@ var _ = Describe("cli", func() {
 			Context("with collection", func() {
 				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.FakeCore)
+					fakeCore := new(core.Fake)
 
 					expectedCollection := "dummyCollection"
 					expectedOpUrl := "dummyOpUrl"
 
-					objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+					objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "run", "-c", expectedCollection, expectedOpUrl})
@@ -338,13 +338,13 @@ var _ = Describe("cli", func() {
 			Context("with two op run args", func() {
 				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.FakeCore)
+					fakeCore := new(core.Fake)
 
 					expectedOpArgs := []string{"arg1Name=arg1Value", "arg2Name=arg2Value"}
 					expectedCollection := ".opspec"
 					expectedOpUrl := "dummyOpUrl"
 
-					objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+					objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "run", "-a", expectedOpArgs[0], "-a", expectedOpArgs[1], expectedOpUrl})
@@ -361,12 +361,12 @@ var _ = Describe("cli", func() {
 			Context("with zero op run args", func() {
 				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.FakeCore)
+					fakeCore := new(core.Fake)
 
 					expectedOpUrl := "dummyOpUrl"
 					expectedCollection := ".opspec"
 
-					objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+					objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "run", expectedOpUrl})
@@ -391,9 +391,9 @@ var _ = Describe("cli", func() {
 				/* arrange */
 				expectedChannel := "beta"
 
-				fakeCore := new(core.FakeCore)
+				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+				objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update", "-c", expectedChannel})
@@ -412,9 +412,9 @@ var _ = Describe("cli", func() {
 				/* arrange */
 				expectedChannel := "stable"
 
-				fakeCore := new(core.FakeCore)
+				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(colorer.FakeColorer))
+				objectUnderTest := newCli(fakeCore, new(colorer.Fake))
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update"})

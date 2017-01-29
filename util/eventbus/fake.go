@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-type FakeEventBus struct {
+type Fake struct {
 	PublishStub        func(event model.Event)
 	publishMutex       sync.RWMutex
 	publishArgsForCall []struct {
@@ -28,7 +28,7 @@ type FakeEventBus struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEventBus) Publish(event model.Event) {
+func (fake *Fake) Publish(event model.Event) {
 	fake.publishMutex.Lock()
 	fake.publishArgsForCall = append(fake.publishArgsForCall, struct {
 		event model.Event
@@ -40,19 +40,19 @@ func (fake *FakeEventBus) Publish(event model.Event) {
 	}
 }
 
-func (fake *FakeEventBus) PublishCallCount() int {
+func (fake *Fake) PublishCallCount() int {
 	fake.publishMutex.RLock()
 	defer fake.publishMutex.RUnlock()
 	return len(fake.publishArgsForCall)
 }
 
-func (fake *FakeEventBus) PublishArgsForCall(i int) model.Event {
+func (fake *Fake) PublishArgsForCall(i int) model.Event {
 	fake.publishMutex.RLock()
 	defer fake.publishMutex.RUnlock()
 	return fake.publishArgsForCall[i].event
 }
 
-func (fake *FakeEventBus) RegisterSubscriber(filter *model.EventFilter, eventChannel chan model.Event) {
+func (fake *Fake) RegisterSubscriber(filter *model.EventFilter, eventChannel chan model.Event) {
 	fake.registerSubscriberMutex.Lock()
 	fake.registerSubscriberArgsForCall = append(fake.registerSubscriberArgsForCall, struct {
 		filter       *model.EventFilter
@@ -65,19 +65,19 @@ func (fake *FakeEventBus) RegisterSubscriber(filter *model.EventFilter, eventCha
 	}
 }
 
-func (fake *FakeEventBus) RegisterSubscriberCallCount() int {
+func (fake *Fake) RegisterSubscriberCallCount() int {
 	fake.registerSubscriberMutex.RLock()
 	defer fake.registerSubscriberMutex.RUnlock()
 	return len(fake.registerSubscriberArgsForCall)
 }
 
-func (fake *FakeEventBus) RegisterSubscriberArgsForCall(i int) (*model.EventFilter, chan model.Event) {
+func (fake *Fake) RegisterSubscriberArgsForCall(i int) (*model.EventFilter, chan model.Event) {
 	fake.registerSubscriberMutex.RLock()
 	defer fake.registerSubscriberMutex.RUnlock()
 	return fake.registerSubscriberArgsForCall[i].filter, fake.registerSubscriberArgsForCall[i].eventChannel
 }
 
-func (fake *FakeEventBus) UnregisterSubscriber(eventChannel chan model.Event) {
+func (fake *Fake) UnregisterSubscriber(eventChannel chan model.Event) {
 	fake.unregisterSubscriberMutex.Lock()
 	fake.unregisterSubscriberArgsForCall = append(fake.unregisterSubscriberArgsForCall, struct {
 		eventChannel chan model.Event
@@ -89,19 +89,19 @@ func (fake *FakeEventBus) UnregisterSubscriber(eventChannel chan model.Event) {
 	}
 }
 
-func (fake *FakeEventBus) UnregisterSubscriberCallCount() int {
+func (fake *Fake) UnregisterSubscriberCallCount() int {
 	fake.unregisterSubscriberMutex.RLock()
 	defer fake.unregisterSubscriberMutex.RUnlock()
 	return len(fake.unregisterSubscriberArgsForCall)
 }
 
-func (fake *FakeEventBus) UnregisterSubscriberArgsForCall(i int) chan model.Event {
+func (fake *Fake) UnregisterSubscriberArgsForCall(i int) chan model.Event {
 	fake.unregisterSubscriberMutex.RLock()
 	defer fake.unregisterSubscriberMutex.RUnlock()
 	return fake.unregisterSubscriberArgsForCall[i].eventChannel
 }
 
-func (fake *FakeEventBus) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.publishMutex.RLock()
@@ -113,7 +113,7 @@ func (fake *FakeEventBus) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeEventBus) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -125,4 +125,4 @@ func (fake *FakeEventBus) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ EventBus = new(FakeEventBus)
+var _ EventBus = new(Fake)

@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 )
 
-var _ = Describe("startOpHandler", func() {
+var _ = Context("startOpHandler", func() {
 
 	Context("ServeHTTP() method", func() {
 		It("should return StatusCode of 400 if body of request is malformed", func() {

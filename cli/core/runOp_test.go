@@ -15,19 +15,19 @@ import (
 	"time"
 )
 
-var _ = Describe("runOp", func() {
+var _ = Context("runOp", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				expectedError := errors.New("dummyError")
 				fakeVos.GetwdReturns("", expectedError)
 
 				fakeExiter := new(fakeExiter)
 
 				objectUnderTest := _core{
-					bundle: new(bundle.FakeBundle),
+					bundle: new(bundle.Fake),
 					exiter: fakeExiter,
 					vos:    fakeVos,
 				}
@@ -43,9 +43,9 @@ var _ = Describe("runOp", func() {
 		Context("vos.Getwd doesn't error", func() {
 			It("should call bundle.GetOp w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.FakeBundle)
+				fakeBundle := new(bundle.Fake)
 
-				fakeEngineClient := new(engineclient.FakeEngineClient)
+				fakeEngineClient := new(engineclient.Fake)
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
 				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
@@ -56,7 +56,7 @@ var _ = Describe("runOp", func() {
 				providedCollection := "dummyCollection"
 				wdReturnedFromVos := "dummyWorkDir"
 
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
 				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection, providedName)
 
@@ -64,7 +64,7 @@ var _ = Describe("runOp", func() {
 					bundle:         fakeBundle,
 					engineClient:   fakeEngineClient,
 					exiter:         fakeExiter,
-					paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
+					paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
 					vos:            fakeVos,
 				}
 
@@ -80,14 +80,14 @@ var _ = Describe("runOp", func() {
 					fakeExiter := new(fakeExiter)
 					returnedError := errors.New("dummyError")
 
-					fakeBundle := new(bundle.FakeBundle)
+					fakeBundle := new(bundle.Fake)
 					fakeBundle.GetOpReturns(model.OpView{}, returnedError)
 
 					objectUnderTest := _core{
 						bundle:         fakeBundle,
 						exiter:         fakeExiter,
-						paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-						vos:            new(vos.FakeVos),
+						paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+						vos:            new(vos.Fake),
 					}
 
 					/* act */
@@ -107,7 +107,7 @@ var _ = Describe("runOp", func() {
 							param1Name := "DUMMY_PARAM1_NAME"
 							param1Value := &model.Data{String: "dummyParam1Value"}
 
-							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle := new(bundle.Fake)
 							fakeBundle.GetOpReturns(
 								model.OpView{
 									Inputs: []*model.Param{
@@ -121,15 +121,15 @@ var _ = Describe("runOp", func() {
 								nil,
 							)
 
-							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient := new(engineclient.Fake)
 							fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
 							objectUnderTest := _core{
 								bundle:         fakeBundle,
 								engineClient:   fakeEngineClient,
 								exiter:         fakeExiter,
-								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-								vos:            new(vos.FakeVos),
+								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+								vos:            new(vos.Fake),
 							}
 
 							expectedArgs := map[string]*model.Data{param1Name: param1Value}
@@ -149,10 +149,10 @@ var _ = Describe("runOp", func() {
 							param1Name := "DUMMY_PARAM1_NAME"
 							param1Value := &model.Data{String: "dummyParam1Value"}
 
-							fakeVos := new(vos.FakeVos)
+							fakeVos := new(vos.Fake)
 							fakeVos.GetenvReturns(param1Value.String)
 
-							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle := new(bundle.Fake)
 							fakeBundle.GetOpReturns(
 								model.OpView{
 									Inputs: []*model.Param{
@@ -166,7 +166,7 @@ var _ = Describe("runOp", func() {
 								nil,
 							)
 
-							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient := new(engineclient.Fake)
 							fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
 							objectUnderTest := _core{
@@ -174,7 +174,7 @@ var _ = Describe("runOp", func() {
 								engineClient:   fakeEngineClient,
 								exiter:         fakeExiter,
 								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
-								vos:            new(vos.FakeVos),
+								vos:            new(vos.Fake),
 							}
 
 							expectedArgs := map[string]*model.Data{param1Name: param1Value}
@@ -195,10 +195,10 @@ var _ = Describe("runOp", func() {
 								param1Name := "DUMMY_PARAM1_NAME"
 								param1Value := &model.Data{String: "dummyParam1Value"}
 
-								fakeVos := new(vos.FakeVos)
+								fakeVos := new(vos.Fake)
 								fakeVos.GetenvReturns(param1Value.String)
 
-								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle := new(bundle.Fake)
 								fakeBundle.GetOpReturns(
 									model.OpView{
 										Inputs: []*model.Param{
@@ -212,7 +212,7 @@ var _ = Describe("runOp", func() {
 									nil,
 								)
 
-								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient := new(engineclient.Fake)
 								fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
 								objectUnderTest := _core{
@@ -220,7 +220,7 @@ var _ = Describe("runOp", func() {
 									engineClient:   fakeEngineClient,
 									exiter:         fakeExiter,
 									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), fakeVos),
-									vos:            new(vos.FakeVos),
+									vos:            new(vos.Fake),
 								}
 
 								expectedArgs := map[string]*model.Data{param1Name: param1Value}
@@ -240,7 +240,7 @@ var _ = Describe("runOp", func() {
 								// unique name to ensure conflicting env var not present
 								param1Name := string(time.Now().Unix())
 
-								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle := new(bundle.Fake)
 								fakeBundle.GetOpReturns(
 									model.OpView{
 										Inputs: []*model.Param{
@@ -255,15 +255,15 @@ var _ = Describe("runOp", func() {
 									nil,
 								)
 
-								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient := new(engineclient.Fake)
 								fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
 								objectUnderTest := _core{
 									bundle:         fakeBundle,
 									engineClient:   fakeEngineClient,
 									exiter:         fakeExiter,
-									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-									vos:            new(vos.FakeVos),
+									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+									vos:            new(vos.Fake),
 								}
 
 								expectedArgs := map[string]*model.Data{}
@@ -285,18 +285,18 @@ var _ = Describe("runOp", func() {
 							fakeExiter := new(fakeExiter)
 							returnedError := errors.New("dummyError")
 
-							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle := new(bundle.Fake)
 							fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient := new(engineclient.Fake)
 							fakeEngineClient.StartOpReturns("dummyOpId", returnedError)
 
 							objectUnderTest := _core{
 								bundle:         fakeBundle,
 								engineClient:   fakeEngineClient,
 								exiter:         fakeExiter,
-								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-								vos:            new(vos.FakeVos),
+								paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+								vos:            new(vos.Fake),
 							}
 
 							/* act */
@@ -310,7 +310,7 @@ var _ = Describe("runOp", func() {
 					Context("engineClient.StartOp doesn't error", func() {
 						It("should call engineClient.GetEventStream w/ expected args", func() {
 							/* arrange */
-							fakeBundle := new(bundle.FakeBundle)
+							fakeBundle := new(bundle.Fake)
 							fakeBundle.GetOpReturns(model.OpView{}, nil)
 							opGraphIdReturnedFromStartOp := "dummyOpGraphId"
 							expectedEventFilter := &model.GetEventStreamReq{
@@ -319,7 +319,7 @@ var _ = Describe("runOp", func() {
 								},
 							}
 
-							fakeEngineClient := new(engineclient.FakeEngineClient)
+							fakeEngineClient := new(engineclient.Fake)
 							fakeEngineClient.StartOpReturns(opGraphIdReturnedFromStartOp, nil)
 							eventChannel := make(chan model.Event)
 							close(eventChannel)
@@ -329,8 +329,8 @@ var _ = Describe("runOp", func() {
 								bundle:         fakeBundle,
 								engineClient:   fakeEngineClient,
 								exiter:         new(fakeExiter),
-								paramSatisfier: newParamSatisfier(colorer.New(), new(fakeExiter), validate.New(), new(vos.FakeVos)),
-								vos:            new(vos.FakeVos),
+								paramSatisfier: newParamSatisfier(colorer.New(), new(fakeExiter), validate.New(), new(vos.Fake)),
+								vos:            new(vos.Fake),
 							}
 
 							/* act */
@@ -346,18 +346,18 @@ var _ = Describe("runOp", func() {
 								fakeExiter := new(fakeExiter)
 								returnedError := errors.New("dummyError")
 
-								fakeBundle := new(bundle.FakeBundle)
+								fakeBundle := new(bundle.Fake)
 								fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-								fakeEngineClient := new(engineclient.FakeEngineClient)
+								fakeEngineClient := new(engineclient.Fake)
 								fakeEngineClient.GetEventStreamReturns(nil, returnedError)
 
 								objectUnderTest := _core{
 									bundle:         fakeBundle,
 									engineClient:   fakeEngineClient,
 									exiter:         fakeExiter,
-									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-									vos:            new(vos.FakeVos),
+									paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+									vos:            new(vos.Fake),
 								}
 
 								/* act */
@@ -374,10 +374,10 @@ var _ = Describe("runOp", func() {
 									/* arrange */
 									fakeExiter := new(fakeExiter)
 
-									fakeBundle := new(bundle.FakeBundle)
+									fakeBundle := new(bundle.Fake)
 									fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-									fakeEngineClient := new(engineclient.FakeEngineClient)
+									fakeEngineClient := new(engineclient.Fake)
 									eventChannel := make(chan model.Event)
 									close(eventChannel)
 									fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
@@ -386,8 +386,8 @@ var _ = Describe("runOp", func() {
 										bundle:         fakeBundle,
 										engineClient:   fakeEngineClient,
 										exiter:         fakeExiter,
-										paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-										vos:            new(vos.FakeVos),
+										paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+										vos:            new(vos.Fake),
 									}
 
 									/* act */
@@ -417,10 +417,10 @@ var _ = Describe("runOp", func() {
 
 												fakeExiter := new(fakeExiter)
 
-												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle := new(bundle.Fake)
 												fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-												fakeEngineClient := new(engineclient.FakeEngineClient)
+												fakeEngineClient := new(engineclient.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
@@ -433,8 +433,8 @@ var _ = Describe("runOp", func() {
 													engineClient:   fakeEngineClient,
 													exiter:         fakeExiter,
 													output:         new(fakeOutput),
-													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-													vos:            new(vos.FakeVos),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+													vos:            new(vos.Fake),
 												}
 
 												/* act/assert */
@@ -458,10 +458,10 @@ var _ = Describe("runOp", func() {
 
 												fakeExiter := new(fakeExiter)
 
-												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle := new(bundle.Fake)
 												fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-												fakeEngineClient := new(engineclient.FakeEngineClient)
+												fakeEngineClient := new(engineclient.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
@@ -474,8 +474,8 @@ var _ = Describe("runOp", func() {
 													engineClient:   fakeEngineClient,
 													exiter:         fakeExiter,
 													output:         new(fakeOutput),
-													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-													vos:            new(vos.FakeVos),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+													vos:            new(vos.Fake),
 												}
 
 												/* act/assert */
@@ -500,10 +500,10 @@ var _ = Describe("runOp", func() {
 
 												fakeExiter := new(fakeExiter)
 
-												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle := new(bundle.Fake)
 												fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-												fakeEngineClient := new(engineclient.FakeEngineClient)
+												fakeEngineClient := new(engineclient.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
@@ -516,8 +516,8 @@ var _ = Describe("runOp", func() {
 													engineClient:   fakeEngineClient,
 													exiter:         fakeExiter,
 													output:         new(fakeOutput),
-													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-													vos:            new(vos.FakeVos),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+													vos:            new(vos.Fake),
 												}
 
 												/* act/assert */
@@ -541,10 +541,10 @@ var _ = Describe("runOp", func() {
 
 												fakeExiter := new(fakeExiter)
 
-												fakeBundle := new(bundle.FakeBundle)
+												fakeBundle := new(bundle.Fake)
 												fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-												fakeEngineClient := new(engineclient.FakeEngineClient)
+												fakeEngineClient := new(engineclient.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
@@ -557,8 +557,8 @@ var _ = Describe("runOp", func() {
 													engineClient:   fakeEngineClient,
 													exiter:         fakeExiter,
 													output:         new(fakeOutput),
-													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.FakeVos)),
-													vos:            new(vos.FakeVos),
+													paramSatisfier: newParamSatisfier(colorer.New(), fakeExiter, validate.New(), new(vos.Fake)),
+													vos:            new(vos.Fake),
 												}
 
 												/* act/assert */

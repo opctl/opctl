@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("equinoxClient", func() {
+var _ = Context("equinoxClient", func() {
 	Context("New", func() {
 		It("should return equinoxClient", func() {
 			/* arrange/act/assert */

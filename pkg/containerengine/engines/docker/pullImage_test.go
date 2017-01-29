@@ -12,7 +12,7 @@ import (
 	"io/ioutil"
 )
 
-var _ = Describe("pullImage", func() {
+var _ = Context("pullImage", func() {
 	Context("imageRef invalid", func() {
 		It("should return expected error", func() {
 			/* arrange */

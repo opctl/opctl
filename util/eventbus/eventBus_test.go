@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("eventBus", func() {
+var _ = Context("eventBus", func() {
 	Context("New", func() {
 		It("should return EventBus", func() {
 			/* arrange/act/assert */

@@ -6,13 +6,13 @@ import (
 	"github.com/opspec-io/opctl/util/vos"
 )
 
-var _ = Describe("_exiter", func() {
+var _ = Context("_exiter", func() {
 	Context("newExiter", func() {
 		It("should return Exiter", func() {
 			/* arrange/act/assert */
 			Expect(newExiter(
 				new(fakeOutput),
-				new(vos.FakeVos)),
+				new(vos.Fake)),
 			).Should(Not(BeNil()))
 		})
 	})
@@ -28,7 +28,7 @@ var _ = Describe("_exiter", func() {
 				fakeOutput := new(fakeOutput)
 				objectUnderTest := newExiter(
 					fakeOutput,
-					new(vos.FakeVos),
+					new(vos.Fake),
 				)
 
 				/* act */
@@ -43,7 +43,7 @@ var _ = Describe("_exiter", func() {
 				providedExitReq := ExitReq{
 					Code: 3,
 				}
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				objectUnderTest := newExiter(
 					new(fakeOutput),
 					fakeVos,
@@ -66,7 +66,7 @@ var _ = Describe("_exiter", func() {
 				fakeOutput := new(fakeOutput)
 				objectUnderTest := newExiter(
 					fakeOutput,
-					new(vos.FakeVos),
+					new(vos.Fake),
 				)
 
 				/* act */
@@ -79,7 +79,7 @@ var _ = Describe("_exiter", func() {
 			It("should not call vos.Exit", func() {
 				/* arrange */
 				providedExitReq := ExitReq{}
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				objectUnderTest := newExiter(
 					new(fakeOutput),
 					fakeVos,

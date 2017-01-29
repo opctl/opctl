@@ -1,7 +1,7 @@
 package eventbus
 
 //go:generate counterfeiter -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
-//go:generate counterfeiter -o ./fakeEventBus.go --fake-name FakeEventBus ./ EventBus
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ EventBus
 
 import (
 	"fmt"

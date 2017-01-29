@@ -12,6 +12,7 @@ import (
 )
 
 type containerCaller interface {
+	// Executes a container call
 	Call(
 		args map[string]*model.Data,
 		containerId string,
@@ -28,14 +29,14 @@ func newContainerCaller(
 	bundle bundle.Bundle,
 	containerEngine containerengine.ContainerEngine,
 	eventBus eventbus.EventBus,
-	nodeRepo nodeRepo,
+	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return &_containerCaller{
 		bundle:          bundle,
 		containerEngine: containerEngine,
 		eventBus:        eventBus,
-		nodeRepo:        nodeRepo,
+		dcgNodeRepo:     dcgNodeRepo,
 	}
 
 }
@@ -44,7 +45,7 @@ type _containerCaller struct {
 	bundle          bundle.Bundle
 	containerEngine containerengine.ContainerEngine
 	eventBus        eventbus.EventBus
-	nodeRepo        nodeRepo
+	dcgNodeRepo     dcgNodeRepo
 }
 
 func (this _containerCaller) Call(
@@ -65,12 +66,12 @@ func (this _containerCaller) Call(
 		return
 	}
 
-	this.nodeRepo.add(
-		&nodeDescriptor{
+	this.dcgNodeRepo.Add(
+		&dcgNodeDescriptor{
 			Id:        containerId,
 			OpRef:     opRef,
 			OpGraphId: opGraphId,
-			Container: &containerDescriptor{},
+			Container: &dcgContainerDescriptor{},
 		},
 	)
 
@@ -133,7 +134,7 @@ func (this _containerCaller) Call(
 
 	defer func() {
 
-		this.nodeRepo.deleteIfExists(containerId)
+		this.dcgNodeRepo.DeleteIfExists(containerId)
 
 		this.eventBus.Publish(
 			model.Event{

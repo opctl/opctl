@@ -1,6 +1,6 @@
 package colorer
 
-//go:generate counterfeiter -o ./fakeColorer.go --fake-name FakeColorer ./ Colorer
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Colorer
 
 import (
 	"github.com/fatih/color"

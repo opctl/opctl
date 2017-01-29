@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeColorer struct {
+type Fake struct {
 	DisableStub          func()
 	disableMutex         sync.RWMutex
 	disableArgsForCall   []struct{}
@@ -49,7 +49,7 @@ type FakeColorer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeColorer) Disable() {
+func (fake *Fake) Disable() {
 	fake.disableMutex.Lock()
 	fake.disableArgsForCall = append(fake.disableArgsForCall, struct{}{})
 	fake.recordInvocation("Disable", []interface{}{})
@@ -59,13 +59,13 @@ func (fake *FakeColorer) Disable() {
 	}
 }
 
-func (fake *FakeColorer) DisableCallCount() int {
+func (fake *Fake) DisableCallCount() int {
 	fake.disableMutex.RLock()
 	defer fake.disableMutex.RUnlock()
 	return len(fake.disableArgsForCall)
 }
 
-func (fake *FakeColorer) Attention(format string, values ...interface{}) string {
+func (fake *Fake) Attention(format string, values ...interface{}) string {
 	fake.attentionMutex.Lock()
 	fake.attentionArgsForCall = append(fake.attentionArgsForCall, struct {
 		format string
@@ -80,26 +80,26 @@ func (fake *FakeColorer) Attention(format string, values ...interface{}) string 
 	}
 }
 
-func (fake *FakeColorer) AttentionCallCount() int {
+func (fake *Fake) AttentionCallCount() int {
 	fake.attentionMutex.RLock()
 	defer fake.attentionMutex.RUnlock()
 	return len(fake.attentionArgsForCall)
 }
 
-func (fake *FakeColorer) AttentionArgsForCall(i int) (string, []interface{}) {
+func (fake *Fake) AttentionArgsForCall(i int) (string, []interface{}) {
 	fake.attentionMutex.RLock()
 	defer fake.attentionMutex.RUnlock()
 	return fake.attentionArgsForCall[i].format, fake.attentionArgsForCall[i].values
 }
 
-func (fake *FakeColorer) AttentionReturns(result1 string) {
+func (fake *Fake) AttentionReturns(result1 string) {
 	fake.AttentionStub = nil
 	fake.attentionReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeColorer) Error(format string, values ...interface{}) string {
+func (fake *Fake) Error(format string, values ...interface{}) string {
 	fake.errorMutex.Lock()
 	fake.errorArgsForCall = append(fake.errorArgsForCall, struct {
 		format string
@@ -114,26 +114,26 @@ func (fake *FakeColorer) Error(format string, values ...interface{}) string {
 	}
 }
 
-func (fake *FakeColorer) ErrorCallCount() int {
+func (fake *Fake) ErrorCallCount() int {
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
 	return len(fake.errorArgsForCall)
 }
 
-func (fake *FakeColorer) ErrorArgsForCall(i int) (string, []interface{}) {
+func (fake *Fake) ErrorArgsForCall(i int) (string, []interface{}) {
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
 	return fake.errorArgsForCall[i].format, fake.errorArgsForCall[i].values
 }
 
-func (fake *FakeColorer) ErrorReturns(result1 string) {
+func (fake *Fake) ErrorReturns(result1 string) {
 	fake.ErrorStub = nil
 	fake.errorReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeColorer) Info(format string, values ...interface{}) string {
+func (fake *Fake) Info(format string, values ...interface{}) string {
 	fake.infoMutex.Lock()
 	fake.infoArgsForCall = append(fake.infoArgsForCall, struct {
 		format string
@@ -148,26 +148,26 @@ func (fake *FakeColorer) Info(format string, values ...interface{}) string {
 	}
 }
 
-func (fake *FakeColorer) InfoCallCount() int {
+func (fake *Fake) InfoCallCount() int {
 	fake.infoMutex.RLock()
 	defer fake.infoMutex.RUnlock()
 	return len(fake.infoArgsForCall)
 }
 
-func (fake *FakeColorer) InfoArgsForCall(i int) (string, []interface{}) {
+func (fake *Fake) InfoArgsForCall(i int) (string, []interface{}) {
 	fake.infoMutex.RLock()
 	defer fake.infoMutex.RUnlock()
 	return fake.infoArgsForCall[i].format, fake.infoArgsForCall[i].values
 }
 
-func (fake *FakeColorer) InfoReturns(result1 string) {
+func (fake *Fake) InfoReturns(result1 string) {
 	fake.InfoStub = nil
 	fake.infoReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeColorer) Success(format string, values ...interface{}) string {
+func (fake *Fake) Success(format string, values ...interface{}) string {
 	fake.successMutex.Lock()
 	fake.successArgsForCall = append(fake.successArgsForCall, struct {
 		format string
@@ -182,26 +182,26 @@ func (fake *FakeColorer) Success(format string, values ...interface{}) string {
 	}
 }
 
-func (fake *FakeColorer) SuccessCallCount() int {
+func (fake *Fake) SuccessCallCount() int {
 	fake.successMutex.RLock()
 	defer fake.successMutex.RUnlock()
 	return len(fake.successArgsForCall)
 }
 
-func (fake *FakeColorer) SuccessArgsForCall(i int) (string, []interface{}) {
+func (fake *Fake) SuccessArgsForCall(i int) (string, []interface{}) {
 	fake.successMutex.RLock()
 	defer fake.successMutex.RUnlock()
 	return fake.successArgsForCall[i].format, fake.successArgsForCall[i].values
 }
 
-func (fake *FakeColorer) SuccessReturns(result1 string) {
+func (fake *Fake) SuccessReturns(result1 string) {
 	fake.SuccessStub = nil
 	fake.successReturns = struct {
 		result1 string
 	}{result1}
 }
 
-func (fake *FakeColorer) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.disableMutex.RLock()
@@ -217,7 +217,7 @@ func (fake *FakeColorer) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeColorer) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -229,4 +229,4 @@ func (fake *FakeColorer) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Colorer = new(FakeColorer)
+var _ Colorer = new(Fake)

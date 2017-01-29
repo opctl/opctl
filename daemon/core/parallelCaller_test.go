@@ -8,20 +8,21 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-var _ = Describe("parallelCaller", func() {
+var _ = Context("parallelCaller", func() {
 	Context("newParallelCaller", func() {
 		It("should return parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
 				new(fakeCaller),
-				new(uniquestring.FakeUniqueStringFactory),
+				new(uniquestring.Fake),
 			)).Should(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {
+		// @TODO: determine why this flickers
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
-			providedParentScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Data{}
 			providedOpGraphId := "dummyOpGraphId"
 			providedOpRef := "dummyOpRef"
 			providedParallelCalls := []*model.Scg{
@@ -42,14 +43,14 @@ var _ = Describe("parallelCaller", func() {
 			fakeCaller := new(fakeCaller)
 
 			returnedUniqueString := "dummyUniqueString"
-			fakeUniqueStringFactory := new(uniquestring.FakeUniqueStringFactory)
+			fakeUniqueStringFactory := new(uniquestring.Fake)
 			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
 			objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
 
 			/* act */
 			objectUnderTest.Call(
-				providedParentScope,
+				providedInboundScope,
 				providedOpGraphId,
 				providedOpRef,
 				providedParallelCalls,
@@ -59,12 +60,12 @@ var _ = Describe("parallelCaller", func() {
 			actualParallelCalls := []*model.Scg{}
 			for callIndex := range providedParallelCalls {
 				actualNodeId,
-					actualChildScope,
+					actualChildOutboundScope,
 					actualScg,
 					actualOpRef,
 					actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
-				Expect(actualChildScope).To(Equal(providedParentScope))
+				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualOpRef).To(Equal(providedOpRef))
 				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
 				actualParallelCalls = append(actualParallelCalls, actualScg)
@@ -74,7 +75,7 @@ var _ = Describe("parallelCaller", func() {
 		Context("caller errors", func() {
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
-				providedParentScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
 				providedParallelCalls := []*model.Scg{
@@ -97,14 +98,14 @@ var _ = Describe("parallelCaller", func() {
 				fakeCaller.CallReturns(map[string]*model.Data{}, errors.New("dummyError"))
 
 				returnedUniqueString := "dummyUniqueString"
-				fakeUniqueStringFactory := new(uniquestring.FakeUniqueStringFactory)
+				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
 				objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedParentScope,
+					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
 					providedParallelCalls,
@@ -114,12 +115,12 @@ var _ = Describe("parallelCaller", func() {
 				actualParallelCalls := []*model.Scg{}
 				for callIndex := range providedParallelCalls {
 					actualNodeId,
-						actualChildScope,
+						actualChildOutboundScope,
 						actualScg,
 						actualOpRef,
 						actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
-					Expect(actualChildScope).To(Equal(providedParentScope))
+					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpRef).To(Equal(providedOpRef))
 					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
 					actualParallelCalls = append(actualParallelCalls, actualScg)
@@ -131,7 +132,7 @@ var _ = Describe("parallelCaller", func() {
 		Context("caller doesn't error", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
-				providedParentScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
 				providedParallelCalls := []*model.Scg{
@@ -152,14 +153,14 @@ var _ = Describe("parallelCaller", func() {
 				fakeCaller := new(fakeCaller)
 
 				returnedUniqueString := "dummyUniqueString"
-				fakeUniqueStringFactory := new(uniquestring.FakeUniqueStringFactory)
+				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
 				objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedParentScope,
+					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
 					providedParallelCalls,
@@ -169,12 +170,12 @@ var _ = Describe("parallelCaller", func() {
 				actualParallelCalls := []*model.Scg{}
 				for callIndex := range providedParallelCalls {
 					actualNodeId,
-						actualChildScope,
+						actualChildOutboundScope,
 						actualScg,
 						actualOpRef,
 						actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
-					Expect(actualChildScope).To(Equal(providedParentScope))
+					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpRef).To(Equal(providedOpRef))
 					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
 					actualParallelCalls = append(actualParallelCalls, actualScg)

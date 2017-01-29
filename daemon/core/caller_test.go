@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("caller", func() {
+var _ = Context("caller", func() {
 	Context("newCaller", func() {
 		It("should return caller", func() {
 			/* arrange/act/assert */

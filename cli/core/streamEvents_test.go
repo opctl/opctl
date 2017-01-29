@@ -8,13 +8,13 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-var _ = Describe("streamEvents", func() {
+var _ = Context("streamEvents", func() {
 	Context("Execute", func() {
 		It("should call bundle.GetEventStream", func() {
 			/* arrange */
 			fakeExiter := new(fakeExiter)
 
-			fakeEngineClient := new(engineclient.FakeEngineClient)
+			fakeEngineClient := new(engineclient.Fake)
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
 			fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
@@ -37,7 +37,7 @@ var _ = Describe("streamEvents", func() {
 				fakeExiter := new(fakeExiter)
 				returnedError := errors.New("dummyError")
 
-				fakeEngineClient := new(engineclient.FakeEngineClient)
+				fakeEngineClient := new(engineclient.Fake)
 				fakeEngineClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _core{
@@ -59,7 +59,7 @@ var _ = Describe("streamEvents", func() {
 					/* arrange */
 					fakeExiter := new(fakeExiter)
 
-					fakeEngineClient := new(engineclient.FakeEngineClient)
+					fakeEngineClient := new(engineclient.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
 					fakeEngineClient.GetEventStreamReturns(eventChannel, nil)

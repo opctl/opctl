@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var _ = Describe("output", func() {
+var _ = Context("output", func() {
 	Context("newOutput", func() {
 		It("should return output", func() {
 			/* arrange/act/assert */

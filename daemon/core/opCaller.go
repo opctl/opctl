@@ -13,13 +13,14 @@ import (
 )
 
 type opCaller interface {
+	// Executes an op call
 	Call(
-		args map[string]*model.Data,
+		inboundScope map[string]*model.Data,
 		opId string,
 		opRef string,
 		opGraphId string,
 	) (
-		outputs map[string]*model.Data,
+		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -27,7 +28,7 @@ type opCaller interface {
 func newOpCaller(
 	bundle bundle.Bundle,
 	eventBus eventbus.EventBus,
-	nodeRepo nodeRepo,
+	dcgNodeRepo dcgNodeRepo,
 	caller caller,
 	uniqueStringFactory uniquestring.UniqueStringFactory,
 	validate validate.Validate,
@@ -35,7 +36,7 @@ func newOpCaller(
 	return _opCaller{
 		bundle:              bundle,
 		eventBus:            eventBus,
-		nodeRepo:            nodeRepo,
+		dcgNodeRepo:         dcgNodeRepo,
 		caller:              caller,
 		uniqueStringFactory: uniqueStringFactory,
 		validate:            validate,
@@ -45,29 +46,28 @@ func newOpCaller(
 type _opCaller struct {
 	bundle              bundle.Bundle
 	eventBus            eventbus.EventBus
-	nodeRepo            nodeRepo
+	dcgNodeRepo         dcgNodeRepo
 	caller              caller
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	validate            validate.Validate
 }
 
-// Calls an op
 func (this _opCaller) Call(
-	args map[string]*model.Data,
+	inboundScope map[string]*model.Data,
 	opId string,
 	opRef string,
 	opGraphId string,
 ) (
-	outputs map[string]*model.Data,
+	outboundScope map[string]*model.Data,
 	err error,
 ) {
 
-	this.nodeRepo.add(
-		&nodeDescriptor{
+	this.dcgNodeRepo.Add(
+		&dcgNodeDescriptor{
 			Id:        opId,
 			OpRef:     opRef,
 			OpGraphId: opGraphId,
-			Op:        &opDescriptor{},
+			Op:        &dcgOpDescriptor{},
 		},
 	)
 
@@ -94,15 +94,16 @@ func (this _opCaller) Call(
 	for _, input := range op.Inputs {
 		var arg *model.Data
 
+		// resolve var for input
 		switch {
-		case nil != input.String:
-			if providedArg := args[input.String.Name]; nil != providedArg {
-				arg = providedArg
-			}
+		case nil != input.Dir:
+			arg = inboundScope[input.Dir.Name]
+		case nil != input.File:
+			arg = inboundScope[input.File.Name]
 		case nil != input.Socket:
-			if providedArg := args[input.Socket.Name]; nil != providedArg {
-				arg = providedArg
-			}
+			arg = inboundScope[input.Socket.Name]
+		case nil != input.String:
+			arg = inboundScope[input.String.Name]
 		}
 		errs = append(errs, this.validate.Param(arg, input)...)
 	}
@@ -135,9 +136,9 @@ func (this _opCaller) Call(
 	}
 	this.eventBus.Publish(opStartedEvent)
 
-	outputs, err = this.caller.Call(
+	outboundScope, err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
-		args,
+		inboundScope,
 		op.Run,
 		opRef,
 		opGraphId,
@@ -145,7 +146,7 @@ func (this _opCaller) Call(
 
 	defer func(err error) {
 
-		if nil == this.nodeRepo.getIfExists(opGraphId) {
+		if nil == this.dcgNodeRepo.GetIfExists(opGraphId) {
 			// guard: op killed (we got preempted)
 			this.eventBus.Publish(
 				model.Event{
@@ -161,7 +162,7 @@ func (this _opCaller) Call(
 			return
 		}
 
-		this.nodeRepo.deleteIfExists(opId)
+		this.dcgNodeRepo.DeleteIfExists(opId)
 
 		var opOutcome string
 		if nil != err {
