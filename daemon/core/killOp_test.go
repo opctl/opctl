@@ -91,7 +91,7 @@ var _ = Context("core", func() {
 
 				nodesReturnedFromDcgNodeRepo := []*dcgNodeDescriptor{
 					{Id: containerNodeIds[0], Container: &dcgContainerDescriptor{}},
-					{Id: "dummyNode2Id"},
+					{Id: "dummyNode2Id", Container: nil},
 					{Id: containerNodeIds[1], Container: &dcgContainerDescriptor{}},
 				}
 				fakeDcgNodeRepo := new(fakeDcgNodeRepo)

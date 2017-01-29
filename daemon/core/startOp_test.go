@@ -47,15 +47,15 @@ var _ = Context("core", func() {
 			/* assert */
 			// Call happens in go routine; wait 500ms to allow it to occur
 			time.Sleep(time.Millisecond * 500)
-			inboundScope,
-				opId,
-				opRef,
-				opGraphId := fakeOpCaller.CallArgsForCall(0)
+			actualInboundScope,
+				actualOpId,
+				actualOpRef,
+				actualOpGraphId := fakeOpCaller.CallArgsForCall(0)
 
-			Expect(inboundScope).To(Equal(providedReq.Args))
-			Expect(opId).To(Equal(expectedOpId))
-			Expect(opRef).To(Equal(providedReq.OpRef))
-			Expect(opGraphId).To(Equal(opId))
+			Expect(actualInboundScope).To(Equal(providedReq.Args))
+			Expect(actualOpId).To(Equal(expectedOpId))
+			Expect(actualOpRef).To(Equal(providedReq.OpRef))
+			Expect(actualOpGraphId).To(Equal(actualOpId))
 		})
 	})
 })
