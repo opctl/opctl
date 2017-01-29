@@ -50,4 +50,4 @@ services:
         exit 1
       fi
     environment:
-      - MINIMUM_COVERAGE=54
+      - MINIMUM_COVERAGE=55

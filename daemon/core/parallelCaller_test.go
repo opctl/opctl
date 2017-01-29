@@ -19,7 +19,6 @@ var _ = Context("parallelCaller", func() {
 		})
 	})
 	Context("Call", func() {
-		// @TODO: determine why this flickers
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
@@ -73,7 +72,6 @@ var _ = Context("parallelCaller", func() {
 			Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
 		})
 		Context("caller errors", func() {
-			// @TODO: determine why this flickers
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
@@ -131,7 +129,6 @@ var _ = Context("parallelCaller", func() {
 			})
 		})
 		Context("caller doesn't error", func() {
-			// @TODO: determine why this flickers
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
