@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 )
 
-var _ = Describe("uniqueStringFactory", func() {
+var _ = Context("uniqueStringFactory", func() {
 	Context("Construct()", func() {
 		It("should not return the same string in 100000 iterations", func() {
 

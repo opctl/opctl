@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/opctl/pkg/containerengine/engines/fake"
 )
 
-var _ = Describe("core", func() {
+var _ = Context("core", func() {
 	Context("New", func() {
 		It("should return Core", func() {
 			/* arrange/act/assert */

@@ -6,14 +6,14 @@ import (
 	"github.com/opspec-io/opctl/daemon/core"
 )
 
-var _ = Describe("compositionRoot", func() {
+var _ = Context("compositionRoot", func() {
 
 	Context("GetEventBusHandler()", func() {
 		It("should not return nil", func() {
 
 			/* arrange */
 			objectUnderTest := newCompositionRoot(
-				new(core.FakeCore),
+				new(core.Fake),
 			)
 
 			/* act */
@@ -30,7 +30,7 @@ var _ = Describe("compositionRoot", func() {
 
 			/* arrange */
 			objectUnderTest := newCompositionRoot(
-				new(core.FakeCore),
+				new(core.Fake),
 			)
 
 			/* act */
@@ -47,7 +47,7 @@ var _ = Describe("compositionRoot", func() {
 
 			/* arrange */
 			objectUnderTest := newCompositionRoot(
-				new(core.FakeCore),
+				new(core.Fake),
 			)
 
 			/* act */
@@ -64,7 +64,7 @@ var _ = Describe("compositionRoot", func() {
 
 			/* arrange */
 			objectUnderTest := newCompositionRoot(
-				new(core.FakeCore),
+				new(core.Fake),
 			)
 
 			/* act */

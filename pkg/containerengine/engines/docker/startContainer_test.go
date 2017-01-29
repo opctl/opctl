@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 )
 
-var _ = Describe("StartContainer", func() {
+var _ = Context("StartContainer", func() {
 	It("should call dockerClient.ContainerCreate w/ expected args", func() {
 		/* arrange */
 		providedReq := &containerengine.StartContainerReq{

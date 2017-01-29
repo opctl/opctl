@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeCore struct {
+type Fake struct {
 	CreateCollectionStub        func(description string, name string)
 	createCollectionMutex       sync.RWMutex
 	createCollectionArgsForCall []struct {
@@ -60,7 +60,7 @@ type FakeCore struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeCore) CreateCollection(description string, name string) {
+func (fake *Fake) CreateCollection(description string, name string) {
 	fake.createCollectionMutex.Lock()
 	fake.createCollectionArgsForCall = append(fake.createCollectionArgsForCall, struct {
 		description string
@@ -73,19 +73,19 @@ func (fake *FakeCore) CreateCollection(description string, name string) {
 	}
 }
 
-func (fake *FakeCore) CreateCollectionCallCount() int {
+func (fake *Fake) CreateCollectionCallCount() int {
 	fake.createCollectionMutex.RLock()
 	defer fake.createCollectionMutex.RUnlock()
 	return len(fake.createCollectionArgsForCall)
 }
 
-func (fake *FakeCore) CreateCollectionArgsForCall(i int) (string, string) {
+func (fake *Fake) CreateCollectionArgsForCall(i int) (string, string) {
 	fake.createCollectionMutex.RLock()
 	defer fake.createCollectionMutex.RUnlock()
 	return fake.createCollectionArgsForCall[i].description, fake.createCollectionArgsForCall[i].name
 }
 
-func (fake *FakeCore) CreateOp(collection string, description string, name string) {
+func (fake *Fake) CreateOp(collection string, description string, name string) {
 	fake.createOpMutex.Lock()
 	fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
 		collection  string
@@ -99,19 +99,19 @@ func (fake *FakeCore) CreateOp(collection string, description string, name strin
 	}
 }
 
-func (fake *FakeCore) CreateOpCallCount() int {
+func (fake *Fake) CreateOpCallCount() int {
 	fake.createOpMutex.RLock()
 	defer fake.createOpMutex.RUnlock()
 	return len(fake.createOpArgsForCall)
 }
 
-func (fake *FakeCore) CreateOpArgsForCall(i int) (string, string, string) {
+func (fake *Fake) CreateOpArgsForCall(i int) (string, string, string) {
 	fake.createOpMutex.RLock()
 	defer fake.createOpMutex.RUnlock()
 	return fake.createOpArgsForCall[i].collection, fake.createOpArgsForCall[i].description, fake.createOpArgsForCall[i].name
 }
 
-func (fake *FakeCore) KillOp(opId string) {
+func (fake *Fake) KillOp(opId string) {
 	fake.killOpMutex.Lock()
 	fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
 		opId string
@@ -123,19 +123,19 @@ func (fake *FakeCore) KillOp(opId string) {
 	}
 }
 
-func (fake *FakeCore) KillOpCallCount() int {
+func (fake *Fake) KillOpCallCount() int {
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	return len(fake.killOpArgsForCall)
 }
 
-func (fake *FakeCore) KillOpArgsForCall(i int) string {
+func (fake *Fake) KillOpArgsForCall(i int) string {
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	return fake.killOpArgsForCall[i].opId
 }
 
-func (fake *FakeCore) ListOpsInCollection(collection string) {
+func (fake *Fake) ListOpsInCollection(collection string) {
 	fake.listOpsInCollectionMutex.Lock()
 	fake.listOpsInCollectionArgsForCall = append(fake.listOpsInCollectionArgsForCall, struct {
 		collection string
@@ -147,19 +147,19 @@ func (fake *FakeCore) ListOpsInCollection(collection string) {
 	}
 }
 
-func (fake *FakeCore) ListOpsInCollectionCallCount() int {
+func (fake *Fake) ListOpsInCollectionCallCount() int {
 	fake.listOpsInCollectionMutex.RLock()
 	defer fake.listOpsInCollectionMutex.RUnlock()
 	return len(fake.listOpsInCollectionArgsForCall)
 }
 
-func (fake *FakeCore) ListOpsInCollectionArgsForCall(i int) string {
+func (fake *Fake) ListOpsInCollectionArgsForCall(i int) string {
 	fake.listOpsInCollectionMutex.RLock()
 	defer fake.listOpsInCollectionMutex.RUnlock()
 	return fake.listOpsInCollectionArgsForCall[i].collection
 }
 
-func (fake *FakeCore) RunOp(args []string, collection string, name string) {
+func (fake *Fake) RunOp(args []string, collection string, name string) {
 	var argsCopy []string
 	if args != nil {
 		argsCopy = make([]string, len(args))
@@ -178,19 +178,19 @@ func (fake *FakeCore) RunOp(args []string, collection string, name string) {
 	}
 }
 
-func (fake *FakeCore) RunOpCallCount() int {
+func (fake *Fake) RunOpCallCount() int {
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
 	return len(fake.runOpArgsForCall)
 }
 
-func (fake *FakeCore) RunOpArgsForCall(i int) ([]string, string, string) {
+func (fake *Fake) RunOpArgsForCall(i int) ([]string, string, string) {
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
 	return fake.runOpArgsForCall[i].args, fake.runOpArgsForCall[i].collection, fake.runOpArgsForCall[i].name
 }
 
-func (fake *FakeCore) SetCollectionDescription(description string) {
+func (fake *Fake) SetCollectionDescription(description string) {
 	fake.setCollectionDescriptionMutex.Lock()
 	fake.setCollectionDescriptionArgsForCall = append(fake.setCollectionDescriptionArgsForCall, struct {
 		description string
@@ -202,19 +202,19 @@ func (fake *FakeCore) SetCollectionDescription(description string) {
 	}
 }
 
-func (fake *FakeCore) SetCollectionDescriptionCallCount() int {
+func (fake *Fake) SetCollectionDescriptionCallCount() int {
 	fake.setCollectionDescriptionMutex.RLock()
 	defer fake.setCollectionDescriptionMutex.RUnlock()
 	return len(fake.setCollectionDescriptionArgsForCall)
 }
 
-func (fake *FakeCore) SetCollectionDescriptionArgsForCall(i int) string {
+func (fake *Fake) SetCollectionDescriptionArgsForCall(i int) string {
 	fake.setCollectionDescriptionMutex.RLock()
 	defer fake.setCollectionDescriptionMutex.RUnlock()
 	return fake.setCollectionDescriptionArgsForCall[i].description
 }
 
-func (fake *FakeCore) SetOpDescription(collection string, description string, name string) {
+func (fake *Fake) SetOpDescription(collection string, description string, name string) {
 	fake.setOpDescriptionMutex.Lock()
 	fake.setOpDescriptionArgsForCall = append(fake.setOpDescriptionArgsForCall, struct {
 		collection  string
@@ -228,19 +228,19 @@ func (fake *FakeCore) SetOpDescription(collection string, description string, na
 	}
 }
 
-func (fake *FakeCore) SetOpDescriptionCallCount() int {
+func (fake *Fake) SetOpDescriptionCallCount() int {
 	fake.setOpDescriptionMutex.RLock()
 	defer fake.setOpDescriptionMutex.RUnlock()
 	return len(fake.setOpDescriptionArgsForCall)
 }
 
-func (fake *FakeCore) SetOpDescriptionArgsForCall(i int) (string, string, string) {
+func (fake *Fake) SetOpDescriptionArgsForCall(i int) (string, string, string) {
 	fake.setOpDescriptionMutex.RLock()
 	defer fake.setOpDescriptionMutex.RUnlock()
 	return fake.setOpDescriptionArgsForCall[i].collection, fake.setOpDescriptionArgsForCall[i].description, fake.setOpDescriptionArgsForCall[i].name
 }
 
-func (fake *FakeCore) StreamEvents() {
+func (fake *Fake) StreamEvents() {
 	fake.streamEventsMutex.Lock()
 	fake.streamEventsArgsForCall = append(fake.streamEventsArgsForCall, struct{}{})
 	fake.recordInvocation("StreamEvents", []interface{}{})
@@ -250,13 +250,13 @@ func (fake *FakeCore) StreamEvents() {
 	}
 }
 
-func (fake *FakeCore) StreamEventsCallCount() int {
+func (fake *Fake) StreamEventsCallCount() int {
 	fake.streamEventsMutex.RLock()
 	defer fake.streamEventsMutex.RUnlock()
 	return len(fake.streamEventsArgsForCall)
 }
 
-func (fake *FakeCore) SelfUpdate(channel string) {
+func (fake *Fake) SelfUpdate(channel string) {
 	fake.selfUpdateMutex.Lock()
 	fake.selfUpdateArgsForCall = append(fake.selfUpdateArgsForCall, struct {
 		channel string
@@ -268,19 +268,19 @@ func (fake *FakeCore) SelfUpdate(channel string) {
 	}
 }
 
-func (fake *FakeCore) SelfUpdateCallCount() int {
+func (fake *Fake) SelfUpdateCallCount() int {
 	fake.selfUpdateMutex.RLock()
 	defer fake.selfUpdateMutex.RUnlock()
 	return len(fake.selfUpdateArgsForCall)
 }
 
-func (fake *FakeCore) SelfUpdateArgsForCall(i int) string {
+func (fake *Fake) SelfUpdateArgsForCall(i int) string {
 	fake.selfUpdateMutex.RLock()
 	defer fake.selfUpdateMutex.RUnlock()
 	return fake.selfUpdateArgsForCall[i].channel
 }
 
-func (fake *FakeCore) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.createCollectionMutex.RLock()
@@ -304,7 +304,7 @@ func (fake *FakeCore) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeCore) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -316,4 +316,4 @@ func (fake *FakeCore) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ = new(FakeCore)
+var _ = new(Fake)

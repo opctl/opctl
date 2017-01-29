@@ -1,6 +1,6 @@
 package format
 
-//go:generate counterfeiter -o ./fakeFormat.go --fake-name FakeFormat ./ Format
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Format
 
 // a data format implements methods to convert between itself and native go types
 type Format interface {

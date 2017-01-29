@@ -8,8 +8,9 @@ import (
 )
 
 type serialCaller interface {
+	// Executes a serial call
 	Call(
-		parentScope map[string]*model.Data,
+		inboundScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
 		serialCall []*model.Scg,
@@ -36,7 +37,7 @@ type _serialCaller struct {
 }
 
 func (this _serialCaller) Call(
-	parentScope map[string]*model.Data,
+	inboundScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
 	serialCall []*model.Scg,
@@ -44,13 +45,13 @@ func (this _serialCaller) Call(
 	err error,
 ) {
 	currentScope := map[string]*model.Data{}
-	for varName, varData := range parentScope {
+	for varName, varData := range inboundScope {
 		currentScope[varName] = varData
 	}
 
-	var childScope map[string]*model.Data
+	var childOutboundScope map[string]*model.Data
 	for _, call := range serialCall {
-		childScope, err = this.caller.Call(
+		childOutboundScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
 			currentScope,
 			call,
@@ -63,7 +64,7 @@ func (this _serialCaller) Call(
 		}
 
 		// apply outputs to current scope
-		for varName, varData := range childScope {
+		for varName, varData := range childOutboundScope {
 			currentScope[varName] = varData
 		}
 	}

@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeCore.go --fake-name FakeCore ./ Core
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 import (
 	"github.com/opspec-io/opctl/pkg/containerengine"
@@ -39,14 +39,14 @@ func New(
 
 	_bundle := bundle.New()
 
-	nodeRepo := newNodeRepo()
+	dcgNodeRepo := newDcgNodeRepo()
 
 	caller := newCaller(
 		newContainerCaller(
 			_bundle,
 			containerEngine,
 			eventBus,
-			nodeRepo,
+			dcgNodeRepo,
 		),
 	)
 
@@ -67,7 +67,7 @@ func New(
 	opCaller := newOpCaller(
 		_bundle,
 		eventBus,
-		nodeRepo,
+		dcgNodeRepo,
 		caller,
 		uniqueStringFactory,
 		validate.New(),
@@ -82,7 +82,7 @@ func New(
 		eventBus:            eventBus,
 		opCaller:            opCaller,
 		pathNormalizer:      pathnormalizer.NewPathNormalizer(),
-		nodeRepo:            nodeRepo,
+		dcgNodeRepo:         dcgNodeRepo,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 
@@ -94,7 +94,7 @@ type _core struct {
 	eventBus            eventbus.EventBus
 	caller              caller
 	pathNormalizer      pathnormalizer.PathNormalizer
-	nodeRepo            nodeRepo
+	dcgNodeRepo         dcgNodeRepo
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	opCaller            opCaller
 }

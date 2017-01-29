@@ -8,7 +8,7 @@ import (
 	"github.com/opspec-io/opctl/util/updater"
 )
 
-var _ = Describe("selfUpdate", func() {
+var _ = Context("selfUpdate", func() {
 
 	Context("Execute", func() {
 		Context("invalid channel", func() {
@@ -34,7 +34,7 @@ var _ = Describe("selfUpdate", func() {
 		Context("valid channel", func() {
 			It("should call updater.GetUpdateIfExists w/ expected args", func() {
 				/* arrange */
-				fakeUpdater := new(updater.FakeUpdater)
+				fakeUpdater := new(updater.Fake)
 
 				objectUnderTest := _core{
 					updater: fakeUpdater,
@@ -55,7 +55,7 @@ var _ = Describe("selfUpdate", func() {
 					fakeExiter := new(fakeExiter)
 					returnedError := errors.New("dummyError")
 
-					fakeUpdater := new(updater.FakeUpdater)
+					fakeUpdater := new(updater.Fake)
 					fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{}, returnedError)
 
 					objectUnderTest := _core{
@@ -77,7 +77,7 @@ var _ = Describe("selfUpdate", func() {
 						/* arrange */
 						fakeExiter := new(fakeExiter)
 
-						fakeUpdater := new(updater.FakeUpdater)
+						fakeUpdater := new(updater.Fake)
 						fakeUpdater.GetUpdateIfExistsReturns(nil, nil)
 
 						objectUnderTest := _core{
@@ -98,7 +98,7 @@ var _ = Describe("selfUpdate", func() {
 						/* arrange */
 						fakeExiter := new(fakeExiter)
 
-						fakeUpdater := new(updater.FakeUpdater)
+						fakeUpdater := new(updater.Fake)
 						returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
 						fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
@@ -121,7 +121,7 @@ var _ = Describe("selfUpdate", func() {
 							fakeExiter := new(fakeExiter)
 							returnedError := errors.New("dummyError")
 
-							fakeUpdater := new(updater.FakeUpdater)
+							fakeUpdater := new(updater.Fake)
 
 							fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{Version: "dummyVersion"}, nil)
 
@@ -145,7 +145,7 @@ var _ = Describe("selfUpdate", func() {
 							/* arrange */
 							fakeExiter := new(fakeExiter)
 
-							fakeUpdater := new(updater.FakeUpdater)
+							fakeUpdater := new(updater.Fake)
 							returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
 							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)

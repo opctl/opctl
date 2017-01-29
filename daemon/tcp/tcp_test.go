@@ -5,12 +5,12 @@ import (
 	"github.com/opspec-io/opctl/daemon/core"
 )
 
-var _ = Describe("tcp", func() {
+var _ = Context("tcp", func() {
 	Context("New", func() {
 		It("should return an instance of Tcp", func() {
 
 			/* arrange */
-			var _ = New(new(core.FakeCore)).(Api)
+			var _ = New(new(core.Fake)).(Api)
 
 		})
 	})
@@ -18,7 +18,7 @@ var _ = Describe("tcp", func() {
 		It("should not panic", func() {
 
 			/* arrange */
-			objectUnderTest := New(new(core.FakeCore))
+			objectUnderTest := New(new(core.Fake))
 
 			/* arrange/act/assert */
 			go objectUnderTest.Start()

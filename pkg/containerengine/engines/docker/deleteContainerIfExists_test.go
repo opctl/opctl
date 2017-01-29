@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Describe("DeleteContainerIfExists", func() {
+var _ = Context("DeleteContainerIfExists", func() {
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
 		_fakeDockerClient := new(fakeDockerClient)

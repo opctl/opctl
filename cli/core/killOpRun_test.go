@@ -8,11 +8,11 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-var _ = Describe("killOp", func() {
+var _ = Context("killOp", func() {
 	Context("Execute", func() {
 		It("should call engineClient.KillOp w/ expected args", func() {
 			/* arrange */
-			fakeEngineClient := new(engineclient.FakeEngineClient)
+			fakeEngineClient := new(engineclient.Fake)
 
 			expectedReq := model.KillOpReq{
 				OpGraphId: "dummyOpGraphId",
@@ -32,7 +32,7 @@ var _ = Describe("killOp", func() {
 		Context("engineClient.KillOp errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeEngineClient := new(engineclient.FakeEngineClient)
+				fakeEngineClient := new(engineclient.Fake)
 				expectedError := errors.New("dummyError")
 				fakeEngineClient.KillOpReturns(expectedError)
 

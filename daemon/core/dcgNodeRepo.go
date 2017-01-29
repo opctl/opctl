@@ -1,46 +1,47 @@
 package core
 
-//go:generate counterfeiter -o ./fakeNodeRepo.go --fake-name fakeNodeRepo ./ nodeRepo
+//go:generate counterfeiter -o ./fakeDcgNodeRepo.go --fake-name fakeDcgNodeRepo ./ dcgNodeRepo
 
 import (
 	"sync"
 )
 
-type nodeRepo interface {
+// stores DCG (dynamic call graph) nodes
+type dcgNodeRepo interface {
 	// adds the provided node
-	add(node *nodeDescriptor)
+	Add(node *dcgNodeDescriptor)
 	// deletes the node with the provided id
-	deleteIfExists(nodeId string)
+	DeleteIfExists(nodeId string)
 	// lists all nodes with the provided opGraphId
-	listWithOpGraphId(opGraphId string) []*nodeDescriptor
+	ListWithOpGraphId(opGraphId string) []*dcgNodeDescriptor
 	// tries to get the node with the provided id; returns nil if not found
-	getIfExists(nodeId string) *nodeDescriptor
+	GetIfExists(nodeId string) *dcgNodeDescriptor
 }
 
-func newNodeRepo() nodeRepo {
+func newDcgNodeRepo() dcgNodeRepo {
 
-	return &_nodeRepo{
-		byIdIndex:      make(map[string]*nodeDescriptor),
+	return &_dcgNodeRepo{
+		byIdIndex:      make(map[string]*dcgNodeDescriptor),
 		byIdIndexMutex: sync.RWMutex{},
 	}
 
 }
 
-type _nodeRepo struct {
+type _dcgNodeRepo struct {
 	// synchronize access via mutex
-	byIdIndex      map[string]*nodeDescriptor
+	byIdIndex      map[string]*dcgNodeDescriptor
 	byIdIndexMutex sync.RWMutex
 }
 
 // O(1) complexity; thread safe
-func (this *_nodeRepo) add(node *nodeDescriptor) {
+func (this *_dcgNodeRepo) Add(node *dcgNodeDescriptor) {
 	this.byIdIndexMutex.Lock()
 	defer this.byIdIndexMutex.Unlock()
 	this.byIdIndex[node.Id] = node
 }
 
 // O(1) complexity; thread safe
-func (this *_nodeRepo) deleteIfExists(nodeId string) {
+func (this *_dcgNodeRepo) DeleteIfExists(nodeId string) {
 	this.byIdIndexMutex.Lock()
 	defer this.byIdIndexMutex.Unlock()
 
@@ -48,11 +49,11 @@ func (this *_nodeRepo) deleteIfExists(nodeId string) {
 }
 
 // O(n) complexity (n being active node count); thread safe
-func (this *_nodeRepo) listWithOpGraphId(opGraphId string) []*nodeDescriptor {
+func (this *_dcgNodeRepo) ListWithOpGraphId(opGraphId string) []*dcgNodeDescriptor {
 	this.byIdIndexMutex.RLock()
 	defer this.byIdIndexMutex.RUnlock()
 
-	nodesWithGraphIdSlice := []*nodeDescriptor{}
+	nodesWithGraphIdSlice := []*dcgNodeDescriptor{}
 
 	for _, node := range this.byIdIndex {
 		if node.OpGraphId == opGraphId {
@@ -63,7 +64,7 @@ func (this *_nodeRepo) listWithOpGraphId(opGraphId string) []*nodeDescriptor {
 }
 
 // O(1) complexity; thread safe
-func (this *_nodeRepo) getIfExists(nodeId string) *nodeDescriptor {
+func (this *_dcgNodeRepo) GetIfExists(nodeId string) *dcgNodeDescriptor {
 	this.byIdIndexMutex.RLock()
 	defer this.byIdIndexMutex.RUnlock()
 

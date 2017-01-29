@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type FakeFormat struct {
+type Fake struct {
 	FromStub        func(in interface{}) (out []byte, err error)
 	fromMutex       sync.RWMutex
 	fromArgsForCall []struct {
@@ -28,7 +28,7 @@ type FakeFormat struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFormat) From(in interface{}) (out []byte, err error) {
+func (fake *Fake) From(in interface{}) (out []byte, err error) {
 	fake.fromMutex.Lock()
 	fake.fromArgsForCall = append(fake.fromArgsForCall, struct {
 		in interface{}
@@ -42,19 +42,19 @@ func (fake *FakeFormat) From(in interface{}) (out []byte, err error) {
 	}
 }
 
-func (fake *FakeFormat) FromCallCount() int {
+func (fake *Fake) FromCallCount() int {
 	fake.fromMutex.RLock()
 	defer fake.fromMutex.RUnlock()
 	return len(fake.fromArgsForCall)
 }
 
-func (fake *FakeFormat) FromArgsForCall(i int) interface{} {
+func (fake *Fake) FromArgsForCall(i int) interface{} {
 	fake.fromMutex.RLock()
 	defer fake.fromMutex.RUnlock()
 	return fake.fromArgsForCall[i].in
 }
 
-func (fake *FakeFormat) FromReturns(result1 []byte, result2 error) {
+func (fake *Fake) FromReturns(result1 []byte, result2 error) {
 	fake.FromStub = nil
 	fake.fromReturns = struct {
 		result1 []byte
@@ -62,7 +62,7 @@ func (fake *FakeFormat) FromReturns(result1 []byte, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *FakeFormat) To(in []byte, out interface{}) (err error) {
+func (fake *Fake) To(in []byte, out interface{}) (err error) {
 	var inCopy []byte
 	if in != nil {
 		inCopy = make([]byte, len(in))
@@ -82,26 +82,26 @@ func (fake *FakeFormat) To(in []byte, out interface{}) (err error) {
 	}
 }
 
-func (fake *FakeFormat) ToCallCount() int {
+func (fake *Fake) ToCallCount() int {
 	fake.toMutex.RLock()
 	defer fake.toMutex.RUnlock()
 	return len(fake.toArgsForCall)
 }
 
-func (fake *FakeFormat) ToArgsForCall(i int) ([]byte, interface{}) {
+func (fake *Fake) ToArgsForCall(i int) ([]byte, interface{}) {
 	fake.toMutex.RLock()
 	defer fake.toMutex.RUnlock()
 	return fake.toArgsForCall[i].in, fake.toArgsForCall[i].out
 }
 
-func (fake *FakeFormat) ToReturns(result1 error) {
+func (fake *Fake) ToReturns(result1 error) {
 	fake.ToStub = nil
 	fake.toReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeFormat) Invocations() map[string][][]interface{} {
+func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.fromMutex.RLock()
@@ -111,7 +111,7 @@ func (fake *FakeFormat) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *FakeFormat) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -123,4 +123,4 @@ func (fake *FakeFormat) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Format = new(FakeFormat)
+var _ Format = new(Fake)

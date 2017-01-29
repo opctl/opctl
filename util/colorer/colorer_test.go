@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("colorer", func() {
+var _ = Context("colorer", func() {
 	Context("New", func() {
 		It("should return Colorer", func() {
 			/* arrange/act/assert */

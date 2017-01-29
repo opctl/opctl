@@ -10,19 +10,19 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("createCollection", func() {
+var _ = Context("createCollection", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				expectedError := errors.New("dummyError")
 				fakeVos.GetwdReturns("", expectedError)
 
 				fakeExiter := new(fakeExiter)
 
 				objectUnderTest := _core{
-					bundle: new(bundle.FakeBundle),
+					bundle: new(bundle.Fake),
 					exiter: fakeExiter,
 					vos:    fakeVos,
 				}
@@ -38,12 +38,12 @@ var _ = Describe("createCollection", func() {
 		Context("vos.Getwd doesn't error", func() {
 			It("should call bundle.CreateCollection w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.FakeBundle)
+				fakeBundle := new(bundle.Fake)
 
 				expectedCollectionName := "dummyCollectionName"
 				wdReturnedFromVos := "dummyWorkDir"
 
-				fakeVos := new(vos.FakeVos)
+				fakeVos := new(vos.Fake)
 				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
 
 				expectedReq := model.CreateCollectionReq{
@@ -66,7 +66,7 @@ var _ = Describe("createCollection", func() {
 			Context("bundle.CreateCollection errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeBundle := new(bundle.FakeBundle)
+					fakeBundle := new(bundle.Fake)
 					expectedError := errors.New("dummyError")
 					fakeBundle.CreateCollectionReturns(expectedError)
 
@@ -75,7 +75,7 @@ var _ = Describe("createCollection", func() {
 					objectUnderTest := _core{
 						bundle: fakeBundle,
 						exiter: fakeExiter,
-						vos:    new(vos.FakeVos),
+						vos:    new(vos.Fake),
 					}
 
 					/* act */

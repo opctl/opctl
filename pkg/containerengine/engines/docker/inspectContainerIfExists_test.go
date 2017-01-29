@@ -43,7 +43,7 @@ func (this fileInfo) Sys() interface{} {
 	return &this.sys
 }
 
-var _ = Describe("InspectContainerIfExists", func() {
+var _ = Context("InspectContainerIfExists", func() {
 	It("should call dockerClient.ContainerInspect w/ expected args", func() {
 		/* arrange */
 		_fakeDockerClient := new(fakeDockerClient)

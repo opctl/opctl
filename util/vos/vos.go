@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-//go:generate counterfeiter -o ./fakeVos.go --fake-name FakeVos ./ Vos
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Vos
 
 // virtual operating system interface
 type Vos interface {
