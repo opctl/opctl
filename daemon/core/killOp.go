@@ -13,8 +13,8 @@ func (this _core) KillOp(
 	var waitGroup sync.WaitGroup
 
 	for _, childNode := range this.dcgNodeRepo.ListWithOpGraphId(req.OpGraphId) {
+		waitGroup.Add(1)
 		go func(childNode *dcgNodeDescriptor) {
-			waitGroup.Add(1)
 			this.dcgNodeRepo.DeleteIfExists(childNode.Id)
 
 			if nil != childNode.Container {

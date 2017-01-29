@@ -54,7 +54,6 @@ func (this _parallelCaller) Call(
 		wg.Add(1)
 
 		go func(childCall *model.Scg) {
-			wg.Done()
 			// @TODO: handle sockets
 			_, childErr := this.caller.Call(
 				this.uniqueStringFactory.Construct(),
@@ -66,6 +65,7 @@ func (this _parallelCaller) Call(
 			if nil != childErr {
 				childErrChannel <- childErr
 			}
+			defer wg.Done()
 		}(childCall)
 	}
 	wg.Wait()
