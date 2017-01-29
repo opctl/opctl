@@ -47,7 +47,7 @@ func (this _opViewFactory) Construct(
 	opManifestBytes, err := this.fileSystem.GetBytesOfFile(
 		opManifestPath,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
@@ -56,7 +56,7 @@ func (this _opViewFactory) Construct(
 		opManifestBytes,
 		&opManifest,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 

@@ -83,7 +83,7 @@ var _ = Context("core", func() {
 					Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(nodeIndex + 1)).To(Equal(node.Id))
 				}
 			})
-			It("should call containerEngine.DeleteContainerIfExists w/ expected args for each container node", func() {
+			It("should call containerEngine.DeleteContainerIfExists w/ expected args for container nodes", func() {
 				/* arrange */
 				providedReq := model.KillOpReq{OpGraphId: "dummyOpGraphId"}
 

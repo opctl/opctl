@@ -14,7 +14,7 @@ func (this _bundle) SetOpDescription(
 	opBytes, err := this.fileSystem.GetBytesOfFile(
 		pathToOpManifest,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
@@ -23,14 +23,14 @@ func (this _bundle) SetOpDescription(
 		opBytes,
 		&opManifest,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
 	opManifest.Description = req.Description
 
 	opBytes, err = this.yaml.From(&opManifest)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 

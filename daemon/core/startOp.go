@@ -16,7 +16,7 @@ func (this _core) StartOp(
 	normalizedOpRef := this.pathNormalizer.Normalize(req.OpRef)
 
 	go func() {
-		_, err = this.opCaller.Call(
+		this.opCaller.Call(
 			req.Args,
 			opId,
 			normalizedOpRef,

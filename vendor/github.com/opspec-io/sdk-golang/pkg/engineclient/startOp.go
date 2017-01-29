@@ -16,7 +16,7 @@ func (this _engineClient) StartOp(
 ) {
 
 	reqBytes, err := this.jsonFormat.From(req)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
@@ -25,17 +25,17 @@ func (this _engineClient) StartOp(
 		fmt.Sprintf("http://%v/instances/starts", "localhost:42224"),
 		bytes.NewBuffer(reqBytes),
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
 	httpResp, err := this.httpClient.Do(httpReq)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
 	opIdBuffer, err := ioutil.ReadAll(httpResp.Body)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 

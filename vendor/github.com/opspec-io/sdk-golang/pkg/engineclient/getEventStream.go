@@ -20,7 +20,7 @@ func (this _engineClient) GetEventStream(
 	if filter := req.Filter; nil != filter {
 		var filterBytes []byte
 		filterBytes, err = this.jsonFormat.From(filter)
-		if nil != err {
+		if (nil != err) {
 			return
 		}
 		queryParams = append(
@@ -49,7 +49,7 @@ func (this _engineClient) GetEventStream(
 
 			var event model.Event
 			err = this.jsonFormat.To(bytes, &event)
-			if nil != err {
+			if (nil != err) {
 				fmt.Printf("json.Unmarshal err: %v \n", err)
 			}
 			eventStream <- event

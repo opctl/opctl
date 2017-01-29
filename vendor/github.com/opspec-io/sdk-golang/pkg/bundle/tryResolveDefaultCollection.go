@@ -15,12 +15,12 @@ func (this _bundle) TryResolveDefaultCollection(
 ) {
 
 	pathToCurrentDir, err := filepath.Abs(req.PathToDir)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
 	childDirFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(pathToCurrentDir)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
