@@ -50,7 +50,7 @@ func (this _collectionViewFactory) Construct(
 	collectionManifestBytes, err := this.fileSystem.GetBytesOfFile(
 		collectionManifestPath,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
@@ -59,13 +59,13 @@ func (this _collectionViewFactory) Construct(
 		collectionManifestBytes,
 		&collectionManifest,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
 	var opViews []model.OpView
 	childFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(collectionBundlePath)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 

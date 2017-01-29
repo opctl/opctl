@@ -12,7 +12,7 @@ func (this _bundle) CreateCollection(
 	err = this.fileSystem.AddDir(
 		req.Path,
 	)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
@@ -24,7 +24,7 @@ func (this _bundle) CreateCollection(
 	}
 
 	opManifestBytes, err := this.yaml.From(&opCollection)
-	if nil != err {
+	if (nil != err) {
 		return
 	}
 
