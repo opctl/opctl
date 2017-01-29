@@ -13,7 +13,7 @@ type serialCaller interface {
 		inboundScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
-		serialCall []*model.Scg,
+		scgSerialCall []*model.Scg,
 	) (
 		err error,
 	)
@@ -40,7 +40,7 @@ func (this _serialCaller) Call(
 	inboundScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
-	serialCall []*model.Scg,
+	scgSerialCall []*model.Scg,
 ) (
 	err error,
 ) {
@@ -50,7 +50,7 @@ func (this _serialCaller) Call(
 	}
 
 	var childOutboundScope map[string]*model.Data
-	for _, call := range serialCall {
+	for _, call := range scgSerialCall {
 		childOutboundScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
 			currentScope,

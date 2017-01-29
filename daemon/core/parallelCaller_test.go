@@ -25,7 +25,7 @@ var _ = Context("parallelCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedOpGraphId := "dummyOpGraphId"
 			providedOpRef := "dummyOpRef"
-			providedParallelCalls := []*model.Scg{
+			providedScgParallelCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
 				},
@@ -53,12 +53,12 @@ var _ = Context("parallelCaller", func() {
 				providedInboundScope,
 				providedOpGraphId,
 				providedOpRef,
-				providedParallelCalls,
+				providedScgParallelCalls,
 			)
 
 			/* assert */
-			actualParallelCalls := []*model.Scg{}
-			for callIndex := range providedParallelCalls {
+			actualScgParallelCalls := []*model.Scg{}
+			for callIndex := range providedScgParallelCalls {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualScg,
@@ -68,17 +68,18 @@ var _ = Context("parallelCaller", func() {
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualOpRef).To(Equal(providedOpRef))
 				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
-				actualParallelCalls = append(actualParallelCalls, actualScg)
+				actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 			}
-			Expect(actualParallelCalls).To(ConsistOf(providedParallelCalls))
+			Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
 		})
 		Context("caller errors", func() {
+			// @TODO: determine why this flickers
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
-				providedParallelCalls := []*model.Scg{
+				providedScgParallelCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
 					},
@@ -108,12 +109,12 @@ var _ = Context("parallelCaller", func() {
 					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
-					providedParallelCalls,
+					providedScgParallelCalls,
 				)
 
 				/* assert */
-				actualParallelCalls := []*model.Scg{}
-				for callIndex := range providedParallelCalls {
+				actualScgParallelCalls := []*model.Scg{}
+				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
 						actualScg,
@@ -123,19 +124,20 @@ var _ = Context("parallelCaller", func() {
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpRef).To(Equal(providedOpRef))
 					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
-					actualParallelCalls = append(actualParallelCalls, actualScg)
+					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 				}
-				Expect(actualParallelCalls).To(ConsistOf(providedParallelCalls))
+				Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
 				Expect(actualError).To(Equal(expectedError))
 			})
 		})
 		Context("caller doesn't error", func() {
+			// @TODO: determine why this flickers
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
-				providedParallelCalls := []*model.Scg{
+				providedScgParallelCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
 					},
@@ -163,12 +165,12 @@ var _ = Context("parallelCaller", func() {
 					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
-					providedParallelCalls,
+					providedScgParallelCalls,
 				)
 
 				/* assert */
-				actualParallelCalls := []*model.Scg{}
-				for callIndex := range providedParallelCalls {
+				actualScgParallelCalls := []*model.Scg{}
+				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
 						actualScg,
@@ -178,9 +180,9 @@ var _ = Context("parallelCaller", func() {
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpRef).To(Equal(providedOpRef))
 					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
-					actualParallelCalls = append(actualParallelCalls, actualScg)
+					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 				}
-				Expect(actualParallelCalls).To(ConsistOf(providedParallelCalls))
+				Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
 				Expect(actualError).To(BeNil())
 			})
 		})

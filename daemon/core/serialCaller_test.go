@@ -25,7 +25,7 @@ var _ = Context("serialCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedOpGraphId := "dummyOpGraphId"
 			providedOpRef := "dummyOpRef"
-			providedSerialCalls := []*model.Scg{
+			providedScgSerialCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
 				},
@@ -58,11 +58,11 @@ var _ = Context("serialCaller", func() {
 				providedInboundScope,
 				providedOpGraphId,
 				providedOpRef,
-				providedSerialCalls,
+				providedScgSerialCalls,
 			)
 
 			/* assert */
-			for expectedScgIndex, expectedScg := range providedSerialCalls {
+			for expectedScgIndex, expectedScg := range providedScgSerialCalls {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualScg,
@@ -81,7 +81,7 @@ var _ = Context("serialCaller", func() {
 				providedInboundScope := map[string]*model.Data{}
 				providedOpGraphId := "dummyOpGraphId"
 				providedOpRef := "dummyOpRef"
-				providedSerialCalls := []*model.Scg{
+				providedScgSerialCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
 					},
@@ -98,7 +98,7 @@ var _ = Context("serialCaller", func() {
 					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,
-					providedSerialCalls,
+					providedScgSerialCalls,
 				)
 
 				/* assert */
@@ -116,7 +116,7 @@ var _ = Context("serialCaller", func() {
 					expectedScopePassedToGrandchild := providedInboundScope
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
-					providedSerialCalls := []*model.Scg{
+					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
 						},
@@ -134,7 +134,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedOpGraphId,
 						providedOpRef,
-						providedSerialCalls,
+						providedScgSerialCalls,
 					)
 
 					/* assert */
@@ -161,7 +161,7 @@ var _ = Context("serialCaller", func() {
 					}
 					providedOpGraphId := "dummyOpGraphId"
 					providedOpRef := "dummyOpRef"
-					providedSerialCalls := []*model.Scg{
+					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
 						},
@@ -180,7 +180,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedOpGraphId,
 						providedOpRef,
-						providedSerialCalls,
+						providedScgSerialCalls,
 					)
 
 					/* assert */
