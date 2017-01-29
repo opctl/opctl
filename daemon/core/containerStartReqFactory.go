@@ -1,14 +1,13 @@
 package core
 
 import (
-	"fmt"
 	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 func newContainerStartReq(
-	args map[string]*model.Data,
+	currentScope map[string]*model.Data,
 	containerCall *model.ScgContainerCall,
 	containerId string,
 	inputs []*model.Param,
@@ -29,45 +28,41 @@ func newContainerStartReq(
 
 	// construct files
 	for scgContainerFilePath, scgContainerFile := range containerCall.Files {
-		// @TODO: handle unbound files; (create temp file & pass path)
-		if boundArg, ok := args[scgContainerFile.Bind]; ok {
+		// @TODO: handle output files; (create temp file & pass path)
+		if boundArg, ok := currentScope[scgContainerFile.Bind]; ok {
 			files[scgContainerFilePath] = boundArg.File
 		}
 	}
-	fmt.Printf("startFactory: req.files\n%#v\n", files)
 
 	// construct dirs
 	for scgContainerDirPath, scgContainerDir := range containerCall.Dirs {
-		// @TODO: handle unbound dirs; (create temp dir & pass path)
-		if boundArg, ok := args[scgContainerDir.Bind]; ok {
+		// @TODO: handle output dirs; (create temp dir & pass path)
+		if boundArg, ok := currentScope[scgContainerDir.Bind]; ok {
 			dirs[scgContainerDirPath] = boundArg.Dir
 		}
 	}
-	fmt.Printf("startFactory: req.dirs\n%#v\n", dirs)
 
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocket := range containerCall.Sockets {
-		// @TODO: handle unbound (unix) sockets; (create temp unix socket & pass path)
-		if boundArg, ok := args[scgContainerSocket.Bind]; ok {
+		// @TODO: handle output (unix) sockets; (create temp unix socket & pass path)
+		if boundArg, ok := currentScope[scgContainerSocket.Bind]; ok {
 			switch {
 			case "" != boundArg.Socket:
 				sockets[scgContainerSocketAddress] = boundArg.Socket
 			}
 		}
 	}
-	fmt.Printf("startFactory: req.sockets\n%#v\n", sockets)
 
 	for _, input := range inputs {
-		fmt.Printf("containerStartReqFactory.input:\n%#v\n", input)
 		switch {
 		case nil != input.String:
 			stringInput := input.String
 
 			// obtain inputValue
 			inputValue := ""
-			if _, isArgForInput := args[stringInput.Name]; isArgForInput {
+			if _, isArgForInput := currentScope[stringInput.Name]; isArgForInput {
 				// use provided arg for param
-				inputValue = args[stringInput.Name].String
+				inputValue = currentScope[stringInput.Name].String
 			} else {
 				// no provided arg for param; fallback to default
 				inputValue = stringInput.Default

@@ -15,7 +15,7 @@ type parallelCaller interface {
 		inboundScope map[string]*model.Data,
 		opGraphId string,
 		opRef string,
-		parallelCall []*model.Scg,
+		scgParallelCall []*model.Scg,
 	) (
 		err error,
 	)
@@ -42,15 +42,15 @@ func (this _parallelCaller) Call(
 	inboundScope map[string]*model.Data,
 	opGraphId string,
 	opRef string,
-	parallelCall []*model.Scg,
+	scgParallelCall []*model.Scg,
 ) (
 	err error,
 ) {
 
 	var wg sync.WaitGroup
-	childErrChannel := make(chan error, len(parallelCall))
+	childErrChannel := make(chan error, len(scgParallelCall))
 
-	for _, childCall := range parallelCall {
+	for _, childCall := range scgParallelCall {
 		wg.Add(1)
 
 		go func(childCall *model.Scg) {

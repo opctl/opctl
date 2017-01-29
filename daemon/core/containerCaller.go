@@ -3,7 +3,6 @@ package core
 //go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
-	"fmt"
 	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
@@ -14,13 +13,13 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		args map[string]*model.Data,
+		inboundScope map[string]*model.Data,
 		containerId string,
-		containerCall *model.ScgContainerCall,
+		scgContainerCall *model.ScgContainerCall,
 		opRef string,
 		opGraphId string,
 	) (
-		outputs map[string]*model.Data,
+		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -32,7 +31,7 @@ func newContainerCaller(
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
-	return &_containerCaller{
+	return _containerCaller{
 		bundle:          bundle,
 		containerEngine: containerEngine,
 		eventBus:        eventBus,
@@ -49,13 +48,13 @@ type _containerCaller struct {
 }
 
 func (this _containerCaller) Call(
-	args map[string]*model.Data,
+	inboundScope map[string]*model.Data,
 	containerId string,
-	containerCall *model.ScgContainerCall,
+	scgContainerCall *model.ScgContainerCall,
 	opRef string,
 	opGraphId string,
 ) (
-	outputs map[string]*model.Data,
+	outboundScope map[string]*model.Data,
 	err error,
 ) {
 
@@ -86,51 +85,48 @@ func (this _containerCaller) Call(
 	this.eventBus.Publish(containerStartedEvent)
 
 	err = this.containerEngine.StartContainer(
-		newContainerStartReq(args, containerCall, containerId, op.Inputs, opGraphId),
+		newContainerStartReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
 		this.eventBus,
 	)
 	if nil != err {
 		return
 	}
 
-	// construct outputs
-	outputs = map[string]*model.Data{}
-	container, err := this.containerEngine.InspectContainerIfExists(containerId)
-	fmt.Println(opRef)
-	fmt.Printf("containerCaller.container:\n %#v\n", container)
+	/* construct outputs */
+	outboundScope = map[string]*model.Data{}
+	dcgContainer, err := this.containerEngine.InspectContainerIfExists(containerId)
 	// construct files
-	for scgContainerFilePath, scgContainerFile := range containerCall.Files {
-		for containerFilePath, hostFilePath := range container.Files {
-			if scgContainerFilePath == containerFilePath {
-				outputs[scgContainerFile.Bind] = &model.Data{File: hostFilePath}
+	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
+		for dcgContainerFilePath, dcgHostFilePath := range dcgContainer.Files {
+			if scgContainerFilePath == dcgContainerFilePath {
+				outboundScope[scgContainerFile.Bind] = &model.Data{File: dcgHostFilePath}
 			}
 		}
 	}
 	// construct dirs
-	for scgContainerDirPath, scgContainerDir := range containerCall.Dirs {
-		for containerDirPath, hostDirPath := range container.Dirs {
-			if scgContainerDirPath == containerDirPath {
-				outputs[scgContainerDir.Bind] = &model.Data{Dir: hostDirPath}
+	for scgContainerDirPath, scgContainerDir := range scgContainerCall.Dirs {
+		for dcgContainerDirPath, dcgHostDirPath := range dcgContainer.Dirs {
+			if scgContainerDirPath == dcgContainerDirPath {
+				outboundScope[scgContainerDir.Bind] = &model.Data{Dir: dcgHostDirPath}
 			}
 		}
 	}
 	// construct strings
-	for scgContainerEnvVarName, scgContainerEnvVar := range containerCall.EnvVars {
-		for containerEnvVarName, containerEnvVarValue := range container.EnvVars {
-			if scgContainerEnvVarName == containerEnvVarName {
-				outputs[scgContainerEnvVar.Bind] = &model.Data{String: containerEnvVarValue}
+	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
+		for dcgContainerEnvVarName, dcgContainerEnvVarValue := range dcgContainer.EnvVars {
+			if scgContainerEnvVarName == dcgContainerEnvVarName {
+				outboundScope[scgContainerEnvVar.Bind] = &model.Data{String: dcgContainerEnvVarValue}
 			}
 		}
 	}
 	// construct sockets
-	for scgContainerSocketAddress, scgContainerSocket := range containerCall.Sockets {
-		for containerSocketAddress, hostSocketAddress := range container.Sockets {
-			if scgContainerSocketAddress == containerSocketAddress {
-				outputs[scgContainerSocket.Bind] = &model.Data{Socket: hostSocketAddress}
+	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
+		for dcgContainerSocketAddress, dcgHostSocketAddress := range dcgContainer.Sockets {
+			if scgContainerSocketAddress == dcgContainerSocketAddress {
+				outboundScope[scgContainerSocket.Bind] = &model.Data{Socket: dcgHostSocketAddress}
 			}
 		}
 	}
-	fmt.Printf("containerCaller.outputs:\n %#v\n", outputs)
 
 	defer func() {
 

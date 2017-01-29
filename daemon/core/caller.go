@@ -52,7 +52,7 @@ func (this _caller) Call(
 	switch {
 	case nil != scg.Container:
 		outboundScope, err = this.containerCaller.Call(
-      inboundScope,
+			inboundScope,
 			nodeId,
 			scg.Container,
 			opRef,
@@ -60,21 +60,21 @@ func (this _caller) Call(
 		)
 	case nil != scg.Op:
 		outboundScope, err = this.opCaller.Call(
-      inboundScope,
+			inboundScope,
 			nodeId,
 			path.Join(filepath.Dir(opRef), scg.Op.Ref),
 			opGraphId,
 		)
 	case len(scg.Parallel) > 0:
 		err = this.parallelCaller.Call(
-      inboundScope,
+			inboundScope,
 			opGraphId,
 			opRef,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
 		err = this.serialCaller.Call(
-      inboundScope,
+			inboundScope,
 			opGraphId,
 			opRef,
 			scg.Serial,
