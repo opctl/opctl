@@ -40,7 +40,7 @@ Run 'opctl COMMAND --help' for more information on a command.
 
 for every release:
 - source code will be [tagged](https://github.com/opspec-io/opctl/tags).
-- platform specific binaries/installers will be made available on [opctl.io](https://opctl.io)
+- platform specific binaries/installers will be made available on [opspec.io/opctl](https://opspec.io/opctl/)
 
 # Versioning
 
