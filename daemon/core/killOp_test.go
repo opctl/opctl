@@ -83,6 +83,7 @@ var _ = Context("core", func() {
 					Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(nodeIndex + 1)).To(Equal(node.Id))
 				}
 			})
+			// @TODO: flickers?
 			It("should call containerEngine.DeleteContainerIfExists w/ expected args for container nodes", func() {
 				/* arrange */
 				providedReq := model.KillOpReq{OpGraphId: "dummyOpGraphId"}
@@ -90,16 +91,16 @@ var _ = Context("core", func() {
 				containerNodeIds := []string{"dummyNode1Id", "dummyNode3Id"}
 
 				nodesReturnedFromDcgNodeRepo := []*dcgNodeDescriptor{
-					{Id: containerNodeIds[0], Container: &dcgContainerDescriptor{}},
-					{Id: "dummyNode2Id", Container: nil},
-					{Id: containerNodeIds[1], Container: &dcgContainerDescriptor{}},
+					{Id: "dummyNode1Id", Container: &dcgContainerDescriptor{}},
+					{Id: "dummyNode2Id"},
+					{Id: "dummyNode3Id", Container: &dcgContainerDescriptor{}},
 				}
 				fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 				fakeDcgNodeRepo.ListWithOpGraphIdReturns(nodesReturnedFromDcgNodeRepo)
 
 				fakeContainerEngine := new(fake.ContainerEngine)
 
-				objectUnderTest := _core{
+				objectUnderTest := &_core{
 					containerEngine:     fakeContainerEngine,
 					eventBus:            new(eventbus.Fake),
 					opCaller:            new(fakeOpCaller),

@@ -2,12 +2,15 @@ package docker
 
 import (
 	"bytes"
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/pkg/containerengine"
 	"github.com/opspec-io/opctl/util/eventbus"
+	"golang.org/x/net/context"
+	"io"
 	"io/ioutil"
 )
 
@@ -62,8 +65,13 @@ var _ = Context("StartContainer", func() {
 
 		_fakeDockerClient := new(fakeDockerClient)
 
-		dummyReadCloser := ioutil.NopCloser(bytes.NewBufferString(""))
-		_fakeDockerClient.ContainerLogsReturns(dummyReadCloser, nil)
+		_fakeDockerClient.ContainerLogsStub = func(
+			ctx context.Context,
+			container string,
+			options types.ContainerLogsOptions,
+		) (io.ReadCloser, error) {
+			return ioutil.NopCloser(bytes.NewBufferString("")), nil
+		}
 
 		objectUnderTest := _containerEngine{
 			dockerClient: _fakeDockerClient,

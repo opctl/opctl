@@ -334,8 +334,8 @@ var _ = Context("containerCaller", func() {
 								"file2ContainerPath": {Bind: "file2VarName"},
 							},
 							Sockets: map[string]*model.ScgContainerSocket{
-								"socket1ContainerAddress": {Bind: "socket1VarName"},
-								"socket2ContainerAddress": {Bind: "socket2VarName"},
+								"/unixSocket1ContainerAddress": {Bind: "socket1VarName"},
+								"/unixSocket2ContainerAddress": {Bind: "socket2VarName"},
 							},
 						}
 
@@ -353,8 +353,8 @@ var _ = Context("containerCaller", func() {
 								"file2ContainerPath": "file2HostPath",
 							},
 							Sockets: map[string]string{
-								"socket1ContainerAddress": "socket1HostAddress",
-								"socket2ContainerAddress": "socket2HostAddress",
+								"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
+								"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
 							},
 						}
 						fakeContainerEngine := new(fake.ContainerEngine)
@@ -374,8 +374,8 @@ var _ = Context("containerCaller", func() {
 							"file2VarName": {File: "file2HostPath"},
 
 							// sockets
-							"socket1VarName": {Socket: "socket1HostAddress"},
-							"socket2VarName": {Socket: "socket2HostAddress"},
+							"socket1VarName": {Socket: "/unixSocket1HostAddress"},
+							"socket2VarName": {Socket: "/unixSocket2HostAddress"},
 						}
 
 						objectUnderTest := newContainerCaller(

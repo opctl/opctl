@@ -14,7 +14,7 @@ func New(
 	coreApi core.Core,
 ) Api {
 
-	return &_api{
+	return _api{
 		compositionRoot: newCompositionRoot(coreApi),
 	}
 

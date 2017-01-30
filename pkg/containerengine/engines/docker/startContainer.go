@@ -58,8 +58,6 @@ func (this _containerEngine) StartContainer(
 	// sort binds to make order deterministic; useful for testing
 	sort.Strings(hostConfig.Binds)
 
-	fmt.Printf("startContainer: hostConfig\n%#v\n", hostConfig)
-
 	// create container
 	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
 		context.Background(),
@@ -110,7 +108,7 @@ func (this _containerEngine) StartContainer(
 	if nil != err {
 		return
 	}
-	//err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
+	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
 	if nil != err {
 		return
 	}

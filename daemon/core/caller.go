@@ -24,8 +24,8 @@ type caller interface {
 
 func newCaller(
 	containerCaller containerCaller,
-) _caller {
-	return _caller{
+) *_caller {
+	return &_caller{
 		containerCaller: containerCaller,
 	}
 }

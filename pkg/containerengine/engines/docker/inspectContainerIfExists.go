@@ -58,5 +58,7 @@ func (this _containerEngine) InspectContainerIfExists(
 		}
 	}
 
+	// @TODO: handle network sockets
+
 	return
 }
