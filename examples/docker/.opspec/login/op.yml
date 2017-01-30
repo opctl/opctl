@@ -1,23 +1,16 @@
 name: login
 description: Logs in to a docker registry
 inputs:
-  - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true}
-  - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true}
+  - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true }
+  - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true }
+  - socket: { name: DOCKERD_SOCKET }
 outputs:
-  - file: { name: DOCKER_CONFIG, description: Can be used for caching, isSecret: true}
+  - file: { name: DOCKER_CONFIG, description: Can be used for caching, isSecret: true }
 run:
   container:
-    cmd:
-      - sh
-      - -c
-      - |
-        # start dockerd
-        dockerd &>/dev/null &
-
-        echo sleeping for 2 sec to allow dockerd enough time to startup
-        sleep 2
-
-        docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
+    cmd: [ docker, login, -u, $(DOCKER_USERNAME), -p, $(DOCKER_PASSWORD) ]
     files:
       /root/.docker/config.json: { bind: DOCKER_CONFIG }
-    image: docker:1.12-dind
+    image: docker:1.13
+    sockets:
+      /var/run/docker.sock: { bind: DOCKERD_SOCKET }
