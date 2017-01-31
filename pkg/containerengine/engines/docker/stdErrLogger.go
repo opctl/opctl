@@ -29,10 +29,9 @@ func (this _containerEngine) stdErrLogger(
 	if nil != err {
 		return
 	}
-	scanner := bufio.NewScanner(readCloser)
 
 	go func() {
-		defer readCloser.Close()
+		scanner := bufio.NewScanner(readCloser)
 		for scanner.Scan() {
 			eventPublisher.Publish(
 				model.Event{
@@ -45,6 +44,7 @@ func (this _containerEngine) stdErrLogger(
 				},
 			)
 		}
+		defer readCloser.Close()
 	}()
 	return
 }
