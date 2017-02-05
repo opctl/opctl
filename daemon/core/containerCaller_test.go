@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/pkg/containerengine/engines/fake"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/pkg/errors"
@@ -18,7 +18,7 @@ var _ = Context("containerCaller", func() {
 			Expect(newContainerCaller(
 				new(bundle.Fake),
 				new(fake.ContainerEngine),
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				new(fakeDcgNodeRepo),
 			)).Should(Not(BeNil()))
 		})
@@ -37,7 +37,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := newContainerCaller(
 				fakeBundle,
 				new(fake.ContainerEngine),
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				new(fakeDcgNodeRepo),
 			)
 
@@ -70,7 +70,7 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest := newContainerCaller(
 					fakeBundle,
 					new(fake.ContainerEngine),
-					new(eventbus.Fake),
+					new(pubsub.Fake),
 					new(fakeDcgNodeRepo),
 				)
 
@@ -108,7 +108,7 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest := newContainerCaller(
 					new(bundle.Fake),
 					new(fake.ContainerEngine),
-					new(eventbus.Fake),
+					new(pubsub.Fake),
 					fakeDcgNodeRepo,
 				)
 
@@ -124,7 +124,7 @@ var _ = Context("containerCaller", func() {
 				/* assert */
 				Expect(fakeDcgNodeRepo.AddArgsForCall(0)).To(Equal(expectedDcgNodeDescriptor))
 			})
-			It("should call eventBus.Publish w/ expected args", func() {
+			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedContainerId := "dummyContainerId"
@@ -141,12 +141,12 @@ var _ = Context("containerCaller", func() {
 					},
 				}
 
-				fakeEventBus := new(eventbus.Fake)
+				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := newContainerCaller(
 					new(bundle.Fake),
 					new(fake.ContainerEngine),
-					fakeEventBus,
+					fakePubSub,
 					new(fakeDcgNodeRepo),
 				)
 
@@ -160,7 +160,7 @@ var _ = Context("containerCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakeEventBus.PublishArgsForCall(0)
+				actualEvent := fakePubSub.PublishArgsForCall(0)
 
 				// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -178,8 +178,8 @@ var _ = Context("containerCaller", func() {
 				providedOpGraphId := "dummyOpGraphId"
 
 				opViewReturnedFromBundle := model.OpView{
-					Inputs: []*model.Param{
-						{
+					Inputs: map[string]*model.Param{
+						"dummyParam1Name": {
 							String: &model.StringParam{},
 						},
 					},
@@ -196,12 +196,12 @@ var _ = Context("containerCaller", func() {
 
 				fakeContainerEngine := new(fake.ContainerEngine)
 
-				fakeEventBus := new(eventbus.Fake)
+				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := newContainerCaller(
 					fakeBundle,
 					fakeContainerEngine,
-					fakeEventBus,
+					fakePubSub,
 					new(fakeDcgNodeRepo),
 				)
 
@@ -217,7 +217,7 @@ var _ = Context("containerCaller", func() {
 				/* assert */
 				actualReq, actualEventPublisher := fakeContainerEngine.StartContainerArgsForCall(0)
 				Expect(actualReq).To(Equal(expectedReq))
-				Expect(actualEventPublisher).To(Equal(fakeEventBus))
+				Expect(actualEventPublisher).To(Equal(fakePubSub))
 			})
 			Context("containerEngine.StartContainer errors", func() {
 				It("should return expected error", func() {
@@ -236,7 +236,7 @@ var _ = Context("containerCaller", func() {
 					objectUnderTest := newContainerCaller(
 						new(bundle.Fake),
 						fakeContainerEngine,
-						new(eventbus.Fake),
+						new(pubsub.Fake),
 						new(fakeDcgNodeRepo),
 					)
 
@@ -267,7 +267,7 @@ var _ = Context("containerCaller", func() {
 					objectUnderTest := newContainerCaller(
 						new(bundle.Fake),
 						fakeContainerEngine,
-						new(eventbus.Fake),
+						new(pubsub.Fake),
 						new(fakeDcgNodeRepo),
 					)
 
@@ -300,7 +300,7 @@ var _ = Context("containerCaller", func() {
 						objectUnderTest := newContainerCaller(
 							new(bundle.Fake),
 							fakeContainerEngine,
-							new(eventbus.Fake),
+							new(pubsub.Fake),
 							new(fakeDcgNodeRepo),
 						)
 
@@ -381,7 +381,7 @@ var _ = Context("containerCaller", func() {
 						objectUnderTest := newContainerCaller(
 							new(bundle.Fake),
 							fakeContainerEngine,
-							new(eventbus.Fake),
+							new(pubsub.Fake),
 							new(fakeDcgNodeRepo),
 						)
 
@@ -413,7 +413,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := newContainerCaller(
 				new(bundle.Fake),
 				new(fake.ContainerEngine),
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				fakeDcgNodeRepo,
 			)
 
@@ -429,7 +429,7 @@ var _ = Context("containerCaller", func() {
 			/* assert */
 			Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerId))
 		})
-		It("should call eventBus.Publish w/ expected args", func() {
+		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
@@ -446,12 +446,12 @@ var _ = Context("containerCaller", func() {
 				},
 			}
 
-			fakeEventBus := new(eventbus.Fake)
+			fakePubSub := new(pubsub.Fake)
 
 			objectUnderTest := newContainerCaller(
 				new(bundle.Fake),
 				new(fake.ContainerEngine),
-				fakeEventBus,
+				fakePubSub,
 				new(fakeDcgNodeRepo),
 			)
 
@@ -465,7 +465,7 @@ var _ = Context("containerCaller", func() {
 			)
 
 			/* assert */
-			actualEvent := fakeEventBus.PublishArgsForCall(1)
+			actualEvent := fakePubSub.PublishArgsForCall(1)
 
 			// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 			Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))

@@ -1,5 +1,7 @@
 package core
 
+//go:generate counterfeiter -o ./fakeParamSatisfier.go --fake-name fakeParamSatisfier ./ paramSatisfier
+
 import (
 	"bytes"
 	"fmt"
@@ -20,13 +22,14 @@ import (
 type paramSatisfier interface {
 	Satisfy(
 		options []string,
-		params []*model.Param,
+		params map[string]*model.Param,
 	) (argMap map[string]*model.Data)
 }
 
 func newParamSatisfier(
 	colorer colorer.Colorer,
 	exiter exiter,
+	output output,
 	validate validate.Validate,
 	vos vos.Vos,
 ) paramSatisfier {
@@ -34,6 +37,7 @@ func newParamSatisfier(
 	return &_paramSatisfier{
 		colorer:  colorer,
 		exiter:   exiter,
+		output:   output,
 		validate: validate,
 		vos:      vos,
 	}
@@ -42,13 +46,14 @@ func newParamSatisfier(
 type _paramSatisfier struct {
 	colorer  colorer.Colorer
 	exiter   exiter
+	output   output
 	validate validate.Validate
 	vos      vos.Vos
 }
 
 func (this _paramSatisfier) Satisfy(
 	options []string,
-	params []*model.Param,
+	params map[string]*model.Param,
 ) (argMap map[string]*model.Data) {
 
 	rawArgMap := make(map[string]string)
@@ -67,114 +72,111 @@ func (this _paramSatisfier) Satisfy(
 	}
 
 	argMap = make(map[string]*model.Data)
-	paramIndex := 0
-paramLoop:
-	for paramIndex < len(params) {
-		param := params[paramIndex]
-		var paramName, rawArg string
-		var arg *model.Data
-		var argErrors []error
+	for paramName, param := range params {
+	paramLoop:
+		for {
+			var rawArg string
+			var arg *model.Data
+			var argErrors []error
+			var hideValue bool
+			switch {
+			case nil != param.String:
+				// obtain raw value
+				stringParam := param.String
+				hideValue = stringParam.IsSecret
 
-		switch {
-		case nil != param.String:
-			// obtain raw value
-			stringParam := param.String
-			paramName = stringParam.Name
+				if providedArg, ok := rawArgMap[paramName]; ok {
+					rawArg = providedArg
+				} else if "" != this.vos.Getenv(paramName) {
+					rawArg = this.vos.Getenv(paramName)
+				} else if "" != stringParam.Default {
+					// default value exists
+					break paramLoop
+				} else {
+					rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
+				}
+				arg = &model.Data{String: rawArg}
+			case nil != param.Dir:
+				// obtain raw value
+				dirParam := param.Dir
 
-			if providedArg, ok := rawArgMap[paramName]; ok {
-				rawArg = providedArg
-			} else if "" != this.vos.Getenv(paramName) {
-				rawArg = this.vos.Getenv(paramName)
-			} else if "" != stringParam.Default {
-				// default value exists
-				paramIndex++
-				continue paramLoop
-			} else {
-				rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
+				if providedArg, ok := rawArgMap[paramName]; ok {
+					rawArg = providedArg
+				} else if "" != this.vos.Getenv(paramName) {
+					rawArg = this.vos.Getenv(paramName)
+				} else {
+					rawArg = this.promptForArg(paramName, dirParam.Description, false)
+				}
+				arg = &model.Data{Dir: rawArg}
+			case nil != param.File:
+				// obtain raw value
+				fileParam := param.File
+
+				if providedArg, ok := rawArgMap[paramName]; ok {
+					rawArg = providedArg
+				} else if "" != this.vos.Getenv(paramName) {
+					rawArg = this.vos.Getenv(paramName)
+				} else {
+					rawArg = this.promptForArg(paramName, fileParam.Description, false)
+				}
+				arg = &model.Data{File: rawArg}
+			case nil != param.Socket:
+				socketParam := param.Socket
+
+				if providedArg, ok := rawArgMap[paramName]; ok {
+					rawArg = providedArg
+				} else if "" != this.vos.Getenv(paramName) {
+					rawArg = this.vos.Getenv(paramName)
+				} else {
+					rawArg = this.promptForArg(paramName, socketParam.Description, false)
+				}
+				arg = &model.Data{Socket: rawArg}
 			}
-			arg = &model.Data{String: rawArg}
-		case nil != param.Dir:
-			// obtain raw value
-			dirParam := param.Dir
-			paramName = dirParam.Name
 
-			if providedArg, ok := rawArgMap[paramName]; ok {
-				rawArg = providedArg
-			} else if "" != this.vos.Getenv(paramName) {
-				rawArg = this.vos.Getenv(paramName)
-			} else {
-				rawArg = this.promptForArg(paramName, dirParam.Description, false)
-			}
-			arg = &model.Data{Dir: rawArg}
-		case nil != param.File:
-			// obtain raw value
-			fileParam := param.File
-			paramName = fileParam.Name
-
-			if providedArg, ok := rawArgMap[paramName]; ok {
-				rawArg = providedArg
-			} else if "" != this.vos.Getenv(paramName) {
-				rawArg = this.vos.Getenv(paramName)
-			} else {
-				rawArg = this.promptForArg(paramName, fileParam.Description, false)
-			}
-			arg = &model.Data{File: rawArg}
-		case nil != param.Socket:
-			socketParam := param.Socket
-			paramName = socketParam.Name
-
-			if providedArg, ok := rawArgMap[paramName]; ok {
-				rawArg = providedArg
-			} else if "" != this.vos.Getenv(paramName) {
-				rawArg = this.vos.Getenv(paramName)
-			} else {
-				rawArg = this.promptForArg(paramName, socketParam.Description, false)
-			}
-			arg = &model.Data{Socket: rawArg}
-		}
-
-		// only perform semantic validation if no syntax errors exist
-		// why? syntax errors imply semantic validation will fail
-		if len(argErrors) < 1 {
+			// validate
 			argErrors = append(argErrors, this.validate.Param(arg, param)...)
-		}
 
-		if len(argErrors) > 0 {
-			this.notifyOfArgErrors(argErrors, paramName, rawArg)
-			// we failed.. try again
-			continue
-		}
+			if len(argErrors) > 0 {
+				this.notifyOfArgErrors(argErrors, paramName, hideValue, rawArg)
+				// we failed.. try again
+				continue
+			}
 
-		// we succeeded.. store & move to next
-		argMap[paramName] = arg
-		paramIndex++
+			// we succeeded.. store & move to next
+			argMap[paramName] = arg
+			break paramLoop
+		}
 	}
 
 	return
-
 }
 
 func (this _paramSatisfier) notifyOfArgErrors(
 	errors []error,
 	paramName string,
+	hideValue bool,
 	rawArg string,
 ) {
+	var displayValue string
+	if hideValue {
+		displayValue = "**********"
+	} else {
+		displayValue = rawArg
+	}
 	messageBuffer := bytes.NewBufferString(
 		fmt.Sprintf(`
 -
   %v invalid; provide valid value to proceed.
   Value: %v
-  Error(s):`, paramName, rawArg),
+  Error(s):`, paramName, displayValue),
 	)
 	for _, validationError := range errors {
 		messageBuffer.WriteString(fmt.Sprintf(`
     - %v`, validationError.Error()))
 	}
-	fmt.Print(
-		this.colorer.Error(`
+	this.output.Error(`
 %v
--`, messageBuffer.String()),
-	)
+-`, messageBuffer.String())
 }
 
 func (this _paramSatisfier) promptForArg(
@@ -187,14 +189,12 @@ func (this _paramSatisfier) promptForArg(
 	line.SetCtrlCAborts(true)
 	defer line.Close()
 
-	fmt.Println(
-		this.colorer.Attention(`
+	this.output.Attention(`
 -
   Please provide value for parameter.
   Name: %v
   Description: %v
--`, paramName, paramDescription),
-	)
+-`, paramName, paramDescription)
 
 	// liner has inconsistent behavior if non empty prompt arg passed so use ""
 	var err error
@@ -216,6 +216,10 @@ func (this _paramSatisfier) promptForArg(
 -`,
 			paramName,
 		)
+
+		// explicitly call line.Close(); os.Exit() doesn't allow defer'd statements to be observed
+		line.Close()
+
 		this.exiter.Exit(ExitReq{Message: message, Code: 1})
 		return // support fake exiter
 	}

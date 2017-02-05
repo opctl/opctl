@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
@@ -24,11 +24,11 @@ type ContainerEngine struct {
 	deleteContainerIfExistsArgsForCall []struct {
 		containerId string
 	}
-	StartContainerStub        func(req *containerengine.StartContainerReq, eventPublisher eventbus.EventPublisher) (err error)
+	StartContainerStub        func(req *containerengine.StartContainerReq, eventPublisher pubsub.EventPublisher) (err error)
 	startContainerMutex       sync.RWMutex
 	startContainerArgsForCall []struct {
 		req            *containerengine.StartContainerReq
-		eventPublisher eventbus.EventPublisher
+		eventPublisher pubsub.EventPublisher
 	}
 	startContainerReturns struct {
 		result1 error
@@ -95,11 +95,11 @@ func (fake *ContainerEngine) DeleteContainerIfExistsArgsForCall(i int) string {
 	return fake.deleteContainerIfExistsArgsForCall[i].containerId
 }
 
-func (fake *ContainerEngine) StartContainer(req *containerengine.StartContainerReq, eventPublisher eventbus.EventPublisher) (err error) {
+func (fake *ContainerEngine) StartContainer(req *containerengine.StartContainerReq, eventPublisher pubsub.EventPublisher) (err error) {
 	fake.startContainerMutex.Lock()
 	fake.startContainerArgsForCall = append(fake.startContainerArgsForCall, struct {
 		req            *containerengine.StartContainerReq
-		eventPublisher eventbus.EventPublisher
+		eventPublisher pubsub.EventPublisher
 	}{req, eventPublisher})
 	fake.recordInvocation("StartContainer", []interface{}{req, eventPublisher})
 	fake.startContainerMutex.Unlock()
@@ -116,7 +116,7 @@ func (fake *ContainerEngine) StartContainerCallCount() int {
 	return len(fake.startContainerArgsForCall)
 }
 
-func (fake *ContainerEngine) StartContainerArgsForCall(i int) (*containerengine.StartContainerReq, eventbus.EventPublisher) {
+func (fake *ContainerEngine) StartContainerArgsForCall(i int) (*containerengine.StartContainerReq, pubsub.EventPublisher) {
 	fake.startContainerMutex.RLock()
 	defer fake.startContainerMutex.RUnlock()
 	return fake.startContainerArgsForCall[i].req, fake.startContainerArgsForCall[i].eventPublisher

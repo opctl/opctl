@@ -14,7 +14,7 @@ func (this _engineClient) KillOp(
 ) {
 
 	reqBytes, err := this.jsonFormat.From(req)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 
@@ -23,7 +23,7 @@ func (this _engineClient) KillOp(
 		fmt.Sprintf("http://%v/instances/kills", "localhost:42224"),
 		bytes.NewBuffer(reqBytes),
 	)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 

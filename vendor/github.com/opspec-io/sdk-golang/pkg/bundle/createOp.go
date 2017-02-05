@@ -12,7 +12,7 @@ func (this _bundle) CreateOp(
 	err = this.fileSystem.AddDir(
 		req.Path,
 	)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 
@@ -24,7 +24,7 @@ func (this _bundle) CreateOp(
 	}
 
 	opManifestBytes, err := this.yaml.From(&opManifest)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 

@@ -3,7 +3,7 @@ package tcp
 /* resources */
 const (
 	// resource: a single event-stream
-	eventBusRelUrlTemplate string = "/event-stream"
+	pubSubRelUrlTemplate string = "/event-stream"
 
 	// resource: a single liveness
 	livenessRelUrlTemplate string = "/liveness"
@@ -18,7 +18,7 @@ const (
 /* use cases */
 const (
 	getLivenessRelUrlTemplate string = livenessRelUrlTemplate
-	getEventBusRelUrlTemplate string = eventBusRelUrlTemplate
+	getPubSubRelUrlTemplate   string = pubSubRelUrlTemplate
 	killOpRelUrlTemplate      string = opKillsRelUrlTemplate
 	startOpRelUrlTemplate     string = opStartsRelUrlTemplate
 )

@@ -12,7 +12,7 @@ type CollectionManifest struct {
 
 type OpManifest struct {
 	Manifest `yaml:",inline"`
-	Inputs   []*Param `yaml:"inputs,omitempty"`
-	Outputs  []*Param `yaml:"outputs,omitempty"`
-	Run      *Scg     `yaml:"run,omitempty"`
+	Inputs   map[string]*Param `yaml:"inputs,omitempty"`
+	Outputs  map[string]*Param `yaml:"outputs,omitempty"`
+	Run      *Scg              `yaml:"run,omitempty"`
 }

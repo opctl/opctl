@@ -4,7 +4,7 @@ package core
 
 import (
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"time"
@@ -27,14 +27,14 @@ type containerCaller interface {
 func newContainerCaller(
 	bundle bundle.Bundle,
 	containerEngine containerengine.ContainerEngine,
-	eventBus eventbus.EventBus,
+	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
 		bundle:          bundle,
 		containerEngine: containerEngine,
-		eventBus:        eventBus,
+		pubSub:          pubSub,
 		dcgNodeRepo:     dcgNodeRepo,
 	}
 
@@ -43,7 +43,7 @@ func newContainerCaller(
 type _containerCaller struct {
 	bundle          bundle.Bundle
 	containerEngine containerengine.ContainerEngine
-	eventBus        eventbus.EventBus
+	pubSub          pubsub.PubSub
 	dcgNodeRepo     dcgNodeRepo
 }
 
@@ -82,11 +82,11 @@ func (this _containerCaller) Call(
 			OpGraphId:   opGraphId,
 		},
 	}
-	this.eventBus.Publish(containerStartedEvent)
+	this.pubSub.Publish(containerStartedEvent)
 
 	err = this.containerEngine.StartContainer(
 		newContainerStartReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
-		this.eventBus,
+		this.pubSub,
 	)
 	if nil != err {
 		return
@@ -132,7 +132,7 @@ func (this _containerCaller) Call(
 
 		this.dcgNodeRepo.DeleteIfExists(containerId)
 
-		this.eventBus.Publish(
+		this.pubSub.Publish(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerExited: &model.ContainerExitedEvent{

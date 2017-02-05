@@ -8,7 +8,7 @@ import (
 
 var _ = Context("compositionRoot", func() {
 
-	Context("GetEventBusHandler()", func() {
+	Context("GetEventStreamHandler()", func() {
 		It("should not return nil", func() {
 
 			/* arrange */
@@ -17,10 +17,10 @@ var _ = Context("compositionRoot", func() {
 			)
 
 			/* act */
-			actualGetEventBusHandler := objectUnderTest.GetEventBusHandler()
+			actualGetEventStreamHandler := objectUnderTest.GetEventStreamHandler()
 
 			/* assert */
-			Expect(actualGetEventBusHandler).NotTo(BeNil())
+			Expect(actualGetEventStreamHandler).NotTo(BeNil())
 
 		})
 	})

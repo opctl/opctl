@@ -6,7 +6,7 @@ import (
 )
 
 type compositionRoot interface {
-	GetEventBusHandler() http.Handler
+	GetEventStreamHandler() http.Handler
 	GetLivenessHandler() http.Handler
 	KillOpHandler() http.Handler
 	StartOpHandler() http.Handler
@@ -17,10 +17,10 @@ func newCompositionRoot(
 ) (compositionRoot compositionRoot) {
 
 	compositionRoot = &_compositionRoot{
-		getEventBusHandler: newGetEventBusHandler(coreApi),
-		getLivenessHandler: newGetLivenessHandler(),
-		killOpHandler:      newKillOpHandler(coreApi),
-		startOpHandler:     newStartOpHandler(coreApi),
+		getEventStreamHandler: newGetEventStreamHandler(coreApi),
+		getLivenessHandler:    newGetLivenessHandler(),
+		killOpHandler:         newKillOpHandler(coreApi),
+		startOpHandler:        newStartOpHandler(coreApi),
 	}
 
 	return
@@ -28,18 +28,18 @@ func newCompositionRoot(
 }
 
 type _compositionRoot struct {
-	getLivenessHandler http.Handler
-	getEventBusHandler http.Handler
-	killOpHandler      http.Handler
-	startOpHandler     http.Handler
+	getLivenessHandler    http.Handler
+	getEventStreamHandler http.Handler
+	killOpHandler         http.Handler
+	startOpHandler        http.Handler
 }
 
 func (this _compositionRoot) GetLivenessHandler() http.Handler {
 	return this.getLivenessHandler
 }
 
-func (this _compositionRoot) GetEventBusHandler() http.Handler {
-	return this.getEventBusHandler
+func (this _compositionRoot) GetEventStreamHandler() http.Handler {
+	return this.getEventStreamHandler
 }
 
 func (this _compositionRoot) KillOpHandler() http.Handler {

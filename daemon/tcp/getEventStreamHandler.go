@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func newGetEventBusHandler(
+func newGetEventStreamHandler(
 	core core.Core,
 ) http.Handler {
 
-	return &getEventBusHandler{
+	return &getEventStreamHandler{
 		core: core,
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  4096,
@@ -25,12 +25,12 @@ func newGetEventBusHandler(
 
 }
 
-type getEventBusHandler struct {
+type getEventStreamHandler struct {
 	core     core.Core
 	upgrader websocket.Upgrader
 }
 
-func (this getEventBusHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	conn, err := this.upgrader.Upgrade(w, r, nil)
 	if nil != err {
 		http.Error(w, err.Error(), http.StatusBadRequest)

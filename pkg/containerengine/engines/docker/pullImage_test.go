@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types/reference"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/pkg/errors"
 	"io/ioutil"
 )
@@ -28,7 +28,7 @@ var _ = Context("pullImage", func() {
 				providedImageRef,
 				"",
 				"",
-				new(eventbus.FakeEventPublisher),
+				new(pubsub.FakeEventPublisher),
 			)
 
 			/* assert */
@@ -56,7 +56,7 @@ var _ = Context("pullImage", func() {
 				providedImageRef,
 				"",
 				"",
-				new(eventbus.FakeEventPublisher),
+				new(pubsub.FakeEventPublisher),
 			)
 			if nil != err {
 				panic(err)
@@ -86,7 +86,7 @@ var _ = Context("pullImage", func() {
 					"dummy-ref",
 					"",
 					"",
-					new(eventbus.FakeEventPublisher),
+					new(pubsub.FakeEventPublisher),
 				)
 
 				/* assert */

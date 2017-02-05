@@ -8,7 +8,7 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"golang.org/x/net/context"
 	"sort"
 	"strings"
@@ -16,7 +16,7 @@ import (
 
 func (this _containerEngine) StartContainer(
 	req *containerengine.StartContainerReq,
-	eventPublisher eventbus.EventPublisher,
+	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 
 	// construct container config

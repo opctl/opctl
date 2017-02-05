@@ -8,6 +8,12 @@ import (
 )
 
 type fakeOutput struct {
+	AttentionStub        func(format string, values ...interface{})
+	attentionMutex       sync.RWMutex
+	attentionArgsForCall []struct {
+		format string
+		values []interface{}
+	}
 	ErrorStub        func(format string, values ...interface{})
 	errorMutex       sync.RWMutex
 	errorArgsForCall []struct {
@@ -33,6 +39,31 @@ type fakeOutput struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *fakeOutput) Attention(format string, values ...interface{}) {
+	fake.attentionMutex.Lock()
+	fake.attentionArgsForCall = append(fake.attentionArgsForCall, struct {
+		format string
+		values []interface{}
+	}{format, values})
+	fake.recordInvocation("Attention", []interface{}{format, values})
+	fake.attentionMutex.Unlock()
+	if fake.AttentionStub != nil {
+		fake.AttentionStub(format, values...)
+	}
+}
+
+func (fake *fakeOutput) AttentionCallCount() int {
+	fake.attentionMutex.RLock()
+	defer fake.attentionMutex.RUnlock()
+	return len(fake.attentionArgsForCall)
+}
+
+func (fake *fakeOutput) AttentionArgsForCall(i int) (string, []interface{}) {
+	fake.attentionMutex.RLock()
+	defer fake.attentionMutex.RUnlock()
+	return fake.attentionArgsForCall[i].format, fake.attentionArgsForCall[i].values
 }
 
 func (fake *fakeOutput) Error(format string, values ...interface{}) {
@@ -137,6 +168,8 @@ func (fake *fakeOutput) SuccessArgsForCall(i int) (string, []interface{}) {
 func (fake *fakeOutput) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.attentionMutex.RLock()
+	defer fake.attentionMutex.RUnlock()
 	fake.errorMutex.RLock()
 	defer fake.errorMutex.RUnlock()
 	fake.eventMutex.RLock()

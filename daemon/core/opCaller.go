@@ -3,7 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
 
 import (
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -27,7 +27,7 @@ type opCaller interface {
 
 func newOpCaller(
 	bundle bundle.Bundle,
-	eventBus eventbus.EventBus,
+	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 	caller caller,
 	uniqueStringFactory uniquestring.UniqueStringFactory,
@@ -35,7 +35,7 @@ func newOpCaller(
 ) opCaller {
 	return _opCaller{
 		bundle:              bundle,
-		eventBus:            eventBus,
+		pubSub:              pubSub,
 		dcgNodeRepo:         dcgNodeRepo,
 		caller:              caller,
 		uniqueStringFactory: uniqueStringFactory,
@@ -45,7 +45,7 @@ func newOpCaller(
 
 type _opCaller struct {
 	bundle              bundle.Bundle
-	eventBus            eventbus.EventBus
+	pubSub              pubsub.PubSub
 	dcgNodeRepo         dcgNodeRepo
 	caller              caller
 	uniqueStringFactory uniquestring.UniqueStringFactory
@@ -75,7 +75,7 @@ func (this _opCaller) Call(
 		opRef,
 	)
 	if nil != err {
-		this.eventBus.Publish(
+		this.pubSub.Publish(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEncounteredError: &model.OpEncounteredErrorEvent{
@@ -91,19 +91,24 @@ func (this _opCaller) Call(
 
 	// validate args
 	errs := []error{}
-	for _, input := range op.Inputs {
+	for inputName, input := range op.Inputs {
 		var arg *model.Data
 
 		// resolve var for input
 		switch {
 		case nil != input.Dir:
-			arg = inboundScope[input.Dir.Name]
+			arg = inboundScope[inputName]
 		case nil != input.File:
-			arg = inboundScope[input.File.Name]
+			arg = inboundScope[inputName]
 		case nil != input.Socket:
-			arg = inboundScope[input.Socket.Name]
+			arg = inboundScope[inputName]
 		case nil != input.String:
-			arg = inboundScope[input.String.Name]
+			if inScopeVar, ok := inboundScope[inputName]; ok {
+				arg = inScopeVar
+			} else {
+				// fallback to default
+				arg = &model.Data{String: input.String.Default}
+			}
 		}
 		errs = append(errs, this.validate.Param(arg, input)...)
 	}
@@ -112,7 +117,7 @@ func (this _opCaller) Call(
 		for _, err := range errs {
 			errStrings = append(errStrings, err.Error())
 		}
-		this.eventBus.Publish(
+		this.pubSub.Publish(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEncounteredError: &model.OpEncounteredErrorEvent{
@@ -134,7 +139,7 @@ func (this _opCaller) Call(
 			OpGraphId: opGraphId,
 		},
 	}
-	this.eventBus.Publish(opStartedEvent)
+	this.pubSub.Publish(opStartedEvent)
 
 	outboundScope, err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
@@ -148,7 +153,7 @@ func (this _opCaller) Call(
 
 		if nil == this.dcgNodeRepo.GetIfExists(opGraphId) {
 			// guard: op killed (we got preempted)
-			this.eventBus.Publish(
+			this.pubSub.Publish(
 				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
@@ -167,7 +172,7 @@ func (this _opCaller) Call(
 		var opOutcome string
 		if nil != err {
 			opOutcome = model.OpOutcomeFailed
-			this.eventBus.Publish(
+			this.pubSub.Publish(
 				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
@@ -182,7 +187,7 @@ func (this _opCaller) Call(
 			opOutcome = model.OpOutcomeSucceeded
 		}
 
-		this.eventBus.Publish(
+		this.pubSub.Publish(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{

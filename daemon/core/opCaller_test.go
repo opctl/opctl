@@ -1,10 +1,9 @@
 package core
 
 import (
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -20,7 +19,7 @@ var _ = Context("opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
 				new(bundle.Fake),
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				newDcgNodeRepo(),
 				new(fakeCaller),
 				new(uniquestring.Fake),
@@ -47,7 +46,7 @@ var _ = Context("opCaller", func() {
 
 			objectUnderTest := newOpCaller(
 				new(bundle.Fake),
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				fakeDcgNodeRepo,
 				new(fakeCaller),
 				new(uniquestring.Fake),
@@ -78,7 +77,7 @@ var _ = Context("opCaller", func() {
 
 			objectUnderTest := newOpCaller(
 				fakeBundle,
-				new(eventbus.Fake),
+				new(pubsub.Fake),
 				new(fakeDcgNodeRepo),
 				new(fakeCaller),
 				new(uniquestring.Fake),
@@ -97,7 +96,7 @@ var _ = Context("opCaller", func() {
 			Expect(fakeBundle.GetOpArgsForCall(0)).To(Equal(expectedOpRef))
 		})
 		Context("bundle.GetOp errors", func() {
-			It("should call eventBus.Publish w/ expected args", func() {
+			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedOpId := "dummyOpId"
@@ -120,11 +119,11 @@ var _ = Context("opCaller", func() {
 					errors.New(expectedEvent.OpEncounteredError.Msg),
 				)
 
-				fakeEventBus := new(eventbus.Fake)
+				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := newOpCaller(
 					fakeBundle,
-					fakeEventBus,
+					fakePubSub,
 					new(fakeDcgNodeRepo),
 					new(fakeCaller),
 					new(uniquestring.Fake),
@@ -140,7 +139,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				actualEvent := fakeEventBus.PublishArgsForCall(0)
+				actualEvent := fakePubSub.PublishArgsForCall(0)
 
 				// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -164,37 +163,34 @@ var _ = Context("opCaller", func() {
 				providedOpGraphId := "dummyOpGraphId"
 
 				opReturnedFromBundle := model.OpView{
-					Inputs: []*model.Param{
-						{
-							String: &model.StringParam{
-								Name: "dummyVar1Name",
-							},
+					Inputs: map[string]*model.Param{
+						"dummyVar1Name": {
+							String: &model.StringParam{},
 						},
-						{
-							File: &model.FileParam{
-								Name: "dummyVar2Name",
-							},
+						"dummyVar2Name": {
+							File: &model.FileParam{},
 						},
-						{
-							Dir: &model.DirParam{
-								Name: "dummyVar3Name",
-							},
+						"dummyVar3Name": {
+							Dir: &model.DirParam{},
 						},
-						{
-							Socket: &model.SocketParam{
-								Name: "dummyVar4Name",
-							},
+						"dummyVar4Name": {
+							Socket: &model.SocketParam{},
 						},
 					},
 				}
 				fakeBundle := new(bundle.Fake)
 				fakeBundle.GetOpReturns(opReturnedFromBundle, nil)
 
+				expectedCalls := map[*model.Data]*model.Param{}
+				for inputName, input := range opReturnedFromBundle.Inputs {
+					expectedCalls[providedInboundScope[inputName]] = input
+				}
+
 				fakeValidate := new(validate.Fake)
 
 				objectUnderTest := newOpCaller(
 					fakeBundle,
-					new(eventbus.Fake),
+					new(pubsub.Fake),
 					new(fakeDcgNodeRepo),
 					new(fakeCaller),
 					new(uniquestring.Fake),
@@ -210,14 +206,15 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				for paramIndex, expectedParam := range opReturnedFromBundle.Inputs {
-					actualVarData, actualParam := fakeValidate.ParamArgsForCall(paramIndex)
-					Expect(actualVarData).To(Equal(providedInboundScope[fmt.Sprintf("dummyVar%vName", paramIndex+1)]))
-					Expect(actualParam).To(Equal(expectedParam))
+				actualCalls := map[*model.Data]*model.Param{}
+				for i := 0; i < fakeValidate.ParamCallCount(); i++ {
+					actualVarData, actualParam := fakeValidate.ParamArgsForCall(i)
+					actualCalls[actualVarData] = actualParam
 				}
+				Expect(actualCalls).To(Equal(expectedCalls))
 			})
 			Context("validate.Param errors", func() {
-				It("should call eventBus.Publish w/ expected args", func() {
+				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
@@ -225,26 +222,18 @@ var _ = Context("opCaller", func() {
 					providedOpGraphId := "dummyOpGraphId"
 
 					opReturnedFromBundle := model.OpView{
-						Inputs: []*model.Param{
-							{
-								String: &model.StringParam{
-									Name: "dummyVar1Name",
-								},
+						Inputs: map[string]*model.Param{
+							"dummyVar1Name": {
+								String: &model.StringParam{},
 							},
-							{
-								File: &model.FileParam{
-									Name: "dummyVar2Name",
-								},
+							"dummyVar2Name": {
+								File: &model.FileParam{},
 							},
-							{
-								Dir: &model.DirParam{
-									Name: "dummyVar3Name",
-								},
+							"dummyVar3Name": {
+								Dir: &model.DirParam{},
 							},
-							{
-								Socket: &model.SocketParam{
-									Name: "dummyVar4Name",
-								},
+							"dummyVar4Name": {
+								Socket: &model.SocketParam{},
 							},
 						},
 					}
@@ -252,28 +241,27 @@ var _ = Context("opCaller", func() {
 					fakeBundle.GetOpReturns(opReturnedFromBundle, nil)
 
 					fakeValidate := new(validate.Fake)
-					validateErrMap := map[int][]error{}
-					expectedEventMsgSlice := []string{}
-					for inputIndex := range opReturnedFromBundle.Inputs {
-						errA := fmt.Errorf("dummyError%v.a", inputIndex)
-						errB := fmt.Errorf("dummyError%v.b", inputIndex)
-						validateErrMap[inputIndex] = []error{errA, errB}
-						expectedEventMsgSlice = append(expectedEventMsgSlice, errA.Error(), errB.Error())
+					expectedEventMsgParts := []string{
+						"error1Msg",
+						"error2Msg",
+						"error3Msg",
 					}
 					callIndex := 0
-					fakeValidate.ParamStub = func(arg *model.Data, param *model.Param) (errors []error) {
+					fakeValidate.ParamStub = func(arg *model.Data, param *model.Param) (errs []error) {
 						defer func() {
 							callIndex++
 						}()
-						errors = validateErrMap[callIndex]
+						if len(expectedEventMsgParts) > callIndex {
+							errs = []error{errors.New(expectedEventMsgParts[callIndex])}
+						}
 						return
 					}
 
-					fakeEventBus := new(eventbus.Fake)
+					fakePubSub := new(pubsub.Fake)
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEncounteredError: &model.OpEncounteredErrorEvent{
-							Msg:       strings.Join(expectedEventMsgSlice, "\n"),
+							Msg:       strings.Join(expectedEventMsgParts, "\n"),
 							OpId:      providedOpId,
 							OpRef:     providedOpRef,
 							OpGraphId: providedOpGraphId,
@@ -282,7 +270,7 @@ var _ = Context("opCaller", func() {
 
 					objectUnderTest := newOpCaller(
 						fakeBundle,
-						fakeEventBus,
+						fakePubSub,
 						new(fakeDcgNodeRepo),
 						new(fakeCaller),
 						new(uniquestring.Fake),
@@ -298,7 +286,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					/* assert */
-					actualEvent := fakeEventBus.PublishArgsForCall(0)
+					actualEvent := fakePubSub.PublishArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -309,7 +297,7 @@ var _ = Context("opCaller", func() {
 				})
 			})
 			Context("validate.Param doesn't error", func() {
-				It("should call eventBus.Publish w/ expected args", func() {
+				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
@@ -325,11 +313,11 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					fakeEventBus := new(eventbus.Fake)
+					fakePubSub := new(pubsub.Fake)
 
 					objectUnderTest := newOpCaller(
 						new(bundle.Fake),
-						fakeEventBus,
+						fakePubSub,
 						new(fakeDcgNodeRepo),
 						new(fakeCaller),
 						new(uniquestring.Fake),
@@ -345,7 +333,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					/* assert */
-					actualEvent := fakeEventBus.PublishArgsForCall(0)
+					actualEvent := fakePubSub.PublishArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -381,7 +369,7 @@ var _ = Context("opCaller", func() {
 
 					objectUnderTest := newOpCaller(
 						fakeBundle,
-						new(eventbus.Fake),
+						new(pubsub.Fake),
 						new(fakeDcgNodeRepo),
 						fakeCaller,
 						fakeUniqueStringFactory,
@@ -420,7 +408,7 @@ var _ = Context("opCaller", func() {
 
 					objectUnderTest := newOpCaller(
 						new(bundle.Fake),
-						new(eventbus.Fake),
+						new(pubsub.Fake),
 						fakeDcgNodeRepo,
 						new(fakeCaller),
 						new(uniquestring.Fake),
@@ -439,7 +427,7 @@ var _ = Context("opCaller", func() {
 					Expect(fakeDcgNodeRepo.GetIfExistsArgsForCall(0)).To(Equal(providedOpGraphId))
 				})
 				Context("dcgNodeRepo.GetIfExists returns nil", func() {
-					It("should call eventBus.Publish w/ expected args", func() {
+					It("should call pubSub.Publish w/ expected args", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
 						providedOpId := "dummyOpId"
@@ -456,11 +444,11 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeEventBus := new(eventbus.Fake)
+						fakePubSub := new(pubsub.Fake)
 
 						objectUnderTest := newOpCaller(
 							new(bundle.Fake),
-							fakeEventBus,
+							fakePubSub,
 							new(fakeDcgNodeRepo),
 							new(fakeCaller),
 							new(uniquestring.Fake),
@@ -476,7 +464,7 @@ var _ = Context("opCaller", func() {
 						)
 
 						/* assert */
-						actualEvent := fakeEventBus.PublishArgsForCall(1)
+						actualEvent := fakePubSub.PublishArgsForCall(1)
 
 						// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 						Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -499,7 +487,7 @@ var _ = Context("opCaller", func() {
 
 						objectUnderTest := newOpCaller(
 							new(bundle.Fake),
-							new(eventbus.Fake),
+							new(pubsub.Fake),
 							fakeDcgNodeRepo,
 							new(fakeCaller),
 							new(uniquestring.Fake),
@@ -518,7 +506,7 @@ var _ = Context("opCaller", func() {
 						Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedOpId))
 					})
 					Context("caller.Call errored", func() {
-						It("should call eventBus.Publish w/ expected args", func() {
+						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
@@ -538,7 +526,7 @@ var _ = Context("opCaller", func() {
 							fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 							fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-							fakeEventBus := new(eventbus.Fake)
+							fakePubSub := new(pubsub.Fake)
 
 							fakeCaller := new(fakeCaller)
 							fakeCaller.CallReturns(
@@ -548,7 +536,7 @@ var _ = Context("opCaller", func() {
 
 							objectUnderTest := newOpCaller(
 								new(bundle.Fake),
-								fakeEventBus,
+								fakePubSub,
 								fakeDcgNodeRepo,
 								fakeCaller,
 								new(uniquestring.Fake),
@@ -564,7 +552,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							/* assert */
-							actualEvent := fakeEventBus.PublishArgsForCall(1)
+							actualEvent := fakePubSub.PublishArgsForCall(1)
 
 							// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 							Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -573,7 +561,7 @@ var _ = Context("opCaller", func() {
 
 							Expect(actualEvent).To(Equal(expectedEvent))
 						})
-						It("should call eventBus.Publish w/ expected args", func() {
+						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
@@ -593,7 +581,7 @@ var _ = Context("opCaller", func() {
 							fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 							fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-							fakeEventBus := new(eventbus.Fake)
+							fakePubSub := new(pubsub.Fake)
 
 							fakeCaller := new(fakeCaller)
 							fakeCaller.CallReturns(
@@ -603,7 +591,7 @@ var _ = Context("opCaller", func() {
 
 							objectUnderTest := newOpCaller(
 								new(bundle.Fake),
-								fakeEventBus,
+								fakePubSub,
 								fakeDcgNodeRepo,
 								fakeCaller,
 								new(uniquestring.Fake),
@@ -619,7 +607,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							/* assert */
-							actualEvent := fakeEventBus.PublishArgsForCall(2)
+							actualEvent := fakePubSub.PublishArgsForCall(2)
 
 							// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 							Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -630,7 +618,7 @@ var _ = Context("opCaller", func() {
 						})
 					})
 					Context("caller.Call didn't error", func() {
-						It("should call eventBus.Publish w/ expected args", func() {
+						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
@@ -650,11 +638,11 @@ var _ = Context("opCaller", func() {
 							fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 							fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-							fakeEventBus := new(eventbus.Fake)
+							fakePubSub := new(pubsub.Fake)
 
 							objectUnderTest := newOpCaller(
 								new(bundle.Fake),
-								fakeEventBus,
+								fakePubSub,
 								fakeDcgNodeRepo,
 								new(fakeCaller),
 								new(uniquestring.Fake),
@@ -670,7 +658,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							/* assert */
-							actualEvent := fakeEventBus.PublishArgsForCall(1)
+							actualEvent := fakePubSub.PublishArgsForCall(1)
 
 							// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
 							Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))

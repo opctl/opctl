@@ -69,7 +69,7 @@ func New(
 		exiter:         exiter,
 		engineClient:   engineclient.New(),
 		output:         output,
-		paramSatisfier: newParamSatisfier(colorer, exiter, validate.New(), vos.New()),
+		paramSatisfier: newParamSatisfier(colorer, exiter, output, validate.New(), vos.New()),
 		updater:        updater.New(),
 		vos:            vos.New(),
 		writer:         os.Stdout,
