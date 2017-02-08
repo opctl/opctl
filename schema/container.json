@@ -31,7 +31,7 @@
         },
         "value": {
           "description": "Value of the env var",
-          "type": "#/definitions/interpolatedString"
+          "$ref": "#/definitions/interpolatedString"
         }
       }
     },

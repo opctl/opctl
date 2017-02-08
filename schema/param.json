@@ -3,84 +3,76 @@
   "id": "https://spec.opspec.io/0.1.3/schema/param.json",
   "title": "param",
   "description": "Parameter of an op",
+  "type": "object",
+  "properties": {
+    "description": {
+      "description": "Description of the parameter",
+      "type": "string"
+    },
+    "isSecret": {
+      "description": "If the parameter is secret",
+      "type": "boolean"
+    }
+  },
   "oneOf": [
     {
-      "$ref": "#/definitions/dirParam"
+      "properties": {
+        "dir": {
+          "$ref": "#/definitions/dirParam"
+        }
+      },
+      "required": [
+        "dir"
+      ]
     },
     {
-      "$ref": "#/definitions/fileParam"
+      "properties": {
+        "file": {
+          "$ref": "#/definitions/fileParam"
+        }
+      },
+      "required": [
+        "file"
+      ]
     },
     {
-      "$ref": "#/definitions/socketParam"
+      "properties": {
+        "socket": {
+          "$ref": "#/definitions/socketParam"
+        }
+      },
+      "required": [
+        "socket"
+      ]
     },
     {
-      "$ref": "#/definitions/stringParam"
+      "properties": {
+        "string": {
+          "$ref": "#/definitions/stringParam"
+        }
+      },
+      "required": [
+        "string"
+      ]
     }
   ],
+  "additionalProperties": false,
   "definitions": {
     "dirParam": {
       "title": "dirParam",
       "description": "Directory parameter of an op",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Description of the parameter",
-          "type": "string"
-        },
-        "isSecret": {
-          "description": "If the directory is secret",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
       "additionalProperties": false
     },
     "fileParam": {
       "title": "fileParam",
       "description": "File parameter of an op",
       "type": "object",
-      "properties": {
-        "description": {
-          "description": "Description of the parameter",
-          "type": "string"
-        },
-        "isSecret": {
-          "description": "If the file is secret",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
       "additionalProperties": false
     },
     "socketParam": {
       "title": "socketParam",
       "description": "Socket parameter of an op",
       "type": "object",
-      "properties": {
-        "description": {
-          "description": "Description of the parameter",
-          "type": "string"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
       "additionalProperties": false
     },
     "stringParam": {
@@ -88,29 +80,21 @@
       "description": "String parameter of an op",
       "type": "object",
       "properties": {
-        "constraints": {
-          "$ref": "constraints.json#/definitions/stringConstraints"
+        "length": {
+          "$ref": "constraints.json#/definitions/stringLengthConstraint"
+        },
+        "patterns": {
+          "description": "Constrains a string to match patterns",
+          "type": "array",
+          "items": {
+            "$ref": "constraints.json#/definitions/stringPatternConstraint"
+          }
         },
         "default": {
           "description": "Default value of the parameter",
           "type": "string"
-        },
-        "description": {
-          "description": "Description of the parameter",
-          "type": "string"
-        },
-        "isSecret": {
-          "description": "If the string is secret",
-          "type": "boolean"
-        },
-        "name": {
-          "description": "Name of the parameter",
-          "type": "string"
         }
       },
-      "required": [
-        "name"
-      ],
       "additionalProperties": false
     }
   }
