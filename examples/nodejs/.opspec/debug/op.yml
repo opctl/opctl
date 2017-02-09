@@ -1,15 +1,15 @@
 name: debug
 description: Ensures deps are installed and debugs the node app
 inputs:
-  - string: { name: NPM_REGISTRY_ADDRESS }
-  - string: { name: NPM_REGISTRY_PATH, isSecret: true }
-  - dir: { name: APP_DIR, description: Directory containing the app }
+  app_dir: { dir:, description: directory containing a nodejs app }
+  npm_registry_address: { string: }
+  npm_registry_path: { string:, isSecret: true}
 outputs:
-  - dir: { name: APP_DIR, description: Directory containing the app (returned to support caching) }
+  app_dir: { dir:, description: directory containing a nodejs app }
 run:
   serial:
     - op:
         ref: install-deps
-        inputs: { NPM_REGISTRY_ADDRESS, NPM_REGISTRY_PATH, APP_DIR }
-        outputs: { APP_DIR }
-    - op: { ref: debug-api, inputs: { APP_DIR } }
+        inputs: { npm_registry_address, npm_registry_path, app_dir }
+        outputs: { app_dir }
+    - op: { ref: debug-api, inputs: { app_dir } }

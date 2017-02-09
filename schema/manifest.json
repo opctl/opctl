@@ -53,16 +53,21 @@
         },
         "inputs": {
           "description": "Inputs to the op",
-          "type": "array",
-          "items": {
-            "$ref": "param.json"
-          }
+          "type": "object",
+          "patternProperties": {
+            "[-_.a-zA-Z0-9]+": {
+              "$ref": "param.json"
+            }
+          },
+          "additionalProperties": false
         },
         "outputs": {
           "description": "Outputs from the op",
-          "type": "array",
-          "items": {
-            "$ref": "param.json"
+          "type": "object",
+          "patternProperties": {
+            "[-_.a-zA-Z0-9]+": {
+              "$ref": "param.json"
+            }
           }
         },
         "run": {
@@ -92,3 +97,4 @@
     }
   }
 }
+

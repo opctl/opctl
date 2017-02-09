@@ -1,17 +1,17 @@
 name: install-deps
 description: installs npm packages
 inputs:
-  - string: { name: NPM_REGISTRY_ADDRESS }
-  - string: { name: NPM_REGISTRY_PATH, isSecret: true }
-  - dir: { name: APP_DIR, description: Directory containing the app }
+  app_dir: { dir:, description: directory containing a nodejs app }
+  npm_registry_address: { string: }
+  npm_registry_path: { string:, isSecret: true }
 outputs:
-  - dir: { name: APP_DIR, description: Directory containing the app }
+  app_dir: { dir:, description: directory containing a nodejs app }
 run:
   container:
     cmd: [ npm, install ]
     envVars:
-      NPM_CONFIG_REGISTRY: { value: 'https://$(NPM_REGISTRY_ADDRESS)$(NPM_REGISTRY_PATH)' }
+      NPM_CONFIG_REGISTRY: { value: 'https://$(npm_registry_address)$(npm_registry_path)' }
     dirs:
-      /opt/app: { bind: APP_DIR }
+      /opt/app: { bind: app_dir }
     image: node:7.4
     workDir: /opt/app
