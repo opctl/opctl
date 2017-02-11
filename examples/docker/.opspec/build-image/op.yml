@@ -1,15 +1,21 @@
 name: build-image
 description: Builds a docker image
 inputs:
-  build_context: { dir:, description: context to use for docker build }
-  dockerd_socket: { socket:, description: socket for a docker daemon }
-  image_ref: { string:, description: docker image reference }
+  buildContext:
+    dir:
+      description: context to use for docker build
+  dockerSocket:
+    socket:
+      description: socket for docker daemon
+  imageRef:
+    string:
+      constraints: { format: docker-image-ref }
 run:
   container:
-    cmd: [ docker, build, -t, $(image_ref), . ]
+    cmd: [ docker, build, -t, $(imageRef), . ]
     dirs:
-      /opt/app: { bind: build_context }
+      /opt/app: { bind: buildContext }
     image: docker:1.13
     sockets:
-      /var/run/docker.sock: { bind: dockerd_socket }
+      /var/run/docker.sock: { bind: dockerSocket }
     workDir: /opt/app

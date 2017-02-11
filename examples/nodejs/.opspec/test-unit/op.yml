@@ -1,11 +1,13 @@
 name: test-unit
 description: Runs unit tests
 inputs:
-  app_dir: { dir:, description: directory containing a nodejs app }
+  appDir:
+    dir:
+      description: directory containing the app
 run:
   container:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     dirs:
-      /opt/app: { bind: app_dir }
+      /opt/app: { bind: appDir }
     image: node:7.4
     workDir: /opt/app
