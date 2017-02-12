@@ -1,0 +1,40 @@
+name: create-resource-group
+description: creates a resource group if it doesn't already exist
+inputs:
+  subscriptionId:
+    string:
+      constraints: { minLength: 1}
+      isSecret: true
+  username:
+    string:
+      constraints: { format: email }
+      isSecret: true
+  password:
+    string:
+      constraints: { minLength: 1 }
+      isSecret: true
+  location:
+    string:
+      constraints: { enum: [ westus, centralus, eastus ] }
+      default: westus
+  resourceGroupName:
+    string:
+      constraints: { minLength: 1 }
+run:
+  container:
+    image: microsoft/azure-cli
+    cmd:
+      - sh
+      - -ce
+      - |
+        ### login to azure
+        azure login -u "$(username)" -p "$(password)"
+
+        ### set the default subscription id
+        azure account set "$(subscriptionId)"
+
+        ### switch the mode to azure resource manager
+        azure config mode arm
+
+        # ensure resource resourceGroup exists
+        azure group create --name "$(resourceGroupName)" --location "$(location)"

@@ -1,14 +1,17 @@
 name: test
 description: Runs all tests
 inputs:
-  app_dir: { dir:, description: directory containing a nodejs app }
-  npm_registry_address: { string: }
-  npm_registry_path: { string:, isSecret: true }
+  appDir:
+    dir:
+      description: directory containing the app
+  npmRegistryUrl:
+    string:
+      constraints: { format: uri }
 run:
   serial:
-    - op: { ref: install-deps, inputs: { npm_registry_address, npm_registry_path }, outputs: { app_dir } }
+    - op: { ref: install-deps, inputs: { npmRegistryUrl }, outputs: { appDir } }
     - parallel:
-      - op: { ref: debug-api, inputs: { app_dir }, outputs: { api_socket }}
-      - op: { ref: test-unit, inputs: { app_dir } }
-      - op: { ref: test-style, inputs: { app_dir } }
-      - op: { ref: test-acceptance, inputs: { app_dir, api_socket } }
+      - op: { ref: debug-api, inputs: { appDir }, outputs: { apiSocket }}
+      - op: { ref: test-unit, inputs: { appDir } }
+      - op: { ref: test-style, inputs: { appDir } }
+      - op: { ref: test-acceptance, inputs: { appDir, apiSocket } }

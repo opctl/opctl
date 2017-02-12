@@ -1,16 +1,27 @@
 name: login
 description: Logs in to a docker registry
 inputs:
-  docker_password: { string:, description: password for docker registry, isSecret: true }
-  dockerd_socket: { socket:, description: socket for a docker daemon }
-  docker_username: { string:, description: username for docker registry, isSecret: true }
+  dockerPassword:
+    string:
+      constraints: { minLength: 1 }
+      isSecret: true
+  dockerSocket:
+    socket:
+      description: socket for docker daemon
+  dockerUsername:
+    string:
+      constraints: { format: email }
+      isSecret: true
 outputs:
-  docker_config: { file:, description: config for docker CLI, isSecret: true }
+  dockerConfig:
+    file:
+      description: config for docker CLI
+      isSecret: true
 run:
   container:
-    cmd: [ docker, login, -u, $(docker_username), -p, $(docker_password) ]
+    cmd: [ docker, login, -u, $(dockerUsername), -p, $(dockerPassword) ]
     files:
-      /root/.docker/config.json: { bind: docker_config }
+      /root/.docker/config.json: { bind: dockerConfig }
     image: docker:1.13
     sockets:
-      /var/run/docker.sock: { bind: dockerd_socket }
+      /var/run/docker.sock: { bind: dockerSocket }

@@ -1,14 +1,21 @@
 name: push-image
 description: Pushes a local image to a registry
 inputs:
-  dockerd_socket: { socket:, description: socket for a docker daemon }
-  docker_config: { file:, description: config for docker CLI, isSecret: true }
-  image_ref: { string:, description: docker image reference }
+  dockerSocket:
+    socket:
+      description: socket for docker daemon
+  dockerConfig:
+    file:
+      description: config for docker CLI
+      isSecret: true
+  imageRef:
+    string:
+      constraints: { format: docker-image-ref }
 run:
   container:
-    cmd: [ docker, push, $(image_ref) ]
+    cmd: [ docker, push, $(imageRef) ]
     files:
-      /root/.docker/config.json: { bind: docker_config }
+      /root/.docker/config.json: { bind: dockerConfig }
     image: docker:1.13
     sockets:
-      /var/run/docker.sock: { bind: dockerd_socket }
+      /var/run/docker.sock: { bind: dockerSocket }
