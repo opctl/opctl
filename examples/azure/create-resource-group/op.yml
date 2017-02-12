@@ -4,11 +4,9 @@ inputs:
   subscriptionId:
     string:
       constraints: { minLength: 1}
-      isSecret: true
   username:
     string:
       constraints: { format: email }
-      isSecret: true
   password:
     string:
       constraints: { minLength: 1 }

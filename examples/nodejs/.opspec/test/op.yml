@@ -7,6 +7,7 @@ inputs:
   npmRegistryUrl:
     string:
       constraints: { format: uri }
+      default: https://npmjs.org/
 run:
   serial:
     - op: { ref: install-deps, inputs: { npmRegistryUrl }, outputs: { appDir } }
