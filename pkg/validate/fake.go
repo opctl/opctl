@@ -8,10 +8,10 @@ import (
 )
 
 type Fake struct {
-	ParamStub        func(arg *model.Data, param *model.Param) (errors []error)
-	paramMutex       sync.RWMutex
-	paramArgsForCall []struct {
-		arg   *model.Data
+	ParamStub          func(value *model.Data, param *model.Param) (errors []error)
+	paramMutex         sync.RWMutex
+	paramValuesForCall []struct {
+		value *model.Data
 		param *model.Param
 	}
 	paramReturns struct {
@@ -21,16 +21,16 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Param(arg *model.Data, param *model.Param) (errors []error) {
+func (fake *Fake) Param(value *model.Data, param *model.Param) (errors []error) {
 	fake.paramMutex.Lock()
-	fake.paramArgsForCall = append(fake.paramArgsForCall, struct {
-		arg   *model.Data
+	fake.paramValuesForCall = append(fake.paramValuesForCall, struct {
+		value *model.Data
 		param *model.Param
-	}{arg, param})
-	fake.recordInvocation("Param", []interface{}{arg, param})
+	}{value, param})
+	fake.recordInvocation("Param", []interface{}{value, param})
 	fake.paramMutex.Unlock()
 	if fake.ParamStub != nil {
-		return fake.ParamStub(arg, param)
+		return fake.ParamStub(value, param)
 	} else {
 		return fake.paramReturns.result1
 	}
@@ -39,13 +39,13 @@ func (fake *Fake) Param(arg *model.Data, param *model.Param) (errors []error) {
 func (fake *Fake) ParamCallCount() int {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
-	return len(fake.paramArgsForCall)
+	return len(fake.paramValuesForCall)
 }
 
-func (fake *Fake) ParamArgsForCall(i int) (*model.Data, *model.Param) {
+func (fake *Fake) ParamValuesForCall(i int) (*model.Data, *model.Param) {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
-	return fake.paramArgsForCall[i].arg, fake.paramArgsForCall[i].param
+	return fake.paramValuesForCall[i].value, fake.paramValuesForCall[i].param
 }
 
 func (fake *Fake) ParamReturns(result1 []error) {
@@ -63,7 +63,7 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *Fake) recordInvocation(key string, args []interface{}) {
+func (fake *Fake) recordInvocation(key string, values []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -72,7 +72,7 @@ func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	if fake.invocations[key] == nil {
 		fake.invocations[key] = [][]interface{}{}
 	}
-	fake.invocations[key] = append(fake.invocations[key], args)
+	fake.invocations[key] = append(fake.invocations[key], values)
 }
 
 var _ Validate = new(Fake)

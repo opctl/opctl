@@ -91,26 +91,19 @@ var _ = Describe("_opViewFactory", func() {
 		It("should return expected opView", func() {
 
 			/* arrange */
-			dummyParams := []*model.Param{
-				{
+			dummyParams := map[string]*model.Param{
+				"dummyName": {
 					String: &model.StringParam{
+						Constraints: &model.StringConstraints{
+							MinLength: 0,
+							MaxLength: 1000,
+							Pattern:   "dummyPattern",
+							Format:    "dummyFormat",
+							Enum:      []string{"dummyEnumItem1"},
+						},
 						Default:     "dummyDefault",
 						Description: "dummyDescription",
-						Constraints: &model.StringConstraints{
-							Length: &model.StringLengthConstraint{
-								Min:         0,
-								Max:         1000,
-								Description: "dummyStringLengthConstraintDescription",
-							},
-							Patterns: []*model.StringPatternConstraint{
-								{
-									Regex:       ".*",
-									Description: "dummyStringPatternConstraintDescription",
-								},
-							},
-						},
-						Name:     "dummyName",
-						IsSecret: true,
+						IsSecret:    true,
 					},
 				},
 			}
@@ -292,27 +285,33 @@ var _ = Describe("_opViewFactory", func() {
 				expectedOpView := model.OpView{
 					Description: "Logs in to a docker registry",
 					Name:        "login",
-					Inputs: []*model.Param{
-						{
+					Inputs: map[string]*model.Param{
+						"dockerPassword": {
 							String: &model.StringParam{
-								Name:        "DOCKER_PASSWORD",
-								Description: "Password for docker registry",
-								IsSecret:    true,
+								Constraints: &model.StringConstraints{
+									MinLength: 1,
+								},
+								IsSecret: true,
 							},
 						},
-						{
+						"dockerUsername": {
 							String: &model.StringParam{
-								Name:        "DOCKER_USERNAME",
-								Description: "Username for docker registry",
-								IsSecret:    true,
+								Constraints: &model.StringConstraints{
+									Format: "email",
+								},
+								IsSecret: true,
+							},
+						},
+						"dockerSocket": {
+							Socket: &model.SocketParam{
+								Description: "socket for docker daemon",
 							},
 						},
 					},
-					Outputs: []*model.Param{
-						{
+					Outputs: map[string]*model.Param{
+						"dockerConfig": {
 							File: &model.FileParam{
-								Name:        "DOCKER_CONFIG",
-								Description: "Can be used for caching",
+								Description: "config for docker CLI",
 								IsSecret:    true,
 							},
 						},
@@ -320,23 +319,19 @@ var _ = Describe("_opViewFactory", func() {
 					Run: &model.Scg{
 						Container: &model.ScgContainerCall{
 							Cmd: []string{
-								"sh",
-								"-c",
-								`# start dockerd
-dockerd &>/dev/null &
-
-echo sleeping for 2 sec to allow dockerd enough time to startup
-sleep 2
-
-docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
-`,
+								"docker", "login", "-u", "$(dockerUsername)", "-p", "$(dockerPassword)",
 							},
 							Files: map[string]*model.ScgContainerFile{
 								"/root/.docker/config.json": {
-									Bind: "DOCKER_CONFIG",
+									Bind: "dockerConfig",
 								},
 							},
-							Image: "docker:1.12-dind",
+							Image: "docker:1.13",
+							Sockets: map[string]*model.ScgContainerSocket{
+								"/var/run/docker.sock": {
+									Bind: "dockerSocket",
+								},
+							},
 						},
 					},
 				}
@@ -370,30 +365,24 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 				expectedOpView := model.OpView{
 					Description: "Ensures deps are installed and debugs the node app",
 					Name:        "debug",
-					Inputs: []*model.Param{
-						{
+					Inputs: map[string]*model.Param{
+						"npmRegistryUrl": {
 							String: &model.StringParam{
-								Name: "NPM_REGISTRY_ADDRESS",
+								Constraints: &model.StringConstraints{
+									Format: "uri",
+								},
 							},
 						},
-						{
-							String: &model.StringParam{
-								Name:     "NPM_REGISTRY_PATH",
-								IsSecret: true,
-							},
-						},
-						{
+						"appDir": {
 							Dir: &model.DirParam{
-								Name:        "APP_DIR",
-								Description: "Directory containing the app",
+								Description: "directory containing the app",
 							},
 						},
 					},
-					Outputs: []*model.Param{
-						{
+					Outputs: map[string]*model.Param{
+						"appDir": {
 							Dir: &model.DirParam{
-								Name:        "APP_DIR",
-								Description: "Directory containing the app (returned to support caching)",
+								Description: "directory containing the app",
 							},
 						},
 					},
@@ -403,12 +392,11 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 								Op: &model.ScgOpCall{
 									Ref: "install-deps",
 									Inputs: map[string]string{
-										"NPM_REGISTRY_ADDRESS": "",
-										"NPM_REGISTRY_PATH":    "",
-										"APP_DIR":              "",
+										"npmRegistryUrl": "",
+										"appDir":         "",
 									},
 									Outputs: map[string]string{
-										"APP_DIR": "",
+										"appDir": "",
 									},
 								},
 							},
@@ -416,7 +404,7 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 								Op: &model.ScgOpCall{
 									Ref: "debug-api",
 									Inputs: map[string]string{
-										"APP_DIR": "",
+										"appDir": "",
 									},
 								},
 							},
@@ -453,17 +441,15 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 				expectedOpView := model.OpView{
 					Description: "Runs acceptance tests",
 					Name:        "test-acceptance",
-					Inputs: []*model.Param{
-						{
+					Inputs: map[string]*model.Param{
+						"appDir": {
 							Dir: &model.DirParam{
-								Name:        "APP_DIR",
-								Description: "Directory containing the app",
+								Description: "directory containing the app",
 							},
 						},
-						{
+						"apiSocket": {
 							Socket: &model.SocketParam{
-								Name:        "API_SOCKET",
-								Description: "Socket for the API under test",
+								Description: "socket for the API",
 							},
 						},
 					},
@@ -477,13 +463,13 @@ docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
 							},
 							Dirs: map[string]*model.ScgContainerDir{
 								"/opt/app": {
-									Bind: "APP_DIR",
+									Bind: "appDir",
 								},
 							},
 							Image: "node:7.4",
 							Sockets: map[string]*model.ScgContainerSocket{
 								"api:80": {
-									Bind: "API_SOCKET",
+									Bind: "apiSocket",
 								},
 							},
 							WorkDir: "/opt/app",

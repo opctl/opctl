@@ -38,8 +38,8 @@ var _ = Describe("_getOp", func() {
 			/* arrange */
 			expectedOpView := model.OpView{
 				Description: "dummyDescription",
-				Inputs:      []*model.Param{},
-				Outputs:     []*model.Param{},
+				Inputs:      map[string]*model.Param{},
+				Outputs:     map[string]*model.Param{},
 				Name:        "dummyName",
 				Run: &model.Scg{
 					Op: &model.ScgOpCall{

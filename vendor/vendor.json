@@ -3,6 +3,18 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "Gj+xR1VgFKKmFXYOJMnAczC3Znk=",
+			"path": "github.com/docker/distribution/digestset",
+			"revision": "b1993c95303df3d0214129d85382c3c573e4df20",
+			"revisionTime": "2017-02-07T22:24:14Z"
+		},
+		{
+			"checksumSHA1": "V6JHiPCGQc5iaRyqRtiTGq7RNpM=",
+			"path": "github.com/docker/distribution/reference",
+			"revision": "b1993c95303df3d0214129d85382c3c573e4df20",
+			"revisionTime": "2017-02-07T22:24:14Z"
+		},
+		{
 			"checksumSHA1": "klfNfdEPsrWYLps2qBkLgfJsNYI=",
 			"path": "github.com/gorilla/websocket",
 			"revision": "2d1e4548da234d9cb742cc3628556fef86aafbac",
@@ -183,10 +195,34 @@
 			"revisionTime": "2016-09-11T05:10:23Z"
 		},
 		{
+			"checksumSHA1": "qj7IAU2RRq99oaIEGH0eLfX/UcM=",
+			"path": "github.com/opencontainers/go-digest",
+			"revision": "aa2ec055abd10d26d539eb630a92241b781ce4bc",
+			"revisionTime": "2017-01-31T01:35:07Z"
+		},
+		{
 			"checksumSHA1": "Qm7DuiE3Cn0+CelfV9tggSPNG0k=",
 			"path": "github.com/sethgrid/pester",
 			"revision": "2a102734c18c43c74fd0664e06cd414cf9602b93",
 			"revisionTime": "2016-09-16T18:34:45Z"
+		},
+		{
+			"checksumSHA1": "drSl/ipSHSsHWWTrp3WZw4LN/No=",
+			"path": "github.com/xeipuuv/gojsonpointer",
+			"revision": "e0fe6f68307607d540ed8eac07a342c33fa1b54a",
+			"revisionTime": "2015-10-27T08:21:46Z"
+		},
+		{
+			"checksumSHA1": "pSoUW+qY6LwIJ5lFwGohPU5HUpg=",
+			"path": "github.com/xeipuuv/gojsonreference",
+			"revision": "e02fc20de94c78484cd5ffb007f8af96be030a45",
+			"revisionTime": "2015-08-08T06:50:54Z"
+		},
+		{
+			"checksumSHA1": "AxKv5GkuhsWKCctpgDjMprrE5fo=",
+			"path": "github.com/xeipuuv/gojsonschema",
+			"revision": "6b67b3fab74d992bd07f72550006ab2c6907c416",
+			"revisionTime": "2017-02-10T23:36:22Z"
 		},
 		{
 			"checksumSHA1": "vu7njn8O4vhFtmgGWntwjA2NAbk=",

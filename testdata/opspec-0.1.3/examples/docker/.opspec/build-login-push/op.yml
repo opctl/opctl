@@ -1,12 +1,25 @@
 name: build-login-push
 description: Builds an image, logs in to a docker registry, and pushes the image to it.
 inputs:
-  - string: { name: DOCKER_PASSWORD, description: Password for docker registry, isSecret: true}
-  - string: { name: DOCKER_USERNAME, description: Username for docker registry, isSecret: true}
-  - string: { name: IMAGE_REF, description: 'Docker image reference. pseudo regex: "((registry/)?namespace/)?repo(:tag)?)"' }
-  - dir: { name: BUILD_CONTEXT }
+  buildContext:
+    dir:
+      description: context to use for docker build
+  dockerPassword:
+    string:
+      constraints: { minLength: 1 }
+      isSecret: true
+  dockerSocket:
+    socket:
+      description: socket for docker daemon
+  dockerUsername:
+    string:
+      constraints: { format: email }
+      isSecret: true
+  imageRef:
+    string:
+      constraints: { format: docker-image-ref }
 run:
   serial:
-    - op: { ref: build-image, inputs: { BUILD_CONTEXT, IMAGE_REF } }
-    - op: { ref: login, inputs: { DOCKER_PASSWORD, DOCKER_USERNAME }, outputs: { DOCKER_CONFIG } }
-    - op: { ref: push-image, inputs: { DOCKER_CONFIG, IMAGE_REF } }
+    - op: { ref: build-image, inputs: { buildContext, dockerSocket, imageRef } }
+    - op: { ref: login, inputs: { dockerSocket, dockerPassword, dockerUsername }, outputs: { dockerConfig } }
+    - op: { ref: push-image, inputs: { dockerConfig, dockerSocket, imageRef } }

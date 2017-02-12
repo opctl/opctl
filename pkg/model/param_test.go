@@ -18,7 +18,6 @@ var _ = Describe("Param", func() {
 				/* arrange */
 				expectedParam := Param{
 					Dir: &DirParam{
-						Name:        "dummyName",
 						Description: "dummyDescription",
 						IsSecret:    true,
 					},
@@ -47,7 +46,6 @@ var _ = Describe("Param", func() {
 				/* arrange */
 				expectedParam := Param{
 					File: &FileParam{
-						Name:        "dummyName",
 						Description: "dummyDescription",
 						IsSecret:    true,
 					},
@@ -76,7 +74,6 @@ var _ = Describe("Param", func() {
 				/* arrange */
 				expectedParam := Param{
 					Socket: &SocketParam{
-						Name:        "dummyName",
 						Description: "dummyDescription",
 						IsSecret:    true,
 					},
@@ -106,21 +103,29 @@ var _ = Describe("Param", func() {
 				expectedParam := Param{
 					String: &StringParam{
 						Default:     "dummyDefault",
-						Description: "dummyDescription",
+						Description: "dummyParamDescription",
 						Constraints: &StringConstraints{
-							Length: &StringLengthConstraint{
-								Min:         0,
-								Max:         1000,
-								Description: "dummyStringLengthConstraintDescription",
-							},
-							Patterns: []*StringPatternConstraint{
+							AllOf: []*StringConstraints{
 								{
-									Regex:       ".*",
-									Description: "dummyStringPatternConstraintDescription",
+									MaxLength: 2,
 								},
 							},
+							AnyOf: []*StringConstraints{
+								{
+									Pattern: "xyz",
+								},
+							},
+							Enum:      []string{"dummyEnumItem1", "dummyEnumItem2"},
+							Format:    "dummyFormat",
+							MaxLength: 1000,
+							MinLength: 0,
+							OneOf: []*StringConstraints{
+								{
+									MinLength: 0,
+								},
+							},
+							Pattern: "dummyPattern",
 						},
-						Name:     "dummyName",
 						IsSecret: true,
 					},
 				}

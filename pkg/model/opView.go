@@ -2,9 +2,9 @@ package model
 
 type OpView struct {
 	Description string
-	Inputs      []*Param
+	Inputs      map[string]*Param
 	Name        string
-	Outputs     []*Param
+	Outputs     map[string]*Param
 	Run         *Scg
 	Version     string
 }

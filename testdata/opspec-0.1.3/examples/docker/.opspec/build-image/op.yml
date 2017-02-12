@@ -1,23 +1,21 @@
 name: build-image
 description: Builds a docker image
 inputs:
-  - string: { name: IMAGE_REF, description: 'Docker image reference. pseudo regex: "((registry/)?namespace/)?repo(:tag)?)"' }
-  - dir: { name: BUILD_CONTEXT }
+  buildContext:
+    dir:
+      description: context to use for docker build
+  dockerSocket:
+    socket:
+      description: socket for docker daemon
+  imageRef:
+    string:
+      constraints: { format: docker-image-ref }
 run:
   container:
-    cmd:
-      - sh
-      - -c
-      - |
-        # start dockerd
-        dockerd &>/dev/null &
-
-        echo sleeping for 2 sec to allow dockerd enough time to startup
-        sleep 2
-
-        # build image
-        docker build -t $(IMAGE_REF) .
+    cmd: [ docker, build, -t, $(imageRef), . ]
     dirs:
-      /opt/app: { bind: BUILD_CONTEXT }
-    image: docker:1.12-dind
+      /opt/app: { bind: buildContext }
+    image: docker:1.13
+    sockets:
+      /var/run/docker.sock: { bind: dockerSocket }
     workDir: /opt/app
