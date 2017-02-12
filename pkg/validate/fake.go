@@ -8,9 +8,9 @@ import (
 )
 
 type Fake struct {
-	ParamStub          func(value *model.Data, param *model.Param) (errors []error)
-	paramMutex         sync.RWMutex
-	paramValuesForCall []struct {
+	ParamStub        func(value *model.Data, param *model.Param) (errors []error)
+	paramMutex       sync.RWMutex
+	paramArgsForCall []struct {
 		value *model.Data
 		param *model.Param
 	}
@@ -23,7 +23,7 @@ type Fake struct {
 
 func (fake *Fake) Param(value *model.Data, param *model.Param) (errors []error) {
 	fake.paramMutex.Lock()
-	fake.paramValuesForCall = append(fake.paramValuesForCall, struct {
+	fake.paramArgsForCall = append(fake.paramArgsForCall, struct {
 		value *model.Data
 		param *model.Param
 	}{value, param})
@@ -39,13 +39,13 @@ func (fake *Fake) Param(value *model.Data, param *model.Param) (errors []error) 
 func (fake *Fake) ParamCallCount() int {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
-	return len(fake.paramValuesForCall)
+	return len(fake.paramArgsForCall)
 }
 
-func (fake *Fake) ParamValuesForCall(i int) (*model.Data, *model.Param) {
+func (fake *Fake) ParamArgsForCall(i int) (*model.Data, *model.Param) {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
-	return fake.paramValuesForCall[i].value, fake.paramValuesForCall[i].param
+	return fake.paramArgsForCall[i].value, fake.paramArgsForCall[i].param
 }
 
 func (fake *Fake) ParamReturns(result1 []error) {
@@ -63,7 +63,7 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *Fake) recordInvocation(key string, values []interface{}) {
+func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -72,7 +72,7 @@ func (fake *Fake) recordInvocation(key string, values []interface{}) {
 	if fake.invocations[key] == nil {
 		fake.invocations[key] = [][]interface{}{}
 	}
-	fake.invocations[key] = append(fake.invocations[key], values)
+	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
 var _ Validate = new(Fake)
