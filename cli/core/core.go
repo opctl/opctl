@@ -1,6 +1,9 @@
 package core
 
 import (
+	"github.com/opspec-io/opctl/util/cliexiter"
+	"github.com/opspec-io/opctl/util/clioutput"
+	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/opctl/util/vos"
@@ -60,31 +63,31 @@ func New(
 	colorer colorer.Colorer,
 ) Core {
 
-	output := newOutput(colorer, os.Stderr, os.Stdout)
-	exiter := newExiter(output, vos.New())
+	cliOutput := clioutput.New(colorer, os.Stderr, os.Stdout)
+	cliExiter := cliexiter.New(cliOutput, vos.New())
 
 	return &_core{
-		bundle:         bundle.New(),
-		colorer:        colorer,
-		exiter:         exiter,
-		engineClient:   engineclient.New(),
-		output:         output,
-		paramSatisfier: newParamSatisfier(colorer, exiter, output, validate.New(), vos.New()),
-		updater:        updater.New(),
-		vos:            vos.New(),
-		writer:         os.Stdout,
+		bundle:            bundle.New(),
+		colorer:           colorer,
+		cliExiter:         cliExiter,
+		engineClient:      engineclient.New(),
+		cliOutput:         cliOutput,
+		cliParamSatisfier: cliparamsatisfier.New(colorer, cliExiter, cliOutput, validate.New(), vos.New()),
+		updater:           updater.New(),
+		vos:               vos.New(),
+		writer:            os.Stdout,
 	}
 
 }
 
 type _core struct {
-	bundle         bundle.Bundle
-	colorer        colorer.Colorer
-	exiter         exiter
-	engineClient   engineclient.EngineClient
-	output         output
-	paramSatisfier paramSatisfier
-	updater        updater.Updater
-	vos            vos.Vos
-	writer         io.Writer
+	bundle            bundle.Bundle
+	colorer           colorer.Colorer
+	cliExiter         cliexiter.CliExiter
+	engineClient      engineclient.EngineClient
+	cliOutput         clioutput.CliOutput
+	cliParamSatisfier cliparamsatisfier.CliParamSatisfier
+	updater           updater.Updater
+	vos               vos.Vos
+	writer            io.Writer
 }

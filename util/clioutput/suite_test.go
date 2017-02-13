@@ -1,4 +1,4 @@
-package uniquestring
+package clioutput
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/util/uniquestring")
+	RunSpecs(t, "opctl/util/clioutput")
 }
