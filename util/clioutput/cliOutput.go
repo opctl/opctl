@@ -4,7 +4,7 @@ package clioutput
 
 import (
 	"fmt"
-	"github.com/opspec-io/opctl/util/colorer"
+	"github.com/opspec-io/opctl/util/clicolorer"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"io"
 	"time"
@@ -30,29 +30,29 @@ type CliOutput interface {
 }
 
 func New(
-	colorer colorer.Colorer,
+	cliColorer clicolorer.CliColorer,
 	errWriter io.Writer,
 	stdWriter io.Writer,
 ) CliOutput {
 	return _cliOutput{
-		colorer:   colorer,
-		errWriter: errWriter,
-		stdWriter: stdWriter,
+		cliColorer: cliColorer,
+		errWriter:  errWriter,
+		stdWriter:  stdWriter,
 	}
 }
 
 type _cliOutput struct {
-	colorer   colorer.Colorer
-	errWriter io.Writer
-	stdWriter io.Writer
+	cliColorer clicolorer.CliColorer
+	errWriter  io.Writer
+	stdWriter  io.Writer
 }
 
 func (this _cliOutput) Attention(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.colorer.Attention(format, values...))
+	fmt.Fprintln(this.stdWriter, this.cliColorer.Attention(format, values...))
 }
 
 func (this _cliOutput) Error(format string, values ...interface{}) {
-	fmt.Fprintln(this.errWriter, this.colorer.Error(format, values...))
+	fmt.Fprintln(this.errWriter, this.cliColorer.Error(format, values...))
 }
 
 func (this _cliOutput) Event(event *model.Event) {
@@ -139,9 +139,9 @@ func (this _cliOutput) opStarted(event *model.Event) {
 }
 
 func (this _cliOutput) Info(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.colorer.Info(format, values...))
+	fmt.Fprintln(this.stdWriter, this.cliColorer.Info(format, values...))
 }
 
 func (this _cliOutput) Success(format string, values ...interface{}) {
-	fmt.Fprintln(this.stdWriter, this.colorer.Success(format, values...))
+	fmt.Fprintln(this.stdWriter, this.cliColorer.Success(format, values...))
 }

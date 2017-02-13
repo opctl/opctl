@@ -454,7 +454,7 @@ func AfterSuite(body interface{}, timeout ...float64) bool {
 }
 
 //SynchronizedBeforeSuite blocks are primarily meant to solve the problem of setting up singleton external resources shared across
-//nodes when running tests in parallel.  For example, say you have a shared database that you can only start one instance of that
+//pkg/nodes when running tests in parallel.  For example, say you have a shared database that you can only start one instance of that
 //must be used in your tests.  When running in parallel, only one node should set up the database and all other nodes should wait
 //until that node is done before running.
 //

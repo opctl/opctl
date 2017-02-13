@@ -5,8 +5,8 @@ package main
 import (
 	mow "github.com/jawher/mow.cli"
 	"github.com/opspec-io/opctl/cli/core"
-	"github.com/opspec-io/opctl/node"
-	"github.com/opspec-io/opctl/util/colorer"
+	"github.com/opspec-io/opctl/pkg/node"
+	"github.com/opspec-io/opctl/util/clicolorer"
 )
 
 type cli interface {
@@ -15,7 +15,7 @@ type cli interface {
 
 func newCli(
 	core core.Core,
-	colorer colorer.Colorer,
+	cliColorer clicolorer.CliColorer,
 ) cli {
 
 	cli := mow.App("opctl", "Cross platform runtime for https://opspec.io")
@@ -24,11 +24,11 @@ func newCli(
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
 	cli.Before = func() {
 		if *noColor {
-			colorer.Disable()
+			cliColorer.Disable()
 		}
 	}
 
-	cli.Command("collection", "Collection related actions", func(collectionCmd *mow.Cmd) {
+	cli.Command("collection", "Manage collections", func(collectionCmd *mow.Cmd) {
 
 		collectionCmd.Command("create", "Create a collection", func(createCmd *mow.Cmd) {
 
@@ -73,8 +73,11 @@ func newCli(
 		}
 	})
 
-	cli.Command("node", "Node related actions", func(nodeCmd *mow.Cmd) {
+	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
+		nodeCmd.Command("ls", "List nodes", func(lsCmd *mow.Cmd) {
+			lsCmd.StringOpt("p provider ", "docker", "Filter by provider (currently only 'docker' supported)")
+		})
 		nodeCmd.Command("create", "Creates an opctl node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
 				createCmd.StringOpt("p provider ", "docker", "Provider of the node (currently only 'docker' supported)")
@@ -84,7 +87,7 @@ func newCli(
 
 	})
 
-	cli.Command("op", "Op related actions", func(opCmd *mow.Cmd) {
+	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
 
 		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
 			collection := createCmd.StringOpt("c collection", ".opspec", "Collection to embed op in (use '' to not embed)")

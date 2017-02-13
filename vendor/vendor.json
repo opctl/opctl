@@ -483,18 +483,6 @@
 			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
-			"checksumSHA1": "twMiFGskcu/7mN7ljLeu1pV9PNI=",
-			"path": "github.com/opspec-io/sdk-golang/pkg/engineprovider",
-			"revision": "b798636b50428b0ab3d47054505b1e3f55df7e7c",
-			"revisionTime": "2017-01-05T06:37:26Z"
-		},
-		{
-			"checksumSHA1": "XYDTr8RyIBecnic5D3N2ZTM1sX8=",
-			"path": "github.com/opspec-io/sdk-golang/pkg/engineprovider/providers/docker",
-			"revision": "b798636b50428b0ab3d47054505b1e3f55df7e7c",
-			"revisionTime": "2017-01-05T06:37:26Z"
-		},
-		{
 			"checksumSHA1": "a66MSqHL9K9pDxKhZNMWqisDW7M=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/interpolate",
 			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
