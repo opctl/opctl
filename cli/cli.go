@@ -5,7 +5,7 @@ package main
 import (
 	mow "github.com/jawher/mow.cli"
 	"github.com/opspec-io/opctl/cli/core"
-	"github.com/opspec-io/opctl/daemon"
+	"github.com/opspec-io/opctl/node"
 	"github.com/opspec-io/opctl/util/colorer"
 )
 
@@ -52,19 +52,13 @@ func newCli(
 		})
 	})
 
-	cli.Command("daemon", "Run the opctl daemon", func(daemonCmd *mow.Cmd) {
-		daemonCmd.Action = func() {
-			daemon.New()
-		}
-	})
-
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
 			core.StreamEvents()
 		}
 	})
 
-	cli.Command("kill", "Kill an op graph", func(killCmd *mow.Cmd) {
+	cli.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
 		opId := killCmd.StringArg("OP_GRAPH_ID", "", "Id of the op graph to kill")
 
 		killCmd.Action = func() {
@@ -77,6 +71,17 @@ func newCli(
 		lsCmd.Action = func() {
 			core.ListOpsInCollection(*collection)
 		}
+	})
+
+	cli.Command("node", "Node related actions", func(nodeCmd *mow.Cmd) {
+
+		nodeCmd.Command("create", "Creates an opctl node", func(createCmd *mow.Cmd) {
+			createCmd.Action = func() {
+				createCmd.StringOpt("p provider ", "docker", "Provider of the node (currently only 'docker' supported)")
+				node.New()
+			}
+		})
+
 	})
 
 	cli.Command("op", "Op related actions", func(opCmd *mow.Cmd) {

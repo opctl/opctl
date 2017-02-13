@@ -25,10 +25,10 @@ Options:
 
 Commands:
   collection    Collection related actions
-  daemon        Run the opctl daemon
   events        Stream events
-  kill          Kill an op graph
+  kill          Kill an op
   ls            List ops in a collection
+  node          Node related actions
   op            Op related actions
   run           Run an op
   self-update   Update opctl
@@ -39,8 +39,10 @@ Run 'opctl COMMAND --help' for more information on a command.
 # Releases
 
 for every release:
+
 - source code will be [tagged](https://github.com/opspec-io/opctl/tags).
-- platform specific binaries/installers will be made available on [opspec.io/opctl](https://opspec.io/opctl/)
+- platform specific binaries/installers will be made available on
+  [opspec.io/opctl](https://opspec.io/opctl/)
 
 # Versioning
 

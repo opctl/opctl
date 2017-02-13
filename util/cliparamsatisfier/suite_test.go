@@ -1,4 +1,4 @@
-package uniquestring
+package cliparamsatisfier
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/util/uniquestring")
+	RunSpecs(t, "opctl/util/cliparamsatisfier")
 }
