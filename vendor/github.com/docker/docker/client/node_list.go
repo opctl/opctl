@@ -24,7 +24,7 @@ func (cli *Client) NodeList(ctx context.Context, options types.NodeListOptions) 
 		query.Set("filters", filterJSON)
 	}
 
-	resp, err := cli.get(ctx, "/nodes", query, nil)
+	resp, err := cli.get(ctx, "/pkg/nodes", query, nil)
 	if err != nil {
 		return nil, err
 	}

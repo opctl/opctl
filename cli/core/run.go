@@ -72,7 +72,7 @@ func (this _core) RunOp(
 			if intSignalsReceived == 0 {
 
 				intSignalsReceived++
-				fmt.Println(this.colorer.Error("Gracefully stopping... (signal Control-C again to force)"))
+				fmt.Println(this.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
 				this.engineClient.KillOp(
 					model.KillOpReq{

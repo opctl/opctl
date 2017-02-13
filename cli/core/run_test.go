@@ -5,10 +5,10 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/util/clicolorer"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
-	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
@@ -336,7 +336,7 @@ var _ = Context("runOp", func() {
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
-												colorer:           colorer.New(),
+												cliColorer:        clicolorer.New(),
 												engineClient:      fakeEngineClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
@@ -377,7 +377,7 @@ var _ = Context("runOp", func() {
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
-												colorer:           colorer.New(),
+												cliColorer:        clicolorer.New(),
 												engineClient:      fakeEngineClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
@@ -419,7 +419,7 @@ var _ = Context("runOp", func() {
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
-												colorer:           colorer.New(),
+												cliColorer:        clicolorer.New(),
 												engineClient:      fakeEngineClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
@@ -460,7 +460,7 @@ var _ = Context("runOp", func() {
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
-												colorer:           colorer.New(),
+												cliColorer:        clicolorer.New(),
 												engineClient:      fakeEngineClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),

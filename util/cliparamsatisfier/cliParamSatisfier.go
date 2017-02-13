@@ -5,9 +5,9 @@ package cliparamsatisfier
 import (
 	"bytes"
 	"fmt"
+	"github.com/opspec-io/opctl/util/clicolorer"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
-	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
@@ -29,7 +29,7 @@ type CliParamSatisfier interface {
 }
 
 func New(
-	colorer colorer.Colorer,
+	cliColorer clicolorer.CliColorer,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	validate validate.Validate,
@@ -37,20 +37,20 @@ func New(
 ) CliParamSatisfier {
 
 	return &_cliParamSatisfier{
-		colorer:   colorer,
-		cliExiter: cliExiter,
-		cliOutput: cliOutput,
-		validate:  validate,
-		vos:       vos,
+		cliColorer: cliColorer,
+		cliExiter:  cliExiter,
+		cliOutput:  cliOutput,
+		validate:   validate,
+		vos:        vos,
 	}
 }
 
 type _cliParamSatisfier struct {
-	colorer   colorer.Colorer
-	cliExiter cliexiter.CliExiter
-	cliOutput clioutput.CliOutput
-	validate  validate.Validate
-	vos       vos.Vos
+	cliColorer clicolorer.CliColorer
+	cliExiter  cliexiter.CliExiter
+	cliOutput  clioutput.CliOutput
+	validate   validate.Validate
+	vos        vos.Vos
 }
 
 func (this _cliParamSatisfier) Satisfy(

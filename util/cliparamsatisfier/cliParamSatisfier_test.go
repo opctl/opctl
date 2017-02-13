@@ -5,9 +5,9 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/util/clicolorer"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
-	"github.com/opspec-io/opctl/util/colorer"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -24,7 +24,7 @@ var _ = Context("parameterSatisfier", func() {
 					param1Value := &model.Data{String: "dummyParam1Value"}
 
 					objectUnderTest := New(
-						new(colorer.Fake),
+						new(clicolorer.Fake),
 						new(cliexiter.Fake),
 						new(clioutput.Fake),
 						new(validate.Fake),
@@ -56,7 +56,7 @@ var _ = Context("parameterSatisfier", func() {
 					fakeVos.GetenvReturns(param1Value.String)
 
 					objectUnderTest := New(
-						new(colorer.Fake),
+						new(clicolorer.Fake),
 						new(cliexiter.Fake),
 						new(clioutput.Fake),
 						new(validate.Fake),
@@ -92,7 +92,7 @@ var _ = Context("parameterSatisfier", func() {
 						fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
 
 						objectUnderTest := New(
-							new(colorer.Fake),
+							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							new(validate.Fake),
@@ -118,7 +118,7 @@ var _ = Context("parameterSatisfier", func() {
 					It("should not return them in the argMap", func() {
 						/* arrange */
 						objectUnderTest := New(
-							new(colorer.Fake),
+							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							new(validate.Fake),
@@ -150,7 +150,7 @@ var _ = Context("parameterSatisfier", func() {
 				expectedResult := map[string]*model.Data{}
 
 				objectUnderTest := New(
-					new(colorer.Fake),
+					new(clicolorer.Fake),
 					new(cliexiter.Fake),
 					new(clioutput.Fake),
 					new(validate.Fake),

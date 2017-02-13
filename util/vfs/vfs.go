@@ -1,6 +1,6 @@
 package vfs
 
-//go:generate counterfeiter -o ./fake/vfs.go --fake-name FileInfo ../../../os/types.go FileInfo
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Vfs
 
 import "os"
 
