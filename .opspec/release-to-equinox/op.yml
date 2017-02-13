@@ -1,0 +1,6 @@
+description: performs a release to equinox.io by compiling binaries and uploading them
+name: release-to-equinox
+inputs:
+- { name: EQUINOX_TOKEN, description: equinox.io auth token, isSecret: true }
+- { name: EQUINOX_SIGNING_KEY, description: signing key for artifacts published to equinox.io, isSecret: true }
+- { name: VERSION, description: opctl version }

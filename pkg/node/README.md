@@ -1,1 +1,1 @@
-opctl/pkg/node/ implements an opctl node
+opctl/pkg/node/ implements opctl node

@@ -1,6 +1,6 @@
 version: "2"
 services:
-  release-publish:
+  release-to-equinox:
     extends:
       service: go
       file: ../.common/docker-compose.yml
