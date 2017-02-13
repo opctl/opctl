@@ -76,9 +76,11 @@ var _ = Context("_exiter", func() {
 				Expect(fakeOutput.SuccessArgsForCall(0)).
 					Should(Equal(providedExitReq.Message))
 			})
-			It("should not call vos.Exit", func() {
+			It("should call vos.Exit w/ expected args", func() {
 				/* arrange */
-				providedExitReq := ExitReq{}
+				providedExitReq := ExitReq{
+					Code: 0,
+				}
 				fakeVos := new(vos.Fake)
 				objectUnderTest := newExiter(
 					new(fakeOutput),
@@ -89,7 +91,7 @@ var _ = Context("_exiter", func() {
 				objectUnderTest.Exit(providedExitReq)
 
 				/* assert */
-				Expect(fakeVos.ExitCallCount()).Should(Equal(0))
+				Expect(fakeVos.ExitArgsForCall(0)).Should(Equal(0))
 			})
 		})
 	})

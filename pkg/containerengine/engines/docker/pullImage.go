@@ -6,7 +6,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/reference"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"golang.org/x/net/context"
 	"io"
 )
@@ -15,7 +15,7 @@ func (this _containerEngine) pullImage(
 	imageRef string,
 	containerId string,
 	opGraphId string,
-	eventPublisher eventbus.EventPublisher,
+	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 	// ensure tag present in image string.
 	// if not present, docker defaults to downloading all tags

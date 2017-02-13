@@ -3,7 +3,7 @@ package docker
 import (
 	"bufio"
 	"github.com/docker/docker/api/types"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 	"io"
@@ -11,7 +11,7 @@ import (
 )
 
 func (this _containerEngine) stdOutLogger(
-	eventPublisher eventbus.EventPublisher,
+	eventPublisher pubsub.EventPublisher,
 	containerId string,
 	opGraphId string,
 ) (err error) {

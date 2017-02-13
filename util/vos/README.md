@@ -1,7 +1,8 @@
-operating system interface & implementation
+## problem statement
 
-why does this package exist?
+lib abstracting os interactions
 
-- Testing os dependent code in isolation from the os
-  requires an os interface, but this is not builtin to the
-  standard lib.
+## features
+
+- API exposed via interface
+- fake implementation to allow faking interactions

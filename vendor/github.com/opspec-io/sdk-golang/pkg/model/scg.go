@@ -19,7 +19,7 @@ type ScgContainerCall struct {
 	WorkDir string                         `yaml:"workDir,omitempty"`
 }
 
-// entry in a containers env; an env var
+// env var in a container
 type ScgContainerEnvVar struct {
 	Bind string `yaml:"bind,omitempty"`
 	// value string will be interpolated

@@ -1,97 +1,90 @@
 package validate
 
 import (
+	"errors"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"regexp"
-	"unicode/utf8"
+	"github.com/opspec-io/sdk-golang/util/format"
+	"github.com/xeipuuv/gojsonschema"
+	"strings"
 )
 
-// validates an arg against a parameter
+// validates an value against a parameter
 func (this validate) Param(
-	arg *model.Data,
+	value *model.Data,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {
+		// panic as errs represents validation errors not execution errors
 		panic("param required")
 	}
 
 	switch {
 	case nil != param.String:
-		errs = this.stringParam(arg, param.String)
+		errs = this.stringParam(value, param.String)
 	case nil != param.Socket:
-		errs = this.socketParam(arg, param.Socket)
+		errs = this.socketParam(value, param.Socket)
 	}
 	return
 }
 
-// validates an arg against a string parameter
+// validates an value against a string parameter
 func (this validate) stringParam(
-	rawArg *model.Data,
+	rawValue *model.Data,
 	param *model.StringParam,
 ) (errs []error) {
 	errs = []error{}
 
-	// handle no arg passed
-	if nil == rawArg {
-		errs = append(errs, fmt.Errorf("%v required", param.Name))
+	// handle no value passed
+	if nil == rawValue {
+		errs = append(errs, errors.New("String required"))
 		return
 	}
 
-	arg := rawArg.String
-	if "" == arg && "" != param.Default {
-		// apply default if arg not set
-		arg = param.Default
+	value := rawValue.String
+	if "" == value && "" != param.Default {
+		// apply default if value not set
+		value = param.Default
 	}
 
 	// guard no constraints
 	if nil == param.Constraints {
 		return
 	}
-	lengthConstraint := param.Constraints.Length
-	if nil != lengthConstraint {
-		length := utf8.RuneCountInString(arg)
-		if lengthConstraint.Min > 0 && length < lengthConstraint.Min {
-			errs = append(errs, fmt.Errorf(
-				"%v must be >= %v characters",
-				param.Name,
-				lengthConstraint.Min,
-			))
-		}
-		if lengthConstraint.Max > 0 && length > lengthConstraint.Max {
-			errs = append(errs, fmt.Errorf(
-				"%v must be <= %v characters",
-				param.Name,
-				lengthConstraint.Max,
-			))
-		}
+
+	constraintsJsonBytes, err := format.NewJsonFormat().From(param.Constraints)
+	if err != nil {
+		// panic as errs represents validation errors not execution errors
+		panic(err.Error())
 	}
-	patternConstraints := param.Constraints.Patterns
-	if len(patternConstraints) > 0 {
-		for _, patternConstraint := range patternConstraints {
-			isMatch, _ := regexp.MatchString(patternConstraint.Regex, arg)
-			if !isMatch {
-				errs = append(errs, fmt.Errorf(
-					"%v must match pattern %v",
-					param.Name,
-					patternConstraint.Regex,
-				))
-			}
-		}
+
+	result, err := gojsonschema.Validate(
+		gojsonschema.NewStringLoader(string(constraintsJsonBytes)),
+		gojsonschema.NewStringLoader(fmt.Sprintf(`"%v"`, value)),
+	)
+	if err != nil {
+		// panic as errs represents validation errors not execution errors
+		panic(err.Error())
 	}
+
+	for _, errString := range result.Errors() {
+		// enum validation errors include `(root) ` prefix we don't want
+		errs = append(errs, errors.New(strings.TrimPrefix(errString.Description(), "(root) ")))
+	}
+
 	return
 }
 
-// validates an arg against a network socket parameter
+// validates an value against a network socket parameter
 func (this validate) socketParam(
-	rawArg *model.Data,
+	rawValue *model.Data,
 	param *model.SocketParam,
 ) (errs []error) {
 	errs = []error{}
 
-	// handle no arg passed
-	if nil == rawArg || "" == rawArg.Socket {
-		errs = append(errs, fmt.Errorf("%v required", param.Name))
+	// handle no value passed
+	if nil == rawValue || "" == rawValue.Socket {
+		errs = append(errs, errors.New("Socket required"))
 	}
 	return
 }

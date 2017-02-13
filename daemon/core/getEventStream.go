@@ -7,7 +7,7 @@ func (this _core) GetEventStream(
 	subscriberEventChannel chan model.Event,
 ) (err error) {
 
-	this.eventBus.RegisterSubscriber(req.Filter, subscriberEventChannel)
+	this.pubSub.RegisterSubscriber(req.Filter, subscriberEventChannel)
 
 	return
 }

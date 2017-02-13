@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"
@@ -78,7 +78,7 @@ var _ = Context("StartContainer", func() {
 		}
 
 		/* act */
-		objectUnderTest.StartContainer(providedReq, new(eventbus.FakeEventPublisher))
+		objectUnderTest.StartContainer(providedReq, new(pubsub.FakeEventPublisher))
 
 		/* assert */
 		_,

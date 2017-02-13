@@ -4,19 +4,21 @@ package validate
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 type Validate interface {
-	// validates an arg against a parameter
 	Param(
-		arg *model.Data,
+		value *model.Data,
 		param *model.Param,
 	) (errors []error)
 }
 
 func New() Validate {
-	return &validate{}
+	// register custom format checkers
+	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
+
+	return validate{}
 }
 
-type validate struct {
-}
+type validate struct{}

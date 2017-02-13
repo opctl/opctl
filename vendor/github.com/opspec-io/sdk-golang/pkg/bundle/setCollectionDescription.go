@@ -14,7 +14,7 @@ func (this _bundle) SetCollectionDescription(
 	collectionManifestBytes, err := this.fileSystem.GetBytesOfFile(
 		pathToCollectionManifest,
 	)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 
@@ -23,14 +23,14 @@ func (this _bundle) SetCollectionDescription(
 		collectionManifestBytes,
 		&collectionManifest,
 	)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 
 	collectionManifest.Description = req.Description
 
 	collectionManifestBytes, err = this.yaml.From(&collectionManifest)
-	if (nil != err) {
+	if nil != err {
 		return
 	}
 

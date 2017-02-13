@@ -12,6 +12,9 @@ import (
 
 // allows mocking/faking output
 type output interface {
+	// outputs a msg requiring attention
+	Attention(format string, values ...interface{})
+
 	// outputs an error msg
 	Error(format string, values ...interface{})
 
@@ -43,8 +46,12 @@ type _output struct {
 	stdWriter io.Writer
 }
 
+func (this _output) Attention(format string, values ...interface{}) {
+	fmt.Fprintln(this.stdWriter, this.colorer.Attention(format, values...))
+}
+
 func (this _output) Error(format string, values ...interface{}) {
-	fmt.Fprint(this.errWriter, this.colorer.Error(format, values...))
+	fmt.Fprintln(this.errWriter, this.colorer.Error(format, values...))
 }
 
 func (this _output) Event(event *model.Event) {
@@ -86,11 +93,11 @@ func (this _output) containerStarted(event *model.Event) {
 }
 
 func (this _output) containerStdErrWrittenTo(event *model.Event) {
-	fmt.Fprintf(this.errWriter, "%v \n", string(event.ContainerStdErrWrittenTo.Data))
+	fmt.Fprintln(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
 }
 
 func (this _output) containerStdOutWrittenTo(event *model.Event) {
-	fmt.Fprintf(this.stdWriter, "%v \n", string(event.ContainerStdOutWrittenTo.Data))
+	fmt.Fprintln(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
 func (this _output) opEncounteredError(event *model.Event) {
@@ -131,9 +138,9 @@ func (this _output) opStarted(event *model.Event) {
 }
 
 func (this _output) Info(format string, values ...interface{}) {
-	fmt.Fprint(this.stdWriter, this.colorer.Info(format, values...))
+	fmt.Fprintln(this.stdWriter, this.colorer.Info(format, values...))
 }
 
 func (this _output) Success(format string, values ...interface{}) {
-	fmt.Fprint(this.stdWriter, this.colorer.Success(format, values...))
+	fmt.Fprintln(this.stdWriter, this.colorer.Success(format, values...))
 }

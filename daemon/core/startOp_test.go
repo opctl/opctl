@@ -4,8 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/pkg/containerengine/engines/fake"
-	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/opctl/util/pathnormalizer"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"time"
@@ -34,7 +34,7 @@ var _ = Context("core", func() {
 
 			objectUnderTest := _core{
 				containerEngine:     new(fake.ContainerEngine),
-				eventBus:            new(eventbus.Fake),
+				pubSub:              new(pubsub.Fake),
 				opCaller:            fakeOpCaller,
 				pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 				dcgNodeRepo:         new(fakeDcgNodeRepo),

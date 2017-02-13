@@ -13,7 +13,7 @@ func newContainerStartReq(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
-	inputs []*model.Param,
+	inputs map[string]*model.Param,
 	opGraphId string,
 ) *containerengine.StartContainerReq {
 
@@ -106,16 +106,16 @@ func newContainerStartReq(
 		}
 	}
 
-	for _, input := range inputs {
+	for inputName, input := range inputs {
 		switch {
 		case nil != input.String:
 			stringInput := input.String
 
 			// obtain inputValue
 			inputValue := ""
-			if _, isArgForInput := currentScope[stringInput.Name]; isArgForInput {
+			if _, isArgForInput := currentScope[inputName]; isArgForInput {
 				// use provided arg for param
-				inputValue = currentScope[stringInput.Name].String
+				inputValue = currentScope[inputName].String
 			} else {
 				// no provided arg for param; fallback to default
 				inputValue = stringInput.Default
@@ -123,10 +123,10 @@ func newContainerStartReq(
 
 			// interpolate interpolatedStrings w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.Interpolate(cmdEntry, stringInput.Name, inputValue)
+				cmd[cmdEntryIndex] = interpolate.Interpolate(cmdEntry, inputName, inputValue)
 			}
 			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.Interpolate(containerEnvVar, stringInput.Name, inputValue)
+				envVars[containerEnvVarName] = interpolate.Interpolate(containerEnvVar, inputName, inputValue)
 			}
 		}
 	}

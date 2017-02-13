@@ -8,10 +8,10 @@ import (
 )
 
 type Fake struct {
-	ParamStub        func(arg *model.Data, param *model.Param) (errors []error)
+	ParamStub        func(value *model.Data, param *model.Param) (errors []error)
 	paramMutex       sync.RWMutex
 	paramArgsForCall []struct {
-		arg   *model.Data
+		value *model.Data
 		param *model.Param
 	}
 	paramReturns struct {
@@ -21,16 +21,16 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Param(arg *model.Data, param *model.Param) (errors []error) {
+func (fake *Fake) Param(value *model.Data, param *model.Param) (errors []error) {
 	fake.paramMutex.Lock()
 	fake.paramArgsForCall = append(fake.paramArgsForCall, struct {
-		arg   *model.Data
+		value *model.Data
 		param *model.Param
-	}{arg, param})
-	fake.recordInvocation("Param", []interface{}{arg, param})
+	}{value, param})
+	fake.recordInvocation("Param", []interface{}{value, param})
 	fake.paramMutex.Unlock()
 	if fake.ParamStub != nil {
-		return fake.ParamStub(arg, param)
+		return fake.ParamStub(value, param)
 	} else {
 		return fake.paramReturns.result1
 	}
@@ -45,7 +45,7 @@ func (fake *Fake) ParamCallCount() int {
 func (fake *Fake) ParamArgsForCall(i int) (*model.Data, *model.Param) {
 	fake.paramMutex.RLock()
 	defer fake.paramMutex.RUnlock()
-	return fake.paramArgsForCall[i].arg, fake.paramArgsForCall[i].param
+	return fake.paramArgsForCall[i].value, fake.paramArgsForCall[i].param
 }
 
 func (fake *Fake) ParamReturns(result1 []error) {

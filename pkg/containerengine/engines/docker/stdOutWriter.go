@@ -2,14 +2,14 @@ package docker
 
 import (
 	"bufio"
-	"github.com/opspec-io/opctl/util/eventbus"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"io"
 	"time"
 )
 
 func NewStdOutWriter(
-	eventPublisher eventbus.EventPublisher,
+	eventPublisher pubsub.EventPublisher,
 	containerId string,
 	opGraphId string,
 ) io.Writer {

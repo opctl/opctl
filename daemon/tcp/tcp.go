@@ -29,8 +29,8 @@ func (this _api) Start() {
 	router := mux.NewRouter()
 
 	router.Handle(
-		getEventBusRelUrlTemplate,
-		this.compositionRoot.GetEventBusHandler(),
+		getPubSubRelUrlTemplate,
+		this.compositionRoot.GetEventStreamHandler(),
 	).Methods(http.MethodGet)
 
 	router.Handle(

@@ -473,14 +473,14 @@
 		{
 			"checksumSHA1": "yIES+Woe9vevGyB5ECC3yANTRsA=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/bundle",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
 			"checksumSHA1": "KxUdC7hQGdMIYcWTKeVbpR8Auf8=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/engineclient",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
 			"checksumSHA1": "twMiFGskcu/7mN7ljLeu1pV9PNI=",
@@ -497,44 +497,44 @@
 		{
 			"checksumSHA1": "a66MSqHL9K9pDxKhZNMWqisDW7M=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/interpolate",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
-			"checksumSHA1": "xN2KRphPn0NtgvXIftcmw8ICHGE=",
+			"checksumSHA1": "HJR69SdM7C53L+1SET3MOfCZZWA=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/model",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
-			"checksumSHA1": "Er2S/7WUCe1utRgM08w9bCvfjow=",
+			"checksumSHA1": "H71uJj52p1Zf+0AiaQhmoJuc5jg=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/validate",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
 			"checksumSHA1": "gvDqEBf1FkABsTdSzw0zOCaBNgA=",
 			"path": "github.com/opspec-io/sdk-golang/util/format",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
 			"checksumSHA1": "G1zI6cvH1Lk2VuIKZbufHGnRp90=",
 			"path": "github.com/opspec-io/sdk-golang/util/fs",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
 			"checksumSHA1": "vsGPCGARopV4vIhGFMq1d09egok=",
 			"path": "github.com/opspec-io/sdk-golang/util/http",
-			"revision": "7f8c3ea9c76a283575de046768dc94e323e7eec3",
-			"revisionTime": "2017-01-28T22:30:54Z"
+			"revision": "e0626dfe2df7d7c46e083556a97f253c2fc24f0a",
+			"revisionTime": "2017-02-12T07:47:36Z"
 		},
 		{
-			"checksumSHA1": "qyhCKeUC8KlzUYM+etFNMqmgvik=",
+			"checksumSHA1": "4SfJoLxQlfSSQjBIMqK+IgNxLMk=",
 			"path": "github.com/peterh/liner",
-			"revision": "3c5f577f62ec95a012ea48a58dd4de3c48222a35",
-			"revisionTime": "2016-11-03T18:00:30Z"
+			"revision": "bf27d3ba8e1d9899d45a457ffac16c953eb2d647",
+			"revisionTime": "2017-02-11T19:53:22Z"
 		},
 		{
 			"checksumSHA1": "ynJSWoF6v+3zMnh9R0QmmG6iGV8=",
@@ -547,6 +547,24 @@
 			"path": "github.com/sethgrid/pester",
 			"revision": "2c5fb962da6113d0968907fd81dba3ca35151d1c",
 			"revisionTime": "2016-12-29T17:44:48Z"
+		},
+		{
+			"checksumSHA1": "drSl/ipSHSsHWWTrp3WZw4LN/No=",
+			"path": "github.com/xeipuuv/gojsonpointer",
+			"revision": "e0fe6f68307607d540ed8eac07a342c33fa1b54a",
+			"revisionTime": "2015-10-27T08:21:46Z"
+		},
+		{
+			"checksumSHA1": "pSoUW+qY6LwIJ5lFwGohPU5HUpg=",
+			"path": "github.com/xeipuuv/gojsonreference",
+			"revision": "e02fc20de94c78484cd5ffb007f8af96be030a45",
+			"revisionTime": "2015-08-08T06:50:54Z"
+		},
+		{
+			"checksumSHA1": "AxKv5GkuhsWKCctpgDjMprrE5fo=",
+			"path": "github.com/xeipuuv/gojsonschema",
+			"revision": "6b67b3fab74d992bd07f72550006ab2c6907c416",
+			"revisionTime": "2017-02-10T23:36:22Z"
 		},
 		{
 			"checksumSHA1": "9jjO5GjLa0XF/nfWihF02RoH4qc=",

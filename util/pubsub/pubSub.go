@@ -1,7 +1,7 @@
-package eventbus
+package pubsub
 
 //go:generate counterfeiter -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ EventBus
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
 	"fmt"
@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
-func New() EventBus {
+func New() PubSub {
 
-	objectUnderConstruction := &eventBus{
+	objectUnderConstruction := &pubSub{
 		pendingPublishesChannel: make(chan model.Event),
 		subscriberMutex:         sync.RWMutex{},
 		subscribers:             make(map[chan model.Event]*model.EventFilter),
@@ -31,7 +31,7 @@ type EventPublisher interface {
 	)
 }
 
-type EventBus interface {
+type PubSub interface {
 	EventPublisher
 
 	RegisterSubscriber(
@@ -44,13 +44,13 @@ type EventBus interface {
 	)
 }
 
-type eventBus struct {
+type pubSub struct {
 	pendingPublishesChannel chan model.Event
 	subscriberMutex         sync.RWMutex
 	subscribers             map[chan model.Event]*model.EventFilter
 }
 
-func (this *eventBus) init() {
+func (this *pubSub) init() {
 
 	for {
 		event := <-this.pendingPublishesChannel
@@ -60,7 +60,7 @@ func (this *eventBus) init() {
 }
 
 // O(1) complexity; thread safe
-func (this *eventBus) RegisterSubscriber(
+func (this *pubSub) RegisterSubscriber(
 	filter *model.EventFilter,
 	eventChannel chan model.Event,
 ) {
@@ -69,7 +69,7 @@ func (this *eventBus) RegisterSubscriber(
 	this.subscribers[eventChannel] = filter
 }
 
-func (this *eventBus) isEventFiltered(
+func (this *pubSub) isEventFiltered(
 	event model.Event,
 	filter *model.EventFilter,
 ) bool {
@@ -90,7 +90,7 @@ func (this *eventBus) isEventFiltered(
 }
 
 // O(n) complexity (n being subscription count); thread safe
-func (this *eventBus) publishToSubscribers(event model.Event) {
+func (this *pubSub) publishToSubscribers(event model.Event) {
 	this.subscriberMutex.RLock()
 	defer this.subscriberMutex.RUnlock()
 	for subscriber, filter := range this.subscribers {
@@ -107,7 +107,7 @@ func (this *eventBus) publishToSubscribers(event model.Event) {
 	}
 }
 
-func (this *eventBus) getEventOpGraphId(event model.Event) string {
+func (this *pubSub) getEventOpGraphId(event model.Event) string {
 	switch {
 	case nil != event.ContainerExited:
 		return event.ContainerExited.OpGraphId
@@ -129,14 +129,14 @@ func (this *eventBus) getEventOpGraphId(event model.Event) string {
 }
 
 // O(1) complexity; thread safe
-func (this *eventBus) Publish(
+func (this *pubSub) Publish(
 	event model.Event,
 ) {
 	this.pendingPublishesChannel <- event
 }
 
 // O(1) complexity; thread safe
-func (this *eventBus) UnregisterSubscriber(
+func (this *pubSub) UnregisterSubscriber(
 	eventChannel chan model.Event,
 ) {
 	this.subscriberMutex.Lock()

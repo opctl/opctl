@@ -4,8 +4,8 @@ package core
 
 import (
 	"github.com/opspec-io/opctl/pkg/containerengine"
-	"github.com/opspec-io/opctl/util/eventbus"
 	"github.com/opspec-io/opctl/util/pathnormalizer"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -35,7 +35,7 @@ func New(
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	eventBus := eventbus.New()
+	pubSub := pubsub.New()
 
 	_bundle := bundle.New()
 
@@ -45,7 +45,7 @@ func New(
 		newContainerCaller(
 			_bundle,
 			containerEngine,
-			eventBus,
+			pubSub,
 			dcgNodeRepo,
 		),
 	)
@@ -66,7 +66,7 @@ func New(
 
 	opCaller := newOpCaller(
 		_bundle,
-		eventBus,
+		pubSub,
 		dcgNodeRepo,
 		caller,
 		uniqueStringFactory,
@@ -79,7 +79,7 @@ func New(
 
 	core = _core{
 		containerEngine:     containerEngine,
-		eventBus:            eventBus,
+		pubSub:              pubSub,
 		opCaller:            opCaller,
 		pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 		dcgNodeRepo:         dcgNodeRepo,
@@ -91,7 +91,7 @@ func New(
 
 type _core struct {
 	containerEngine     containerengine.ContainerEngine
-	eventBus            eventbus.EventBus
+	pubSub              pubsub.PubSub
 	caller              caller
 	pathNormalizer      pathnormalizer.PathNormalizer
 	dcgNodeRepo         dcgNodeRepo

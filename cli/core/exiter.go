@@ -37,5 +37,6 @@ func (this _exiter) Exit(req ExitReq) {
 		this.vos.Exit(req.Code)
 	} else {
 		this.output.Success(req.Message)
+		this.vos.Exit(0)
 	}
 }
