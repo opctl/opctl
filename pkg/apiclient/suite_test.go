@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "sdk-golang/pkg/engineclient")
+	RunSpecs(t, "sdk-golang/pkg/apiclient")
 }

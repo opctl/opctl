@@ -21,8 +21,9 @@ type DcgContainerCall struct {
 	Files map[string]string `json:"files"`
 	Image string            `json:"image"`
 	// format: containerSocket => hostSocket
-	Sockets map[string]string `json:"sockets"`
-	WorkDir string            `json:"workDir"`
+	Sockets   map[string]string `json:"sockets"`
+	WorkDir   string            `json:"workDir"`
+	IpAddress string            `json:"ipAddress"`
 }
 
 type DcgOp struct{}

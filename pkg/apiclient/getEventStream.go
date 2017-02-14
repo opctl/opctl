@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (this _engineClient) GetEventStream(
+func (this _apiClient) GetEventStream(
 	req *model.GetEventStreamReq,
 ) (eventStream chan model.Event, err error) {
 

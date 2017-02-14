@@ -1,6 +1,6 @@
-package engineclient
+package apiclient
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ EngineClient
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ApiClient
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -9,7 +9,7 @@ import (
 	"github.com/sethgrid/pester"
 )
 
-type EngineClient interface {
+type ApiClient interface {
 	GetEventStream(
 		req *model.GetEventStreamReq,
 	) (
@@ -31,18 +31,18 @@ type EngineClient interface {
 	)
 }
 
-func New() EngineClient {
+func New() ApiClient {
 
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
 
-	return &_engineClient{
+	return &_apiClient{
 		httpClient: httpClient,
 		jsonFormat: format.NewJsonFormat(),
 	}
 }
 
-type _engineClient struct {
+type _apiClient struct {
 	httpClient http.Client
 	jsonFormat format.Format
 }

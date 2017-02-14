@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	"bytes"
@@ -34,7 +34,7 @@ var _ = Describe("StartOp", func() {
 		fakeHttpClient := new(http.Fake)
 		fakeHttpClient.DoReturns(&netHttp.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
-		objectUnderTest := _engineClient{
+		objectUnderTest := _apiClient{
 			httpClient: fakeHttpClient,
 			jsonFormat: format.NewJsonFormat(),
 		}

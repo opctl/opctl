@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	"bytes"
@@ -30,7 +30,7 @@ var _ = Describe("KillOp", func() {
 
 		fakeHttpClient := new(http.Fake)
 
-		objectUnderTest := _engineClient{
+		objectUnderTest := _apiClient{
 			httpClient: fakeHttpClient,
 			jsonFormat: format.NewJsonFormat(),
 		}
