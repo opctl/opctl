@@ -1,0 +1,15 @@
+name: push-docker-image
+description: pushes the built docker image to docker
+inputs:
+- name: DOCKER_PASSWORD
+  description: password for docker registry
+  isSecret: true
+- name: DOCKER_USERNAME
+  description: username for docker registry
+  isSecret: true
+- name: VERSION
+  description: opctl version
+run:
+  serial:
+  - op: compile-docker-image
+  - op: push-docker-image
