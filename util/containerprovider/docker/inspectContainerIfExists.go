@@ -27,13 +27,14 @@ func (this _containerProvider) InspectContainerIfExists(
 
 	// construct dynamic call graph container from docker container
 	container = &model.DcgContainerCall{
-		Cmd:     dockerContainer.Config.Entrypoint,
-		Dirs:    map[string]string{},
-		EnvVars: map[string]string{},
-		Files:   map[string]string{},
-		Image:   dockerContainer.Image,
-		Sockets: map[string]string{},
-		WorkDir: dockerContainer.Config.WorkingDir,
+		Cmd:       dockerContainer.Config.Entrypoint,
+		Dirs:      map[string]string{},
+		EnvVars:   map[string]string{},
+		Files:     map[string]string{},
+		Image:     dockerContainer.Image,
+		Sockets:   map[string]string{},
+		WorkDir:   dockerContainer.Config.WorkingDir,
+		IpAddress: dockerContainer.NetworkSettings.IPAddress,
 	}
 	// construct envVars
 	for _, rawEnvVar := range dockerContainer.Config.Env {
@@ -57,8 +58,6 @@ func (this _containerProvider) InspectContainerIfExists(
 			container.Files[mount.Destination] = mount.Source
 		}
 	}
-
-	// @TODO: handle network sockets
 
 	return
 }

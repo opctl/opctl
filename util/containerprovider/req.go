@@ -1,6 +1,6 @@
 package containerprovider
 
-type StartContainerReq struct {
+type RunContainerReq struct {
 	Cmd         []string
 	Dirs        map[string]string
 	Env         map[string]string

@@ -10,8 +10,8 @@ import (
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
-	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"path"
 	"path/filepath"
@@ -48,10 +48,10 @@ var _ = Context("runOp", func() {
 				/* arrange */
 				fakeBundle := new(bundle.Fake)
 
-				fakeEngineClient := new(engineclient.Fake)
+				fakeApiClient := new(apiclient.Fake)
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
-				fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+				fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -65,7 +65,7 @@ var _ = Context("runOp", func() {
 
 				objectUnderTest := _core{
 					bundle:            fakeBundle,
-					engineClient:      fakeEngineClient,
+					apiClient:         fakeApiClient,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
 					vos:               fakeVos,
@@ -124,16 +124,16 @@ var _ = Context("runOp", func() {
 					)
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeEngineClient := new(engineclient.Fake)
+					fakeApiClient := new(apiclient.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 					objectUnderTest := _core{
 						bundle:            fakeBundle,
-						engineClient:      fakeEngineClient,
+						apiClient:         fakeApiClient,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						vos:               new(vos.Fake),
@@ -147,7 +147,7 @@ var _ = Context("runOp", func() {
 					Expect(actualArgs).To(Equal(providedArgs))
 					Expect(actualParams).To(Equal(expectedParams))
 				})
-				It("should call engineClient.StartOp w/ expected args", func() {
+				It("should call apiClient.StartOp w/ expected args", func() {
 					/* arrange */
 					pwd := "dummyWorkDir"
 					fakeVos := new(vos.Fake)
@@ -163,17 +163,17 @@ var _ = Context("runOp", func() {
 					}
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeEngineClient := new(engineclient.Fake)
+					fakeApiClient := new(apiclient.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 					fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 					objectUnderTest := _core{
 						bundle:            new(bundle.Fake),
-						engineClient:      fakeEngineClient,
+						apiClient:         fakeApiClient,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						vos:               fakeVos,
@@ -183,10 +183,10 @@ var _ = Context("runOp", func() {
 					objectUnderTest.RunOp([]string{}, providedCollection, providedOp)
 
 					/* assert */
-					actualArgs := fakeEngineClient.StartOpArgsForCall(0)
+					actualArgs := fakeApiClient.StartOpArgsForCall(0)
 					Expect(actualArgs).To(Equal(expectedArgs))
 				})
-				Context("engineClient.StartOp errors", func() {
+				Context("apiClient.StartOp errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						fakeCliExiter := new(cliexiter.Fake)
@@ -195,12 +195,12 @@ var _ = Context("runOp", func() {
 						fakeBundle := new(bundle.Fake)
 						fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-						fakeEngineClient := new(engineclient.Fake)
-						fakeEngineClient.StartOpReturns("dummyOpId", returnedError)
+						fakeApiClient := new(apiclient.Fake)
+						fakeApiClient.StartOpReturns("dummyOpId", returnedError)
 
 						objectUnderTest := _core{
 							bundle:            fakeBundle,
-							engineClient:      fakeEngineClient,
+							apiClient:         fakeApiClient,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							vos:               new(vos.Fake),
@@ -214,8 +214,8 @@ var _ = Context("runOp", func() {
 							Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 					})
 				})
-				Context("engineClient.StartOp doesn't error", func() {
-					It("should call engineClient.GetEventStream w/ expected args", func() {
+				Context("apiClient.StartOp doesn't error", func() {
+					It("should call apiClient.GetEventStream w/ expected args", func() {
 						/* arrange */
 						fakeBundle := new(bundle.Fake)
 						fakeBundle.GetOpReturns(model.OpView{}, nil)
@@ -226,15 +226,15 @@ var _ = Context("runOp", func() {
 							},
 						}
 
-						fakeEngineClient := new(engineclient.Fake)
-						fakeEngineClient.StartOpReturns(opGraphIdReturnedFromStartOp, nil)
+						fakeApiClient := new(apiclient.Fake)
+						fakeApiClient.StartOpReturns(opGraphIdReturnedFromStartOp, nil)
 						eventChannel := make(chan model.Event)
 						close(eventChannel)
-						fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+						fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 						objectUnderTest := _core{
 							bundle:            fakeBundle,
-							engineClient:      fakeEngineClient,
+							apiClient:         fakeApiClient,
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							vos:               new(vos.Fake),
@@ -244,10 +244,10 @@ var _ = Context("runOp", func() {
 						objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
 						/* assert */
-						Expect(fakeEngineClient.GetEventStreamArgsForCall(0)).
+						Expect(fakeApiClient.GetEventStreamArgsForCall(0)).
 							Should(Equal(expectedEventFilter))
 					})
-					Context("engineClient.GetEventStream errors", func() {
+					Context("apiClient.GetEventStream errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
@@ -256,12 +256,12 @@ var _ = Context("runOp", func() {
 							fakeBundle := new(bundle.Fake)
 							fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-							fakeEngineClient := new(engineclient.Fake)
-							fakeEngineClient.GetEventStreamReturns(nil, returnedError)
+							fakeApiClient := new(apiclient.Fake)
+							fakeApiClient.GetEventStreamReturns(nil, returnedError)
 
 							objectUnderTest := _core{
 								bundle:            fakeBundle,
-								engineClient:      fakeEngineClient,
+								apiClient:         fakeApiClient,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
 								vos:               new(vos.Fake),
@@ -275,7 +275,7 @@ var _ = Context("runOp", func() {
 								Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
-					Context("engineClient.GetEventStream doesn't error", func() {
+					Context("apiClient.GetEventStream doesn't error", func() {
 						Context("event channel closes", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
@@ -284,14 +284,14 @@ var _ = Context("runOp", func() {
 								fakeBundle := new(bundle.Fake)
 								fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-								fakeEngineClient := new(engineclient.Fake)
+								fakeApiClient := new(apiclient.Fake)
 								eventChannel := make(chan model.Event)
 								close(eventChannel)
-								fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+								fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 								objectUnderTest := _core{
 									bundle:            fakeBundle,
-									engineClient:      fakeEngineClient,
+									apiClient:         fakeApiClient,
 									cliExiter:         fakeCliExiter,
 									cliParamSatisfier: new(cliparamsatisfier.Fake),
 									vos:               new(vos.Fake),
@@ -327,17 +327,17 @@ var _ = Context("runOp", func() {
 											fakeBundle := new(bundle.Fake)
 											fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-											fakeEngineClient := new(engineclient.Fake)
+											fakeApiClient := new(apiclient.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-											fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
 												cliColorer:        clicolorer.New(),
-												engineClient:      fakeEngineClient,
+												apiClient:         fakeApiClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -368,17 +368,17 @@ var _ = Context("runOp", func() {
 											fakeBundle := new(bundle.Fake)
 											fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-											fakeEngineClient := new(engineclient.Fake)
+											fakeApiClient := new(apiclient.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-											fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
 												cliColorer:        clicolorer.New(),
-												engineClient:      fakeEngineClient,
+												apiClient:         fakeApiClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -410,17 +410,17 @@ var _ = Context("runOp", func() {
 											fakeBundle := new(bundle.Fake)
 											fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-											fakeEngineClient := new(engineclient.Fake)
+											fakeApiClient := new(apiclient.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-											fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
 												cliColorer:        clicolorer.New(),
-												engineClient:      fakeEngineClient,
+												apiClient:         fakeApiClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -451,17 +451,17 @@ var _ = Context("runOp", func() {
 											fakeBundle := new(bundle.Fake)
 											fakeBundle.GetOpReturns(model.OpView{}, nil)
 
-											fakeEngineClient := new(engineclient.Fake)
+											fakeApiClient := new(apiclient.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
-											fakeEngineClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
 
 											objectUnderTest := _core{
 												bundle:            fakeBundle,
 												cliColorer:        clicolorer.New(),
-												engineClient:      fakeEngineClient,
+												apiClient:         fakeApiClient,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),

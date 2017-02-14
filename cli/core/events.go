@@ -7,7 +7,7 @@ import (
 
 func (this _core) StreamEvents() {
 
-	eventChannel, err := this.engineClient.GetEventStream(
+	eventChannel, err := this.apiClient.GetEventStream(
 		&model.GetEventStreamReq{},
 	)
 	if nil != err {

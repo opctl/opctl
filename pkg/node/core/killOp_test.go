@@ -62,9 +62,18 @@ var _ = Context("core", func() {
 				nodesReturnedFromDcgNodeRepo := []*dcgNodeDescriptor{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
+					{Id: "dummyNode3Id"},
 				}
 				fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 				fakeDcgNodeRepo.ListWithOpGraphIdReturns(nodesReturnedFromDcgNodeRepo)
+
+				// use map so order ignored; calls happen in parallel so all ordering bets are off
+				expectedCalls := map[string]bool{
+					providedReq.OpGraphId:              true,
+					nodesReturnedFromDcgNodeRepo[0].Id: true,
+					nodesReturnedFromDcgNodeRepo[1].Id: true,
+					nodesReturnedFromDcgNodeRepo[2].Id: true,
+				}
 
 				objectUnderTest := _core{
 					containerProvider:   new(containerprovider.Fake),
@@ -79,24 +88,33 @@ var _ = Context("core", func() {
 				objectUnderTest.KillOp(providedReq)
 
 				/* assert */
-				for nodeIndex, node := range nodesReturnedFromDcgNodeRepo {
-					Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(nodeIndex + 1)).To(Equal(node.Id))
+				actualCalls := map[string]bool{}
+				callIndex := 0
+				for callIndex < fakeDcgNodeRepo.DeleteIfExistsCallCount() {
+					actualCalls[fakeDcgNodeRepo.DeleteIfExistsArgsForCall(callIndex)] = true
+					callIndex++
 				}
+
+				Expect(actualCalls).To(Equal(expectedCalls))
 			})
-			// @TODO: flickers?
 			It("should call containerProvider.DeleteContainerIfExists w/ expected args for container nodes", func() {
 				/* arrange */
 				providedReq := model.KillOpReq{OpGraphId: "dummyOpGraphId"}
 
-				containerNodeIds := []string{"dummyNode1Id", "dummyNode3Id"}
-
 				nodesReturnedFromDcgNodeRepo := []*dcgNodeDescriptor{
 					{Id: "dummyNode1Id", Container: &dcgContainerDescriptor{}},
-					{Id: "dummyNode2Id"},
+					{Id: "dummyNode2Id", Container: &dcgContainerDescriptor{}},
 					{Id: "dummyNode3Id", Container: &dcgContainerDescriptor{}},
 				}
 				fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 				fakeDcgNodeRepo.ListWithOpGraphIdReturns(nodesReturnedFromDcgNodeRepo)
+
+				// use map so order ignored; calls happen in parallel so all ordering bets are off
+				expectedCalls := map[string]bool{
+					nodesReturnedFromDcgNodeRepo[0].Id: true,
+					nodesReturnedFromDcgNodeRepo[1].Id: true,
+					nodesReturnedFromDcgNodeRepo[2].Id: true,
+				}
 
 				fakeContainerProvider := new(containerprovider.Fake)
 
@@ -113,9 +131,14 @@ var _ = Context("core", func() {
 				objectUnderTest.KillOp(providedReq)
 
 				/* assert */
-				for nodeIndex, nodeId := range containerNodeIds {
-					Expect(fakeContainerProvider.DeleteContainerIfExistsArgsForCall(nodeIndex)).To(Equal(nodeId))
+				actualCalls := map[string]bool{}
+				callIndex := 0
+				for callIndex < fakeContainerProvider.DeleteContainerIfExistsCallCount() {
+					actualCalls[fakeContainerProvider.DeleteContainerIfExistsArgsForCall(callIndex)] = true
+					callIndex++
 				}
+
+				Expect(actualCalls).To(Equal(expectedCalls))
 			})
 		})
 	})

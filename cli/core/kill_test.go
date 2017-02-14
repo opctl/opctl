@@ -5,22 +5,22 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/pkg/engineclient"
+	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 var _ = Context("killOp", func() {
 	Context("Execute", func() {
-		It("should call engineClient.KillOp w/ expected args", func() {
+		It("should call apiClient.KillOp w/ expected args", func() {
 			/* arrange */
-			fakeEngineClient := new(engineclient.Fake)
+			fakeApiClient := new(apiclient.Fake)
 
 			expectedReq := model.KillOpReq{
 				OpGraphId: "dummyOpGraphId",
 			}
 
 			objectUnderTest := _core{
-				engineClient: fakeEngineClient,
+				apiClient: fakeApiClient,
 			}
 
 			/* act */
@@ -28,20 +28,20 @@ var _ = Context("killOp", func() {
 
 			/* assert */
 
-			Expect(fakeEngineClient.KillOpArgsForCall(0)).Should(BeEquivalentTo(expectedReq))
+			Expect(fakeApiClient.KillOpArgsForCall(0)).Should(BeEquivalentTo(expectedReq))
 		})
-		Context("engineClient.KillOp errors", func() {
+		Context("apiClient.KillOp errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeEngineClient := new(engineclient.Fake)
+				fakeApiClient := new(apiclient.Fake)
 				expectedError := errors.New("dummyError")
-				fakeEngineClient.KillOpReturns(expectedError)
+				fakeApiClient.KillOpReturns(expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					engineClient: fakeEngineClient,
-					cliExiter:    fakeCliExiter,
+					apiClient: fakeApiClient,
+					cliExiter: fakeCliExiter,
 				}
 
 				/* act */

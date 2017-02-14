@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 )
 
-func newContainerStartReq(
+func newRunContainerReq(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
 	inputs map[string]*model.Param,
 	opGraphId string,
-) *containerprovider.StartContainerReq {
+) *containerprovider.RunContainerReq {
 
-	// create new slice so we don't mutate containerCall.Cmd @ caller
+	// create new slice so we don't cause side effects
 	cmd := append([]string{}, scgContainerCall.Cmd...)
 	dirs := map[string]string{}
 	envVars := map[string]string{}
@@ -41,7 +41,7 @@ func newContainerStartReq(
 
 	// construct envVars
 	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		envVars[scgContainerEnvVarName] = scgContainerEnvVar.Value
+		envVars[scgContainerEnvVarName] = scgContainerEnvVar
 	}
 
 	// construct files
@@ -51,6 +51,7 @@ func newContainerStartReq(
 			files[scgContainerFilePath] = boundArg.File
 		} else {
 			// bound to output
+			// create placeholder file on host so the output points to something
 			dcgHostFilePath := filepath.Join(scratchDirPath, scgContainerFilePath)
 			_, err = os.Create(dcgHostFilePath)
 			if nil != err {
@@ -67,6 +68,7 @@ func newContainerStartReq(
 			dirs[scgContainerDirPath] = boundArg.Dir
 		} else {
 			// bound to output
+			// create placeholder dir on host so the output points to something
 			dcgHostDirPath := filepath.Join(scratchDirPath, scgContainerDirPath)
 			err := os.MkdirAll(dcgHostDirPath, 0700)
 			if nil != err {
@@ -80,16 +82,11 @@ func newContainerStartReq(
 	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
 		if boundArg, ok := currentScope[scgContainerSocket.Bind]; ok {
 			// bound to input
-			switch {
-			case isUnixSocketAddress(scgContainerSocketAddress):
-				sockets[scgContainerSocketAddress] = boundArg.Socket
-			default:
-				// @TODO: handle network sockets
-			}
-		} else {
+			sockets[scgContainerSocketAddress] = boundArg.Socket
+		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
-			switch {
-			case isUnixSocketAddress(scgContainerSocketAddress):
+			// create placeholder unix socket on host so the output points to something
+			if isUnixSocketAddress(scgContainerSocketAddress) {
 				dcgHostSocketAddress := filepath.Join(scratchDirPath, scgContainerSocketAddress)
 				_, err = os.Create(dcgHostSocketAddress)
 				if nil != err {
@@ -100,8 +97,6 @@ func newContainerStartReq(
 					panic(err)
 				}
 				sockets[scgContainerSocketAddress] = dcgHostSocketAddress
-			default:
-				// @TODO: handle network sockets
 			}
 		}
 	}
@@ -130,7 +125,7 @@ func newContainerStartReq(
 			}
 		}
 	}
-	return &containerprovider.StartContainerReq{
+	return &containerprovider.RunContainerReq{
 		Cmd:         cmd,
 		Dirs:        dirs,
 		Env:         envVars,

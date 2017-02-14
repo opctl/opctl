@@ -54,6 +54,9 @@ var _ = Context("InspectContainerIfExists", func() {
 			types.ContainerJSON{
 				ContainerJSONBase: &types.ContainerJSONBase{},
 				Config:            &container.Config{},
+				NetworkSettings: &types.NetworkSettings{
+					DefaultNetworkSettings: types.DefaultNetworkSettings{},
+				},
 			},
 			nil,
 		)
@@ -78,6 +81,9 @@ var _ = Context("InspectContainerIfExists", func() {
 					types.ContainerJSON{
 						ContainerJSONBase: &types.ContainerJSONBase{},
 						Config:            &container.Config{},
+						NetworkSettings: &types.NetworkSettings{
+							DefaultNetworkSettings: types.DefaultNetworkSettings{},
+						},
 					},
 					dockerNotFoundError{},
 				)
@@ -149,6 +155,11 @@ var _ = Context("InspectContainerIfExists", func() {
 						Destination: "dummyNamedPipe1Dst",
 					},
 				},
+				NetworkSettings: &types.NetworkSettings{
+					DefaultNetworkSettings: types.DefaultNetworkSettings{
+						IPAddress: "dummyIpAddress",
+					},
+				},
 			}
 			_fakeDockerClient.ContainerInspectReturns(
 				dockerContainer,
@@ -187,7 +198,8 @@ var _ = Context("InspectContainerIfExists", func() {
 					"dummySocket1Dst":    "dummySocket1Src",
 					"dummyNamedPipe1Dst": "dummyNamedPipe1Src",
 				},
-				WorkDir: dockerContainer.Config.WorkingDir,
+				WorkDir:   dockerContainer.Config.WorkingDir,
+				IpAddress: dockerContainer.NetworkSettings.IPAddress,
 			}
 
 			objectUnderTest := _containerProvider{

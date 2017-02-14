@@ -84,8 +84,8 @@ func (this _containerCaller) Call(
 	}
 	this.pubSub.Publish(containerStartedEvent)
 
-	err = this.containerProvider.StartContainer(
-		newContainerStartReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
+	err = this.containerProvider.RunContainer(
+		newRunContainerReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
 		this.pubSub,
 	)
 	if nil != err {
@@ -111,18 +111,13 @@ func (this _containerCaller) Call(
 			}
 		}
 	}
-	// construct strings
-	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		for dcgContainerEnvVarName, dcgContainerEnvVarValue := range dcgContainer.EnvVars {
-			if scgContainerEnvVarName == dcgContainerEnvVarName {
-				outboundScope[scgContainerEnvVar.Bind] = &model.Data{String: dcgContainerEnvVarValue}
-			}
-		}
-	}
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
+		// default; point net sockets @ their containers ip
+		outboundScope[scgContainerSocket.Bind] = &model.Data{Socket: dcgContainer.IpAddress}
 		for dcgContainerSocketAddress, dcgHostSocketAddress := range dcgContainer.Sockets {
 			if scgContainerSocketAddress == dcgContainerSocketAddress {
+				// override default; point unix sockets @ their location on the host
 				outboundScope[scgContainerSocket.Bind] = &model.Data{Socket: dcgHostSocketAddress}
 			}
 		}

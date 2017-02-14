@@ -41,7 +41,7 @@ func (this _core) RunOp(
 	)
 
 	// start op
-	opGraphId, err := this.engineClient.StartOp(
+	opGraphId, err := this.apiClient.StartOp(
 		model.StartOpReq{
 			Args:  argsMap,
 			OpRef: opPath,
@@ -53,7 +53,7 @@ func (this _core) RunOp(
 	}
 
 	// start event loop
-	eventChannel, err := this.engineClient.GetEventStream(
+	eventChannel, err := this.apiClient.GetEventStream(
 		&model.GetEventStreamReq{
 			Filter: &model.EventFilter{
 				OpGraphIds: []string{opGraphId},
@@ -74,7 +74,7 @@ func (this _core) RunOp(
 				intSignalsReceived++
 				fmt.Println(this.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
-				this.engineClient.KillOp(
+				this.apiClient.KillOp(
 					model.KillOpReq{
 						OpGraphId: opGraphId,
 					},

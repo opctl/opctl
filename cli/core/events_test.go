@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/pkg/engineclient"
+	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
@@ -15,21 +15,21 @@ var _ = Context("streamEvents", func() {
 			/* arrange */
 			fakeCliExiter := new(cliexiter.Fake)
 
-			fakeEngineClient := new(engineclient.Fake)
+			fakeApiClient := new(apiclient.Fake)
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
-			fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+			fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _core{
-				engineClient: fakeEngineClient,
-				cliExiter:    fakeCliExiter,
+				apiClient: fakeApiClient,
+				cliExiter: fakeCliExiter,
 			}
 
 			/* act */
 			objectUnderTest.StreamEvents()
 
 			/* assert */
-			Expect(fakeEngineClient.GetEventStreamCallCount()).Should(Equal(1))
+			Expect(fakeApiClient.GetEventStreamCallCount()).Should(Equal(1))
 
 		})
 		Context("bundle.GetEventStream errors", func() {
@@ -38,12 +38,12 @@ var _ = Context("streamEvents", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 				returnedError := errors.New("dummyError")
 
-				fakeEngineClient := new(engineclient.Fake)
-				fakeEngineClient.GetEventStreamReturns(nil, returnedError)
+				fakeApiClient := new(apiclient.Fake)
+				fakeApiClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _core{
-					engineClient: fakeEngineClient,
-					cliExiter:    fakeCliExiter,
+					apiClient: fakeApiClient,
+					cliExiter: fakeCliExiter,
 				}
 
 				/* act */
@@ -60,14 +60,14 @@ var _ = Context("streamEvents", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
 
-					fakeEngineClient := new(engineclient.Fake)
+					fakeApiClient := new(apiclient.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeEngineClient.GetEventStreamReturns(eventChannel, nil)
+					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						engineClient: fakeEngineClient,
-						cliExiter:    fakeCliExiter,
+						apiClient: fakeApiClient,
+						cliExiter: fakeCliExiter,
 					}
 
 					/* act */

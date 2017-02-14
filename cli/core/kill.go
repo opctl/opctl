@@ -9,7 +9,7 @@ func (this _core) KillOp(
 	opGraphId string,
 ) {
 
-	err := this.engineClient.KillOp(
+	err := this.apiClient.KillOp(
 		model.KillOpReq{
 			OpGraphId: opGraphId,
 		},
