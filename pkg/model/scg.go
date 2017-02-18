@@ -9,35 +9,21 @@ type Scg struct {
 }
 
 type ScgContainerCall struct {
-	// cmd strings will be interpolated
-	Cmd     []string                       `yaml:"cmd,omitempty"`
-	EnvVars map[string]*ScgContainerEnvVar `yaml:"envVars,omitempty"`
-	Files   map[string]*ScgContainerFile   `yaml:"files,omitempty"`
-	Dirs    map[string]*ScgContainerDir    `yaml:"dirs,omitempty"`
-	Image   string                         `yaml:"image"`
-	Sockets map[string]*ScgContainerSocket `yaml:"sockets,omitempty"`
-	WorkDir string                         `yaml:"workDir,omitempty"`
+	// each entry of cmd will be interpolated
+	Cmd  []string               `yaml:"cmd,omitempty"`
+	Dirs map[string]*ScgBinding `yaml:"dirs,omitempty"`
+
+	// each env var value will be interpolated
+	EnvVars map[string]string      `yaml:"envVars,omitempty"`
+	Files   map[string]*ScgBinding `yaml:"files,omitempty"`
+	Image   string                 `yaml:"image"`
+	Sockets map[string]*ScgBinding `yaml:"sockets,omitempty"`
+	StdErr  map[string]*ScgBinding `yaml:"stdErr,omitempty"`
+	StdOut  map[string]*ScgBinding `yaml:"stdOut,omitempty"`
+	WorkDir string                 `yaml:"workDir,omitempty"`
 }
 
-// env var in a container
-type ScgContainerEnvVar struct {
-	Bind string `yaml:"bind,omitempty"`
-	// value string will be interpolated
-	Value string `yaml:"value,omitempty"`
-}
-
-// file in a container
-type ScgContainerFile struct {
-	Bind string `yaml:"bind,omitempty"`
-}
-
-// dir in a container
-type ScgContainerDir struct {
-	Bind string `yaml:"bind,omitempty"`
-}
-
-// socket in a container
-type ScgContainerSocket struct {
+type ScgBinding struct {
 	Bind string `yaml:"bind,omitempty"`
 }
 

@@ -321,13 +321,13 @@ var _ = Describe("_opViewFactory", func() {
 							Cmd: []string{
 								"docker", "login", "-u", "$(dockerUsername)", "-p", "$(dockerPassword)",
 							},
-							Files: map[string]*model.ScgContainerFile{
+							Files: map[string]*model.ScgBinding{
 								"/root/.docker/config.json": {
 									Bind: "dockerConfig",
 								},
 							},
 							Image: "docker:1.13",
-							Sockets: map[string]*model.ScgContainerSocket{
+							Sockets: map[string]*model.ScgBinding{
 								"/var/run/docker.sock": {
 									Bind: "dockerSocket",
 								},
@@ -461,13 +461,13 @@ var _ = Describe("_opViewFactory", func() {
 								"--reporter=spec",
 								"tests/unit",
 							},
-							Dirs: map[string]*model.ScgContainerDir{
+							Dirs: map[string]*model.ScgBinding{
 								"/opt/app": {
 									Bind: "appDir",
 								},
 							},
 							Image: "node:7.4",
-							Sockets: map[string]*model.ScgContainerSocket{
+							Sockets: map[string]*model.ScgBinding{
 								"api:80": {
 									Bind: "apiSocket",
 								},
