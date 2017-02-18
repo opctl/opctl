@@ -16,7 +16,7 @@ run:
   container:
     cmd: [ npm, install ]
     envVars:
-      NPM_CONFIG_REGISTRY: { bind: npmRegistryUrl }
+      NPM_CONFIG_REGISTRY: $(npmRegistryUrl)
     dirs:
       /opt/app: { bind: appDir }
     image: node:7.4

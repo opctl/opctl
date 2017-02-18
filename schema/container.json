@@ -23,17 +23,7 @@
     "containerEnvVar": {
       "title": "containerEnvVar",
       "description": "An environment variable in a container",
-      "type": "object",
-      "properties": {
-        "bind": {
-          "description": "Variable to bind the environment variable to",
-          "type": "string"
-        },
-        "value": {
-          "description": "Value of the env var",
-          "$ref": "#/definitions/interpolatedString"
-        }
-      }
+      "$ref": "#/definitions/interpolatedString"
     },
     "containerFile": {
       "title": "containerFile",
