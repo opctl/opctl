@@ -3,7 +3,7 @@ description: creates a resource group if it doesn't already exist
 inputs:
   subscriptionId:
     string:
-      constraints: { minLength: 1}
+      constraints: { minLength: 1 }
   username:
     string:
       constraints: { format: email }

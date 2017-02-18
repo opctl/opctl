@@ -36,7 +36,7 @@
         "envVars": {
           "type": "object",
           "patternProperties": {
-            "^[^=]+(=.+)?$": {
+            "^[^=]+$": {
               "$ref": "container.json#/definitions/containerEnvVar"
             }
           },
@@ -59,6 +59,36 @@
           "patternProperties": {
             "[:a-zA-Z0-9]+": {
               "$ref": "container.json#/definitions/containerSocket"
+            }
+          },
+          "additionalProperties": false
+        },
+        "stdErr": {
+          "type": "object",
+          "patternProperties": {
+            "^.+$": {
+              "type": "object",
+              "properties": {
+                "bind": {
+                  "description": "Variable to bind to",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "stdOut": {
+          "type": "object",
+          "patternProperties": {
+            "^.+$": {
+              "type": "object",
+              "properties": {
+                "bind": {
+                  "description": "Variable to bind to",
+                  "type": "string"
+                }
+              }
             }
           },
           "additionalProperties": false
