@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/peterh/liner"
+	"sort"
 	"strings"
 )
 
@@ -74,25 +75,34 @@ func (this _cliParamSatisfier) Satisfy(
 	}
 
 	argMap = make(map[string]*model.Data)
-	for paramName, param := range params {
+	for _, paramName := range this.getSortedParamNames(params) {
+		param := params[paramName]
+		// track the number of attempts to satisfy the param
+		var isEnvAttempted bool
 	paramLoop:
 		for {
-			var rawArg string
-			var arg *model.Data
-			var argErrors []error
-			var hideValue bool
+			var (
+				arg                *model.Data
+				argErrors          []error
+				rawArg             string
+				rawArgDisplayValue string
+			)
 			switch {
 			case nil != param.String:
 				// obtain raw value
 				stringParam := param.String
-				hideValue = stringParam.IsSecret
+
+				if stringParam.IsSecret {
+					rawArgDisplayValue = "************"
+				}
 
 				if providedArg, ok := rawArgMap[paramName]; ok {
 					rawArg = providedArg
-				} else if "" != this.vos.Getenv(paramName) {
+				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
+					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
+					isEnvAttempted = true
 				} else if "" != stringParam.Default {
-					// default value exists
 					break paramLoop
 				} else {
 					rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
@@ -104,8 +114,10 @@ func (this _cliParamSatisfier) Satisfy(
 
 				if providedArg, ok := rawArgMap[paramName]; ok {
 					rawArg = providedArg
-				} else if "" != this.vos.Getenv(paramName) {
+				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
+					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
+					isEnvAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, dirParam.Description, false)
 				}
@@ -116,8 +128,10 @@ func (this _cliParamSatisfier) Satisfy(
 
 				if providedArg, ok := rawArgMap[paramName]; ok {
 					rawArg = providedArg
-				} else if "" != this.vos.Getenv(paramName) {
+				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
+					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
+					isEnvAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, fileParam.Description, false)
 				}
@@ -127,8 +141,10 @@ func (this _cliParamSatisfier) Satisfy(
 
 				if providedArg, ok := rawArgMap[paramName]; ok {
 					rawArg = providedArg
-				} else if "" != this.vos.Getenv(paramName) {
+				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
+					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
+					isEnvAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, socketParam.Description, false)
 				}
@@ -139,12 +155,17 @@ func (this _cliParamSatisfier) Satisfy(
 			argErrors = append(argErrors, this.validate.Param(arg, param)...)
 
 			if len(argErrors) > 0 {
-				this.notifyOfArgErrors(argErrors, paramName, hideValue, rawArg)
-				// we failed.. try again
+				if rawArgDisplayValue == "" {
+					// if not set; default raw arg display value
+					rawArgDisplayValue = rawArg
+				}
+				this.notifyOfArgErrors(argErrors, paramName, rawArgDisplayValue)
+
+				// param not satisfied; re-attempt it!
 				continue
 			}
 
-			// we succeeded.. store & move to next
+			// param satisfied; store & move to next!
 			argMap[paramName] = arg
 			break paramLoop
 		}
@@ -153,18 +174,22 @@ func (this _cliParamSatisfier) Satisfy(
 	return
 }
 
+func (this _cliParamSatisfier) getSortedParamNames(
+	params map[string]*model.Param,
+) []string {
+	paramNames := []string{}
+	for paramname := range params {
+		paramNames = append(paramNames, paramname)
+	}
+	sort.Strings(paramNames)
+	return paramNames
+}
+
 func (this _cliParamSatisfier) notifyOfArgErrors(
 	errors []error,
 	paramName string,
-	hideValue bool,
-	rawArg string,
+	displayValue string,
 ) {
-	var displayValue string
-	if hideValue {
-		displayValue = "**********"
-	} else {
-		displayValue = rawArg
-	}
 	messageBuffer := bytes.NewBufferString(
 		fmt.Sprintf(`
 -
@@ -180,6 +205,8 @@ func (this _cliParamSatisfier) notifyOfArgErrors(
 %v
 -`, messageBuffer.String())
 }
+
+//@TODO: add promptForEnumArg
 
 func (this _cliParamSatisfier) promptForArg(
 	paramName string,

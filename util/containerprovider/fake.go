@@ -23,13 +23,13 @@ type Fake struct {
 	deleteContainerIfExistsArgsForCall []struct {
 		containerId string
 	}
-	StartContainerStub        func(req *StartContainerReq, eventPublisher pubsub.EventPublisher) (err error)
-	startContainerMutex       sync.RWMutex
-	startContainerArgsForCall []struct {
-		req            *StartContainerReq
+	RunContainerStub        func(req *RunContainerReq, eventPublisher pubsub.EventPublisher) (err error)
+	runContainerMutex       sync.RWMutex
+	runContainerArgsForCall []struct {
+		req            *RunContainerReq
 		eventPublisher pubsub.EventPublisher
 	}
-	startContainerReturns struct {
+	runContainerReturns struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
@@ -94,36 +94,36 @@ func (fake *Fake) DeleteContainerIfExistsArgsForCall(i int) string {
 	return fake.deleteContainerIfExistsArgsForCall[i].containerId
 }
 
-func (fake *Fake) StartContainer(req *StartContainerReq, eventPublisher pubsub.EventPublisher) (err error) {
-	fake.startContainerMutex.Lock()
-	fake.startContainerArgsForCall = append(fake.startContainerArgsForCall, struct {
-		req            *StartContainerReq
+func (fake *Fake) RunContainer(req *RunContainerReq, eventPublisher pubsub.EventPublisher) (err error) {
+	fake.runContainerMutex.Lock()
+	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
+		req            *RunContainerReq
 		eventPublisher pubsub.EventPublisher
 	}{req, eventPublisher})
-	fake.recordInvocation("StartContainer", []interface{}{req, eventPublisher})
-	fake.startContainerMutex.Unlock()
-	if fake.StartContainerStub != nil {
-		return fake.StartContainerStub(req, eventPublisher)
+	fake.recordInvocation("RunContainer", []interface{}{req, eventPublisher})
+	fake.runContainerMutex.Unlock()
+	if fake.RunContainerStub != nil {
+		return fake.RunContainerStub(req, eventPublisher)
 	} else {
-		return fake.startContainerReturns.result1
+		return fake.runContainerReturns.result1
 	}
 }
 
-func (fake *Fake) StartContainerCallCount() int {
-	fake.startContainerMutex.RLock()
-	defer fake.startContainerMutex.RUnlock()
-	return len(fake.startContainerArgsForCall)
+func (fake *Fake) RunContainerCallCount() int {
+	fake.runContainerMutex.RLock()
+	defer fake.runContainerMutex.RUnlock()
+	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *Fake) StartContainerArgsForCall(i int) (*StartContainerReq, pubsub.EventPublisher) {
-	fake.startContainerMutex.RLock()
-	defer fake.startContainerMutex.RUnlock()
-	return fake.startContainerArgsForCall[i].req, fake.startContainerArgsForCall[i].eventPublisher
+func (fake *Fake) RunContainerArgsForCall(i int) (*RunContainerReq, pubsub.EventPublisher) {
+	fake.runContainerMutex.RLock()
+	defer fake.runContainerMutex.RUnlock()
+	return fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher
 }
 
-func (fake *Fake) StartContainerReturns(result1 error) {
-	fake.StartContainerStub = nil
-	fake.startContainerReturns = struct {
+func (fake *Fake) RunContainerReturns(result1 error) {
+	fake.RunContainerStub = nil
+	fake.runContainerReturns = struct {
 		result1 error
 	}{result1}
 }
@@ -135,8 +135,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.inspectContainerIfExistsMutex.RUnlock()
 	fake.deleteContainerIfExistsMutex.RLock()
 	defer fake.deleteContainerIfExistsMutex.RUnlock()
-	fake.startContainerMutex.RLock()
-	defer fake.startContainerMutex.RUnlock()
+	fake.runContainerMutex.RLock()
+	defer fake.runContainerMutex.RUnlock()
 	return fake.invocations
 }
 

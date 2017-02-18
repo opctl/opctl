@@ -1,6 +1,8 @@
 description: performs a release
 name: release
 inputs:
+- { name: DOCKER_PASSWORD, description: password for docker registry, isSecret: true }
+- { name: DOCKER_USERNAME, description: username for docker registry, isSecret: true }
 - { name: EQUINOX_TOKEN, description: equinox.io auth token, isSecret: true }
 - { name: EQUINOX_SIGNING_KEY, description: signing key for artifacts published to equinox.io, isSecret: true }
 - { name: GIT_BRANCH, default: master, description: git branch the coverage should be associated with }

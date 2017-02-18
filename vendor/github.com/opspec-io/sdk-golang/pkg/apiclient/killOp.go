@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (this _engineClient) KillOp(
+func (this _apiClient) KillOp(
 	req model.KillOpReq,
 ) (
 	err error,

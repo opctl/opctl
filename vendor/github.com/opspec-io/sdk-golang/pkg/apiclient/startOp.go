@@ -1,4 +1,4 @@
-package engineclient
+package apiclient
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (this _engineClient) StartOp(
+func (this _apiClient) StartOp(
 	req model.StartOpReq,
 ) (
 	opId string,

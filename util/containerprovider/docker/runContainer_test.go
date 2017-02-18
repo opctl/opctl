@@ -14,10 +14,10 @@ import (
 	"io/ioutil"
 )
 
-var _ = Context("StartContainer", func() {
+var _ = Context("RunContainer", func() {
 	It("should call dockerClient.ContainerCreate w/ expected args", func() {
 		/* arrange */
-		providedReq := &containerprovider.StartContainerReq{
+		providedReq := &containerprovider.RunContainerReq{
 			ContainerId: "dummyContainerId",
 			Dirs: map[string]string{
 				"dir1ContainerPath": "dir1HostPath",
@@ -78,7 +78,7 @@ var _ = Context("StartContainer", func() {
 		}
 
 		/* act */
-		objectUnderTest.StartContainer(providedReq, new(pubsub.FakeEventPublisher))
+		objectUnderTest.RunContainer(providedReq, new(pubsub.FakeEventPublisher))
 
 		/* assert */
 		_,

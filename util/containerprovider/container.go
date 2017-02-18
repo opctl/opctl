@@ -16,8 +16,8 @@ type ContainerProvider interface {
 		containerId string,
 	)
 
-	StartContainer(
-		req *StartContainerReq,
+	RunContainer(
+		req *RunContainerReq,
 		eventPublisher pubsub.EventPublisher,
 	) (err error)
 }

@@ -6,7 +6,7 @@ services:
     - sh
     - -ce
     - |
-      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
       docker push opspec/opctl:$VERSION
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

@@ -7,8 +7,8 @@ import (
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
-	"github.com/opspec-io/sdk-golang/pkg/engineclient"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"io"
 	"os"
@@ -70,7 +70,7 @@ func New(
 		bundle:            bundle.New(),
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
-		engineClient:      engineclient.New(),
+		apiClient:         apiclient.New(),
 		cliOutput:         cliOutput,
 		cliParamSatisfier: cliparamsatisfier.New(cliColorer, cliExiter, cliOutput, validate.New(), vos.New()),
 		updater:           updater.New(),
@@ -84,7 +84,7 @@ type _core struct {
 	bundle            bundle.Bundle
 	cliColorer        clicolorer.CliColorer
 	cliExiter         cliexiter.CliExiter
-	engineClient      engineclient.EngineClient
+	apiClient         apiclient.ApiClient
 	cliOutput         clioutput.CliOutput
 	cliParamSatisfier cliparamsatisfier.CliParamSatisfier
 	updater           updater.Updater

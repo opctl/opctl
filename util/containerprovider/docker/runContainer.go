@@ -14,8 +14,8 @@ import (
 	"strings"
 )
 
-func (this _containerProvider) StartContainer(
-	req *containerprovider.StartContainerReq,
+func (this _containerProvider) RunContainer(
+	req *containerprovider.RunContainerReq,
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 
@@ -47,12 +47,17 @@ func (this _containerProvider) StartContainer(
 	}
 	for containerSocketAddress, hostSocketAddress := range req.Sockets {
 		const unixSocketAddressDiscriminationChars = `/\`
-		switch {
 		// note: this mechanism for determining the type of socket is naive; higher level of sophistication may be required
-		case strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars):
-			hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostSocketAddress, containerSocketAddress))
-		default:
-			// @TODO: handle network sockets
+		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
+			hostConfig.Binds = append(
+				hostConfig.Binds,
+				fmt.Sprintf("%v:%v", hostSocketAddress, containerSocketAddress),
+			)
+		} else {
+			hostConfig.ExtraHosts = append(
+				hostConfig.ExtraHosts,
+				fmt.Sprintf("%v:%v", containerSocketAddress, hostSocketAddress),
+			)
 		}
 	}
 	// sort binds to make order deterministic; useful for testing

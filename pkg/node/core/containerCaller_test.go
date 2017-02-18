@@ -169,7 +169,7 @@ var _ = Context("containerCaller", func() {
 
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
-			It("should call containerProvider.StartContainer w/ expected args", func() {
+			It("should call containerProvider.RunContainer w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedContainerId := "dummyContainerId"
@@ -187,7 +187,7 @@ var _ = Context("containerCaller", func() {
 				fakeBundle := new(bundle.Fake)
 				fakeBundle.GetOpReturns(opViewReturnedFromBundle, nil)
 
-				expectedReq := newContainerStartReq(
+				expectedReq := newRunContainerReq(
 					providedInboundScope,
 					providedScgContainerCall,
 					providedContainerId,
@@ -215,11 +215,11 @@ var _ = Context("containerCaller", func() {
 				)
 
 				/* assert */
-				actualReq, actualEventPublisher := fakeContainerProvider.StartContainerArgsForCall(0)
+				actualReq, actualEventPublisher := fakeContainerProvider.RunContainerArgsForCall(0)
 				Expect(actualReq).To(Equal(expectedReq))
 				Expect(actualEventPublisher).To(Equal(fakePubSub))
 			})
-			Context("containerProvider.StartContainer errors", func() {
+			Context("containerProvider.RunContainer errors", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
@@ -231,7 +231,7 @@ var _ = Context("containerCaller", func() {
 					expectedError := errors.New("dummyError")
 
 					fakeContainerProvider := new(containerprovider.Fake)
-					fakeContainerProvider.StartContainerReturns(expectedError)
+					fakeContainerProvider.RunContainerReturns(expectedError)
 
 					objectUnderTest := newContainerCaller(
 						new(bundle.Fake),
@@ -253,7 +253,7 @@ var _ = Context("containerCaller", func() {
 					Expect(actualError).To(Equal(expectedError))
 				})
 			})
-			Context("containerProvider.StartContainer doesn't error", func() {
+			Context("containerProvider.RunContainer doesn't error", func() {
 				It("should call containerProvider.InspectContainerIfExists w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
@@ -321,19 +321,15 @@ var _ = Context("containerCaller", func() {
 					It("should return expected outboundScope", func() {
 						/* arrange */
 						providedScgContainerCall := &model.ScgContainerCall{
-							Dirs: map[string]*model.ScgContainerDir{
+							Dirs: map[string]*model.ScgBinding{
 								"dir1ContainerPath": {Bind: "dir1VarName"},
 								"dir2ContainerPath": {Bind: "dir2VarName"},
 							},
-							EnvVars: map[string]*model.ScgContainerEnvVar{
-								"envVar1Name": {Bind: "string1VarName"},
-								"envVar2Name": {Bind: "string2VarName"},
-							},
-							Files: map[string]*model.ScgContainerFile{
+							Files: map[string]*model.ScgBinding{
 								"file1ContainerPath": {Bind: "file1VarName"},
 								"file2ContainerPath": {Bind: "file2VarName"},
 							},
-							Sockets: map[string]*model.ScgContainerSocket{
+							Sockets: map[string]*model.ScgBinding{
 								"/unixSocket1ContainerAddress": {Bind: "socket1VarName"},
 								"/unixSocket2ContainerAddress": {Bind: "socket2VarName"},
 							},
@@ -343,10 +339,6 @@ var _ = Context("containerCaller", func() {
 							Dirs: map[string]string{
 								"dir1ContainerPath": "dir1HostPath",
 								"dir2ContainerPath": "dir2HostPath",
-							},
-							EnvVars: map[string]string{
-								"envVar1Name": "envVar1Value",
-								"envVar2Name": "envVar2Value",
 							},
 							Files: map[string]string{
 								"file1ContainerPath": "file1HostPath",
@@ -364,10 +356,6 @@ var _ = Context("containerCaller", func() {
 							// dirs
 							"dir1VarName": {Dir: "dir1HostPath"},
 							"dir2VarName": {Dir: "dir2HostPath"},
-
-							// envVars
-							"string1VarName": {String: "envVar1Value"},
-							"string2VarName": {String: "envVar2Value"},
 
 							// files
 							"file1VarName": {File: "file1HostPath"},

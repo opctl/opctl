@@ -9,7 +9,7 @@ import (
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/engineclient"
+	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 )
@@ -88,8 +88,8 @@ var _ = Context("parameterSatisfier", func() {
 						fakeVos := new(vos.Fake)
 						fakeVos.GetenvReturns(param1ValueFromEnv.String)
 
-						fakeEngineClient := new(engineclient.Fake)
-						fakeEngineClient.StartOpReturns("dummyOpId", errors.New(""))
+						fakeApiClient := new(apiclient.Fake)
+						fakeApiClient.StartOpReturns("dummyOpId", errors.New(""))
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
