@@ -19,7 +19,12 @@ func (this _core) StreamEvents() {
 
 		event, isEventChannelOpen := <-eventChannel
 		if !isEventChannelOpen {
-			this.cliExiter.Exit(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1})
+			this.cliExiter.Exit(
+				cliexiter.ExitReq{
+					Message: "Connection to event stream lost",
+					Code:    1,
+				},
+			)
 			return // support fake exiter
 		}
 
