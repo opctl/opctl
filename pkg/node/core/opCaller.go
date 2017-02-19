@@ -3,12 +3,13 @@ package core
 //go:generate counterfeiter -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
-	"strings"
 	"time"
 )
 
@@ -61,95 +62,8 @@ func (this _opCaller) Call(
 	outboundScope map[string]*model.Data,
 	err error,
 ) {
-
-	this.dcgNodeRepo.Add(
-		&dcgNodeDescriptor{
-			Id:        opId,
-			OpRef:     opRef,
-			OpGraphId: opGraphId,
-			Op:        &dcgOpDescriptor{},
-		},
-	)
-
-	op, err := this.bundle.GetOp(
-		opRef,
-	)
-	if nil != err {
-		this.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				OpEncounteredError: &model.OpEncounteredErrorEvent{
-					Msg:       err.Error(),
-					OpId:      opId,
-					OpRef:     opRef,
-					OpGraphId: opGraphId,
-				},
-			},
-		)
-		return
-	}
-
-	// validate args
-	errs := []error{}
-	for inputName, input := range op.Inputs {
-		var arg *model.Data
-
-		// resolve var for input
-		switch {
-		case nil != input.Dir:
-			arg = inboundScope[inputName]
-		case nil != input.File:
-			arg = inboundScope[inputName]
-		case nil != input.Socket:
-			arg = inboundScope[inputName]
-		case nil != input.String:
-			if inScopeVar, ok := inboundScope[inputName]; ok {
-				arg = inScopeVar
-			} else {
-				// fallback to default
-				arg = &model.Data{String: input.String.Default}
-			}
-		}
-		errs = append(errs, this.validate.Param(arg, input)...)
-	}
-	if len(errs) > 0 {
-		errStrings := []string{}
-		for _, err := range errs {
-			errStrings = append(errStrings, err.Error())
-		}
-		this.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				OpEncounteredError: &model.OpEncounteredErrorEvent{
-					Msg:       strings.Join(errStrings, "\n"),
-					OpId:      opId,
-					OpRef:     opRef,
-					OpGraphId: opGraphId,
-				},
-			},
-		)
-		return
-	}
-
-	opStartedEvent := model.Event{
-		Timestamp: time.Now().UTC(),
-		OpStarted: &model.OpStartedEvent{
-			OpId:      opId,
-			OpRef:     opRef,
-			OpGraphId: opGraphId,
-		},
-	}
-	this.pubSub.Publish(opStartedEvent)
-
-	outboundScope, err = this.caller.Call(
-		this.uniqueStringFactory.Construct(),
-		inboundScope,
-		op.Run,
-		opRef,
-		opGraphId,
-	)
-
-	defer func(err error) {
+	defer func() {
+		// defer must be defined before conditional return statements so it always runs
 
 		if nil == this.dcgNodeRepo.GetIfExists(opGraphId) {
 			// guard: op killed (we got preempted)
@@ -171,7 +85,6 @@ func (this _opCaller) Call(
 
 		var opOutcome string
 		if nil != err {
-			opOutcome = model.OpOutcomeFailed
 			this.pubSub.Publish(
 				model.Event{
 					Timestamp: time.Now().UTC(),
@@ -183,6 +96,7 @@ func (this _opCaller) Call(
 					},
 				},
 			)
+			opOutcome = model.OpOutcomeFailed
 		} else {
 			opOutcome = model.OpOutcomeSucceeded
 		}
@@ -199,8 +113,123 @@ func (this _opCaller) Call(
 			},
 		)
 
-	}(err)
+	}()
+
+	this.dcgNodeRepo.Add(
+		&dcgNodeDescriptor{
+			Id:        opId,
+			OpRef:     opRef,
+			OpGraphId: opGraphId,
+			Op:        &dcgOpDescriptor{},
+		},
+	)
+
+	op, err := this.bundle.GetOp(
+		opRef,
+	)
+	if nil != err {
+		return
+	}
+
+	// validate inputs
+	err = this.validateScope("input", inboundScope, op.Inputs)
+	if nil != err {
+		return
+	}
+
+	opStartedEvent := model.Event{
+		Timestamp: time.Now().UTC(),
+		OpStarted: &model.OpStartedEvent{
+			OpId:      opId,
+			OpRef:     opRef,
+			OpGraphId: opGraphId,
+		},
+	}
+	this.pubSub.Publish(opStartedEvent)
+
+	outboundScope, err = this.caller.Call(
+		this.uniqueStringFactory.Construct(),
+		inboundScope,
+		op.Run,
+		opRef,
+		opGraphId,
+	)
+	if nil != err {
+		return
+	}
+
+	// validate outputs
+	err = this.validateScope("output", outboundScope, op.Outputs)
 
 	return
 
+}
+
+func (this _opCaller) validateScope(
+	scopeType string,
+	scope map[string]*model.Data,
+	params map[string]*model.Param,
+) error {
+
+	messageBuffer := bytes.NewBufferString(``)
+	for paramName, param := range params {
+		var (
+			arg             *model.Data
+			argDisplayValue string
+		)
+
+		// resolve var for param
+		var ok bool
+		switch {
+		case nil != param.Dir:
+			if arg, ok = scope[paramName]; ok {
+				argDisplayValue = arg.Dir
+			}
+		case nil != param.File:
+			if arg, ok = scope[paramName]; ok {
+				argDisplayValue = arg.File
+			}
+		case nil != param.Socket:
+			if arg, ok = scope[paramName]; ok {
+				argDisplayValue = arg.Socket
+			}
+		case nil != param.String:
+			if arg, ok = scope[paramName]; ok {
+				argDisplayValue = arg.String
+			} else {
+				// fallback to default
+				arg = &model.Data{String: param.String.Default}
+				argDisplayValue = arg.String
+			}
+			if param.String.IsSecret {
+				argDisplayValue = "************"
+			}
+		}
+
+		// validate
+		validationErrors := this.validate.Param(arg, param)
+
+		if len(validationErrors) > 0 {
+			messageBuffer.WriteString(fmt.Sprintf(`
+  Name: %v
+  Value: %v
+  Error(s):`, paramName, argDisplayValue),
+			)
+			for _, validationError := range validationErrors {
+				messageBuffer.WriteString(fmt.Sprintf(`
+    - %v`, validationError.Error()))
+			}
+			messageBuffer.WriteString(`
+`)
+		}
+	}
+
+	if messageBuffer.Len() > 0 {
+		return fmt.Errorf(`
+-
+  validation of the following op %vs failed:
+%v
+-`, scopeType, messageBuffer.String())
+	}
+	return nil
 }

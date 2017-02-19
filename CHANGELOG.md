@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - [Add ability to specify collection for op create, op set, run, and ls commands](https://github.com/opspec-io/opctl/issues/44)
 - [Add opspec 0.1.3 support](https://github.com/opspec-io/opctl/issues/48)
 - [Add output coloring](https://github.com/opspec-io/opctl/issues/49)
+- Add runtime op input/output validation
+- Add ability to subscribe to events w/ a provided opGraphId
 
 ### Removed
 - support for < [opspec 0.1.3](https://opspec.io)
