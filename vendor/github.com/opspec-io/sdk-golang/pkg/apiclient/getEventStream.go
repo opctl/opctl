@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"log"
 	"net/url"
 	"strings"
 )
@@ -38,19 +37,23 @@ func (this _apiClient) GetEventStream(
 	}
 
 	go func() {
+    // ensure web socket closed on exit
 		defer c.Close()
+
+    // ensure channel closed on exit
+    defer close(eventStream)
+
 		for {
 
 			_, bytes, err := c.ReadMessage()
-			if err != nil {
-				log.Println("read:", err)
+			if nil != err {
 				return
 			}
 
 			var event model.Event
 			err = this.jsonFormat.To(bytes, &event)
 			if nil != err {
-				fmt.Printf("json.Unmarshal err: %v \n", err)
+        return
 			}
 			eventStream <- event
 

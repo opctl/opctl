@@ -75,7 +75,7 @@ var _ = Context("streamEvents", func() {
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+						Should(Equal(cliexiter.ExitReq{Message: "Connection to event stream lost", Code: 1}))
 				})
 			})
 		})
