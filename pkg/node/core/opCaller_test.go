@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
@@ -9,7 +10,6 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/pkg/errors"
-	"strings"
 	"time"
 )
 
@@ -119,12 +119,15 @@ var _ = Context("opCaller", func() {
 					errors.New(expectedEvent.OpEncounteredError.Msg),
 				)
 
+				fakeDcgNodeRepo := new(fakeDcgNodeRepo)
+				fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
+
 				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := newOpCaller(
 					fakeBundle,
 					fakePubSub,
-					new(fakeDcgNodeRepo),
+					fakeDcgNodeRepo,
 					new(fakeCaller),
 					new(uniquestring.Fake),
 					new(validate.Fake),
@@ -221,19 +224,15 @@ var _ = Context("opCaller", func() {
 					providedOpRef := "dummyOpRef"
 					providedOpGraphId := "dummyOpGraphId"
 
+					fakeDcgNodeRepo := new(fakeDcgNodeRepo)
+					fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
+
 					opReturnedFromBundle := model.OpView{
 						Inputs: map[string]*model.Param{
 							"dummyVar1Name": {
-								String: &model.StringParam{},
-							},
-							"dummyVar2Name": {
-								File: &model.FileParam{},
-							},
-							"dummyVar3Name": {
-								Dir: &model.DirParam{},
-							},
-							"dummyVar4Name": {
-								Socket: &model.SocketParam{},
+								String: &model.StringParam{
+									IsSecret: true,
+								},
 							},
 						},
 					}
@@ -241,27 +240,26 @@ var _ = Context("opCaller", func() {
 					fakeBundle.GetOpReturns(opReturnedFromBundle, nil)
 
 					fakeValidate := new(validate.Fake)
-					expectedEventMsgParts := []string{
-						"error1Msg",
-						"error2Msg",
-						"error3Msg",
-					}
-					callIndex := 0
-					fakeValidate.ParamStub = func(arg *model.Data, param *model.Param) (errs []error) {
-						defer func() {
-							callIndex++
-						}()
-						if len(expectedEventMsgParts) > callIndex {
-							errs = []error{errors.New(expectedEventMsgParts[callIndex])}
-						}
-						return
-					}
+
+					errorReturnedFromValidate := "validationError0"
+					fakeValidate.ParamReturns([]error{errors.New(errorReturnedFromValidate)})
+
+					expectedMsg := fmt.Sprintf(`
+-
+  validation of the following op inputs failed:
+
+  Name: %v
+  Value: %v
+  Error(s):
+    - %v
+
+-`, "dummyVar1Name", "************", errorReturnedFromValidate)
 
 					fakePubSub := new(pubsub.Fake)
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEncounteredError: &model.OpEncounteredErrorEvent{
-							Msg:       strings.Join(expectedEventMsgParts, "\n"),
+							Msg:       expectedMsg,
 							OpId:      providedOpId,
 							OpRef:     providedOpRef,
 							OpGraphId: providedOpGraphId,
@@ -271,7 +269,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest := newOpCaller(
 						fakeBundle,
 						fakePubSub,
-						new(fakeDcgNodeRepo),
+						fakeDcgNodeRepo,
 						new(fakeCaller),
 						new(uniquestring.Fake),
 						fakeValidate,

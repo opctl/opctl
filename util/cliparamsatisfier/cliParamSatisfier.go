@@ -77,8 +77,12 @@ func (this _cliParamSatisfier) Satisfy(
 	argMap = make(map[string]*model.Data)
 	for _, paramName := range this.getSortedParamNames(params) {
 		param := params[paramName]
-		// track the number of attempts to satisfy the param
-		var isEnvAttempted bool
+		// track if using the env provided value has been attempted
+		var (
+			isEnvAttempted      bool
+			isProvidedAttempted bool
+		)
+
 	paramLoop:
 		for {
 			var (
@@ -96,8 +100,10 @@ func (this _cliParamSatisfier) Satisfy(
 					rawArgDisplayValue = "************"
 				}
 
-				if providedArg, ok := rawArgMap[paramName]; ok {
+				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
+					// provided & we've not made any attempt to use it
 					rawArg = providedArg
+					isProvidedAttempted = true
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
@@ -112,8 +118,10 @@ func (this _cliParamSatisfier) Satisfy(
 				// obtain raw value
 				dirParam := param.Dir
 
-				if providedArg, ok := rawArgMap[paramName]; ok {
+				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
+					// provided & we've not made any attempt to use it
 					rawArg = providedArg
+					isProvidedAttempted = true
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
@@ -126,8 +134,10 @@ func (this _cliParamSatisfier) Satisfy(
 				// obtain raw value
 				fileParam := param.File
 
-				if providedArg, ok := rawArgMap[paramName]; ok {
+				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
+					// provided & we've not made any attempt to use it
 					rawArg = providedArg
+					isProvidedAttempted = true
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
@@ -139,8 +149,10 @@ func (this _cliParamSatisfier) Satisfy(
 			case nil != param.Socket:
 				socketParam := param.Socket
 
-				if providedArg, ok := rawArgMap[paramName]; ok {
+				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
+					// provided & we've not made any attempt to use it
 					rawArg = providedArg
+					isProvidedAttempted = true
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)

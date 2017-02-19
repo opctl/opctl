@@ -18,33 +18,72 @@ var _ = Context("parameterSatisfier", func() {
 	Context("Satisfy", func() {
 		Context("op has params", func() {
 			Context("args provided explicitly w/ values", func() {
-				It("should return them in the argMap as provided", func() {
-					/* arrange */
-					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Data{String: "dummyParam1Value"}
+				Context("an arg is invalid", func() {
+					It("should return it in the argMap w/ value from env", func() {
+						/* arrange */
+						param1Name := "DUMMY_PARAM1_NAME"
+						param1Value := &model.Data{String: "dummyParam1Value"}
 
-					objectUnderTest := New(
-						new(clicolorer.Fake),
-						new(cliexiter.Fake),
-						new(clioutput.Fake),
-						new(validate.Fake),
-						new(vos.Fake),
-					)
+						fakeVos := new(vos.Fake)
+						fakeVos.GetenvReturns(param1Value.String)
 
-					expectedResult := map[string]*model.Data{param1Name: param1Value}
-					providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
-					providedParams := map[string]*model.Param{
-						param1Name: {
-							String: &model.StringParam{},
-						},
-					}
+						objectUnderTest := New(
+							new(clicolorer.Fake),
+							new(cliexiter.Fake),
+							new(clioutput.Fake),
+							validate.New(),
+							fakeVos,
+						)
 
-					/* act */
-					actualResult := objectUnderTest.Satisfy(providedArgs, providedParams)
+						expectedResult := map[string]*model.Data{param1Name: param1Value}
+						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, "invalid")}
+						providedParams := map[string]*model.Param{
+							param1Name: {
+								String: &model.StringParam{
+									Constraints: &model.StringConstraints{
+										Enum: []string{param1Value.String},
+									},
+								},
+							},
+						}
 
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+						/* act */
+						actualResult := objectUnderTest.Satisfy(providedArgs, providedParams)
+
+						/* assert */
+						Expect(actualResult).To(Equal(expectedResult))
+					})
 				})
+				Context("all args valid", func() {
+					It("should return them in the argMap as provided", func() {
+						/* arrange */
+						param1Name := "DUMMY_PARAM1_NAME"
+						param1Value := &model.Data{String: "dummyParam1Value"}
+
+						objectUnderTest := New(
+							new(clicolorer.Fake),
+							new(cliexiter.Fake),
+							new(clioutput.Fake),
+							new(validate.Fake),
+							new(vos.Fake),
+						)
+
+						expectedResult := map[string]*model.Data{param1Name: param1Value}
+						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
+						providedParams := map[string]*model.Param{
+							param1Name: {
+								String: &model.StringParam{},
+							},
+						}
+
+						/* act */
+						actualResult := objectUnderTest.Satisfy(providedArgs, providedParams)
+
+						/* assert */
+						Expect(actualResult).To(Equal(expectedResult))
+					})
+				})
+
 			})
 			Context("args provided explicitly w/out values", func() {
 				It("should return them in the argMap w/ values from env", func() {
