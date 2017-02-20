@@ -3,6 +3,7 @@ description: Builds an image, logs in to a docker registry, and pushes the image
 inputs:
   buildContext:
     dir:
+      default: .
       description: context to use for docker build
   dockerPassword:
     string:

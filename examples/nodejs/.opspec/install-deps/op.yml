@@ -3,6 +3,7 @@ description: installs npm packages
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   npmRegistryUrl:
     string:

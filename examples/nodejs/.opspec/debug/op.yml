@@ -3,6 +3,7 @@ description: Ensures deps are installed and debugs the node app
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   npmRegistryUrl:
     string:

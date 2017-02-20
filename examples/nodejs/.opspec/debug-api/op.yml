@@ -3,6 +3,7 @@ description: Debugs the apps api by starting it and exposing a remote debugger
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
 outputs:
   apiDebugSocket:

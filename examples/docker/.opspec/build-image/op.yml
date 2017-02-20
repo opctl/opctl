@@ -3,6 +3,7 @@ description: Builds a docker image
 inputs:
   buildContext:
     dir:
+      default: .
       description: context to use for docker build
   dockerSocket:
     socket:

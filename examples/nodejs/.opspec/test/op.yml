@@ -3,6 +3,7 @@ description: Runs all tests
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   npmRegistryUrl:
     string:

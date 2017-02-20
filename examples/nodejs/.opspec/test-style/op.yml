@@ -3,6 +3,7 @@ description: Runs style tests
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
 run:
   container:
