@@ -7,12 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-type Fake struct {
-	PublishStub        func(event *model.Event)
-	publishMutex       sync.RWMutex
-	publishArgsForCall []struct {
-		event *model.Event
-	}
+type FakeEventSubscriber struct {
 	SubscribeStub        func(filter *model.EventFilter, eventChannel chan *model.Event)
 	subscribeMutex       sync.RWMutex
 	subscribeArgsForCall []struct {
@@ -23,31 +18,7 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Publish(event *model.Event) {
-	fake.publishMutex.Lock()
-	fake.publishArgsForCall = append(fake.publishArgsForCall, struct {
-		event *model.Event
-	}{event})
-	fake.recordInvocation("Publish", []interface{}{event})
-	fake.publishMutex.Unlock()
-	if fake.PublishStub != nil {
-		fake.PublishStub(event)
-	}
-}
-
-func (fake *Fake) PublishCallCount() int {
-	fake.publishMutex.RLock()
-	defer fake.publishMutex.RUnlock()
-	return len(fake.publishArgsForCall)
-}
-
-func (fake *Fake) PublishArgsForCall(i int) *model.Event {
-	fake.publishMutex.RLock()
-	defer fake.publishMutex.RUnlock()
-	return fake.publishArgsForCall[i].event
-}
-
-func (fake *Fake) Subscribe(filter *model.EventFilter, eventChannel chan *model.Event) {
+func (fake *FakeEventSubscriber) Subscribe(filter *model.EventFilter, eventChannel chan *model.Event) {
 	fake.subscribeMutex.Lock()
 	fake.subscribeArgsForCall = append(fake.subscribeArgsForCall, struct {
 		filter       *model.EventFilter
@@ -60,29 +31,27 @@ func (fake *Fake) Subscribe(filter *model.EventFilter, eventChannel chan *model.
 	}
 }
 
-func (fake *Fake) SubscribeCallCount() int {
+func (fake *FakeEventSubscriber) SubscribeCallCount() int {
 	fake.subscribeMutex.RLock()
 	defer fake.subscribeMutex.RUnlock()
 	return len(fake.subscribeArgsForCall)
 }
 
-func (fake *Fake) SubscribeArgsForCall(i int) (*model.EventFilter, chan *model.Event) {
+func (fake *FakeEventSubscriber) SubscribeArgsForCall(i int) (*model.EventFilter, chan *model.Event) {
 	fake.subscribeMutex.RLock()
 	defer fake.subscribeMutex.RUnlock()
 	return fake.subscribeArgsForCall[i].filter, fake.subscribeArgsForCall[i].eventChannel
 }
 
-func (fake *Fake) Invocations() map[string][][]interface{} {
+func (fake *FakeEventSubscriber) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.publishMutex.RLock()
-	defer fake.publishMutex.RUnlock()
 	fake.subscribeMutex.RLock()
 	defer fake.subscribeMutex.RUnlock()
 	return fake.invocations
 }
 
-func (fake *Fake) recordInvocation(key string, args []interface{}) {
+func (fake *FakeEventSubscriber) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -94,4 +63,4 @@ func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ PubSub = new(Fake)
+var _ EventSubscriber = new(FakeEventSubscriber)

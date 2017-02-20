@@ -1,148 +1,91 @@
 package pubsub
 
+//go:generate counterfeiter -o ./fakeEventSubscriber.go --fake-name FakeEventSubscriber ./ EventSubscriber
 //go:generate counterfeiter -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
-	"fmt"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"sync"
 	"time"
 )
 
 func New() PubSub {
-
-	objectUnderConstruction := &pubSub{
-		pendingPublishesChannel: make(chan model.Event),
-		subscriberMutex:         sync.RWMutex{},
-		subscribers:             make(map[chan model.Event]*model.EventFilter),
+	return &pubSub{
+		eventRepo:          newEventRepo(),
+		subscriptions:      map[chan *model.Event]chan *model.Event{},
+		subscriptionsMutex: sync.RWMutex{},
 	}
-
-	go objectUnderConstruction.init()
-
-	return objectUnderConstruction
-
 }
 
-// publishes messages to the event bus
 type EventPublisher interface {
 	Publish(
-		event model.Event,
+		event *model.Event,
+	)
+}
+
+type EventSubscriber interface {
+	Subscribe(
+		filter *model.EventFilter,
+		eventChannel chan *model.Event,
 	)
 }
 
 type PubSub interface {
 	EventPublisher
-
-	RegisterSubscriber(
-		filter *model.EventFilter,
-		eventChannel chan model.Event,
-	)
-
-	UnregisterSubscriber(
-		eventChannel chan model.Event,
-	)
+	EventSubscriber
 }
 
 type pubSub struct {
-	pendingPublishesChannel chan model.Event
-	subscriberMutex         sync.RWMutex
-	subscribers             map[chan model.Event]*model.EventFilter
+	eventRepo eventRepo
+	// format: output : input
+	subscriptions      map[chan *model.Event]chan *model.Event
+	subscriptionsMutex sync.RWMutex
 }
 
-func (this *pubSub) init() {
-
-	for {
-		event := <-this.pendingPublishesChannel
-		this.publishToSubscribers(event)
-	}
-
-}
-
-// O(1) complexity; thread safe
-func (this *pubSub) RegisterSubscriber(
+// O(n) complexity (n being topics subscribed to); thread safe
+func (this *pubSub) Subscribe(
 	filter *model.EventFilter,
-	eventChannel chan model.Event,
+	channel chan *model.Event,
 ) {
-	this.subscriberMutex.Lock()
-	defer this.subscriberMutex.Unlock()
-	this.subscribers[eventChannel] = filter
-}
+	this.subscriptionsMutex.Lock()
+	defer this.subscriptionsMutex.Unlock()
+	this.subscriptions[channel] = make(chan *model.Event, 1000)
 
-func (this *pubSub) isEventFiltered(
-	event model.Event,
-	filter *model.EventFilter,
-) bool {
-	if nil != filter && nil != filter.OpGraphIds {
-		eventOpGraphId := this.getEventOpGraphId(event)
-		isMatchFound := false
-		for _, opGraphId := range filter.OpGraphIds {
-			if opGraphId == eventOpGraphId {
-				isMatchFound = true
-				break
+	go func() {
+		for _, event := range this.eventRepo.List(filter) {
+			this.deliverEvent(event, channel)
+		}
+		for event := range this.subscriptions[channel] {
+			ogid := getEventOpGraphId(event)
+			if !isOgidExcludedByFilter(ogid, filter) {
+				this.deliverEvent(event, channel)
 			}
 		}
-		if !isMatchFound {
-			return true
-		}
-	}
-	return false
+	}()
 }
 
-// O(n) complexity (n being subscription count); thread safe
-func (this *pubSub) publishToSubscribers(event model.Event) {
-	this.subscriberMutex.RLock()
-	defer this.subscriberMutex.RUnlock()
-	for subscriber, filter := range this.subscribers {
-		if !this.isEventFiltered(event, filter) {
-			// use go routine; sending event may be slow or timeout
-			go func(event model.Event, subscriber chan model.Event) {
-				select {
-				case subscriber <- event:
-				case <-time.After(time.Second * 5):
-					this.UnregisterSubscriber(subscriber)
-				}
-			}(event, subscriber)
-		}
-	}
-}
-
-func (this *pubSub) getEventOpGraphId(event model.Event) string {
-	switch {
-	case nil != event.ContainerExited:
-		return event.ContainerExited.OpGraphId
-	case nil != event.ContainerStarted:
-		return event.ContainerStarted.OpGraphId
-	case nil != event.ContainerStdErrWrittenTo:
-		return event.ContainerStdErrWrittenTo.OpGraphId
-	case nil != event.ContainerStdOutWrittenTo:
-		return event.ContainerStdOutWrittenTo.OpGraphId
-	case nil != event.OpEncounteredError:
-		return event.OpEncounteredError.OpGraphId
-	case nil != event.OpEnded:
-		return event.OpEnded.OpGraphId
-	case nil != event.OpStarted:
-		return event.OpStarted.OpGraphId
-	default:
-		panic(fmt.Sprintf("Received unexpected event %v\n", event))
+func (this *pubSub) deliverEvent(
+	event *model.Event,
+	channel chan *model.Event,
+) {
+	select {
+	case channel <- event:
+	case <-time.After(time.Second * 5):
+		delete(this.subscriptions, channel)
+		return
 	}
 }
 
 // O(1) complexity; thread safe
 func (this *pubSub) Publish(
-	event model.Event,
+	event *model.Event,
 ) {
-	this.pendingPublishesChannel <- event
-}
+	this.eventRepo.Add(event)
 
-// O(1) complexity; thread safe
-func (this *pubSub) UnregisterSubscriber(
-	eventChannel chan model.Event,
-) {
-	this.subscriberMutex.Lock()
-	defer this.subscriberMutex.Unlock()
-	if _, ok := this.subscribers[eventChannel]; ok {
-		delete(this.subscribers, eventChannel)
-		close(eventChannel)
+	this.subscriptionsMutex.RLock()
+	defer this.subscriptionsMutex.RUnlock()
+	for _, subscriptionInput := range this.subscriptions {
+		subscriptionInput <- event
 	}
 }

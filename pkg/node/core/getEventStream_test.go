@@ -22,7 +22,7 @@ var _ = Context("core", func() {
 				},
 			}
 
-			providedEventStream := make(chan model.Event)
+			providedEventStream := make(chan *model.Event)
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -40,9 +40,8 @@ var _ = Context("core", func() {
 
 			/* assert */
 
-			// Call happens in go routine; wait 500ms to allow it to occur
 			actualFilter,
-				actualEventChannel := fakePubSub.RegisterSubscriberArgsForCall(0)
+				actualEventChannel := fakePubSub.SubscribeArgsForCall(0)
 
 			Expect(actualFilter).To(Equal(providedReq.Filter))
 			Expect(actualEventChannel).To(Equal(providedEventStream))

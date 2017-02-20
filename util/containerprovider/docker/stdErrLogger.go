@@ -34,7 +34,7 @@ func (this _containerProvider) stdErrLogger(
 		scanner := bufio.NewScanner(readCloser)
 		for scanner.Scan() {
 			eventPublisher.Publish(
-				model.Event{
+				&model.Event{
 					Timestamp: time.Now().UTC(),
 					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
 						Data:        scanner.Bytes(),

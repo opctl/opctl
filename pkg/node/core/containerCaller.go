@@ -57,6 +57,23 @@ func (this _containerCaller) Call(
 	outboundScope map[string]*model.Data,
 	err error,
 ) {
+	defer func() {
+		// defer must be defined before conditional return statements so it always runs
+
+		this.dcgNodeRepo.DeleteIfExists(containerId)
+
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerExited: &model.ContainerExitedEvent{
+					ContainerId: containerId,
+					OpRef:       opRef,
+					OpGraphId:   opGraphId,
+				},
+			},
+		)
+
+	}()
 
 	op, err := this.bundle.GetOp(
 		opRef,
@@ -74,15 +91,16 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	containerStartedEvent := model.Event{
-		Timestamp: time.Now().UTC(),
-		ContainerStarted: &model.ContainerStartedEvent{
-			ContainerId: containerId,
-			OpRef:       opRef,
-			OpGraphId:   opGraphId,
+	this.pubSub.Publish(
+		&model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerStarted: &model.ContainerStartedEvent{
+				ContainerId: containerId,
+				OpRef:       opRef,
+				OpGraphId:   opGraphId,
+			},
 		},
-	}
-	this.pubSub.Publish(containerStartedEvent)
+	)
 
 	err = this.containerProvider.RunContainer(
 		newRunContainerReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
@@ -122,23 +140,6 @@ func (this _containerCaller) Call(
 			}
 		}
 	}
-
-	defer func() {
-
-		this.dcgNodeRepo.DeleteIfExists(containerId)
-
-		this.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerExited: &model.ContainerExitedEvent{
-					ContainerId: containerId,
-					OpRef:       opRef,
-					OpGraphId:   opGraphId,
-				},
-			},
-		)
-
-	}()
 
 	return
 }
