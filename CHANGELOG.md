@@ -8,14 +8,14 @@ All notable changes to this project will be documented in this file.
 
 - `dir`, `file`, and `socket` parameter types
 - `constraints` attribute for `string` parameter type
-- [./schema/call-graph.json#definitions/containerCall](schema/call-graph.json#definitions/containerCall)
+- [./schema/scg.json#definitions/containerCall](schema/scg.json#definitions/containerCall)
 - `filter` to engine API `/event-stream` resource
 
 ### Changed
 
 - Rename from `run` to `call graph` for consistency with established
   terminology.
-- [./schema/call-graph.json#definitions/opCall](schema/call-graph.json#definitions/opCall)
+- [./schema/scg.json#definitions/opCall](schema/scg.json#definitions/opCall)
   changed from string to object with `ref`, `inputs`, and `outputs`
   attributes. To migrate, replace string value with object having `ref`
   attribute equal to existing string and add `inputs`/`outputs` values as

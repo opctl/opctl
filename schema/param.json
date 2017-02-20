@@ -12,7 +12,9 @@
           "type": "object",
           "properties": {
             "description": {
-              "description": "Description of the directory",
+              "type": "string"
+            },
+            "default": {
               "type": "string"
             },
             "isSecret": {
@@ -34,7 +36,9 @@
           "type": "object",
           "properties": {
             "description": {
-              "description": "Description of the file",
+              "type": "string"
+            },
+            "default": {
               "type": "string"
             },
             "isSecret": {
@@ -56,7 +60,6 @@
           "type": "object",
           "properties": {
             "description": {
-              "description": "Description of the socket",
               "type": "string"
             },
             "isSecret": {
@@ -77,11 +80,9 @@
           "type": "object",
           "properties": {
             "description": {
-              "description": "Description of the string",
               "type": "string"
             },
             "default": {
-              "description": "Default value of the string",
               "type": "string"
             },
             "isSecret": {
