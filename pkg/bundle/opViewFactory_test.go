@@ -371,10 +371,12 @@ var _ = Describe("_opViewFactory", func() {
 								Constraints: &model.StringConstraints{
 									Format: "uri",
 								},
+								Default: "https://npmjs.org/",
 							},
 						},
 						"appDir": {
 							Dir: &model.DirParam{
+								Default:     ".",
 								Description: "directory containing the app",
 							},
 						},
@@ -444,6 +446,7 @@ var _ = Describe("_opViewFactory", func() {
 					Inputs: map[string]*model.Param{
 						"appDir": {
 							Dir: &model.DirParam{
+								Default:     ".",
 								Description: "directory containing the app",
 							},
 						},
@@ -468,7 +471,7 @@ var _ = Describe("_opViewFactory", func() {
 							},
 							Image: "node:7.4",
 							Sockets: map[string]*model.ScgBinding{
-								"api:80": {
+								"api": {
 									Bind: "apiSocket",
 								},
 							},

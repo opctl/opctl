@@ -37,11 +37,11 @@ func (this _apiClient) GetEventStream(
 	}
 
 	go func() {
-    // ensure web socket closed on exit
+		// ensure web socket closed on exit
 		defer c.Close()
 
-    // ensure channel closed on exit
-    defer close(eventStream)
+		// ensure channel closed on exit
+		defer close(eventStream)
 
 		for {
 
@@ -53,7 +53,7 @@ func (this _apiClient) GetEventStream(
 			var event model.Event
 			err = this.jsonFormat.To(bytes, &event)
 			if nil != err {
-        return
+				return
 			}
 			eventStream <- event
 

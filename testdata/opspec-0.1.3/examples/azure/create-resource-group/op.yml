@@ -3,12 +3,10 @@ description: creates a resource group if it doesn't already exist
 inputs:
   subscriptionId:
     string:
-      constraints: { minLength: 1}
-      isSecret: true
+      constraints: { minLength: 1 }
   username:
     string:
       constraints: { format: email }
-      isSecret: true
   password:
     string:
       constraints: { minLength: 1 }

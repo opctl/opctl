@@ -3,6 +3,7 @@ description: Runs acceptance tests
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   apiSocket:
     socket:
@@ -14,5 +15,5 @@ run:
       /opt/app: { bind: appDir }
     image: node:7.4
     sockets:
-      api:80: { bind: apiSocket }
+      api: { bind: apiSocket }
     workDir: /opt/app

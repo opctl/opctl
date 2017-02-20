@@ -3,10 +3,12 @@ description: Runs all tests
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   npmRegistryUrl:
     string:
       constraints: { format: uri }
+      default: https://npmjs.org/
 run:
   serial:
     - op: { ref: install-deps, inputs: { npmRegistryUrl }, outputs: { appDir } }
