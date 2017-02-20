@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
+	"path/filepath"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -156,26 +157,54 @@ var _ = Context("parameterSatisfier", func() {
 				Context("params have defaults", func() {
 					It("should not return them in the argMap", func() {
 						/* arrange */
+						wdReturnedFromGetwd := "dummyWorkDir"
+
+						fakeVos := new(vos.Fake)
+						fakeVos.GetwdReturns(wdReturnedFromGetwd, nil)
+
 						objectUnderTest := New(
 							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							new(validate.Fake),
-							new(vos.Fake),
+							fakeVos,
 						)
 
-						expectedResult := map[string]*model.Data{}
-						providedArgs := []string{}
+						providedParam1Name := "dummyParam1Name"
+						providedParam2Name := "dummyParam2Name"
+						providedParam3Name := "dummyParam3Name"
 						providedParams := map[string]*model.Param{
-							"dummyParam1Name": {
+							providedParam1Name: {
 								String: &model.StringParam{
 									Default: "dummyParam1Default",
 								},
 							},
+							providedParam2Name: {
+								File: &model.FileParam{
+									Default: "dummyParam2Default",
+								},
+							},
+							providedParam3Name: {
+								Dir: &model.DirParam{
+									Default: "dummyParam3Default",
+								},
+							},
+						}
+
+						expectedResult := map[string]*model.Data{
+							providedParam1Name: {
+								String: providedParams[providedParam1Name].String.Default,
+							},
+							providedParam2Name: {
+								File: filepath.Join(wdReturnedFromGetwd, providedParams[providedParam2Name].File.Default),
+							},
+							providedParam3Name: {
+								Dir: filepath.Join(wdReturnedFromGetwd, providedParams[providedParam3Name].Dir.Default),
+							},
 						}
 
 						/* act */
-						actualResult := objectUnderTest.Satisfy(providedArgs, providedParams)
+						actualResult := objectUnderTest.Satisfy([]string{}, providedParams)
 
 						/* assert */
 						Expect(actualResult).To(Equal(expectedResult))

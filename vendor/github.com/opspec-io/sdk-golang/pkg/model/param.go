@@ -10,12 +10,14 @@ type Param struct {
 
 // Directory parameter
 type DirParam struct {
+	Default     string `yaml:"default,omitempty"`
 	Description string `yaml:"description,omitempty"`
 	IsSecret    bool   `yaml:"isSecret,omitempty"`
 }
 
 // File parameter
 type FileParam struct {
+	Default     string `yaml:"default,omitempty"`
 	Description string `yaml:"description,omitempty"`
 	IsSecret    bool   `yaml:"isSecret,omitempty"`
 }
