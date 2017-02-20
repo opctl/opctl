@@ -71,8 +71,8 @@
           }
         },
         "run": {
-          "description": "Call graph run when the op is instantiated",
-          "$ref": "call-graph.json"
+          "description": "Static Call Graph (SCG) of the op",
+          "$ref": "scg.json"
         },
         "version": {
           "description": "Version of the op",
