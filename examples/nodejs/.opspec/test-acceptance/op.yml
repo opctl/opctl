@@ -3,6 +3,7 @@ description: Runs acceptance tests
 inputs:
   appDir:
     dir:
+      default: .
       description: directory containing the app
   apiSocket:
     socket:

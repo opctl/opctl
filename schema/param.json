@@ -15,6 +15,7 @@
               "type": "string"
             },
             "default": {
+              "description":"Default value; a relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -39,6 +40,7 @@
               "type": "string"
             },
             "default": {
+              "description":"Default value; a relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
