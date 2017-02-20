@@ -132,7 +132,7 @@ var _ = Context("containerCaller", func() {
 				providedOpRef := "dummyOpRef"
 				providedOpGraphId := "dummyOpGraphId"
 
-				expectedEvent := model.Event{
+				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
 					ContainerStarted: &model.ContainerStartedEvent{
 						ContainerId: providedContainerId,
@@ -425,7 +425,7 @@ var _ = Context("containerCaller", func() {
 			providedOpRef := "dummyOpRef"
 			providedOpGraphId := "dummyOpGraphId"
 
-			expectedEvent := model.Event{
+			expectedEvent := &model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerExited: &model.ContainerExitedEvent{
 					ContainerId: providedContainerId,

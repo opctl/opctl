@@ -20,7 +20,7 @@ func NewStdOutWriter(
 	go func() {
 		for scanner.Scan() {
 			eventPublisher.Publish(
-				model.Event{
+				&model.Event{
 					Timestamp: time.Now().UTC(),
 					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 						Data:        scanner.Bytes(),

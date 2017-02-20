@@ -8,11 +8,11 @@ import (
 )
 
 type Fake struct {
-	GetEventStreamStub        func(req *model.GetEventStreamReq, eventChannel chan model.Event) (err error)
+	GetEventStreamStub        func(req *model.GetEventStreamReq, eventChannel chan *model.Event) (err error)
 	getEventStreamMutex       sync.RWMutex
 	getEventStreamArgsForCall []struct {
 		req          *model.GetEventStreamReq
-		eventChannel chan model.Event
+		eventChannel chan *model.Event
 	}
 	getEventStreamReturns struct {
 		result1 error
@@ -35,11 +35,11 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) GetEventStream(req *model.GetEventStreamReq, eventChannel chan model.Event) (err error) {
+func (fake *Fake) GetEventStream(req *model.GetEventStreamReq, eventChannel chan *model.Event) (err error) {
 	fake.getEventStreamMutex.Lock()
 	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
 		req          *model.GetEventStreamReq
-		eventChannel chan model.Event
+		eventChannel chan *model.Event
 	}{req, eventChannel})
 	fake.recordInvocation("GetEventStream", []interface{}{req, eventChannel})
 	fake.getEventStreamMutex.Unlock()
@@ -56,7 +56,7 @@ func (fake *Fake) GetEventStreamCallCount() int {
 	return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *Fake) GetEventStreamArgsForCall(i int) (*model.GetEventStreamReq, chan model.Event) {
+func (fake *Fake) GetEventStreamArgsForCall(i int) (*model.GetEventStreamReq, chan *model.Event) {
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
 	return fake.getEventStreamArgsForCall[i].req, fake.getEventStreamArgsForCall[i].eventChannel

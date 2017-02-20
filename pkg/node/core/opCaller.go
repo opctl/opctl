@@ -68,7 +68,7 @@ func (this _opCaller) Call(
 		if nil == this.dcgNodeRepo.GetIfExists(opGraphId) {
 			// guard: op killed (we got preempted)
 			this.pubSub.Publish(
-				model.Event{
+				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
 						OpId:      opId,
@@ -86,7 +86,7 @@ func (this _opCaller) Call(
 		var opOutcome string
 		if nil != err {
 			this.pubSub.Publish(
-				model.Event{
+				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
 						Msg:       err.Error(),
@@ -102,7 +102,7 @@ func (this _opCaller) Call(
 		}
 
 		this.pubSub.Publish(
-			model.Event{
+			&model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpId:      opId,
@@ -137,15 +137,16 @@ func (this _opCaller) Call(
 		return
 	}
 
-	opStartedEvent := model.Event{
-		Timestamp: time.Now().UTC(),
-		OpStarted: &model.OpStartedEvent{
-			OpId:      opId,
-			OpRef:     opRef,
-			OpGraphId: opGraphId,
+	this.pubSub.Publish(
+		&model.Event{
+			Timestamp: time.Now().UTC(),
+			OpStarted: &model.OpStartedEvent{
+				OpId:      opId,
+				OpRef:     opRef,
+				OpGraphId: opGraphId,
+			},
 		},
-	}
-	this.pubSub.Publish(opStartedEvent)
+	)
 
 	outboundScope, err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
@@ -227,7 +228,7 @@ func (this _opCaller) validateScope(
 	if messageBuffer.Len() > 0 {
 		return fmt.Errorf(`
 -
-  validation of the following op %vs failed:
+  validation of the following op %v(s) failed:
 %v
 -`, scopeType, messageBuffer.String())
 	}

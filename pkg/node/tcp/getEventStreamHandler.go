@@ -39,7 +39,7 @@ func (this getEventStreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Reque
 
 	defer conn.Close()
 
-	eventChannel := make(chan model.Event)
+	eventChannel := make(chan *model.Event)
 
 	// inspired by https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/monitor-dockers-events
 	req := &model.GetEventStreamReq{}

@@ -103,7 +103,7 @@ var _ = Context("opCaller", func() {
 				providedOpRef := "dummyOpRef"
 				providedOpGraphId := "dummyOpGraphId"
 
-				expectedEvent := model.Event{
+				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
 						Msg:       "dummyError",
@@ -246,7 +246,7 @@ var _ = Context("opCaller", func() {
 
 					expectedMsg := fmt.Sprintf(`
 -
-  validation of the following op inputs failed:
+  validation of the following op input(s) failed:
 
   Name: %v
   Value: %v
@@ -256,7 +256,7 @@ var _ = Context("opCaller", func() {
 -`, "dummyVar1Name", "************", errorReturnedFromValidate)
 
 					fakePubSub := new(pubsub.Fake)
-					expectedEvent := model.Event{
+					expectedEvent := &model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEncounteredError: &model.OpEncounteredErrorEvent{
 							Msg:       expectedMsg,
@@ -302,7 +302,7 @@ var _ = Context("opCaller", func() {
 					providedOpRef := "dummyOpRef"
 					providedOpGraphId := "dummyOpGraphId"
 
-					expectedEvent := model.Event{
+					expectedEvent := &model.Event{
 						Timestamp: time.Now().UTC(),
 						OpStarted: &model.OpStartedEvent{
 							OpId:      providedOpId,
@@ -432,7 +432,7 @@ var _ = Context("opCaller", func() {
 						providedOpRef := "dummyOpRef"
 						providedOpGraphId := "dummyOpGraphId"
 
-						expectedEvent := model.Event{
+						expectedEvent := &model.Event{
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
 								OpId:      providedOpId,
@@ -511,7 +511,7 @@ var _ = Context("opCaller", func() {
 							providedOpRef := "dummyOpRef"
 							providedOpGraphId := "dummyOpGraphId"
 
-							expectedEvent := model.Event{
+							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEncounteredError: &model.OpEncounteredErrorEvent{
 									Msg:       "dummyError",
@@ -566,7 +566,7 @@ var _ = Context("opCaller", func() {
 							providedOpRef := "dummyOpRef"
 							providedOpGraphId := "dummyOpGraphId"
 
-							expectedEvent := model.Event{
+							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEnded: &model.OpEndedEvent{
 									OpId:      providedOpId,
@@ -623,7 +623,7 @@ var _ = Context("opCaller", func() {
 							providedOpRef := "dummyOpRef"
 							providedOpGraphId := "dummyOpGraphId"
 
-							expectedEvent := model.Event{
+							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEnded: &model.OpEndedEvent{
 									OpId:      providedOpId,
