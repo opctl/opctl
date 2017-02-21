@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/peterh/liner"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -79,6 +80,7 @@ func (this _cliParamSatisfier) Satisfy(
 		param := params[paramName]
 		// track if using the env provided value has been attempted
 		var (
+			isDefaultAttempted  bool
 			isEnvAttempted      bool
 			isProvidedAttempted bool
 		)
@@ -108,8 +110,9 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
-				} else if "" != stringParam.Default {
-					break paramLoop
+				} else if "" != stringParam.Default && !isDefaultAttempted {
+					rawArg = stringParam.Default
+					isDefaultAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
 				}
@@ -126,6 +129,13 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+				} else if "" != dirParam.Default && !isDefaultAttempted {
+					wd, err := this.vos.Getwd()
+					if nil != err {
+						panic(err)
+					}
+					rawArg = filepath.Join(wd, dirParam.Default)
+					isDefaultAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, dirParam.Description, false)
 				}
@@ -142,6 +152,13 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+				} else if "" != fileParam.Default && !isDefaultAttempted {
+					wd, err := this.vos.Getwd()
+					if nil != err {
+						panic(err)
+					}
+					rawArg = filepath.Join(wd, fileParam.Default)
+					isDefaultAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, fileParam.Description, false)
 				}
