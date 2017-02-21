@@ -12,6 +12,9 @@ import (
 
 // client interface for docker
 type dockerClient interface {
+	// NetworkConnect connects a container to an existent network in the docker host.
+	NetworkConnect(ctx context.Context, networkID, containerID string, config *network.EndpointSettings) error
+
 	// ContainerCreate creates a new container based in the given configuration.
 	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, containerName string,
 	) (container.ContainerCreateCreatedBody, error)
@@ -35,6 +38,12 @@ type dockerClient interface {
 	// It executes the privileged function if the operation is unauthorized
 	// and it tries one more time.
 	ImagePull(ctx context.Context, ref string, options types.ImagePullOptions) (io.ReadCloser, error)
+
+	// NetworkCreate creates a new network in the docker host.
+	NetworkCreate(ctx context.Context, name string, options types.NetworkCreate) (types.NetworkCreateResponse, error)
+
+	// NetworkRemove removes an existent network from the docker host.
+	NetworkRemove(ctx context.Context, networkID string) error
 }
 
 type dockerNotFoundError struct {

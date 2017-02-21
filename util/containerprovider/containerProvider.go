@@ -8,13 +8,27 @@ import (
 )
 
 type ContainerProvider interface {
+	CreateNetwork(
+		networkId string,
+	) (err error)
+
+	DeleteNetworkIfExists(
+		networkId string,
+	) (err error)
+
+	DeleteContainerIfExists(
+		containerId string,
+	) (err error)
+
 	InspectContainerIfExists(
 		containerId string,
 	) (container *model.DcgContainerCall, err error)
 
-	DeleteContainerIfExists(
+	NetworkContainer(
+		networkId string,
 		containerId string,
-	)
+		containerAlias string,
+	) (err error)
 
 	RunContainer(
 		req *RunContainerReq,

@@ -46,11 +46,11 @@ func (this fileInfo) Sys() interface{} {
 var _ = Context("InspectContainerIfExists", func() {
 	It("should call dockerClient.ContainerInspect w/ expected args", func() {
 		/* arrange */
-		_fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient := new(fakeDockerClient)
 
 		providedContainerId := "dummyContainerId"
 		expectedContainerId := providedContainerId
-		_fakeDockerClient.ContainerInspectReturns(
+		fakeDockerClient.ContainerInspectReturns(
 			types.ContainerJSON{
 				ContainerJSONBase: &types.ContainerJSONBase{},
 				Config:            &container.Config{},
@@ -62,22 +62,22 @@ var _ = Context("InspectContainerIfExists", func() {
 		)
 
 		objectUnderTest := _containerProvider{
-			dockerClient: _fakeDockerClient,
+			dockerClient: fakeDockerClient,
 		}
 
 		/* act */
 		objectUnderTest.InspectContainerIfExists(providedContainerId)
 
 		/* assert */
-		_, actualContainerId := _fakeDockerClient.ContainerInspectArgsForCall(0)
+		_, actualContainerId := fakeDockerClient.ContainerInspectArgsForCall(0)
 		Expect(actualContainerId).To(Equal(expectedContainerId))
 	})
 	Context("dockerClient.ContainerInspect errors", func() {
 		Context("is NotFoundError", func() {
 			It("shouldn't return error", func() {
 				/* arrange */
-				_fakeDockerClient := new(fakeDockerClient)
-				_fakeDockerClient.ContainerInspectReturns(
+				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient.ContainerInspectReturns(
 					types.ContainerJSON{
 						ContainerJSONBase: &types.ContainerJSONBase{},
 						Config:            &container.Config{},
@@ -89,7 +89,7 @@ var _ = Context("InspectContainerIfExists", func() {
 				)
 
 				objectUnderTest := _containerProvider{
-					dockerClient: _fakeDockerClient,
+					dockerClient: fakeDockerClient,
 				}
 
 				/* act */
@@ -103,11 +103,11 @@ var _ = Context("InspectContainerIfExists", func() {
 			It("should return error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
-				_fakeDockerClient := new(fakeDockerClient)
-				_fakeDockerClient.ContainerInspectReturns(types.ContainerJSON{}, expectedError)
+				fakeDockerClient := new(fakeDockerClient)
+				fakeDockerClient.ContainerInspectReturns(types.ContainerJSON{}, expectedError)
 
 				objectUnderTest := _containerProvider{
-					dockerClient: _fakeDockerClient,
+					dockerClient: fakeDockerClient,
 				}
 
 				/* act */
@@ -121,7 +121,7 @@ var _ = Context("InspectContainerIfExists", func() {
 	Context("dockerClient.ContainerInspect doesn't error", func() {
 		It("should return expected container", func() {
 			/* arrange */
-			_fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient := new(fakeDockerClient)
 			fakeVfs := new(vfs.Fake)
 
 			providedContainerId := "dummyContainerId"
@@ -161,7 +161,7 @@ var _ = Context("InspectContainerIfExists", func() {
 					},
 				},
 			}
-			_fakeDockerClient.ContainerInspectReturns(
+			fakeDockerClient.ContainerInspectReturns(
 				dockerContainer,
 				nil,
 			)
@@ -203,7 +203,7 @@ var _ = Context("InspectContainerIfExists", func() {
 			}
 
 			objectUnderTest := _containerProvider{
-				dockerClient: _fakeDockerClient,
+				dockerClient: fakeDockerClient,
 				vfs:          fakeVfs,
 			}
 
