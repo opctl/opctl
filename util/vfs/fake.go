@@ -25,6 +25,15 @@ type Fake struct {
 	mkdirAllReturns struct {
 		result1 error
 	}
+	OpenStub        func(name string) (*os.File, error)
+	openMutex       sync.RWMutex
+	openArgsForCall []struct {
+		name string
+	}
+	openReturns struct {
+		result1 *os.File
+		result2 error
+	}
 	RemoveAllStub        func(path string) error
 	removeAllMutex       sync.RWMutex
 	removeAllArgsForCall []struct {
@@ -114,6 +123,40 @@ func (fake *Fake) MkdirAllReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) Open(name string) (*os.File, error) {
+	fake.openMutex.Lock()
+	fake.openArgsForCall = append(fake.openArgsForCall, struct {
+		name string
+	}{name})
+	fake.recordInvocation("Open", []interface{}{name})
+	fake.openMutex.Unlock()
+	if fake.OpenStub != nil {
+		return fake.OpenStub(name)
+	} else {
+		return fake.openReturns.result1, fake.openReturns.result2
+	}
+}
+
+func (fake *Fake) OpenCallCount() int {
+	fake.openMutex.RLock()
+	defer fake.openMutex.RUnlock()
+	return len(fake.openArgsForCall)
+}
+
+func (fake *Fake) OpenArgsForCall(i int) string {
+	fake.openMutex.RLock()
+	defer fake.openMutex.RUnlock()
+	return fake.openArgsForCall[i].name
+}
+
+func (fake *Fake) OpenReturns(result1 *os.File, result2 error) {
+	fake.OpenStub = nil
+	fake.openReturns = struct {
+		result1 *os.File
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) RemoveAll(path string) error {
 	fake.removeAllMutex.Lock()
 	fake.removeAllArgsForCall = append(fake.removeAllArgsForCall, struct {
@@ -188,6 +231,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.createMutex.RUnlock()
 	fake.mkdirAllMutex.RLock()
 	defer fake.mkdirAllMutex.RUnlock()
+	fake.openMutex.RLock()
+	defer fake.openMutex.RUnlock()
 	fake.removeAllMutex.RLock()
 	defer fake.removeAllMutex.RUnlock()
 	fake.statMutex.RLock()

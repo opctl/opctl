@@ -4,6 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/pkg/nodeprovider"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -21,8 +22,9 @@ var _ = Context("streamEvents", func() {
 			fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _core{
-				apiClient: fakeApiClient,
-				cliExiter: fakeCliExiter,
+				apiClient:    fakeApiClient,
+				cliExiter:    fakeCliExiter,
+				nodeProvider: new(nodeprovider.Fake),
 			}
 
 			/* act */
@@ -42,8 +44,9 @@ var _ = Context("streamEvents", func() {
 				fakeApiClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _core{
-					apiClient: fakeApiClient,
-					cliExiter: fakeCliExiter,
+					apiClient:    fakeApiClient,
+					cliExiter:    fakeCliExiter,
+					nodeProvider: new(nodeprovider.Fake),
 				}
 
 				/* act */
@@ -66,8 +69,9 @@ var _ = Context("streamEvents", func() {
 					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						apiClient: fakeApiClient,
-						cliExiter: fakeCliExiter,
+						apiClient:    fakeApiClient,
+						cliExiter:    fakeCliExiter,
+						nodeProvider: new(nodeprovider.Fake),
 					}
 
 					/* act */

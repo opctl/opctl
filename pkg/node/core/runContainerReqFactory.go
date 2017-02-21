@@ -1,7 +1,7 @@
 package core
 
 import (
-	appdatapath "github.com/appdataspec/sdk-golang/pkg/path"
+	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -28,7 +28,7 @@ func newRunContainerReq(
 	scratchDirPath := filepath.Join(
 		appdatapath.New().PerUser(),
 		"opctl",
-		"dcg",
+		"dcgs",
 		opGraphId,
 		"containers",
 		containerId,

@@ -29,9 +29,15 @@ type Fake struct {
 	listOpsInCollectionArgsForCall []struct {
 		collection string
 	}
-	RunOpStub        func(args []string, collection string, name string)
-	runOpMutex       sync.RWMutex
-	runOpArgsForCall []struct {
+	NodeCreateStub        func()
+	nodeCreateMutex       sync.RWMutex
+	nodeCreateArgsForCall []struct{}
+	NodeKillStub          func()
+	nodeKillMutex         sync.RWMutex
+	nodeKillArgsForCall   []struct{}
+	RunOpStub             func(args []string, collection string, name string)
+	runOpMutex            sync.RWMutex
+	runOpArgsForCall      []struct {
 		args       []string
 		collection string
 		name       string
@@ -157,6 +163,38 @@ func (fake *Fake) ListOpsInCollectionArgsForCall(i int) string {
 	fake.listOpsInCollectionMutex.RLock()
 	defer fake.listOpsInCollectionMutex.RUnlock()
 	return fake.listOpsInCollectionArgsForCall[i].collection
+}
+
+func (fake *Fake) NodeCreate() {
+	fake.nodeCreateMutex.Lock()
+	fake.nodeCreateArgsForCall = append(fake.nodeCreateArgsForCall, struct{}{})
+	fake.recordInvocation("NodeCreate", []interface{}{})
+	fake.nodeCreateMutex.Unlock()
+	if fake.NodeCreateStub != nil {
+		fake.NodeCreateStub()
+	}
+}
+
+func (fake *Fake) NodeCreateCallCount() int {
+	fake.nodeCreateMutex.RLock()
+	defer fake.nodeCreateMutex.RUnlock()
+	return len(fake.nodeCreateArgsForCall)
+}
+
+func (fake *Fake) NodeKill() {
+	fake.nodeKillMutex.Lock()
+	fake.nodeKillArgsForCall = append(fake.nodeKillArgsForCall, struct{}{})
+	fake.recordInvocation("NodeKill", []interface{}{})
+	fake.nodeKillMutex.Unlock()
+	if fake.NodeKillStub != nil {
+		fake.NodeKillStub()
+	}
+}
+
+func (fake *Fake) NodeKillCallCount() int {
+	fake.nodeKillMutex.RLock()
+	defer fake.nodeKillMutex.RUnlock()
+	return len(fake.nodeKillArgsForCall)
 }
 
 func (fake *Fake) RunOp(args []string, collection string, name string) {
@@ -291,6 +329,10 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.killOpMutex.RUnlock()
 	fake.listOpsInCollectionMutex.RLock()
 	defer fake.listOpsInCollectionMutex.RUnlock()
+	fake.nodeCreateMutex.RLock()
+	defer fake.nodeCreateMutex.RUnlock()
+	fake.nodeKillMutex.RLock()
+	defer fake.nodeKillMutex.RUnlock()
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
 	fake.setCollectionDescriptionMutex.RLock()
@@ -316,4 +358,4 @@ func (fake *Fake) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ = new(Fake)
+var _ Core = new(Fake)

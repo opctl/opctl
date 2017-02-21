@@ -29,7 +29,7 @@ var _ = Context("selfUpdate", func() {
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
 					Should(Equal(cliexiter.ExitReq{Message: fmt.Sprintf(
 						"%v is not an available release channel. "+
-							"Available release channels are 'beta' 'stable'. \n", providedReleaseChannel), Code: 1}))
+							"Available release channels are 'alpha', 'beta', and 'stable'. \n", providedReleaseChannel), Code: 1}))
 			})
 		})
 		Context("valid channel", func() {

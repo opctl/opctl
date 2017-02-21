@@ -27,16 +27,16 @@
 			"revisionTime": "2017-01-06T22:16:01Z"
 		},
 		{
-			"checksumSHA1": "x8B26Hpj+opN5HpQv+TLCbij6ho=",
-			"path": "github.com/appdataspec/sdk-golang/pkg/path",
-			"revision": "2b6efebf9393bd38a72abc28470c3f1a084e7784",
-			"revisionTime": "2017-01-23T17:54:58Z"
+			"checksumSHA1": "3zxGuqgXJVbXJ/lRO//n2ZNzsFY=",
+			"path": "github.com/appdataspec/sdk-golang/pkg/appdatapath",
+			"revision": "426f7b4c7be69a2026d9c11015e123a3836ed329",
+			"revisionTime": "2017-02-21T17:39:10Z"
 		},
 		{
 			"checksumSHA1": "dLF1hi4T10mKgqxLGsP4ArYYPxo=",
 			"path": "github.com/appdataspec/sdk-golang/util/vos",
-			"revision": "2b6efebf9393bd38a72abc28470c3f1a084e7784",
-			"revisionTime": "2017-01-23T17:54:58Z"
+			"revision": "426f7b4c7be69a2026d9c11015e123a3836ed329",
+			"revisionTime": "2017-02-21T17:39:10Z"
 		},
 		{
 			"path": "github.com/docker/distribution/digest",

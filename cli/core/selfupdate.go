@@ -9,12 +9,12 @@ func (this _core) SelfUpdate(
 	releaseChannel string,
 ) {
 
-	if releaseChannel != "beta" && releaseChannel != "stable" {
+	if releaseChannel != "alpha" && releaseChannel != "beta" && releaseChannel != "stable" {
 		this.cliExiter.Exit(
 			cliexiter.ExitReq{
 				Message: fmt.Sprintf(
 					"%v is not an available release channel. "+
-						"Available release channels are 'beta' 'stable'. \n", releaseChannel),
+						"Available release channels are 'alpha', 'beta', and 'stable'. \n", releaseChannel),
 				Code: 1,
 			},
 		)

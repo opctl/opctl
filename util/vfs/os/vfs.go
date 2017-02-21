@@ -19,6 +19,10 @@ func (this _vfs) MkdirAll(path string, perm os.FileMode) error {
 	return os.MkdirAll(path, perm)
 }
 
+func (this _vfs) Open(name string) (*os.File, error) {
+	return os.Open(name)
+}
+
 func (this _vfs) RemoveAll(path string) error {
 	return os.RemoveAll(path)
 }
