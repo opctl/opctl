@@ -8,8 +8,8 @@ import (
 
 func (this _containerProvider) DeleteContainerIfExists(
 	containerId string,
-) {
-	err := this.dockerClient.ContainerRemove(
+) (err error) {
+	err = this.dockerClient.ContainerRemove(
 		context.Background(),
 		containerId,
 		types.ContainerRemoveOptions{
@@ -18,6 +18,7 @@ func (this _containerProvider) DeleteContainerIfExists(
 		},
 	)
 	if nil != err {
-		fmt.Printf("Unable to delete container. Response from docker was:\n %v", err.Error())
+		err = fmt.Errorf("Unable to delete container. Response from docker was:\n %v", err.Error())
 	}
+	return
 }

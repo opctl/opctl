@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"fmt"
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -10,7 +11,7 @@ import (
 var _ = Context("DeleteContainerIfExists", func() {
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
-		_fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient := new(fakeDockerClient)
 
 		providedContainerId := "dummyContainerId"
 		expectedContainerId := providedContainerId
@@ -20,40 +21,53 @@ var _ = Context("DeleteContainerIfExists", func() {
 		}
 
 		objectUnderTest := _containerProvider{
-			dockerClient: _fakeDockerClient,
+			dockerClient: fakeDockerClient,
 		}
 
 		/* act */
 		objectUnderTest.DeleteContainerIfExists(providedContainerId)
 
 		/* assert */
-		_, actualContainerId, actualContainerRemoveOptions := _fakeDockerClient.ContainerRemoveArgsForCall(0)
+		_, actualContainerId, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
 		Expect(actualContainerId).To(Equal(expectedContainerId))
 		Expect(actualContainerRemoveOptions).Should(Equal(expectedContainerRemoveOptions))
 	})
 	Context("dockerClient.ContainerRemove errors", func() {
 		It("should return", func() {
 			/* arrange */
-			_fakeDockerClient := new(fakeDockerClient)
-			_fakeDockerClient.ContainerRemoveReturns(errors.New("dummyError"))
+			errorReturnedFromContainerRemove := errors.New("dummyError")
+
+			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient.ContainerRemoveReturns(errorReturnedFromContainerRemove)
+
+			expectedError := fmt.Errorf(
+				"Unable to delete container. Response from docker was:\n %v",
+				errorReturnedFromContainerRemove.Error(),
+			)
 
 			objectUnderTest := _containerProvider{
-				dockerClient: _fakeDockerClient,
+				dockerClient: fakeDockerClient,
 			}
 
-			/* act/assert */
-			objectUnderTest.DeleteContainerIfExists("dummyContainerId")
+			/* act */
+			actualError := objectUnderTest.DeleteContainerIfExists("")
+
+			/* assert */
+			Expect(actualError).To(Equal(expectedError))
 		})
 	})
 	Context("dockerClient.ContainerRemove doesn't error", func() {
-		It("should return", func() {
+		It("shouldn't error", func() {
 			/* arrange */
 			objectUnderTest := _containerProvider{
 				dockerClient: new(fakeDockerClient),
 			}
 
-			/* act/assert */
-			objectUnderTest.DeleteContainerIfExists("dummyContainerId")
+			/* act */
+			actualError := objectUnderTest.DeleteContainerIfExists("")
+
+			/* assert */
+			Expect(actualError).To(BeNil())
 		})
 	})
 })
