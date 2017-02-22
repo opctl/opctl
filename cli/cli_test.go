@@ -167,6 +167,43 @@ var _ = Context("cli", func() {
 			})
 		})
 
+		Context("node", func() {
+
+			Context("create", func() {
+
+				It("should call core.NodeCreate w/ expected args", func() {
+					/* arrange */
+					fakeCore := new(core.Fake)
+
+					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+
+					/* act */
+					objectUnderTest.Run([]string{"opctl", "node", "create"})
+
+					/* assert */
+					Expect(fakeCore.NodeCreateCallCount()).Should(Equal(1))
+				})
+
+			})
+
+			Context("kill", func() {
+
+				It("should call core.NodeKill w/ expected args", func() {
+					/* arrange */
+					fakeCore := new(core.Fake)
+
+					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+
+					/* act */
+					objectUnderTest.Run([]string{"opctl", "node", "kill"})
+
+					/* assert */
+					Expect(fakeCore.NodeKillCallCount()).Should(Equal(1))
+				})
+
+			})
+		})
+
 		Context("op", func() {
 
 			Context("create", func() {

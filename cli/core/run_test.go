@@ -5,6 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/pkg/nodeprovider"
 	"github.com/opspec-io/opctl/util/clicolorer"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
@@ -30,9 +31,10 @@ var _ = Context("runOp", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:    new(bundle.Fake),
-					cliExiter: fakeCliExiter,
-					vos:       fakeVos,
+					bundle:       new(bundle.Fake),
+					cliExiter:    fakeCliExiter,
+					nodeProvider: new(nodeprovider.Fake),
+					vos:          fakeVos,
 				}
 
 				/* act */
@@ -68,6 +70,7 @@ var _ = Context("runOp", func() {
 					apiClient:         fakeApiClient,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
+					nodeProvider:      new(nodeprovider.Fake),
 					vos:               fakeVos,
 				}
 
@@ -90,6 +93,7 @@ var _ = Context("runOp", func() {
 						bundle:            fakeBundle,
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						nodeProvider:      new(nodeprovider.Fake),
 						vos:               new(vos.Fake),
 					}
 
@@ -136,6 +140,7 @@ var _ = Context("runOp", func() {
 						apiClient:         fakeApiClient,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
+						nodeProvider:      new(nodeprovider.Fake),
 						vos:               new(vos.Fake),
 					}
 
@@ -176,6 +181,7 @@ var _ = Context("runOp", func() {
 						apiClient:         fakeApiClient,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
+						nodeProvider:      new(nodeprovider.Fake),
 						vos:               fakeVos,
 					}
 
@@ -203,6 +209,7 @@ var _ = Context("runOp", func() {
 							apiClient:         fakeApiClient,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							nodeProvider:      new(nodeprovider.Fake),
 							vos:               new(vos.Fake),
 						}
 
@@ -237,6 +244,7 @@ var _ = Context("runOp", func() {
 							apiClient:         fakeApiClient,
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							nodeProvider:      new(nodeprovider.Fake),
 							vos:               new(vos.Fake),
 						}
 
@@ -264,6 +272,7 @@ var _ = Context("runOp", func() {
 								apiClient:         fakeApiClient,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
+								nodeProvider:      new(nodeprovider.Fake),
 								vos:               new(vos.Fake),
 							}
 
@@ -294,6 +303,7 @@ var _ = Context("runOp", func() {
 									apiClient:         fakeApiClient,
 									cliExiter:         fakeCliExiter,
 									cliParamSatisfier: new(cliparamsatisfier.Fake),
+									nodeProvider:      new(nodeprovider.Fake),
 									vos:               new(vos.Fake),
 								}
 
@@ -341,6 +351,7 @@ var _ = Context("runOp", func() {
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
+												nodeProvider:      new(nodeprovider.Fake),
 												vos:               new(vos.Fake),
 											}
 
@@ -382,6 +393,7 @@ var _ = Context("runOp", func() {
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
+												nodeProvider:      new(nodeprovider.Fake),
 												vos:               new(vos.Fake),
 											}
 
@@ -424,6 +436,7 @@ var _ = Context("runOp", func() {
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
+												nodeProvider:      new(nodeprovider.Fake),
 												vos:               new(vos.Fake),
 											}
 
@@ -465,6 +478,7 @@ var _ = Context("runOp", func() {
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
+												nodeProvider:      new(nodeprovider.Fake),
 												vos:               new(vos.Fake),
 											}
 

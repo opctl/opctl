@@ -2,6 +2,7 @@
 package vos
 
 import (
+	"os"
 	"sync"
 )
 
@@ -11,6 +12,15 @@ type Fake struct {
 	exitArgsForCall []struct {
 		code int
 	}
+	FindProcessStub        func(pid int) (*os.Process, error)
+	findProcessMutex       sync.RWMutex
+	findProcessArgsForCall []struct {
+		pid int
+	}
+	findProcessReturns struct {
+		result1 *os.Process
+		result2 error
+	}
 	GetenvStub        func(key string) string
 	getenvMutex       sync.RWMutex
 	getenvArgsForCall []struct {
@@ -18,6 +28,12 @@ type Fake struct {
 	}
 	getenvReturns struct {
 		result1 string
+	}
+	GetpidStub        func() int
+	getpidMutex       sync.RWMutex
+	getpidArgsForCall []struct{}
+	getpidReturns     struct {
+		result1 int
 	}
 	GetwdStub        func() (string, error)
 	getwdMutex       sync.RWMutex
@@ -63,6 +79,40 @@ func (fake *Fake) ExitArgsForCall(i int) int {
 	return fake.exitArgsForCall[i].code
 }
 
+func (fake *Fake) FindProcess(pid int) (*os.Process, error) {
+	fake.findProcessMutex.Lock()
+	fake.findProcessArgsForCall = append(fake.findProcessArgsForCall, struct {
+		pid int
+	}{pid})
+	fake.recordInvocation("FindProcess", []interface{}{pid})
+	fake.findProcessMutex.Unlock()
+	if fake.FindProcessStub != nil {
+		return fake.FindProcessStub(pid)
+	} else {
+		return fake.findProcessReturns.result1, fake.findProcessReturns.result2
+	}
+}
+
+func (fake *Fake) FindProcessCallCount() int {
+	fake.findProcessMutex.RLock()
+	defer fake.findProcessMutex.RUnlock()
+	return len(fake.findProcessArgsForCall)
+}
+
+func (fake *Fake) FindProcessArgsForCall(i int) int {
+	fake.findProcessMutex.RLock()
+	defer fake.findProcessMutex.RUnlock()
+	return fake.findProcessArgsForCall[i].pid
+}
+
+func (fake *Fake) FindProcessReturns(result1 *os.Process, result2 error) {
+	fake.FindProcessStub = nil
+	fake.findProcessReturns = struct {
+		result1 *os.Process
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) Getenv(key string) string {
 	fake.getenvMutex.Lock()
 	fake.getenvArgsForCall = append(fake.getenvArgsForCall, struct {
@@ -93,6 +143,31 @@ func (fake *Fake) GetenvReturns(result1 string) {
 	fake.GetenvStub = nil
 	fake.getenvReturns = struct {
 		result1 string
+	}{result1}
+}
+
+func (fake *Fake) Getpid() int {
+	fake.getpidMutex.Lock()
+	fake.getpidArgsForCall = append(fake.getpidArgsForCall, struct{}{})
+	fake.recordInvocation("Getpid", []interface{}{})
+	fake.getpidMutex.Unlock()
+	if fake.GetpidStub != nil {
+		return fake.GetpidStub()
+	} else {
+		return fake.getpidReturns.result1
+	}
+}
+
+func (fake *Fake) GetpidCallCount() int {
+	fake.getpidMutex.RLock()
+	defer fake.getpidMutex.RUnlock()
+	return len(fake.getpidArgsForCall)
+}
+
+func (fake *Fake) GetpidReturns(result1 int) {
+	fake.GetpidStub = nil
+	fake.getpidReturns = struct {
+		result1 int
 	}{result1}
 }
 
@@ -161,8 +236,12 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.exitMutex.RLock()
 	defer fake.exitMutex.RUnlock()
+	fake.findProcessMutex.RLock()
+	defer fake.findProcessMutex.RUnlock()
 	fake.getenvMutex.RLock()
 	defer fake.getenvMutex.RUnlock()
+	fake.getpidMutex.RLock()
+	defer fake.getpidMutex.RUnlock()
 	fake.getwdMutex.RLock()
 	defer fake.getwdMutex.RUnlock()
 	fake.setenvMutex.RLock()

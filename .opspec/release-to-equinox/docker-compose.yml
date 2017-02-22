@@ -11,6 +11,8 @@ services:
         ### DETERMINE CHANNEL
         if echo "$VERSION" | grep -Eq "*.-beta\.*."; then
           channel=beta
+        elif echo "$VERSION" | grep -Eq "*.-alpha\.*."; then
+          channel=alpha
         else
           channel=stable
         fi

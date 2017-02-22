@@ -16,6 +16,7 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
 	newCli(core.New(_cliColorer), _cliColorer).Run(os.Args)
 
 }

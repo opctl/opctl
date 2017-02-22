@@ -3,9 +3,22 @@ package core
 import (
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"time"
 )
 
 func (this _core) StreamEvents() {
+
+	// ensure node running
+	nodes, err := this.nodeProvider.ListNodes()
+	if nil != err {
+		panic(err.Error())
+	}
+	if len(nodes) < 1 {
+		this.nodeProvider.CreateNode()
+		// sleep to let the opctl node start
+		// @TODO: add exp backoff to SDK websocket client so we don't need this
+		<-time.After(time.Second * 3)
+	}
 
 	eventChannel, err := this.apiClient.GetEventStream(
 		&model.GetEventStreamReq{},

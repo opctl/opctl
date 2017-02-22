@@ -5,7 +5,6 @@ package main
 import (
 	mow "github.com/jawher/mow.cli"
 	"github.com/opspec-io/opctl/cli/core"
-	"github.com/opspec-io/opctl/pkg/node"
 	"github.com/opspec-io/opctl/util/clicolorer"
 )
 
@@ -75,16 +74,17 @@ func newCli(
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
-		nodeCmd.Command("ls", "List nodes", func(lsCmd *mow.Cmd) {
-			lsCmd.StringOpt("p provider ", "docker", "Filter by provider (currently only 'docker' supported)")
-		})
-		nodeCmd.Command("create", "Creates an opctl node", func(createCmd *mow.Cmd) {
+		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			createCmd.Action = func() {
-				createCmd.StringOpt("p provider ", "docker", "Provider of the node (currently only 'docker' supported)")
-				node.New()
+				core.NodeCreate()
 			}
 		})
 
+		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
+			killCmd.Action = func() {
+				core.NodeKill()
+			}
+		})
 	})
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {

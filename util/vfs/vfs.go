@@ -22,6 +22,12 @@ type Vfs interface {
 	// and returns nil.
 	MkdirAll(path string, perm os.FileMode) error
 
+	// Open opens the named file for reading. If successful, methods on
+	// the returned file can be used for reading; the associated file
+	// descriptor has mode O_RDONLY.
+	// If there is an error, it will be of type *PathError.
+	Open(name string) (*os.File, error)
+
 	// RemoveAll removes path and any children it contains.
 	// It removes everything it can but returns the first error
 	// it encounters. If the path does not exist, RemoveAll

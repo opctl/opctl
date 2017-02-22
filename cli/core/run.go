@@ -15,6 +15,16 @@ func (this _core) RunOp(
 	collection string,
 	name string,
 ) {
+
+	// ensure node running
+	nodes, err := this.nodeProvider.ListNodes()
+	if nil != err {
+		panic(err.Error())
+	}
+	if len(nodes) < 1 {
+		this.nodeProvider.CreateNode()
+	}
+
 	pwd, err := this.vos.Getwd()
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})

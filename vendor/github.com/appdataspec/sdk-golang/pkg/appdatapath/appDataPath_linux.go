@@ -1,4 +1,4 @@
-package path
+package appdatapath
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ const (
 	perUserTemplate = "%v"
 )
 
-func (this path) Global() string {
+func (this appDataPath) Global() string {
 	return globalTemplate
 }
 
-func (this path) PerUser() string {
-	localAppDataEnvVar := this.vos.Getenv("HOME")
+func (this appDataPath) PerUser() string {
+	localAppDataEnvVar := this.os.Getenv("HOME")
 	if "" == localAppDataEnvVar {
 		panic("Unable to determine per user app data path. Error was: HOME env var required")
 	}
