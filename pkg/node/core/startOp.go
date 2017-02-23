@@ -13,13 +13,11 @@ func (this _core) StartOp(
 
 	opId = this.uniqueStringFactory.Construct()
 
-	normalizedOpRef := this.pathNormalizer.Normalize(req.OpRef)
-
 	go func() {
 		this.opCaller.Call(
 			req.Args,
 			opId,
-			normalizedOpRef,
+			req.OpRef,
 			opId,
 		)
 	}()

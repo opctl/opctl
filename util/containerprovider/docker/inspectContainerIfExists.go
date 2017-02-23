@@ -43,20 +43,23 @@ func (this _containerProvider) InspectContainerIfExists(
 	}
 	// construct dirs, sockets backed by unix sockets, & files
 	for _, mount := range dockerContainer.Mounts {
+		localMountPath := this.localPath(mount.Source)
+
 		var fileInfo os.FileInfo
-		fileInfo, err = this.vfs.Stat(mount.Source)
+		fileInfo, err = this.fs.Stat(localMountPath)
 		if nil != err {
 			err = nil
-			fmt.Printf("Mount not available on opctl host and will be ignored. Mount was: %v \n", mount.Source)
+			fmt.Printf("Mount not available on opctl host and will be ignored. Mount was: %v \n", localMountPath)
 			continue
 		}
 		if fileInfo.IsDir() {
-			container.Dirs[mount.Destination] = mount.Source
+			container.Dirs[mount.Destination] = this.localPath(localMountPath)
 		} else if (fileInfo.Mode() & (os.ModeSocket | os.ModeNamedPipe)) != 0 {
-			container.Sockets[mount.Destination] = mount.Source
+			container.Sockets[mount.Destination] = this.localPath(localMountPath)
 		} else {
-			container.Files[mount.Destination] = mount.Source
+			container.Files[mount.Destination] = this.localPath(localMountPath)
 		}
+
 	}
 
 	return

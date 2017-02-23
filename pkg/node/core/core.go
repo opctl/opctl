@@ -4,7 +4,6 @@ package core
 
 import (
 	"github.com/opspec-io/opctl/util/containerprovider"
-	"github.com/opspec-io/opctl/util/pathnormalizer"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
@@ -81,7 +80,6 @@ func New(
 		containerProvider:   containerProvider,
 		pubSub:              pubSub,
 		opCaller:            opCaller,
-		pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 		dcgNodeRepo:         dcgNodeRepo,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -93,7 +91,6 @@ type _core struct {
 	containerProvider   containerprovider.ContainerProvider
 	pubSub              pubsub.PubSub
 	caller              caller
-	pathNormalizer      pathnormalizer.PathNormalizer
 	dcgNodeRepo         dcgNodeRepo
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	opCaller            opCaller

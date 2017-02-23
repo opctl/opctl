@@ -21,18 +21,18 @@ func New(
 	cliOutput clioutput.CliOutput,
 	vos vos.Vos,
 ) CliExiter {
-	return _cliExiter{
+	return cliExiter{
 		cliOutput: cliOutput,
 		vos:       vos,
 	}
 }
 
-type _cliExiter struct {
+type cliExiter struct {
 	cliOutput clioutput.CliOutput
 	vos       vos.Vos
 }
 
-func (this _cliExiter) Exit(req ExitReq) {
+func (this cliExiter) Exit(req ExitReq) {
 	if req.Code > 0 {
 		this.cliOutput.Error(req.Message)
 		this.vos.Exit(req.Code)

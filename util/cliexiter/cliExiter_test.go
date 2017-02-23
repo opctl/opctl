@@ -7,8 +7,8 @@ import (
 	"github.com/opspec-io/opctl/util/vos"
 )
 
-var _ = Context("_exiter", func() {
-	Context("newExiter", func() {
+var _ = Context("cliExiter", func() {
+	Context("New", func() {
 		It("should return Exiter", func() {
 			/* arrange/act/assert */
 			Expect(New(

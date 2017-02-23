@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/opspec-io/opctl/pkg/node"
 	"os/exec"
+	"syscall"
 )
 
 func (this nodeProvider) CreateNode() (nodeInfo *node.InfoView, err error) {
@@ -12,6 +13,11 @@ func (this nodeProvider) CreateNode() (nodeInfo *node.InfoView, err error) {
 		"node",
 		"create",
 	)
+
+	nodeCmd.SysProcAttr = &syscall.SysProcAttr{
+		// ensure node gets it's own process group
+		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
+	}
 
 	err = nodeCmd.Start()
 	if nil != err {

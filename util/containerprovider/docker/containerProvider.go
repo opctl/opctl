@@ -5,6 +5,7 @@ import (
 	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/vfs"
 	"github.com/opspec-io/opctl/util/vfs/os"
+	"github.com/opspec-io/opctl/util/vruntime"
 	"golang.org/x/net/context"
 )
 
@@ -27,7 +28,8 @@ func New() (
 
 	containerProvider = _containerProvider{
 		dockerClient: dockerClient,
-		vfs:          os.New(),
+		fs:           os.New(),
+		runtime:      vruntime.New(),
 	}
 
 	return
@@ -36,5 +38,6 @@ func New() (
 
 type _containerProvider struct {
 	dockerClient dockerClient
-	vfs          vfs.Vfs
+	fs           vfs.Vfs
+	runtime      vruntime.Vruntime
 }

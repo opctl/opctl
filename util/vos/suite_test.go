@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestCli(t *testing.T) {
+func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "opctl/util/vos")
 }

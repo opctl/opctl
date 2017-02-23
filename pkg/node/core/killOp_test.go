@@ -4,7 +4,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/containerprovider"
-	"github.com/opspec-io/opctl/util/pathnormalizer"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -22,7 +21,6 @@ var _ = Context("core", func() {
 				containerProvider:   new(containerprovider.Fake),
 				pubSub:              new(pubsub.Fake),
 				opCaller:            new(fakeOpCaller),
-				pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 				dcgNodeRepo:         fakeDcgNodeRepo,
 				uniqueStringFactory: new(uniquestring.Fake),
 			}
@@ -43,7 +41,6 @@ var _ = Context("core", func() {
 				containerProvider:   new(containerprovider.Fake),
 				pubSub:              new(pubsub.Fake),
 				opCaller:            new(fakeOpCaller),
-				pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 				dcgNodeRepo:         fakeDcgNodeRepo,
 				uniqueStringFactory: new(uniquestring.Fake),
 			}
@@ -79,7 +76,6 @@ var _ = Context("core", func() {
 					containerProvider:   new(containerprovider.Fake),
 					pubSub:              new(pubsub.Fake),
 					opCaller:            new(fakeOpCaller),
-					pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 					dcgNodeRepo:         fakeDcgNodeRepo,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
@@ -122,7 +118,6 @@ var _ = Context("core", func() {
 					containerProvider:   fakeContainerProvider,
 					pubSub:              new(pubsub.Fake),
 					opCaller:            new(fakeOpCaller),
-					pathNormalizer:      pathnormalizer.NewPathNormalizer(),
 					dcgNodeRepo:         fakeDcgNodeRepo,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
