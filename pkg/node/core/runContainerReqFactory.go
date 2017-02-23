@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"os"
-	"path/filepath"
+	"path"
 )
 
 func newRunContainerReq(
@@ -25,7 +25,7 @@ func newRunContainerReq(
 	sockets := map[string]string{}
 
 	// create scratch dir for container
-	scratchDirPath := filepath.Join(
+	scratchDirPath := path.Join(
 		appdatapath.New().PerUser(),
 		"opctl",
 		"dcgs",
@@ -52,7 +52,7 @@ func newRunContainerReq(
 		} else {
 			// bound to output
 			// create placeholder file on host so the output points to something
-			dcgHostFilePath := filepath.Join(scratchDirPath, scgContainerFilePath)
+			dcgHostFilePath := path.Join(scratchDirPath, scgContainerFilePath)
 			_, err = os.Create(dcgHostFilePath)
 			if nil != err {
 				panic(err)
@@ -69,7 +69,7 @@ func newRunContainerReq(
 		} else {
 			// bound to output
 			// create placeholder dir on host so the output points to something
-			dcgHostDirPath := filepath.Join(scratchDirPath, scgContainerDirPath)
+			dcgHostDirPath := path.Join(scratchDirPath, scgContainerDirPath)
 			err := os.MkdirAll(dcgHostDirPath, 0700)
 			if nil != err {
 				panic(err)
@@ -87,7 +87,7 @@ func newRunContainerReq(
 			// bound to output
 			// create placeholder unix socket on host so the output points to something
 			if isUnixSocketAddress(scgContainerSocketAddress) {
-				dcgHostSocketAddress := filepath.Join(scratchDirPath, scgContainerSocketAddress)
+				dcgHostSocketAddress := path.Join(scratchDirPath, scgContainerSocketAddress)
 				_, err = os.Create(dcgHostSocketAddress)
 				if nil != err {
 					panic(err)

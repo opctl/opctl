@@ -1,4 +1,4 @@
-package pathnormalizer
+package vruntime
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/util/pathnormalizer")
+	RunSpecs(t, "opctl/util/vruntime")
 }

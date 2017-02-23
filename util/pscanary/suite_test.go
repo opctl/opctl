@@ -1,4 +1,4 @@
-package updater
+package pscanary
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/util/updater")
+	RunSpecs(t, "opctl/util/pscanary")
 }

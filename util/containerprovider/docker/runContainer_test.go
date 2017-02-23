@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opspec-io/opctl/util/vruntime"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"
@@ -75,6 +76,7 @@ var _ = Context("RunContainer", func() {
 
 		objectUnderTest := _containerProvider{
 			dockerClient: _fakeDockerClient,
+			runtime:      new(vruntime.Fake),
 		}
 
 		/* act */

@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/vfs"
+	"github.com/opspec-io/opctl/util/vruntime"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/pkg/errors"
 	"os"
@@ -204,7 +205,8 @@ var _ = Context("InspectContainerIfExists", func() {
 
 			objectUnderTest := _containerProvider{
 				dockerClient: fakeDockerClient,
-				vfs:          fakeVfs,
+				fs:           fakeVfs,
+				runtime:      new(vruntime.Fake),
 			}
 
 			/* act */

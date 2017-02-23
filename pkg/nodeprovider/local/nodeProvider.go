@@ -3,6 +3,7 @@ package local
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/opctl/pkg/nodeprovider"
+	"github.com/opspec-io/opctl/util/pscanary"
 	"github.com/opspec-io/opctl/util/vfs/os"
 	"github.com/opspec-io/opctl/util/vos"
 )
@@ -13,11 +14,13 @@ func New() nodeprovider.NodeProvider {
 			appdatapath.New(),
 			os.New(),
 		),
-		os: vos.New(),
+		os:       vos.New(),
+		psCanary: pscanary.New(),
 	}
 }
 
 type nodeProvider struct {
 	nodeRepo nodeRepo
 	os       vos.Vos
+	psCanary pscanary.PsCanary
 }

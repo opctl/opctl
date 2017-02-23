@@ -40,10 +40,10 @@ func (this _containerProvider) RunContainer(
 		Privileged: true,
 	}
 	for containerFilePath, hostFilePath := range req.Files {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostFilePath, containerFilePath))
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", this.enginePath(hostFilePath), containerFilePath))
 	}
 	for containerDirPath, hostDirPath := range req.Dirs {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", hostDirPath, containerDirPath))
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", this.enginePath(hostDirPath), containerDirPath))
 	}
 	for containerSocketAddress, hostSocketAddress := range req.Sockets {
 		const unixSocketAddressDiscriminationChars = `/\`
@@ -51,7 +51,7 @@ func (this _containerProvider) RunContainer(
 		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
 			hostConfig.Binds = append(
 				hostConfig.Binds,
-				fmt.Sprintf("%v:%v", hostSocketAddress, containerSocketAddress),
+				fmt.Sprintf("%v:%v", this.enginePath(hostSocketAddress), containerSocketAddress),
 			)
 		} else {
 			hostConfig.ExtraHosts = append(
