@@ -24,12 +24,12 @@ Options:
   --nc, --no-color=false   Disable output coloring
 
 Commands:
-  collection    Collection related actions
+  collection    Manage collections
   events        Stream events
   kill          Kill an op
   ls            List ops in a collection
-  node          Node related actions
-  op            Op related actions
+  node          Manage nodes
+  op            Manage ops
   run           Run an op
   self-update   Update opctl
 
