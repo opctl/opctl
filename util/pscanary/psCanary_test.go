@@ -8,7 +8,7 @@ import (
 
 var _ = Context("psCanary", func() {
 	Context("New", func() {
-		It("should return Exiter", func() {
+		It("should return PsCanary", func() {
 			/* arrange/act/assert */
 			Expect(New()).Should(Not(BeNil()))
 		})

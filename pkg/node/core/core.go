@@ -78,9 +78,9 @@ func New(
 
 	core = _core{
 		containerProvider:   containerProvider,
-		pubSub:              pubSub,
-		opCaller:            opCaller,
 		dcgNodeRepo:         dcgNodeRepo,
+		opCaller:            opCaller,
+		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 
@@ -89,9 +89,8 @@ func New(
 
 type _core struct {
 	containerProvider   containerprovider.ContainerProvider
-	pubSub              pubsub.PubSub
-	caller              caller
 	dcgNodeRepo         dcgNodeRepo
-	uniqueStringFactory uniquestring.UniqueStringFactory
 	opCaller            opCaller
+	pubSub              pubsub.PubSub
+	uniqueStringFactory uniquestring.UniqueStringFactory
 }

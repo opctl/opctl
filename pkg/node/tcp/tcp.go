@@ -7,7 +7,7 @@ import (
 )
 
 type Api interface {
-	Start()
+	Start() error
 }
 
 func New(
@@ -24,7 +24,7 @@ type _api struct {
 	compositionRoot compositionRoot
 }
 
-func (this _api) Start() {
+func (this _api) Start() error {
 
 	router := mux.NewRouter()
 
@@ -48,6 +48,6 @@ func (this _api) Start() {
 		this.compositionRoot.StartOpHandler(),
 	).Methods(http.MethodPost)
 
-	http.ListenAndServe(":42224", router)
+	return http.ListenAndServe(":42224", router)
 
 }

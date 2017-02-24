@@ -3,24 +3,33 @@ package local
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/opctl/pkg/nodeprovider"
-	"github.com/opspec-io/opctl/util/pscanary"
-	"github.com/opspec-io/opctl/util/vfs/os"
+	"github.com/opspec-io/opctl/util/lockfile"
 	"github.com/opspec-io/opctl/util/vos"
+	"path"
 )
 
 func New() nodeprovider.NodeProvider {
 	return nodeProvider{
-		nodeRepo: newNodeRepo(
-			appdatapath.New(),
-			os.New(),
-		),
+		lockfile: lockfile.New(),
 		os:       vos.New(),
-		psCanary: pscanary.New(),
 	}
 }
 
 type nodeProvider struct {
-	nodeRepo nodeRepo
+	lockfile lockfile.LockFile
 	os       vos.Vos
-	psCanary pscanary.PsCanary
+}
+
+func dataDirPath() string {
+	return path.Join(
+		appdatapath.New().PerUser(),
+		"opctl",
+	)
+}
+
+func lockFilePath() string {
+	return path.Join(
+		dataDirPath(),
+		"pid.lock",
+	)
 }
