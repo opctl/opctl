@@ -1,12 +1,31 @@
 name: push-docker-image
-description: pushes the built docker image to docker
+description: pushes the local docker image to the docker registry
 inputs:
-- name: DOCKER_PASSWORD
-  description: Password for docker registry
-  isSecret: true
-- name: DOCKER_USERNAME
-  description: Username for docker registry
-  isSecret: true
-- name: VERSION
-  description: Version of opctl
+  dockerDSocket:
+    socket:
+      description: socket for docker daemon
+  dockerPassword:
+    string:
+      description: password for docker registry
+      isSecret: true
+  dockerUsername:
+    string:
+      description: username for docker registry
+  version:
+    string:
+      description: version of opctl being pushed
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "authenticating"
+        docker login -u "$(dockerUsername)" -p "$(dockerPassword)"
+
+        echo "pushing image"
+        docker push opspec/opctl:"$(version)"
+    image: docker:1.11
+    sockets:
+      /var/run/docker.sock: { bind: dockerDSocket }
 

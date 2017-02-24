@@ -94,7 +94,7 @@ var _ = Context("serialCaller", func() {
 				objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
 
 				/* act */
-				actualErr := objectUnderTest.Call(
+				_, actualErr := objectUnderTest.Call(
 					providedInboundScope,
 					providedOpGraphId,
 					providedOpRef,

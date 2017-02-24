@@ -1,5 +1,33 @@
 name: compile-docker-image
 description: compiles a docker image and stores it in the local registry
 inputs:
-- name: VERSION
-  description:  opctl version
+  dockerDSocket:
+    socket:
+      description: socket for docker daemon
+  version:
+    string:
+      description: version of opctl being compiled
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "generating Dockerfile"
+        cat << 'EOF' > Dockerfile
+        FROM alpine:3.5
+
+        EXPOSE 42224
+
+        RUN apk add --no-cache curl
+        RUN curl -L https://bin.equinox.io/a/5Cw5dTJ3ECp/opctl-$(version)-linux-amd64.tar.gz | tar -xzv -C /usr/local/bin
+
+        ENTRYPOINT ["opctl", "node", "create"]
+        EOF
+
+        echo "compiling image"
+        docker build -t opspec/opctl:"$(version)" .
+    image: docker:1.11
+    sockets:
+      /var/run/docker.sock: { bind: dockerDSocket }
+    workDir: /workDir
