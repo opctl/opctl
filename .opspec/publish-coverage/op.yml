@@ -6,8 +6,13 @@ inputs:
       description: aggregate of all test coverage metrics
   gitBranch:
     string:
+      constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
+  gitCommit:
+    string:
+      constraints: { minLength: 1 }
+      description: git commit the coverage should be associated with
 run:
   container:
     cmd:
@@ -19,6 +24,7 @@ run:
     envVars:
       CODECOV_TOKEN: b432a3b8-8220-4c1d-bcee-db76e68d0128
       GIT_BRANCH: $(gitBranch)
+      GIT_COMMIT: $(gitCommit)
     files:
       /workDir/coverage.txt: { bind: coverageTxtFile }
     image: golang:1.8

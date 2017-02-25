@@ -6,14 +6,16 @@ inputs:
       description: socket for docker daemon
   dockerPassword:
     string:
+      constraints: { minLength: 1 }
       description: password for docker registry
       isSecret: true
   dockerUsername:
     string:
-      constraints: { format: email }
+      constraints: { minLength: 1 }
       description: username for docker registry
   version:
     string:
+      constraints: { format: semver }
       description: version of opctl being released
 run:
   serial:

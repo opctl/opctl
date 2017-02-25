@@ -1,2 +1,2 @@
-description: ops used to develop the engine
-name: opspec.op-engine
+description: dev ops for opctl
+name: opspec.io/opctl-devops

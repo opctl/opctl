@@ -6,6 +6,7 @@ inputs:
       description: socket for docker daemon
   version:
     string:
+      constraints: { format: semver }
       description: version of opctl being compiled
 run:
   container:
