@@ -1,6 +1,43 @@
 description: Runs all deploy ops
 name: deploy
 inputs:
-  - { name: AWS_ACCESS_KEY_ID, description: Access key for AWS, isSecret: true }
-  - { name: AWS_SECRET_ACCESS_KEY, description: Secret access key for AWS, isSecret: true }
-  - { name: SPEC_VERSION, description: Version of the spec being deploy }
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+  awsAccessKeyId:
+    string:
+      constraints: { minLength: 20 }
+      description: access key for AWS
+  awsSecretAccessKey:
+    string:
+      constraints: { minLength: 20 }
+      description: secret access key for AWS
+      isSecret: true
+  version:
+    string:
+      constraints: { format: semver }
+      description: version of the spec being deployed
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        pip install awscli
+
+        echo "performing deploy"
+        aws s3 sync . \
+          s3://spec.opspec.io/"$(version)" \
+          --delete --exclude "*" \
+          --include "index.md" \
+          --include "*spec.yml" \
+          --include "schema/*"
+    dirs:
+      /workDir: { bind: srcDir }
+    envVars:
+      AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
+      AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
+      AWS_DEFAULT_REGION: us-west-2
+    image: python:2.7
+    workDir: /workDir

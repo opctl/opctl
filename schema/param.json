@@ -57,6 +57,34 @@
     },
     {
       "properties": {
+        "string": {
+          "description": "Number parameter of an op",
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the number is secret",
+              "type": "boolean"
+            },
+            "constraints": {
+              "description": "Constraints for the number",
+              "$ref": "constraint.json#/definitions/numberConstraints"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "number"
+      ]
+    },
+    {
+      "properties": {
         "socket": {
           "description": "Socket parameter of an op",
           "type": "object",
@@ -79,6 +107,7 @@
     {
       "properties": {
         "string": {
+          "description": "String parameter of an op",
           "type": "object",
           "properties": {
             "description": {
@@ -93,7 +122,7 @@
             },
             "constraints": {
               "description": "Constraints for the string",
-              "$ref": "#/definitions/stringConstraints"
+              "$ref": "constraint.json#/definitions/stringConstraints"
             }
           },
           "additionalProperties": false
@@ -104,114 +133,5 @@
       ]
     }
   ],
-  "additionalProperties": false,
-  "definitions": {
-    "stringConstraints": {
-      "type": "object",
-      "properties": {
-        "allOf": {
-          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/stringConstraints"
-          }
-        },
-        "anyOf": {
-          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/stringConstraints"
-          }
-        },
-        "enum": {
-          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "format": {
-          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7)",
-          "oneOf": [
-            {
-              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.1)",
-              "type": "string",
-              "enum": [
-                "date-time"
-              ]
-            },
-            {
-              "description": "docker-image-ref; pseudo regex: `((registry/)?namespace/)?repo(:tag)?`",
-              "type": "string",
-              "enum": [
-                "docker-image-ref"
-              ]
-            },
-            {
-              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.2)",
-              "type": "string",
-              "enum": [
-                "email"
-              ]
-            },
-            {
-              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.3)",
-              "type": "string",
-              "enum": [
-                "hostname"
-              ]
-            },
-            {
-              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.4)",
-              "type": "string",
-              "enum": [
-                "ipv4"
-              ]
-            },
-            {
-              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.5)",
-              "type": "string",
-              "enum": [
-                "ipv6"
-              ]
-            },
-            {
-              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.6)",
-              "type": "string",
-              "enum": [
-                "uri"
-              ]
-            }
-          ]
-        },
-        "maxLength": {
-          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.6)",
-          "type": "integer",
-          "minimum": 1
-        },
-        "minLength": {
-          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.7)",
-          "type": "integer",
-          "minimum": 0,
-          "default": 0
-        },
-        "not": {
-          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
-          "$ref": "#/definitions/stringConstraints"
-        },
-        "oneOf": {
-          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/stringConstraints"
-          }
-        },
-        "pattern": {
-          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.8)",
-          "type": "string",
-          "format": "regex"
-        }
-      }
-    }
-  }
+  "additionalProperties": false
 }
