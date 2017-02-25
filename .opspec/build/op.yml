@@ -3,8 +3,13 @@ name: build
 inputs:
   gitBranch:
     string:
+      constraints: { minLength: 1 }
       description: git branch coverage should be associated with
       default: master
+  gitCommit:
+    string:
+      constraints: { minLength: 1 }
+      description: git commit the coverage should be associated with
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -15,4 +20,4 @@ outputs:
 run:
   serial:
     - op: { ref: test, inputs: { srcDir }, outputs: { coverageTxtFile } }
-    - op: { ref: publish-coverage, inputs: { coverageTxtFile, gitBranch } }
+    - op: { ref: publish-coverage, inputs: { coverageTxtFile, gitBranch, gitCommit } }

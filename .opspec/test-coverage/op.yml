@@ -1,9 +1,6 @@
 description: tests code coverage
 name: test-coverage
 inputs:
-  version:
-    string:
-      description: version to set
   srcDir:
     dir:
       description: directory containing the projects source code

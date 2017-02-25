@@ -7,4 +7,4 @@ before_script:
 services:
 - docker
 script:
-- opctl run -a srcDir=$(pwd) -a gitBranch=$TRAVIS_BRANCH build
+- opctl run -a srcDir=$(pwd) -a gitBranch=$TRAVIS_BRANCH -a gitCommit=$TRAVIS_COMMIT build
