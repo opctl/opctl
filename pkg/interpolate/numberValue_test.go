@@ -6,17 +6,17 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Interpolate", func() {
+var _ = Describe("NumberValue", func() {
 	Describe("passed input containing no var placeholders", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := "dummyVarValue"
+			providedVarValue := 1.0
 			providedInput := "dummyInput"
 			expectedResult := providedInput
 
 			/* act */
-			actualResult := Interpolate(providedInput, providedVarName, providedVarValue)
+			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -26,12 +26,12 @@ var _ = Describe("Interpolate", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := "dummyVarValue"
+			providedVarValue := 1.0
 			providedInput := "dummyInput $(var1) $(var2)"
 			expectedResult := providedInput
 
 			/* act */
-			actualResult := Interpolate(providedInput, providedVarName, providedVarValue)
+			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -41,12 +41,12 @@ var _ = Describe("Interpolate", func() {
 		It("should replace all placeholders referencing varName", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := "dummyVarValue"
+			providedVarValue := 1.0
 			providedInput := fmt.Sprintf("dummyInput $(%v) $(%v)", providedVarName, providedVarName)
 			expectedResult := fmt.Sprintf("dummyInput %v %v", providedVarValue, providedVarValue)
 
 			/* act */
-			actualResult := Interpolate(providedInput, providedVarName, providedVarValue)
+			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -55,12 +55,12 @@ var _ = Describe("Interpolate", func() {
 			It("should replace only placeholders referencing varName", func() {
 				/* arrange */
 				providedVarName := "dummyVarName"
-				providedVarValue := "dummyVarValue"
+				providedVarValue := 1.0
 				providedInput := fmt.Sprintf("dummyInput $(%v) $(not%v) $(%v)", providedVarName, providedVarName, providedVarName)
 				expectedResult := fmt.Sprintf("dummyInput %v $(not%v) %v", providedVarValue, providedVarName, providedVarValue)
 
 				/* act */
-				actualResult := Interpolate(providedInput, providedVarName, providedVarValue)
+				actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
 
 				/* assert */
 				Expect(actualResult).To(Equal(expectedResult))
