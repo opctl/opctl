@@ -1,18 +1,14 @@
 description: publishes code coverage
 name: publish-coverage
 inputs:
-  coverageTxtFile:
-    file:
-      description: aggregate of all test coverage metrics
   gitBranch:
     string:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  gitCommit:
-    string:
-      constraints: { minLength: 1 }
-      description: git commit the coverage should be associated with
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   container:
     cmd:
@@ -21,11 +17,10 @@ run:
       - |
         echo "publishing coverage"
         curl -s https://codecov.io/bash | bash -s
+    dirs:
+      /workDir: { bind: srcDir }
     envVars:
       CODECOV_TOKEN: b432a3b8-8220-4c1d-bcee-db76e68d0128
       GIT_BRANCH: $(gitBranch)
-      GIT_COMMIT: $(gitCommit)
-    files:
-      /workDir/coverage.txt: { bind: coverageTxtFile }
     image: golang:1.8
     workDir: /workDir

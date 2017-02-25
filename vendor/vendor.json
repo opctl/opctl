@@ -479,8 +479,8 @@
 		{
 			"checksumSHA1": "Q09BeI6B9ukJE9dxik5ahgFyb1Q=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/apiclient",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"path": "github.com/opspec-io/sdk-golang/pkg/apiclient",
@@ -489,44 +489,44 @@
 		{
 			"checksumSHA1": "yIES+Woe9vevGyB5ECC3yANTRsA=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/bundle",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
-			"checksumSHA1": "a66MSqHL9K9pDxKhZNMWqisDW7M=",
+			"checksumSHA1": "qTFywv1SsWsKMCnxa+JlHVhzdSc=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/interpolate",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "hex5d4uNiVEQbm/l7xNDEI6vmV8=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/model",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "BNUFabe1KvbnO+NehD995eRPQxg=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/validate",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "gvDqEBf1FkABsTdSzw0zOCaBNgA=",
 			"path": "github.com/opspec-io/sdk-golang/util/format",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "G1zI6cvH1Lk2VuIKZbufHGnRp90=",
 			"path": "github.com/opspec-io/sdk-golang/util/fs",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "vsGPCGARopV4vIhGFMq1d09egok=",
 			"path": "github.com/opspec-io/sdk-golang/util/http",
-			"revision": "9d8e334e7b85ceaedb10cbe2cc7fa968b5d156f9",
-			"revisionTime": "2017-02-25T18:43:26Z"
+			"revision": "299b24e869e0f8afa9db3147f070d51ba7177d7c",
+			"revisionTime": "2017-02-25T22:20:04Z"
 		},
 		{
 			"checksumSHA1": "4SfJoLxQlfSSQjBIMqK+IgNxLMk=",

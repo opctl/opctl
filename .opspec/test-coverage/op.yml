@@ -5,9 +5,9 @@ inputs:
     dir:
       description: directory containing the projects source code
 outputs:
-  coverageTxtFile:
-    file:
-      description: aggregate of all test coverage metrics
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   container:
     cmd:
@@ -15,10 +15,10 @@ run:
       - -ce
       - |
         echo "generating aggregate coverage profile"
-        find . -name '*.coverprofile' | xargs cat > raw_coverage.txt
+        find . -name '*.coverprofile' | xargs cat > coverage.txt
 
         echo "stripping fakes"
-        sed '/fake/d' raw_coverage.txt > coverage.txt
+        sed '/fake/d' -i coverage.txt
 
         echo "determining aggregate coverage metrics"
         declare -i total_statements total_hits line_statements line_hits
@@ -58,8 +58,6 @@ run:
     dirs:
       /go/src/github.com/opspec-io/opctl: { bind: srcDir }
     envVars:
-      MINIMUM_COVERAGE: 63
-    files:
-      /go/src/github.com/opspec-io/opctl/coverage.txt: { bind: coverageTxtFile }
+      MINIMUM_COVERAGE: 60
     image: golang:1.8
     workDir: /go/src/github.com/opspec-io/opctl

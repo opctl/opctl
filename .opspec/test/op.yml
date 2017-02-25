@@ -5,9 +5,9 @@ inputs:
     dir:
       description: directory containing the projects source code
 outputs:
-  coverageTxtFile:
-    file:
-      description: aggregate of all test coverage metrics
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   serial:
     - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir } }
@@ -15,4 +15,4 @@ run:
     - parallel:
       - op: { ref: test-lint, inputs: { srcDir }, outputs: { srcDir } }
       - op: { ref: test-unit, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: test-coverage, inputs: { srcDir }, outputs: { coverageTxtFile } }
+    - op: { ref: test-coverage, inputs: { srcDir }, outputs: { srcDir } }
