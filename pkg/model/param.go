@@ -12,7 +12,7 @@ type Param struct {
 // Number parameter
 type NumberParam struct {
 	Constraints *NumberConstraints `yaml:"constraints,omitempty"`
-	Default     string             `yaml:"default,omitempty"`
+	Default     float64            `yaml:"default,omitempty"`
 	Description string             `yaml:"description,omitempty"`
 	IsSecret    bool               `yaml:"isSecret,omitempty"`
 }
@@ -23,6 +23,7 @@ type NumberConstraints struct {
 	AllOf      []*NumberConstraints `json:"allOf,omitempty" yaml:"allOf,omitempty"`
 	AnyOf      []*NumberConstraints `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
 	Enum       []float64            `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Format     string               `json:"format,omitempty" yaml:"format,omitempty"`
 	Maximum    float64              `json:"maximum,omitempty" yaml:"maximum,omitempty"`
 	Minimum    float64              `json:"minimum,omitempty" yaml:"minimum,omitempty"`
 	MultipleOf float64              `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`

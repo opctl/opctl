@@ -74,7 +74,7 @@ var _ = Describe("Param", func() {
 				/* arrange */
 				expectedParam := Param{
 					Number: &NumberParam{
-						Default:     "dummyDefault",
+						Default:     2.2,
 						Description: "dummyParamDescription",
 						Constraints: &NumberConstraints{
 							AllOf: []*NumberConstraints{

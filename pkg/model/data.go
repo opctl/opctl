@@ -2,8 +2,9 @@ package model
 
 // typed data
 type Data struct {
-	Socket string `json:"socket"`
-	File   string `json:"file"`
-	Dir    string `json:"dir"`
-	String string `json:"string"`
+	Dir    string  `json:"dir"`
+	File   string  `json:"file"`
+	Number float64 `json:"number"`
+	Socket string  `json:"socket"`
+	String string  `json:"string"`
 }
