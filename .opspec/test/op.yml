@@ -1,6 +1,10 @@
 description: runs all test ops
 name: test
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   parallel:
-    - op: test-json-schema
-    - op: test-oai-spec
+    - op: { ref: test-json-schema, inputs: { srcDir }  }
+    - op: { ref: test-oai-spec, inputs: { srcDir }  }

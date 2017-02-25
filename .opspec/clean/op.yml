@@ -1,2 +1,22 @@
 name: clean
 description: removes files & dirs ignored by git
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "cleaning untracked files from workdir"
+        git clean -fXd -e !.idea/
+    dirs:
+      /go/src/github.com/opspec-io/opctl: { bind: srcDir }
+    image: node:7.6
+    workDir: /go/src/github.com/opspec-io/opctl

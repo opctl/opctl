@@ -1,2 +1,22 @@
 description: tests the oai spec is valid
 name: test-oai-spec
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        npm install swagger-cli -g --quiet
+
+        echo "testing OpenAPI specs"
+        swagger validate runtime-oai_spec.yml
+        swagger validate distribution-oai_spec.yml
+    dirs:
+      /workDir: { bind: srcDir }
+    image: node:7.6
+    workDir: /workDir

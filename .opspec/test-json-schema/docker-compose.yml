@@ -1,8 +1,0 @@
-version: "2"
-services:
-  test-json-schema:
-    build: .
-    volumes:
-      - ../../schema:/working_dir
-    working_dir: /working_dir
-    entrypoint: "ajv compile -s * -r *"

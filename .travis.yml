@@ -3,8 +3,8 @@ sudo: required
 before_script:
 - sudo apt-get remove --purge docker-engine
 - curl -fsSL https://get.docker.com/ | sh
-- curl -L https://opctl.opspec.io/0.1.14/opctl-linux.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:
-- opctl run -a GIT_BRANCH=$TRAVIS_BRANCH build
+- opctl run -a srcDir=$(pwd) -a gitBranch=$TRAVIS_BRANCH build

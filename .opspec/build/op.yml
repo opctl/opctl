@@ -1,6 +1,10 @@
 description: runs all build ops
 name: build
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   serial:
-    - op: clean
-    - op: test
+    - op: { ref: clean }
+    - op: { ref: test, inputs: { srcDir } }

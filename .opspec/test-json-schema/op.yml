@@ -1,2 +1,21 @@
 description: tests the json schema is valid
 name: test-json-schema
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        npm install ajv-cli -g --quiet
+
+        echo "testing json schemas"
+        ajv compile -s "*" -r "*"
+    dirs:
+      /src: { bind: srcDir }
+    image: node:7.6
+    workDir: /src/schema
