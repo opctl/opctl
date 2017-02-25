@@ -6,10 +6,12 @@ inputs:
       description: socket for docker daemon
   dockerPassword:
     string:
+      constraints: { minLength: 1 }
       description: password for docker registry
       isSecret: true
   dockerUsername:
     string:
+      constraints: { minLength: 1 }
       description: username for docker registry
   equinoxSigningKey:
     string:
@@ -17,21 +19,28 @@ inputs:
       isSecret: true
   equinoxToken:
     string:
+      constraints: { minLength: 1 }
       description: equinox.io auth token
       isSecret: true
   gitBranch:
     string:
-      description: The git branch the coverage should be associated with
+      constraints: { minLength: 1 }
+      description: git branch the coverage should be associated with
       default: master
+  gitCommit:
+    string:
+      constraints: { minLength: 1 }
+      description: git commit the coverage should be associated with
   srcDir:
     dir:
       description: directory containing the projects source code
   version:
     string:
+      constraints: { format: semver }
       description: version of opctl being released
 run:
   serial:
     - op: { ref: set-version, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: build, inputs: { srcDir } }
+    - op: { ref: build, inputs: { srcDir, gitBranch, gitCommit } }
     - op: { ref: release-to-equinox, inputs: { equinoxSigningKey, equinoxToken, srcDir, version } }
     - op: { ref: release-to-docker, inputs: { dockerDSocket, dockerPassword, dockerUsername, version } }

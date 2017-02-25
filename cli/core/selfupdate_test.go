@@ -5,6 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/pkg/nodeprovider"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/updater"
 )
@@ -105,8 +106,9 @@ var _ = Context("selfUpdate", func() {
 						fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
 
 						objectUnderTest := _core{
-							updater:   fakeUpdater,
-							cliExiter: fakeCliExiter,
+							updater:      fakeUpdater,
+							cliExiter:    fakeCliExiter,
+							nodeProvider: new(nodeprovider.Fake),
 						}
 
 						/* act */
@@ -142,6 +144,48 @@ var _ = Context("selfUpdate", func() {
 						})
 					})
 					Context("updater.ApplyUpdate doesn't error", func() {
+						It("should call nodeProvider.KillNodeIfExists", func() {
+							/* arrange */
+							fakeNodeProvider := new(nodeprovider.Fake)
+
+							fakeUpdater := new(updater.Fake)
+							returnedUpdate := &updater.Update{Version: "dummyVersion"}
+
+							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
+
+							objectUnderTest := _core{
+								updater:      fakeUpdater,
+								cliExiter:    new(cliexiter.Fake),
+								nodeProvider: fakeNodeProvider,
+							}
+
+							/* act */
+							objectUnderTest.SelfUpdate("beta")
+
+							/* assert */
+							Expect(fakeNodeProvider.KillNodeIfExistsCallCount()).To(Equal(1))
+						})
+						It("should call nodeProvider.CreateNode", func() {
+							/* arrange */
+							fakeNodeProvider := new(nodeprovider.Fake)
+
+							fakeUpdater := new(updater.Fake)
+							returnedUpdate := &updater.Update{Version: "dummyVersion"}
+
+							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
+
+							objectUnderTest := _core{
+								updater:      fakeUpdater,
+								cliExiter:    new(cliexiter.Fake),
+								nodeProvider: fakeNodeProvider,
+							}
+
+							/* act */
+							objectUnderTest.SelfUpdate("beta")
+
+							/* assert */
+							Expect(fakeNodeProvider.CreateNodeCallCount()).To(Equal(1))
+						})
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
@@ -152,8 +196,9 @@ var _ = Context("selfUpdate", func() {
 							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
 
 							objectUnderTest := _core{
-								updater:   fakeUpdater,
-								cliExiter: fakeCliExiter,
+								updater:      fakeUpdater,
+								cliExiter:    fakeCliExiter,
+								nodeProvider: new(nodeprovider.Fake),
 							}
 
 							/* act */

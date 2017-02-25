@@ -7,6 +7,7 @@ inputs:
       isSecret: true
   equinoxToken:
     string:
+      constraints: { minLength: 1 }
       description: equinox.io auth token
       isSecret: true
   srcDir:
@@ -14,6 +15,7 @@ inputs:
       description: directory containing the projects source code
   version:
     string:
+      constraints: { format: semver }
       description: version of opctl being released
 run:
   container:

@@ -17,6 +17,8 @@ type Validate interface {
 func New() Validate {
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
+	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
+	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
 	return validate{}
 }

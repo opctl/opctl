@@ -3,6 +3,7 @@ name: set-version
 inputs:
   version:
     string:
+      constraints: { format: semver }
       description: version to set
   srcDir:
     dir:
