@@ -14,6 +14,7 @@ import (
 	"github.com/peterh/liner"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -90,13 +91,13 @@ func (this _cliParamSatisfier) Satisfy(
 			var (
 				arg                *model.Data
 				argErrors          []error
-				rawArg             string
 				rawArgDisplayValue string
 			)
 			switch {
 			case nil != param.String:
 				// obtain raw value
 				stringParam := param.String
+				var rawArg string
 
 				if stringParam.IsSecret {
 					rawArgDisplayValue = "************"
@@ -104,90 +105,134 @@ func (this _cliParamSatisfier) Satisfy(
 
 				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
 					// provided & we've not made any attempt to use it
-					rawArg = providedArg
 					isProvidedAttempted = true
+					rawArg = providedArg
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
-					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+					rawArg = this.vos.Getenv(paramName)
 				} else if "" != stringParam.Default && !isDefaultAttempted {
-					rawArg = stringParam.Default
 					isDefaultAttempted = true
+					rawArg = stringParam.Default
 				} else {
 					rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
+				}
+
+				if "" == rawArgDisplayValue {
+					rawArgDisplayValue = rawArg
 				}
 				arg = &model.Data{String: rawArg}
 			case nil != param.Dir:
 				// obtain raw value
 				dirParam := param.Dir
+				var rawArg string
 
 				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
 					// provided & we've not made any attempt to use it
-					rawArg = providedArg
 					isProvidedAttempted = true
+					rawArg = providedArg
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
-					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+					rawArg = this.vos.Getenv(paramName)
 				} else if "" != dirParam.Default && !isDefaultAttempted {
+					isDefaultAttempted = true
 					wd, err := this.vos.Getwd()
 					if nil != err {
-						panic(err)
+						argErrors = append(argErrors, err)
 					}
 					rawArg = filepath.Join(wd, dirParam.Default)
-					isDefaultAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, dirParam.Description, false)
 				}
+
+				rawArgDisplayValue = rawArg
 				arg = &model.Data{Dir: rawArg}
 			case nil != param.File:
 				// obtain raw value
 				fileParam := param.File
+				var rawArg string
 
 				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
 					// provided & we've not made any attempt to use it
-					rawArg = providedArg
 					isProvidedAttempted = true
+					rawArg = providedArg
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
-					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+					rawArg = this.vos.Getenv(paramName)
 				} else if "" != fileParam.Default && !isDefaultAttempted {
+					isDefaultAttempted = true
 					wd, err := this.vos.Getwd()
 					if nil != err {
-						panic(err)
+						argErrors = append(argErrors, err)
 					}
 					rawArg = filepath.Join(wd, fileParam.Default)
-					isDefaultAttempted = true
 				} else {
 					rawArg = this.promptForArg(paramName, fileParam.Description, false)
 				}
+
+				rawArgDisplayValue = rawArg
 				arg = &model.Data{File: rawArg}
+			case nil != param.Number:
+				// obtain raw value
+				numberParam := param.Number
+				var rawArg float64
+
+				if numberParam.IsSecret {
+					rawArgDisplayValue = "************"
+				}
+
+				var err error
+				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
+					// provided & we've not made any attempt to use it
+					isProvidedAttempted = true
+					rawArg, err = strconv.ParseFloat(providedArg, 64)
+				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
+					// env var exists & we've not made any attempt to use it
+					isEnvAttempted = true
+					rawArg, err = strconv.ParseFloat(this.vos.Getenv(paramName), 64)
+				} else if 0 != numberParam.Default && !isDefaultAttempted {
+					isDefaultAttempted = true
+					rawArg = numberParam.Default
+				} else {
+					rawArg, err =
+						strconv.ParseFloat(this.promptForArg(paramName, numberParam.Description, numberParam.IsSecret), 64)
+				}
+				if nil != err {
+					argErrors = append(argErrors, err)
+				}
+
+				if "" == rawArgDisplayValue {
+					rawArgDisplayValue = strconv.FormatFloat(rawArg, 'f', -1, 64)
+				}
+				arg = &model.Data{Number: rawArg}
 			case nil != param.Socket:
 				socketParam := param.Socket
+				var rawArg string
 
 				if providedArg, ok := rawArgMap[paramName]; ok && !isProvidedAttempted {
 					// provided & we've not made any attempt to use it
-					rawArg = providedArg
 					isProvidedAttempted = true
+					rawArg = providedArg
 				} else if "" != this.vos.Getenv(paramName) && !isEnvAttempted {
 					// env var exists & we've not made any attempt to use it
-					rawArg = this.vos.Getenv(paramName)
 					isEnvAttempted = true
+					rawArg = this.vos.Getenv(paramName)
 				} else {
 					rawArg = this.promptForArg(paramName, socketParam.Description, false)
 				}
+
+				rawArgDisplayValue = rawArg
 				arg = &model.Data{Socket: rawArg}
 			}
 
-			// validate
-			argErrors = append(argErrors, this.validate.Param(arg, param)...)
+			if len(argErrors) == 0 {
+				// only validate args if there wasn't an error retrieving them
+				argErrors = append(argErrors, this.validate.Param(arg, param)...)
+			}
 
 			if len(argErrors) > 0 {
-				if rawArgDisplayValue == "" {
-					// if not set; default raw arg display value
-					rawArgDisplayValue = rawArg
-				}
 				this.notifyOfArgErrors(argErrors, paramName, rawArgDisplayValue)
 
 				// param not satisfied; re-attempt it!

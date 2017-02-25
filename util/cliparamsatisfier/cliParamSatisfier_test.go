@@ -17,7 +17,7 @@ import (
 
 var _ = Context("parameterSatisfier", func() {
 	Context("Satisfy", func() {
-		Context("op has params", func() {
+		Context("op has string params", func() {
 			Context("args provided explicitly w/ values", func() {
 				Context("an arg is invalid", func() {
 					It("should return it in the argMap w/ value from env", func() {

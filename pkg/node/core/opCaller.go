@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
+	"strconv"
 	"time"
 )
 
@@ -190,20 +191,31 @@ func (this _opCaller) validateScope(
 			if arg, ok = scope[paramName]; ok {
 				argDisplayValue = arg.File
 			}
+		case nil != param.Number:
+			if param.Number.IsSecret {
+				argDisplayValue = "************"
+			}
+			if arg, ok = scope[paramName]; !ok {
+				// fallback to default
+				arg = &model.Data{Number: param.Number.Default}
+			}
+			if "" == argDisplayValue {
+				argDisplayValue = strconv.FormatFloat(arg.Number, 'f', -1, 64)
+			}
 		case nil != param.Socket:
 			if arg, ok = scope[paramName]; ok {
 				argDisplayValue = arg.Socket
 			}
 		case nil != param.String:
-			if arg, ok = scope[paramName]; ok {
-				argDisplayValue = arg.String
-			} else {
-				// fallback to default
-				arg = &model.Data{String: param.String.Default}
-				argDisplayValue = arg.String
-			}
 			if param.String.IsSecret {
 				argDisplayValue = "************"
+			}
+			if arg, ok = scope[paramName]; !ok {
+				// fallback to default
+				arg = &model.Data{String: param.String.Default}
+			}
+			if "" == argDisplayValue {
+				argDisplayValue = arg.String
 			}
 		}
 

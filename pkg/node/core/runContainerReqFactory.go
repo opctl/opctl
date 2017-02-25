@@ -111,11 +111,31 @@ func newRunContainerReq(
 
 	for inputName, input := range inputs {
 		switch {
+		case nil != input.Number:
+			numberInput := input.Number
+
+			// obtain inputValue
+			var inputValue float64
+			if _, isArgForInput := currentScope[inputName]; isArgForInput {
+				// use provided arg for param
+				inputValue = currentScope[inputName].Number
+			} else {
+				// no provided arg for param; fallback to default
+				inputValue = numberInput.Default
+			}
+
+			// interpolate interpolatedNumbers w/ inputValue
+			for cmdEntryIndex, cmdEntry := range cmd {
+				cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, inputName, inputValue)
+			}
+			for containerEnvVarName, containerEnvVar := range envVars {
+				envVars[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, inputName, inputValue)
+			}
 		case nil != input.String:
 			stringInput := input.String
 
 			// obtain inputValue
-			inputValue := ""
+			var inputValue string
 			if _, isArgForInput := currentScope[inputName]; isArgForInput {
 				// use provided arg for param
 				inputValue = currentScope[inputName].String
@@ -126,10 +146,10 @@ func newRunContainerReq(
 
 			// interpolate interpolatedStrings w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.Interpolate(cmdEntry, inputName, inputValue)
+				cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, inputName, inputValue)
 			}
 			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.Interpolate(containerEnvVar, inputName, inputValue)
+				envVars[containerEnvVarName] = interpolate.StringValue(containerEnvVar, inputName, inputValue)
 			}
 		}
 	}

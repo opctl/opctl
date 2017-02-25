@@ -27,10 +27,6 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  gitCommit:
-    string:
-      constraints: { minLength: 1 }
-      description: git commit the coverage should be associated with
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -41,6 +37,6 @@ inputs:
 run:
   serial:
     - op: { ref: set-version, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: build, inputs: { srcDir, gitBranch, gitCommit } }
+    - op: { ref: build, inputs: { srcDir, gitBranch, srcDir } }
     - op: { ref: release-to-equinox, inputs: { equinoxSigningKey, equinoxToken, srcDir, version } }
     - op: { ref: release-to-docker, inputs: { dockerDSocket, dockerPassword, dockerUsername, version } }
