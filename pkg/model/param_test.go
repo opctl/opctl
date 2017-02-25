@@ -67,6 +67,57 @@ var _ = Describe("Param", func() {
 
 		})
 
+		Context("with non-nil $.number", func() {
+
+			It("should have expected attributes", func() {
+
+				/* arrange */
+				expectedParam := Param{
+					Number: &NumberParam{
+						Default:     "dummyDefault",
+						Description: "dummyParamDescription",
+						Constraints: &NumberConstraints{
+							AllOf: []*NumberConstraints{
+								{
+									Maximum: 2,
+								},
+							},
+							AnyOf: []*NumberConstraints{
+								{
+									Minimum: 1,
+								},
+							},
+							Enum:       []float64{1.2, 2},
+							Integer:    true,
+							Maximum:    1000,
+							MultipleOf: 1,
+							Minimum:    0,
+							OneOf: []*NumberConstraints{
+								{
+									Minimum: 0,
+								},
+							},
+						},
+						IsSecret: true,
+					},
+				}
+
+				/* act */
+				providedYaml, err := yaml.From(expectedParam)
+				if nil != err {
+					panic(err)
+				}
+
+				actualParam := Param{}
+				yaml.To(providedYaml, &actualParam)
+
+				/* assert */
+				Expect(actualParam).To(Equal(expectedParam))
+
+			})
+
+		})
+
 		Context("with non-nil $.socket", func() {
 
 			It("should have expected attributes", func() {

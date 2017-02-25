@@ -1,4 +1,25 @@
 description: publishes code coverage
 name: publish-coverage
 inputs:
-- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
+  coverageTxtFile:
+    file:
+      description: aggregate of all test coverage metrics
+  gitBranch:
+    string:
+      description: git branch coverage should be associated with
+      default: master
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "publishing coverage"
+        curl -s https://codecov.io/bash | bash -s
+    envVars:
+      CODECOV_TOKEN: 5f64e6aa-5117-410b-aceb-3188c58e4a18
+      GIT_BRANCH: $(gitBranch)
+    files:
+      /workDir/coverage.txt: { bind: coverageTxtFile }
+    image: golang:1.8
+    workDir: /workDir

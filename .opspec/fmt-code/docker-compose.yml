@@ -1,8 +1,0 @@
-version: "2"
-services:
-  fmt-code:
-    extends:
-      service: go
-      file: ../.common/docker-compose.yml
-    entrypoint: govendor fmt +local
-    network_mode: none

@@ -4,8 +4,31 @@ package model
 type Param struct {
 	Dir    *DirParam    `yaml:"dir,omitempty"`
 	File   *FileParam   `yaml:"file,omitempty"`
+	Number *NumberParam `yaml:"number,omitempty"`
 	Socket *SocketParam `yaml:"socket,omitempty"`
 	String *StringParam `yaml:"string,omitempty"`
+}
+
+// Number parameter
+type NumberParam struct {
+	Constraints *NumberConstraints `yaml:"constraints,omitempty"`
+	Default     string             `yaml:"default,omitempty"`
+	Description string             `yaml:"description,omitempty"`
+	IsSecret    bool               `yaml:"isSecret,omitempty"`
+}
+
+// Number parameter constraints
+type NumberConstraints struct {
+	// json struct tags used for validating via gojsonschema
+	AllOf      []*NumberConstraints `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf      []*NumberConstraints `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
+	Enum       []float64            `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Maximum    float64              `json:"maximum,omitempty" yaml:"maximum,omitempty"`
+	Minimum    float64              `json:"minimum,omitempty" yaml:"minimum,omitempty"`
+	MultipleOf float64              `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
+	Integer    bool                 `json:"integer,omitempty" yaml:"integer,omitempty"`
+	Not        *NumberConstraints   `json:"not,omitempty" yaml:"not,omitempty"`
+	OneOf      []*NumberConstraints `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
 }
 
 // Directory parameter

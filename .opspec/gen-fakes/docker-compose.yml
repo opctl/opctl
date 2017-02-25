@@ -1,8 +1,0 @@
-version: "2"
-services:
-  gen-fakes:
-    extends:
-      service: go
-      file: ../.common/docker-compose.yml
-    entrypoint: govendor generate +local
-    network_mode: none

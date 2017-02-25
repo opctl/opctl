@@ -1,10 +1,18 @@
-description: runs all tests
 name: test
+description: runs all tests
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+outputs:
+  coverageTxtFile:
+    file:
+      description: aggregate of all test coverage metrics
 run:
   serial:
-  - op: clean
-  - op: fmt-code
-  - parallel:
-    - op: test-lint
-    - op: test-unit
-  - op: test-coverage
+    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir } }
+    - op: { ref: fmt-code, inputs: { srcDir }, outputs: { srcDir } }
+    - parallel:
+      - op: { ref: test-lint, inputs: { srcDir }, outputs: { srcDir } }
+      - op: { ref: test-unit, inputs: { srcDir }, outputs: { srcDir } }
+    - op: { ref: test-coverage, inputs: { srcDir }, outputs: { coverageTxtFile } }

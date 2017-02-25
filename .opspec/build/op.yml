@@ -1,8 +1,18 @@
 description: runs a build
 name: build
 inputs:
-- { name: GIT_BRANCH, default: master, description: 'The git branch the coverage should be associated with' }
+  gitBranch:
+    string:
+      description: git branch coverage should be associated with
+      default: master
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+outputs:
+  coverageTxtFile:
+    file:
+      description: aggregate of all test coverage metrics
 run:
   serial:
-  - op: test
-  - op: publish-coverage
+    - op: { ref: test, inputs: { srcDir }, outputs: { coverageTxtFile } }
+    - op: { ref: publish-coverage, inputs: { coverageTxtFile, gitBranch } }
