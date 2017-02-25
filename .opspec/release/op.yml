@@ -10,6 +10,7 @@ inputs:
       isSecret: true
   dockerUsername:
     string:
+      constraints: { format: email }
       description: username for docker registry
   equinoxSigningKey:
     string:

@@ -66,16 +66,16 @@ func (this _serialCaller) Call(
 		}
 
 		if scgOpCall := scgCall.Op; nil != scgCall.Op {
-			// apply bound outputs to current scope
+			// apply bound child outputs to current scope
 			for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
 				if "" == childScopeVarName {
-					// if no custom childScopeVarName provided; use currentScopeVarName
+					// if no explicit childScopeVarName provided; use currentScopeVarName (assume same)
 					childScopeVarName = currentScopeVarName
 				}
 				outboundScope[currentScopeVarName] = childOutboundScope[childScopeVarName]
 			}
 		} else {
-			// apply outputs to current scope
+			// apply child outputs to current scope
 			for varName, varData := range childOutboundScope {
 				outboundScope[varName] = varData
 			}

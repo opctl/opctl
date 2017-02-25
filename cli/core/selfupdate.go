@@ -23,17 +23,32 @@ func (this _core) SelfUpdate(
 
 	update, err := this.updater.GetUpdateIfExists(releaseChannel)
 	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		this.cliExiter.Exit(cliexiter.ExitReq{
+			Message: err.Error(),
+			Code:    1,
+		})
 		return // support fake exiter
 	} else if nil == update {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: "No update available, already at the latest version!", Code: 0})
+		this.cliExiter.Exit(cliexiter.ExitReq{
+			Message: "No update available, already at the latest version!",
+			Code:    0,
+		})
 		return // support fake exiter
 	}
 
 	err = this.updater.ApplyUpdate(update)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-	} else {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: fmt.Sprintf("Updated to new version: %s!\n", update.Version), Code: 0})
+		return // support fake exiter
 	}
+
+	// recreate local node so it's running updated version
+	this.nodeProvider.KillNodeIfExists("")
+	this.nodeProvider.CreateNode()
+
+	this.cliExiter.Exit(cliexiter.ExitReq{
+		Message: fmt.Sprintf("Updated to new version: %s!\n", update.Version),
+		Code:    0,
+	})
+
 }
