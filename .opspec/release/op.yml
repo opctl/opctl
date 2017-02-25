@@ -1,15 +1,37 @@
 description: performs a release
 name: release
 inputs:
-- { name: DOCKER_PASSWORD, description: password for docker registry, isSecret: true }
-- { name: DOCKER_USERNAME, description: username for docker registry, isSecret: true }
-- { name: EQUINOX_TOKEN, description: equinox.io auth token, isSecret: true }
-- { name: EQUINOX_SIGNING_KEY, description: signing key for artifacts published to equinox.io, isSecret: true }
-- { name: GIT_BRANCH, default: master, description: git branch the coverage should be associated with }
-- { name: VERSION, description: opctl version }
+  dockerDSocket:
+    socket:
+      description: socket for docker daemon
+  dockerPassword:
+    string:
+      description: password for docker registry
+      isSecret: true
+  dockerUsername:
+    string:
+      description: username for docker registry
+  equinoxSigningKey:
+    string:
+      description: signing key for artifacts published to equinox.io
+      isSecret: true
+  equinoxToken:
+    string:
+      description: equinox.io auth token
+      isSecret: true
+  gitBranch:
+    string:
+      description: The git branch the coverage should be associated with
+      default: master
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+  version:
+    string:
+      description: version of opctl being released
 run:
   serial:
-  - op: set-version
-  - op: build
-  - op: release-to-equinox
-  - op: release-to-docker
+    - op: { ref: set-version, inputs: { srcDir }, outputs: { srcDir } }
+    - op: { ref: build, inputs: { srcDir } }
+    - op: { ref: release-to-equinox, inputs: { equinoxSigningKey, equinoxToken, srcDir, version } }
+    - op: { ref: release-to-docker, inputs: { dockerDSocket, dockerPassword, dockerUsername, version } }

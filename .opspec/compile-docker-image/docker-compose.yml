@@ -1,9 +1,0 @@
-version: "2"
-services:
-  compile-docker-image:
-    image: docker:1.11
-    entrypoint: docker build --build-arg VERSION=$VERSION -t opspec/opctl:$VERSION .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - .:/working_dir
-    working_dir: /working_dir

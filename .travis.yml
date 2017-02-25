@@ -3,11 +3,11 @@ sudo: required
 before_script:
 - sudo apt-get remove --purge docker-engine
 - curl -fsSL https://get.docker.com/ | sh
-- curl -L https://opctl.opspec.io/0.1.14/opctl-linux.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:
-- opctl run -a GIT_BRANCH=$TRAVIS_BRANCH build
+- opctl run -a srcDir=$(pwd) -a gitBranch=$TRAVIS_BRANCH build
 env:
   global:
   - secure: DnqH08zzIPW9sLx0pBZfodqh35ObREdWMkVCnkHpR7gOqp6jYL1Taj66HPKxV8HZWTODvRnXRuR3tVoZ8eeZMiYvq2odtOaRNnzx19OAmyXRnHibASVRLgYVChqrOiLBf+qyVCmAy4BnMaFKr8Rdd8k7VwakQIx0s5Yqi+3DY5UQmL46PfHWZURfhs2SZ2DZldHxa/K8rhOItISh9PhrSRoqnbwagMFJY9RfYXmhcPtjsJ5DwQPxWyq58uoAKgpUtlZoxDpgl4FcZBLDqiP4wuPLBp5bqhaySemFMCZ//5QKoLMkfXXIpArAw1cEbJfwVhGyAgVFaF4nWKwz23IRNRvLshkCP+5bFgOGrsXBU9honxOWmBFQ8AQPy/aYUZvK9yGMeos4eI4yfQCfTeC0mzZBR2US8FNQXvRkvJAuCivtxk0Ike1GBv5KRUcCAo6vMAGHxzhYvNpOohY6mVM2ErLdwXFTqzGsuZzxfEwjHaDo0NzHeQSBs4ayhEqIfhmE3YLq2g7QOafThVMydqCc0RxlNW+k1H0eAkfuhrIQb6ILVWpTMHsBEuFjOBoC4zPYXXfbt7OfxzC/OED91qDV01Psd5ZmZUQpGuZywmPKRj+x53czzdBXo9N3L7RSooJowUAovOe8JqlUDHO32uTztHzeUz9lpf0HJwx1DB8vnDM=

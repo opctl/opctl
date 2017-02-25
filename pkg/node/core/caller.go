@@ -73,7 +73,7 @@ func (this _caller) Call(
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
-		err = this.serialCaller.Call(
+		outboundScope, err = this.serialCaller.Call(
 			inboundScope,
 			opGraphId,
 			opRef,

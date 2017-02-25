@@ -39,28 +39,6 @@ func newRunContainerReq(
 		panic(err)
 	}
 
-	// construct envVars
-	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		envVars[scgContainerEnvVarName] = scgContainerEnvVar
-	}
-
-	// construct files
-	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
-		if boundArg, ok := currentScope[scgContainerFile.Bind]; ok {
-			// bound to input
-			files[scgContainerFilePath] = boundArg.File
-		} else {
-			// bound to output
-			// create placeholder file on host so the output points to something
-			dcgHostFilePath := path.Join(scratchDirPath, scgContainerFilePath)
-			_, err = os.Create(dcgHostFilePath)
-			if nil != err {
-				panic(err)
-			}
-			files[scgContainerFilePath] = dcgHostFilePath
-		}
-	}
-
 	// construct dirs
 	for scgContainerDirPath, scgContainerDir := range scgContainerCall.Dirs {
 		if boundArg, ok := currentScope[scgContainerDir.Bind]; ok {
@@ -78,6 +56,35 @@ func newRunContainerReq(
 		}
 	}
 
+	// construct envVars
+	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
+		envVars[scgContainerEnvVarName] = scgContainerEnvVar
+	}
+
+	// construct files
+	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
+		if boundArg, ok := currentScope[scgContainerFile.Bind]; ok {
+			// bound to input
+			files[scgContainerFilePath] = boundArg.File
+		} else {
+			// bound to output
+			// create outputFile on host so the output points to something
+			dcgHostFilePath := path.Join(scratchDirPath, scgContainerFilePath)
+			// create dir
+			err := os.MkdirAll(path.Dir(dcgHostFilePath), 0700)
+			if nil != err {
+				panic(err)
+			}
+			// create file
+			outputFile, err := os.Create(dcgHostFilePath)
+			outputFile.Close()
+			if nil != err {
+				panic(err)
+			}
+			files[scgContainerFilePath] = dcgHostFilePath
+		}
+	}
+
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
 		if boundArg, ok := currentScope[scgContainerSocket.Bind]; ok {
@@ -85,10 +92,11 @@ func newRunContainerReq(
 			sockets[scgContainerSocketAddress] = boundArg.Socket
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
-			// create placeholder unix socket on host so the output points to something
+			// create outputSocket on host so the output points to something
 			if isUnixSocketAddress(scgContainerSocketAddress) {
 				dcgHostSocketAddress := path.Join(scratchDirPath, scgContainerSocketAddress)
-				_, err = os.Create(dcgHostSocketAddress)
+				outputSocket, err := os.Create(dcgHostSocketAddress)
+				outputSocket.Close()
 				if nil != err {
 					panic(err)
 				}

@@ -1,6 +1,50 @@
 description: performs a release to equinox.io by compiling binaries and uploading them
 name: release-to-equinox
 inputs:
-- { name: EQUINOX_TOKEN, description: equinox.io auth token, isSecret: true }
-- { name: EQUINOX_SIGNING_KEY, description: signing key for artifacts published to equinox.io, isSecret: true }
-- { name: VERSION, description: opctl version }
+  equinoxSigningKey:
+    string:
+      description: signing key for artifacts published to equinox.io
+      isSecret: true
+  equinoxToken:
+    string:
+      description: equinox.io auth token
+      isSecret: true
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+  version:
+    string:
+      description: version of opctl being released
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        curl -L https://bin.equinox.io/c/mBWdkfai63v/release-tool-stable-linux-amd64.tgz | tar -xzv -C /usr/local/bin
+
+        echo "determining channel"
+        if echo "$(version)" | grep -Eq "*.-beta\.*."; then
+          channel=beta
+        elif echo "$(version)" | grep -Eq "*.-alpha\.*."; then
+          channel=alpha
+        else
+          channel=stable
+        fi
+
+        echo "releasing to $channel"
+        equinox release \
+          --channel="${channel}" \
+          --version="$(version)" \
+          --platforms="darwin_amd64 linux_amd64 windows_amd64" \
+          --app="app_kNrDsPk2bis" \
+          --token="$(equinoxToken)" \
+          -- -a github.com/opspec-io/opctl/cli
+    dirs:
+      /go/src/github.com/opspec-io/opctl: { bind: srcDir }
+    envVars:
+      EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
+      CGO_ENABLED: 0
+    image: golang:1.8
+    workDir: /go/src/github.com/opspec-io/opctl

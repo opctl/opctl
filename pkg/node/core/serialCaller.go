@@ -15,6 +15,7 @@ type serialCaller interface {
 		opRef string,
 		scgSerialCall []*model.Scg,
 	) (
+		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -42,19 +43,20 @@ func (this _serialCaller) Call(
 	opRef string,
 	scgSerialCall []*model.Scg,
 ) (
+	outboundScope map[string]*model.Data,
 	err error,
 ) {
-	currentScope := map[string]*model.Data{}
+	outboundScope = map[string]*model.Data{}
 	for varName, varData := range inboundScope {
-		currentScope[varName] = varData
+		outboundScope[varName] = varData
 	}
 
 	var childOutboundScope map[string]*model.Data
-	for _, call := range scgSerialCall {
+	for _, scgCall := range scgSerialCall {
 		childOutboundScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
-			currentScope,
-			call,
+			outboundScope,
+			scgCall,
 			opRef,
 			opGraphId,
 		)
@@ -63,9 +65,20 @@ func (this _serialCaller) Call(
 			return
 		}
 
-		// apply outputs to current scope
-		for varName, varData := range childOutboundScope {
-			currentScope[varName] = varData
+		if scgOpCall := scgCall.Op; nil != scgCall.Op {
+			// apply bound outputs to current scope
+			for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
+				if "" == childScopeVarName {
+					// if no custom childScopeVarName provided; use currentScopeVarName
+					childScopeVarName = currentScopeVarName
+				}
+				outboundScope[currentScopeVarName] = childOutboundScope[childScopeVarName]
+			}
+		} else {
+			// apply outputs to current scope
+			for varName, varData := range childOutboundScope {
+				outboundScope[varName] = varData
+			}
 		}
 	}
 

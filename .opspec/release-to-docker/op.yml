@@ -1,15 +1,20 @@
-name: push-docker-image
+name: release-to-docker
 description: pushes the built docker image to docker
 inputs:
-- name: DOCKER_PASSWORD
-  description: password for docker registry
-  isSecret: true
-- name: DOCKER_USERNAME
-  description: username for docker registry
-  isSecret: true
-- name: VERSION
-  description: opctl version
+  dockerDSocket:
+    socket:
+      description: socket for docker daemon
+  dockerPassword:
+    string:
+      description: password for docker registry
+      isSecret: true
+  dockerUsername:
+    string:
+      description: username for docker registry
+  version:
+    string:
+      description: version of opctl being released
 run:
   serial:
-  - op: compile-docker-image
-  - op: push-docker-image
+  - op: { ref: compile-docker-image, inputs: { dockerDSocket, version } }
+  - op: { ref: push-docker-image, inputs: { dockerDSocket, dockerPassword, dockerUsername, version } }
