@@ -4,13 +4,21 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"io/ioutil"
 )
 
 var _ = Context("pubSub", func() {
+	tempFilePath, err := ioutil.TempFile("", "")
+	if nil != err {
+		panic(err)
+	}
+	tempEventRepo := NewEventRepo(tempFilePath.Name())
+
 	Context("New", func() {
 		It("should return PubSub", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+
+			Expect(New(tempEventRepo)).Should(Not(BeNil()))
 		})
 	})
 	Context("Publish", func() {
@@ -28,7 +36,7 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New()
+					objectUnderTest := New(tempEventRepo)
 
 					objectUnderTest.Subscribe(nil, subscriberChannel)
 
@@ -55,7 +63,7 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New()
+					objectUnderTest := New(tempEventRepo)
 
 					objectUnderTest.Subscribe(subscriberEventFilter, subscriberChannel)
 
@@ -83,7 +91,7 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New()
+					objectUnderTest := New(tempEventRepo)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */
@@ -114,7 +122,7 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New()
+					objectUnderTest := New(tempEventRepo)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */

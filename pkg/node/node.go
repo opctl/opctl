@@ -7,6 +7,7 @@ import (
 	"github.com/opspec-io/opctl/pkg/node/tcp"
 	"github.com/opspec-io/opctl/util/containerprovider/docker"
 	"github.com/opspec-io/opctl/util/lockfile"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/vfs/os"
 	"path"
 )
@@ -26,15 +27,17 @@ func New() {
 		panic(fmt.Errorf("node already running w/ PId: %v\n", pIdOExistingNode))
 	}
 
-	// ensure we've got a clean scratch dir
-	dcgDirPath := path.Join(dataDirPath(), "dcgs")
-	err = os.New().RemoveAll(dcgDirPath)
+	// cleanup existing DCG (dynamic call graph) data
+	err = os.New().RemoveAll(dcgDataDirPath())
 	if nil != err {
-		panic(fmt.Errorf("unable to cleanup path: %v\n", dcgDirPath))
+		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath()))
 	}
 
 	err = tcp.New(
-		core.New(containerProvider),
+		core.New(
+			pubsub.New(pubsub.NewEventRepo(eventDbPath())),
+			containerProvider,
+		),
 	).Start()
 	if nil != err {
 		panic(err)
@@ -46,6 +49,20 @@ func dataDirPath() string {
 	return path.Join(
 		appdatapath.New().PerUser(),
 		"opctl",
+	)
+}
+
+func dcgDataDirPath() string {
+	return path.Join(
+		dataDirPath(),
+		"dcg",
+	)
+}
+
+func eventDbPath() string {
+	return path.Join(
+		dcgDataDirPath(),
+		"event.db",
 	)
 }
 

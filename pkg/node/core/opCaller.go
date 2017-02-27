@@ -132,6 +132,8 @@ func (this _opCaller) Call(
 		return
 	}
 
+	this.applyParamDefaultsToScope(inboundScope, op.Inputs)
+
 	// validate inputs
 	err = this.validateScope("input", inboundScope, op.Inputs)
 	if nil != err {
@@ -160,11 +162,35 @@ func (this _opCaller) Call(
 		return
 	}
 
+	this.applyParamDefaultsToScope(outboundScope, op.Outputs)
+
 	// validate outputs
 	err = this.validateScope("output", outboundScope, op.Outputs)
 
 	return
 
+}
+
+func (this _opCaller) applyParamDefaultsToScope(
+	scope map[string]*model.Data,
+	params map[string]*model.Param,
+) {
+	for paramName, param := range params {
+		// resolve var for param
+		var ok bool
+		switch {
+		case nil != param.Number:
+			if _, ok = scope[paramName]; !ok {
+				// apply default; value not found in scope
+				scope[paramName] = &model.Data{Number: param.Number.Default}
+			}
+		case nil != param.String:
+			if _, ok = scope[paramName]; !ok {
+				// apply default; value not found in scope
+				scope[paramName] = &model.Data{String: param.String.Default}
+			}
+		}
+	}
 }
 
 func (this _opCaller) validateScope(
@@ -175,46 +201,28 @@ func (this _opCaller) validateScope(
 
 	messageBuffer := bytes.NewBufferString(``)
 	for paramName, param := range params {
+		arg := scope[paramName]
 		var (
-			arg             *model.Data
 			argDisplayValue string
 		)
 
-		// resolve var for param
-		var ok bool
 		switch {
 		case nil != param.Dir:
-			if arg, ok = scope[paramName]; ok {
-				argDisplayValue = arg.Dir
-			}
+			argDisplayValue = arg.Dir
 		case nil != param.File:
-			if arg, ok = scope[paramName]; ok {
-				argDisplayValue = arg.File
-			}
+			argDisplayValue = arg.File
 		case nil != param.Number:
 			if param.Number.IsSecret {
 				argDisplayValue = "************"
-			}
-			if arg, ok = scope[paramName]; !ok {
-				// fallback to default
-				arg = &model.Data{Number: param.Number.Default}
-			}
-			if "" == argDisplayValue {
+			} else {
 				argDisplayValue = strconv.FormatFloat(arg.Number, 'f', -1, 64)
 			}
 		case nil != param.Socket:
-			if arg, ok = scope[paramName]; ok {
-				argDisplayValue = arg.Socket
-			}
+			argDisplayValue = arg.Socket
 		case nil != param.String:
 			if param.String.IsSecret {
 				argDisplayValue = "************"
-			}
-			if arg, ok = scope[paramName]; !ok {
-				// fallback to default
-				arg = &model.Data{String: param.String.Default}
-			}
-			if "" == argDisplayValue {
+			} else {
 				argDisplayValue = arg.String
 			}
 		}

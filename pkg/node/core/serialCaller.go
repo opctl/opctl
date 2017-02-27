@@ -51,8 +51,8 @@ func (this _serialCaller) Call(
 		outboundScope[varName] = varData
 	}
 
-	var childOutboundScope map[string]*model.Data
 	for _, scgCall := range scgSerialCall {
+		var childOutboundScope map[string]*model.Data
 		childOutboundScope, err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
 			outboundScope,

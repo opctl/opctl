@@ -10,9 +10,11 @@ import (
 	"time"
 )
 
-func New() PubSub {
+func New(
+	eventRepo EventRepo,
+) PubSub {
 	return &pubSub{
-		eventRepo:          newEventRepo(),
+		eventRepo:          eventRepo,
 		subscriptions:      map[chan *model.Event]chan *model.Event{},
 		subscriptionsMutex: sync.RWMutex{},
 	}
@@ -37,7 +39,7 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventRepo eventRepo
+	eventRepo EventRepo
 	// format: output : input
 	subscriptions      map[chan *model.Event]chan *model.Event
 	subscriptionsMutex sync.RWMutex
@@ -58,7 +60,7 @@ func (this *pubSub) Subscribe(
 		}
 		for event := range this.subscriptions[channel] {
 			ogid := getEventOpGraphId(event)
-			if !isOgidExcludedByFilter(ogid, filter) {
+			if !isOgIdExcludedByFilter(ogid, filter) {
 				this.deliverEvent(event, channel)
 			}
 		}

@@ -30,19 +30,15 @@ type Core interface {
 }
 
 func New(
+	pubSub pubsub.PubSub,
 	containerProvider containerprovider.ContainerProvider,
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
-
-	pubSub := pubsub.New()
-
-	_bundle := bundle.New()
 
 	dcgNodeRepo := newDcgNodeRepo()
 
 	caller := newCaller(
 		newContainerCaller(
-			_bundle,
 			containerProvider,
 			pubSub,
 			dcgNodeRepo,
@@ -64,7 +60,7 @@ func New(
 	)
 
 	opCaller := newOpCaller(
-		_bundle,
+		bundle.New(),
 		pubSub,
 		dcgNodeRepo,
 		caller,

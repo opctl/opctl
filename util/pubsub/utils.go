@@ -5,7 +5,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
-func isOgidExcludedByFilter(
+func isOgIdExcludedByFilter(
 	ogid string,
 	filter *model.EventFilter,
 ) bool {
