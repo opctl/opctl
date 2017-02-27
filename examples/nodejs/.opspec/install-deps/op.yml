@@ -18,6 +18,7 @@ run:
     cmd: [ npm, install ]
     envVars:
       NPM_CONFIG_REGISTRY: $(npmRegistryUrl)
+      NPM_CONFIG_LOGLEVEL: warn
     dirs:
       /opt/app: { bind: appDir }
     image: node:7.4
