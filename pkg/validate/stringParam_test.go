@@ -52,7 +52,7 @@ var _ = Describe("Param", func() {
 
 						/* arrange */
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: "dummyValue==\"",
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
