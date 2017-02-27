@@ -47,9 +47,16 @@ func (this validate) numberParam(
 			return
 		}
 
+		valueJsonBytes, err := format.NewJsonFormat().From(value)
+		if err != nil {
+			// handle syntax errors specially
+			errs = append(errs, fmt.Errorf("Error validating parameter.\n Details: %v", err.Error()))
+			return
+		}
+
 		result, err := gojsonschema.Validate(
-			gojsonschema.NewStringLoader(string(constraintsJsonBytes)),
-			gojsonschema.NewStringLoader(fmt.Sprintf(`%v`, value)),
+			gojsonschema.NewBytesLoader(constraintsJsonBytes),
+			gojsonschema.NewBytesLoader(valueJsonBytes),
 		)
 		if err != nil {
 			// handle syntax errors specially
