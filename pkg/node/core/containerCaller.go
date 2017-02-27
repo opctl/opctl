@@ -5,8 +5,8 @@ package core
 import (
 	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"strings"
 	"time"
 )
 
@@ -25,14 +25,12 @@ type containerCaller interface {
 }
 
 func newContainerCaller(
-	bundle bundle.Bundle,
 	containerProvider containerprovider.ContainerProvider,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
-		bundle:            bundle,
 		containerProvider: containerProvider,
 		pubSub:            pubSub,
 		dcgNodeRepo:       dcgNodeRepo,
@@ -41,7 +39,6 @@ func newContainerCaller(
 }
 
 type _containerCaller struct {
-	bundle            bundle.Bundle
 	containerProvider containerprovider.ContainerProvider
 	pubSub            pubsub.PubSub
 	dcgNodeRepo       dcgNodeRepo
@@ -62,25 +59,7 @@ func (this _containerCaller) Call(
 
 		this.dcgNodeRepo.DeleteIfExists(containerId)
 
-		this.pubSub.Publish(
-			&model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerExited: &model.ContainerExitedEvent{
-					ContainerId: containerId,
-					OpRef:       opRef,
-					OpGraphId:   opGraphId,
-				},
-			},
-		)
-
 	}()
-
-	op, err := this.bundle.GetOp(
-		opRef,
-	)
-	if nil != err {
-		return
-	}
 
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
@@ -103,15 +82,70 @@ func (this _containerCaller) Call(
 	)
 
 	err = this.containerProvider.RunContainer(
-		newRunContainerReq(inboundScope, scgContainerCall, containerId, op.Inputs, opGraphId),
+		newRunContainerReq(inboundScope, scgContainerCall, containerId, opGraphId),
 		this.pubSub,
+	)
+	this.pubSub.Publish(
+		&model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerExited: &model.ContainerExitedEvent{
+				ContainerId: containerId,
+				OpRef:       opRef,
+				OpGraphId:   opGraphId,
+			},
+		},
 	)
 	if nil != err {
 		return
 	}
 
 	/* construct outputs */
+	outboundScope, err = this.constructOutboundScope(containerId, opGraphId, scgContainerCall)
+
+	return
+}
+
+// O(n) complexity (n being events in op graph)
+func (this _containerCaller) constructOutboundScope(
+	containerId string,
+	opGraphId string,
+	scgContainerCall *model.ScgContainerCall,
+) (outboundScope map[string]*model.Data, err error) {
 	outboundScope = map[string]*model.Data{}
+
+	// subscribe to op graph events
+	eventChannel := make(chan *model.Event)
+	this.pubSub.Subscribe(
+		&model.EventFilter{OpGraphIds: []string{opGraphId}},
+		eventChannel,
+	)
+
+eventLoop:
+	for event := range eventChannel {
+		switch {
+		case nil != event.ContainerExited && event.ContainerExited.ContainerId == containerId:
+			break eventLoop
+		case nil != event.ContainerStdErrWrittenTo && event.ContainerStdErrWrittenTo.ContainerId == containerId:
+			for boundPrefix, binding := range scgContainerCall.StdErr {
+				rawOutput := string(event.ContainerStdErrWrittenTo.Data)
+				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
+				if trimmedOutput != rawOutput {
+					// if output trimming wasn't a NoOp we've got a match
+					outboundScope[binding.Bind] = &model.Data{String: trimmedOutput}
+				}
+			}
+		case nil != event.ContainerStdOutWrittenTo && event.ContainerStdOutWrittenTo.ContainerId == containerId:
+			for boundPrefix, binding := range scgContainerCall.StdOut {
+				rawOutput := string(event.ContainerStdOutWrittenTo.Data)
+				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
+				if trimmedOutput != rawOutput {
+					// if output trimming wasn't a NoOp we've got a match
+					outboundScope[binding.Bind] = &model.Data{String: trimmedOutput}
+				}
+			}
+		}
+	}
+
 	dcgContainer, err := this.containerProvider.InspectContainerIfExists(containerId)
 	// construct files
 	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {

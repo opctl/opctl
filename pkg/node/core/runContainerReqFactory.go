@@ -13,7 +13,6 @@ func newRunContainerReq(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
-	inputs map[string]*model.Param,
 	opGraphId string,
 ) *containerprovider.RunContainerReq {
 
@@ -28,7 +27,7 @@ func newRunContainerReq(
 	scratchDirPath := path.Join(
 		appdatapath.New().PerUser(),
 		"opctl",
-		"dcgs",
+		"dcg",
 		opGraphId,
 		"containers",
 		containerId,
@@ -109,50 +108,30 @@ func newRunContainerReq(
 		}
 	}
 
-	for inputName, input := range inputs {
+	// interpolate cmd & envVars w/ values from currentScope
+	for varName, varData := range currentScope {
 		switch {
-		case nil != input.Number:
-			numberInput := input.Number
+		case 0 != varData.Number:
+			numberVarData := varData.Number
 
-			// obtain inputValue
-			var inputValue float64
-			if _, isArgForInput := currentScope[inputName]; isArgForInput {
-				// use provided arg for param
-				inputValue = currentScope[inputName].Number
-			} else {
-				// no provided arg for param; fallback to default
-				inputValue = numberInput.Default
-			}
-
-			// interpolate interpolatedNumbers w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, inputName, inputValue)
+				cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, varName, numberVarData)
 			}
 			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, inputName, inputValue)
+				envVars[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, varName, numberVarData)
 			}
-		case nil != input.String:
-			stringInput := input.String
+		case "" != varData.String:
+			stringVarData := varData.String
 
-			// obtain inputValue
-			var inputValue string
-			if _, isArgForInput := currentScope[inputName]; isArgForInput {
-				// use provided arg for param
-				inputValue = currentScope[inputName].String
-			} else {
-				// no provided arg for param; fallback to default
-				inputValue = stringInput.Default
-			}
-
-			// interpolate interpolatedStrings w/ inputValue
 			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, inputName, inputValue)
+				cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, varName, stringVarData)
 			}
 			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.StringValue(containerEnvVar, inputName, inputValue)
+				envVars[containerEnvVarName] = interpolate.StringValue(containerEnvVar, varName, stringVarData)
 			}
 		}
 	}
+
 	return &containerprovider.RunContainerReq{
 		Cmd:         cmd,
 		Dirs:        dirs,
