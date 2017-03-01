@@ -57,7 +57,7 @@
     },
     {
       "properties": {
-        "string": {
+        "number": {
           "description": "Number parameter of an op",
           "type": "object",
           "properties": {
