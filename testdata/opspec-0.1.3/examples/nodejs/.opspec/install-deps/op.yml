@@ -8,7 +8,7 @@ inputs:
   npmRegistryUrl:
     string:
       constraints: { format: uri }
-      default: https://npmjs.org/
+      default: https://registry.npmjs.org/
 outputs:
   appDir:
     dir:
@@ -18,7 +18,8 @@ run:
     cmd: [ npm, install ]
     envVars:
       NPM_CONFIG_REGISTRY: $(npmRegistryUrl)
+      NPM_CONFIG_LOGLEVEL: warn
     dirs:
-      /opt/app: { bind: appDir }
+      /opt/app: appDir
     image: node:7.4
     workDir: /opt/app

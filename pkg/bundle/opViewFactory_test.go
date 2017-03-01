@@ -321,16 +321,12 @@ var _ = Describe("_opViewFactory", func() {
 							Cmd: []string{
 								"docker", "login", "-u", "$(dockerUsername)", "-p", "$(dockerPassword)",
 							},
-							Files: map[string]*model.ScgBinding{
-								"/root/.docker/config.json": {
-									Bind: "dockerConfig",
-								},
+							Files: map[string]string{
+								"/root/.docker/config.json": "dockerConfig",
 							},
 							Image: "docker:1.13",
-							Sockets: map[string]*model.ScgBinding{
-								"/var/run/docker.sock": {
-									Bind: "dockerSocket",
-								},
+							Sockets: map[string]string{
+								"/var/run/docker.sock": "dockerSocket",
 							},
 						},
 					},
@@ -371,7 +367,7 @@ var _ = Describe("_opViewFactory", func() {
 								Constraints: &model.StringConstraints{
 									Format: "uri",
 								},
-								Default: "https://npmjs.org/",
+								Default: "https://registry.npmjs.org/",
 							},
 						},
 						"appDir": {
@@ -464,16 +460,12 @@ var _ = Describe("_opViewFactory", func() {
 								"--reporter=spec",
 								"tests/unit",
 							},
-							Dirs: map[string]*model.ScgBinding{
-								"/opt/app": {
-									Bind: "appDir",
-								},
+							Dirs: map[string]string{
+								"/opt/app": "appDir",
 							},
 							Image: "node:7.4",
-							Sockets: map[string]*model.ScgBinding{
-								"api": {
-									Bind: "apiSocket",
-								},
+							Sockets: map[string]string{
+								"api": "apiSocket",
 							},
 							WorkDir: "/opt/app",
 						},

@@ -15,8 +15,8 @@ run:
   container:
     cmd: [ docker, build, -t, $(imageRef), . ]
     dirs:
-      /opt/app: { bind: buildContext }
+      /opt/app: buildContext
     image: docker:1.13
     sockets:
-      /var/run/docker.sock: { bind: dockerSocket }
+      /var/run/docker.sock: dockerSocket
     workDir: /opt/app

@@ -9,6 +9,6 @@ run:
   container:
     cmd: [ node_modules/.bin/eslint, lib ]
     dirs:
-      /opt/app: { bind: appDir }
+      /opt/app: appDir
     image: node:7.4
     workDir: /opt/app

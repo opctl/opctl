@@ -1,5 +1,5 @@
-name: create-resource-group
-description: creates a resource group if it doesn't already exist
+name: delete-resource-group
+description: deletes a resource group if it exists
 inputs:
   subscriptionId:
     string:
@@ -11,10 +11,6 @@ inputs:
     string:
       constraints: { minLength: 1 }
       isSecret: true
-  location:
-    string:
-      constraints: { enum: [ westus, centralus, eastus ] }
-      default: westus
   resourceGroupName:
     string:
       constraints: { minLength: 1 }
@@ -24,3 +20,4 @@ run:
     cmd: [ /cmd.sh ]
     files:
       /cmd.sh
+

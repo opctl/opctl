@@ -8,7 +8,7 @@ inputs:
   npmRegistryUrl:
     string:
       constraints: { format: uri }
-      default: https://npmjs.org/
+      default: https://registry.npmjs.org/
 outputs:
   appDir:
     dir:

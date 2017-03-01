@@ -7,46 +7,43 @@ inputs:
   username:
     string:
       constraints: { format: email }
-      isSecret: true
-  password:
-    string:
-      constraints: { minLength: 1 }
-      isSecret: true
   location:
     string:
       constraints: { enum: [ westus, centralus, eastus ] }
       default: westus
+  password:
+    string:
+      constraints: { minLength: 1 }
+      isSecret: true
   resourceGroupName:
     string:
       constraints: { minLength: 1 }
   storageAccountName:
     string:
-      constraints: { minLength: 4, maxLength: 23, pattern: ^[a-z0-9]*$ }
-  storageAccountType:
+      constraints: { minLength: 4, maxLength: 23, pattern: '^[a-z0-9]*$' }
+  storageAccountKind:
+    string:
+      constraints: { enum: [ Storage, Blob ] }
+      default: Storage
+  storageAccountSkuName:
     string:
       constraints: { enum: [ LRS, ZRS, GRS, RAGRS, PLRS ] }
       default: RAGRS
+outputs:
+  storageAccessKey:
+    string:
+      constraints: { minLength: 1 }
+      isSecret: true
 run:
   serial:
-    op: { ref: create-resource-group, inputs: { subscriptionId, username, password, location, resourceGroupName }}
-    container:
-      image: microsoft/azure-cli
-      cmd:
-        - sh
-        - -ce
-        - |
-          ### login to azure using your credentials
-          azure login
+    - op: 
+        ref: create-resource-group
+        inputs: { subscriptionId, username, password, location, resourceGroupName }
+    - container:
+        image: microsoft/azure-cli
+        cmd: [ /cmd.sh ]
+        files:
+          /cmd.sh
+        stdOut:
+          storageAccessKey=: storageAccessKey
 
-          ### set the default subscription id
-          azure account set $(subscriptionId)
-
-          ### switch the mode to azure resource manager
-          azure config mode arm
-
-          ### create storage account
-          azure storage account create \
-          --resource-group $(resourceGroupName) \
-          --type $(storageAccountType) \
-          --location $(location) \
-          $(storageAccountName)
