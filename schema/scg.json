@@ -22,13 +22,18 @@
       "type": "object",
       "properties": {
         "cmd": {
-          "$ref": "container.json#/definitions/containerCmd"
+          "description": "Command run by a container; overrides any set at the image level",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/interpolatedString"
+          }
         },
         "dirs": {
           "type": "object",
           "patternProperties": {
             "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "$ref": "container.json#/definitions/containerDir"
+              "description": "Container dir path mapped to a dir variable or bundle dir path. If no bundle dir path provided, container dir path will be used",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -37,7 +42,8 @@
           "type": "object",
           "patternProperties": {
             "^[^=]+$": {
-              "$ref": "container.json#/definitions/containerEnvVar"
+              "description": "An environment variable in a container",
+              "$ref": "#/definitions/interpolatedString"
             }
           },
           "additionalProperties": false
@@ -46,19 +52,22 @@
           "type": "object",
           "patternProperties": {
             "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "$ref": "container.json#/definitions/containerFile"
+              "description": "Container file path mapped to a file variable or bundle file path. If no bundle file path provided, container file path will be used",
+              "type": "string"
             }
           },
           "additionalProperties": false
         },
         "image": {
-          "$ref": "container.json#/definitions/containerImageRef"
+          "description": "Reference to a container image",
+          "type": "string"
         },
         "sockets": {
           "type": "object",
           "patternProperties": {
             "[:a-zA-Z0-9]+": {
-              "$ref": "container.json#/definitions/containerSocket"
+              "description": "Container socket address mapped to a socket variable",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -67,13 +76,8 @@
           "type": "object",
           "patternProperties": {
             "^.+$": {
-              "type": "object",
-              "properties": {
-                "bind": {
-                  "description": "Variable to bind to",
-                  "type": "string"
-                }
-              }
+              "description": "Container stderr prefix mapped to a string variable",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -82,13 +86,8 @@
           "type": "object",
           "patternProperties": {
             "^.+$": {
-              "type": "object",
-              "properties": {
-                "bind": {
-                  "description": "Variable to bind to",
-                  "type": "string"
-                }
-              }
+              "description": "Container stdout prefix mapped to a string variable",
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -107,7 +106,8 @@
           "type": "object",
           "properties": {
             "ref": {
-              "$ref": "#/definitions/opRef"
+              "description": "Reference to an op",
+              "type": "string"
             },
             "inputs": {
               "type": "object",
@@ -164,9 +164,9 @@
       ],
       "additionalProperties": false
     },
-    "opRef": {
-      "title": "opRef",
-      "description": "Reference to an op",
+    "interpolatedString":{
+      "title": "interpolatedString",
+      "description": "String supporting $(IN_SCOPE_VAR) substitution syntax where $(IN_SCOPE_VAR) will be replaced by the value of IN_SCOPE_VAR at runtime.",
       "type": "string"
     }
   }

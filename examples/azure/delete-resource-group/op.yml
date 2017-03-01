@@ -17,18 +17,7 @@ inputs:
 run:
   container:
     image: microsoft/azure-cli
-    cmd:
-      - sh
-      - -ce
-      - |
-        echo "logging in to azure"
-        azure login -u "$(username)" -p "$(password)"
+    cmd: [ /cmd.sh ]
+    files:
+      /cmd.sh
 
-        echo "setting default subscription"
-        azure account set "$(subscriptionId)"
-
-        echo "switching to ARM (azure resource manager) mode"
-        azure config mode arm
-
-        echo "deleting resource group"
-        azure group delete --name "$(resourceGroupName)" --quiet

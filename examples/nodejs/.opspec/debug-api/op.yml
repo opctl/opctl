@@ -16,9 +16,9 @@ run:
   container:
     cmd: [ node, --debug, --harmony-async-await, app/index.js ]
     dirs:
-      /opt/app: { bind: appDir }
+      /opt/app: appDir
     image: node:7.4
     sockets:
-      0.0.0.0:80: { bind: apiSocket }
-      0.0.0.0:5858: { bind: apiDebugSocket }
+      0.0.0.0:80: apiSocket
+      0.0.0.0:5858: apiDebugSocket
     workDir: /opt/app

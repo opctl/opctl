@@ -20,6 +20,6 @@ run:
       NPM_CONFIG_REGISTRY: $(npmRegistryUrl)
       NPM_CONFIG_LOGLEVEL: warn
     dirs:
-      /opt/app: { bind: appDir }
+      /opt/app: appDir
     image: node:7.4
     workDir: /opt/app
