@@ -18,6 +18,10 @@ run:
   container:
     image: microsoft/azure-cli
     cmd: [ /cmd.sh ]
-    files:
-      /cmd.sh
+    envVars:
+      SUBSCRIPTION_ID: $(subscriptionId)
+      USERNAME: $(username)
+      PASSWORD: $(password)
+      RESOURCE_GROUP_NAME: $(resourceGroupName)
+    files: { /cmd.sh }
 

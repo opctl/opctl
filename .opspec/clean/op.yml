@@ -17,6 +17,6 @@ run:
         echo "cleaning untracked files from workdir"
         git clean -fXd -e !.idea/
     dirs:
-      /go/src/github.com/opspec-io/opctl: { bind: srcDir }
+      /go/src/github.com/opspec-io/opctl: srcDir
     image: node:7.6
     workDir: /go/src/github.com/opspec-io/opctl

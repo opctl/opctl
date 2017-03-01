@@ -17,6 +17,6 @@ run:
         swagger validate runtime-oai_spec.yml
         swagger validate distribution-oai_spec.yml
     dirs:
-      /workDir: { bind: srcDir }
+      /workDir: srcDir
     image: node:7.6
     workDir: /workDir
