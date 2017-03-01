@@ -18,7 +18,7 @@ run:
         echo "publishing coverage"
         curl -s https://codecov.io/bash | bash -s
     dirs:
-      /workDir: { bind: srcDir }
+      /workDir: srcDir
     envVars:
       CODECOV_TOKEN: 5f64e6aa-5117-410b-aceb-3188c58e4a18
       GIT_BRANCH: $(gitBranch)
