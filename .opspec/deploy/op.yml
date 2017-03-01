@@ -34,7 +34,7 @@ run:
           --include "*spec.yml" \
           --include "schema/*"
     dirs:
-      /workDir: { bind: srcDir }
+      /workDir: srcDir
     envVars:
       AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
       AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
