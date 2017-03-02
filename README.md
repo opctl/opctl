@@ -1,5 +1,6 @@
+[![In Progress](https://img.shields.io/waffle/label/opspec-io/opctl/in%20progress.svg)]()
 [![Build Status](https://travis-ci.org/opspec-io/opctl.svg?branch=master)](https://travis-ci.org/opspec-io/opctl)
-[![codecov](https://codecov.io/gh/opspec-io/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/opctl)
+[![Coverage](https://codecov.io/gh/opspec-io/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/opctl)
 
 Cross platform runtime for [opspec.io](https://opspec.io)
 
