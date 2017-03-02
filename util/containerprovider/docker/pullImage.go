@@ -20,7 +20,7 @@ func (this _containerProvider) pullImage(
 	// ensure tag present in image string.
 	// if not present, docker defaults to downloading all tags
 	imageName, tag, err := reference.Parse(imageRef)
-	if err != nil {
+	if nil != err {
 		return
 	}
 	imageRef = fmt.Sprintf("%v:%v", imageName, tag)
@@ -40,7 +40,7 @@ func (this _containerProvider) pullImage(
 	dec := json.NewDecoder(imagePullResp)
 	for {
 		var jm jsonmessage.JSONMessage
-		if err = dec.Decode(&jm); err != nil {
+		if err = dec.Decode(&jm); nil != err {
 			if err == io.EOF {
 				err = nil
 			}

@@ -10,11 +10,11 @@ import (
 // implementation based on github.com/nightlyone/lockfile
 func (this psCanary) IsAlive(processId int) bool {
 	proc, err := os.FindProcess(processId)
-	if err != nil {
+	if nil != err {
 		return false
 	}
 
-	if err := proc.Signal(syscall.Signal(0)); err != nil {
+	if err := proc.Signal(syscall.Signal(0)); nil != err {
 		return false
 	}
 	return true

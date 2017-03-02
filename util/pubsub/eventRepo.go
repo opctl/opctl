@@ -59,7 +59,7 @@ func (this *eventRepo) Add(event *model.Event) {
 		bucket := tx.Bucket([]byte("events"))
 
 		encodedEvent, err := json.Marshal(event)
-		if err != nil {
+		if nil != err {
 			return err
 		}
 
@@ -80,7 +80,7 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 		bucket.ForEach(func(timestamp, encodedEvent []byte) error {
 			event := &model.Event{}
 			err := json.Unmarshal(encodedEvent, event)
-			if err != nil {
+			if nil != err {
 				return err
 			}
 

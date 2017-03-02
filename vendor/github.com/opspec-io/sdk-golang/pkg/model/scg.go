@@ -10,21 +10,17 @@ type Scg struct {
 
 type ScgContainerCall struct {
 	// each entry of cmd will be interpolated
-	Cmd  []string               `yaml:"cmd,omitempty"`
-	Dirs map[string]*ScgBinding `yaml:"dirs,omitempty"`
+	Cmd  []string          `yaml:"cmd,omitempty"`
+	Dirs map[string]string `yaml:"dirs,omitempty"`
 
 	// each env var value will be interpolated
-	EnvVars map[string]string      `yaml:"envVars,omitempty"`
-	Files   map[string]*ScgBinding `yaml:"files,omitempty"`
-	Image   string                 `yaml:"image"`
-	Sockets map[string]*ScgBinding `yaml:"sockets,omitempty"`
-	StdErr  map[string]*ScgBinding `yaml:"stdErr,omitempty"`
-	StdOut  map[string]*ScgBinding `yaml:"stdOut,omitempty"`
-	WorkDir string                 `yaml:"workDir,omitempty"`
-}
-
-type ScgBinding struct {
-	Bind string `yaml:"bind,omitempty"`
+	EnvVars map[string]string `yaml:"envVars,omitempty"`
+	Files   map[string]string `yaml:"files,omitempty"`
+	Image   string            `yaml:"image"`
+	Sockets map[string]string `yaml:"sockets,omitempty"`
+	StdErr  map[string]string `yaml:"stdErr,omitempty"`
+	StdOut  map[string]string `yaml:"stdOut,omitempty"`
+	WorkDir string            `yaml:"workDir,omitempty"`
 }
 
 type ScgOpCall struct {

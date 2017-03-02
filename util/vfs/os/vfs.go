@@ -11,6 +11,10 @@ func New() vfs.Vfs {
 
 type _vfs struct{}
 
+func (this _vfs) Chmod(name string, mode os.FileMode) error {
+	return os.Chmod(name, mode)
+}
+
 func (this _vfs) Create(name string) (*os.File, error) {
 	return os.Create(name)
 }

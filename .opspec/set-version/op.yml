@@ -27,6 +27,6 @@ run:
           version = "$(version)"
         )
     dirs:
-      /go/src/github.com/opspec-io/opctl: { bind: srcDir }
+      /go/src/github.com/opspec-io/opctl: srcDir
     image: alpine:3.4
     workDir: /go/src/github.com/opspec-io/opctl

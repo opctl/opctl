@@ -7,12 +7,28 @@ import (
 )
 
 type Fake struct {
+	ChmodStub        func(name string, mode os.FileMode) error
+	chmodMutex       sync.RWMutex
+	chmodArgsForCall []struct {
+		name string
+		mode os.FileMode
+	}
+	chmodReturns struct {
+		result1 error
+	}
+	chmodReturnsOnCall map[int]struct {
+		result1 error
+	}
 	CreateStub        func(name string) (*os.File, error)
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
 		name string
 	}
 	createReturns struct {
+		result1 *os.File
+		result2 error
+	}
+	createReturnsOnCall map[int]struct {
 		result1 *os.File
 		result2 error
 	}
@@ -25,12 +41,19 @@ type Fake struct {
 	mkdirAllReturns struct {
 		result1 error
 	}
+	mkdirAllReturnsOnCall map[int]struct {
+		result1 error
+	}
 	OpenStub        func(name string) (*os.File, error)
 	openMutex       sync.RWMutex
 	openArgsForCall []struct {
 		name string
 	}
 	openReturns struct {
+		result1 *os.File
+		result2 error
+	}
+	openReturnsOnCall map[int]struct {
 		result1 *os.File
 		result2 error
 	}
@@ -42,6 +65,9 @@ type Fake struct {
 	removeAllReturns struct {
 		result1 error
 	}
+	removeAllReturnsOnCall map[int]struct {
+		result1 error
+	}
 	StatStub        func(name string) (os.FileInfo, error)
 	statMutex       sync.RWMutex
 	statArgsForCall []struct {
@@ -51,12 +77,66 @@ type Fake struct {
 		result1 os.FileInfo
 		result2 error
 	}
+	statReturnsOnCall map[int]struct {
+		result1 os.FileInfo
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
+func (fake *Fake) Chmod(name string, mode os.FileMode) error {
+	fake.chmodMutex.Lock()
+	ret, specificReturn := fake.chmodReturnsOnCall[len(fake.chmodArgsForCall)]
+	fake.chmodArgsForCall = append(fake.chmodArgsForCall, struct {
+		name string
+		mode os.FileMode
+	}{name, mode})
+	fake.recordInvocation("Chmod", []interface{}{name, mode})
+	fake.chmodMutex.Unlock()
+	if fake.ChmodStub != nil {
+		return fake.ChmodStub(name, mode)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.chmodReturns.result1
+}
+
+func (fake *Fake) ChmodCallCount() int {
+	fake.chmodMutex.RLock()
+	defer fake.chmodMutex.RUnlock()
+	return len(fake.chmodArgsForCall)
+}
+
+func (fake *Fake) ChmodArgsForCall(i int) (string, os.FileMode) {
+	fake.chmodMutex.RLock()
+	defer fake.chmodMutex.RUnlock()
+	return fake.chmodArgsForCall[i].name, fake.chmodArgsForCall[i].mode
+}
+
+func (fake *Fake) ChmodReturns(result1 error) {
+	fake.ChmodStub = nil
+	fake.chmodReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *Fake) ChmodReturnsOnCall(i int, result1 error) {
+	fake.ChmodStub = nil
+	if fake.chmodReturnsOnCall == nil {
+		fake.chmodReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.chmodReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) Create(name string) (*os.File, error) {
 	fake.createMutex.Lock()
+	ret, specificReturn := fake.createReturnsOnCall[len(fake.createArgsForCall)]
 	fake.createArgsForCall = append(fake.createArgsForCall, struct {
 		name string
 	}{name})
@@ -64,9 +144,11 @@ func (fake *Fake) Create(name string) (*os.File, error) {
 	fake.createMutex.Unlock()
 	if fake.CreateStub != nil {
 		return fake.CreateStub(name)
-	} else {
-		return fake.createReturns.result1, fake.createReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.createReturns.result1, fake.createReturns.result2
 }
 
 func (fake *Fake) CreateCallCount() int {
@@ -89,8 +171,23 @@ func (fake *Fake) CreateReturns(result1 *os.File, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *Fake) CreateReturnsOnCall(i int, result1 *os.File, result2 error) {
+	fake.CreateStub = nil
+	if fake.createReturnsOnCall == nil {
+		fake.createReturnsOnCall = make(map[int]struct {
+			result1 *os.File
+			result2 error
+		})
+	}
+	fake.createReturnsOnCall[i] = struct {
+		result1 *os.File
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) MkdirAll(path string, perm os.FileMode) error {
 	fake.mkdirAllMutex.Lock()
+	ret, specificReturn := fake.mkdirAllReturnsOnCall[len(fake.mkdirAllArgsForCall)]
 	fake.mkdirAllArgsForCall = append(fake.mkdirAllArgsForCall, struct {
 		path string
 		perm os.FileMode
@@ -99,9 +196,11 @@ func (fake *Fake) MkdirAll(path string, perm os.FileMode) error {
 	fake.mkdirAllMutex.Unlock()
 	if fake.MkdirAllStub != nil {
 		return fake.MkdirAllStub(path, perm)
-	} else {
-		return fake.mkdirAllReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.mkdirAllReturns.result1
 }
 
 func (fake *Fake) MkdirAllCallCount() int {
@@ -123,8 +222,21 @@ func (fake *Fake) MkdirAllReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) MkdirAllReturnsOnCall(i int, result1 error) {
+	fake.MkdirAllStub = nil
+	if fake.mkdirAllReturnsOnCall == nil {
+		fake.mkdirAllReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.mkdirAllReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) Open(name string) (*os.File, error) {
 	fake.openMutex.Lock()
+	ret, specificReturn := fake.openReturnsOnCall[len(fake.openArgsForCall)]
 	fake.openArgsForCall = append(fake.openArgsForCall, struct {
 		name string
 	}{name})
@@ -132,9 +244,11 @@ func (fake *Fake) Open(name string) (*os.File, error) {
 	fake.openMutex.Unlock()
 	if fake.OpenStub != nil {
 		return fake.OpenStub(name)
-	} else {
-		return fake.openReturns.result1, fake.openReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.openReturns.result1, fake.openReturns.result2
 }
 
 func (fake *Fake) OpenCallCount() int {
@@ -157,8 +271,23 @@ func (fake *Fake) OpenReturns(result1 *os.File, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *Fake) OpenReturnsOnCall(i int, result1 *os.File, result2 error) {
+	fake.OpenStub = nil
+	if fake.openReturnsOnCall == nil {
+		fake.openReturnsOnCall = make(map[int]struct {
+			result1 *os.File
+			result2 error
+		})
+	}
+	fake.openReturnsOnCall[i] = struct {
+		result1 *os.File
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) RemoveAll(path string) error {
 	fake.removeAllMutex.Lock()
+	ret, specificReturn := fake.removeAllReturnsOnCall[len(fake.removeAllArgsForCall)]
 	fake.removeAllArgsForCall = append(fake.removeAllArgsForCall, struct {
 		path string
 	}{path})
@@ -166,9 +295,11 @@ func (fake *Fake) RemoveAll(path string) error {
 	fake.removeAllMutex.Unlock()
 	if fake.RemoveAllStub != nil {
 		return fake.RemoveAllStub(path)
-	} else {
-		return fake.removeAllReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.removeAllReturns.result1
 }
 
 func (fake *Fake) RemoveAllCallCount() int {
@@ -190,8 +321,21 @@ func (fake *Fake) RemoveAllReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) RemoveAllReturnsOnCall(i int, result1 error) {
+	fake.RemoveAllStub = nil
+	if fake.removeAllReturnsOnCall == nil {
+		fake.removeAllReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.removeAllReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) Stat(name string) (os.FileInfo, error) {
 	fake.statMutex.Lock()
+	ret, specificReturn := fake.statReturnsOnCall[len(fake.statArgsForCall)]
 	fake.statArgsForCall = append(fake.statArgsForCall, struct {
 		name string
 	}{name})
@@ -199,9 +343,11 @@ func (fake *Fake) Stat(name string) (os.FileInfo, error) {
 	fake.statMutex.Unlock()
 	if fake.StatStub != nil {
 		return fake.StatStub(name)
-	} else {
-		return fake.statReturns.result1, fake.statReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.statReturns.result1, fake.statReturns.result2
 }
 
 func (fake *Fake) StatCallCount() int {
@@ -224,9 +370,25 @@ func (fake *Fake) StatReturns(result1 os.FileInfo, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *Fake) StatReturnsOnCall(i int, result1 os.FileInfo, result2 error) {
+	fake.StatStub = nil
+	if fake.statReturnsOnCall == nil {
+		fake.statReturnsOnCall = make(map[int]struct {
+			result1 os.FileInfo
+			result2 error
+		})
+	}
+	fake.statReturnsOnCall[i] = struct {
+		result1 os.FileInfo
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.chmodMutex.RLock()
+	defer fake.chmodMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	fake.mkdirAllMutex.RLock()
