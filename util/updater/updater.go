@@ -58,7 +58,7 @@ func (this _updater) GetUpdateIfExists(
 ) {
 
 	opts := equinox.Options{Channel: releaseChannel}
-	if err = opts.SetPublicKeyPEM(this.publicKey); err != nil {
+	if err = opts.SetPublicKeyPEM(this.publicKey); nil != err {
 		return
 	}
 
@@ -68,7 +68,7 @@ func (this _updater) GetUpdateIfExists(
 	case err == equinox.NotAvailableErr:
 		err = nil
 		return
-	case err != nil:
+	case nil != err:
 		return
 	}
 	update = &Update{
@@ -85,7 +85,7 @@ func (this _updater) ApplyUpdate(
 
 	// fetch the update and apply it
 	err = this.equinoxClient.Apply(*update.equinoxResponse)
-	if err != nil {
+	if nil != err {
 		return
 	}
 

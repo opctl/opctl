@@ -12,7 +12,7 @@ const (
 
 func (this psCanary) IsAlive(processId int) bool {
 	procHnd, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, true, uint32(processId))
-	if err != nil {
+	if nil != err {
 		if scerr, ok := err.(syscall.Errno); ok {
 			if uintptr(scerr) == error_invalid_parameter {
 				return false
@@ -22,7 +22,7 @@ func (this psCanary) IsAlive(processId int) bool {
 
 	var code uint32
 	err = syscall.GetExitCodeProcess(procHnd, &code)
-	if err != nil {
+	if nil != err {
 		return false
 	}
 

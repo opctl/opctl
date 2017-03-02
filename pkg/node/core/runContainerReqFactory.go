@@ -3,10 +3,14 @@ package core
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/opctl/util/containerprovider"
+	"github.com/opspec-io/opctl/util/dircopier"
+	"github.com/opspec-io/opctl/util/filecopier"
+	osfs "github.com/opspec-io/opctl/util/vfs/os"
 	"github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"os"
 	"path"
+	"strings"
 )
 
 func newRunContainerReq(
@@ -14,14 +18,23 @@ func newRunContainerReq(
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
 	opGraphId string,
-) *containerprovider.RunContainerReq {
+	opRef string,
+) (req *containerprovider.RunContainerReq, err error) {
+	fs := osfs.New()
+	fileCopier := filecopier.New()
+	dirCopier := dircopier.New()
 
-	// create new slice so we don't cause side effects
-	cmd := append([]string{}, scgContainerCall.Cmd...)
-	dirs := map[string]string{}
-	envVars := map[string]string{}
-	files := map[string]string{}
-	sockets := map[string]string{}
+	req = &containerprovider.RunContainerReq{
+		Cmd:         append([]string{}, scgContainerCall.Cmd...), // create new slice so we don't cause side effects
+		Dirs:        map[string]string{},
+		Env:         map[string]string{},
+		Files:       map[string]string{},
+		Image:       scgContainerCall.Image,
+		Sockets:     map[string]string{},
+		WorkDir:     scgContainerCall.WorkDir,
+		ContainerId: containerId,
+		OpGraphId:   opGraphId,
+	}
 
 	// create scratch dir for container
 	scratchDirPath := path.Join(
@@ -33,77 +46,107 @@ func newRunContainerReq(
 		containerId,
 		"fs",
 	)
-	err := os.MkdirAll(scratchDirPath, 0700)
+	err = fs.MkdirAll(scratchDirPath, 0700)
 	if nil != err {
-		panic(err)
+		return
 	}
 
 	// construct dirs
-	for scgContainerDirPath, scgContainerDir := range scgContainerCall.Dirs {
-		if boundArg, ok := currentScope[scgContainerDir.Bind]; ok {
-			// bound to input
-			dirs[scgContainerDirPath] = boundArg.Dir
+	for scgContainerDirPath, scgContainerDirBind := range scgContainerCall.Dirs {
+		if "" == scgContainerDirBind {
+			// use container dir path as bundle dir path if not provided
+			scgContainerDirBind = scgContainerDirPath
+		}
+
+		if strings.HasPrefix(scgContainerDirBind, "/") {
+			// is bound to bundle path
+			req.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
+			err = dirCopier.Fs(
+				path.Join(opRef, scgContainerDirBind),
+				req.Dirs[scgContainerDirPath],
+			)
 		} else {
-			// bound to output
-			// create placeholder dir on host so the output points to something
-			dcgHostDirPath := path.Join(scratchDirPath, scgContainerDirPath)
-			err := os.MkdirAll(dcgHostDirPath, 0700)
-			if nil != err {
-				panic(err)
+			// is bound to variable
+			if boundArg, ok := currentScope[scgContainerDirBind]; ok {
+				// bound to input
+				req.Dirs[scgContainerDirPath] = boundArg.Dir
+			} else {
+				// bound to output
+				// create placeholder dir on host so the output points to something
+				req.Files[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirPath)
+				err = fs.MkdirAll(req.Files[scgContainerDirPath], 0700)
 			}
-			files[scgContainerDirPath] = dcgHostDirPath
+		}
+		if nil != err {
+			return
 		}
 	}
 
 	// construct envVars
 	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		envVars[scgContainerEnvVarName] = scgContainerEnvVar
+		req.Env[scgContainerEnvVarName] = scgContainerEnvVar
 	}
 
 	// construct files
-	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
-		if boundArg, ok := currentScope[scgContainerFile.Bind]; ok {
-			// bound to input
-			files[scgContainerFilePath] = boundArg.File
+	for scgContainerFilePath, scgContainerFileBind := range scgContainerCall.Files {
+		if "" == scgContainerFileBind {
+			// use container file path as bundle file path if not provided
+			scgContainerFileBind = scgContainerFilePath
+		}
+
+		if strings.HasPrefix(scgContainerFileBind, "/") {
+			// is bound to bundle path
+			req.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
+			err = fileCopier.Fs(
+				path.Join(opRef, scgContainerFileBind),
+				req.Files[scgContainerFilePath],
+			)
 		} else {
-			// bound to output
-			// create outputFile on host so the output points to something
-			dcgHostFilePath := path.Join(scratchDirPath, scgContainerFilePath)
-			// create dir
-			err := os.MkdirAll(path.Dir(dcgHostFilePath), 0700)
-			if nil != err {
-				panic(err)
+			// is bound to variable
+			if boundArg, ok := currentScope[scgContainerFileBind]; ok {
+				// bound to input
+				req.Files[scgContainerFilePath] = boundArg.File
+			} else {
+				// bound to output
+				// create outputFile on host so the output points to something
+				req.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFilePath)
+				// create dir
+				err = fs.MkdirAll(path.Dir(req.Files[scgContainerFilePath]), 0700)
+				if nil != err {
+					return
+				}
+				// create file
+				var outputFile *os.File
+				outputFile, err = fs.Create(req.Files[scgContainerFilePath])
+				outputFile.Close()
 			}
-			// create file
-			outputFile, err := os.Create(dcgHostFilePath)
-			outputFile.Close()
-			if nil != err {
-				panic(err)
-			}
-			files[scgContainerFilePath] = dcgHostFilePath
+		}
+		if nil != err {
+			return
 		}
 	}
 
 	// construct sockets
-	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
-		if boundArg, ok := currentScope[scgContainerSocket.Bind]; ok {
+	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCall.Sockets {
+		if boundArg, ok := currentScope[scgContainerSocketBind]; ok {
 			// bound to input
-			sockets[scgContainerSocketAddress] = boundArg.Socket
+			req.Sockets[scgContainerSocketAddress] = boundArg.Socket
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something
 			if isUnixSocketAddress(scgContainerSocketAddress) {
 				dcgHostSocketAddress := path.Join(scratchDirPath, scgContainerSocketAddress)
-				outputSocket, err := os.Create(dcgHostSocketAddress)
+				var outputSocket *os.File
+				outputSocket, err = fs.Create(dcgHostSocketAddress)
 				outputSocket.Close()
 				if nil != err {
-					panic(err)
+					return
 				}
-				err = os.Chmod(dcgHostSocketAddress, os.ModeSocket)
+				err = fs.Chmod(dcgHostSocketAddress, os.ModeSocket)
 				if nil != err {
-					panic(err)
+					return
 				}
-				sockets[scgContainerSocketAddress] = dcgHostSocketAddress
+				req.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
 			}
 		}
 	}
@@ -114,34 +157,24 @@ func newRunContainerReq(
 		case 0 != varData.Number:
 			numberVarData := varData.Number
 
-			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, varName, numberVarData)
+			for cmdEntryIndex, cmdEntry := range req.Cmd {
+				req.Cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, varName, numberVarData)
 			}
-			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, varName, numberVarData)
+			for containerEnvVarName, containerEnvVar := range req.Env {
+				req.Env[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, varName, numberVarData)
 			}
 		case "" != varData.String:
 			stringVarData := varData.String
 
-			for cmdEntryIndex, cmdEntry := range cmd {
-				cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, varName, stringVarData)
+			for cmdEntryIndex, cmdEntry := range req.Cmd {
+				req.Cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, varName, stringVarData)
 			}
-			for containerEnvVarName, containerEnvVar := range envVars {
-				envVars[containerEnvVarName] = interpolate.StringValue(containerEnvVar, varName, stringVarData)
+			for containerEnvVarName, containerEnvVar := range req.Env {
+				req.Env[containerEnvVarName] = interpolate.StringValue(containerEnvVar, varName, stringVarData)
 			}
 		}
 	}
 
-	return &containerprovider.RunContainerReq{
-		Cmd:         cmd,
-		Dirs:        dirs,
-		Env:         envVars,
-		Files:       files,
-		Image:       scgContainerCall.Image,
-		Sockets:     sockets,
-		WorkDir:     scgContainerCall.WorkDir,
-		ContainerId: containerId,
-		OpGraphId:   opGraphId,
-	}
+	return
 
 }

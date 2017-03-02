@@ -117,11 +117,13 @@ var _ = Context("containerCaller", func() {
 			providedOpRef := "dummyOpRef"
 			providedOpGraphId := "dummyOpGraphId"
 
-			expectedReq := newRunContainerReq(
+			expectedReq, _ := newRunContainerReq(
 				providedInboundScope,
 				providedScgContainerCall,
 				providedContainerId,
-				providedOpGraphId)
+				providedOpGraphId,
+				providedOpRef,
+			)
 
 			fakeContainerProvider := new(containerprovider.Fake)
 
@@ -259,17 +261,17 @@ var _ = Context("containerCaller", func() {
 				It("should return expected outboundScope", func() {
 					/* arrange */
 					providedScgContainerCall := &model.ScgContainerCall{
-						Dirs: map[string]*model.ScgBinding{
-							"dir1ContainerPath": {Bind: "dir1VarName"},
-							"dir2ContainerPath": {Bind: "dir2VarName"},
+						Dirs: map[string]string{
+							"dir1ContainerPath": "dir1VarName",
+							"dir2ContainerPath": "dir2VarName",
 						},
-						Files: map[string]*model.ScgBinding{
-							"file1ContainerPath": {Bind: "file1VarName"},
-							"file2ContainerPath": {Bind: "file2VarName"},
+						Files: map[string]string{
+							"file1ContainerPath": "file1VarName",
+							"file2ContainerPath": "file2VarName",
 						},
-						Sockets: map[string]*model.ScgBinding{
-							"/unixSocket1ContainerAddress": {Bind: "socket1VarName"},
-							"/unixSocket2ContainerAddress": {Bind: "socket2VarName"},
+						Sockets: map[string]string{
+							"/unixSocket1ContainerAddress": "socket1VarName",
+							"/unixSocket2ContainerAddress": "socket2VarName",
 						},
 					}
 

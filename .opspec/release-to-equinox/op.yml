@@ -44,7 +44,7 @@ run:
           --token="$(equinoxToken)" \
           -- -a github.com/opspec-io/opctl/cli
     dirs:
-      /go/src/github.com/opspec-io/opctl: { bind: srcDir }
+      /go/src/github.com/opspec-io/opctl: srcDir
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: 0

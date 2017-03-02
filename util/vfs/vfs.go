@@ -6,6 +6,11 @@ import "os"
 
 // virtual filesystem interface
 type Vfs interface {
+	// Chmod changes the mode of the named file to mode.
+	// If the file is a symbolic link, it changes the mode of the link's target.
+	// If there is an error, it will be of type *PathError.
+	Chmod(name string, mode os.FileMode) error
+
 	// Create creates the named file with mode 0666 (before umask), truncating
 	// it if it already exists. If successful, methods on the returned
 	// File can be used for I/O; the associated file descriptor has mode

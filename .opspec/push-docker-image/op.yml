@@ -30,5 +30,5 @@ run:
         docker push opspec/opctl:"$(version)"
     image: docker:1.11
     sockets:
-      /var/run/docker.sock: { bind: dockerDSocket }
+      /var/run/docker.sock: dockerDSocket
 
