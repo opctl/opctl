@@ -5,6 +5,8 @@
 * [cli](cli/README.md)
     * [events](cli/events.md)
     * [ls](cli/ls.md)
+    * [node create](cli/node_create.md)
+    * [node kill](cli/node_kill.md)
     * [run](cli/run.md)
     * [color](cli/color.md)
     * [help](cli/help.md)

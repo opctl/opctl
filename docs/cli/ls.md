@@ -1,8 +1,8 @@
 ## `ls`
 
-### specify collection
+List ops in a collection.
 
-The ops of a given collection can be listed.
+### collection (since v0.1.15)
 
 The optional `-c` (or `--collection`) argument allows specifying which
 collection to list ops from.
