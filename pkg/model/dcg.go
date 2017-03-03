@@ -9,7 +9,8 @@ type Dcg struct {
 	OpRef     string        `json:"opRef"`
 }
 
-type DcgContainer struct{}
+type DcgContainer struct {
+}
 
 type DcgContainerCall struct {
 	Cmd []string `json:"cmd"`
@@ -18,12 +19,18 @@ type DcgContainerCall struct {
 	// format: name => value
 	EnvVars map[string]string `json:"envVars"`
 	// format: containerPath => hostPath
-	Files map[string]string `json:"files"`
-	Image string            `json:"image"`
+	Files map[string]string      `json:"files"`
+	Image *DcgContainerCallImage `json:"image"`
 	// format: containerSocket => hostSocket
 	Sockets   map[string]string `json:"sockets"`
 	WorkDir   string            `json:"workDir"`
 	IpAddress string            `json:"ipAddress"`
+}
+
+type DcgContainerCallImage struct {
+	Ref          string `json:"ref"`
+	PullIdentity string `json:"pullIdentity,omitempty"`
+	PullSecret   string `json:"pullSecret,omitempty"`
 }
 
 type DcgOp struct{}

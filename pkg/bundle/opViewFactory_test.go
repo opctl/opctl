@@ -324,7 +324,7 @@ var _ = Describe("_opViewFactory", func() {
 							Files: map[string]string{
 								"/root/.docker/config.json": "dockerConfig",
 							},
-							Image: &model.ScgContainerImage{
+							Image: &model.ScgContainerCallImage{
 								Ref: "docker:1.13",
 							},
 							Sockets: map[string]string{
@@ -465,7 +465,7 @@ var _ = Describe("_opViewFactory", func() {
 							Dirs: map[string]string{
 								"/opt/app": "appDir",
 							},
-							Image: &model.ScgContainerImage{
+							Image: &model.ScgContainerCallImage{
 								Ref: "node:7.6",
 							},
 							Sockets: map[string]string{
