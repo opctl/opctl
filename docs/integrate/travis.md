@@ -1,5 +1,6 @@
-### travis.yml
+### examples
 
+travis.yml
 ```yaml
 language: generic
 sudo: required
@@ -10,7 +11,3 @@ services:
 script:
 - opctl run build
 ```
-
-### examples
-
-[opctl projects travis](https://travis-ci.org/opspec-io/opctl)
