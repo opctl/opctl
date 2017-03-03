@@ -1,3 +1,5 @@
+## `-h` (or `--help`)
+
 For context specific help, include a `-h` (or `--help`) flag w/ your
 command.
 

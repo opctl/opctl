@@ -1,4 +1,4 @@
-Color is enabled by default (as of v0.1.15).
+## `-nc` (or `--no-color`) (since v0.1.15)
 
 To disable color, include a `-nc` (or `--no-color`) flag w/ your
 command.

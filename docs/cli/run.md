@@ -1,5 +1,22 @@
 ## `run`
 
+Run an op.
+
+### node creation
+
+If a node isn't running, one will be automatically created.
+
+### collection (since v0.1.15)
+
+The optional `-c` (or `--collection`) argument allows specifying which
+collection to list ops from.
+> `-c` (or `--collection`) defaults to .opspec, which by convention
+> designates it as the default collection for that dir
+
+```shell
+$ opctl run -c someCollection someOp
+```
+
 ### input sources
 
 Input sources are checked according to the following precedence:
@@ -32,7 +49,7 @@ them.
 
 ```
 
-### input validation
+### input validation (since v0.1.15)
 
 When inputs don't meet constraints, the cli will (re)prompt for the
 input until a satisfactory value is obtained.

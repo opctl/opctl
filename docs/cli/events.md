@@ -1,8 +1,14 @@
 ## `events`
 
+listen to node events.
+
+### node creation
+
+If a node isn't running, one will be automatically created.
+
 ### replaying
 
-Events are persisted to disk and can be replayed (as of v0.1.15).
+Events are persisted to disk and can be replayed (since v0.1.15).
 > events are not held across node restarts; any time a node starts it
 > clears its event db.
 

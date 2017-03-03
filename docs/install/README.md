@@ -2,10 +2,10 @@ opctl is distributed as a self-contained binary.
 
 installation generally consists of:
 
-- downloading the (OS specific) binary
+- downloading the OS specific binary
 - adding it to your path
 
-see the (OS specific) installation guide for details:
+see an OS specific installation guide for details:
 
 - [linux](linux.md)
 - [osx](osx.md)
