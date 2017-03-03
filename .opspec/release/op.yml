@@ -30,6 +30,7 @@ inputs:
   srcDir:
     dir:
       description: directory containing the projects source code
+      default: .
   version:
     string:
       constraints: { format: semver }

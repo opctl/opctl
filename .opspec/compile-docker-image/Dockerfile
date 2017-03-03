@@ -1,8 +1,10 @@
-FROM alpine:3.5
+FROM docker:1.13-dind
 
-EXPOSE 42224
+ARG CHANNEL
 
-RUN apk add --no-cache curl
-RUN curl -L https://bin.equinox.io/a/5Cw5dTJ3ECp/opctl-$VERSION-linux-amd64.tar.gz | tar -xzv -C /usr/local/bin
+COPY entrypoint.sh /usr/local/bin/
 
-ENTRYPOINT ["opctl", "node", "create"]
+RUN curl -L https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz | tar -xzv -C /usr/local/bin
+RUN opctl self-update -c "$CHANNEL"
+
+ENTRYPOINT ["entrypoint.sh"]

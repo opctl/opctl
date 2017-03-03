@@ -4,6 +4,10 @@ inputs:
   dockerDSocket:
     socket:
       description: socket for docker daemon
+  dockerImageRef:
+    string:
+      constraints: { format: docker-image-ref }
+      description: docker image reference
   dockerPassword:
     string:
       constraints: { minLength: 1 }
@@ -13,10 +17,6 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: username for docker registry
-  version:
-    string:
-      constraints: { format: semver }
-      description: version of opctl being pushed
 run:
   container:
     cmd:
@@ -27,7 +27,7 @@ run:
         docker login -u "$(dockerUsername)" -p "$(dockerPassword)"
 
         echo "pushing image"
-        docker push opspec/opctl:"$(version)"
+        docker push "$(dockerImageRef)"
     image: docker:1.11
     sockets:
       /var/run/docker.sock: dockerDSocket

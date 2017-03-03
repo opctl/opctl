@@ -9,6 +9,7 @@ inputs:
   srcDir:
     dir:
       description: directory containing the projects source code
+      default: .
 outputs:
   srcDir:
     dir:

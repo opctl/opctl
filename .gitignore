@@ -4,3 +4,7 @@
 ### codecov.io
 coverage.txt
 *.coverprofile
+
+### gitbook
+_book/
+node_modules/
