@@ -40,7 +40,7 @@ run:
         ref: create-resource-group
         inputs: { subscriptionId, username, password, location, resourceGroupName }
     - container:
-        image: microsoft/azure-cli
+        image: { ref: microsoft/azure-cli }
         cmd: [ /cmd.sh ]
         envVars:
           SUBSCRIPTION_ID: $(subscriptionId)
