@@ -1,3 +1,6 @@
+### travis.yml
+
+```yaml
 language: generic
 sudo: required
 before_script:
@@ -5,4 +8,9 @@ before_script:
 services:
 - docker
 script:
-- opctl run -a srcDir=$(pwd) -a gitBranch=$TRAVIS_BRANCH build
+- opctl run build
+```
+
+### examples
+
+[opctl projects travis](https://travis-ci.org/opspec-io/opctl)

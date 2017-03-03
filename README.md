@@ -1,4 +1,4 @@
-[![In Progress](https://img.shields.io/waffle/label/opspec-io/opctl/in%20progress.svg)]()
+[![In Progress](https://img.shields.io/waffle/label/opspec-io/opctl/in%20progress.svg)](https://waffle.io/opspec-io/opctl)
 [![Build Status](https://travis-ci.org/opspec-io/opctl.svg?branch=master)](https://travis-ci.org/opspec-io/opctl)
 [![Coverage](https://codecov.io/gh/opspec-io/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/opctl)
 

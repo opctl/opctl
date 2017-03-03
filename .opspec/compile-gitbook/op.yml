@@ -1,0 +1,25 @@
+name: compile-gitbook
+description: compiles the gitbook
+inputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+      default: .
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing gitbook cli"
+        npm install gitbook-cli -g --quiet
+
+        echo "installing plugins"
+        gitbook install
+
+        echo "compiling book"
+        gitbook build
+    dirs:
+      /src: srcDir
+    image: node:7.6
+    workDir: /src

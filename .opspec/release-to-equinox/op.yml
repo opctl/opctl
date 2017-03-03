@@ -27,13 +27,17 @@ run:
         curl -L https://bin.equinox.io/c/mBWdkfai63v/release-tool-stable-linux-amd64.tgz | tar -xzv -C /usr/local/bin
 
         echo "determining channel"
-        if echo "$(version)" | grep -Eq "*.-beta\.*."; then
-          channel=beta
-        elif echo "$(version)" | grep -Eq "*.-alpha\.*."; then
-          channel=alpha
-        else
-          channel=stable
-        fi
+        case "$(version)" in
+          *beta*)
+            channel=beta
+            ;;
+          *alpha*)
+            channel=alpha
+            ;;
+          *)
+            channel=stable
+            ;;
+        esac
 
         echo "releasing to $channel"
         equinox release \

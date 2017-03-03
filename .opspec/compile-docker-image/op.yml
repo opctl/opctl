@@ -8,12 +8,41 @@ inputs:
     string:
       constraints: { format: semver }
       description: version of opctl being compiled
+outputs:
+  dockerImageRef:
+    string:
+      constraints: { format: docker-image-ref }
+      description: docker image reference
 run:
   container:
-    cmd: [ docker, build, -t, opspec/opctl:$(version), . ]
-    envVars:
-      VERSION: $(version)
-    image: docker:1.11
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "determining channel"
+        case "$(version)" in
+          *beta*)
+            channel=beta
+            ;;
+          *alpha*)
+            channel=alpha
+            ;;
+          *)
+            channel=stable
+            ;;
+        esac
+
+        dockerImageRef=opspec/opctl:"$channel"
+
+        echo dockerImageRef=$dockerImageRef
+
+        echo "compiling image"
+        docker build --build-arg CHANNEL="$channel" -t "$dockerImageRef" .
+    dirs:
+      /workDir: /
+    image: docker:1.13
     sockets:
       /var/run/docker.sock: dockerDSocket
+    stdOut:
+      dockerImageRef=: dockerImageRef
     workDir: /workDir
