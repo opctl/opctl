@@ -18,15 +18,15 @@ argument which allows updating from any available release channel:
 
 ```shell
 # get latest stable release
-opctl self-update
+$ opctl self-update
 Updated to new version: 0.1.14!
 
 # play around w/ latest beta release
-opctl self-update -c beta
+$ opctl self-update -c beta
 Updated to new version: 0.1.15-beta.122!
 
 # play times over; switch back to latest stable release
-opctl self-update
+$ opctl self-update
 Updated to new version: 0.1.14!
 ```
 

@@ -1,6 +1,7 @@
 {
   "root": "./docs",
   "plugins": [
+    "toggle-chapters",
     "disqus",
     "edit-link",
     "ga",
