@@ -17,7 +17,7 @@ run:
     cmd: [ node, --debug, --harmony-async-await, app/index.js ]
     dirs:
       /opt/app: appDir
-    image: node:7.4
+    image: { ref: 'node:7.6' }
     sockets:
       0.0.0.0:80: apiSocket
       0.0.0.0:5858: apiDebugSocket

@@ -20,7 +20,12 @@ inputs:
       constraints: { minLength: 1 }
 run:
   container:
-    image: microsoft/azure-cli
+    image: { ref: microsoft/azure-cli }
     cmd: [ /cmd.sh ]
-    files:
-      /cmd.sh
+    envVars:
+      SUBSCRIPTION_ID: $(subscriptionId)
+      USERNAME: $(username)
+      PASSWORD: $(password)
+      LOCATION: $(location)
+      RESOURCE_GROUP_NAME: $(resourceGroupName)
+    files: { /cmd.sh }

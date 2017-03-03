@@ -40,10 +40,18 @@ run:
         ref: create-resource-group
         inputs: { subscriptionId, username, password, location, resourceGroupName }
     - container:
-        image: microsoft/azure-cli
+        image: { ref: microsoft/azure-cli }
         cmd: [ /cmd.sh ]
-        files:
-          /cmd.sh
+        envVars:
+          SUBSCRIPTION_ID: $(subscriptionId)
+          USERNAME: $(username)
+          PASSWORD: $(password)
+          LOCATION: $(location)
+          RESOURCE_GROUP_NAME: $(resourceGroupName)
+          STORAGE_ACCOUNT_NAME: $(storageAccountName)
+          STORAGE_ACCOUNT_KIND: $(storageAccountKind)
+          STORAGE_ACCOUNT_SKU_NAME: $(storageAccountSkuName)
+        files: { /cmd.sh }
         stdOut:
           storageAccessKey=: storageAccessKey
 
