@@ -1,10 +1,7 @@
-opctl is an open source cross platform op runtime
+opctl is an open source cross platform op runtime.
 
-### issues
-[Github issues](https://github.com/opspec-io/opctl/issues)
+project links:
 
-### source
-[Github](https://github.com/opspec-io/opctl)
-
-### project tracking
-[Waffle](https://waffle.io/opspec-io/opctl)
+- [issues/feat requests](https://github.com/opspec-io/opctl/issues)
+- [source](https://github.com/opspec-io/opctl)
+- [project mgmt](https://waffle.io/opspec-io/opctl)

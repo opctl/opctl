@@ -1,0 +1,40 @@
+description: Runs all ops necessary to deploy docs
+name: deploy-docs
+inputs:
+  docSrc:
+    dir:
+      default: .
+      description: dir containing the doc source code
+  awsAccessKeyId:
+    string:
+      constraints: { minLength: 20 }
+      description: access key for AWS
+  awsSecretAccessKey:
+    string:
+      constraints: { minLength: 20 }
+      description: secret access key for AWS
+      isSecret: true
+run:
+  serial:
+    #- op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
+    - op: { ref: compile-gitbook, inputs: { srcDir }, outputs: { docSite }}
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            pip install awscli
+
+            echo "performing deploy"
+            aws s3 sync . \
+              s3://opspec.io/opctl \
+              --delete
+        dirs:
+          /workDir: docSite
+        envVars:
+          AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
+          AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
+          AWS_DEFAULT_REGION: us-west-2
+        image: python:2.7
+        workDir: /workDir

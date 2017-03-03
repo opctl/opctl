@@ -1,10 +1,14 @@
 name: compile-gitbook
 description: compiles the gitbook
 inputs:
-  srcDir:
+  docSrc:
     dir:
-      description: directory containing the projects source code
       default: .
+      description: dir containing the doc source code
+outputs:
+  docSite:
+    dir:
+      description: dir containing the compiled doc site
 run:
   container:
     cmd:
@@ -20,6 +24,7 @@ run:
         echo "compiling book"
         gitbook build
     dirs:
-      /src: srcDir
+      /src/_book: docSite
+      /src: docSrc
     image: node:7.6
     workDir: /src

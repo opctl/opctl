@@ -1,7 +1,8 @@
 ### image
 
 An official opctl image is
-[maintained on docker hub](https://hub.docker.com/r/opspec/opctl/).
+[maintained on docker hub](https://hub.docker.com/r/opspec/opctl/) (as
+of v0.1.15).
 
 The image features a ready to use opctl node.
 
