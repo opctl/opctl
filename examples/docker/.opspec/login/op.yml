@@ -22,6 +22,6 @@ run:
     cmd: [ docker, login, -u, $(dockerUsername), -p, $(dockerPassword) ]
     files:
       /root/.docker/config.json: dockerConfig
-    image: { ref: docker:1.13 }
+    image: { ref: 'docker:1.13' }
     sockets:
       /var/run/docker.sock: dockerSocket
