@@ -59,8 +59,24 @@
           "additionalProperties": false
         },
         "image": {
-          "description": "Reference to a container image",
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "ref": {
+              "description": "Reference to an image",
+              "$ref": "#/definitions/interpolatedString"
+            },
+            "pullIdentity": {
+              "description": "Identity used to pull the image",
+              "$ref": "#/definitions/interpolatedString"
+            },
+            "pullSecret": {
+              "description": "Secret used to pull the image",
+              "$ref": "#/definitions/interpolatedString"
+            }
+          },
+          "required": [
+            "ref"
+          ]
         },
         "sockets": {
           "type": "object",
@@ -164,7 +180,7 @@
       ],
       "additionalProperties": false
     },
-    "interpolatedString":{
+    "interpolatedString": {
       "title": "interpolatedString",
       "description": "String supporting $(IN_SCOPE_VAR) substitution syntax where $(IN_SCOPE_VAR) will be replaced by the value of IN_SCOPE_VAR at runtime.",
       "type": "string"

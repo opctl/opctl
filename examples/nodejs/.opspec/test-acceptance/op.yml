@@ -13,7 +13,7 @@ run:
     cmd: [ node_modules/.bin/mocha, --recursive, --reporter=spec, tests/unit ]
     dirs:
       /opt/app: appDir
-    image: node:7.4
+    image: { ref: node:7.4 }
     sockets:
       api: apiSocket
     workDir: /opt/app

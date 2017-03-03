@@ -16,7 +16,7 @@ inputs:
       constraints: { minLength: 1 }
 run:
   container:
-    image: microsoft/azure-cli
+    image: { ref: microsoft/azure-cli }
     cmd: [ /cmd.sh ]
     envVars:
       SUBSCRIPTION_ID: $(subscriptionId)

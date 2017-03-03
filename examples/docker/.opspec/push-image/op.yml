@@ -16,6 +16,6 @@ run:
     cmd: [ docker, push, $(imageRef) ]
     files:
       /root/.docker/config.json: dockerConfig
-    image: docker:1.13
+    image: { ref: docker:1.13 }
     sockets:
       /var/run/docker.sock: dockerSocket
