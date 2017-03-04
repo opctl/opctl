@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("StringValue", func() {
+var _ = Describe("Interpolate", func() {
 	Describe("passed input containing no var placeholders", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
@@ -15,8 +15,10 @@ var _ = Describe("StringValue", func() {
 			providedInput := "dummyInput"
 			expectedResult := providedInput
 
+			objectUnderTest := newStringInterpolater()
+
 			/* act */
-			actualResult := StringValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -30,8 +32,10 @@ var _ = Describe("StringValue", func() {
 			providedInput := "dummyInput $(var1) $(var2)"
 			expectedResult := providedInput
 
+			objectUnderTest := newStringInterpolater()
+
 			/* act */
-			actualResult := StringValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -45,8 +49,10 @@ var _ = Describe("StringValue", func() {
 			providedInput := fmt.Sprintf("dummyInput $(%v) $(%v)", providedVarName, providedVarName)
 			expectedResult := fmt.Sprintf("dummyInput %v %v", providedVarValue, providedVarValue)
 
+			objectUnderTest := newStringInterpolater()
+
 			/* act */
-			actualResult := StringValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -59,8 +65,10 @@ var _ = Describe("StringValue", func() {
 				providedInput := fmt.Sprintf("dummyInput $(%v) $(not%v) $(%v)", providedVarName, providedVarName, providedVarName)
 				expectedResult := fmt.Sprintf("dummyInput %v $(not%v) %v", providedVarValue, providedVarName, providedVarValue)
 
+				objectUnderTest := newStringInterpolater()
+
 				/* act */
-				actualResult := StringValue(providedInput, providedVarName, providedVarValue)
+				actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 				/* assert */
 				Expect(actualResult).To(Equal(expectedResult))

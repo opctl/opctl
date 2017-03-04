@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("NumberValue", func() {
+var _ = Describe("Interpolate", func() {
 	Describe("passed input containing no var placeholders", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
@@ -14,9 +14,10 @@ var _ = Describe("NumberValue", func() {
 			providedVarValue := 1.0
 			providedInput := "dummyInput"
 			expectedResult := providedInput
+			objectUnderTest := newNumberInterpolater()
 
 			/* act */
-			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -30,8 +31,10 @@ var _ = Describe("NumberValue", func() {
 			providedInput := "dummyInput $(var1) $(var2)"
 			expectedResult := providedInput
 
+			objectUnderTest := newNumberInterpolater()
+
 			/* act */
-			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -45,8 +48,10 @@ var _ = Describe("NumberValue", func() {
 			providedInput := fmt.Sprintf("dummyInput $(%v) $(%v)", providedVarName, providedVarName)
 			expectedResult := fmt.Sprintf("dummyInput %v %v", providedVarValue, providedVarValue)
 
+			objectUnderTest := newNumberInterpolater()
+
 			/* act */
-			actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
+			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 			/* assert */
 			Expect(actualResult).To(Equal(expectedResult))
@@ -59,8 +64,10 @@ var _ = Describe("NumberValue", func() {
 				providedInput := fmt.Sprintf("dummyInput $(%v) $(not%v) $(%v)", providedVarName, providedVarName, providedVarName)
 				expectedResult := fmt.Sprintf("dummyInput %v $(not%v) %v", providedVarValue, providedVarName, providedVarValue)
 
+				objectUnderTest := newNumberInterpolater()
+
 				/* act */
-				actualResult := NumberValue(providedInput, providedVarName, providedVarValue)
+				actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
 
 				/* assert */
 				Expect(actualResult).To(Equal(expectedResult))
