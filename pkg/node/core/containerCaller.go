@@ -59,6 +59,8 @@ func (this _containerCaller) Call(
 
 		this.dcgNodeRepo.DeleteIfExists(containerId)
 
+		this.containerProvider.DeleteContainerIfExists(containerId)
+
 	}()
 
 	this.dcgNodeRepo.Add(
@@ -70,7 +72,7 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	runContainerReq, err := newRunContainerReq(inboundScope, scgContainerCall, containerId, opGraphId, opRef)
+	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, opGraphId, opRef)
 	if nil != err {
 		return
 	}
@@ -86,7 +88,7 @@ func (this _containerCaller) Call(
 		},
 	)
 	err = this.containerProvider.RunContainer(
-		runContainerReq,
+		dcgContainerCall,
 		this.pubSub,
 	)
 	this.pubSub.Publish(
@@ -104,32 +106,32 @@ func (this _containerCaller) Call(
 	}
 
 	/* construct outputs */
-	outboundScope, err = this.constructOutboundScope(containerId, opGraphId, scgContainerCall)
+	outboundScope = this.constructOutboundScope(dcgContainerCall, scgContainerCall)
 
 	return
 }
 
 // O(n) complexity (n being events in op graph)
 func (this _containerCaller) constructOutboundScope(
-	containerId string,
-	opGraphId string,
+	dcgContainerCall *model.DcgContainerCall,
 	scgContainerCall *model.ScgContainerCall,
-) (outboundScope map[string]*model.Data, err error) {
+) (outboundScope map[string]*model.Data) {
 	outboundScope = map[string]*model.Data{}
 
 	// subscribe to op graph events
 	eventChannel := make(chan *model.Event)
 	this.pubSub.Subscribe(
-		&model.EventFilter{OpGraphIds: []string{opGraphId}},
+		&model.EventFilter{OpGraphIds: []string{dcgContainerCall.OpGraphId}},
 		eventChannel,
 	)
 
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.ContainerExited && event.ContainerExited.ContainerId == containerId:
+		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgContainerCall.ContainerId:
 			break eventLoop
-		case nil != event.ContainerStdErrWrittenTo && event.ContainerStdErrWrittenTo.ContainerId == containerId:
+		case nil != event.ContainerStdErrWrittenTo &&
+			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
 			for boundPrefix, binding := range scgContainerCall.StdErr {
 				rawOutput := string(event.ContainerStdErrWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
@@ -138,7 +140,8 @@ eventLoop:
 					outboundScope[binding] = &model.Data{String: trimmedOutput}
 				}
 			}
-		case nil != event.ContainerStdOutWrittenTo && event.ContainerStdOutWrittenTo.ContainerId == containerId:
+		case nil != event.ContainerStdOutWrittenTo &&
+			event.ContainerStdOutWrittenTo.ContainerId == dcgContainerCall.ContainerId:
 			for boundPrefix, binding := range scgContainerCall.StdOut {
 				rawOutput := string(event.ContainerStdOutWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
@@ -150,10 +153,9 @@ eventLoop:
 		}
 	}
 
-	dcgContainer, err := this.containerProvider.InspectContainerIfExists(containerId)
 	// construct files
 	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
-		for dcgContainerFilePath, dcgHostFilePath := range dcgContainer.Files {
+		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
 				outboundScope[scgContainerFile] = &model.Data{File: dcgHostFilePath}
 			}
@@ -161,7 +163,7 @@ eventLoop:
 	}
 	// construct dirs
 	for scgContainerDirPath, scgContainerDir := range scgContainerCall.Dirs {
-		for dcgContainerDirPath, dcgHostDirPath := range dcgContainer.Dirs {
+		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
 			if scgContainerDirPath == dcgContainerDirPath {
 				outboundScope[scgContainerDir] = &model.Data{Dir: dcgHostDirPath}
 			}
@@ -170,8 +172,8 @@ eventLoop:
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
 		// default; point net sockets @ their containers ip
-		outboundScope[scgContainerSocket] = &model.Data{Socket: dcgContainer.IpAddress}
-		for dcgContainerSocketAddress, dcgHostSocketAddress := range dcgContainer.Sockets {
+		outboundScope[scgContainerSocket] = &model.Data{Socket: dcgContainerCall.IpAddress}
+		for dcgContainerSocketAddress, dcgHostSocketAddress := range dcgContainerCall.Sockets {
 			if scgContainerSocketAddress == dcgContainerSocketAddress {
 				// override default; point unix sockets @ their location on the host
 				outboundScope[scgContainerSocket] = &model.Data{Socket: dcgHostSocketAddress}

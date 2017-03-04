@@ -3,6 +3,7 @@ description: runs all tests
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 outputs:
   srcDir:

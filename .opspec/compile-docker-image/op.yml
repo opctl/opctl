@@ -40,7 +40,7 @@ run:
         docker build --build-arg CHANNEL="$channel" -t "$dockerImageRef" .
     dirs:
       /workDir: /
-    image: docker:1.13
+    image: { ref: 'docker:1.13' }
     sockets:
       /var/run/docker.sock: dockerDSocket
     stdOut:

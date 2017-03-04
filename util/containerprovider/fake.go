@@ -17,12 +17,18 @@ type Fake struct {
 	createNetworkReturns struct {
 		result1 error
 	}
+	createNetworkReturnsOnCall map[int]struct {
+		result1 error
+	}
 	DeleteNetworkIfExistsStub        func(networkId string) (err error)
 	deleteNetworkIfExistsMutex       sync.RWMutex
 	deleteNetworkIfExistsArgsForCall []struct {
 		networkId string
 	}
 	deleteNetworkIfExistsReturns struct {
+		result1 error
+	}
+	deleteNetworkIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
 	DeleteContainerIfExistsStub        func(containerId string) (err error)
@@ -33,14 +39,8 @@ type Fake struct {
 	deleteContainerIfExistsReturns struct {
 		result1 error
 	}
-	InspectContainerIfExistsStub        func(containerId string) (container *model.DcgContainerCall, err error)
-	inspectContainerIfExistsMutex       sync.RWMutex
-	inspectContainerIfExistsArgsForCall []struct {
-		containerId string
-	}
-	inspectContainerIfExistsReturns struct {
-		result1 *model.DcgContainerCall
-		result2 error
+	deleteContainerIfExistsReturnsOnCall map[int]struct {
+		result1 error
 	}
 	NetworkContainerStub        func(networkId string, containerId string, containerAlias string) (err error)
 	networkContainerMutex       sync.RWMutex
@@ -52,13 +52,19 @@ type Fake struct {
 	networkContainerReturns struct {
 		result1 error
 	}
-	RunContainerStub        func(req *RunContainerReq, eventPublisher pubsub.EventPublisher) (err error)
+	networkContainerReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RunContainerStub        func(req *model.DcgContainerCall, eventPublisher pubsub.EventPublisher) (err error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
-		req            *RunContainerReq
+		req            *model.DcgContainerCall
 		eventPublisher pubsub.EventPublisher
 	}
 	runContainerReturns struct {
+		result1 error
+	}
+	runContainerReturnsOnCall map[int]struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
@@ -67,6 +73,7 @@ type Fake struct {
 
 func (fake *Fake) CreateNetwork(networkId string) (err error) {
 	fake.createNetworkMutex.Lock()
+	ret, specificReturn := fake.createNetworkReturnsOnCall[len(fake.createNetworkArgsForCall)]
 	fake.createNetworkArgsForCall = append(fake.createNetworkArgsForCall, struct {
 		networkId string
 	}{networkId})
@@ -74,9 +81,11 @@ func (fake *Fake) CreateNetwork(networkId string) (err error) {
 	fake.createNetworkMutex.Unlock()
 	if fake.CreateNetworkStub != nil {
 		return fake.CreateNetworkStub(networkId)
-	} else {
-		return fake.createNetworkReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.createNetworkReturns.result1
 }
 
 func (fake *Fake) CreateNetworkCallCount() int {
@@ -98,8 +107,21 @@ func (fake *Fake) CreateNetworkReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) CreateNetworkReturnsOnCall(i int, result1 error) {
+	fake.CreateNetworkStub = nil
+	if fake.createNetworkReturnsOnCall == nil {
+		fake.createNetworkReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.createNetworkReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) DeleteNetworkIfExists(networkId string) (err error) {
 	fake.deleteNetworkIfExistsMutex.Lock()
+	ret, specificReturn := fake.deleteNetworkIfExistsReturnsOnCall[len(fake.deleteNetworkIfExistsArgsForCall)]
 	fake.deleteNetworkIfExistsArgsForCall = append(fake.deleteNetworkIfExistsArgsForCall, struct {
 		networkId string
 	}{networkId})
@@ -107,9 +129,11 @@ func (fake *Fake) DeleteNetworkIfExists(networkId string) (err error) {
 	fake.deleteNetworkIfExistsMutex.Unlock()
 	if fake.DeleteNetworkIfExistsStub != nil {
 		return fake.DeleteNetworkIfExistsStub(networkId)
-	} else {
-		return fake.deleteNetworkIfExistsReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.deleteNetworkIfExistsReturns.result1
 }
 
 func (fake *Fake) DeleteNetworkIfExistsCallCount() int {
@@ -131,8 +155,21 @@ func (fake *Fake) DeleteNetworkIfExistsReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) DeleteNetworkIfExistsReturnsOnCall(i int, result1 error) {
+	fake.DeleteNetworkIfExistsStub = nil
+	if fake.deleteNetworkIfExistsReturnsOnCall == nil {
+		fake.deleteNetworkIfExistsReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.deleteNetworkIfExistsReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) DeleteContainerIfExists(containerId string) (err error) {
 	fake.deleteContainerIfExistsMutex.Lock()
+	ret, specificReturn := fake.deleteContainerIfExistsReturnsOnCall[len(fake.deleteContainerIfExistsArgsForCall)]
 	fake.deleteContainerIfExistsArgsForCall = append(fake.deleteContainerIfExistsArgsForCall, struct {
 		containerId string
 	}{containerId})
@@ -140,9 +177,11 @@ func (fake *Fake) DeleteContainerIfExists(containerId string) (err error) {
 	fake.deleteContainerIfExistsMutex.Unlock()
 	if fake.DeleteContainerIfExistsStub != nil {
 		return fake.DeleteContainerIfExistsStub(containerId)
-	} else {
-		return fake.deleteContainerIfExistsReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.deleteContainerIfExistsReturns.result1
 }
 
 func (fake *Fake) DeleteContainerIfExistsCallCount() int {
@@ -164,42 +203,21 @@ func (fake *Fake) DeleteContainerIfExistsReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) InspectContainerIfExists(containerId string) (container *model.DcgContainerCall, err error) {
-	fake.inspectContainerIfExistsMutex.Lock()
-	fake.inspectContainerIfExistsArgsForCall = append(fake.inspectContainerIfExistsArgsForCall, struct {
-		containerId string
-	}{containerId})
-	fake.recordInvocation("InspectContainerIfExists", []interface{}{containerId})
-	fake.inspectContainerIfExistsMutex.Unlock()
-	if fake.InspectContainerIfExistsStub != nil {
-		return fake.InspectContainerIfExistsStub(containerId)
-	} else {
-		return fake.inspectContainerIfExistsReturns.result1, fake.inspectContainerIfExistsReturns.result2
+func (fake *Fake) DeleteContainerIfExistsReturnsOnCall(i int, result1 error) {
+	fake.DeleteContainerIfExistsStub = nil
+	if fake.deleteContainerIfExistsReturnsOnCall == nil {
+		fake.deleteContainerIfExistsReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
 	}
-}
-
-func (fake *Fake) InspectContainerIfExistsCallCount() int {
-	fake.inspectContainerIfExistsMutex.RLock()
-	defer fake.inspectContainerIfExistsMutex.RUnlock()
-	return len(fake.inspectContainerIfExistsArgsForCall)
-}
-
-func (fake *Fake) InspectContainerIfExistsArgsForCall(i int) string {
-	fake.inspectContainerIfExistsMutex.RLock()
-	defer fake.inspectContainerIfExistsMutex.RUnlock()
-	return fake.inspectContainerIfExistsArgsForCall[i].containerId
-}
-
-func (fake *Fake) InspectContainerIfExistsReturns(result1 *model.DcgContainerCall, result2 error) {
-	fake.InspectContainerIfExistsStub = nil
-	fake.inspectContainerIfExistsReturns = struct {
-		result1 *model.DcgContainerCall
-		result2 error
-	}{result1, result2}
+	fake.deleteContainerIfExistsReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *Fake) NetworkContainer(networkId string, containerId string, containerAlias string) (err error) {
 	fake.networkContainerMutex.Lock()
+	ret, specificReturn := fake.networkContainerReturnsOnCall[len(fake.networkContainerArgsForCall)]
 	fake.networkContainerArgsForCall = append(fake.networkContainerArgsForCall, struct {
 		networkId      string
 		containerId    string
@@ -209,9 +227,11 @@ func (fake *Fake) NetworkContainer(networkId string, containerId string, contain
 	fake.networkContainerMutex.Unlock()
 	if fake.NetworkContainerStub != nil {
 		return fake.NetworkContainerStub(networkId, containerId, containerAlias)
-	} else {
-		return fake.networkContainerReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.networkContainerReturns.result1
 }
 
 func (fake *Fake) NetworkContainerCallCount() int {
@@ -233,19 +253,34 @@ func (fake *Fake) NetworkContainerReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) RunContainer(req *RunContainerReq, eventPublisher pubsub.EventPublisher) (err error) {
+func (fake *Fake) NetworkContainerReturnsOnCall(i int, result1 error) {
+	fake.NetworkContainerStub = nil
+	if fake.networkContainerReturnsOnCall == nil {
+		fake.networkContainerReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.networkContainerReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *Fake) RunContainer(req *model.DcgContainerCall, eventPublisher pubsub.EventPublisher) (err error) {
 	fake.runContainerMutex.Lock()
+	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
-		req            *RunContainerReq
+		req            *model.DcgContainerCall
 		eventPublisher pubsub.EventPublisher
 	}{req, eventPublisher})
 	fake.recordInvocation("RunContainer", []interface{}{req, eventPublisher})
 	fake.runContainerMutex.Unlock()
 	if fake.RunContainerStub != nil {
 		return fake.RunContainerStub(req, eventPublisher)
-	} else {
-		return fake.runContainerReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.runContainerReturns.result1
 }
 
 func (fake *Fake) RunContainerCallCount() int {
@@ -254,7 +289,7 @@ func (fake *Fake) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *Fake) RunContainerArgsForCall(i int) (*RunContainerReq, pubsub.EventPublisher) {
+func (fake *Fake) RunContainerArgsForCall(i int) (*model.DcgContainerCall, pubsub.EventPublisher) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	return fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher
@@ -263,6 +298,18 @@ func (fake *Fake) RunContainerArgsForCall(i int) (*RunContainerReq, pubsub.Event
 func (fake *Fake) RunContainerReturns(result1 error) {
 	fake.RunContainerStub = nil
 	fake.runContainerReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *Fake) RunContainerReturnsOnCall(i int, result1 error) {
+	fake.RunContainerStub = nil
+	if fake.runContainerReturnsOnCall == nil {
+		fake.runContainerReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.runContainerReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }
@@ -276,8 +323,6 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.deleteNetworkIfExistsMutex.RUnlock()
 	fake.deleteContainerIfExistsMutex.RLock()
 	defer fake.deleteContainerIfExistsMutex.RUnlock()
-	fake.inspectContainerIfExistsMutex.RLock()
-	defer fake.inspectContainerIfExistsMutex.RUnlock()
 	fake.networkContainerMutex.RLock()
 	defer fake.networkContainerMutex.RUnlock()
 	fake.runContainerMutex.RLock()

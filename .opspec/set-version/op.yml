@@ -7,6 +7,7 @@ inputs:
       description: version to set
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 outputs:
   srcDir:
@@ -28,5 +29,5 @@ run:
         )
     dirs:
       /go/src/github.com/opspec-io/opctl: srcDir
-    image: alpine:3.4
+    image: { ref: 'alpine:3.4' }
     workDir: /go/src/github.com/opspec-io/opctl

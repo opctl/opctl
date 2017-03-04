@@ -8,6 +8,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/api/types/registry"
 	"golang.org/x/net/context"
 )
 
@@ -23,6 +24,9 @@ type fakeDockerClient struct {
 	networkConnectReturns struct {
 		result1 error
 	}
+	networkConnectReturnsOnCall map[int]struct {
+		result1 error
+	}
 	ContainerCreateStub        func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, containerName string) (container.ContainerCreateCreatedBody, error)
 	containerCreateMutex       sync.RWMutex
 	containerCreateArgsForCall []struct {
@@ -36,14 +40,8 @@ type fakeDockerClient struct {
 		result1 container.ContainerCreateCreatedBody
 		result2 error
 	}
-	ContainerInspectStub        func(ctx context.Context, containerID string) (types.ContainerJSON, error)
-	containerInspectMutex       sync.RWMutex
-	containerInspectArgsForCall []struct {
-		ctx         context.Context
-		containerID string
-	}
-	containerInspectReturns struct {
-		result1 types.ContainerJSON
+	containerCreateReturnsOnCall map[int]struct {
+		result1 container.ContainerCreateCreatedBody
 		result2 error
 	}
 	ContainerLogsStub        func(ctx context.Context, container string, options types.ContainerLogsOptions) (io.ReadCloser, error)
@@ -57,6 +55,10 @@ type fakeDockerClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
+	containerLogsReturnsOnCall map[int]struct {
+		result1 io.ReadCloser
+		result2 error
+	}
 	ContainerRemoveStub        func(ctx context.Context, containerID string, options types.ContainerRemoveOptions) error
 	containerRemoveMutex       sync.RWMutex
 	containerRemoveArgsForCall []struct {
@@ -65,6 +67,9 @@ type fakeDockerClient struct {
 		options     types.ContainerRemoveOptions
 	}
 	containerRemoveReturns struct {
+		result1 error
+	}
+	containerRemoveReturnsOnCall map[int]struct {
 		result1 error
 	}
 	ContainerStartStub        func(ctx context.Context, containerID string, options types.ContainerStartOptions) error
@@ -77,6 +82,9 @@ type fakeDockerClient struct {
 	containerStartReturns struct {
 		result1 error
 	}
+	containerStartReturnsOnCall map[int]struct {
+		result1 error
+	}
 	ContainerWaitStub        func(ctx context.Context, containerID string) (int64, error)
 	containerWaitMutex       sync.RWMutex
 	containerWaitArgsForCall []struct {
@@ -84,6 +92,10 @@ type fakeDockerClient struct {
 		containerID string
 	}
 	containerWaitReturns struct {
+		result1 int64
+		result2 error
+	}
+	containerWaitReturnsOnCall map[int]struct {
 		result1 int64
 		result2 error
 	}
@@ -98,6 +110,10 @@ type fakeDockerClient struct {
 		result1 io.ReadCloser
 		result2 error
 	}
+	imagePullReturnsOnCall map[int]struct {
+		result1 io.ReadCloser
+		result2 error
+	}
 	NetworkCreateStub        func(ctx context.Context, name string, options types.NetworkCreate) (types.NetworkCreateResponse, error)
 	networkCreateMutex       sync.RWMutex
 	networkCreateArgsForCall []struct {
@@ -106,6 +122,10 @@ type fakeDockerClient struct {
 		options types.NetworkCreate
 	}
 	networkCreateReturns struct {
+		result1 types.NetworkCreateResponse
+		result2 error
+	}
+	networkCreateReturnsOnCall map[int]struct {
 		result1 types.NetworkCreateResponse
 		result2 error
 	}
@@ -118,12 +138,30 @@ type fakeDockerClient struct {
 	networkRemoveReturns struct {
 		result1 error
 	}
+	networkRemoveReturnsOnCall map[int]struct {
+		result1 error
+	}
+	RegistryLoginStub        func(ctx context.Context, auth types.AuthConfig) (registry.AuthenticateOKBody, error)
+	registryLoginMutex       sync.RWMutex
+	registryLoginArgsForCall []struct {
+		ctx  context.Context
+		auth types.AuthConfig
+	}
+	registryLoginReturns struct {
+		result1 registry.AuthenticateOKBody
+		result2 error
+	}
+	registryLoginReturnsOnCall map[int]struct {
+		result1 registry.AuthenticateOKBody
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
 func (fake *fakeDockerClient) NetworkConnect(ctx context.Context, networkID string, containerID string, config *network.EndpointSettings) error {
 	fake.networkConnectMutex.Lock()
+	ret, specificReturn := fake.networkConnectReturnsOnCall[len(fake.networkConnectArgsForCall)]
 	fake.networkConnectArgsForCall = append(fake.networkConnectArgsForCall, struct {
 		ctx         context.Context
 		networkID   string
@@ -134,9 +172,11 @@ func (fake *fakeDockerClient) NetworkConnect(ctx context.Context, networkID stri
 	fake.networkConnectMutex.Unlock()
 	if fake.NetworkConnectStub != nil {
 		return fake.NetworkConnectStub(ctx, networkID, containerID, config)
-	} else {
-		return fake.networkConnectReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.networkConnectReturns.result1
 }
 
 func (fake *fakeDockerClient) NetworkConnectCallCount() int {
@@ -158,8 +198,21 @@ func (fake *fakeDockerClient) NetworkConnectReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *fakeDockerClient) NetworkConnectReturnsOnCall(i int, result1 error) {
+	fake.NetworkConnectStub = nil
+	if fake.networkConnectReturnsOnCall == nil {
+		fake.networkConnectReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.networkConnectReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *fakeDockerClient) ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, containerName string) (container.ContainerCreateCreatedBody, error) {
 	fake.containerCreateMutex.Lock()
+	ret, specificReturn := fake.containerCreateReturnsOnCall[len(fake.containerCreateArgsForCall)]
 	fake.containerCreateArgsForCall = append(fake.containerCreateArgsForCall, struct {
 		ctx              context.Context
 		config           *container.Config
@@ -171,9 +224,11 @@ func (fake *fakeDockerClient) ContainerCreate(ctx context.Context, config *conta
 	fake.containerCreateMutex.Unlock()
 	if fake.ContainerCreateStub != nil {
 		return fake.ContainerCreateStub(ctx, config, hostConfig, networkingConfig, containerName)
-	} else {
-		return fake.containerCreateReturns.result1, fake.containerCreateReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.containerCreateReturns.result1, fake.containerCreateReturns.result2
 }
 
 func (fake *fakeDockerClient) ContainerCreateCallCount() int {
@@ -196,43 +251,23 @@ func (fake *fakeDockerClient) ContainerCreateReturns(result1 container.Container
 	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) ContainerInspect(ctx context.Context, containerID string) (types.ContainerJSON, error) {
-	fake.containerInspectMutex.Lock()
-	fake.containerInspectArgsForCall = append(fake.containerInspectArgsForCall, struct {
-		ctx         context.Context
-		containerID string
-	}{ctx, containerID})
-	fake.recordInvocation("ContainerInspect", []interface{}{ctx, containerID})
-	fake.containerInspectMutex.Unlock()
-	if fake.ContainerInspectStub != nil {
-		return fake.ContainerInspectStub(ctx, containerID)
-	} else {
-		return fake.containerInspectReturns.result1, fake.containerInspectReturns.result2
+func (fake *fakeDockerClient) ContainerCreateReturnsOnCall(i int, result1 container.ContainerCreateCreatedBody, result2 error) {
+	fake.ContainerCreateStub = nil
+	if fake.containerCreateReturnsOnCall == nil {
+		fake.containerCreateReturnsOnCall = make(map[int]struct {
+			result1 container.ContainerCreateCreatedBody
+			result2 error
+		})
 	}
-}
-
-func (fake *fakeDockerClient) ContainerInspectCallCount() int {
-	fake.containerInspectMutex.RLock()
-	defer fake.containerInspectMutex.RUnlock()
-	return len(fake.containerInspectArgsForCall)
-}
-
-func (fake *fakeDockerClient) ContainerInspectArgsForCall(i int) (context.Context, string) {
-	fake.containerInspectMutex.RLock()
-	defer fake.containerInspectMutex.RUnlock()
-	return fake.containerInspectArgsForCall[i].ctx, fake.containerInspectArgsForCall[i].containerID
-}
-
-func (fake *fakeDockerClient) ContainerInspectReturns(result1 types.ContainerJSON, result2 error) {
-	fake.ContainerInspectStub = nil
-	fake.containerInspectReturns = struct {
-		result1 types.ContainerJSON
+	fake.containerCreateReturnsOnCall[i] = struct {
+		result1 container.ContainerCreateCreatedBody
 		result2 error
 	}{result1, result2}
 }
 
 func (fake *fakeDockerClient) ContainerLogs(ctx context.Context, container string, options types.ContainerLogsOptions) (io.ReadCloser, error) {
 	fake.containerLogsMutex.Lock()
+	ret, specificReturn := fake.containerLogsReturnsOnCall[len(fake.containerLogsArgsForCall)]
 	fake.containerLogsArgsForCall = append(fake.containerLogsArgsForCall, struct {
 		ctx       context.Context
 		container string
@@ -242,9 +277,11 @@ func (fake *fakeDockerClient) ContainerLogs(ctx context.Context, container strin
 	fake.containerLogsMutex.Unlock()
 	if fake.ContainerLogsStub != nil {
 		return fake.ContainerLogsStub(ctx, container, options)
-	} else {
-		return fake.containerLogsReturns.result1, fake.containerLogsReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.containerLogsReturns.result1, fake.containerLogsReturns.result2
 }
 
 func (fake *fakeDockerClient) ContainerLogsCallCount() int {
@@ -267,8 +304,23 @@ func (fake *fakeDockerClient) ContainerLogsReturns(result1 io.ReadCloser, result
 	}{result1, result2}
 }
 
+func (fake *fakeDockerClient) ContainerLogsReturnsOnCall(i int, result1 io.ReadCloser, result2 error) {
+	fake.ContainerLogsStub = nil
+	if fake.containerLogsReturnsOnCall == nil {
+		fake.containerLogsReturnsOnCall = make(map[int]struct {
+			result1 io.ReadCloser
+			result2 error
+		})
+	}
+	fake.containerLogsReturnsOnCall[i] = struct {
+		result1 io.ReadCloser
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *fakeDockerClient) ContainerRemove(ctx context.Context, containerID string, options types.ContainerRemoveOptions) error {
 	fake.containerRemoveMutex.Lock()
+	ret, specificReturn := fake.containerRemoveReturnsOnCall[len(fake.containerRemoveArgsForCall)]
 	fake.containerRemoveArgsForCall = append(fake.containerRemoveArgsForCall, struct {
 		ctx         context.Context
 		containerID string
@@ -278,9 +330,11 @@ func (fake *fakeDockerClient) ContainerRemove(ctx context.Context, containerID s
 	fake.containerRemoveMutex.Unlock()
 	if fake.ContainerRemoveStub != nil {
 		return fake.ContainerRemoveStub(ctx, containerID, options)
-	} else {
-		return fake.containerRemoveReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.containerRemoveReturns.result1
 }
 
 func (fake *fakeDockerClient) ContainerRemoveCallCount() int {
@@ -302,8 +356,21 @@ func (fake *fakeDockerClient) ContainerRemoveReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *fakeDockerClient) ContainerRemoveReturnsOnCall(i int, result1 error) {
+	fake.ContainerRemoveStub = nil
+	if fake.containerRemoveReturnsOnCall == nil {
+		fake.containerRemoveReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.containerRemoveReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *fakeDockerClient) ContainerStart(ctx context.Context, containerID string, options types.ContainerStartOptions) error {
 	fake.containerStartMutex.Lock()
+	ret, specificReturn := fake.containerStartReturnsOnCall[len(fake.containerStartArgsForCall)]
 	fake.containerStartArgsForCall = append(fake.containerStartArgsForCall, struct {
 		ctx         context.Context
 		containerID string
@@ -313,9 +380,11 @@ func (fake *fakeDockerClient) ContainerStart(ctx context.Context, containerID st
 	fake.containerStartMutex.Unlock()
 	if fake.ContainerStartStub != nil {
 		return fake.ContainerStartStub(ctx, containerID, options)
-	} else {
-		return fake.containerStartReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.containerStartReturns.result1
 }
 
 func (fake *fakeDockerClient) ContainerStartCallCount() int {
@@ -337,8 +406,21 @@ func (fake *fakeDockerClient) ContainerStartReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *fakeDockerClient) ContainerStartReturnsOnCall(i int, result1 error) {
+	fake.ContainerStartStub = nil
+	if fake.containerStartReturnsOnCall == nil {
+		fake.containerStartReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.containerStartReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *fakeDockerClient) ContainerWait(ctx context.Context, containerID string) (int64, error) {
 	fake.containerWaitMutex.Lock()
+	ret, specificReturn := fake.containerWaitReturnsOnCall[len(fake.containerWaitArgsForCall)]
 	fake.containerWaitArgsForCall = append(fake.containerWaitArgsForCall, struct {
 		ctx         context.Context
 		containerID string
@@ -347,9 +429,11 @@ func (fake *fakeDockerClient) ContainerWait(ctx context.Context, containerID str
 	fake.containerWaitMutex.Unlock()
 	if fake.ContainerWaitStub != nil {
 		return fake.ContainerWaitStub(ctx, containerID)
-	} else {
-		return fake.containerWaitReturns.result1, fake.containerWaitReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.containerWaitReturns.result1, fake.containerWaitReturns.result2
 }
 
 func (fake *fakeDockerClient) ContainerWaitCallCount() int {
@@ -372,8 +456,23 @@ func (fake *fakeDockerClient) ContainerWaitReturns(result1 int64, result2 error)
 	}{result1, result2}
 }
 
+func (fake *fakeDockerClient) ContainerWaitReturnsOnCall(i int, result1 int64, result2 error) {
+	fake.ContainerWaitStub = nil
+	if fake.containerWaitReturnsOnCall == nil {
+		fake.containerWaitReturnsOnCall = make(map[int]struct {
+			result1 int64
+			result2 error
+		})
+	}
+	fake.containerWaitReturnsOnCall[i] = struct {
+		result1 int64
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *fakeDockerClient) ImagePull(ctx context.Context, ref string, options types.ImagePullOptions) (io.ReadCloser, error) {
 	fake.imagePullMutex.Lock()
+	ret, specificReturn := fake.imagePullReturnsOnCall[len(fake.imagePullArgsForCall)]
 	fake.imagePullArgsForCall = append(fake.imagePullArgsForCall, struct {
 		ctx     context.Context
 		ref     string
@@ -383,9 +482,11 @@ func (fake *fakeDockerClient) ImagePull(ctx context.Context, ref string, options
 	fake.imagePullMutex.Unlock()
 	if fake.ImagePullStub != nil {
 		return fake.ImagePullStub(ctx, ref, options)
-	} else {
-		return fake.imagePullReturns.result1, fake.imagePullReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.imagePullReturns.result1, fake.imagePullReturns.result2
 }
 
 func (fake *fakeDockerClient) ImagePullCallCount() int {
@@ -408,8 +509,23 @@ func (fake *fakeDockerClient) ImagePullReturns(result1 io.ReadCloser, result2 er
 	}{result1, result2}
 }
 
+func (fake *fakeDockerClient) ImagePullReturnsOnCall(i int, result1 io.ReadCloser, result2 error) {
+	fake.ImagePullStub = nil
+	if fake.imagePullReturnsOnCall == nil {
+		fake.imagePullReturnsOnCall = make(map[int]struct {
+			result1 io.ReadCloser
+			result2 error
+		})
+	}
+	fake.imagePullReturnsOnCall[i] = struct {
+		result1 io.ReadCloser
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *fakeDockerClient) NetworkCreate(ctx context.Context, name string, options types.NetworkCreate) (types.NetworkCreateResponse, error) {
 	fake.networkCreateMutex.Lock()
+	ret, specificReturn := fake.networkCreateReturnsOnCall[len(fake.networkCreateArgsForCall)]
 	fake.networkCreateArgsForCall = append(fake.networkCreateArgsForCall, struct {
 		ctx     context.Context
 		name    string
@@ -419,9 +535,11 @@ func (fake *fakeDockerClient) NetworkCreate(ctx context.Context, name string, op
 	fake.networkCreateMutex.Unlock()
 	if fake.NetworkCreateStub != nil {
 		return fake.NetworkCreateStub(ctx, name, options)
-	} else {
-		return fake.networkCreateReturns.result1, fake.networkCreateReturns.result2
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.networkCreateReturns.result1, fake.networkCreateReturns.result2
 }
 
 func (fake *fakeDockerClient) NetworkCreateCallCount() int {
@@ -444,8 +562,23 @@ func (fake *fakeDockerClient) NetworkCreateReturns(result1 types.NetworkCreateRe
 	}{result1, result2}
 }
 
+func (fake *fakeDockerClient) NetworkCreateReturnsOnCall(i int, result1 types.NetworkCreateResponse, result2 error) {
+	fake.NetworkCreateStub = nil
+	if fake.networkCreateReturnsOnCall == nil {
+		fake.networkCreateReturnsOnCall = make(map[int]struct {
+			result1 types.NetworkCreateResponse
+			result2 error
+		})
+	}
+	fake.networkCreateReturnsOnCall[i] = struct {
+		result1 types.NetworkCreateResponse
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *fakeDockerClient) NetworkRemove(ctx context.Context, networkID string) error {
 	fake.networkRemoveMutex.Lock()
+	ret, specificReturn := fake.networkRemoveReturnsOnCall[len(fake.networkRemoveArgsForCall)]
 	fake.networkRemoveArgsForCall = append(fake.networkRemoveArgsForCall, struct {
 		ctx       context.Context
 		networkID string
@@ -454,9 +587,11 @@ func (fake *fakeDockerClient) NetworkRemove(ctx context.Context, networkID strin
 	fake.networkRemoveMutex.Unlock()
 	if fake.NetworkRemoveStub != nil {
 		return fake.NetworkRemoveStub(ctx, networkID)
-	} else {
-		return fake.networkRemoveReturns.result1
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.networkRemoveReturns.result1
 }
 
 func (fake *fakeDockerClient) NetworkRemoveCallCount() int {
@@ -478,6 +613,70 @@ func (fake *fakeDockerClient) NetworkRemoveReturns(result1 error) {
 	}{result1}
 }
 
+func (fake *fakeDockerClient) NetworkRemoveReturnsOnCall(i int, result1 error) {
+	fake.NetworkRemoveStub = nil
+	if fake.networkRemoveReturnsOnCall == nil {
+		fake.networkRemoveReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.networkRemoveReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *fakeDockerClient) RegistryLogin(ctx context.Context, auth types.AuthConfig) (registry.AuthenticateOKBody, error) {
+	fake.registryLoginMutex.Lock()
+	ret, specificReturn := fake.registryLoginReturnsOnCall[len(fake.registryLoginArgsForCall)]
+	fake.registryLoginArgsForCall = append(fake.registryLoginArgsForCall, struct {
+		ctx  context.Context
+		auth types.AuthConfig
+	}{ctx, auth})
+	fake.recordInvocation("RegistryLogin", []interface{}{ctx, auth})
+	fake.registryLoginMutex.Unlock()
+	if fake.RegistryLoginStub != nil {
+		return fake.RegistryLoginStub(ctx, auth)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.registryLoginReturns.result1, fake.registryLoginReturns.result2
+}
+
+func (fake *fakeDockerClient) RegistryLoginCallCount() int {
+	fake.registryLoginMutex.RLock()
+	defer fake.registryLoginMutex.RUnlock()
+	return len(fake.registryLoginArgsForCall)
+}
+
+func (fake *fakeDockerClient) RegistryLoginArgsForCall(i int) (context.Context, types.AuthConfig) {
+	fake.registryLoginMutex.RLock()
+	defer fake.registryLoginMutex.RUnlock()
+	return fake.registryLoginArgsForCall[i].ctx, fake.registryLoginArgsForCall[i].auth
+}
+
+func (fake *fakeDockerClient) RegistryLoginReturns(result1 registry.AuthenticateOKBody, result2 error) {
+	fake.RegistryLoginStub = nil
+	fake.registryLoginReturns = struct {
+		result1 registry.AuthenticateOKBody
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *fakeDockerClient) RegistryLoginReturnsOnCall(i int, result1 registry.AuthenticateOKBody, result2 error) {
+	fake.RegistryLoginStub = nil
+	if fake.registryLoginReturnsOnCall == nil {
+		fake.registryLoginReturnsOnCall = make(map[int]struct {
+			result1 registry.AuthenticateOKBody
+			result2 error
+		})
+	}
+	fake.registryLoginReturnsOnCall[i] = struct {
+		result1 registry.AuthenticateOKBody
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *fakeDockerClient) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -485,8 +684,6 @@ func (fake *fakeDockerClient) Invocations() map[string][][]interface{} {
 	defer fake.networkConnectMutex.RUnlock()
 	fake.containerCreateMutex.RLock()
 	defer fake.containerCreateMutex.RUnlock()
-	fake.containerInspectMutex.RLock()
-	defer fake.containerInspectMutex.RUnlock()
 	fake.containerLogsMutex.RLock()
 	defer fake.containerLogsMutex.RUnlock()
 	fake.containerRemoveMutex.RLock()
@@ -501,6 +698,8 @@ func (fake *fakeDockerClient) Invocations() map[string][][]interface{} {
 	defer fake.networkCreateMutex.RUnlock()
 	fake.networkRemoveMutex.RLock()
 	defer fake.networkRemoveMutex.RUnlock()
+	fake.registryLoginMutex.RLock()
+	defer fake.registryLoginMutex.RUnlock()
 	return fake.invocations
 }
 

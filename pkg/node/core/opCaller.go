@@ -201,34 +201,36 @@ func (this _opCaller) validateScope(
 
 	messageBuffer := bytes.NewBufferString(``)
 	for paramName, param := range params {
-		arg := scope[paramName]
+		varData := scope[paramName]
 		var (
 			argDisplayValue string
 		)
 
-		switch {
-		case nil != param.Dir:
-			argDisplayValue = arg.Dir
-		case nil != param.File:
-			argDisplayValue = arg.File
-		case nil != param.Number:
-			if param.Number.IsSecret {
-				argDisplayValue = "************"
-			} else {
-				argDisplayValue = strconv.FormatFloat(arg.Number, 'f', -1, 64)
-			}
-		case nil != param.Socket:
-			argDisplayValue = arg.Socket
-		case nil != param.String:
-			if param.String.IsSecret {
-				argDisplayValue = "************"
-			} else {
-				argDisplayValue = arg.String
+		if nil != varData {
+			switch {
+			case nil != param.Dir:
+				argDisplayValue = varData.Dir
+			case nil != param.File:
+				argDisplayValue = varData.File
+			case nil != param.Number:
+				if param.Number.IsSecret {
+					argDisplayValue = "************"
+				} else {
+					argDisplayValue = strconv.FormatFloat(varData.Number, 'f', -1, 64)
+				}
+			case nil != param.Socket:
+				argDisplayValue = varData.Socket
+			case nil != param.String:
+				if param.String.IsSecret {
+					argDisplayValue = "************"
+				} else {
+					argDisplayValue = varData.String
+				}
 			}
 		}
 
 		// validate
-		validationErrors := this.validate.Param(arg, param)
+		validationErrors := this.validate.Param(varData, param)
 
 		if len(validationErrors) > 0 {
 			messageBuffer.WriteString(fmt.Sprintf(`

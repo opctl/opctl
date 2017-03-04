@@ -14,13 +14,22 @@ type ScgContainerCall struct {
 	Dirs map[string]string `yaml:"dirs,omitempty"`
 
 	// each env var value will be interpolated
-	EnvVars map[string]string `yaml:"envVars,omitempty"`
-	Files   map[string]string `yaml:"files,omitempty"`
-	Image   string            `yaml:"image"`
-	Sockets map[string]string `yaml:"sockets,omitempty"`
-	StdErr  map[string]string `yaml:"stdErr,omitempty"`
-	StdOut  map[string]string `yaml:"stdOut,omitempty"`
-	WorkDir string            `yaml:"workDir,omitempty"`
+	EnvVars map[string]string      `yaml:"envVars,omitempty"`
+	Files   map[string]string      `yaml:"files,omitempty"`
+	Image   *ScgContainerCallImage `yaml:"image"`
+	Sockets map[string]string      `yaml:"sockets,omitempty"`
+	StdErr  map[string]string      `yaml:"stdErr,omitempty"`
+	StdOut  map[string]string      `yaml:"stdOut,omitempty"`
+	WorkDir string                 `yaml:"workDir,omitempty"`
+}
+
+type ScgContainerCallImage struct {
+	// will be interpolated
+	Ref string `yaml:"ref"`
+	// will be interpolated
+	PullIdentity string `yaml:"pullIdentity,omitempty"`
+	// will be interpolated
+	PullSecret string `yaml:"pullSecret,omitempty"`
 }
 
 type ScgOpCall struct {

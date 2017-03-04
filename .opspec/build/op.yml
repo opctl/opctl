@@ -8,8 +8,8 @@ inputs:
       default: master
   srcDir:
     dir:
-      description: directory containing the projects source code
       default: .
+      description: directory containing the projects source code
 outputs:
   srcDir:
     dir:
