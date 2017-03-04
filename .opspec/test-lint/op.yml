@@ -22,5 +22,5 @@ run:
         govendor vet +local
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: srcDir
-    image: golang:1.8
+    image: { ref: 'golang:1.8' }
     workDir: /go/src/github.com/opspec-io/sdk-golang
