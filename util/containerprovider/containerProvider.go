@@ -20,10 +20,6 @@ type ContainerProvider interface {
 		containerId string,
 	) (err error)
 
-	InspectContainerIfExists(
-		containerId string,
-	) (container *model.DcgContainerCall, err error)
-
 	NetworkContainer(
 		networkId string,
 		containerId string,
@@ -31,7 +27,7 @@ type ContainerProvider interface {
 	) (err error)
 
 	RunContainer(
-		req *RunContainerReq,
+		req *model.DcgContainerCall,
 		eventPublisher pubsub.EventPublisher,
 	) (err error)
 }

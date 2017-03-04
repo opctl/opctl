@@ -7,9 +7,9 @@ import (
 	"github.com/docker/docker/api/types/network"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/vruntime"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"
@@ -18,13 +18,13 @@ import (
 var _ = Context("RunContainer", func() {
 	It("should call dockerClient.ContainerCreate w/ expected args", func() {
 		/* arrange */
-		providedReq := &containerprovider.RunContainerReq{
+		providedReq := &model.DcgContainerCall{
 			ContainerId: "dummyContainerId",
 			Dirs: map[string]string{
 				"dir1ContainerPath": "dir1HostPath",
 				"dir2ContainerPath": "dir2HostPath",
 			},
-			Env: map[string]string{
+			EnvVars: map[string]string{
 				"envVar1Name": "envVar1Value",
 				"envVar2Name": "envVar2Value",
 				"envVar3Name": "envVar3Value",
@@ -33,7 +33,7 @@ var _ = Context("RunContainer", func() {
 				"file1ContainerPath": "file1HostPath",
 				"file2ContainerPath": "file2HostPath",
 			},
-			Image: "dummyImage",
+			Image: &model.DcgContainerCallImage{Ref: "dummyImage"},
 			Sockets: map[string]string{
 				"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
 				"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
@@ -47,7 +47,7 @@ var _ = Context("RunContainer", func() {
 				"envVar2Name=envVar2Value",
 				"envVar3Name=envVar3Value",
 			},
-			Image:      providedReq.Image,
+			Image:      providedReq.Image.Ref,
 			Tty:        true,
 			WorkingDir: providedReq.WorkDir,
 		}

@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/pkg/errors"
 	"io/ioutil"
 )
@@ -16,8 +17,8 @@ var _ = Context("pullImage", func() {
 	Context("imageRef invalid", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			providedImageRef := "%$^"
-			_, _, expectedError := reference.Parse(providedImageRef)
+			providedImage := &model.DcgContainerCallImage{Ref: "%$^"}
+			_, _, expectedError := reference.Parse(providedImage.Ref)
 
 			objectUnderTest := _containerProvider{
 				dockerClient: new(fakeDockerClient),
@@ -25,7 +26,7 @@ var _ = Context("pullImage", func() {
 
 			/* act */
 			actualError := objectUnderTest.pullImage(
-				providedImageRef,
+				providedImage,
 				"",
 				"",
 				new(pubsub.FakeEventPublisher),
@@ -38,8 +39,8 @@ var _ = Context("pullImage", func() {
 	Context("imageRef valid", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
-			providedImageRef := "dummy-ref"
-			expectedImageRef := fmt.Sprintf("%v:latest", providedImageRef)
+			providedImage := &model.DcgContainerCallImage{Ref: "dummy-ref"}
+			expectedImageRef := fmt.Sprintf("%v:latest", providedImage.Ref)
 			expectedImagePullOptions := types.ImagePullOptions{}
 
 			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
@@ -53,7 +54,7 @@ var _ = Context("pullImage", func() {
 
 			/* act */
 			err := objectUnderTest.pullImage(
-				providedImageRef,
+				providedImage,
 				"",
 				"",
 				new(pubsub.FakeEventPublisher),
@@ -83,7 +84,7 @@ var _ = Context("pullImage", func() {
 
 				/* act */
 				actualError := objectUnderTest.pullImage(
-					"dummy-ref",
+					&model.DcgContainerCallImage{Ref: "dummy-ref"},
 					"",
 					"",
 					new(pubsub.FakeEventPublisher),

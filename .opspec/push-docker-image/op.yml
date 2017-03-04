@@ -28,7 +28,7 @@ run:
 
         echo "pushing image"
         docker push "$(dockerImageRef)"
-    image: docker:1.11
+    image: { ref: 'docker:1.11' }
     sockets:
       /var/run/docker.sock: dockerDSocket
 

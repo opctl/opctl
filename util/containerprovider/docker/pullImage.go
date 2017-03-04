@@ -7,28 +7,41 @@ import (
 	"github.com/docker/docker/api/types/reference"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 	"io"
 )
 
 func (this _containerProvider) pullImage(
-	imageRef string,
+	dcgContainerImage *model.DcgContainerCallImage,
 	containerId string,
 	opGraphId string,
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 	// ensure tag present in image string.
 	// if not present, docker defaults to downloading all tags
-	imageName, tag, err := reference.Parse(imageRef)
+	imageName, tag, err := reference.Parse(dcgContainerImage.Ref)
 	if nil != err {
 		return
 	}
-	imageRef = fmt.Sprintf("%v:%v", imageName, tag)
+	imageRef := fmt.Sprintf("%v:%v", imageName, tag)
+
+	imagePullOptions := types.ImagePullOptions{}
+	if "" != dcgContainerImage.PullIdentity && "" != dcgContainerImage.PullSecret {
+		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
+			dcgContainerImage.PullIdentity,
+			dcgContainerImage.PullSecret,
+		)
+		fmt.Printf("imagePullOptions.RegistryAuth: %v \n", imagePullOptions.RegistryAuth)
+		if nil != err {
+			return
+		}
+	}
 
 	imagePullResp, err := this.dockerClient.ImagePull(
 		context.Background(),
 		imageRef,
-		types.ImagePullOptions{},
+		imagePullOptions,
 	)
 	if nil != err {
 		return

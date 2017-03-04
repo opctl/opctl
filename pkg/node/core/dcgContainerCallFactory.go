@@ -2,34 +2,32 @@ package core
 
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
-	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/dircopier"
 	"github.com/opspec-io/opctl/util/filecopier"
 	osfs "github.com/opspec-io/opctl/util/vfs/os"
-	"github.com/opspec-io/sdk-golang/pkg/interpolate"
+	interpolatePkg "github.com/opspec-io/sdk-golang/pkg/interpolate"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"os"
 	"path"
 	"strings"
 )
 
-func newRunContainerReq(
+func constructDcgContainerCall(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
 	opGraphId string,
 	opRef string,
-) (req *containerprovider.RunContainerReq, err error) {
+) (dcgContainerCall *model.DcgContainerCall, err error) {
 	fs := osfs.New()
 	fileCopier := filecopier.New()
 	dirCopier := dircopier.New()
+	interpolate := interpolatePkg.New()
 
-	req = &containerprovider.RunContainerReq{
-		Cmd:         append([]string{}, scgContainerCall.Cmd...), // create new slice so we don't cause side effects
+	dcgContainerCall = &model.DcgContainerCall{
 		Dirs:        map[string]string{},
-		Env:         map[string]string{},
+		EnvVars:     map[string]string{},
 		Files:       map[string]string{},
-		Image:       scgContainerCall.Image,
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
 		ContainerId: containerId,
@@ -51,6 +49,12 @@ func newRunContainerReq(
 		return
 	}
 
+	// construct cmd
+	for _, cmdEntry := range scgContainerCall.Cmd {
+		// interpolate each entry
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, interpolate.Interpolate(cmdEntry, currentScope))
+	}
+
 	// construct dirs
 	for scgContainerDirPath, scgContainerDirBind := range scgContainerCall.Dirs {
 		if "" == scgContainerDirBind {
@@ -60,21 +64,21 @@ func newRunContainerReq(
 
 		if strings.HasPrefix(scgContainerDirBind, "/") {
 			// is bound to bundle path
-			req.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
+			dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
 			err = dirCopier.Fs(
 				path.Join(opRef, scgContainerDirBind),
-				req.Dirs[scgContainerDirPath],
+				dcgContainerCall.Dirs[scgContainerDirPath],
 			)
 		} else {
 			// is bound to variable
-			if boundArg, ok := currentScope[scgContainerDirBind]; ok {
+			if varData, ok := currentScope[scgContainerDirBind]; ok {
 				// bound to input
-				req.Dirs[scgContainerDirPath] = boundArg.Dir
+				dcgContainerCall.Dirs[scgContainerDirPath] = varData.Dir
 			} else {
 				// bound to output
 				// create placeholder dir on host so the output points to something
-				req.Files[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirPath)
-				err = fs.MkdirAll(req.Files[scgContainerDirPath], 0700)
+				dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirPath)
+				err = fs.MkdirAll(dcgContainerCall.Dirs[scgContainerDirPath], 0700)
 			}
 		}
 		if nil != err {
@@ -84,7 +88,8 @@ func newRunContainerReq(
 
 	// construct envVars
 	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		req.Env[scgContainerEnvVarName] = scgContainerEnvVar
+		// interpolate each value
+		dcgContainerCall.EnvVars[scgContainerEnvVarName] = interpolate.Interpolate(scgContainerEnvVar, currentScope)
 	}
 
 	// construct files
@@ -96,28 +101,28 @@ func newRunContainerReq(
 
 		if strings.HasPrefix(scgContainerFileBind, "/") {
 			// is bound to bundle path
-			req.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
+			dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
 			err = fileCopier.Fs(
 				path.Join(opRef, scgContainerFileBind),
-				req.Files[scgContainerFilePath],
+				dcgContainerCall.Files[scgContainerFilePath],
 			)
 		} else {
 			// is bound to variable
-			if boundArg, ok := currentScope[scgContainerFileBind]; ok {
+			if varData, ok := currentScope[scgContainerFileBind]; ok {
 				// bound to input
-				req.Files[scgContainerFilePath] = boundArg.File
+				dcgContainerCall.Files[scgContainerFilePath] = varData.File
 			} else {
 				// bound to output
 				// create outputFile on host so the output points to something
-				req.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFilePath)
+				dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFilePath)
 				// create dir
-				err = fs.MkdirAll(path.Dir(req.Files[scgContainerFilePath]), 0700)
+				err = fs.MkdirAll(path.Dir(dcgContainerCall.Files[scgContainerFilePath]), 0700)
 				if nil != err {
 					return
 				}
 				// create file
 				var outputFile *os.File
-				outputFile, err = fs.Create(req.Files[scgContainerFilePath])
+				outputFile, err = fs.Create(dcgContainerCall.Files[scgContainerFilePath])
 				outputFile.Close()
 			}
 		}
@@ -126,11 +131,21 @@ func newRunContainerReq(
 		}
 	}
 
+	// construct image
+	if scgContainerCallImage := scgContainerCall.Image; scgContainerCallImage != nil {
+		dcgContainerCall.Image = &model.DcgContainerCallImage{
+			// interpolate all properties
+			Ref:          interpolate.Interpolate(scgContainerCall.Image.Ref, currentScope),
+			PullIdentity: interpolate.Interpolate(scgContainerCall.Image.PullIdentity, currentScope),
+			PullSecret:   interpolate.Interpolate(scgContainerCall.Image.PullSecret, currentScope),
+		}
+	}
+
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCall.Sockets {
 		if boundArg, ok := currentScope[scgContainerSocketBind]; ok {
-			// bound to input
-			req.Sockets[scgContainerSocketAddress] = boundArg.Socket
+			// bound to var
+			dcgContainerCall.Sockets[scgContainerSocketAddress] = boundArg.Socket
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something
@@ -146,31 +161,7 @@ func newRunContainerReq(
 				if nil != err {
 					return
 				}
-				req.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
-			}
-		}
-	}
-
-	// interpolate cmd & envVars w/ values from currentScope
-	for varName, varData := range currentScope {
-		switch {
-		case 0 != varData.Number:
-			numberVarData := varData.Number
-
-			for cmdEntryIndex, cmdEntry := range req.Cmd {
-				req.Cmd[cmdEntryIndex] = interpolate.NumberValue(cmdEntry, varName, numberVarData)
-			}
-			for containerEnvVarName, containerEnvVar := range req.Env {
-				req.Env[containerEnvVarName] = interpolate.NumberValue(containerEnvVar, varName, numberVarData)
-			}
-		case "" != varData.String:
-			stringVarData := varData.String
-
-			for cmdEntryIndex, cmdEntry := range req.Cmd {
-				req.Cmd[cmdEntryIndex] = interpolate.StringValue(cmdEntry, varName, stringVarData)
-			}
-			for containerEnvVarName, containerEnvVar := range req.Env {
-				req.Env[containerEnvVarName] = interpolate.StringValue(containerEnvVar, varName, stringVarData)
+				dcgContainerCall.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
 			}
 		}
 	}

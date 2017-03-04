@@ -8,6 +8,7 @@ inputs:
       default: master
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 run:
   container:
@@ -22,5 +23,5 @@ run:
     envVars:
       CODECOV_TOKEN: b432a3b8-8220-4c1d-bcee-db76e68d0128
       GIT_BRANCH: $(gitBranch)
-    image: golang:1.8
+    image: { ref: 'golang:1.8' }
     workDir: /workDir

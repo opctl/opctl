@@ -3,6 +3,7 @@ name: fmt-code
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 outputs:
   srcDir:
@@ -21,5 +22,5 @@ run:
         govendor fmt +local
     dirs:
       /go/src/github.com/opspec-io/opctl: srcDir
-    image: golang:1.8
+    image: { ref: 'golang:1.8' }
     workDir: /go/src/github.com/opspec-io/opctl

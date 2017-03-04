@@ -7,26 +7,26 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
 	"sort"
 	"strings"
 )
 
 func (this _containerProvider) RunContainer(
-	req *containerprovider.RunContainerReq,
+	req *model.DcgContainerCall,
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 
 	// construct container config
 	containerConfig := &container.Config{
 		Entrypoint: req.Cmd,
-		Image:      req.Image,
+		Image:      req.Image.Ref,
 		WorkingDir: req.WorkDir,
 		Tty:        true,
 	}
-	for envVarName, envVarValue := range req.Env {
+	for envVarName, envVarValue := range req.EnvVars {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
 	}
 	// sort binds to make order deterministic; useful for testing
@@ -76,7 +76,7 @@ func (this _containerProvider) RunContainer(
 		//if image not found try to pull it
 		if client.IsErrImageNotFound(err) {
 			err = nil
-			fmt.Printf("Unable to find image '%s' locally\n", req.Image)
+			fmt.Printf("Unable to find image '%s' locally\n", req.Image.Ref)
 
 			err = this.pullImage(req.Image, req.ContainerId, req.OpGraphId, eventPublisher)
 			if nil != err {
