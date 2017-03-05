@@ -7,6 +7,6 @@
     * [nodes](latest/nodes.md)
         * [node api](latest/node-api.md)
     * [packages](latest/packages.md)
-        * [op package](latest/op-package.md)
-        * [collection package](latest/collection-package.md)
+        * [op packages](latest/op-packages.md)
+        * [collection packages](latest/collection-packages.md)
         * [package resolution](latest/package-resolution.md)

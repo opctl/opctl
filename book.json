@@ -1,6 +1,7 @@
 {
   "root": "./src",
   "plugins": [
+    "swagger@git+https://github.com/chrisdostert/gitbook-plugin-swagger.git",
     "toggle-chapters",
     "edit-link",
     "ga",

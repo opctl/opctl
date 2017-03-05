@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   version: '0.1'
-  title: opspec node API
+  title: opspec node api
 consumes:
   - application/json
 produces:
@@ -13,7 +13,7 @@ paths:
       summary: Get event stream
       description: |
         The connection will be upgraded to use the websocket protocol.
-        Inspired by Docker Remote API (GET /events endpoint)[https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/monitor-dockers-events]
+        Inspired by Docker Remote API [GET /events endpoint](https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/monitor-dockers-events)
       parameters:
         - name: filter
           in: query
@@ -43,14 +43,14 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/EventMsg'
+              $ref: '#/definitions/Event'
         '400':
           description: Bad Request
           schema:
             type: string
   /liveness:
     get:
-      summary: Get liveness of runtime
+      summary: Get liveness of node
       tags:
         - liveness
       responses:
@@ -126,28 +126,111 @@ paths:
           schema:
             type: string
 definitions:
-  EventMsg:
-    title: EventMsg
-    description: A message containing event data
+  Event:
     type: object
-    discriminator: type
-    required:
-      - type
-      - data
     properties:
-      type:
+      timestamp:
+        type: string
+        format: dateTime
+      # @TODO: use oneOf as soon as OpenAPI v3 is released
+      containerExited:
+        $ref: '#/definitions/ContainerExitedEvent'
+      containerStarted:
+        $ref: '#/definitions/ContainerStartedEvent'
+      containerStdErrWrittenTo:
+        $ref: '#/definitions/ContainerStdErrWrittenToEvent'
+      containerStdOutWrittenTo:
+        $ref: '#/definitions/ContainerStdOutWrittenToEvent'
+      opEnded:
+        $ref: '#/definitions/OpEndedEvent'
+      opStarted:
+        $ref: '#/definitions/OpStartedEvent'
+      opEncounteredError:
+        $ref: '#/definitions/OpEncounteredErrorEvent'
+  ContainerExitedEvent:
+    type: object
+    properties:
+      containerRef:
+        type: string
+      exitCode:
+        type: integer
+      opGraphId:
+        type: string
+      containerId:
+        type: string
+      opRef:
+        type: string
+  ContainerStartedEvent:
+    type: object
+    properties:
+      containerRef:
+        type: string
+      opGraphId:
+        type: string
+      containerId:
+        type: string
+      opRef:
+        type: string
+  ContainerStdErrWrittenToEvent:
+    type: object
+    properties:
+      containerRef:
         type: string
       data:
-        type: object
-        required:
-          - timestamp
-          - correlationId
-        properties:
-          timestamp:
-            type: string
-            format: dateTime
-          correlationId:
-            type: string
+        type: string
+        format: binary
+      opGraphId:
+        type: string
+      containerId:
+        type: string
+      opRef:
+        type: string
+  ContainerStdOutWrittenToEvent:
+    type: object
+    properties:
+      containerRef:
+        type: string
+      data:
+        type: string
+        format: binary
+      opGraphId:
+        type: string
+      containerId:
+        type: string
+      opRef:
+        type: string
+  OpEncounteredErrorEvent:
+    type: object
+    properties:
+      opGraphId:
+        type: string
+      msg:
+        type: string
+      opId:
+        type: string
+      opRef:
+        type: string
+  OpEndedEvent:
+    type: object
+    properties:
+      opGraphId:
+        type: string
+      opId:
+        type: string
+      opRef:
+        type: string
+      outcome:
+        enum: [ SUCCEEDED, FAILED, KILLED]
+        type: string
+  OpStartedEvent:
+    type: object
+    properties:
+      opGraphId:
+        type: string
+      opId:
+        type: string
+      opRef:
+        type: string
   OpRunArg:
     title: OpRunArg
     description: An arg to be provided to the op

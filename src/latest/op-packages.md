@@ -1,8 +1,8 @@
-## Op Package
+## Op Packages
 
-Encapsulates an *op.
+encapsulate ops so they may be consumed and/or distributed.
 
-### Op Package Dir Structure
+### Dir Structure
 
 ```
 pkg-name
@@ -12,11 +12,10 @@ pkg-name
 
 Constraints:
 
-- MUST contain an [op package manifest](#op-package-manifest) at their
-  root.
+- MUST contain an [op package manifest](#manifest) at their root.
 - Name MUST match their manifest.
 
-### Op Package Manifest
+### Manifest
 
 Constraints:
 
