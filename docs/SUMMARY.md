@@ -1,3 +1,5 @@
+* [about](README.md)
+* [change log](changelog.md)
 * [install](install/README.md)
     * [linux](install/linux.md)
     * [osx](install/osx.md)

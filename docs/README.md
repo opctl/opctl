@@ -1,4 +1,4 @@
-opctl is an open source cross platform op runtime.
+An open source cross platform [opspec](https://opspec.io/spec) node
 
 project links:
 
