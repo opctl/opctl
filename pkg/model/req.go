@@ -21,7 +21,7 @@ type GetEventStreamReq struct {
 }
 
 type KillOpReq struct {
-	RootOpId string
+	OpId string
 }
 
 type SetCollectionDescriptionReq struct {
