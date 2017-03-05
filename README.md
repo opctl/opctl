@@ -9,40 +9,22 @@ Cross platform runtime for [opspec.io](https://opspec.io)
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-# Usage
+# Documentation
 
-for usage guidance simply execute without any arguments:
+see [website](https://opspec.io/opctl)
 
-```SHELL
-opctl
+# ALM
 
-Usage: opctl [OPTIONS] COMMAND [arg...]
-
-Cross platform runtime for https://opspec.io
-
-Options:
-  -v, --version            Show the version and exit
-  --nc, --no-color=false   Disable output coloring
-
-Commands:
-  collection    Manage collections
-  events        Stream events
-  kill          Kill an op
-  ls            List ops in a collection
-  node          Manage nodes
-  op            Manage ops
-  run           Run an op
-  self-update   Update opctl
-
-Run 'opctl COMMAND --help' for more information on a command.
-```
+- [issues/feat requests](https://github.com/opspec-io/opctl/issues)
+- [source](https://github.com/opspec-io/opctl)
+- [kanban board](https://waffle.io/opspec-io/opctl)
 
 # Releases
 
 for every release:
 
 - source code will be [tagged](https://github.com/opspec-io/opctl/tags).
-- platform specific binaries/installers will be made available on
+- installation instructions will be made available at
   [opspec.io/opctl](https://opspec.io/opctl/install)
 
 # Versioning
