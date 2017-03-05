@@ -1,6 +1,6 @@
 # Introduction
 
-{% include "../partials/project-description.md" %}
+{% include "../_partials/project-description.md" %}
 
 ## Purpose
 

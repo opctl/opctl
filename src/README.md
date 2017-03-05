@@ -1,4 +1,6 @@
-{% include "./partials/project-description.md" %}
+# About
+
+{% include "_partials/project-description.md" %}
 
 ## Project Links
 
