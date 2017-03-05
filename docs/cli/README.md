@@ -3,7 +3,7 @@ opctl
 
 Usage: opctl [OPTIONS] COMMAND [arg...]
 
-Cross platform runtime for https://opspec.io
+Open source cross platform opspec node
 
 Options:
   -v, --version            Show the version and exit

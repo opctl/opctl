@@ -17,7 +17,7 @@ func (this _core) StartOp(
 		this.opCaller.Call(
 			req.Args,
 			opId,
-			req.OpRef,
+			req.OpPkgRef,
 			opId,
 		)
 	}()

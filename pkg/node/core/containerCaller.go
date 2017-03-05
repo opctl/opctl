@@ -16,8 +16,8 @@ type containerCaller interface {
 		inboundScope map[string]*model.Data,
 		containerId string,
 		scgContainerCall *model.ScgContainerCall,
-		opRef string,
-		opGraphId string,
+		opPkgRef string,
+		rootOpId string,
 	) (
 		outboundScope map[string]*model.Data,
 		err error,
@@ -48,8 +48,8 @@ func (this _containerCaller) Call(
 	inboundScope map[string]*model.Data,
 	containerId string,
 	scgContainerCall *model.ScgContainerCall,
-	opRef string,
-	opGraphId string,
+	opPkgRef string,
+	rootOpId string,
 ) (
 	outboundScope map[string]*model.Data,
 	err error,
@@ -66,13 +66,13 @@ func (this _containerCaller) Call(
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerId,
-			OpRef:     opRef,
-			OpGraphId: opGraphId,
+			OpPkgRef:  opPkgRef,
+			RootOpId:  rootOpId,
 			Container: &dcgContainerDescriptor{},
 		},
 	)
 
-	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, opGraphId, opRef)
+	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, opPkgRef)
 	if nil != err {
 		return
 	}
@@ -82,8 +82,8 @@ func (this _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerId: containerId,
-				OpRef:       opRef,
-				OpGraphId:   opGraphId,
+				OpPkgRef:    opPkgRef,
+				RootOpId:    rootOpId,
 			},
 		},
 	)
@@ -96,8 +96,8 @@ func (this _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: containerId,
-				OpRef:       opRef,
-				OpGraphId:   opGraphId,
+				OpPkgRef:    opPkgRef,
+				RootOpId:    rootOpId,
 			},
 		},
 	)
@@ -121,7 +121,7 @@ func (this _containerCaller) constructOutboundScope(
 	// subscribe to op graph events
 	eventChannel := make(chan *model.Event)
 	this.pubSub.Subscribe(
-		&model.EventFilter{OpGraphIds: []string{dcgContainerCall.OpGraphId}},
+		&model.EventFilter{RootOpIds: []string{dcgContainerCall.RootOpId}},
 		eventChannel,
 	)
 

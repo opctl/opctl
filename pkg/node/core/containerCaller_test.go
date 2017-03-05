@@ -27,8 +27,8 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpRef := "dummyOpRef"
-			providedOpGraphId := "dummyOpGraphId"
+			providedOpPkgRef := "dummyOpPkgRef"
+			providedRootOpId := "dummyRootOpId"
 
 			fakePubSub := new(pubsub.Fake)
 			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
@@ -37,8 +37,8 @@ var _ = Context("containerCaller", func() {
 
 			expectedDcgNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
-				OpRef:     providedOpRef,
-				OpGraphId: providedOpGraphId,
+				OpPkgRef:  providedOpPkgRef,
+				RootOpId:  providedRootOpId,
 				Container: &dcgContainerDescriptor{},
 			}
 
@@ -55,8 +55,8 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpRef,
-				providedOpGraphId,
+				providedOpPkgRef,
+				providedRootOpId,
 			)
 
 			/* assert */
@@ -67,15 +67,15 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpRef := "dummyOpRef"
-			providedOpGraphId := "dummyOpGraphId"
+			providedOpPkgRef := "dummyOpPkgRef"
+			providedRootOpId := "dummyRootOpId"
 
 			expectedEvent := &model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerId: providedContainerId,
-					OpRef:       providedOpRef,
-					OpGraphId:   providedOpGraphId,
+					OpPkgRef:    providedOpPkgRef,
+					RootOpId:    providedRootOpId,
 				},
 			}
 
@@ -95,8 +95,8 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpRef,
-				providedOpGraphId,
+				providedOpPkgRef,
+				providedRootOpId,
 			)
 
 			/* assert */
@@ -114,15 +114,15 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpRef := "dummyOpRef"
-			providedOpGraphId := "dummyOpGraphId"
+			providedOpPkgRef := "dummyOpPkgRef"
+			providedRootOpId := "dummyRootOpId"
 
 			expectedReq, _ := constructDcgContainerCall(
 				providedInboundScope,
 				providedScgContainerCall,
 				providedContainerId,
-				providedOpGraphId,
-				providedOpRef,
+				providedRootOpId,
+				providedOpPkgRef,
 			)
 
 			fakeContainerProvider := new(containerprovider.Fake)
@@ -143,8 +143,8 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpRef,
-				providedOpGraphId,
+				providedOpPkgRef,
+				providedRootOpId,
 			)
 
 			/* assert */
@@ -158,8 +158,8 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope := map[string]*model.Data{}
 				providedContainerId := "dummyContainerId"
 				providedScgContainerCall := &model.ScgContainerCall{}
-				providedOpRef := "dummyOpRef"
-				providedOpGraphId := "dummyOpGraphId"
+				providedOpPkgRef := "dummyOpPkgRef"
+				providedRootOpId := "dummyRootOpId"
 
 				expectedError := errors.New("dummyError")
 
@@ -177,8 +177,8 @@ var _ = Context("containerCaller", func() {
 					providedInboundScope,
 					providedContainerId,
 					providedScgContainerCall,
-					providedOpRef,
-					providedOpGraphId,
+					providedOpPkgRef,
+					providedRootOpId,
 				)
 
 				/* assert */
@@ -191,8 +191,8 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
-		providedOpRef := "dummyOpRef"
-		providedOpGraphId := "dummyOpGraphId"
+		providedOpPkgRef := "dummyOpPkgRef"
+		providedRootOpId := "dummyRootOpId"
 
 		fakePubSub := new(pubsub.Fake)
 		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
@@ -212,8 +212,8 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedScgContainerCall,
-			providedOpRef,
-			providedOpGraphId,
+			providedOpPkgRef,
+			providedRootOpId,
 		)
 
 		/* assert */
@@ -224,15 +224,15 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
-		providedOpRef := "dummyOpRef"
-		providedOpGraphId := "dummyOpGraphId"
+		providedOpPkgRef := "dummyOpPkgRef"
+		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := &model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				OpRef:       providedOpRef,
-				OpGraphId:   providedOpGraphId,
+				OpPkgRef:    providedOpPkgRef,
+				RootOpId:    providedRootOpId,
 			},
 		}
 
@@ -252,8 +252,8 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedScgContainerCall,
-			providedOpRef,
-			providedOpGraphId,
+			providedOpPkgRef,
+			providedRootOpId,
 		)
 
 		/* assert */

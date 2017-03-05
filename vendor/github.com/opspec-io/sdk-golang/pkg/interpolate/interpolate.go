@@ -27,14 +27,14 @@ func (this interpolate) Interpolate(
 	scope map[string]*model.Data,
 ) string {
 	for varName, varData := range scope {
-    if nil != varData {
-      switch {
-      case 0 != varData.Number:
-        template = this.numberInterpolater.Interpolate(template, varName, varData.Number)
-      case "" != varData.String:
-        template = this.stringInterpolater.Interpolate(template, varName, varData.String)
-      }
-    }
+		if nil != varData {
+			switch {
+			case 0 != varData.Number:
+				template = this.numberInterpolater.Interpolate(template, varName, varData.Number)
+			case "" != varData.String:
+				template = this.stringInterpolater.Interpolate(template, varName, varData.String)
+			}
+		}
 	}
 	return template
 }

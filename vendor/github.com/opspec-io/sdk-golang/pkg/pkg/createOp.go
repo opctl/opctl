@@ -1,12 +1,12 @@
-package bundle
+package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"path"
 )
 
-func (this _bundle) CreateCollection(
-	req model.CreateCollectionReq,
+func (this pkg) CreateOp(
+	req model.CreateOpReq,
 ) (err error) {
 
 	err = this.fileSystem.AddDir(
@@ -16,20 +16,20 @@ func (this _bundle) CreateCollection(
 		return
 	}
 
-	var opCollection = model.CollectionManifest{
+	var opManifest = model.OpManifest{
 		Manifest: model.Manifest{
 			Description: req.Description,
 			Name:        req.Name,
 		},
 	}
 
-	opManifestBytes, err := this.yaml.From(&opCollection)
+	opManifestBytes, err := this.yaml.From(&opManifest)
 	if nil != err {
 		return
 	}
 
 	err = this.fileSystem.SaveFile(
-		path.Join(req.Path, NameOfCollectionManifestFile),
+		path.Join(req.Path, NameOfOpManifestFile),
 		opManifestBytes,
 	)
 

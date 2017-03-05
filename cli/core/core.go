@@ -11,8 +11,8 @@ import (
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/apiclient"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
+	"github.com/opspec-io/sdk-golang/pkg/consumenodeapi"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"io"
 	"os"
@@ -73,8 +73,8 @@ func New(
 	cliExiter := cliexiter.New(cliOutput, vos.New())
 
 	return &_core{
-		apiClient:         apiclient.New(),
-		bundle:            bundle.New(),
+		consumeNodeApi:    consumenodeapi.New(),
+		pkg:               pkg.New(),
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
@@ -88,8 +88,8 @@ func New(
 }
 
 type _core struct {
-	apiClient         apiclient.ApiClient
-	bundle            bundle.Bundle
+	consumeNodeApi    consumenodeapi.ConsumeNodeApi
+	pkg               pkg.Pkg
 	cliColorer        clicolorer.CliColorer
 	cliExiter         cliexiter.CliExiter
 	cliOutput         clioutput.CliOutput

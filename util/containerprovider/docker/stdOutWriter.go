@@ -11,7 +11,7 @@ import (
 func NewStdOutWriter(
 	eventPublisher pubsub.EventPublisher,
 	containerId string,
-	opGraphId string,
+	rootOpId string,
 ) io.Writer {
 
 	reader, writer := io.Pipe()
@@ -25,7 +25,7 @@ func NewStdOutWriter(
 					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 						Data:        scanner.Bytes(),
 						ContainerId: containerId,
-						OpGraphId:   opGraphId,
+						RootOpId:    rootOpId,
 					},
 				},
 			)

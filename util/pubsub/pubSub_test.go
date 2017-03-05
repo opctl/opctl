@@ -30,9 +30,9 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent := &model.Event{
 						OpStarted: &model.OpStartedEvent{
-							OpGraphId: "dummyOpGraphId",
-							OpId:      "dummyOpId",
-							OpRef:     "dummyOpRef",
+							RootOpId: "dummyRootOpId",
+							OpId:     "dummyOpId",
+							OpPkgRef: "dummyOpPkgRef",
 						},
 					}
 
@@ -52,14 +52,14 @@ var _ = Context("pubSub", func() {
 			Context("isn't subscribed", func() {
 				It("doesn't receive event", func() {
 					/* arrange */
-					subscriberEventFilter := &model.EventFilter{OpGraphIds: []string{"notPublishedOgid"}}
+					subscriberEventFilter := &model.EventFilter{RootOpIds: []string{"notPublishedOgid"}}
 					subscriberChannel := make(chan *model.Event, 1000)
 
 					publishedEvent := &model.Event{
 						OpStarted: &model.OpStartedEvent{
-							OpGraphId: "dummyOpGraphId",
-							OpId:      "dummyOpId",
-							OpRef:     "dummyOpRef",
+							RootOpId: "dummyRootOpId",
+							OpId:     "dummyOpId",
+							OpPkgRef: "dummyOpPkgRef",
 						},
 					}
 
@@ -85,9 +85,9 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent := &model.Event{
 						OpStarted: &model.OpStartedEvent{
-							OpGraphId: "dummyOpGraphId",
-							OpId:      "dummyOpId",
-							OpRef:     "dummyOpRef",
+							RootOpId: "dummyRootOpId",
+							OpId:     "dummyOpId",
+							OpPkgRef: "dummyOpPkgRef",
 						},
 					}
 
@@ -110,15 +110,15 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent := &model.Event{
 						OpStarted: &model.OpStartedEvent{
-							OpGraphId: "dummyOpGraphId",
-							OpId:      "dummyOpId",
-							OpRef:     "dummyOpRef",
+							RootOpId: "dummyRootOpId",
+							OpId:     "dummyOpId",
+							OpPkgRef: "dummyOpPkgRef",
 						},
 					}
 
 					providedFilter := &model.EventFilter{
-						OpGraphIds: []string{
-							expectedEvent.OpStarted.OpGraphId,
+						RootOpIds: []string{
+							expectedEvent.OpStarted.RootOpId,
 						},
 					}
 

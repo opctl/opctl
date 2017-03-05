@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"path/filepath"
 )
 
@@ -23,7 +23,7 @@ var _ = Context("setOpDescription", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:    new(bundle.Fake),
+					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
 					vos:       fakeVos,
 				}
@@ -36,9 +36,9 @@ var _ = Context("setOpDescription", func() {
 					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		It("should call bundle.SetOpDescription w/ expected args", func() {
+		It("should call pkg.SetOpDescription w/ expected args", func() {
 			/* arrange */
-			fakeBundle := new(bundle.Fake)
+			fakePkg := new(pkg.Fake)
 
 			providedCollection := "dummyCollection"
 			providedName := "dummyOpName"
@@ -53,8 +53,8 @@ var _ = Context("setOpDescription", func() {
 			}
 
 			objectUnderTest := _core{
-				bundle: fakeBundle,
-				vos:    fakeVos,
+				pkg: fakePkg,
+				vos: fakeVos,
 			}
 
 			/* act */
@@ -62,19 +62,19 @@ var _ = Context("setOpDescription", func() {
 
 			/* assert */
 
-			Expect(fakeBundle.SetOpDescriptionArgsForCall(0)).Should(Equal(expectedReq))
+			Expect(fakePkg.SetOpDescriptionArgsForCall(0)).Should(Equal(expectedReq))
 		})
-		Context("bundle.SetOpDescription errors", func() {
+		Context("pkg.SetOpDescription errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.Fake)
+				fakePkg := new(pkg.Fake)
 				expectedError := errors.New("dummyError")
-				fakeBundle.SetOpDescriptionReturns(expectedError)
+				fakePkg.SetOpDescriptionReturns(expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:    fakeBundle,
+					pkg:       fakePkg,
 					cliExiter: fakeCliExiter,
 					vos:       new(vos.Fake),
 				}

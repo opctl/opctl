@@ -1,6 +1,6 @@
-package apiclient
+package consumenodeapi
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ApiClient
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ConsumeNodeApi
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -9,7 +9,7 @@ import (
 	"github.com/sethgrid/pester"
 )
 
-type ApiClient interface {
+type ConsumeNodeApi interface {
 	GetEventStream(
 		req *model.GetEventStreamReq,
 	) (
@@ -31,18 +31,18 @@ type ApiClient interface {
 	)
 }
 
-func New() ApiClient {
+func New() ConsumeNodeApi {
 
 	httpClient := pester.New()
 	httpClient.Backoff = pester.ExponentialBackoff
 
-	return &_apiClient{
+	return &consumeNodeApi{
 		httpClient: httpClient,
 		jsonFormat: format.NewJsonFormat(),
 	}
 }
 
-type _apiClient struct {
+type consumeNodeApi struct {
 	httpClient http.Client
 	jsonFormat format.Format
 }

@@ -1,4 +1,4 @@
-package apiclient
+package consumenodeapi
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (this _apiClient) GetEventStream(
+func (this consumeNodeApi) GetEventStream(
 	req *model.GetEventStreamReq,
 ) (eventStream chan model.Event, err error) {
 
@@ -29,7 +29,7 @@ func (this _apiClient) GetEventStream(
 	}
 
 	c, _, err := websocket.DefaultDialer.Dial(
-		fmt.Sprintf("ws://%v/event-stream?%v", "localhost:42224", strings.Join(queryParams, "&")),
+		fmt.Sprintf("ws://%v/events/stream?%v", "localhost:42224", strings.Join(queryParams, "&")),
 		nil,
 	)
 	if err != nil {

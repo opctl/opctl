@@ -1,4 +1,4 @@
-package bundle
+package pkg
 
 //go:generate counterfeiter -o ./fakeOpViewFactory.go --fake-name fakeOpViewFactory ./ opViewFactory
 
@@ -11,7 +11,7 @@ import (
 
 type opViewFactory interface {
 	Construct(
-		opBundlePath string,
+		opPackagePath string,
 	) (
 		opView model.OpView,
 		err error,
@@ -36,13 +36,13 @@ type _opViewFactory struct {
 }
 
 func (this _opViewFactory) Construct(
-	opBundlePath string,
+	opPackagePath string,
 ) (
 	opView model.OpView,
 	err error,
 ) {
 
-	opManifestPath := path.Join(opBundlePath, NameOfOpManifestFile)
+	opManifestPath := path.Join(opPackagePath, NameOfOpManifestFile)
 
 	opManifestBytes, err := this.fileSystem.GetBytesOfFile(
 		opManifestPath,

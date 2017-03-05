@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"strconv"
 	"time"
@@ -19,8 +19,8 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		opId string,
-		opRef string,
-		opGraphId string,
+		opPkgRef string,
+		rootOpId string,
 	) (
 		outboundScope map[string]*model.Data,
 		err error,
@@ -28,7 +28,7 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	bundle bundle.Bundle,
+	pkg pkg.Pkg,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 	caller caller,
@@ -36,7 +36,7 @@ func newOpCaller(
 	validate validate.Validate,
 ) opCaller {
 	return _opCaller{
-		bundle:              bundle,
+		pkg:                 pkg,
 		pubSub:              pubSub,
 		dcgNodeRepo:         dcgNodeRepo,
 		caller:              caller,
@@ -46,7 +46,7 @@ func newOpCaller(
 }
 
 type _opCaller struct {
-	bundle              bundle.Bundle
+	pkg                 pkg.Pkg
 	pubSub              pubsub.PubSub
 	dcgNodeRepo         dcgNodeRepo
 	caller              caller
@@ -57,8 +57,8 @@ type _opCaller struct {
 func (this _opCaller) Call(
 	inboundScope map[string]*model.Data,
 	opId string,
-	opRef string,
-	opGraphId string,
+	opPkgRef string,
+	rootOpId string,
 ) (
 	outboundScope map[string]*model.Data,
 	err error,
@@ -66,16 +66,16 @@ func (this _opCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
-		if nil == this.dcgNodeRepo.GetIfExists(opGraphId) {
+		if nil == this.dcgNodeRepo.GetIfExists(rootOpId) {
 			// guard: op killed (we got preempted)
 			this.pubSub.Publish(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
-						OpId:      opId,
-						Outcome:   model.OpOutcomeKilled,
-						OpGraphId: opGraphId,
-						OpRef:     opRef,
+						OpId:     opId,
+						Outcome:  model.OpOutcomeKilled,
+						RootOpId: rootOpId,
+						OpPkgRef: opPkgRef,
 					},
 				},
 			)
@@ -90,10 +90,10 @@ func (this _opCaller) Call(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
-						Msg:       err.Error(),
-						OpId:      opId,
-						OpRef:     opRef,
-						OpGraphId: opGraphId,
+						Msg:      err.Error(),
+						OpId:     opId,
+						OpPkgRef: opPkgRef,
+						RootOpId: rootOpId,
 					},
 				},
 			)
@@ -106,10 +106,10 @@ func (this _opCaller) Call(
 			&model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
-					OpId:      opId,
-					OpRef:     opRef,
-					Outcome:   opOutcome,
-					OpGraphId: opGraphId,
+					OpId:     opId,
+					OpPkgRef: opPkgRef,
+					Outcome:  opOutcome,
+					RootOpId: rootOpId,
 				},
 			},
 		)
@@ -118,15 +118,15 @@ func (this _opCaller) Call(
 
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
-			Id:        opId,
-			OpRef:     opRef,
-			OpGraphId: opGraphId,
-			Op:        &dcgOpDescriptor{},
+			Id:       opId,
+			OpPkgRef: opPkgRef,
+			RootOpId: rootOpId,
+			Op:       &dcgOpDescriptor{},
 		},
 	)
 
-	op, err := this.bundle.GetOp(
-		opRef,
+	op, err := this.pkg.GetOp(
+		opPkgRef,
 	)
 	if nil != err {
 		return
@@ -144,9 +144,9 @@ func (this _opCaller) Call(
 		&model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
-				OpId:      opId,
-				OpRef:     opRef,
-				OpGraphId: opGraphId,
+				OpId:     opId,
+				OpPkgRef: opPkgRef,
+				RootOpId: rootOpId,
 			},
 		},
 	)
@@ -155,8 +155,8 @@ func (this _opCaller) Call(
 		this.uniqueStringFactory.Construct(),
 		inboundScope,
 		op.Run,
-		opRef,
-		opGraphId,
+		opPkgRef,
+		rootOpId,
 	)
 	if nil != err {
 		return

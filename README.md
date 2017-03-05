@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/opspec-io/opctl.svg?branch=master)](https://travis-ci.org/opspec-io/opctl)
 [![Coverage](https://codecov.io/gh/opspec-io/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/opctl)
 
-Cross platform runtime for [opspec.io](https://opspec.io)
+Open source cross platform [opspec node](https://opspec.io/spec/latest/nodes.html)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial

@@ -32,7 +32,7 @@ func (this _core) RunOp(
 	}
 
 	opPath := path.Join(pwd, collection, name)
-	opView, err := this.bundle.GetOp(opPath)
+	opView, err := this.pkg.GetOp(opPath)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
@@ -51,10 +51,10 @@ func (this _core) RunOp(
 	)
 
 	// start op
-	opGraphId, err := this.apiClient.StartOp(
+	rootOpId, err := this.consumeNodeApi.StartOp(
 		model.StartOpReq{
-			Args:  argsMap,
-			OpRef: opPath,
+			Args:     argsMap,
+			OpPkgRef: opPath,
 		},
 	)
 	if nil != err {
@@ -63,10 +63,10 @@ func (this _core) RunOp(
 	}
 
 	// start event loop
-	eventChannel, err := this.apiClient.GetEventStream(
+	eventChannel, err := this.consumeNodeApi.GetEventStream(
 		&model.GetEventStreamReq{
 			Filter: &model.EventFilter{
-				OpGraphIds: []string{opGraphId},
+				RootOpIds: []string{rootOpId},
 			},
 		},
 	)
@@ -84,9 +84,9 @@ func (this _core) RunOp(
 				intSignalsReceived++
 				fmt.Println(this.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
-				this.apiClient.KillOp(
+				this.consumeNodeApi.KillOp(
 					model.KillOpReq{
-						OpGraphId: opGraphId,
+						OpId: rootOpId,
 					},
 				)
 			} else {
@@ -103,7 +103,7 @@ func (this _core) RunOp(
 			this.cliOutput.Event(&event)
 
 			if nil != event.OpEnded {
-				if event.OpEnded.OpId == opGraphId {
+				if event.OpEnded.OpId == rootOpId {
 					switch event.OpEnded.Outcome {
 					case model.OpOutcomeSucceeded:
 						this.cliExiter.Exit(cliexiter.ExitReq{Code: 0})

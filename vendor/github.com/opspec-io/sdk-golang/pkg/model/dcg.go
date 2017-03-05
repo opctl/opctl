@@ -20,8 +20,8 @@ type DcgContainerCall struct {
 	Files     map[string]string      `json:"files"`
 	Image     *DcgContainerCallImage `json:"image"`
 	IpAddress string                 `json:"ipAddress"`
-	OpGraphId string                 `json:"opGraphId"`
-	OpRef     string                 `json:"opRef"`
+	RootOpId  string                 `json:"rootOpId"`
+	OpPkgRef  string                 `json:"opPkgRef"`
 	// format: containerSocket => hostSocket
 	Sockets map[string]string `json:"sockets"`
 	WorkDir string            `json:"workDir"`

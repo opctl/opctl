@@ -12,8 +12,8 @@ type dcgNodeRepo interface {
 	Add(node *dcgNodeDescriptor)
 	// deletes the node with the provided id
 	DeleteIfExists(nodeId string)
-	// lists all nodes with the provided opGraphId
-	ListWithOpGraphId(opGraphId string) []*dcgNodeDescriptor
+	// lists all nodes with the provided rootOpId
+	ListWithRootOpId(rootOpId string) []*dcgNodeDescriptor
 	// tries to get the node with the provided id; returns nil if not found
 	GetIfExists(nodeId string) *dcgNodeDescriptor
 }
@@ -49,14 +49,14 @@ func (this *_dcgNodeRepo) DeleteIfExists(nodeId string) {
 }
 
 // O(n) complexity (n being active node count); thread safe
-func (this *_dcgNodeRepo) ListWithOpGraphId(opGraphId string) []*dcgNodeDescriptor {
+func (this *_dcgNodeRepo) ListWithRootOpId(rootOpId string) []*dcgNodeDescriptor {
 	this.byIdIndexMutex.RLock()
 	defer this.byIdIndexMutex.RUnlock()
 
 	nodesWithGraphIdSlice := []*dcgNodeDescriptor{}
 
 	for _, node := range this.byIdIndex {
-		if node.OpGraphId == opGraphId {
+		if node.RootOpId == rootOpId {
 			nodesWithGraphIdSlice = append(nodesWithGraphIdSlice, node)
 		}
 	}

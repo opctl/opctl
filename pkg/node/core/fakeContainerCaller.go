@@ -8,14 +8,14 @@ import (
 )
 
 type fakeContainerCaller struct {
-	CallStub        func(args map[string]*model.Data, containerId string, containerCall *model.ScgContainerCall, opRef string, opGraphId string) (outputs map[string]*model.Data, err error)
+	CallStub        func(args map[string]*model.Data, containerId string, containerCall *model.ScgContainerCall, opPkgRef string, rootOpId string) (outputs map[string]*model.Data, err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		args          map[string]*model.Data
 		containerId   string
 		containerCall *model.ScgContainerCall
-		opRef         string
-		opGraphId     string
+		opPkgRef      string
+		rootOpId      string
 	}
 	callReturns struct {
 		result1 map[string]*model.Data
@@ -25,19 +25,19 @@ type fakeContainerCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerCaller) Call(args map[string]*model.Data, containerId string, containerCall *model.ScgContainerCall, opRef string, opGraphId string) (outputs map[string]*model.Data, err error) {
+func (fake *fakeContainerCaller) Call(args map[string]*model.Data, containerId string, containerCall *model.ScgContainerCall, opPkgRef string, rootOpId string) (outputs map[string]*model.Data, err error) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		args          map[string]*model.Data
 		containerId   string
 		containerCall *model.ScgContainerCall
-		opRef         string
-		opGraphId     string
-	}{args, containerId, containerCall, opRef, opGraphId})
-	fake.recordInvocation("Call", []interface{}{args, containerId, containerCall, opRef, opGraphId})
+		opPkgRef      string
+		rootOpId      string
+	}{args, containerId, containerCall, opPkgRef, rootOpId})
+	fake.recordInvocation("Call", []interface{}{args, containerId, containerCall, opPkgRef, rootOpId})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(args, containerId, containerCall, opRef, opGraphId)
+		return fake.CallStub(args, containerId, containerCall, opPkgRef, rootOpId)
 	} else {
 		return fake.callReturns.result1, fake.callReturns.result2
 	}
@@ -52,7 +52,7 @@ func (fake *fakeContainerCaller) CallCallCount() int {
 func (fake *fakeContainerCaller) CallArgsForCall(i int) (map[string]*model.Data, string, *model.ScgContainerCall, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].containerId, fake.callArgsForCall[i].containerCall, fake.callArgsForCall[i].opRef, fake.callArgsForCall[i].opGraphId
+	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].containerId, fake.callArgsForCall[i].containerCall, fake.callArgsForCall[i].opPkgRef, fake.callArgsForCall[i].rootOpId
 }
 
 func (fake *fakeContainerCaller) CallReturns(result1 map[string]*model.Data, result2 error) {

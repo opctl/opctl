@@ -8,11 +8,11 @@ import (
 func (this _core) KillOp(
 	req model.KillOpReq,
 ) {
-	this.dcgNodeRepo.DeleteIfExists(req.OpGraphId)
+	this.dcgNodeRepo.DeleteIfExists(req.OpId)
 
 	var waitGroup sync.WaitGroup
 
-	for _, childNode := range this.dcgNodeRepo.ListWithOpGraphId(req.OpGraphId) {
+	for _, childNode := range this.dcgNodeRepo.ListWithRootOpId(req.OpId) {
 		waitGroup.Add(1)
 		go func(childNode *dcgNodeDescriptor) {
 			this.dcgNodeRepo.DeleteIfExists(childNode.Id)

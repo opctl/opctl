@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"os"
 	"path/filepath"
 )
@@ -24,7 +24,7 @@ var _ = Context("listOpsInCollection", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:    new(bundle.Fake),
+					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
 					vos:       fakeVos,
 					writer:    os.Stdout,
@@ -39,9 +39,9 @@ var _ = Context("listOpsInCollection", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.GetCollection w/ expected args", func() {
+			It("should call pkg.GetCollection w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.Fake)
+				fakePkg := new(pkg.Fake)
 
 				providedCollection := "dummyCollection"
 				wdReturnedFromVos := "dummyWorkDir"
@@ -51,7 +51,7 @@ var _ = Context("listOpsInCollection", func() {
 				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection)
 
 				objectUnderTest := _core{
-					bundle: fakeBundle,
+					pkg:    fakePkg,
 					vos:    fakeVos,
 					writer: os.Stdout,
 				}
@@ -61,19 +61,19 @@ var _ = Context("listOpsInCollection", func() {
 
 				/* assert */
 
-				Expect(fakeBundle.GetCollectionArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakePkg.GetCollectionArgsForCall(0)).Should(Equal(expectedPath))
 			})
-			Context("bundle.GetCollection errors", func() {
+			Context("pkg.GetCollection errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeBundle := new(bundle.Fake)
+					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
-					fakeBundle.GetCollectionReturns(model.CollectionView{}, expectedError)
+					fakePkg.GetCollectionReturns(model.CollectionView{}, expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
 					objectUnderTest := _core{
-						bundle:    fakeBundle,
+						pkg:       fakePkg,
 						cliExiter: fakeCliExiter,
 						vos:       new(vos.Fake),
 						writer:    os.Stdout,

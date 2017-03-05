@@ -1,4 +1,4 @@
-package bundle
+package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (this _bundle) TryResolveDefaultCollection(
+func (this pkg) TryResolveDefaultCollection(
 	req model.TryResolveDefaultCollectionReq,
 ) (
 	pathToDefaultCollection string,

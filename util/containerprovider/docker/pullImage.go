@@ -15,7 +15,7 @@ import (
 func (this _containerProvider) pullImage(
 	dcgContainerImage *model.DcgContainerCallImage,
 	containerId string,
-	opGraphId string,
+	rootOpId string,
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 	// ensure tag present in image string.
@@ -49,7 +49,7 @@ func (this _containerProvider) pullImage(
 
 	defer imagePullResp.Close()
 
-	stdOutWriter := NewStdOutWriter(eventPublisher, containerId, opGraphId)
+	stdOutWriter := NewStdOutWriter(eventPublisher, containerId, rootOpId)
 	dec := json.NewDecoder(imagePullResp)
 	for {
 		var jm jsonmessage.JSONMessage

@@ -15,7 +15,7 @@ func (this _core) SetCollectionDescription(
 		return // support fake exiter
 	}
 
-	err = this.bundle.SetCollectionDescription(
+	err = this.pkg.SetCollectionDescription(
 		model.SetCollectionDescriptionReq{
 			PathToCollection: path.Join(pwd, ".opspec"),
 			Description:      description,

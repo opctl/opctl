@@ -16,12 +16,12 @@ type fakeDcgNodeRepo struct {
 	deleteIfExistsArgsForCall []struct {
 		nodeId string
 	}
-	ListWithOpGraphIdStub        func(opGraphId string) []*dcgNodeDescriptor
-	listWithOpGraphIdMutex       sync.RWMutex
-	listWithOpGraphIdArgsForCall []struct {
-		opGraphId string
+	ListWithRootOpIdStub        func(rootOpId string) []*dcgNodeDescriptor
+	listWithRootOpIdMutex       sync.RWMutex
+	listWithRootOpIdArgsForCall []struct {
+		rootOpId string
 	}
-	listWithOpGraphIdReturns struct {
+	listWithRootOpIdReturns struct {
 		result1 []*dcgNodeDescriptor
 	}
 	GetIfExistsStub        func(nodeId string) *dcgNodeDescriptor
@@ -84,35 +84,35 @@ func (fake *fakeDcgNodeRepo) DeleteIfExistsArgsForCall(i int) string {
 	return fake.deleteIfExistsArgsForCall[i].nodeId
 }
 
-func (fake *fakeDcgNodeRepo) ListWithOpGraphId(opGraphId string) []*dcgNodeDescriptor {
-	fake.listWithOpGraphIdMutex.Lock()
-	fake.listWithOpGraphIdArgsForCall = append(fake.listWithOpGraphIdArgsForCall, struct {
-		opGraphId string
-	}{opGraphId})
-	fake.recordInvocation("ListWithOpGraphId", []interface{}{opGraphId})
-	fake.listWithOpGraphIdMutex.Unlock()
-	if fake.ListWithOpGraphIdStub != nil {
-		return fake.ListWithOpGraphIdStub(opGraphId)
+func (fake *fakeDcgNodeRepo) ListWithRootOpId(rootOpId string) []*dcgNodeDescriptor {
+	fake.listWithRootOpIdMutex.Lock()
+	fake.listWithRootOpIdArgsForCall = append(fake.listWithRootOpIdArgsForCall, struct {
+		rootOpId string
+	}{rootOpId})
+	fake.recordInvocation("ListWithRootOpId", []interface{}{rootOpId})
+	fake.listWithRootOpIdMutex.Unlock()
+	if fake.ListWithRootOpIdStub != nil {
+		return fake.ListWithRootOpIdStub(rootOpId)
 	} else {
-		return fake.listWithOpGraphIdReturns.result1
+		return fake.listWithRootOpIdReturns.result1
 	}
 }
 
-func (fake *fakeDcgNodeRepo) ListWithOpGraphIdCallCount() int {
-	fake.listWithOpGraphIdMutex.RLock()
-	defer fake.listWithOpGraphIdMutex.RUnlock()
-	return len(fake.listWithOpGraphIdArgsForCall)
+func (fake *fakeDcgNodeRepo) ListWithRootOpIdCallCount() int {
+	fake.listWithRootOpIdMutex.RLock()
+	defer fake.listWithRootOpIdMutex.RUnlock()
+	return len(fake.listWithRootOpIdArgsForCall)
 }
 
-func (fake *fakeDcgNodeRepo) ListWithOpGraphIdArgsForCall(i int) string {
-	fake.listWithOpGraphIdMutex.RLock()
-	defer fake.listWithOpGraphIdMutex.RUnlock()
-	return fake.listWithOpGraphIdArgsForCall[i].opGraphId
+func (fake *fakeDcgNodeRepo) ListWithRootOpIdArgsForCall(i int) string {
+	fake.listWithRootOpIdMutex.RLock()
+	defer fake.listWithRootOpIdMutex.RUnlock()
+	return fake.listWithRootOpIdArgsForCall[i].rootOpId
 }
 
-func (fake *fakeDcgNodeRepo) ListWithOpGraphIdReturns(result1 []*dcgNodeDescriptor) {
-	fake.ListWithOpGraphIdStub = nil
-	fake.listWithOpGraphIdReturns = struct {
+func (fake *fakeDcgNodeRepo) ListWithRootOpIdReturns(result1 []*dcgNodeDescriptor) {
+	fake.ListWithRootOpIdStub = nil
+	fake.listWithRootOpIdReturns = struct {
 		result1 []*dcgNodeDescriptor
 	}{result1}
 }
@@ -157,8 +157,8 @@ func (fake *fakeDcgNodeRepo) Invocations() map[string][][]interface{} {
 	defer fake.addMutex.RUnlock()
 	fake.deleteIfExistsMutex.RLock()
 	defer fake.deleteIfExistsMutex.RUnlock()
-	fake.listWithOpGraphIdMutex.RLock()
-	defer fake.listWithOpGraphIdMutex.RUnlock()
+	fake.listWithRootOpIdMutex.RLock()
+	defer fake.listWithRootOpIdMutex.RUnlock()
 	fake.getIfExistsMutex.RLock()
 	defer fake.getIfExistsMutex.RUnlock()
 	return fake.invocations

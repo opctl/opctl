@@ -23,8 +23,8 @@ var _ = Context("serialCaller", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
-			providedOpGraphId := "dummyOpGraphId"
-			providedOpRef := "dummyOpRef"
+			providedRootOpId := "dummyRootOpId"
+			providedOpPkgRef := "dummyOpPkgRef"
 			providedScgSerialCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
@@ -56,8 +56,8 @@ var _ = Context("serialCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedOpGraphId,
-				providedOpRef,
+				providedRootOpId,
+				providedOpPkgRef,
 				providedScgSerialCalls,
 			)
 
@@ -66,21 +66,21 @@ var _ = Context("serialCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualScg,
-					actualOpRef,
-					actualOpGraphId := fakeCaller.CallArgsForCall(expectedScgIndex)
+					actualOpPkgRef,
+					actualRootOpId := fakeCaller.CallArgsForCall(expectedScgIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualScg).To(Equal(expectedScg))
-				Expect(actualOpRef).To(Equal(providedOpRef))
-				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
+				Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			}
 		})
 		Context("caller errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
-				providedOpGraphId := "dummyOpGraphId"
-				providedOpRef := "dummyOpRef"
+				providedRootOpId := "dummyRootOpId"
+				providedOpPkgRef := "dummyOpPkgRef"
 				providedScgSerialCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
@@ -96,8 +96,8 @@ var _ = Context("serialCaller", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Call(
 					providedInboundScope,
-					providedOpGraphId,
-					providedOpRef,
+					providedRootOpId,
+					providedOpPkgRef,
 					providedScgSerialCalls,
 				)
 
@@ -114,8 +114,8 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 					}
 					expectedScopePassedToGrandchild := providedInboundScope
-					providedOpGraphId := "dummyOpGraphId"
-					providedOpRef := "dummyOpRef"
+					providedRootOpId := "dummyRootOpId"
+					providedOpPkgRef := "dummyOpPkgRef"
 					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
@@ -132,8 +132,8 @@ var _ = Context("serialCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
-						providedOpGraphId,
-						providedOpRef,
+						providedRootOpId,
+						providedOpPkgRef,
 						providedScgSerialCalls,
 					)
 
@@ -159,8 +159,8 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": childOutboundScope["dummyVar2Name"],
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
-					providedOpGraphId := "dummyOpGraphId"
-					providedOpRef := "dummyOpRef"
+					providedRootOpId := "dummyRootOpId"
+					providedOpPkgRef := "dummyOpPkgRef"
 					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
@@ -178,8 +178,8 @@ var _ = Context("serialCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
-						providedOpGraphId,
-						providedOpRef,
+						providedRootOpId,
+						providedOpPkgRef,
 						providedScgSerialCalls,
 					)
 

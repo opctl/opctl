@@ -11,9 +11,9 @@ import (
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/apiclient"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
+	"github.com/opspec-io/sdk-golang/pkg/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"path"
 	"path/filepath"
 	"time"
@@ -31,7 +31,7 @@ var _ = Context("runOp", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:       new(bundle.Fake),
+					pkg:          new(pkg.Fake),
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
 					vos:          fakeVos,
@@ -46,14 +46,14 @@ var _ = Context("runOp", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.GetOp w/ expected args", func() {
+			It("should call pkg.GetOp w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.Fake)
+				fakePkg := new(pkg.Fake)
 
-				fakeApiClient := new(apiclient.Fake)
+				fakeConsumeNodeApi := new(consumenodeapi.Fake)
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
-				fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+				fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -66,8 +66,8 @@ var _ = Context("runOp", func() {
 				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection, providedName)
 
 				objectUnderTest := _core{
-					bundle:            fakeBundle,
-					apiClient:         fakeApiClient,
+					pkg:               fakePkg,
+					consumeNodeApi:    fakeConsumeNodeApi,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
 					nodeProvider:      new(nodeprovider.Fake),
@@ -78,19 +78,19 @@ var _ = Context("runOp", func() {
 				objectUnderTest.RunOp([]string{}, providedCollection, providedName)
 
 				/* assert */
-				Expect(fakeBundle.GetOpArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakePkg.GetOpArgsForCall(0)).Should(Equal(expectedPath))
 			})
-			Context("bundle.GetOp errors", func() {
+			Context("pkg.GetOp errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
 					returnedError := errors.New("dummyError")
 
-					fakeBundle := new(bundle.Fake)
-					fakeBundle.GetOpReturns(model.OpView{}, returnedError)
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetOpReturns(model.OpView{}, returnedError)
 
 					objectUnderTest := _core{
-						bundle:            fakeBundle,
+						pkg:               fakePkg,
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
 						nodeProvider:      new(nodeprovider.Fake),
@@ -105,7 +105,7 @@ var _ = Context("runOp", func() {
 						Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 				})
 			})
-			Context("bundle.GetOp doesn't error", func() {
+			Context("pkg.GetOp doesn't error", func() {
 				It("should call paramSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
 					param1Name := "DUMMY_PARAM1_NAME"
@@ -119,8 +119,8 @@ var _ = Context("runOp", func() {
 						},
 					}
 
-					fakeBundle := new(bundle.Fake)
-					fakeBundle.GetOpReturns(
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetOpReturns(
 						model.OpView{
 							Inputs: expectedParams,
 						},
@@ -128,16 +128,16 @@ var _ = Context("runOp", func() {
 					)
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeApiClient := new(apiclient.Fake)
+					fakeConsumeNodeApi := new(consumenodeapi.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+					fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 					objectUnderTest := _core{
-						bundle:            fakeBundle,
-						apiClient:         fakeApiClient,
+						pkg:               fakePkg,
+						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						nodeProvider:      new(nodeprovider.Fake),
@@ -152,7 +152,7 @@ var _ = Context("runOp", func() {
 					Expect(actualArgs).To(Equal(providedArgs))
 					Expect(actualParams).To(Equal(expectedParams))
 				})
-				It("should call apiClient.StartOp w/ expected args", func() {
+				It("should call consumeNodeApi.StartOp w/ expected args", func() {
 					/* arrange */
 					pwd := "dummyWorkDir"
 					fakeVos := new(vos.Fake)
@@ -164,21 +164,21 @@ var _ = Context("runOp", func() {
 						Args: map[string]*model.Data{
 							"dummyArg1Name": {String: "dummyArg1Value"},
 						},
-						OpRef: path.Join(pwd, providedCollection, providedOp),
+						OpPkgRef: path.Join(pwd, providedCollection, providedOp),
 					}
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeApiClient := new(apiclient.Fake)
+					fakeConsumeNodeApi := new(consumenodeapi.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+					fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 					fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 					objectUnderTest := _core{
-						bundle:            new(bundle.Fake),
-						apiClient:         fakeApiClient,
+						pkg:               new(pkg.Fake),
+						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						nodeProvider:      new(nodeprovider.Fake),
@@ -189,24 +189,24 @@ var _ = Context("runOp", func() {
 					objectUnderTest.RunOp([]string{}, providedCollection, providedOp)
 
 					/* assert */
-					actualArgs := fakeApiClient.StartOpArgsForCall(0)
+					actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
 					Expect(actualArgs).To(Equal(expectedArgs))
 				})
-				Context("apiClient.StartOp errors", func() {
+				Context("consumeNodeApi.StartOp errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						fakeCliExiter := new(cliexiter.Fake)
 						returnedError := errors.New("dummyError")
 
-						fakeBundle := new(bundle.Fake)
-						fakeBundle.GetOpReturns(model.OpView{}, nil)
+						fakePkg := new(pkg.Fake)
+						fakePkg.GetOpReturns(model.OpView{}, nil)
 
-						fakeApiClient := new(apiclient.Fake)
-						fakeApiClient.StartOpReturns("dummyOpId", returnedError)
+						fakeConsumeNodeApi := new(consumenodeapi.Fake)
+						fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
 
 						objectUnderTest := _core{
-							bundle:            fakeBundle,
-							apiClient:         fakeApiClient,
+							pkg:               fakePkg,
+							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							nodeProvider:      new(nodeprovider.Fake),
@@ -221,27 +221,27 @@ var _ = Context("runOp", func() {
 							Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 					})
 				})
-				Context("apiClient.StartOp doesn't error", func() {
-					It("should call apiClient.GetEventStream w/ expected args", func() {
+				Context("consumeNodeApi.StartOp doesn't error", func() {
+					It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
 						/* arrange */
-						fakeBundle := new(bundle.Fake)
-						fakeBundle.GetOpReturns(model.OpView{}, nil)
-						opGraphIdReturnedFromStartOp := "dummyOpGraphId"
+						fakePkg := new(pkg.Fake)
+						fakePkg.GetOpReturns(model.OpView{}, nil)
+						rootOpIdReturnedFromStartOp := "dummyRootOpId"
 						expectedEventFilter := &model.GetEventStreamReq{
 							Filter: &model.EventFilter{
-								OpGraphIds: []string{opGraphIdReturnedFromStartOp},
+								RootOpIds: []string{rootOpIdReturnedFromStartOp},
 							},
 						}
 
-						fakeApiClient := new(apiclient.Fake)
-						fakeApiClient.StartOpReturns(opGraphIdReturnedFromStartOp, nil)
+						fakeConsumeNodeApi := new(consumenodeapi.Fake)
+						fakeConsumeNodeApi.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
 						eventChannel := make(chan model.Event)
 						close(eventChannel)
-						fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 						objectUnderTest := _core{
-							bundle:            fakeBundle,
-							apiClient:         fakeApiClient,
+							pkg:               fakePkg,
+							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							nodeProvider:      new(nodeprovider.Fake),
@@ -252,24 +252,24 @@ var _ = Context("runOp", func() {
 						objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
 
 						/* assert */
-						Expect(fakeApiClient.GetEventStreamArgsForCall(0)).
+						Expect(fakeConsumeNodeApi.GetEventStreamArgsForCall(0)).
 							Should(Equal(expectedEventFilter))
 					})
-					Context("apiClient.GetEventStream errors", func() {
+					Context("consumeNodeApi.GetEventStream errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
 							returnedError := errors.New("dummyError")
 
-							fakeBundle := new(bundle.Fake)
-							fakeBundle.GetOpReturns(model.OpView{}, nil)
+							fakePkg := new(pkg.Fake)
+							fakePkg.GetOpReturns(model.OpView{}, nil)
 
-							fakeApiClient := new(apiclient.Fake)
-							fakeApiClient.GetEventStreamReturns(nil, returnedError)
+							fakeConsumeNodeApi := new(consumenodeapi.Fake)
+							fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
 
 							objectUnderTest := _core{
-								bundle:            fakeBundle,
-								apiClient:         fakeApiClient,
+								pkg:               fakePkg,
+								consumeNodeApi:    fakeConsumeNodeApi,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
 								nodeProvider:      new(nodeprovider.Fake),
@@ -284,23 +284,23 @@ var _ = Context("runOp", func() {
 								Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
-					Context("apiClient.GetEventStream doesn't error", func() {
+					Context("consumeNodeApi.GetEventStream doesn't error", func() {
 						Context("event channel closes", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
 								fakeCliExiter := new(cliexiter.Fake)
 
-								fakeBundle := new(bundle.Fake)
-								fakeBundle.GetOpReturns(model.OpView{}, nil)
+								fakePkg := new(pkg.Fake)
+								fakePkg.GetOpReturns(model.OpView{}, nil)
 
-								fakeApiClient := new(apiclient.Fake)
+								fakeConsumeNodeApi := new(consumenodeapi.Fake)
 								eventChannel := make(chan model.Event)
 								close(eventChannel)
-								fakeApiClient.GetEventStreamReturns(eventChannel, nil)
+								fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 								objectUnderTest := _core{
-									bundle:            fakeBundle,
-									apiClient:         fakeApiClient,
+									pkg:               fakePkg,
+									consumeNodeApi:    fakeConsumeNodeApi,
 									cliExiter:         fakeCliExiter,
 									cliParamSatisfier: new(cliparamsatisfier.Fake),
 									nodeProvider:      new(nodeprovider.Fake),
@@ -317,7 +317,7 @@ var _ = Context("runOp", func() {
 						})
 						Context("event channel doesn't close", func() {
 							Context("event received", func() {
-								opGraphId := "dummyOpGraphId"
+								rootOpId := "dummyRootOpId"
 								Context("OpEndedEvent", func() {
 									Context("Outcome==SUCCEEDED", func() {
 										It("should call exiter w/ expected args", func() {
@@ -325,29 +325,29 @@ var _ = Context("runOp", func() {
 											opEndedEvent := model.Event{
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
-													OpId:      opGraphId,
-													OpRef:     "dummyOpRef",
-													Outcome:   model.OpOutcomeSucceeded,
-													OpGraphId: opGraphId,
+													OpId:     rootOpId,
+													OpPkgRef: "dummyOpPkgRef",
+													Outcome:  model.OpOutcomeSucceeded,
+													RootOpId: rootOpId,
 												},
 											}
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakeBundle := new(bundle.Fake)
-											fakeBundle.GetOpReturns(model.OpView{}, nil)
+											fakePkg := new(pkg.Fake)
+											fakePkg.GetOpReturns(model.OpView{}, nil)
 
-											fakeApiClient := new(apiclient.Fake)
+											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
-											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												bundle:            fakeBundle,
+												pkg:               fakePkg,
 												cliColorer:        clicolorer.New(),
-												apiClient:         fakeApiClient,
+												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -367,29 +367,29 @@ var _ = Context("runOp", func() {
 											opEndedEvent := model.Event{
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
-													OpId:      opGraphId,
-													OpRef:     "dummyOpRef",
-													Outcome:   model.OpOutcomeKilled,
-													OpGraphId: opGraphId,
+													OpId:     rootOpId,
+													OpPkgRef: "dummyOpPkgRef",
+													Outcome:  model.OpOutcomeKilled,
+													RootOpId: rootOpId,
 												},
 											}
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakeBundle := new(bundle.Fake)
-											fakeBundle.GetOpReturns(model.OpView{}, nil)
+											fakePkg := new(pkg.Fake)
+											fakePkg.GetOpReturns(model.OpView{}, nil)
 
-											fakeApiClient := new(apiclient.Fake)
+											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
-											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												bundle:            fakeBundle,
+												pkg:               fakePkg,
 												cliColorer:        clicolorer.New(),
-												apiClient:         fakeApiClient,
+												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -410,29 +410,29 @@ var _ = Context("runOp", func() {
 											opEndedEvent := model.Event{
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
-													OpId:      opGraphId,
-													OpRef:     "dummyOpRef",
-													Outcome:   model.OpOutcomeFailed,
-													OpGraphId: opGraphId,
+													OpId:     rootOpId,
+													OpPkgRef: "dummyOpPkgRef",
+													Outcome:  model.OpOutcomeFailed,
+													RootOpId: rootOpId,
 												},
 											}
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakeBundle := new(bundle.Fake)
-											fakeBundle.GetOpReturns(model.OpView{}, nil)
+											fakePkg := new(pkg.Fake)
+											fakePkg.GetOpReturns(model.OpView{}, nil)
 
-											fakeApiClient := new(apiclient.Fake)
+											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
-											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												bundle:            fakeBundle,
+												pkg:               fakePkg,
 												cliColorer:        clicolorer.New(),
-												apiClient:         fakeApiClient,
+												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -452,29 +452,29 @@ var _ = Context("runOp", func() {
 											opEndedEvent := model.Event{
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
-													OpId:      opGraphId,
-													OpRef:     "dummyOpRef",
-													Outcome:   "some unexpected outcome",
-													OpGraphId: opGraphId,
+													OpId:     rootOpId,
+													OpPkgRef: "dummyOpPkgRef",
+													Outcome:  "some unexpected outcome",
+													RootOpId: rootOpId,
 												},
 											}
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakeBundle := new(bundle.Fake)
-											fakeBundle.GetOpReturns(model.OpView{}, nil)
+											fakePkg := new(pkg.Fake)
+											fakePkg.GetOpReturns(model.OpView{}, nil)
 
-											fakeApiClient := new(apiclient.Fake)
+											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
 											eventChannel <- opEndedEvent
 											defer close(eventChannel)
-											fakeApiClient.GetEventStreamReturns(eventChannel, nil)
-											fakeApiClient.StartOpReturns(opEndedEvent.OpEnded.OpGraphId, nil)
+											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												bundle:            fakeBundle,
+												pkg:               fakePkg,
 												cliColorer:        clicolorer.New(),
-												apiClient:         fakeApiClient,
+												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
 												cliOutput:         new(clioutput.Fake),
 												cliParamSatisfier: new(cliparamsatisfier.Fake),

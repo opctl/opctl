@@ -78,7 +78,7 @@ func (this _containerProvider) RunContainer(
 			err = nil
 			fmt.Printf("Unable to find image '%s' locally\n", req.Image.Ref)
 
-			err = this.pullImage(req.Image, req.ContainerId, req.OpGraphId, eventPublisher)
+			err = this.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
 			if nil != err {
 				return
 			}
@@ -109,11 +109,11 @@ func (this _containerProvider) RunContainer(
 		return
 	}
 
-	err = this.stdErrLogger(eventPublisher, req.ContainerId, req.OpGraphId)
+	err = this.stdErrLogger(eventPublisher, req.ContainerId, req.RootOpId)
 	if nil != err {
 		return
 	}
-	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.OpGraphId)
+	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.RootOpId)
 	if nil != err {
 		return
 	}
