@@ -2,15 +2,11 @@
   "root": "./docs",
   "plugins": [
     "toggle-chapters",
-    "disqus",
     "edit-link",
     "ga",
     "github-buttons"
   ],
   "pluginsConfig": {
-    "disqus": {
-      "shortName": "opctl"
-    },
     "edit-link": {
       "base": "https://github.com/opspec-io/opctl/edit/master/docs",
       "label": "edit this page"

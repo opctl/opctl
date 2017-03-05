@@ -6,9 +6,9 @@ inputs:
       default: .
       description: dir containing the doc source
 outputs:
-  docSite:
+  srcDir:
     dir:
-      description: dir containing the compiled doc site
+      description: dir containing the doc source
 run:
   container:
     cmd:
@@ -24,7 +24,6 @@ run:
         echo "compiling book"
         gitbook build
     dirs:
-      /src/_book: docSite
       /src: srcDir
     image: { ref: 'node:7.6' }
     workDir: /src
