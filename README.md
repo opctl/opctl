@@ -1,10 +1,23 @@
 [![In Progress](https://img.shields.io/waffle/label/opspec-io/spec/in%20progress.svg)](https://waffle.io/opspec-io/spec)
 [![Build Status](https://travis-ci.org/opspec-io/spec.svg?branch=master)](https://travis-ci.org/opspec-io/spec)
 
+A specification for defining, distributing, and running, compositions of
+containerized processes \[ops].
+
 > *Be advised: the op spec is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
+
+# Documentation
+
+see [website](https://opspec.io/spec)
+
+# ALM
+
+- [issues/feat requests](https://github.com/opspec-io/spec/issues)
+- [source](https://github.com/opspec-io/spec)
+- [kanban board](https://waffle.io/opspec-io/spec)
 
 # Releases
 
@@ -20,17 +33,16 @@ specification
 
 # Contributing
 
-see [CONTRIBUTING.md](CONTRIBUTING.md)
+see [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 # Changelog
 
-see [CHANGELOG.md](CHANGELOG.md)
+see [CHANGELOG.md](./CHANGELOG.md)
 
 # Influences
 
 [App Container](https://github.com/appc),
-[Codeship](https://codeship.com/),
-[Docker](https://github.com/docker),
+[Codeship](https://codeship.com/), [Docker](https://github.com/docker),
 [Inter Planetary Filesystem (IPFS)](https://github.com/ipfs),
 [JSON Schema](https://github.com/json-schema),
 [Kubernetes](https://github.com/kubernetes),

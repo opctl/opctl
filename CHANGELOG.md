@@ -1,12 +1,13 @@
 # Change Log
 
-All notable changes to the spec will be documented in this file.
+All notable changes to the spec will be documented in this file in
+accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 ## \[Unreleased]
 
 ### Added
 
-- `dir`, `file`, `number`, `socket` parameter types
+- typed params; `dir`, `file`, `number`, `socket`, `string`
 - `string` and `number` parameter constraints
 - support for container calls
 - `filter` to engine API `/event-stream` resource
@@ -14,16 +15,16 @@ All notable changes to the spec will be documented in this file.
 
 ### Changed
 
-- op call changed from string to object with `ref`, `inputs`, and `outputs`
-  attributes. To migrate, replace string value with object having `ref`
-  attribute equal to existing string and add `inputs`/`outputs` values as
-  applicable.
-- String parameters must now be declared as an object in form:
+- op call changed from `string` to `object` w/ `ref`, `inputs`, and
+  `outputs` attributes. To migrate, replace string value with object
+  having `ref` attribute equal to existing string and add
+  `inputs`/`outputs` values as applicable.
+- String parameters must now be declared as an object:
   ```yaml
   paramName:
-    string:
-      description: ...
-      # and so on... 
+      string:
+        description: ...
+        # and so on... 
   ```
 
 ### Removed
@@ -34,16 +35,14 @@ All notable changes to the spec will be documented in this file.
 
 ### Added 
 
-- typed run declarations; `serial`, `op`, and `parallel`
-- nested run declaration support (applies to `serial` & `parallel` run
-  declarations)
+- `serial`, `op`, and `parallel` calls
+- nested calls (applicable to `serial` & `parallel` calls)
 - json schema
 
 ### Changed
 
 - params no longer support `type` attribute;
-- run declaration no longer supports `subOps` attribute; use new `op`
-  run declaration type
+- `subOps` call; use new `op` call
 
 ## \[0.1.1] - 2016-08-03
 

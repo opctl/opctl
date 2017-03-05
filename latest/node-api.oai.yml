@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   version: '0.1'
-  title: opspec node api
+  title: node api
 consumes:
   - application/json
 produces:
@@ -22,7 +22,7 @@ paths:
 
             |attribute|type|description|
             |--|--|--|
-            |opGraphIds|array of strings|events must have one of these op graph ids|
+            |rootOpIds|array of strings|events will be filtered to those having one of these rootOpIds|
           required: false
           type: string
           format: json
@@ -58,26 +58,24 @@ paths:
           description: OK
         '500':
           description: Internal Server Error
-  /op-runs:
+  /ops/starts:
     post:
-      summary: Run op
+      summary: Starts an op
       tags:
-        - op-runs
+        - ops
       parameters:
         - name: body
           in: body
-          description: The body of the request
           schema:
-            title: RunOpReq
             type: object
             required:
-              - opRef
+              - opPkgRef
             properties:
               args:
                 type: object
                 additionalProperties:
-                  $ref: '#/definitions/OpRunArg'
-              opRef:
+                  $ref: '#/definitions/OpArg'
+              opPkgRef:
                 type: string
       responses:
         '201':
@@ -86,7 +84,7 @@ paths:
             Correlation-Id:
               type: string
           schema:
-            description: The id of the op graph
+            description: The id of the [started] op
             type: string
         '400':
           description: Bad Request
@@ -96,18 +94,16 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-  /op-run-kills:
+  /ops/kills:
     post:
-      summary: Kill op run
+      summary: Kills an op
       tags:
-        - op-run-kills
+        - ops
       parameters:
         - name: body
           in: body
-          description: The body of the request
           required: true
           schema:
-            title: KillOpRunReq
             type: object
             required:
               - opRunId
@@ -154,22 +150,22 @@ definitions:
         type: string
       exitCode:
         type: integer
-      opGraphId:
+      rootOpId:
         type: string
       containerId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
   ContainerStartedEvent:
     type: object
     properties:
       containerRef:
         type: string
-      opGraphId:
+      rootOpId:
         type: string
       containerId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
   ContainerStdErrWrittenToEvent:
     type: object
@@ -179,11 +175,11 @@ definitions:
       data:
         type: string
         format: binary
-      opGraphId:
+      rootOpId:
         type: string
       containerId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
   ContainerStdOutWrittenToEvent:
     type: object
@@ -193,31 +189,31 @@ definitions:
       data:
         type: string
         format: binary
-      opGraphId:
+      rootOpId:
         type: string
       containerId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
   OpEncounteredErrorEvent:
     type: object
     properties:
-      opGraphId:
+      rootOpId:
         type: string
       msg:
         type: string
       opId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
   OpEndedEvent:
     type: object
     properties:
-      opGraphId:
+      rootOpId:
         type: string
       opId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
       outcome:
         enum: [ SUCCEEDED, FAILED, KILLED]
@@ -225,21 +221,13 @@ definitions:
   OpStartedEvent:
     type: object
     properties:
-      opGraphId:
+      rootOpId:
         type: string
       opId:
         type: string
-      opRef:
+      opPkgRef:
         type: string
-  OpRunArg:
-    title: OpRunArg
+  OpArg:
     description: An arg to be provided to the op
     type: object
-    required:
-      - name
-      - value
-    properties:
-      name:
-        type: string
-      value:
-        type: string
+    # @TODO: use patternProperties if/when OpenAPI spec supports it
