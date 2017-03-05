@@ -1,5 +1,4 @@
 {
-  "root": "./docs",
   "plugins": [
     "toggle-chapters",
     "edit-link",
