@@ -3,6 +3,7 @@ description: removes files & dirs ignored by git
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 outputs:
   srcDir:
@@ -18,5 +19,5 @@ run:
         git clean -fXd -e !.idea/
     dirs:
       /go/src/github.com/opspec-io/opctl: srcDir
-    image: node:7.6
+    image: { ref: 'node:7.6' }
     workDir: /go/src/github.com/opspec-io/opctl

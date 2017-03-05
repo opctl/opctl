@@ -1,16 +1,10 @@
 [![In Progress](https://img.shields.io/waffle/label/opspec-io/spec/in%20progress.svg)](https://waffle.io/opspec-io/spec)
 [![Build Status](https://travis-ci.org/opspec-io/spec.svg?branch=master)](https://travis-ci.org/opspec-io/spec)
 
-A specification for defining, distributing, and running ops (operations)
-
 > *Be advised: the op spec is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
-
-# Spec
-
-Refer to [index.md](index.md) for the spec
 
 # Releases
 

@@ -1,6 +1,6 @@
 ### JetBrains
-*.iml
 .idea/
 
-### OSX
-.DS_Store
+### gitbook
+_book/
+node_modules/

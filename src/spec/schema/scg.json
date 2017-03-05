@@ -32,7 +32,7 @@
           "type": "object",
           "patternProperties": {
             "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "description": "Absolute container dir path mapped to a dir variable or absolute bundle dir path. If no bundle dir path provided, container dir path will be used.",
+              "description": "Absolute container dir path mapped to a dir variable or absolute package dir path. If no package dir path provided, container dir path will be used.",
               "type": "string"
             }
           },
@@ -52,7 +52,7 @@
           "type": "object",
           "patternProperties": {
             "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "description": "Absolute container file path mapped to a file variable or absolute bundle file path. If no bundle file path provided, container file path will be used.",
+              "description": "Absolute container file path mapped to a file variable or absolute package file path. If no package file path provided, container file path will be used.",
               "type": "string"
             }
           },

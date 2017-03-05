@@ -3,6 +3,7 @@ name: build
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 run:
   serial:

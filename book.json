@@ -1,0 +1,26 @@
+{
+  "root": "./src",
+  "plugins": [
+    "toggle-chapters",
+    "edit-link",
+    "ga",
+    "github-buttons"
+  ],
+  "pluginsConfig": {
+    "edit-link": {
+      "base": "https://github.com/opspec-io/spec/edit/master/docs",
+      "label": "edit this page"
+    },
+    "ga": {
+      "token": "UA-79889286-1"
+    },
+    "github-buttons": {
+      "repo": "opspec-io/spec",
+      "types": [
+        "star",
+        "watch"
+      ],
+      "size": "small"
+    }
+  }
+}

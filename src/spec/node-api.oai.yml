@@ -1,8 +1,7 @@
 swagger: '2.0'
 info:
   version: '0.1'
-  title: opspec.runtime
-  description: opspec runtime api
+  title: opspec node API
 consumes:
   - application/json
 produces:

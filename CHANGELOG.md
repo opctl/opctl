@@ -1,35 +1,36 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
+All notable changes to the spec will be documented in this file.
 
-## [Unreleased]
+## \[Unreleased]
 
 ### Added
 
-- `dir`, `file`, and `socket` parameter types
-- `constraints` attribute for `string` parameter type
-- [./schema/scg.json#definitions/containerCall](schema/scg.json#definitions/containerCall)
+- `dir`, `file`, `number`, `socket` parameter types
+- `string` and `number` parameter constraints
+- support for container calls
 - `filter` to engine API `/event-stream` resource
+- [support for private images](https://github.com/opspec-io/spec/issues/71)
 
 ### Changed
 
-- Rename from `run` to `call graph` for consistency with established
-  terminology.
-- [./schema/scg.json#definitions/opCall](schema/scg.json#definitions/opCall)
-  changed from string to object with `ref`, `inputs`, and `outputs`
+- op call changed from string to object with `ref`, `inputs`, and `outputs`
   attributes. To migrate, replace string value with object having `ref`
   attribute equal to existing string and add `inputs`/`outputs` values as
   applicable.
-- String inputs must now be declared as a key value pair where the key
-  is `string` and the value is its attributes. To migrate, just turn
-  existing inputs into a key value pair where the key is `string` and
-  existing attributes are the value.
+- String parameters must now be declared as an object in form:
+  ```yaml
+  paramName:
+    string:
+      description: ...
+      # and so on... 
+  ```
 
 ### Removed
 
 - bubbling of default collection lookup
 
-## [0.1.2] - 2016-09-10
+## \[0.1.2] - 2016-09-10
 
 ### Added 
 
@@ -44,7 +45,7 @@ All notable changes to this project will be documented in this file.
 - run declaration no longer supports `subOps` attribute; use new `op`
   run declaration type
 
-## [0.1.1] - 2016-08-03
+## \[0.1.1] - 2016-08-03
 
-## [0.1.0] - 2016-07-18
+## \[0.1.0] - 2016-07-18
 

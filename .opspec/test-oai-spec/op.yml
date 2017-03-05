@@ -3,6 +3,7 @@ name: test-oai-spec
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 run:
   container:
@@ -14,9 +15,8 @@ run:
         npm install swagger-cli -g --quiet
 
         echo "testing OpenAPI specs"
-        swagger validate runtime-oai_spec.yml
-        swagger validate distribution-oai_spec.yml
+        swagger validate node-api.oai.yml
     dirs:
-      /workDir: srcDir
-    image: node:7.6
-    workDir: /workDir
+      /src: srcDir
+    image: { ref: 'node:7.6' }
+    workDir: /src/src/spec
