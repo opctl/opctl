@@ -3,6 +3,7 @@ name: test-json-schema
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
 run:
   container:
@@ -17,5 +18,5 @@ run:
         ajv compile -s "*" -r "*"
     dirs:
       /src: srcDir
-    image: node:7.6
-    workDir: /src/schema
+    image: { ref: 'node:7.6' }
+    workDir: /src/src/spec/schema

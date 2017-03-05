@@ -3,6 +3,7 @@ name: deploy
 inputs:
   srcDir:
     dir:
+      default: .
       description: directory containing the projects source code
   awsAccessKeyId:
     string:
