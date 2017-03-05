@@ -1,11 +1,11 @@
-## Collection Package
+## Collection Packages
 
-Encapsulates a *collection
+encapsulate collections so they may be consumed and/or distributed.
 
-### Collection Package Dir Structure
+### Dir Structure
 
 ```
-pkg-name (or .opspec)
+pkg-name
   |-- collection.yml
   ... (op packages)
 ```
@@ -13,11 +13,11 @@ pkg-name (or .opspec)
 Constraints:
 
 - MUST contain a
-  [collection package manifest](#collection-package-manifest) at their
+  [collection package manifest](#manifest) at their
   root.
 - Name MUST match their manifest
 
-### Collection Package Manifest
+### Manifest
 
 Constraints:
 
