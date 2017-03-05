@@ -17,6 +17,6 @@ run:
         echo "testing json schemas"
         ajv compile -s "*" -r "*"
     dirs:
-      /src: srcDir
+      /opt: srcDir
     image: { ref: 'node:7.6' }
-    workDir: /src/src/spec/schema
+    workDir: /opt/src/latest/schema
