@@ -8,9 +8,9 @@ produces:
   - application/json
   - text/plain
 paths:
-  /event-stream:
+  /events/stream:
     get:
-      summary: Get event stream
+      summary: Get an event stream
       description: |
         The connection will be upgraded to use the websocket protocol.
         Inspired by Docker Remote API [GET /events endpoint](https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/monitor-dockers-events)
@@ -22,12 +22,12 @@ paths:
 
             |attribute|type|description|
             |--|--|--|
-            |rootOpIds|array of strings|events will be filtered to those having one of these rootOpIds|
+            |opIds|array of strings|events will be filtered to those w/ matching opIds|
           required: false
           type: string
           format: json
       tags:
-        - event-stream
+        - events
       responses:
         '101':
           description: Switching Protocols
@@ -72,8 +72,8 @@ paths:
               - opPkgRef
             properties:
               args:
-                type: object
-                additionalProperties:
+                type: array
+                items:
                   $ref: '#/definitions/OpArg'
               opPkgRef:
                 type: string
