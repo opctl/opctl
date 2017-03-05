@@ -110,7 +110,7 @@ var _ = Describe("_opViewFactory", func() {
 
 			expectedCallGraph := &model.Scg{
 				Op: &model.ScgOpCall{
-					Ref: "dummyOpRef",
+					Ref: "dummyOpPkgRef",
 				},
 			}
 
@@ -203,7 +203,7 @@ var _ = Describe("_opViewFactory", func() {
 				/* arrange */
 				expectedCallGraph := &model.Scg{
 					Op: &model.ScgOpCall{
-						Ref: "dummyOpRef",
+						Ref: "dummyOpPkgRef",
 					},
 				}
 

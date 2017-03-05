@@ -43,7 +43,7 @@ var _ = Describe("_getOp", func() {
 				Name:        "dummyName",
 				Run: &model.Scg{
 					Op: &model.ScgOpCall{
-						Ref: "dummyOpRef",
+						Ref: "dummyOpPkgRef",
 					},
 				},
 				Version: "",

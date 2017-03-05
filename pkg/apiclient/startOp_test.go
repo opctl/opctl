@@ -18,8 +18,8 @@ var _ = Describe("StartOp", func() {
 
 		/* arrange */
 		providedStartOpReq := model.StartOpReq{
-			Args:  map[string]*model.Data{},
-			OpRef: "dummyOpRef",
+			Args:     map[string]*model.Data{},
+			OpPkgRef: "dummyOpPkgRef",
 		}
 
 		expectedReqBytes, _ := format.NewJsonFormat().From(providedStartOpReq)
@@ -27,7 +27,7 @@ var _ = Describe("StartOp", func() {
 
 		expectedHttpReq, _ := netHttp.NewRequest(
 			"POST",
-			fmt.Sprintf("http://%v/instances/starts", "localhost:42224"),
+			fmt.Sprintf("http://%v/ops/starts", "localhost:42224"),
 			bytes.NewBuffer(expectedReqBytes),
 		)
 

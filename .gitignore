@@ -4,3 +4,6 @@
 ### codecov.io
 coverage.txt
 *.coverprofile
+
+### OSX
+.DS_Store

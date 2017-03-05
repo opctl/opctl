@@ -22,7 +22,7 @@ func (this _apiClient) StartOp(
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http://%v/instances/starts", "localhost:42224"),
+		fmt.Sprintf("http://%v/ops/starts", "localhost:42224"),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {

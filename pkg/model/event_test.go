@@ -21,9 +21,9 @@ var _ = Describe("Event", func() {
 					ContainerExited: &ContainerExitedEvent{
 						ContainerRef: "dummyContainerRef",
 						ExitCode:     1,
-						OpGraphId:    "dummyOpGraphId",
+						RootOpId:     "dummyRootOpId",
 						ContainerId:  "dummyContainerId",
-						OpRef:        "dummyOpRef",
+						OpPkgRef:     "dummyOpPkgRef",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -52,9 +52,9 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStarted: &ContainerStartedEvent{
 						ContainerRef: "dummyContainerRef",
-						OpRef:        "dummyOpRef",
+						OpPkgRef:     "dummyOpPkgRef",
 						ContainerId:  "dummyContainerId",
-						OpGraphId:    "dummyOpGraphId",
+						RootOpId:     "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -83,9 +83,9 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdErrWrittenTo: &ContainerStdErrWrittenToEvent{
 						Data:        []byte("dummyData"),
-						OpRef:       "dummyOpRef",
+						OpPkgRef:    "dummyOpPkgRef",
 						ContainerId: "dummyContainerId",
-						OpGraphId:   "dummyOpGraphId",
+						RootOpId:    "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -114,9 +114,9 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdOutWrittenTo: &ContainerStdOutWrittenToEvent{
 						Data:        []byte("dummyData"),
-						OpRef:       "dummyOpRef",
+						OpPkgRef:    "dummyOpPkgRef",
 						ContainerId: "dummyContainerId",
-						OpGraphId:   "dummyOpGraphId",
+						RootOpId:    "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -144,10 +144,10 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpEnded: &OpEndedEvent{
-						OpRef:     "dummyOpRef",
-						OpId:      "dummyOpId",
-						Outcome:   "dummyOutcome",
-						OpGraphId: "dummyOpGraphId",
+						OpPkgRef: "dummyOpPkgRef",
+						OpId:     "dummyOpId",
+						Outcome:  "dummyOutcome",
+						RootOpId: "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -175,9 +175,9 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpStarted: &OpStartedEvent{
-						OpRef:     "dummyOpRef",
-						OpId:      "dummyOpId",
-						OpGraphId: "dummyOpGraphId",
+						OpPkgRef: "dummyOpPkgRef",
+						OpId:     "dummyOpId",
+						RootOpId: "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -205,10 +205,10 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpEncounteredError: &OpEncounteredErrorEvent{
-						Msg:       "dummyMsg",
-						OpRef:     "dummyOpRef",
-						OpId:      "dummyOpId",
-						OpGraphId: "dummyOpGraphId",
+						Msg:      "dummyMsg",
+						OpPkgRef: "dummyOpPkgRef",
+						OpId:     "dummyOpId",
+						RootOpId: "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}

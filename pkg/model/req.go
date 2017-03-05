@@ -13,7 +13,7 @@ type CreateOpReq struct {
 }
 
 type EventFilter struct {
-	OpGraphIds []string
+	RootOpIds []string
 }
 
 type GetEventStreamReq struct {
@@ -21,7 +21,7 @@ type GetEventStreamReq struct {
 }
 
 type KillOpReq struct {
-	OpGraphId string
+	RootOpId string
 }
 
 type SetCollectionDescriptionReq struct {
@@ -36,6 +36,6 @@ type SetOpDescriptionReq struct {
 
 type StartOpReq struct {
 	// map of args keyed by param name
-	Args  map[string]*Data `json:"args"`
-	OpRef string           `json:"opRef"`
+	Args     map[string]*Data `json:"args"`
+	OpPkgRef string           `json:"opPkgRef"`
 }

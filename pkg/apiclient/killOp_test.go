@@ -17,14 +17,14 @@ var _ = Describe("KillOp", func() {
 
 		/* arrange */
 		providedKillOpReq := model.KillOpReq{
-			OpGraphId: "dummyOpGraphId",
+			RootOpId: "dummyRootOpId",
 		}
 
 		expectedBytes, _ := format.NewJsonFormat().From(providedKillOpReq)
 
 		expectedHttpReq, _ := netHttp.NewRequest(
 			"POST",
-			fmt.Sprintf("http://%v/instances/kills", "localhost:42224"),
+			fmt.Sprintf("http://%v/ops/kills", "localhost:42224"),
 			bytes.NewBuffer(expectedBytes),
 		)
 
