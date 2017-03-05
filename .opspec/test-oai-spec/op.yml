@@ -17,6 +17,6 @@ run:
         echo "testing OpenAPI specs"
         swagger validate node-api.oai.yml
     dirs:
-      /opt: srcDir
+      /src: srcDir
     image: { ref: 'node:7.6' }
-    workDir: /opt/src/latest
+    workDir: /src/latest

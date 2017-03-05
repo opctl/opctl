@@ -4,7 +4,7 @@ composition of containerized processes.
 
 ## Collection
 
-0-N [ops](#op) grouped together.
+0-N [ops](GLOSSARY.md#op) grouped together.
 
 ## MAY
 
