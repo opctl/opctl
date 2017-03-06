@@ -17,6 +17,24 @@ var _ = Context("caller", func() {
 		})
 	})
 	Context("Call", func() {
+		Context("Null SCG", func() {
+			It("should not throw", func() {
+				/* arrange */
+				fakeContainerCaller := new(fakeContainerCaller)
+
+				/* act */
+				objectUnderTest := newCaller(fakeContainerCaller)
+
+				/* assert */
+				objectUnderTest.Call(
+					"dummyNodeId",
+					map[string]*model.Data{},
+					nil,
+					"dummyOpPkgRef",
+					"dummyRootOpId",
+				)
+			})
+		})
 		Context("Container SCG", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */

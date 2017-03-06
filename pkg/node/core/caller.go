@@ -49,6 +49,11 @@ func (this _caller) Call(
 	err error,
 ) {
 
+	if nil == scg {
+		// No Op; equivalent to an empty fn body in a programming language
+		return
+	}
+
 	switch {
 	case nil != scg.Container:
 		outboundScope, err = this.containerCaller.Call(
