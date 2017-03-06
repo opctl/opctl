@@ -1,10 +1,10 @@
-description: Runs all deploy ops
-name: deploy
+description: Runs all ops necessary to deploy docs
+name: deploy-docs
 inputs:
   srcDir:
     dir:
       default: .
-      description: directory containing the projects source code
+      description: dir containing the doc source
   awsAccessKeyId:
     string:
       constraints: { minLength: 20 }
@@ -19,26 +19,27 @@ inputs:
       constraints: { format: semver }
       description: version of the spec being deployed
 run:
-  container:
-    cmd:
-      - sh
-      - -ce
-      - |
-        echo "installing deps"
-        pip install awscli
+  serial:
+    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
+    - op: { ref: compile-gitbook, inputs: { srcDir }, outputs: { srcDir }}
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            pip install awscli
 
-        echo "performing deploy"
-        aws s3 sync . \
-          s3://spec.opspec.io/"$(version)" \
-          --delete --exclude "*" \
-          --include "index.md" \
-          --include "*spec.yml" \
-          --include "schema/*"
-    dirs:
-      /workDir: srcDir
-    envVars:
-      AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
-      AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
-      AWS_DEFAULT_REGION: us-west-2
-    image: python:2.7
-    workDir: /workDir
+            echo "deploying spec"
+            aws s3 sync . s3://opspec.io/spec --delete
+
+            echo "deploying versioned schema"
+            aws s3 sync latest/schema s3://opspec.io/spec/$(version)/schema --delete
+        dirs:
+          /src: srcDir
+        envVars:
+          AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
+          AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
+          AWS_DEFAULT_REGION: us-west-2
+        image: { ref: 'python:2.7' }
+        workDir: /src/_book
