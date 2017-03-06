@@ -84,7 +84,7 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 				return err
 			}
 
-			if !isOgIdExcludedByFilter(getEventOpGraphId(event), filter) {
+			if !isOgIdExcludedByFilter(getEventRootOpId(event), filter) {
 				result = append(result, event)
 			}
 

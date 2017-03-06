@@ -11,8 +11,8 @@ type serialCaller interface {
 	// Executes a serial call
 	Call(
 		inboundScope map[string]*model.Data,
-		opGraphId string,
-		opRef string,
+		rootOpId string,
+		opPkgRef string,
 		scgSerialCall []*model.Scg,
 	) (
 		outboundScope map[string]*model.Data,
@@ -39,8 +39,8 @@ type _serialCaller struct {
 
 func (this _serialCaller) Call(
 	inboundScope map[string]*model.Data,
-	opGraphId string,
-	opRef string,
+	rootOpId string,
+	opPkgRef string,
 	scgSerialCall []*model.Scg,
 ) (
 	outboundScope map[string]*model.Data,
@@ -57,8 +57,8 @@ func (this _serialCaller) Call(
 			this.uniqueStringFactory.Construct(),
 			outboundScope,
 			scgCall,
-			opRef,
-			opGraphId,
+			opPkgRef,
+			rootOpId,
 		)
 		if nil != err {
 			// end run immediately on any error

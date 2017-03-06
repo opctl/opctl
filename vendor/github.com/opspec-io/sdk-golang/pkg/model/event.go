@@ -22,50 +22,50 @@ const (
 type ContainerExitedEvent struct {
 	ContainerRef string `json:"containerRef"`
 	ExitCode     int    `json:"exitCode"`
-	OpGraphId    string `json:"opGraphId"`
+	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	OpRef        string `json:"opRef"`
+	OpPkgRef     string `json:"opPkgRef"`
 }
 
 type ContainerStartedEvent struct {
 	ContainerRef string `json:"containerRef"`
-	OpGraphId    string `json:"opGraphId"`
+	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	OpRef        string `json:"opRef"`
+	OpPkgRef     string `json:"opPkgRef"`
 }
 
 type ContainerStdErrWrittenToEvent struct {
 	ContainerRef string `json:"containerRef"`
 	Data         []byte `json:"data"`
-	OpGraphId    string `json:"opGraphId"`
+	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	OpRef        string `json:"opRef"`
+	OpPkgRef     string `json:"opPkgRef"`
 }
 
 type ContainerStdOutWrittenToEvent struct {
 	ContainerRef string `json:"containerRef"`
 	Data         []byte `json:"data"`
-	OpGraphId    string `json:"opGraphId"`
+	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	OpRef        string `json:"opRef"`
+	OpPkgRef     string `json:"opPkgRef"`
 }
 
 type OpEncounteredErrorEvent struct {
-	OpGraphId string `json:"opGraphId"`
-	Msg       string `json:"msg"`
-	OpId      string `json:"opId"`
-	OpRef     string `json:"opRef"`
+	RootOpId string `json:"rootOpId"`
+	Msg      string `json:"msg"`
+	OpId     string `json:"opId"`
+	OpPkgRef string `json:"opPkgRef"`
 }
 
 type OpEndedEvent struct {
-	OpGraphId string `json:"opGraphId"`
-	OpId      string `json:"opId"`
-	OpRef     string `json:"opRef"`
-	Outcome   string `json:"outcome"`
+	RootOpId string `json:"rootOpId"`
+	OpId     string `json:"opId"`
+	OpPkgRef string `json:"opPkgRef"`
+	Outcome  string `json:"outcome"`
 }
 
 type OpStartedEvent struct {
-	OpGraphId string `json:"opGraphId"`
-	OpId      string `json:"opId"`
-	OpRef     string `json:"opRef"`
+	RootOpId string `json:"rootOpId"`
+	OpId     string `json:"opId"`
+	OpPkgRef string `json:"opPkgRef"`
 }

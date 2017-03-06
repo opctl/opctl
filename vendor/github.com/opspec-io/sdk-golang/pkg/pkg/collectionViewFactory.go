@@ -1,4 +1,4 @@
-package bundle
+package pkg
 
 //go:generate counterfeiter -o ./fakeCollectionViewFactory.go --fake-name fakeCollectionViewFactory ./ collectionViewFactory
 
@@ -11,7 +11,7 @@ import (
 
 type collectionViewFactory interface {
 	Construct(
-		collectionBundlePath string,
+		collectionPackagePath string,
 	) (
 		collectionView model.CollectionView,
 		err error,
@@ -39,13 +39,13 @@ type _collectionViewFactory struct {
 }
 
 func (this _collectionViewFactory) Construct(
-	collectionBundlePath string,
+	collectionPackagePath string,
 ) (
 	collectionView model.CollectionView,
 	err error,
 ) {
 
-	collectionManifestPath := path.Join(collectionBundlePath, NameOfCollectionManifestFile)
+	collectionManifestPath := path.Join(collectionPackagePath, NameOfCollectionManifestFile)
 
 	collectionManifestBytes, err := this.fileSystem.GetBytesOfFile(
 		collectionManifestPath,
@@ -64,14 +64,14 @@ func (this _collectionViewFactory) Construct(
 	}
 
 	var opViews []model.OpView
-	childFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(collectionBundlePath)
+	childFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(collectionPackagePath)
 	if nil != err {
 		return
 	}
 
 	for _, childFileInfo := range childFileInfos {
 		opView, err := this.opViewFactory.Construct(
-			path.Join(collectionBundlePath, childFileInfo.Name()),
+			path.Join(collectionPackagePath, childFileInfo.Name()),
 		)
 		if nil == err {
 			opViews = append(opViews, opView)

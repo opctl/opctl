@@ -16,8 +16,8 @@ func constructDcgContainerCall(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
-	opGraphId string,
-	opRef string,
+	rootOpId string,
+	opPkgRef string,
 ) (dcgContainerCall *model.DcgContainerCall, err error) {
 	fs := osfs.New()
 	fileCopier := filecopier.New()
@@ -31,7 +31,7 @@ func constructDcgContainerCall(
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
 		ContainerId: containerId,
-		OpGraphId:   opGraphId,
+		RootOpId:    rootOpId,
 	}
 
 	// create scratch dir for container
@@ -39,7 +39,7 @@ func constructDcgContainerCall(
 		appdatapath.New().PerUser(),
 		"opctl",
 		"dcg",
-		opGraphId,
+		rootOpId,
 		"containers",
 		containerId,
 		"fs",
@@ -58,15 +58,15 @@ func constructDcgContainerCall(
 	// construct dirs
 	for scgContainerDirPath, scgContainerDirBind := range scgContainerCall.Dirs {
 		if "" == scgContainerDirBind {
-			// use container dir path as bundle dir path if not provided
+			// use container dir path as pkg dir path if not provided
 			scgContainerDirBind = scgContainerDirPath
 		}
 
 		if strings.HasPrefix(scgContainerDirBind, "/") {
-			// is bound to bundle path
+			// is bound to pkg path
 			dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
 			err = dirCopier.Fs(
-				path.Join(opRef, scgContainerDirBind),
+				path.Join(opPkgRef, scgContainerDirBind),
 				dcgContainerCall.Dirs[scgContainerDirPath],
 			)
 		} else {
@@ -95,15 +95,15 @@ func constructDcgContainerCall(
 	// construct files
 	for scgContainerFilePath, scgContainerFileBind := range scgContainerCall.Files {
 		if "" == scgContainerFileBind {
-			// use container file path as bundle file path if not provided
+			// use container file path as pkg file path if not provided
 			scgContainerFileBind = scgContainerFilePath
 		}
 
 		if strings.HasPrefix(scgContainerFileBind, "/") {
-			// is bound to bundle path
+			// is bound to pkg path
 			dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
 			err = fileCopier.Fs(
-				path.Join(opRef, scgContainerFileBind),
+				path.Join(opPkgRef, scgContainerFileBind),
 				dcgContainerCall.Files[scgContainerFilePath],
 			)
 		} else {

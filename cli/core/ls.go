@@ -22,7 +22,7 @@ func (this _core) ListOpsInCollection(
 		return // support fake exiter
 	}
 
-	ops, err := this.bundle.GetCollection(
+	ops, err := this.pkg.GetCollection(
 		filepath.Join(pwd, collection),
 	)
 	if nil != err {

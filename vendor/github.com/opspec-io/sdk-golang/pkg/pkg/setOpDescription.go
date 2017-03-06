@@ -1,11 +1,11 @@
-package bundle
+package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"path"
 )
 
-func (this _bundle) SetOpDescription(
+func (this pkg) SetOpDescription(
 	req model.SetOpDescriptionReq,
 ) (err error) {
 

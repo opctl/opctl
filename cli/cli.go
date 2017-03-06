@@ -17,7 +17,7 @@ func newCli(
 	cliColorer clicolorer.CliColorer,
 ) cli {
 
-	cli := mow.App("opctl", "Cross platform runtime for https://opspec.io")
+	cli := mow.App("opctl", "Open source cross platform opspec node")
 	cli.Version("v version", version)
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")
@@ -58,7 +58,7 @@ func newCli(
 	})
 
 	cli.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-		opId := killCmd.StringArg("OP_GRAPH_ID", "", "Id of the op graph to kill")
+		opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 		killCmd.Action = func() {
 			core.KillOp(*opId)

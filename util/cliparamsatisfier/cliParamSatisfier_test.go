@@ -1,7 +1,6 @@
 package cliparamsatisfier
 
 import (
-	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -9,7 +8,6 @@ import (
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/apiclient"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"path/filepath"
@@ -127,9 +125,6 @@ var _ = Context("parameterSatisfier", func() {
 
 						fakeVos := new(vos.Fake)
 						fakeVos.GetenvReturns(param1ValueFromEnv.String)
-
-						fakeApiClient := new(apiclient.Fake)
-						fakeApiClient.StartOpReturns("dummyOpId", errors.New(""))
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),

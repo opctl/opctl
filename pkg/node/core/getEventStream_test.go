@@ -15,8 +15,8 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedReq := &model.GetEventStreamReq{
 				Filter: &model.EventFilter{
-					OpGraphIds: []string{
-						"dummyOpGraphId",
+					RootOpIds: []string{
+						"dummyRootOpId",
 					},
 				},
 			}

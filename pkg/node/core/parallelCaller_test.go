@@ -22,8 +22,8 @@ var _ = Context("parallelCaller", func() {
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
-			providedOpGraphId := "dummyOpGraphId"
-			providedOpRef := "dummyOpRef"
+			providedRootOpId := "dummyRootOpId"
+			providedOpPkgRef := "dummyOpPkgRef"
 			providedScgParallelCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
@@ -50,8 +50,8 @@ var _ = Context("parallelCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedOpGraphId,
-				providedOpRef,
+				providedRootOpId,
+				providedOpPkgRef,
 				providedScgParallelCalls,
 			)
 
@@ -61,12 +61,12 @@ var _ = Context("parallelCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualScg,
-					actualOpRef,
-					actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
+					actualOpPkgRef,
+					actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualOpRef).To(Equal(providedOpRef))
-				Expect(actualOpGraphId).To(Equal(providedOpGraphId))
+				Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 			}
 			Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
@@ -75,8 +75,8 @@ var _ = Context("parallelCaller", func() {
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
-				providedOpGraphId := "dummyOpGraphId"
-				providedOpRef := "dummyOpRef"
+				providedRootOpId := "dummyRootOpId"
+				providedOpPkgRef := "dummyOpPkgRef"
 				providedScgParallelCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
@@ -105,8 +105,8 @@ var _ = Context("parallelCaller", func() {
 				/* act */
 				actualError := objectUnderTest.Call(
 					providedInboundScope,
-					providedOpGraphId,
-					providedOpRef,
+					providedRootOpId,
+					providedOpPkgRef,
 					providedScgParallelCalls,
 				)
 
@@ -116,12 +116,12 @@ var _ = Context("parallelCaller", func() {
 					actualNodeId,
 						actualChildOutboundScope,
 						actualScg,
-						actualOpRef,
-						actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
+						actualOpPkgRef,
+						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-					Expect(actualOpRef).To(Equal(providedOpRef))
-					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
+					Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+					Expect(actualRootOpId).To(Equal(providedRootOpId))
 					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 				}
 				Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))
@@ -132,8 +132,8 @@ var _ = Context("parallelCaller", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
-				providedOpGraphId := "dummyOpGraphId"
-				providedOpRef := "dummyOpRef"
+				providedRootOpId := "dummyRootOpId"
+				providedOpPkgRef := "dummyOpPkgRef"
 				providedScgParallelCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
@@ -160,8 +160,8 @@ var _ = Context("parallelCaller", func() {
 				/* act */
 				actualError := objectUnderTest.Call(
 					providedInboundScope,
-					providedOpGraphId,
-					providedOpRef,
+					providedRootOpId,
+					providedOpPkgRef,
 					providedScgParallelCalls,
 				)
 
@@ -171,12 +171,12 @@ var _ = Context("parallelCaller", func() {
 					actualNodeId,
 						actualChildOutboundScope,
 						actualScg,
-						actualOpRef,
-						actualOpGraphId := fakeCaller.CallArgsForCall(callIndex)
+						actualOpPkgRef,
+						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-					Expect(actualOpRef).To(Equal(providedOpRef))
-					Expect(actualOpGraphId).To(Equal(providedOpGraphId))
+					Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+					Expect(actualRootOpId).To(Equal(providedRootOpId))
 					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
 				}
 				Expect(actualScgParallelCalls).To(ConsistOf(providedScgParallelCalls))

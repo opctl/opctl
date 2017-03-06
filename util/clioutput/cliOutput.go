@@ -76,9 +76,9 @@ func (this _cliOutput) Event(event *model.Event) {
 
 func (this _cliOutput) containerExited(event *model.Event) {
 	this.Info(
-		"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
+		"ContainerExited Id='%v' OpPkgRef='%v' ExitCode='%v' Timestamp='%v'\n",
 		event.ContainerExited.ContainerId,
-		event.ContainerExited.OpRef,
+		event.ContainerExited.OpPkgRef,
 		event.ContainerExited.ExitCode,
 		event.Timestamp.Format(time.RFC3339),
 	)
@@ -86,9 +86,9 @@ func (this _cliOutput) containerExited(event *model.Event) {
 
 func (this _cliOutput) containerStarted(event *model.Event) {
 	this.Info(
-		"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+		"ContainerStarted Id='%v' OpPkgRef='%v' Timestamp='%v'\n",
 		event.ContainerStarted.ContainerId,
-		event.ContainerStarted.OpRef,
+		event.ContainerStarted.OpPkgRef,
 		event.Timestamp.Format(time.RFC3339),
 	)
 }
@@ -103,9 +103,9 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 
 func (this _cliOutput) opEncounteredError(event *model.Event) {
 	this.Error(
-		"OpEncounteredError Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
+		"OpEncounteredError Id='%v' OpPkgRef='%v' Timestamp='%v' Msg='%v'\n",
 		event.OpEncounteredError.OpId,
-		event.OpEncounteredError.OpRef,
+		event.OpEncounteredError.OpPkgRef,
 		event.Timestamp.Format(time.RFC3339),
 		event.OpEncounteredError.Msg,
 	)
@@ -113,9 +113,9 @@ func (this _cliOutput) opEncounteredError(event *model.Event) {
 
 func (this _cliOutput) opEnded(event *model.Event) {
 	message := fmt.Sprintf(
-		"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
+		"OpEnded Id='%v' OpPkgRef='%v' Outcome='%v' Timestamp='%v'\n",
 		event.OpEnded.OpId,
-		event.OpEnded.OpRef,
+		event.OpEnded.OpPkgRef,
 		event.OpEnded.Outcome,
 		event.Timestamp.Format(time.RFC3339),
 	)
@@ -131,9 +131,9 @@ func (this _cliOutput) opEnded(event *model.Event) {
 
 func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
-		"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
+		"OpStarted Id='%v' OpPkgRef='%v' Timestamp='%v'\n",
 		event.OpStarted.OpId,
-		event.OpStarted.OpRef,
+		event.OpStarted.OpPkgRef,
 		event.Timestamp.Format(time.RFC3339),
 	)
 }

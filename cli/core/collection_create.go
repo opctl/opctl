@@ -16,7 +16,7 @@ func (this _core) CreateCollection(
 		return // support fake exiter
 	}
 
-	err = this.bundle.CreateCollection(
+	err = this.pkg.CreateCollection(
 		model.CreateCollectionReq{
 			Path:        filepath.Join(pwd, name),
 			Name:        name,

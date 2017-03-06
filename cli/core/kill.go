@@ -6,12 +6,12 @@ import (
 )
 
 func (this _core) KillOp(
-	opGraphId string,
+	opId string,
 ) {
 
-	err := this.apiClient.KillOp(
+	err := this.consumeNodeApi.KillOp(
 		model.KillOpReq{
-			OpGraphId: opGraphId,
+			OpId: opId,
 		},
 	)
 	if nil != err {

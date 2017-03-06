@@ -1,4 +1,4 @@
-package bundle
+package pkg
 
 const (
 	NameOfOpManifestFile         = "op.yml"

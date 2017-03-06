@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/bundle"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"path/filepath"
 )
 
@@ -23,7 +23,7 @@ var _ = Context("createCollection", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					bundle:    new(bundle.Fake),
+					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
 					vos:       fakeVos,
 				}
@@ -37,9 +37,9 @@ var _ = Context("createCollection", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call bundle.CreateCollection w/ expected args", func() {
+			It("should call pkg.CreateCollection w/ expected args", func() {
 				/* arrange */
-				fakeBundle := new(bundle.Fake)
+				fakePkg := new(pkg.Fake)
 
 				expectedCollectionName := "dummyCollectionName"
 				wdReturnedFromVos := "dummyWorkDir"
@@ -54,27 +54,27 @@ var _ = Context("createCollection", func() {
 				}
 
 				objectUnderTest := _core{
-					bundle: fakeBundle,
-					vos:    fakeVos,
+					pkg: fakePkg,
+					vos: fakeVos,
 				}
 
 				/* act */
 				objectUnderTest.CreateCollection(expectedReq.Description, expectedReq.Name)
 
 				/* assert */
-				Expect(fakeBundle.CreateCollectionArgsForCall(0)).Should(Equal(expectedReq))
+				Expect(fakePkg.CreateCollectionArgsForCall(0)).Should(Equal(expectedReq))
 			})
-			Context("bundle.CreateCollection errors", func() {
+			Context("pkg.CreateCollection errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeBundle := new(bundle.Fake)
+					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
-					fakeBundle.CreateCollectionReturns(expectedError)
+					fakePkg.CreateCollectionReturns(expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
 					objectUnderTest := _core{
-						bundle:    fakeBundle,
+						pkg:       fakePkg,
 						cliExiter: fakeCliExiter,
 						vos:       new(vos.Fake),
 					}

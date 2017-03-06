@@ -20,7 +20,7 @@ func (this _core) StreamEvents() {
 		<-time.After(time.Second * 3)
 	}
 
-	eventChannel, err := this.apiClient.GetEventStream(
+	eventChannel, err := this.consumeNodeApi.GetEventStream(
 		&model.GetEventStreamReq{},
 	)
 	if nil != err {

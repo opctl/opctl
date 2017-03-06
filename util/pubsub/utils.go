@@ -9,9 +9,9 @@ func isOgIdExcludedByFilter(
 	ogid string,
 	filter *model.EventFilter,
 ) bool {
-	if nil != filter && nil != filter.OpGraphIds {
+	if nil != filter && nil != filter.RootOpIds {
 		isMatchFound := false
-		for _, includedOgid := range filter.OpGraphIds {
+		for _, includedOgid := range filter.RootOpIds {
 			if includedOgid == ogid {
 				isMatchFound = true
 				break
@@ -24,24 +24,24 @@ func isOgIdExcludedByFilter(
 	return false
 }
 
-func getEventOpGraphId(
+func getEventRootOpId(
 	event *model.Event,
 ) string {
 	switch {
 	case nil != event.ContainerExited:
-		return event.ContainerExited.OpGraphId
+		return event.ContainerExited.RootOpId
 	case nil != event.ContainerStarted:
-		return event.ContainerStarted.OpGraphId
+		return event.ContainerStarted.RootOpId
 	case nil != event.ContainerStdErrWrittenTo:
-		return event.ContainerStdErrWrittenTo.OpGraphId
+		return event.ContainerStdErrWrittenTo.RootOpId
 	case nil != event.ContainerStdOutWrittenTo:
-		return event.ContainerStdOutWrittenTo.OpGraphId
+		return event.ContainerStdOutWrittenTo.RootOpId
 	case nil != event.OpEncounteredError:
-		return event.OpEncounteredError.OpGraphId
+		return event.OpEncounteredError.RootOpId
 	case nil != event.OpEnded:
-		return event.OpEnded.OpGraphId
+		return event.OpEnded.RootOpId
 	case nil != event.OpStarted:
-		return event.OpStarted.OpGraphId
+		return event.OpStarted.RootOpId
 	default:
 		panic(fmt.Sprintf("Received unexpected event %v\n", event))
 	}

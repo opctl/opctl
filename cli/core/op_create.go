@@ -17,7 +17,7 @@ func (this _core) CreateOp(
 		return // support fake exiter
 	}
 
-	err = this.bundle.CreateOp(
+	err = this.pkg.CreateOp(
 		model.CreateOpReq{
 			Path:        filepath.Join(pwd, collection, name),
 			Name:        name,

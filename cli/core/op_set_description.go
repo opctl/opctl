@@ -17,7 +17,7 @@ func (this _core) SetOpDescription(
 		return // support fake exiter
 	}
 
-	err = this.bundle.SetOpDescription(
+	err = this.pkg.SetOpDescription(
 		model.SetOpDescriptionReq{
 			PathToOp:    path.Join(pwd, collection, name),
 			Description: description,

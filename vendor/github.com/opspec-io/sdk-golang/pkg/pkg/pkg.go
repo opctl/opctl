@@ -1,6 +1,6 @@
-package bundle
+package pkg
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Bundle
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Package
 
 import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
@@ -8,7 +8,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/fs"
 )
 
-type Bundle interface {
+type Pkg interface {
 	CreateCollection(
 		req model.CreateCollectionReq,
 	) (err error)
@@ -18,14 +18,14 @@ type Bundle interface {
 	) (err error)
 
 	GetCollection(
-		collectionBundlePath string,
+		collectionPackagePath string,
 	) (
 		collectionView model.CollectionView,
 		err error,
 	)
 
 	GetOp(
-		opBundlePath string,
+		opPackagePath string,
 	) (
 		opView model.OpView,
 		err error,
@@ -47,12 +47,12 @@ type Bundle interface {
 	)
 }
 
-func New() Bundle {
+func New() Pkg {
 	fileSystem := fs.NewFileSystem()
 	yaml := format.NewYamlFormat()
 	opViewFactory := newOpViewFactory(fileSystem, yaml)
 
-	return &_bundle{
+	return &pkg{
 		collectionViewFactory: newCollectionViewFactory(fileSystem, opViewFactory, yaml),
 		fileSystem:            fileSystem,
 		opViewFactory:         opViewFactory,
@@ -60,7 +60,7 @@ func New() Bundle {
 	}
 }
 
-type _bundle struct {
+type pkg struct {
 	collectionViewFactory collectionViewFactory
 	fileSystem            fs.FileSystem
 	opViewFactory         opViewFactory

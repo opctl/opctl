@@ -13,7 +13,7 @@ import (
 func (this _containerProvider) stdOutLogger(
 	eventPublisher pubsub.EventPublisher,
 	containerId string,
-	opGraphId string,
+	rootOpId string,
 ) (err error) {
 
 	var readCloser io.ReadCloser
@@ -39,7 +39,7 @@ func (this _containerProvider) stdOutLogger(
 					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 						Data:        scanner.Bytes(),
 						ContainerId: containerId,
-						OpGraphId:   opGraphId,
+						RootOpId:    rootOpId,
 					},
 				},
 			)
