@@ -3,7 +3,7 @@
 All notable changes to the spec will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
-## \[0.1.3]
+## \[0.1.3] - 2017-03-06
 
 ### Added
 

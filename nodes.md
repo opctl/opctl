@@ -2,6 +2,6 @@
 
 Nodes distribute packages and orchestrate ops
 
-# API
+## API
 
 Nodes MUST implement the [node api](node-api.md)
