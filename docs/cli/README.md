@@ -1,5 +1,5 @@
 ```shell
-opctl
+$ opctl
 
 Usage: opctl [OPTIONS] COMMAND [arg...]
 
@@ -10,14 +10,14 @@ Options:
   --nc, --no-color=false   Disable output coloring
 
 Commands:
-  collection    Manage collections
   events        Stream events
-  kill          Kill an op
-  ls            List ops in a collection
+  ls            List packages (only v0.1.3 opspec packages will be listed)
   node          Manage nodes
   op            Manage ops
-  run           Run an op
+  pkg           Manage packages
+  run           Start and wait on an op
   self-update   Update opctl
 
 Run 'opctl COMMAND --help' for more information on a command.
+
 ```

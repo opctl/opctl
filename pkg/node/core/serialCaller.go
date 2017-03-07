@@ -12,7 +12,7 @@ type serialCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		rootOpId string,
-		opPkgRef string,
+		pkgRef string,
 		scgSerialCall []*model.Scg,
 	) (
 		outboundScope map[string]*model.Data,
@@ -40,7 +40,7 @@ type _serialCaller struct {
 func (this _serialCaller) Call(
 	inboundScope map[string]*model.Data,
 	rootOpId string,
-	opPkgRef string,
+	pkgRef string,
 	scgSerialCall []*model.Scg,
 ) (
 	outboundScope map[string]*model.Data,
@@ -57,7 +57,7 @@ func (this _serialCaller) Call(
 			this.uniqueStringFactory.Construct(),
 			outboundScope,
 			scgCall,
-			opPkgRef,
+			pkgRef,
 			rootOpId,
 		)
 		if nil != err {

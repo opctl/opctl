@@ -2,7 +2,7 @@
 
 This project maintains an [op spec](https://opspec.io/).
 
-It can be consumed via tools like [opctl](https://opctl.io).
+It can be consumed via tools like [opctl](https://opspec.io/opctl).
 
 # Acceptance criteria
 

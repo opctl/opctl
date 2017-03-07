@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
+	"github.com/opspec-io/sdk-golang/pkg/managepackages"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"github.com/pkg/errors"
 	"time"
@@ -18,7 +18,7 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
-				new(pkg.Fake),
+				new(managepackages.Fake),
 				new(pubsub.Fake),
 				newDcgNodeRepo(),
 				new(fakeCaller),
@@ -32,12 +32,12 @@ var _ = Context("opCaller", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedOpId := "dummyOpId"
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
 			expectedDcgNodeDescriptor := &dcgNodeDescriptor{
 				Id:       providedOpId,
-				OpPkgRef: providedOpPkgRef,
+				PkgRef:   providedPkgRef,
 				RootOpId: providedRootOpId,
 				Op:       &dcgOpDescriptor{},
 			}
@@ -45,7 +45,7 @@ var _ = Context("opCaller", func() {
 			fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 
 			objectUnderTest := newOpCaller(
-				new(pkg.Fake),
+				new(managepackages.Fake),
 				new(pubsub.Fake),
 				fakeDcgNodeRepo,
 				new(fakeCaller),
@@ -57,26 +57,26 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedOpId,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedRootOpId,
 			)
 
 			/* assert */
 			Expect(fakeDcgNodeRepo.AddArgsForCall(0)).To(Equal(expectedDcgNodeDescriptor))
 		})
-		It("should call pkg.GetOp w/ expected args", func() {
+		It("should call managepackages.GetPackage w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedOpId := "dummyOpId"
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
-			expectedOpPkgRef := providedOpPkgRef
+			expectedPkgRef := providedPkgRef
 
-			fakePkg := new(pkg.Fake)
+			fakeManagePackages := new(managepackages.Fake)
 
 			objectUnderTest := newOpCaller(
-				fakePkg,
+				fakeManagePackages,
 				new(pubsub.Fake),
 				new(fakeDcgNodeRepo),
 				new(fakeCaller),
@@ -88,19 +88,19 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedOpId,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedRootOpId,
 			)
 
 			/* assert */
-			Expect(fakePkg.GetOpArgsForCall(0)).To(Equal(expectedOpPkgRef))
+			Expect(fakeManagePackages.GetPackageArgsForCall(0)).To(Equal(expectedPkgRef))
 		})
-		Context("pkg.GetOp errors", func() {
+		Context("managepackages.GetPackage errors", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedOpId := "dummyOpId"
-				providedOpPkgRef := "dummyOpPkgRef"
+				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
 
 				expectedEvent := &model.Event{
@@ -108,14 +108,14 @@ var _ = Context("opCaller", func() {
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
 						Msg:      "dummyError",
 						OpId:     providedOpId,
-						OpPkgRef: providedOpPkgRef,
+						PkgRef:   providedPkgRef,
 						RootOpId: providedRootOpId,
 					},
 				}
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetOpReturns(
-					model.OpView{},
+				fakeManagePackages := new(managepackages.Fake)
+				fakeManagePackages.GetPackageReturns(
+					model.PackageView{},
 					errors.New(expectedEvent.OpEncounteredError.Msg),
 				)
 
@@ -125,7 +125,7 @@ var _ = Context("opCaller", func() {
 				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := newOpCaller(
-					fakePkg,
+					fakeManagePackages,
 					fakePubSub,
 					fakeDcgNodeRepo,
 					new(fakeCaller),
@@ -137,7 +137,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					providedInboundScope,
 					providedOpId,
-					providedOpPkgRef,
+					providedPkgRef,
 					providedRootOpId,
 				)
 
@@ -152,7 +152,7 @@ var _ = Context("opCaller", func() {
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
 		})
-		Context("pkg.GetOp doesn't error", func() {
+		Context("managepackages.GetPackage doesn't error", func() {
 			It("should call validate.Param w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{
@@ -162,10 +162,10 @@ var _ = Context("opCaller", func() {
 					"dummyVar4Name": {Socket: "dummyVar4Data"},
 				}
 				providedOpId := "dummyOpId"
-				providedOpPkgRef := "dummyOpPkgRef"
+				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
 
-				opReturnedFromPkg := model.OpView{
+				opReturnedFromPkg := model.PackageView{
 					Inputs: map[string]*model.Param{
 						"dummyVar1Name": {
 							String: &model.StringParam{},
@@ -181,8 +181,8 @@ var _ = Context("opCaller", func() {
 						},
 					},
 				}
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetOpReturns(opReturnedFromPkg, nil)
+				fakeManagePackages := new(managepackages.Fake)
+				fakeManagePackages.GetPackageReturns(opReturnedFromPkg, nil)
 
 				expectedCalls := map[*model.Data]*model.Param{}
 				for inputName, input := range opReturnedFromPkg.Inputs {
@@ -192,7 +192,7 @@ var _ = Context("opCaller", func() {
 				fakeValidate := new(validate.Fake)
 
 				objectUnderTest := newOpCaller(
-					fakePkg,
+					fakeManagePackages,
 					new(pubsub.Fake),
 					new(fakeDcgNodeRepo),
 					new(fakeCaller),
@@ -204,7 +204,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					providedInboundScope,
 					providedOpId,
-					providedOpPkgRef,
+					providedPkgRef,
 					providedRootOpId,
 				)
 
@@ -221,13 +221,13 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
 
 					fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 					fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-					opReturnedFromPkg := model.OpView{
+					opReturnedFromPkg := model.PackageView{
 						Inputs: map[string]*model.Param{
 							"dummyVar1Name": {
 								String: &model.StringParam{
@@ -236,8 +236,8 @@ var _ = Context("opCaller", func() {
 							},
 						},
 					}
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetOpReturns(opReturnedFromPkg, nil)
+					fakeManagePackages := new(managepackages.Fake)
+					fakeManagePackages.GetPackageReturns(opReturnedFromPkg, nil)
 
 					fakeValidate := new(validate.Fake)
 
@@ -261,13 +261,13 @@ var _ = Context("opCaller", func() {
 						OpEncounteredError: &model.OpEncounteredErrorEvent{
 							Msg:      expectedMsg,
 							OpId:     providedOpId,
-							OpPkgRef: providedOpPkgRef,
+							PkgRef:   providedPkgRef,
 							RootOpId: providedRootOpId,
 						},
 					}
 
 					objectUnderTest := newOpCaller(
-						fakePkg,
+						fakeManagePackages,
 						fakePubSub,
 						fakeDcgNodeRepo,
 						new(fakeCaller),
@@ -279,7 +279,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedRootOpId,
 					)
 
@@ -299,14 +299,14 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
 
 					expectedEvent := &model.Event{
 						Timestamp: time.Now().UTC(),
 						OpStarted: &model.OpStartedEvent{
 							OpId:     providedOpId,
-							OpPkgRef: providedOpPkgRef,
+							PkgRef:   providedPkgRef,
 							RootOpId: providedRootOpId,
 						},
 					}
@@ -314,7 +314,7 @@ var _ = Context("opCaller", func() {
 					fakePubSub := new(pubsub.Fake)
 
 					objectUnderTest := newOpCaller(
-						new(pkg.Fake),
+						new(managepackages.Fake),
 						fakePubSub,
 						new(fakeDcgNodeRepo),
 						new(fakeCaller),
@@ -326,7 +326,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedRootOpId,
 					)
 
@@ -344,10 +344,10 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
 
-					opReturnedFromPkg := model.OpView{
+					opReturnedFromPkg := model.PackageView{
 						Run: &model.Scg{
 							Parallel: []*model.Scg{
 								{
@@ -356,8 +356,8 @@ var _ = Context("opCaller", func() {
 							},
 						},
 					}
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetOpReturns(opReturnedFromPkg, nil)
+					fakeManagePackages := new(managepackages.Fake)
+					fakeManagePackages.GetPackageReturns(opReturnedFromPkg, nil)
 
 					fakeCaller := new(fakeCaller)
 
@@ -366,7 +366,7 @@ var _ = Context("opCaller", func() {
 					fakeUniqueStringFactory.ConstructReturns(expectedNodeId)
 
 					objectUnderTest := newOpCaller(
-						fakePkg,
+						fakeManagePackages,
 						new(pubsub.Fake),
 						new(fakeDcgNodeRepo),
 						fakeCaller,
@@ -378,7 +378,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedRootOpId,
 					)
 
@@ -386,26 +386,26 @@ var _ = Context("opCaller", func() {
 					actualNodeId,
 						actualInboundScope,
 						actualScg,
-						actualOpPkgRef,
+						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(0)
 
 					Expect(actualNodeId).To(Equal(expectedNodeId))
 					Expect(actualInboundScope).To(Equal(providedInboundScope))
 					Expect(actualScg).To(Equal(opReturnedFromPkg.Run))
-					Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+					Expect(actualPkgRef).To(Equal(providedPkgRef))
 					Expect(actualRootOpId).To(Equal(providedRootOpId))
 				})
 				It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
 					providedOpId := "dummyOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
 
 					fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 
 					objectUnderTest := newOpCaller(
-						new(pkg.Fake),
+						new(managepackages.Fake),
 						new(pubsub.Fake),
 						fakeDcgNodeRepo,
 						new(fakeCaller),
@@ -417,7 +417,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedRootOpId,
 					)
 
@@ -429,7 +429,7 @@ var _ = Context("opCaller", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
 						providedOpId := "dummyOpId"
-						providedOpPkgRef := "dummyOpPkgRef"
+						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
 
 						expectedEvent := &model.Event{
@@ -438,14 +438,14 @@ var _ = Context("opCaller", func() {
 								OpId:     providedOpId,
 								Outcome:  model.OpOutcomeKilled,
 								RootOpId: providedRootOpId,
-								OpPkgRef: providedOpPkgRef,
+								PkgRef:   providedPkgRef,
 							},
 						}
 
 						fakePubSub := new(pubsub.Fake)
 
 						objectUnderTest := newOpCaller(
-							new(pkg.Fake),
+							new(managepackages.Fake),
 							fakePubSub,
 							new(fakeDcgNodeRepo),
 							new(fakeCaller),
@@ -457,7 +457,7 @@ var _ = Context("opCaller", func() {
 						objectUnderTest.Call(
 							providedInboundScope,
 							providedOpId,
-							providedOpPkgRef,
+							providedPkgRef,
 							providedRootOpId,
 						)
 
@@ -477,14 +477,14 @@ var _ = Context("opCaller", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
 						providedOpId := "dummyOpId"
-						providedOpPkgRef := "dummyOpPkgRef"
+						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
 
 						fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 						fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						objectUnderTest := newOpCaller(
-							new(pkg.Fake),
+							new(managepackages.Fake),
 							new(pubsub.Fake),
 							fakeDcgNodeRepo,
 							new(fakeCaller),
@@ -496,7 +496,7 @@ var _ = Context("opCaller", func() {
 						objectUnderTest.Call(
 							providedInboundScope,
 							providedOpId,
-							providedOpPkgRef,
+							providedPkgRef,
 							providedRootOpId,
 						)
 
@@ -508,7 +508,7 @@ var _ = Context("opCaller", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
-							providedOpPkgRef := "dummyOpPkgRef"
+							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
 
 							expectedEvent := &model.Event{
@@ -516,7 +516,7 @@ var _ = Context("opCaller", func() {
 								OpEncounteredError: &model.OpEncounteredErrorEvent{
 									Msg:      "dummyError",
 									OpId:     providedOpId,
-									OpPkgRef: providedOpPkgRef,
+									PkgRef:   providedPkgRef,
 									RootOpId: providedRootOpId,
 								},
 							}
@@ -533,7 +533,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								new(managepackages.Fake),
 								fakePubSub,
 								fakeDcgNodeRepo,
 								fakeCaller,
@@ -545,7 +545,7 @@ var _ = Context("opCaller", func() {
 							objectUnderTest.Call(
 								providedInboundScope,
 								providedOpId,
-								providedOpPkgRef,
+								providedPkgRef,
 								providedRootOpId,
 							)
 
@@ -563,14 +563,14 @@ var _ = Context("opCaller", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
-							providedOpPkgRef := "dummyOpPkgRef"
+							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEnded: &model.OpEndedEvent{
 									OpId:     providedOpId,
-									OpPkgRef: providedOpPkgRef,
+									PkgRef:   providedPkgRef,
 									Outcome:  model.OpOutcomeFailed,
 									RootOpId: providedRootOpId,
 								},
@@ -588,7 +588,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								new(managepackages.Fake),
 								fakePubSub,
 								fakeDcgNodeRepo,
 								fakeCaller,
@@ -600,7 +600,7 @@ var _ = Context("opCaller", func() {
 							objectUnderTest.Call(
 								providedInboundScope,
 								providedOpId,
-								providedOpPkgRef,
+								providedPkgRef,
 								providedRootOpId,
 							)
 
@@ -620,14 +620,14 @@ var _ = Context("opCaller", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
 							providedOpId := "dummyOpId"
-							providedOpPkgRef := "dummyOpPkgRef"
+							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEnded: &model.OpEndedEvent{
 									OpId:     providedOpId,
-									OpPkgRef: providedOpPkgRef,
+									PkgRef:   providedPkgRef,
 									Outcome:  model.OpOutcomeSucceeded,
 									RootOpId: providedRootOpId,
 								},
@@ -639,7 +639,7 @@ var _ = Context("opCaller", func() {
 							fakePubSub := new(pubsub.Fake)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								new(managepackages.Fake),
 								fakePubSub,
 								fakeDcgNodeRepo,
 								new(fakeCaller),
@@ -651,7 +651,7 @@ var _ = Context("opCaller", func() {
 							objectUnderTest.Call(
 								providedInboundScope,
 								providedOpId,
-								providedOpPkgRef,
+								providedPkgRef,
 								providedRootOpId,
 							)
 

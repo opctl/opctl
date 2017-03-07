@@ -14,7 +14,7 @@ type caller interface {
 		nodeId string,
 		inboundScope map[string]*model.Data,
 		scg *model.Scg,
-		opPkgRef string,
+		pkgRef string,
 		rootOpId string,
 	) (
 		outboundScope map[string]*model.Data,
@@ -42,7 +42,7 @@ func (this _caller) Call(
 	nodeId string,
 	inboundScope map[string]*model.Data,
 	scg *model.Scg,
-	opPkgRef string,
+	pkgRef string,
 	rootOpId string,
 ) (
 	outboundScope map[string]*model.Data,
@@ -60,28 +60,28 @@ func (this _caller) Call(
 			inboundScope,
 			nodeId,
 			scg.Container,
-			opPkgRef,
+			pkgRef,
 			rootOpId,
 		)
 	case nil != scg.Op:
 		outboundScope, err = this.opCaller.Call(
 			inboundScope,
 			nodeId,
-			path.Join(filepath.Dir(opPkgRef), scg.Op.Ref),
+			path.Join(filepath.Dir(pkgRef), scg.Op.Ref),
 			rootOpId,
 		)
 	case len(scg.Parallel) > 0:
 		err = this.parallelCaller.Call(
 			inboundScope,
 			rootOpId,
-			opPkgRef,
+			pkgRef,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
 		outboundScope, err = this.serialCaller.Call(
 			inboundScope,
 			rootOpId,
-			opPkgRef,
+			pkgRef,
 			scg.Serial,
 		)
 	default:

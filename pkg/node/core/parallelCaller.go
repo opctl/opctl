@@ -14,7 +14,7 @@ type parallelCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		rootOpId string,
-		opPkgRef string,
+		pkgRef string,
 		scgParallelCall []*model.Scg,
 	) (
 		err error,
@@ -41,7 +41,7 @@ type _parallelCaller struct {
 func (this _parallelCaller) Call(
 	inboundScope map[string]*model.Data,
 	rootOpId string,
-	opPkgRef string,
+	pkgRef string,
 	scgParallelCall []*model.Scg,
 ) (
 	err error,
@@ -59,7 +59,7 @@ func (this _parallelCaller) Call(
 				this.uniqueStringFactory.Construct(),
 				inboundScope,
 				childCall,
-				opPkgRef,
+				pkgRef,
 				rootOpId,
 			)
 			if nil != childErr {

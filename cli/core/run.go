@@ -12,8 +12,7 @@ import (
 
 func (this _core) RunOp(
 	args []string,
-	collection string,
-	name string,
+	pkgRef string,
 ) {
 
 	// ensure node running
@@ -25,20 +24,32 @@ func (this _core) RunOp(
 		this.nodeProvider.CreateNode()
 	}
 
-	pwd, err := this.vos.Getwd()
+	if !path.IsAbs(pkgRef) {
+		pkgDir := path.Dir(pkgRef)
+
+		if "." == pkgDir {
+			// default package location is .opspec subdir of current working directory
+			// so if they only provided us a name let's look there
+			pkgName := path.Base(pkgRef)
+			pkgRef = path.Join(pkgDir, ".opspec", pkgName)
+		}
+
+		// make our pkgRef absolute
+		pwd, err := this.vos.Getwd()
+		if nil != err {
+			this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+			return // support fake exiter
+		}
+		pkgRef = path.Join(pwd, pkgRef)
+	}
+
+	packageView, err := this.managePackages.GetPackage(pkgRef)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
-	opPath := path.Join(pwd, collection, name)
-	opView, err := this.pkg.GetOp(opPath)
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
-
-	argsMap := this.cliParamSatisfier.Satisfy(args, opView.Inputs)
+	argsMap := this.cliParamSatisfier.Satisfy(args, packageView.Inputs)
 
 	// init signal channel
 	intSignalsReceived := 0
@@ -53,8 +64,8 @@ func (this _core) RunOp(
 	// start op
 	rootOpId, err := this.consumeNodeApi.StartOp(
 		model.StartOpReq{
-			Args:     argsMap,
-			OpPkgRef: opPath,
+			Args:   argsMap,
+			PkgRef: pkgRef,
 		},
 	)
 	if nil != err {

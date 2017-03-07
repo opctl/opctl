@@ -1,15 +1,12 @@
-## collection
+## package
 
-0-N [ops](GLOSSARY.md#op) grouped together.
+an opspec [package](https://opspec.io/spec/packages.html)
 
 ## node
 
-process, typically run as a
-[daemon/service](https://en.wikipedia.org/wiki/Daemon_(computing) ),
-which hosts the [node API](https://opspec.io/spec/latest/node-api.html)
-
-There can be only one node running at a time on a given machine.
+an opspec [node](https://opspec.io/spec/nodes.html)
 
 ## op
 
-composition of containerized processes.
+an opspec [op](https://opspec.io/spec/ops.html)
+

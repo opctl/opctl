@@ -27,7 +27,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
 			fakePubSub := new(pubsub.Fake)
@@ -37,7 +37,7 @@ var _ = Context("containerCaller", func() {
 
 			expectedDcgNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
-				OpPkgRef:  providedOpPkgRef,
+				PkgRef:    providedPkgRef,
 				RootOpId:  providedRootOpId,
 				Container: &dcgContainerDescriptor{},
 			}
@@ -55,7 +55,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedRootOpId,
 			)
 
@@ -67,14 +67,14 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
 			expectedEvent := &model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerId: providedContainerId,
-					OpPkgRef:    providedOpPkgRef,
+					PkgRef:      providedPkgRef,
 					RootOpId:    providedRootOpId,
 				},
 			}
@@ -95,7 +95,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedRootOpId,
 			)
 
@@ -114,7 +114,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
 			expectedReq, _ := constructDcgContainerCall(
@@ -122,7 +122,7 @@ var _ = Context("containerCaller", func() {
 				providedScgContainerCall,
 				providedContainerId,
 				providedRootOpId,
-				providedOpPkgRef,
+				providedPkgRef,
 			)
 
 			fakeContainerProvider := new(containerprovider.Fake)
@@ -143,7 +143,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedScgContainerCall,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedRootOpId,
 			)
 
@@ -158,7 +158,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope := map[string]*model.Data{}
 				providedContainerId := "dummyContainerId"
 				providedScgContainerCall := &model.ScgContainerCall{}
-				providedOpPkgRef := "dummyOpPkgRef"
+				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
 
 				expectedError := errors.New("dummyError")
@@ -177,7 +177,7 @@ var _ = Context("containerCaller", func() {
 					providedInboundScope,
 					providedContainerId,
 					providedScgContainerCall,
-					providedOpPkgRef,
+					providedPkgRef,
 					providedRootOpId,
 				)
 
@@ -191,7 +191,7 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
-		providedOpPkgRef := "dummyOpPkgRef"
+		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
 		fakePubSub := new(pubsub.Fake)
@@ -212,7 +212,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedScgContainerCall,
-			providedOpPkgRef,
+			providedPkgRef,
 			providedRootOpId,
 		)
 
@@ -224,14 +224,14 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
-		providedOpPkgRef := "dummyOpPkgRef"
+		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := &model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				OpPkgRef:    providedOpPkgRef,
+				PkgRef:      providedPkgRef,
 				RootOpId:    providedRootOpId,
 			},
 		}
@@ -252,7 +252,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedScgContainerCall,
-			providedOpPkgRef,
+			providedPkgRef,
 			providedRootOpId,
 		)
 

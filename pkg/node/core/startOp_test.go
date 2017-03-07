@@ -21,7 +21,7 @@ var _ = Context("core", func() {
 					"dummyArg3Name": {Dir: "dummyArg3Value"},
 					"dummyArg4Name": {Dir: "dummyArg4Value"},
 				},
-				OpPkgRef: "dummyOpPkgRef",
+				PkgRef: "dummyPkgRef",
 			}
 
 			expectedOpId := "dummyOpId"
@@ -47,12 +47,12 @@ var _ = Context("core", func() {
 			time.Sleep(time.Millisecond * 500)
 			actualInboundScope,
 				actualOpId,
-				actualOpPkgRef,
+				actualPkgRef,
 				actualRootOpId := fakeOpCaller.CallArgsForCall(0)
 
 			Expect(actualInboundScope).To(Equal(providedReq.Args))
 			Expect(actualOpId).To(Equal(expectedOpId))
-			Expect(actualOpPkgRef).To(Equal(providedReq.OpPkgRef))
+			Expect(actualPkgRef).To(Equal(providedReq.PkgRef))
 			Expect(actualRootOpId).To(Equal(actualOpId))
 		})
 	})

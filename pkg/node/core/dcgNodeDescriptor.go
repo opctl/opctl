@@ -3,7 +3,7 @@ package core
 // descriptor for a DCG (dynamic call graph) node
 type dcgNodeDescriptor struct {
 	Id        string
-	OpPkgRef  string
+	PkgRef    string
 	RootOpId  string
 	Op        *dcgOpDescriptor
 	Container *dcgContainerDescriptor

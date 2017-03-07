@@ -8,12 +8,12 @@ import (
 )
 
 type fakeParallelCaller struct {
-	CallStub        func(args map[string]*model.Data, rootOpId string, opPkgRef string, parallelCall []*model.Scg) (err error)
+	CallStub        func(args map[string]*model.Data, rootOpId string, pkgRef string, parallelCall []*model.Scg) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		args         map[string]*model.Data
 		rootOpId     string
-		opPkgRef     string
+		pkgRef       string
 		parallelCall []*model.Scg
 	}
 	callReturns struct {
@@ -23,7 +23,7 @@ type fakeParallelCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeParallelCaller) Call(args map[string]*model.Data, rootOpId string, opPkgRef string, parallelCall []*model.Scg) (err error) {
+func (fake *fakeParallelCaller) Call(args map[string]*model.Data, rootOpId string, pkgRef string, parallelCall []*model.Scg) (err error) {
 	var parallelCallCopy []*model.Scg
 	if parallelCall != nil {
 		parallelCallCopy = make([]*model.Scg, len(parallelCall))
@@ -33,13 +33,13 @@ func (fake *fakeParallelCaller) Call(args map[string]*model.Data, rootOpId strin
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		args         map[string]*model.Data
 		rootOpId     string
-		opPkgRef     string
+		pkgRef       string
 		parallelCall []*model.Scg
-	}{args, rootOpId, opPkgRef, parallelCallCopy})
-	fake.recordInvocation("Call", []interface{}{args, rootOpId, opPkgRef, parallelCallCopy})
+	}{args, rootOpId, pkgRef, parallelCallCopy})
+	fake.recordInvocation("Call", []interface{}{args, rootOpId, pkgRef, parallelCallCopy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(args, rootOpId, opPkgRef, parallelCall)
+		return fake.CallStub(args, rootOpId, pkgRef, parallelCall)
 	} else {
 		return fake.callReturns.result1
 	}
@@ -54,7 +54,7 @@ func (fake *fakeParallelCaller) CallCallCount() int {
 func (fake *fakeParallelCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, []*model.Scg) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].opPkgRef, fake.callArgsForCall[i].parallelCall
+	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].parallelCall
 }
 
 func (fake *fakeParallelCaller) CallReturns(result1 error) {

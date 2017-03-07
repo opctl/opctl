@@ -27,50 +27,19 @@ func newCli(
 		}
 	}
 
-	cli.Command("collection", "Manage collections", func(collectionCmd *mow.Cmd) {
-
-		collectionCmd.Command("create", "Create a collection", func(createCmd *mow.Cmd) {
-
-			name := createCmd.StringArg("NAME", "", "Name of the collection")
-			description := createCmd.StringOpt("d description", "", "Description of the collection")
-
-			createCmd.Action = func() {
-				core.CreateCollection(*description, *name)
-			}
-
-		})
-
-		collectionCmd.Command("set", "Set collection attributes", func(setCmd *mow.Cmd) {
-			setCmd.Command("description", "Set the description of a collection", func(descriptionCmd *mow.Cmd) {
-				description := descriptionCmd.StringArg("DESCRIPTION", "", "Description of the collection")
-
-				descriptionCmd.Action = func() {
-					core.SetCollectionDescription(*description)
-				}
-			})
-		})
-	})
-
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
 			core.StreamEvents()
 		}
 	})
 
-	cli.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-		opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
-
-		killCmd.Action = func() {
-			core.KillOp(*opId)
-		}
-	})
-
-	cli.Command("ls", "List ops in a collection", func(lsCmd *mow.Cmd) {
-		collection := lsCmd.StringOpt("c collection", ".opspec", "Collection to list ops from")
-		lsCmd.Action = func() {
-			core.ListOpsInCollection(*collection)
-		}
-	})
+	cli.Command(
+		"ls", "List packages (only v0.1.3 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
+			path := lsCmd.StringOpt("path", ".opspec", "Path to list packages from")
+			lsCmd.Action = func() {
+				core.ListPackages(*path)
+			}
+		})
 
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
@@ -89,36 +58,48 @@ func newCli(
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
 
-		opCmd.Command("create", "Create an op", func(createCmd *mow.Cmd) {
-			collection := createCmd.StringOpt("c collection", ".opspec", "Collection to embed op in (use '' to not embed)")
-			description := createCmd.StringOpt("d description", "", "Description of the op")
-			name := createCmd.StringArg("NAME", "", "Name of the op")
+		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
+			opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
-			createCmd.Action = func() {
-				core.CreateOp(*collection, *description, *name)
+			killCmd.Action = func() {
+				core.OpKill(*opId)
 			}
 		})
 
-		opCmd.Command("set", "Set op attributes", func(setCmd *mow.Cmd) {
-			setCmd.Command("description", "Set the description of an op", func(descriptionCmd *mow.Cmd) {
-				collection := descriptionCmd.StringOpt("c collection", ".opspec", "Collection the op is embedded in (use '' if not embedded)")
-				description := descriptionCmd.StringArg("DESCRIPTION", "", "description of the op")
-				name := descriptionCmd.StringArg("NAME", "", "name of the op")
+	})
+
+	cli.Command("pkg", "Manage packages", func(pkgCmd *mow.Cmd) {
+
+		pkgCmd.Command(
+			"create", "Create a package",
+			func(createCmd *mow.Cmd) {
+				path := createCmd.StringOpt("path", ".opspec", "Path the package will be created at")
+				description := createCmd.StringOpt("d description", "", "Package description")
+				name := createCmd.StringArg("NAME", "", "Package name")
+
+				createCmd.Action = func() {
+					core.CreatePackage(*path, *description, *name)
+				}
+			})
+
+		pkgCmd.Command("set", "Set attributes of a package", func(setCmd *mow.Cmd) {
+			setCmd.Command("description", "Set the description of a package", func(descriptionCmd *mow.Cmd) {
+				description := descriptionCmd.StringArg("DESCRIPTION", "", "Package description")
+				pkgRef := descriptionCmd.StringArg("PACKAGE_REF", "", "Package reference")
 
 				descriptionCmd.Action = func() {
-					core.SetOpDescription(*collection, *description, *name)
+					core.PkgSetDescription(*description, *pkgRef)
 				}
 			})
 		})
 	})
 
-	cli.Command("run", "Run an op", func(runCmd *mow.Cmd) {
-		args := runCmd.StringsOpt("a", []string{}, "Pass args to op in format: NAME[=VALUE] (gets from env if not provided)")
-		collection := runCmd.StringOpt("c collection", ".opspec", "Collection the op is embedded in (use '' if not embedded)")
-		name := runCmd.StringArg("OP_URL", "", "Url of the op (op name if in collection)")
+	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
+		args := runCmd.StringsOpt("a", []string{}, "Pass args in format: NAME[=VALUE] (gets from env if not provided)")
+		pkgRef := runCmd.StringArg("PACKAGE_REF", "", "Package reference")
 
 		runCmd.Action = func() {
-			core.RunOp(*args, *collection, *name)
+			core.RunOp(*args, *pkgRef)
 		}
 	})
 

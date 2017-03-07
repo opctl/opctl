@@ -6,7 +6,7 @@ type CreateCollectionReq struct {
 	Description string
 }
 
-type CreateOpReq struct {
+type CreatePackageReq struct {
 	Path        string
 	Name        string
 	Description string
@@ -29,7 +29,7 @@ type SetCollectionDescriptionReq struct {
 	Description      string
 }
 
-type SetOpDescriptionReq struct {
+type SetPackageDescriptionReq struct {
 	PathToOp    string
 	Description string
 }
@@ -37,5 +37,5 @@ type SetOpDescriptionReq struct {
 type StartOpReq struct {
 	// map of args keyed by param name
 	Args     map[string]*Data `json:"args"`
-	OpPkgRef string           `json:"opPkgRef"`
+	PkgRef string           `json:"pkgRef"`
 }
