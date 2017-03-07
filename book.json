@@ -1,6 +1,6 @@
 {
   "plugins": [
-    "swagger@git+https://github.com/chrisdostert/gitbook-plugin-swagger.git",
+    "swagger",
     "toggle-chapters",
     "edit-link",
     "ga",
