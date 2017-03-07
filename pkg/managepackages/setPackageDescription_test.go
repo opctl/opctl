@@ -1,4 +1,4 @@
-package pkg
+package managepackages
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	"reflect"
 )
 
-var _ = Describe("_setCollectionDescription", func() {
+var _ = Describe("_setPackageDescription", func() {
 
 	Context("Execute", func() {
 
@@ -25,14 +25,14 @@ var _ = Describe("_setCollectionDescription", func() {
 				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
-				objectUnderTest := &pkg{
+				objectUnderTest := &managePackages{
 					fileSystem: fakeFileSystem,
 					yaml:       format.NewYamlFormat(),
 				}
 
 				/* act */
-				actualError := objectUnderTest.SetCollectionDescription(
-					model.SetCollectionDescriptionReq{},
+				actualError := objectUnderTest.SetPackageDescription(
+					model.SetPackageDescriptionReq{},
 				)
 
 				/* assert */
@@ -51,14 +51,14 @@ var _ = Describe("_setCollectionDescription", func() {
 				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToReturns(expectedError)
 
-				objectUnderTest := &pkg{
+				objectUnderTest := &managePackages{
 					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
 				/* act */
-				actualError := objectUnderTest.SetCollectionDescription(
-					model.SetCollectionDescriptionReq{},
+				actualError := objectUnderTest.SetPackageDescription(
+					model.SetPackageDescriptionReq{},
 				)
 
 				/* assert */
@@ -76,14 +76,14 @@ var _ = Describe("_setCollectionDescription", func() {
 				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.FromReturns(nil, expectedError)
 
-				objectUnderTest := &pkg{
+				objectUnderTest := &managePackages{
 					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
 				/* act */
-				actualError := objectUnderTest.SetCollectionDescription(
-					model.SetCollectionDescriptionReq{},
+				actualError := objectUnderTest.SetPackageDescription(
+					model.SetPackageDescriptionReq{},
 				)
 
 				/* assert */
@@ -92,44 +92,42 @@ var _ = Describe("_setCollectionDescription", func() {
 			})
 		})
 
-		It("should call YamlFormat.From with expected collectionManifest", func() {
+		It("should call YamlFormat.From with expected packageManifestView", func() {
 
 			/* arrange */
-			expectedCollectionManifest := model.CollectionManifest{
-				Manifest: model.Manifest{
-					Name:        "dummyName",
-					Description: "dummyDescription",
-					Version:     "dummyVersion",
-				},
+			expectedPackageManifestView := model.PackageManifestView{
+				Name:        "dummyName",
+				Description: "dummyDescription",
+				Version:     "dummyVersion",
 			}
 
 			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
-				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedCollectionManifest))
+				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedPackageManifestView))
 				return
 			}
 
-			objectUnderTest := &pkg{
+			objectUnderTest := &managePackages{
 				fileSystem: new(fs.Fake),
 				yaml:       fakeYamlFormat,
 			}
 
 			/* act */
-			objectUnderTest.SetCollectionDescription(
-				model.SetCollectionDescriptionReq{Description: expectedCollectionManifest.Description},
+			objectUnderTest.SetPackageDescription(
+				model.SetPackageDescriptionReq{Description: expectedPackageManifestView.Description},
 			)
 
 			/* assert */
-			actualCollectionManifest := fakeYamlFormat.FromArgsForCall(0)
-			Expect(actualCollectionManifest).To(Equal(&expectedCollectionManifest))
+			actualPackageManifestView := fakeYamlFormat.FromArgsForCall(0)
+			Expect(actualPackageManifestView).To(Equal(&expectedPackageManifestView))
 
 		})
 
 		It("should call FileSystem.SaveFile with expected args", func() {
 
 			/* arrange */
-			providedPathToCollection := "/dummy/collection/path"
-			expectedSaveFilePathArg := path.Join(providedPathToCollection, NameOfCollectionManifestFile)
+			providedPathToOp := "/dummy/op/path"
+			expectedSaveFilePathArg := path.Join(providedPathToOp, NameOfPackageManifestFile)
 			expectedSaveFileBytesArg := []byte{2, 3, 4}
 
 			fakeFileSystem := new(fs.Fake)
@@ -137,14 +135,14 @@ var _ = Describe("_setCollectionDescription", func() {
 			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
-			objectUnderTest := &pkg{
+			objectUnderTest := &managePackages{
 				fileSystem: fakeFileSystem,
 				yaml:       fakeYamlFormat,
 			}
 
 			/* act */
-			objectUnderTest.SetCollectionDescription(
-				model.SetCollectionDescriptionReq{PathToCollection: providedPathToCollection},
+			objectUnderTest.SetPackageDescription(
+				model.SetPackageDescriptionReq{PathToOp: providedPathToOp},
 			)
 
 			/* assert */

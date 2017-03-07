@@ -6,7 +6,7 @@ type CreateCollectionReq struct {
 	Description string
 }
 
-type CreateOpReq struct {
+type CreatePackageReq struct {
 	Path        string
 	Name        string
 	Description string
@@ -29,7 +29,7 @@ type SetCollectionDescriptionReq struct {
 	Description      string
 }
 
-type SetOpDescriptionReq struct {
+type SetPackageDescriptionReq struct {
 	PathToOp    string
 	Description string
 }

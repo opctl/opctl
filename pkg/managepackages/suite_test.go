@@ -1,4 +1,4 @@
-package pkg
+package managepackages
 
 import (
 	. "github.com/onsi/ginkgo"

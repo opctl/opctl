@@ -1,4 +1,4 @@
-package pkg
+package managepackages
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ import (
 	"reflect"
 )
 
-var _ = Describe("_opViewFactory", func() {
+var _ = Describe("_packageViewFactory", func() {
 
 	Context("Construct", func() {
 
@@ -26,7 +26,7 @@ var _ = Describe("_opViewFactory", func() {
 				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fakeFileSystem,
 					new(format.Fake),
 				)
@@ -50,7 +50,7 @@ var _ = Describe("_opViewFactory", func() {
 				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToReturns(expectedError)
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					new(fs.Fake),
 					fakeYamlFormat,
 				)
@@ -74,7 +74,7 @@ var _ = Describe("_opViewFactory", func() {
 
 			fakeYamlFormat := new(format.Fake)
 
-			objectUnderTest := newOpViewFactory(
+			objectUnderTest := newPackageViewFactory(
 				fakeFileSystem,
 				fakeYamlFormat,
 			)
@@ -88,7 +88,7 @@ var _ = Describe("_opViewFactory", func() {
 
 		})
 
-		It("should return expected opView", func() {
+		It("should return expected packageView", func() {
 
 			/* arrange */
 			dummyParams := map[string]*model.Param{
@@ -114,7 +114,7 @@ var _ = Describe("_opViewFactory", func() {
 				},
 			}
 
-			expectedOpView := model.OpView{
+			expectedPackageView := model.PackageView{
 				Description: "dummyDescription",
 				Inputs:      dummyParams,
 				Name:        "dummyName",
@@ -128,36 +128,34 @@ var _ = Describe("_opViewFactory", func() {
 			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-				stubbedOpManifest := model.OpManifest{
-					Manifest: model.Manifest{
-						Name:        expectedOpView.Name,
-						Description: expectedOpView.Description,
-						Version:     expectedOpView.Version,
-					},
-					Inputs:  dummyParams,
-					Outputs: dummyParams,
-					Run:     expectedCallGraph,
+				stubbedPackageManifestView := model.PackageManifestView{
+					Name:        expectedPackageView.Name,
+					Description: expectedPackageView.Description,
+					Version:     expectedPackageView.Version,
+					Inputs:      dummyParams,
+					Outputs:     dummyParams,
+					Run:         expectedCallGraph,
 				}
 
-				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
+				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedPackageManifestView))
 				return
 			}
 
-			objectUnderTest := newOpViewFactory(
+			objectUnderTest := newPackageViewFactory(
 				fakeFileSystem,
 				fakeYamlFormat,
 			)
 
 			/* act */
-			actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
+			actualPackageView, _ := objectUnderTest.Construct("/dummy/op/path")
 
 			/* assert */
-			Expect(actualOpView).To(Equal(expectedOpView))
+			Expect(actualPackageView).To(Equal(expectedPackageView))
 
 		})
 
-		Context("when opManifest.Run.Parallel is not empty", func() {
-			It("should return expected opView.Run", func() {
+		Context("when packageManifestView.Run.Parallel is not empty", func() {
+			It("should return expected packageView.Run", func() {
 
 				/* arrange */
 
@@ -176,29 +174,29 @@ var _ = Describe("_opViewFactory", func() {
 				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-					stubbedOpManifest := model.OpManifest{
+					stubbedPackageManifestView := model.PackageManifestView{
 						Run: expectedCallGraph,
 					}
 
-					reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
+					reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedPackageManifestView))
 					return
 				}
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fakeFileSystem,
 					fakeYamlFormat,
 				)
 
 				/* act */
-				actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
+				actualPackageView, _ := objectUnderTest.Construct("/dummy/op/path")
 
 				/* assert */
-				Expect(actualOpView.Run).To(Equal(expectedCallGraph))
+				Expect(actualPackageView.Run).To(Equal(expectedCallGraph))
 
 			})
 		})
-		Context("when opManifest.Run.Parallel is empty", func() {
-			It("should return expected opView.Run", func() {
+		Context("when packageManifestView.Run.Parallel is empty", func() {
+			It("should return expected packageView.Run", func() {
 
 				/* arrange */
 				expectedCallGraph := &model.Scg{
@@ -212,28 +210,28 @@ var _ = Describe("_opViewFactory", func() {
 				fakeYamlFormat := new(format.Fake)
 				fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-					stubbedOpManifest := model.OpManifest{
+					stubbedPackageManifestView := model.PackageManifestView{
 						Run: expectedCallGraph,
 					}
 
-					reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
+					reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedPackageManifestView))
 					return
 				}
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fakeFileSystem,
 					fakeYamlFormat,
 				)
 
 				/* act */
-				actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
+				actualPackageView, _ := objectUnderTest.Construct("/dummy/op/path")
 
 				/* assert */
-				Expect(actualOpView.Run).To(Equal(expectedCallGraph))
+				Expect(actualPackageView.Run).To(Equal(expectedCallGraph))
 
 			})
-			Context("when opManifest.Run.Serial is not empty", func() {
-				It("should return expected opView.Run", func() {
+			Context("when packageManifestView.Run.Serial is not empty", func() {
+				It("should return expected packageView.Run", func() {
 
 					/* arrange */
 					expectedCallGraph := &model.Scg{
@@ -251,24 +249,24 @@ var _ = Describe("_opViewFactory", func() {
 					fakeYamlFormat := new(format.Fake)
 					fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
 
-						stubbedOpManifest := model.OpManifest{
+						stubbedPackageManifestView := model.PackageManifestView{
 							Run: expectedCallGraph,
 						}
 
-						reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedOpManifest))
+						reflect.ValueOf(out).Elem().Set(reflect.ValueOf(stubbedPackageManifestView))
 						return
 					}
 
-					objectUnderTest := newOpViewFactory(
+					objectUnderTest := newPackageViewFactory(
 						fakeFileSystem,
 						fakeYamlFormat,
 					)
 
 					/* act */
-					actualOpView, _ := objectUnderTest.Construct("/dummy/op/path")
+					actualPackageView, _ := objectUnderTest.Construct("/dummy/op/path")
 
 					/* assert */
-					Expect(actualOpView.Run).To(Equal(expectedCallGraph))
+					Expect(actualPackageView.Run).To(Equal(expectedCallGraph))
 
 				})
 			})
@@ -279,10 +277,10 @@ var _ = Describe("_opViewFactory", func() {
 			if nil != err {
 				panic(err)
 			}
-			It("should return expected opView", func() {
+			It("should return expected packageView", func() {
 
 				/* arrange */
-				expectedOpView := model.OpView{
+				expectedPackageView := model.PackageView{
 					Description: "Logs in to a docker registry",
 					Name:        "login",
 					Inputs: map[string]*model.Param{
@@ -334,13 +332,13 @@ var _ = Describe("_opViewFactory", func() {
 					},
 				}
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fs.NewFileSystem(),
 					format.NewYamlFormat(),
 				)
 
 				/* act */
-				actualOpView, err :=
+				actualPackageView, err :=
 					objectUnderTest.Construct(
 						fmt.Sprintf("%v/../../testdata/opspec-0.1.3/examples/docker/.opspec/login", wd))
 				if nil != err {
@@ -348,7 +346,7 @@ var _ = Describe("_opViewFactory", func() {
 				}
 
 				/* assert */
-				Expect(actualOpView).To(Equal(expectedOpView))
+				Expect(actualPackageView).To(Equal(expectedPackageView))
 
 			})
 		})
@@ -357,10 +355,10 @@ var _ = Describe("_opViewFactory", func() {
 			if nil != err {
 				panic(err)
 			}
-			It("should return expected opView", func() {
+			It("should return expected packageView", func() {
 
 				/* arrange */
-				expectedOpView := model.OpView{
+				expectedPackageView := model.PackageView{
 					Description: "Ensures deps are installed and debugs the node app",
 					Name:        "debug",
 					Inputs: map[string]*model.Param{
@@ -412,13 +410,13 @@ var _ = Describe("_opViewFactory", func() {
 					},
 				}
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fs.NewFileSystem(),
 					format.NewYamlFormat(),
 				)
 
 				/* act */
-				actualOpView, err :=
+				actualPackageView, err :=
 					objectUnderTest.Construct(
 						fmt.Sprintf("%v/../../testdata/opspec-0.1.3/examples/nodejs/.opspec/debug", wd))
 				if nil != err {
@@ -426,7 +424,7 @@ var _ = Describe("_opViewFactory", func() {
 				}
 
 				/* assert */
-				Expect(actualOpView).To(Equal(expectedOpView))
+				Expect(actualPackageView).To(Equal(expectedPackageView))
 
 			})
 		})
@@ -435,10 +433,10 @@ var _ = Describe("_opViewFactory", func() {
 			if nil != err {
 				panic(err)
 			}
-			It("should return expected opView", func() {
+			It("should return expected packageView", func() {
 
 				/* arrange */
-				expectedOpView := model.OpView{
+				expectedPackageView := model.PackageView{
 					Description: "Runs acceptance tests",
 					Name:        "test-acceptance",
 					Inputs: map[string]*model.Param{
@@ -476,13 +474,13 @@ var _ = Describe("_opViewFactory", func() {
 					},
 				}
 
-				objectUnderTest := newOpViewFactory(
+				objectUnderTest := newPackageViewFactory(
 					fs.NewFileSystem(),
 					format.NewYamlFormat(),
 				)
 
 				/* act */
-				actualOpView, err :=
+				actualPackageView, err :=
 					objectUnderTest.Construct(
 						fmt.Sprintf("%v/../../testdata/opspec-0.1.3/examples/nodejs/.opspec/test-acceptance", wd))
 				if nil != err {
@@ -490,7 +488,7 @@ var _ = Describe("_opViewFactory", func() {
 				}
 
 				/* assert */
-				Expect(actualOpView).To(Equal(expectedOpView))
+				Expect(actualPackageView).To(Equal(expectedPackageView))
 
 			})
 		})
