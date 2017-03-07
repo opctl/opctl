@@ -1,6 +1,8 @@
 ## Packages
 
-Encapsulate the definition of an op.
+A package defines an orchestration of (a) containerized process(es).
+
+> Ops are instances of a package.
 
 ### Dir Structure
 
@@ -21,4 +23,5 @@ Constraints:
 
 - MUST be named `op.yml`
 - MUST be valid [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html)
-- MUST validate against [schema/packageManifest.json](schema/packageManifest.json)
+- MUST validate against
+  [schema/packageManifest.json](schema/packageManifest.json)

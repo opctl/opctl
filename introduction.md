@@ -1,7 +1,7 @@
 # Introduction
 
-opspec is a specification for defining, distributing, and
-orchestrating, containerized processes \[ops].
+opspec is a specification for defining, distributing, and running,
+orchestrations of containerized processes \[ops].
 
 ## Purpose
 
