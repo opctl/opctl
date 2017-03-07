@@ -1,6 +1,6 @@
 # Nodes
 
-Nodes distribute packages and orchestrate ops
+Nodes distribute packages and run ops.
 
 ## API
 
