@@ -34,7 +34,7 @@ run:
             aws s3 sync . s3://opspec.io/spec --delete
 
             echo "deploying versioned schema"
-            aws s3 sync latest/schema s3://opspec.io/spec/$(version)/schema --delete
+            aws s3 sync schema s3://opspec.io/spec/$(version)/schema --delete
         dirs:
           /src: srcDir
         envVars:

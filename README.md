@@ -22,6 +22,7 @@ see [website](https://opspec.io/spec)
 # Releases
 
 All releases will be [tagged](https://github.com/opspec-io/spec/tags)
+
 and made available on the
 [releases](https://github.com/opspec-io/spec/releases) page with release
 notes.

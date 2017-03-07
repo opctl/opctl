@@ -19,4 +19,4 @@ run:
     dirs:
       /src: srcDir
     image: { ref: 'node:7.6' }
-    workDir: /src/latest
+    workDir: /src

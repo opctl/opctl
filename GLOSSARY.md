@@ -2,10 +2,6 @@
 
 composition of containerized processes.
 
-## Collection
-
-0-N [ops](GLOSSARY.md#op) grouped together.
-
 ## MAY
 
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)

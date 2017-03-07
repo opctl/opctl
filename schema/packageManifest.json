@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://opspec.io/spec/0.1.3/schema/packageManifest.json",
+  "title": "packageManifest",
+  "description": "Manifest for a package",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the op",
+      "type": "string"
+    },
+    "description": {
+      "description": "Description of the op",
+      "type": "string"
+    },
+    "inputs": {
+      "description": "Inputs to the op",
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "$ref": "param.json"
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputs": {
+      "description": "Outputs from the op",
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "$ref": "param.json"
+        }
+      }
+    },
+    "run": {
+      "description": "Static Call Graph (SCG) of the op",
+      "$ref": "scg.json"
+    },
+    "version": {
+      "description": "Version of the op",
+      "$ref": "#/definitions/semVer"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "semVer": {
+      "title": "semVer",
+      "description": "v2.0.0 semantic version (see http://semver.org/spec/v2.0.0.html)",
+      "type": "string",
+      "pattern": "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:(\\-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\-\\.]+)?$"
+    }
+  }
+}
+
