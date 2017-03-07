@@ -19,7 +19,7 @@ var _ = Describe("StartOp", func() {
 		/* arrange */
 		providedStartOpReq := model.StartOpReq{
 			Args:     map[string]*model.Data{},
-			OpPkgRef: "dummyOpPkgRef",
+			PkgRef: "dummyPkgRef",
 		}
 
 		expectedReqBytes, _ := format.NewJsonFormat().From(providedStartOpReq)

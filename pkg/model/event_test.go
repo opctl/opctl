@@ -23,7 +23,7 @@ var _ = Describe("Event", func() {
 						ExitCode:     1,
 						RootOpId:     "dummyRootOpId",
 						ContainerId:  "dummyContainerId",
-						OpPkgRef:     "dummyOpPkgRef",
+						PkgRef:     "dummyPkgRef",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -52,7 +52,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStarted: &ContainerStartedEvent{
 						ContainerRef: "dummyContainerRef",
-						OpPkgRef:     "dummyOpPkgRef",
+						PkgRef:     "dummyPkgRef",
 						ContainerId:  "dummyContainerId",
 						RootOpId:     "dummyRootOpId",
 					},
@@ -83,7 +83,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdErrWrittenTo: &ContainerStdErrWrittenToEvent{
 						Data:        []byte("dummyData"),
-						OpPkgRef:    "dummyOpPkgRef",
+						PkgRef:    "dummyPkgRef",
 						ContainerId: "dummyContainerId",
 						RootOpId:    "dummyRootOpId",
 					},
@@ -114,7 +114,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdOutWrittenTo: &ContainerStdOutWrittenToEvent{
 						Data:        []byte("dummyData"),
-						OpPkgRef:    "dummyOpPkgRef",
+						PkgRef:    "dummyPkgRef",
 						ContainerId: "dummyContainerId",
 						RootOpId:    "dummyRootOpId",
 					},
@@ -144,7 +144,7 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpEnded: &OpEndedEvent{
-						OpPkgRef: "dummyOpPkgRef",
+						PkgRef: "dummyPkgRef",
 						OpId:     "dummyOpId",
 						Outcome:  "dummyOutcome",
 						RootOpId: "dummyRootOpId",
@@ -175,7 +175,7 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpStarted: &OpStartedEvent{
-						OpPkgRef: "dummyOpPkgRef",
+						PkgRef: "dummyPkgRef",
 						OpId:     "dummyOpId",
 						RootOpId: "dummyRootOpId",
 					},
@@ -206,7 +206,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					OpEncounteredError: &OpEncounteredErrorEvent{
 						Msg:      "dummyMsg",
-						OpPkgRef: "dummyOpPkgRef",
+						PkgRef: "dummyPkgRef",
 						OpId:     "dummyOpId",
 						RootOpId: "dummyRootOpId",
 					},

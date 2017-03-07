@@ -18,7 +18,7 @@ var _ = Describe("Scg", func() {
 				/* arrange */
 				expectedCallGraph := Scg{
 					Op: &ScgOpCall{
-						Ref: "dummyOpPkgRef",
+						Ref: "dummyPkgRef",
 						Inputs: map[string]string{
 							"dummyArg1Name": "dummyArg1Value",
 						},
@@ -53,7 +53,7 @@ var _ = Describe("Scg", func() {
 					Parallel: []*Scg{
 						{
 							Op: &ScgOpCall{
-								Ref: "dummyOpPkgRef",
+								Ref: "dummyPkgRef",
 							},
 						},
 					},
@@ -84,7 +84,7 @@ var _ = Describe("Scg", func() {
 					Serial: []*Scg{
 						{
 							Op: &ScgOpCall{
-								Ref: "dummyOpPkgRef",
+								Ref: "dummyPkgRef",
 							},
 						},
 					},

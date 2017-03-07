@@ -43,7 +43,7 @@ var _ = Describe("_getPackage", func() {
 				Name:        "dummyName",
 				Run: &model.Scg{
 					Op: &model.ScgOpCall{
-						Ref: "dummyOpPkgRef",
+						Ref: "dummyPkgRef",
 					},
 				},
 				Version: "",

@@ -110,7 +110,7 @@ var _ = Describe("_packageViewFactory", func() {
 
 			expectedCallGraph := &model.Scg{
 				Op: &model.ScgOpCall{
-					Ref: "dummyOpPkgRef",
+					Ref: "dummyPkgRef",
 				},
 			}
 
@@ -201,7 +201,7 @@ var _ = Describe("_packageViewFactory", func() {
 				/* arrange */
 				expectedCallGraph := &model.Scg{
 					Op: &model.ScgOpCall{
-						Ref: "dummyOpPkgRef",
+						Ref: "dummyPkgRef",
 					},
 				}
 
