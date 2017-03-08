@@ -69,13 +69,13 @@ paths:
           schema:
             type: object
             required:
-              - opPkgRef
+              - pkgRef
             properties:
               args:
                 type: array
                 items:
                   $ref: '#/definitions/OpArg'
-              opPkgRef:
+              pkgRef:
                 type: string
       responses:
         '201':
@@ -151,7 +151,7 @@ definitions:
         type: string
       containerId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   ContainerStartedEvent:
     type: object
@@ -162,7 +162,7 @@ definitions:
         type: string
       containerId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   ContainerStdErrWrittenToEvent:
     type: object
@@ -176,7 +176,7 @@ definitions:
         type: string
       containerId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   ContainerStdOutWrittenToEvent:
     type: object
@@ -190,7 +190,7 @@ definitions:
         type: string
       containerId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   OpEncounteredErrorEvent:
     type: object
@@ -201,7 +201,7 @@ definitions:
         type: string
       opId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   OpEndedEvent:
     type: object
@@ -210,7 +210,7 @@ definitions:
         type: string
       opId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
       outcome:
         enum: [ SUCCEEDED, FAILED, KILLED]
@@ -222,7 +222,7 @@ definitions:
         type: string
       opId:
         type: string
-      opPkgRef:
+      pkgRef:
         type: string
   OpArg:
     description: An arg to be provided to the op
