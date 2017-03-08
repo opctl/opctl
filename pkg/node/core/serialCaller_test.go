@@ -24,7 +24,7 @@ var _ = Context("serialCaller", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedRootOpId := "dummyRootOpId"
-			providedOpPkgRef := "dummyOpPkgRef"
+			providedPkgRef := "dummyPkgRef"
 			providedScgSerialCalls := []*model.Scg{
 				{
 					Container: &model.ScgContainerCall{},
@@ -57,7 +57,7 @@ var _ = Context("serialCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedRootOpId,
-				providedOpPkgRef,
+				providedPkgRef,
 				providedScgSerialCalls,
 			)
 
@@ -66,12 +66,12 @@ var _ = Context("serialCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualScg,
-					actualOpPkgRef,
+					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(expectedScgIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualScg).To(Equal(expectedScg))
-				Expect(actualOpPkgRef).To(Equal(providedOpPkgRef))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			}
 		})
@@ -80,7 +80,7 @@ var _ = Context("serialCaller", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedRootOpId := "dummyRootOpId"
-				providedOpPkgRef := "dummyOpPkgRef"
+				providedPkgRef := "dummyPkgRef"
 				providedScgSerialCalls := []*model.Scg{
 					{
 						Container: &model.ScgContainerCall{},
@@ -97,7 +97,7 @@ var _ = Context("serialCaller", func() {
 				_, actualErr := objectUnderTest.Call(
 					providedInboundScope,
 					providedRootOpId,
-					providedOpPkgRef,
+					providedPkgRef,
 					providedScgSerialCalls,
 				)
 
@@ -115,7 +115,7 @@ var _ = Context("serialCaller", func() {
 					}
 					expectedScopePassedToGrandchild := providedInboundScope
 					providedRootOpId := "dummyRootOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
@@ -133,7 +133,7 @@ var _ = Context("serialCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedRootOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedScgSerialCalls,
 					)
 
@@ -160,7 +160,7 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpId := "dummyRootOpId"
-					providedOpPkgRef := "dummyOpPkgRef"
+					providedPkgRef := "dummyPkgRef"
 					providedScgSerialCalls := []*model.Scg{
 						{
 							Container: &model.ScgContainerCall{},
@@ -179,7 +179,7 @@ var _ = Context("serialCaller", func() {
 					objectUnderTest.Call(
 						providedInboundScope,
 						providedRootOpId,
-						providedOpPkgRef,
+						providedPkgRef,
 						providedScgSerialCalls,
 					)
 

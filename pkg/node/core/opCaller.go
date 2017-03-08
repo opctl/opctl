@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
+	"github.com/opspec-io/sdk-golang/pkg/managepackages"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"strconv"
 	"time"
@@ -19,7 +19,7 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		opId string,
-		opPkgRef string,
+		pkgRef string,
 		rootOpId string,
 	) (
 		outboundScope map[string]*model.Data,
@@ -28,7 +28,7 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	pkg pkg.Pkg,
+	pkg managepackages.ManagePackages,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 	caller caller,
@@ -36,7 +36,7 @@ func newOpCaller(
 	validate validate.Validate,
 ) opCaller {
 	return _opCaller{
-		pkg:                 pkg,
+		managePackages:      pkg,
 		pubSub:              pubSub,
 		dcgNodeRepo:         dcgNodeRepo,
 		caller:              caller,
@@ -46,7 +46,7 @@ func newOpCaller(
 }
 
 type _opCaller struct {
-	pkg                 pkg.Pkg
+	managePackages      managepackages.ManagePackages
 	pubSub              pubsub.PubSub
 	dcgNodeRepo         dcgNodeRepo
 	caller              caller
@@ -57,7 +57,7 @@ type _opCaller struct {
 func (this _opCaller) Call(
 	inboundScope map[string]*model.Data,
 	opId string,
-	opPkgRef string,
+	pkgRef string,
 	rootOpId string,
 ) (
 	outboundScope map[string]*model.Data,
@@ -75,7 +75,7 @@ func (this _opCaller) Call(
 						OpId:     opId,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpId: rootOpId,
-						OpPkgRef: opPkgRef,
+						PkgRef:   pkgRef,
 					},
 				},
 			)
@@ -92,7 +92,7 @@ func (this _opCaller) Call(
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
 						Msg:      err.Error(),
 						OpId:     opId,
-						OpPkgRef: opPkgRef,
+						PkgRef:   pkgRef,
 						RootOpId: rootOpId,
 					},
 				},
@@ -107,7 +107,7 @@ func (this _opCaller) Call(
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpId:     opId,
-					OpPkgRef: opPkgRef,
+					PkgRef:   pkgRef,
 					Outcome:  opOutcome,
 					RootOpId: rootOpId,
 				},
@@ -119,14 +119,14 @@ func (this _opCaller) Call(
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:       opId,
-			OpPkgRef: opPkgRef,
+			PkgRef:   pkgRef,
 			RootOpId: rootOpId,
 			Op:       &dcgOpDescriptor{},
 		},
 	)
 
-	op, err := this.pkg.GetOp(
-		opPkgRef,
+	op, err := this.managePackages.GetPackage(
+		pkgRef,
 	)
 	if nil != err {
 		return
@@ -145,7 +145,7 @@ func (this _opCaller) Call(
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
 				OpId:     opId,
-				OpPkgRef: opPkgRef,
+				PkgRef:   pkgRef,
 				RootOpId: rootOpId,
 			},
 		},
@@ -155,7 +155,7 @@ func (this _opCaller) Call(
 		this.uniqueStringFactory.Construct(),
 		inboundScope,
 		op.Run,
-		opPkgRef,
+		pkgRef,
 		rootOpId,
 	)
 	if nil != err {

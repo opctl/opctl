@@ -8,12 +8,12 @@ import (
 )
 
 type fakeOpCaller struct {
-	CallStub        func(args map[string]*model.Data, opId string, opPkgRef string, rootOpId string) (outputs map[string]*model.Data, err error)
+	CallStub        func(args map[string]*model.Data, opId string, pkgRef string, rootOpId string) (outputs map[string]*model.Data, err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		args     map[string]*model.Data
 		opId     string
-		opPkgRef string
+		pkgRef   string
 		rootOpId string
 	}
 	callReturns struct {
@@ -24,18 +24,18 @@ type fakeOpCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpCaller) Call(args map[string]*model.Data, opId string, opPkgRef string, rootOpId string) (outputs map[string]*model.Data, err error) {
+func (fake *fakeOpCaller) Call(args map[string]*model.Data, opId string, pkgRef string, rootOpId string) (outputs map[string]*model.Data, err error) {
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		args     map[string]*model.Data
 		opId     string
-		opPkgRef string
+		pkgRef   string
 		rootOpId string
-	}{args, opId, opPkgRef, rootOpId})
-	fake.recordInvocation("Call", []interface{}{args, opId, opPkgRef, rootOpId})
+	}{args, opId, pkgRef, rootOpId})
+	fake.recordInvocation("Call", []interface{}{args, opId, pkgRef, rootOpId})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(args, opId, opPkgRef, rootOpId)
+		return fake.CallStub(args, opId, pkgRef, rootOpId)
 	} else {
 		return fake.callReturns.result1, fake.callReturns.result2
 	}
@@ -50,7 +50,7 @@ func (fake *fakeOpCaller) CallCallCount() int {
 func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].opPkgRef, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
 }
 
 func (fake *fakeOpCaller) CallReturns(result1 map[string]*model.Data, result2 error) {

@@ -405,7 +405,7 @@ func (c *Cmd) parse(args []string, entry, inFlow, outFlow *step) error {
 		return nil
 	}
 
-	nargsLen := c.getOptsAndArgs(args)
+	nargsLen := c.getPackagetsAndArgs(args)
 
 	if err := c.fsm.parse(args[:nargsLen]); err != nil {
 		fmt.Fprintf(stdErr, "Error: %s\n", err.Error())
@@ -491,7 +491,7 @@ func (c *Cmd) helpRequested(args []string) bool {
 	return c.isArgSet(args, []string{"-h", "--help"})
 }
 
-func (c *Cmd) getOptsAndArgs(args []string) int {
+func (c *Cmd) getPackagetsAndArgs(args []string) int {
 	consumed := 0
 
 	for _, arg := range args {

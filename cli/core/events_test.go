@@ -12,7 +12,7 @@ import (
 
 var _ = Context("streamEvents", func() {
 	Context("Execute", func() {
-		It("should call pkg.GetEventStream", func() {
+		It("should call managepackages.GetEventStream", func() {
 			/* arrange */
 			fakeCliExiter := new(cliexiter.Fake)
 
@@ -34,7 +34,7 @@ var _ = Context("streamEvents", func() {
 			Expect(fakeConsumeNodeApi.GetEventStreamCallCount()).Should(Equal(1))
 
 		})
-		Context("pkg.GetEventStream errors", func() {
+		Context("managepackages.GetEventStream errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				fakeCliExiter := new(cliexiter.Fake)
@@ -57,7 +57,7 @@ var _ = Context("streamEvents", func() {
 					Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 			})
 		})
-		Context("pkg.GetEventStream doesn't error", func() {
+		Context("managepackages.GetEventStream doesn't error", func() {
 			Context("channel closes unexpectedly", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */

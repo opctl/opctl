@@ -3,6 +3,8 @@
 Create an in-process node which inherits current
 stderr/stdout/stdin/PGId (process group id) and blocks until killed.
 
+> There can be only one node running at a time on a given machine.
+
 ### lockfile
 
 Upon creation, nodes populate a lockfile at

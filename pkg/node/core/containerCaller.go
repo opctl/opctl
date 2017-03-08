@@ -16,7 +16,7 @@ type containerCaller interface {
 		inboundScope map[string]*model.Data,
 		containerId string,
 		scgContainerCall *model.ScgContainerCall,
-		opPkgRef string,
+		pkgRef string,
 		rootOpId string,
 	) (
 		outboundScope map[string]*model.Data,
@@ -48,7 +48,7 @@ func (this _containerCaller) Call(
 	inboundScope map[string]*model.Data,
 	containerId string,
 	scgContainerCall *model.ScgContainerCall,
-	opPkgRef string,
+	pkgRef string,
 	rootOpId string,
 ) (
 	outboundScope map[string]*model.Data,
@@ -66,13 +66,13 @@ func (this _containerCaller) Call(
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerId,
-			OpPkgRef:  opPkgRef,
+			PkgRef:    pkgRef,
 			RootOpId:  rootOpId,
 			Container: &dcgContainerDescriptor{},
 		},
 	)
 
-	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, opPkgRef)
+	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
 		return
 	}
@@ -82,7 +82,7 @@ func (this _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerId: containerId,
-				OpPkgRef:    opPkgRef,
+				PkgRef:      pkgRef,
 				RootOpId:    rootOpId,
 			},
 		},
@@ -96,7 +96,7 @@ func (this _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: containerId,
-				OpPkgRef:    opPkgRef,
+				PkgRef:      pkgRef,
 				RootOpId:    rootOpId,
 			},
 		},

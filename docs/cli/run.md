@@ -6,15 +6,6 @@ Run an op.
 
 If a node isn't running, one will be automatically created.
 
-### collection (since v0.1.15)
-
-The optional `-c` (or `--collection`) argument allows specifying which
-collection to reference; defaults to .opspec
-
-```shell
-$ opctl run -c someCollection someOp
-```
-
 ### container cleanup
 
 Containers created during the run are removed as they exit.

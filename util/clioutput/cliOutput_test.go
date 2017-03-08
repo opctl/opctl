@@ -72,16 +72,16 @@ var _ = Context("output", func() {
 				providedEvent := &model.Event{
 					ContainerExited: &model.ContainerExitedEvent{
 						ContainerId: "dummyContainerId",
-						OpPkgRef:    "dummyOpPkgRef",
+						PkgRef:      "dummyPkgRef",
 						ExitCode:    1,
 					},
 					Timestamp: time.Now(),
 				}
 				expectedWriteArg := []byte(fmt.Sprintln(
 					_cliColorer.Info(
-						"ContainerExited Id='%v' OpPkgRef='%v' ExitCode='%v' Timestamp='%v'\n",
+						"ContainerExited Id='%v' PkgRef='%v' ExitCode='%v' Timestamp='%v'\n",
 						providedEvent.ContainerExited.ContainerId,
-						providedEvent.ContainerExited.OpPkgRef,
+						providedEvent.ContainerExited.PkgRef,
 						providedEvent.ContainerExited.ExitCode,
 						providedEvent.Timestamp.Format(time.RFC3339),
 					),
@@ -108,15 +108,15 @@ var _ = Context("output", func() {
 				providedEvent := &model.Event{
 					ContainerStarted: &model.ContainerStartedEvent{
 						ContainerId: "dummyContainerId",
-						OpPkgRef:    "dummyOpPkgRef",
+						PkgRef:      "dummyPkgRef",
 					},
 					Timestamp: time.Now(),
 				}
 				expectedWriteArg := []byte(fmt.Sprintln(
 					_cliColorer.Info(
-						"ContainerStarted Id='%v' OpPkgRef='%v' Timestamp='%v'\n",
+						"ContainerStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
 						providedEvent.ContainerStarted.ContainerId,
-						providedEvent.ContainerStarted.OpPkgRef,
+						providedEvent.ContainerStarted.PkgRef,
 						providedEvent.Timestamp.Format(time.RFC3339),
 					),
 				))
@@ -193,17 +193,17 @@ var _ = Context("output", func() {
 				/* arrange */
 				providedEvent := &model.Event{
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
-						OpId:     "dummyOpId",
-						OpPkgRef: "dummyOpPkgRef",
-						Msg:      "dummyMsg",
+						OpId:   "dummyOpId",
+						PkgRef: "dummyPkgRef",
+						Msg:    "dummyMsg",
 					},
 					Timestamp: time.Now(),
 				}
 				expectedWriteArg := []byte(fmt.Sprintln(
 					_cliColorer.Error(
-						"OpEncounteredError Id='%v' OpPkgRef='%v' Timestamp='%v' Msg='%v'\n",
+						"OpEncounteredError Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
 						providedEvent.OpEncounteredError.OpId,
-						providedEvent.OpEncounteredError.OpPkgRef,
+						providedEvent.OpEncounteredError.PkgRef,
 						providedEvent.Timestamp.Format(time.RFC3339),
 						providedEvent.OpEncounteredError.Msg,
 					),
@@ -230,17 +230,17 @@ var _ = Context("output", func() {
 					/* arrange */
 					providedEvent := &model.Event{
 						OpEnded: &model.OpEndedEvent{
-							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
-							Outcome:  "SUCCEEDED",
+							OpId:    "dummyOpId",
+							PkgRef:  "dummyPkgRef",
+							Outcome: "SUCCEEDED",
 						},
 						Timestamp: time.Now(),
 					}
 					expectedWriteArg := []byte(fmt.Sprintln(
 						_cliColorer.Success(
-							"OpEnded Id='%v' OpPkgRef='%v' Outcome='%v' Timestamp='%v'\n",
+							"OpEnded Id='%v' PkgRef='%v' Outcome='%v' Timestamp='%v'\n",
 							providedEvent.OpEnded.OpId,
-							providedEvent.OpEnded.OpPkgRef,
+							providedEvent.OpEnded.PkgRef,
 							providedEvent.OpEnded.Outcome,
 							providedEvent.Timestamp.Format(time.RFC3339),
 						),
@@ -266,17 +266,17 @@ var _ = Context("output", func() {
 					/* arrange */
 					providedEvent := &model.Event{
 						OpEnded: &model.OpEndedEvent{
-							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
-							Outcome:  "KILLED",
+							OpId:    "dummyOpId",
+							PkgRef:  "dummyPkgRef",
+							Outcome: "KILLED",
 						},
 						Timestamp: time.Now(),
 					}
 					expectedWriteArg := []byte(fmt.Sprintln(
 						_cliColorer.Info(
-							"OpEnded Id='%v' OpPkgRef='%v' Outcome='%v' Timestamp='%v'\n",
+							"OpEnded Id='%v' PkgRef='%v' Outcome='%v' Timestamp='%v'\n",
 							providedEvent.OpEnded.OpId,
-							providedEvent.OpEnded.OpPkgRef,
+							providedEvent.OpEnded.PkgRef,
 							providedEvent.OpEnded.Outcome,
 							providedEvent.Timestamp.Format(time.RFC3339),
 						),
@@ -302,17 +302,17 @@ var _ = Context("output", func() {
 					/* arrange */
 					providedEvent := &model.Event{
 						OpEnded: &model.OpEndedEvent{
-							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
-							Outcome:  "FAILED",
+							OpId:    "dummyOpId",
+							PkgRef:  "dummyPkgRef",
+							Outcome: "FAILED",
 						},
 						Timestamp: time.Now(),
 					}
 					expectedWriteArg := []byte(fmt.Sprintln(
 						_cliColorer.Error(
-							"OpEnded Id='%v' OpPkgRef='%v' Outcome='%v' Timestamp='%v'\n",
+							"OpEnded Id='%v' PkgRef='%v' Outcome='%v' Timestamp='%v'\n",
 							providedEvent.OpEnded.OpId,
-							providedEvent.OpEnded.OpPkgRef,
+							providedEvent.OpEnded.PkgRef,
 							providedEvent.OpEnded.Outcome,
 							providedEvent.Timestamp.Format(time.RFC3339),
 						),
@@ -339,16 +339,16 @@ var _ = Context("output", func() {
 				/* arrange */
 				providedEvent := &model.Event{
 					OpStarted: &model.OpStartedEvent{
-						OpId:     "dummyOpId",
-						OpPkgRef: "dummyOpPkgRef",
+						OpId:   "dummyOpId",
+						PkgRef: "dummyPkgRef",
 					},
 					Timestamp: time.Now(),
 				}
 				expectedWriteArg := []byte(fmt.Sprintln(
 					_cliColorer.Info(
-						"OpStarted Id='%v' OpPkgRef='%v' Timestamp='%v'\n",
+						"OpStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
 						providedEvent.OpStarted.OpId,
-						providedEvent.OpStarted.OpPkgRef,
+						providedEvent.OpStarted.PkgRef,
 						providedEvent.Timestamp.Format(time.RFC3339),
 					),
 				))

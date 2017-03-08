@@ -12,8 +12,8 @@ import (
 	"github.com/opspec-io/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/consumenodeapi"
+	"github.com/opspec-io/sdk-golang/pkg/managepackages"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"path"
 	"path/filepath"
 	"time"
@@ -31,14 +31,14 @@ var _ = Context("runOp", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					pkg:          new(pkg.Fake),
-					cliExiter:    fakeCliExiter,
-					nodeProvider: new(nodeprovider.Fake),
-					vos:          fakeVos,
+					managePackages: new(managepackages.Fake),
+					cliExiter:      fakeCliExiter,
+					nodeProvider:   new(nodeprovider.Fake),
+					vos:            fakeVos,
 				}
 
 				/* act */
-				objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyName")
+				objectUnderTest.RunOp([]string{}, "dummyName")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -46,9 +46,9 @@ var _ = Context("runOp", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call pkg.GetOp w/ expected args", func() {
+			It("should call managepackages.GetPackage w/ expected args", func() {
 				/* arrange */
-				fakePkg := new(pkg.Fake)
+				fakeManagePackages := new(managepackages.Fake)
 
 				fakeConsumeNodeApi := new(consumenodeapi.Fake)
 				eventChannel := make(chan model.Event)
@@ -57,16 +57,15 @@ var _ = Context("runOp", func() {
 
 				fakeCliExiter := new(cliexiter.Fake)
 
-				providedName := "dummyOpName"
-				providedCollection := "dummyCollection"
+				providedPkgRef := "dummyPkgName"
 				wdReturnedFromVos := "dummyWorkDir"
 
 				fakeVos := new(vos.Fake)
 				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
-				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection, providedName)
+				expectedPath := filepath.Join(wdReturnedFromVos, ".opspec", providedPkgRef)
 
 				objectUnderTest := _core{
-					pkg:               fakePkg,
+					managePackages:    fakeManagePackages,
 					consumeNodeApi:    fakeConsumeNodeApi,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -75,22 +74,22 @@ var _ = Context("runOp", func() {
 				}
 
 				/* act */
-				objectUnderTest.RunOp([]string{}, providedCollection, providedName)
+				objectUnderTest.RunOp([]string{}, providedPkgRef)
 
 				/* assert */
-				Expect(fakePkg.GetOpArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakeManagePackages.GetPackageArgsForCall(0)).Should(Equal(expectedPath))
 			})
-			Context("pkg.GetOp errors", func() {
+			Context("managepackages.GetPackage errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
 					returnedError := errors.New("dummyError")
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetOpReturns(model.OpView{}, returnedError)
+					fakeManagePackages := new(managepackages.Fake)
+					fakeManagePackages.GetPackageReturns(model.PackageView{}, returnedError)
 
 					objectUnderTest := _core{
-						pkg:               fakePkg,
+						managePackages:    fakeManagePackages,
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
 						nodeProvider:      new(nodeprovider.Fake),
@@ -98,14 +97,14 @@ var _ = Context("runOp", func() {
 					}
 
 					/* act */
-					objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyName")
+					objectUnderTest.RunOp([]string{}, "dummyName")
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
 						Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 				})
 			})
-			Context("pkg.GetOp doesn't error", func() {
+			Context("managepackages.GetPackage doesn't error", func() {
 				It("should call paramSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
 					param1Name := "DUMMY_PARAM1_NAME"
@@ -119,9 +118,9 @@ var _ = Context("runOp", func() {
 						},
 					}
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetOpReturns(
-						model.OpView{
+					fakeManagePackages := new(managepackages.Fake)
+					fakeManagePackages.GetPackageReturns(
+						model.PackageView{
 							Inputs: expectedParams,
 						},
 						nil,
@@ -136,7 +135,7 @@ var _ = Context("runOp", func() {
 					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 					objectUnderTest := _core{
-						pkg:               fakePkg,
+						managePackages:    fakeManagePackages,
 						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
@@ -145,7 +144,7 @@ var _ = Context("runOp", func() {
 					}
 
 					/* act */
-					objectUnderTest.RunOp(providedArgs, "dummyCollection", "dummyOpName")
+					objectUnderTest.RunOp(providedArgs, "dummyPkgName")
 
 					/* assert */
 					actualArgs, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
@@ -158,13 +157,12 @@ var _ = Context("runOp", func() {
 					fakeVos := new(vos.Fake)
 					fakeVos.GetwdReturns(pwd, nil)
 
-					providedCollection := "dummyCollection"
-					providedOp := "dummyOp"
+					providedPkgRef := "dummyOp"
 					expectedArgs := model.StartOpReq{
 						Args: map[string]*model.Data{
 							"dummyArg1Name": {String: "dummyArg1Value"},
 						},
-						OpPkgRef: path.Join(pwd, providedCollection, providedOp),
+						PkgRef: path.Join(pwd, ".opspec", providedPkgRef),
 					}
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
@@ -177,7 +175,7 @@ var _ = Context("runOp", func() {
 					fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 					objectUnderTest := _core{
-						pkg:               new(pkg.Fake),
+						managePackages:    new(managepackages.Fake),
 						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
@@ -186,7 +184,7 @@ var _ = Context("runOp", func() {
 					}
 
 					/* act */
-					objectUnderTest.RunOp([]string{}, providedCollection, providedOp)
+					objectUnderTest.RunOp([]string{}, providedPkgRef)
 
 					/* assert */
 					actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
@@ -198,14 +196,14 @@ var _ = Context("runOp", func() {
 						fakeCliExiter := new(cliexiter.Fake)
 						returnedError := errors.New("dummyError")
 
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetOpReturns(model.OpView{}, nil)
+						fakeManagePackages := new(managepackages.Fake)
+						fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 						fakeConsumeNodeApi := new(consumenodeapi.Fake)
 						fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
 
 						objectUnderTest := _core{
-							pkg:               fakePkg,
+							managePackages:    fakeManagePackages,
 							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -214,7 +212,7 @@ var _ = Context("runOp", func() {
 						}
 
 						/* act */
-						objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+						objectUnderTest.RunOp([]string{}, "dummyPkgName")
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -224,8 +222,8 @@ var _ = Context("runOp", func() {
 				Context("consumeNodeApi.StartOp doesn't error", func() {
 					It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
 						/* arrange */
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetOpReturns(model.OpView{}, nil)
+						fakeManagePackages := new(managepackages.Fake)
+						fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 						rootOpIdReturnedFromStartOp := "dummyRootOpId"
 						expectedEventFilter := &model.GetEventStreamReq{
 							Filter: &model.EventFilter{
@@ -240,7 +238,7 @@ var _ = Context("runOp", func() {
 						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 						objectUnderTest := _core{
-							pkg:               fakePkg,
+							managePackages:    fakeManagePackages,
 							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -249,7 +247,7 @@ var _ = Context("runOp", func() {
 						}
 
 						/* act */
-						objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+						objectUnderTest.RunOp([]string{}, "dummyPkgName")
 
 						/* assert */
 						Expect(fakeConsumeNodeApi.GetEventStreamArgsForCall(0)).
@@ -261,14 +259,14 @@ var _ = Context("runOp", func() {
 							fakeCliExiter := new(cliexiter.Fake)
 							returnedError := errors.New("dummyError")
 
-							fakePkg := new(pkg.Fake)
-							fakePkg.GetOpReturns(model.OpView{}, nil)
+							fakeManagePackages := new(managepackages.Fake)
+							fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 							fakeConsumeNodeApi := new(consumenodeapi.Fake)
 							fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
 
 							objectUnderTest := _core{
-								pkg:               fakePkg,
+								managePackages:    fakeManagePackages,
 								consumeNodeApi:    fakeConsumeNodeApi,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -277,7 +275,7 @@ var _ = Context("runOp", func() {
 							}
 
 							/* act */
-							objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+							objectUnderTest.RunOp([]string{}, "dummyPkgName")
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -290,8 +288,8 @@ var _ = Context("runOp", func() {
 								/* arrange */
 								fakeCliExiter := new(cliexiter.Fake)
 
-								fakePkg := new(pkg.Fake)
-								fakePkg.GetOpReturns(model.OpView{}, nil)
+								fakeManagePackages := new(managepackages.Fake)
+								fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 								fakeConsumeNodeApi := new(consumenodeapi.Fake)
 								eventChannel := make(chan model.Event)
@@ -299,7 +297,7 @@ var _ = Context("runOp", func() {
 								fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 								objectUnderTest := _core{
-									pkg:               fakePkg,
+									managePackages:    fakeManagePackages,
 									consumeNodeApi:    fakeConsumeNodeApi,
 									cliExiter:         fakeCliExiter,
 									cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -308,7 +306,7 @@ var _ = Context("runOp", func() {
 								}
 
 								/* act */
-								objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+								objectUnderTest.RunOp([]string{}, "dummyPkgName")
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -326,7 +324,7 @@ var _ = Context("runOp", func() {
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
 													OpId:     rootOpId,
-													OpPkgRef: "dummyOpPkgRef",
+													PkgRef:   "dummyPkgRef",
 													Outcome:  model.OpOutcomeSucceeded,
 													RootOpId: rootOpId,
 												},
@@ -334,8 +332,8 @@ var _ = Context("runOp", func() {
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetOpReturns(model.OpView{}, nil)
+											fakeManagePackages := new(managepackages.Fake)
+											fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -345,7 +343,7 @@ var _ = Context("runOp", func() {
 											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												pkg:               fakePkg,
+												managePackages:    fakeManagePackages,
 												cliColorer:        clicolorer.New(),
 												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
@@ -356,7 +354,7 @@ var _ = Context("runOp", func() {
 											}
 
 											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+											objectUnderTest.RunOp([]string{}, "dummyPkgName")
 											Expect(fakeCliExiter.ExitArgsForCall(0)).
 												Should(Equal(cliexiter.ExitReq{Code: 0}))
 										})
@@ -368,7 +366,7 @@ var _ = Context("runOp", func() {
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
 													OpId:     rootOpId,
-													OpPkgRef: "dummyOpPkgRef",
+													PkgRef:   "dummyPkgRef",
 													Outcome:  model.OpOutcomeKilled,
 													RootOpId: rootOpId,
 												},
@@ -376,8 +374,8 @@ var _ = Context("runOp", func() {
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetOpReturns(model.OpView{}, nil)
+											fakeManagePackages := new(managepackages.Fake)
+											fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -387,7 +385,7 @@ var _ = Context("runOp", func() {
 											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												pkg:               fakePkg,
+												managePackages:    fakeManagePackages,
 												cliColorer:        clicolorer.New(),
 												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
@@ -398,7 +396,7 @@ var _ = Context("runOp", func() {
 											}
 
 											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+											objectUnderTest.RunOp([]string{}, "dummyPkgName")
 											Expect(fakeCliExiter.ExitArgsForCall(0)).
 												Should(Equal(cliexiter.ExitReq{Code: 137}))
 										})
@@ -411,7 +409,7 @@ var _ = Context("runOp", func() {
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
 													OpId:     rootOpId,
-													OpPkgRef: "dummyOpPkgRef",
+													PkgRef:   "dummyPkgRef",
 													Outcome:  model.OpOutcomeFailed,
 													RootOpId: rootOpId,
 												},
@@ -419,8 +417,8 @@ var _ = Context("runOp", func() {
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetOpReturns(model.OpView{}, nil)
+											fakeManagePackages := new(managepackages.Fake)
+											fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -430,7 +428,7 @@ var _ = Context("runOp", func() {
 											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												pkg:               fakePkg,
+												managePackages:    fakeManagePackages,
 												cliColorer:        clicolorer.New(),
 												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
@@ -441,7 +439,7 @@ var _ = Context("runOp", func() {
 											}
 
 											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+											objectUnderTest.RunOp([]string{}, "dummyPkgName")
 											Expect(fakeCliExiter.ExitArgsForCall(0)).
 												Should(Equal(cliexiter.ExitReq{Code: 1}))
 										})
@@ -453,7 +451,7 @@ var _ = Context("runOp", func() {
 												Timestamp: time.Now(),
 												OpEnded: &model.OpEndedEvent{
 													OpId:     rootOpId,
-													OpPkgRef: "dummyOpPkgRef",
+													PkgRef:   "dummyPkgRef",
 													Outcome:  "some unexpected outcome",
 													RootOpId: rootOpId,
 												},
@@ -461,8 +459,8 @@ var _ = Context("runOp", func() {
 
 											fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetOpReturns(model.OpView{}, nil)
+											fakeManagePackages := new(managepackages.Fake)
+											fakeManagePackages.GetPackageReturns(model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -472,7 +470,7 @@ var _ = Context("runOp", func() {
 											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 											objectUnderTest := _core{
-												pkg:               fakePkg,
+												managePackages:    fakeManagePackages,
 												cliColorer:        clicolorer.New(),
 												consumeNodeApi:    fakeConsumeNodeApi,
 												cliExiter:         fakeCliExiter,
@@ -483,7 +481,7 @@ var _ = Context("runOp", func() {
 											}
 
 											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyCollection", "dummyOpName")
+											objectUnderTest.RunOp([]string{}, "dummyPkgName")
 											Expect(fakeCliExiter.ExitArgsForCall(0)).
 												Should(Equal(cliexiter.ExitReq{Code: 1}))
 										})

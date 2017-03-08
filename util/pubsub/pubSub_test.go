@@ -32,7 +32,7 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
+							PkgRef:   "dummyPkgRef",
 						},
 					}
 
@@ -59,7 +59,7 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
+							PkgRef:   "dummyPkgRef",
 						},
 					}
 
@@ -87,7 +87,7 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
+							PkgRef:   "dummyPkgRef",
 						},
 					}
 
@@ -112,7 +112,7 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
-							OpPkgRef: "dummyOpPkgRef",
+							PkgRef:   "dummyPkgRef",
 						},
 					}
 

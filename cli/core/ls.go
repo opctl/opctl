@@ -3,12 +3,12 @@ package core
 import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"path/filepath"
+	pathPkg "path"
 	"text/tabwriter"
 )
 
-func (this _core) ListOpsInCollection(
-	collection string,
+func (this _core) ListPackages(
+	path string,
 ) {
 	_tabWriter := new(tabwriter.Writer)
 	defer _tabWriter.Flush()
@@ -22,17 +22,17 @@ func (this _core) ListOpsInCollection(
 		return // support fake exiter
 	}
 
-	ops, err := this.pkg.GetCollection(
-		filepath.Join(pwd, collection),
+	packages, err := this.managePackages.ListPackagesInDir(
+		pathPkg.Join(pwd, path),
 	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
-	for _, op := range ops.Ops {
+	for _, _package := range packages {
 
-		fmt.Fprintf(_tabWriter, "%v\t%v", op.Name, op.Description)
+		fmt.Fprintf(_tabWriter, "%v\t%v", _package.Name, _package.Description)
 		fmt.Fprintln(_tabWriter)
 
 	}

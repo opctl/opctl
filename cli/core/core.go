@@ -12,30 +12,25 @@ import (
 	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg/consumenodeapi"
-	"github.com/opspec-io/sdk-golang/pkg/pkg"
+	"github.com/opspec-io/sdk-golang/pkg/managepackages"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"io"
 	"os"
 )
 
 type Core interface {
-	CreateCollection(
+	CreatePackage(
+		path string,
 		description string,
 		name string,
 	)
 
-	CreateOp(
-		collection string,
-		description string,
-		name string,
-	)
-
-	KillOp(
+	OpKill(
 		opId string,
 	)
 
-	ListOpsInCollection(
-		collection string,
+	ListPackages(
+		path string,
 	)
 
 	NodeCreate()
@@ -44,18 +39,12 @@ type Core interface {
 
 	RunOp(
 		args []string,
-		collection string,
-		name string,
+		pkgRef string,
 	)
 
-	SetCollectionDescription(
+	PkgSetDescription(
 		description string,
-	)
-
-	SetOpDescription(
-		collection string,
-		description string,
-		name string,
+		pkgRef string,
 	)
 
 	StreamEvents()
@@ -74,7 +63,7 @@ func New(
 
 	return &_core{
 		consumeNodeApi:    consumenodeapi.New(),
-		pkg:               pkg.New(),
+		managePackages:    managepackages.New(),
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
@@ -89,7 +78,7 @@ func New(
 
 type _core struct {
 	consumeNodeApi    consumenodeapi.ConsumeNodeApi
-	pkg               pkg.Pkg
+	managePackages    managepackages.ManagePackages
 	cliColorer        clicolorer.CliColorer
 	cliExiter         cliexiter.CliExiter
 	cliOutput         clioutput.CliOutput

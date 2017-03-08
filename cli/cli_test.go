@@ -25,76 +25,6 @@ var _ = Context("cli", func() {
 			})
 		})
 
-		Context("collection", func() {
-
-			Context("create", func() {
-
-				Context("with description", func() {
-					It("should call core.CreateCollection w/ expected args", func() {
-						/* arrange */
-						fakeCore := new(core.Fake)
-
-						expectedCollectionName := "dummyCollectionName"
-						expectedCollectionDescription := "dummyCollectionDescription"
-
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-						/* act */
-						objectUnderTest.Run([]string{"opctl", "collection", "create", "-d", expectedCollectionDescription, expectedCollectionName})
-
-						/* assert */
-						Expect(fakeCore.CreateCollectionCallCount()).Should(Equal(1))
-						actualCollectionDescription, actualCollectionName := fakeCore.CreateCollectionArgsForCall(0)
-						Expect(actualCollectionName).Should(Equal(expectedCollectionName))
-						Expect(actualCollectionDescription).Should(Equal(expectedCollectionDescription))
-					})
-				})
-
-				Context("with no description", func() {
-					It("should call core.CreateCollectionUseCase w/ expected args", func() {
-						/* arrange */
-						fakeCore := new(core.Fake)
-
-						expectedCollectionName := "dummyCollectionName"
-
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-						/* act */
-						objectUnderTest.Run([]string{"opctl", "collection", "create", expectedCollectionName})
-
-						/* assert */
-						Expect(fakeCore.CreateCollectionCallCount()).Should(Equal(1))
-						actualCollectionDescription, actualCollectionName := fakeCore.CreateCollectionArgsForCall(0)
-						Expect(actualCollectionName).Should(Equal(expectedCollectionName))
-						Expect(actualCollectionDescription).Should(BeEmpty())
-					})
-				})
-			})
-
-			Context("set", func() {
-
-				Context("description", func() {
-					It("should call core.SetCollectionDescription w/ expected args", func() {
-						/* arrange */
-						fakeCore := new(core.Fake)
-
-						expectedCollectionDescription := "dummyCollectionDescription"
-
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-						/* act */
-						objectUnderTest.Run([]string{"opctl", "collection", "set", "description", expectedCollectionDescription})
-
-						/* assert */
-						Expect(fakeCore.SetCollectionDescriptionCallCount()).Should(Equal(1))
-						Expect(fakeCore.SetCollectionDescriptionArgsForCall(0)).Should(Equal(expectedCollectionDescription))
-					})
-				})
-
-			})
-
-		})
-
 		Context("events", func() {
 			It("should call core.StreamEvents w/ expected args", func() {
 				/* arrange */
@@ -110,59 +40,41 @@ var _ = Context("cli", func() {
 			})
 		})
 
-		Context("kill", func() {
-			It("should call core.KillOp w/ expected args", func() {
-				/* arrange */
-				fakeCore := new(core.Fake)
-
-				expectedOpId := "dummyOpId"
-
-				objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-				/* act */
-				objectUnderTest.Run([]string{"opctl", "kill", expectedOpId})
-
-				/* assert */
-				Expect(fakeCore.KillOpCallCount()).Should(Equal(1))
-				Expect(fakeCore.KillOpArgsForCall(0)).Should(Equal(expectedOpId))
-			})
-		})
-
 		Context("ls", func() {
-			Context("with collection", func() {
+			Context("w/ path", func() {
 
-				It("should call core.ListOpsInCollection w/ expected args", func() {
+				It("should call core.ListPackages w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedCollection := "dummyCollection"
+					expectedPath := "dummyPath"
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
-					objectUnderTest.Run([]string{"opctl", "ls", "-c", expectedCollection})
+					objectUnderTest.Run([]string{"opctl", "ls", "-c", expectedPath})
 
 					/* assert */
-					Expect(fakeCore.ListOpsInCollectionCallCount()).Should(Equal(1))
-					actualCollection := fakeCore.ListOpsInCollectionArgsForCall(0)
-					Expect(actualCollection).Should(Equal(expectedCollection))
+					Expect(fakeCore.ListPackagesCallCount()).Should(Equal(1))
+					actualPath := fakeCore.ListPackagesArgsForCall(0)
+					Expect(actualPath).Should(Equal(expectedPath))
 				})
 			})
-			Context("without collection", func() {
+			Context("w/out path", func() {
 
-				It("should call core.ListOpsInCollection w/ expected args", func() {
+				It("should call core.ListPackages w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedCollection := ".opspec"
+					expectedPath := ".opspec"
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "ls"})
 
 					/* assert */
-					Expect(fakeCore.ListOpsInCollectionCallCount()).Should(Equal(1))
-					actualCollection := fakeCore.ListOpsInCollectionArgsForCall(0)
-					Expect(actualCollection).Should(Equal(expectedCollection))
+					Expect(fakeCore.ListPackagesCallCount()).Should(Equal(1))
+					actualPath := fakeCore.ListPackagesArgsForCall(0)
+					Expect(actualPath).Should(Equal(expectedPath))
 				})
 			})
 		})
@@ -206,92 +118,114 @@ var _ = Context("cli", func() {
 
 		Context("op", func() {
 
+			Context("kill", func() {
+				It("should call core.OpKill w/ expected args", func() {
+					/* arrange */
+					fakeCore := new(core.Fake)
+
+					expectedOpId := "dummyOpId"
+
+					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+
+					/* act */
+					objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpId})
+
+					/* assert */
+					Expect(fakeCore.OpKillCallCount()).Should(Equal(1))
+					Expect(fakeCore.OpKillArgsForCall(0)).Should(Equal(expectedOpId))
+				})
+			})
+
+		})
+
+		Context("pkg", func() {
+
 			Context("create", func() {
-				Context("with collection", func() {
-					It("should call core.CreateOp w/ expected args", func() {
+				Context("w/ path", func() {
+					It("should call core.CreatePackage w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
-						expectedOpName := "dummyOpName"
-						expectedCollection := "dummyCollection"
+						expectedPkgName := "dummyPkgName"
+						expectedPath := "dummyPath"
 
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "create", "-c", expectedCollection, expectedOpName})
+						objectUnderTest.Run([]string{"opctl", "pkg", "create", "-c", expectedPath, expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreateOpCallCount()).Should(Equal(1))
-						actualCollection, actualOpDescription, actualOpName := fakeCore.CreateOpArgsForCall(0)
-						Expect(actualOpName).Should(Equal(expectedOpName))
-						Expect(actualOpDescription).Should(BeEmpty())
-						Expect(actualCollection).Should(Equal(expectedCollection))
+						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(actualPkgName).Should(Equal(expectedPkgName))
+						Expect(actualPkgDescription).Should(BeEmpty())
+						Expect(actualPath).Should(Equal(expectedPath))
 					})
 				})
 
-				Context("with no collection", func() {
-					It("should call core.CreateOp w/ expected args", func() {
+				Context("w/out path", func() {
+					It("should call core.CreatePackage w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
-						expectedOpName := "dummyOpName"
-						expectedCollection := ".opspec"
+						expectedPkgName := "dummyPkgName"
+						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "create", expectedOpName})
+						objectUnderTest.Run([]string{"opctl", "pkg", "create", expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreateOpCallCount()).Should(Equal(1))
-						actualCollection, actualOpDescription, actualOpName := fakeCore.CreateOpArgsForCall(0)
-						Expect(actualOpName).Should(Equal(expectedOpName))
-						Expect(actualOpDescription).Should(BeEmpty())
-						Expect(actualCollection).Should(Equal(expectedCollection))
+						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(actualPkgName).Should(Equal(expectedPkgName))
+						Expect(actualPkgDescription).Should(BeEmpty())
+						Expect(actualPath).Should(Equal(expectedPath))
 					})
 				})
-				Context("with description", func() {
-					It("should call core.CreateOp w/ expected args", func() {
+				Context("w/ description", func() {
+					It("should call core.CreatePackage w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
-						expectedOpName := "dummyOpName"
-						expectedOpDescription := "dummyOpDescription"
-						expectedCollection := ".opspec"
+						expectedPkgName := "dummyPkgName"
+						expectedPkgDescription := "dummyPkgDescription"
+						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "create", "-d", expectedOpDescription, expectedOpName})
+						objectUnderTest.Run([]string{"opctl", "pkg", "create", "-d", expectedPkgDescription, expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreateOpCallCount()).Should(Equal(1))
-						actualCollection, actualOpDescription, actualOpName := fakeCore.CreateOpArgsForCall(0)
-						Expect(actualOpName).Should(Equal(expectedOpName))
-						Expect(actualOpDescription).Should(Equal(expectedOpDescription))
-						Expect(actualCollection).Should(Equal(expectedCollection))
+						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(actualPkgName).Should(Equal(expectedPkgName))
+						Expect(actualPkgDescription).Should(Equal(expectedPkgDescription))
+						Expect(actualPath).Should(Equal(expectedPath))
 					})
 				})
 
-				Context("with no description", func() {
-					It("should call core.CreateOp w/ expected args", func() {
+				Context("w/out description", func() {
+					It("should call core.CreatePackage w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
-						expectedName := "dummyOpName"
-						expectedCollection := ".opspec"
+						expectedName := "dummyPkgName"
+						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "create", expectedName})
+						objectUnderTest.Run([]string{"opctl", "pkg", "create", expectedName})
 
 						/* assert */
-						Expect(fakeCore.CreateOpCallCount()).Should(Equal(1))
-						actualCollection, actualOpDescription, actualOpName := fakeCore.CreateOpArgsForCall(0)
-						Expect(actualOpName).Should(Equal(expectedName))
-						Expect(actualOpDescription).Should(BeEmpty())
-						Expect(actualCollection).Should(Equal(expectedCollection))
+						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(actualPkgName).Should(Equal(expectedName))
+						Expect(actualPkgDescription).Should(BeEmpty())
+						Expect(actualPath).Should(Equal(expectedPath))
 					})
 				})
 			})
@@ -299,51 +233,26 @@ var _ = Context("cli", func() {
 			Context("set", func() {
 
 				Context("description", func() {
-					Context("with collection", func() {
-						It("should call core.SetOpDescription w/ expected args", func() {
-							/* arrange */
-							fakeCore := new(core.Fake)
 
-							expectedName := "dummyOpName"
-							expectedDescription := "dummyOpDescription"
-							expectedCollection := "dummyCollection"
+					It("should call core.PkgSetDescription w/ expected args", func() {
+						/* arrange */
+						fakeCore := new(core.Fake)
 
-							objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+						pkgRef := ".opspec/dummyPkgName"
+						expectedDescription := "dummyPkgDescription"
 
-							/* act */
-							objectUnderTest.Run([]string{"opctl", "op", "set", "description", "-c", expectedCollection, expectedDescription, expectedName})
+						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
-							/* assert */
-							Expect(fakeCore.SetOpDescriptionCallCount()).Should(Equal(1))
-							actualCollection, actualOpDescription, actualOpName := fakeCore.SetOpDescriptionArgsForCall(0)
-							Expect(actualOpName).Should(Equal(expectedName))
-							Expect(actualOpDescription).Should(Equal(expectedDescription))
-							Expect(actualCollection).Should(Equal(expectedCollection))
-						})
+						/* act */
+						objectUnderTest.Run([]string{"opctl", "op", "set", "description", expectedDescription, pkgRef})
+
+						/* assert */
+						Expect(fakeCore.PkgSetDescriptionCallCount()).Should(Equal(1))
+						actualPkgDescription, actualPkgRef := fakeCore.PkgSetDescriptionArgsForCall(0)
+						Expect(actualPkgRef).Should(Equal(pkgRef))
+						Expect(actualPkgDescription).Should(Equal(expectedDescription))
 					})
 
-					Context("with no collection", func() {
-						It("should call core.SetOpDescription w/ expected args", func() {
-							/* arrange */
-							fakeCore := new(core.Fake)
-
-							expectedName := "dummyOpName"
-							expectedDescription := "dummyOpDescription"
-							expectedCollection := ".opspec"
-
-							objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-							/* act */
-							objectUnderTest.Run([]string{"opctl", "op", "set", "description", expectedDescription, expectedName})
-
-							/* assert */
-							Expect(fakeCore.SetOpDescriptionCallCount()).Should(Equal(1))
-							actualCollection, actualOpDescription, actualOpName := fakeCore.SetOpDescriptionArgsForCall(0)
-							Expect(actualOpName).Should(Equal(expectedName))
-							Expect(actualOpDescription).Should(Equal(expectedDescription))
-							Expect(actualCollection).Should(Equal(expectedCollection))
-						})
-					})
 				})
 
 			})
@@ -351,46 +260,23 @@ var _ = Context("cli", func() {
 		})
 
 		Context("run", func() {
-			Context("with collection", func() {
-				It("should call core.RunOp w/ expected args", func() {
-					/* arrange */
-					fakeCore := new(core.Fake)
-
-					expectedCollection := "dummyCollection"
-					expectedOpUrl := "dummyOpUrl"
-
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-					/* act */
-					objectUnderTest.Run([]string{"opctl", "run", "-c", expectedCollection, expectedOpUrl})
-
-					/* assert */
-					Expect(fakeCore.RunOpCallCount()).Should(Equal(1))
-					actualOpArgs, actualCollection, actualOpUrl := fakeCore.RunOpArgsForCall(0)
-					Expect(actualOpUrl).Should(Equal(expectedOpUrl))
-					Expect(actualCollection).Should(Equal(expectedCollection))
-					Expect(actualOpArgs).Should(BeEmpty())
-				})
-			})
 			Context("with two op run args", func() {
 				It("should call core.RunOp w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
 					expectedOpArgs := []string{"arg1Name=arg1Value", "arg2Name=arg2Value"}
-					expectedCollection := ".opspec"
-					expectedOpUrl := "dummyOpUrl"
+					expectedPkgRef := ".opspec/dummyPkgName"
 
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
-					objectUnderTest.Run([]string{"opctl", "run", "-a", expectedOpArgs[0], "-a", expectedOpArgs[1], expectedOpUrl})
+					objectUnderTest.Run([]string{"opctl", "run", "-a", expectedOpArgs[0], "-a", expectedOpArgs[1], expectedPkgRef})
 
 					/* assert */
 					Expect(fakeCore.RunOpCallCount()).Should(Equal(1))
-					actualOpArgs, actualCollection, actualOpUrl := fakeCore.RunOpArgsForCall(0)
-					Expect(actualOpUrl).Should(Equal(expectedOpUrl))
-					Expect(actualCollection).Should(Equal(expectedCollection))
+					actualOpArgs, actualOpUrl := fakeCore.RunOpArgsForCall(0)
+					Expect(actualOpUrl).Should(Equal(expectedPkgRef))
 					Expect(actualOpArgs).Should(Equal(expectedOpArgs))
 				})
 			})
@@ -400,20 +286,18 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedOpUrl := "dummyOpUrl"
-					expectedCollection := ".opspec"
+					expectedPkgRef := ".opspec/dummyPkgName"
 
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
-					objectUnderTest.Run([]string{"opctl", "run", expectedOpUrl})
+					objectUnderTest.Run([]string{"opctl", "run", expectedPkgRef})
 
 					/* assert */
 					Expect(fakeCore.RunOpCallCount()).Should(Equal(1))
 
-					actualOpArgs, actualCollection, actualOpUrl := fakeCore.RunOpArgsForCall(0)
-					Expect(actualOpUrl).Should(Equal(expectedOpUrl))
-					Expect(actualCollection).Should(Equal(expectedCollection))
+					actualOpArgs, actualPkgRef := fakeCore.RunOpArgsForCall(0)
+					Expect(actualPkgRef).Should(Equal(expectedPkgRef))
 					Expect(actualOpArgs).Should(BeEmpty())
 				})
 			})

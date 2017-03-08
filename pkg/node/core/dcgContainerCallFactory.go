@@ -17,7 +17,7 @@ func constructDcgContainerCall(
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
 	rootOpId string,
-	opPkgRef string,
+	pkgRef string,
 ) (dcgContainerCall *model.DcgContainerCall, err error) {
 	fs := osfs.New()
 	fileCopier := filecopier.New()
@@ -66,7 +66,7 @@ func constructDcgContainerCall(
 			// is bound to pkg path
 			dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
 			err = dirCopier.Fs(
-				path.Join(opPkgRef, scgContainerDirBind),
+				path.Join(pkgRef, scgContainerDirBind),
 				dcgContainerCall.Dirs[scgContainerDirPath],
 			)
 		} else {
@@ -103,7 +103,7 @@ func constructDcgContainerCall(
 			// is bound to pkg path
 			dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
 			err = fileCopier.Fs(
-				path.Join(opPkgRef, scgContainerFileBind),
+				path.Join(pkgRef, scgContainerFileBind),
 				dcgContainerCall.Files[scgContainerFilePath],
 			)
 		} else {

@@ -6,28 +6,22 @@ import (
 )
 
 type Fake struct {
-	CreateCollectionStub        func(description string, name string)
-	createCollectionMutex       sync.RWMutex
-	createCollectionArgsForCall []struct {
-		description string
-		name        string
-	}
-	CreateOpStub        func(collection string, description string, name string)
-	createOpMutex       sync.RWMutex
-	createOpArgsForCall []struct {
+	CreatePackageStub        func(collection string, description string, name string)
+	createPackageMutex       sync.RWMutex
+	createPackageArgsForCall []struct {
 		collection  string
 		description string
 		name        string
 	}
-	KillOpStub        func(opId string)
-	killOpMutex       sync.RWMutex
-	killOpArgsForCall []struct {
+	OpKillStub        func(opId string)
+	opKillMutex       sync.RWMutex
+	opKillArgsForCall []struct {
 		opId string
 	}
-	ListOpsInCollectionStub        func(collection string)
-	listOpsInCollectionMutex       sync.RWMutex
-	listOpsInCollectionArgsForCall []struct {
-		collection string
+	ListPackagesStub        func(path string)
+	listPackagesMutex       sync.RWMutex
+	listPackagesArgsForCall []struct {
+		path string
 	}
 	NodeCreateStub        func()
 	nodeCreateMutex       sync.RWMutex
@@ -35,24 +29,17 @@ type Fake struct {
 	NodeKillStub          func()
 	nodeKillMutex         sync.RWMutex
 	nodeKillArgsForCall   []struct{}
-	RunOpStub             func(args []string, collection string, name string)
+	RunOpStub             func(args []string, pkgRef string)
 	runOpMutex            sync.RWMutex
 	runOpArgsForCall      []struct {
-		args       []string
-		collection string
-		name       string
+		args   []string
+		pkgRef string
 	}
-	SetCollectionDescriptionStub        func(description string)
-	setCollectionDescriptionMutex       sync.RWMutex
-	setCollectionDescriptionArgsForCall []struct {
+	PkgSetDescriptionStub        func(description string, pkgRef string)
+	pkgSetDescriptionMutex       sync.RWMutex
+	pkgSetDescriptionArgsForCall []struct {
 		description string
-	}
-	SetOpDescriptionStub        func(collection string, description string, name string)
-	setOpDescriptionMutex       sync.RWMutex
-	setOpDescriptionArgsForCall []struct {
-		collection  string
-		description string
-		name        string
+		pkgRef      string
 	}
 	StreamEventsStub        func()
 	streamEventsMutex       sync.RWMutex
@@ -66,103 +53,78 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) CreateCollection(description string, name string) {
-	fake.createCollectionMutex.Lock()
-	fake.createCollectionArgsForCall = append(fake.createCollectionArgsForCall, struct {
-		description string
-		name        string
-	}{description, name})
-	fake.recordInvocation("CreateCollection", []interface{}{description, name})
-	fake.createCollectionMutex.Unlock()
-	if fake.CreateCollectionStub != nil {
-		fake.CreateCollectionStub(description, name)
-	}
-}
-
-func (fake *Fake) CreateCollectionCallCount() int {
-	fake.createCollectionMutex.RLock()
-	defer fake.createCollectionMutex.RUnlock()
-	return len(fake.createCollectionArgsForCall)
-}
-
-func (fake *Fake) CreateCollectionArgsForCall(i int) (string, string) {
-	fake.createCollectionMutex.RLock()
-	defer fake.createCollectionMutex.RUnlock()
-	return fake.createCollectionArgsForCall[i].description, fake.createCollectionArgsForCall[i].name
-}
-
-func (fake *Fake) CreateOp(collection string, description string, name string) {
-	fake.createOpMutex.Lock()
-	fake.createOpArgsForCall = append(fake.createOpArgsForCall, struct {
+func (fake *Fake) CreatePackage(collection string, description string, name string) {
+	fake.createPackageMutex.Lock()
+	fake.createPackageArgsForCall = append(fake.createPackageArgsForCall, struct {
 		collection  string
 		description string
 		name        string
 	}{collection, description, name})
-	fake.recordInvocation("CreateOp", []interface{}{collection, description, name})
-	fake.createOpMutex.Unlock()
-	if fake.CreateOpStub != nil {
-		fake.CreateOpStub(collection, description, name)
+	fake.recordInvocation("CreatePackage", []interface{}{collection, description, name})
+	fake.createPackageMutex.Unlock()
+	if fake.CreatePackageStub != nil {
+		fake.CreatePackageStub(collection, description, name)
 	}
 }
 
-func (fake *Fake) CreateOpCallCount() int {
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	return len(fake.createOpArgsForCall)
+func (fake *Fake) CreatePackageCallCount() int {
+	fake.createPackageMutex.RLock()
+	defer fake.createPackageMutex.RUnlock()
+	return len(fake.createPackageArgsForCall)
 }
 
-func (fake *Fake) CreateOpArgsForCall(i int) (string, string, string) {
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	return fake.createOpArgsForCall[i].collection, fake.createOpArgsForCall[i].description, fake.createOpArgsForCall[i].name
+func (fake *Fake) CreatePackageArgsForCall(i int) (string, string, string) {
+	fake.createPackageMutex.RLock()
+	defer fake.createPackageMutex.RUnlock()
+	return fake.createPackageArgsForCall[i].collection, fake.createPackageArgsForCall[i].description, fake.createPackageArgsForCall[i].name
 }
 
-func (fake *Fake) KillOp(opId string) {
-	fake.killOpMutex.Lock()
-	fake.killOpArgsForCall = append(fake.killOpArgsForCall, struct {
+func (fake *Fake) OpKill(opId string) {
+	fake.opKillMutex.Lock()
+	fake.opKillArgsForCall = append(fake.opKillArgsForCall, struct {
 		opId string
 	}{opId})
-	fake.recordInvocation("KillOp", []interface{}{opId})
-	fake.killOpMutex.Unlock()
-	if fake.KillOpStub != nil {
-		fake.KillOpStub(opId)
+	fake.recordInvocation("OpKill", []interface{}{opId})
+	fake.opKillMutex.Unlock()
+	if fake.OpKillStub != nil {
+		fake.OpKillStub(opId)
 	}
 }
 
-func (fake *Fake) KillOpCallCount() int {
-	fake.killOpMutex.RLock()
-	defer fake.killOpMutex.RUnlock()
-	return len(fake.killOpArgsForCall)
+func (fake *Fake) OpKillCallCount() int {
+	fake.opKillMutex.RLock()
+	defer fake.opKillMutex.RUnlock()
+	return len(fake.opKillArgsForCall)
 }
 
-func (fake *Fake) KillOpArgsForCall(i int) string {
-	fake.killOpMutex.RLock()
-	defer fake.killOpMutex.RUnlock()
-	return fake.killOpArgsForCall[i].opId
+func (fake *Fake) OpKillArgsForCall(i int) string {
+	fake.opKillMutex.RLock()
+	defer fake.opKillMutex.RUnlock()
+	return fake.opKillArgsForCall[i].opId
 }
 
-func (fake *Fake) ListOpsInCollection(collection string) {
-	fake.listOpsInCollectionMutex.Lock()
-	fake.listOpsInCollectionArgsForCall = append(fake.listOpsInCollectionArgsForCall, struct {
-		collection string
-	}{collection})
-	fake.recordInvocation("ListOpsInCollection", []interface{}{collection})
-	fake.listOpsInCollectionMutex.Unlock()
-	if fake.ListOpsInCollectionStub != nil {
-		fake.ListOpsInCollectionStub(collection)
+func (fake *Fake) ListPackages(path string) {
+	fake.listPackagesMutex.Lock()
+	fake.listPackagesArgsForCall = append(fake.listPackagesArgsForCall, struct {
+		path string
+	}{path})
+	fake.recordInvocation("ListPackages", []interface{}{path})
+	fake.listPackagesMutex.Unlock()
+	if fake.ListPackagesStub != nil {
+		fake.ListPackagesStub(path)
 	}
 }
 
-func (fake *Fake) ListOpsInCollectionCallCount() int {
-	fake.listOpsInCollectionMutex.RLock()
-	defer fake.listOpsInCollectionMutex.RUnlock()
-	return len(fake.listOpsInCollectionArgsForCall)
+func (fake *Fake) ListPackagesCallCount() int {
+	fake.listPackagesMutex.RLock()
+	defer fake.listPackagesMutex.RUnlock()
+	return len(fake.listPackagesArgsForCall)
 }
 
-func (fake *Fake) ListOpsInCollectionArgsForCall(i int) string {
-	fake.listOpsInCollectionMutex.RLock()
-	defer fake.listOpsInCollectionMutex.RUnlock()
-	return fake.listOpsInCollectionArgsForCall[i].collection
+func (fake *Fake) ListPackagesArgsForCall(i int) string {
+	fake.listPackagesMutex.RLock()
+	defer fake.listPackagesMutex.RUnlock()
+	return fake.listPackagesArgsForCall[i].path
 }
 
 func (fake *Fake) NodeCreate() {
@@ -197,7 +159,7 @@ func (fake *Fake) NodeKillCallCount() int {
 	return len(fake.nodeKillArgsForCall)
 }
 
-func (fake *Fake) RunOp(args []string, collection string, name string) {
+func (fake *Fake) RunOp(args []string, pkgRef string) {
 	var argsCopy []string
 	if args != nil {
 		argsCopy = make([]string, len(args))
@@ -205,14 +167,13 @@ func (fake *Fake) RunOp(args []string, collection string, name string) {
 	}
 	fake.runOpMutex.Lock()
 	fake.runOpArgsForCall = append(fake.runOpArgsForCall, struct {
-		args       []string
-		collection string
-		name       string
-	}{argsCopy, collection, name})
-	fake.recordInvocation("RunOp", []interface{}{argsCopy, collection, name})
+		args   []string
+		pkgRef string
+	}{argsCopy, pkgRef})
+	fake.recordInvocation("RunOp", []interface{}{argsCopy, pkgRef})
 	fake.runOpMutex.Unlock()
 	if fake.RunOpStub != nil {
-		fake.RunOpStub(args, collection, name)
+		fake.RunOpStub(args, pkgRef)
 	}
 }
 
@@ -222,60 +183,35 @@ func (fake *Fake) RunOpCallCount() int {
 	return len(fake.runOpArgsForCall)
 }
 
-func (fake *Fake) RunOpArgsForCall(i int) ([]string, string, string) {
+func (fake *Fake) RunOpArgsForCall(i int) ([]string, string) {
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
-	return fake.runOpArgsForCall[i].args, fake.runOpArgsForCall[i].collection, fake.runOpArgsForCall[i].name
+	return fake.runOpArgsForCall[i].args, fake.runOpArgsForCall[i].pkgRef
 }
 
-func (fake *Fake) SetCollectionDescription(description string) {
-	fake.setCollectionDescriptionMutex.Lock()
-	fake.setCollectionDescriptionArgsForCall = append(fake.setCollectionDescriptionArgsForCall, struct {
+func (fake *Fake) PkgSetDescription(description string, pkgRef string) {
+	fake.pkgSetDescriptionMutex.Lock()
+	fake.pkgSetDescriptionArgsForCall = append(fake.pkgSetDescriptionArgsForCall, struct {
 		description string
-	}{description})
-	fake.recordInvocation("SetCollectionDescription", []interface{}{description})
-	fake.setCollectionDescriptionMutex.Unlock()
-	if fake.SetCollectionDescriptionStub != nil {
-		fake.SetCollectionDescriptionStub(description)
+		pkgRef      string
+	}{description, pkgRef})
+	fake.recordInvocation("PkgSetDescription", []interface{}{description, pkgRef})
+	fake.pkgSetDescriptionMutex.Unlock()
+	if fake.PkgSetDescriptionStub != nil {
+		fake.PkgSetDescriptionStub(description, pkgRef)
 	}
 }
 
-func (fake *Fake) SetCollectionDescriptionCallCount() int {
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	return len(fake.setCollectionDescriptionArgsForCall)
+func (fake *Fake) PkgSetDescriptionCallCount() int {
+	fake.pkgSetDescriptionMutex.RLock()
+	defer fake.pkgSetDescriptionMutex.RUnlock()
+	return len(fake.pkgSetDescriptionArgsForCall)
 }
 
-func (fake *Fake) SetCollectionDescriptionArgsForCall(i int) string {
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	return fake.setCollectionDescriptionArgsForCall[i].description
-}
-
-func (fake *Fake) SetOpDescription(collection string, description string, name string) {
-	fake.setOpDescriptionMutex.Lock()
-	fake.setOpDescriptionArgsForCall = append(fake.setOpDescriptionArgsForCall, struct {
-		collection  string
-		description string
-		name        string
-	}{collection, description, name})
-	fake.recordInvocation("SetOpDescription", []interface{}{collection, description, name})
-	fake.setOpDescriptionMutex.Unlock()
-	if fake.SetOpDescriptionStub != nil {
-		fake.SetOpDescriptionStub(collection, description, name)
-	}
-}
-
-func (fake *Fake) SetOpDescriptionCallCount() int {
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
-	return len(fake.setOpDescriptionArgsForCall)
-}
-
-func (fake *Fake) SetOpDescriptionArgsForCall(i int) (string, string, string) {
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
-	return fake.setOpDescriptionArgsForCall[i].collection, fake.setOpDescriptionArgsForCall[i].description, fake.setOpDescriptionArgsForCall[i].name
+func (fake *Fake) PkgSetDescriptionArgsForCall(i int) (string, string) {
+	fake.pkgSetDescriptionMutex.RLock()
+	defer fake.pkgSetDescriptionMutex.RUnlock()
+	return fake.pkgSetDescriptionArgsForCall[i].description, fake.pkgSetDescriptionArgsForCall[i].pkgRef
 }
 
 func (fake *Fake) StreamEvents() {
@@ -321,24 +257,20 @@ func (fake *Fake) SelfUpdateArgsForCall(i int) string {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.createCollectionMutex.RLock()
-	defer fake.createCollectionMutex.RUnlock()
-	fake.createOpMutex.RLock()
-	defer fake.createOpMutex.RUnlock()
-	fake.killOpMutex.RLock()
-	defer fake.killOpMutex.RUnlock()
-	fake.listOpsInCollectionMutex.RLock()
-	defer fake.listOpsInCollectionMutex.RUnlock()
+	fake.createPackageMutex.RLock()
+	defer fake.createPackageMutex.RUnlock()
+	fake.opKillMutex.RLock()
+	defer fake.opKillMutex.RUnlock()
+	fake.listPackagesMutex.RLock()
+	defer fake.listPackagesMutex.RUnlock()
 	fake.nodeCreateMutex.RLock()
 	defer fake.nodeCreateMutex.RUnlock()
 	fake.nodeKillMutex.RLock()
 	defer fake.nodeKillMutex.RUnlock()
 	fake.runOpMutex.RLock()
 	defer fake.runOpMutex.RUnlock()
-	fake.setCollectionDescriptionMutex.RLock()
-	defer fake.setCollectionDescriptionMutex.RUnlock()
-	fake.setOpDescriptionMutex.RLock()
-	defer fake.setOpDescriptionMutex.RUnlock()
+	fake.pkgSetDescriptionMutex.RLock()
+	defer fake.pkgSetDescriptionMutex.RUnlock()
 	fake.streamEventsMutex.RLock()
 	defer fake.streamEventsMutex.RUnlock()
 	fake.selfUpdateMutex.RLock()

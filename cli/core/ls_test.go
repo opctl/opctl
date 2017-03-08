@@ -6,13 +6,13 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opspec-io/sdk-golang/pkg/managepackages"
 	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/opspec-io/sdk-golang/pkg/pkg"
 	"os"
 	"path/filepath"
 )
 
-var _ = Context("listOpsInCollection", func() {
+var _ = Context("listPackages", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -24,14 +24,14 @@ var _ = Context("listOpsInCollection", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					pkg:       new(pkg.Fake),
-					cliExiter: fakeCliExiter,
-					vos:       fakeVos,
-					writer:    os.Stdout,
+					managePackages: new(managepackages.Fake),
+					cliExiter:      fakeCliExiter,
+					vos:            fakeVos,
+					writer:         os.Stdout,
 				}
 
 				/* act */
-				objectUnderTest.ListOpsInCollection("")
+				objectUnderTest.ListPackages("")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -39,48 +39,48 @@ var _ = Context("listOpsInCollection", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call pkg.GetCollection w/ expected args", func() {
+			It("should call managepackages.ListPackagesInDir w/ expected args", func() {
 				/* arrange */
-				fakePkg := new(pkg.Fake)
+				fakeManagePackages := new(managepackages.Fake)
 
-				providedCollection := "dummyCollection"
+				providedPath := "dummyPath"
 				wdReturnedFromVos := "dummyWorkDir"
 
 				fakeVos := new(vos.Fake)
 				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
-				expectedPath := filepath.Join(wdReturnedFromVos, providedCollection)
+				expectedPath := filepath.Join(wdReturnedFromVos, providedPath)
 
 				objectUnderTest := _core{
-					pkg:    fakePkg,
-					vos:    fakeVos,
-					writer: os.Stdout,
+					managePackages: fakeManagePackages,
+					vos:            fakeVos,
+					writer:         os.Stdout,
 				}
 
 				/* act */
-				objectUnderTest.ListOpsInCollection(providedCollection)
+				objectUnderTest.ListPackages(providedPath)
 
 				/* assert */
 
-				Expect(fakePkg.GetCollectionArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakeManagePackages.ListPackagesInDirArgsForCall(0)).Should(Equal(expectedPath))
 			})
-			Context("pkg.GetCollection errors", func() {
+			Context("managepackages.ListPackagesInDir errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakePkg := new(pkg.Fake)
+					fakeManagePackages := new(managepackages.Fake)
 					expectedError := errors.New("dummyError")
-					fakePkg.GetCollectionReturns(model.CollectionView{}, expectedError)
+					fakeManagePackages.ListPackagesInDirReturns([]*model.PackageView{}, expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
 					objectUnderTest := _core{
-						pkg:       fakePkg,
-						cliExiter: fakeCliExiter,
-						vos:       new(vos.Fake),
-						writer:    os.Stdout,
+						managePackages: fakeManagePackages,
+						cliExiter:      fakeCliExiter,
+						vos:            new(vos.Fake),
+						writer:         os.Stdout,
 					}
 
 					/* act */
-					objectUnderTest.ListOpsInCollection("dummyCollection")
+					objectUnderTest.ListPackages("dummyPath")
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
