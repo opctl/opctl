@@ -27,6 +27,9 @@ func New() {
 		panic(fmt.Errorf("node already running w/ PId: %v\n", pIdOExistingNode))
 	}
 
+	// cleanup [legacy] opspec.engine container if exists; ignore errors
+	containerProvider.DeleteContainerIfExists("opspec.engine")
+
 	// cleanup existing DCG (dynamic call graph) data
 	err = os.New().RemoveAll(dcgDataDirPath())
 	if nil != err {
