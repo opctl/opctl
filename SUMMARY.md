@@ -1,6 +1,7 @@
 * [about](README.md)
     * [changelog](CHANGELOG.md)
     * [contributing](CONTRIBUTING.md)
+    * [maintainers](MAINTAINERS.md)
 * [install](docs/install/README.md)
     * [linux](docs/install/linux.md)
     * [osx](docs/install/osx.md)

@@ -25,6 +25,7 @@ var _ = Context("containerCaller", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
+			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -53,6 +54,7 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
+				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -65,6 +67,7 @@ var _ = Context("containerCaller", func() {
 		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
+			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -93,6 +96,7 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
+				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -112,6 +116,7 @@ var _ = Context("containerCaller", func() {
 		It("should call containerProvider.RunContainer w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
+			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -141,6 +146,7 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
+				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -156,6 +162,7 @@ var _ = Context("containerCaller", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedContainerId := "dummyContainerId"
 				providedScgContainerCall := &model.ScgContainerCall{}
 				providedPkgRef := "dummyPkgRef"
@@ -173,8 +180,9 @@ var _ = Context("containerCaller", func() {
 				)
 
 				/* act */
-				_, actualError := objectUnderTest.Call(
+				actualError := objectUnderTest.Call(
 					providedInboundScope,
+					providedOutputs,
 					providedContainerId,
 					providedScgContainerCall,
 					providedPkgRef,
@@ -189,6 +197,7 @@ var _ = Context("containerCaller", func() {
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
+		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -210,6 +219,7 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
+			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,
 			providedPkgRef,
@@ -222,6 +232,7 @@ var _ = Context("containerCaller", func() {
 	It("should call pubSub.Publish w/ expected args", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
+		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -250,6 +261,7 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
+			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,
 			providedPkgRef,

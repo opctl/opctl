@@ -17,12 +17,12 @@ import (
 type opCaller interface {
 	// Executes an op call
 	Call(
-		inboundScope map[string]*model.Data,
+		inputScope map[string]*model.Data,
+		outputs chan *variable,
 		opId string,
 		pkgRef string,
 		rootOpId string,
 	) (
-		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -55,12 +55,12 @@ type _opCaller struct {
 }
 
 func (this _opCaller) Call(
-	inboundScope map[string]*model.Data,
+	inputScope map[string]*model.Data,
+	outputs chan *variable,
 	opId string,
 	pkgRef string,
 	rootOpId string,
 ) (
-	outboundScope map[string]*model.Data,
 	err error,
 ) {
 	defer func() {
@@ -132,10 +132,10 @@ func (this _opCaller) Call(
 		return
 	}
 
-	this.applyParamDefaultsToScope(inboundScope, op.Inputs)
+	this.applyParamDefaultsToScope(inputScope, op.Inputs)
 
 	// validate inputs
-	err = this.validateScope("input", inboundScope, op.Inputs)
+	err = this.validateScope("input", inputScope, op.Inputs)
 	if nil != err {
 		return
 	}
@@ -151,9 +151,32 @@ func (this _opCaller) Call(
 		},
 	)
 
-	outboundScope, err = this.caller.Call(
+	childOutputs := make(chan *variable, 150)
+	outputScope := map[string]*model.Data{}
+	// stream outputs as they're sent
+	go func() {
+		for childOutput := range childOutputs {
+			varName := childOutput.Name
+			varValue := childOutput.Value
+			if param, ok := op.Outputs[varName]; ok {
+
+				childOutput = &variable{
+					Name:  varName,
+					Value: this.getValueOrDefault(varName, varValue, param),
+				}
+
+				// track outputs in outputScope so we can validate them before returning
+				outputScope[childOutput.Name] = childOutput.Value
+				outputs <- childOutput
+			}
+		}
+		close(outputs)
+	}()
+
+	err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
-		inboundScope,
+		inputScope,
+		childOutputs,
 		op.Run,
 		pkgRef,
 		rootOpId,
@@ -162,10 +185,8 @@ func (this _opCaller) Call(
 		return
 	}
 
-	this.applyParamDefaultsToScope(outboundScope, op.Outputs)
-
 	// validate outputs
-	err = this.validateScope("output", outboundScope, op.Outputs)
+	err = this.validateScope("output", outputScope, op.Outputs)
 
 	return
 
@@ -176,21 +197,89 @@ func (this _opCaller) applyParamDefaultsToScope(
 	params map[string]*model.Param,
 ) {
 	for paramName, param := range params {
-		// resolve var for param
-		var ok bool
+		this.getValueOrDefault(paramName, scope[paramName], param)
+	}
+}
+
+func (this _opCaller) getValueOrDefault(
+	varName string,
+	varValue *model.Data,
+	param *model.Param,
+) *model.Data {
+	switch {
+	case nil != param.Number:
+		if nil == varValue {
+			return &model.Data{Number: param.Number.Default}
+		}
+	case nil != param.String:
+		if nil == varValue {
+			// apply default; value not found in scope
+			return &model.Data{String: param.String.Default}
+		}
+	}
+	return varValue
+}
+
+func (this _opCaller) validateParam(
+	paramType string,
+	varName string,
+	varValue *model.Data,
+	param *model.Param,
+) error {
+	var (
+		argDisplayValue string
+	)
+
+	if nil != varValue {
 		switch {
+		case nil != param.Dir:
+			argDisplayValue = varValue.Dir
+		case nil != param.File:
+			argDisplayValue = varValue.File
 		case nil != param.Number:
-			if _, ok = scope[paramName]; !ok {
-				// apply default; value not found in scope
-				scope[paramName] = &model.Data{Number: param.Number.Default}
+			if param.Number.IsSecret {
+				argDisplayValue = "************"
+			} else {
+				argDisplayValue = strconv.FormatFloat(varValue.Number, 'f', -1, 64)
 			}
+		case nil != param.Socket:
+			argDisplayValue = varValue.Socket
 		case nil != param.String:
-			if _, ok = scope[paramName]; !ok {
-				// apply default; value not found in scope
-				scope[paramName] = &model.Data{String: param.String.Default}
+			if param.String.IsSecret {
+				argDisplayValue = "************"
+			} else {
+				argDisplayValue = varValue.String
 			}
 		}
 	}
+
+	// validate
+	validationErrors := this.validate.Param(varValue, param)
+
+	messageBuffer := bytes.NewBufferString(``)
+
+	if len(validationErrors) > 0 {
+		messageBuffer.WriteString(fmt.Sprintf(`
+  Name: %v
+  Value: %v
+  Error(s):`, varName, argDisplayValue),
+		)
+		for _, validationError := range validationErrors {
+			messageBuffer.WriteString(fmt.Sprintf(`
+    - %v`, validationError.Error()))
+		}
+		messageBuffer.WriteString(`
+`)
+	}
+
+	if messageBuffer.Len() > 0 {
+		return fmt.Errorf(`
+-
+  validation of the following %v failed:
+%v
+-`, paramType, messageBuffer.String())
+	}
+	return nil
 }
 
 func (this _opCaller) validateScope(
@@ -198,61 +287,10 @@ func (this _opCaller) validateScope(
 	scope map[string]*model.Data,
 	params map[string]*model.Param,
 ) error {
-
-	messageBuffer := bytes.NewBufferString(``)
 	for paramName, param := range params {
-		varData := scope[paramName]
-		var (
-			argDisplayValue string
-		)
-
-		if nil != varData {
-			switch {
-			case nil != param.Dir:
-				argDisplayValue = varData.Dir
-			case nil != param.File:
-				argDisplayValue = varData.File
-			case nil != param.Number:
-				if param.Number.IsSecret {
-					argDisplayValue = "************"
-				} else {
-					argDisplayValue = strconv.FormatFloat(varData.Number, 'f', -1, 64)
-				}
-			case nil != param.Socket:
-				argDisplayValue = varData.Socket
-			case nil != param.String:
-				if param.String.IsSecret {
-					argDisplayValue = "************"
-				} else {
-					argDisplayValue = varData.String
-				}
-			}
+		if err := this.validateParam(scopeType, paramName, scope[paramName], param); nil != err {
+			return err
 		}
-
-		// validate
-		validationErrors := this.validate.Param(varData, param)
-
-		if len(validationErrors) > 0 {
-			messageBuffer.WriteString(fmt.Sprintf(`
-  Name: %v
-  Value: %v
-  Error(s):`, paramName, argDisplayValue),
-			)
-			for _, validationError := range validationErrors {
-				messageBuffer.WriteString(fmt.Sprintf(`
-    - %v`, validationError.Error()))
-			}
-			messageBuffer.WriteString(`
-`)
-		}
-	}
-
-	if messageBuffer.Len() > 0 {
-		return fmt.Errorf(`
--
-  validation of the following op %v(s) failed:
-%v
--`, scopeType, messageBuffer.String())
 	}
 	return nil
 }

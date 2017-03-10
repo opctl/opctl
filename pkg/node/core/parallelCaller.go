@@ -54,10 +54,11 @@ func (this _parallelCaller) Call(
 		wg.Add(1)
 
 		go func(childCall *model.Scg) {
-			// @TODO: handle sockets
-			_, childErr := this.caller.Call(
+			childErr := this.caller.Call(
 				this.uniqueStringFactory.Construct(),
 				inboundScope,
+				// @TODO: handle sockets
+				make(chan *variable, 150),
 				childCall,
 				pkgRef,
 				rootOpId,
@@ -71,7 +72,6 @@ func (this _parallelCaller) Call(
 	wg.Wait()
 
 	if len(childErrChannel) > 0 {
-		// @TODO: consider including actual errors
 		err = errors.New("One or more errors encountered in parallel run block")
 	}
 

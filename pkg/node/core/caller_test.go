@@ -29,6 +29,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					"dummyNodeId",
 					map[string]*model.Data{},
+					make(chan *variable, 150),
 					nil,
 					"dummyPkgRef",
 					"dummyRootOpId",
@@ -42,6 +43,7 @@ var _ = Context("caller", func() {
 
 				providedNodeId := "dummyNodeId"
 				providedArgs := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Container: &model.ScgContainerCall{},
 				}
@@ -54,6 +56,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					providedNodeId,
 					providedArgs,
+					providedOutputs,
 					providedScg,
 					providedPkgRef,
 					providedRootOpId,
@@ -61,6 +64,7 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				actualArgs,
+					_,
 					actualNodeId,
 					actualScg,
 					actualPkgRef,
@@ -85,6 +89,7 @@ var _ = Context("caller", func() {
 
 				providedNodeId := "dummyNodeId"
 				providedArgs := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Op: &model.ScgOpCall{
 						Ref: "dummyPkgRef",
@@ -100,6 +105,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					providedNodeId,
 					providedArgs,
+					providedOutputs,
 					providedScg,
 					providedPkgRef,
 					providedRootOpId,
@@ -107,6 +113,7 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				actualArgs,
+					_,
 					actualNodeId,
 					actualPkgRef,
 					actualRootOpId := fakeOpCaller.CallArgsForCall(0)
@@ -129,6 +136,7 @@ var _ = Context("caller", func() {
 
 				providedNodeId := "dummyNodeId"
 				providedArgs := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Parallel: []*model.Scg{
 						{Container: &model.ScgContainerCall{}},
@@ -144,6 +152,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					providedNodeId,
 					providedArgs,
+					providedOutputs,
 					providedScg,
 					providedPkgRef,
 					providedRootOpId,
@@ -174,6 +183,7 @@ var _ = Context("caller", func() {
 
 				providedNodeId := "dummyNodeId"
 				providedArgs := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Serial: []*model.Scg{
 						{Container: &model.ScgContainerCall{}},
@@ -189,6 +199,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					providedNodeId,
 					providedArgs,
+					providedOutputs,
 					providedScg,
 					providedPkgRef,
 					providedRootOpId,
@@ -196,6 +207,7 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				actualArgs,
+					_,
 					actualRootOpId,
 					actualPkgRef,
 					actualScg := fakeSerialCaller.CallArgsForCall(0)
@@ -218,6 +230,7 @@ var _ = Context("caller", func() {
 
 				providedNodeId := "dummyNodeId"
 				providedArgs := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{}
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
@@ -227,9 +240,10 @@ var _ = Context("caller", func() {
 				objectUnderTest.setSerialCaller(fakeSerialCaller)
 
 				/* act */
-				_, actualError := objectUnderTest.Call(
+				actualError := objectUnderTest.Call(
 					providedNodeId,
 					providedArgs,
+					providedOutputs,
 					providedScg,
 					providedPkgRef,
 					providedRootOpId,
