@@ -1,6 +1,7 @@
 * [about](README.md)
     * [changelog](CHANGELOG.md)
     * [contributing](CONTRIBUTING.md)
+    * [maintainers](MAINTAINERS.md)
 * [latest](introduction.md)
     * [packages](packages.md)
         * [resolution](package-resolution.md)
