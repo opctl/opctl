@@ -1,14 +1,16 @@
 {
   "plugins": [
+    "edit-link",
+    "-fontsettings",
+    "ga",
+    "theme-opspec@git+https://github.com/opspec-io/gitbook-plugin-theme-opspec.git",
     "swagger",
     "toggle-chapters",
-    "edit-link",
-    "ga",
     "github-buttons"
   ],
   "pluginsConfig": {
     "edit-link": {
-      "base": "https://github.com/opspec-io/spec/edit/master/docs",
+      "base": "https://github.com/opspec-io/spec/edit/master",
       "label": "edit this page"
     },
     "ga": {

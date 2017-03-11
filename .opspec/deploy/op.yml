@@ -1,5 +1,5 @@
-description: Runs all ops necessary to deploy docs
-name: deploy-docs
+description: Runs all ops necessary to deploy the spec
+name: deploy
 inputs:
   srcDir:
     dir:
