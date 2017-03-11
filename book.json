@@ -9,7 +9,7 @@
   ],
   "pluginsConfig": {
     "edit-link": {
-      "base": "https://github.com/opspec-io/opctl/edit/master/docs",
+      "base": "https://github.com/opspec-io/opctl/edit/master",
       "label": "edit this page"
     },
     "ga": {
