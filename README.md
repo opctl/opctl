@@ -19,6 +19,10 @@ see [website](https://opspec.io/opctl)
 - [source](https://github.com/opspec-io/opctl)
 - [kanban board](https://waffle.io/opspec-io/opctl)
 
+# Community
+
+- [chat](https://gitter.im/opspec-io/opctl)
+
 # Releases
 
 for every release:
