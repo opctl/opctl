@@ -10,7 +10,7 @@ import (
 type serialCaller interface {
 	// Executes a serial call
 	Call(
-		inboundScope map[string]*model.Data,
+		inputs chan *variable,
 		outputs chan *variable,
 		rootOpId string,
 		pkgRef string,
@@ -38,7 +38,7 @@ type _serialCaller struct {
 }
 
 func (this _serialCaller) Call(
-	inboundScope map[string]*model.Data,
+	inputs chan *variable,
 	outputs chan *variable,
 	rootOpId string,
 	pkgRef string,
@@ -46,23 +46,34 @@ func (this _serialCaller) Call(
 ) (
 	err error,
 ) {
-	outboundScope := map[string]*model.Data{}
-	for varName, varData := range inboundScope {
-		outboundScope[varName] = varData
+	scope := map[string]*model.Data{}
+	for input := range inputs {
+		scope[input.Name] = input.Value
 	}
 
 	for _, scgCall := range scgSerialCall {
+
+		subInputs := make(chan *variable, 150)
+		for varName, varValue := range scope {
+			subInputs <- &variable{
+				Name:  varName,
+				Value: varValue,
+			}
+		}
+		close(subInputs)
+
 		subOutputs := make(chan *variable, 150)
+
 		err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
-			outboundScope,
+			subInputs,
 			subOutputs,
 			scgCall,
 			pkgRef,
 			rootOpId,
 		)
 		if nil != err {
-			// end run immediately on any error
+			// end immediately on any error
 			return
 		}
 
@@ -71,20 +82,20 @@ func (this _serialCaller) Call(
 			for subOutput := range subOutputs {
 				for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
 					if currentScopeVarName == subOutput.Name || childScopeVarName == subOutput.Name {
-						outboundScope[currentScopeVarName] = subOutput.Value
+						scope[currentScopeVarName] = subOutput.Value
 					}
 				}
 			}
 		} else {
 			// apply child outputs to current scope
 			for subOutput := range subOutputs {
-				outboundScope[subOutput.Name] = subOutput.Value
+				scope[subOutput.Name] = subOutput.Value
 			}
 		}
 	}
 
 	// @TODO: stream outputs from last child
-	for varName, varValue := range outboundScope {
+	for varName, varValue := range scope {
 		outputs <- &variable{Name: varName, Value: varValue}
 	}
 	close(outputs)

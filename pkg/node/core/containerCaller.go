@@ -13,7 +13,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		scope map[string]*model.Data,
+		inputs chan *variable,
 		outputs chan *variable,
 		containerId string,
 		scgContainerCall *model.ScgContainerCall,
@@ -45,7 +45,7 @@ type _containerCaller struct {
 }
 
 func (this _containerCaller) Call(
-	scope map[string]*model.Data,
+	inputs chan *variable,
 	outputs chan *variable,
 	containerId string,
 	scgContainerCall *model.ScgContainerCall,
@@ -72,12 +72,19 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := constructDcgContainerCall(scope, scgContainerCall, containerId, rootOpId, pkgRef)
+	dcgContainerCall, err := constructDcgContainerCall(
+		this.rxInputs(inputs),
+		scgContainerCall,
+		containerId,
+		rootOpId,
+		pkgRef,
+	)
 	if nil != err {
 		return
 	}
 
-	go this.sendOutputs(dcgContainerCall, outputs, scgContainerCall)
+	// stream outputs
+	go this.txOutputs(dcgContainerCall, outputs, scgContainerCall)
 
 	this.pubSub.Publish(
 		&model.Event{
@@ -108,13 +115,25 @@ func (this _containerCaller) Call(
 	return
 }
 
-func (this _containerCaller) sendOutputs(
+// receives inputs from the inputs chan
+func (this _containerCaller) rxInputs(
+	inputs chan *variable,
+) map[string]*model.Data {
+	scope := map[string]*model.Data{}
+	for input := range inputs {
+		scope[input.Name] = input.Value
+	}
+	return scope
+}
+
+// transmits outputs into the outputs chan
+func (this _containerCaller) txOutputs(
 	dcgContainerCall *model.DcgContainerCall,
 	outputs chan *variable,
 	scgContainerCall *model.ScgContainerCall,
 ) {
 
-	// send socket outputs
+	// transmit socket outputs
 	for socketAddr, varName := range scgContainerCall.Sockets {
 		if "0.0.0.0" == socketAddr {
 			outputs <- &variable{
@@ -124,7 +143,7 @@ func (this _containerCaller) sendOutputs(
 		}
 	}
 
-	// send file outputs
+	// transmit file outputs
 	for scgContainerFilePath, varName := range scgContainerCall.Files {
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
@@ -136,7 +155,7 @@ func (this _containerCaller) sendOutputs(
 		}
 	}
 
-	// send dir outputs
+	// transmit dir outputs
 	for scgContainerDirPath, varName := range scgContainerCall.Dirs {
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
 			if scgContainerDirPath == dcgContainerDirPath {
@@ -155,7 +174,7 @@ func (this _containerCaller) sendOutputs(
 		eventChannel,
 	)
 
-	// send string outputs
+	// transmit string outputs
 eventLoop:
 	for event := range eventChannel {
 		switch {

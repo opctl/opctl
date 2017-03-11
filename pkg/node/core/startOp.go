@@ -13,9 +13,18 @@ func (this _core) StartOp(
 
 	opId = this.uniqueStringFactory.Construct()
 
+	// @TODO: remove once caller signature updated to use `inputs chan *variable`
+	inputs := make(chan *variable, 150)
+	for varName, varValue := range req.Args {
+		inputs <- &variable{
+			Name:  varName,
+			Value: varValue,
+		}
+	}
+	close(inputs)
 	go func() {
 		this.opCaller.Call(
-			req.Args,
+			inputs,
 			make(chan *variable, 150),
 			opId,
 			req.PkgRef,

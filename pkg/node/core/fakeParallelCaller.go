@@ -8,41 +8,47 @@ import (
 )
 
 type fakeParallelCaller struct {
-	CallStub        func(args map[string]*model.Data, rootOpId string, pkgRef string, parallelCall []*model.Scg) (err error)
+	CallStub        func(inputs chan *variable, rootOpId string, pkgRef string, scgParallelCall []*model.Scg) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		args         map[string]*model.Data
-		rootOpId     string
-		pkgRef       string
-		parallelCall []*model.Scg
+		inputs          chan *variable
+		rootOpId        string
+		pkgRef          string
+		scgParallelCall []*model.Scg
 	}
 	callReturns struct {
+		result1 error
+	}
+	callReturnsOnCall map[int]struct {
 		result1 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeParallelCaller) Call(args map[string]*model.Data, rootOpId string, pkgRef string, parallelCall []*model.Scg) (err error) {
-	var parallelCallCopy []*model.Scg
-	if parallelCall != nil {
-		parallelCallCopy = make([]*model.Scg, len(parallelCall))
-		copy(parallelCallCopy, parallelCall)
+func (fake *fakeParallelCaller) Call(inputs chan *variable, rootOpId string, pkgRef string, scgParallelCall []*model.Scg) (err error) {
+	var scgParallelCallCopy []*model.Scg
+	if scgParallelCall != nil {
+		scgParallelCallCopy = make([]*model.Scg, len(scgParallelCall))
+		copy(scgParallelCallCopy, scgParallelCall)
 	}
 	fake.callMutex.Lock()
+	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		args         map[string]*model.Data
-		rootOpId     string
-		pkgRef       string
-		parallelCall []*model.Scg
-	}{args, rootOpId, pkgRef, parallelCallCopy})
-	fake.recordInvocation("Call", []interface{}{args, rootOpId, pkgRef, parallelCallCopy})
+		inputs          chan *variable
+		rootOpId        string
+		pkgRef          string
+		scgParallelCall []*model.Scg
+	}{inputs, rootOpId, pkgRef, scgParallelCallCopy})
+	fake.recordInvocation("Call", []interface{}{inputs, rootOpId, pkgRef, scgParallelCallCopy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(args, rootOpId, pkgRef, parallelCall)
-	} else {
-		return fake.callReturns.result1
+		return fake.CallStub(inputs, rootOpId, pkgRef, scgParallelCall)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.callReturns.result1
 }
 
 func (fake *fakeParallelCaller) CallCallCount() int {
@@ -51,15 +57,27 @@ func (fake *fakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeParallelCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, []*model.Scg) {
+func (fake *fakeParallelCaller) CallArgsForCall(i int) (chan *variable, string, string, []*model.Scg) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].args, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].parallelCall
+	return fake.callArgsForCall[i].inputs, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].scgParallelCall
 }
 
 func (fake *fakeParallelCaller) CallReturns(result1 error) {
 	fake.CallStub = nil
 	fake.callReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *fakeParallelCaller) CallReturnsOnCall(i int, result1 error) {
+	fake.CallStub = nil
+	if fake.callReturnsOnCall == nil {
+		fake.callReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.callReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
 }

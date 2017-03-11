@@ -11,13 +11,14 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/opspec-io/sdk-golang/pkg/validate"
 	"strconv"
+	"sync"
 	"time"
 )
 
 type opCaller interface {
 	// Executes an op call
 	Call(
-		inputScope map[string]*model.Data,
+		inputs chan *variable,
 		outputs chan *variable,
 		opId string,
 		pkgRef string,
@@ -55,7 +56,7 @@ type _opCaller struct {
 }
 
 func (this _opCaller) Call(
-	inputScope map[string]*model.Data,
+	inputs chan *variable,
 	outputs chan *variable,
 	opId string,
 	pkgRef string,
@@ -125,17 +126,14 @@ func (this _opCaller) Call(
 		},
 	)
 
-	op, err := this.managePackages.GetPackage(
+	pkg, err := this.managePackages.GetPackage(
 		pkgRef,
 	)
 	if nil != err {
 		return
 	}
 
-	this.applyParamDefaultsToScope(inputScope, op.Inputs)
-
-	// validate inputs
-	err = this.validateScope("input", inputScope, op.Inputs)
+	validatedInputs, err := this.rxInputs(inputs, pkg)
 	if nil != err {
 		return
 	}
@@ -151,33 +149,22 @@ func (this _opCaller) Call(
 		},
 	)
 
+	var wg sync.WaitGroup
+	outputErrChan := make(chan error, 1)
 	childOutputs := make(chan *variable, 150)
-	outputScope := map[string]*model.Data{}
-	// stream outputs as they're sent
+
+	// stream outputs
+	wg.Add(1)
 	go func() {
-		for childOutput := range childOutputs {
-			varName := childOutput.Name
-			varValue := childOutput.Value
-			if param, ok := op.Outputs[varName]; ok {
-
-				childOutput = &variable{
-					Name:  varName,
-					Value: this.getValueOrDefault(varName, varValue, param),
-				}
-
-				// track outputs in outputScope so we can validate them before returning
-				outputScope[childOutput.Name] = childOutput.Value
-				outputs <- childOutput
-			}
-		}
-		close(outputs)
+		outputErrChan <- this.txOutputs(childOutputs, outputs, pkg)
+		wg.Done()
 	}()
 
 	err = this.caller.Call(
 		this.uniqueStringFactory.Construct(),
-		inputScope,
+		validatedInputs,
 		childOutputs,
-		op.Run,
+		pkg.Run,
 		pkgRef,
 		rootOpId,
 	)
@@ -185,11 +172,66 @@ func (this _opCaller) Call(
 		return
 	}
 
-	// validate outputs
-	err = this.validateScope("output", outputScope, op.Outputs)
+	wg.Wait()
+	if outputErr := <-outputErrChan; nil != outputErr {
+		err = outputErr
+	}
 
 	return
 
+}
+
+func (this _opCaller) rxInputs(
+	inputs chan *variable,
+	pkg model.PackageView,
+) (validatedInputs chan *variable, err error) {
+	scope := map[string]*model.Data{}
+	for input := range inputs {
+		scope[input.Name] = input.Value
+	}
+
+	this.applyParamDefaultsToScope(scope, pkg.Inputs)
+
+	err = this.validateScope("input", scope, pkg.Inputs)
+
+	validatedInputs = make(chan *variable, 150)
+	for varName, varValue := range scope {
+		validatedInputs <- &variable{
+			Name:  varName,
+			Value: varValue,
+		}
+	}
+	close(validatedInputs)
+
+	return
+}
+
+func (this _opCaller) txOutputs(
+	childOutputs chan *variable,
+	outputs chan *variable,
+	pkg model.PackageView,
+) (err error) {
+	outputScope := map[string]*model.Data{}
+	for childOutput := range childOutputs {
+		varName := childOutput.Name
+		varValue := childOutput.Value
+		if param, ok := pkg.Outputs[varName]; ok {
+
+			childOutput = &variable{
+				Name:  varName,
+				Value: this.getValueOrDefault(varName, varValue, param),
+			}
+
+			// track outputs in outputScope so we can validate them before returning
+			outputScope[childOutput.Name] = childOutput.Value
+			outputs <- childOutput
+		}
+	}
+	close(outputs)
+
+	// validate outputs
+	err = this.validateScope("output", outputScope, pkg.Outputs)
+	return
 }
 
 func (this _opCaller) applyParamDefaultsToScope(

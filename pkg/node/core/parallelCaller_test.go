@@ -21,7 +21,15 @@ var _ = Context("parallelCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			inputMap := map[string]*model.Data{}
+
+			providedInputs := make(chan *variable)
+			for varName, varValue := range inputMap {
+				providedInputs <- &variable{Name: varName, Value: varValue}
+			}
+			// inputs chan must be closed for method under test to return
+			close(providedInputs)
+
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedScgParallelCalls := []*model.Scg{
@@ -49,7 +57,7 @@ var _ = Context("parallelCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
+				providedInputs,
 				providedRootOpId,
 				providedPkgRef,
 				providedScgParallelCalls,
@@ -59,13 +67,19 @@ var _ = Context("parallelCaller", func() {
 			actualScgParallelCalls := []*model.Scg{}
 			for callIndex := range providedScgParallelCalls {
 				actualNodeId,
-					actualChildOutboundScope,
+					actualChildInputs,
 					_,
 					actualScg,
 					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
+
+				actualChildInputMap := map[string]*model.Data{}
+				for input := range actualChildInputs {
+					actualChildInputMap[input.Name] = input.Value
+				}
+
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
-				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
+				Expect(actualChildInputMap).To(Equal(inputMap))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
@@ -75,7 +89,15 @@ var _ = Context("parallelCaller", func() {
 		Context("caller errors", func() {
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
+				inputMap := map[string]*model.Data{}
+
+				providedInputs := make(chan *variable)
+				for varName, varValue := range inputMap {
+					providedInputs <- &variable{Name: varName, Value: varValue}
+				}
+				// inputs chan must be closed for method under test to return
+				close(providedInputs)
+
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedScgParallelCalls := []*model.Scg{
@@ -105,7 +127,7 @@ var _ = Context("parallelCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedInboundScope,
+					providedInputs,
 					providedRootOpId,
 					providedPkgRef,
 					providedScgParallelCalls,
@@ -115,13 +137,19 @@ var _ = Context("parallelCaller", func() {
 				actualScgParallelCalls := []*model.Scg{}
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
-						actualChildOutboundScope,
+						actualChildInputs,
 						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
+
+					actualChildInputMap := map[string]*model.Data{}
+					for input := range actualChildInputs {
+						actualChildInputMap[input.Name] = input.Value
+					}
+
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
-					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
+					Expect(actualChildInputMap).To(Equal(inputMap))
 					Expect(actualPkgRef).To(Equal(providedPkgRef))
 					Expect(actualRootOpId).To(Equal(providedRootOpId))
 					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)
@@ -133,7 +161,15 @@ var _ = Context("parallelCaller", func() {
 		Context("caller doesn't error", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
+				inputMap := map[string]*model.Data{}
+
+				providedInputs := make(chan *variable)
+				for varName, varValue := range inputMap {
+					providedInputs <- &variable{Name: varName, Value: varValue}
+				}
+				// inputs chan must be closed for method under test to return
+				close(providedInputs)
+
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedScgParallelCalls := []*model.Scg{
@@ -161,7 +197,7 @@ var _ = Context("parallelCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedInboundScope,
+					providedInputs,
 					providedRootOpId,
 					providedPkgRef,
 					providedScgParallelCalls,
@@ -171,13 +207,19 @@ var _ = Context("parallelCaller", func() {
 				actualScgParallelCalls := []*model.Scg{}
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
-						actualChildOutboundScope,
+						actualChildInputs,
 						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
+
+					actualChildInputMap := map[string]*model.Data{}
+					for input := range actualChildInputs {
+						actualChildInputMap[input.Name] = input.Value
+					}
+
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
-					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
+					Expect(actualChildInputMap).To(Equal(inputMap))
 					Expect(actualPkgRef).To(Equal(providedPkgRef))
 					Expect(actualRootOpId).To(Equal(providedRootOpId))
 					actualScgParallelCalls = append(actualScgParallelCalls, actualScg)

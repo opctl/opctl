@@ -3,15 +3,13 @@ package core
 
 import (
 	"sync"
-
-	"github.com/opspec-io/sdk-golang/pkg/model"
 )
 
 type fakeOpCaller struct {
-	CallStub        func(scope map[string]*model.Data, outputs chan *variable, opId string, pkgRef string, rootOpId string) (err error)
+	CallStub        func(inputs chan *variable, outputs chan *variable, opId string, pkgRef string, rootOpId string) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		scope    map[string]*model.Data
+		inputs   chan *variable
 		outputs  chan *variable
 		opId     string
 		pkgRef   string
@@ -27,20 +25,20 @@ type fakeOpCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpCaller) Call(scope map[string]*model.Data, outputs chan *variable, opId string, pkgRef string, rootOpId string) (err error) {
+func (fake *fakeOpCaller) Call(inputs chan *variable, outputs chan *variable, opId string, pkgRef string, rootOpId string) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		scope    map[string]*model.Data
+		inputs   chan *variable
 		outputs  chan *variable
 		opId     string
 		pkgRef   string
 		rootOpId string
-	}{scope, outputs, opId, pkgRef, rootOpId})
-	fake.recordInvocation("Call", []interface{}{scope, outputs, opId, pkgRef, rootOpId})
+	}{inputs, outputs, opId, pkgRef, rootOpId})
+	fake.recordInvocation("Call", []interface{}{inputs, outputs, opId, pkgRef, rootOpId})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(scope, outputs, opId, pkgRef, rootOpId)
+		return fake.CallStub(inputs, outputs, opId, pkgRef, rootOpId)
 	}
 	if specificReturn {
 		return ret.result1
@@ -54,10 +52,10 @@ func (fake *fakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, chan *variable, string, string, string) {
+func (fake *fakeOpCaller) CallArgsForCall(i int) (chan *variable, chan *variable, string, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].scope, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].inputs, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
 }
 
 func (fake *fakeOpCaller) CallReturns(result1 error) {

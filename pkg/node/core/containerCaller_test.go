@@ -24,7 +24,10 @@ var _ = Context("containerCaller", func() {
 	Context("Call", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInputs := make(chan *variable)
+			// inputs chan must be closed for method under test to return
+			close(providedInputs)
+
 			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
@@ -53,7 +56,7 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
+				providedInputs,
 				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
@@ -66,7 +69,10 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInputs := make(chan *variable)
+			// inputs chan must be closed for method under test to return
+			close(providedInputs)
+
 			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
@@ -95,7 +101,7 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
+				providedInputs,
 				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
@@ -115,7 +121,10 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call containerProvider.RunContainer w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInputs := make(chan *variable)
+			// inputs chan must be closed for method under test to return
+			close(providedInputs)
+
 			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
@@ -123,7 +132,7 @@ var _ = Context("containerCaller", func() {
 			providedRootOpId := "dummyRootOpId"
 
 			expectedReq, _ := constructDcgContainerCall(
-				providedInboundScope,
+				map[string]*model.Data{},
 				providedScgContainerCall,
 				providedContainerId,
 				providedRootOpId,
@@ -145,7 +154,7 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
+				providedInputs,
 				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
@@ -161,7 +170,10 @@ var _ = Context("containerCaller", func() {
 		Context("containerProvider.RunContainer errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
+				providedInputs := make(chan *variable)
+				// inputs chan must be closed for method under test to return
+				close(providedInputs)
+
 				providedOutputs := make(chan *variable, 150)
 				providedContainerId := "dummyContainerId"
 				providedScgContainerCall := &model.ScgContainerCall{}
@@ -181,7 +193,7 @@ var _ = Context("containerCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedInboundScope,
+					providedInputs,
 					providedOutputs,
 					providedContainerId,
 					providedScgContainerCall,
@@ -196,7 +208,10 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
+		providedInputs := make(chan *variable)
+		// inputs chan must be closed for method under test to return
+		close(providedInputs)
+
 		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
@@ -218,7 +233,7 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			providedInboundScope,
+			providedInputs,
 			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,
@@ -231,7 +246,10 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call pubSub.Publish w/ expected args", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
+		providedInputs := make(chan *variable)
+		// inputs chan must be closed for method under test to return
+		close(providedInputs)
+
 		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
@@ -260,7 +278,7 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			providedInboundScope,
+			providedInputs,
 			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,

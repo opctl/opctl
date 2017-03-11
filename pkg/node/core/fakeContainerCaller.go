@@ -8,10 +8,10 @@ import (
 )
 
 type fakeContainerCaller struct {
-	CallStub        func(scope map[string]*model.Data, outputs chan *variable, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error)
+	CallStub        func(inputs chan *variable, outputs chan *variable, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		scope            map[string]*model.Data
+		inputs           chan *variable
 		outputs          chan *variable
 		containerId      string
 		scgContainerCall *model.ScgContainerCall
@@ -28,21 +28,21 @@ type fakeContainerCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerCaller) Call(scope map[string]*model.Data, outputs chan *variable, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error) {
+func (fake *fakeContainerCaller) Call(inputs chan *variable, outputs chan *variable, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		scope            map[string]*model.Data
+		inputs           chan *variable
 		outputs          chan *variable
 		containerId      string
 		scgContainerCall *model.ScgContainerCall
 		pkgRef           string
 		rootOpId         string
-	}{scope, outputs, containerId, scgContainerCall, pkgRef, rootOpId})
-	fake.recordInvocation("Call", []interface{}{scope, outputs, containerId, scgContainerCall, pkgRef, rootOpId})
+	}{inputs, outputs, containerId, scgContainerCall, pkgRef, rootOpId})
+	fake.recordInvocation("Call", []interface{}{inputs, outputs, containerId, scgContainerCall, pkgRef, rootOpId})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(scope, outputs, containerId, scgContainerCall, pkgRef, rootOpId)
+		return fake.CallStub(inputs, outputs, containerId, scgContainerCall, pkgRef, rootOpId)
 	}
 	if specificReturn {
 		return ret.result1
@@ -56,10 +56,10 @@ func (fake *fakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeContainerCaller) CallArgsForCall(i int) (map[string]*model.Data, chan *variable, string, *model.ScgContainerCall, string, string) {
+func (fake *fakeContainerCaller) CallArgsForCall(i int) (chan *variable, chan *variable, string, *model.ScgContainerCall, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].scope, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].containerId, fake.callArgsForCall[i].scgContainerCall, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].inputs, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].containerId, fake.callArgsForCall[i].scgContainerCall, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
 }
 
 func (fake *fakeContainerCaller) CallReturns(result1 error) {

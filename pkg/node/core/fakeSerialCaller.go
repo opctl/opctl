@@ -8,10 +8,10 @@ import (
 )
 
 type fakeSerialCaller struct {
-	CallStub        func(inboundScope map[string]*model.Data, outputs chan *variable, rootOpId string, pkgRef string, scgSerialCall []*model.Scg) (err error)
+	CallStub        func(inputs chan *variable, outputs chan *variable, rootOpId string, pkgRef string, scgSerialCall []*model.Scg) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		inboundScope  map[string]*model.Data
+		inputs        chan *variable
 		outputs       chan *variable
 		rootOpId      string
 		pkgRef        string
@@ -27,7 +27,7 @@ type fakeSerialCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeSerialCaller) Call(inboundScope map[string]*model.Data, outputs chan *variable, rootOpId string, pkgRef string, scgSerialCall []*model.Scg) (err error) {
+func (fake *fakeSerialCaller) Call(inputs chan *variable, outputs chan *variable, rootOpId string, pkgRef string, scgSerialCall []*model.Scg) (err error) {
 	var scgSerialCallCopy []*model.Scg
 	if scgSerialCall != nil {
 		scgSerialCallCopy = make([]*model.Scg, len(scgSerialCall))
@@ -36,16 +36,16 @@ func (fake *fakeSerialCaller) Call(inboundScope map[string]*model.Data, outputs 
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		inboundScope  map[string]*model.Data
+		inputs        chan *variable
 		outputs       chan *variable
 		rootOpId      string
 		pkgRef        string
 		scgSerialCall []*model.Scg
-	}{inboundScope, outputs, rootOpId, pkgRef, scgSerialCallCopy})
-	fake.recordInvocation("Call", []interface{}{inboundScope, outputs, rootOpId, pkgRef, scgSerialCallCopy})
+	}{inputs, outputs, rootOpId, pkgRef, scgSerialCallCopy})
+	fake.recordInvocation("Call", []interface{}{inputs, outputs, rootOpId, pkgRef, scgSerialCallCopy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(inboundScope, outputs, rootOpId, pkgRef, scgSerialCall)
+		return fake.CallStub(inputs, outputs, rootOpId, pkgRef, scgSerialCall)
 	}
 	if specificReturn {
 		return ret.result1
@@ -59,10 +59,10 @@ func (fake *fakeSerialCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeSerialCaller) CallArgsForCall(i int) (map[string]*model.Data, chan *variable, string, string, []*model.Scg) {
+func (fake *fakeSerialCaller) CallArgsForCall(i int) (chan *variable, chan *variable, string, string, []*model.Scg) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].scgSerialCall
+	return fake.callArgsForCall[i].inputs, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].scgSerialCall
 }
 
 func (fake *fakeSerialCaller) CallReturns(result1 error) {

@@ -22,7 +22,14 @@ var _ = Context("serialCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			inputMap := map[string]*model.Data{}
+			providedInputs := make(chan *variable, 150)
+			for varName, varValue := range inputMap {
+				providedInputs <- &variable{Name: varName, Value: varValue}
+			}
+			// inputs chan must be closed for method under test to return
+			close(providedInputs)
+
 			providedOutputs := make(chan *variable, 150)
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
@@ -43,7 +50,7 @@ var _ = Context("serialCaller", func() {
 
 			fakeCaller := new(fakeCaller)
 			// outputs chan must be closed for method under test to return
-			fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+			fakeCaller.CallStub = func(nodeId string, inputs chan *variable, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
 				close(outputs)
 				return
 			}
@@ -61,7 +68,7 @@ var _ = Context("serialCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
+				providedInputs,
 				providedOutputs,
 				providedRootOpId,
 				providedPkgRef,
@@ -71,13 +78,19 @@ var _ = Context("serialCaller", func() {
 			/* assert */
 			for expectedScgIndex, expectedScg := range providedScgSerialCalls {
 				actualNodeId,
-					actualChildOutboundScope,
+					actualChildInputs,
 					_,
 					actualScg,
 					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(expectedScgIndex)
+
+				actualChildInputMap := map[string]*model.Data{}
+				for input := range actualChildInputs {
+					actualChildInputMap[input.Name] = input.Value
+				}
+
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
-				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
+				Expect(actualChildInputMap).To(Equal(inputMap))
 				Expect(actualScg).To(Equal(expectedScg))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
@@ -86,7 +99,10 @@ var _ = Context("serialCaller", func() {
 		Context("caller errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
+				// inputs chan must be closed for method under test to return
+				close(providedInputs)
+
 				providedOutputs := make(chan *variable, 150)
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
@@ -104,7 +120,7 @@ var _ = Context("serialCaller", func() {
 
 				/* act */
 				actualErr := objectUnderTest.Call(
-					providedInboundScope,
+					providedInputs,
 					providedOutputs,
 					providedRootOpId,
 					providedPkgRef,
@@ -116,15 +132,22 @@ var _ = Context("serialCaller", func() {
 			})
 		})
 		Context("caller doesn't error", func() {
-			Context("childOutboundScope empty", func() {
-				It("should call grandchild w/ inboundScope", func() {
+			Context("childOutputs empty", func() {
+				It("should call secondChild w/ inboundScope", func() {
 					/* arrange */
-					providedInboundScope := map[string]*model.Data{
+					inputMap := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 					}
+					providedInputs := make(chan *variable, 150)
+					for varName, varValue := range inputMap {
+						providedInputs <- &variable{Name: varName, Value: varValue}
+					}
+					// inputs chan must be closed for method under test to return
+					close(providedInputs)
+
 					providedOutputs := make(chan *variable, 150)
-					expectedScopePassedToGrandchild := providedInboundScope
+					expectedSecondChildInputMap := inputMap
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedScgSerialCalls := []*model.Scg{
@@ -138,7 +161,7 @@ var _ = Context("serialCaller", func() {
 
 					fakeCaller := new(fakeCaller)
 					// outputs chan must be closed for method under test to return
-					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+					fakeCaller.CallStub = func(nodeId string, inputs chan *variable, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
 						close(outputs)
 						return
 					}
@@ -147,7 +170,7 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						providedInboundScope,
+						providedInputs,
 						providedOutputs,
 						providedRootOpId,
 						providedPkgRef,
@@ -155,27 +178,40 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualScopePassedToGranchild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
-					Expect(actualScopePassedToGranchild).To(Equal(expectedScopePassedToGrandchild))
+					_, actualSecondChildInputs, _, _, _, _ := fakeCaller.CallArgsForCall(1)
+					actualSecondChildInputMap := map[string]*model.Data{}
+					for input := range actualSecondChildInputs {
+						actualSecondChildInputMap[input.Name] = input.Value
+					}
+
+					Expect(actualSecondChildInputMap).To(Equal(expectedSecondChildInputMap))
 				})
 			})
-			Context("childOutboundScope not empty", func() {
+			Context("childOutputs not empty", func() {
 				It("should call secondChild w/ firstChildOutputs overlaying inboundScope", func() {
 					/* arrange */
-					providedInboundScope := map[string]*model.Data{
+					inputMap := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 						"dummyVar3Name": {File: "dummyParentVar3Data"},
 					}
-					firstChildOutputs := map[string]*model.Data{
+					providedInputs := make(chan *variable, 150)
+					for varName, varValue := range inputMap {
+						providedInputs <- &variable{Name: varName, Value: varValue}
+					}
+					// inputs chan must be closed for method under test to return
+					close(providedInputs)
+
+					firstChildOutputMap := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyFirstChildVar1Data"},
 						"dummyVar2Name": {Dir: "dummyFirstChildVar2Data"},
 					}
-					expectedScopePassedToSecondChild := map[string]*model.Data{
-						"dummyVar1Name": firstChildOutputs["dummyVar1Name"],
-						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],
-						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
+					expectedSecondChildInputMap := map[string]*model.Data{
+						"dummyVar1Name": firstChildOutputMap["dummyVar1Name"],
+						"dummyVar2Name": firstChildOutputMap["dummyVar2Name"],
+						"dummyVar3Name": inputMap["dummyVar3Name"],
 					}
+
 					providedOutputs := make(chan *variable, 150)
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
@@ -189,10 +225,10 @@ var _ = Context("serialCaller", func() {
 					}
 
 					fakeCaller := new(fakeCaller)
-					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+					fakeCaller.CallStub = func(nodeId string, inputs chan *variable, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
 						// stub firstChildOutputs
 						if scg == providedScgSerialCalls[0] {
-							for varName, varValue := range firstChildOutputs {
+							for varName, varValue := range firstChildOutputMap {
 								outputs <- &variable{
 									Name:  varName,
 									Value: varValue,
@@ -208,7 +244,7 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						providedInboundScope,
+						providedInputs,
 						providedOutputs,
 						providedRootOpId,
 						providedPkgRef,
@@ -216,8 +252,13 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualScopePassedToGranchild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
-					Expect(actualScopePassedToGranchild).To(Equal(expectedScopePassedToSecondChild))
+					_, actualSecondChildInputs, _, _, _, _ := fakeCaller.CallArgsForCall(1)
+					actualSecondChildInputMap := map[string]*model.Data{}
+					for input := range actualSecondChildInputs {
+						actualSecondChildInputMap[input.Name] = input.Value
+					}
+
+					Expect(actualSecondChildInputMap).To(Equal(expectedSecondChildInputMap))
 				})
 			})
 		})

@@ -28,7 +28,7 @@ var _ = Context("caller", func() {
 				/* assert */
 				objectUnderTest.Call(
 					"dummyNodeId",
-					map[string]*model.Data{},
+					make(chan *variable, 150),
 					make(chan *variable, 150),
 					nil,
 					"dummyPkgRef",
@@ -42,7 +42,7 @@ var _ = Context("caller", func() {
 				fakeContainerCaller := new(fakeContainerCaller)
 
 				providedNodeId := "dummyNodeId"
-				providedArgs := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
 				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Container: &model.ScgContainerCall{},
@@ -55,7 +55,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedNodeId,
-					providedArgs,
+					providedInputs,
 					providedOutputs,
 					providedScg,
 					providedPkgRef,
@@ -70,16 +70,10 @@ var _ = Context("caller", func() {
 					actualPkgRef,
 					actualRootOpId := fakeContainerCaller.CallArgsForCall(0)
 				Expect(actualNodeId).To(Equal(providedNodeId))
-				Expect(actualArgs).To(Equal(providedArgs))
+				Expect(actualArgs).To(Equal(providedInputs))
 				Expect(actualScg).To(Equal(providedScg.Container))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
-			})
-			Context("containerCaller.Call errors", func() {
-
-			})
-			Context("containerCaller.Call doesn't error", func() {
-
 			})
 		})
 		Context("Op SCG", func() {
@@ -88,7 +82,7 @@ var _ = Context("caller", func() {
 				fakeOpCaller := new(fakeOpCaller)
 
 				providedNodeId := "dummyNodeId"
-				providedArgs := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
 				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Op: &model.ScgOpCall{
@@ -104,7 +98,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedNodeId,
-					providedArgs,
+					providedInputs,
 					providedOutputs,
 					providedScg,
 					providedPkgRef,
@@ -118,15 +112,9 @@ var _ = Context("caller", func() {
 					actualPkgRef,
 					actualRootOpId := fakeOpCaller.CallArgsForCall(0)
 				Expect(actualNodeId).To(Equal(providedNodeId))
-				Expect(actualArgs).To(Equal(providedArgs))
+				Expect(actualArgs).To(Equal(providedInputs))
 				Expect(actualPkgRef).To(Equal(path.Join(filepath.Dir(providedPkgRef), providedScg.Op.Ref)))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
-			})
-			Context("opCaller.Call errors", func() {
-
-			})
-			Context("opCaller.Call doesn't error", func() {
-
 			})
 		})
 		Context("Parallel SCG", func() {
@@ -135,7 +123,7 @@ var _ = Context("caller", func() {
 				fakeParallelCaller := new(fakeParallelCaller)
 
 				providedNodeId := "dummyNodeId"
-				providedArgs := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
 				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Parallel: []*model.Scg{
@@ -151,7 +139,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedNodeId,
-					providedArgs,
+					providedInputs,
 					providedOutputs,
 					providedScg,
 					providedPkgRef,
@@ -163,16 +151,10 @@ var _ = Context("caller", func() {
 					actualRootOpId,
 					actualPkgRef,
 					actualScg := fakeParallelCaller.CallArgsForCall(0)
-				Expect(actualArgs).To(Equal(providedArgs))
+				Expect(actualArgs).To(Equal(providedInputs))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualScg).To(Equal(providedScg.Parallel))
-			})
-			Context("parallelCaller.Call errors", func() {
-
-			})
-			Context("parallelCaller.Call doesn't error", func() {
-
 			})
 		})
 		Context("Serial SCG", func() {
@@ -182,7 +164,7 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(fakeSerialCaller)
 
 				providedNodeId := "dummyNodeId"
-				providedArgs := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
 				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{
 					Serial: []*model.Scg{
@@ -198,7 +180,7 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedNodeId,
-					providedArgs,
+					providedInputs,
 					providedOutputs,
 					providedScg,
 					providedPkgRef,
@@ -211,16 +193,10 @@ var _ = Context("caller", func() {
 					actualRootOpId,
 					actualPkgRef,
 					actualScg := fakeSerialCaller.CallArgsForCall(0)
-				Expect(actualArgs).To(Equal(providedArgs))
+				Expect(actualArgs).To(Equal(providedInputs))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualScg).To(Equal(providedScg.Serial))
-			})
-			Context("serialCaller.Call errors", func() {
-
-			})
-			Context("serialCaller.Call doesn't error", func() {
-
 			})
 		})
 		Context("No SCG", func() {
@@ -229,7 +205,7 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(fakeSerialCaller)
 
 				providedNodeId := "dummyNodeId"
-				providedArgs := map[string]*model.Data{}
+				providedInputs := make(chan *variable, 150)
 				providedOutputs := make(chan *variable, 150)
 				providedScg := &model.Scg{}
 				providedPkgRef := "dummyPkgRef"
@@ -242,7 +218,7 @@ var _ = Context("caller", func() {
 				/* act */
 				actualError := objectUnderTest.Call(
 					providedNodeId,
-					providedArgs,
+					providedInputs,
 					providedOutputs,
 					providedScg,
 					providedPkgRef,

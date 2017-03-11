@@ -12,7 +12,7 @@ import (
 type caller interface {
 	Call(
 		nodeId string,
-		scope map[string]*model.Data,
+		inputs chan *variable,
 		outputs chan *variable,
 		scg *model.Scg,
 		pkgRef string,
@@ -40,7 +40,7 @@ type _caller struct {
 // Executes/runs an op
 func (this _caller) Call(
 	nodeId string,
-	scope map[string]*model.Data,
+	inputs chan *variable,
 	outputs chan *variable,
 	scg *model.Scg,
 	pkgRef string,
@@ -57,7 +57,7 @@ func (this _caller) Call(
 	switch {
 	case nil != scg.Container:
 		err = this.containerCaller.Call(
-			scope,
+			inputs,
 			outputs,
 			nodeId,
 			scg.Container,
@@ -66,7 +66,7 @@ func (this _caller) Call(
 		)
 	case nil != scg.Op:
 		err = this.opCaller.Call(
-			scope,
+			inputs,
 			outputs,
 			nodeId,
 			path.Join(filepath.Dir(pkgRef), scg.Op.Ref),
@@ -75,14 +75,14 @@ func (this _caller) Call(
 	case len(scg.Parallel) > 0:
 		close(outputs)
 		err = this.parallelCaller.Call(
-			scope,
+			inputs,
 			rootOpId,
 			pkgRef,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
 		err = this.serialCaller.Call(
-			scope,
+			inputs,
 			outputs,
 			rootOpId,
 			pkgRef,

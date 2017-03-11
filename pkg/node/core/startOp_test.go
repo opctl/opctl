@@ -45,13 +45,18 @@ var _ = Context("core", func() {
 			/* assert */
 			// Call happens in go routine; wait 500ms to allow it to occur
 			time.Sleep(time.Millisecond * 500)
-			actualInboundScope,
+			actualInputs,
 				_,
 				actualOpId,
 				actualPkgRef,
 				actualRootOpId := fakeOpCaller.CallArgsForCall(0)
 
-			Expect(actualInboundScope).To(Equal(providedReq.Args))
+			actualInputMap := map[string]*model.Data{}
+			for actualInput := range actualInputs {
+				actualInputMap[actualInput.Name] = actualInput.Value
+			}
+
+			Expect(actualInputMap).To(Equal(providedReq.Args))
 			Expect(actualOpId).To(Equal(expectedOpId))
 			Expect(actualPkgRef).To(Equal(providedReq.PkgRef))
 			Expect(actualRootOpId).To(Equal(actualOpId))
