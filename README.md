@@ -19,6 +19,10 @@ see [website](https://opspec.io/spec)
 - [source](https://github.com/opspec-io/spec)
 - [kanban board](https://waffle.io/opspec-io/spec)
 
+# Community
+
+- [chat](https://gitter.im/opspec-io/spec)
+
 # Releases
 
 All releases will be [tagged](https://github.com/opspec-io/spec/tags)
