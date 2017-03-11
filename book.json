@@ -1,8 +1,10 @@
 {
   "plugins": [
-    "toggle-chapters",
     "edit-link",
+    "-fontsettings",
     "ga",
+    "theme-opspec@git+https://github.com/opspec-io/gitbook-plugin-theme-opspec.git",
+    "toggle-chapters",
     "github-buttons"
   ],
   "pluginsConfig": {
