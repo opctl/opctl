@@ -13,13 +13,13 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		inboundScope map[string]*model.Data,
+		scope map[string]*model.Data,
+		outputs chan *variable,
 		containerId string,
 		scgContainerCall *model.ScgContainerCall,
 		pkgRef string,
 		rootOpId string,
 	) (
-		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -45,13 +45,13 @@ type _containerCaller struct {
 }
 
 func (this _containerCaller) Call(
-	inboundScope map[string]*model.Data,
+	scope map[string]*model.Data,
+	outputs chan *variable,
 	containerId string,
 	scgContainerCall *model.ScgContainerCall,
 	pkgRef string,
 	rootOpId string,
 ) (
-	outboundScope map[string]*model.Data,
 	err error,
 ) {
 	defer func() {
@@ -72,10 +72,12 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := constructDcgContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
+	dcgContainerCall, err := constructDcgContainerCall(scope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
 		return
 	}
+
+	go this.sendOutputs(dcgContainerCall, outputs, scgContainerCall)
 
 	this.pubSub.Publish(
 		&model.Event{
@@ -101,22 +103,50 @@ func (this _containerCaller) Call(
 			},
 		},
 	)
-	if nil != err {
-		return
-	}
-
-	/* construct outputs */
-	outboundScope = this.constructOutboundScope(dcgContainerCall, scgContainerCall)
+	close(outputs)
 
 	return
 }
 
-// O(n) complexity (n being events in op graph)
-func (this _containerCaller) constructOutboundScope(
+func (this _containerCaller) sendOutputs(
 	dcgContainerCall *model.DcgContainerCall,
+	outputs chan *variable,
 	scgContainerCall *model.ScgContainerCall,
-) (outboundScope map[string]*model.Data) {
-	outboundScope = map[string]*model.Data{}
+) {
+
+	// send socket outputs
+	for socketAddr, varName := range scgContainerCall.Sockets {
+		if "0.0.0.0" == socketAddr {
+			outputs <- &variable{
+				Name:  varName,
+				Value: &model.Data{Socket: dcgContainerCall.ContainerId},
+			}
+		}
+	}
+
+	// send file outputs
+	for scgContainerFilePath, varName := range scgContainerCall.Files {
+		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
+			if scgContainerFilePath == dcgContainerFilePath {
+				outputs <- &variable{
+					Name:  varName,
+					Value: &model.Data{File: dcgHostFilePath},
+				}
+			}
+		}
+	}
+
+	// send dir outputs
+	for scgContainerDirPath, varName := range scgContainerCall.Dirs {
+		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
+			if scgContainerDirPath == dcgContainerDirPath {
+				outputs <- &variable{
+					Name:  varName,
+					Value: &model.Data{Dir: dcgHostDirPath},
+				}
+			}
+		}
+	}
 
 	// subscribe to op graph events
 	eventChannel := make(chan *model.Event)
@@ -125,6 +155,7 @@ func (this _containerCaller) constructOutboundScope(
 		eventChannel,
 	)
 
+	// send string outputs
 eventLoop:
 	for event := range eventChannel {
 		switch {
@@ -132,51 +163,29 @@ eventLoop:
 			break eventLoop
 		case nil != event.ContainerStdErrWrittenTo &&
 			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, binding := range scgContainerCall.StdErr {
+			for boundPrefix, varName := range scgContainerCall.StdErr {
 				rawOutput := string(event.ContainerStdErrWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
-					outboundScope[binding] = &model.Data{String: trimmedOutput}
+					outputs <- &variable{
+						Name:  varName,
+						Value: &model.Data{String: trimmedOutput},
+					}
 				}
 			}
 		case nil != event.ContainerStdOutWrittenTo &&
 			event.ContainerStdOutWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, binding := range scgContainerCall.StdOut {
+			for boundPrefix, varName := range scgContainerCall.StdOut {
 				rawOutput := string(event.ContainerStdOutWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
-					outboundScope[binding] = &model.Data{String: trimmedOutput}
+					outputs <- &variable{
+						Name:  varName,
+						Value: &model.Data{String: trimmedOutput},
+					}
 				}
-			}
-		}
-	}
-
-	// construct files
-	for scgContainerFilePath, scgContainerFile := range scgContainerCall.Files {
-		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
-			if scgContainerFilePath == dcgContainerFilePath {
-				outboundScope[scgContainerFile] = &model.Data{File: dcgHostFilePath}
-			}
-		}
-	}
-	// construct dirs
-	for scgContainerDirPath, scgContainerDir := range scgContainerCall.Dirs {
-		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
-			if scgContainerDirPath == dcgContainerDirPath {
-				outboundScope[scgContainerDir] = &model.Data{Dir: dcgHostDirPath}
-			}
-		}
-	}
-	// construct sockets
-	for scgContainerSocketAddress, scgContainerSocket := range scgContainerCall.Sockets {
-		// default; point net sockets @ their containers ip
-		outboundScope[scgContainerSocket] = &model.Data{Socket: dcgContainerCall.IpAddress}
-		for dcgContainerSocketAddress, dcgHostSocketAddress := range dcgContainerCall.Sockets {
-			if scgContainerSocketAddress == dcgContainerSocketAddress {
-				// override default; point unix sockets @ their location on the host
-				outboundScope[scgContainerSocket] = &model.Data{Socket: dcgHostSocketAddress}
 			}
 		}
 	}

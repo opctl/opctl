@@ -11,11 +11,11 @@ type serialCaller interface {
 	// Executes a serial call
 	Call(
 		inboundScope map[string]*model.Data,
+		outputs chan *variable,
 		rootOpId string,
 		pkgRef string,
 		scgSerialCall []*model.Scg,
 	) (
-		outboundScope map[string]*model.Data,
 		err error,
 	)
 }
@@ -39,23 +39,24 @@ type _serialCaller struct {
 
 func (this _serialCaller) Call(
 	inboundScope map[string]*model.Data,
+	outputs chan *variable,
 	rootOpId string,
 	pkgRef string,
 	scgSerialCall []*model.Scg,
 ) (
-	outboundScope map[string]*model.Data,
 	err error,
 ) {
-	outboundScope = map[string]*model.Data{}
+	outboundScope := map[string]*model.Data{}
 	for varName, varData := range inboundScope {
 		outboundScope[varName] = varData
 	}
 
 	for _, scgCall := range scgSerialCall {
-		var childOutboundScope map[string]*model.Data
-		childOutboundScope, err = this.caller.Call(
+		subOutputs := make(chan *variable, 150)
+		err = this.caller.Call(
 			this.uniqueStringFactory.Construct(),
 			outboundScope,
+			subOutputs,
 			scgCall,
 			pkgRef,
 			rootOpId,
@@ -67,20 +68,26 @@ func (this _serialCaller) Call(
 
 		if scgOpCall := scgCall.Op; nil != scgCall.Op {
 			// apply bound child outputs to current scope
-			for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
-				if "" == childScopeVarName {
-					// if no explicit childScopeVarName provided; use currentScopeVarName (assume same)
-					childScopeVarName = currentScopeVarName
+			for subOutput := range subOutputs {
+				for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
+					if currentScopeVarName == subOutput.Name || childScopeVarName == subOutput.Name {
+						outboundScope[currentScopeVarName] = subOutput.Value
+					}
 				}
-				outboundScope[currentScopeVarName] = childOutboundScope[childScopeVarName]
 			}
 		} else {
 			// apply child outputs to current scope
-			for varName, varData := range childOutboundScope {
-				outboundScope[varName] = varData
+			for subOutput := range subOutputs {
+				outboundScope[subOutput.Name] = subOutput.Value
 			}
 		}
 	}
+
+	// @TODO: stream outputs from last child
+	for varName, varValue := range outboundScope {
+		outputs <- &variable{Name: varName, Value: varValue}
+	}
+	close(outputs)
 
 	return
 

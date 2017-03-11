@@ -60,6 +60,7 @@ var _ = Context("parallelCaller", func() {
 			for callIndex := range providedScgParallelCalls {
 				actualNodeId,
 					actualChildOutboundScope,
+					_,
 					actualScg,
 					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
@@ -94,7 +95,7 @@ var _ = Context("parallelCaller", func() {
 
 				expectedError := errors.New("One or more errors encountered in parallel run block")
 				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(map[string]*model.Data{}, errors.New("dummyError"))
+				fakeCaller.CallReturns(errors.New("dummyError"))
 
 				returnedUniqueString := "dummyUniqueString"
 				fakeUniqueStringFactory := new(uniquestring.Fake)
@@ -115,6 +116,7 @@ var _ = Context("parallelCaller", func() {
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
+						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
@@ -170,6 +172,7 @@ var _ = Context("parallelCaller", func() {
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
+						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)

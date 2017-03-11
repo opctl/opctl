@@ -31,6 +31,7 @@ var _ = Context("opCaller", func() {
 		It("should call dcgNodeRepo.add w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
+			providedOutputs := make(chan *variable, 150)
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
@@ -44,11 +45,18 @@ var _ = Context("opCaller", func() {
 
 			fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 
+			fakeCaller := new(fakeCaller)
+			// outputs chan must be closed for method under test to return
+			fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+				close(outputs)
+				return
+			}
+
 			objectUnderTest := newOpCaller(
 				new(managepackages.Fake),
 				new(pubsub.Fake),
 				fakeDcgNodeRepo,
-				new(fakeCaller),
+				fakeCaller,
 				new(uniquestring.Fake),
 				new(validate.Fake),
 			)
@@ -56,6 +64,7 @@ var _ = Context("opCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
+				providedOutputs,
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
@@ -67,6 +76,7 @@ var _ = Context("opCaller", func() {
 		It("should call managepackages.GetPackage w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
+			providedOutputs := make(chan *variable, 150)
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
@@ -75,11 +85,18 @@ var _ = Context("opCaller", func() {
 
 			fakeManagePackages := new(managepackages.Fake)
 
+			fakeCaller := new(fakeCaller)
+			// outputs chan must be closed for method under test to return
+			fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+				close(outputs)
+				return
+			}
+
 			objectUnderTest := newOpCaller(
 				fakeManagePackages,
 				new(pubsub.Fake),
 				new(fakeDcgNodeRepo),
-				new(fakeCaller),
+				fakeCaller,
 				new(uniquestring.Fake),
 				new(validate.Fake),
 			)
@@ -87,6 +104,7 @@ var _ = Context("opCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
+				providedOutputs,
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
@@ -99,6 +117,7 @@ var _ = Context("opCaller", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
+				providedOutputs := make(chan *variable, 150)
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
@@ -136,6 +155,7 @@ var _ = Context("opCaller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedInboundScope,
+					providedOutputs,
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
@@ -161,6 +181,7 @@ var _ = Context("opCaller", func() {
 					"dummyVar3Name": {Dir: "dummyVar3Data"},
 					"dummyVar4Name": {Socket: "dummyVar4Data"},
 				}
+				providedOutputs := make(chan *variable, 150)
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
@@ -191,11 +212,18 @@ var _ = Context("opCaller", func() {
 
 				fakeValidate := new(validate.Fake)
 
+				fakeCaller := new(fakeCaller)
+				// outputs chan must be closed for method under test to return
+				fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+					close(outputs)
+					return
+				}
+
 				objectUnderTest := newOpCaller(
 					fakeManagePackages,
 					new(pubsub.Fake),
 					new(fakeDcgNodeRepo),
-					new(fakeCaller),
+					fakeCaller,
 					new(uniquestring.Fake),
 					fakeValidate,
 				)
@@ -203,6 +231,7 @@ var _ = Context("opCaller", func() {
 				/* act */
 				objectUnderTest.Call(
 					providedInboundScope,
+					providedOutputs,
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
@@ -220,6 +249,7 @@ var _ = Context("opCaller", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
+					providedOutputs := make(chan *variable, 150)
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
@@ -246,14 +276,14 @@ var _ = Context("opCaller", func() {
 
 					expectedMsg := fmt.Sprintf(`
 -
-  validation of the following op input(s) failed:
+  validation of the following input failed:
 
   Name: %v
   Value: %v
   Error(s):
     - %v
 
--`, "dummyVar1Name", "************", errorReturnedFromValidate)
+-`, "dummyVar1Name", "", errorReturnedFromValidate)
 
 					fakePubSub := new(pubsub.Fake)
 					expectedEvent := &model.Event{
@@ -278,6 +308,7 @@ var _ = Context("opCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
+						providedOutputs,
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
@@ -298,6 +329,7 @@ var _ = Context("opCaller", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
+					providedOutputs := make(chan *variable, 150)
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
@@ -313,11 +345,18 @@ var _ = Context("opCaller", func() {
 
 					fakePubSub := new(pubsub.Fake)
 
+					fakeCaller := new(fakeCaller)
+					// outputs chan must be closed for method under test to return
+					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+						close(outputs)
+						return
+					}
+
 					objectUnderTest := newOpCaller(
 						new(managepackages.Fake),
 						fakePubSub,
 						new(fakeDcgNodeRepo),
-						new(fakeCaller),
+						fakeCaller,
 						new(uniquestring.Fake),
 						new(validate.Fake),
 					)
@@ -325,6 +364,7 @@ var _ = Context("opCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
+						providedOutputs,
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
@@ -343,6 +383,7 @@ var _ = Context("opCaller", func() {
 				It("should call caller.Call w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
+					providedOutputs := make(chan *variable, 150)
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
@@ -360,6 +401,11 @@ var _ = Context("opCaller", func() {
 					fakeManagePackages.GetPackageReturns(opReturnedFromPkg, nil)
 
 					fakeCaller := new(fakeCaller)
+					// outputs chan must be closed for method under test to return
+					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+						close(outputs)
+						return
+					}
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
 					expectedNodeId := "dummyNodeId"
@@ -377,6 +423,7 @@ var _ = Context("opCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
+						providedOutputs,
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
@@ -385,6 +432,7 @@ var _ = Context("opCaller", func() {
 					/* assert */
 					actualNodeId,
 						actualInboundScope,
+						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(0)
@@ -398,17 +446,25 @@ var _ = Context("opCaller", func() {
 				It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
 					/* arrange */
 					providedInboundScope := map[string]*model.Data{}
+					providedOutputs := make(chan *variable, 150)
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
 
 					fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 
+					fakeCaller := new(fakeCaller)
+					// outputs chan must be closed for method under test to return
+					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+						close(outputs)
+						return
+					}
+
 					objectUnderTest := newOpCaller(
 						new(managepackages.Fake),
 						new(pubsub.Fake),
 						fakeDcgNodeRepo,
-						new(fakeCaller),
+						fakeCaller,
 						new(uniquestring.Fake),
 						new(validate.Fake),
 					)
@@ -416,6 +472,7 @@ var _ = Context("opCaller", func() {
 					/* act */
 					objectUnderTest.Call(
 						providedInboundScope,
+						providedOutputs,
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
@@ -428,6 +485,7 @@ var _ = Context("opCaller", func() {
 					It("should call pubSub.Publish w/ expected args", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
+						providedOutputs := make(chan *variable, 150)
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
@@ -444,11 +502,18 @@ var _ = Context("opCaller", func() {
 
 						fakePubSub := new(pubsub.Fake)
 
+						fakeCaller := new(fakeCaller)
+						// outputs chan must be closed for method under test to return
+						fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+							close(outputs)
+							return
+						}
+
 						objectUnderTest := newOpCaller(
 							new(managepackages.Fake),
 							fakePubSub,
 							new(fakeDcgNodeRepo),
-							new(fakeCaller),
+							fakeCaller,
 							new(uniquestring.Fake),
 							new(validate.Fake),
 						)
@@ -456,6 +521,7 @@ var _ = Context("opCaller", func() {
 						/* act */
 						objectUnderTest.Call(
 							providedInboundScope,
+							providedOutputs,
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
@@ -476,6 +542,7 @@ var _ = Context("opCaller", func() {
 					It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
+						providedOutputs := make(chan *variable, 150)
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
@@ -483,11 +550,18 @@ var _ = Context("opCaller", func() {
 						fakeDcgNodeRepo := new(fakeDcgNodeRepo)
 						fakeDcgNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
+						fakeCaller := new(fakeCaller)
+						// outputs chan must be closed for method under test to return
+						fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+							close(outputs)
+							return
+						}
+
 						objectUnderTest := newOpCaller(
 							new(managepackages.Fake),
 							new(pubsub.Fake),
 							fakeDcgNodeRepo,
-							new(fakeCaller),
+							fakeCaller,
 							new(uniquestring.Fake),
 							new(validate.Fake),
 						)
@@ -495,6 +569,7 @@ var _ = Context("opCaller", func() {
 						/* act */
 						objectUnderTest.Call(
 							providedInboundScope,
+							providedOutputs,
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
@@ -507,6 +582,7 @@ var _ = Context("opCaller", func() {
 						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
+							providedOutputs := make(chan *variable, 150)
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
@@ -528,7 +604,6 @@ var _ = Context("opCaller", func() {
 
 							fakeCaller := new(fakeCaller)
 							fakeCaller.CallReturns(
-								map[string]*model.Data{},
 								errors.New(expectedEvent.OpEncounteredError.Msg),
 							)
 
@@ -544,6 +619,7 @@ var _ = Context("opCaller", func() {
 							/* act */
 							objectUnderTest.Call(
 								providedInboundScope,
+								providedOutputs,
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
@@ -562,6 +638,7 @@ var _ = Context("opCaller", func() {
 						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
+							providedOutputs := make(chan *variable, 150)
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
@@ -583,7 +660,6 @@ var _ = Context("opCaller", func() {
 
 							fakeCaller := new(fakeCaller)
 							fakeCaller.CallReturns(
-								map[string]*model.Data{},
 								errors.New("dummyError"),
 							)
 
@@ -599,6 +675,7 @@ var _ = Context("opCaller", func() {
 							/* act */
 							objectUnderTest.Call(
 								providedInboundScope,
+								providedOutputs,
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
@@ -619,6 +696,7 @@ var _ = Context("opCaller", func() {
 						It("should call pubSub.Publish w/ expected args", func() {
 							/* arrange */
 							providedInboundScope := map[string]*model.Data{}
+							providedOutputs := make(chan *variable, 150)
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
@@ -638,11 +716,18 @@ var _ = Context("opCaller", func() {
 
 							fakePubSub := new(pubsub.Fake)
 
+							fakeCaller := new(fakeCaller)
+							// outputs chan must be closed for method under test to return
+							fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+								close(outputs)
+								return
+							}
+
 							objectUnderTest := newOpCaller(
 								new(managepackages.Fake),
 								fakePubSub,
 								fakeDcgNodeRepo,
-								new(fakeCaller),
+								fakeCaller,
 								new(uniquestring.Fake),
 								new(validate.Fake),
 							)
@@ -650,6 +735,7 @@ var _ = Context("opCaller", func() {
 							/* act */
 							objectUnderTest.Call(
 								providedInboundScope,
+								providedOutputs,
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
