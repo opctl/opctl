@@ -23,7 +23,7 @@ var _ = Describe("Event", func() {
 						ExitCode:     1,
 						RootOpId:     "dummyRootOpId",
 						ContainerId:  "dummyContainerId",
-						PkgRef:     "dummyPkgRef",
+						PkgRef:       "dummyPkgRef",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -52,7 +52,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStarted: &ContainerStartedEvent{
 						ContainerRef: "dummyContainerRef",
-						PkgRef:     "dummyPkgRef",
+						PkgRef:       "dummyPkgRef",
 						ContainerId:  "dummyContainerId",
 						RootOpId:     "dummyRootOpId",
 					},
@@ -83,7 +83,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdErrWrittenTo: &ContainerStdErrWrittenToEvent{
 						Data:        []byte("dummyData"),
-						PkgRef:    "dummyPkgRef",
+						PkgRef:      "dummyPkgRef",
 						ContainerId: "dummyContainerId",
 						RootOpId:    "dummyRootOpId",
 					},
@@ -114,7 +114,7 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					ContainerStdOutWrittenTo: &ContainerStdOutWrittenToEvent{
 						Data:        []byte("dummyData"),
-						PkgRef:    "dummyPkgRef",
+						PkgRef:      "dummyPkgRef",
 						ContainerId: "dummyContainerId",
 						RootOpId:    "dummyRootOpId",
 					},
@@ -144,7 +144,7 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpEnded: &OpEndedEvent{
-						PkgRef: "dummyPkgRef",
+						PkgRef:   "dummyPkgRef",
 						OpId:     "dummyOpId",
 						Outcome:  "dummyOutcome",
 						RootOpId: "dummyRootOpId",
@@ -175,7 +175,7 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					OpStarted: &OpStartedEvent{
-						PkgRef: "dummyPkgRef",
+						PkgRef:   "dummyPkgRef",
 						OpId:     "dummyOpId",
 						RootOpId: "dummyRootOpId",
 					},
@@ -206,9 +206,43 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					OpEncounteredError: &OpEncounteredErrorEvent{
 						Msg:      "dummyMsg",
-						PkgRef: "dummyPkgRef",
+						PkgRef:   "dummyPkgRef",
 						OpId:     "dummyOpId",
 						RootOpId: "dummyRootOpId",
+					},
+					Timestamp: time.Now().UTC(),
+				}
+
+				/* act */
+				providedJson, err := json.From(expectedEvent)
+				if nil != err {
+					panic(err)
+				}
+
+				actualEvent := Event{}
+				json.To(providedJson, &actualEvent)
+
+				/* assert */
+				Expect(actualEvent).To(Equal(expectedEvent))
+
+			})
+
+		})
+
+		Context("with non-nil $.varAssigned", func() {
+
+			It("should have expected attributes", func() {
+
+				/* arrange */
+				expectedEvent := Event{
+					VarAssigned: &VarAssignedEvent{
+						ContainerRef: "dummyContainerRef",
+						VarName:      "dummyVarName",
+						VarId:        "dummyVarId",
+						VarValue:     &Data{String: "dummyVarValue"},
+						RootOpId:     "dummyRootOpId",
+						ContainerId:  "dummyContainerId",
+						PkgRef:       "dummyPkgRef",
 					},
 					Timestamp: time.Now().UTC(),
 				}

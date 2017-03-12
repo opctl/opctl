@@ -11,6 +11,7 @@ type Event struct {
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
+	VarAssigned              *VarAssignedEvent              `json:"varAssigned,omitempty"`
 }
 
 const (
@@ -19,19 +20,29 @@ const (
 	OpOutcomeKilled    = "KILLED"
 )
 
+type VarAssignedEvent struct {
+	ContainerRef string `json:"containerRef"`
+	VarName      string `json:"varName"`
+	VarId        string `json:"varId"`
+	VarValue     *Data  `json:"varValue"`
+	RootOpId     string `json:"rootOpId"`
+	ContainerId  string `json:"containerId"`
+	PkgRef       string `json:"pkgRef"`
+}
+
 type ContainerExitedEvent struct {
 	ContainerRef string `json:"containerRef"`
 	ExitCode     int    `json:"exitCode"`
 	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	PkgRef     string `json:"pkgRef"`
+	PkgRef       string `json:"pkgRef"`
 }
 
 type ContainerStartedEvent struct {
 	ContainerRef string `json:"containerRef"`
 	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	PkgRef     string `json:"pkgRef"`
+	PkgRef       string `json:"pkgRef"`
 }
 
 type ContainerStdErrWrittenToEvent struct {
@@ -39,7 +50,7 @@ type ContainerStdErrWrittenToEvent struct {
 	Data         []byte `json:"data"`
 	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	PkgRef     string `json:"pkgRef"`
+	PkgRef       string `json:"pkgRef"`
 }
 
 type ContainerStdOutWrittenToEvent struct {
@@ -47,25 +58,25 @@ type ContainerStdOutWrittenToEvent struct {
 	Data         []byte `json:"data"`
 	RootOpId     string `json:"rootOpId"`
 	ContainerId  string `json:"containerId"`
-	PkgRef     string `json:"pkgRef"`
+	PkgRef       string `json:"pkgRef"`
 }
 
 type OpEncounteredErrorEvent struct {
 	RootOpId string `json:"rootOpId"`
 	Msg      string `json:"msg"`
 	OpId     string `json:"opId"`
-	PkgRef string `json:"pkgRef"`
+	PkgRef   string `json:"pkgRef"`
 }
 
 type OpEndedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	OpId     string `json:"opId"`
-	PkgRef string `json:"pkgRef"`
+	PkgRef   string `json:"pkgRef"`
 	Outcome  string `json:"outcome"`
 }
 
 type OpStartedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	OpId     string `json:"opId"`
-	PkgRef string `json:"pkgRef"`
+	PkgRef   string `json:"pkgRef"`
 }
