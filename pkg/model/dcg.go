@@ -39,5 +39,6 @@ type DCGOp struct{}
 
 type DCGOpCall struct {
 	*DCGBaseCall
+  OpId string   `json:"opId"`
 	ChildCallId string `json:"childCallId"`
 }
