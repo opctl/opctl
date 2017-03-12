@@ -11,7 +11,7 @@ type Event struct {
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
-	ConstantInitialized      *ConstantInitializedEvent      `json:"constantInitialized,omitempty"`
+	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
 }
 
 const (
@@ -20,11 +20,11 @@ const (
 	OpOutcomeKilled    = "KILLED"
 )
 
-type ConstantInitializedEvent struct {
-	ConstantName  string `json:"constantName"`
-	DCGCallId     string `json:"dcgCallId"`
-	ConstantValue *Data  `json:"constantValue"`
-	RootOpId      string `json:"rootOpId"`
+type OutputInitializedEvent struct {
+	Name     string `json:"name"`
+	CallId   string `json:"callId"`
+	Value    *Data  `json:"value"`
+	RootOpId string `json:"rootOpId"`
 }
 
 type ContainerExitedEvent struct {

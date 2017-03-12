@@ -23,13 +23,13 @@ type DCGContainerCall struct {
 	EnvVars map[string]string `json:"envVars"`
 	// format: containerPath => hostPath
 	Files map[string]string      `json:"files"`
-	Image *DcgContainerCallImage `json:"image"`
+	Image *DCGContainerCallImage `json:"image"`
 	// format: containerSocket => hostSocket
 	Sockets map[string]string `json:"sockets"`
 	WorkDir string            `json:"workDir"`
 }
 
-type DcgContainerCallImage struct {
+type DCGContainerCallImage struct {
 	Ref          string `json:"ref"`
 	PullIdentity string `json:"pullIdentity,omitempty"`
 	PullSecret   string `json:"pullSecret,omitempty"`
@@ -39,6 +39,6 @@ type DCGOp struct{}
 
 type DCGOpCall struct {
 	*DCGBaseCall
-  OpId string   `json:"opId"`
+	OpId        string `json:"opId"`
 	ChildCallId string `json:"childCallId"`
 }

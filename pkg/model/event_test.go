@@ -229,17 +229,17 @@ var _ = Describe("Event", func() {
 
 		})
 
-		Context("with non-nil $.constantInitialized", func() {
+		Context("with non-nil $.outputInitialized", func() {
 
 			It("should have expected attributes", func() {
 
 				/* arrange */
 				expectedEvent := Event{
-					ConstantInitialized: &ConstantInitializedEvent{
-						ConstantName:  "dummyConstantName",
-						DCGCallId:     "dummyDCGCallId",
-						ConstantValue: &Data{String: "dummyConstantValue"},
-						RootOpId:      "dummyRootOpId",
+					OutputInitialized: &OutputInitializedEvent{
+						Name:     "dummyOutputName",
+						CallId:   "dummyDCGCallId",
+						Value:    &Data{String: "dummyOutputValue"},
+						RootOpId: "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}
