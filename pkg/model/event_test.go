@@ -236,13 +236,10 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					VarAssigned: &VarAssignedEvent{
-						ContainerRef: "dummyContainerRef",
-						VarName:      "dummyVarName",
-						VarId:        "dummyVarId",
-						VarValue:     &Data{String: "dummyVarValue"},
-						RootOpId:     "dummyRootOpId",
-						ContainerId:  "dummyContainerId",
-						PkgRef:       "dummyPkgRef",
+						VarName:   "dummyVarName",
+						VarValue:  &Data{String: "dummyVarValue"},
+						RootOpId:  "dummyRootOpId",
+						DCGCallId: "dummyDCGCallId",
 					},
 					Timestamp: time.Now().UTC(),
 				}

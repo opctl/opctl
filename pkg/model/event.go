@@ -21,13 +21,10 @@ const (
 )
 
 type VarAssignedEvent struct {
-	ContainerRef string `json:"containerRef"`
-	VarName      string `json:"varName"`
-	VarId        string `json:"varId"`
-	VarValue     *Data  `json:"varValue"`
-	RootOpId     string `json:"rootOpId"`
-	ContainerId  string `json:"containerId"`
-	PkgRef       string `json:"pkgRef"`
+  VarName   string `json:"varName"`
+  VarValue  *Data  `json:"varValue"`
+  RootOpId  string `json:"rootOpId"`
+  DCGCallId string `json:"dcgCallId"`
 }
 
 type ContainerExitedEvent struct {
