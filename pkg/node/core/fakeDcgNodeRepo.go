@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type fakeDcgNodeRepo struct {
+type fakeDCGNodeRepo struct {
 	AddStub        func(node *dcgNodeDescriptor)
 	addMutex       sync.RWMutex
 	addArgsForCall []struct {
@@ -36,7 +36,7 @@ type fakeDcgNodeRepo struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeDcgNodeRepo) Add(node *dcgNodeDescriptor) {
+func (fake *fakeDCGNodeRepo) Add(node *dcgNodeDescriptor) {
 	fake.addMutex.Lock()
 	fake.addArgsForCall = append(fake.addArgsForCall, struct {
 		node *dcgNodeDescriptor
@@ -48,19 +48,19 @@ func (fake *fakeDcgNodeRepo) Add(node *dcgNodeDescriptor) {
 	}
 }
 
-func (fake *fakeDcgNodeRepo) AddCallCount() int {
+func (fake *fakeDCGNodeRepo) AddCallCount() int {
 	fake.addMutex.RLock()
 	defer fake.addMutex.RUnlock()
 	return len(fake.addArgsForCall)
 }
 
-func (fake *fakeDcgNodeRepo) AddArgsForCall(i int) *dcgNodeDescriptor {
+func (fake *fakeDCGNodeRepo) AddArgsForCall(i int) *dcgNodeDescriptor {
 	fake.addMutex.RLock()
 	defer fake.addMutex.RUnlock()
 	return fake.addArgsForCall[i].node
 }
 
-func (fake *fakeDcgNodeRepo) DeleteIfExists(nodeId string) {
+func (fake *fakeDCGNodeRepo) DeleteIfExists(nodeId string) {
 	fake.deleteIfExistsMutex.Lock()
 	fake.deleteIfExistsArgsForCall = append(fake.deleteIfExistsArgsForCall, struct {
 		nodeId string
@@ -72,19 +72,19 @@ func (fake *fakeDcgNodeRepo) DeleteIfExists(nodeId string) {
 	}
 }
 
-func (fake *fakeDcgNodeRepo) DeleteIfExistsCallCount() int {
+func (fake *fakeDCGNodeRepo) DeleteIfExistsCallCount() int {
 	fake.deleteIfExistsMutex.RLock()
 	defer fake.deleteIfExistsMutex.RUnlock()
 	return len(fake.deleteIfExistsArgsForCall)
 }
 
-func (fake *fakeDcgNodeRepo) DeleteIfExistsArgsForCall(i int) string {
+func (fake *fakeDCGNodeRepo) DeleteIfExistsArgsForCall(i int) string {
 	fake.deleteIfExistsMutex.RLock()
 	defer fake.deleteIfExistsMutex.RUnlock()
 	return fake.deleteIfExistsArgsForCall[i].nodeId
 }
 
-func (fake *fakeDcgNodeRepo) ListWithRootOpId(rootOpId string) []*dcgNodeDescriptor {
+func (fake *fakeDCGNodeRepo) ListWithRootOpId(rootOpId string) []*dcgNodeDescriptor {
 	fake.listWithRootOpIdMutex.Lock()
 	fake.listWithRootOpIdArgsForCall = append(fake.listWithRootOpIdArgsForCall, struct {
 		rootOpId string
@@ -98,26 +98,26 @@ func (fake *fakeDcgNodeRepo) ListWithRootOpId(rootOpId string) []*dcgNodeDescrip
 	}
 }
 
-func (fake *fakeDcgNodeRepo) ListWithRootOpIdCallCount() int {
+func (fake *fakeDCGNodeRepo) ListWithRootOpIdCallCount() int {
 	fake.listWithRootOpIdMutex.RLock()
 	defer fake.listWithRootOpIdMutex.RUnlock()
 	return len(fake.listWithRootOpIdArgsForCall)
 }
 
-func (fake *fakeDcgNodeRepo) ListWithRootOpIdArgsForCall(i int) string {
+func (fake *fakeDCGNodeRepo) ListWithRootOpIdArgsForCall(i int) string {
 	fake.listWithRootOpIdMutex.RLock()
 	defer fake.listWithRootOpIdMutex.RUnlock()
 	return fake.listWithRootOpIdArgsForCall[i].rootOpId
 }
 
-func (fake *fakeDcgNodeRepo) ListWithRootOpIdReturns(result1 []*dcgNodeDescriptor) {
+func (fake *fakeDCGNodeRepo) ListWithRootOpIdReturns(result1 []*dcgNodeDescriptor) {
 	fake.ListWithRootOpIdStub = nil
 	fake.listWithRootOpIdReturns = struct {
 		result1 []*dcgNodeDescriptor
 	}{result1}
 }
 
-func (fake *fakeDcgNodeRepo) GetIfExists(nodeId string) *dcgNodeDescriptor {
+func (fake *fakeDCGNodeRepo) GetIfExists(nodeId string) *dcgNodeDescriptor {
 	fake.getIfExistsMutex.Lock()
 	fake.getIfExistsArgsForCall = append(fake.getIfExistsArgsForCall, struct {
 		nodeId string
@@ -131,26 +131,26 @@ func (fake *fakeDcgNodeRepo) GetIfExists(nodeId string) *dcgNodeDescriptor {
 	}
 }
 
-func (fake *fakeDcgNodeRepo) GetIfExistsCallCount() int {
+func (fake *fakeDCGNodeRepo) GetIfExistsCallCount() int {
 	fake.getIfExistsMutex.RLock()
 	defer fake.getIfExistsMutex.RUnlock()
 	return len(fake.getIfExistsArgsForCall)
 }
 
-func (fake *fakeDcgNodeRepo) GetIfExistsArgsForCall(i int) string {
+func (fake *fakeDCGNodeRepo) GetIfExistsArgsForCall(i int) string {
 	fake.getIfExistsMutex.RLock()
 	defer fake.getIfExistsMutex.RUnlock()
 	return fake.getIfExistsArgsForCall[i].nodeId
 }
 
-func (fake *fakeDcgNodeRepo) GetIfExistsReturns(result1 *dcgNodeDescriptor) {
+func (fake *fakeDCGNodeRepo) GetIfExistsReturns(result1 *dcgNodeDescriptor) {
 	fake.GetIfExistsStub = nil
 	fake.getIfExistsReturns = struct {
 		result1 *dcgNodeDescriptor
 	}{result1}
 }
 
-func (fake *fakeDcgNodeRepo) Invocations() map[string][][]interface{} {
+func (fake *fakeDCGNodeRepo) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.addMutex.RLock()
@@ -164,7 +164,7 @@ func (fake *fakeDcgNodeRepo) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *fakeDcgNodeRepo) recordInvocation(key string, args []interface{}) {
+func (fake *fakeDCGNodeRepo) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

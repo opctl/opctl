@@ -27,7 +27,7 @@ type ContainerProvider interface {
 	) (err error)
 
 	RunContainer(
-		req *model.DcgContainerCall,
+		req *model.DCGContainerCall,
 		eventPublisher pubsub.EventPublisher,
 	) (err error)
 }

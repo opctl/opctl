@@ -74,7 +74,9 @@ func (this *pubSub) deliverEvent(
 	select {
 	case channel <- event:
 	case <-time.After(time.Second * 5):
+		this.subscriptionsMutex.Lock()
 		delete(this.subscriptions, channel)
+		this.subscriptionsMutex.Unlock()
 		return
 	}
 }

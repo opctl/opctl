@@ -4,14 +4,17 @@ package core
 
 import (
 	"errors"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"sync"
+	"time"
 )
 
 type parallelCaller interface {
 	// Executes a parallel call
 	Call(
+		callId string,
 		inboundScope map[string]*model.Data,
 		rootOpId string,
 		pkgRef string,
@@ -23,11 +26,13 @@ type parallelCaller interface {
 
 func newParallelCaller(
 	caller caller,
+	pubSub pubsub.PubSub,
 	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) parallelCaller {
 
 	return _parallelCaller{
 		caller:              caller,
+		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 
@@ -35,10 +40,12 @@ func newParallelCaller(
 
 type _parallelCaller struct {
 	caller              caller
+	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (this _parallelCaller) Call(
+	callId string,
 	inboundScope map[string]*model.Data,
 	rootOpId string,
 	pkgRef string,
@@ -46,6 +53,21 @@ func (this _parallelCaller) Call(
 ) (
 	err error,
 ) {
+
+	defer func() {
+		// defer must be defined before conditional return statements so it always runs
+
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ParallelCallEnded: &model.ParallelCallEndedEvent{
+					CallId:   callId,
+					RootOpId: rootOpId,
+				},
+			},
+		)
+
+	}()
 
 	var wg sync.WaitGroup
 	childErrChannel := make(chan error, len(scgParallelCall))
@@ -57,8 +79,6 @@ func (this _parallelCaller) Call(
 			childErr := this.caller.Call(
 				this.uniqueStringFactory.Construct(),
 				inboundScope,
-				// @TODO: handle sockets
-				make(chan *variable, 150),
 				childCall,
 				pkgRef,
 				rootOpId,

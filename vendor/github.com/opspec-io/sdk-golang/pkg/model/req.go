@@ -36,6 +36,6 @@ type SetPackageDescriptionReq struct {
 
 type StartOpReq struct {
 	// map of args keyed by param name
-	Args     map[string]*Data `json:"args"`
+	Args   map[string]*Data `json:"args"`
 	PkgRef string           `json:"pkgRef"`
 }

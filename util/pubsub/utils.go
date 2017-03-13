@@ -42,6 +42,12 @@ func getEventRootOpId(
 		return event.OpEnded.RootOpId
 	case nil != event.OpStarted:
 		return event.OpStarted.RootOpId
+	case nil != event.OutputInitialized:
+		return event.OutputInitialized.RootOpId
+	case nil != event.ParallelCallEnded:
+		return event.ParallelCallEnded.RootOpId
+	case nil != event.SerialCallEnded:
+		return event.SerialCallEnded.RootOpId
 	default:
 		panic(fmt.Sprintf("Received unexpected event %v\n", event))
 	}

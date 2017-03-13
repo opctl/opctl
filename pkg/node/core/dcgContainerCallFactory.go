@@ -12,26 +12,29 @@ import (
 	"strings"
 )
 
-func constructDcgContainerCall(
+func constructDCGContainerCall(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.ScgContainerCall,
 	containerId string,
 	rootOpId string,
 	pkgRef string,
-) (dcgContainerCall *model.DcgContainerCall, err error) {
+) (dcgContainerCall *model.DCGContainerCall, err error) {
 	fs := osfs.New()
 	fileCopier := filecopier.New()
 	dirCopier := dircopier.New()
 	interpolate := interpolatePkg.New()
 
-	dcgContainerCall = &model.DcgContainerCall{
+	dcgContainerCall = &model.DCGContainerCall{
+		DCGBaseCall: &model.DCGBaseCall{
+			RootOpId: rootOpId,
+			PkgRef:   pkgRef,
+		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
 		Files:       map[string]string{},
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
 		ContainerId: containerId,
-		RootOpId:    rootOpId,
 	}
 
 	// create scratch dir for container
@@ -133,7 +136,7 @@ func constructDcgContainerCall(
 
 	// construct image
 	if scgContainerCallImage := scgContainerCall.Image; scgContainerCallImage != nil {
-		dcgContainerCall.Image = &model.DcgContainerCallImage{
+		dcgContainerCall.Image = &model.DCGContainerCallImage{
 			// interpolate all properties
 			Ref:          interpolate.Interpolate(scgContainerCall.Image.Ref, currentScope),
 			PullIdentity: interpolate.Interpolate(scgContainerCall.Image.PullIdentity, currentScope),

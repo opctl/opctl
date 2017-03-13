@@ -35,7 +35,7 @@ func New(
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	dcgNodeRepo := newDcgNodeRepo()
+	dcgNodeRepo := newDCGNodeRepo()
 
 	caller := newCaller(
 		newContainerCaller(
@@ -48,6 +48,7 @@ func New(
 	caller.setParallelCaller(
 		newParallelCaller(
 			caller,
+			pubSub,
 			uniqueStringFactory,
 		),
 	)
@@ -55,6 +56,7 @@ func New(
 	caller.setSerialCaller(
 		newSerialCaller(
 			caller,
+			pubSub,
 			uniqueStringFactory,
 		),
 	)

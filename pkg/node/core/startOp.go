@@ -16,7 +16,6 @@ func (this _core) StartOp(
 	go func() {
 		this.opCaller.Call(
 			req.Args,
-			make(chan *variable, 150),
 			opId,
 			req.PkgRef,
 			opId,

@@ -55,10 +55,10 @@ type Fake struct {
 	networkContainerReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RunContainerStub        func(req *model.DcgContainerCall, eventPublisher pubsub.EventPublisher) (err error)
+	RunContainerStub        func(req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher) (err error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
-		req            *model.DcgContainerCall
+		req            *model.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 	}
 	runContainerReturns struct {
@@ -265,11 +265,11 @@ func (fake *Fake) NetworkContainerReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) RunContainer(req *model.DcgContainerCall, eventPublisher pubsub.EventPublisher) (err error) {
+func (fake *Fake) RunContainer(req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher) (err error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
-		req            *model.DcgContainerCall
+		req            *model.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 	}{req, eventPublisher})
 	fake.recordInvocation("RunContainer", []interface{}{req, eventPublisher})
@@ -289,7 +289,7 @@ func (fake *Fake) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *Fake) RunContainerArgsForCall(i int) (*model.DcgContainerCall, pubsub.EventPublisher) {
+func (fake *Fake) RunContainerArgsForCall(i int) (*model.DCGContainerCall, pubsub.EventPublisher) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	return fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher

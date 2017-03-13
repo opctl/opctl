@@ -13,7 +13,7 @@ import (
 )
 
 func (this _containerProvider) pullImage(
-	dcgContainerImage *model.DcgContainerCallImage,
+	dcgContainerImage *model.DCGContainerCallImage,
 	containerId string,
 	rootOpId string,
 	eventPublisher pubsub.EventPublisher,

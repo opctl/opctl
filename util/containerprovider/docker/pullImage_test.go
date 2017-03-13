@@ -17,7 +17,7 @@ var _ = Context("pullImage", func() {
 	Context("imageRef invalid", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			providedImage := &model.DcgContainerCallImage{Ref: "%$^"}
+			providedImage := &model.DCGContainerCallImage{Ref: "%$^"}
 			_, _, expectedError := reference.Parse(providedImage.Ref)
 
 			objectUnderTest := _containerProvider{
@@ -39,7 +39,7 @@ var _ = Context("pullImage", func() {
 	Context("imageRef valid", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
-			providedImage := &model.DcgContainerCallImage{Ref: "dummy-ref"}
+			providedImage := &model.DCGContainerCallImage{Ref: "dummy-ref"}
 			expectedImageRef := fmt.Sprintf("%v:latest", providedImage.Ref)
 			expectedImagePullOptions := types.ImagePullOptions{}
 
@@ -84,7 +84,7 @@ var _ = Context("pullImage", func() {
 
 				/* act */
 				actualError := objectUnderTest.pullImage(
-					&model.DcgContainerCallImage{Ref: "dummy-ref"},
+					&model.DCGContainerCallImage{Ref: "dummy-ref"},
 					"",
 					"",
 					new(pubsub.FakeEventPublisher),

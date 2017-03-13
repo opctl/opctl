@@ -4,6 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 )
@@ -14,6 +15,7 @@ var _ = Context("parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
 				new(fakeCaller),
+				new(pubsub.Fake),
 				new(uniquestring.Fake),
 			)).Should(Not(BeNil()))
 		})
@@ -21,6 +23,7 @@ var _ = Context("parallelCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
+			providedCallId := "dummyCallId"
 			providedInboundScope := map[string]*model.Data{}
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
@@ -45,10 +48,11 @@ var _ = Context("parallelCaller", func() {
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-			objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
+			objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
 
 			/* act */
 			objectUnderTest.Call(
+				providedCallId,
 				providedInboundScope,
 				providedRootOpId,
 				providedPkgRef,
@@ -60,7 +64,6 @@ var _ = Context("parallelCaller", func() {
 			for callIndex := range providedScgParallelCalls {
 				actualNodeId,
 					actualChildOutboundScope,
-					_,
 					actualScg,
 					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
@@ -75,6 +78,7 @@ var _ = Context("parallelCaller", func() {
 		Context("caller errors", func() {
 			It("shouldn't exit until all childCalls complete & return expected error", func() {
 				/* arrange */
+				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Data{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
@@ -101,10 +105,11 @@ var _ = Context("parallelCaller", func() {
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-				objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
+				objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					providedCallId,
 					providedInboundScope,
 					providedRootOpId,
 					providedPkgRef,
@@ -116,7 +121,6 @@ var _ = Context("parallelCaller", func() {
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
-						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
@@ -133,6 +137,7 @@ var _ = Context("parallelCaller", func() {
 		Context("caller doesn't error", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
+				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Data{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
@@ -157,10 +162,11 @@ var _ = Context("parallelCaller", func() {
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-				objectUnderTest := newParallelCaller(fakeCaller, fakeUniqueStringFactory)
+				objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					providedCallId,
 					providedInboundScope,
 					providedRootOpId,
 					providedPkgRef,
@@ -172,7 +178,6 @@ var _ = Context("parallelCaller", func() {
 				for callIndex := range providedScgParallelCalls {
 					actualNodeId,
 						actualChildOutboundScope,
-						_,
 						actualScg,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)

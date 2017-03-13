@@ -17,7 +17,7 @@ var _ = Context("containerCaller", func() {
 			Expect(newContainerCaller(
 				new(containerprovider.Fake),
 				new(pubsub.Fake),
-				new(fakeDcgNodeRepo),
+				new(fakeDCGNodeRepo),
 			)).Should(Not(BeNil()))
 		})
 	})
@@ -25,7 +25,6 @@ var _ = Context("containerCaller", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
-			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -36,25 +35,24 @@ var _ = Context("containerCaller", func() {
 				close(eventChannel)
 			}
 
-			expectedDcgNodeDescriptor := &dcgNodeDescriptor{
+			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
 				PkgRef:    providedPkgRef,
 				RootOpId:  providedRootOpId,
 				Container: &dcgContainerDescriptor{},
 			}
 
-			fakeDcgNodeRepo := new(fakeDcgNodeRepo)
+			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 			objectUnderTest := newContainerCaller(
 				new(containerprovider.Fake),
 				fakePubSub,
-				fakeDcgNodeRepo,
+				fakeDCGNodeRepo,
 			)
 
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -62,12 +60,11 @@ var _ = Context("containerCaller", func() {
 			)
 
 			/* assert */
-			Expect(fakeDcgNodeRepo.AddArgsForCall(0)).To(Equal(expectedDcgNodeDescriptor))
+			Expect(fakeDCGNodeRepo.AddArgsForCall(0)).To(Equal(expectedDCGNodeDescriptor))
 		})
 		It("should call pubSub.Publish w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
-			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -90,13 +87,12 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := newContainerCaller(
 				new(containerprovider.Fake),
 				fakePubSub,
-				new(fakeDcgNodeRepo),
+				new(fakeDCGNodeRepo),
 			)
 
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -116,13 +112,12 @@ var _ = Context("containerCaller", func() {
 		It("should call containerProvider.RunContainer w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
-			providedOutputs := make(chan *variable, 150)
 			providedContainerId := "dummyContainerId"
 			providedScgContainerCall := &model.ScgContainerCall{}
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
-			expectedReq, _ := constructDcgContainerCall(
+			expectedReq, _ := constructDCGContainerCall(
 				providedInboundScope,
 				providedScgContainerCall,
 				providedContainerId,
@@ -140,13 +135,12 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest := newContainerCaller(
 				fakeContainerProvider,
 				fakePubSub,
-				new(fakeDcgNodeRepo),
+				new(fakeDCGNodeRepo),
 			)
 
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedOutputs,
 				providedContainerId,
 				providedScgContainerCall,
 				providedPkgRef,
@@ -162,7 +156,6 @@ var _ = Context("containerCaller", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
-				providedOutputs := make(chan *variable, 150)
 				providedContainerId := "dummyContainerId"
 				providedScgContainerCall := &model.ScgContainerCall{}
 				providedPkgRef := "dummyPkgRef"
@@ -176,13 +169,12 @@ var _ = Context("containerCaller", func() {
 				objectUnderTest := newContainerCaller(
 					fakeContainerProvider,
 					new(pubsub.Fake),
-					new(fakeDcgNodeRepo),
+					new(fakeDCGNodeRepo),
 				)
 
 				/* act */
 				actualError := objectUnderTest.Call(
 					providedInboundScope,
-					providedOutputs,
 					providedContainerId,
 					providedScgContainerCall,
 					providedPkgRef,
@@ -197,7 +189,6 @@ var _ = Context("containerCaller", func() {
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
-		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -208,18 +199,17 @@ var _ = Context("containerCaller", func() {
 			close(eventChannel)
 		}
 
-		fakeDcgNodeRepo := new(fakeDcgNodeRepo)
+		fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 		objectUnderTest := newContainerCaller(
 			new(containerprovider.Fake),
 			fakePubSub,
-			fakeDcgNodeRepo,
+			fakeDCGNodeRepo,
 		)
 
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
-			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,
 			providedPkgRef,
@@ -227,12 +217,11 @@ var _ = Context("containerCaller", func() {
 		)
 
 		/* assert */
-		Expect(fakeDcgNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerId))
+		Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerId))
 	})
 	It("should call pubSub.Publish w/ expected args", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
-		providedOutputs := make(chan *variable, 150)
 		providedContainerId := "dummyContainerId"
 		providedScgContainerCall := &model.ScgContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -255,13 +244,12 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest := newContainerCaller(
 			new(containerprovider.Fake),
 			fakePubSub,
-			new(fakeDcgNodeRepo),
+			new(fakeDCGNodeRepo),
 		)
 
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
-			providedOutputs,
 			providedContainerId,
 			providedScgContainerCall,
 			providedPkgRef,

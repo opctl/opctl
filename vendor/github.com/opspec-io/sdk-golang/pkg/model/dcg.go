@@ -1,15 +1,20 @@
 package model
 
 // dynamic call graph; see https://en.wikipedia.org/wiki/Call_graph
-type Dcg struct {
-	Container *DcgContainer `json:"container,omitempty"`
-	Op        *DcgOp        `json:"op,omitempty"`
+type DCG struct {
+	Container *DCGContainer `json:"container,omitempty"`
+	Op        *DCGOp        `json:"op,omitempty"`
 }
 
-type DcgContainer struct {
+type DCGBaseCall struct {
+	RootOpId string `json:"rootOpId"`
+	PkgRef   string `json:"pkgRef"`
 }
 
-type DcgContainerCall struct {
+type DCGContainer struct{}
+
+type DCGContainerCall struct {
+	*DCGBaseCall
 	ContainerId string   `json:"containerId"`
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
@@ -17,20 +22,23 @@ type DcgContainerCall struct {
 	// format: name => value
 	EnvVars map[string]string `json:"envVars"`
 	// format: containerPath => hostPath
-	Files     map[string]string      `json:"files"`
-	Image     *DcgContainerCallImage `json:"image"`
-	IpAddress string                 `json:"ipAddress"`
-	RootOpId  string                 `json:"rootOpId"`
-	PkgRef  string                 `json:"pkgRef"`
+	Files map[string]string      `json:"files"`
+	Image *DCGContainerCallImage `json:"image"`
 	// format: containerSocket => hostSocket
 	Sockets map[string]string `json:"sockets"`
 	WorkDir string            `json:"workDir"`
 }
 
-type DcgContainerCallImage struct {
+type DCGContainerCallImage struct {
 	Ref          string `json:"ref"`
 	PullIdentity string `json:"pullIdentity,omitempty"`
 	PullSecret   string `json:"pullSecret,omitempty"`
 }
 
-type DcgOp struct{}
+type DCGOp struct{}
+
+type DCGOpCall struct {
+	*DCGBaseCall
+	OpId        string `json:"opId"`
+	ChildCallId string `json:"childCallId"`
+}

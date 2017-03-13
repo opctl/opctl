@@ -8,15 +8,14 @@ import (
 )
 
 type fakeCaller struct {
-	CallStub        func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error)
+	CallStub        func(callId string, inboundScope map[string]*model.Data, scg *model.Scg, pkgRef string, rootOpId string) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		nodeId   string
-		scope    map[string]*model.Data
-		outputs  chan *variable
-		scg      *model.Scg
-		pkgRef   string
-		rootOpId string
+		callId       string
+		inboundScope map[string]*model.Data
+		scg          *model.Scg
+		pkgRef       string
+		rootOpId     string
 	}
 	callReturns struct {
 		result1 error
@@ -28,21 +27,20 @@ type fakeCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCaller) Call(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
+func (fake *fakeCaller) Call(callId string, inboundScope map[string]*model.Data, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		nodeId   string
-		scope    map[string]*model.Data
-		outputs  chan *variable
-		scg      *model.Scg
-		pkgRef   string
-		rootOpId string
-	}{nodeId, scope, outputs, scg, pkgRef, rootOpId})
-	fake.recordInvocation("Call", []interface{}{nodeId, scope, outputs, scg, pkgRef, rootOpId})
+		callId       string
+		inboundScope map[string]*model.Data
+		scg          *model.Scg
+		pkgRef       string
+		rootOpId     string
+	}{callId, inboundScope, scg, pkgRef, rootOpId})
+	fake.recordInvocation("Call", []interface{}{callId, inboundScope, scg, pkgRef, rootOpId})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(nodeId, scope, outputs, scg, pkgRef, rootOpId)
+		return fake.CallStub(callId, inboundScope, scg, pkgRef, rootOpId)
 	}
 	if specificReturn {
 		return ret.result1
@@ -56,10 +54,10 @@ func (fake *fakeCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeCaller) CallArgsForCall(i int) (string, map[string]*model.Data, chan *variable, *model.Scg, string, string) {
+func (fake *fakeCaller) CallArgsForCall(i int) (string, map[string]*model.Data, *model.Scg, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].nodeId, fake.callArgsForCall[i].scope, fake.callArgsForCall[i].outputs, fake.callArgsForCall[i].scg, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].callId, fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].scg, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
 }
 
 func (fake *fakeCaller) CallReturns(result1 error) {

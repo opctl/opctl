@@ -13,8 +13,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		scope map[string]*model.Data,
-		outputs chan *variable,
+		inboundScope map[string]*model.Data,
 		containerId string,
 		scgContainerCall *model.ScgContainerCall,
 		pkgRef string,
@@ -45,8 +44,7 @@ type _containerCaller struct {
 }
 
 func (this _containerCaller) Call(
-	scope map[string]*model.Data,
-	outputs chan *variable,
+	inboundScope map[string]*model.Data,
 	containerId string,
 	scgContainerCall *model.ScgContainerCall,
 	pkgRef string,
@@ -61,6 +59,17 @@ func (this _containerCaller) Call(
 
 		this.containerProvider.DeleteContainerIfExists(containerId)
 
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerExited: &model.ContainerExitedEvent{
+					ContainerId: containerId,
+					PkgRef:      pkgRef,
+					RootOpId:    rootOpId,
+				},
+			},
+		)
+
 	}()
 
 	this.dcgNodeRepo.Add(
@@ -72,12 +81,12 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := constructDcgContainerCall(scope, scgContainerCall, containerId, rootOpId, pkgRef)
+	dcgContainerCall, err := constructDCGContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
 		return
 	}
 
-	go this.sendOutputs(dcgContainerCall, outputs, scgContainerCall)
+	go this.txOutputs(dcgContainerCall, scgContainerCall)
 
 	this.pubSub.Publish(
 		&model.Event{
@@ -93,63 +102,63 @@ func (this _containerCaller) Call(
 		dcgContainerCall,
 		this.pubSub,
 	)
-	this.pubSub.Publish(
-		&model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
-				ContainerId: containerId,
-				PkgRef:      pkgRef,
-				RootOpId:    rootOpId,
-			},
-		},
-	)
-	close(outputs)
 
 	return
 }
 
-func (this _containerCaller) sendOutputs(
-	dcgContainerCall *model.DcgContainerCall,
-	outputs chan *variable,
+func (this _containerCaller) txOutputs(
+	dcgContainerCall *model.DCGContainerCall,
 	scgContainerCall *model.ScgContainerCall,
 ) {
 
 	// send socket outputs
-	for socketAddr, varName := range scgContainerCall.Sockets {
+	for socketAddr, name := range scgContainerCall.Sockets {
 		if "0.0.0.0" == socketAddr {
-			outputs <- &variable{
-				Name:  varName,
-				Value: &model.Data{Socket: dcgContainerCall.ContainerId},
-			}
+			this.pubSub.Publish(&model.Event{
+				OutputInitialized: &model.OutputInitializedEvent{
+					Name:     name,
+					Value:    &model.Data{Socket: dcgContainerCall.ContainerId},
+					RootOpId: dcgContainerCall.RootOpId,
+					CallId:   dcgContainerCall.ContainerId,
+				},
+			})
 		}
 	}
 
 	// send file outputs
-	for scgContainerFilePath, varName := range scgContainerCall.Files {
+	for scgContainerFilePath, name := range scgContainerCall.Files {
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
-				outputs <- &variable{
-					Name:  varName,
-					Value: &model.Data{File: dcgHostFilePath},
-				}
+				this.pubSub.Publish(&model.Event{
+					OutputInitialized: &model.OutputInitializedEvent{
+						Name:     name,
+						Value:    &model.Data{File: dcgHostFilePath},
+						RootOpId: dcgContainerCall.RootOpId,
+						CallId:   dcgContainerCall.ContainerId,
+					},
+				})
 			}
 		}
 	}
 
 	// send dir outputs
-	for scgContainerDirPath, varName := range scgContainerCall.Dirs {
+	for scgContainerDirPath, name := range scgContainerCall.Dirs {
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
 			if scgContainerDirPath == dcgContainerDirPath {
-				outputs <- &variable{
-					Name:  varName,
-					Value: &model.Data{Dir: dcgHostDirPath},
-				}
+				this.pubSub.Publish(&model.Event{
+					OutputInitialized: &model.OutputInitializedEvent{
+						Name:     name,
+						Value:    &model.Data{Dir: dcgHostDirPath},
+						RootOpId: dcgContainerCall.RootOpId,
+						CallId:   dcgContainerCall.ContainerId,
+					},
+				})
 			}
 		}
 	}
 
 	// subscribe to op graph events
-	eventChannel := make(chan *model.Event)
+	eventChannel := make(chan *model.Event, 150)
 	this.pubSub.Subscribe(
 		&model.EventFilter{RootOpIds: []string{dcgContainerCall.RootOpId}},
 		eventChannel,
@@ -163,28 +172,36 @@ eventLoop:
 			break eventLoop
 		case nil != event.ContainerStdErrWrittenTo &&
 			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, varName := range scgContainerCall.StdErr {
+			for boundPrefix, name := range scgContainerCall.StdErr {
 				rawOutput := string(event.ContainerStdErrWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
-					outputs <- &variable{
-						Name:  varName,
-						Value: &model.Data{String: trimmedOutput},
-					}
+					this.pubSub.Publish(&model.Event{
+						OutputInitialized: &model.OutputInitializedEvent{
+							Name:     name,
+							Value:    &model.Data{String: trimmedOutput},
+							RootOpId: dcgContainerCall.RootOpId,
+							CallId:   dcgContainerCall.ContainerId,
+						},
+					})
 				}
 			}
 		case nil != event.ContainerStdOutWrittenTo &&
 			event.ContainerStdOutWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, varName := range scgContainerCall.StdOut {
+			for boundPrefix, name := range scgContainerCall.StdOut {
 				rawOutput := string(event.ContainerStdOutWrittenTo.Data)
 				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
-					outputs <- &variable{
-						Name:  varName,
-						Value: &model.Data{String: trimmedOutput},
-					}
+					this.pubSub.Publish(&model.Event{
+						OutputInitialized: &model.OutputInitializedEvent{
+							Name:     name,
+							Value:    &model.Data{String: trimmedOutput},
+							RootOpId: dcgContainerCall.RootOpId,
+							CallId:   dcgContainerCall.ContainerId,
+						},
+					})
 				}
 			}
 		}

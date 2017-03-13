@@ -18,7 +18,11 @@ import (
 var _ = Context("RunContainer", func() {
 	It("should call dockerClient.ContainerCreate w/ expected args", func() {
 		/* arrange */
-		providedReq := &model.DcgContainerCall{
+		providedReq := &model.DCGContainerCall{
+			DCGBaseCall: &model.DCGBaseCall{
+				RootOpId: "dummyRootOpId",
+				PkgRef:   "dummyPkgRef",
+			},
 			ContainerId: "dummyContainerId",
 			Dirs: map[string]string{
 				"dir1ContainerPath": "dir1HostPath",
@@ -33,7 +37,7 @@ var _ = Context("RunContainer", func() {
 				"file1ContainerPath": "file1HostPath",
 				"file2ContainerPath": "file2HostPath",
 			},
-			Image: &model.DcgContainerCallImage{Ref: "dummyImage"},
+			Image: &model.DCGContainerCallImage{Ref: "dummyImage"},
 			Sockets: map[string]string{
 				"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
 				"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",

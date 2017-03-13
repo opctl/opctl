@@ -17,8 +17,7 @@ import (
 type opCaller interface {
 	// Executes an op call
 	Call(
-		inputScope map[string]*model.Data,
-		outputs chan *variable,
+		inboundScope map[string]*model.Data,
 		opId string,
 		pkgRef string,
 		rootOpId string,
@@ -55,8 +54,7 @@ type _opCaller struct {
 }
 
 func (this _opCaller) Call(
-	inputScope map[string]*model.Data,
-	outputs chan *variable,
+	inboundScope map[string]*model.Data,
 	opId string,
 	pkgRef string,
 	rootOpId string,
@@ -125,17 +123,26 @@ func (this _opCaller) Call(
 		},
 	)
 
-	op, err := this.managePackages.GetPackage(
+	dcgOpCall := &model.DCGOpCall{
+		DCGBaseCall: &model.DCGBaseCall{
+			RootOpId: rootOpId,
+			PkgRef:   pkgRef,
+		},
+		OpId:        opId,
+		ChildCallId: this.uniqueStringFactory.Construct(),
+	}
+
+	pkg, err := this.managePackages.GetPackage(
 		pkgRef,
 	)
 	if nil != err {
 		return
 	}
 
-	this.applyParamDefaultsToScope(inputScope, op.Inputs)
+	this.applyParamDefaultsToScope(inboundScope, pkg.Inputs)
 
 	// validate inputs
-	err = this.validateScope("input", inputScope, op.Inputs)
+	err = this.validateScope("input", inboundScope, pkg.Inputs)
 	if nil != err {
 		return
 	}
@@ -151,33 +158,12 @@ func (this _opCaller) Call(
 		},
 	)
 
-	childOutputs := make(chan *variable, 150)
-	outputScope := map[string]*model.Data{}
-	// stream outputs as they're sent
-	go func() {
-		for childOutput := range childOutputs {
-			varName := childOutput.Name
-			varValue := childOutput.Value
-			if param, ok := op.Outputs[varName]; ok {
-
-				childOutput = &variable{
-					Name:  varName,
-					Value: this.getValueOrDefault(varName, varValue, param),
-				}
-
-				// track outputs in outputScope so we can validate them before returning
-				outputScope[childOutput.Name] = childOutput.Value
-				outputs <- childOutput
-			}
-		}
-		close(outputs)
-	}()
+	go this.txOutputs(dcgOpCall, &pkg)
 
 	err = this.caller.Call(
-		this.uniqueStringFactory.Construct(),
-		inputScope,
-		childOutputs,
-		op.Run,
+		dcgOpCall.ChildCallId,
+		inboundScope,
+		pkg.Run,
 		pkgRef,
 		rootOpId,
 	)
@@ -185,11 +171,41 @@ func (this _opCaller) Call(
 		return
 	}
 
-	// validate outputs
-	err = this.validateScope("output", outputScope, op.Outputs)
-
 	return
 
+}
+
+func (this _opCaller) txOutputs(
+	dcgOpCall *model.DCGOpCall,
+	pkg *model.PackageView,
+) {
+	// subscribe to events
+	eventChannel := make(chan *model.Event, 150)
+	this.pubSub.Subscribe(
+		&model.EventFilter{RootOpIds: []string{dcgOpCall.RootOpId}},
+		eventChannel,
+	)
+
+	// send outputs
+eventLoop:
+	for event := range eventChannel {
+		switch {
+		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.OpId:
+			break eventLoop
+		case nil != event.OutputInitialized && event.OutputInitialized.CallId == dcgOpCall.ChildCallId:
+			childOutput := event.OutputInitialized
+			if _, ok := pkg.Outputs[childOutput.Name]; ok {
+				this.pubSub.Publish(&model.Event{
+					OutputInitialized: &model.OutputInitializedEvent{
+						Name:     childOutput.Name,
+						Value:    childOutput.Value,
+						RootOpId: dcgOpCall.RootOpId,
+						CallId:   dcgOpCall.OpId,
+					},
+				})
+			}
+		}
+	}
 }
 
 func (this _opCaller) applyParamDefaultsToScope(

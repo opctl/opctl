@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeDcgNodeRepo.go --fake-name fakeDcgNodeRepo ./ dcgNodeRepo
+//go:generate counterfeiter -o ./fakeDCGNodeRepo.go --fake-name fakeDCGNodeRepo ./ dcgNodeRepo
 
 import (
 	"sync"
@@ -18,7 +18,7 @@ type dcgNodeRepo interface {
 	GetIfExists(nodeId string) *dcgNodeDescriptor
 }
 
-func newDcgNodeRepo() dcgNodeRepo {
+func newDCGNodeRepo() dcgNodeRepo {
 
 	return &_dcgNodeRepo{
 		byIdIndex:      make(map[string]*dcgNodeDescriptor),

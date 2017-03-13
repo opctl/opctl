@@ -15,7 +15,7 @@ import (
 )
 
 func (this _containerProvider) RunContainer(
-	req *model.DcgContainerCall,
+	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 

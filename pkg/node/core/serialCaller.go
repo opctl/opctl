@@ -3,15 +3,17 @@ package core
 //go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
+	"time"
 )
 
 type serialCaller interface {
 	// Executes a serial call
 	Call(
+		callId string,
 		inboundScope map[string]*model.Data,
-		outputs chan *variable,
 		rootOpId string,
 		pkgRef string,
 		scgSerialCall []*model.Scg,
@@ -22,11 +24,13 @@ type serialCaller interface {
 
 func newSerialCaller(
 	caller caller,
+	pubSub pubsub.PubSub,
 	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) serialCaller {
 
 	return _serialCaller{
 		caller:              caller,
+		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
 
@@ -34,29 +38,44 @@ func newSerialCaller(
 
 type _serialCaller struct {
 	caller              caller
+	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (this _serialCaller) Call(
+	callId string,
 	inboundScope map[string]*model.Data,
-	outputs chan *variable,
 	rootOpId string,
 	pkgRef string,
 	scgSerialCall []*model.Scg,
 ) (
 	err error,
 ) {
-	outboundScope := map[string]*model.Data{}
+	defer func() {
+		// defer must be defined before conditional return statements so it always runs
+
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				SerialCallEnded: &model.SerialCallEndedEvent{
+					CallId:   callId,
+					RootOpId: rootOpId,
+				},
+			},
+		)
+
+	}()
+
+	scope := map[string]*model.Data{}
 	for varName, varData := range inboundScope {
-		outboundScope[varName] = varData
+		scope[varName] = varData
 	}
 
 	for _, scgCall := range scgSerialCall {
-		subOutputs := make(chan *variable, 150)
+		childCallId := this.uniqueStringFactory.Construct()
 		err = this.caller.Call(
-			this.uniqueStringFactory.Construct(),
-			outboundScope,
-			subOutputs,
+			childCallId,
+			scope,
 			scgCall,
 			pkgRef,
 			rootOpId,
@@ -66,28 +85,54 @@ func (this _serialCaller) Call(
 			return
 		}
 
-		if scgOpCall := scgCall.Op; nil != scgCall.Op {
-			// apply bound child outputs to current scope
-			for subOutput := range subOutputs {
-				for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
-					if currentScopeVarName == subOutput.Name || childScopeVarName == subOutput.Name {
-						outboundScope[currentScopeVarName] = subOutput.Value
+		// subscribe to events
+		eventChannel := make(chan *model.Event, 150)
+		this.pubSub.Subscribe(
+			&model.EventFilter{RootOpIds: []string{rootOpId}},
+			eventChannel,
+		)
+
+		// send outputs
+	eventLoop:
+		for event := range eventChannel {
+			switch {
+			case nil != event.OpEnded && event.OpEnded.OpId == childCallId:
+				break eventLoop
+			case nil != event.ContainerExited && event.ContainerExited.ContainerId == childCallId:
+				break eventLoop
+			case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == childCallId:
+				break eventLoop
+			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == childCallId:
+				break eventLoop
+			case nil != event.OutputInitialized && event.OutputInitialized.CallId == childCallId:
+				childOutput := event.OutputInitialized
+				if scgOpCall := scgCall.Op; nil != scgCall.Op {
+					// apply bound child outputs to current scope
+					for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
+						if currentScopeVarName == childOutput.Name || childScopeVarName == childOutput.Name {
+							scope[currentScopeVarName] = childOutput.Value
+						}
 					}
+				} else {
+					// apply child outputs to current scope
+					scope[childOutput.Name] = childOutput.Value
 				}
 			}
-		} else {
-			// apply child outputs to current scope
-			for subOutput := range subOutputs {
-				outboundScope[subOutput.Name] = subOutput.Value
-			}
 		}
+
 	}
 
 	// @TODO: stream outputs from last child
-	for varName, varValue := range outboundScope {
-		outputs <- &variable{Name: varName, Value: varValue}
+	for childOutputName, childOutputValue := range scope {
+		this.pubSub.Publish(&model.Event{
+			OutputInitialized: &model.OutputInitializedEvent{
+				Name:     childOutputName,
+				Value:    childOutputValue,
+				RootOpId: rootOpId,
+				CallId:   callId,
+			},
+		})
 	}
-	close(outputs)
 
 	return
 

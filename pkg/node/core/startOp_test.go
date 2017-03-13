@@ -35,7 +35,7 @@ var _ = Context("core", func() {
 				containerProvider:   new(containerprovider.Fake),
 				pubSub:              new(pubsub.Fake),
 				opCaller:            fakeOpCaller,
-				dcgNodeRepo:         new(fakeDcgNodeRepo),
+				dcgNodeRepo:         new(fakeDCGNodeRepo),
 				uniqueStringFactory: fakeUniqueStringFactory,
 			}
 
@@ -46,7 +46,6 @@ var _ = Context("core", func() {
 			// Call happens in go routine; wait 500ms to allow it to occur
 			time.Sleep(time.Millisecond * 500)
 			actualInboundScope,
-				_,
 				actualOpId,
 				actualPkgRef,
 				actualRootOpId := fakeOpCaller.CallArgsForCall(0)

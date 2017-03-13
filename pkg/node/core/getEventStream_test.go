@@ -21,7 +21,7 @@ var _ = Context("core", func() {
 				},
 			}
 
-			providedEventStream := make(chan *model.Event)
+			providedEventStream := make(chan *model.Event, 150)
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -29,7 +29,7 @@ var _ = Context("core", func() {
 				containerProvider:   new(containerprovider.Fake),
 				pubSub:              fakePubSub,
 				opCaller:            new(fakeOpCaller),
-				dcgNodeRepo:         new(fakeDcgNodeRepo),
+				dcgNodeRepo:         new(fakeDCGNodeRepo),
 				uniqueStringFactory: new(uniquestring.Fake),
 			}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"github.com/pkg/errors"
@@ -15,6 +16,7 @@ var _ = Context("serialCaller", func() {
 			/* arrange/act/assert */
 			Expect(newSerialCaller(
 				new(fakeCaller),
+				new(pubsub.Fake),
 				new(uniquestring.Fake),
 			)).Should(Not(BeNil()))
 		})
@@ -22,8 +24,8 @@ var _ = Context("serialCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
+			providedCallId := "dummyCallId"
 			providedInboundScope := map[string]*model.Data{}
-			providedOutputs := make(chan *variable, 150)
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedScgSerialCalls := []*model.Scg{
@@ -41,12 +43,16 @@ var _ = Context("serialCaller", func() {
 				},
 			}
 
-			fakeCaller := new(fakeCaller)
-			// outputs chan must be closed for method under test to return
-			fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
-				close(outputs)
-				return
+			fakePubSub := new(pubsub.Fake)
+			subscribeCallIndex := 0
+			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+				defer func() {
+					subscribeCallIndex++
+				}()
+				eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
 			}
+
+			fakeCaller := new(fakeCaller)
 
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			uniqueStringCallIndex := 0
@@ -57,12 +63,12 @@ var _ = Context("serialCaller", func() {
 				return fmt.Sprintf("%v", uniqueStringCallIndex)
 			}
 
-			objectUnderTest := newSerialCaller(fakeCaller, fakeUniqueStringFactory)
+			objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
 
 			/* act */
 			objectUnderTest.Call(
+				providedCallId,
 				providedInboundScope,
-				providedOutputs,
 				providedRootOpId,
 				providedPkgRef,
 				providedScgSerialCalls,
@@ -72,7 +78,6 @@ var _ = Context("serialCaller", func() {
 			for expectedScgIndex, expectedScg := range providedScgSerialCalls {
 				actualNodeId,
 					actualChildOutboundScope,
-					_,
 					actualScg,
 					actualPkgRef,
 					actualRootOpId := fakeCaller.CallArgsForCall(expectedScgIndex)
@@ -86,8 +91,8 @@ var _ = Context("serialCaller", func() {
 		Context("caller errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
+				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Data{}
-				providedOutputs := make(chan *variable, 150)
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedScgSerialCalls := []*model.Scg{
@@ -100,12 +105,12 @@ var _ = Context("serialCaller", func() {
 				fakeCaller := new(fakeCaller)
 				fakeCaller.CallReturns(expectedError)
 
-				objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
+				objectUnderTest := newSerialCaller(fakeCaller, new(pubsub.Fake), new(uniquestring.Fake))
 
 				/* act */
 				actualErr := objectUnderTest.Call(
+					providedCallId,
 					providedInboundScope,
-					providedOutputs,
 					providedRootOpId,
 					providedPkgRef,
 					providedScgSerialCalls,
@@ -117,14 +122,14 @@ var _ = Context("serialCaller", func() {
 		})
 		Context("caller doesn't error", func() {
 			Context("childOutboundScope empty", func() {
-				It("should call grandchild w/ inboundScope", func() {
+				It("should call secondChild w/ inboundScope", func() {
 					/* arrange */
+					providedCallId := "dummyCallId"
 					providedInboundScope := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
 					}
-					providedOutputs := make(chan *variable, 150)
-					expectedScopePassedToGrandchild := providedInboundScope
+					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedScgSerialCalls := []*model.Scg{
@@ -136,32 +141,46 @@ var _ = Context("serialCaller", func() {
 						},
 					}
 
-					fakeCaller := new(fakeCaller)
-					// outputs chan must be closed for method under test to return
-					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
-						close(outputs)
-						return
+					fakePubSub := new(pubsub.Fake)
+					subscribeCallIndex := 0
+					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+						defer func() {
+							subscribeCallIndex++
+						}()
+						eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
 					}
 
-					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
+					fakeCaller := new(fakeCaller)
+
+					fakeUniqueStringFactory := new(uniquestring.Fake)
+					uniqueStringCallIndex := 0
+					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+						defer func() {
+							uniqueStringCallIndex++
+						}()
+						return fmt.Sprintf("%v", uniqueStringCallIndex)
+					}
+
+					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
 
 					/* act */
 					objectUnderTest.Call(
+						providedCallId,
 						providedInboundScope,
-						providedOutputs,
 						providedRootOpId,
 						providedPkgRef,
 						providedScgSerialCalls,
 					)
 
 					/* assert */
-					_, actualScopePassedToGranchild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
-					Expect(actualScopePassedToGranchild).To(Equal(expectedScopePassedToGrandchild))
+					_, actualInboundScopeToSecondChild, _, _, _ := fakeCaller.CallArgsForCall(1)
+					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})
 			Context("childOutboundScope not empty", func() {
 				It("should call secondChild w/ firstChildOutputs overlaying inboundScope", func() {
 					/* arrange */
+					providedCallId := "dummyCallId"
 					providedInboundScope := map[string]*model.Data{
 						"dummyVar1Name": {String: "dummyParentVar1Data"},
 						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
@@ -171,12 +190,11 @@ var _ = Context("serialCaller", func() {
 						"dummyVar1Name": {String: "dummyFirstChildVar1Data"},
 						"dummyVar2Name": {Dir: "dummyFirstChildVar2Data"},
 					}
-					expectedScopePassedToSecondChild := map[string]*model.Data{
+					expectedInboundScopeToSecondChild := map[string]*model.Data{
 						"dummyVar1Name": firstChildOutputs["dummyVar1Name"],
 						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
-					providedOutputs := make(chan *variable, 150)
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedScgSerialCalls := []*model.Scg{
@@ -188,36 +206,50 @@ var _ = Context("serialCaller", func() {
 						},
 					}
 
-					fakeCaller := new(fakeCaller)
-					fakeCaller.CallStub = func(nodeId string, scope map[string]*model.Data, outputs chan *variable, scg *model.Scg, pkgRef string, rootOpId string) (err error) {
-						// stub firstChildOutputs
-						if scg == providedScgSerialCalls[0] {
-							for varName, varValue := range firstChildOutputs {
-								outputs <- &variable{
-									Name:  varName,
-									Value: varValue,
-								}
+					fakePubSub := new(pubsub.Fake)
+					subscribeCallIndex := 0
+					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+						defer func() {
+							subscribeCallIndex++
+						}()
+						for outputName, outputValue := range firstChildOutputs {
+							eventChannel <- &model.Event{
+								OutputInitialized: &model.OutputInitializedEvent{
+									Name:     outputName,
+									Value:    outputValue,
+									RootOpId: providedRootOpId,
+									CallId:   fmt.Sprintf("%v", subscribeCallIndex),
+								},
 							}
 						}
-						// outputs chan must be closed for method under test to return
-						close(outputs)
-						return
+						eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
 					}
 
-					objectUnderTest := newSerialCaller(fakeCaller, new(uniquestring.Fake))
+					fakeCaller := new(fakeCaller)
+
+					fakeUniqueStringFactory := new(uniquestring.Fake)
+					uniqueStringCallIndex := 0
+					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+						defer func() {
+							uniqueStringCallIndex++
+						}()
+						return fmt.Sprintf("%v", uniqueStringCallIndex)
+					}
+
+					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
 
 					/* act */
 					objectUnderTest.Call(
+						providedCallId,
 						providedInboundScope,
-						providedOutputs,
 						providedRootOpId,
 						providedPkgRef,
 						providedScgSerialCalls,
 					)
 
 					/* assert */
-					_, actualScopePassedToGranchild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
-					Expect(actualScopePassedToGranchild).To(Equal(expectedScopePassedToSecondChild))
+					_, actualInboundScopeToSecondChild, _, _, _ := fakeCaller.CallArgsForCall(1)
+					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})
 		})
