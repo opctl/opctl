@@ -12,6 +12,8 @@ type Event struct {
 	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
 	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
+	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
+	SerialCallEnded          *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
 }
 
 const (
@@ -19,13 +21,6 @@ const (
 	OpOutcomeFailed    = "FAILED"
 	OpOutcomeKilled    = "KILLED"
 )
-
-type OutputInitializedEvent struct {
-	Name     string `json:"name"`
-	CallId   string `json:"callId"`
-	Value    *Data  `json:"value"`
-	RootOpId string `json:"rootOpId"`
-}
 
 type ContainerExitedEvent struct {
 	ContainerRef string `json:"containerRef"`
@@ -76,4 +71,21 @@ type OpStartedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	OpId     string `json:"opId"`
 	PkgRef   string `json:"pkgRef"`
+}
+
+type OutputInitializedEvent struct {
+	Name     string `json:"name"`
+	CallId   string `json:"callId"`
+	Value    *Data  `json:"value"`
+	RootOpId string `json:"rootOpId"`
+}
+
+type ParallelCallEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	CallId   string `json:"callId"`
+}
+
+type SerialCallEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	CallId   string `json:"callId"`
 }

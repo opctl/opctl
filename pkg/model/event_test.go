@@ -237,8 +237,66 @@ var _ = Describe("Event", func() {
 				expectedEvent := Event{
 					OutputInitialized: &OutputInitializedEvent{
 						Name:     "dummyOutputName",
-						CallId:   "dummyDCGCallId",
+						CallId:   "callId",
 						Value:    &Data{String: "dummyOutputValue"},
+						RootOpId: "dummyRootOpId",
+					},
+					Timestamp: time.Now().UTC(),
+				}
+
+				/* act */
+				providedJson, err := json.From(expectedEvent)
+				if nil != err {
+					panic(err)
+				}
+
+				actualEvent := Event{}
+				json.To(providedJson, &actualEvent)
+
+				/* assert */
+				Expect(actualEvent).To(Equal(expectedEvent))
+
+			})
+
+		})
+
+		Context("with non-nil $.parallelCallEnded", func() {
+
+			It("should have expected attributes", func() {
+
+				/* arrange */
+				expectedEvent := Event{
+					ParallelCallEnded: &ParallelCallEndedEvent{
+						CallId:   "callId",
+						RootOpId: "dummyRootOpId",
+					},
+					Timestamp: time.Now().UTC(),
+				}
+
+				/* act */
+				providedJson, err := json.From(expectedEvent)
+				if nil != err {
+					panic(err)
+				}
+
+				actualEvent := Event{}
+				json.To(providedJson, &actualEvent)
+
+				/* assert */
+				Expect(actualEvent).To(Equal(expectedEvent))
+
+			})
+
+		})
+
+		Context("with non-nil $.serialCallEnded", func() {
+
+			It("should have expected attributes", func() {
+
+				/* arrange */
+				expectedEvent := Event{
+					SerialCallEnded: &SerialCallEndedEvent{
+						CallId:   "callId",
 						RootOpId: "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
