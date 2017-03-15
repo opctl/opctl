@@ -27,6 +27,8 @@ type DCGContainerCall struct {
 	// format: containerSocket => hostSocket
 	Sockets map[string]string `json:"sockets"`
 	WorkDir string            `json:"workDir"`
+	Name    string            `json:"name,omitempty"`
+	Ports   map[string]string `json:"ports,omitempty"`
 }
 
 type DCGContainerCallImage struct {
