@@ -3,9 +3,26 @@
   "id": "https://opspec.io/spec/0.1.3/schema/param.json",
   "title": "param",
   "description": "Parameter of an op",
-  "type": "object",
   "oneOf": [
     {
+      "$ref": "#/definitions/dirParam"
+    },
+    {
+      "$ref": "#/definitions/fileParam"
+    },
+    {
+      "$ref": "#/definitions/numberParam"
+    },
+    {
+      "$ref": "#/definitions/socketParam"
+    },
+    {
+      "$ref": "#/definitions/stringParam"
+    }
+  ],
+  "definitions": {
+    "dirParam": {
+      "title": "dirParam",
       "properties": {
         "dir": {
           "description": "Directory parameter of an op",
@@ -15,7 +32,7 @@
               "type": "string"
             },
             "default": {
-              "description":"Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; a relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -30,17 +47,17 @@
         "dir"
       ]
     },
-    {
+    "fileParam": {
+      "title": "fileParam",
       "properties": {
         "file": {
           "description": "File parameter of an op",
-          "type": "object",
           "properties": {
             "description": {
               "type": "string"
             },
             "default": {
-              "description":"Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; a relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -55,7 +72,8 @@
         "file"
       ]
     },
-    {
+    "numberParam": {
+      "title": "numberParam",
       "properties": {
         "number": {
           "description": "Number parameter of an op",
@@ -73,7 +91,7 @@
             },
             "constraints": {
               "description": "Constraints for the number",
-              "$ref": "constraint.json#/definitions/numberConstraints"
+              "$ref": "https://opspec.io/spec/0.1.3/schema/constraint.json#/definitions/numberConstraints"
             }
           },
           "additionalProperties": false
@@ -83,11 +101,11 @@
         "number"
       ]
     },
-    {
+    "socketParam": {
+      "title": "socketParam",
       "properties": {
         "socket": {
           "description": "Socket parameter of an op",
-          "type": "object",
           "properties": {
             "description": {
               "type": "string"
@@ -104,11 +122,11 @@
         "socket"
       ]
     },
-    {
+    "stringParam": {
+      "title": "stringParam",
       "properties": {
         "string": {
           "description": "String parameter of an op",
-          "type": "object",
           "properties": {
             "description": {
               "type": "string"
@@ -122,7 +140,7 @@
             },
             "constraints": {
               "description": "Constraints for the string",
-              "$ref": "constraint.json#/definitions/stringConstraints"
+              "$ref": "https://opspec.io/spec/0.1.3/schema/constraint.json#/definitions/stringConstraints"
             }
           },
           "additionalProperties": false
@@ -132,6 +150,5 @@
         "string"
       ]
     }
-  ],
-  "additionalProperties": false
+  }
 }
