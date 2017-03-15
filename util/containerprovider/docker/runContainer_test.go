@@ -5,6 +5,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
+	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
@@ -43,6 +44,11 @@ var _ = Context("RunContainer", func() {
 				"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
 			},
 			WorkDir: "dummyWorkDir",
+			Name:    "dummyName",
+			Ports: map[string]string{
+				"6060/udp":  "6060",
+				"8080-8081": "9090-9091",
+			},
 		}
 
 		expectedConfig := &container.Config{
@@ -50,6 +56,11 @@ var _ = Context("RunContainer", func() {
 				"envVar1Name=envVar1Value",
 				"envVar2Name=envVar2Value",
 				"envVar3Name=envVar3Value",
+			},
+			ExposedPorts: nat.PortSet{
+				"6060/udp": struct{}{},
+				"8080/tcp": struct{}{},
+				"8081/tcp": struct{}{},
 			},
 			Image:      providedReq.Image.Ref,
 			Tty:        true,
@@ -64,9 +75,23 @@ var _ = Context("RunContainer", func() {
 				"file1HostPath:file1ContainerPath",
 				"file2HostPath:file2ContainerPath",
 			},
+			PortBindings: nat.PortMap{
+				"6060/udp": []nat.PortBinding{{HostPort: "6060"}},
+				"8080/tcp": []nat.PortBinding{{HostPort: "9090"}},
+				"8081/tcp": []nat.PortBinding{{HostPort: "9091"}},
+			},
+
 			Privileged: true,
 		}
-		expectedNetworkingConfig := &network.NetworkingConfig{}
+		expectedNetworkingConfig := &network.NetworkingConfig{
+			EndpointsConfig: map[string]*network.EndpointSettings{
+				"opctl": {
+					Aliases: []string{
+						providedReq.Name,
+					},
+				},
+			},
+		}
 
 		_fakeDockerClient := new(fakeDockerClient)
 

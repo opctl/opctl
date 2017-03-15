@@ -35,6 +35,8 @@ func constructDCGContainerCall(
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
 		ContainerId: containerId,
+		Name:        scgContainerCall.Name,
+		Ports:       scgContainerCall.Ports,
 	}
 
 	// create scratch dir for container

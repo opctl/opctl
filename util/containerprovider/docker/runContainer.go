@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/docker/go-connections/nat"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/pkg/model"
 	"golang.org/x/net/context"
@@ -19,12 +20,32 @@ func (this _containerProvider) RunContainer(
 	eventPublisher pubsub.EventPublisher,
 ) (err error) {
 
+	// construct port bindings
+	portBindings := nat.PortMap{}
+	for containerPort, hostPort := range req.Ports {
+		portMappings, err := nat.ParsePortSpec(fmt.Sprintf("%v:%v", hostPort, containerPort))
+		if nil != err {
+			return err
+		}
+		for _, portMapping := range portMappings {
+			if _, ok := portBindings[portMapping.Port]; ok {
+				portBindings[portMapping.Port] = append(portBindings[portMapping.Port], portMapping.Binding)
+			} else {
+				portBindings[portMapping.Port] = []nat.PortBinding{portMapping.Binding}
+			}
+		}
+	}
+
 	// construct container config
 	containerConfig := &container.Config{
-		Entrypoint: req.Cmd,
-		Image:      req.Image.Ref,
-		WorkingDir: req.WorkDir,
-		Tty:        true,
+		Entrypoint:   req.Cmd,
+		Image:        req.Image.Ref,
+		WorkingDir:   req.WorkDir,
+		Tty:          true,
+		ExposedPorts: nat.PortSet{},
+	}
+	for port := range portBindings {
+		containerConfig.ExposedPorts[port] = struct{}{}
 	}
 	for envVarName, envVarValue := range req.EnvVars {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
@@ -34,6 +55,7 @@ func (this _containerProvider) RunContainer(
 
 	// construct host config
 	hostConfig := &container.HostConfig{
+		PortBindings: portBindings,
 		// support docker in docker
 		// @TODO: reconsider; can we avoid this?
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
@@ -53,11 +75,6 @@ func (this _containerProvider) RunContainer(
 				hostConfig.Binds,
 				fmt.Sprintf("%v:%v", this.enginePath(hostSocketAddress), containerSocketAddress),
 			)
-		} else {
-			hostConfig.ExtraHosts = append(
-				hostConfig.ExtraHosts,
-				fmt.Sprintf("%v:%v", containerSocketAddress, hostSocketAddress),
-			)
 		}
 	}
 	// sort binds to make order deterministic; useful for testing
@@ -68,7 +85,15 @@ func (this _containerProvider) RunContainer(
 		context.Background(),
 		containerConfig,
 		hostConfig,
-		&network.NetworkingConfig{},
+		&network.NetworkingConfig{
+			EndpointsConfig: map[string]*network.EndpointSettings{
+				"opctl": {
+					Aliases: []string{
+						req.Name,
+					},
+				},
+			},
+		},
 		req.ContainerId,
 	)
 

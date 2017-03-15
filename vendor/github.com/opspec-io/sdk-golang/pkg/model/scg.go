@@ -21,6 +21,8 @@ type ScgContainerCall struct {
 	StdErr  map[string]string      `yaml:"stdErr,omitempty"`
 	StdOut  map[string]string      `yaml:"stdOut,omitempty"`
 	WorkDir string                 `yaml:"workDir,omitempty"`
+	Name    string                 `yaml:"name,omitempty"`
+	Ports   map[string]string      `yaml:"ports,omitempty"`
 }
 
 type ScgContainerCallImage struct {
