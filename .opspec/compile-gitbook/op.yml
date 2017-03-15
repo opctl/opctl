@@ -25,5 +25,5 @@ run:
         gitbook build
     dirs:
       /src: srcDir
-    image: { ref: 'node:7.6' }
+    image: { ref: 'node:7.7' }
     workDir: /src

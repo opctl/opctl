@@ -3,7 +3,6 @@
   "id": "https://opspec.io/spec/0.1.3/schema/packageManifest.json",
   "title": "packageManifest",
   "description": "Manifest for a package",
-  "type": "object",
   "properties": {
     "name": {
       "description": "Name of the op",
@@ -15,20 +14,18 @@
     },
     "inputs": {
       "description": "Inputs to the op",
-      "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
-          "$ref": "param.json"
+          "$ref": "https://opspec.io/spec/0.1.3/schema/param.json"
         }
       },
       "additionalProperties": false
     },
     "outputs": {
       "description": "Outputs from the op",
-      "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
-          "$ref": "param.json"
+          "$ref": "https://opspec.io/spec/0.1.3/schema/param.json"
         }
       }
     },
