@@ -5,7 +5,7 @@ package pubsub
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"sync"
 	"time"
 )

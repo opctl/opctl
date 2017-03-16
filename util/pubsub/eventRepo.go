@@ -3,7 +3,7 @@ package pubsub
 import (
 	"encoding/json"
 	"github.com/boltdb/bolt"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path"
 	"sync"

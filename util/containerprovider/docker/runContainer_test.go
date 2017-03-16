@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/vruntime"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/net/context"
 	"io"
 	"io/ioutil"

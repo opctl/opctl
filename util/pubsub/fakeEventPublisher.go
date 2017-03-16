@@ -4,7 +4,7 @@ package pubsub
 import (
 	"sync"
 
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type FakeEventPublisher struct {

@@ -4,10 +4,10 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/pkg/nodeprovider"
+	"github.com/opspec-io/opctl/nodeprovider"
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/pkg/consumenodeapi"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/consumenodeapi"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 var _ = Context("streamEvents", func() {

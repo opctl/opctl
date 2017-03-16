@@ -2,7 +2,7 @@ package pubsub
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 func isOgIdExcludedByFilter(
