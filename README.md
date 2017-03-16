@@ -7,10 +7,6 @@ Golang SDK for [opspec](https://opspec.io)
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-# Packages
-
-`/pkg` contains all packages distributed by this SDK.
-
 # Releases
 
 All releases will be
