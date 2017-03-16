@@ -8,8 +8,8 @@ import (
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/clioutput"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/model"
-	"github.com/opspec-io/sdk-golang/pkg/validate"
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/validate"
 	"path/filepath"
 )
 

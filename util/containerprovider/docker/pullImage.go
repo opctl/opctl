@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types/reference"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/net/context"
 	"io"
 )

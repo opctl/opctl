@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"github.com/pkg/errors"
 	"io/ioutil"
 )

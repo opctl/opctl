@@ -3,7 +3,7 @@ package docker
 import (
 	"bufio"
 	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 	"io"
 	"time"
 )

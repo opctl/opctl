@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 func (this _core) OpKill(

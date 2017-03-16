@@ -4,7 +4,7 @@ package containerprovider
 
 import (
 	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type ContainerProvider interface {

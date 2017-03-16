@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/pkg/managepackages"
-	"github.com/opspec-io/sdk-golang/pkg/model"
+	"github.com/opspec-io/sdk-golang/managepackages"
+	"github.com/opspec-io/sdk-golang/model"
 	"path"
 )
 
