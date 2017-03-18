@@ -13,25 +13,22 @@
       "type": "string"
     },
     "inputs": {
-      "description": "Inputs to the op",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
-          "$ref": "https://opspec.io/spec/0.1.3/schema/param.json"
+          "$ref": "#/definitions/param"
         }
       },
       "additionalProperties": false
     },
     "outputs": {
-      "description": "Outputs from the op",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
-          "$ref": "https://opspec.io/spec/0.1.3/schema/param.json"
+          "$ref": "#/definitions/param"
         }
       }
     },
     "run": {
-      "description": "Static Call Graph (SCG) of the op",
-      "$ref": "https://opspec.io/spec/0.1.3/schema/scg.json"
+      "$ref": "#/definitions/scg"
     },
     "version": {
       "description": "Version of the op",
@@ -43,6 +40,545 @@
   ],
   "additionalProperties": false,
   "definitions": {
+    "dirParam": {
+      "title": "dirParam",
+      "description": "Directory parameter of an op",
+      "type": "object",
+      "properties": {
+        "dir": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the directory is secret",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "dir"
+      ]
+    },
+    "fileParam": {
+      "title": "fileParam",
+      "description": "File parameter of an op",
+      "type": "object",
+      "properties": {
+        "file": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the file is secret",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "file"
+      ]
+    },
+    "numberConstraints": {
+      "type": "object",
+      "properties": {
+        "allOf": {
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        },
+        "anyOf": {
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        },
+        "enum": {
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "format": {
+          "oneOf": [
+            {
+              "title": "integer",
+              "description": "Requires the number be an integer",
+              "type": "string",
+              "enum": [
+                "integer"
+              ]
+            }
+          ]
+        },
+        "maximum": {
+          "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.2)",
+          "type": "number"
+        },
+        "minimum": {
+          "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.4)",
+          "type": "number"
+        },
+        "multipleOf": {
+          "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.1)",
+          "type": "number"
+        },
+        "not": {
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "$ref": "#/definitions/numberConstraints"
+        },
+        "oneOf": {
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "numberParam": {
+      "title": "numberParam",
+      "description": "Number parameter of an op",
+      "type": "object",
+      "properties": {
+        "number": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the number is secret",
+              "type": "boolean"
+            },
+            "constraints": {
+              "$ref": "#/definitions/numberConstraints"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "number"
+      ]
+    },
+    "socketParam": {
+      "title": "socketParam",
+      "type": "object",
+      "description": "Socket parameter of an op",
+      "properties": {
+        "socket": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the socket is secret",
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "socket"
+      ]
+    },
+    "stringConstraints": {
+      "type": "object",
+      "properties": {
+        "allOf": {
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "anyOf": {
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "enum": {
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "format": {
+          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7)",
+          "oneOf": [
+            {
+              "title": "date-time",
+              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.1)",
+              "type": "string",
+              "enum": [
+                "date-time"
+              ]
+            },
+            {
+              "title": "docker-image-ref",
+              "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
+              "type": "string",
+              "enum": [
+                "docker-image-ref"
+              ]
+            },
+            {
+              "title": "email",
+              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.2)",
+              "type": "string",
+              "enum": [
+                "email"
+              ]
+            },
+            {
+              "title": "hostname",
+              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.3)",
+              "type": "string",
+              "enum": [
+                "hostname"
+              ]
+            },
+            {
+              "title": "ipv4",
+              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.4)",
+              "type": "string",
+              "enum": [
+                "ipv4"
+              ]
+            },
+            {
+              "title": "ipv6",
+              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.5)",
+              "type": "string",
+              "enum": [
+                "ipv6"
+              ]
+            },
+            {
+              "title": "uri",
+              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.6)",
+              "type": "string",
+              "enum": [
+                "uri"
+              ]
+            },
+            {
+              "title": "semver",
+              "description": "A semantic version as defined by [semver.org](http://semver.org/)",
+              "type": "string",
+              "enum": [
+                "semver"
+              ]
+            }
+          ]
+        },
+        "maxLength": {
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.6)",
+          "type": "integer",
+          "minimum": 1
+        },
+        "minLength": {
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.7)",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "not": {
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "$ref": "#/definitions/stringConstraints"
+        },
+        "oneOf": {
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "pattern": {
+          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.8)",
+          "type": "string",
+          "format": "regex"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stringParam": {
+      "title": "stringParam",
+      "type": "object",
+      "description": "String parameter of an op",
+      "properties": {
+        "string": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "isSecret": {
+              "description": "If the string is secret",
+              "type": "boolean"
+            },
+            "constraints": {
+              "$ref": "#/definitions/stringConstraints"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "string"
+      ]
+    },
+    "param": {
+      "description": "Parameter of an op",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/dirParam"
+        },
+        {
+          "$ref": "#/definitions/fileParam"
+        },
+        {
+          "$ref": "#/definitions/numberParam"
+        },
+        {
+          "$ref": "#/definitions/socketParam"
+        },
+        {
+          "$ref": "#/definitions/stringParam"
+        }
+      ]
+    },
+    "scg": {
+      "title": "scg",
+      "description": "Static call graph of an op; see https://en.wikipedia.org/wiki/Call_graph",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/containerCall"
+        },
+        {
+          "$ref": "#/definitions/opCall"
+        },
+        {
+          "$ref": "#/definitions/parallelCall"
+        },
+        {
+          "$ref": "#/definitions/serialCall"
+        }
+      ]
+    },
+    "containerCall": {
+      "title": "containerCall",
+      "type": "object",
+      "properties": {
+        "container": {
+          "properties": {
+            "cmd": {
+              "description": "Command run by a container; overrides any set at the image level",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interpolatedString"
+              }
+            },
+            "dirs": {
+              "type": "object",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "description": "Absolute container dir path mapped to a dir variable or absolute package dir path. If no package dir path provided, container dir path will be used.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "envVars": {
+              "type": "object",
+              "patternProperties": {
+                "^[^=]+$": {
+                  "description": "An environment variable in a container",
+                  "$ref": "#/definitions/interpolatedString"
+                }
+              },
+              "additionalProperties": false
+            },
+            "files": {
+              "type": "object",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "description": "Absolute container file path mapped to a file variable or absolute package file path. If no package file path provided, container file path will be used.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "description": "Reference to an image",
+                  "$ref": "#/definitions/interpolatedString"
+                },
+                "pullIdentity": {
+                  "description": "Identity used to pull the image",
+                  "$ref": "#/definitions/interpolatedString"
+                },
+                "pullSecret": {
+                  "description": "Secret used to pull the image",
+                  "$ref": "#/definitions/interpolatedString"
+                }
+              },
+              "required": [
+                "ref"
+              ]
+            },
+            "sockets": {
+              "type": "object",
+              "patternProperties": {
+                "[:a-zA-Z0-9]+": {
+                  "description": "Container socket address mapped to a socket variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "stdErr": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stderr prefix mapped to a string variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "stdOut": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stdout prefix mapped to a string variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "workDir": {
+              "description": "Working directory path (overrides any defined by image)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "image"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "container"
+      ],
+      "additionalProperties": false
+    },
+    "opCall": {
+      "title": "opCall",
+      "type": "object",
+      "properties": {
+        "op": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "description": "Reference to an op",
+              "type": "string"
+            },
+            "inputs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "outputs": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "op"
+      ],
+      "additionalProperties": false
+    },
+    "parallelCall": {
+      "title": "parallelCall",
+      "type": "object",
+      "properties": {
+        "parallel": {
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          }
+        }
+      },
+      "required": [
+        "parallel"
+      ],
+      "additionalProperties": false
+    },
+    "serialCall": {
+      "title": "serialCall",
+      "type": "object",
+      "properties": {
+        "serial": {
+          "type": "array",
+          "items": {
+            "$ref": "#"
+          }
+        }
+      },
+      "required": [
+        "serial"
+      ],
+      "additionalProperties": false
+    },
+    "interpolatedString": {
+      "title": "interpolatedString",
+      "description": "String supporting $(IN_SCOPE_VAR) substitution syntax where $(IN_SCOPE_VAR) will be replaced by the value of IN_SCOPE_VAR at runtime.",
+      "type": "string"
+    },
     "semVer": {
       "title": "semVer",
       "description": "v2.0.0 semantic version (see http://semver.org/spec/v2.0.0.html)",
