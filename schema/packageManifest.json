@@ -31,7 +31,7 @@
     },
     "run": {
       "description": "Static Call Graph (SCG) of the op",
-      "$ref": "scg.json"
+      "$ref": "https://opspec.io/spec/0.1.3/schema/scg.json"
     },
     "version": {
       "description": "Version of the op",
