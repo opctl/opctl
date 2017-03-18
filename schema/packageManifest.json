@@ -13,6 +13,7 @@
       "type": "string"
     },
     "inputs": {
+      "type":"object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
           "$ref": "#/definitions/param"
@@ -21,11 +22,13 @@
       "additionalProperties": false
     },
     "outputs": {
+      "type":"object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
           "$ref": "#/definitions/param"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "run": {
       "$ref": "#/definitions/scg"
@@ -95,6 +98,7 @@
       ]
     },
     "numberConstraints": {
+      "title": "numberConstraints",
       "type": "object",
       "properties": {
         "allOf": {
@@ -209,6 +213,7 @@
       ]
     },
     "stringConstraints": {
+      "title": "stringConstraints",
       "type": "object",
       "properties": {
         "allOf": {
@@ -549,7 +554,7 @@
         "parallel": {
           "type": "array",
           "items": {
-            "$ref": "#"
+            "$ref": "#/definitions/scg"
           }
         }
       },
@@ -565,7 +570,7 @@
         "serial": {
           "type": "array",
           "items": {
-            "$ref": "#"
+            "$ref": "#/definitions/scg"
           }
         }
       },
