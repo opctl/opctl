@@ -20,99 +20,111 @@
     "containerCall": {
       "title": "containerCall",
       "type": "object",
-      "properties": {
-        "cmd": {
-          "description": "Command run by a container; overrides any set at the image level",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/interpolatedString"
-          }
-        },
-        "dirs": {
-          "type": "object",
-          "patternProperties": {
-            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "description": "Absolute container dir path mapped to a dir variable or absolute package dir path. If no package dir path provided, container dir path will be used.",
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "envVars": {
-          "type": "object",
-          "patternProperties": {
-            "^[^=]+$": {
-              "description": "An environment variable in a container",
-              "$ref": "#/definitions/interpolatedString"
-            }
-          },
-          "additionalProperties": false
-        },
-        "files": {
-          "type": "object",
-          "patternProperties": {
-            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "description": "Absolute container file path mapped to a file variable or absolute package file path. If no package file path provided, container file path will be used.",
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "image": {
-          "type": "object",
+      "properties":{
+        "container":{
           "properties": {
-            "ref": {
-              "description": "Reference to an image",
-              "$ref": "#/definitions/interpolatedString"
+            "cmd": {
+              "description": "Command run by a container; overrides any set at the image level",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interpolatedString"
+              }
             },
-            "pullIdentity": {
-              "description": "Identity used to pull the image",
-              "$ref": "#/definitions/interpolatedString"
+            "dirs": {
+              "type": "object",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "description": "Absolute container dir path mapped to a dir variable or absolute package dir path. If no package dir path provided, container dir path will be used.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             },
-            "pullSecret": {
-              "description": "Secret used to pull the image",
-              "$ref": "#/definitions/interpolatedString"
+            "envVars": {
+              "type": "object",
+              "patternProperties": {
+                "^[^=]+$": {
+                  "description": "An environment variable in a container",
+                  "$ref": "#/definitions/interpolatedString"
+                }
+              },
+              "additionalProperties": false
+            },
+            "files": {
+              "type": "object",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "description": "Absolute container file path mapped to a file variable or absolute package file path. If no package file path provided, container file path will be used.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "description": "Reference to an image",
+                  "$ref": "#/definitions/interpolatedString"
+                },
+                "pullIdentity": {
+                  "description": "Identity used to pull the image",
+                  "$ref": "#/definitions/interpolatedString"
+                },
+                "pullSecret": {
+                  "description": "Secret used to pull the image",
+                  "$ref": "#/definitions/interpolatedString"
+                }
+              },
+              "required": [
+                "ref"
+              ]
+            },
+            "sockets": {
+              "type": "object",
+              "patternProperties": {
+                "[:a-zA-Z0-9]+": {
+                  "description": "Container socket address mapped to a socket variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "stdErr": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stderr prefix mapped to a string variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "stdOut": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stdout prefix mapped to a string variable",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "workDir": {
+              "description": "Working directory path (overrides any defined by image)",
+              "type": "string"
             }
           },
           "required": [
-            "ref"
-          ]
-        },
-        "sockets": {
-          "type": "object",
-          "patternProperties": {
-            "[:a-zA-Z0-9]+": {
-              "description": "Container socket address mapped to a socket variable",
-              "type": "string"
-            }
-          },
+            "image"
+          ],
           "additionalProperties": false
-        },
-        "stdErr": {
-          "type": "object",
-          "patternProperties": {
-            "^.+$": {
-              "description": "Container stderr prefix mapped to a string variable",
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "stdOut": {
-          "type": "object",
-          "patternProperties": {
-            "^.+$": {
-              "description": "Container stdout prefix mapped to a string variable",
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "workDir": {
-          "description": "Working directory path (overrides any defined by image)",
-          "type": "string"
         }
-      }
+      },
+      "required": [
+        "container"
+      ],
+      "additionalProperties": false
     },
     "opCall": {
       "title": "opCall",
@@ -140,7 +152,8 @@
           },
           "required": [
             "ref"
-          ]
+          ],
+          "additionalProperties": false
         }
       },
       "required": [

@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://opspec.io/spec/0.1.3/schema/param.json",
-  "title": "param",
   "description": "Parameter of an op",
   "oneOf": [
     {
@@ -22,11 +21,11 @@
   ],
   "definitions": {
     "dirParam": {
-      "title": "dirParam",
+      "title":"dirParam",
+      "description": "Directory parameter of an op",
+      "type": "object",
       "properties": {
         "dir": {
-          "description": "Directory parameter of an op",
-          "type": "object",
           "properties": {
             "description": {
               "type": "string"
@@ -43,15 +42,17 @@
           "additionalProperties": false
         }
       },
-      "required": [
+      "additionalProperties": false,
+      "required":[
         "dir"
       ]
     },
     "fileParam": {
-      "title": "fileParam",
+      "title":"fileParam",
+      "description": "File parameter of an op",
+      "type": "object",
       "properties": {
         "file": {
-          "description": "File parameter of an op",
           "properties": {
             "description": {
               "type": "string"
@@ -68,16 +69,79 @@
           "additionalProperties": false
         }
       },
-      "required": [
+      "additionalProperties": false,
+      "required":[
         "file"
       ]
     },
+    "numberConstraints": {
+      "type": "object",
+      "properties": {
+        "allOf": {
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        },
+        "anyOf": {
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        },
+        "enum": {
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "format": {
+          "oneOf": [
+            {
+              "title": "integer",
+              "description": "Requires the number be an integer",
+              "type": "string",
+              "enum": [
+                "integer"
+              ]
+            }
+          ]
+        },
+        "maximum": {
+          "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.2)",
+          "type": "number"
+        },
+        "minimum": {
+          "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.4)",
+          "type": "number"
+        },
+        "multipleOf": {
+          "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.1)",
+          "type": "number"
+        },
+        "not": {
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "$ref": "#/definitions/numberConstraints"
+        },
+        "oneOf": {
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/numberConstraints"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "numberParam": {
-      "title": "numberParam",
+      "title":"numberParam",
+      "description": "Number parameter of an op",
+      "type": "object",
       "properties": {
         "number": {
-          "description": "Number parameter of an op",
-          "type": "object",
           "properties": {
             "description": {
               "type": "string"
@@ -90,22 +154,23 @@
               "type": "boolean"
             },
             "constraints": {
-              "description": "Constraints for the number",
-              "$ref": "https://opspec.io/spec/0.1.3/schema/constraint.json#/definitions/numberConstraints"
+              "$ref": "#/definitions/numberConstraints"
             }
           },
           "additionalProperties": false
         }
       },
-      "required": [
+      "additionalProperties": false,
+      "required":[
         "number"
       ]
     },
     "socketParam": {
-      "title": "socketParam",
+      "title":"socketParam",
+      "type": "object",
+      "description": "Socket parameter of an op",
       "properties": {
         "socket": {
-          "description": "Socket parameter of an op",
           "properties": {
             "description": {
               "type": "string"
@@ -118,15 +183,140 @@
           "additionalProperties": false
         }
       },
-      "required": [
+      "additionalProperties": false,
+      "required":[
         "socket"
       ]
     },
+    "stringConstraints": {
+      "type": "object",
+      "properties": {
+        "allOf": {
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "anyOf": {
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "enum": {
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "format": {
+          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7)",
+          "oneOf": [
+            {
+              "title": "date-time",
+              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.1)",
+              "type": "string",
+              "enum": [
+                "date-time"
+              ]
+            },
+            {
+              "title": "docker-image-ref",
+              "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
+              "type": "string",
+              "enum": [
+                "docker-image-ref"
+              ]
+            },
+            {
+              "title": "email",
+              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.2)",
+              "type": "string",
+              "enum": [
+                "email"
+              ]
+            },
+            {
+              "title": "hostname",
+              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.3)",
+              "type": "string",
+              "enum": [
+                "hostname"
+              ]
+            },
+            {
+              "title": "ipv4",
+              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.4)",
+              "type": "string",
+              "enum": [
+                "ipv4"
+              ]
+            },
+            {
+              "title": "ipv6",
+              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.5)",
+              "type": "string",
+              "enum": [
+                "ipv6"
+              ]
+            },
+            {
+              "title": "uri",
+              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.6)",
+              "type": "string",
+              "enum": [
+                "uri"
+              ]
+            },
+            {
+              "title": "semver",
+              "description": "A semantic version as defined by [semver.org](http://semver.org/)",
+              "type": "string",
+              "enum": [
+                "semver"
+              ]
+            }
+          ]
+        },
+        "maxLength": {
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.6)",
+          "type": "integer",
+          "minimum": 1
+        },
+        "minLength": {
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.7)",
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "not": {
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "$ref": "#/definitions/stringConstraints"
+        },
+        "oneOf": {
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stringConstraints"
+          }
+        },
+        "pattern": {
+          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.8)",
+          "type": "string",
+          "format": "regex"
+        }
+      },
+      "additionalProperties": false
+    },
     "stringParam": {
-      "title": "stringParam",
+      "title":"stringParam",
+      "type": "object",
+      "description": "String parameter of an op",
       "properties": {
         "string": {
-          "description": "String parameter of an op",
           "properties": {
             "description": {
               "type": "string"
@@ -139,14 +329,14 @@
               "type": "boolean"
             },
             "constraints": {
-              "description": "Constraints for the string",
-              "$ref": "https://opspec.io/spec/0.1.3/schema/constraint.json#/definitions/stringConstraints"
+              "$ref": "#/definitions/stringConstraints"
             }
           },
           "additionalProperties": false
         }
       },
-      "required": [
+      "additionalProperties": false,
+      "required":[
         "string"
       ]
     }
