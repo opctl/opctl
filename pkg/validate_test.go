@@ -18,7 +18,7 @@ var _ = Describe("Validate", func() {
 		It("should return expected errs", func() {
 			/* arrange */
 			expectedErrs := []error{errors.New(
-				"Error validating pkg.\n Details: yaml: did not find expected alphabetic or numeric character",
+				"Error validating pkg. Details: yaml: did not find expected alphabetic or numeric character",
 			)}
 
 			/* act */

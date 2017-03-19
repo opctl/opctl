@@ -15,14 +15,14 @@ func (this pkg) Validate(
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg.\n Details: %v", err.Error()))
+		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
 		return
 	}
 
 	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg.\n Details: %v", err.Error()))
+		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
 		return
 	}
 
@@ -31,7 +31,7 @@ func (this pkg) Validate(
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg.\n Details: %v", err.Error()))
+		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
 		return
 	}
 	for _, desc := range result.Errors() {
