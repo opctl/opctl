@@ -13,22 +13,10 @@
       "type": "string"
     },
     "inputs": {
-      "type":"object",
-      "patternProperties": {
-        "[-_.a-zA-Z0-9]+": {
-          "$ref": "#/definitions/param"
-        }
-      },
-      "additionalProperties": false
+      "$ref": "#/definitions/param"
     },
     "outputs": {
-      "type":"object",
-      "patternProperties": {
-        "[-_.a-zA-Z0-9]+": {
-          "$ref": "#/definitions/param"
-        }
-      },
-      "additionalProperties": false
+      "$ref": "#/definitions/param"
     },
     "run": {
       "$ref": "#/definitions/scg"
@@ -367,23 +355,29 @@
     },
     "param": {
       "description": "Parameter of an op",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/dirParam"
-        },
-        {
-          "$ref": "#/definitions/fileParam"
-        },
-        {
-          "$ref": "#/definitions/numberParam"
-        },
-        {
-          "$ref": "#/definitions/socketParam"
-        },
-        {
-          "$ref": "#/definitions/stringParam"
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/dirParam"
+            },
+            {
+              "$ref": "#/definitions/fileParam"
+            },
+            {
+              "$ref": "#/definitions/numberParam"
+            },
+            {
+              "$ref": "#/definitions/socketParam"
+            },
+            {
+              "$ref": "#/definitions/stringParam"
+            }
+          ]
         }
-      ]
+      },
+      "additionalProperties": false
     },
     "scg": {
       "title": "scg",
@@ -512,6 +506,24 @@
       ],
       "additionalProperties": false
     },
+    "paramBinding": {
+      "title": "paramBinding",
+      "description": "An inter-scope binding; when null, the same name will be assumed in both scopes",
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "opCall": {
       "title": "opCall",
       "type": "object",
@@ -524,16 +536,10 @@
               "type": "string"
             },
             "inputs": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
+              "$ref": "#/definitions/paramBinding"
             },
             "outputs": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              }
+              "$ref": "#/definitions/paramBinding"
             }
           },
           "required": [
