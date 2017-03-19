@@ -4,12 +4,14 @@ A package defines an orchestration of (a) containerized process(es).
 
 > Ops are instances of a package.
 
-### Dir Structure
+Packages MUST follow the [package format](#format)
+
+### Format
 
 ```
 pkg-name
-  |-- op.yml
-  ... (pkg specific files/dirs)
+  |-- op.yml (manifest *required)
+  ... (pkg specific files/dirs *optional)
 ```
 
 Constraints:
@@ -23,5 +25,8 @@ Constraints:
 
 - MUST be named `op.yml`
 - MUST be valid [v1.2 yaml](http://www.yaml.org/spec/1.2/spec.html)
-- MUST validate against
-  [schema/packageManifest.json](schema/packageManifest.json)
+- MUST validate against the [manifest schema](#manifest-schema)
+
+#### Manifest Schema
+
+[include](package-manifest.schema.json)

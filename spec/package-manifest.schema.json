@@ -506,24 +506,6 @@
       ],
       "additionalProperties": false
     },
-    "paramBinding": {
-      "title": "paramBinding",
-      "description": "An inter-scope binding; when null, the same name will be assumed in both scopes",
-      "type": "object",
-      "patternProperties": {
-        "[-_.a-zA-Z0-9]+": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
     "opCall": {
       "title": "opCall",
       "type": "object",
@@ -536,10 +518,38 @@
               "type": "string"
             },
             "inputs": {
-              "$ref": "#/definitions/paramBinding"
+              "description": "Initializes a child input from a name in the current scope in format of `childInputName: currentScopeName`. If `currentScopeName` is null, `childInputName` will be assumed",
+              "type":"object",
+              "patternProperties": {
+                "[-_.a-zA-Z0-9]+": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
             },
             "outputs": {
-              "$ref": "#/definitions/paramBinding"
+              "description": "Initializes a name in the current scope from a child output in format of `currentScopeName: childOutputName`. If `childOutputName` is null, `currentScopeName` will be assumed",
+              "type":"object",
+              "patternProperties": {
+                "[-_.a-zA-Z0-9]+": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
             }
           },
           "required": [

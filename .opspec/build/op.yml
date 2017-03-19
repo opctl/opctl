@@ -9,3 +9,6 @@ run:
   serial:
     - op: { ref: clean }
     - op: { ref: test, inputs: { srcDir } }
+    - parallel:
+      - op: { ref: compile-spec, inputs: { srcDir }, outputs: { srcDir }}
+      - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}

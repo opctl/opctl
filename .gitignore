@@ -1,7 +1,5 @@
 ### JetBrains
 .idea/
 
-### gitbook
-_book/
-node_modules/
-etc/
+### build
+/build/

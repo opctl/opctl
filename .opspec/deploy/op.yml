@@ -1,4 +1,4 @@
-description: Runs all ops necessary to deploy the spec
+description: Runs all ops necessary to build & deploy the spec
 name: deploy
 inputs:
   srcDir:
@@ -20,8 +20,7 @@ inputs:
       description: version of the spec being deployed
 run:
   serial:
-    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
-    - op: { ref: compile-gitbook, inputs: { srcDir }, outputs: { srcDir }}
+    - op: { ref: build, inputs: { srcDir }, outputs: { srcDir }}
     - container:
         cmd:
           - sh
@@ -30,11 +29,11 @@ run:
             echo "installing deps"
             pip install awscli
 
-            echo "deploying spec"
-            aws s3 sync . s3://opspec.io/spec --delete
+            echo "deploy"
+            aws s3 sync . s3://opspec.io --delete
 
-            echo "deploying versioned schema"
-            aws s3 sync schema s3://opspec.io/spec/$(version)/schema --delete
+            echo "archive"
+            aws s3 sync . s3://archive.opspec.io/$(version) --delete
         dirs:
           /src: srcDir
         envVars:
@@ -42,4 +41,4 @@ run:
           AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
           AWS_DEFAULT_REGION: us-west-2
         image: { ref: 'python:2.7' }
-        workDir: /src/_book
+        workDir: /src/build
