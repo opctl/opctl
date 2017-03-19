@@ -35,7 +35,7 @@ func (this pkg) Validate(
 		return
 	}
 	for _, desc := range result.Errors() {
-		errs = append(errs, fmt.Errorf("%s\n", desc))
+		errs = append(errs, fmt.Errorf("%s", desc))
 	}
 	return
 }
