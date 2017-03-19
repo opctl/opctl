@@ -1,15 +1,15 @@
-package managepackages
+package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"path"
 )
 
-func (this managePackages) SetPackageDescription(
-	req model.SetPackageDescriptionReq,
+func (this pkg) SetDescription(
+	req SetDescriptionReq,
 ) (err error) {
 
-	pathToPackageManifestView := path.Join(req.PathToOp, NameOfPackageManifestFile)
+	pathToPackageManifestView := path.Join(req.Path, NameOfPackageManifestFile)
 
 	opBytes, err := this.fileSystem.GetBytesOfFile(
 		pathToPackageManifestView,

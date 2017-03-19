@@ -6,8 +6,8 @@ import (
 	"github.com/opspec-io/opctl/util/containerprovider"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/managepackages"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 )
 
@@ -62,7 +62,7 @@ func New(
 	)
 
 	opCaller := newOpCaller(
-		managepackages.New(),
+		pkg.New(),
 		pubSub,
 		dcgNodeRepo,
 		caller,

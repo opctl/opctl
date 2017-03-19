@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/opspec-io/opctl/util/pubsub"
 	"github.com/opspec-io/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/managepackages"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"strconv"
 	"time"
@@ -27,7 +27,7 @@ type opCaller interface {
 }
 
 func newOpCaller(
-	pkg managepackages.ManagePackages,
+	pkg pkg.Pkg,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 	caller caller,
@@ -35,7 +35,7 @@ func newOpCaller(
 	validate validate.Validate,
 ) opCaller {
 	return _opCaller{
-		managePackages:      pkg,
+		pkg:                 pkg,
 		pubSub:              pubSub,
 		dcgNodeRepo:         dcgNodeRepo,
 		caller:              caller,
@@ -45,7 +45,7 @@ func newOpCaller(
 }
 
 type _opCaller struct {
-	managePackages      managepackages.ManagePackages
+	pkg                 pkg.Pkg
 	pubSub              pubsub.PubSub
 	dcgNodeRepo         dcgNodeRepo
 	caller              caller
@@ -132,7 +132,7 @@ func (this _opCaller) Call(
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
-	pkg, err := this.managePackages.GetPackage(
+	pkg, err := this.pkg.Get(
 		pkgRef,
 	)
 	if nil != err {

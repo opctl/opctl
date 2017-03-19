@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/managepackages"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"path/filepath"
 )
@@ -24,10 +24,10 @@ var _ = Context("listPackages", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					managePackages: new(managepackages.Fake),
-					cliExiter:      fakeCliExiter,
-					vos:            fakeVos,
-					writer:         os.Stdout,
+					pkg:       new(pkg.Fake),
+					cliExiter: fakeCliExiter,
+					vos:       fakeVos,
+					writer:    os.Stdout,
 				}
 
 				/* act */
@@ -39,9 +39,9 @@ var _ = Context("listPackages", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call managepackages.ListPackagesInDir w/ expected args", func() {
+			It("should call pkg.ListPackagesInDir w/ expected args", func() {
 				/* arrange */
-				fakeManagePackages := new(managepackages.Fake)
+				fakePkg := new(pkg.Fake)
 
 				providedPath := "dummyPath"
 				wdReturnedFromVos := "dummyWorkDir"
@@ -51,9 +51,9 @@ var _ = Context("listPackages", func() {
 				expectedPath := filepath.Join(wdReturnedFromVos, providedPath)
 
 				objectUnderTest := _core{
-					managePackages: fakeManagePackages,
-					vos:            fakeVos,
-					writer:         os.Stdout,
+					pkg:    fakePkg,
+					vos:    fakeVos,
+					writer: os.Stdout,
 				}
 
 				/* act */
@@ -61,22 +61,22 @@ var _ = Context("listPackages", func() {
 
 				/* assert */
 
-				Expect(fakeManagePackages.ListPackagesInDirArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakePkg.ListPackagesInDirArgsForCall(0)).Should(Equal(expectedPath))
 			})
-			Context("managepackages.ListPackagesInDir errors", func() {
+			Context("pkg.ListPackagesInDir errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeManagePackages := new(managepackages.Fake)
+					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
-					fakeManagePackages.ListPackagesInDirReturns([]*model.PackageView{}, expectedError)
+					fakePkg.ListPackagesInDirReturns([]*model.PackageView{}, expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
 					objectUnderTest := _core{
-						managePackages: fakeManagePackages,
-						cliExiter:      fakeCliExiter,
-						vos:            new(vos.Fake),
-						writer:         os.Stdout,
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+						vos:       new(vos.Fake),
+						writer:    os.Stdout,
 					}
 
 					/* act */

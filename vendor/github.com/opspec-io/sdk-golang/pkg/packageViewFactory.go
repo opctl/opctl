@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 //go:generate counterfeiter -o ./fakePackageViewFactory.go --fake-name fakePackageViewFactory ./ packageViewFactory
 
@@ -11,7 +11,7 @@ import (
 
 type packageViewFactory interface {
 	Construct(
-		packageRef string,
+		pkgRef string,
 	) (
 		packageView model.PackageView,
 		err error,
@@ -36,13 +36,13 @@ type _packageViewFactory struct {
 }
 
 func (this _packageViewFactory) Construct(
-	packageRef string,
+	pkgRef string,
 ) (
 	packageView model.PackageView,
 	err error,
 ) {
 
-	packageManifestViewPath := path.Join(packageRef, NameOfPackageManifestFile)
+	packageManifestViewPath := path.Join(pkgRef, NameOfPackageManifestFile)
 
 	packageManifestViewBytes, err := this.fileSystem.GetBytesOfFile(
 		packageManifestViewPath,

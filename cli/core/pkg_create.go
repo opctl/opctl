@@ -2,12 +2,12 @@ package core
 
 import (
 	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 )
 
-func (this _core) CreatePackage(
-	collection string,
+func (this _core) Create(
+	path string,
 	description string,
 	name string,
 ) {
@@ -17,9 +17,9 @@ func (this _core) CreatePackage(
 		return // support fake exiter
 	}
 
-	err = this.managePackages.CreatePackage(
-		model.CreatePackageReq{
-			Path:        filepath.Join(pwd, collection, name),
+	err = this.pkg.Create(
+		pkg.CreateReq{
+			Path:        filepath.Join(pwd, path, name),
 			Name:        name,
 			Description: description,
 		},

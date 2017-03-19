@@ -43,7 +43,7 @@ func (this _core) RunOp(
 		pkgRef = path.Join(pwd, pkgRef)
 	}
 
-	packageView, err := this.managePackages.GetPackage(pkgRef)
+	packageView, err := this.pkg.Get(pkgRef)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter

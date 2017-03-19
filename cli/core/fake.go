@@ -6,10 +6,10 @@ import (
 )
 
 type Fake struct {
-	CreatePackageStub        func(collection string, description string, name string)
-	createPackageMutex       sync.RWMutex
-	createPackageArgsForCall []struct {
-		collection  string
+	CreateStub        func(path string, description string, name string)
+	createMutex       sync.RWMutex
+	createArgsForCall []struct {
+		path        string
 		description string
 		name        string
 	}
@@ -41,6 +41,11 @@ type Fake struct {
 		description string
 		pkgRef      string
 	}
+	PkgValidateStub        func(pkgRef string)
+	pkgValidateMutex       sync.RWMutex
+	pkgValidateArgsForCall []struct {
+		pkgRef string
+	}
 	StreamEventsStub        func()
 	streamEventsMutex       sync.RWMutex
 	streamEventsArgsForCall []struct{}
@@ -53,30 +58,30 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) CreatePackage(collection string, description string, name string) {
-	fake.createPackageMutex.Lock()
-	fake.createPackageArgsForCall = append(fake.createPackageArgsForCall, struct {
-		collection  string
+func (fake *Fake) Create(path string, description string, name string) {
+	fake.createMutex.Lock()
+	fake.createArgsForCall = append(fake.createArgsForCall, struct {
+		path        string
 		description string
 		name        string
-	}{collection, description, name})
-	fake.recordInvocation("CreatePackage", []interface{}{collection, description, name})
-	fake.createPackageMutex.Unlock()
-	if fake.CreatePackageStub != nil {
-		fake.CreatePackageStub(collection, description, name)
+	}{path, description, name})
+	fake.recordInvocation("Create", []interface{}{path, description, name})
+	fake.createMutex.Unlock()
+	if fake.CreateStub != nil {
+		fake.CreateStub(path, description, name)
 	}
 }
 
-func (fake *Fake) CreatePackageCallCount() int {
-	fake.createPackageMutex.RLock()
-	defer fake.createPackageMutex.RUnlock()
-	return len(fake.createPackageArgsForCall)
+func (fake *Fake) CreateCallCount() int {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	return len(fake.createArgsForCall)
 }
 
-func (fake *Fake) CreatePackageArgsForCall(i int) (string, string, string) {
-	fake.createPackageMutex.RLock()
-	defer fake.createPackageMutex.RUnlock()
-	return fake.createPackageArgsForCall[i].collection, fake.createPackageArgsForCall[i].description, fake.createPackageArgsForCall[i].name
+func (fake *Fake) CreateArgsForCall(i int) (string, string, string) {
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
+	return fake.createArgsForCall[i].path, fake.createArgsForCall[i].description, fake.createArgsForCall[i].name
 }
 
 func (fake *Fake) OpKill(opId string) {
@@ -214,6 +219,30 @@ func (fake *Fake) PkgSetDescriptionArgsForCall(i int) (string, string) {
 	return fake.pkgSetDescriptionArgsForCall[i].description, fake.pkgSetDescriptionArgsForCall[i].pkgRef
 }
 
+func (fake *Fake) PkgValidate(pkgRef string) {
+	fake.pkgValidateMutex.Lock()
+	fake.pkgValidateArgsForCall = append(fake.pkgValidateArgsForCall, struct {
+		pkgRef string
+	}{pkgRef})
+	fake.recordInvocation("PkgValidate", []interface{}{pkgRef})
+	fake.pkgValidateMutex.Unlock()
+	if fake.PkgValidateStub != nil {
+		fake.PkgValidateStub(pkgRef)
+	}
+}
+
+func (fake *Fake) PkgValidateCallCount() int {
+	fake.pkgValidateMutex.RLock()
+	defer fake.pkgValidateMutex.RUnlock()
+	return len(fake.pkgValidateArgsForCall)
+}
+
+func (fake *Fake) PkgValidateArgsForCall(i int) string {
+	fake.pkgValidateMutex.RLock()
+	defer fake.pkgValidateMutex.RUnlock()
+	return fake.pkgValidateArgsForCall[i].pkgRef
+}
+
 func (fake *Fake) StreamEvents() {
 	fake.streamEventsMutex.Lock()
 	fake.streamEventsArgsForCall = append(fake.streamEventsArgsForCall, struct{}{})
@@ -257,8 +286,8 @@ func (fake *Fake) SelfUpdateArgsForCall(i int) string {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.createPackageMutex.RLock()
-	defer fake.createPackageMutex.RUnlock()
+	fake.createMutex.RLock()
+	defer fake.createMutex.RUnlock()
 	fake.opKillMutex.RLock()
 	defer fake.opKillMutex.RUnlock()
 	fake.listPackagesMutex.RLock()
@@ -271,6 +300,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.runOpMutex.RUnlock()
 	fake.pkgSetDescriptionMutex.RLock()
 	defer fake.pkgSetDescriptionMutex.RUnlock()
+	fake.pkgValidateMutex.RLock()
+	defer fake.pkgValidateMutex.RUnlock()
 	fake.streamEventsMutex.RLock()
 	defer fake.streamEventsMutex.RUnlock()
 	fake.selfUpdateMutex.RLock()

@@ -15,7 +15,7 @@ var _ = Context("CreateNetwork", func() {
 
 		providedContainerId := "dummyContainerId"
 		expectedContainerId := providedContainerId
-		expectedNetworkCreatePackagetions := types.NetworkCreate{
+		expectedNetworkCreatetions := types.NetworkCreate{
 			Attachable: true,
 		}
 
@@ -27,9 +27,9 @@ var _ = Context("CreateNetwork", func() {
 		objectUnderTest.CreateNetwork(providedContainerId)
 
 		/* assert */
-		_, actualContainerId, actualNetworkCreatePackagetions := fakeDockerClient.NetworkCreateArgsForCall(0)
+		_, actualContainerId, actualNetworkCreatetions := fakeDockerClient.NetworkCreateArgsForCall(0)
 		Expect(actualContainerId).To(Equal(expectedContainerId))
-		Expect(actualNetworkCreatePackagetions).Should(Equal(expectedNetworkCreatePackagetions))
+		Expect(actualNetworkCreatetions).Should(Equal(expectedNetworkCreatetions))
 	})
 	Context("dockerClient.NetworkCreate errors", func() {
 		It("should return expected error", func() {

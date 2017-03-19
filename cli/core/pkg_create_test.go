@@ -6,12 +6,11 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
 	"github.com/opspec-io/opctl/util/vos"
-	"github.com/opspec-io/sdk-golang/managepackages"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 )
 
-var _ = Context("createPackage", func() {
+var _ = Context("create", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -23,13 +22,13 @@ var _ = Context("createPackage", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					managePackages: new(managepackages.Fake),
-					cliExiter:      fakeCliExiter,
-					vos:            fakeVos,
+					pkg:       new(pkg.Fake),
+					cliExiter: fakeCliExiter,
+					vos:       fakeVos,
 				}
 
 				/* act */
-				objectUnderTest.CreatePackage("", "", "")
+				objectUnderTest.Create("", "", "")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -37,9 +36,9 @@ var _ = Context("createPackage", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call managepackages.CreatePackage w/ expected args", func() {
+			It("should call pkg.Create w/ expected args", func() {
 				/* arrange */
-				fakeManagePackages := new(managepackages.Fake)
+				fakePkg := new(pkg.Fake)
 
 				providedPath := "dummyPath"
 				providedName := "dummyName"
@@ -48,41 +47,41 @@ var _ = Context("createPackage", func() {
 				fakeVos := new(vos.Fake)
 				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
 
-				expectedReq := model.CreatePackageReq{
+				expectedReq := pkg.CreateReq{
 					Path:        filepath.Join(wdReturnedFromVos, providedPath, providedName),
 					Name:        providedName,
 					Description: "dummyPkgDescription",
 				}
 
 				objectUnderTest := _core{
-					managePackages: fakeManagePackages,
-					vos:            fakeVos,
+					pkg: fakePkg,
+					vos: fakeVos,
 				}
 
 				/* act */
-				objectUnderTest.CreatePackage(providedPath, expectedReq.Description, expectedReq.Name)
+				objectUnderTest.Create(providedPath, expectedReq.Description, expectedReq.Name)
 
 				/* assert */
 
-				Expect(fakeManagePackages.CreatePackageArgsForCall(0)).Should(Equal(expectedReq))
+				Expect(fakePkg.CreateArgsForCall(0)).Should(Equal(expectedReq))
 			})
-			Context("managepackages.CreatePackage errors", func() {
+			Context("pkg.Create errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
-					fakeManagePackages := new(managepackages.Fake)
+					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
-					fakeManagePackages.CreatePackageReturns(expectedError)
+					fakePkg.CreateReturns(expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
 					objectUnderTest := _core{
-						managePackages: fakeManagePackages,
-						cliExiter:      fakeCliExiter,
-						vos:            new(vos.Fake),
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+						vos:       new(vos.Fake),
 					}
 
 					/* act */
-					objectUnderTest.CreatePackage("", "", "")
+					objectUnderTest.Create("", "", "")
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
