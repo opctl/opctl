@@ -22,7 +22,7 @@ func (this _core) ListPackages(
 		return // support fake exiter
 	}
 
-	packages, err := this.managePackages.ListPackagesInDir(
+	packages, err := this.pkg.ListPackagesInDir(
 		pathPkg.Join(pwd, path),
 	)
 	if nil != err {

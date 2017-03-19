@@ -142,7 +142,7 @@ var _ = Context("cli", func() {
 
 			Context("create", func() {
 				Context("w/ path", func() {
-					It("should call core.CreatePackage w/ expected args", func() {
+					It("should call core.Create w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
@@ -155,8 +155,8 @@ var _ = Context("cli", func() {
 						objectUnderTest.Run([]string{"opctl", "pkg", "create", "-c", expectedPath, expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
-						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(fakeCore.CreateCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreateArgsForCall(0)
 						Expect(actualPkgName).Should(Equal(expectedPkgName))
 						Expect(actualPkgDescription).Should(BeEmpty())
 						Expect(actualPath).Should(Equal(expectedPath))
@@ -164,7 +164,7 @@ var _ = Context("cli", func() {
 				})
 
 				Context("w/out path", func() {
-					It("should call core.CreatePackage w/ expected args", func() {
+					It("should call core.Create w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
@@ -177,15 +177,15 @@ var _ = Context("cli", func() {
 						objectUnderTest.Run([]string{"opctl", "pkg", "create", expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
-						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(fakeCore.CreateCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreateArgsForCall(0)
 						Expect(actualPkgName).Should(Equal(expectedPkgName))
 						Expect(actualPkgDescription).Should(BeEmpty())
 						Expect(actualPath).Should(Equal(expectedPath))
 					})
 				})
 				Context("w/ description", func() {
-					It("should call core.CreatePackage w/ expected args", func() {
+					It("should call core.Create w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
@@ -199,8 +199,8 @@ var _ = Context("cli", func() {
 						objectUnderTest.Run([]string{"opctl", "pkg", "create", "-d", expectedPkgDescription, expectedPkgName})
 
 						/* assert */
-						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
-						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(fakeCore.CreateCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreateArgsForCall(0)
 						Expect(actualPkgName).Should(Equal(expectedPkgName))
 						Expect(actualPkgDescription).Should(Equal(expectedPkgDescription))
 						Expect(actualPath).Should(Equal(expectedPath))
@@ -208,7 +208,7 @@ var _ = Context("cli", func() {
 				})
 
 				Context("w/out description", func() {
-					It("should call core.CreatePackage w/ expected args", func() {
+					It("should call core.Create w/ expected args", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
@@ -221,8 +221,8 @@ var _ = Context("cli", func() {
 						objectUnderTest.Run([]string{"opctl", "pkg", "create", expectedName})
 
 						/* assert */
-						Expect(fakeCore.CreatePackageCallCount()).Should(Equal(1))
-						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreatePackageArgsForCall(0)
+						Expect(fakeCore.CreateCallCount()).Should(Equal(1))
+						actualPath, actualPkgDescription, actualPkgName := fakeCore.CreateArgsForCall(0)
 						Expect(actualPkgName).Should(Equal(expectedName))
 						Expect(actualPkgDescription).Should(BeEmpty())
 						Expect(actualPath).Should(Equal(expectedPath))
@@ -244,7 +244,7 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "set", "description", expectedDescription, pkgRef})
+						objectUnderTest.Run([]string{"opctl", "pkg", "set", "description", expectedDescription, pkgRef})
 
 						/* assert */
 						Expect(fakeCore.PkgSetDescriptionCallCount()).Should(Equal(1))
@@ -253,6 +253,27 @@ var _ = Context("cli", func() {
 						Expect(actualPkgDescription).Should(Equal(expectedDescription))
 					})
 
+				})
+
+			})
+
+			Context("validate", func() {
+
+				It("should call core.PkgValidate w/ expected args", func() {
+					/* arrange */
+					fakeCore := new(core.Fake)
+
+					pkgRef := ".opspec/dummyPkgName"
+
+					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+
+					/* act */
+					objectUnderTest.Run([]string{"opctl", "pkg", "validate", pkgRef})
+
+					/* assert */
+					Expect(fakeCore.PkgSetDescriptionCallCount()).Should(Equal(1))
+					actualPkgRef := fakeCore.PkgValidateArgsForCall(0)
+					Expect(actualPkgRef).Should(Equal(pkgRef))
 				})
 
 			})

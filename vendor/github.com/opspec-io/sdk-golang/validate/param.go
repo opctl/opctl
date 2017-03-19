@@ -15,6 +15,10 @@ func (this validate) Param(
 	}
 
 	switch {
+	case nil != param.Dir:
+		errs = this.dirParam(value, param.Dir)
+	case nil != param.File:
+		errs = this.fileParam(value, param.File)
 	case nil != param.String:
 		errs = this.stringParam(value, param.String)
 	case nil != param.Number:

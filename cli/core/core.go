@@ -12,14 +12,14 @@ import (
 	"github.com/opspec-io/opctl/util/updater"
 	"github.com/opspec-io/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
-	"github.com/opspec-io/sdk-golang/managepackages"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"io"
 	"os"
 )
 
 type Core interface {
-	CreatePackage(
+	Create(
 		path string,
 		description string,
 		name string,
@@ -47,6 +47,10 @@ type Core interface {
 		pkgRef string,
 	)
 
+	PkgValidate(
+		pkgRef string,
+	)
+
 	StreamEvents()
 
 	SelfUpdate(
@@ -63,7 +67,7 @@ func New(
 
 	return &_core{
 		consumeNodeApi:    consumenodeapi.New(),
-		managePackages:    managepackages.New(),
+		pkg:               pkg.New(),
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
@@ -78,7 +82,7 @@ func New(
 
 type _core struct {
 	consumeNodeApi    consumenodeapi.ConsumeNodeApi
-	managePackages    managepackages.ManagePackages
+	pkg               pkg.Pkg
 	cliColorer        clicolorer.CliColorer
 	cliExiter         cliexiter.CliExiter
 	cliOutput         clioutput.CliOutput

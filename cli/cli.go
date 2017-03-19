@@ -78,7 +78,7 @@ func newCli(
 				name := createCmd.StringArg("NAME", "", "Package name")
 
 				createCmd.Action = func() {
-					core.CreatePackage(*path, *description, *name)
+					core.Create(*path, *description, *name)
 				}
 			})
 
@@ -92,6 +92,16 @@ func newCli(
 				}
 			})
 		})
+
+		pkgCmd.Command(
+			"validate", "Validates a package",
+			func(validateCmd *mow.Cmd) {
+				pkgRef := validateCmd.StringArg("PACKAGE_REF", "", "Package reference")
+
+				validateCmd.Action = func() {
+					core.PkgValidate(*pkgRef)
+				}
+			})
 	})
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {

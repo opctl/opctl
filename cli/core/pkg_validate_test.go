@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/opctl/util/cliexiter"
@@ -10,7 +11,7 @@ import (
 	"path"
 )
 
-var _ = Context("pkgSetDescription", func() {
+var _ = Context("pkgValidate", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -28,14 +29,14 @@ var _ = Context("pkgSetDescription", func() {
 				}
 
 				/* act */
-				objectUnderTest.PkgSetDescription("", "")
+				objectUnderTest.PkgValidate("")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
 					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		It("should call pkg.SetDescription w/ expected args", func() {
+		It("should call pkg.Validate w/ expected args", func() {
 			/* arrange */
 			fakePkg := new(pkg.Fake)
 
@@ -45,10 +46,7 @@ var _ = Context("pkgSetDescription", func() {
 			fakeVos := new(vos.Fake)
 			fakeVos.GetwdReturns(wdReturnedFromVos, nil)
 
-			expectedReq := pkg.SetDescriptionReq{
-				Path:        path.Join(wdReturnedFromVos, ".opspec", providedPkgRef),
-				Description: "dummyPkgDescription",
-			}
+			expectedPkgRef := path.Join(wdReturnedFromVos, ".opspec", providedPkgRef)
 
 			objectUnderTest := _core{
 				pkg: fakePkg,
@@ -56,18 +54,28 @@ var _ = Context("pkgSetDescription", func() {
 			}
 
 			/* act */
-			objectUnderTest.PkgSetDescription(expectedReq.Description, providedPkgRef)
+			objectUnderTest.PkgValidate(providedPkgRef)
 
 			/* assert */
 
-			Expect(fakePkg.SetDescriptionArgsForCall(0)).Should(Equal(expectedReq))
+			Expect(fakePkg.ValidateArgsForCall(0)).Should(Equal(expectedPkgRef))
 		})
-		Context("pkg.SetDescription errors", func() {
-			It("should call exiter w/ expected args", func() {
+		Context("pkg.Validate returns errors", func() {
+			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
 				fakePkg := new(pkg.Fake)
-				expectedError := errors.New("dummyError")
-				fakePkg.SetDescriptionReturns(expectedError)
+				errsReturnedFromValidate := []error{errors.New("dummyError")}
+				fakePkg.ValidateReturns(errsReturnedFromValidate)
+
+				expectedExitReq := cliexiter.ExitReq{
+					Message: fmt.Sprintf(`
+
+-
+  Error(s):
+    - %v
+-`, errsReturnedFromValidate[0]),
+					Code: 1,
+				}
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -78,11 +86,11 @@ var _ = Context("pkgSetDescription", func() {
 				}
 
 				/* act */
-				objectUnderTest.PkgSetDescription("", "")
+				objectUnderTest.PkgValidate("dummyPkgRef")
 
 				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+
+				Expect(fakeCliExiter.ExitArgsForCall(0)).Should(Equal(expectedExitReq))
 			})
 		})
 	})

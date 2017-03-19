@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 //go:generate counterfeiter -o ./fakeListPackagesInDir.go --fake-name fakeListPackagesInDir ./ listPackagesInDir
 
@@ -7,7 +7,7 @@ import (
 	"path"
 )
 
-func (this managePackages) ListPackagesInDir(
+func (this pkg) ListPackagesInDir(
 	dirPath string,
 ) (
 	ops []*model.PackageView,
