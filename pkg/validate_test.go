@@ -33,7 +33,7 @@ var _ = Describe("Validate", func() {
 
 			/* arrange */
 			expectedErrs := []error{errors.New(
-				"inputs: Invalid type. Expected: object, given: array\n",
+				"inputs: Invalid type. Expected: object, given: array",
 			)}
 
 			/* act */
@@ -48,7 +48,7 @@ var _ = Describe("Validate", func() {
 
 			/* arrange */
 			expectedErrs := []error{errors.New(
-				"outputs: Invalid type. Expected: object, given: array\n",
+				"outputs: Invalid type. Expected: object, given: array",
 			)}
 
 			/* act */
@@ -63,8 +63,8 @@ var _ = Describe("Validate", func() {
 
 			/* arrange */
 			expectedErrs := []error{
-				errors.New("run: Must validate one and only one schema (oneOf)\n"),
-				errors.New("run: Invalid type. Expected: object, given: array\n"),
+				errors.New("run: Must validate one and only one schema (oneOf)"),
+				errors.New("run: Invalid type. Expected: object, given: array"),
 			}
 
 			/* act */
