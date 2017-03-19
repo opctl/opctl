@@ -1,0 +1,6 @@
+### gitbook
+_book/
+*.pdf
+
+### npm
+node_modules/

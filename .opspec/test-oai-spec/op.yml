@@ -15,8 +15,8 @@ run:
         npm install swagger-cli -g --quiet
 
         echo "testing OpenAPI specs"
-        swagger validate node-api.oai.yml
+        swagger validate node-api.spec.yml
     dirs:
       /src: srcDir
     image: { ref: 'node:7.7' }
-    workDir: /src
+    workDir: /src/spec

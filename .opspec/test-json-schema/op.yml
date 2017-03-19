@@ -15,8 +15,8 @@ run:
         npm install ajv-cli -g --quiet
 
         echo "testing json schemas"
-        ajv compile -s "*" -r "*"
+        ajv compile -s "*.schema.json"
     dirs:
       /src: srcDir
     image: { ref: 'node:7.7' }
-    workDir: /src/schema
+    workDir: /src/spec

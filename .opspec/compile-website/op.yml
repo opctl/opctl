@@ -1,0 +1,28 @@
+description: Compiles the static website by running a metalsmith build
+name: compile-website
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        npm install -q
+
+        echo "compiling"
+        node_modules/.bin/metalsmith . ../build/spec/
+    dirs:
+      /src: srcDir
+    envVars:
+      DEBUG: 'metalsmith:*'
+    image: { ref: 'node:7.7' }
+    workDir: /src/website

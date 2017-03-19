@@ -1,0 +1,27 @@
+{% extends template.self %}
+{% block head %}
+<!-- favicon -->
+<link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/images/favicon-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96">
+
+<!-- our styles -->
+<link rel="stylesheet" href="https://opspec.io/common.css">
+{% endblock %}
+{% block body %}
+<div class="navbar navbar-full navbar-fixed-top navbar-light bg-light"
+     style="z-index: 1000; border-bottom: solid thin #ececec;">
+  <a class="navbar-brand" href="https://opspec.io">
+    <img src="/images/logo-ops.svg" style="height: 30px;">
+  </a>
+  <ul class="nav navbar-nav float-xs-right">
+    <li class="nav-item">
+      <a class="nav-link" href="/spec">Spec (HTML version)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" target="_blank" href="/spec/opspec.pdf">Spec (PDF version)</a>
+    </li>
+  </ul>
+</div>
+{{ super() }}
+{% endblock %}
