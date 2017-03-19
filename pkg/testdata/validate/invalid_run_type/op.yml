@@ -1,0 +1,3 @@
+name: invalid_run_type
+run:
+  - op: { ref: xyz }

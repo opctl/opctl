@@ -5,7 +5,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-// validates an value against a network socket parameter
+// validates an value against a socket parameter
 func (this validate) socketParam(
 	rawValue *model.Data,
 	param *model.SocketParam,

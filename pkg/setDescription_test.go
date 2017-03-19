@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 import (
 	"errors"
@@ -11,56 +11,35 @@ import (
 	"reflect"
 )
 
-var _ = Describe("_createPackage", func() {
+var _ = Describe("_setDescription", func() {
 
 	Context("Execute", func() {
 
-		It("should call FileSystem.AddDir with expected args", func() {
+		Context("when FileSystem.GetBytesOfFile returns an error", func() {
 
-			/* arrange */
-
-			providedCreatePackageReq := model.CreatePackageReq{Path: "/dummy/path"}
-
-			fakeFileSystem := new(fs.Fake)
-
-			objectUnderTest := &managePackages{
-				fileSystem: fakeFileSystem,
-				yaml:       format.NewYamlFormat(),
-			}
-
-			/* act */
-			objectUnderTest.CreatePackage(
-				providedCreatePackageReq,
-			)
-
-			/* assert */
-			Expect(fakeFileSystem.AddDirArgsForCall(0)).To(Equal(providedCreatePackageReq.Path))
-
-		})
-
-		Context("when FileSystem.AddDir returns an error", func() {
 			It("should be returned", func() {
 
 				/* arrange */
-				expectedError := errors.New("AddDirError")
+				expectedError := errors.New("GetBytesOfFileError")
 
 				fakeFileSystem := new(fs.Fake)
-				fakeFileSystem.AddDirReturns(expectedError)
+				fakeFileSystem.GetBytesOfFileReturns(nil, expectedError)
 
-				objectUnderTest := &managePackages{
+				objectUnderTest := &pkg{
 					fileSystem: fakeFileSystem,
 					yaml:       format.NewYamlFormat(),
 				}
 
 				/* act */
-				actualError := objectUnderTest.CreatePackage(
-					model.CreatePackageReq{},
+				actualError := objectUnderTest.SetDescription(
+					SetDescriptionReq{},
 				)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
 
 			})
+
 		})
 
 		Context("when YamlFormat.From returns an error", func() {
@@ -70,16 +49,41 @@ var _ = Describe("_createPackage", func() {
 				expectedError := errors.New("FromError")
 
 				fakeYamlFormat := new(format.Fake)
-				fakeYamlFormat.FromReturns(nil, expectedError)
+				fakeYamlFormat.ToReturns(expectedError)
 
-				objectUnderTest := &managePackages{
+				objectUnderTest := &pkg{
 					fileSystem: new(fs.Fake),
 					yaml:       fakeYamlFormat,
 				}
 
 				/* act */
-				actualError := objectUnderTest.CreatePackage(
-					model.CreatePackageReq{},
+				actualError := objectUnderTest.SetDescription(
+					SetDescriptionReq{},
+				)
+
+				/* assert */
+				Expect(actualError).To(Equal(expectedError))
+
+			})
+		})
+
+		Context("when YamlFormat.To returns an error", func() {
+			It("should be returned", func() {
+
+				/* arrange */
+				expectedError := errors.New("ToError")
+
+				fakeYamlFormat := new(format.Fake)
+				fakeYamlFormat.FromReturns(nil, expectedError)
+
+				objectUnderTest := &pkg{
+					fileSystem: new(fs.Fake),
+					yaml:       fakeYamlFormat,
+				}
+
+				/* act */
+				actualError := objectUnderTest.SetDescription(
+					SetDescriptionReq{},
 				)
 
 				/* assert */
@@ -92,8 +96,9 @@ var _ = Describe("_createPackage", func() {
 
 			/* arrange */
 			expectedPackageManifestView := model.PackageManifestView{
-				Description: "DummyDescription",
-				Name:        "DummyName",
+				Name:        "dummyName",
+				Description: "dummyDescription",
+				Version:     "dummyVersion",
 			}
 
 			fakeYamlFormat := new(format.Fake)
@@ -102,17 +107,14 @@ var _ = Describe("_createPackage", func() {
 				return
 			}
 
-			objectUnderTest := &managePackages{
+			objectUnderTest := &pkg{
 				fileSystem: new(fs.Fake),
 				yaml:       fakeYamlFormat,
 			}
 
 			/* act */
-			objectUnderTest.CreatePackage(
-				model.CreatePackageReq{
-					Description: expectedPackageManifestView.Description,
-					Name:        expectedPackageManifestView.Name,
-				},
+			objectUnderTest.SetDescription(
+				SetDescriptionReq{Description: expectedPackageManifestView.Description},
 			)
 
 			/* assert */
@@ -133,14 +135,14 @@ var _ = Describe("_createPackage", func() {
 			fakeYamlFormat := new(format.Fake)
 			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
 
-			objectUnderTest := &managePackages{
+			objectUnderTest := &pkg{
 				fileSystem: fakeFileSystem,
 				yaml:       fakeYamlFormat,
 			}
 
 			/* act */
-			objectUnderTest.CreatePackage(
-				model.CreatePackageReq{Path: providedPath},
+			objectUnderTest.SetDescription(
+				SetDescriptionReq{Path: providedPath},
 			)
 
 			/* assert */

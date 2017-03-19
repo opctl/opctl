@@ -18,8 +18,9 @@ run:
         echo "generating aggregate coverage profile"
         find . -name '*.coverprofile' | xargs cat > coverage.txt
 
-        echo "stripping fakes"
+        echo "stripping generated code"
         sed '/fake/d' -i coverage.txt
+        sed '/bindata/d' -i coverage.txt
 
         echo "determining aggregate coverage metrics"
         declare -i total_statements total_hits line_statements line_hits

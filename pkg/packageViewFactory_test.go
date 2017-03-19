@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 import (
 	"errors"
@@ -13,6 +13,10 @@ import (
 )
 
 var _ = Describe("_packageViewFactory", func() {
+	wd, err := os.Getwd()
+	if nil != err {
+		panic(err)
+	}
 
 	Context("Construct", func() {
 
@@ -273,10 +277,6 @@ var _ = Describe("_packageViewFactory", func() {
 
 		})
 		Context("when passed ./testdata/opspec-0.1.3/examples/docker/.opspec/login", func() {
-			wd, err := os.Getwd()
-			if nil != err {
-				panic(err)
-			}
 			It("should return expected packageView", func() {
 
 				/* arrange */
@@ -351,10 +351,6 @@ var _ = Describe("_packageViewFactory", func() {
 			})
 		})
 		Context("when passed ./testdata/opspec-0.1.3/examples/nodejs/.opspec/debug", func() {
-			wd, err := os.Getwd()
-			if nil != err {
-				panic(err)
-			}
 			It("should return expected packageView", func() {
 
 				/* arrange */
@@ -429,10 +425,6 @@ var _ = Describe("_packageViewFactory", func() {
 			})
 		})
 		Context("when passed ./testdata/opspec-0.1.3/examples/nodejs/.opspec/test-acceptance", func() {
-			wd, err := os.Getwd()
-			if nil != err {
-				panic(err)
-			}
 			It("should return expected packageView", func() {
 
 				/* arrange */

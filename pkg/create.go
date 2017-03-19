@@ -1,12 +1,12 @@
-package managepackages
+package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"path"
 )
 
-func (this managePackages) CreatePackage(
-	req model.CreatePackageReq,
+func (this pkg) Create(
+	req CreateReq,
 ) (err error) {
 
 	err = this.fileSystem.AddDir(

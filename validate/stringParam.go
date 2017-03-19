@@ -35,7 +35,7 @@ func (this validate) stringParam(
 		constraintsJsonBytes, err := format.NewJsonFormat().From(paramConstraints)
 		if err != nil {
 			// handle syntax errors specially
-			errs = append(errs, fmt.Errorf("Error interpreting constraints; the op likely has a syntax error.\n Details: %v", err.Error()))
+			errs = append(errs, fmt.Errorf("Error interpreting constraints; the pkg likely has a syntax error.\n Details: %v", err.Error()))
 			return
 		}
 
@@ -52,7 +52,7 @@ func (this validate) stringParam(
 		)
 		if err != nil {
 			// handle syntax errors specially
-			errs = append(errs, fmt.Errorf("Error interpreting constraints; the op likely has a syntax error.\n Details: %v", err.Error()))
+			errs = append(errs, fmt.Errorf("Error validating param.\n Details: %v", err.Error()))
 			return
 		}
 

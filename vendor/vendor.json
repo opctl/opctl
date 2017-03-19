@@ -21,6 +21,12 @@
 			"revisionTime": "2017-02-07T22:24:14Z"
 		},
 		{
+			"checksumSHA1": "muGVyM8mY3/gcap6kr4Ib3F5Xn4=",
+			"path": "github.com/ghodss/yaml",
+			"revision": "04f313413ffd65ce25f2541bfd2b2ceec5c0908c",
+			"revisionTime": "2016-12-07T00:33:20Z"
+		},
+		{
 			"checksumSHA1": "klfNfdEPsrWYLps2qBkLgfJsNYI=",
 			"path": "github.com/gorilla/websocket",
 			"revision": "2d1e4548da234d9cb742cc3628556fef86aafbac",

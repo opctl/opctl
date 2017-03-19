@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 import (
 	"errors"
@@ -21,7 +21,7 @@ var _ = Describe("listPackagesInDir", func() {
 				fakeFileSystem := new(fs.Fake)
 				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, expectedError)
 
-				objectUnderTest := managePackages{
+				objectUnderTest := pkg{
 					fileSystem:         fakeFileSystem,
 					packageViewFactory: new(fakePackageViewFactory),
 					yaml:               new(format.Fake),

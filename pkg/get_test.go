@@ -1,4 +1,4 @@
-package managepackages
+package pkg
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Describe("_getPackage", func() {
+var _ = Describe("_get", func() {
 
 	Context("Execute", func() {
 
@@ -15,21 +15,21 @@ var _ = Describe("_getPackage", func() {
 
 			/* arrange */
 
-			providedPackageRef := "/dummy/path"
+			providedPkgRef := "/dummy/path"
 
 			fakePackageViewFactory := new(fakePackageViewFactory)
 
-			objectUnderTest := &managePackages{
+			objectUnderTest := &pkg{
 				packageViewFactory: fakePackageViewFactory,
 			}
 
 			/* act */
-			objectUnderTest.GetPackage(
-				providedPackageRef,
+			objectUnderTest.Get(
+				providedPkgRef,
 			)
 
 			/* assert */
-			Expect(fakePackageViewFactory.ConstructArgsForCall(0)).To(Equal(providedPackageRef))
+			Expect(fakePackageViewFactory.ConstructArgsForCall(0)).To(Equal(providedPkgRef))
 
 		})
 
@@ -53,12 +53,12 @@ var _ = Describe("_getPackage", func() {
 			fakePackageViewFactory := new(fakePackageViewFactory)
 			fakePackageViewFactory.ConstructReturns(expectedPackageView, expectedError)
 
-			objectUnderTest := &managePackages{
+			objectUnderTest := &pkg{
 				packageViewFactory: fakePackageViewFactory,
 			}
 
 			/* act */
-			actualPackageView, actualError := objectUnderTest.GetPackage("/dummy/path")
+			actualPackageView, actualError := objectUnderTest.Get("/dummy/path")
 
 			/* assert */
 			Expect(actualPackageView).To(Equal(expectedPackageView))
