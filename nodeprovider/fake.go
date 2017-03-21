@@ -4,7 +4,7 @@ package nodeprovider
 import (
 	"sync"
 
-	"github.com/opspec-io/opctl/node"
+	"github.com/opctl/opctl/node"
 )
 
 type Fake struct {

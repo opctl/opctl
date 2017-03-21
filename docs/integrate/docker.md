@@ -1,7 +1,7 @@
 ### image
 
 An official opctl image is
-[maintained on docker hub](https://hub.docker.com/r/opspec/opctl/) (as
+[maintained on docker hub](https://hub.docker.com/r/opctl/opctl/) (as
 of v0.1.15).
 
 The image features a ready to use opctl node.
@@ -13,7 +13,7 @@ The image features a ready to use opctl node.
 
 ```shell
 # attach to an sh terminal in the container
-docker run --privileged -it opspec/opctl:beta /bin/sh
+docker run --privileged -it opctl/opctl:beta /bin/sh
 
 # install git & clone the opspec repo
 apk add -U git

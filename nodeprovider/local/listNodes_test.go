@@ -3,8 +3,8 @@ package local
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/node"
-	"github.com/opspec-io/opctl/util/lockfile"
+	"github.com/opctl/opctl/node"
+	"github.com/opctl/opctl/util/lockfile"
 )
 
 var _ = Context("listNodes", func() {

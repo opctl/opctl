@@ -47,11 +47,11 @@ run:
           --platforms="darwin_amd64 linux_amd64 windows_amd64" \
           --app="app_kNrDsPk2bis" \
           --token="$(equinoxToken)" \
-          -- -a github.com/opspec-io/opctl/cli
+          -- -a github.com/opctl/opctl/cli
     dirs:
-      /go/src/github.com/opspec-io/opctl: srcDir
+      /go/src/github.com/opctl/opctl: srcDir
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: 0
     image: { ref: 'golang:1.8' }
-    workDir: /go/src/github.com/opspec-io/opctl
+    workDir: /go/src/github.com/opctl/opctl

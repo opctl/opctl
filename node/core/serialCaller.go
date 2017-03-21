@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
-	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/opctl/util/uniquestring"
+	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
 	"time"
 )

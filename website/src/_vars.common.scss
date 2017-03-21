@@ -1,0 +1,10 @@
+$opspec-pink: #fc16be;
+$opspec-light-gray: #6b6b6b;
+$opspec-dark-gray: #464646;
+
+/* bootstrap override */
+$brand-primary: $opspec-pink;
+$gray-dark: $opspec-dark-gray;
+$enable-flex: true;
+
+@import "../node_modules/bootstrap/scss/_variables.scss";

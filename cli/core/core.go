@@ -3,14 +3,14 @@ package core
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 import (
-	"github.com/opspec-io/opctl/nodeprovider"
-	"github.com/opspec-io/opctl/nodeprovider/local"
-	"github.com/opspec-io/opctl/util/clicolorer"
-	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/opctl/util/clioutput"
-	"github.com/opspec-io/opctl/util/cliparamsatisfier"
-	"github.com/opspec-io/opctl/util/updater"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/nodeprovider"
+	"github.com/opctl/opctl/nodeprovider/local"
+	"github.com/opctl/opctl/util/clicolorer"
+	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/clioutput"
+	"github.com/opctl/opctl/util/cliparamsatisfier"
+	"github.com/opctl/opctl/util/updater"
+	"github.com/opctl/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"

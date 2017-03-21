@@ -1,6 +1,6 @@
 package core
 
-import "github.com/opspec-io/opctl/node"
+import "github.com/opctl/opctl/node"
 
 func (this _core) NodeCreate() {
 	node.New()

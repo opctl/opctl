@@ -1,8 +1,8 @@
-[![In Progress](https://img.shields.io/waffle/label/opspec-io/opctl/in%20progress.svg)](https://waffle.io/opspec-io/opctl)
-[![Build Status](https://travis-ci.org/opspec-io/opctl.svg?branch=master)](https://travis-ci.org/opspec-io/opctl)
-[![Coverage](https://codecov.io/gh/opspec-io/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/opctl)
+[![In Progress](https://img.shields.io/waffle/label/opctl/opctl/in%20progress.svg)](https://waffle.io/opctl/opctl)
+[![Build Status](https://travis-ci.org/opctl/opctl.svg?branch=master)](https://travis-ci.org/opctl/opctl)
+[![Coverage](https://codecov.io/gh/opctl/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/opctl)
 
-Open source cross platform [opspec node](https://opspec.io/spec/nodes.html)
+Open source cross platform op control
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
@@ -11,25 +11,25 @@ Open source cross platform [opspec node](https://opspec.io/spec/nodes.html)
 
 # Documentation
 
-see [website](https://opspec.io/opctl)
+see [website](https://opctl.io)
 
 # ALM
 
-- [issues/feat requests](https://github.com/opspec-io/opctl/issues)
-- [source](https://github.com/opspec-io/opctl)
-- [kanban board](https://waffle.io/opspec-io/opctl)
+- [issues/feat requests](https://github.com/opctl/opctl/issues)
+- [source](https://github.com/opctl/opctl)
+- [kanban board](https://waffle.io/opctl/opctl)
 
 # Community
 
-- [chat](https://gitter.im/opspec-io/opctl)
+- [chat](https://gitter.im/opctl/opctl)
 
 # Releases
 
 for every release:
 
-- source code will be [tagged](https://github.com/opspec-io/opctl/tags).
+- source code will be [tagged](https://github.com/opctl/opctl/tags).
 - installation instructions will be made available at
-  [opspec.io/opctl](https://opspec.io/opctl/)
+  [opctl.io](https://opctl/)
 
 # Versioning
 

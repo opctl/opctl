@@ -3,8 +3,8 @@ package cliexiter
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliExiter
 
 import (
-	"github.com/opspec-io/opctl/util/clioutput"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/util/clioutput"
+	"github.com/opctl/opctl/util/vos"
 )
 
 type ExitReq struct {

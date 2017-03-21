@@ -1,7 +1,7 @@
 package tcp
 
 import (
-	"github.com/opspec-io/opctl/node/core"
+	"github.com/opctl/opctl/node/core"
 	"net/http"
 )
 

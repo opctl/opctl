@@ -1,13 +1,13 @@
 ## `ls`
 
-List ops in a collection.
+List packages.
 
-### collection (since v0.1.15)
+### Path (since v0.1.15)
 
 The optional `--path` argument allows specifying the path to list
 packages from; defaults to .opspec
 
 ```shell
-$ opctl ls -c myCollection
+$ opctl ls -c somePath
 ```
 

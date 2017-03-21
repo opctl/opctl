@@ -3,12 +3,12 @@ package node
 import (
 	"fmt"
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
-	"github.com/opspec-io/opctl/node/core"
-	"github.com/opspec-io/opctl/node/tcp"
-	"github.com/opspec-io/opctl/util/containerprovider/docker"
-	"github.com/opspec-io/opctl/util/lockfile"
-	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/opctl/util/vfs/os"
+	"github.com/opctl/opctl/node/core"
+	"github.com/opctl/opctl/node/tcp"
+	"github.com/opctl/opctl/util/containerprovider/docker"
+	"github.com/opctl/opctl/util/lockfile"
+	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/vfs/os"
 	"path"
 )
 

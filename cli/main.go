@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/opspec-io/opctl/cli/core"
-	"github.com/opspec-io/opctl/util/clicolorer"
+	"github.com/opctl/opctl/cli/core"
+	"github.com/opctl/opctl/util/clicolorer"
 	"os"
 )
 

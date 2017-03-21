@@ -4,7 +4,7 @@ package containerprovider
 import (
 	"sync"
 
-	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 )
 

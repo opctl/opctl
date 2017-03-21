@@ -2,10 +2,10 @@ package docker
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/opspec-io/opctl/util/containerprovider"
-	"github.com/opspec-io/opctl/util/vfs"
-	"github.com/opspec-io/opctl/util/vfs/os"
-	"github.com/opspec-io/opctl/util/vruntime"
+	"github.com/opctl/opctl/util/containerprovider"
+	"github.com/opctl/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs/os"
+	"github.com/opctl/opctl/util/vruntime"
 	"golang.org/x/net/context"
 )
 

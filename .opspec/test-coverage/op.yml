@@ -57,8 +57,8 @@ run:
           echo "Coverage ok"
         fi
     dirs:
-      /go/src/github.com/opspec-io/opctl: srcDir
+      /go/src/github.com/opctl/opctl: srcDir
     envVars:
       MINIMUM_COVERAGE: 57
     image: { ref: 'golang:1.8' }
-    workDir: /go/src/github.com/opspec-io/opctl
+    workDir: /go/src/github.com/opctl/opctl

@@ -32,7 +32,7 @@ run:
             ;;
         esac
 
-        dockerImageRef=opspec/opctl:"$channel"
+        dockerImageRef=opctl/opctl:"$channel"
 
         echo dockerImageRef=$dockerImageRef
 

@@ -1,0 +1,46 @@
+name: compile-website
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: dir containing the doc source
+outputs:
+  srcDir:
+    dir:
+      description: dir containing the doc source
+run:
+  serial:
+    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            npm install -q
+
+            echo "compiling"
+            node_modules/.bin/metalsmith
+        dirs:
+          /src: srcDir
+        envVars:
+          DEBUG: 'metalsmith:*'
+        image: { ref: 'node:7.7' }
+        workDir: /src/website
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing gitbook cli"
+            npm install gitbook-cli -g -q
+
+            echo "installing plugins"
+            gitbook install
+
+            echo "compiling website"
+            gitbook build . ../build/docs
+        dirs:
+          /src: srcDir
+        image: { ref: 'node:7.7' }
+        workDir: /src/docs

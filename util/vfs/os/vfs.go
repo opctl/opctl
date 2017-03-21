@@ -1,7 +1,7 @@
 package os
 
 import (
-	"github.com/opspec-io/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs"
 	"os"
 )
 

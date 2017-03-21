@@ -21,6 +21,6 @@ run:
         echo "linting code"
         govendor vet +local
     dirs:
-      /go/src/github.com/opspec-io/opctl: srcDir
+      /go/src/github.com/opctl/opctl: srcDir
     image: { ref: 'golang:1.8' }
-    workDir: /go/src/github.com/opspec-io/opctl
+    workDir: /go/src/github.com/opctl/opctl

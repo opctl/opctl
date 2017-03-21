@@ -3,7 +3,7 @@ package docker
 import (
 	"bufio"
 	"github.com/docker/docker/api/types"
-	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/net/context"
 	"io"

@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/api/types/reference"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/pkg/errors"
 	"io/ioutil"
