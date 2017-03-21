@@ -4,9 +4,9 @@ package dircopier
 
 import (
 	"fmt"
-	"github.com/opspec-io/opctl/util/filecopier"
-	"github.com/opspec-io/opctl/util/vfs"
-	"github.com/opspec-io/opctl/util/vfs/os"
+	"github.com/opctl/opctl/util/filecopier"
+	"github.com/opctl/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs/os"
 	"io/ioutil"
 	"path"
 )

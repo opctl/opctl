@@ -3,8 +3,8 @@ package cliexiter
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/clioutput"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/util/clioutput"
+	"github.com/opctl/opctl/util/vos"
 )
 
 var _ = Context("cliExiter", func() {

@@ -1,7 +1,7 @@
 package local
 
 import (
-	"github.com/opspec-io/opctl/node"
+	"github.com/opctl/opctl/node"
 	"os/exec"
 	"syscall"
 )

@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/opctl/util/uniquestring"
+	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
 )
 

@@ -2,7 +2,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/opspec-io/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"os/signal"

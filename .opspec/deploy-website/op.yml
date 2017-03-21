@@ -1,5 +1,4 @@
-description: Runs all ops necessary to deploy docs
-name: deploy-docs
+name: deploy-website
 inputs:
   srcDir:
     dir:
@@ -16,8 +15,7 @@ inputs:
       isSecret: true
 run:
   serial:
-    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
-    - op: { ref: compile-gitbook, inputs: { srcDir }, outputs: { srcDir }}
+    - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}
     - container:
         cmd:
           - sh
@@ -26,8 +24,8 @@ run:
             echo "installing deps"
             pip install awscli
 
-            echo "performing deploy"
-            aws s3 sync . s3://opspec.io/opctl --delete
+            echo "deploy"
+            aws s3 sync . s3://opctl.io --delete
         dirs:
           /src: srcDir
         envVars:
@@ -35,4 +33,4 @@ run:
           AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
           AWS_DEFAULT_REGION: us-west-2
         image: { ref: 'python:2.7' }
-        workDir: /src/_book
+        workDir: /src/build

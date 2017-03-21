@@ -2,7 +2,7 @@ package tcp
 
 import (
 	. "github.com/onsi/ginkgo"
-	"github.com/opspec-io/opctl/node/core"
+	"github.com/opctl/opctl/node/core"
 )
 
 var _ = Context("tcp", func() {

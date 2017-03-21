@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/opspec-io/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/model"
 	"time"
 )

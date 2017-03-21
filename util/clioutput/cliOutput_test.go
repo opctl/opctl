@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/clicolorer"
+	"github.com/opctl/opctl/util/clicolorer"
 	"github.com/opspec-io/sdk-golang/model"
 	"time"
 )

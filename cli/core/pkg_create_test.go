@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/cliexiter"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 )

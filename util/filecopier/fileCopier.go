@@ -3,8 +3,8 @@ package filecopier
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FileCopier
 
 import (
-	"github.com/opspec-io/opctl/util/vfs"
-	"github.com/opspec-io/opctl/util/vfs/os"
+	"github.com/opctl/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs/os"
 	"io"
 )
 

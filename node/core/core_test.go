@@ -3,8 +3,8 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/containerprovider"
-	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/containerprovider"
+	"github.com/opctl/opctl/util/pubsub"
 )
 
 var _ = Context("core", func() {

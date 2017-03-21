@@ -9,9 +9,9 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 - Merge cli & Engine in preparation for P2P
 - Add `node` command w/ `create` and `kill` subcommands
-- [Add ability to override default (`.opspec`) package location for `create`, `set`, `run`, and `ls` `op` sub commands](https://github.com/opspec-io/opctl/issues/44)
-- [Add opspec 0.1.3 support](https://github.com/opspec-io/opctl/issues/48)
-- [Add output coloring](https://github.com/opspec-io/opctl/issues/49)
+- [Add ability to override default (`.opspec`) package location for `create`, `set`, `run`, and `ls` `op` sub commands](https://github.com/opctl/opctl/issues/44)
+- [Add opspec 0.1.3 support](https://github.com/opctl/opctl/issues/48)
+- [Add output coloring](https://github.com/opctl/opctl/issues/49)
 - Add input/output validation
 - Add ability to subscribe to events w/ a provided opId
 
@@ -23,7 +23,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 ### Added
 
-- [Add support for "default" input values](https://github.com/opspec-io/opctl/issues/41)
+- [Add support for "default" input values](https://github.com/opctl/opctl/issues/41)
 
 ## 0.1.9 - 2016-11-06
 
@@ -34,7 +34,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 ### Fixed
 
-- [Emitted ContainerStd*WrittenToEvent.Data Incomplete](https://github.com/opspec-io/opctl/issues/32)
+- [Emitted ContainerStd*WrittenToEvent.Data Incomplete](https://github.com/opctl/opctl/issues/32)
 
 ## 0.1.8 - 2016-09-09
 
@@ -55,7 +55,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 ### Fixed
 
 - [opctl does not wait for parallel op containers to die before returning](https://github.com/opspec-io/cli/issues/8)
-- [Many parallel ops crash engine](https://github.com/opspec-io/opctl/issues/17)
+- [Many parallel ops crash engine](https://github.com/opctl/opctl/issues/17)
 
 ## 0.1.6 - 2016-08-21
 
@@ -83,18 +83,18 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 ### Added
 
-- [Support new opspec subop `isParallel` flag](https://github.com/opspec-io/opctl/issues/11)
+- [Support new opspec subop `isParallel` flag](https://github.com/opctl/opctl/issues/11)
 
 ### Fixed
 
-- [Unable to simultaneously run multiple ops from same collection](https://github.com/opspec-io/opctl/issues/10)
+- [Unable to simultaneously run multiple ops from same collection](https://github.com/opctl/opctl/issues/10)
 
 ## 0.1.2 - 2016-06-22
 
 ### Fixed
 
-- [Missleading `variable is not set` message on op finish](https://github.com/opspec-io/opctl/issues/5)
-- [Engine not observing exitcode of op entrypoint](https://github.com/opspec-io/opctl/issues/9)
+- [Missleading `variable is not set` message on op finish](https://github.com/opctl/opctl/issues/5)
+- [Engine not observing exitcode of op entrypoint](https://github.com/opctl/opctl/issues/9)
 
 ## 0.1.1 - 2016-06-22
 
@@ -105,7 +105,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 ### Fixed
 
 - kill op run use case killing all ops
-- [cannot run multiple ops with same name simultaneously](https://github.com/opspec-io/opctl/issues/8)
+- [cannot run multiple ops with same name simultaneously](https://github.com/opctl/opctl/issues/8)
 
 ### Removed
 

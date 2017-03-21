@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
-	"github.com/opspec-io/opctl/util/containerprovider"
-	"github.com/opspec-io/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/containerprovider"
+	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"strings"
 	"time"

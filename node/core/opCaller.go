@@ -5,8 +5,8 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"github.com/opspec-io/opctl/util/pubsub"
-	"github.com/opspec-io/opctl/util/uniquestring"
+	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"

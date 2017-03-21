@@ -5,10 +5,10 @@ package lockfile
 import (
 	"bufio"
 	"fmt"
-	"github.com/opspec-io/opctl/util/pscanary"
-	"github.com/opspec-io/opctl/util/vfs"
-	"github.com/opspec-io/opctl/util/vfs/os"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/util/pscanary"
+	"github.com/opctl/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs/os"
+	"github.com/opctl/opctl/util/vos"
 	"path"
 	"strconv"
 )

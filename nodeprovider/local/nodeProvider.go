@@ -2,9 +2,9 @@ package local
 
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
-	"github.com/opspec-io/opctl/nodeprovider"
-	"github.com/opspec-io/opctl/util/lockfile"
-	"github.com/opspec-io/opctl/util/vos"
+	"github.com/opctl/opctl/nodeprovider"
+	"github.com/opctl/opctl/util/lockfile"
+	"github.com/opctl/opctl/util/vos"
 	"path"
 )
 

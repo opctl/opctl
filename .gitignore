@@ -5,6 +5,8 @@
 coverage.txt
 *.coverprofile
 
-### gitbook
-_book/
+### build
+/build/
+
+### npm
 node_modules/

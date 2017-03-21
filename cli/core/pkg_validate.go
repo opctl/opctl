@@ -3,7 +3,7 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"github.com/opspec-io/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/cliexiter"
 	"path"
 )
 

@@ -8,6 +8,6 @@ command.
 example:
 
 ```shell
-opctl node events -nc
+opctl --nc events
 ```
 

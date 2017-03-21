@@ -3,7 +3,7 @@ package tcp
 import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
-	"github.com/opspec-io/opctl/node/core"
+	"github.com/opctl/opctl/node/core"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
 )

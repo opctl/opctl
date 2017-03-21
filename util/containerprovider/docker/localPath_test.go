@@ -3,7 +3,7 @@ package docker
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/vruntime"
+	"github.com/opctl/opctl/util/vruntime"
 )
 
 var _ = Context("localPath", func() {

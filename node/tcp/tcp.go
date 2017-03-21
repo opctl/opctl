@@ -2,7 +2,7 @@ package tcp
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/opspec-io/opctl/node/core"
+	"github.com/opctl/opctl/node/core"
 	"net/http"
 )
 

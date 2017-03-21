@@ -3,7 +3,7 @@ package filecopier
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/opctl/util/vfs"
+	"github.com/opctl/opctl/util/vfs"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
