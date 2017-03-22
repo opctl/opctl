@@ -59,6 +59,6 @@ run:
     dirs:
       /go/src/github.com/opctl/opctl: srcDir
     envVars:
-      MINIMUM_COVERAGE: 57
+      MINIMUM_COVERAGE: '57'
     image: { ref: 'golang:1.8' }
     workDir: /go/src/github.com/opctl/opctl
