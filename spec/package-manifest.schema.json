@@ -458,7 +458,26 @@
               },
               "required": [
                 "ref"
-              ]
+              ],
+              "additionalProperties": false
+            },
+            "name": {
+              "description": "Name of the container; note: this field is deprecated",
+              "deprecated": true,
+              "type": "string"
+            },
+            "ports": {
+              "description": "Ports bound from the container to the host; note: this field is deprecated",
+              "deprecated": true,
+              "type": "object",
+              "patternProperties": {
+                "[0-9]+(-[0-9]+)?(tcp|udp)?": {
+                  "description": "Host port(s) to bind to",
+                  "type": "string",
+                  "pattern": "[0-9]+(-[0-9]+)?"
+                }
+              },
+              "additionalProperties": false
             },
             "sockets": {
               "type": "object",
@@ -519,7 +538,7 @@
             },
             "inputs": {
               "description": "Initializes a child input from a name in the current scope in format of `childInputName: currentScopeName`. If `currentScopeName` is null, `childInputName` will be assumed",
-              "type":"object",
+              "type": "object",
               "patternProperties": {
                 "[-_.a-zA-Z0-9]+": {
                   "oneOf": [
@@ -536,7 +555,7 @@
             },
             "outputs": {
               "description": "Initializes a name in the current scope from a child output in format of `currentScopeName: childOutputName`. If `childOutputName` is null, `currentScopeName` will be assumed",
-              "type":"object",
+              "type": "object",
               "patternProperties": {
                 "[-_.a-zA-Z0-9]+": {
                   "oneOf": [
