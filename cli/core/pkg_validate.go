@@ -10,6 +10,7 @@ import (
 func (this _core) PkgValidate(
 	pkgRef string,
 ) {
+	originalPkgRef := pkgRef
 	if !path.IsAbs(pkgRef) {
 		pkgDir := path.Dir(pkgRef)
 
@@ -44,6 +45,9 @@ func (this _core) PkgValidate(
 %v
 -`, messageBuffer.String()),
 			Code: 1})
-		return // support fake exiter
+	} else {
+		this.cliExiter.Exit(cliexiter.ExitReq{
+			Message: fmt.Sprintf("%v is valid", originalPkgRef),
+		})
 	}
 }

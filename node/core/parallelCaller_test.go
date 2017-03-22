@@ -97,7 +97,7 @@ var _ = Context("parallelCaller", func() {
 					},
 				}
 
-				expectedError := errors.New("One or more errors encountered in parallel run block")
+				expectedError := errors.New("Error(s) encountered during parallel call")
 				fakeCaller := new(fakeCaller)
 				fakeCaller.CallReturns(errors.New("dummyError"))
 

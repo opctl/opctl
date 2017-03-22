@@ -1,13 +1,13 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("serialCaller", func() {
@@ -101,9 +101,9 @@ var _ = Context("serialCaller", func() {
 					},
 				}
 
-				expectedError := errors.New("dummyError")
+				expectedError := errors.New("Error encountered during serial call")
 				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(expectedError)
+				fakeCaller.CallReturns(errors.New("dummyError"))
 
 				objectUnderTest := newSerialCaller(fakeCaller, new(pubsub.Fake), new(uniquestring.Fake))
 

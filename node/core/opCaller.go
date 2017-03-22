@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/pkg/errors"
 	"strconv"
 	"time"
 )
@@ -134,6 +135,24 @@ func (this _opCaller) Call(
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
+	// validate pkg
+	errs := this.pkg.Validate(pkgRef)
+	if len(errs) > 0 {
+		messageBuffer := bytes.NewBufferString(
+			fmt.Sprintf(`
+-
+  Package manifest %v invalid.
+  Error(s):`, pkgRef))
+		for _, validationError := range errs {
+			messageBuffer.WriteString(fmt.Sprintf(`
+    - %v`, validationError.Error()))
+		}
+		err = fmt.Errorf(`
+%v
+-`, messageBuffer.String())
+		return
+	}
+
 	pkg, err := this.pkg.Get(
 		pkgRef,
 	)
@@ -171,14 +190,15 @@ func (this _opCaller) Call(
 
 	go this.txOutputs(dcgOpCall, &pkg)
 
-	err = this.caller.Call(
+	callErr := this.caller.Call(
 		dcgOpCall.ChildCallId,
 		inputs,
 		pkg.Run,
 		pkgRef,
 		rootOpId,
 	)
-	if nil != err {
+	if nil != callErr {
+		err = errors.New("Error encountered during call")
 		return
 	}
 
