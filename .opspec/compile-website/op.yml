@@ -19,7 +19,7 @@ run:
         npm install -q
 
         echo "compiling"
-        node_modules/.bin/metalsmith . ../build/spec/
+        node_modules/.bin/metalsmith
     dirs:
       /src: srcDir
     envVars:
