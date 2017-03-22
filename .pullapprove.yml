@@ -1,5 +1,5 @@
 approve_by_comment: true
-approve_regex: ^[Aa]pprov
+approve_regex: ^[Aa]pprove
 reject_regex: ^[Rr]eject
 reset_on_push: true
 reviewers:

@@ -92,7 +92,7 @@ func (this _parallelCaller) Call(
 	wg.Wait()
 
 	if len(childErrChannel) > 0 {
-		err = errors.New("One or more errors encountered in parallel run block")
+		err = errors.New("Error(s) encountered during parallel call")
 	}
 
 	return

@@ -49,8 +49,9 @@ var _ = Context("pkgValidate", func() {
 			expectedPkgRef := path.Join(wdReturnedFromVos, ".opspec", providedPkgRef)
 
 			objectUnderTest := _core{
-				pkg: fakePkg,
-				vos: fakeVos,
+				pkg:       fakePkg,
+				cliExiter: new(cliexiter.Fake),
+				vos:       fakeVos,
 			}
 
 			/* act */
@@ -87,6 +88,35 @@ var _ = Context("pkgValidate", func() {
 
 				/* act */
 				objectUnderTest.PkgValidate("dummyPkgRef")
+
+				/* assert */
+
+				Expect(fakeCliExiter.ExitArgsForCall(0)).Should(Equal(expectedExitReq))
+			})
+		})
+		Context("pkg.Validate doesn't return errors", func() {
+			It("should call cliExiter.Exit w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef"
+
+				fakePkg := new(pkg.Fake)
+				errsReturnedFromValidate := []error{}
+				fakePkg.ValidateReturns(errsReturnedFromValidate)
+
+				expectedExitReq := cliexiter.ExitReq{
+					Message: fmt.Sprintf("%v is valid", providedPkgRef),
+				}
+
+				fakeCliExiter := new(cliexiter.Fake)
+
+				objectUnderTest := _core{
+					pkg:       fakePkg,
+					cliExiter: fakeCliExiter,
+					vos:       new(vos.Fake),
+				}
+
+				/* act */
+				objectUnderTest.PkgValidate(providedPkgRef)
 
 				/* assert */
 

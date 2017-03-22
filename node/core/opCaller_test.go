@@ -108,6 +108,81 @@ var _ = Context("opCaller", func() {
 				providedRootOpId := "dummyRootOpId"
 				providedScgOpCall := &model.ScgOpCall{}
 
+				errorsReturnedFromValidate := []error{
+					errors.New("dummyError1"),
+					errors.New("dummyError2"),
+				}
+
+				expectedErrorMsg :=
+					fmt.Errorf(`
+
+-
+  Package manifest %v invalid.
+  Error(s):
+    - %v
+    - %v
+-`,
+						providedPkgRef,
+						errorsReturnedFromValidate[0],
+						errorsReturnedFromValidate[1],
+					)
+
+				expectedEvent := &model.Event{
+					Timestamp: time.Now().UTC(),
+					OpEncounteredError: &model.OpEncounteredErrorEvent{
+						Msg:      expectedErrorMsg.Error(),
+						OpId:     providedOpId,
+						PkgRef:   providedPkgRef,
+						RootOpId: providedRootOpId,
+					},
+				}
+
+				fakePkg := new(pkg.Fake)
+				fakePkg.ValidateReturns(errorsReturnedFromValidate)
+
+				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
+				fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
+
+				fakePubSub := new(pubsub.Fake)
+
+				objectUnderTest := newOpCaller(
+					fakePkg,
+					fakePubSub,
+					fakeDCGNodeRepo,
+					new(fakeCaller),
+					new(uniquestring.Fake),
+					new(validate.Fake),
+				)
+
+				/* act */
+				objectUnderTest.Call(
+					providedInboundScope,
+					providedOpId,
+					providedPkgRef,
+					providedRootOpId,
+					providedScgOpCall,
+				)
+
+				/* assert */
+				actualEvent := fakePubSub.PublishArgsForCall(0)
+
+				// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
+				// set temporal fields to expected vals since they're already asserted
+				actualEvent.Timestamp = expectedEvent.Timestamp
+
+				Expect(actualEvent).To(Equal(expectedEvent))
+			})
+		})
+		Context("pkg.Get errors", func() {
+			It("should call pubSub.Publish w/ expected args", func() {
+				/* arrange */
+				providedInboundScope := map[string]*model.Data{}
+				providedOpId := "dummyOpId"
+				providedPkgRef := "dummyPkgRef"
+				providedRootOpId := "dummyRootOpId"
+				providedScgOpCall := &model.ScgOpCall{}
+
 				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
@@ -542,7 +617,7 @@ var _ = Context("opCaller", func() {
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEncounteredError: &model.OpEncounteredErrorEvent{
-									Msg:      "dummyError",
+									Msg:      "Error encountered during call",
 									OpId:     providedOpId,
 									PkgRef:   providedPkgRef,
 									RootOpId: providedRootOpId,
