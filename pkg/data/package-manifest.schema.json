@@ -412,10 +412,19 @@
             },
             "dirs": {
               "type": "object",
+              "description": "Directories in the container",
               "patternProperties": {
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                  "description": "Absolute container dir path mapped to a dir variable or absolute package dir path. If no package dir path provided, container dir path will be used.",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "description": "(Container & package dir path are identical)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "dir variable or path in package",
+                      "type": "string"
+                    }
+                  ]
                 }
               },
               "additionalProperties": false
@@ -432,10 +441,19 @@
             },
             "files": {
               "type": "object",
+              "description": "Files in the container",
               "patternProperties": {
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                  "description": "Absolute container file path mapped to a file variable or absolute package file path. If no package file path provided, container file path will be used.",
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "description": "(Container & package file path are identical)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "file variable or path in package",
+                      "type": "string"
+                    }
+                  ]
                 }
               },
               "additionalProperties": false
