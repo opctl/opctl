@@ -42,7 +42,7 @@ func New() Pkg {
 	yaml := format.NewYamlFormat()
 	packageViewFactory := newPackageViewFactory(fileSystem, yaml)
 
-	manifestSchemaBytes, err := pkgDataPackagemanifestJsonBytes()
+	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}

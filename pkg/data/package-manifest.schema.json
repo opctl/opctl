@@ -159,7 +159,7 @@
               "type": "string"
             },
             "default": {
-              "type": "string"
+              "type": "number"
             },
             "isSecret": {
               "description": "If the number is secret",
