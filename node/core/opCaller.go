@@ -21,6 +21,7 @@ type opCaller interface {
 		opId string,
 		pkgRef string,
 		rootOpId string,
+		scgOpCall *model.ScgOpCall,
 	) (
 		err error,
 	)
@@ -58,6 +59,7 @@ func (this _opCaller) Call(
 	opId string,
 	pkgRef string,
 	rootOpId string,
+	scgOpCall *model.ScgOpCall,
 ) (
 	err error,
 ) {
@@ -139,10 +141,19 @@ func (this _opCaller) Call(
 		return
 	}
 
-	this.applyParamDefaultsToScope(inboundScope, pkg.Inputs)
+	inputs := map[string]*model.Data{}
+	for inputName, scopeName := range scgOpCall.Inputs {
+		if "" == scopeName {
+			// when not explicitly provided, set scopeName to inputName
+			scopeName = inputName
+		}
+		inputs[inputName] = inboundScope[scopeName]
+	}
+
+	this.applyParamDefaultsToScope(inputs, pkg.Inputs)
 
 	// validate inputs
-	err = this.validateScope("input", inboundScope, pkg.Inputs)
+	err = this.validateScope("input", inputs, pkg.Inputs)
 	if nil != err {
 		return
 	}
@@ -162,7 +173,7 @@ func (this _opCaller) Call(
 
 	err = this.caller.Call(
 		dcgOpCall.ChildCallId,
-		inboundScope,
+		inputs,
 		pkg.Run,
 		pkgRef,
 		rootOpId,

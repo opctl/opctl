@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"path"
-	"path/filepath"
 )
 
 type caller interface {
@@ -65,8 +64,9 @@ func (this _caller) Call(
 		err = this.opCaller.Call(
 			inboundScope,
 			callId,
-			path.Join(filepath.Dir(pkgRef), scg.Op.Ref),
+			path.Join(path.Dir(pkgRef), scg.Op.Ref),
 			rootOpId,
+			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
 		err = this.parallelCaller.Call(

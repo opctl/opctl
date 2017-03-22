@@ -52,7 +52,7 @@ func (this *pubSub) Subscribe(
 ) {
 	this.subscriptionsMutex.Lock()
 	defer this.subscriptionsMutex.Unlock()
-	this.subscriptions[channel] = make(chan *model.Event, 1000)
+	this.subscriptions[channel] = make(chan *model.Event, 10000)
 
 	go func() {
 		for _, event := range this.eventRepo.List(filter) {
