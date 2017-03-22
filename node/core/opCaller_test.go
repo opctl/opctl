@@ -34,6 +34,7 @@ var _ = Context("opCaller", func() {
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
+			providedScgOpCall := &model.ScgOpCall{}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:       providedOpId,
@@ -59,6 +60,7 @@ var _ = Context("opCaller", func() {
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
+				providedScgOpCall,
 			)
 
 			/* assert */
@@ -70,6 +72,7 @@ var _ = Context("opCaller", func() {
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
+			providedScgOpCall := &model.ScgOpCall{}
 
 			expectedPkgRef := providedPkgRef
 
@@ -90,6 +93,7 @@ var _ = Context("opCaller", func() {
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
+				providedScgOpCall,
 			)
 
 			/* assert */
@@ -102,6 +106,7 @@ var _ = Context("opCaller", func() {
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
+				providedScgOpCall := &model.ScgOpCall{}
 
 				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
@@ -139,6 +144,7 @@ var _ = Context("opCaller", func() {
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
+					providedScgOpCall,
 				)
 
 				/* assert */
@@ -164,6 +170,14 @@ var _ = Context("opCaller", func() {
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
+				providedScgOpCall := &model.ScgOpCall{
+					Inputs: map[string]string{
+						"dummyVar1Name": "",
+						"dummyVar2Name": "",
+						"dummyVar3Name": "",
+						"dummyVar4Name": "",
+					},
+				}
 
 				opReturnedFromPkg := model.PackageView{
 					Inputs: map[string]*model.Param{
@@ -206,6 +220,7 @@ var _ = Context("opCaller", func() {
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
+					providedScgOpCall,
 				)
 
 				/* assert */
@@ -223,6 +238,7 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
+					providedScgOpCall := &model.ScgOpCall{}
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -281,6 +297,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
+						providedScgOpCall,
 					)
 
 					/* assert */
@@ -301,6 +318,7 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
+					providedScgOpCall := &model.ScgOpCall{}
 
 					expectedEvent := &model.Event{
 						Timestamp: time.Now().UTC(),
@@ -328,6 +346,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
+						providedScgOpCall,
 					)
 
 					/* assert */
@@ -346,6 +365,7 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
+					providedScgOpCall := &model.ScgOpCall{}
 
 					opReturnedFromPkg := model.PackageView{
 						Run: &model.Scg{
@@ -380,6 +400,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
+						providedScgOpCall,
 					)
 
 					/* assert */
@@ -401,6 +422,7 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
+					providedScgOpCall := &model.ScgOpCall{}
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -419,6 +441,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
+						providedScgOpCall,
 					)
 
 					/* assert */
@@ -431,6 +454,7 @@ var _ = Context("opCaller", func() {
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
+						providedScgOpCall := &model.ScgOpCall{}
 
 						expectedEvent := &model.Event{
 							Timestamp: time.Now().UTC(),
@@ -459,6 +483,7 @@ var _ = Context("opCaller", func() {
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
+							providedScgOpCall,
 						)
 
 						/* assert */
@@ -479,6 +504,7 @@ var _ = Context("opCaller", func() {
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
+						providedScgOpCall := &model.ScgOpCall{}
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -498,6 +524,7 @@ var _ = Context("opCaller", func() {
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
+							providedScgOpCall,
 						)
 
 						/* assert */
@@ -510,6 +537,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
+							providedScgOpCall := &model.ScgOpCall{}
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
@@ -546,6 +574,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
+								providedScgOpCall,
 							)
 
 							/* assert */
@@ -564,6 +593,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
+							providedScgOpCall := &model.ScgOpCall{}
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
@@ -600,6 +630,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
+								providedScgOpCall,
 							)
 
 							/* assert */
@@ -620,6 +651,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
+							providedScgOpCall := &model.ScgOpCall{}
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
@@ -651,6 +683,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
+								providedScgOpCall,
 							)
 
 							/* assert */

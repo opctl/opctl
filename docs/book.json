@@ -11,14 +11,14 @@
   ],
   "pluginsConfig": {
     "edit-link": {
-      "base": "https://github.com/opctl/opctl/edit/master/opctl",
+      "base": "https://github.com/opctl/opctl/edit/master/docs",
       "label": "edit this page"
     },
     "ga": {
-      "token": "UA-79889286-1"
+      "token": "UA-94109316-1"
     },
     "github-buttons": {
-      "repo": "opspec-io/opctl",
+      "repo": "opctl/opctl",
       "types": [
         "star",
         "watch"
@@ -26,5 +26,5 @@
       "size": "small"
     }
   },
-  "title": "opspec"
+  "title": "opctl"
 }

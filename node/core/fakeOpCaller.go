@@ -8,13 +8,14 @@ import (
 )
 
 type fakeOpCaller struct {
-	CallStub        func(inputScope map[string]*model.Data, opId string, pkgRef string, rootOpId string) (err error)
+	CallStub        func(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.ScgOpCall) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		inputScope map[string]*model.Data
-		opId       string
-		pkgRef     string
-		rootOpId   string
+		inboundScope map[string]*model.Data
+		opId         string
+		pkgRef       string
+		rootOpId     string
+		scgOpCall    *model.ScgOpCall
 	}
 	callReturns struct {
 		result1 error
@@ -26,19 +27,20 @@ type fakeOpCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpCaller) Call(inputScope map[string]*model.Data, opId string, pkgRef string, rootOpId string) (err error) {
+func (fake *fakeOpCaller) Call(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.ScgOpCall) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		inputScope map[string]*model.Data
-		opId       string
-		pkgRef     string
-		rootOpId   string
-	}{inputScope, opId, pkgRef, rootOpId})
-	fake.recordInvocation("Call", []interface{}{inputScope, opId, pkgRef, rootOpId})
+		inboundScope map[string]*model.Data
+		opId         string
+		pkgRef       string
+		rootOpId     string
+		scgOpCall    *model.ScgOpCall
+	}{inboundScope, opId, pkgRef, rootOpId, scgOpCall})
+	fake.recordInvocation("Call", []interface{}{inboundScope, opId, pkgRef, rootOpId, scgOpCall})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(inputScope, opId, pkgRef, rootOpId)
+		return fake.CallStub(inboundScope, opId, pkgRef, rootOpId, scgOpCall)
 	}
 	if specificReturn {
 		return ret.result1
@@ -52,10 +54,10 @@ func (fake *fakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, string) {
+func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, string, *model.ScgOpCall) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].inputScope, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].scgOpCall
 }
 
 func (fake *fakeOpCaller) CallReturns(result1 error) {

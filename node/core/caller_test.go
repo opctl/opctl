@@ -103,11 +103,13 @@ var _ = Context("caller", func() {
 				actualArgs,
 					actualCallId,
 					actualPkgRef,
-					actualRootOpId := fakeOpCaller.CallArgsForCall(0)
+					actualRootOpId,
+					actualScg := fakeOpCaller.CallArgsForCall(0)
 				Expect(actualCallId).To(Equal(providedCallId))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualPkgRef).To(Equal(path.Join(filepath.Dir(providedPkgRef), providedScg.Op.Ref)))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
+				Expect(actualScg).To(Equal(providedScg.Op))
 			})
 		})
 		Context("Parallel SCG", func() {
