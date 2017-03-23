@@ -275,7 +275,21 @@ var _ = Context("opCaller", func() {
 
 				expectedCalls := map[*model.Data]*model.Param{}
 				for inputName, input := range opReturnedFromPkg.Inputs {
-					expectedCalls[providedInboundScope[inputName]] = input
+					value := providedInboundScope[inputName]
+					switch {
+					case nil != input.Number:
+						if nil == value {
+							// apply default; value not in scope
+							value = &model.Data{Number: input.Number.Default}
+						}
+					case nil != input.String:
+						if nil == value {
+							// apply default; value not in scope
+							value = &model.Data{String: input.String.Default}
+						}
+					}
+
+					expectedCalls[value] = input
 				}
 
 				fakeValidate := new(validate.Fake)
@@ -344,7 +358,7 @@ var _ = Context("opCaller", func() {
   Error(s):
     - %v
 
--`, "dummyVar1Name", "", errorReturnedFromValidate)
+-`, "dummyVar1Name", "************", errorReturnedFromValidate)
 
 					fakePubSub := new(pubsub.Fake)
 					expectedEvent := &model.Event{
