@@ -549,10 +549,12 @@ var _ = Context("opCaller", func() {
 							providedRootOpId := "dummyRootOpId"
 							providedScgOpCall := &model.ScgOpCall{}
 
+							callErr := errors.New("dummyError")
+
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
 								OpEncounteredError: &model.OpEncounteredErrorEvent{
-									Msg:      "Error encountered during call",
+									Msg:      callErr.Error(),
 									OpId:     providedOpId,
 									PkgRef:   providedPkgRef,
 									RootOpId: providedRootOpId,
@@ -566,7 +568,7 @@ var _ = Context("opCaller", func() {
 
 							fakeCaller := new(fakeCaller)
 							fakeCaller.CallReturns(
-								errors.New(expectedEvent.OpEncounteredError.Msg),
+								callErr,
 							)
 
 							objectUnderTest := newOpCaller(

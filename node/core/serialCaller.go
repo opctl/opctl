@@ -3,7 +3,6 @@ package core
 //go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
-	"errors"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
@@ -74,15 +73,14 @@ func (this _serialCaller) Call(
 
 	for _, scgCall := range scgSerialCall {
 		childCallId := this.uniqueStringFactory.Construct()
-		callErr := this.caller.Call(
+		err = this.caller.Call(
 			childCallId,
 			scope,
 			scgCall,
 			pkgRef,
 			rootOpId,
 		)
-		if nil != callErr {
-			err = errors.New("Error encountered during serial call")
+		if nil != err {
 			// end run immediately on any error
 			return
 		}

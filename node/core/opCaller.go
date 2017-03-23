@@ -172,15 +172,14 @@ func (this _opCaller) Call(
 
 	go this.txOutputs(dcgOpCall, &pkg)
 
-	callErr := this.caller.Call(
+	err = this.caller.Call(
 		dcgOpCall.ChildCallId,
 		inputs,
 		pkg.Run,
 		pkgRef,
 		rootOpId,
 	)
-	if nil != callErr {
-		err = errors.New("Error encountered during call")
+	if nil != err {
 		return
 	}
 
