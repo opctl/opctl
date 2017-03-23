@@ -244,7 +244,7 @@ func (this _opCaller) applyParamDefaultsToScope(
 	params map[string]*model.Param,
 ) {
 	for paramName, param := range params {
-		this.getValueOrDefault(paramName, scope[paramName], param)
+		scope[paramName] = this.getValueOrDefault(paramName, scope[paramName], param)
 	}
 }
 
