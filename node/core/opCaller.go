@@ -334,10 +334,14 @@ func (this _opCaller) validateScope(
 	scope map[string]*model.Data,
 	params map[string]*model.Param,
 ) error {
+	messageBuffer := bytes.NewBufferString("")
 	for paramName, param := range params {
 		if err := this.validateParam(scopeType, paramName, scope[paramName], param); nil != err {
-			return err
+			messageBuffer.WriteString(err.Error())
 		}
+	}
+	if messageBuffer.Len() > 0 {
+		return errors.New(messageBuffer.String())
 	}
 	return nil
 }
