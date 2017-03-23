@@ -3,21 +3,23 @@
 All notable changes to this project will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
-## \[Unreleased]
+## 0.1.15 - 2017-03-23
 
 ### Added
 
-- Merge cli & Engine in preparation for P2P
 - Add `node` command w/ `create` and `kill` subcommands
-- [Add ability to override default (`.opspec`) package location for `create`, `set`, `run`, and `ls` `op` sub commands](https://github.com/opctl/opctl/issues/44)
+- [Add ability to override default (`.opspec`) package location for `pkg set`, `pkg create`, `run`, and `ls` commands](https://github.com/opctl/opctl/issues/44)
 - [Add opspec 0.1.3 support](https://github.com/opctl/opctl/issues/48)
 - [Add output coloring](https://github.com/opctl/opctl/issues/49)
-- Add input/output validation
-- Add ability to subscribe to events w/ a provided opId
+- Add input/output constraint validation
+- Added package validation via `pkg validate` command & before `run`
+- Add `pkg` command w/ `validate`, `set`, `create` subcommands
 
 ### Removed
 
 - support for < [opspec 0.1.3](https://opspec.io)
+- `collection` command
+- `op` command
 
 ## 0.1.10 - 2016-11-21
 
