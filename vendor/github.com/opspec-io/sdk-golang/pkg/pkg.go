@@ -6,7 +6,6 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/opspec-io/sdk-golang/util/fs"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 type Pkg interface {
@@ -42,29 +41,17 @@ func New() Pkg {
 	yaml := format.NewYamlFormat()
 	packageViewFactory := newPackageViewFactory(fileSystem, yaml)
 
-	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
-	if nil != err {
-		panic(err)
-	}
-
-	manifestSchema, err := gojsonschema.NewSchema(
-		gojsonschema.NewBytesLoader(manifestSchemaBytes),
-	)
-	if err != nil {
-		panic(err)
-	}
-
 	return pkg{
 		fileSystem:         fileSystem,
-		manifestSchema:     manifestSchema,
 		packageViewFactory: packageViewFactory,
 		yaml:               yaml,
+		validator:          newValidator(),
 	}
 }
 
 type pkg struct {
 	fileSystem         fs.FileSystem
-	manifestSchema     *gojsonschema.Schema
 	packageViewFactory packageViewFactory
 	yaml               format.Format
+	validator          validator
 }

@@ -70,7 +70,6 @@ var _ = Context("pkgValidate", func() {
 
 				expectedExitReq := cliexiter.ExitReq{
 					Message: fmt.Sprintf(`
-
 -
   Error(s):
     - %v

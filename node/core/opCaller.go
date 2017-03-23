@@ -135,24 +135,6 @@ func (this _opCaller) Call(
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
-	// validate pkg
-	errs := this.pkg.Validate(pkgRef)
-	if len(errs) > 0 {
-		messageBuffer := bytes.NewBufferString(
-			fmt.Sprintf(`
--
-  Package manifest %v invalid.
-  Error(s):`, pkgRef))
-		for _, validationError := range errs {
-			messageBuffer.WriteString(fmt.Sprintf(`
-    - %v`, validationError.Error()))
-		}
-		err = fmt.Errorf(`
-%v
--`, messageBuffer.String())
-		return
-	}
-
 	pkg, err := this.pkg.Get(
 		pkgRef,
 	)
