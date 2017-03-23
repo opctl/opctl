@@ -3,7 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeParallelCaller.go --fake-name fakeParallelCaller ./ parallelCaller
 
 import (
-	"errors"
+	"bytes"
+	"fmt"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
@@ -90,9 +91,24 @@ func (this _parallelCaller) Call(
 		}(childCall)
 	}
 	wg.Wait()
+	close(childErrChannel)
 
 	if len(childErrChannel) > 0 {
-		err = errors.New("Error(s) encountered during parallel call")
+
+		messageBuffer := bytes.NewBufferString(
+			fmt.Sprint(`
+-
+  Error during parallel call.
+  Error(s):`))
+		for validationError := range childErrChannel {
+			messageBuffer.WriteString(fmt.Sprintf(`
+    - %v`,
+				validationError.Error(),
+			))
+		}
+		err = fmt.Errorf(
+			`%v
+-`, messageBuffer.String())
 	}
 
 	return

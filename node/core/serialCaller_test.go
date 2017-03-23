@@ -101,9 +101,10 @@ var _ = Context("serialCaller", func() {
 					},
 				}
 
-				expectedError := errors.New("Error encountered during serial call")
+				callErr := errors.New("dummyErr")
+
 				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(errors.New("dummyError"))
+				fakeCaller.CallReturns(callErr)
 
 				objectUnderTest := newSerialCaller(fakeCaller, new(pubsub.Fake), new(uniquestring.Fake))
 
@@ -117,7 +118,7 @@ var _ = Context("serialCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(expectedError))
+				Expect(actualErr).To(Equal(callErr))
 			})
 		})
 		Context("caller doesn't error", func() {

@@ -2,6 +2,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/pubsub"
@@ -97,9 +98,25 @@ var _ = Context("parallelCaller", func() {
 					},
 				}
 
-				expectedError := errors.New("Error(s) encountered during parallel call")
+				callErr := errors.New("dummyError")
+
+				expectedError := fmt.Errorf(`
+-
+  Error during parallel call.
+  Error(s):
+    - %v
+    - %v
+    - %v
+    - %v
+-`,
+					callErr,
+					callErr,
+					callErr,
+					callErr,
+				)
+
 				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(errors.New("dummyError"))
+				fakeCaller.CallReturns(callErr)
 
 				returnedUniqueString := "dummyUniqueString"
 				fakeUniqueStringFactory := new(uniquestring.Fake)
