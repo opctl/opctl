@@ -41,8 +41,8 @@ func (this _core) PkgValidate(
     - %v`, validationError.Error()))
 		}
 		this.cliExiter.Exit(cliexiter.ExitReq{
-			Message: fmt.Sprintf(`
-%v
+			Message: fmt.Sprintf(
+				`%v
 -`, messageBuffer.String()),
 			Code: 1})
 	} else {

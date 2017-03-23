@@ -108,81 +108,6 @@ var _ = Context("opCaller", func() {
 				providedRootOpId := "dummyRootOpId"
 				providedScgOpCall := &model.ScgOpCall{}
 
-				errorsReturnedFromValidate := []error{
-					errors.New("dummyError1"),
-					errors.New("dummyError2"),
-				}
-
-				expectedErrorMsg :=
-					fmt.Errorf(`
-
--
-  Package manifest %v invalid.
-  Error(s):
-    - %v
-    - %v
--`,
-						providedPkgRef,
-						errorsReturnedFromValidate[0],
-						errorsReturnedFromValidate[1],
-					)
-
-				expectedEvent := &model.Event{
-					Timestamp: time.Now().UTC(),
-					OpEncounteredError: &model.OpEncounteredErrorEvent{
-						Msg:      expectedErrorMsg.Error(),
-						OpId:     providedOpId,
-						PkgRef:   providedPkgRef,
-						RootOpId: providedRootOpId,
-					},
-				}
-
-				fakePkg := new(pkg.Fake)
-				fakePkg.ValidateReturns(errorsReturnedFromValidate)
-
-				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
-				fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
-
-				fakePubSub := new(pubsub.Fake)
-
-				objectUnderTest := newOpCaller(
-					fakePkg,
-					fakePubSub,
-					fakeDCGNodeRepo,
-					new(fakeCaller),
-					new(uniquestring.Fake),
-					new(validate.Fake),
-				)
-
-				/* act */
-				objectUnderTest.Call(
-					providedInboundScope,
-					providedOpId,
-					providedPkgRef,
-					providedRootOpId,
-					providedScgOpCall,
-				)
-
-				/* assert */
-				actualEvent := fakePubSub.PublishArgsForCall(0)
-
-				// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
-				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-				// set temporal fields to expected vals since they're already asserted
-				actualEvent.Timestamp = expectedEvent.Timestamp
-
-				Expect(actualEvent).To(Equal(expectedEvent))
-			})
-		})
-		Context("pkg.Get errors", func() {
-			It("should call pubSub.Publish w/ expected args", func() {
-				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
-				providedOpId := "dummyOpId"
-				providedPkgRef := "dummyPkgRef"
-				providedRootOpId := "dummyRootOpId"
-				providedScgOpCall := &model.ScgOpCall{}
-
 				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEncounteredError: &model.OpEncounteredErrorEvent{
@@ -237,59 +162,55 @@ var _ = Context("opCaller", func() {
 			It("should call validate.Param w/ expected args", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{
-					"dummyVar1Name": {String: "dummyVar1Data"},
-					"dummyVar2Name": {File: "dummyVar2Data"},
-					"dummyVar3Name": {Dir: "dummyVar3Data"},
-					"dummyVar4Name": {Socket: "dummyVar4Data"},
+					"name1": {String: "val1"},
+					"name2": {File: "val2"},
+					"name3": {Dir: "val3"},
+					"name4": {Socket: "val4"},
+					"name5": {Number: 5},
 				}
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
 				providedScgOpCall := &model.ScgOpCall{
 					Inputs: map[string]string{
-						"dummyVar1Name": "",
-						"dummyVar2Name": "",
-						"dummyVar3Name": "",
-						"dummyVar4Name": "",
+						"name1": "",
+						"name2": "",
+						"name3": "",
+						"name4": "",
+						"name5": "",
+						"name6": "",
+						"name7": "",
 					},
 				}
 
-				opReturnedFromPkg := model.PackageView{
+				returnedPkg := model.PackageView{
 					Inputs: map[string]*model.Param{
-						"dummyVar1Name": {
-							String: &model.StringParam{},
-						},
-						"dummyVar2Name": {
-							File: &model.FileParam{},
-						},
-						"dummyVar3Name": {
-							Dir: &model.DirParam{},
-						},
-						"dummyVar4Name": {
-							Socket: &model.SocketParam{},
-						},
+						"name1": {String: &model.StringParam{}},
+						"name2": {File: &model.FileParam{}},
+						"name3": {Dir: &model.DirParam{}},
+						"name4": {Socket: &model.SocketParam{}},
+						"name5": {Number: &model.NumberParam{}},
+						"name6": {Number: &model.NumberParam{Default: 6}},
+						"name7": {String: &model.StringParam{Default: "seven"}},
 					},
 				}
 				fakePkg := new(pkg.Fake)
-				fakePkg.GetReturns(opReturnedFromPkg, nil)
+				fakePkg.GetReturns(returnedPkg, nil)
 
-				expectedCalls := map[*model.Data]*model.Param{}
-				for inputName, input := range opReturnedFromPkg.Inputs {
-					value := providedInboundScope[inputName]
-					switch {
-					case nil != input.Number:
-						if nil == value {
-							// apply default; value not in scope
-							value = &model.Data{Number: input.Number.Default}
-						}
-					case nil != input.String:
-						if nil == value {
-							// apply default; value not in scope
-							value = &model.Data{String: input.String.Default}
-						}
-					}
-
-					expectedCalls[value] = input
+				expectedCalls := map[model.Data]*model.Param{
+					// from scope
+					*providedInboundScope["name1"]: returnedPkg.Inputs["name1"],
+					*providedInboundScope["name2"]: returnedPkg.Inputs["name2"],
+					*providedInboundScope["name3"]: returnedPkg.Inputs["name3"],
+					*providedInboundScope["name4"]: returnedPkg.Inputs["name4"],
+					*providedInboundScope["name5"]: returnedPkg.Inputs["name5"],
+					// from defaults
+					model.Data{
+						Number: returnedPkg.Inputs["name6"].Number.Default,
+					}: returnedPkg.Inputs["name6"],
+					model.Data{
+						String: returnedPkg.Inputs["name7"].String.Default,
+					}: returnedPkg.Inputs["name7"],
 				}
 
 				fakeValidate := new(validate.Fake)
@@ -313,10 +234,10 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				actualCalls := map[*model.Data]*model.Param{}
+				actualCalls := map[model.Data]*model.Param{}
 				for i := 0; i < fakeValidate.ParamCallCount(); i++ {
 					actualVarData, actualParam := fakeValidate.ParamArgsForCall(i)
-					actualCalls[actualVarData] = actualParam
+					actualCalls[*actualVarData] = actualParam
 				}
 				Expect(actualCalls).To(Equal(expectedCalls))
 			})
