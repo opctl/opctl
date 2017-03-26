@@ -85,6 +85,35 @@
         "file"
       ]
     },
+    "usernamePasswordAuth":{
+      "description": "Authentication via username and password",
+      "properties": {
+        "username": {
+          "$ref": "#/definitions/interpolatedString"
+        },
+        "password": {
+          "$ref": "#/definitions/interpolatedString"
+        }
+      },
+      "required":[
+        "username",
+        "password"
+      ],
+      "additionalProperties": false
+    },
+    "sshPublicKeyAuth":{
+      "description": "Authentication via SSH Public Key",
+      "properties": {
+        "sshPublicKey": {
+          "description": "String in [SSH Public Key File Format](https://tools.ietf.org/html/rfc4716)",
+          "$ref": "#/definitions/interpolatedString"
+        }
+      },
+      "required":[
+        "publicKey"
+      ],
+      "additionalProperties": false
+    },
     "numberConstraints": {
       "title": "numberConstraints",
       "type": "object",
@@ -431,9 +460,9 @@
             },
             "envVars": {
               "type": "object",
+              "description": "Environment variables in the container",
               "patternProperties": {
                 "^[^=]+$": {
-                  "description": "An environment variable in a container",
                   "$ref": "#/definitions/interpolatedString"
                 }
               },
@@ -465,13 +494,8 @@
                   "description": "Reference to an image",
                   "$ref": "#/definitions/interpolatedString"
                 },
-                "pullIdentity": {
-                  "description": "Identity used to pull the image",
-                  "$ref": "#/definitions/interpolatedString"
-                },
-                "pullSecret": {
-                  "description": "Secret used to pull the image",
-                  "$ref": "#/definitions/interpolatedString"
+                "pullAuth":{
+                  "$ref":"#/definitions/usernamePasswordAuth"
                 }
               },
               "required": [
@@ -550,8 +574,33 @@
         "op": {
           "type": "object",
           "properties": {
+            "package":{
+              "type":"object",
+              "properties":{
+                "ref": {
+                  "description": "Reference to a package",
+                  "$ref": "#/definitions/interpolatedString"
+                },
+                "pullAuth":{
+                  "oneOf":[
+                    {
+                      "$ref":"#/definitions/usernamePasswordAuth"
+                    },
+                    {
+                      "$ref":"#/definitions/sshPublicKeyAuth"
+                    }
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "ref"
+              ],
+              "additionalProperties": false
+            },
             "ref": {
               "description": "Reference to an op",
+              "deprecated": true,
               "type": "string"
             },
             "inputs": {
@@ -589,8 +638,17 @@
               "additionalProperties": false
             }
           },
-          "required": [
-            "ref"
+          "oneOf":[
+            {
+              "required": [
+                "ref"
+              ]
+            },
+            {
+              "required":[
+                "package"
+              ]
+            }
           ],
           "additionalProperties": false
         }

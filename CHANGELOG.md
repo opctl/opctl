@@ -3,6 +3,20 @@
 All notable changes to the spec will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## \[Unreleased]
+
+### Deprecated
+
+- `ref` attribute in
+  [package-manifest.schema.json#/definitions/opCall](spec/package-manifest.schema.json#/definitions/opCall).
+  Use new `pkg` attribute.
+
+### Removed
+
+- `pullIdentity` & `pullSecret` attributes in
+  [package-manifest.schema.json#/definitions/containerCall](spec/package-manifest.schema.json#/definitions/containerCall).
+  Use new `pullAuth` attribute.
+
 ## \[0.1.3] - 2017-03-06
 
 ### Added
@@ -20,12 +34,13 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
   having `ref` attribute equal to existing string and pass
   `inputs`/`outputs` as applicable.
 - String parameters must now be declared as an object:
-  ```yaml
-  paramName:
+
+```yaml
+paramName:
       string:
         description: ...
         # and so on... 
-  ```
+```
 
 ### Removed
 
