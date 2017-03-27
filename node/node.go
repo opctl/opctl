@@ -30,13 +30,6 @@ func New() {
 	// cleanup [legacy] opspec.engine container if exists; ignore errors
 	containerProvider.DeleteContainerIfExists("opspec.engine")
 
-	// (re)create network; ignore errors
-	containerProvider.DeleteNetworkIfExists("opctl")
-	createNetworkErr := containerProvider.CreateNetwork("opctl")
-	if nil != createNetworkErr {
-		fmt.Print(createNetworkErr.Error())
-	}
-
 	// cleanup existing DCG (dynamic call graph) data
 	err = os.New().RemoveAll(dcgDataDirPath())
 	if nil != err {

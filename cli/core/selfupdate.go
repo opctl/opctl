@@ -42,9 +42,17 @@ func (this _core) SelfUpdate(
 		return // support fake exiter
 	}
 
-	// recreate local node so it's running updated version
-	this.nodeProvider.KillNodeIfExists("")
-	this.nodeProvider.CreateNode()
+	// kill local node to ensure outdated version not left running
+	err = this.nodeProvider.KillNodeIfExists("")
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{
+			Message: fmt.Sprintf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", err.Error()),
+			Code:    1,
+		})
+		return // support fake exiter
+	}
+
+	// @TODO start node maintaining previous user
 
 	this.cliExiter.Exit(cliexiter.ExitReq{
 		Message: fmt.Sprintf("Updated to new version: %s!\n", update.Version),

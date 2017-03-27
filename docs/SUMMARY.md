@@ -10,6 +10,7 @@
     * [node kill](cli/node_kill.md)
     * [pkg validate](cli/pkg_validate.md)
     * [run](cli/run.md)
+    * [self-update](cli/self_update.md)
     * [color](cli/color.md)
     * [help](cli/help.md)
 * [integrate](integrate/README.md)
