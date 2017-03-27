@@ -6,7 +6,7 @@ type Event struct {
 	ContainerExited          *ContainerExitedEvent          `json:"containerExitedEvent,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStartedEvent,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
-	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitEmpty"`
+	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`

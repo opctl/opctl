@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## 0.1.16 - 2017-03-26
+
+### Fixed
+
+- [Outputs internal to op call graph not initialized](https://github.com/opctl/opctl/issues/165)
+
 ## 0.1.15 - 2017-03-23
 
 ### Added
