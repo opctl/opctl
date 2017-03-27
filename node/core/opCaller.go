@@ -170,7 +170,7 @@ func (this _opCaller) Call(
 		},
 	)
 
-	go this.txOutputs(dcgOpCall, &pkg)
+	go this.txOutputs(dcgOpCall, scgOpCall)
 
 	err = this.caller.Call(
 		dcgOpCall.ChildCallId,
@@ -189,7 +189,7 @@ func (this _opCaller) Call(
 
 func (this _opCaller) txOutputs(
 	dcgOpCall *model.DCGOpCall,
-	pkg *model.PackageView,
+	scgOpCall *model.ScgOpCall,
 ) {
 	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)
@@ -206,8 +206,9 @@ eventLoop:
 			break eventLoop
 		case nil != event.OutputInitialized && event.OutputInitialized.CallId == dcgOpCall.ChildCallId:
 			childOutput := event.OutputInitialized
-			if _, ok := pkg.Outputs[childOutput.Name]; ok {
+			if _, ok := scgOpCall.Outputs[childOutput.Name]; ok {
 				this.pubSub.Publish(&model.Event{
+					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     childOutput.Name,
 						Value:    childOutput.Value,

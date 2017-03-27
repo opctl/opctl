@@ -115,6 +115,7 @@ func (this _containerCaller) txOutputs(
 	for socketAddr, name := range scgContainerCall.Sockets {
 		if "0.0.0.0" == socketAddr {
 			this.pubSub.Publish(&model.Event{
+				Timestamp: time.Now().UTC(),
 				OutputInitialized: &model.OutputInitializedEvent{
 					Name:     name,
 					Value:    &model.Data{Socket: dcgContainerCall.ContainerId},
@@ -130,6 +131,7 @@ func (this _containerCaller) txOutputs(
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
 				this.pubSub.Publish(&model.Event{
+					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
 						Value:    &model.Data{File: dcgHostFilePath},
@@ -146,6 +148,7 @@ func (this _containerCaller) txOutputs(
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
 			if scgContainerDirPath == dcgContainerDirPath {
 				this.pubSub.Publish(&model.Event{
+					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
 						Value:    &model.Data{Dir: dcgHostDirPath},
@@ -178,6 +181,7 @@ eventLoop:
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
 					this.pubSub.Publish(&model.Event{
+						Timestamp: time.Now().UTC(),
 						OutputInitialized: &model.OutputInitializedEvent{
 							Name:     name,
 							Value:    &model.Data{String: trimmedOutput},
@@ -195,6 +199,7 @@ eventLoop:
 				if trimmedOutput != rawOutput {
 					// if output trimming had effect we've got a match
 					this.pubSub.Publish(&model.Event{
+						Timestamp: time.Now().UTC(),
 						OutputInitialized: &model.OutputInitializedEvent{
 							Name:     name,
 							Value:    &model.Data{String: trimmedOutput},
