@@ -21,6 +21,13 @@ inputs:
       constraints: { format: docker-image-ref }
 run:
   serial:
-    - op: { ref: build-image, inputs: { buildContext, dockerSocket, imageRef } }
-    - op: { ref: login, inputs: { dockerSocket, dockerPassword, dockerUsername }, outputs: { dockerConfig } }
-    - op: { ref: push-image, inputs: { dockerConfig, dockerSocket, imageRef } }
+    - op:
+        pkg: { ref: build-image }
+        inputs: { buildContext, dockerSocket, imageRef }
+    - op:
+        pkg: { ref: login }
+        inputs: { dockerSocket, dockerPassword, dockerUsername }
+        outputs: { dockerConfig }
+    - op:
+        pkg: { ref: push-image }
+        inputs: { dockerConfig, dockerSocket, imageRef }

@@ -36,8 +36,8 @@ outputs:
       isSecret: true
 run:
   serial:
-    - op: 
-        ref: create-resource-group
+    - op:
+        pkg: { ref: create-resource-group }
         inputs: { subscriptionId, username, password, location, resourceGroupName }
     - container:
         image: { ref: microsoft/azure-cli }

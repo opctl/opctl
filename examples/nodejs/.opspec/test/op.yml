@@ -11,9 +11,14 @@ inputs:
       default: https://registry.npmjs.org/
 run:
   serial:
-    - op: { ref: install-deps, inputs: { npmRegistryUrl }, outputs: { appDir } }
+    - op:
+        pkg: { ref: install-deps }
+        inputs: { npmRegistryUrl }
+        outputs: { appDir }
     - parallel:
-      - op: { ref: debug-api, inputs: { appDir }, outputs: { apiSocket }}
-      - op: { ref: test-unit, inputs: { appDir } }
-      - op: { ref: test-style, inputs: { appDir } }
-      - op: { ref: test-acceptance, inputs: { appDir, apiSocket } }
+      - op:
+          pkg: { ref: test-unit }
+          inputs: { appDir }
+      - op:
+          pkg: { ref: test-style }
+          inputs: { appDir }
