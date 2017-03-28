@@ -26,14 +26,18 @@ func New() (
 	}
 	dockerClient.UpdateClientVersion(pingInfo.APIVersion)
 
-	containerProvider = _containerProvider{
+	objectUnderConstruction := _containerProvider{
 		dockerClient: dockerClient,
 		fs:           os.New(),
 		runtime:      vruntime.New(),
 	}
+	containerProvider = objectUnderConstruction
+
+	// ensure user defined network exists to allow inter container resolution via name
+	// @TODO: remove when socket outputs supported
+	err = objectUnderConstruction.EnsureNetworkExists("opctl")
 
 	return
-
 }
 
 type _containerProvider struct {

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## 0.1.18 - 2017-03-28
+
+### Changed
+
+- [Don't recreate node on self-update](https://github.com/opctl/opctl/issues/169)
+
+### Fixed
+
+- [Multiple opctl networks created leading to lack of inter-container connectivity](https://github.com/opctl/opctl/issues/167)
+
 ## 0.1.16 - 2017-03-26
 
 ### Fixed

@@ -9,28 +9,6 @@ import (
 )
 
 type Fake struct {
-	CreateNetworkStub        func(networkId string) (err error)
-	createNetworkMutex       sync.RWMutex
-	createNetworkArgsForCall []struct {
-		networkId string
-	}
-	createNetworkReturns struct {
-		result1 error
-	}
-	createNetworkReturnsOnCall map[int]struct {
-		result1 error
-	}
-	DeleteNetworkIfExistsStub        func(networkId string) (err error)
-	deleteNetworkIfExistsMutex       sync.RWMutex
-	deleteNetworkIfExistsArgsForCall []struct {
-		networkId string
-	}
-	deleteNetworkIfExistsReturns struct {
-		result1 error
-	}
-	deleteNetworkIfExistsReturnsOnCall map[int]struct {
-		result1 error
-	}
 	DeleteContainerIfExistsStub        func(containerId string) (err error)
 	deleteContainerIfExistsMutex       sync.RWMutex
 	deleteContainerIfExistsArgsForCall []struct {
@@ -69,102 +47,6 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
-}
-
-func (fake *Fake) CreateNetwork(networkId string) (err error) {
-	fake.createNetworkMutex.Lock()
-	ret, specificReturn := fake.createNetworkReturnsOnCall[len(fake.createNetworkArgsForCall)]
-	fake.createNetworkArgsForCall = append(fake.createNetworkArgsForCall, struct {
-		networkId string
-	}{networkId})
-	fake.recordInvocation("CreateNetwork", []interface{}{networkId})
-	fake.createNetworkMutex.Unlock()
-	if fake.CreateNetworkStub != nil {
-		return fake.CreateNetworkStub(networkId)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.createNetworkReturns.result1
-}
-
-func (fake *Fake) CreateNetworkCallCount() int {
-	fake.createNetworkMutex.RLock()
-	defer fake.createNetworkMutex.RUnlock()
-	return len(fake.createNetworkArgsForCall)
-}
-
-func (fake *Fake) CreateNetworkArgsForCall(i int) string {
-	fake.createNetworkMutex.RLock()
-	defer fake.createNetworkMutex.RUnlock()
-	return fake.createNetworkArgsForCall[i].networkId
-}
-
-func (fake *Fake) CreateNetworkReturns(result1 error) {
-	fake.CreateNetworkStub = nil
-	fake.createNetworkReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) CreateNetworkReturnsOnCall(i int, result1 error) {
-	fake.CreateNetworkStub = nil
-	if fake.createNetworkReturnsOnCall == nil {
-		fake.createNetworkReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.createNetworkReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) DeleteNetworkIfExists(networkId string) (err error) {
-	fake.deleteNetworkIfExistsMutex.Lock()
-	ret, specificReturn := fake.deleteNetworkIfExistsReturnsOnCall[len(fake.deleteNetworkIfExistsArgsForCall)]
-	fake.deleteNetworkIfExistsArgsForCall = append(fake.deleteNetworkIfExistsArgsForCall, struct {
-		networkId string
-	}{networkId})
-	fake.recordInvocation("DeleteNetworkIfExists", []interface{}{networkId})
-	fake.deleteNetworkIfExistsMutex.Unlock()
-	if fake.DeleteNetworkIfExistsStub != nil {
-		return fake.DeleteNetworkIfExistsStub(networkId)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.deleteNetworkIfExistsReturns.result1
-}
-
-func (fake *Fake) DeleteNetworkIfExistsCallCount() int {
-	fake.deleteNetworkIfExistsMutex.RLock()
-	defer fake.deleteNetworkIfExistsMutex.RUnlock()
-	return len(fake.deleteNetworkIfExistsArgsForCall)
-}
-
-func (fake *Fake) DeleteNetworkIfExistsArgsForCall(i int) string {
-	fake.deleteNetworkIfExistsMutex.RLock()
-	defer fake.deleteNetworkIfExistsMutex.RUnlock()
-	return fake.deleteNetworkIfExistsArgsForCall[i].networkId
-}
-
-func (fake *Fake) DeleteNetworkIfExistsReturns(result1 error) {
-	fake.DeleteNetworkIfExistsStub = nil
-	fake.deleteNetworkIfExistsReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) DeleteNetworkIfExistsReturnsOnCall(i int, result1 error) {
-	fake.DeleteNetworkIfExistsStub = nil
-	if fake.deleteNetworkIfExistsReturnsOnCall == nil {
-		fake.deleteNetworkIfExistsReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.deleteNetworkIfExistsReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *Fake) DeleteContainerIfExists(containerId string) (err error) {
@@ -317,10 +199,6 @@ func (fake *Fake) RunContainerReturnsOnCall(i int, result1 error) {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.createNetworkMutex.RLock()
-	defer fake.createNetworkMutex.RUnlock()
-	fake.deleteNetworkIfExistsMutex.RLock()
-	defer fake.deleteNetworkIfExistsMutex.RUnlock()
 	fake.deleteContainerIfExistsMutex.RLock()
 	defer fake.deleteContainerIfExistsMutex.RUnlock()
 	fake.networkContainerMutex.RLock()

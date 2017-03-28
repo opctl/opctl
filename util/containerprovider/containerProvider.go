@@ -8,14 +8,6 @@ import (
 )
 
 type ContainerProvider interface {
-	CreateNetwork(
-		networkId string,
-	) (err error)
-
-	DeleteNetworkIfExists(
-		networkId string,
-	) (err error)
-
 	DeleteContainerIfExists(
 		containerId string,
 	) (err error)
