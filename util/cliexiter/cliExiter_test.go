@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/opctl/util/vos"
+	"github.com/virtual-go/vos"
 )
 
 var _ = Context("cliExiter", func() {

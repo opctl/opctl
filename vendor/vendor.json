@@ -551,6 +551,36 @@
 			"revisionTime": "2016-12-29T17:44:48Z"
 		},
 		{
+			"checksumSHA1": "bW5l+WyYsqFRBUID1opvnjHGVIY=",
+			"path": "github.com/virtual-go/dircopier",
+			"revision": "dbd6f32cdf6c9af00f09bd56842a4876151d0fd6",
+			"revisionTime": "2017-04-01T22:50:51Z"
+		},
+		{
+			"checksumSHA1": "IB8g7B3hg6tE3yz/4uJkHXy4RzI=",
+			"path": "github.com/virtual-go/filecopier",
+			"revision": "ce7a02b5914a92d1c4bf8421fd43fa75a86521d5",
+			"revisionTime": "2017-04-01T22:58:52Z"
+		},
+		{
+			"checksumSHA1": "+3RIinj64jxwsTEDn+Z062xnnsI=",
+			"path": "github.com/virtual-go/vfs",
+			"revision": "8bada3475423e41661ebd4f57b5a49289f7d212e",
+			"revisionTime": "2017-04-01T21:49:14Z"
+		},
+		{
+			"checksumSHA1": "QfqOIGu7wWsHcw0txrMpUzM3U90=",
+			"path": "github.com/virtual-go/vfs/osfs",
+			"revision": "8bada3475423e41661ebd4f57b5a49289f7d212e",
+			"revisionTime": "2017-04-01T21:49:14Z"
+		},
+		{
+			"checksumSHA1": "TgLgkfekOfZVi/7vKxoOQO1dXIw=",
+			"path": "github.com/virtual-go/vos",
+			"revision": "5991ec22880f981bf05ccd61ce551bbc7dfc31d4",
+			"revisionTime": "2017-04-01T22:19:54Z"
+		},
+		{
 			"checksumSHA1": "drSl/ipSHSsHWWTrp3WZw4LN/No=",
 			"path": "github.com/xeipuuv/gojsonpointer",
 			"revision": "e0fe6f68307607d540ed8eac07a342c33fa1b54a",

@@ -4,9 +4,9 @@ package dircopier
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/util/filecopier"
-	"github.com/opctl/opctl/util/vfs"
-	"github.com/opctl/opctl/util/vfs/os"
+	"github.com/virtual-go/filecopier"
+	"github.com/virtual-go/vfs"
+	"github.com/virtual-go/vfs/osfs"
 	"io/ioutil"
 	"path"
 )
@@ -17,7 +17,7 @@ type DirCopier interface {
 }
 
 func New() DirCopier {
-	fs := os.New()
+	fs := osfs.New()
 	return dirCopier{
 		fs:         fs,
 		fileCopier: filecopier.New(),

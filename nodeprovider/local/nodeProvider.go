@@ -4,7 +4,7 @@ import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opctl/opctl/nodeprovider"
 	"github.com/opctl/opctl/util/lockfile"
-	"github.com/opctl/opctl/util/vos"
+	"github.com/virtual-go/vos"
 	"path"
 )
 
