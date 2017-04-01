@@ -3,8 +3,8 @@ package filecopier
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FileCopier
 
 import (
-	"github.com/opctl/opctl/util/vfs"
-	"github.com/opctl/opctl/util/vfs/os"
+	"github.com/virtual-go/vfs"
+	"github.com/virtual-go/vfs/osfs"
 	"io"
 )
 
@@ -15,7 +15,7 @@ type FileCopier interface {
 
 func New() FileCopier {
 	return fileCopier{
-		fs: os.New(),
+		fs: osfs.New(),
 	}
 }
 

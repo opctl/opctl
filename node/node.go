@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/containerprovider/docker"
 	"github.com/opctl/opctl/util/lockfile"
 	"github.com/opctl/opctl/util/pubsub"
-	"github.com/opctl/opctl/util/vfs/os"
+	"github.com/virtual-go/vfs/osfs"
 	"path"
 )
 
@@ -31,7 +31,7 @@ func New() {
 	containerProvider.DeleteContainerIfExists("opspec.engine")
 
 	// cleanup existing DCG (dynamic call graph) data
-	err = os.New().RemoveAll(dcgDataDirPath())
+	err = osfs.New().RemoveAll(dcgDataDirPath())
 	if nil != err {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath()))
 	}

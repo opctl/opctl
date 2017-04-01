@@ -1,7 +1,7 @@
-package os
+package osfs
 
 import (
-	"github.com/opctl/opctl/util/vfs"
+	"github.com/virtual-go/vfs"
 	"os"
 )
 

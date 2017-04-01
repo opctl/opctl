@@ -6,9 +6,9 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/opctl/opctl/util/pscanary"
-	"github.com/opctl/opctl/util/vfs"
-	"github.com/opctl/opctl/util/vfs/os"
-	"github.com/opctl/opctl/util/vos"
+	"github.com/virtual-go/vfs"
+	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/vos"
 	"path"
 	"strconv"
 )
@@ -23,7 +23,7 @@ type LockFile interface {
 
 func New() LockFile {
 	return lockfile{
-		fs:       os.New(),
+		fs:       osfs.New(),
 		os:       vos.New(),
 		psCanary: pscanary.New(),
 	}
