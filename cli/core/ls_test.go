@@ -17,16 +17,16 @@ var _ = Context("listPackages", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVos.GetwdReturns("", expectedError)
+				fakeVOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					vos:       fakeVos,
+					vos:       fakeVOS,
 					writer:    os.Stdout,
 				}
 
@@ -44,15 +44,15 @@ var _ = Context("listPackages", func() {
 				fakePkg := new(pkg.Fake)
 
 				providedPath := "dummyPath"
-				wdReturnedFromVos := "dummyWorkDir"
+				wdReturnedFromVOS := "dummyWorkDir"
 
-				fakeVos := new(vos.Fake)
-				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
-				expectedPath := filepath.Join(wdReturnedFromVos, providedPath)
+				fakeVOS := new(vos.Fake)
+				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+				expectedPath := filepath.Join(wdReturnedFromVOS, providedPath)
 
 				objectUnderTest := _core{
 					pkg:    fakePkg,
-					vos:    fakeVos,
+					vos:    fakeVOS,
 					writer: os.Stdout,
 				}
 

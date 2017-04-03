@@ -13,6 +13,7 @@ import (
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/virtual-go/fs/osfs"
 	"github.com/virtual-go/vos"
 	"io"
 	"os"
@@ -62,8 +63,11 @@ func New(
 	cliColorer clicolorer.CliColorer,
 ) Core {
 
+	_fs := osfs.New()
+	_os := vos.New(_fs)
+
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
-	cliExiter := cliexiter.New(cliOutput, vos.New())
+	cliExiter := cliexiter.New(cliOutput, _os)
 
 	return &_core{
 		consumeNodeApi:    consumenodeapi.New(),
@@ -71,10 +75,10 @@ func New(
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
-		cliParamSatisfier: cliparamsatisfier.New(cliColorer, cliExiter, cliOutput, validate.New(), vos.New()),
+		cliParamSatisfier: cliparamsatisfier.New(cliColorer, cliExiter, cliOutput, validate.New(), _os),
 		nodeProvider:      local.New(),
 		updater:           updater.New(),
-		vos:               vos.New(),
+		vos:               _os,
 		writer:            os.Stdout,
 	}
 
@@ -89,6 +93,6 @@ type _core struct {
 	cliParamSatisfier cliparamsatisfier.CliParamSatisfier
 	nodeProvider      nodeprovider.NodeProvider
 	updater           updater.Updater
-	vos               vos.Vos
+	vos               vos.VOS
 	writer            io.Writer
 }

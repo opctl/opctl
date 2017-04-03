@@ -551,34 +551,46 @@
 			"revisionTime": "2016-12-29T17:44:48Z"
 		},
 		{
-			"checksumSHA1": "bW5l+WyYsqFRBUID1opvnjHGVIY=",
+			"checksumSHA1": "eEr5t7HdJu2Vo8GEiAeMeiXvvl0=",
 			"path": "github.com/virtual-go/dircopier",
-			"revision": "dbd6f32cdf6c9af00f09bd56842a4876151d0fd6",
-			"revisionTime": "2017-04-01T22:50:51Z"
+			"revision": "46829a4a1fffdd550c2208afcf8054c97fa1bbb7",
+			"revisionTime": "2017-04-03T02:48:23Z"
 		},
 		{
-			"checksumSHA1": "IB8g7B3hg6tE3yz/4uJkHXy4RzI=",
+			"checksumSHA1": "N/tMwjLyh46BHsC4Hax99V7gK+Q=",
 			"path": "github.com/virtual-go/filecopier",
-			"revision": "ce7a02b5914a92d1c4bf8421fd43fa75a86521d5",
-			"revisionTime": "2017-04-01T22:58:52Z"
+			"revision": "5f41bc6540249e629d750b4a7b7da17bdd743281",
+			"revisionTime": "2017-04-03T02:15:19Z"
 		},
 		{
-			"checksumSHA1": "+3RIinj64jxwsTEDn+Z062xnnsI=",
-			"path": "github.com/virtual-go/vfs",
-			"revision": "8bada3475423e41661ebd4f57b5a49289f7d212e",
-			"revisionTime": "2017-04-01T21:49:14Z"
+			"checksumSHA1": "bUW2EgOVl2ylWG3ApLnDokrjNYg=",
+			"path": "github.com/virtual-go/fs",
+			"revision": "42a86c1b4bd9306c3785a29510411e22e566b2b3",
+			"revisionTime": "2017-04-02T18:23:26Z"
 		},
 		{
-			"checksumSHA1": "QfqOIGu7wWsHcw0txrMpUzM3U90=",
-			"path": "github.com/virtual-go/vfs/osfs",
-			"revision": "8bada3475423e41661ebd4f57b5a49289f7d212e",
-			"revisionTime": "2017-04-01T21:49:14Z"
+			"checksumSHA1": "tIGJS5KKcTT2usSrVQie9+ou6X8=",
+			"path": "github.com/virtual-go/fs/osfs",
+			"revision": "42a86c1b4bd9306c3785a29510411e22e566b2b3",
+			"revisionTime": "2017-04-02T18:23:26Z"
 		},
 		{
-			"checksumSHA1": "TgLgkfekOfZVi/7vKxoOQO1dXIw=",
+			"checksumSHA1": "j4aLyogQD4VYXdc/85vr3Jz35/8=",
+			"path": "github.com/virtual-go/pscanary",
+			"revision": "867dfaad84bd2f3c42f9006b87064b9177be34b5",
+			"revisionTime": "2017-04-03T03:25:23Z"
+		},
+		{
+			"checksumSHA1": "pMR9UnJMECitr7tuHS0wCjhMJCY=",
+			"path": "github.com/virtual-go/vioutil",
+			"revision": "3316a693f8eecaf34c0cccc495ead16da9e68348",
+			"revisionTime": "2017-04-02T18:27:10Z"
+		},
+		{
+			"checksumSHA1": "LPiDoIbKjs9rgdWqAsR+tPXXdEo=",
 			"path": "github.com/virtual-go/vos",
-			"revision": "5991ec22880f981bf05ccd61ce551bbc7dfc31d4",
-			"revisionTime": "2017-04-01T22:19:54Z"
+			"revision": "5f4be7180188d93df1aed9500e1ba2f3b1ce1059",
+			"revisionTime": "2017-04-03T03:19:18Z"
 		},
 		{
 			"checksumSHA1": "drSl/ipSHSsHWWTrp3WZw4LN/No=",

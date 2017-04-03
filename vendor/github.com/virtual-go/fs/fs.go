@@ -1,11 +1,13 @@
-package vfs
+package fs
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Vfs
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FS
 
-import "os"
+import (
+	"os"
+)
 
 // virtual filesystem interface
-type Vfs interface {
+type FS interface {
 	// Chmod changes the mode of the named file to mode.
 	// If the file is a symbolic link, it changes the mode of the link's target.
 	// If there is an error, it will be of type *PathError.
@@ -32,6 +34,13 @@ type Vfs interface {
 	// descriptor has mode O_RDONLY.
 	// If there is an error, it will be of type *PathError.
 	Open(name string) (*os.File, error)
+
+	// OpenFile is the generalized open call; most users will use Open
+	// or Create instead. It opens the named file with specified flag
+	// (O_RDONLY etc.) and perm, (0666 etc.) if applicable. If successful,
+	// methods on the returned File can be used for I/O.
+	// If there is an error, it will be of type *PathError.
+	OpenFile(name string, flag int, perm os.FileMode) (*os.File, error)
 
 	// RemoveAll removes path and any children it contains.
 	// It removes everything it can but returns the first error

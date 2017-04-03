@@ -44,17 +44,17 @@ var _ = Context("cliExiter", func() {
 				providedExitReq := ExitReq{
 					Code: 3,
 				}
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				objectUnderTest := New(
 					new(clioutput.Fake),
-					fakeVos,
+					fakeVOS,
 				)
 
 				/* act */
 				objectUnderTest.Exit(providedExitReq)
 
 				/* assert */
-				Expect(fakeVos.ExitArgsForCall(0)).Should(Equal(providedExitReq.Code))
+				Expect(fakeVOS.ExitArgsForCall(0)).Should(Equal(providedExitReq.Code))
 			})
 		})
 		Context("req.Code <= 0", func() {
@@ -82,17 +82,17 @@ var _ = Context("cliExiter", func() {
 				providedExitReq := ExitReq{
 					Code: 0,
 				}
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				objectUnderTest := New(
 					new(clioutput.Fake),
-					fakeVos,
+					fakeVOS,
 				)
 
 				/* act */
 				objectUnderTest.Exit(providedExitReq)
 
 				/* assert */
-				Expect(fakeVos.ExitArgsForCall(0)).Should(Equal(0))
+				Expect(fakeVOS.ExitArgsForCall(0)).Should(Equal(0))
 			})
 		})
 	})

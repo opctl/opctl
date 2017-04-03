@@ -36,7 +36,7 @@ func New(
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	validate validate.Validate,
-	vos vos.Vos,
+	vos vos.VOS,
 ) CliParamSatisfier {
 
 	return &_cliParamSatisfier{
@@ -53,7 +53,7 @@ type _cliParamSatisfier struct {
 	cliExiter  cliexiter.CliExiter
 	cliOutput  clioutput.CliOutput
 	validate   validate.Validate
-	vos        vos.Vos
+	vos        vos.VOS
 }
 
 func (this _cliParamSatisfier) Satisfy(

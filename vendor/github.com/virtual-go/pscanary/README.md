@@ -1,13 +1,12 @@
-[![Build Status](https://travis-ci.org/virtual-go/vfs.svg?branch=master)](https://travis-ci.org/virtual-go/vfs)
-[![Coverage](https://codecov.io/gh/virtual-go/vfs/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/vfs)
+[![Build Status](https://travis-ci.org/virtual-go/pscanary.svg?branch=master)](https://travis-ci.org/virtual-go/pscanary)
+[![Coverage](https://codecov.io/gh/virtual-go/pscanary/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/pscanary)
 
 # problem statement
 
-golang package virtualizing fs interactions
+process liveness checking package for virtual-go
 
 # features
 
-- API compatible w/ native go fs interactions
 - API exposed via interface
 - fake implementation to allow faking interactions
 
@@ -20,7 +19,7 @@ golang package virtualizing fs interactions
 
 for every release:
 
-- source code will be [tagged](https://github.com/virtual-go/vfs/tags).
+- source code will be [tagged](https://github.com/virtual-go/pscanary/tags).
 
 # Versioning
 

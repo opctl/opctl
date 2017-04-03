@@ -3,11 +3,11 @@
 
 # problem statement
 
-golang package virtualizing os interactions
+os package for virtual-go
 
 # features
 
-- API compatible w/ native go os interactions
+- API compatible w/ native [os package](https://golang.org/pkg/os/)
 - API exposed via interface
 - fake implementation to allow faking interactions
 

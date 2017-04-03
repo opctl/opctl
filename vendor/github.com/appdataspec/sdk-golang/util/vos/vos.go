@@ -4,10 +4,10 @@ import (
 	"os"
 )
 
-//go:generate counterfeiter -o ./fakeVos.go --fake-name FakeVos ./ Vos
+//go:generate counterfeiter -o ./fakeVOS.go --fake-name FakeVOS ./ VOS
 
 // virtual operating system interface
-type Vos interface {
+type VOS interface {
 	// Getenv retrieves the value of the environment variable named by the key.
 	// It returns the value, which will be empty if the variable is not present.
 	Getenv(key string) string
@@ -17,7 +17,7 @@ type Vos interface {
 	Setenv(key, value string) error
 }
 
-func New() Vos {
+func New() VOS {
 	return _vos{}
 }
 

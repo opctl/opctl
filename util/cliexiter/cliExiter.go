@@ -19,7 +19,7 @@ type CliExiter interface {
 
 func New(
 	cliOutput clioutput.CliOutput,
-	vos vos.Vos,
+	vos vos.VOS,
 ) CliExiter {
 	return cliExiter{
 		cliOutput: cliOutput,
@@ -29,7 +29,7 @@ func New(
 
 type cliExiter struct {
 	cliOutput clioutput.CliOutput
-	vos       vos.Vos
+	vos       vos.VOS
 }
 
 func (this cliExiter) Exit(req ExitReq) {
