@@ -41,7 +41,7 @@ type _getter struct {
 func (this _getter) Get(
 	req *GetReq,
 ) (packageView *model.PackageView, err error) {
-	embeddedPkgPath := pathPkg.Join(req.path, ".opspec", req.pkgRef)
+	embeddedPkgPath := pathPkg.Join(req.Path, ".opspec", req.PkgRef)
 	if _, err = this.fs.Stat(embeddedPkgPath); nil == err {
 		return this.viewFactory.Construct(embeddedPkgPath)
 	}
@@ -52,7 +52,7 @@ func (this _getter) getRemote(
 	req *GetReq,
 ) (packageView *model.PackageView, err error) {
 
-	stringParts := strings.Split(req.pkgRef, "#")
+	stringParts := strings.Split(req.PkgRef, "#")
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
@@ -72,8 +72,8 @@ func (this _getter) getRemote(
 			SingleBranch:  true,
 		}
 
-		if "" != req.username && "" != req.password {
-			cloneOptions.Auth = http.NewBasicAuth(req.username, req.password)
+		if "" != req.Username && "" != req.Password {
+			cloneOptions.Auth = http.NewBasicAuth(req.Username, req.Password)
 		}
 
 		_, err = git.PlainClone("", false, cloneOptions)

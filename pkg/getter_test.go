@@ -22,11 +22,11 @@ var _ = Describe("Getter", func() {
 		It("should call fs.Stat w/ expected args", func() {
 			/* arrange */
 			providedGetReq := &GetReq{
-				path:   "/dummyPath",
-				pkgRef: "dummyPkgRef",
+				Path:   "/dummyPath",
+				PkgRef: "dummyPkgRef",
 			}
 
-			expectedPkgPath := path.Join(providedGetReq.path, ".opspec", providedGetReq.pkgRef)
+			expectedPkgPath := path.Join(providedGetReq.Path, ".opspec", providedGetReq.PkgRef)
 
 			fakeFS := new(fs.Fake)
 			fakeFS.StatReturns(nil, nil)
@@ -46,11 +46,11 @@ var _ = Describe("Getter", func() {
 			It("should call viewFactory.Construct w/ expected args", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
-					path:   "/dummyPath",
-					pkgRef: "dummyPkgRef",
+					Path:   "/dummyPath",
+					PkgRef: "dummyPkgRef",
 				}
 
-				expectedPkgPath := path.Join(providedGetReq.path, ".opspec", providedGetReq.pkgRef)
+				expectedPkgPath := path.Join(providedGetReq.Path, ".opspec", providedGetReq.PkgRef)
 
 				fakeFS := new(fs.Fake)
 				fakeFS.StatReturns(nil, nil)
@@ -71,8 +71,8 @@ var _ = Describe("Getter", func() {
 			It("should return result of viewFactory.Construct", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
-					path:   "/dummyPath",
-					pkgRef: "dummyPkgRef",
+					Path:   "/dummyPath",
+					PkgRef: "dummyPkgRef",
 				}
 
 				expectedView := &model.PackageView{
@@ -115,11 +115,11 @@ var _ = Describe("Getter", func() {
 				It("should call viewFactory.Construct w/ expected args", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						path:   "/dummyPath",
-						pkgRef: "dummyPkgRef#000",
+						Path:   "/dummyPath",
+						PkgRef: "dummyPkgRef#000",
 					}
 
-					stringParts := strings.Split(providedGetReq.pkgRef, "#")
+					stringParts := strings.Split(providedGetReq.PkgRef, "#")
 					repoName := stringParts[0]
 					repoRefName := stringParts[1]
 
@@ -150,8 +150,8 @@ var _ = Describe("Getter", func() {
 				It("should return result of viewFactory.Construct", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						path:   "/dummyPath",
-						pkgRef: "dummyPkgRef#000",
+						Path:   "/dummyPath",
+						PkgRef: "dummyPkgRef#000",
 					}
 
 					expectedView := &model.PackageView{

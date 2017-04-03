@@ -10,7 +10,7 @@ import (
 var _ = Describe("Get", func() {
 	It("should call getter.Get with expected inputs", func() {
 		/* arrange */
-		providedGetReq := &GetReq{pkgRef: "/dummy/pkg/ref"}
+		providedGetReq := &GetReq{PkgRef: "/dummy/pkg/ref"}
 
 		fakeGetter := new(fakeGetter)
 
@@ -58,7 +58,7 @@ var _ = Describe("Get", func() {
 		}
 
 		/* act */
-		actualPackageView, actualError := objectUnderTest.Get(&GetReq{pkgRef: "/dummy/path"})
+		actualPackageView, actualError := objectUnderTest.Get(&GetReq{PkgRef: "/dummy/path"})
 
 		/* assert */
 		Expect(actualPackageView).To(Equal(expectedPackageView))

@@ -7,10 +7,10 @@ type CreateReq struct {
 }
 
 type GetReq struct {
-	path     string
-	pkgRef   string
-	username string
-	password string
+	Path     string
+	PkgRef   string
+	Username string
+	Password string
 }
 
 type SetDescriptionReq struct {
