@@ -19,11 +19,11 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					ContainerExited: &ContainerExitedEvent{
-						ContainerRef: "dummyContainerRef",
-						ExitCode:     1,
-						RootOpId:     "dummyRootOpId",
-						ContainerId:  "dummyContainerId",
-						PkgRef:       "dummyPkgRef",
+						ImageRef:    "dummyImageRef",
+						ExitCode:    1,
+						RootOpId:    "dummyRootOpId",
+						ContainerId: "dummyContainerId",
+						PkgRef:      "dummyPkgRef",
 					},
 					Timestamp: time.Now().UTC(),
 				}
@@ -51,10 +51,10 @@ var _ = Describe("Event", func() {
 				/* arrange */
 				expectedEvent := Event{
 					ContainerStarted: &ContainerStartedEvent{
-						ContainerRef: "dummyContainerRef",
-						PkgRef:       "dummyPkgRef",
-						ContainerId:  "dummyContainerId",
-						RootOpId:     "dummyRootOpId",
+						ImageRef:    "dummyImageRef",
+						PkgRef:      "dummyPkgRef",
+						ContainerId: "dummyContainerId",
+						RootOpId:    "dummyRootOpId",
 					},
 					Timestamp: time.Now().UTC(),
 				}

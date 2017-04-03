@@ -5,6 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/virtual-go/fs/osfs"
 	"os"
 )
 
@@ -13,12 +14,12 @@ var _ = Describe("validator", func() {
 	if nil != err {
 		panic(err)
 	}
-	objectUnderTest := newValidator()
+	objectUnderTest := newValidator(osfs.New())
 	Context("invalid__yml", func() {
 		It("should return expected errs", func() {
 			/* arrange */
 			expectedErrs := []error{errors.New(
-				"Error validating pkg. Details: yaml: did not find expected alphabetic or numeric character",
+				"yaml: did not find expected alphabetic or numeric character",
 			)}
 
 			/* act */

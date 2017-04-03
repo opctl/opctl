@@ -15,5 +15,10 @@ outputs:
       description: directory containing the app
 run:
   serial:
-    - op: { ref: install-deps, inputs: { npmRegistryUrl, appDir }, outputs: { appDir } }
-    - op: { ref: debug-api, inputs: { appDir } }
+    - op:
+        pkg: { ref: install-deps }
+        inputs: { npmRegistryUrl, appDir }
+        outputs: { appDir }
+    - op:
+        pkg: { ref: debug-api }
+        inputs: { appDir }

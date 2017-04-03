@@ -23,34 +23,34 @@ const (
 )
 
 type ContainerExitedEvent struct {
-	ContainerRef string `json:"containerRef"`
-	ExitCode     int    `json:"exitCode"`
-	RootOpId     string `json:"rootOpId"`
-	ContainerId  string `json:"containerId"`
-	PkgRef       string `json:"pkgRef"`
+	ImageRef    string `json:"imageRef"`
+	ExitCode    int    `json:"exitCode"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 type ContainerStartedEvent struct {
-	ContainerRef string `json:"containerRef"`
-	RootOpId     string `json:"rootOpId"`
-	ContainerId  string `json:"containerId"`
-	PkgRef       string `json:"pkgRef"`
+	ImageRef    string `json:"imageRef"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 type ContainerStdErrWrittenToEvent struct {
-	ContainerRef string `json:"containerRef"`
-	Data         []byte `json:"data"`
-	RootOpId     string `json:"rootOpId"`
-	ContainerId  string `json:"containerId"`
-	PkgRef       string `json:"pkgRef"`
+	ImageRef    string `json:"imageRef"`
+	Data        []byte `json:"data"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 type ContainerStdOutWrittenToEvent struct {
-	ContainerRef string `json:"containerRef"`
-	Data         []byte `json:"data"`
-	RootOpId     string `json:"rootOpId"`
-	ContainerId  string `json:"containerId"`
-	PkgRef       string `json:"pkgRef"`
+	ImageRef    string `json:"imageRef"`
+	Data        []byte `json:"data"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 type OpEncounteredErrorEvent struct {

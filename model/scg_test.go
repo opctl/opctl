@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/format"
 )
 
-var _ = Describe("Scg", func() {
+var _ = Describe("SCG", func() {
 
 	Context("when formatting to/from yaml", func() {
 		yaml := format.NewYamlFormat()
@@ -16,9 +16,11 @@ var _ = Describe("Scg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := Scg{
-					Op: &ScgOpCall{
-						Ref: "dummyPkgRef",
+				expectedCallGraph := SCG{
+					Op: &SCGOpCall{
+						Pkg: &SCGOpCallPkg{
+							Ref: "dummyPkgRef",
+						},
 						Inputs: map[string]string{
 							"dummyArg1Name": "dummyArg1Value",
 						},
@@ -34,7 +36,7 @@ var _ = Describe("Scg", func() {
 					panic(err)
 				}
 
-				actualCallGraph := Scg{}
+				actualCallGraph := SCG{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */
@@ -49,11 +51,13 @@ var _ = Describe("Scg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := Scg{
-					Parallel: []*Scg{
+				expectedCallGraph := SCG{
+					Parallel: []*SCG{
 						{
-							Op: &ScgOpCall{
-								Ref: "dummyPkgRef",
+							Op: &SCGOpCall{
+								Pkg: &SCGOpCallPkg{
+									Ref: "dummyPkgRef",
+								},
 							},
 						},
 					},
@@ -65,7 +69,7 @@ var _ = Describe("Scg", func() {
 					panic(err)
 				}
 
-				actualCallGraph := Scg{}
+				actualCallGraph := SCG{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */
@@ -80,11 +84,13 @@ var _ = Describe("Scg", func() {
 			It("should have expected attributes", func() {
 
 				/* arrange */
-				expectedCallGraph := Scg{
-					Serial: []*Scg{
+				expectedCallGraph := SCG{
+					Serial: []*SCG{
 						{
-							Op: &ScgOpCall{
-								Ref: "dummyPkgRef",
+							Op: &SCGOpCall{
+								Pkg: &SCGOpCallPkg{
+									Ref: "dummyPkgRef",
+								},
 							},
 						},
 					},
@@ -96,7 +102,7 @@ var _ = Describe("Scg", func() {
 					panic(err)
 				}
 
-				actualCallGraph := Scg{}
+				actualCallGraph := SCG{}
 				yaml.To(providedYaml, &actualCallGraph)
 
 				/* assert */

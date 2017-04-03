@@ -6,7 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/format"
-	"github.com/opspec-io/sdk-golang/util/fs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/vioutil"
+	"os"
 	"path"
 	"reflect"
 )
@@ -15,16 +17,16 @@ var _ = Describe("_create", func() {
 
 	Context("Execute", func() {
 
-		It("should call FileSystem.AddDir with expected args", func() {
-
+		It("should call FileSystem.MkdirAll with expected args", func() {
 			/* arrange */
-
 			providedCreateReq := CreateReq{Path: "/dummy/path"}
+			expectedPerm := os.FileMode(0777)
 
 			fakeFileSystem := new(fs.Fake)
 
 			objectUnderTest := &pkg{
 				fileSystem: fakeFileSystem,
+				ioUtil:     new(vioutil.Fake),
 				yaml:       format.NewYamlFormat(),
 			}
 
@@ -34,18 +36,19 @@ var _ = Describe("_create", func() {
 			)
 
 			/* assert */
-			Expect(fakeFileSystem.AddDirArgsForCall(0)).To(Equal(providedCreateReq.Path))
-
+			actualPath, actualPerm := fakeFileSystem.MkdirAllArgsForCall(0)
+			Expect(actualPath).To(Equal(providedCreateReq.Path))
+			Expect(actualPerm).To(Equal(expectedPerm))
 		})
 
-		Context("when FileSystem.AddDir returns an error", func() {
+		Context("when FileSystem.MkdirAll returns an error", func() {
 			It("should be returned", func() {
 
 				/* arrange */
 				expectedError := errors.New("AddDirError")
 
 				fakeFileSystem := new(fs.Fake)
-				fakeFileSystem.AddDirReturns(expectedError)
+				fakeFileSystem.MkdirAllReturns(expectedError)
 
 				objectUnderTest := &pkg{
 					fileSystem: fakeFileSystem,
@@ -104,6 +107,7 @@ var _ = Describe("_create", func() {
 
 			objectUnderTest := &pkg{
 				fileSystem: new(fs.Fake),
+				ioUtil:     new(vioutil.Fake),
 				yaml:       fakeYamlFormat,
 			}
 
@@ -121,20 +125,22 @@ var _ = Describe("_create", func() {
 
 		})
 
-		It("should call FileSystem.SaveFile with expected args", func() {
+		It("should call ioutil.WriteFile with expected args", func() {
 
 			/* arrange */
 			providedPath := "/dummy/op/path"
-			expectedSaveFilePathArg := path.Join(providedPath, NameOfPackageManifestFile)
-			expectedSaveFileBytesArg := []byte{2, 3, 4}
+			expectedPath := path.Join(providedPath, NameOfPkgManifestFile)
+			expectedData := []byte{2, 3, 4}
+			expectedPerms := os.FileMode(0777)
 
-			fakeFileSystem := new(fs.Fake)
+			fakeIOUtil := new(vioutil.Fake)
 
 			fakeYamlFormat := new(format.Fake)
-			fakeYamlFormat.FromReturns(expectedSaveFileBytesArg, nil)
+			fakeYamlFormat.FromReturns(expectedData, nil)
 
 			objectUnderTest := &pkg{
-				fileSystem: fakeFileSystem,
+				fileSystem: new(fs.Fake),
+				ioUtil:     fakeIOUtil,
 				yaml:       fakeYamlFormat,
 			}
 
@@ -144,10 +150,10 @@ var _ = Describe("_create", func() {
 			)
 
 			/* assert */
-			actualSaveFilePathArg, actualSaveFileBytesArg := fakeFileSystem.SaveFileArgsForCall(0)
-			Expect(actualSaveFilePathArg).To(Equal(expectedSaveFilePathArg))
-			Expect(actualSaveFileBytesArg).To(Equal(expectedSaveFileBytesArg))
-
+			actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
+			Expect(actualPath).To(Equal(expectedPath))
+			Expect(actualData).To(Equal(expectedData))
+			Expect(actualPerms).To(Equal(expectedPerms))
 		})
 
 	})

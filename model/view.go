@@ -6,7 +6,7 @@ type PackageManifestView struct {
 	Version     string            `yaml:"version,omitempty"`
 	Inputs      map[string]*Param `yaml:"inputs,omitempty"`
 	Outputs     map[string]*Param `yaml:"outputs,omitempty"`
-	Run         *Scg              `yaml:"run,omitempty"`
+	Run         *SCG              `yaml:"run,omitempty"`
 }
 
 type PackageView struct {
@@ -14,6 +14,6 @@ type PackageView struct {
 	Inputs      map[string]*Param
 	Name        string
 	Outputs     map[string]*Param
-	Run         *Scg
+	Run         *SCG
 	Version     string
 }

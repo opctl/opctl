@@ -19,17 +19,17 @@ type Fake struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
-	GetStub        func(pkgRef string) (packageView model.PackageView, err error)
+	GetStub        func(req *GetReq) (packageView *model.PackageView, err error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
-		pkgRef string
+		req *GetReq
 	}
 	getReturns struct {
-		result1 model.PackageView
+		result1 *model.PackageView
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 model.PackageView
+		result1 *model.PackageView
 		result2 error
 	}
 	ListPackagesInDirStub        func(dirPath string) (ops []*model.PackageView, err error)
@@ -119,16 +119,16 @@ func (fake *Fake) CreateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) Get(pkgRef string) (packageView model.PackageView, err error) {
+func (fake *Fake) Get(req *GetReq) (packageView *model.PackageView, err error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("Get", []interface{}{pkgRef})
+		req *GetReq
+	}{req})
+	fake.recordInvocation("Get", []interface{}{req})
 	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
-		return fake.GetStub(pkgRef)
+		return fake.GetStub(req)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -142,30 +142,30 @@ func (fake *Fake) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *Fake) GetArgsForCall(i int) string {
+func (fake *Fake) GetArgsForCall(i int) *GetReq {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].pkgRef
+	return fake.getArgsForCall[i].req
 }
 
-func (fake *Fake) GetReturns(result1 model.PackageView, result2 error) {
+func (fake *Fake) GetReturns(result1 *model.PackageView, result2 error) {
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 model.PackageView
+		result1 *model.PackageView
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) GetReturnsOnCall(i int, result1 model.PackageView, result2 error) {
+func (fake *Fake) GetReturnsOnCall(i int, result1 *model.PackageView, result2 error) {
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 model.PackageView
+			result1 *model.PackageView
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 model.PackageView
+		result1 *model.PackageView
 		result2 error
 	}{result1, result2}
 }

@@ -55,10 +55,15 @@ run:
           /outputFile1: outputFile1
         image:
           ref: imageRef$(inputString1)
-          pullIdentity: image$(inputString1)PullIdentity
-          pullSecret: image$(inputString2)PullSecret
+          pullAuth:
+            username: image$(inputString1)Username
+            password: image$(inputString2)Password
     - op:
-        ref: opRef
+        pkg:
+          ref: pkgRef
+          pullAuth:
+            username: pkg$(inputString1)Username
+            password: pkg$(inputString2)Password
         inputs:
           opInput1: # bind
           opInput2: inputDir1 # named bind

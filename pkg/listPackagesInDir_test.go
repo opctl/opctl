@@ -5,26 +5,26 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/util/format"
-	"github.com/opspec-io/sdk-golang/util/fs"
+	"github.com/virtual-go/vioutil"
 )
 
 var _ = Describe("listPackagesInDir", func() {
 
 	Context("ListPackagesInDir", func() {
 
-		Context("when FileSystem.ListChildFileInfosOfDir returns an error", func() {
+		Context("when ioutil.ReadDir returns an error", func() {
 			It("should be returned", func() {
 
 				/* arrange */
-				expectedError := errors.New("ListChildFileInfosOfDirError")
+				expectedError := errors.New("dummyError")
 
-				fakeFileSystem := new(fs.Fake)
-				fakeFileSystem.ListChildFileInfosOfDirReturns(nil, expectedError)
+				fakeIOUtil := new(vioutil.Fake)
+				fakeIOUtil.ReadDirReturns(nil, expectedError)
 
 				objectUnderTest := pkg{
-					fileSystem:         fakeFileSystem,
-					packageViewFactory: new(fakePackageViewFactory),
-					yaml:               new(format.Fake),
+					ioUtil:      fakeIOUtil,
+					viewFactory: new(fakeViewFactory),
+					yaml:        new(format.Fake),
 				}
 
 				/* act */
