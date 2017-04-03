@@ -10,7 +10,7 @@ const (
 	code_still_active       = 259
 )
 
-func (this psCanary) IsAlive(processId int) bool {
+func (this _PsCanary) IsAlive(processId int) bool {
 	procHnd, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, true, uint32(processId))
 	if nil != err {
 		if scerr, ok := err.(syscall.Errno); ok {

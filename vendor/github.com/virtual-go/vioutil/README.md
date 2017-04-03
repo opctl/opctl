@@ -1,12 +1,13 @@
-[![Build Status](https://travis-ci.org/virtual-go/filecopier.svg?branch=master)](https://travis-ci.org/virtual-go/filecopier)
-[![Coverage](https://codecov.io/gh/virtual-go/filecopier/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/filecopier)
+[![Build Status](https://travis-ci.org/virtual-go/vioutil.svg?branch=master)](https://travis-ci.org/virtual-go/vioutil)
+[![Coverage](https://codecov.io/gh/virtual-go/vioutil/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/vioutil)
 
 # problem statement
 
-golang package for copying files in virtual-go
+ioutil package for virtual-go
 
 # features
 
+- API compatible w/ native [ioutil](https://golang.org/pkg/io/ioutil/) package
 - API exposed via interface
 - fake implementation to allow faking interactions
 
@@ -19,7 +20,7 @@ golang package for copying files in virtual-go
 
 for every release:
 
-- source code will be [tagged](https://github.com/virtual-go/filecopier/tags).
+- source code will be [tagged](https://github.com/virtual-go/vioutil/tags).
 
 # Versioning
 

@@ -24,9 +24,9 @@ var _ = Context("runOp", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVos.GetwdReturns("", expectedError)
+				fakeVOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -34,7 +34,7 @@ var _ = Context("runOp", func() {
 					pkg:          new(pkg.Fake),
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					vos:          fakeVos,
+					vos:          fakeVOS,
 				}
 
 				/* act */
@@ -58,11 +58,11 @@ var _ = Context("runOp", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				providedPkgRef := "dummyPkgName"
-				wdReturnedFromVos := "dummyWorkDir"
+				wdReturnedFromVOS := "dummyWorkDir"
 
-				fakeVos := new(vos.Fake)
-				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
-				expectedPath := filepath.Join(wdReturnedFromVos, ".opspec", providedPkgRef)
+				fakeVOS := new(vos.Fake)
+				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+				expectedPath := filepath.Join(wdReturnedFromVOS, ".opspec", providedPkgRef)
 
 				objectUnderTest := _core{
 					pkg:               fakePkg,
@@ -70,7 +70,7 @@ var _ = Context("runOp", func() {
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
 					nodeProvider:      new(nodeprovider.Fake),
-					vos:               fakeVos,
+					vos:               fakeVOS,
 				}
 
 				/* act */
@@ -154,8 +154,8 @@ var _ = Context("runOp", func() {
 				It("should call consumeNodeApi.StartOp w/ expected args", func() {
 					/* arrange */
 					pwd := "dummyWorkDir"
-					fakeVos := new(vos.Fake)
-					fakeVos.GetwdReturns(pwd, nil)
+					fakeVOS := new(vos.Fake)
+					fakeVOS.GetwdReturns(pwd, nil)
 
 					providedPkgRef := "dummyOp"
 					expectedArgs := model.StartOpReq{
@@ -180,7 +180,7 @@ var _ = Context("runOp", func() {
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						nodeProvider:      new(nodeprovider.Fake),
-						vos:               fakeVos,
+						vos:               fakeVOS,
 					}
 
 					/* act */

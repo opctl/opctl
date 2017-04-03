@@ -23,15 +23,15 @@ var _ = Context("parameterSatisfier", func() {
 						param1Name := "DUMMY_PARAM1_NAME"
 						param1Value := &model.Data{String: "dummyParam1Value"}
 
-						fakeVos := new(vos.Fake)
-						fakeVos.GetenvReturns(param1Value.String)
+						fakeVOS := new(vos.Fake)
+						fakeVOS.GetenvReturns(param1Value.String)
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							validate.New(),
-							fakeVos,
+							fakeVOS,
 						)
 
 						expectedResult := map[string]*model.Data{param1Name: param1Value}
@@ -90,15 +90,15 @@ var _ = Context("parameterSatisfier", func() {
 					param1Name := "DUMMY_PARAM1_NAME"
 					param1Value := &model.Data{String: "dummyParam1Value"}
 
-					fakeVos := new(vos.Fake)
-					fakeVos.GetenvReturns(param1Value.String)
+					fakeVOS := new(vos.Fake)
+					fakeVOS.GetenvReturns(param1Value.String)
 
 					objectUnderTest := New(
 						new(clicolorer.Fake),
 						new(cliexiter.Fake),
 						new(clioutput.Fake),
 						new(validate.Fake),
-						fakeVos,
+						fakeVOS,
 					)
 
 					expectedResult := map[string]*model.Data{param1Name: param1Value}
@@ -123,15 +123,15 @@ var _ = Context("parameterSatisfier", func() {
 						param1Name := "DUMMY_PARAM1_NAME"
 						param1ValueFromEnv := &model.Data{String: "dummyParam1Value"}
 
-						fakeVos := new(vos.Fake)
-						fakeVos.GetenvReturns(param1ValueFromEnv.String)
+						fakeVOS := new(vos.Fake)
+						fakeVOS.GetenvReturns(param1ValueFromEnv.String)
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							new(validate.Fake),
-							fakeVos,
+							fakeVOS,
 						)
 
 						expectedResult := map[string]*model.Data{param1Name: param1ValueFromEnv}
@@ -154,15 +154,15 @@ var _ = Context("parameterSatisfier", func() {
 						/* arrange */
 						wdReturnedFromGetwd := "dummyWorkDir"
 
-						fakeVos := new(vos.Fake)
-						fakeVos.GetwdReturns(wdReturnedFromGetwd, nil)
+						fakeVOS := new(vos.Fake)
+						fakeVOS.GetwdReturns(wdReturnedFromGetwd, nil)
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
 							new(cliexiter.Fake),
 							new(clioutput.Fake),
 							new(validate.Fake),
-							fakeVos,
+							fakeVOS,
 						)
 
 						providedParam1Name := "dummyParam1Name"

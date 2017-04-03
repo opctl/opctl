@@ -5,9 +5,9 @@ package dircopier
 import (
 	"fmt"
 	"github.com/virtual-go/filecopier"
-	"github.com/virtual-go/vfs"
-	"github.com/virtual-go/vfs/osfs"
-	"io/ioutil"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
+	"github.com/virtual-go/vioutil"
 	"path"
 )
 
@@ -17,15 +17,17 @@ type DirCopier interface {
 }
 
 func New() DirCopier {
-	fs := osfs.New()
+	_fs := osfs.New()
 	return dirCopier{
-		fs:         fs,
+		fs:         _fs,
+		ioutil:     vioutil.New(_fs),
 		fileCopier: filecopier.New(),
 	}
 }
 
 type dirCopier struct {
-	fs         vfs.Vfs
+	fs         fs.FS
+	ioutil     vioutil.VIOUtil
 	fileCopier filecopier.FileCopier
 }
 
@@ -47,8 +49,7 @@ func (this dirCopier) Fs(srcPath string, dstPath string) (err error) {
 		return
 	}
 
-	// @TODO: remove dependence on real fs here
-	entries, err := ioutil.ReadDir(srcPath)
+	entries, err := this.ioutil.ReadDir(srcPath)
 
 	for _, entry := range entries {
 

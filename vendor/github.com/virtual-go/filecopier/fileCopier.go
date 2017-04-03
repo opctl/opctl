@@ -3,8 +3,8 @@ package filecopier
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FileCopier
 
 import (
-	"github.com/virtual-go/vfs"
-	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
 	"io"
 )
 
@@ -20,7 +20,7 @@ func New() FileCopier {
 }
 
 type fileCopier struct {
-	fs vfs.Vfs
+	fs fs.FS
 }
 
 func (this fileCopier) Fs(srcPath string, dstPath string) (err error) {

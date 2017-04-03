@@ -3,13 +3,12 @@
 package pscanary
 
 import (
-	"os"
 	"syscall"
 )
 
 // implementation based on github.com/nightlyone/lockfile
-func (this psCanary) IsAlive(processId int) bool {
-	proc, err := os.FindProcess(processId)
+func (this _PsCanary) IsAlive(processId int) bool {
+	proc, err := this.os.FindProcess(processId)
 	if nil != err {
 		return false
 	}

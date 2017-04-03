@@ -4,9 +4,9 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/util/pscanary"
 	"github.com/pkg/errors"
-	"github.com/virtual-go/vfs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/pscanary"
 	"github.com/virtual-go/vos"
 	"io/ioutil"
 	"os"
@@ -28,7 +28,7 @@ var _ = Context("lockfile", func() {
 			expectedPath := path.Dir(providedFilePath)
 			expectedPerms := os.FileMode(0700)
 
-			fakeFs := new(vfs.Fake)
+			fakeFs := new(fs.Fake)
 
 			objectUnderTest := lockfile{
 				fs:       fakeFs,
@@ -50,7 +50,7 @@ var _ = Context("lockfile", func() {
 				providedFilePath := "/dummy/pid.lock"
 				expectedErr := errors.New("dummyError")
 
-				fakeFs := new(vfs.Fake)
+				fakeFs := new(fs.Fake)
 				fakeFs.MkdirAllReturns(expectedErr)
 
 				objectUnderTest := lockfile{
@@ -69,7 +69,7 @@ var _ = Context("lockfile", func() {
 				/* arrange */
 				providedFilePath := "/dummy/pid.lock"
 
-				fakeFs := new(vfs.Fake)
+				fakeFs := new(fs.Fake)
 
 				objectUnderTest := lockfile{
 					fs:       fakeFs,
@@ -88,7 +88,7 @@ var _ = Context("lockfile", func() {
 					/* arrange */
 					providedFilePath := "/dummy/pid.lock"
 
-					fakeFs := new(vfs.Fake)
+					fakeFs := new(fs.Fake)
 					fakeFs.OpenReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := lockfile{
@@ -111,7 +111,7 @@ var _ = Context("lockfile", func() {
 						/* arrange */
 						providedFilePath := "/dummy/pid.lock"
 
-						fakeFs := new(vfs.Fake)
+						fakeFs := new(fs.Fake)
 
 						objectUnderTest := lockfile{
 							fs:       fakeFs,
@@ -132,7 +132,7 @@ var _ = Context("lockfile", func() {
 							/* arrange */
 							providedFilePath := "/dummy/pid.lock"
 
-							fakeFs := new(vfs.Fake)
+							fakeFs := new(fs.Fake)
 
 							fakePsCanary := new(pscanary.Fake)
 							fakePsCanary.IsAliveReturns(false)
@@ -156,7 +156,7 @@ var _ = Context("lockfile", func() {
 							pIdFromFile := 1234
 							expectedErr := fmt.Errorf("Unable to obtain lock; currently owned by PId: %v\n", pIdFromFile)
 
-							fakeFs := new(vfs.Fake)
+							fakeFs := new(fs.Fake)
 							// create a real temp file; no good way to stub os.File
 							tempFile, err := ioutil.TempFile("", "lockfile_test")
 							defer tempFile.Close()
