@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/virtual-go/vos"
 	"path/filepath"
 )
 

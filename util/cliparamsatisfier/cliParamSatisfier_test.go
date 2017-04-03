@@ -7,9 +7,9 @@ import (
 	"github.com/opctl/opctl/util/clicolorer"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/virtual-go/vos"
 	"path/filepath"
 )
 

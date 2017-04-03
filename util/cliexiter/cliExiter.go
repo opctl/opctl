@@ -4,7 +4,7 @@ package cliexiter
 
 import (
 	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/opctl/util/vos"
+	"github.com/virtual-go/vos"
 )
 
 type ExitReq struct {

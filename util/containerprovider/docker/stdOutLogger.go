@@ -13,6 +13,8 @@ import (
 func (this _containerProvider) stdOutLogger(
 	eventPublisher pubsub.EventPublisher,
 	containerId string,
+	imageRef string,
+	pkgRef string,
 	rootOpId string,
 ) (err error) {
 
@@ -37,9 +39,11 @@ func (this _containerProvider) stdOutLogger(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
-						Data:        scanner.Bytes(),
-						ContainerId: containerId,
-						RootOpId:    rootOpId,
+						Data:         scanner.Bytes(),
+						ContainerId:  containerId,
+						ContainerRef: imageRef,
+						PkgRef:       pkgRef,
+						RootOpId:     rootOpId,
 					},
 				},
 			)

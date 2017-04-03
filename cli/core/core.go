@@ -10,10 +10,10 @@ import (
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
-	"github.com/opctl/opctl/util/vos"
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/virtual-go/vos"
 	"io"
 	"os"
 )

@@ -40,8 +40,8 @@ type dockerClient interface {
 	// NetworkCreate creates a new network in the docker host.
 	NetworkCreate(ctx context.Context, name string, options types.NetworkCreate) (types.NetworkCreateResponse, error)
 
-	// NetworkRemove removes an existent network from the docker host.
-	NetworkRemove(ctx context.Context, networkID string) error
+	// NetworkInspect returns the information for a specific network configured in the docker host.
+	NetworkInspect(ctx context.Context, networkID string) (types.NetworkResource, error)
 
 	// RegistryLogin authenticates the docker server with a given docker registry.
 	// It returns unauthorizedError when the authentication fails.

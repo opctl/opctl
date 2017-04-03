@@ -134,11 +134,23 @@ func (this _containerProvider) RunContainer(
 		return
 	}
 
-	err = this.stdErrLogger(eventPublisher, req.ContainerId, req.RootOpId)
+	err = this.stdErrLogger(
+		eventPublisher,
+		req.ContainerId,
+		req.Image.Ref,
+		req.PkgRef,
+		req.RootOpId,
+	)
 	if nil != err {
 		return
 	}
-	err = this.stdOutLogger(eventPublisher, req.ContainerId, req.RootOpId)
+	err = this.stdOutLogger(
+		eventPublisher,
+		req.ContainerId,
+		req.Image.Ref,
+		req.PkgRef,
+		req.RootOpId,
+	)
 	if nil != err {
 		return
 	}

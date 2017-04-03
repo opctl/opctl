@@ -129,17 +129,19 @@ type fakeDockerClient struct {
 		result1 types.NetworkCreateResponse
 		result2 error
 	}
-	NetworkRemoveStub        func(ctx context.Context, networkID string) error
-	networkRemoveMutex       sync.RWMutex
-	networkRemoveArgsForCall []struct {
+	NetworkInspectStub        func(ctx context.Context, networkID string) (types.NetworkResource, error)
+	networkInspectMutex       sync.RWMutex
+	networkInspectArgsForCall []struct {
 		ctx       context.Context
 		networkID string
 	}
-	networkRemoveReturns struct {
-		result1 error
+	networkInspectReturns struct {
+		result1 types.NetworkResource
+		result2 error
 	}
-	networkRemoveReturnsOnCall map[int]struct {
-		result1 error
+	networkInspectReturnsOnCall map[int]struct {
+		result1 types.NetworkResource
+		result2 error
 	}
 	RegistryLoginStub        func(ctx context.Context, auth types.AuthConfig) (registry.AuthenticateOKBody, error)
 	registryLoginMutex       sync.RWMutex
@@ -576,53 +578,56 @@ func (fake *fakeDockerClient) NetworkCreateReturnsOnCall(i int, result1 types.Ne
 	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) NetworkRemove(ctx context.Context, networkID string) error {
-	fake.networkRemoveMutex.Lock()
-	ret, specificReturn := fake.networkRemoveReturnsOnCall[len(fake.networkRemoveArgsForCall)]
-	fake.networkRemoveArgsForCall = append(fake.networkRemoveArgsForCall, struct {
+func (fake *fakeDockerClient) NetworkInspect(ctx context.Context, networkID string) (types.NetworkResource, error) {
+	fake.networkInspectMutex.Lock()
+	ret, specificReturn := fake.networkInspectReturnsOnCall[len(fake.networkInspectArgsForCall)]
+	fake.networkInspectArgsForCall = append(fake.networkInspectArgsForCall, struct {
 		ctx       context.Context
 		networkID string
 	}{ctx, networkID})
-	fake.recordInvocation("NetworkRemove", []interface{}{ctx, networkID})
-	fake.networkRemoveMutex.Unlock()
-	if fake.NetworkRemoveStub != nil {
-		return fake.NetworkRemoveStub(ctx, networkID)
+	fake.recordInvocation("NetworkInspect", []interface{}{ctx, networkID})
+	fake.networkInspectMutex.Unlock()
+	if fake.NetworkInspectStub != nil {
+		return fake.NetworkInspectStub(ctx, networkID)
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fake.networkRemoveReturns.result1
+	return fake.networkInspectReturns.result1, fake.networkInspectReturns.result2
 }
 
-func (fake *fakeDockerClient) NetworkRemoveCallCount() int {
-	fake.networkRemoveMutex.RLock()
-	defer fake.networkRemoveMutex.RUnlock()
-	return len(fake.networkRemoveArgsForCall)
+func (fake *fakeDockerClient) NetworkInspectCallCount() int {
+	fake.networkInspectMutex.RLock()
+	defer fake.networkInspectMutex.RUnlock()
+	return len(fake.networkInspectArgsForCall)
 }
 
-func (fake *fakeDockerClient) NetworkRemoveArgsForCall(i int) (context.Context, string) {
-	fake.networkRemoveMutex.RLock()
-	defer fake.networkRemoveMutex.RUnlock()
-	return fake.networkRemoveArgsForCall[i].ctx, fake.networkRemoveArgsForCall[i].networkID
+func (fake *fakeDockerClient) NetworkInspectArgsForCall(i int) (context.Context, string) {
+	fake.networkInspectMutex.RLock()
+	defer fake.networkInspectMutex.RUnlock()
+	return fake.networkInspectArgsForCall[i].ctx, fake.networkInspectArgsForCall[i].networkID
 }
 
-func (fake *fakeDockerClient) NetworkRemoveReturns(result1 error) {
-	fake.NetworkRemoveStub = nil
-	fake.networkRemoveReturns = struct {
-		result1 error
-	}{result1}
+func (fake *fakeDockerClient) NetworkInspectReturns(result1 types.NetworkResource, result2 error) {
+	fake.NetworkInspectStub = nil
+	fake.networkInspectReturns = struct {
+		result1 types.NetworkResource
+		result2 error
+	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) NetworkRemoveReturnsOnCall(i int, result1 error) {
-	fake.NetworkRemoveStub = nil
-	if fake.networkRemoveReturnsOnCall == nil {
-		fake.networkRemoveReturnsOnCall = make(map[int]struct {
-			result1 error
+func (fake *fakeDockerClient) NetworkInspectReturnsOnCall(i int, result1 types.NetworkResource, result2 error) {
+	fake.NetworkInspectStub = nil
+	if fake.networkInspectReturnsOnCall == nil {
+		fake.networkInspectReturnsOnCall = make(map[int]struct {
+			result1 types.NetworkResource
+			result2 error
 		})
 	}
-	fake.networkRemoveReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
+	fake.networkInspectReturnsOnCall[i] = struct {
+		result1 types.NetworkResource
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *fakeDockerClient) RegistryLogin(ctx context.Context, auth types.AuthConfig) (registry.AuthenticateOKBody, error) {
@@ -696,8 +701,8 @@ func (fake *fakeDockerClient) Invocations() map[string][][]interface{} {
 	defer fake.imagePullMutex.RUnlock()
 	fake.networkCreateMutex.RLock()
 	defer fake.networkCreateMutex.RUnlock()
-	fake.networkRemoveMutex.RLock()
-	defer fake.networkRemoveMutex.RUnlock()
+	fake.networkInspectMutex.RLock()
+	defer fake.networkInspectMutex.RUnlock()
 	fake.registryLoginMutex.RLock()
 	defer fake.registryLoginMutex.RUnlock()
 	return fake.invocations

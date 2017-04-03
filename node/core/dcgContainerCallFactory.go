@@ -2,11 +2,11 @@ package core
 
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
-	"github.com/opctl/opctl/util/dircopier"
-	"github.com/opctl/opctl/util/filecopier"
-	osfs "github.com/opctl/opctl/util/vfs/os"
+	"github.com/virtual-go/dircopier"
+	"github.com/virtual-go/filecopier"
 	interpolatePkg "github.com/opspec-io/sdk-golang/interpolate"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/virtual-go/vfs/osfs"
 	"os"
 	"path"
 	"strings"

@@ -165,51 +165,62 @@ var _ = Context("selfUpdate", func() {
 							/* assert */
 							Expect(fakeNodeProvider.KillNodeIfExistsCallCount()).To(Equal(1))
 						})
-						It("should call nodeProvider.CreateNode", func() {
-							/* arrange */
-							fakeNodeProvider := new(nodeprovider.Fake)
+						Context("nodeProvider.KillNodeIfExists errors", func() {
+							It("should call exiter w/ expected args", func() {
+								/* arrange */
+								fakeCliExiter := new(cliexiter.Fake)
+								returnedError := errors.New("dummyError")
 
-							fakeUpdater := new(updater.Fake)
-							returnedUpdate := &updater.Update{Version: "dummyVersion"}
+								fakeNodeProvider := new(nodeprovider.Fake)
+								fakeNodeProvider.KillNodeIfExistsReturns(returnedError)
 
-							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
+								expectedExitMsg :=
+									fmt.Sprintf("Unable to kill running node; run `node kill` to complete the update. Error was: %v", returnedError.Error())
 
-							objectUnderTest := _core{
-								updater:      fakeUpdater,
-								cliExiter:    new(cliexiter.Fake),
-								nodeProvider: fakeNodeProvider,
-							}
+								fakeUpdater := new(updater.Fake)
 
-							/* act */
-							objectUnderTest.SelfUpdate("beta")
+								fakeUpdater.GetUpdateIfExistsReturns(&updater.Update{Version: "dummyVersion"}, nil)
 
-							/* assert */
-							Expect(fakeNodeProvider.CreateNodeCallCount()).To(Equal(1))
+								objectUnderTest := _core{
+									nodeProvider: fakeNodeProvider,
+									updater:      fakeUpdater,
+									cliExiter:    fakeCliExiter,
+								}
+
+								/* act */
+								objectUnderTest.SelfUpdate("beta")
+
+								/* assert */
+								Expect(fakeCliExiter.ExitArgsForCall(0)).
+									Should(Equal(cliexiter.ExitReq{Message: expectedExitMsg, Code: 1}))
+							})
 						})
-						It("should call exiter w/ expected args", func() {
-							/* arrange */
-							fakeCliExiter := new(cliexiter.Fake)
+						Context("nodeProvider.KillNodeIfExists doesn't error", func() {
+							It("should call exiter w/ expected args", func() {
+								/* arrange */
+								fakeCliExiter := new(cliexiter.Fake)
 
-							fakeUpdater := new(updater.Fake)
-							returnedUpdate := &updater.Update{Version: "dummyVersion"}
+								fakeUpdater := new(updater.Fake)
+								returnedUpdate := &updater.Update{Version: "dummyVersion"}
 
-							fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
+								fakeUpdater.GetUpdateIfExistsReturns(returnedUpdate, nil)
 
-							objectUnderTest := _core{
-								updater:      fakeUpdater,
-								cliExiter:    fakeCliExiter,
-								nodeProvider: new(nodeprovider.Fake),
-							}
+								objectUnderTest := _core{
+									updater:      fakeUpdater,
+									cliExiter:    fakeCliExiter,
+									nodeProvider: new(nodeprovider.Fake),
+								}
 
-							/* act */
-							objectUnderTest.SelfUpdate("beta")
+								/* act */
+								objectUnderTest.SelfUpdate("beta")
 
-							/* assert */
-							Expect(fakeCliExiter.ExitArgsForCall(0)).
-								Should(Equal(cliexiter.ExitReq{
-									Message: fmt.Sprintf("Updated to new version: %s!\n", returnedUpdate.Version),
-									Code:    0,
-								}))
+								/* assert */
+								Expect(fakeCliExiter.ExitArgsForCall(0)).
+									Should(Equal(cliexiter.ExitReq{
+										Message: fmt.Sprintf("Updated to new version: %s!\n", returnedUpdate.Version),
+										Code:    0,
+									}))
+							})
 						})
 					})
 				})
