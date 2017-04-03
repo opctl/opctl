@@ -24,13 +24,16 @@ var _ = Context("core", func() {
 				PkgRef: "dummyPkgRef",
 			}
 
-			expectedScgOpCall := &model.ScgOpCall{
-				Ref:    providedReq.PkgRef,
+			expectedSCGOpCall := &model.SCGOpCall{
+
+				Pkg: &model.SCGOpCallPkg{
+					Ref: providedReq.PkgRef,
+				},
 				Inputs: map[string]string{},
 			}
 			for name := range providedReq.Args {
 				// map as passed
-				expectedScgOpCall.Inputs[name] = name
+				expectedSCGOpCall.Inputs[name] = name
 			}
 
 			expectedOpId := "dummyOpId"
@@ -58,13 +61,13 @@ var _ = Context("core", func() {
 				actualOpId,
 				actualPkgRef,
 				actualRootOpId,
-				actualScgOpCall := fakeOpCaller.CallArgsForCall(0)
+				actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 			Expect(actualInboundScope).To(Equal(providedReq.Args))
 			Expect(actualOpId).To(Equal(expectedOpId))
 			Expect(actualPkgRef).To(Equal(providedReq.PkgRef))
 			Expect(actualRootOpId).To(Equal(actualOpId))
-			Expect(actualScgOpCall).To(Equal(expectedScgOpCall))
+			Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 		})
 	})
 })

@@ -27,10 +27,12 @@ func (this _containerProvider) pullImage(
 	imageRef := fmt.Sprintf("%v:%v", imageName, tag)
 
 	imagePullOptions := types.ImagePullOptions{}
-	if "" != dcgContainerImage.PullIdentity && "" != dcgContainerImage.PullSecret {
+	if nil != dcgContainerImage.PullAuth &&
+		"" != dcgContainerImage.PullAuth.Username &&
+		"" != dcgContainerImage.PullAuth.Password {
 		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
-			dcgContainerImage.PullIdentity,
-			dcgContainerImage.PullSecret,
+			dcgContainerImage.PullAuth.Username,
+			dcgContainerImage.PullAuth.Password,
 		)
 		fmt.Printf("imagePullOptions.RegistryAuth: %v \n", imagePullOptions.RegistryAuth)
 		if nil != err {

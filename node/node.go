@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/containerprovider/docker"
 	"github.com/opctl/opctl/util/lockfile"
 	"github.com/opctl/opctl/util/pubsub"
-	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/fs/osfs"
 	"path"
 )
 

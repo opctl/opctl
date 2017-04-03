@@ -2,11 +2,11 @@ package core
 
 import (
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
-	"github.com/virtual-go/dircopier"
-	"github.com/virtual-go/filecopier"
 	interpolatePkg "github.com/opspec-io/sdk-golang/interpolate"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/dircopier"
+	"github.com/virtual-go/filecopier"
+	"github.com/virtual-go/fs/osfs"
 	"os"
 	"path"
 	"strings"
@@ -14,7 +14,7 @@ import (
 
 func constructDCGContainerCall(
 	currentScope map[string]*model.Data,
-	scgContainerCall *model.ScgContainerCall,
+	scgContainerCall *model.SCGContainerCall,
 	containerId string,
 	rootOpId string,
 	pkgRef string,
@@ -140,9 +140,13 @@ func constructDCGContainerCall(
 	if scgContainerCallImage := scgContainerCall.Image; scgContainerCallImage != nil {
 		dcgContainerCall.Image = &model.DCGContainerCallImage{
 			// interpolate all properties
-			Ref:          interpolate.Interpolate(scgContainerCall.Image.Ref, currentScope),
-			PullIdentity: interpolate.Interpolate(scgContainerCall.Image.PullIdentity, currentScope),
-			PullSecret:   interpolate.Interpolate(scgContainerCall.Image.PullSecret, currentScope),
+			Ref: interpolate.Interpolate(scgContainerCall.Image.Ref, currentScope),
+		}
+		if nil != scgContainerCallImage.PullAuth {
+			dcgContainerCall.Image.PullAuth = &model.DCGUsernamePasswordAuth{
+				Username: interpolate.Interpolate(scgContainerCall.Image.PullAuth.Username, currentScope),
+				Password: interpolate.Interpolate(scgContainerCall.Image.PullAuth.Password, currentScope),
+			}
 		}
 	}
 

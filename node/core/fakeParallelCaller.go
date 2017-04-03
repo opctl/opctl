@@ -8,14 +8,14 @@ import (
 )
 
 type fakeParallelCaller struct {
-	CallStub        func(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgParallelCall []*model.Scg) (err error)
+	CallStub        func(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgParallelCall []*model.SCG) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		callId          string
 		inboundScope    map[string]*model.Data
 		rootOpId        string
 		pkgRef          string
-		scgParallelCall []*model.Scg
+		scgParallelCall []*model.SCG
 	}
 	callReturns struct {
 		result1 error
@@ -27,10 +27,10 @@ type fakeParallelCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgParallelCall []*model.Scg) (err error) {
-	var scgParallelCallCopy []*model.Scg
+func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgParallelCall []*model.SCG) (err error) {
+	var scgParallelCallCopy []*model.SCG
 	if scgParallelCall != nil {
-		scgParallelCallCopy = make([]*model.Scg, len(scgParallelCall))
+		scgParallelCallCopy = make([]*model.SCG, len(scgParallelCall))
 		copy(scgParallelCallCopy, scgParallelCall)
 	}
 	fake.callMutex.Lock()
@@ -40,7 +40,7 @@ func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*mod
 		inboundScope    map[string]*model.Data
 		rootOpId        string
 		pkgRef          string
-		scgParallelCall []*model.Scg
+		scgParallelCall []*model.SCG
 	}{callId, inboundScope, rootOpId, pkgRef, scgParallelCallCopy})
 	fake.recordInvocation("Call", []interface{}{callId, inboundScope, rootOpId, pkgRef, scgParallelCallCopy})
 	fake.callMutex.Unlock()
@@ -59,7 +59,7 @@ func (fake *fakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeParallelCaller) CallArgsForCall(i int) (string, map[string]*model.Data, string, string, []*model.Scg) {
+func (fake *fakeParallelCaller) CallArgsForCall(i int) (string, map[string]*model.Data, string, string, []*model.SCG) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return fake.callArgsForCall[i].callId, fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].scgParallelCall

@@ -9,8 +9,9 @@ func (this pkg) Create(
 	req CreateReq,
 ) (err error) {
 
-	err = this.fileSystem.AddDir(
+	err = this.fileSystem.MkdirAll(
 		req.Path,
+		0777,
 	)
 	if nil != err {
 		return
@@ -26,9 +27,10 @@ func (this pkg) Create(
 		return
 	}
 
-	err = this.fileSystem.SaveFile(
-		path.Join(req.Path, NameOfPackageManifestFile),
+	err = this.ioUtil.WriteFile(
+		path.Join(req.Path, NameOfPkgManifestFile),
 		packageManifestViewBytes,
+		0777,
 	)
 
 	return

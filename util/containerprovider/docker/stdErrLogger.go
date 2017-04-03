@@ -39,11 +39,11 @@ func (this _containerProvider) stdErrLogger(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
-						Data:         scanner.Bytes(),
-						ContainerId:  containerId,
-						ContainerRef: imageRef,
-						PkgRef:       pkgRef,
-						RootOpId:     rootOpId,
+						Data:        scanner.Bytes(),
+						ContainerId: containerId,
+						ImageRef:    imageRef,
+						PkgRef:      pkgRef,
+						RootOpId:    rootOpId,
 					},
 				},
 			)

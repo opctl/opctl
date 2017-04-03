@@ -14,8 +14,10 @@ func (this _core) StartOp(
 	opId = this.uniqueStringFactory.Construct()
 
 	// construct scgOpCall
-	scgOpCall := &model.ScgOpCall{
-		Ref:    req.PkgRef,
+	scgOpCall := &model.SCGOpCall{
+		Pkg: &model.SCGOpCallPkg{
+			Ref: req.PkgRef,
+		},
 		Inputs: map[string]string{},
 	}
 	for name := range req.Args {

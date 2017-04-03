@@ -15,16 +15,16 @@ var _ = Context("pkgSetDescription", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVos.GetwdReturns("", expectedError)
+				fakeVOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					vos:       fakeVos,
+					vos:       fakeVOS,
 				}
 
 				/* act */
@@ -40,19 +40,19 @@ var _ = Context("pkgSetDescription", func() {
 			fakePkg := new(pkg.Fake)
 
 			providedPkgRef := "dummyPkgRef"
-			wdReturnedFromVos := "dummyWorkDir"
+			wdReturnedFromVOS := "dummyWorkDir"
 
-			fakeVos := new(vos.Fake)
-			fakeVos.GetwdReturns(wdReturnedFromVos, nil)
+			fakeVOS := new(vos.Fake)
+			fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
 
 			expectedReq := pkg.SetDescriptionReq{
-				Path:        path.Join(wdReturnedFromVos, ".opspec", providedPkgRef),
+				Path:        path.Join(wdReturnedFromVOS, ".opspec", providedPkgRef),
 				Description: "dummyPkgDescription",
 			}
 
 			objectUnderTest := _core{
 				pkg: fakePkg,
-				vos: fakeVos,
+				vos: fakeVOS,
 			}
 
 			/* act */

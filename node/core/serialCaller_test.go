@@ -28,18 +28,18 @@ var _ = Context("serialCaller", func() {
 			providedInboundScope := map[string]*model.Data{}
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
-			providedScgSerialCalls := []*model.Scg{
+			providedSCGSerialCalls := []*model.SCG{
 				{
-					Container: &model.ScgContainerCall{},
+					Container: &model.SCGContainerCall{},
 				},
 				{
-					Op: &model.ScgOpCall{},
+					Op: &model.SCGOpCall{},
 				},
 				{
-					Parallel: []*model.Scg{},
+					Parallel: []*model.SCG{},
 				},
 				{
-					Serial: []*model.Scg{},
+					Serial: []*model.SCG{},
 				},
 			}
 
@@ -71,19 +71,19 @@ var _ = Context("serialCaller", func() {
 				providedInboundScope,
 				providedRootOpId,
 				providedPkgRef,
-				providedScgSerialCalls,
+				providedSCGSerialCalls,
 			)
 
 			/* assert */
-			for expectedScgIndex, expectedScg := range providedScgSerialCalls {
+			for expectedSCGIndex, expectedSCG := range providedSCGSerialCalls {
 				actualNodeId,
 					actualChildOutboundScope,
-					actualScg,
+					actualSCG,
 					actualPkgRef,
-					actualRootOpId := fakeCaller.CallArgsForCall(expectedScgIndex)
-				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedScgIndex)))
+					actualRootOpId := fakeCaller.CallArgsForCall(expectedSCGIndex)
+				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualScg).To(Equal(expectedScg))
+				Expect(actualSCG).To(Equal(expectedSCG))
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			}
@@ -95,9 +95,9 @@ var _ = Context("serialCaller", func() {
 				providedInboundScope := map[string]*model.Data{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
-				providedScgSerialCalls := []*model.Scg{
+				providedSCGSerialCalls := []*model.SCG{
 					{
-						Container: &model.ScgContainerCall{},
+						Container: &model.SCGContainerCall{},
 					},
 				}
 
@@ -114,7 +114,7 @@ var _ = Context("serialCaller", func() {
 					providedInboundScope,
 					providedRootOpId,
 					providedPkgRef,
-					providedScgSerialCalls,
+					providedSCGSerialCalls,
 				)
 
 				/* assert */
@@ -133,12 +133,12 @@ var _ = Context("serialCaller", func() {
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
-					providedScgSerialCalls := []*model.Scg{
+					providedSCGSerialCalls := []*model.SCG{
 						{
-							Container: &model.ScgContainerCall{},
+							Container: &model.SCGContainerCall{},
 						},
 						{
-							Container: &model.ScgContainerCall{},
+							Container: &model.SCGContainerCall{},
 						},
 					}
 
@@ -170,7 +170,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedRootOpId,
 						providedPkgRef,
-						providedScgSerialCalls,
+						providedSCGSerialCalls,
 					)
 
 					/* assert */
@@ -198,12 +198,12 @@ var _ = Context("serialCaller", func() {
 					}
 					providedRootOpId := "dummyRootOpId"
 					providedPkgRef := "dummyPkgRef"
-					providedScgSerialCalls := []*model.Scg{
+					providedSCGSerialCalls := []*model.SCG{
 						{
-							Container: &model.ScgContainerCall{},
+							Container: &model.SCGContainerCall{},
 						},
 						{
-							Container: &model.ScgContainerCall{},
+							Container: &model.SCGContainerCall{},
 						},
 					}
 
@@ -245,7 +245,7 @@ var _ = Context("serialCaller", func() {
 						providedInboundScope,
 						providedRootOpId,
 						providedPkgRef,
-						providedScgSerialCalls,
+						providedSCGSerialCalls,
 					)
 
 					/* assert */

@@ -8,14 +8,14 @@ import (
 )
 
 type fakeOpCaller struct {
-	CallStub        func(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.ScgOpCall) (err error)
+	CallStub        func(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.SCGOpCall) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		inboundScope map[string]*model.Data
 		opId         string
 		pkgRef       string
 		rootOpId     string
-		scgOpCall    *model.ScgOpCall
+		scgOpCall    *model.SCGOpCall
 	}
 	callReturns struct {
 		result1 error
@@ -27,7 +27,7 @@ type fakeOpCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpCaller) Call(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.ScgOpCall) (err error) {
+func (fake *fakeOpCaller) Call(inboundScope map[string]*model.Data, opId string, pkgRef string, rootOpId string, scgOpCall *model.SCGOpCall) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
@@ -35,7 +35,7 @@ func (fake *fakeOpCaller) Call(inboundScope map[string]*model.Data, opId string,
 		opId         string
 		pkgRef       string
 		rootOpId     string
-		scgOpCall    *model.ScgOpCall
+		scgOpCall    *model.SCGOpCall
 	}{inboundScope, opId, pkgRef, rootOpId, scgOpCall})
 	fake.recordInvocation("Call", []interface{}{inboundScope, opId, pkgRef, rootOpId, scgOpCall})
 	fake.callMutex.Unlock()
@@ -54,7 +54,7 @@ func (fake *fakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, string, *model.ScgOpCall) {
+func (fake *fakeOpCaller) CallArgsForCall(i int) (map[string]*model.Data, string, string, string, *model.SCGOpCall) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].opId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].scgOpCall

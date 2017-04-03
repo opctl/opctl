@@ -3,7 +3,7 @@
 
 # problem statement
 
-golang package for copying files in conjunction w/ virtual-go/vfs
+golang package for copying files in virtual-go
 
 # features
 

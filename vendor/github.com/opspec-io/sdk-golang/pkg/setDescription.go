@@ -9,34 +9,35 @@ func (this pkg) SetDescription(
 	req SetDescriptionReq,
 ) (err error) {
 
-	pathToPackageManifestView := path.Join(req.Path, NameOfPackageManifestFile)
+	pathToPkgManifestView := path.Join(req.Path, NameOfPkgManifestFile)
 
-	opBytes, err := this.fileSystem.GetBytesOfFile(
-		pathToPackageManifestView,
+	pkgManifestBytes, err := this.ioUtil.ReadFile(
+		pathToPkgManifestView,
 	)
 	if nil != err {
 		return
 	}
 
-	packageManifestView := model.PackageManifestView{}
+	pkgManifestView := model.PackageManifestView{}
 	err = this.yaml.To(
-		opBytes,
-		&packageManifestView,
+		pkgManifestBytes,
+		&pkgManifestView,
 	)
 	if nil != err {
 		return
 	}
 
-	packageManifestView.Description = req.Description
+	pkgManifestView.Description = req.Description
 
-	opBytes, err = this.yaml.From(&packageManifestView)
+	pkgManifestBytes, err = this.yaml.From(&pkgManifestView)
 	if nil != err {
 		return
 	}
 
-	err = this.fileSystem.SaveFile(
-		pathToPackageManifestView,
-		opBytes,
+	err = this.ioUtil.WriteFile(
+		pathToPkgManifestView,
+		pkgManifestBytes,
+		0777,
 	)
 
 	return

@@ -11,6 +11,13 @@ type DCGBaseCall struct {
 	PkgRef   string `json:"pkgRef"`
 }
 
+type DCGUsernamePasswordAuth struct {
+	// will be interpolated
+	Username string `yaml:"username"`
+	// will be interpolated
+	Password string `yaml:"password"`
+}
+
 type DCGContainer struct{}
 
 type DCGContainerCall struct {
@@ -32,9 +39,9 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
-	Ref          string `json:"ref"`
-	PullIdentity string `json:"pullIdentity,omitempty"`
-	PullSecret   string `json:"pullSecret,omitempty"`
+	// will be interpolated
+	Ref      string                   `yaml:"ref"`
+	PullAuth *DCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
 }
 
 type DCGOp struct{}
@@ -43,4 +50,10 @@ type DCGOpCall struct {
 	*DCGBaseCall
 	OpId        string `json:"opId"`
 	ChildCallId string `json:"childCallId"`
+}
+
+type DCGOpCallPkg struct {
+	// will be interpolated
+	Ref      string                   `yaml:"ref"`
+	PullAuth *DCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
 }

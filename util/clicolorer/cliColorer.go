@@ -16,7 +16,7 @@ type CliColorer interface {
 		values ...interface{},
 	) string
 
-	// errors collors
+	// errors colors
 	Error(
 		format string,
 		values ...interface{},

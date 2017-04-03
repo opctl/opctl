@@ -16,7 +16,7 @@ type serialCaller interface {
 		inboundScope map[string]*model.Data,
 		rootOpId string,
 		pkgRef string,
-		scgSerialCall []*model.Scg,
+		scgSerialCall []*model.SCG,
 	) (
 		err error,
 	)
@@ -47,7 +47,7 @@ func (this _serialCaller) Call(
 	inboundScope map[string]*model.Data,
 	rootOpId string,
 	pkgRef string,
-	scgSerialCall []*model.Scg,
+	scgSerialCall []*model.SCG,
 ) (
 	err error,
 ) {

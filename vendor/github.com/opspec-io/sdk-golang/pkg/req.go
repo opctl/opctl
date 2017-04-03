@@ -6,6 +6,13 @@ type CreateReq struct {
 	Description string
 }
 
+type GetReq struct {
+	Path     string
+	PkgRef   string
+	Username string
+	Password string
+}
+
 type SetDescriptionReq struct {
 	Path        string
 	Description string

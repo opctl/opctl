@@ -12,7 +12,7 @@ type caller interface {
 	Call(
 		callId string,
 		inboundScope map[string]*model.Data,
-		scg *model.Scg,
+		scg *model.SCG,
 		pkgRef string,
 		rootOpId string,
 	) (
@@ -39,7 +39,7 @@ type _caller struct {
 func (this _caller) Call(
 	callId string,
 	inboundScope map[string]*model.Data,
-	scg *model.Scg,
+	scg *model.SCG,
 	pkgRef string,
 	rootOpId string,
 ) (
@@ -64,7 +64,7 @@ func (this _caller) Call(
 		err = this.opCaller.Call(
 			inboundScope,
 			callId,
-			path.Join(path.Dir(pkgRef), scg.Op.Ref),
+			path.Join(path.Dir(pkgRef), scg.Op.Pkg.Ref),
 			rootOpId,
 			scg.Op,
 		)
