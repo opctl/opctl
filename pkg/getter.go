@@ -3,6 +3,7 @@ package pkg
 //go:generate counterfeiter -o ./fakeGetter.go --fake-name fakeGetter ./ getter
 
 import (
+	"errors"
 	"fmt"
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/sdk-golang/model"
@@ -11,6 +12,7 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
+	"os"
 	pathPkg "path"
 	"strings"
 )
@@ -53,30 +55,34 @@ func (this _getter) getRemote(
 ) (packageView *model.PackageView, err error) {
 
 	stringParts := strings.Split(req.PkgRef, "#")
+	if len(stringParts) != 2 {
+		err = errors.New("Invalid pkgRef")
+	}
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
 	gitPkgPath := pathPkg.Join(
-		appdatapath.New().Global(),
+		appdatapath.New().PerUser(),
 		".opspec",
-		"refs",
+		"cache",
+		"pkgs",
 		repoName,
 		repoRefName,
 	)
-
 	if _, err = this.fs.Stat(gitPkgPath); nil != err {
-		// ref not resolved on node; pull it
+		// pkg not resolved on node; pull it
 		cloneOptions := &git.CloneOptions{
 			URL:           fmt.Sprintf("https://%v", repoName),
 			ReferenceName: plumbing.ReferenceName(repoRefName),
-			SingleBranch:  true,
+			Depth:         1,
+			Progress:      os.Stdout,
 		}
 
 		if "" != req.Username && "" != req.Password {
 			cloneOptions.Auth = http.NewBasicAuth(req.Username, req.Password)
 		}
 
-		_, err = git.PlainClone("", false, cloneOptions)
+		_, err = this.git.PlainClone(gitPkgPath, false, cloneOptions)
 		if nil != err {
 			return
 		}

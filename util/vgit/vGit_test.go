@@ -7,7 +7,7 @@ import (
 
 var _ = Context("_VGit", func() {
 	Context("New", func() {
-		It("should return Fs", func() {
+		It("should return VGIT", func() {
 			/* arrange/act/assert */
 			Expect(New()).
 				Should(Not(BeNil()))

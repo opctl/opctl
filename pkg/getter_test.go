@@ -124,10 +124,12 @@ var _ = Describe("Getter", func() {
 					repoRefName := stringParts[1]
 
 					expectedPkgPath := path.Join(
-						appdatapath.New().Global(),
+						appdatapath.New().PerUser(),
 						".opspec",
-						"refs",
-						repoName, repoRefName,
+						"cache",
+						"pkgs",
+						repoName,
+						repoRefName,
 					)
 
 					fakeFS := new(fs.Fake)
