@@ -27,7 +27,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
-			providedScgContainerCall := &model.ScgContainerCall{}
+			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
@@ -55,7 +55,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedContainerId,
-				providedScgContainerCall,
+				providedSCGContainerCall,
 				providedPkgRef,
 				providedRootOpId,
 			)
@@ -67,7 +67,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
-			providedScgContainerCall := &model.ScgContainerCall{}
+			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
@@ -95,7 +95,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedContainerId,
-				providedScgContainerCall,
+				providedSCGContainerCall,
 				providedPkgRef,
 				providedRootOpId,
 			)
@@ -114,13 +114,13 @@ var _ = Context("containerCaller", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Data{}
 			providedContainerId := "dummyContainerId"
-			providedScgContainerCall := &model.ScgContainerCall{}
+			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
 			expectedReq, _ := constructDCGContainerCall(
 				providedInboundScope,
-				providedScgContainerCall,
+				providedSCGContainerCall,
 				providedContainerId,
 				providedRootOpId,
 				providedPkgRef,
@@ -143,7 +143,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedInboundScope,
 				providedContainerId,
-				providedScgContainerCall,
+				providedSCGContainerCall,
 				providedPkgRef,
 				providedRootOpId,
 			)
@@ -158,7 +158,7 @@ var _ = Context("containerCaller", func() {
 				/* arrange */
 				providedInboundScope := map[string]*model.Data{}
 				providedContainerId := "dummyContainerId"
-				providedScgContainerCall := &model.ScgContainerCall{}
+				providedSCGContainerCall := &model.SCGContainerCall{}
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
 
@@ -177,7 +177,7 @@ var _ = Context("containerCaller", func() {
 				actualError := objectUnderTest.Call(
 					providedInboundScope,
 					providedContainerId,
-					providedScgContainerCall,
+					providedSCGContainerCall,
 					providedPkgRef,
 					providedRootOpId,
 				)
@@ -191,7 +191,7 @@ var _ = Context("containerCaller", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
-		providedScgContainerCall := &model.ScgContainerCall{}
+		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
@@ -212,7 +212,7 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest.Call(
 			providedInboundScope,
 			providedContainerId,
-			providedScgContainerCall,
+			providedSCGContainerCall,
 			providedPkgRef,
 			providedRootOpId,
 		)
@@ -225,7 +225,7 @@ var _ = Context("containerCaller", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
-		providedScgContainerCall := &model.ScgContainerCall{}
+		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
@@ -253,7 +253,7 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest.Call(
 			providedInboundScope,
 			providedContainerId,
-			providedScgContainerCall,
+			providedSCGContainerCall,
 			providedPkgRef,
 			providedRootOpId,
 		)
@@ -272,7 +272,7 @@ var _ = Context("containerCaller", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
-		providedScgContainerCall := &model.ScgContainerCall{
+		providedSCGContainerCall := &model.SCGContainerCall{
 			Sockets: map[string]string{
 				"0.0.0.0": "socket0Name",
 			},
@@ -290,7 +290,7 @@ var _ = Context("containerCaller", func() {
 			{
 				Timestamp: expectedEventTimestamp,
 				OutputInitialized: &model.OutputInitializedEvent{
-					Name:     providedScgContainerCall.Sockets["0.0.0.0"],
+					Name:     providedSCGContainerCall.Sockets["0.0.0.0"],
 					Value:    &model.Data{Socket: providedContainerId},
 					RootOpId: providedRootOpId,
 					CallId:   providedContainerId,
@@ -323,7 +323,7 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest.Call(
 			providedInboundScope,
 			providedContainerId,
-			providedScgContainerCall,
+			providedSCGContainerCall,
 			providedPkgRef,
 			providedRootOpId,
 		)
@@ -339,7 +339,7 @@ var _ = Context("containerCaller", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
-		providedScgContainerCall := &model.ScgContainerCall{}
+		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
@@ -367,7 +367,7 @@ var _ = Context("containerCaller", func() {
 		objectUnderTest.Call(
 			providedInboundScope,
 			providedContainerId,
-			providedScgContainerCall,
+			providedSCGContainerCall,
 			providedPkgRef,
 			providedRootOpId,
 		)

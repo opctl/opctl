@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
+	"github.com/opspec-io/sdk-golang/interpolate"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
@@ -34,7 +35,7 @@ var _ = Context("opCaller", func() {
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
-			providedScgOpCall := &model.ScgOpCall{}
+			providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:       providedOpId,
@@ -43,10 +44,13 @@ var _ = Context("opCaller", func() {
 				Op:       &dcgOpDescriptor{},
 			}
 
+			fakePkg := new(pkg.Fake)
+			fakePkg.GetReturns(&model.PackageView{}, nil)
+
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 			objectUnderTest := newOpCaller(
-				new(pkg.Fake),
+				fakePkg,
 				new(pubsub.Fake),
 				fakeDCGNodeRepo,
 				new(fakeCaller),
@@ -60,7 +64,7 @@ var _ = Context("opCaller", func() {
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
-				providedScgOpCall,
+				providedSCGOpCall,
 			)
 
 			/* assert */
@@ -68,15 +72,30 @@ var _ = Context("opCaller", func() {
 		})
 		It("should call pkg.Get w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Data{
+				"username": {String: "name1Value"},
+			}
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
-			providedScgOpCall := &model.ScgOpCall{}
+			providedSCGOpCall := &model.SCGOpCall{
+				Pkg: &model.SCGOpCallPkg{
+					Ref: "dummySCGOpCallPkgRef",
+					PullAuth: &model.SCGUsernamePasswordAuth{
+						Username: "$(username)",
+						Password: "dummyPassword",
+					},
+				},
+			}
 
-			expectedPkgRef := providedPkgRef
+			expectedPkgGetReq := &pkg.GetReq{
+				PkgRef:   providedSCGOpCall.Pkg.Ref,
+				Username: interpolate.New().Interpolate(providedSCGOpCall.Pkg.PullAuth.Username, providedInboundScope),
+				Password: providedSCGOpCall.Pkg.PullAuth.Password,
+			}
 
 			fakePkg := new(pkg.Fake)
+			fakePkg.GetReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := newOpCaller(
 				fakePkg,
@@ -93,11 +112,11 @@ var _ = Context("opCaller", func() {
 				providedOpId,
 				providedPkgRef,
 				providedRootOpId,
-				providedScgOpCall,
+				providedSCGOpCall,
 			)
 
 			/* assert */
-			Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
+			Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgGetReq))
 		})
 		Context("pkg.Get errors", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
@@ -106,7 +125,7 @@ var _ = Context("opCaller", func() {
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
-				providedScgOpCall := &model.ScgOpCall{}
+				providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 				expectedEvent := &model.Event{
 					Timestamp: time.Now().UTC(),
@@ -120,7 +139,7 @@ var _ = Context("opCaller", func() {
 
 				fakePkg := new(pkg.Fake)
 				fakePkg.GetReturns(
-					model.PackageView{},
+					&model.PackageView{},
 					errors.New(expectedEvent.OpEncounteredError.Msg),
 				)
 
@@ -144,7 +163,7 @@ var _ = Context("opCaller", func() {
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
-					providedScgOpCall,
+					providedSCGOpCall,
 				)
 
 				/* assert */
@@ -171,7 +190,8 @@ var _ = Context("opCaller", func() {
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"
-				providedScgOpCall := &model.ScgOpCall{
+				providedSCGOpCall := &model.SCGOpCall{
+					Pkg: &model.SCGOpCallPkg{},
 					Inputs: map[string]string{
 						"name1": "",
 						"name2": "",
@@ -183,7 +203,7 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				returnedPkg := model.PackageView{
+				returnedPkg := &model.PackageView{
 					Inputs: map[string]*model.Param{
 						"name1": {String: &model.StringParam{}},
 						"name2": {File: &model.FileParam{}},
@@ -230,7 +250,7 @@ var _ = Context("opCaller", func() {
 					providedOpId,
 					providedPkgRef,
 					providedRootOpId,
-					providedScgOpCall,
+					providedSCGOpCall,
 				)
 
 				/* assert */
@@ -248,12 +268,12 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
-					providedScgOpCall := &model.ScgOpCall{}
+					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-					opReturnedFromPkg := model.PackageView{
+					opReturnedFromPkg := &model.PackageView{
 						Inputs: map[string]*model.Param{
 							"dummyVar1Name": {
 								String: &model.StringParam{
@@ -307,7 +327,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
-						providedScgOpCall,
+						providedSCGOpCall,
 					)
 
 					/* assert */
@@ -328,7 +348,7 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
-					providedScgOpCall := &model.ScgOpCall{}
+					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 					expectedEvent := &model.Event{
 						Timestamp: time.Now().UTC(),
@@ -339,10 +359,13 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetReturns(&model.PackageView{}, nil)
+
 					fakePubSub := new(pubsub.Fake)
 
 					objectUnderTest := newOpCaller(
-						new(pkg.Fake),
+						fakePkg,
 						fakePubSub,
 						new(fakeDCGNodeRepo),
 						new(fakeCaller),
@@ -356,7 +379,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
-						providedScgOpCall,
+						providedSCGOpCall,
 					)
 
 					/* assert */
@@ -375,13 +398,13 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
-					providedScgOpCall := &model.ScgOpCall{}
+					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
-					opReturnedFromPkg := model.PackageView{
-						Run: &model.Scg{
-							Parallel: []*model.Scg{
+					opReturnedFromPkg := &model.PackageView{
+						Run: &model.SCG{
+							Parallel: []*model.SCG{
 								{
-									Container: &model.ScgContainerCall{},
+									Container: &model.SCGContainerCall{},
 								},
 							},
 						},
@@ -410,19 +433,19 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
-						providedScgOpCall,
+						providedSCGOpCall,
 					)
 
 					/* assert */
 					actualNodeId,
 						actualInboundScope,
-						actualScg,
+						actualSCG,
 						actualPkgRef,
 						actualRootOpId := fakeCaller.CallArgsForCall(0)
 
 					Expect(actualNodeId).To(Equal(expectedNodeId))
 					Expect(actualInboundScope).To(Equal(providedInboundScope))
-					Expect(actualScg).To(Equal(opReturnedFromPkg.Run))
+					Expect(actualSCG).To(Equal(opReturnedFromPkg.Run))
 					Expect(actualPkgRef).To(Equal(providedPkgRef))
 					Expect(actualRootOpId).To(Equal(providedRootOpId))
 				})
@@ -432,12 +455,15 @@ var _ = Context("opCaller", func() {
 					providedOpId := "dummyOpId"
 					providedPkgRef := "dummyPkgRef"
 					providedRootOpId := "dummyRootOpId"
-					providedScgOpCall := &model.ScgOpCall{}
+					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetReturns(&model.PackageView{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 					objectUnderTest := newOpCaller(
-						new(pkg.Fake),
+						fakePkg,
 						new(pubsub.Fake),
 						fakeDCGNodeRepo,
 						new(fakeCaller),
@@ -451,7 +477,7 @@ var _ = Context("opCaller", func() {
 						providedOpId,
 						providedPkgRef,
 						providedRootOpId,
-						providedScgOpCall,
+						providedSCGOpCall,
 					)
 
 					/* assert */
@@ -464,7 +490,7 @@ var _ = Context("opCaller", func() {
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
-						providedScgOpCall := &model.ScgOpCall{}
+						providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 						expectedEvent := &model.Event{
 							Timestamp: time.Now().UTC(),
@@ -476,10 +502,13 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
+						fakePkg := new(pkg.Fake)
+						fakePkg.GetReturns(&model.PackageView{}, nil)
+
 						fakePubSub := new(pubsub.Fake)
 
 						objectUnderTest := newOpCaller(
-							new(pkg.Fake),
+							fakePkg,
 							fakePubSub,
 							new(fakeDCGNodeRepo),
 							new(fakeCaller),
@@ -493,7 +522,7 @@ var _ = Context("opCaller", func() {
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
-							providedScgOpCall,
+							providedSCGOpCall,
 						)
 
 						/* assert */
@@ -514,13 +543,16 @@ var _ = Context("opCaller", func() {
 						providedOpId := "dummyOpId"
 						providedPkgRef := "dummyPkgRef"
 						providedRootOpId := "dummyRootOpId"
-						providedScgOpCall := &model.ScgOpCall{}
+						providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.GetReturns(&model.PackageView{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						objectUnderTest := newOpCaller(
-							new(pkg.Fake),
+							fakePkg,
 							new(pubsub.Fake),
 							fakeDCGNodeRepo,
 							new(fakeCaller),
@@ -534,7 +566,7 @@ var _ = Context("opCaller", func() {
 							providedOpId,
 							providedPkgRef,
 							providedRootOpId,
-							providedScgOpCall,
+							providedSCGOpCall,
 						)
 
 						/* assert */
@@ -547,7 +579,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
-							providedScgOpCall := &model.ScgOpCall{}
+							providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 							callErr := errors.New("dummyError")
 
@@ -561,6 +593,9 @@ var _ = Context("opCaller", func() {
 								},
 							}
 
+							fakePkg := new(pkg.Fake)
+							fakePkg.GetReturns(&model.PackageView{}, nil)
+
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
@@ -572,7 +607,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								fakePkg,
 								fakePubSub,
 								fakeDCGNodeRepo,
 								fakeCaller,
@@ -586,7 +621,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
-								providedScgOpCall,
+								providedSCGOpCall,
 							)
 
 							/* assert */
@@ -605,7 +640,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
-							providedScgOpCall := &model.ScgOpCall{}
+							providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
@@ -616,6 +651,9 @@ var _ = Context("opCaller", func() {
 									RootOpId: providedRootOpId,
 								},
 							}
+
+							fakePkg := new(pkg.Fake)
+							fakePkg.GetReturns(&model.PackageView{}, nil)
 
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -628,7 +666,7 @@ var _ = Context("opCaller", func() {
 							)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								fakePkg,
 								fakePubSub,
 								fakeDCGNodeRepo,
 								fakeCaller,
@@ -642,7 +680,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
-								providedScgOpCall,
+								providedSCGOpCall,
 							)
 
 							/* assert */
@@ -663,7 +701,7 @@ var _ = Context("opCaller", func() {
 							providedOpId := "dummyOpId"
 							providedPkgRef := "dummyPkgRef"
 							providedRootOpId := "dummyRootOpId"
-							providedScgOpCall := &model.ScgOpCall{}
+							providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 							expectedEvent := &model.Event{
 								Timestamp: time.Now().UTC(),
@@ -675,13 +713,16 @@ var _ = Context("opCaller", func() {
 								},
 							}
 
+							fakePkg := new(pkg.Fake)
+							fakePkg.GetReturns(&model.PackageView{}, nil)
+
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 							fakePubSub := new(pubsub.Fake)
 
 							objectUnderTest := newOpCaller(
-								new(pkg.Fake),
+								fakePkg,
 								fakePubSub,
 								fakeDCGNodeRepo,
 								new(fakeCaller),
@@ -695,7 +736,7 @@ var _ = Context("opCaller", func() {
 								providedOpId,
 								providedPkgRef,
 								providedRootOpId,
-								providedScgOpCall,
+								providedSCGOpCall,
 							)
 
 							/* assert */

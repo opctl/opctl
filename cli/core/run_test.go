@@ -14,8 +14,6 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/virtual-go/vos"
-	"path"
-	"path/filepath"
 	"time"
 )
 
@@ -24,9 +22,9 @@ var _ = Context("runOp", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVos := new(vos.Fake)
+				fakeVOS := new(vos.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVos.GetwdReturns("", expectedError)
+				fakeVOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -34,7 +32,7 @@ var _ = Context("runOp", func() {
 					pkg:          new(pkg.Fake),
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					vos:          fakeVos,
+					vos:          fakeVOS,
 				}
 
 				/* act */
@@ -48,7 +46,16 @@ var _ = Context("runOp", func() {
 		Context("vos.Getwd doesn't error", func() {
 			It("should call pkg.Get w/ expected args", func() {
 				/* arrange */
+				providedPkgRef := "dummyPkgName"
+				wdReturnedFromVOS := "dummyWorkDir"
+
+				expectedGetReq := &pkg.GetReq{
+					Path:   wdReturnedFromVOS,
+					PkgRef: providedPkgRef,
+				}
+
 				fakePkg := new(pkg.Fake)
+				fakePkg.GetReturns(&model.PackageView{}, nil)
 
 				fakeConsumeNodeApi := new(consumenodeapi.Fake)
 				eventChannel := make(chan model.Event)
@@ -57,12 +64,8 @@ var _ = Context("runOp", func() {
 
 				fakeCliExiter := new(cliexiter.Fake)
 
-				providedPkgRef := "dummyPkgName"
-				wdReturnedFromVos := "dummyWorkDir"
-
-				fakeVos := new(vos.Fake)
-				fakeVos.GetwdReturns(wdReturnedFromVos, nil)
-				expectedPath := filepath.Join(wdReturnedFromVos, ".opspec", providedPkgRef)
+				fakeVOS := new(vos.Fake)
+				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
 
 				objectUnderTest := _core{
 					pkg:               fakePkg,
@@ -70,14 +73,14 @@ var _ = Context("runOp", func() {
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
 					nodeProvider:      new(nodeprovider.Fake),
-					vos:               fakeVos,
+					vos:               fakeVOS,
 				}
 
 				/* act */
 				objectUnderTest.RunOp([]string{}, providedPkgRef)
 
 				/* assert */
-				Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedGetReq))
 			})
 			Context("pkg.Get errors", func() {
 				It("should call exiter w/ expected args", func() {
@@ -86,7 +89,7 @@ var _ = Context("runOp", func() {
 					returnedError := errors.New("dummyError")
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(model.PackageView{}, returnedError)
+					fakePkg.GetReturns(&model.PackageView{}, returnedError)
 
 					objectUnderTest := _core{
 						pkg:               fakePkg,
@@ -120,7 +123,7 @@ var _ = Context("runOp", func() {
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.GetReturns(
-						model.PackageView{
+						&model.PackageView{
 							Inputs: expectedParams,
 						},
 						nil,
@@ -154,16 +157,19 @@ var _ = Context("runOp", func() {
 				It("should call consumeNodeApi.StartOp w/ expected args", func() {
 					/* arrange */
 					pwd := "dummyWorkDir"
-					fakeVos := new(vos.Fake)
-					fakeVos.GetwdReturns(pwd, nil)
+					fakeVOS := new(vos.Fake)
+					fakeVOS.GetwdReturns(pwd, nil)
 
 					providedPkgRef := "dummyOp"
 					expectedArgs := model.StartOpReq{
 						Args: map[string]*model.Data{
 							"dummyArg1Name": {String: "dummyArg1Value"},
 						},
-						PkgRef: path.Join(pwd, ".opspec", providedPkgRef),
+						PkgRef: providedPkgRef,
 					}
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetReturns(&model.PackageView{}, nil)
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 					fakeConsumeNodeApi := new(consumenodeapi.Fake)
@@ -175,12 +181,12 @@ var _ = Context("runOp", func() {
 					fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 					objectUnderTest := _core{
-						pkg:               new(pkg.Fake),
+						pkg:               fakePkg,
 						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: fakeCliParamSatisfier,
 						nodeProvider:      new(nodeprovider.Fake),
-						vos:               fakeVos,
+						vos:               fakeVOS,
 					}
 
 					/* act */
@@ -197,7 +203,7 @@ var _ = Context("runOp", func() {
 						returnedError := errors.New("dummyError")
 
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PackageView{}, nil)
 
 						fakeConsumeNodeApi := new(consumenodeapi.Fake)
 						fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
@@ -223,7 +229,7 @@ var _ = Context("runOp", func() {
 					It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
 						/* arrange */
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PackageView{}, nil)
 						rootOpIdReturnedFromStartOp := "dummyRootOpId"
 						expectedEventFilter := &model.GetEventStreamReq{
 							Filter: &model.EventFilter{
@@ -260,7 +266,7 @@ var _ = Context("runOp", func() {
 							returnedError := errors.New("dummyError")
 
 							fakePkg := new(pkg.Fake)
-							fakePkg.GetReturns(model.PackageView{}, nil)
+							fakePkg.GetReturns(&model.PackageView{}, nil)
 
 							fakeConsumeNodeApi := new(consumenodeapi.Fake)
 							fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
@@ -289,7 +295,7 @@ var _ = Context("runOp", func() {
 								fakeCliExiter := new(cliexiter.Fake)
 
 								fakePkg := new(pkg.Fake)
-								fakePkg.GetReturns(model.PackageView{}, nil)
+								fakePkg.GetReturns(&model.PackageView{}, nil)
 
 								fakeConsumeNodeApi := new(consumenodeapi.Fake)
 								eventChannel := make(chan model.Event)
@@ -333,7 +339,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -375,7 +381,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -418,7 +424,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -460,7 +466,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PackageView{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)

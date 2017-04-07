@@ -1,14 +1,21 @@
 package model
 
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
-type Scg struct {
-	Container *ScgContainerCall `yaml:"container,omitempty"`
-	Op        *ScgOpCall        `yaml:"op,omitempty"`
-	Parallel  []*Scg            `yaml:"parallel,omitempty"`
-	Serial    []*Scg            `yaml:"serial,omitempty"`
+type SCG struct {
+	Container *SCGContainerCall `yaml:"container,omitempty"`
+	Op        *SCGOpCall        `yaml:"op,omitempty"`
+	Parallel  []*SCG            `yaml:"parallel,omitempty"`
+	Serial    []*SCG            `yaml:"serial,omitempty"`
 }
 
-type ScgContainerCall struct {
+type SCGUsernamePasswordAuth struct {
+	// will be interpolated
+	Username string `yaml:"username"`
+	// will be interpolated
+	Password string `yaml:"password"`
+}
+
+type SCGContainerCall struct {
 	// each entry of cmd will be interpolated
 	Cmd  []string          `yaml:"cmd,omitempty"`
 	Dirs map[string]string `yaml:"dirs,omitempty"`
@@ -16,7 +23,7 @@ type ScgContainerCall struct {
 	// each env var value will be interpolated
 	EnvVars map[string]string      `yaml:"envVars,omitempty"`
 	Files   map[string]string      `yaml:"files,omitempty"`
-	Image   *ScgContainerCallImage `yaml:"image"`
+	Image   *SCGContainerCallImage `yaml:"image"`
 	Sockets map[string]string      `yaml:"sockets,omitempty"`
 	StdErr  map[string]string      `yaml:"stdErr,omitempty"`
 	StdOut  map[string]string      `yaml:"stdOut,omitempty"`
@@ -25,19 +32,22 @@ type ScgContainerCall struct {
 	Ports   map[string]string      `yaml:"ports,omitempty"`
 }
 
-type ScgContainerCallImage struct {
+type SCGContainerCallImage struct {
 	// will be interpolated
-	Ref string `yaml:"ref"`
-	// will be interpolated
-	PullIdentity string `yaml:"pullIdentity,omitempty"`
-	// will be interpolated
-	PullSecret string `yaml:"pullSecret,omitempty"`
+	Ref      string                   `yaml:"ref"`
+	PullAuth *SCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
 }
 
-type ScgOpCall struct {
-	Ref string `yaml:"ref"`
+type SCGOpCall struct {
+	Pkg *SCGOpCallPkg `yaml:"pkg"`
 	// binds in scope variables to inputs of referenced op
 	Inputs map[string]string `yaml:"inputs,omitempty"`
 	// binds in scope variables to outputs of referenced op
 	Outputs map[string]string `yaml:"outputs,omitempty"`
+}
+
+type SCGOpCallPkg struct {
+	// will be interpolated
+	Ref      string                   `yaml:"ref"`
+	PullAuth *SCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
 }

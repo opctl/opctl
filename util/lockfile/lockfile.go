@@ -5,9 +5,9 @@ package lockfile
 import (
 	"bufio"
 	"fmt"
-	"github.com/opctl/opctl/util/pscanary"
-	"github.com/virtual-go/vfs"
-	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
+	"github.com/virtual-go/pscanary"
 	"github.com/virtual-go/vos"
 	"path"
 	"strconv"
@@ -22,16 +22,19 @@ type LockFile interface {
 }
 
 func New() LockFile {
+	_fs := osfs.New()
+	_os := vos.New(_fs)
+
 	return lockfile{
-		fs:       osfs.New(),
-		os:       vos.New(),
-		psCanary: pscanary.New(),
+		fs:       _fs,
+		os:       _os,
+		psCanary: pscanary.New(_os),
 	}
 }
 
 type lockfile struct {
-	fs       vfs.Vfs
-	os       vos.Vos
+	fs       fs.FS
+	os       vos.VOS
 	psCanary pscanary.PsCanary
 }
 

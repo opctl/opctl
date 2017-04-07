@@ -5,7 +5,9 @@ package pkg
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/format"
-	"github.com/opspec-io/sdk-golang/util/fs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
+	"github.com/virtual-go/vioutil"
 )
 
 type Pkg interface {
@@ -14,9 +16,9 @@ type Pkg interface {
 	) (err error)
 
 	Get(
-		pkgRef string,
+		req *GetReq,
 	) (
-		packageView model.PackageView,
+		packageView *model.PackageView,
 		err error,
 	)
 
@@ -37,21 +39,27 @@ type Pkg interface {
 }
 
 func New() Pkg {
-	fileSystem := fs.NewFileSystem()
+	fileSystem := osfs.New()
+	ioUtil := vioutil.New(fileSystem)
+	validator := newValidator(fileSystem)
 	yaml := format.NewYamlFormat()
-	packageViewFactory := newPackageViewFactory(fileSystem, yaml)
+	viewFactory := newViewFactory(ioUtil, validator, yaml)
 
 	return pkg{
-		fileSystem:         fileSystem,
-		packageViewFactory: packageViewFactory,
-		yaml:               yaml,
-		validator:          newValidator(),
+		fileSystem:  fileSystem,
+		ioUtil:      ioUtil,
+		getter:      newGetter(fileSystem, viewFactory),
+		viewFactory: viewFactory,
+		yaml:        yaml,
+		validator:   validator,
 	}
 }
 
 type pkg struct {
-	fileSystem         fs.FileSystem
-	packageViewFactory packageViewFactory
-	yaml               format.Format
-	validator          validator
+	fileSystem  fs.FS
+	ioUtil      vioutil.VIOUtil
+	getter      getter
+	viewFactory viewFactory
+	yaml        format.Format
+	validator   validator
 }

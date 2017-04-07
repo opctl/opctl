@@ -8,12 +8,12 @@ import (
 )
 
 type fakeContainerCaller struct {
-	CallStub        func(scope map[string]*model.Data, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error)
+	CallStub        func(scope map[string]*model.Data, containerId string, scgContainerCall *model.SCGContainerCall, pkgRef string, rootOpId string) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		scope            map[string]*model.Data
 		containerId      string
-		scgContainerCall *model.ScgContainerCall
+		scgContainerCall *model.SCGContainerCall
 		pkgRef           string
 		rootOpId         string
 	}
@@ -27,13 +27,13 @@ type fakeContainerCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerCaller) Call(scope map[string]*model.Data, containerId string, scgContainerCall *model.ScgContainerCall, pkgRef string, rootOpId string) (err error) {
+func (fake *fakeContainerCaller) Call(scope map[string]*model.Data, containerId string, scgContainerCall *model.SCGContainerCall, pkgRef string, rootOpId string) (err error) {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		scope            map[string]*model.Data
 		containerId      string
-		scgContainerCall *model.ScgContainerCall
+		scgContainerCall *model.SCGContainerCall
 		pkgRef           string
 		rootOpId         string
 	}{scope, containerId, scgContainerCall, pkgRef, rootOpId})
@@ -54,7 +54,7 @@ func (fake *fakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeContainerCaller) CallArgsForCall(i int) (map[string]*model.Data, string, *model.ScgContainerCall, string, string) {
+func (fake *fakeContainerCaller) CallArgsForCall(i int) (map[string]*model.Data, string, *model.SCGContainerCall, string, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return fake.callArgsForCall[i].scope, fake.callArgsForCall[i].containerId, fake.callArgsForCall[i].scgContainerCall, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].rootOpId

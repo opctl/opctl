@@ -5,7 +5,8 @@ package pkg
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/opspec-io/sdk-golang/util/fs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/vioutil"
 	"github.com/xeipuuv/gojsonschema"
 	"path"
 )
@@ -14,7 +15,9 @@ type validator interface {
 	Validate(pkgRef string) (errs []error)
 }
 
-func newValidator() validator {
+func newValidator(
+	fs fs.FS,
+) validator {
 	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
@@ -28,33 +31,33 @@ func newValidator() validator {
 	}
 
 	return _validator{
-		fileSystem:     fs.NewFileSystem(),
+		ioUtil:         vioutil.New(fs),
 		manifestSchema: manifestSchema,
 	}
 
 }
 
 type _validator struct {
-	fileSystem     fs.FileSystem
+	ioUtil         vioutil.VIOUtil
 	manifestSchema *gojsonschema.Schema
 }
 
 func (this _validator) Validate(
 	pkgRef string,
 ) (errs []error) {
-	ManifestYAMLBytes, err := this.fileSystem.GetBytesOfFile(
-		path.Join(pkgRef, NameOfPackageManifestFile),
+	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
+		path.Join(pkgRef, NameOfPkgManifestFile),
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
+		errs = append(errs, err)
 		return
 	}
 
 	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
+		errs = append(errs, err)
 		return
 	}
 
@@ -63,7 +66,7 @@ func (this _validator) Validate(
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, fmt.Errorf("Error validating pkg. Details: %v", err.Error()))
+		errs = append(errs, err)
 		return
 	}
 	for _, desc := range result.Errors() {

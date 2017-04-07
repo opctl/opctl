@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## \[Unreleased]
+
+### Added
+
+- Add opspec 0.1.4 support
+
+
 ## 0.1.18 - 2017-03-28
 
 ### Changed

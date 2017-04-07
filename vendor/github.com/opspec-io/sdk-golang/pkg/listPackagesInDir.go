@@ -14,17 +14,17 @@ func (this pkg) ListPackagesInDir(
 	err error,
 ) {
 
-	childFileInfos, err := this.fileSystem.ListChildFileInfosOfDir(dirPath)
+	childFileInfos, err := this.ioUtil.ReadDir(dirPath)
 	if nil != err {
 		return
 	}
 
 	for _, childFileInfo := range childFileInfos {
-		packageView, err := this.packageViewFactory.Construct(
+		packageView, err := this.viewFactory.Construct(
 			path.Join(dirPath, childFileInfo.Name()),
 		)
 		if nil == err {
-			ops = append(ops, &packageView)
+			ops = append(ops, packageView)
 		}
 	}
 

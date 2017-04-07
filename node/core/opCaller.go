@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
+	interpolatePkg "github.com/opspec-io/sdk-golang/interpolate"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
@@ -22,7 +23,7 @@ type opCaller interface {
 		opId string,
 		pkgRef string,
 		rootOpId string,
-		scgOpCall *model.ScgOpCall,
+		scgOpCall *model.SCGOpCall,
 	) (
 		err error,
 	)
@@ -60,7 +61,7 @@ func (this _opCaller) Call(
 	opId string,
 	pkgRef string,
 	rootOpId string,
-	scgOpCall *model.ScgOpCall,
+	scgOpCall *model.SCGOpCall,
 ) (
 	err error,
 ) {
@@ -135,9 +136,7 @@ func (this _opCaller) Call(
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
-	pkg, err := this.pkg.Get(
-		pkgRef,
-	)
+	_pkg, err := this.getPkg(inboundScope, scgOpCall.Pkg)
 	if nil != err {
 		return
 	}
@@ -151,10 +150,10 @@ func (this _opCaller) Call(
 		inputs[inputName] = inboundScope[scopeName]
 	}
 
-	this.applyParamDefaultsToScope(inputs, pkg.Inputs)
+	this.applyParamDefaultsToScope(inputs, _pkg.Inputs)
 
 	// validate inputs
-	err = this.validateScope("input", inputs, pkg.Inputs)
+	err = this.validateScope("input", inputs, _pkg.Inputs)
 	if nil != err {
 		return
 	}
@@ -175,7 +174,7 @@ func (this _opCaller) Call(
 	err = this.caller.Call(
 		dcgOpCall.ChildCallId,
 		inputs,
-		pkg.Run,
+		_pkg.Run,
 		pkgRef,
 		rootOpId,
 	)
@@ -187,9 +186,36 @@ func (this _opCaller) Call(
 
 }
 
+func (this _opCaller) getPkg(
+	inboundScope map[string]*model.Data,
+	scgOpCallPkg *model.SCGOpCallPkg,
+) (
+	packageView *model.PackageView,
+	err error,
+) {
+
+	// interpolate strings
+	interpolate := interpolatePkg.New()
+	pkgRef := interpolate.Interpolate(scgOpCallPkg.Ref, inboundScope)
+
+	var username, password string
+	if scgPullAuth := scgOpCallPkg.PullAuth; nil != scgPullAuth {
+		username = interpolate.Interpolate(scgPullAuth.Username, inboundScope)
+		password = interpolate.Interpolate(scgPullAuth.Password, inboundScope)
+	}
+
+	return this.pkg.Get(
+		&pkg.GetReq{
+			PkgRef:   pkgRef,
+			Username: username,
+			Password: password,
+		},
+	)
+}
+
 func (this _opCaller) txOutputs(
 	dcgOpCall *model.DCGOpCall,
-	scgOpCall *model.ScgOpCall,
+	scgOpCall *model.SCGOpCall,
 ) {
 	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)

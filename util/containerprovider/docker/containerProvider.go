@@ -4,8 +4,8 @@ import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/vruntime"
-	"github.com/virtual-go/vfs"
-	"github.com/virtual-go/vfs/osfs"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
 	"golang.org/x/net/context"
 )
 
@@ -42,6 +42,6 @@ func New() (
 
 type _containerProvider struct {
 	dockerClient dockerClient
-	fs           vfs.Vfs
+	fs           fs.FS
 	runtime      vruntime.Vruntime
 }

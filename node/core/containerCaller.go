@@ -15,7 +15,7 @@ type containerCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		containerId string,
-		scgContainerCall *model.ScgContainerCall,
+		scgContainerCall *model.SCGContainerCall,
 		pkgRef string,
 		rootOpId string,
 	) (
@@ -46,7 +46,7 @@ type _containerCaller struct {
 func (this _containerCaller) Call(
 	inboundScope map[string]*model.Data,
 	containerId string,
-	scgContainerCall *model.ScgContainerCall,
+	scgContainerCall *model.SCGContainerCall,
 	pkgRef string,
 	rootOpId string,
 ) (
@@ -108,7 +108,7 @@ func (this _containerCaller) Call(
 
 func (this _containerCaller) txOutputs(
 	dcgContainerCall *model.DCGContainerCall,
-	scgContainerCall *model.ScgContainerCall,
+	scgContainerCall *model.SCGContainerCall,
 ) {
 
 	// send socket outputs

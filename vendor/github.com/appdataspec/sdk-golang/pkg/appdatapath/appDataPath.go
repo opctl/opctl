@@ -14,12 +14,12 @@ type AppDataPath interface {
 }
 
 func New() AppDataPath {
-	return NewWithVos(vos.New())
+	return NewWithVOS(vos.New())
 }
 
 // allows passing in virtual operating system to decouple from running OS (useful for testing)
-func NewWithVos(
-	os vos.Vos,
+func NewWithVOS(
+	os vos.VOS,
 ) AppDataPath {
 	return appDataPath{
 		os: os,
@@ -27,5 +27,5 @@ func NewWithVos(
 }
 
 type appDataPath struct {
-	os vos.Vos
+	os vos.VOS
 }
