@@ -20,60 +20,62 @@ import (
 type getter interface {
 	Get(
 		req *GetReq,
-	) (packageView *model.PackageView, err error)
+	) (*model.PkgManifest, error)
 }
 
 func newGetter(
 	fs fs.FS,
-	viewFactory viewFactory,
+	manifestUnmarshaller manifestUnmarshaller,
 ) getter {
 	return _getter{
-		fs:          fs,
-		git:         vgit.New(),
-		viewFactory: viewFactory,
+		fs:                   fs,
+		git:                  vgit.New(),
+		manifestUnmarshaller: manifestUnmarshaller,
 	}
 }
 
 type _getter struct {
-	fs          fs.FS
-	git         vgit.VGit
-	viewFactory viewFactory
+	fs                   fs.FS
+	git                  vgit.VGit
+	manifestUnmarshaller manifestUnmarshaller
 }
 
 func (this _getter) Get(
 	req *GetReq,
-) (packageView *model.PackageView, err error) {
-	embeddedPkgPath := pathPkg.Join(req.Path, ".opspec", req.PkgRef)
-	if _, err = this.fs.Stat(embeddedPkgPath); nil == err {
-		return this.viewFactory.Construct(embeddedPkgPath)
+) (*model.PkgManifest, error) {
+
+	embeddedPkgPath := pathPkg.Join(req.Path, RepoDirName, req.PkgRef)
+
+	if _, err := this.fs.Stat(embeddedPkgPath); nil == err {
+		return this.manifestUnmarshaller.Unmarshal(embeddedPkgPath)
 	}
 	return this.getRemote(req)
 }
 
 func (this _getter) getRemote(
 	req *GetReq,
-) (packageView *model.PackageView, err error) {
+) (*model.PkgManifest, error) {
 
 	stringParts := strings.Split(req.PkgRef, "#")
 	if len(stringParts) != 2 {
-		err = errors.New("Invalid pkgRef")
+		return nil, errors.New("Invalid pkgRef, version not provided")
 	}
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
 	gitPkgPath := pathPkg.Join(
 		appdatapath.New().PerUser(),
-		".opspec",
+		"opspec",
 		"cache",
 		"pkgs",
 		repoName,
 		repoRefName,
 	)
-	if _, err = this.fs.Stat(gitPkgPath); nil != err {
+	if _, err := this.fs.Stat(gitPkgPath); nil != err {
 		// pkg not resolved on node; pull it
 		cloneOptions := &git.CloneOptions{
 			URL:           fmt.Sprintf("https://%v", repoName),
-			ReferenceName: plumbing.ReferenceName(repoRefName),
+			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
 			Depth:         1,
 			Progress:      os.Stdout,
 		}
@@ -82,12 +84,10 @@ func (this _getter) getRemote(
 			cloneOptions.Auth = http.NewBasicAuth(req.Username, req.Password)
 		}
 
-		_, err = this.git.PlainClone(gitPkgPath, false, cloneOptions)
+		_, err := this.git.PlainClone(gitPkgPath, false, cloneOptions)
 		if nil != err {
-			return
+			return nil, err
 		}
 	}
-	packageView, err = this.viewFactory.Construct(gitPkgPath)
-
-	return
+	return this.manifestUnmarshaller.Unmarshal(gitPkgPath)
 }

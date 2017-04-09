@@ -1,65 +1,61 @@
+// Pkg implements use cases for managing opspec packages
 package pkg
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/virtual-go/fs"
 	"github.com/virtual-go/fs/osfs"
 	"github.com/virtual-go/vioutil"
 )
 
 type Pkg interface {
+	// Create creates an opspec package
 	Create(
 		req CreateReq,
-	) (err error)
+	) error
 
+	// Get gets a package according to opspec package resolution rules
 	Get(
 		req *GetReq,
-	) (
-		packageView *model.PackageView,
-		err error,
-	)
+	) (*model.PkgManifest, error)
 
-	ListPackagesInDir(
+	// List lists packages according to opspec package resolution rules
+	List(
 		dirPath string,
-	) (
-		ops []*model.PackageView,
-		err error,
-	)
+	) ([]*model.PkgManifest, error)
 
+	// SetDescription sets the description of a package
 	SetDescription(
 		req SetDescriptionReq,
-	) (err error)
+	) error
 
+	// Validate validates an opspec package
 	Validate(
 		pkgRef string,
-	) (errs []error)
+	) []error
 }
 
 func New() Pkg {
 	fileSystem := osfs.New()
 	ioUtil := vioutil.New(fileSystem)
 	validator := newValidator(fileSystem)
-	yaml := format.NewYamlFormat()
-	viewFactory := newViewFactory(ioUtil, validator, yaml)
+	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
 
 	return pkg{
-		fileSystem:  fileSystem,
-		ioUtil:      ioUtil,
-		getter:      newGetter(fileSystem, viewFactory),
-		viewFactory: viewFactory,
-		yaml:        yaml,
-		validator:   validator,
+		fileSystem:           fileSystem,
+		getter:               newGetter(fileSystem, manifestUnmarshaller),
+		ioUtil:               ioUtil,
+		validator:            validator,
+		manifestUnmarshaller: manifestUnmarshaller,
 	}
 }
 
 type pkg struct {
-	fileSystem  fs.FS
-	ioUtil      vioutil.VIOUtil
-	getter      getter
-	viewFactory viewFactory
-	yaml        format.Format
-	validator   validator
+	fileSystem           fs.FS
+	getter               getter
+	ioUtil               vioutil.VIOUtil
+	validator            validator
+	manifestUnmarshaller manifestUnmarshaller
 }

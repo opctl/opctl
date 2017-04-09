@@ -2,11 +2,11 @@ package consumenodeapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/opspec-io/sdk-golang/util/http"
 	netHttp "net/http"
 )
@@ -20,7 +20,7 @@ var _ = Describe("KillOp", func() {
 			OpId: "dummyRootOpId",
 		}
 
-		expectedBytes, _ := format.NewJsonFormat().From(providedKillOpReq)
+		expectedBytes, _ := json.Marshal(providedKillOpReq)
 
 		expectedHttpReq, _ := netHttp.NewRequest(
 			"POST",
@@ -32,7 +32,6 @@ var _ = Describe("KillOp", func() {
 
 		objectUnderTest := consumeNodeApi{
 			httpClient: fakeHttpClient,
-			jsonFormat: format.NewJsonFormat(),
 		}
 
 		/* act */

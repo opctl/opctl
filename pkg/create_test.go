@@ -5,12 +5,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/virtual-go/fs"
 	"github.com/virtual-go/vioutil"
+	"gopkg.in/yaml.v2"
 	"os"
 	"path"
-	"reflect"
 )
 
 var _ = Describe("_create", func() {
@@ -27,7 +26,6 @@ var _ = Describe("_create", func() {
 			objectUnderTest := &pkg{
 				fileSystem: fakeFileSystem,
 				ioUtil:     new(vioutil.Fake),
-				yaml:       format.NewYamlFormat(),
 			}
 
 			/* act */
@@ -52,7 +50,6 @@ var _ = Describe("_create", func() {
 
 				objectUnderTest := &pkg{
 					fileSystem: fakeFileSystem,
-					yaml:       format.NewYamlFormat(),
 				}
 
 				/* act */
@@ -65,97 +62,44 @@ var _ = Describe("_create", func() {
 
 			})
 		})
+	})
 
-		Context("when YamlFormat.From returns an error", func() {
-			It("should be returned", func() {
+	It("should call ioutil.WriteFile with expected args", func() {
 
-				/* arrange */
-				expectedError := errors.New("FromError")
+		/* arrange */
+		providedCreateReq := CreateReq{
+			Path:        "dummyPath",
+			Description: "dummyDescription",
+			Name:        "dummyName",
+		}
 
-				fakeYamlFormat := new(format.Fake)
-				fakeYamlFormat.FromReturns(nil, expectedError)
-
-				objectUnderTest := &pkg{
-					fileSystem: new(fs.Fake),
-					yaml:       fakeYamlFormat,
-				}
-
-				/* act */
-				actualError := objectUnderTest.Create(
-					CreateReq{},
-				)
-
-				/* assert */
-				Expect(actualError).To(Equal(expectedError))
-
-			})
+		expectedPkgManifestBytes, err := yaml.Marshal(&model.PkgManifest{
+			Description: providedCreateReq.Description,
+			Name:        providedCreateReq.Name,
 		})
+		if nil != err {
+			panic(err)
+		}
 
-		It("should call YamlFormat.From with expected packageManifestView", func() {
+		expectedPath := path.Join(providedCreateReq.Path, ManifestFileName)
+		expectedData := expectedPkgManifestBytes
+		expectedPerms := os.FileMode(0777)
 
-			/* arrange */
-			expectedPackageManifestView := model.PackageManifestView{
-				Description: "DummyDescription",
-				Name:        "DummyName",
-			}
+		fakeIOUtil := new(vioutil.Fake)
 
-			fakeYamlFormat := new(format.Fake)
-			fakeYamlFormat.ToStub = func(in []byte, out interface{}) (err error) {
-				reflect.ValueOf(out).Elem().Set(reflect.ValueOf(expectedPackageManifestView))
-				return
-			}
+		objectUnderTest := &pkg{
+			fileSystem: new(fs.Fake),
+			ioUtil:     fakeIOUtil,
+		}
 
-			objectUnderTest := &pkg{
-				fileSystem: new(fs.Fake),
-				ioUtil:     new(vioutil.Fake),
-				yaml:       fakeYamlFormat,
-			}
+		/* act */
+		objectUnderTest.Create(providedCreateReq)
 
-			/* act */
-			objectUnderTest.Create(
-				CreateReq{
-					Description: expectedPackageManifestView.Description,
-					Name:        expectedPackageManifestView.Name,
-				},
-			)
-
-			/* assert */
-			actualPackageManifestView := fakeYamlFormat.FromArgsForCall(0)
-			Expect(actualPackageManifestView).To(Equal(&expectedPackageManifestView))
-
-		})
-
-		It("should call ioutil.WriteFile with expected args", func() {
-
-			/* arrange */
-			providedPath := "/dummy/op/path"
-			expectedPath := path.Join(providedPath, NameOfPkgManifestFile)
-			expectedData := []byte{2, 3, 4}
-			expectedPerms := os.FileMode(0777)
-
-			fakeIOUtil := new(vioutil.Fake)
-
-			fakeYamlFormat := new(format.Fake)
-			fakeYamlFormat.FromReturns(expectedData, nil)
-
-			objectUnderTest := &pkg{
-				fileSystem: new(fs.Fake),
-				ioUtil:     fakeIOUtil,
-				yaml:       fakeYamlFormat,
-			}
-
-			/* act */
-			objectUnderTest.Create(
-				CreateReq{Path: providedPath},
-			)
-
-			/* assert */
-			actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
-			Expect(actualPath).To(Equal(expectedPath))
-			Expect(actualData).To(Equal(expectedData))
-			Expect(actualPerms).To(Equal(expectedPerms))
-		})
-
+		/* assert */
+		actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
+		Expect(actualPath).To(Equal(expectedPath))
+		Expect(actualData).To(Equal(expectedData))
+		Expect(actualPerms).To(Equal(expectedPerms))
 	})
 
 })

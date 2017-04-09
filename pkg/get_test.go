@@ -8,7 +8,7 @@ import (
 )
 
 var _ = Describe("Get", func() {
-	It("should call getter.Get with expected inputs", func() {
+	It("should call getter.Get w/ expected inputs", func() {
 		/* arrange */
 		providedGetReq := &GetReq{PkgRef: "/dummy/pkg/ref"}
 
@@ -33,7 +33,7 @@ var _ = Describe("Get", func() {
 	It("should return result of getter.Get", func() {
 
 		/* arrange */
-		expectedPackageView := &model.PackageView{
+		expectedPkgManifest := &model.PkgManifest{
 			Description: "dummyDescription",
 			Inputs:      map[string]*model.Param{},
 			Outputs:     map[string]*model.Param{},
@@ -47,10 +47,10 @@ var _ = Describe("Get", func() {
 			},
 			Version: "",
 		}
-		expectedError := errors.New("ConstructError")
+		expectedError := errors.New("UnmarshalError")
 
 		fakeGetter := new(fakeGetter)
-		fakeGetter.GetReturns(expectedPackageView, expectedError)
+		fakeGetter.GetReturns(expectedPkgManifest, expectedError)
 
 		objectUnderTest := &pkg{
 			getter:    fakeGetter,
@@ -58,10 +58,10 @@ var _ = Describe("Get", func() {
 		}
 
 		/* act */
-		actualPackageView, actualError := objectUnderTest.Get(&GetReq{PkgRef: "/dummy/path"})
+		actualPkgManifest, actualError := objectUnderTest.Get(&GetReq{PkgRef: "/dummy/path"})
 
 		/* assert */
-		Expect(actualPackageView).To(Equal(expectedPackageView))
+		Expect(actualPkgManifest).To(Equal(expectedPkgManifest))
 		Expect(actualError).To(Equal(expectedError))
 
 	})

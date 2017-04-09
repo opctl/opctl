@@ -2,11 +2,11 @@ package consumenodeapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/opspec-io/sdk-golang/util/http"
 	"io/ioutil"
 	netHttp "net/http"
@@ -22,7 +22,7 @@ var _ = Describe("StartOp", func() {
 			PkgRef: "dummyPkgRef",
 		}
 
-		expectedReqBytes, _ := format.NewJsonFormat().From(providedStartOpReq)
+		expectedReqBytes, _ := json.Marshal(providedStartOpReq)
 		expectedResult := "dummyOpId"
 
 		expectedHttpReq, _ := netHttp.NewRequest(
@@ -36,7 +36,6 @@ var _ = Describe("StartOp", func() {
 
 		objectUnderTest := consumeNodeApi{
 			httpClient: fakeHttpClient,
-			jsonFormat: format.NewJsonFormat(),
 		}
 
 		/* act */

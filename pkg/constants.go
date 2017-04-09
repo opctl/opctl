@@ -1,6 +1,6 @@
 package pkg
 
 const (
-	NameOfPkgManifestFile   = "op.yml"
-	NameOfDefaultPackageDir = ".opspec"
+	ManifestFileName = "op.yml"
+	RepoDirName      = ".opspec"
 )

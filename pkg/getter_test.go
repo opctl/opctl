@@ -26,14 +26,14 @@ var _ = Describe("Getter", func() {
 				PkgRef: "dummyPkgRef",
 			}
 
-			expectedPkgPath := path.Join(providedGetReq.Path, ".opspec", providedGetReq.PkgRef)
+			expectedPkgPath := path.Join(providedGetReq.Path, RepoDirName, providedGetReq.PkgRef)
 
 			fakeFS := new(fs.Fake)
 			fakeFS.StatReturns(nil, nil)
 
 			objectUnderTest := _getter{
-				fs:          fakeFS,
-				viewFactory: new(fakeViewFactory),
+				fs:                   fakeFS,
+				manifestUnmarshaller: new(fakeManifestUnmarshaller),
 			}
 
 			/* act */
@@ -43,39 +43,39 @@ var _ = Describe("Getter", func() {
 			Expect(fakeFS.StatArgsForCall(0)).To(Equal(expectedPkgPath))
 		})
 		Context("is embedded pkg", func() {
-			It("should call viewFactory.Construct w/ expected args", func() {
+			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
 					Path:   "/dummyPath",
 					PkgRef: "dummyPkgRef",
 				}
 
-				expectedPkgPath := path.Join(providedGetReq.Path, ".opspec", providedGetReq.PkgRef)
+				expectedPkgPath := path.Join(providedGetReq.Path, RepoDirName, providedGetReq.PkgRef)
 
 				fakeFS := new(fs.Fake)
 				fakeFS.StatReturns(nil, nil)
 
-				fakeViewFactory := new(fakeViewFactory)
+				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 				objectUnderTest := _getter{
-					fs:          fakeFS,
-					viewFactory: fakeViewFactory,
+					fs:                   fakeFS,
+					manifestUnmarshaller: fakeManifestUnmarshaller,
 				}
 
 				/* act */
 				objectUnderTest.Get(providedGetReq)
 
 				/* assert */
-				Expect(fakeViewFactory.ConstructArgsForCall(0)).To(Equal(expectedPkgPath))
+				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedPkgPath))
 			})
-			It("should return result of viewFactory.Construct", func() {
+			It("should return result of manifestUnmarshaller.Unmarshal", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
 					Path:   "/dummyPath",
 					PkgRef: "dummyPkgRef",
 				}
 
-				expectedView := &model.PackageView{
+				expectedView := &model.PkgManifest{
 					Description: "dummyDescription",
 					Inputs:      map[string]*model.Param{},
 					Outputs:     map[string]*model.Param{},
@@ -94,12 +94,12 @@ var _ = Describe("Getter", func() {
 				fakeFS := new(fs.Fake)
 				fakeFS.StatReturns(nil, nil)
 
-				fakeViewFactory := new(fakeViewFactory)
-				fakeViewFactory.ConstructReturns(expectedView, expectedErr)
+				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _getter{
-					fs:          fakeFS,
-					viewFactory: fakeViewFactory,
+					fs:                   fakeFS,
+					manifestUnmarshaller: fakeManifestUnmarshaller,
 				}
 
 				/* act */
@@ -112,11 +112,11 @@ var _ = Describe("Getter", func() {
 		})
 		Context("isn't embedded pkg", func() {
 			Context("is cached", func() {
-				It("should call viewFactory.Construct w/ expected args", func() {
+				It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
 						Path:   "/dummyPath",
-						PkgRef: "dummyPkgRef#000",
+						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
 					stringParts := strings.Split(providedGetReq.PkgRef, "#")
@@ -125,7 +125,7 @@ var _ = Describe("Getter", func() {
 
 					expectedPkgPath := path.Join(
 						appdatapath.New().PerUser(),
-						".opspec",
+						"opspec",
 						"cache",
 						"pkgs",
 						repoName,
@@ -136,27 +136,27 @@ var _ = Describe("Getter", func() {
 					fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
 					fakeFS.StatReturnsOnCall(1, nil, nil)
 
-					fakeViewFactory := new(fakeViewFactory)
+					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 					objectUnderTest := _getter{
-						fs:          fakeFS,
-						viewFactory: fakeViewFactory,
+						fs:                   fakeFS,
+						manifestUnmarshaller: fakeManifestUnmarshaller,
 					}
 
 					/* act */
 					objectUnderTest.Get(providedGetReq)
 
 					/* assert */
-					Expect(fakeViewFactory.ConstructArgsForCall(0)).To(Equal(expectedPkgPath))
+					Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedPkgPath))
 				})
-				It("should return result of viewFactory.Construct", func() {
+				It("should return result of manifestUnmarshaller.Unmarshal", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
 						Path:   "/dummyPath",
-						PkgRef: "dummyPkgRef#000",
+						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
-					expectedView := &model.PackageView{
+					expectedView := &model.PkgManifest{
 						Description: "dummyDescription",
 						Inputs:      map[string]*model.Param{},
 						Outputs:     map[string]*model.Param{},
@@ -176,12 +176,12 @@ var _ = Describe("Getter", func() {
 					fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
 					fakeFS.StatReturnsOnCall(1, nil, nil)
 
-					fakeViewFactory := new(fakeViewFactory)
-					fakeViewFactory.ConstructReturns(expectedView, expectedErr)
+					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
 					objectUnderTest := _getter{
-						fs:          fakeFS,
-						viewFactory: fakeViewFactory,
+						fs:                   fakeFS,
+						manifestUnmarshaller: fakeManifestUnmarshaller,
 					}
 
 					/* act */
