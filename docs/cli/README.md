@@ -1,23 +1,18 @@
-```shell
-$ opctl
+## Commands
 
-Usage: opctl [OPTIONS] COMMAND [arg...]
+* [events](events.md)
+* [ls](ls.md)
+* [node](node/README.md)
+    * [create](node/create.md)
+    * [kill](node/kill.md)
+* [pkg](pkg/README.md)
+    * [pkg create](pkg/create.md)
+    * [pkg set](pkg/set.md)
+    * [pkg validate](pkg/validate.md)
+* [run](run.md)
+* [self-update](self_update.md)
 
-Open source cross platform opspec node
+## Options
 
-Options:
-  -v, --version            Show the version and exit
-  --nc, --no-color=false   Disable output coloring
-
-Commands:
-  events        Stream events
-  ls            List packages (only v0.1.3 opspec packages will be listed)
-  node          Manage nodes
-  op            Manage ops
-  pkg           Manage packages
-  run           Start and wait on an op
-  self-update   Update opctl
-
-Run 'opctl COMMAND --help' for more information on a command.
-
-```
+* [no-color](no_color.md)
+* [help](help.md)
