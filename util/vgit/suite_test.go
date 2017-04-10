@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opspec-io/sdk-golang/util/vgit")
+	RunSpecs(t, "sdk-golang/util/vgit")
 }
