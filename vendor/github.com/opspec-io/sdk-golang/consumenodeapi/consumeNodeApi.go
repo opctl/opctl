@@ -4,7 +4,6 @@ package consumenodeapi
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/opspec-io/sdk-golang/util/http"
 	"github.com/sethgrid/pester"
 )
@@ -38,11 +37,9 @@ func New() ConsumeNodeApi {
 
 	return &consumeNodeApi{
 		httpClient: httpClient,
-		jsonFormat: format.NewJsonFormat(),
 	}
 }
 
 type consumeNodeApi struct {
 	httpClient http.Client
-	jsonFormat format.Format
 }

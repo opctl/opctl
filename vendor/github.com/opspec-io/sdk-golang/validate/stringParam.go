@@ -1,10 +1,10 @@
 package validate
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/format"
 	"github.com/xeipuuv/gojsonschema"
 	"strings"
 )
@@ -32,14 +32,14 @@ func (this validate) stringParam(
 	if paramConstraints := param.Constraints; nil != paramConstraints {
 
 		// perform validations supported by gojsonschema
-		constraintsJsonBytes, err := format.NewJsonFormat().From(paramConstraints)
+		constraintsJsonBytes, err := json.Marshal(paramConstraints)
 		if err != nil {
 			// handle syntax errors specially
 			errs = append(errs, fmt.Errorf("Error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()))
 			return
 		}
 
-		valueJsonBytes, err := format.NewJsonFormat().From(value)
+		valueJsonBytes, err := json.Marshal(value)
 		if err != nil {
 			// handle syntax errors specially
 			errs = append(errs, fmt.Errorf("Error validating parameter. Details: %v", err.Error()))

@@ -4,14 +4,9 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
+// Get gets a package according to opspec package resolution rules
 func (this pkg) Get(
 	req *GetReq,
-) (
-	packageView *model.PackageView,
-	err error,
-) {
-
-	packageView, err = this.getter.Get(req)
-
-	return
+) (*model.PkgManifest, error) {
+	return this.getter.Get(req)
 }

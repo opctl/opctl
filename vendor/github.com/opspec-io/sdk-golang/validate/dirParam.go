@@ -2,6 +2,7 @@ package validate
 
 import (
 	"errors"
+	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -9,12 +10,18 @@ import (
 func (this validate) dirParam(
 	rawValue *model.Data,
 	param *model.DirParam,
-) (errs []error) {
-	errs = []error{}
+) []error {
 
 	// handle no value passed
 	if nil == rawValue || "" == rawValue.Dir {
-		errs = append(errs, errors.New("Dir required"))
+		return []error{errors.New("Dir required")}
 	}
-	return
+
+	fileInfo, err := this.fs.Stat(rawValue.Dir)
+	if nil != err {
+		return []error{err}
+	} else if !fileInfo.IsDir() {
+		return []error{fmt.Errorf("%v not a dir", rawValue.Dir)}
+	}
+	return []error{}
 }
