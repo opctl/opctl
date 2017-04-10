@@ -2,36 +2,17 @@ package validate
 
 import (
 	"errors"
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/virtual-go/fs"
+	"io/ioutil"
 )
 
 var _ = Describe("Param", func() {
-	objectUnderTest := New()
 	Context("invoked w/ non-nil param.Dir", func() {
-		Context("& non-empty value.Dir", func() {
-			It("should return no errors", func() {
-
-				/* arrange */
-				providedValue := &model.Data{
-					Dir: "dummyValue",
-				}
-				providedParam := &model.Param{
-					Dir: &model.DirParam{},
-				}
-
-				expectedErrors := []error{}
-
-				/* act */
-				actualErrors := objectUnderTest.Param(providedValue, providedParam)
-
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
-
-			})
-		})
-		Context("& empty value.Dir", func() {
+		Context("value.Dir is empty", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
@@ -44,6 +25,8 @@ var _ = Describe("Param", func() {
 					errors.New("Dir required"),
 				}
 
+				objectUnderTest := New()
+
 				/* act */
 				actualErrors := objectUnderTest.Param(providedValue, providedParam)
 
@@ -52,7 +35,7 @@ var _ = Describe("Param", func() {
 
 			})
 		})
-		Context("& nil value", func() {
+		Context("value nil", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
@@ -64,12 +47,136 @@ var _ = Describe("Param", func() {
 					errors.New("Dir required"),
 				}
 
+				objectUnderTest := New()
+
 				/* act */
 				actualErrors := objectUnderTest.Param(nil, providedParam)
 
 				/* assert */
 				Expect(actualErrors).To(Equal(expectedErrors))
 
+			})
+		})
+		Context("value.Dir isn't empty", func() {
+			It("should call fs.Stat w/ expected args", func() {
+
+				/* arrange */
+				providedValue := &model.Data{
+					Dir: "dummyValue",
+				}
+				providedParam := &model.Param{
+					Dir: &model.DirParam{},
+				}
+
+				fakeFS := new(fs.Fake)
+				// error to trigger immediate return
+				fakeFS.StatReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := validate{
+					fs: fakeFS,
+				}
+
+				/* act */
+				objectUnderTest.Param(providedValue, providedParam)
+
+				/* assert */
+				Expect(fakeFS.StatArgsForCall(0)).To(Equal(providedValue.Dir))
+
+			})
+			Context("fs.Stat errors", func() {
+				It("should return expected errors", func() {
+
+					/* arrange */
+					providedValue := &model.Data{
+						Dir: "dummyValue",
+					}
+					providedParam := &model.Param{
+						Dir: &model.DirParam{},
+					}
+
+					expectedErrors := []error{
+						errors.New("dummyError"),
+					}
+
+					fakeFs := new(fs.Fake)
+					fakeFs.StatReturns(nil, expectedErrors[0])
+
+					objectUnderTest := validate{
+						fs: fakeFs,
+					}
+
+					/* act */
+					actualErrors := objectUnderTest.Param(providedValue, providedParam)
+
+					/* assert */
+					Expect(actualErrors).To(Equal(expectedErrors))
+
+				})
+
+			})
+			Context("fs.Stat doesn't error", func() {
+				Context("FileInfo.IsDir returns true", func() {
+					It("should return no errors", func() {
+
+						/* arrange */
+						// no good way to fake fileinfo
+						tmpDirPath, err := ioutil.TempDir("", "")
+						if nil != err {
+							panic(err)
+						}
+
+						providedValue := &model.Data{
+							Dir: tmpDirPath,
+						}
+						providedParam := &model.Param{
+							Dir: &model.DirParam{},
+						}
+
+						expectedErrors := []error{}
+
+						objectUnderTest := New()
+
+						/* act */
+						actualErrors := objectUnderTest.Param(providedValue, providedParam)
+
+						/* assert */
+						Expect(actualErrors).To(Equal(expectedErrors))
+
+					})
+				})
+				Context("FileInfo.IsDir returns false", func() {
+					It("should return expected errors", func() {
+
+						/* arrange */
+						// no good way to fake fileinfo
+						tmpFile, err := ioutil.TempFile("", "")
+						if nil != err {
+							panic(err)
+						}
+
+						tmpFilePath := tmpFile.Name()
+
+						providedValue := &model.Data{
+							Dir: tmpFilePath,
+						}
+						providedParam := &model.Param{
+							Dir: &model.DirParam{},
+						}
+
+						expectedErrors := []error{
+							fmt.Errorf("%v not a dir", tmpFilePath),
+						}
+
+						objectUnderTest := New()
+
+						/* act */
+						actualErrors := objectUnderTest.Param(providedValue, providedParam)
+
+						/* assert */
+						Expect(actualErrors).To(Equal(expectedErrors))
+
+					})
+				})
 			})
 		})
 	})

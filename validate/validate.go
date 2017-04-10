@@ -4,6 +4,8 @@ package validate
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/virtual-go/fs"
+	"github.com/virtual-go/fs/osfs"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -20,7 +22,11 @@ func New() Validate {
 	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
 	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
-	return validate{}
+	return validate{
+		fs: osfs.New(),
+	}
 }
 
-type validate struct{}
+type validate struct {
+	fs fs.FS
+}
