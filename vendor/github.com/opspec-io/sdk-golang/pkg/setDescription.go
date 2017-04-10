@@ -1,45 +1,31 @@
 package pkg
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
+	"gopkg.in/yaml.v2"
 	"path"
 )
 
+// SetDescription sets the description of a package
 func (this pkg) SetDescription(
 	req SetDescriptionReq,
-) (err error) {
+) error {
 
-	pathToPkgManifestView := path.Join(req.Path, NameOfPkgManifestFile)
-
-	pkgManifestBytes, err := this.ioUtil.ReadFile(
-		pathToPkgManifestView,
-	)
+	pkgManifest, err := this.manifestUnmarshaller.Unmarshal(req.Path)
 	if nil != err {
-		return
+		return err
 	}
 
-	pkgManifestView := model.PackageManifestView{}
-	err = this.yaml.To(
-		pkgManifestBytes,
-		&pkgManifestView,
-	)
+	pkgManifest.Description = req.Description
+
+	pkgManifestBytes, err := yaml.Marshal(pkgManifest)
 	if nil != err {
-		return
+		return err
 	}
 
-	pkgManifestView.Description = req.Description
-
-	pkgManifestBytes, err = this.yaml.From(&pkgManifestView)
-	if nil != err {
-		return
-	}
-
-	err = this.ioUtil.WriteFile(
-		pathToPkgManifestView,
+	return this.ioUtil.WriteFile(
+		path.Join(req.Path, ManifestFileName),
 		pkgManifestBytes,
 		0777,
 	)
-
-	return
 
 }

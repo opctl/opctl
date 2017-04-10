@@ -190,7 +190,7 @@ func (this _opCaller) getPkg(
 	inboundScope map[string]*model.Data,
 	scgOpCallPkg *model.SCGOpCallPkg,
 ) (
-	packageView *model.PackageView,
+	pkgManifest *model.PkgManifest,
 	err error,
 ) {
 

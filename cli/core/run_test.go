@@ -55,7 +55,7 @@ var _ = Context("runOp", func() {
 				}
 
 				fakePkg := new(pkg.Fake)
-				fakePkg.GetReturns(&model.PackageView{}, nil)
+				fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 				fakeConsumeNodeApi := new(consumenodeapi.Fake)
 				eventChannel := make(chan model.Event)
@@ -89,7 +89,7 @@ var _ = Context("runOp", func() {
 					returnedError := errors.New("dummyError")
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PackageView{}, returnedError)
+					fakePkg.GetReturns(&model.PkgManifest{}, returnedError)
 
 					objectUnderTest := _core{
 						pkg:               fakePkg,
@@ -123,7 +123,7 @@ var _ = Context("runOp", func() {
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.GetReturns(
-						&model.PackageView{
+						&model.PkgManifest{
 							Inputs: expectedParams,
 						},
 						nil,
@@ -169,7 +169,7 @@ var _ = Context("runOp", func() {
 					}
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PackageView{}, nil)
+					fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 					fakeConsumeNodeApi := new(consumenodeapi.Fake)
@@ -203,7 +203,7 @@ var _ = Context("runOp", func() {
 						returnedError := errors.New("dummyError")
 
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 						fakeConsumeNodeApi := new(consumenodeapi.Fake)
 						fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
@@ -229,7 +229,7 @@ var _ = Context("runOp", func() {
 					It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
 						/* arrange */
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PkgManifest{}, nil)
 						rootOpIdReturnedFromStartOp := "dummyRootOpId"
 						expectedEventFilter := &model.GetEventStreamReq{
 							Filter: &model.EventFilter{
@@ -266,7 +266,7 @@ var _ = Context("runOp", func() {
 							returnedError := errors.New("dummyError")
 
 							fakePkg := new(pkg.Fake)
-							fakePkg.GetReturns(&model.PackageView{}, nil)
+							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 							fakeConsumeNodeApi := new(consumenodeapi.Fake)
 							fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
@@ -295,7 +295,7 @@ var _ = Context("runOp", func() {
 								fakeCliExiter := new(cliexiter.Fake)
 
 								fakePkg := new(pkg.Fake)
-								fakePkg.GetReturns(&model.PackageView{}, nil)
+								fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 								fakeConsumeNodeApi := new(consumenodeapi.Fake)
 								eventChannel := make(chan model.Event)
@@ -339,7 +339,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -381,7 +381,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -424,7 +424,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)
@@ -466,7 +466,7 @@ var _ = Context("runOp", func() {
 											fakeCliExiter := new(cliexiter.Fake)
 
 											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PackageView{}, nil)
+											fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 											fakeConsumeNodeApi := new(consumenodeapi.Fake)
 											eventChannel := make(chan model.Event, 10)

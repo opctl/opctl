@@ -2,6 +2,7 @@ package consumenodeapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
@@ -13,7 +14,7 @@ func (this consumeNodeApi) KillOp(
 	err error,
 ) {
 
-	reqBytes, err := this.jsonFormat.From(req)
+	reqBytes, err := json.Marshal(req)
 	if nil != err {
 		return
 	}

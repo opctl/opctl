@@ -7,25 +7,25 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type fakeListPackagesInDir struct {
-	ExecuteStub        func(dirPath string) (ops []*model.PackageView, err error)
+type fakeList struct {
+	ExecuteStub        func(dirPath string) (ops []*model.PkgManifest, err error)
 	executeMutex       sync.RWMutex
 	executeArgsForCall []struct {
 		dirPath string
 	}
 	executeReturns struct {
-		result1 []*model.PackageView
+		result1 []*model.PkgManifest
 		result2 error
 	}
 	executeReturnsOnCall map[int]struct {
-		result1 []*model.PackageView
+		result1 []*model.PkgManifest
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeListPackagesInDir) Execute(dirPath string) (ops []*model.PackageView, err error) {
+func (fake *fakeList) Execute(dirPath string) (ops []*model.PkgManifest, err error) {
 	fake.executeMutex.Lock()
 	ret, specificReturn := fake.executeReturnsOnCall[len(fake.executeArgsForCall)]
 	fake.executeArgsForCall = append(fake.executeArgsForCall, struct {
@@ -42,41 +42,41 @@ func (fake *fakeListPackagesInDir) Execute(dirPath string) (ops []*model.Package
 	return fake.executeReturns.result1, fake.executeReturns.result2
 }
 
-func (fake *fakeListPackagesInDir) ExecuteCallCount() int {
+func (fake *fakeList) ExecuteCallCount() int {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return len(fake.executeArgsForCall)
 }
 
-func (fake *fakeListPackagesInDir) ExecuteArgsForCall(i int) string {
+func (fake *fakeList) ExecuteArgsForCall(i int) string {
 	fake.executeMutex.RLock()
 	defer fake.executeMutex.RUnlock()
 	return fake.executeArgsForCall[i].dirPath
 }
 
-func (fake *fakeListPackagesInDir) ExecuteReturns(result1 []*model.PackageView, result2 error) {
+func (fake *fakeList) ExecuteReturns(result1 []*model.PkgManifest, result2 error) {
 	fake.ExecuteStub = nil
 	fake.executeReturns = struct {
-		result1 []*model.PackageView
+		result1 []*model.PkgManifest
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeListPackagesInDir) ExecuteReturnsOnCall(i int, result1 []*model.PackageView, result2 error) {
+func (fake *fakeList) ExecuteReturnsOnCall(i int, result1 []*model.PkgManifest, result2 error) {
 	fake.ExecuteStub = nil
 	if fake.executeReturnsOnCall == nil {
 		fake.executeReturnsOnCall = make(map[int]struct {
-			result1 []*model.PackageView
+			result1 []*model.PkgManifest
 			result2 error
 		})
 	}
 	fake.executeReturnsOnCall[i] = struct {
-		result1 []*model.PackageView
+		result1 []*model.PkgManifest
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeListPackagesInDir) Invocations() map[string][][]interface{} {
+func (fake *fakeList) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.executeMutex.RLock()
@@ -84,7 +84,7 @@ func (fake *fakeListPackagesInDir) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *fakeListPackagesInDir) recordInvocation(key string, args []interface{}) {
+func (fake *fakeList) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

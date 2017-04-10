@@ -2,6 +2,7 @@ package validate
 
 import (
 	"errors"
+	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -9,12 +10,17 @@ import (
 func (this validate) fileParam(
 	rawValue *model.Data,
 	param *model.FileParam,
-) (errs []error) {
-	errs = []error{}
-
+) []error {
 	// handle no value passed
 	if nil == rawValue || "" == rawValue.File {
-		errs = append(errs, errors.New("File required"))
+		return []error{errors.New("File required")}
 	}
-	return
+
+	fileInfo, err := this.fs.Stat(rawValue.File)
+	if nil != err {
+		return []error{err}
+	} else if !fileInfo.Mode().IsRegular() {
+		return []error{fmt.Errorf("%v not a file", rawValue.File)}
+	}
+	return []error{}
 }

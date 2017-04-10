@@ -1,6 +1,7 @@
 package consumenodeapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
@@ -18,7 +19,7 @@ func (this consumeNodeApi) GetEventStream(
 	queryParams := []string{}
 	if filter := req.Filter; nil != filter {
 		var filterBytes []byte
-		filterBytes, err = this.jsonFormat.From(filter)
+		filterBytes, err = json.Marshal(filter)
 		if nil != err {
 			return
 		}
@@ -51,7 +52,7 @@ func (this consumeNodeApi) GetEventStream(
 			}
 
 			var event model.Event
-			err = this.jsonFormat.To(bytes, &event)
+			err = json.Unmarshal(bytes, &event)
 			if nil != err {
 				return
 			}

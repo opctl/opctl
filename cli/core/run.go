@@ -30,13 +30,13 @@ func (this _core) RunOp(
 		return // support fake exiter
 	}
 
-	packageView, err := this.pkg.Get(&pkg.GetReq{Path: currentPath, PkgRef: pkgRef})
+	pkgManifest, err := this.pkg.Get(&pkg.GetReq{Path: currentPath, PkgRef: pkgRef})
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
-	argsMap := this.cliParamSatisfier.Satisfy(args, packageView.Inputs)
+	argsMap := this.cliParamSatisfier.Satisfy(args, pkgManifest.Inputs)
 
 	// init signal channel
 	intSignalsReceived := 0

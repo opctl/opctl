@@ -8,24 +8,24 @@ import (
 )
 
 type fakeGetter struct {
-	GetStub        func(req *GetReq) (packageView *model.PackageView, err error)
+	GetStub        func(req *GetReq) (*model.PkgManifest, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		req *GetReq
 	}
 	getReturns struct {
-		result1 *model.PackageView
+		result1 *model.PkgManifest
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 *model.PackageView
+		result1 *model.PkgManifest
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeGetter) Get(req *GetReq) (packageView *model.PackageView, err error) {
+func (fake *fakeGetter) Get(req *GetReq) (*model.PkgManifest, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -54,24 +54,24 @@ func (fake *fakeGetter) GetArgsForCall(i int) *GetReq {
 	return fake.getArgsForCall[i].req
 }
 
-func (fake *fakeGetter) GetReturns(result1 *model.PackageView, result2 error) {
+func (fake *fakeGetter) GetReturns(result1 *model.PkgManifest, result2 error) {
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 *model.PackageView
+		result1 *model.PkgManifest
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeGetter) GetReturnsOnCall(i int, result1 *model.PackageView, result2 error) {
+func (fake *fakeGetter) GetReturnsOnCall(i int, result1 *model.PkgManifest, result2 error) {
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *model.PackageView
+			result1 *model.PkgManifest
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 *model.PackageView
+		result1 *model.PkgManifest
 		result2 error
 	}{result1, result2}
 }

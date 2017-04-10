@@ -45,7 +45,7 @@ var _ = Context("opCaller", func() {
 			}
 
 			fakePkg := new(pkg.Fake)
-			fakePkg.GetReturns(&model.PackageView{}, nil)
+			fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -139,7 +139,7 @@ var _ = Context("opCaller", func() {
 
 				fakePkg := new(pkg.Fake)
 				fakePkg.GetReturns(
-					&model.PackageView{},
+					&model.PkgManifest{},
 					errors.New(expectedEvent.OpEncounteredError.Msg),
 				)
 
@@ -203,7 +203,7 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				returnedPkg := &model.PackageView{
+				returnedPkg := &model.PkgManifest{
 					Inputs: map[string]*model.Param{
 						"name1": {String: &model.StringParam{}},
 						"name2": {File: &model.FileParam{}},
@@ -273,7 +273,7 @@ var _ = Context("opCaller", func() {
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
-					opReturnedFromPkg := &model.PackageView{
+					opReturnedFromPkg := &model.PkgManifest{
 						Inputs: map[string]*model.Param{
 							"dummyVar1Name": {
 								String: &model.StringParam{
@@ -360,7 +360,7 @@ var _ = Context("opCaller", func() {
 					}
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PackageView{}, nil)
+					fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 
@@ -400,7 +400,7 @@ var _ = Context("opCaller", func() {
 					providedRootOpId := "dummyRootOpId"
 					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
-					opReturnedFromPkg := &model.PackageView{
+					opReturnedFromPkg := &model.PkgManifest{
 						Run: &model.SCG{
 							Parallel: []*model.SCG{
 								{
@@ -458,7 +458,7 @@ var _ = Context("opCaller", func() {
 					providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PackageView{}, nil)
+					fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -503,7 +503,7 @@ var _ = Context("opCaller", func() {
 						}
 
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 						fakePubSub := new(pubsub.Fake)
 
@@ -546,7 +546,7 @@ var _ = Context("opCaller", func() {
 						providedSCGOpCall := &model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}}
 
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PackageView{}, nil)
+						fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -594,7 +594,7 @@ var _ = Context("opCaller", func() {
 							}
 
 							fakePkg := new(pkg.Fake)
-							fakePkg.GetReturns(&model.PackageView{}, nil)
+							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -653,7 +653,7 @@ var _ = Context("opCaller", func() {
 							}
 
 							fakePkg := new(pkg.Fake)
-							fakePkg.GetReturns(&model.PackageView{}, nil)
+							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -714,7 +714,7 @@ var _ = Context("opCaller", func() {
 							}
 
 							fakePkg := new(pkg.Fake)
-							fakePkg.GetReturns(&model.PackageView{}, nil)
+							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 							fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})

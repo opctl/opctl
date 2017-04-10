@@ -1,8 +1,8 @@
 package pkg
 
+// Validate validates an opspec package
 func (this pkg) Validate(
 	pkgRef string,
-) (errs []error) {
-	errs = this.validator.Validate(pkgRef)
-	return
+) []error {
+	return this.validator.Validate(pkgRef)
 }

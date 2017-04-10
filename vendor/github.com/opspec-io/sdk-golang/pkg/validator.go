@@ -12,7 +12,7 @@ import (
 )
 
 type validator interface {
-	Validate(pkgRef string) (errs []error)
+	Validate(pkgRef string) []error
 }
 
 func newValidator(
@@ -44,21 +44,21 @@ type _validator struct {
 
 func (this _validator) Validate(
 	pkgRef string,
-) (errs []error) {
+) []error {
+	var errs []error
+
 	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path.Join(pkgRef, NameOfPkgManifestFile),
+		path.Join(pkgRef, ManifestFileName),
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, err)
-		return
+		return append(errs, err)
 	}
 
 	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, err)
-		return
+		return append(errs, err)
 	}
 
 	result, err := this.manifestSchema.Validate(
@@ -66,11 +66,11 @@ func (this _validator) Validate(
 	)
 	if nil != err {
 		// handle syntax errors specially
-		errs = append(errs, err)
-		return
+		return append(errs, err)
 	}
 	for _, desc := range result.Errors() {
 		errs = append(errs, fmt.Errorf("%s", desc))
 	}
-	return
+
+	return errs
 }
