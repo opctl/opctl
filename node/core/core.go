@@ -37,6 +37,8 @@ func New(
 
 	dcgNodeRepo := newDCGNodeRepo()
 
+	opKiller := newOpKiller(dcgNodeRepo, containerProvider)
+
 	caller := newCaller(
 		newContainerCaller(
 			containerProvider,
@@ -48,6 +50,7 @@ func New(
 	caller.setParallelCaller(
 		newParallelCaller(
 			caller,
+			opKiller,
 			pubSub,
 			uniqueStringFactory,
 		),
@@ -78,6 +81,7 @@ func New(
 		containerProvider:   containerProvider,
 		dcgNodeRepo:         dcgNodeRepo,
 		opCaller:            opCaller,
+		opKiller:            opKiller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -89,6 +93,7 @@ type _core struct {
 	containerProvider   containerprovider.ContainerProvider
 	dcgNodeRepo         dcgNodeRepo
 	opCaller            opCaller
+	opKiller            opKiller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

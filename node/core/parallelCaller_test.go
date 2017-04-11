@@ -16,6 +16,7 @@ var _ = Context("parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
 				new(fakeCaller),
+				new(fakeOpKiller),
 				new(pubsub.Fake),
 				new(uniquestring.Fake),
 			)).Should(Not(BeNil()))
@@ -49,7 +50,12 @@ var _ = Context("parallelCaller", func() {
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-			objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
+			objectUnderTest := newParallelCaller(
+				fakeCaller,
+				new(fakeOpKiller),
+				new(pubsub.Fake),
+				fakeUniqueStringFactory,
+			)
 
 			/* act */
 			objectUnderTest.Call(
@@ -77,7 +83,7 @@ var _ = Context("parallelCaller", func() {
 			Expect(actualSCGParallelCalls).To(ConsistOf(providedSCGParallelCalls))
 		})
 		Context("caller errors", func() {
-			It("shouldn't exit until all childCalls complete & return expected error", func() {
+			It("should fail fast on childCall error & return expected error", func() {
 				/* arrange */
 				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Data{}
@@ -103,26 +109,25 @@ var _ = Context("parallelCaller", func() {
 				expectedError := fmt.Errorf(`
 -
   Error during parallel call.
-  Error(s):
-    - %v
-    - %v
-    - %v
+  Error:
     - %v
 -`,
-					callErr,
-					callErr,
-					callErr,
 					callErr,
 				)
 
 				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(callErr)
+				fakeCaller.CallReturnsOnCall(0, callErr)
 
 				returnedUniqueString := "dummyUniqueString"
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-				objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
+				objectUnderTest := newParallelCaller(
+					fakeCaller,
+					new(fakeOpKiller),
+					new(pubsub.Fake),
+					fakeUniqueStringFactory,
+				)
 
 				/* act */
 				actualError := objectUnderTest.Call(
@@ -134,20 +139,6 @@ var _ = Context("parallelCaller", func() {
 				)
 
 				/* assert */
-				actualSCGParallelCalls := []*model.SCG{}
-				for callIndex := range providedSCGParallelCalls {
-					actualNodeId,
-						actualChildOutboundScope,
-						actualSCG,
-						actualPkgRef,
-						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
-					Expect(actualNodeId).To(Equal(returnedUniqueString))
-					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-					Expect(actualPkgRef).To(Equal(providedPkgRef))
-					Expect(actualRootOpId).To(Equal(providedRootOpId))
-					actualSCGParallelCalls = append(actualSCGParallelCalls, actualSCG)
-				}
-				Expect(actualSCGParallelCalls).To(ConsistOf(providedSCGParallelCalls))
 				Expect(actualError).To(Equal(expectedError))
 			})
 		})
@@ -179,7 +170,12 @@ var _ = Context("parallelCaller", func() {
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
 
-				objectUnderTest := newParallelCaller(fakeCaller, new(pubsub.Fake), fakeUniqueStringFactory)
+				objectUnderTest := newParallelCaller(
+					fakeCaller,
+					new(fakeOpKiller),
+					new(pubsub.Fake),
+					fakeUniqueStringFactory,
+				)
 
 				/* act */
 				actualError := objectUnderTest.Call(
