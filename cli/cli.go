@@ -17,7 +17,7 @@ func newCli(
 	cliColorer clicolorer.CliColorer,
 ) cli {
 
-	cli := mow.App("opctl", "Open source cross platform opspec node")
+	cli := mow.App("opctl", "Opctl is a free and open source distributed operation control system.")
 	cli.Version("v version", version)
 
 	noColor := cli.BoolOpt("nc no-color", false, "Disable output coloring")

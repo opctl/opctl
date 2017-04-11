@@ -8,7 +8,7 @@ type VGit interface {
 	// PlainClone a repository into the path with the given options, isBare defines
 	// if the new repository will be bare or normal. If the path is not empty
 	// ErrRepositoryAlreadyExists is returned
-	PlainClone(path string, isBare bool, o *git.CloneOptions) (*git.Repository, error)
+	PlainClone(path string, isBare bool, o *git.CloneOptions) error
 }
 
 func New() VGit {
@@ -17,6 +17,7 @@ func New() VGit {
 
 type _VGit struct{}
 
-func (this _VGit) PlainClone(path string, isBare bool, o *git.CloneOptions) (*git.Repository, error) {
-	return git.PlainClone(path, isBare, o)
+func (this _VGit) PlainClone(path string, isBare bool, o *git.CloneOptions) error {
+	_, err := git.PlainClone(path, isBare, o)
+	return err
 }

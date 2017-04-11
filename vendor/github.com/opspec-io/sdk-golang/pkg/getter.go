@@ -72,7 +72,7 @@ func (this _getter) getRemote(
 		repoRefName,
 	)
 	if _, err := this.fs.Stat(gitPkgPath); nil != err {
-		// pkg not resolved on node; pull it
+		// pkg not resolved on node; clone it
 		cloneOptions := &git.CloneOptions{
 			URL:           fmt.Sprintf("https://%v", repoName),
 			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
@@ -84,8 +84,10 @@ func (this _getter) getRemote(
 			cloneOptions.Auth = http.NewBasicAuth(req.Username, req.Password)
 		}
 
-		_, err := this.git.PlainClone(gitPkgPath, false, cloneOptions)
+		err := this.git.PlainClone(gitPkgPath, false, cloneOptions)
 		if nil != err {
+			// clone failed; cleanup remnants
+			this.fs.RemoveAll(gitPkgPath)
 			return nil, err
 		}
 	}

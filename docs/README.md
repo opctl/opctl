@@ -1,3 +1,3 @@
 ## Introduction
 
-opctl is an open source cross platform opspec node
+Opctl is a free and open source distributed operation control system.
