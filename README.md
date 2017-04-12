@@ -17,7 +17,7 @@ for every release:
 
 - source code will be [tagged](https://github.com/opctl/opctl/tags).
 - installation instructions will be made available at
-  [opctl.io](https://opctl/)
+  [opctl.io](https://opctl.io/)
 
 # Versioning
 
