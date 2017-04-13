@@ -2,12 +2,11 @@
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 body {
-  color: $opspec-light-gray;
-  padding-top: 57px;
+  color: $opctl-light-gray;
 }
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-  color: $opspec-light-gray;
+  color: $opctl-light-gray;
 }
 
 .bg-light-shaded {
@@ -18,8 +17,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   background-color: white;
 }
 
-nav li:not(.active) ul{
-  display:none;
+nav li:not(.active) ul {
+  display: none;
 }
 
 // markdown
@@ -32,7 +31,8 @@ blockquote {
   @extend .blockquote;
 }
 
-.card-block {
-  @extend .card-block;
-  text-align: center;
+.v-center {
+  position: relative;
+  top: 50%;
+  transform: perspective(1px) translateY(-50%);
 }

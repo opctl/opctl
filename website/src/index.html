@@ -2,13 +2,9 @@
 layout: landing.hbs
 title: opctl
 ---
-<div id="stars"
-     style="height: 100vh; min-height: 550px; max-height: 1300px;background: linear-gradient(to bottom,#21012b 0%,#521010 160%);">
+<div style="height: 100vh;">
+  <div class="v-center" style="text-align:center;padding-top:30px;">
+    <span><img src="images/logo-text_rect.png" title="opctl" style="height:40vh;"></span>
+    <p class="lead" style="padding-top:5vh;">a free and open source distributed operation control system</p>
+  </div>
 </div>
-
-<script src="/js/pixi.min.js" type="text/javascript"></script>
-<script src="/js/stars.js" type="text/javascript"></script>
-<script type="text/javascript">
-  var starchart = new StarChart(document.getElementById('stars'), PIXI, 70, 70, 2);
-  starchart.run();
-</script>
