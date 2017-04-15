@@ -3,19 +3,19 @@ package model
 import "time"
 
 type Event struct {
-	ContainerExited            *ContainerExitedEvent          `json:"containerExitedEvent,omitempty"`
-	ContainerStarted           *ContainerStartedEvent         `json:"containerStartedEvent,omitempty"`
-	ContainerStdErrClosedEvent *ContainerStdErrClosedEvent    `json:"containerStdErrClosedEvent,omitempty"`
-	ContainerStdErrWrittenTo   *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
-	ContainerStdOutClosedEvent *ContainerStdOutClosedEvent    `json:"containerStdOutClosedEvent,omitempty"`
-	ContainerStdOutWrittenTo   *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
-	OpEnded                    *OpEndedEvent                  `json:"opEnded,omitempty"`
-	OpStarted                  *OpStartedEvent                `json:"opStarted,omitempty"`
-	OpEncounteredError         *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
-	Timestamp                  time.Time                      `json:"timestamp"`
-	OutputInitialized          *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
-	ParallelCallEnded          *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
-	SerialCallEnded            *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
+	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
+	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
+	ContainerStdErrEOFRead   *ContainerStdErrEOFReadEvent   `json:"containerStdErrEOFRead,omitempty"`
+	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
+	ContainerStdOutEOFRead   *ContainerStdOutEOFReadEvent   `json:"containerStdOutEOFRead,omitempty"`
+	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
+	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
+	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
+	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
+	Timestamp                time.Time                      `json:"timestamp"`
+	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
+	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
+	SerialCallEnded          *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
 }
 
 const (
@@ -49,9 +49,9 @@ type ContainerStdErrWrittenToEvent struct {
 	PkgRef      string `json:"pkgRef"`
 }
 
-// ContainerStdErrClosedEvent represents a containers std err being closed.
-// Used to communicate, no further ContainerStdErrWrittenToEvent's will occur.
-type ContainerStdErrClosedEvent struct {
+// ContainerStdErrEOFReadEvent represents EOF being read from a containers std err.
+// This communicates, no further ContainerStdErrWrittenToEvent's will occur.
+type ContainerStdErrEOFReadEvent struct {
 	ImageRef    string `json:"imageRef"`
 	RootOpId    string `json:"rootOpId"`
 	ContainerId string `json:"containerId"`
@@ -67,9 +67,9 @@ type ContainerStdOutWrittenToEvent struct {
 	PkgRef      string `json:"pkgRef"`
 }
 
-// ContainerStdOutClosedEvent represents a containers std out being closed.
-// Used to communicate no further ContainerStdOutWrittenToEvent's will occur.
-type ContainerStdOutClosedEvent struct {
+// ContainerStdOutEOFReadEvent represents EOF being read from a containers std out.
+// This communicates no further ContainerStdOutWrittenToEvent's will occur.
+type ContainerStdOutEOFReadEvent struct {
 	ImageRef    string `json:"imageRef"`
 	RootOpId    string `json:"rootOpId"`
 	ContainerId string `json:"containerId"`
