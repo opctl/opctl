@@ -3,17 +3,19 @@ package model
 import "time"
 
 type Event struct {
-	ContainerExited          *ContainerExitedEvent          `json:"containerExitedEvent,omitempty"`
-	ContainerStarted         *ContainerStartedEvent         `json:"containerStartedEvent,omitempty"`
-	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
-	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
-	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
-	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
-	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
-	Timestamp                time.Time                      `json:"timestamp"`
-	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
-	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
-	SerialCallEnded          *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
+	ContainerExited            *ContainerExitedEvent          `json:"containerExitedEvent,omitempty"`
+	ContainerStarted           *ContainerStartedEvent         `json:"containerStartedEvent,omitempty"`
+	ContainerStdErrClosedEvent *ContainerStdErrClosedEvent    `json:"containerStdErrClosedEvent,omitempty"`
+	ContainerStdErrWrittenTo   *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
+	ContainerStdOutClosedEvent *ContainerStdOutClosedEvent    `json:"containerStdOutClosedEvent,omitempty"`
+	ContainerStdOutWrittenTo   *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
+	OpEnded                    *OpEndedEvent                  `json:"opEnded,omitempty"`
+	OpStarted                  *OpStartedEvent                `json:"opStarted,omitempty"`
+	OpEncounteredError         *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
+	Timestamp                  time.Time                      `json:"timestamp"`
+	OutputInitialized          *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
+	ParallelCallEnded          *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
+	SerialCallEnded            *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
 }
 
 const (
