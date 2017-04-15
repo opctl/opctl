@@ -22,6 +22,7 @@ const (
 	OpOutcomeKilled    = "KILLED"
 )
 
+// represents a containerized process exiting
 type ContainerExitedEvent struct {
 	ImageRef    string `json:"imageRef"`
 	ExitCode    int    `json:"exitCode"`
@@ -37,6 +38,7 @@ type ContainerStartedEvent struct {
 	PkgRef      string `json:"pkgRef"`
 }
 
+// ContainerStdErrWrittenToEvent represents a single write to a containers std err.
 type ContainerStdErrWrittenToEvent struct {
 	ImageRef    string `json:"imageRef"`
 	Data        []byte `json:"data"`
@@ -45,9 +47,28 @@ type ContainerStdErrWrittenToEvent struct {
 	PkgRef      string `json:"pkgRef"`
 }
 
+// ContainerStdErrClosedEvent represents a containers std err being closed.
+// Used to communicate, no further ContainerStdErrWrittenToEvent's will occur.
+type ContainerStdErrClosedEvent struct {
+	ImageRef    string `json:"imageRef"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
+}
+
+// ContainerStdOutWrittenToEvent represents a single write to a containers std out.
 type ContainerStdOutWrittenToEvent struct {
 	ImageRef    string `json:"imageRef"`
 	Data        []byte `json:"data"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
+}
+
+// ContainerStdOutClosedEvent represents a containers std out being closed.
+// Used to communicate no further ContainerStdOutWrittenToEvent's will occur.
+type ContainerStdOutClosedEvent struct {
+	ImageRef    string `json:"imageRef"`
 	RootOpId    string `json:"rootOpId"`
 	ContainerId string `json:"containerId"`
 	PkgRef      string `json:"pkgRef"`
