@@ -10,10 +10,12 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 - Add opspec 0.1.4 support
 - [Validate file/dir inputs are valid files/dirs (respectively)](https://github.com/opctl/opctl/issues/175)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
+- [Support since in event filter](https://github.com/opctl/opctl/issues/187)
 
 ## Fixed
 
 - [Param defaults w/ values equal to type default are not defaulted](https://github.com/opctl/opctl/issues/185)
+- [stdOut/stdErr output race condition](https://github.com/opctl/opctl/issues/174)
 
 
 ## 0.1.18 - 2017-03-28

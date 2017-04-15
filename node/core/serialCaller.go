@@ -71,6 +71,7 @@ func (this _serialCaller) Call(
 		scope[varName] = varData
 	}
 
+	eventFilterSince := time.Now().UTC()
 	for _, scgCall := range scgSerialCall {
 		childCallId := this.uniqueStringFactory.Construct()
 		err = this.caller.Call(
@@ -88,7 +89,10 @@ func (this _serialCaller) Call(
 		// subscribe to events
 		eventChannel := make(chan *model.Event, 150)
 		this.pubSub.Subscribe(
-			&model.EventFilter{RootOpIds: []string{rootOpId}},
+			&model.EventFilter{
+				RootOpIds: []string{rootOpId},
+				Since:     &eventFilterSince,
+			},
 			eventChannel,
 		)
 

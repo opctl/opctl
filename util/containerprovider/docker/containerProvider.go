@@ -35,7 +35,7 @@ func New() (
 
 	// ensure user defined network exists to allow inter container resolution via name
 	// @TODO: remove when socket outputs supported
-	err = objectUnderConstruction.EnsureNetworkExists("opctl")
+	err = objectUnderConstruction.EnsureNetworkExists(dockerNetworkName)
 
 	return
 }
@@ -45,3 +45,5 @@ type _containerProvider struct {
 	fs           fs.FS
 	runtime      vruntime.Vruntime
 }
+
+const dockerNetworkName = "opctl"

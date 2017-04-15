@@ -10,16 +10,16 @@ import (
 	"time"
 )
 
-func (this _containerProvider) stdOutLogger(
+func (this _containerProvider) stdOutEventPublisher(
 	eventPublisher pubsub.EventPublisher,
 	containerId string,
 	imageRef string,
 	pkgRef string,
 	rootOpId string,
-) (err error) {
+) error {
 
 	var readCloser io.ReadCloser
-	readCloser, err = this.dockerClient.ContainerLogs(
+	readCloser, err := this.dockerClient.ContainerLogs(
 		context.Background(),
 		containerId,
 		types.ContainerLogsOptions{
@@ -29,12 +29,16 @@ func (this _containerProvider) stdOutLogger(
 		},
 	)
 	if nil != err {
-		return
+		return err
 	}
 
 	go func() {
 		scanner := bufio.NewScanner(readCloser)
+
+		// scan writes until EOF or error
 		for scanner.Scan() {
+
+			// publish writes
 			eventPublisher.Publish(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
@@ -48,7 +52,23 @@ func (this _containerProvider) stdOutLogger(
 				},
 			)
 		}
+		// @TODO: handle scanner.Err()
+
+		// publish EOF
+		eventPublisher.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerStdOutEOFRead: &model.ContainerStdOutEOFReadEvent{
+					ContainerId: containerId,
+					ImageRef:    imageRef,
+					PkgRef:      pkgRef,
+					RootOpId:    rootOpId,
+				},
+			},
+		)
+
 		defer readCloser.Close()
 	}()
-	return
+
+	return nil
 }
