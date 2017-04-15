@@ -21,10 +21,11 @@ var _ = Context("parameterSatisfier", func() {
 					It("should return it in the argMap w/ value from env", func() {
 						/* arrange */
 						param1Name := "DUMMY_PARAM1_NAME"
-						param1Value := &model.Data{String: "dummyParam1Value"}
+						param1ValueString := "dummyParam1Value"
+						param1Value := &model.Data{String: &param1ValueString}
 
 						fakeVOS := new(vos.Fake)
-						fakeVOS.GetenvReturns(param1Value.String)
+						fakeVOS.GetenvReturns(*param1Value.String)
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
@@ -40,7 +41,7 @@ var _ = Context("parameterSatisfier", func() {
 							param1Name: {
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
-										Enum: []string{param1Value.String},
+										Enum: []string{*param1Value.String},
 									},
 								},
 							},
@@ -57,7 +58,8 @@ var _ = Context("parameterSatisfier", func() {
 					It("should return them in the argMap as provided", func() {
 						/* arrange */
 						param1Name := "DUMMY_PARAM1_NAME"
-						param1Value := &model.Data{String: "dummyParam1Value"}
+						param1ValueString := "dummyParam1Value"
+						param1Value := &model.Data{String: &param1ValueString}
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
@@ -68,7 +70,7 @@ var _ = Context("parameterSatisfier", func() {
 						)
 
 						expectedResult := map[string]*model.Data{param1Name: param1Value}
-						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, param1Value.String)}
+						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, *param1Value.String)}
 						providedParams := map[string]*model.Param{
 							param1Name: {
 								String: &model.StringParam{},
@@ -88,10 +90,11 @@ var _ = Context("parameterSatisfier", func() {
 				It("should return them in the argMap w/ values from env", func() {
 					/* arrange */
 					param1Name := "DUMMY_PARAM1_NAME"
-					param1Value := &model.Data{String: "dummyParam1Value"}
+					param1ValueString := "dummyParam1Value"
+					param1Value := &model.Data{String: &param1ValueString}
 
 					fakeVOS := new(vos.Fake)
-					fakeVOS.GetenvReturns(param1Value.String)
+					fakeVOS.GetenvReturns(*param1Value.String)
 
 					objectUnderTest := New(
 						new(clicolorer.Fake),
@@ -121,10 +124,11 @@ var _ = Context("parameterSatisfier", func() {
 					It("should return them in the argMap w/ values from env", func() {
 						/* arrange */
 						param1Name := "DUMMY_PARAM1_NAME"
-						param1ValueFromEnv := &model.Data{String: "dummyParam1Value"}
+						param1ValueFromEnvString := "dummyParam1Value"
+						param1ValueFromEnv := &model.Data{String: &param1ValueFromEnvString}
 
 						fakeVOS := new(vos.Fake)
-						fakeVOS.GetenvReturns(param1ValueFromEnv.String)
+						fakeVOS.GetenvReturns(*param1ValueFromEnv.String)
 
 						objectUnderTest := New(
 							new(clicolorer.Fake),
@@ -166,35 +170,41 @@ var _ = Context("parameterSatisfier", func() {
 						)
 
 						providedParam1Name := "dummyParam1Name"
+						providedParam1Default := "dummyParam1Default"
 						providedParam2Name := "dummyParam2Name"
+						providedParam2Default := "dummyParam2Default"
 						providedParam3Name := "dummyParam3Name"
+						providedParam3Default := "dummyParam3Default"
 						providedParams := map[string]*model.Param{
 							providedParam1Name: {
 								String: &model.StringParam{
-									Default: "dummyParam1Default",
+									Default: &providedParam1Default,
 								},
 							},
 							providedParam2Name: {
 								File: &model.FileParam{
-									Default: "dummyParam2Default",
+									Default: &providedParam2Default,
 								},
 							},
 							providedParam3Name: {
 								Dir: &model.DirParam{
-									Default: "dummyParam3Default",
+									Default: &providedParam3Default,
 								},
 							},
 						}
+
+						expectedResultParam2File := filepath.Join(wdReturnedFromGetwd, *providedParams[providedParam2Name].File.Default)
+						expectedResultParam3Dir := filepath.Join(wdReturnedFromGetwd, *providedParams[providedParam3Name].Dir.Default)
 
 						expectedResult := map[string]*model.Data{
 							providedParam1Name: {
 								String: providedParams[providedParam1Name].String.Default,
 							},
 							providedParam2Name: {
-								File: filepath.Join(wdReturnedFromGetwd, providedParams[providedParam2Name].File.Default),
+								File: &expectedResultParam2File,
 							},
 							providedParam3Name: {
-								Dir: filepath.Join(wdReturnedFromGetwd, providedParams[providedParam3Name].Dir.Default),
+								Dir: &expectedResultParam3Dir,
 							},
 						}
 

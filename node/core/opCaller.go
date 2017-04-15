@@ -288,22 +288,22 @@ func (this _opCaller) validateParam(
 	if nil != varValue {
 		switch {
 		case nil != param.Dir:
-			argDisplayValue = varValue.Dir
+			argDisplayValue = *varValue.Dir
 		case nil != param.File:
-			argDisplayValue = varValue.File
+			argDisplayValue = *varValue.File
 		case nil != param.Number:
 			if param.Number.IsSecret {
 				argDisplayValue = "************"
 			} else {
-				argDisplayValue = strconv.FormatFloat(varValue.Number, 'f', -1, 64)
+				argDisplayValue = strconv.FormatFloat(*varValue.Number, 'f', -1, 64)
 			}
 		case nil != param.Socket:
-			argDisplayValue = varValue.Socket
+			argDisplayValue = *varValue.Socket
 		case nil != param.String:
 			if param.String.IsSecret {
 				argDisplayValue = "************"
 			} else {
-				argDisplayValue = varValue.String
+				argDisplayValue = *varValue.String
 			}
 		}
 	}

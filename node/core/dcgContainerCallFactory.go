@@ -78,7 +78,7 @@ func constructDCGContainerCall(
 			// is bound to variable
 			if varData, ok := currentScope[scgContainerDirBind]; ok {
 				// bound to input
-				dcgContainerCall.Dirs[scgContainerDirPath] = varData.Dir
+				dcgContainerCall.Dirs[scgContainerDirPath] = *varData.Dir
 			} else {
 				// bound to output
 				// create placeholder dir on host so the output points to something
@@ -115,7 +115,7 @@ func constructDCGContainerCall(
 			// is bound to variable
 			if varData, ok := currentScope[scgContainerFileBind]; ok {
 				// bound to input
-				dcgContainerCall.Files[scgContainerFilePath] = varData.File
+				dcgContainerCall.Files[scgContainerFilePath] = *varData.File
 			} else {
 				// bound to output
 				// create outputFile on host so the output points to something
@@ -154,7 +154,7 @@ func constructDCGContainerCall(
 	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCall.Sockets {
 		if boundArg, ok := currentScope[scgContainerSocketBind]; ok {
 			// bound to var
-			dcgContainerCall.Sockets[scgContainerSocketAddress] = boundArg.Socket
+			dcgContainerCall.Sockets[scgContainerSocketAddress] = *boundArg.Socket
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something

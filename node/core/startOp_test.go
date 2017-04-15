@@ -14,12 +14,17 @@ var _ = Context("core", func() {
 	Context("StartOp", func() {
 		It("should call opCaller.Call w/ expected args", func() {
 			/* arrange */
+
+			providedArg1String := "dummyArg1Value"
+			providedArg2Dir := "dummyArg2Value"
+			providedArg3Dir := "dummyArg3Value"
+			providedArg4Dir := "dummyArg4Value"
 			providedReq := model.StartOpReq{
 				Args: map[string]*model.Data{
-					"dummyArg1Name": {String: "dummyArg1Value"},
-					"dummyArg2Name": {Dir: "dummyArg2Value"},
-					"dummyArg3Name": {Dir: "dummyArg3Value"},
-					"dummyArg4Name": {Dir: "dummyArg4Value"},
+					"dummyArg1Name": {String: &providedArg1String},
+					"dummyArg2Name": {Dir: &providedArg2Dir},
+					"dummyArg3Name": {Dir: &providedArg3Dir},
+					"dummyArg4Name": {Dir: &providedArg4Dir},
 				},
 				PkgRef: "dummyPkgRef",
 			}

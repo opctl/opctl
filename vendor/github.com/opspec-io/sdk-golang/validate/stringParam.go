@@ -11,21 +11,20 @@ import (
 
 // validates an value against a string parameter
 func (this validate) stringParam(
-	rawValue *model.Data,
+	rawValue *string,
 	param *model.StringParam,
 ) (errs []error) {
 	errs = []error{}
 
-	// handle no value passed
-	if nil == rawValue {
-		errs = append(errs, errors.New("String required"))
-		return
-	}
-
-	value := rawValue.String
-	if "" == value && "" != param.Default {
+	value := rawValue
+	if nil == value && nil != param.Default {
 		// apply default if value not set
 		value = param.Default
+	}
+
+	if nil == value {
+		errs = append(errs, errors.New("String required"))
+		return
 	}
 
 	// guard no constraints

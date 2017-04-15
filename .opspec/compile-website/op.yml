@@ -19,7 +19,7 @@ run:
             echo "installing deps"
             npm install -q
 
-            echo "compiling"
+            echo "running metalsmith"
             node_modules/.bin/metalsmith
         dirs:
           /src: srcDir
@@ -38,7 +38,7 @@ run:
             echo "installing plugins"
             gitbook install
 
-            echo "compiling website"
+            echo "running gitbook build"
             gitbook build . ../build/docs
         dirs:
           /src: srcDir

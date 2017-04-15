@@ -29,10 +29,10 @@ func (this interpolate) Interpolate(
 	for varName, varData := range scope {
 		if nil != varData {
 			switch {
-			case 0 != varData.Number:
-				template = this.numberInterpolater.Interpolate(template, varName, varData.Number)
-			case "" != varData.String:
-				template = this.stringInterpolater.Interpolate(template, varName, varData.String)
+			case nil != varData.Number:
+				template = this.numberInterpolater.Interpolate(template, varName, *varData.Number)
+			case nil != varData.String:
+				template = this.stringInterpolater.Interpolate(template, varName, *varData.String)
 			}
 		}
 	}
