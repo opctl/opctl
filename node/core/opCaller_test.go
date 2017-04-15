@@ -72,8 +72,9 @@ var _ = Context("opCaller", func() {
 		})
 		It("should call pkg.Get w/ expected args", func() {
 			/* arrange */
+			providedUsernameString := "name1Value"
 			providedInboundScope := map[string]*model.Data{
-				"username": {String: "name1Value"},
+				"username": {String: &providedUsernameString},
 			}
 			providedOpId := "dummyOpId"
 			providedPkgRef := "dummyPkgRef"
@@ -180,12 +181,17 @@ var _ = Context("opCaller", func() {
 		Context("pkg.Get doesn't error", func() {
 			It("should call validate.Param w/ expected args", func() {
 				/* arrange */
+				providedInboundVar1String := "val1"
+				providedInboundVarFile := "val2"
+				providedInboundVar3Dir := "val3"
+				providedInboundVar4Socket := "val4"
+				providedInboundVar5Number := float64(5)
 				providedInboundScope := map[string]*model.Data{
-					"name1": {String: "val1"},
-					"name2": {File: "val2"},
-					"name3": {Dir: "val3"},
-					"name4": {Socket: "val4"},
-					"name5": {Number: 5},
+					"name1": {String: &providedInboundVar1String},
+					"name2": {File: &providedInboundVarFile},
+					"name3": {Dir: &providedInboundVar3Dir},
+					"name4": {Socket: &providedInboundVar4Socket},
+					"name5": {Number: &providedInboundVar5Number},
 				}
 				providedOpId := "dummyOpId"
 				providedPkgRef := "dummyPkgRef"
@@ -203,6 +209,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
+				returnedPkgInput6Default := float64(6)
+				returnedPkgInput7Default := "seven"
 				returnedPkg := &model.PkgManifest{
 					Inputs: map[string]*model.Param{
 						"name1": {String: &model.StringParam{}},
@@ -210,8 +218,8 @@ var _ = Context("opCaller", func() {
 						"name3": {Dir: &model.DirParam{}},
 						"name4": {Socket: &model.SocketParam{}},
 						"name5": {Number: &model.NumberParam{}},
-						"name6": {Number: &model.NumberParam{Default: 6}},
-						"name7": {String: &model.StringParam{Default: "seven"}},
+						"name6": {Number: &model.NumberParam{Default: &returnedPkgInput6Default}},
+						"name7": {String: &model.StringParam{Default: &returnedPkgInput7Default}},
 					},
 				}
 				fakePkg := new(pkg.Fake)

@@ -126,9 +126,11 @@ var _ = Context("serialCaller", func() {
 				It("should call secondChild w/ inboundScope", func() {
 					/* arrange */
 					providedCallId := "dummyCallId"
+					providedScopeName1String := "dummyParentVar1Data"
+					providedScopeName2Dir := "dummyParentVar2Data"
 					providedInboundScope := map[string]*model.Data{
-						"dummyVar1Name": {String: "dummyParentVar1Data"},
-						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
+						"dummyVar1Name": {String: &providedScopeName1String},
+						"dummyVar2Name": {Dir: &providedScopeName2Dir},
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpId := "dummyRootOpId"
@@ -182,15 +184,23 @@ var _ = Context("serialCaller", func() {
 				It("should call secondChild w/ firstChildOutputs overlaying inboundScope", func() {
 					/* arrange */
 					providedCallId := "dummyCallId"
+
+					providedInboundVar1String := "dummyParentVar1Data"
+					providedInboundVar2Dir := "dummyParentVar2Data"
+					providedInboundVar3File := "dummyParentVar3Data"
 					providedInboundScope := map[string]*model.Data{
-						"dummyVar1Name": {String: "dummyParentVar1Data"},
-						"dummyVar2Name": {Dir: "dummyParentVar2Data"},
-						"dummyVar3Name": {File: "dummyParentVar3Data"},
+						"dummyVar1Name": {String: &providedInboundVar1String},
+						"dummyVar2Name": {Dir: &providedInboundVar2Dir},
+						"dummyVar3Name": {File: &providedInboundVar3File},
 					}
+
+					firstChildOutput1String := "dummyFirstChildVar1Data"
+					firstChildOutput2String := "dummyFirstChildVar2Data"
 					firstChildOutputs := map[string]*model.Data{
-						"dummyVar1Name": {String: "dummyFirstChildVar1Data"},
-						"dummyVar2Name": {Dir: "dummyFirstChildVar2Data"},
+						"dummyVar1Name": {String: &firstChildOutput1String},
+						"dummyVar2Name": {Dir: &firstChildOutput2String},
 					}
+
 					expectedInboundScopeToSecondChild := map[string]*model.Data{
 						"dummyVar1Name": firstChildOutputs["dummyVar1Name"],
 						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],

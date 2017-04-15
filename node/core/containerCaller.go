@@ -118,7 +118,7 @@ func (this _containerCaller) txOutputs(
 				Timestamp: time.Now().UTC(),
 				OutputInitialized: &model.OutputInitializedEvent{
 					Name:     name,
-					Value:    &model.Data{Socket: dcgContainerCall.ContainerId},
+					Value:    &model.Data{Socket: &dcgContainerCall.ContainerId},
 					RootOpId: dcgContainerCall.RootOpId,
 					CallId:   dcgContainerCall.ContainerId,
 				},
@@ -134,7 +134,7 @@ func (this _containerCaller) txOutputs(
 					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
-						Value:    &model.Data{File: dcgHostFilePath},
+						Value:    &model.Data{File: &dcgHostFilePath},
 						RootOpId: dcgContainerCall.RootOpId,
 						CallId:   dcgContainerCall.ContainerId,
 					},
@@ -151,7 +151,7 @@ func (this _containerCaller) txOutputs(
 					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
-						Value:    &model.Data{Dir: dcgHostDirPath},
+						Value:    &model.Data{Dir: &dcgHostDirPath},
 						RootOpId: dcgContainerCall.RootOpId,
 						CallId:   dcgContainerCall.ContainerId,
 					},
@@ -184,7 +184,7 @@ eventLoop:
 						Timestamp: time.Now().UTC(),
 						OutputInitialized: &model.OutputInitializedEvent{
 							Name:     name,
-							Value:    &model.Data{String: trimmedOutput},
+							Value:    &model.Data{String: &trimmedOutput},
 							RootOpId: dcgContainerCall.RootOpId,
 							CallId:   dcgContainerCall.ContainerId,
 						},
@@ -202,7 +202,7 @@ eventLoop:
 						Timestamp: time.Now().UTC(),
 						OutputInitialized: &model.OutputInitializedEvent{
 							Name:     name,
-							Value:    &model.Data{String: trimmedOutput},
+							Value:    &model.Data{String: &trimmedOutput},
 							RootOpId: dcgContainerCall.RootOpId,
 							CallId:   dcgContainerCall.ContainerId,
 						},

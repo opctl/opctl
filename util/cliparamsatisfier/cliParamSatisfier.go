@@ -111,9 +111,9 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					isEnvAttempted = true
 					rawArg = this.vos.Getenv(paramName)
-				} else if "" != stringParam.Default && !isDefaultAttempted {
+				} else if nil != stringParam.Default && !isDefaultAttempted {
 					isDefaultAttempted = true
-					rawArg = stringParam.Default
+					rawArg = *stringParam.Default
 				} else {
 					rawArg = this.promptForArg(paramName, stringParam.Description, stringParam.IsSecret)
 				}
@@ -121,7 +121,7 @@ func (this _cliParamSatisfier) Satisfy(
 				if "" == rawArgDisplayValue {
 					rawArgDisplayValue = rawArg
 				}
-				arg = &model.Data{String: rawArg}
+				arg = &model.Data{String: &rawArg}
 			case nil != param.Dir:
 				// obtain raw value
 				dirParam := param.Dir
@@ -135,19 +135,19 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					isEnvAttempted = true
 					rawArg = this.vos.Getenv(paramName)
-				} else if "" != dirParam.Default && !isDefaultAttempted {
+				} else if nil != dirParam.Default && !isDefaultAttempted {
 					isDefaultAttempted = true
 					wd, err := this.vos.Getwd()
 					if nil != err {
 						argErrors = append(argErrors, err)
 					}
-					rawArg = filepath.Join(wd, dirParam.Default)
+					rawArg = filepath.Join(wd, *dirParam.Default)
 				} else {
 					rawArg = this.promptForArg(paramName, dirParam.Description, false)
 				}
 
 				rawArgDisplayValue = rawArg
-				arg = &model.Data{Dir: rawArg}
+				arg = &model.Data{Dir: &rawArg}
 			case nil != param.File:
 				// obtain raw value
 				fileParam := param.File
@@ -161,19 +161,19 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					isEnvAttempted = true
 					rawArg = this.vos.Getenv(paramName)
-				} else if "" != fileParam.Default && !isDefaultAttempted {
+				} else if nil != fileParam.Default && !isDefaultAttempted {
 					isDefaultAttempted = true
 					wd, err := this.vos.Getwd()
 					if nil != err {
 						argErrors = append(argErrors, err)
 					}
-					rawArg = filepath.Join(wd, fileParam.Default)
+					rawArg = filepath.Join(wd, *fileParam.Default)
 				} else {
 					rawArg = this.promptForArg(paramName, fileParam.Description, false)
 				}
 
 				rawArgDisplayValue = rawArg
-				arg = &model.Data{File: rawArg}
+				arg = &model.Data{File: &rawArg}
 			case nil != param.Number:
 				// obtain raw value
 				numberParam := param.Number
@@ -192,9 +192,9 @@ func (this _cliParamSatisfier) Satisfy(
 					// env var exists & we've not made any attempt to use it
 					isEnvAttempted = true
 					rawArg, err = strconv.ParseFloat(this.vos.Getenv(paramName), 64)
-				} else if 0 != numberParam.Default && !isDefaultAttempted {
+				} else if nil != numberParam.Default && !isDefaultAttempted {
 					isDefaultAttempted = true
-					rawArg = numberParam.Default
+					rawArg = *numberParam.Default
 				} else {
 					rawArg, err =
 						strconv.ParseFloat(this.promptForArg(paramName, numberParam.Description, numberParam.IsSecret), 64)
@@ -206,7 +206,7 @@ func (this _cliParamSatisfier) Satisfy(
 				if "" == rawArgDisplayValue {
 					rawArgDisplayValue = strconv.FormatFloat(rawArg, 'f', -1, 64)
 				}
-				arg = &model.Data{Number: rawArg}
+				arg = &model.Data{Number: &rawArg}
 			case nil != param.Socket:
 				socketParam := param.Socket
 				var rawArg string
@@ -224,7 +224,7 @@ func (this _cliParamSatisfier) Satisfy(
 				}
 
 				rawArgDisplayValue = rawArg
-				arg = &model.Data{Socket: rawArg}
+				arg = &model.Data{Socket: &rawArg}
 			}
 
 			if len(argErrors) == 0 {

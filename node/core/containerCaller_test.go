@@ -291,7 +291,7 @@ var _ = Context("containerCaller", func() {
 				Timestamp: expectedEventTimestamp,
 				OutputInitialized: &model.OutputInitializedEvent{
 					Name:     providedSCGContainerCall.Sockets["0.0.0.0"],
-					Value:    &model.Data{Socket: providedContainerId},
+					Value:    &model.Data{Socket: &providedContainerId},
 					RootOpId: providedRootOpId,
 					CallId:   providedContainerId,
 				},

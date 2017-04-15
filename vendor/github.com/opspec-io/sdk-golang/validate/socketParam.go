@@ -7,13 +7,13 @@ import (
 
 // validates an value against a socket parameter
 func (this validate) socketParam(
-	rawValue *model.Data,
+	rawValue *string,
 	param *model.SocketParam,
 ) (errs []error) {
 	errs = []error{}
 
 	// handle no value passed
-	if nil == rawValue || "" == rawValue.Socket {
+	if nil == rawValue {
 		errs = append(errs, errors.New("Socket required"))
 	}
 	return

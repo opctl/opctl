@@ -8,20 +8,25 @@ import (
 
 // validates an value against a dir parameter
 func (this validate) dirParam(
-	rawValue *model.Data,
+	rawValue *string,
 	param *model.DirParam,
 ) []error {
 
-	// handle no value passed
-	if nil == rawValue || "" == rawValue.Dir {
+	value := rawValue
+	if nil == value && nil != param.Default {
+		// apply default if value not set
+		value = param.Default
+	}
+
+	if nil == value {
 		return []error{errors.New("Dir required")}
 	}
 
-	fileInfo, err := this.fs.Stat(rawValue.Dir)
+	fileInfo, err := this.fs.Stat(*value)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.IsDir() {
-		return []error{fmt.Errorf("%v not a dir", rawValue.Dir)}
+		return []error{fmt.Errorf("%v not a dir", *value)}
 	}
 	return []error{}
 }

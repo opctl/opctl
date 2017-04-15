@@ -12,21 +12,20 @@ import (
 
 // validates an value against a string parameter
 func (this validate) numberParam(
-	rawValue *model.Data,
+	rawValue *float64,
 	param *model.NumberParam,
 ) (errs []error) {
 	errs = []error{}
 
-	// handle no value passed
-	if nil == rawValue {
-		errs = append(errs, errors.New("Number required"))
-		return
-	}
-
-	value := rawValue.Number
-	if 0 == value && 0 != param.Default {
+	value := rawValue
+	if nil == value && nil != param.Default {
 		// apply default if value not set
 		value = param.Default
+	}
+
+	if nil == value {
+		errs = append(errs, errors.New("Number required"))
+		return
 	}
 
 	// guard no constraints
@@ -34,7 +33,7 @@ func (this validate) numberParam(
 
 		// perform validations not supported by gojsonschema
 		if integerConstraint := paramConstraints.Format; integerConstraint == "integer" {
-			if ceiledValue := math.Ceil(value); ceiledValue != value {
+			if ceiledValue := math.Ceil(*value); ceiledValue != *value {
 				errs = append(errs, fmt.Errorf("Does not match format '%v'", integerConstraint))
 			}
 		}

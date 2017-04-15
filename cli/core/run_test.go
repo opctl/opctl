@@ -111,7 +111,8 @@ var _ = Context("runOp", func() {
 				It("should call paramSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
 					param1Name := "DUMMY_PARAM1_NAME"
-					arg1Value := &model.Data{String: "dummyParam1Value"}
+					arg1ValueString := "dummyParam1Value"
+					arg1Value := &model.Data{String: &arg1ValueString}
 
 					providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, arg1Value.String)}
 
@@ -161,9 +162,10 @@ var _ = Context("runOp", func() {
 					fakeVOS.GetwdReturns(pwd, nil)
 
 					providedPkgRef := "dummyOp"
+					expectedArg1ValueString := "dummyArg1Value"
 					expectedArgs := model.StartOpReq{
 						Args: map[string]*model.Data{
-							"dummyArg1Name": {String: "dummyArg1Value"},
+							"dummyArg1Name": {String: &expectedArg1ValueString},
 						},
 						PkgRef: providedPkgRef,
 					}

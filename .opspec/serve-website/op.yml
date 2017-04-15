@@ -1,0 +1,26 @@
+description: serves the website locally
+name: serve-website
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+run:
+  serial:
+    - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            npm install http-server -gq
+
+            echo "starting server"
+            http-server
+        dirs:
+          /src: srcDir
+        ports:
+          '8080': '8080'
+        image: { ref: 'node:7.7' }
+        workDir: /src/build
