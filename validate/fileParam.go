@@ -8,19 +8,25 @@ import (
 
 // validates an value against a file parameter
 func (this validate) fileParam(
-	rawValue *model.Data,
+	rawValue *string,
 	param *model.FileParam,
 ) []error {
-	// handle no value passed
-	if nil == rawValue || "" == rawValue.File {
+
+	value := rawValue
+	if nil == value && nil != param.Default {
+		// apply default if value not set
+		value = param.Default
+	}
+
+	if nil == value {
 		return []error{errors.New("File required")}
 	}
 
-	fileInfo, err := this.fs.Stat(rawValue.File)
+	fileInfo, err := this.fs.Stat(*value)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.Mode().IsRegular() {
-		return []error{fmt.Errorf("%v not a file", rawValue.File)}
+		return []error{fmt.Errorf("%v not a file", *value)}
 	}
 	return []error{}
 }

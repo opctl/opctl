@@ -112,6 +112,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 			It("should return expected pkgManifest", func() {
 
 				/* arrange */
+				paramDefault := "dummyDefault"
 				dummyParams := map[string]*model.Param{
 					"dummyName": {
 						String: &model.StringParam{
@@ -122,7 +123,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 								Format:    "dummyFormat",
 								Enum:      []string{"dummyEnumItem1"},
 							},
-							Default:     "dummyDefault",
+							Default:     &paramDefault,
 							Description: "dummyDescription",
 							IsSecret:    true,
 						},

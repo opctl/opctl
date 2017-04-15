@@ -14,8 +14,9 @@ var _ = Describe("Param", func() {
 			It("should return no errors", func() {
 
 				/* arrange */
+				providedValueSocket := "dummySocket"
 				providedValue := &model.Data{
-					Socket: "dummyValue",
+					Socket: &providedValueSocket,
 				}
 				providedParam := &model.Param{
 					Socket: &model.SocketParam{},

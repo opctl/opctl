@@ -18,8 +18,9 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -29,7 +30,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^.*$",
 										},
 										{
-											Pattern: providedValue.String,
+											Pattern: *providedValue.String,
 										},
 									},
 								},
@@ -51,8 +52,9 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue==\""
 						providedValue := &model.Data{
-							String: "dummyValue==\"",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -62,7 +64,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^$",
 										},
 										{
-											Pattern: providedValue.String,
+											Pattern: *providedValue.String,
 										},
 									},
 								},
@@ -92,8 +94,9 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -103,7 +106,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^.*$",
 										},
 										{
-											Pattern: providedValue.String,
+											Pattern: *providedValue.String,
 										},
 									},
 								},
@@ -125,8 +128,9 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -166,13 +170,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									Enum: []string{providedValue.String},
+									Enum: []string{*providedValue.String},
 								},
 							},
 						}
@@ -192,8 +197,9 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -226,8 +232,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "notDateTime"
 							providedValue := &model.Data{
-								String: "notDateTime",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -257,8 +264,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "0000-01-01T00:00:01.0Z"
 							providedValue := &model.Data{
-								String: "0000-01-01T00:00:01.0Z",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -285,8 +293,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "$notADockerImageRef"
 							providedValue := &model.Data{
-								String: "$notADockerImageRef",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -316,8 +325,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag"
 							providedValue := &model.Data{
-								String: "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -344,8 +354,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "notEmail"
 							providedValue := &model.Data{
-								String: "notEmail",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -375,8 +386,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "dummy-email@dummy-domain.com"
 							providedValue := &model.Data{
-								String: "dummy-email@dummy-domain.com",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -403,8 +415,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "$notAHostname$"
 							providedValue := &model.Data{
-								String: "$notAHostname$",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -434,8 +447,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "dummy.com"
 							providedValue := &model.Data{
-								String: "dummy.com",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -462,8 +476,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "notAnIpV4"
 							providedValue := &model.Data{
-								String: "notAnIpV4",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -493,8 +508,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "0.0.0.0"
 							providedValue := &model.Data{
-								String: "0.0.0.0",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -521,8 +537,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "notAnIpV6"
 							providedValue := &model.Data{
-								String: "notAnIpV6",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -552,8 +569,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "0000:0000:0000:0000:0000:0000:0000:0000"
 							providedValue := &model.Data{
-								String: "0000:0000:0000:0000:0000:0000:0000:0000",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -580,8 +598,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "$notASemver$"
 							providedValue := &model.Data{
-								String: "$notASemver$",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -611,8 +630,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "1.1.1"
 							providedValue := &model.Data{
-								String: "1.1.1",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -639,8 +659,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueString := "notUri"
 							providedValue := &model.Data{
-								String: "notUri",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -670,8 +691,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueString := "https://dummyuri.com:8080/somepath?somequery#somefragment"
 							providedValue := &model.Data{
-								String: "https://dummyuri.com:8080/somepath?somequery#somefragment",
+								String: &providedValueString,
 							}
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -699,13 +721,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MaxLength: len(providedValue.String),
+									MaxLength: len(*providedValue.String),
 								},
 							},
 						}
@@ -725,13 +748,14 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MaxLength: len(providedValue.String) - 1,
+									MaxLength: len(*providedValue.String) - 1,
 								},
 							},
 						}
@@ -756,13 +780,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MaxLength: len(providedValue.String) + 1,
+									MaxLength: len(*providedValue.String) + 1,
 								},
 							},
 						}
@@ -784,13 +809,14 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MinLength: len(providedValue.String),
+									MinLength: len(*providedValue.String),
 								},
 							},
 						}
@@ -810,13 +836,14 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MinLength: len(providedValue.String) + 1,
+									MinLength: len(*providedValue.String) + 1,
 								},
 							},
 						}
@@ -841,13 +868,14 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
 								Constraints: &model.StringConstraints{
-									MinLength: len(providedValue.String) - 1,
+									MinLength: len(*providedValue.String) - 1,
 								},
 							},
 						}
@@ -869,8 +897,9 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -899,8 +928,9 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -929,8 +959,9 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -940,7 +971,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^$",
 										},
 										{
-											Pattern: providedValue.String,
+											Pattern: *providedValue.String,
 										},
 									},
 								},
@@ -962,8 +993,9 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -1001,8 +1033,9 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -1012,7 +1045,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^.*$",
 										},
 										{
-											Enum: []string{providedValue.String},
+											Enum: []string{*providedValue.String},
 										},
 									},
 								},
@@ -1038,8 +1071,9 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -1069,8 +1103,9 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueString := "dummyValue"
 						providedValue := &model.Data{
-							String: "dummyValue",
+							String: &providedValueString,
 						}
 						providedParam := &model.Param{
 							String: &model.StringParam{
@@ -1092,7 +1127,7 @@ var _ = Describe("Param", func() {
 				})
 			})
 		})
-		Context("& empty value.String", func() {
+		Context("& nil value.String", func() {
 			Context("and non empty Default", func() {
 				Context("AllOf constraint", func() {
 					Context("default meets all AllOf constraints", func() {
@@ -1100,9 +1135,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1116,7 +1149,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1135,9 +1168,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1151,7 +1182,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1178,9 +1209,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1194,7 +1223,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1213,9 +1242,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1229,7 +1256,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1256,16 +1283,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										Enum: []string{providedDefault},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1284,16 +1309,14 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										Enum: []string{"dummyEnumItem"},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1320,15 +1343,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "notDateTime"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "date-time",
 										},
-										Default: "notDateTime",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1352,15 +1374,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "0000-01-01T00:00:01.0Z"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "date-time",
 										},
-										Default: "0000-01-01T00:00:01.0Z",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1381,15 +1402,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "$notADockerImageRef"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "docker-image-ref",
 										},
-										Default: "$notADockerImageRef",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1413,15 +1433,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "docker-image-ref",
 										},
-										Default: "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1442,15 +1461,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "notEmail"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "email",
 										},
-										Default: "notEmail",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1474,15 +1492,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "dummy-email@dummy-domain.com"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "email",
 										},
-										Default: "dummy-email@dummy-domain.com",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1503,15 +1520,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "$notAHostname$"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "hostname",
 										},
-										Default: "$notAHostname$",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1535,15 +1551,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "dummy.com"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "hostname",
 										},
-										Default: "dummy.com",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1564,15 +1579,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "notAnIpV4"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "ipv4",
 										},
-										Default: "notAnIpV4",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1596,15 +1610,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "0.0.0.0"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "ipv4",
 										},
-										Default: "0.0.0.0",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1625,15 +1638,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "notAnIpV6"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "ipv6",
 										},
-										Default: "notAnIpV6",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1657,15 +1669,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "0000:0000:0000:0000:0000:0000:0000:0000"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "ipv6",
 										},
-										Default: "0000:0000:0000:0000:0000:0000:0000:0000",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1686,15 +1697,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "$notASemver$"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "semver",
 										},
-										Default: "$notASemver$",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1718,15 +1728,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "1.1.1"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "semver",
 										},
-										Default: "1.1.1",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1747,15 +1756,14 @@ var _ = Describe("Param", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "notUri"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "uri",
 										},
-										Default: "notUri",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1779,15 +1787,14 @@ var _ = Describe("Param", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{
-									String: "",
-								}
+								providedValue := &model.Data{}
+								providedDefault := "https://dummyuri.com:8080/somepath?somequery#somefragment"
 								providedParam := &model.Param{
 									String: &model.StringParam{
 										Constraints: &model.StringConstraints{
 											Format: "uri",
 										},
-										Default: "https://dummyuri.com:8080/somepath?somequery#somefragment",
+										Default: &providedDefault,
 									},
 								}
 
@@ -1809,16 +1816,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MaxLength: len(providedDefault),
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1837,16 +1842,14 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MaxLength: len(providedDefault) - 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1870,16 +1873,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MaxLength: len(providedDefault) + 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1900,16 +1901,14 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MinLength: len(providedDefault),
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1928,16 +1927,14 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MinLength: len(providedDefault) + 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1961,16 +1958,14 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										MinLength: len(providedDefault) - 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1991,9 +1986,7 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2002,7 +1995,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^.*$",
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2023,9 +2016,7 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2034,7 +2025,7 @@ var _ = Describe("Param", func() {
 											Pattern: "^$",
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2055,9 +2046,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2071,7 +2060,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2090,9 +2079,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2106,7 +2093,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2131,9 +2118,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2147,7 +2132,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2170,16 +2155,14 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										Pattern: "^$",
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2203,16 +2186,14 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								String: "",
-							}
+							providedValue := &model.Data{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
 									Constraints: &model.StringConstraints{
 										Pattern: ".$",
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -2227,26 +2208,6 @@ var _ = Describe("Param", func() {
 						})
 					})
 				})
-			})
-		})
-		Context("& nil value", func() {
-			It("should return expected errors", func() {
-
-				/* arrange */
-				providedParam := &model.Param{
-					String: &model.StringParam{},
-				}
-
-				expectedErrors := []error{
-					errors.New("String required"),
-				}
-
-				/* act */
-				actualErrors := objectUnderTest.Param(nil, providedParam)
-
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
-
 			})
 		})
 	})

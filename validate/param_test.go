@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -9,13 +10,15 @@ import (
 var _ = Describe("Param", func() {
 	objectUnderTest := New()
 	Context("invoked w/ nil param", func() {
-		It("should panic", func() {
-			/* arrange/act/assert */
-			Expect(
-				func() {
-					objectUnderTest.Param(&model.Data{}, nil)
-				},
-			).To(Panic())
+		It("should return expected error", func() {
+			/* arrange */
+			providedValue := &model.Data{}
+
+			expectedErrs := []error{errors.New("Param required")}
+
+			/* act */
+			actualErrs := objectUnderTest.Param(providedValue, nil)
+			Expect(actualErrs).To(Equal(expectedErrs))
 		})
 	})
 })

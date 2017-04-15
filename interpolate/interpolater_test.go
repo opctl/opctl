@@ -20,7 +20,7 @@ var _ = Describe("Interpolate", func() {
 			providedVarName := "dummyVarName"
 			providedVarData := "dummyVarData"
 			providedScope := map[string]*model.Data{
-				providedVarName: {String: providedVarData},
+				providedVarName: {String: &providedVarData},
 			}
 
 			expectedTemplateArg := providedTemplate
@@ -56,7 +56,7 @@ var _ = Describe("Interpolate", func() {
 			providedVarName := "dummyVarName"
 			providedVarData := 1.2
 			providedScope := map[string]*model.Data{
-				providedVarName: {Number: providedVarData},
+				providedVarName: {Number: &providedVarData},
 			}
 
 			expectedTemplateArg := providedTemplate

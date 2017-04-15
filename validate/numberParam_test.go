@@ -18,15 +18,16 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									AllOf: []*model.NumberConstraints{
 										{
-											Maximum: providedValue.Number,
+											Maximum: *providedValue.Number,
 										},
 									},
 								},
@@ -48,15 +49,16 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(2)
 						providedValue := &model.Data{
-							Number: 2,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									AllOf: []*model.NumberConstraints{
 										{
-											Maximum: providedValue.Number - 1,
+											Maximum: *providedValue.Number - 1,
 										},
 									},
 								},
@@ -86,15 +88,16 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(4)
 						providedValue := &model.Data{
-							Number: 4,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									AnyOf: []*model.NumberConstraints{
 										{
-											Maximum: providedValue.Number,
+											Maximum: *providedValue.Number,
 										},
 									},
 								},
@@ -116,15 +119,16 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(2)
 						providedValue := &model.Data{
-							Number: 2,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									AnyOf: []*model.NumberConstraints{
 										{
-											Minimum: providedValue.Number + 1,
+											Minimum: *providedValue.Number + 1,
 										},
 									},
 								},
@@ -154,13 +158,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(4)
 						providedValue := &model.Data{
-							Number: 4,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Enum: []float64{providedValue.Number},
+									Enum: []float64{*providedValue.Number},
 								},
 							},
 						}
@@ -180,13 +185,14 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(7.2)
 						providedValue := &model.Data{
-							Number: 7.2,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Enum: []float64{providedValue.Number + 1},
+									Enum: []float64{*providedValue.Number + 1},
 								},
 							},
 						}
@@ -214,8 +220,9 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
+							providedValueNumber := float64(3.3)
 							providedValue := &model.Data{
-								Number: 3.3,
+								Number: &providedValueNumber,
 							}
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -245,8 +252,9 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
+							providedValueNumber := float64(1)
 							providedValue := &model.Data{
-								Number: 1,
+								Number: &providedValueNumber,
 							}
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -274,13 +282,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(2)
 						providedValue := &model.Data{
-							Number: 2,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Maximum: providedValue.Number,
+									Maximum: *providedValue.Number,
 								},
 							},
 						}
@@ -300,13 +309,14 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(2)
 						providedValue := &model.Data{
-							Number: 2,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Maximum: providedValue.Number - 1,
+									Maximum: *providedValue.Number - 1,
 								},
 							},
 						}
@@ -331,13 +341,14 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Maximum: providedValue.Number + 1,
+									Maximum: *providedValue.Number + 1,
 								},
 							},
 						}
@@ -359,13 +370,14 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Minimum: providedValue.Number,
+									Minimum: *providedValue.Number,
 								},
 							},
 						}
@@ -385,13 +397,14 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Minimum: providedValue.Number + 1,
+									Minimum: *providedValue.Number + 1,
 								},
 							},
 						}
@@ -416,13 +429,14 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
-									Minimum: providedValue.Number - 1,
+									Minimum: *providedValue.Number - 1,
 								},
 							},
 						}
@@ -444,14 +458,15 @@ var _ = Describe("Param", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									Not: &model.NumberConstraints{
-										Enum: []float64{providedValue.Number},
+										Enum: []float64{*providedValue.Number},
 									},
 								},
 							},
@@ -474,14 +489,15 @@ var _ = Describe("Param", func() {
 					It("should return no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									Not: &model.NumberConstraints{
-										Enum: []float64{providedValue.Number - 1},
+										Enum: []float64{*providedValue.Number - 1},
 									},
 								},
 							},
@@ -504,15 +520,16 @@ var _ = Describe("Param", func() {
 					It("returns no errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									OneOf: []*model.NumberConstraints{
 										{
-											Maximum: providedValue.Number,
+											Maximum: *providedValue.Number,
 										},
 									},
 								},
@@ -534,15 +551,16 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(1)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									OneOf: []*model.NumberConstraints{
 										{
-											Minimum: providedValue.Number + 1,
+											Minimum: *providedValue.Number + 1,
 										},
 									},
 								},
@@ -570,18 +588,19 @@ var _ = Describe("Param", func() {
 					It("returns expected errors", func() {
 
 						/* arrange */
+						providedValueNumber := float64(4)
 						providedValue := &model.Data{
-							Number: 1,
+							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
 							Number: &model.NumberParam{
 								Constraints: &model.NumberConstraints{
 									OneOf: []*model.NumberConstraints{
 										{
-											Minimum: providedValue.Number,
+											Minimum: *providedValue.Number,
 										},
 										{
-											Enum: []float64{providedValue.Number},
+											Enum: []float64{*providedValue.Number},
 										},
 									},
 								},
@@ -602,7 +621,7 @@ var _ = Describe("Param", func() {
 				})
 			})
 		})
-		Context("& zero value.Number", func() {
+		Context("& nil value.Number", func() {
 			Context("and non empty Default", func() {
 				Context("AllOf constraint", func() {
 					Context("default meets all AllOf constraints", func() {
@@ -610,9 +629,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -623,7 +640,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -642,9 +659,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -655,7 +670,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -682,9 +697,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -695,7 +708,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -714,9 +727,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -727,7 +738,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -754,16 +765,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Enum: []float64{providedDefault},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -782,16 +791,14 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Enum: []float64{providedDefault + 1},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -817,16 +824,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Maximum: providedDefault,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -845,16 +850,14 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Maximum: providedDefault - 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -878,16 +881,14 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Maximum: providedDefault + 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -908,16 +909,14 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Minimum: providedDefault,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -936,16 +935,14 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Minimum: providedDefault + 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -969,16 +966,14 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
 									Constraints: &model.NumberConstraints{
 										Minimum: providedDefault - 1,
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -999,9 +994,7 @@ var _ = Describe("Param", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1010,7 +1003,7 @@ var _ = Describe("Param", func() {
 											Minimum: providedDefault,
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1031,9 +1024,7 @@ var _ = Describe("Param", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1042,7 +1033,7 @@ var _ = Describe("Param", func() {
 											Maximum: providedDefault - 1,
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1063,9 +1054,7 @@ var _ = Describe("Param", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1076,7 +1065,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1095,9 +1084,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1108,7 +1095,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1133,9 +1120,7 @@ var _ = Describe("Param", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{
-								Number: 0,
-							}
+							providedValue := &model.Data{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1149,7 +1134,7 @@ var _ = Describe("Param", func() {
 											},
 										},
 									},
-									Default: providedDefault,
+									Default: &providedDefault,
 								},
 							}
 
@@ -1166,26 +1151,6 @@ var _ = Describe("Param", func() {
 						})
 					})
 				})
-			})
-		})
-		Context("& nil value", func() {
-			It("should return expected errors", func() {
-
-				/* arrange */
-				providedParam := &model.Param{
-					Number: &model.NumberParam{},
-				}
-
-				expectedErrors := []error{
-					errors.New("Number required"),
-				}
-
-				/* act */
-				actualErrors := objectUnderTest.Param(nil, providedParam)
-
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
-
 			})
 		})
 	})

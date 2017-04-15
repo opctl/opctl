@@ -12,7 +12,7 @@ type Param struct {
 // Number parameter
 type NumberParam struct {
 	Constraints *NumberConstraints `yaml:"constraints,omitempty"`
-	Default     float64            `yaml:"default,omitempty"`
+	Default     *float64           `yaml:"default,omitempty"`
 	Description string             `yaml:"description,omitempty"`
 	IsSecret    bool               `yaml:"isSecret,omitempty"`
 }
@@ -34,16 +34,16 @@ type NumberConstraints struct {
 
 // Directory parameter
 type DirParam struct {
-	Default     string `yaml:"default,omitempty"`
-	Description string `yaml:"description,omitempty"`
-	IsSecret    bool   `yaml:"isSecret,omitempty"`
+	Default     *string `yaml:"default,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
 // File parameter
 type FileParam struct {
-	Default     string `yaml:"default,omitempty"`
-	Description string `yaml:"description,omitempty"`
-	IsSecret    bool   `yaml:"isSecret,omitempty"`
+	Default     *string `yaml:"default,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
 // Socket parameter
@@ -55,7 +55,7 @@ type SocketParam struct {
 // String parameter
 type StringParam struct {
 	Constraints *StringConstraints `yaml:"constraints,omitempty"`
-	Default     string             `yaml:"default,omitempty"`
+	Default     *string            `yaml:"default,omitempty"`
 	Description string             `yaml:"description,omitempty"`
 	IsSecret    bool               `yaml:"isSecret,omitempty"`
 }

@@ -61,8 +61,9 @@ var _ = Describe("Param", func() {
 			It("should call fs.Stat w/ expected args", func() {
 
 				/* arrange */
+				providedValueDir := "dummyDir"
 				providedValue := &model.Data{
-					Dir: "dummyValue",
+					Dir: &providedValueDir,
 				}
 				providedParam := &model.Param{
 					Dir: &model.DirParam{},
@@ -80,15 +81,16 @@ var _ = Describe("Param", func() {
 				objectUnderTest.Param(providedValue, providedParam)
 
 				/* assert */
-				Expect(fakeFS.StatArgsForCall(0)).To(Equal(providedValue.Dir))
+				Expect(fakeFS.StatArgsForCall(0)).To(Equal(*providedValue.Dir))
 
 			})
 			Context("fs.Stat errors", func() {
 				It("should return expected errors", func() {
 
 					/* arrange */
+					providedValueDir := "dummyDir"
 					providedValue := &model.Data{
-						Dir: "dummyValue",
+						Dir: &providedValueDir,
 					}
 					providedParam := &model.Param{
 						Dir: &model.DirParam{},
@@ -126,7 +128,7 @@ var _ = Describe("Param", func() {
 						}
 
 						providedValue := &model.Data{
-							Dir: tmpDirPath,
+							Dir: &tmpDirPath,
 						}
 						providedParam := &model.Param{
 							Dir: &model.DirParam{},
@@ -157,7 +159,7 @@ var _ = Describe("Param", func() {
 						tmpFilePath := tmpFile.Name()
 
 						providedValue := &model.Data{
-							Dir: tmpFilePath,
+							Dir: &tmpFilePath,
 						}
 						providedParam := &model.Param{
 							Dir: &model.DirParam{},
