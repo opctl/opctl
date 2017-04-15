@@ -160,19 +160,38 @@ func (this _containerCaller) txOutputs(
 		}
 	}
 
-	// subscribe to op graph events
+	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)
+	eventFilterSince := time.Now().UTC()
 	this.pubSub.Subscribe(
-		&model.EventFilter{RootOpIds: []string{dcgContainerCall.RootOpId}},
+		&model.EventFilter{
+			RootOpIds: []string{dcgContainerCall.RootOpId},
+			Since:     &eventFilterSince,
+		},
 		eventChannel,
 	)
+
+	// need to track EOF reads
+	var isStdErrEOFRead, isStdOutEOFRead bool
 
 	// send string outputs
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgContainerCall.ContainerId:
-			break eventLoop
+		case nil != event.ContainerStdErrEOFRead &&
+			event.ContainerStdErrEOFRead.ContainerId == dcgContainerCall.ContainerId:
+			isStdErrEOFRead = true
+			if isStdOutEOFRead {
+				// no more events we care about; break eventLoop
+				break eventLoop
+			}
+		case nil != event.ContainerStdOutEOFRead &&
+			event.ContainerStdOutEOFRead.ContainerId == dcgContainerCall.ContainerId:
+			isStdOutEOFRead = true
+			if isStdErrEOFRead {
+				// no more events we care about; break eventLoop
+				break eventLoop
+			}
 		case nil != event.ContainerStdErrWrittenTo &&
 			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
 			for boundPrefix, name := range scgContainerCall.StdErr {

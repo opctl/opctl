@@ -17,12 +17,12 @@ func (this _containerProvider) pullImage(
 	containerId string,
 	rootOpId string,
 	eventPublisher pubsub.EventPublisher,
-) (err error) {
+) error {
 	// ensure tag present in image string.
 	// if not present, docker defaults to downloading all tags
 	imageName, tag, err := reference.Parse(dcgContainerImage.Ref)
 	if nil != err {
-		return
+		return err
 	}
 	imageRef := fmt.Sprintf("%v:%v", imageName, tag)
 
@@ -34,9 +34,8 @@ func (this _containerProvider) pullImage(
 			dcgContainerImage.PullAuth.Username,
 			dcgContainerImage.PullAuth.Password,
 		)
-		fmt.Printf("imagePullOptions.RegistryAuth: %v \n", imagePullOptions.RegistryAuth)
 		if nil != err {
-			return
+			return err
 		}
 	}
 
@@ -46,7 +45,7 @@ func (this _containerProvider) pullImage(
 		imagePullOptions,
 	)
 	if nil != err {
-		return
+		return err
 	}
 
 	defer imagePullResp.Close()
@@ -59,7 +58,7 @@ func (this _containerProvider) pullImage(
 			if err == io.EOF {
 				err = nil
 			}
-			return
+			return err
 		}
 		jm.Display(stdOutWriter, false)
 	}

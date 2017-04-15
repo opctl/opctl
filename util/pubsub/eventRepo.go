@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"sync"
+	"time"
 )
 
 // interface for event storage
@@ -49,10 +50,10 @@ type eventRepo struct {
 	eventsMutex  sync.RWMutex
 }
 
+const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
+
 // O(1); threadsafe
 func (this *eventRepo) Add(event *model.Event) {
-
-	const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 
 	// @TODO: handle errors
 	this.db.Update(func(tx *bolt.Tx) error {
@@ -63,7 +64,6 @@ func (this *eventRepo) Add(event *model.Event) {
 			return err
 		}
 
-		// @TODO:
 		return bucket.Put([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
 	})
 }
@@ -74,12 +74,17 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 
 	// @TODO: handle errors
 	this.db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("events"))
+		cursor := tx.Bucket([]byte("events")).Cursor()
 
-		// @TODO: handle errors
-		bucket.ForEach(func(timestamp, encodedEvent []byte) error {
+		sinceTime := new(time.Time)
+		if nil != filter && nil != filter.Since {
+			sinceTime = filter.Since
+		}
+
+		sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
+		for k, v := cursor.Seek(sinceBytes); k != nil; k, v = cursor.Next() {
 			event := &model.Event{}
-			err := json.Unmarshal(encodedEvent, event)
+			err := json.Unmarshal(v, event)
 			if nil != err {
 				return err
 			}
@@ -87,9 +92,7 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 			if !isOgIdExcludedByFilter(getEventRootOpId(event), filter) {
 				result = append(result, event)
 			}
-
-			return nil
-		})
+		}
 
 		return nil
 	})

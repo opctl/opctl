@@ -18,7 +18,7 @@ import (
 func (this _containerProvider) RunContainer(
 	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
-) (err error) {
+) error {
 
 	// construct port bindings
 	portBindings := nat.PortMap{}
@@ -80,47 +80,50 @@ func (this _containerProvider) RunContainer(
 	// sort binds to make order deterministic; useful for testing
 	sort.Strings(hostConfig.Binds)
 
+	// construct networking config
+	networkingConfig := &network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{
+			dockerNetworkName: {
+				Aliases: []string{
+					req.Name,
+				},
+			},
+		},
+	}
+
 	// create container
 	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
 		context.Background(),
 		containerConfig,
 		hostConfig,
-		&network.NetworkingConfig{
-			EndpointsConfig: map[string]*network.EndpointSettings{
-				"opctl": {
-					Aliases: []string{
-						req.Name,
-					},
-				},
-			},
-		},
+		networkingConfig,
 		req.ContainerId,
 	)
 
 	if nil != err {
-		//if image not found try to pull it
-		if client.IsErrImageNotFound(err) {
-			err = nil
-			fmt.Printf("Unable to find image '%s' locally\n", req.Image.Ref)
+		if !client.IsErrImageNotFound(err) {
+			return err
+		}
 
-			err = this.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
-			if nil != err {
-				return
-			}
+		// pull image
+		err = nil
+		fmt.Printf("Unable to find image '%s' locally\n", req.Image.Ref)
 
-			// Retry
-			containerCreatedResponse, err = this.dockerClient.ContainerCreate(
-				context.Background(),
-				containerConfig,
-				hostConfig,
-				&network.NetworkingConfig{},
-				req.ContainerId,
-			)
-			if nil != err {
-				return
-			}
-		} else {
-			return
+		err = this.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
+		if nil != err {
+			return err
+		}
+
+		// retry create
+		containerCreatedResponse, err = this.dockerClient.ContainerCreate(
+			context.Background(),
+			containerConfig,
+			hostConfig,
+			networkingConfig,
+			req.ContainerId,
+		)
+		if nil != err {
+			return err
 		}
 	}
 
@@ -131,10 +134,10 @@ func (this _containerProvider) RunContainer(
 		types.ContainerStartOptions{},
 	)
 	if nil != err {
-		return
+		return err
 	}
 
-	err = this.stdErrLogger(
+	err = this.stdErrEventPublisher(
 		eventPublisher,
 		req.ContainerId,
 		req.Image.Ref,
@@ -142,9 +145,9 @@ func (this _containerProvider) RunContainer(
 		req.RootOpId,
 	)
 	if nil != err {
-		return
+		return err
 	}
-	err = this.stdOutLogger(
+	err = this.stdOutEventPublisher(
 		eventPublisher,
 		req.ContainerId,
 		req.Image.Ref,
@@ -152,7 +155,7 @@ func (this _containerProvider) RunContainer(
 		req.RootOpId,
 	)
 	if nil != err {
-		return
+		return err
 	}
 
 	// wait for exit
@@ -161,11 +164,11 @@ func (this _containerProvider) RunContainer(
 		req.ContainerId,
 	)
 	if nil != waitError {
-		err = errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
+		return errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
 	} else if 0 != exitCode {
-		err = errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
+		return errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
 	}
 
-	return
+	return err
 
 }

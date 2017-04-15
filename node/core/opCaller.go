@@ -219,8 +219,12 @@ func (this _opCaller) txOutputs(
 ) {
 	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)
+	eventFilterSince := time.Now().UTC()
 	this.pubSub.Subscribe(
-		&model.EventFilter{RootOpIds: []string{dcgOpCall.RootOpId}},
+		&model.EventFilter{
+			RootOpIds: []string{dcgOpCall.RootOpId},
+			Since:     &eventFilterSince,
+		},
 		eventChannel,
 	)
 
