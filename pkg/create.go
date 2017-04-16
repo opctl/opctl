@@ -11,7 +11,7 @@ func (this pkg) Create(
 	req CreateReq,
 ) error {
 
-	err := this.fileSystem.MkdirAll(
+	err := this.fs.MkdirAll(
 		req.Path,
 		0777,
 	)
@@ -30,7 +30,7 @@ func (this pkg) Create(
 	}
 
 	return this.ioUtil.WriteFile(
-		path.Join(req.Path, ManifestFileName),
+		path.Join(req.Path, OpDotYmlFileName),
 		pkgManifestBytes,
 		0777,
 	)

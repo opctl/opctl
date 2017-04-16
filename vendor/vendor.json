@@ -261,6 +261,12 @@
 			"revisionTime": "2017-04-02T18:27:10Z"
 		},
 		{
+			"checksumSHA1": "LPiDoIbKjs9rgdWqAsR+tPXXdEo=",
+			"path": "github.com/virtual-go/vos",
+			"revision": "5f4be7180188d93df1aed9500e1ba2f3b1ce1059",
+			"revisionTime": "2017-04-03T03:19:18Z"
+		},
+		{
 			"checksumSHA1": "B9K+5clCq0PU8n8/utbKT0QjQyU=",
 			"path": "github.com/xeipuuv/gojsonpointer",
 			"revision": "6fe8760cad3569743d51ddbb243b26f8456742dc",

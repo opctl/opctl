@@ -24,8 +24,8 @@ var _ = Describe("_create", func() {
 			fakeFileSystem := new(fs.Fake)
 
 			objectUnderTest := &pkg{
-				fileSystem: fakeFileSystem,
-				ioUtil:     new(vioutil.Fake),
+				fs:     fakeFileSystem,
+				ioUtil: new(vioutil.Fake),
 			}
 
 			/* act */
@@ -49,7 +49,7 @@ var _ = Describe("_create", func() {
 				fakeFileSystem.MkdirAllReturns(expectedError)
 
 				objectUnderTest := &pkg{
-					fileSystem: fakeFileSystem,
+					fs: fakeFileSystem,
 				}
 
 				/* act */
@@ -81,15 +81,15 @@ var _ = Describe("_create", func() {
 			panic(err)
 		}
 
-		expectedPath := path.Join(providedCreateReq.Path, ManifestFileName)
+		expectedPath := path.Join(providedCreateReq.Path, OpDotYmlFileName)
 		expectedData := expectedPkgManifestBytes
 		expectedPerms := os.FileMode(0777)
 
 		fakeIOUtil := new(vioutil.Fake)
 
 		objectUnderTest := &pkg{
-			fileSystem: new(fs.Fake),
-			ioUtil:     fakeIOUtil,
+			fs:     new(fs.Fake),
+			ioUtil: fakeIOUtil,
 		}
 
 		/* act */

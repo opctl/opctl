@@ -3,7 +3,6 @@ package pkg
 //go:generate counterfeiter -o ./fakeGetter.go --fake-name fakeGetter ./ getter
 
 import (
-	"errors"
 	"fmt"
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"github.com/opspec-io/sdk-golang/model"
@@ -13,7 +12,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
-  "path"
+	"path"
 	"strings"
 )
 
@@ -44,8 +43,9 @@ func (this _getter) Get(
 	req *GetReq,
 ) (*model.PkgManifest, error) {
 
-	if _, err := this.fs.Stat(req.PkgRef); nil == err {
-		return this.manifestUnmarshaller.Unmarshal(req.PkgRef)
+	if _, err := this.fs.Stat(path.Join(DotOpspecDirName, req.PkgRef)); nil == err {
+		// observe default behavior; resolve from .opspec
+		return this.manifestUnmarshaller.Unmarshal(path.Join(DotOpspecDirName, req.PkgRef))
 	}
 	return this.getRemote(req)
 }
@@ -56,7 +56,10 @@ func (this _getter) getRemote(
 
 	stringParts := strings.Split(req.PkgRef, "#")
 	if len(stringParts) != 2 {
-		return nil, errors.New("Invalid pkgRef, version not provided")
+		return nil, fmt.Errorf(
+			"Invalid remote pkgRef:'%v'. Valid remote pkgRef's are of the form: 'host/path#semver",
+			req.PkgRef,
+		)
 	}
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]

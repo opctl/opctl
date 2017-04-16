@@ -30,6 +30,8 @@ var _ = Describe("Getter", func() {
 				PkgRef: "dummyPkgRef",
 			}
 
+			expectedName := path.Join(DotOpspecDirName, providedGetReq.PkgRef)
+
 			fakeFS := new(fs.Fake)
 			fakeFS.StatReturns(nil, nil)
 
@@ -42,7 +44,7 @@ var _ = Describe("Getter", func() {
 			objectUnderTest.Get(providedGetReq)
 
 			/* assert */
-			Expect(fakeFS.StatArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
+			Expect(fakeFS.StatArgsForCall(0)).To(Equal(expectedName))
 		})
 		Context("is embedded pkg", func() {
 			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
@@ -50,6 +52,8 @@ var _ = Describe("Getter", func() {
 				providedGetReq := &GetReq{
 					PkgRef: "dummyPkgRef",
 				}
+
+				expectedName := path.Join(DotOpspecDirName, providedGetReq.PkgRef)
 
 				fakeFS := new(fs.Fake)
 				fakeFS.StatReturns(nil, nil)
@@ -65,7 +69,7 @@ var _ = Describe("Getter", func() {
 				objectUnderTest.Get(providedGetReq)
 
 				/* assert */
-				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
+				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedName))
 			})
 			It("should return result of manifestUnmarshaller.Unmarshal", func() {
 				/* arrange */

@@ -60,7 +60,7 @@ func (this _manifestUnmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	packageManifestPath := path.Join(pkgRef, ManifestFileName)
+	packageManifestPath := path.Join(pkgRef, OpDotYmlFileName)
 
 	packageManifestBytes, err := this.ioUtil.ReadFile(
 		packageManifestPath,

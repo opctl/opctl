@@ -5,9 +5,10 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/fs"
+	fsPkg "github.com/virtual-go/fs"
 	"github.com/virtual-go/fs/osfs"
 	"github.com/virtual-go/vioutil"
+	"github.com/virtual-go/vos"
 )
 
 type Pkg interface {
@@ -20,6 +21,11 @@ type Pkg interface {
 	Get(
 		req *GetReq,
 	) (*model.PkgManifest, error)
+
+	// ResolveRef resolves a pkgRef according to opspec package resolution rules.
+	ResolveRef(
+		pkgRef string,
+	) string
 
 	// List lists packages according to opspec package resolution rules
 	List(
@@ -38,24 +44,27 @@ type Pkg interface {
 }
 
 func New() Pkg {
-	fileSystem := osfs.New()
-	ioUtil := vioutil.New(fileSystem)
-	validator := newValidator(fileSystem)
+	fs := osfs.New()
+	os := vos.New(fs)
+	ioUtil := vioutil.New(fs)
+	validator := newValidator(fs)
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
 
 	return pkg{
-		fileSystem:           fileSystem,
-		getter:               newGetter(fileSystem, manifestUnmarshaller),
+		fs:                   fs,
+		getter:               newGetter(fs, manifestUnmarshaller),
 		ioUtil:               ioUtil,
+		refResolver:          newRefResolver(os),
 		validator:            validator,
 		manifestUnmarshaller: manifestUnmarshaller,
 	}
 }
 
 type pkg struct {
-	fileSystem           fs.FS
+	fs                   fsPkg.FS
 	getter               getter
 	ioUtil               vioutil.VIOUtil
+	refResolver          refResolver
 	validator            validator
 	manifestUnmarshaller manifestUnmarshaller
 }

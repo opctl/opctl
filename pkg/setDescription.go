@@ -23,7 +23,7 @@ func (this pkg) SetDescription(
 	}
 
 	return this.ioUtil.WriteFile(
-		path.Join(req.Path, ManifestFileName),
+		path.Join(req.Path, OpDotYmlFileName),
 		pkgManifestBytes,
 		0777,
 	)

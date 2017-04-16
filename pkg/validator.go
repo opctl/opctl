@@ -48,7 +48,7 @@ func (this _validator) Validate(
 	var errs []error
 
 	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path.Join(pkgRef, ManifestFileName),
+		path.Join(pkgRef, OpDotYmlFileName),
 	)
 	if nil != err {
 		// handle syntax errors specially

@@ -81,7 +81,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).
-					To(Equal(path.Join(providedPkgRef, ManifestFileName)))
+					To(Equal(path.Join(providedPkgRef, OpDotYmlFileName)))
 
 			})
 			Context("ioutil.ReadFile returns an error", func() {
