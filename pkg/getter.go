@@ -25,11 +25,13 @@ type getter interface {
 func newGetter(
 	fs fs.FS,
 	manifestUnmarshaller manifestUnmarshaller,
+	refResolver refResolver,
 ) getter {
 	return _getter{
 		fs:                   fs,
 		git:                  vgit.New(),
 		manifestUnmarshaller: manifestUnmarshaller,
+		refResolver:          refResolver,
 	}
 }
 
@@ -37,28 +39,31 @@ type _getter struct {
 	fs                   fs.FS
 	git                  vgit.VGit
 	manifestUnmarshaller manifestUnmarshaller
+	refResolver          refResolver
 }
 
 func (this _getter) Get(
 	req *GetReq,
 ) (*model.PkgManifest, error) {
-
-	if _, err := this.fs.Stat(path.Join(DotOpspecDirName, req.PkgRef)); nil == err {
+	resolvedPkgRef := this.refResolver.Resolve(req.PkgRef)
+	if _, err := this.fs.Stat(resolvedPkgRef); nil == err {
 		// observe default behavior; resolve from .opspec
-		return this.manifestUnmarshaller.Unmarshal(path.Join(DotOpspecDirName, req.PkgRef))
+		return this.manifestUnmarshaller.Unmarshal(resolvedPkgRef)
 	}
-	return this.getRemote(req)
+	return this.getRemote(resolvedPkgRef, req.Username, req.Password)
 }
 
 func (this _getter) getRemote(
-	req *GetReq,
+	pkgRef string,
+	username string,
+	password string,
 ) (*model.PkgManifest, error) {
 
-	stringParts := strings.Split(req.PkgRef, "#")
+	stringParts := strings.Split(pkgRef, "#")
 	if len(stringParts) != 2 {
 		return nil, fmt.Errorf(
 			"Invalid remote pkgRef:'%v'. Valid remote pkgRef's are of the form: 'host/path#semver",
-			req.PkgRef,
+			pkgRef,
 		)
 	}
 	repoName := stringParts[0]
@@ -81,8 +86,8 @@ func (this _getter) getRemote(
 			Progress:      os.Stdout,
 		}
 
-		if "" != req.Username && "" != req.Password {
-			cloneOptions.Auth = http.NewBasicAuth(req.Username, req.Password)
+		if "" != username && "" != password {
+			cloneOptions.Auth = http.NewBasicAuth(username, password)
 		}
 
 		err := this.git.PlainClone(gitPkgPath, false, cloneOptions)

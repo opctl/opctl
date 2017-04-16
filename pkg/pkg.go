@@ -48,15 +48,16 @@ func New() Pkg {
 	os := vos.New(fs)
 	ioUtil := vioutil.New(fs)
 	validator := newValidator(fs)
+	refResolver := newRefResolver(os)
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
 
 	return pkg{
 		fs:                   fs,
-		getter:               newGetter(fs, manifestUnmarshaller),
+		getter:               newGetter(fs, manifestUnmarshaller, refResolver),
 		ioUtil:               ioUtil,
-		refResolver:          newRefResolver(os),
-		validator:            validator,
 		manifestUnmarshaller: manifestUnmarshaller,
+		refResolver:          refResolver,
+		validator:            validator,
 	}
 }
 

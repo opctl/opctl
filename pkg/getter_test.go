@@ -20,17 +20,43 @@ var _ = Describe("Getter", func() {
 	Context("newGetter()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(newGetter(nil, nil)).Should(Not(BeNil()))
+			Expect(newGetter(nil, nil, nil)).Should(Not(BeNil()))
 		})
 	})
 	Context("Get", func() {
+		It("should call refResolver.Resolve w/ expected args", func() {
+			/* arrange */
+			providedGetReq := &GetReq{
+				PkgRef: "dummyPkgRef",
+			}
+
+			resolvedPkgRef := "dummyPath"
+
+			fakeRefResolver := new(fakeRefResolver)
+			fakeRefResolver.ResolveReturns(resolvedPkgRef)
+
+			objectUnderTest := _getter{
+				fs:                   new(fs.Fake),
+				manifestUnmarshaller: new(fakeManifestUnmarshaller),
+				refResolver:          fakeRefResolver,
+			}
+
+			/* act */
+			objectUnderTest.Get(providedGetReq)
+
+			/* assert */
+			Expect(fakeRefResolver.ResolveArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
+		})
 		It("should call fs.Stat w/ expected args", func() {
 			/* arrange */
 			providedGetReq := &GetReq{
 				PkgRef: "dummyPkgRef",
 			}
 
-			expectedName := path.Join(DotOpspecDirName, providedGetReq.PkgRef)
+			resolvedPkgRef := "dummyPath"
+
+			fakeRefResolver := new(fakeRefResolver)
+			fakeRefResolver.ResolveReturns(resolvedPkgRef)
 
 			fakeFS := new(fs.Fake)
 			fakeFS.StatReturns(nil, nil)
@@ -38,13 +64,14 @@ var _ = Describe("Getter", func() {
 			objectUnderTest := _getter{
 				fs:                   fakeFS,
 				manifestUnmarshaller: new(fakeManifestUnmarshaller),
+				refResolver:          fakeRefResolver,
 			}
 
 			/* act */
 			objectUnderTest.Get(providedGetReq)
 
 			/* assert */
-			Expect(fakeFS.StatArgsForCall(0)).To(Equal(expectedName))
+			Expect(fakeFS.StatArgsForCall(0)).To(Equal(resolvedPkgRef))
 		})
 		Context("is embedded pkg", func() {
 			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
@@ -53,29 +80,35 @@ var _ = Describe("Getter", func() {
 					PkgRef: "dummyPkgRef",
 				}
 
-				expectedName := path.Join(DotOpspecDirName, providedGetReq.PkgRef)
+				resolvedPkgRef := "dummyPath"
 
-				fakeFS := new(fs.Fake)
-				fakeFS.StatReturns(nil, nil)
+				fakeRefResolver := new(fakeRefResolver)
+				fakeRefResolver.ResolveReturns(resolvedPkgRef)
 
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 				objectUnderTest := _getter{
-					fs:                   fakeFS,
+					fs:                   new(fs.Fake),
 					manifestUnmarshaller: fakeManifestUnmarshaller,
+					refResolver:          fakeRefResolver,
 				}
 
 				/* act */
 				objectUnderTest.Get(providedGetReq)
 
 				/* assert */
-				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedName))
+				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(resolvedPkgRef))
 			})
 			It("should return result of manifestUnmarshaller.Unmarshal", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
 					PkgRef: "dummyPkgRef",
 				}
+
+				resolvedPkgRef := "dummyPath"
+
+				fakeRefResolver := new(fakeRefResolver)
+				fakeRefResolver.ResolveReturns(resolvedPkgRef)
 
 				expectedView := &model.PkgManifest{
 					Description: "dummyDescription",
@@ -93,15 +126,13 @@ var _ = Describe("Getter", func() {
 				}
 				expectedErr := errors.New("dummyError")
 
-				fakeFS := new(fs.Fake)
-				fakeFS.StatReturns(nil, nil)
-
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _getter{
-					fs:                   fakeFS,
+					fs:                   new(fs.Fake),
 					manifestUnmarshaller: fakeManifestUnmarshaller,
+					refResolver:          fakeRefResolver,
 				}
 
 				/* act */
@@ -117,10 +148,15 @@ var _ = Describe("Getter", func() {
 				It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef#0.0.0",
+						PkgRef: "dummyPkgRef",
 					}
 
-					stringParts := strings.Split(providedGetReq.PkgRef, "#")
+					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+
+					fakeRefResolver := new(fakeRefResolver)
+					fakeRefResolver.ResolveReturns(resolvedPkgRef)
+
+					stringParts := strings.Split(resolvedPkgRef, "#")
 					repoName := stringParts[0]
 					repoRefName := stringParts[1]
 
@@ -142,6 +178,7 @@ var _ = Describe("Getter", func() {
 					objectUnderTest := _getter{
 						fs:                   fakeFS,
 						manifestUnmarshaller: fakeManifestUnmarshaller,
+						refResolver:          fakeRefResolver,
 					}
 
 					/* act */
@@ -153,8 +190,13 @@ var _ = Describe("Getter", func() {
 				It("should return result of manifestUnmarshaller.Unmarshal", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef#0.0.0",
+						PkgRef: "dummyPkgRef",
 					}
+
+					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+
+					fakeRefResolver := new(fakeRefResolver)
+					fakeRefResolver.ResolveReturns(resolvedPkgRef)
 
 					expectedView := &model.PkgManifest{
 						Description: "dummyDescription",
@@ -182,6 +224,7 @@ var _ = Describe("Getter", func() {
 					objectUnderTest := _getter{
 						fs:                   fakeFS,
 						manifestUnmarshaller: fakeManifestUnmarshaller,
+						refResolver:          fakeRefResolver,
 					}
 
 					/* act */
@@ -200,7 +243,12 @@ var _ = Describe("Getter", func() {
 						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
-					stringParts := strings.Split(providedGetReq.PkgRef, "#")
+					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+
+					fakeRefResolver := new(fakeRefResolver)
+					fakeRefResolver.ResolveReturns(resolvedPkgRef)
+
+					stringParts := strings.Split(resolvedPkgRef, "#")
 					repoName := stringParts[0]
 					repoRefName := stringParts[1]
 
@@ -232,6 +280,7 @@ var _ = Describe("Getter", func() {
 						fs:                   fakeFS,
 						git:                  fakeGit,
 						manifestUnmarshaller: new(fakeManifestUnmarshaller),
+						refResolver:          fakeRefResolver,
 					}
 
 					/* act */
@@ -254,7 +303,12 @@ var _ = Describe("Getter", func() {
 							PkgRef: "dummyPkgRef#0.0.0",
 						}
 
-						stringParts := strings.Split(providedGetReq.PkgRef, "#")
+						resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+
+						fakeRefResolver := new(fakeRefResolver)
+						fakeRefResolver.ResolveReturns(resolvedPkgRef)
+
+						stringParts := strings.Split(resolvedPkgRef, "#")
 						repoName := stringParts[0]
 						repoRefName := stringParts[1]
 
@@ -280,6 +334,7 @@ var _ = Describe("Getter", func() {
 							fs:                   fakeFS,
 							git:                  fakeGit,
 							manifestUnmarshaller: new(fakeManifestUnmarshaller),
+							refResolver:          fakeRefResolver,
 						}
 
 						/* act */
