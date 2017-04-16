@@ -13,7 +13,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
-	pathPkg "path"
+  "path"
 	"strings"
 )
 
@@ -44,10 +44,8 @@ func (this _getter) Get(
 	req *GetReq,
 ) (*model.PkgManifest, error) {
 
-	embeddedPkgPath := pathPkg.Join(req.Path, RepoDirName, req.PkgRef)
-
-	if _, err := this.fs.Stat(embeddedPkgPath); nil == err {
-		return this.manifestUnmarshaller.Unmarshal(embeddedPkgPath)
+	if _, err := this.fs.Stat(req.PkgRef); nil == err {
+		return this.manifestUnmarshaller.Unmarshal(req.PkgRef)
 	}
 	return this.getRemote(req)
 }
@@ -63,7 +61,7 @@ func (this _getter) getRemote(
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
-	gitPkgPath := pathPkg.Join(
+	gitPkgPath := path.Join(
 		appdatapath.New().PerUser(),
 		"opspec",
 		"cache",

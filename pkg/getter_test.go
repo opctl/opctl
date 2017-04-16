@@ -27,11 +27,8 @@ var _ = Describe("Getter", func() {
 		It("should call fs.Stat w/ expected args", func() {
 			/* arrange */
 			providedGetReq := &GetReq{
-				Path:   "/dummyPath",
 				PkgRef: "dummyPkgRef",
 			}
-
-			expectedPkgPath := path.Join(providedGetReq.Path, RepoDirName, providedGetReq.PkgRef)
 
 			fakeFS := new(fs.Fake)
 			fakeFS.StatReturns(nil, nil)
@@ -45,17 +42,14 @@ var _ = Describe("Getter", func() {
 			objectUnderTest.Get(providedGetReq)
 
 			/* assert */
-			Expect(fakeFS.StatArgsForCall(0)).To(Equal(expectedPkgPath))
+			Expect(fakeFS.StatArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
 		})
 		Context("is embedded pkg", func() {
 			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
-					Path:   "/dummyPath",
 					PkgRef: "dummyPkgRef",
 				}
-
-				expectedPkgPath := path.Join(providedGetReq.Path, RepoDirName, providedGetReq.PkgRef)
 
 				fakeFS := new(fs.Fake)
 				fakeFS.StatReturns(nil, nil)
@@ -71,12 +65,11 @@ var _ = Describe("Getter", func() {
 				objectUnderTest.Get(providedGetReq)
 
 				/* assert */
-				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedPkgPath))
+				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
 			})
 			It("should return result of manifestUnmarshaller.Unmarshal", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
-					Path:   "/dummyPath",
 					PkgRef: "dummyPkgRef",
 				}
 
@@ -120,7 +113,6 @@ var _ = Describe("Getter", func() {
 				It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						Path:   "/dummyPath",
 						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
@@ -157,7 +149,6 @@ var _ = Describe("Getter", func() {
 				It("should return result of manifestUnmarshaller.Unmarshal", func() {
 					/* arrange */
 					providedGetReq := &GetReq{
-						Path:   "/dummyPath",
 						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
@@ -202,7 +193,6 @@ var _ = Describe("Getter", func() {
 
 					/* arrange */
 					providedGetReq := &GetReq{
-						Path:   "/dummyPath",
 						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
@@ -257,7 +247,6 @@ var _ = Describe("Getter", func() {
 
 						/* arrange */
 						providedGetReq := &GetReq{
-							Path:   "/dummyPath",
 							PkgRef: "dummyPkgRef#0.0.0",
 						}
 

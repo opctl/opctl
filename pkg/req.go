@@ -7,7 +7,6 @@ type CreateReq struct {
 }
 
 type GetReq struct {
-	Path     string
 	PkgRef   string
 	Username string
 	Password string
