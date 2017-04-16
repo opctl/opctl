@@ -22,7 +22,9 @@ paths:
 
             |attribute|type|description|
             |--|--|--|
-            |opIds|array of strings|events will be filtered to those w/ matching opIds|
+            |rootOpIds|array of strings|allows filtering events to those w/ rootOpId matching one of those provided|
+            |since|datetime|allows filtering events to those occurring on/after the provided datetime|
+
           required: false
           type: string
           format: json
@@ -130,8 +132,12 @@ definitions:
         $ref: '#/definitions/ContainerExitedEvent'
       containerStarted:
         $ref: '#/definitions/ContainerStartedEvent'
+      containerStdErrEOFRead:
+        $ref: '#/definitions/ContainerStdErrEOFReadEvent'
       containerStdErrWrittenTo:
         $ref: '#/definitions/ContainerStdErrWrittenToEvent'
+      containerStdOutEOFRead:
+        $ref: '#/definitions/ContainerStdOutEOFReadEvent'
       containerStdOutWrittenTo:
         $ref: '#/definitions/ContainerStdOutWrittenToEvent'
       opEnded:
@@ -164,6 +170,17 @@ definitions:
         type: string
       pkgRef:
         type: string
+  ContainerStdErrEOFReadEvent:
+    type: object
+    properties:
+      containerRef:
+        type: string
+      rootOpId:
+        type: string
+      containerId:
+        type: string
+      pkgRef:
+        type: string
   ContainerStdErrWrittenToEvent:
     type: object
     properties:
@@ -172,6 +189,17 @@ definitions:
       data:
         type: string
         format: binary
+      rootOpId:
+        type: string
+      containerId:
+        type: string
+      pkgRef:
+        type: string
+  ContainerStdOutEOFReadEvent:
+    type: object
+    properties:
+      containerRef:
+        type: string
       rootOpId:
         type: string
       containerId:
