@@ -24,56 +24,33 @@ var _ = Describe("Getter", func() {
 		})
 	})
 	Context("Get", func() {
-		It("should call refResolver.Resolve w/ expected args", func() {
+		It("should call localResolver.Resolve w/ expected args", func() {
 			/* arrange */
 			providedGetReq := &GetReq{
-				PkgRef: "dummyPkgRef",
+				BasePath: "dummyBasePath",
+				PkgRef:   "dummyPkgRef",
 			}
 
 			resolvedPkgRef := "dummyPath"
 
-			fakeRefResolver := new(fakeRefResolver)
-			fakeRefResolver.ResolveReturns(resolvedPkgRef)
+			fakeLocalResolver := new(fakeLocalResolver)
+			fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
 
 			objectUnderTest := _getter{
-				fs:                   new(fs.Fake),
 				manifestUnmarshaller: new(fakeManifestUnmarshaller),
-				refResolver:          fakeRefResolver,
+				localResolver:        fakeLocalResolver,
 			}
 
 			/* act */
 			objectUnderTest.Get(providedGetReq)
 
 			/* assert */
-			Expect(fakeRefResolver.ResolveArgsForCall(0)).To(Equal(providedGetReq.PkgRef))
+			actualBasePath, actualPkgRef := fakeLocalResolver.ResolveArgsForCall(0)
+
+			Expect(actualBasePath).To(Equal(providedGetReq.BasePath))
+			Expect(actualPkgRef).To(Equal(providedGetReq.PkgRef))
 		})
-		It("should call fs.Stat w/ expected args", func() {
-			/* arrange */
-			providedGetReq := &GetReq{
-				PkgRef: "dummyPkgRef",
-			}
-
-			resolvedPkgRef := "dummyPath"
-
-			fakeRefResolver := new(fakeRefResolver)
-			fakeRefResolver.ResolveReturns(resolvedPkgRef)
-
-			fakeFS := new(fs.Fake)
-			fakeFS.StatReturns(nil, nil)
-
-			objectUnderTest := _getter{
-				fs:                   fakeFS,
-				manifestUnmarshaller: new(fakeManifestUnmarshaller),
-				refResolver:          fakeRefResolver,
-			}
-
-			/* act */
-			objectUnderTest.Get(providedGetReq)
-
-			/* assert */
-			Expect(fakeFS.StatArgsForCall(0)).To(Equal(resolvedPkgRef))
-		})
-		Context("is embedded pkg", func() {
+		Context("is local pkg", func() {
 			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 				/* arrange */
 				providedGetReq := &GetReq{
@@ -82,15 +59,14 @@ var _ = Describe("Getter", func() {
 
 				resolvedPkgRef := "dummyPath"
 
-				fakeRefResolver := new(fakeRefResolver)
-				fakeRefResolver.ResolveReturns(resolvedPkgRef)
+				fakeLocalResolver := new(fakeLocalResolver)
+				fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
 
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 				objectUnderTest := _getter{
-					fs:                   new(fs.Fake),
 					manifestUnmarshaller: fakeManifestUnmarshaller,
-					refResolver:          fakeRefResolver,
+					localResolver:        fakeLocalResolver,
 				}
 
 				/* act */
@@ -107,32 +83,18 @@ var _ = Describe("Getter", func() {
 
 				resolvedPkgRef := "dummyPath"
 
-				fakeRefResolver := new(fakeRefResolver)
-				fakeRefResolver.ResolveReturns(resolvedPkgRef)
+				fakeLocalResolver := new(fakeLocalResolver)
+				fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
 
-				expectedView := &model.PkgManifest{
-					Description: "dummyDescription",
-					Inputs:      map[string]*model.Param{},
-					Outputs:     map[string]*model.Param{},
-					Name:        "dummyName",
-					Run: &model.SCG{
-						Op: &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyPkgRef",
-							},
-						},
-					},
-					Version: "",
-				}
+				expectedView := &model.PkgManifest{Name: "dummyName"}
 				expectedErr := errors.New("dummyError")
 
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _getter{
-					fs:                   new(fs.Fake),
 					manifestUnmarshaller: fakeManifestUnmarshaller,
-					refResolver:          fakeRefResolver,
+					localResolver:        fakeLocalResolver,
 				}
 
 				/* act */
@@ -143,112 +105,69 @@ var _ = Describe("Getter", func() {
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("isn't embedded pkg", func() {
-			Context("is cached", func() {
-				It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
-					/* arrange */
-					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef",
-					}
+		Context("isn't local pkg", func() {
+			It("should call git.PlainClone w/ expected args", func() {
 
-					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+				/* arrange */
+				providedGetReq := &GetReq{
+					PkgRef: "dummyPkgRef#0.0.0",
+				}
 
-					fakeRefResolver := new(fakeRefResolver)
-					fakeRefResolver.ResolveReturns(resolvedPkgRef)
+				stringParts := strings.Split(providedGetReq.PkgRef, "#")
+				repoName := stringParts[0]
+				repoRefName := stringParts[1]
 
-					stringParts := strings.Split(resolvedPkgRef, "#")
-					repoName := stringParts[0]
-					repoRefName := stringParts[1]
+				expectedPath := path.Join(
+					appdatapath.New().PerUser(),
+					"opspec",
+					"cache",
+					"pkgs",
+					repoName,
+					repoRefName,
+				)
 
-					expectedPkgPath := path.Join(
-						appdatapath.New().PerUser(),
-						"opspec",
-						"cache",
-						"pkgs",
-						repoName,
-						repoRefName,
-					)
+				expectedIsBare := false
 
-					fakeFS := new(fs.Fake)
-					fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
-					fakeFS.StatReturnsOnCall(1, nil, nil)
+				expectedCloneOptions := &git.CloneOptions{
+					URL:           fmt.Sprintf("https://%v", repoName),
+					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
+					Depth:         1,
+					Progress:      os.Stdout,
+				}
 
-					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+				fakeFS := new(fs.Fake)
+				fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
+				fakeFS.StatReturnsOnCall(1, nil, errors.New(""))
 
-					objectUnderTest := _getter{
-						fs:                   fakeFS,
-						manifestUnmarshaller: fakeManifestUnmarshaller,
-						refResolver:          fakeRefResolver,
-					}
+				fakeGit := new(vgit.Fake)
 
-					/* act */
-					objectUnderTest.Get(providedGetReq)
+				objectUnderTest := _getter{
+					git:                  fakeGit,
+					manifestUnmarshaller: new(fakeManifestUnmarshaller),
+					localResolver:        new(fakeLocalResolver),
+				}
 
-					/* assert */
-					Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(expectedPkgPath))
-				})
-				It("should return result of manifestUnmarshaller.Unmarshal", func() {
-					/* arrange */
-					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef",
-					}
+				/* act */
+				objectUnderTest.Get(providedGetReq)
 
-					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+				/* assert */
+				actualPath,
+					actualIsBare,
+					actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
 
-					fakeRefResolver := new(fakeRefResolver)
-					fakeRefResolver.ResolveReturns(resolvedPkgRef)
-
-					expectedView := &model.PkgManifest{
-						Description: "dummyDescription",
-						Inputs:      map[string]*model.Param{},
-						Outputs:     map[string]*model.Param{},
-						Name:        "dummyName",
-						Run: &model.SCG{
-							Op: &model.SCGOpCall{
-								Pkg: &model.SCGOpCallPkg{
-									Ref: "dummyPkgRef",
-								},
-							},
-						},
-						Version: "",
-					}
-					expectedErr := errors.New("dummyError")
-
-					fakeFS := new(fs.Fake)
-					fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
-					fakeFS.StatReturnsOnCall(1, nil, nil)
-
-					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
-					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
-
-					objectUnderTest := _getter{
-						fs:                   fakeFS,
-						manifestUnmarshaller: fakeManifestUnmarshaller,
-						refResolver:          fakeRefResolver,
-					}
-
-					/* act */
-					actualView, actualErr := objectUnderTest.Get(providedGetReq)
-
-					/* assert */
-					Expect(actualView).To(Equal(expectedView))
-					Expect(actualErr).To(Equal(expectedErr))
-				})
+				Expect(actualPath).To(Equal(expectedPath))
+				Expect(actualIsBare).To(Equal(expectedIsBare))
+				Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
 			})
-			Context("isn't cached", func() {
-				It("should call git.PlainClone w/ expected args", func() {
+			Context("git.PlainClone errors", func() {
+				It("should call fs.RemoveAll w/ expected args & return error", func() {
 
 					/* arrange */
 					providedGetReq := &GetReq{
 						PkgRef: "dummyPkgRef#0.0.0",
 					}
 
-					resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
-
-					fakeRefResolver := new(fakeRefResolver)
-					fakeRefResolver.ResolveReturns(resolvedPkgRef)
-
-					stringParts := strings.Split(resolvedPkgRef, "#")
+					stringParts := strings.Split(providedGetReq.PkgRef, "#")
 					repoName := stringParts[0]
 					repoRefName := stringParts[1]
 
@@ -261,89 +180,53 @@ var _ = Describe("Getter", func() {
 						repoRefName,
 					)
 
-					expectedIsBare := false
-
-					expectedCloneOptions := &git.CloneOptions{
-						URL:           fmt.Sprintf("https://%v", repoName),
-						ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
-						Depth:         1,
-						Progress:      os.Stdout,
-					}
-
 					fakeFS := new(fs.Fake)
-					fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
-					fakeFS.StatReturnsOnCall(1, nil, errors.New(""))
+
+					expectedError := errors.New("dummyError")
 
 					fakeGit := new(vgit.Fake)
+					fakeGit.PlainCloneReturns(expectedError)
 
 					objectUnderTest := _getter{
 						fs:                   fakeFS,
 						git:                  fakeGit,
 						manifestUnmarshaller: new(fakeManifestUnmarshaller),
-						refResolver:          fakeRefResolver,
+						localResolver:        new(fakeLocalResolver),
 					}
 
 					/* act */
-					objectUnderTest.Get(providedGetReq)
+					_, actualError := objectUnderTest.Get(providedGetReq)
 
 					/* assert */
-					actualPath,
-						actualIsBare,
-						actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
-
-					Expect(actualPath).To(Equal(expectedPath))
-					Expect(actualIsBare).To(Equal(expectedIsBare))
-					Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
+					Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+					Expect(actualError).To(Equal(expectedError))
 				})
-				Context("git.PlainClone errors", func() {
-					It("should call fs.RemoveAll w/ expected args & return error", func() {
+			})
+			Context("git.PlainClone doesn't error", func() {
+				It("should return result of manifestUnmarshaller.Unmarshal", func() {
+					/* arrange */
+					providedGetReq := &GetReq{
+						PkgRef: "dummyPkgRef#0.0.0",
+					}
 
-						/* arrange */
-						providedGetReq := &GetReq{
-							PkgRef: "dummyPkgRef#0.0.0",
-						}
+					expectedView := &model.PkgManifest{Name: "dummyName"}
+					expectedErr := errors.New("dummyError")
 
-						resolvedPkgRef := "dummyResolvedPkgRef#0.0.0"
+					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
-						fakeRefResolver := new(fakeRefResolver)
-						fakeRefResolver.ResolveReturns(resolvedPkgRef)
+					objectUnderTest := _getter{
+						git:                  new(vgit.Fake),
+						manifestUnmarshaller: fakeManifestUnmarshaller,
+						localResolver:        new(fakeLocalResolver),
+					}
 
-						stringParts := strings.Split(resolvedPkgRef, "#")
-						repoName := stringParts[0]
-						repoRefName := stringParts[1]
+					/* act */
+					actualView, actualErr := objectUnderTest.Get(providedGetReq)
 
-						expectedPath := path.Join(
-							appdatapath.New().PerUser(),
-							"opspec",
-							"cache",
-							"pkgs",
-							repoName,
-							repoRefName,
-						)
-
-						fakeFS := new(fs.Fake)
-						fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
-						fakeFS.StatReturnsOnCall(1, nil, errors.New(""))
-
-						expectedError := errors.New("dummyError")
-
-						fakeGit := new(vgit.Fake)
-						fakeGit.PlainCloneReturns(expectedError)
-
-						objectUnderTest := _getter{
-							fs:                   fakeFS,
-							git:                  fakeGit,
-							manifestUnmarshaller: new(fakeManifestUnmarshaller),
-							refResolver:          fakeRefResolver,
-						}
-
-						/* act */
-						_, actualError := objectUnderTest.Get(providedGetReq)
-
-						/* assert */
-						Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
-						Expect(actualError).To(Equal(expectedError))
-					})
+					/* assert */
+					Expect(actualView).To(Equal(expectedView))
+					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
 		})

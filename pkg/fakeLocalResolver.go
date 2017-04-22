@@ -5,71 +5,78 @@ import (
 	"sync"
 )
 
-type fakeRefResolver struct {
-	ResolveStub        func(pkgRef string) string
+type fakeLocalResolver struct {
+	ResolveStub        func(basePath string, pkgRef string) (string, bool)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
-		pkgRef string
+		basePath string
+		pkgRef   string
 	}
 	resolveReturns struct {
 		result1 string
+		result2 bool
 	}
 	resolveReturnsOnCall map[int]struct {
 		result1 string
+		result2 bool
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeRefResolver) Resolve(pkgRef string) string {
+func (fake *fakeLocalResolver) Resolve(basePath string, pkgRef string) (string, bool) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
-		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("Resolve", []interface{}{pkgRef})
+		basePath string
+		pkgRef   string
+	}{basePath, pkgRef})
+	fake.recordInvocation("Resolve", []interface{}{basePath, pkgRef})
 	fake.resolveMutex.Unlock()
 	if fake.ResolveStub != nil {
-		return fake.ResolveStub(pkgRef)
+		return fake.ResolveStub(basePath, pkgRef)
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fake.resolveReturns.result1
+	return fake.resolveReturns.result1, fake.resolveReturns.result2
 }
 
-func (fake *fakeRefResolver) ResolveCallCount() int {
+func (fake *fakeLocalResolver) ResolveCallCount() int {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
 	return len(fake.resolveArgsForCall)
 }
 
-func (fake *fakeRefResolver) ResolveArgsForCall(i int) string {
+func (fake *fakeLocalResolver) ResolveArgsForCall(i int) (string, string) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
-	return fake.resolveArgsForCall[i].pkgRef
+	return fake.resolveArgsForCall[i].basePath, fake.resolveArgsForCall[i].pkgRef
 }
 
-func (fake *fakeRefResolver) ResolveReturns(result1 string) {
+func (fake *fakeLocalResolver) ResolveReturns(result1 string, result2 bool) {
 	fake.ResolveStub = nil
 	fake.resolveReturns = struct {
 		result1 string
-	}{result1}
+		result2 bool
+	}{result1, result2}
 }
 
-func (fake *fakeRefResolver) ResolveReturnsOnCall(i int, result1 string) {
+func (fake *fakeLocalResolver) ResolveReturnsOnCall(i int, result1 string, result2 bool) {
 	fake.ResolveStub = nil
 	if fake.resolveReturnsOnCall == nil {
 		fake.resolveReturnsOnCall = make(map[int]struct {
 			result1 string
+			result2 bool
 		})
 	}
 	fake.resolveReturnsOnCall[i] = struct {
 		result1 string
-	}{result1}
+		result2 bool
+	}{result1, result2}
 }
 
-func (fake *fakeRefResolver) Invocations() map[string][][]interface{} {
+func (fake *fakeLocalResolver) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.resolveMutex.RLock()
@@ -77,7 +84,7 @@ func (fake *fakeRefResolver) Invocations() map[string][][]interface{} {
 	return fake.invocations
 }
 
-func (fake *fakeRefResolver) recordInvocation(key string, args []interface{}) {
+func (fake *fakeLocalResolver) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

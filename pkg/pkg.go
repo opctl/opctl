@@ -22,11 +22,6 @@ type Pkg interface {
 		req *GetReq,
 	) (*model.PkgManifest, error)
 
-	// ResolveRef resolves a pkgRef according to opspec package resolution rules.
-	ResolveRef(
-		pkgRef string,
-	) string
-
 	// List lists packages according to opspec package resolution rules
 	List(
 		dirPath string,
@@ -48,15 +43,15 @@ func New() Pkg {
 	os := vos.New(fs)
 	ioUtil := vioutil.New(fs)
 	validator := newValidator(fs)
-	refResolver := newRefResolver(os)
+	localResolver := newLocalResolver(os)
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
 
 	return pkg{
 		fs:                   fs,
-		getter:               newGetter(fs, manifestUnmarshaller, refResolver),
+		getter:               newGetter(fs, manifestUnmarshaller, localResolver),
 		ioUtil:               ioUtil,
 		manifestUnmarshaller: manifestUnmarshaller,
-		refResolver:          refResolver,
+		localResolver:        localResolver,
 		validator:            validator,
 	}
 }
@@ -65,7 +60,7 @@ type pkg struct {
 	fs                   fsPkg.FS
 	getter               getter
 	ioUtil               vioutil.VIOUtil
-	refResolver          refResolver
+	localResolver        localResolver
 	validator            validator
 	manifestUnmarshaller manifestUnmarshaller
 }

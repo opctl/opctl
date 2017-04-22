@@ -25,13 +25,13 @@ type getter interface {
 func newGetter(
 	fs fs.FS,
 	manifestUnmarshaller manifestUnmarshaller,
-	refResolver refResolver,
+	localResolver localResolver,
 ) getter {
 	return _getter{
 		fs:                   fs,
 		git:                  vgit.New(),
 		manifestUnmarshaller: manifestUnmarshaller,
-		refResolver:          refResolver,
+		localResolver:        localResolver,
 	}
 }
 
@@ -39,18 +39,16 @@ type _getter struct {
 	fs                   fs.FS
 	git                  vgit.VGit
 	manifestUnmarshaller manifestUnmarshaller
-	refResolver          refResolver
+	localResolver        localResolver
 }
 
 func (this _getter) Get(
 	req *GetReq,
 ) (*model.PkgManifest, error) {
-	resolvedPkgRef := this.refResolver.Resolve(req.PkgRef)
-	if _, err := this.fs.Stat(resolvedPkgRef); nil == err {
-		// observe default behavior; resolve from .opspec
-		return this.manifestUnmarshaller.Unmarshal(resolvedPkgRef)
+	if localPkg, ok := this.localResolver.Resolve(req.BasePath, req.PkgRef); ok {
+		return this.manifestUnmarshaller.Unmarshal(localPkg)
 	}
-	return this.getRemote(resolvedPkgRef, req.Username, req.Password)
+	return this.getRemote(req.PkgRef, req.Username, req.Password)
 }
 
 func (this _getter) getRemote(
@@ -77,25 +75,22 @@ func (this _getter) getRemote(
 		repoName,
 		repoRefName,
 	)
-	if _, err := this.fs.Stat(gitPkgPath); nil != err {
-		// pkg not resolved on node; clone it
-		cloneOptions := &git.CloneOptions{
-			URL:           fmt.Sprintf("https://%v", repoName),
-			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
-			Depth:         1,
-			Progress:      os.Stdout,
-		}
+	cloneOptions := &git.CloneOptions{
+		URL:           fmt.Sprintf("https://%v", repoName),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
+		Depth:         1,
+		Progress:      os.Stdout,
+	}
 
-		if "" != username && "" != password {
-			cloneOptions.Auth = http.NewBasicAuth(username, password)
-		}
+	if "" != username && "" != password {
+		cloneOptions.Auth = http.NewBasicAuth(username, password)
+	}
 
-		err := this.git.PlainClone(gitPkgPath, false, cloneOptions)
-		if nil != err {
-			// clone failed; cleanup remnants
-			this.fs.RemoveAll(gitPkgPath)
-			return nil, err
-		}
+	err := this.git.PlainClone(gitPkgPath, false, cloneOptions)
+	if nil != err {
+		// clone failed; cleanup remnants
+		this.fs.RemoveAll(gitPkgPath)
+		return nil, err
 	}
 	return this.manifestUnmarshaller.Unmarshal(gitPkgPath)
 }

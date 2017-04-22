@@ -32,17 +32,6 @@ type Fake struct {
 		result1 *model.PkgManifest
 		result2 error
 	}
-	ResolveRefStub        func(pkgRef string) string
-	resolveRefMutex       sync.RWMutex
-	resolveRefArgsForCall []struct {
-		pkgRef string
-	}
-	resolveRefReturns struct {
-		result1 string
-	}
-	resolveRefReturnsOnCall map[int]struct {
-		result1 string
-	}
 	ListStub        func(dirPath string) ([]*model.PkgManifest, error)
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
@@ -179,54 +168,6 @@ func (fake *Fake) GetReturnsOnCall(i int, result1 *model.PkgManifest, result2 er
 		result1 *model.PkgManifest
 		result2 error
 	}{result1, result2}
-}
-
-func (fake *Fake) ResolveRef(pkgRef string) string {
-	fake.resolveRefMutex.Lock()
-	ret, specificReturn := fake.resolveRefReturnsOnCall[len(fake.resolveRefArgsForCall)]
-	fake.resolveRefArgsForCall = append(fake.resolveRefArgsForCall, struct {
-		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("ResolveRef", []interface{}{pkgRef})
-	fake.resolveRefMutex.Unlock()
-	if fake.ResolveRefStub != nil {
-		return fake.ResolveRefStub(pkgRef)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.resolveRefReturns.result1
-}
-
-func (fake *Fake) ResolveRefCallCount() int {
-	fake.resolveRefMutex.RLock()
-	defer fake.resolveRefMutex.RUnlock()
-	return len(fake.resolveRefArgsForCall)
-}
-
-func (fake *Fake) ResolveRefArgsForCall(i int) string {
-	fake.resolveRefMutex.RLock()
-	defer fake.resolveRefMutex.RUnlock()
-	return fake.resolveRefArgsForCall[i].pkgRef
-}
-
-func (fake *Fake) ResolveRefReturns(result1 string) {
-	fake.ResolveRefStub = nil
-	fake.resolveRefReturns = struct {
-		result1 string
-	}{result1}
-}
-
-func (fake *Fake) ResolveRefReturnsOnCall(i int, result1 string) {
-	fake.ResolveRefStub = nil
-	if fake.resolveRefReturnsOnCall == nil {
-		fake.resolveRefReturnsOnCall = make(map[int]struct {
-			result1 string
-		})
-	}
-	fake.resolveRefReturnsOnCall[i] = struct {
-		result1 string
-	}{result1}
 }
 
 func (fake *Fake) List(dirPath string) ([]*model.PkgManifest, error) {
@@ -383,8 +324,6 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.createMutex.RUnlock()
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
-	fake.resolveRefMutex.RLock()
-	defer fake.resolveRefMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	fake.setDescriptionMutex.RLock()
