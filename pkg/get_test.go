@@ -8,46 +8,42 @@ import (
 )
 
 var _ = Describe("Get", func() {
-	It("should call getter.Get w/ expected inputs", func() {
+	It("should call manifestUnmarshaller.Unmarshal w/ expected inputs", func() {
 		/* arrange */
-		providedBasePath := "dummyBasePath"
 		providedPkgRef := "dummyPkgRef"
 
-		expectedBasePath := providedBasePath
 		expectedPkgRef := providedPkgRef
 
-		fakeGetter := new(fakeGetter)
+		fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 		objectUnderTest := &pkg{
-			getter: fakeGetter,
+			manifestUnmarshaller: fakeManifestUnmarshaller,
 		}
 
 		/* act */
-		objectUnderTest.Get(providedBasePath, providedPkgRef)
+		objectUnderTest.Get(providedPkgRef)
 
 		/* assert */
-		actualBasePath, actualPkgRef := fakeGetter.GetArgsForCall(0)
-		Expect(actualBasePath).To(Equal(expectedBasePath))
+		actualPkgRef := fakeManifestUnmarshaller.UnmarshalArgsForCall(0)
 		Expect(actualPkgRef).To(Equal(expectedPkgRef))
 
 	})
 
-	It("should return result of getter.Get", func() {
+	It("should return result of manifestUnmarshaller.Unmarshal", func() {
 
 		/* arrange */
 		expectedPkgManifest := &model.PkgManifest{Name: "dummyName"}
 		expectedError := errors.New("UnmarshalError")
 
-		fakeGetter := new(fakeGetter)
-		fakeGetter.GetReturns(expectedPkgManifest, expectedError)
+		fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+		fakeManifestUnmarshaller.UnmarshalReturns(expectedPkgManifest, expectedError)
 
 		objectUnderTest := &pkg{
-			getter:    fakeGetter,
-			validator: new(fakeValidator),
+			manifestUnmarshaller: fakeManifestUnmarshaller,
 		}
 
 		/* act */
-		actualPkgManifest, actualError := objectUnderTest.Get("", "")
+		actualPkgManifest, actualError := objectUnderTest.Get("")
 
 		/* assert */
 		Expect(actualPkgManifest).To(Equal(expectedPkgManifest))

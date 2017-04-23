@@ -6,13 +6,13 @@ import (
 	"unicode"
 )
 
-// runeCategoryValidator takes a rune as input and
+// runeCategoryManifestValidator takes a rune as input and
 // validates it belongs to a rune category
-type runeCategoryValidator func(r rune) bool
+type runeCategoryManifestValidator func(r rune) bool
 
 // tokenizeExpression aggegates a series of runes matching check predicate into a single
 // string and provides given tokenType as token type
-func tokenizeExpression(ch rune, tokenType token, check runeCategoryValidator, r *bufio.Reader) (token, string, error) {
+func tokenizeExpression(ch rune, tokenType token, check runeCategoryManifestValidator, r *bufio.Reader) (token, string, error) {
 	var data []rune
 	data = append(data, ch)
 

@@ -9,12 +9,12 @@ import (
 	"os"
 )
 
-var _ = Describe("validator", func() {
+var _ = Describe("manifestValidator", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
 	}
-	objectUnderTest := newValidator(osfs.New())
+	objectUnderTest := newManifestValidator(osfs.New())
 	Context("invalid__yml", func() {
 		It("should return expected errs", func() {
 			/* arrange */

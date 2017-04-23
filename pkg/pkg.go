@@ -15,7 +15,9 @@ import (
 type Pkg interface {
 	// Create creates an opspec package
 	Create(
-		req CreateReq,
+		path,
+		pkgName,
+		pkgDescription string,
 	) error
 
 	// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
@@ -32,8 +34,7 @@ type Pkg interface {
 
 	// Get gets a local package
 	Get(
-		basePath,
-		pkgRef string,
+		pkgPath string,
 	) (*model.PkgManifest, error)
 
 	// List lists packages according to opspec package resolution rules
@@ -43,12 +44,13 @@ type Pkg interface {
 
 	// SetDescription sets the description of a package
 	SetDescription(
-		req SetDescriptionReq,
+		pkgPath,
+		pkgDescription string,
 	) error
 
 	// Validate validates an opspec package
 	Validate(
-		pkgRef string,
+		pkgPath string,
 	) []error
 }
 
@@ -56,27 +58,25 @@ func New() Pkg {
 	fs := osfs.New()
 	os := vos.New(fs)
 	ioUtil := vioutil.New(fs)
-	validator := newValidator(fs)
+	manifestValidator := newManifestValidator(fs)
 	resolver := newResolver(os)
-	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
+	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
 		fs:                   fs,
-		getter:               newGetter(manifestUnmarshaller, resolver),
 		git:                  vgit.New(),
 		ioUtil:               ioUtil,
 		manifestUnmarshaller: manifestUnmarshaller,
 		resolver:             resolver,
-		validator:            validator,
+		manifestValidator:    manifestValidator,
 	}
 }
 
 type pkg struct {
 	fs                   fsPkg.FS
-	getter               getter
 	git                  vgit.VGit
 	ioUtil               vioutil.VIOUtil
 	resolver             resolver
-	validator            validator
+	manifestValidator    manifestValidator
 	manifestUnmarshaller manifestUnmarshaller
 }

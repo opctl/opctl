@@ -7,15 +7,16 @@ import (
 
 // SetDescription sets the description of a package
 func (this pkg) SetDescription(
-	req SetDescriptionReq,
+	pkgPath,
+	pkgDescription string,
 ) error {
 
-	pkgManifest, err := this.manifestUnmarshaller.Unmarshal(req.Path)
+	pkgManifest, err := this.manifestUnmarshaller.Unmarshal(pkgPath)
 	if nil != err {
 		return err
 	}
 
-	pkgManifest.Description = req.Description
+	pkgManifest.Description = pkgDescription
 
 	pkgManifestBytes, err := yaml.Marshal(pkgManifest)
 	if nil != err {
@@ -23,7 +24,7 @@ func (this pkg) SetDescription(
 	}
 
 	return this.ioUtil.WriteFile(
-		path.Join(req.Path, OpDotYmlFileName),
+		path.Join(pkgPath, OpDotYmlFileName),
 		pkgManifestBytes,
 		0777,
 	)

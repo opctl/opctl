@@ -12,13 +12,13 @@ import (
 	"path"
 )
 
-var _ = Describe("_create", func() {
+var _ = Describe("pkg", func() {
 
-	Context("Execute", func() {
+	Context("Create", func() {
 
 		It("should call FileSystem.MkdirAll with expected args", func() {
 			/* arrange */
-			providedCreateReq := CreateReq{Path: "/dummy/path"}
+			providedPath := "dummyPath"
 			expectedPerm := os.FileMode(0777)
 
 			fakeFileSystem := new(fs.Fake)
@@ -29,13 +29,11 @@ var _ = Describe("_create", func() {
 			}
 
 			/* act */
-			objectUnderTest.Create(
-				providedCreateReq,
-			)
+			objectUnderTest.Create(providedPath, "", "")
 
 			/* assert */
 			actualPath, actualPerm := fakeFileSystem.MkdirAllArgsForCall(0)
-			Expect(actualPath).To(Equal(providedCreateReq.Path))
+			Expect(actualPath).To(Equal(providedPath))
 			Expect(actualPerm).To(Equal(expectedPerm))
 		})
 
@@ -53,9 +51,7 @@ var _ = Describe("_create", func() {
 				}
 
 				/* act */
-				actualError := objectUnderTest.Create(
-					CreateReq{},
-				)
+				actualError := objectUnderTest.Create("", "", "")
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
@@ -67,21 +63,19 @@ var _ = Describe("_create", func() {
 	It("should call ioutil.WriteFile with expected args", func() {
 
 		/* arrange */
-		providedCreateReq := CreateReq{
-			Path:        "dummyPath",
-			Description: "dummyDescription",
-			Name:        "dummyName",
-		}
+		providedPath := "dummyPath"
+		providedPkgName := "dummyPkgName"
+		providedPkgDescription := "dummyPkgDescription"
 
 		expectedPkgManifestBytes, err := yaml.Marshal(&model.PkgManifest{
-			Description: providedCreateReq.Description,
-			Name:        providedCreateReq.Name,
+			Description: providedPkgDescription,
+			Name:        providedPkgName,
 		})
 		if nil != err {
 			panic(err)
 		}
 
-		expectedPath := path.Join(providedCreateReq.Path, OpDotYmlFileName)
+		expectedPath := path.Join(providedPath, OpDotYmlFileName)
 		expectedData := expectedPkgManifestBytes
 		expectedPerms := os.FileMode(0777)
 
@@ -93,7 +87,7 @@ var _ = Describe("_create", func() {
 		}
 
 		/* act */
-		objectUnderTest.Create(providedCreateReq)
+		objectUnderTest.Create(providedPath, providedPkgName, providedPkgDescription)
 
 		/* assert */
 		actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)

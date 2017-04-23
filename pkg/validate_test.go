@@ -7,27 +7,27 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	It("should call validator.Validate w/ expected args & return result", func() {
+	It("should call manifestValidator.Validate w/ expected args & return result", func() {
 		/* arrange */
-		providedPkgRef := "dummyPkgRef"
+		providedPkgPath := "dummyPkgPath"
 
 		expectedErrs := []error{
 			errors.New("dummyErr1"),
 			errors.New("dummyErr2"),
 		}
-		fakeValidator := new(fakeValidator)
+		fakeManifestValidator := new(fakeManifestValidator)
 
-		fakeValidator.ValidateReturns(expectedErrs)
+		fakeManifestValidator.ValidateReturns(expectedErrs)
 
 		objectUnderTest := pkg{
-			validator: fakeValidator,
+			manifestValidator: fakeManifestValidator,
 		}
 
 		/* act */
-		actualErrs := objectUnderTest.Validate(providedPkgRef)
+		actualErrs := objectUnderTest.Validate(providedPkgPath)
 
 		/* assert */
-		Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedPkgRef))
+		Expect(fakeManifestValidator.ValidateArgsForCall(0)).To(Equal(providedPkgPath))
 		Expect(actualErrs).To(Equal(expectedErrs))
 	})
 })

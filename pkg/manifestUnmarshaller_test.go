@@ -19,22 +19,22 @@ var _ = Describe("_manifestUnmarshaller", func() {
 			/* arrange */
 			providedPkgRef := "/dummy/path"
 
-			fakeValidator := new(fakeValidator)
+			fakeManifestValidator := new(fakeManifestValidator)
 
 			// err to cause immediate return
-			fakeValidator.ValidateReturns([]error{errors.New("dummyError")})
+			fakeManifestValidator.ValidateReturns([]error{errors.New("dummyError")})
 
 			objectUnderTest := _manifestUnmarshaller{
-				validator: fakeValidator,
+				manifestValidator: fakeManifestValidator,
 			}
 
 			/* act */
 			objectUnderTest.Unmarshal(providedPkgRef)
 
 			/* assert */
-			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedPkgRef))
+			Expect(fakeManifestValidator.ValidateArgsForCall(0)).To(Equal(providedPkgRef))
 		})
-		Context("validator.Validate returns errors", func() {
+		Context("manifestValidator.Validate returns errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
 
@@ -46,13 +46,13 @@ var _ = Describe("_manifestUnmarshaller", func() {
     - %v
 -`, errs[0], errs[1])
 
-				fakeValidator := new(fakeValidator)
+				fakeManifestValidator := new(fakeManifestValidator)
 
 				// err to cause immediate return
-				fakeValidator.ValidateReturns(errs)
+				fakeManifestValidator.ValidateReturns(errs)
 
 				objectUnderTest := _manifestUnmarshaller{
-					validator: fakeValidator,
+					manifestValidator: fakeManifestValidator,
 				}
 
 				/* act */
@@ -62,7 +62,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 				Expect(actualError).To(Equal(expectedErr))
 			})
 		})
-		Context("validator.Validate doesn't return errors", func() {
+		Context("manifestValidator.Validate doesn't return errors", func() {
 			It("should call ioutil.ReadFile w/expected args", func() {
 				/* arrange */
 				providedPkgRef := "dummyPkgRef"
@@ -73,7 +73,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 				objectUnderTest := newManifestUnmarshaller(
 					fakeIOUtil,
-					new(fakeValidator),
+					new(fakeManifestValidator),
 				)
 
 				/* act */
@@ -96,7 +96,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 					objectUnderTest := newManifestUnmarshaller(
 						fakeIOUtil,
-						new(fakeValidator),
+						new(fakeManifestValidator),
 					)
 
 					/* act */
@@ -150,7 +150,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 				objectUnderTest := newManifestUnmarshaller(
 					fakeIoUtil,
-					new(fakeValidator),
+					new(fakeManifestValidator),
 				)
 
 				/* act */

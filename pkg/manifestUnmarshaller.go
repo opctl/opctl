@@ -19,19 +19,19 @@ type manifestUnmarshaller interface {
 
 func newManifestUnmarshaller(
 	ioUtil vioutil.VIOUtil,
-	validator validator,
+	manifestValidator manifestValidator,
 ) manifestUnmarshaller {
 
 	return _manifestUnmarshaller{
-		ioUtil:    ioUtil,
-		validator: validator,
+		ioUtil:            ioUtil,
+		manifestValidator: manifestValidator,
 	}
 
 }
 
 type _manifestUnmarshaller struct {
-	ioUtil    vioutil.VIOUtil
-	validator validator
+	ioUtil            vioutil.VIOUtil
+	manifestValidator manifestValidator
 }
 
 func (this _manifestUnmarshaller) Unmarshal(
@@ -41,7 +41,7 @@ func (this _manifestUnmarshaller) Unmarshal(
 	var err error
 
 	// 1) ensure valid
-	errs := this.validator.Validate(pkgRef)
+	errs := this.manifestValidator.Validate(pkgRef)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`

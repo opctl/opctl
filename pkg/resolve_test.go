@@ -17,8 +17,8 @@ var _ = Describe("Resolve", func() {
 		fakeResolver := new(fakeResolver)
 
 		objectUnderTest := &pkg{
-			resolver:  fakeResolver,
-			validator: new(fakeValidator),
+			resolver:          fakeResolver,
+			manifestValidator: new(fakeManifestValidator),
 		}
 
 		/* act */
