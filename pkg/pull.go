@@ -2,12 +2,10 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
-	"path"
 	"strings"
 )
 
@@ -26,14 +24,6 @@ func (this pkg) Pull(
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
-	pkgPath := path.Join(
-		appdatapath.New().PerUser(),
-		"opspec",
-		"cache",
-		"pkgs",
-		repoName,
-		repoRefName,
-	)
 	cloneOptions := &git.CloneOptions{
 		URL:           fmt.Sprintf("https://%v", repoName),
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
@@ -45,7 +35,12 @@ func (this pkg) Pull(
 		cloneOptions.Auth = http.NewBasicAuth(opts.Username, opts.Password)
 	}
 
-	err := this.git.PlainClone(pkgPath, false, cloneOptions)
+	pkgPath, err := constructCachePath(pkgRef)
+	if nil != err {
+		return err
+	}
+
+	err = this.git.PlainClone(pkgPath, false, cloneOptions)
 	if nil != err {
 		switch err.Error() {
 		case git.ErrRepositoryAlreadyExists.Error():

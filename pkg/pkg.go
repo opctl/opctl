@@ -56,18 +56,16 @@ type Pkg interface {
 
 func New() Pkg {
 	fs := osfs.New()
-	os := vos.New(fs)
 	ioUtil := vioutil.New(fs)
 	manifestValidator := newManifestValidator(fs)
-	resolver := newResolver(os)
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
 		fs:                   fs,
 		git:                  vgit.New(),
 		ioUtil:               ioUtil,
+		os:                   vos.New(fs),
 		manifestUnmarshaller: manifestUnmarshaller,
-		resolver:             resolver,
 		manifestValidator:    manifestValidator,
 	}
 }
@@ -76,7 +74,7 @@ type pkg struct {
 	fs                   fsPkg.FS
 	git                  vgit.VGit
 	ioUtil               vioutil.VIOUtil
-	resolver             resolver
+	os                   vos.VOS
 	manifestValidator    manifestValidator
 	manifestUnmarshaller manifestUnmarshaller
 }
