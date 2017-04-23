@@ -1,6 +1,6 @@
 package pkg
 
-//go:generate counterfeiter -o ./fakeLocalResolver.go --fake-name fakeLocalResolver ./ localResolver
+//go:generate counterfeiter -o ./fakeResolver.go --fake-name fakeResolver ./ resolver
 
 import (
 	pathPkg "path"
@@ -9,28 +9,29 @@ import (
 	"github.com/virtual-go/vos"
 )
 
-type localResolver interface {
+type resolver interface {
+	// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
 	Resolve(
-		basePath string,
+		basePath,
 		pkgRef string,
 	) (string, bool)
 }
 
-func newLocalResolver(
+func newResolver(
 	os vos.VOS,
-) localResolver {
-	return _localResolver{
+) resolver {
+	return _resolver{
 		os: os,
 	}
 }
 
-type _localResolver struct {
+type _resolver struct {
 	appDataSpec appdatapath.AppDataPath
 	os          vos.VOS
 }
 
-func (this _localResolver) Resolve(
-	basePath string,
+func (this _resolver) Resolve(
+	basePath,
 	pkgRef string,
 ) (string, bool) {
 	var testPath string

@@ -10,43 +10,32 @@ import (
 var _ = Describe("Get", func() {
 	It("should call getter.Get w/ expected inputs", func() {
 		/* arrange */
-		providedGetReq := &GetReq{PkgRef: "/dummy/pkg/ref"}
+		providedBasePath := "dummyBasePath"
+		providedPkgRef := "dummyPkgRef"
+
+		expectedBasePath := providedBasePath
+		expectedPkgRef := providedPkgRef
 
 		fakeGetter := new(fakeGetter)
 
 		objectUnderTest := &pkg{
-			getter:    fakeGetter,
-			validator: new(fakeValidator),
+			getter: fakeGetter,
 		}
 
 		/* act */
-		_, err := objectUnderTest.Get(providedGetReq)
-		if nil != err {
-			panic(err)
-		}
+		objectUnderTest.Get(providedBasePath, providedPkgRef)
 
 		/* assert */
-		Expect(fakeGetter.GetArgsForCall(0)).To(Equal(providedGetReq))
+		actualBasePath, actualPkgRef := fakeGetter.GetArgsForCall(0)
+		Expect(actualBasePath).To(Equal(expectedBasePath))
+		Expect(actualPkgRef).To(Equal(expectedPkgRef))
 
 	})
 
 	It("should return result of getter.Get", func() {
 
 		/* arrange */
-		expectedPkgManifest := &model.PkgManifest{
-			Description: "dummyDescription",
-			Inputs:      map[string]*model.Param{},
-			Outputs:     map[string]*model.Param{},
-			Name:        "dummyName",
-			Run: &model.SCG{
-				Op: &model.SCGOpCall{
-					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyPkgRef",
-					},
-				},
-			},
-			Version: "",
-		}
+		expectedPkgManifest := &model.PkgManifest{Name: "dummyName"}
 		expectedError := errors.New("UnmarshalError")
 
 		fakeGetter := new(fakeGetter)
@@ -58,7 +47,7 @@ var _ = Describe("Get", func() {
 		}
 
 		/* act */
-		actualPkgManifest, actualError := objectUnderTest.Get(&GetReq{PkgRef: "/dummy/path"})
+		actualPkgManifest, actualError := objectUnderTest.Get("", "")
 
 		/* assert */
 		Expect(actualPkgManifest).To(Equal(expectedPkgManifest))

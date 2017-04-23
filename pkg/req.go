@@ -6,9 +6,7 @@ type CreateReq struct {
 	Description string
 }
 
-type GetReq struct {
-	BasePath string
-	PkgRef   string
+type PullOpts struct {
 	Username string
 	Password string
 }

@@ -8,11 +8,11 @@ import (
 	"path"
 )
 
-var _ = Describe("LocalResolver", func() {
-	Context("newLocalResolver()", func() {
+var _ = Describe("Resolver", func() {
+	Context("newResolver()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(newLocalResolver(nil)).Should(Not(BeNil()))
+			Expect(newResolver(nil)).Should(Not(BeNil()))
 		})
 	})
 	Context("Resolve", func() {
@@ -26,7 +26,7 @@ var _ = Describe("LocalResolver", func() {
 			fakeOS := new(vos.Fake)
 			fakeOS.StatReturns(nil, nil)
 
-			objectUnderTest := _localResolver{
+			objectUnderTest := _resolver{
 				os: fakeOS,
 			}
 
@@ -48,7 +48,7 @@ var _ = Describe("LocalResolver", func() {
 				fakeOS := new(vos.Fake)
 				fakeOS.StatReturns(nil, nil)
 
-				objectUnderTest := _localResolver{
+				objectUnderTest := _resolver{
 					os: fakeOS,
 				}
 
@@ -72,7 +72,7 @@ var _ = Describe("LocalResolver", func() {
 				fakeOS := new(vos.Fake)
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _localResolver{
+				objectUnderTest := _resolver{
 					os: fakeOS,
 				}
 

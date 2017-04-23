@@ -1,7 +1,7 @@
 package pkg
 
-type PkgNotFoundError string
+type ErrPkgNotFound struct{}
 
-func (this PkgNotFoundError) Error() string {
-	return string(this)
+func (this ErrPkgNotFound) Error() string {
+	return "Pkg not found"
 }

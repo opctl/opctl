@@ -8,10 +8,11 @@ import (
 )
 
 type fakeGetter struct {
-	GetStub        func(req *GetReq) (*model.PkgManifest, error)
+	GetStub        func(basePath, pkgRef string) (*model.PkgManifest, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
-		req *GetReq
+		basePath string
+		pkgRef   string
 	}
 	getReturns struct {
 		result1 *model.PkgManifest
@@ -25,16 +26,17 @@ type fakeGetter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeGetter) Get(req *GetReq) (*model.PkgManifest, error) {
+func (fake *fakeGetter) Get(basePath string, pkgRef string) (*model.PkgManifest, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		req *GetReq
-	}{req})
-	fake.recordInvocation("Get", []interface{}{req})
+		basePath string
+		pkgRef   string
+	}{basePath, pkgRef})
+	fake.recordInvocation("Get", []interface{}{basePath, pkgRef})
 	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
-		return fake.GetStub(req)
+		return fake.GetStub(basePath, pkgRef)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -48,10 +50,10 @@ func (fake *fakeGetter) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *fakeGetter) GetArgsForCall(i int) *GetReq {
+func (fake *fakeGetter) GetArgsForCall(i int) (string, string) {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].req
+	return fake.getArgsForCall[i].basePath, fake.getArgsForCall[i].pkgRef
 }
 
 func (fake *fakeGetter) GetReturns(result1 *model.PkgManifest, result2 error) {

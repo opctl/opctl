@@ -5,6 +5,7 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/util/vgit"
 	fsPkg "github.com/virtual-go/fs"
 	"github.com/virtual-go/fs/osfs"
 	"github.com/virtual-go/vioutil"
@@ -17,9 +18,22 @@ type Pkg interface {
 		req CreateReq,
 	) error
 
-	// Get gets a package according to opspec package resolution rules
+	// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
+	Resolve(
+		basePath,
+		pkgRef string,
+	) (string, bool)
+
+	// Pull pulls a package from a remote source
+	Pull(
+		pkgRef string,
+		req *PullOpts,
+	) error
+
+	// Get gets a local package
 	Get(
-		req *GetReq,
+		basePath,
+		pkgRef string,
 	) (*model.PkgManifest, error)
 
 	// List lists packages according to opspec package resolution rules
@@ -43,15 +57,16 @@ func New() Pkg {
 	os := vos.New(fs)
 	ioUtil := vioutil.New(fs)
 	validator := newValidator(fs)
-	localResolver := newLocalResolver(os)
+	resolver := newResolver(os)
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
 
 	return pkg{
 		fs:                   fs,
-		getter:               newGetter(fs, manifestUnmarshaller, localResolver),
+		getter:               newGetter(manifestUnmarshaller, resolver),
+		git:                  vgit.New(),
 		ioUtil:               ioUtil,
 		manifestUnmarshaller: manifestUnmarshaller,
-		localResolver:        localResolver,
+		resolver:             resolver,
 		validator:            validator,
 	}
 }
@@ -59,8 +74,9 @@ func New() Pkg {
 type pkg struct {
 	fs                   fsPkg.FS
 	getter               getter
+	git                  vgit.VGit
 	ioUtil               vioutil.VIOUtil
-	localResolver        localResolver
+	resolver             resolver
 	validator            validator
 	manifestUnmarshaller manifestUnmarshaller
 }

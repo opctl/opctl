@@ -2,232 +2,115 @@ package pkg
 
 import (
 	"errors"
-	"fmt"
-	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/vgit"
-	"github.com/virtual-go/fs"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"os"
-	"path"
-	"strings"
 )
 
 var _ = Describe("Getter", func() {
 	Context("newGetter()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(newGetter(nil, nil, nil)).Should(Not(BeNil()))
+			Expect(newGetter(nil, nil)).Should(Not(BeNil()))
 		})
 	})
 	Context("Get", func() {
-		It("should call localResolver.Resolve w/ expected args", func() {
+		It("should call resolver.Resolve w/ expected args", func() {
 			/* arrange */
-			providedGetReq := &GetReq{
-				BasePath: "dummyBasePath",
-				PkgRef:   "dummyPkgRef",
-			}
+			providedBasePath := "dummyBasePath"
+			providedPkgRef := "dummyPkgRef"
 
 			resolvedPkgRef := "dummyPath"
 
-			fakeLocalResolver := new(fakeLocalResolver)
-			fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
+			fakeResolver := new(fakeResolver)
+			fakeResolver.ResolveReturns(resolvedPkgRef, true)
 
 			objectUnderTest := _getter{
 				manifestUnmarshaller: new(fakeManifestUnmarshaller),
-				localResolver:        fakeLocalResolver,
+				resolver:             fakeResolver,
 			}
 
 			/* act */
-			objectUnderTest.Get(providedGetReq)
+			objectUnderTest.Get(providedBasePath, providedPkgRef)
 
 			/* assert */
-			actualBasePath, actualPkgRef := fakeLocalResolver.ResolveArgsForCall(0)
+			actualBasePath, actualPkgRef := fakeResolver.ResolveArgsForCall(0)
 
-			Expect(actualBasePath).To(Equal(providedGetReq.BasePath))
-			Expect(actualPkgRef).To(Equal(providedGetReq.PkgRef))
+			Expect(actualBasePath).To(Equal(providedBasePath))
+			Expect(actualPkgRef).To(Equal(providedPkgRef))
 		})
-		Context("is local pkg", func() {
+		Context("resolver.Resolve returns true", func() {
 			It("should call manifestUnmarshaller.Unmarshal w/ expected args", func() {
 				/* arrange */
-				providedGetReq := &GetReq{
-					PkgRef: "dummyPkgRef",
-				}
+				providedBasePath := "dummyBasePath"
+				providedPkgRef := "dummyPkgRef"
 
 				resolvedPkgRef := "dummyPath"
 
-				fakeLocalResolver := new(fakeLocalResolver)
-				fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
+				fakeResolver := new(fakeResolver)
+				fakeResolver.ResolveReturns(resolvedPkgRef, true)
 
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
 				objectUnderTest := _getter{
 					manifestUnmarshaller: fakeManifestUnmarshaller,
-					localResolver:        fakeLocalResolver,
+					resolver:             fakeResolver,
 				}
 
 				/* act */
-				objectUnderTest.Get(providedGetReq)
+				objectUnderTest.Get(providedBasePath, providedPkgRef)
 
 				/* assert */
 				Expect(fakeManifestUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(resolvedPkgRef))
 			})
 			It("should return result of manifestUnmarshaller.Unmarshal", func() {
 				/* arrange */
-				providedGetReq := &GetReq{
-					PkgRef: "dummyPkgRef",
-				}
+				providedBasePath := "dummyBasePath"
+				providedPkgRef := "dummyPkgRef"
 
 				resolvedPkgRef := "dummyPath"
 
-				fakeLocalResolver := new(fakeLocalResolver)
-				fakeLocalResolver.ResolveReturns(resolvedPkgRef, true)
+				fakeResolver := new(fakeResolver)
+				fakeResolver.ResolveReturns(resolvedPkgRef, true)
 
-				expectedView := &model.PkgManifest{Name: "dummyName"}
+				expectedPkgManifest := &model.PkgManifest{Name: "dummyName"}
 				expectedErr := errors.New("dummyError")
 
 				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
-				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
+				fakeManifestUnmarshaller.UnmarshalReturns(expectedPkgManifest, expectedErr)
 
 				objectUnderTest := _getter{
 					manifestUnmarshaller: fakeManifestUnmarshaller,
-					localResolver:        fakeLocalResolver,
+					resolver:             fakeResolver,
 				}
 
 				/* act */
-				actualView, actualErr := objectUnderTest.Get(providedGetReq)
+				actualPkgManifest, actualErr := objectUnderTest.Get(providedBasePath, providedPkgRef)
 
 				/* assert */
-				Expect(actualView).To(Equal(expectedView))
+				Expect(actualPkgManifest).To(Equal(expectedPkgManifest))
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("isn't local pkg", func() {
-			It("should call git.PlainClone w/ expected args", func() {
-
+		Context("resolver.Resolve returns false", func() {
+			It("should return ErrPkgNotFound ", func() {
 				/* arrange */
-				providedGetReq := &GetReq{
-					PkgRef: "dummyPkgRef#0.0.0",
-				}
+				expectedErr := ErrPkgNotFound{}
 
-				stringParts := strings.Split(providedGetReq.PkgRef, "#")
-				repoName := stringParts[0]
-				repoRefName := stringParts[1]
-
-				expectedPath := path.Join(
-					appdatapath.New().PerUser(),
-					"opspec",
-					"cache",
-					"pkgs",
-					repoName,
-					repoRefName,
-				)
-
-				expectedIsBare := false
-
-				expectedCloneOptions := &git.CloneOptions{
-					URL:           fmt.Sprintf("https://%v", repoName),
-					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
-					Depth:         1,
-					Progress:      os.Stdout,
-				}
-
-				fakeFS := new(fs.Fake)
-				fakeFS.StatReturnsOnCall(0, nil, errors.New(""))
-				fakeFS.StatReturnsOnCall(1, nil, errors.New(""))
-
-				fakeGit := new(vgit.Fake)
+				fakeResolver := new(fakeResolver)
+				fakeResolver.ResolveReturns("", false)
 
 				objectUnderTest := _getter{
-					git:                  fakeGit,
 					manifestUnmarshaller: new(fakeManifestUnmarshaller),
-					localResolver:        new(fakeLocalResolver),
+					resolver:             fakeResolver,
 				}
 
 				/* act */
-				objectUnderTest.Get(providedGetReq)
+				actualPkgManifest, actualErr := objectUnderTest.Get("", "")
 
 				/* assert */
-				actualPath,
-					actualIsBare,
-					actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
-
-				Expect(actualPath).To(Equal(expectedPath))
-				Expect(actualIsBare).To(Equal(expectedIsBare))
-				Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
-			})
-			Context("git.PlainClone errors", func() {
-				It("should call fs.RemoveAll w/ expected args & return error", func() {
-
-					/* arrange */
-					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef#0.0.0",
-					}
-
-					stringParts := strings.Split(providedGetReq.PkgRef, "#")
-					repoName := stringParts[0]
-					repoRefName := stringParts[1]
-
-					expectedPath := path.Join(
-						appdatapath.New().PerUser(),
-						"opspec",
-						"cache",
-						"pkgs",
-						repoName,
-						repoRefName,
-					)
-
-					fakeFS := new(fs.Fake)
-
-					expectedError := errors.New("dummyError")
-
-					fakeGit := new(vgit.Fake)
-					fakeGit.PlainCloneReturns(expectedError)
-
-					objectUnderTest := _getter{
-						fs:                   fakeFS,
-						git:                  fakeGit,
-						manifestUnmarshaller: new(fakeManifestUnmarshaller),
-						localResolver:        new(fakeLocalResolver),
-					}
-
-					/* act */
-					_, actualError := objectUnderTest.Get(providedGetReq)
-
-					/* assert */
-					Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-			Context("git.PlainClone doesn't error", func() {
-				It("should return result of manifestUnmarshaller.Unmarshal", func() {
-					/* arrange */
-					providedGetReq := &GetReq{
-						PkgRef: "dummyPkgRef#0.0.0",
-					}
-
-					expectedView := &model.PkgManifest{Name: "dummyName"}
-					expectedErr := errors.New("dummyError")
-
-					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
-					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
-
-					objectUnderTest := _getter{
-						git:                  new(vgit.Fake),
-						manifestUnmarshaller: fakeManifestUnmarshaller,
-						localResolver:        new(fakeLocalResolver),
-					}
-
-					/* act */
-					actualView, actualErr := objectUnderTest.Get(providedGetReq)
-
-					/* assert */
-					Expect(actualView).To(Equal(expectedView))
-					Expect(actualErr).To(Equal(expectedErr))
-				})
+				Expect(actualPkgManifest).To(BeNil())
+				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
 	})
