@@ -38,13 +38,8 @@ type Core interface {
 
 	NodeKill()
 
-	RunOp(
+	Run(
 		args []string,
-		pkgRef string,
-	)
-
-	PkgSetDescription(
-		description string,
 		pkgRef string,
 	)
 

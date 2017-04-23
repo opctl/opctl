@@ -7,6 +7,7 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
+	"path"
 	"time"
 )
 
@@ -26,13 +27,15 @@ var _ = Context("core", func() {
 					"dummyArg3Name": {Dir: &providedArg3Dir},
 					"dummyArg4Name": {Dir: &providedArg4Dir},
 				},
-				PkgRef: "dummyPkgRef",
+				PkgRef: "/something/dummyPkg",
 			}
 
-			expectedSCGOpCall := &model.SCGOpCall{
+			expectedPkgRef := path.Base(providedReq.PkgRef)
+			expectedPkgBasePath := path.Dir(providedReq.PkgRef)
 
+			expectedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
-					Ref: providedReq.PkgRef,
+					Ref: expectedPkgRef,
 				},
 				Inputs: map[string]string{},
 			}
@@ -64,13 +67,13 @@ var _ = Context("core", func() {
 			time.Sleep(time.Millisecond * 500)
 			actualInboundScope,
 				actualOpId,
-				actualPkgRef,
+				actualPkgBasePath,
 				actualRootOpId,
 				actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 			Expect(actualInboundScope).To(Equal(providedReq.Args))
 			Expect(actualOpId).To(Equal(expectedOpId))
-			Expect(actualPkgRef).To(Equal(providedReq.PkgRef))
+			Expect(actualPkgBasePath).To(Equal(expectedPkgBasePath))
 			Expect(actualRootOpId).To(Equal(actualOpId))
 			Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 		})

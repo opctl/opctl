@@ -230,33 +230,6 @@ var _ = Context("cli", func() {
 				})
 			})
 
-			Context("set", func() {
-
-				Context("description", func() {
-
-					It("should call core.PkgSetDescription w/ expected args", func() {
-						/* arrange */
-						fakeCore := new(core.Fake)
-
-						pkgRef := ".opspec/dummyPkgName"
-						expectedDescription := "dummyPkgDescription"
-
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
-
-						/* act */
-						objectUnderTest.Run([]string{"opctl", "pkg", "set", "description", expectedDescription, pkgRef})
-
-						/* assert */
-						Expect(fakeCore.PkgSetDescriptionCallCount()).Should(Equal(1))
-						actualPkgDescription, actualPkgRef := fakeCore.PkgSetDescriptionArgsForCall(0)
-						Expect(actualPkgRef).Should(Equal(pkgRef))
-						Expect(actualPkgDescription).Should(Equal(expectedDescription))
-					})
-
-				})
-
-			})
-
 			Context("validate", func() {
 
 				It("should call core.PkgValidate w/ expected args", func() {
@@ -271,7 +244,6 @@ var _ = Context("cli", func() {
 					objectUnderTest.Run([]string{"opctl", "pkg", "validate", pkgRef})
 
 					/* assert */
-					Expect(fakeCore.PkgSetDescriptionCallCount()).Should(Equal(1))
 					actualPkgRef := fakeCore.PkgValidateArgsForCall(0)
 					Expect(actualPkgRef).Should(Equal(pkgRef))
 				})
@@ -282,7 +254,7 @@ var _ = Context("cli", func() {
 
 		Context("run", func() {
 			Context("with two op run args", func() {
-				It("should call core.RunOp w/ expected args", func() {
+				It("should call core.Run w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
@@ -295,15 +267,15 @@ var _ = Context("cli", func() {
 					objectUnderTest.Run([]string{"opctl", "run", "-a", expectedOpArgs[0], "-a", expectedOpArgs[1], expectedPkgRef})
 
 					/* assert */
-					Expect(fakeCore.RunOpCallCount()).Should(Equal(1))
-					actualOpArgs, actualOpUrl := fakeCore.RunOpArgsForCall(0)
+					Expect(fakeCore.RunCallCount()).Should(Equal(1))
+					actualOpArgs, actualOpUrl := fakeCore.RunArgsForCall(0)
 					Expect(actualOpUrl).Should(Equal(expectedPkgRef))
 					Expect(actualOpArgs).Should(Equal(expectedOpArgs))
 				})
 			})
 
 			Context("with zero op run args", func() {
-				It("should call core.RunOp w/ expected args", func() {
+				It("should call core.Run w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
@@ -315,9 +287,9 @@ var _ = Context("cli", func() {
 					objectUnderTest.Run([]string{"opctl", "run", expectedPkgRef})
 
 					/* assert */
-					Expect(fakeCore.RunOpCallCount()).Should(Equal(1))
+					Expect(fakeCore.RunCallCount()).Should(Equal(1))
 
-					actualOpArgs, actualPkgRef := fakeCore.RunOpArgsForCall(0)
+					actualOpArgs, actualPkgRef := fakeCore.RunArgsForCall(0)
 					Expect(actualPkgRef).Should(Equal(expectedPkgRef))
 					Expect(actualOpArgs).Should(BeEmpty())
 				})

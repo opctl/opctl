@@ -71,8 +71,8 @@ type Client struct {
 	proto string
 	// addr holds the client address.
 	addr string
-	// basePath holds the path to prepend to the requests.
-	basePath string
+	// pkgBasePath holds the path to prepend to the requests.
+	pkgBasePath string
 	// client used to send and receive http requests.
 	client *http.Client
 	// version of the server to talk to.
@@ -136,7 +136,7 @@ func NewEnvClient() (*Client, error) {
 // highly recommended that you set a version or your client may break if the
 // server is upgraded.
 func NewClient(host string, version string, client *http.Client, httpHeaders map[string]string) (*Client, error) {
-	proto, addr, basePath, err := ParseHost(host)
+	proto, addr, pkgBasePath, err := ParseHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +169,7 @@ func NewClient(host string, version string, client *http.Client, httpHeaders map
 		host:              host,
 		proto:             proto,
 		addr:              addr,
-		basePath:          basePath,
+		pkgBasePath:          pkgBasePath,
 		client:            client,
 		version:           version,
 		customHTTPHeaders: httpHeaders,
@@ -195,9 +195,9 @@ func (cli *Client) getAPIPath(p string, query url.Values) string {
 	var apiPath string
 	if cli.version != "" {
 		v := strings.TrimPrefix(cli.version, "v")
-		apiPath = fmt.Sprintf("%s/v%s%s", cli.basePath, v, p)
+		apiPath = fmt.Sprintf("%s/v%s%s", cli.pkgBasePath, v, p)
 	} else {
-		apiPath = fmt.Sprintf("%s%s", cli.basePath, p)
+		apiPath = fmt.Sprintf("%s%s", cli.pkgBasePath, p)
 	}
 
 	u := &url.URL{
@@ -233,7 +233,7 @@ func ParseHost(host string) (string, string, string, error) {
 		return "", "", "", fmt.Errorf("unable to parse docker host `%s`", host)
 	}
 
-	var basePath string
+	var pkgBasePath string
 	proto, addr := protoAddrParts[0], protoAddrParts[1]
 	if proto == "tcp" {
 		parsed, err := url.Parse("tcp://" + addr)
@@ -241,9 +241,9 @@ func ParseHost(host string) (string, string, string, error) {
 			return "", "", "", err
 		}
 		addr = parsed.Host
-		basePath = parsed.Path
+		pkgBasePath = parsed.Path
 	}
-	return proto, addr, basePath, nil
+	return proto, addr, pkgBasePath, nil
 }
 
 // CustomHTTPHeaders returns the custom http headers associated with this

@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
-func (this _core) RunOp(
+func (this _core) Run(
 	args []string,
 	pkgRef string,
 ) {
@@ -24,13 +24,22 @@ func (this _core) RunOp(
 		this.nodeProvider.CreateNode()
 	}
 
-	currentPath, err := this.vos.Getwd()
+	cwd, err := this.vos.Getwd()
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
-	pkgManifest, err := this.pkg.Get(&pkg.GetReq{Path: currentPath, PkgRef: pkgRef})
+	startTime := time.Now().UTC()
+
+	pkgPath, ok := this.pkg.Resolve(cwd, pkgRef)
+	if !ok {
+		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'; pull required", pkgRef, cwd)
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
+		return // support fake exiter
+	}
+
+	pkgManifest, err := this.pkg.Get(pkgPath)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
@@ -52,7 +61,7 @@ func (this _core) RunOp(
 	rootOpId, err := this.consumeNodeApi.StartOp(
 		model.StartOpReq{
 			Args:   argsMap,
-			PkgRef: pkgRef,
+			PkgRef: pkgPath,
 		},
 	)
 	if nil != err {
@@ -65,6 +74,7 @@ func (this _core) RunOp(
 		&model.GetEventStreamReq{
 			Filter: &model.EventFilter{
 				RootOpIds: []string{rootOpId},
+				Since:     &startTime,
 			},
 		},
 	)

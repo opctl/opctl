@@ -3,16 +3,18 @@ package pkg
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"path"
+	pathPkg "path"
 )
 
 // Create creates an opspec package
 func (this pkg) Create(
-	req CreateReq,
+	path,
+	pkgName,
+	pkgDescription string,
 ) error {
 
-	err := this.fileSystem.MkdirAll(
-		req.Path,
+	err := this.fs.MkdirAll(
+		path,
 		0777,
 	)
 	if nil != err {
@@ -20,8 +22,8 @@ func (this pkg) Create(
 	}
 
 	pkgManifest := model.PkgManifest{
-		Description: req.Description,
-		Name:        req.Name,
+		Description: pkgDescription,
+		Name:        pkgName,
 	}
 
 	pkgManifestBytes, err := yaml.Marshal(&pkgManifest)
@@ -30,7 +32,7 @@ func (this pkg) Create(
 	}
 
 	return this.ioUtil.WriteFile(
-		path.Join(req.Path, ManifestFileName),
+		pathPkg.Join(path, OpDotYmlFileName),
 		pkgManifestBytes,
 		0777,
 	)

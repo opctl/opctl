@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-var _ = Context("runOp", func() {
+var _ = Context("Run", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -36,7 +36,7 @@ var _ = Context("runOp", func() {
 				}
 
 				/* act */
-				objectUnderTest.RunOp([]string{}, "dummyName")
+				objectUnderTest.Run([]string{}, "dummyName")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -44,175 +44,85 @@ var _ = Context("runOp", func() {
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
-			It("should call pkg.Get w/ expected args", func() {
+			It("should call pkg.Resolve w/ expected args", func() {
 				/* arrange */
 				providedPkgRef := "dummyPkgName"
-				wdReturnedFromVOS := "dummyWorkDir"
 
-				expectedGetReq := &pkg.GetReq{
-					Path:   wdReturnedFromVOS,
-					PkgRef: providedPkgRef,
-				}
+				expectedPkgBasePath := "dummyWorkDir"
+				expectedPkgRef := providedPkgRef
 
 				fakePkg := new(pkg.Fake)
-				fakePkg.GetReturns(&model.PkgManifest{}, nil)
-
-				fakeConsumeNodeApi := new(consumenodeapi.Fake)
-				eventChannel := make(chan model.Event)
-				close(eventChannel)
-				fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				fakeVOS := new(vos.Fake)
-				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+				fakeVOS.GetwdReturns(expectedPkgBasePath, nil)
 
 				objectUnderTest := _core{
-					pkg:               fakePkg,
-					consumeNodeApi:    fakeConsumeNodeApi,
-					cliExiter:         fakeCliExiter,
-					cliParamSatisfier: new(cliparamsatisfier.Fake),
-					nodeProvider:      new(nodeprovider.Fake),
-					vos:               fakeVOS,
+					pkg:          fakePkg,
+					cliExiter:    fakeCliExiter,
+					nodeProvider: new(nodeprovider.Fake),
+					vos:          fakeVOS,
 				}
 
 				/* act */
-				objectUnderTest.RunOp([]string{}, providedPkgRef)
+				objectUnderTest.Run([]string{}, providedPkgRef)
 
 				/* assert */
-				Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedGetReq))
+				actualPkgBasePath, actualPkgRef := fakePkg.ResolveArgsForCall(0)
+				Expect(actualPkgBasePath).Should(Equal(expectedPkgBasePath))
+				Expect(actualPkgRef).Should(Equal(expectedPkgRef))
 			})
-			Context("pkg.Get errors", func() {
-				It("should call exiter w/ expected args", func() {
+			Context("pkg.Resolve fails", func() {
+
+			})
+			Context("pkg.Resolve succeeds", func() {
+				It("should call pkg.Get w/ expected args", func() {
 					/* arrange */
-					fakeCliExiter := new(cliexiter.Fake)
-					returnedError := errors.New("dummyError")
+					resolvedPkgRef := "dummyPkgName"
+					wdReturnedFromVOS := "dummyWorkDir"
+
+					expectedPkgRef := resolvedPkgRef
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PkgManifest{}, returnedError)
+					// err to trigger immediate return
+					fakePkg.GetReturns(&model.PkgManifest{}, errors.New("dummyError"))
+
+					fakeConsumeNodeApi := new(consumenodeapi.Fake)
+
+					fakeCliExiter := new(cliexiter.Fake)
+
+					fakeVOS := new(vos.Fake)
+					fakePkg.ResolveReturns(resolvedPkgRef, true)
+					fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
 
 					objectUnderTest := _core{
 						pkg:               fakePkg,
+						consumeNodeApi:    fakeConsumeNodeApi,
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
-						nodeProvider:      new(nodeprovider.Fake),
-						vos:               new(vos.Fake),
-					}
-
-					/* act */
-					objectUnderTest.RunOp([]string{}, "dummyName")
-
-					/* assert */
-					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
-				})
-			})
-			Context("pkg.Get doesn't error", func() {
-				It("should call paramSatisfier.Satisfy w/ expected args", func() {
-					/* arrange */
-					param1Name := "DUMMY_PARAM1_NAME"
-					arg1ValueString := "dummyParam1Value"
-					arg1Value := &model.Data{String: &arg1ValueString}
-
-					providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, arg1Value.String)}
-
-					expectedParams := map[string]*model.Param{
-						param1Name: {
-							String: &model.StringParam{},
-						},
-					}
-
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(
-						&model.PkgManifest{
-							Inputs: expectedParams,
-						},
-						nil,
-					)
-
-					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeConsumeNodeApi := new(consumenodeapi.Fake)
-					eventChannel := make(chan model.Event)
-					close(eventChannel)
-					fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-
-					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
-
-					objectUnderTest := _core{
-						pkg:               fakePkg,
-						consumeNodeApi:    fakeConsumeNodeApi,
-						cliExiter:         new(cliexiter.Fake),
-						cliParamSatisfier: fakeCliParamSatisfier,
-						nodeProvider:      new(nodeprovider.Fake),
-						vos:               new(vos.Fake),
-					}
-
-					/* act */
-					objectUnderTest.RunOp(providedArgs, "dummyPkgName")
-
-					/* assert */
-					actualArgs, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
-					Expect(actualArgs).To(Equal(providedArgs))
-					Expect(actualParams).To(Equal(expectedParams))
-				})
-				It("should call consumeNodeApi.StartOp w/ expected args", func() {
-					/* arrange */
-					pwd := "dummyWorkDir"
-					fakeVOS := new(vos.Fake)
-					fakeVOS.GetwdReturns(pwd, nil)
-
-					providedPkgRef := "dummyOp"
-					expectedArg1ValueString := "dummyArg1Value"
-					expectedArgs := model.StartOpReq{
-						Args: map[string]*model.Data{
-							"dummyArg1Name": {String: &expectedArg1ValueString},
-						},
-						PkgRef: providedPkgRef,
-					}
-
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetReturns(&model.PkgManifest{}, nil)
-
-					// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-					fakeConsumeNodeApi := new(consumenodeapi.Fake)
-					eventChannel := make(chan model.Event)
-					close(eventChannel)
-					fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-
-					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
-					fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
-
-					objectUnderTest := _core{
-						pkg:               fakePkg,
-						consumeNodeApi:    fakeConsumeNodeApi,
-						cliExiter:         new(cliexiter.Fake),
-						cliParamSatisfier: fakeCliParamSatisfier,
 						nodeProvider:      new(nodeprovider.Fake),
 						vos:               fakeVOS,
 					}
 
 					/* act */
-					objectUnderTest.RunOp([]string{}, providedPkgRef)
+					objectUnderTest.Run([]string{}, "")
 
 					/* assert */
-					actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
-					Expect(actualArgs).To(Equal(expectedArgs))
+					Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedPkgRef))
 				})
-				Context("consumeNodeApi.StartOp errors", func() {
+				Context("pkg.Get errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						fakeCliExiter := new(cliexiter.Fake)
 						returnedError := errors.New("dummyError")
 
 						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PkgManifest{}, nil)
-
-						fakeConsumeNodeApi := new(consumenodeapi.Fake)
-						fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
+						fakePkg.ResolveReturns("", true)
+						fakePkg.GetReturns(&model.PkgManifest{}, returnedError)
 
 						objectUnderTest := _core{
 							pkg:               fakePkg,
-							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							nodeProvider:      new(nodeprovider.Fake),
@@ -220,58 +130,119 @@ var _ = Context("runOp", func() {
 						}
 
 						/* act */
-						objectUnderTest.RunOp([]string{}, "dummyPkgName")
+						objectUnderTest.Run([]string{}, "dummyName")
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
 							Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 					})
 				})
-				Context("consumeNodeApi.StartOp doesn't error", func() {
-					It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
+				Context("pkg.Get doesn't error", func() {
+					It("should call paramSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetReturns(&model.PkgManifest{}, nil)
-						rootOpIdReturnedFromStartOp := "dummyRootOpId"
-						expectedEventFilter := &model.GetEventStreamReq{
-							Filter: &model.EventFilter{
-								RootOpIds: []string{rootOpIdReturnedFromStartOp},
+						param1Name := "DUMMY_PARAM1_NAME"
+						arg1ValueString := "dummyParam1Value"
+						arg1Value := &model.Data{String: &arg1ValueString}
+
+						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, arg1Value.String)}
+
+						expectedParams := map[string]*model.Param{
+							param1Name: {
+								String: &model.StringParam{},
 							},
 						}
 
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns("", true)
+						fakePkg.GetReturns(
+							&model.PkgManifest{
+								Inputs: expectedParams,
+							},
+							nil,
+						)
+
+						// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 						fakeConsumeNodeApi := new(consumenodeapi.Fake)
-						fakeConsumeNodeApi.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
 						eventChannel := make(chan model.Event)
 						close(eventChannel)
 						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+
+						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 						objectUnderTest := _core{
 							pkg:               fakePkg,
 							consumeNodeApi:    fakeConsumeNodeApi,
 							cliExiter:         new(cliexiter.Fake),
-							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							cliParamSatisfier: fakeCliParamSatisfier,
 							nodeProvider:      new(nodeprovider.Fake),
 							vos:               new(vos.Fake),
 						}
 
 						/* act */
-						objectUnderTest.RunOp([]string{}, "dummyPkgName")
+						objectUnderTest.Run(providedArgs, "dummyPkgName")
 
 						/* assert */
-						Expect(fakeConsumeNodeApi.GetEventStreamArgsForCall(0)).
-							Should(Equal(expectedEventFilter))
+						actualArgs, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
+						Expect(actualArgs).To(Equal(providedArgs))
+						Expect(actualParams).To(Equal(expectedParams))
 					})
-					Context("consumeNodeApi.GetEventStream errors", func() {
+					It("should call consumeNodeApi.StartOp w/ expected args", func() {
+						/* arrange */
+						cwd := "dummyWorkDir"
+						fakeVOS := new(vos.Fake)
+						fakeVOS.GetwdReturns(cwd, nil)
+
+						resolvedPkgRef := "dummyPkgRef"
+
+						expectedArg1ValueString := "dummyArg1Value"
+						expectedArgs := model.StartOpReq{
+							Args: map[string]*model.Data{
+								"dummyArg1Name": {String: &expectedArg1ValueString},
+							},
+							PkgRef: resolvedPkgRef,
+						}
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns(resolvedPkgRef, true)
+						fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+						// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
+						fakeConsumeNodeApi := new(consumenodeapi.Fake)
+						eventChannel := make(chan model.Event)
+						close(eventChannel)
+						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+
+						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+						fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
+
+						objectUnderTest := _core{
+							pkg:               fakePkg,
+							consumeNodeApi:    fakeConsumeNodeApi,
+							cliExiter:         new(cliexiter.Fake),
+							cliParamSatisfier: fakeCliParamSatisfier,
+							nodeProvider:      new(nodeprovider.Fake),
+							vos:               fakeVOS,
+						}
+
+						/* act */
+						objectUnderTest.Run([]string{}, "")
+
+						/* assert */
+						actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
+						Expect(actualArgs).To(Equal(expectedArgs))
+					})
+					Context("consumeNodeApi.StartOp errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
 							returnedError := errors.New("dummyError")
 
 							fakePkg := new(pkg.Fake)
+							fakePkg.ResolveReturns("", true)
 							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 							fakeConsumeNodeApi := new(consumenodeapi.Fake)
-							fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
+							fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
 
 							objectUnderTest := _core{
 								pkg:               fakePkg,
@@ -283,26 +254,68 @@ var _ = Context("runOp", func() {
 							}
 
 							/* act */
-							objectUnderTest.RunOp([]string{}, "dummyPkgName")
+							objectUnderTest.Run([]string{}, "dummyPkgName")
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
 								Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
-					Context("consumeNodeApi.GetEventStream doesn't error", func() {
-						Context("event channel closes", func() {
+					Context("consumeNodeApi.StartOp doesn't error", func() {
+						It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
+							/* arrange */
+							fakePkg := new(pkg.Fake)
+							fakePkg.ResolveReturns("", true)
+							fakePkg.GetReturns(&model.PkgManifest{}, nil)
+							rootOpIdReturnedFromStartOp := "dummyRootOpId"
+							startTime := time.Now().UTC()
+							expectedReq := &model.GetEventStreamReq{
+								Filter: &model.EventFilter{
+									RootOpIds: []string{rootOpIdReturnedFromStartOp},
+									Since:     &startTime,
+								},
+							}
+
+							fakeConsumeNodeApi := new(consumenodeapi.Fake)
+							fakeConsumeNodeApi.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
+							eventChannel := make(chan model.Event)
+							close(eventChannel)
+							fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+
+							objectUnderTest := _core{
+								pkg:               fakePkg,
+								consumeNodeApi:    fakeConsumeNodeApi,
+								cliExiter:         new(cliexiter.Fake),
+								cliParamSatisfier: new(cliparamsatisfier.Fake),
+								nodeProvider:      new(nodeprovider.Fake),
+								vos:               new(vos.Fake),
+							}
+
+							/* act */
+							objectUnderTest.Run([]string{}, "dummyPkgName")
+
+							/* assert */
+							actualReq := fakeConsumeNodeApi.GetEventStreamArgsForCall(0)
+
+							// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+							Expect(*actualReq.Filter.Since).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
+							// set temporal fields to expected vals since they're already asserted
+							actualReq.Filter.Since = &startTime
+
+							Expect(actualReq).Should(Equal(expectedReq))
+						})
+						Context("consumeNodeApi.GetEventStream errors", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
 								fakeCliExiter := new(cliexiter.Fake)
+								returnedError := errors.New("dummyError")
 
 								fakePkg := new(pkg.Fake)
+								fakePkg.ResolveReturns("", true)
 								fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 								fakeConsumeNodeApi := new(consumenodeapi.Fake)
-								eventChannel := make(chan model.Event)
-								close(eventChannel)
-								fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+								fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
 
 								objectUnderTest := _core{
 									pkg:               fakePkg,
@@ -314,184 +327,221 @@ var _ = Context("runOp", func() {
 								}
 
 								/* act */
-								objectUnderTest.RunOp([]string{}, "dummyPkgName")
+								objectUnderTest.Run([]string{}, "dummyPkgName")
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									Should(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+									Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 							})
 						})
-						Context("event channel doesn't close", func() {
-							Context("event received", func() {
-								rootOpId := "dummyRootOpId"
-								Context("OpEndedEvent", func() {
-									Context("Outcome==SUCCEEDED", func() {
-										It("should call exiter w/ expected args", func() {
-											/* arrange */
-											opEndedEvent := model.Event{
-												Timestamp: time.Now(),
-												OpEnded: &model.OpEndedEvent{
-													OpId:     rootOpId,
-													PkgRef:   "dummyPkgRef",
-													Outcome:  model.OpOutcomeSucceeded,
-													RootOpId: rootOpId,
-												},
-											}
+						Context("consumeNodeApi.GetEventStream doesn't error", func() {
+							Context("event channel closes", func() {
+								It("should call exiter w/ expected args", func() {
+									/* arrange */
+									fakeCliExiter := new(cliexiter.Fake)
 
-											fakeCliExiter := new(cliexiter.Fake)
+									fakePkg := new(pkg.Fake)
+									fakePkg.ResolveReturns("", true)
+									fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PkgManifest{}, nil)
+									fakeConsumeNodeApi := new(consumenodeapi.Fake)
+									eventChannel := make(chan model.Event)
+									close(eventChannel)
+									fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
 
-											fakeConsumeNodeApi := new(consumenodeapi.Fake)
-											eventChannel := make(chan model.Event, 10)
-											eventChannel <- opEndedEvent
-											defer close(eventChannel)
-											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+									objectUnderTest := _core{
+										pkg:               fakePkg,
+										consumeNodeApi:    fakeConsumeNodeApi,
+										cliExiter:         fakeCliExiter,
+										cliParamSatisfier: new(cliparamsatisfier.Fake),
+										nodeProvider:      new(nodeprovider.Fake),
+										vos:               new(vos.Fake),
+									}
 
-											objectUnderTest := _core{
-												pkg:               fakePkg,
-												cliColorer:        clicolorer.New(),
-												consumeNodeApi:    fakeConsumeNodeApi,
-												cliExiter:         fakeCliExiter,
-												cliOutput:         new(clioutput.Fake),
-												cliParamSatisfier: new(cliparamsatisfier.Fake),
-												nodeProvider:      new(nodeprovider.Fake),
-												vos:               new(vos.Fake),
-											}
+									/* act */
+									objectUnderTest.Run([]string{}, "dummyPkgName")
 
-											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyPkgName")
-											Expect(fakeCliExiter.ExitArgsForCall(0)).
-												Should(Equal(cliexiter.ExitReq{Code: 0}))
+									/* assert */
+									Expect(fakeCliExiter.ExitArgsForCall(0)).
+										Should(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+								})
+							})
+							Context("event channel doesn't close", func() {
+								Context("event received", func() {
+									rootOpId := "dummyRootOpId"
+									Context("OpEndedEvent", func() {
+										Context("Outcome==SUCCEEDED", func() {
+											It("should call exiter w/ expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:     rootOpId,
+														PkgRef:   "dummyPkgRef",
+														Outcome:  model.OpOutcomeSucceeded,
+														RootOpId: rootOpId,
+													},
+												}
+
+												fakeCliExiter := new(cliexiter.Fake)
+
+												fakePkg := new(pkg.Fake)
+												fakePkg.ResolveReturns("", true)
+												fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+
+												objectUnderTest := _core{
+													pkg:               fakePkg,
+													cliColorer:        clicolorer.New(),
+													consumeNodeApi:    fakeConsumeNodeApi,
+													cliExiter:         fakeCliExiter,
+													cliOutput:         new(clioutput.Fake),
+													cliParamSatisfier: new(cliparamsatisfier.Fake),
+													nodeProvider:      new(nodeprovider.Fake),
+													vos:               new(vos.Fake),
+												}
+
+												/* act/assert */
+												objectUnderTest.Run([]string{}, "dummyPkgName")
+												Expect(fakeCliExiter.ExitArgsForCall(0)).
+													Should(Equal(cliexiter.ExitReq{Code: 0}))
+											})
 										})
-									})
-									Context("Outcome==KILLED", func() {
-										It("should call exiter w/ expected args", func() {
-											/* arrange */
-											opEndedEvent := model.Event{
-												Timestamp: time.Now(),
-												OpEnded: &model.OpEndedEvent{
-													OpId:     rootOpId,
-													PkgRef:   "dummyPkgRef",
-													Outcome:  model.OpOutcomeKilled,
-													RootOpId: rootOpId,
-												},
-											}
+										Context("Outcome==KILLED", func() {
+											It("should call exiter w/ expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:     rootOpId,
+														PkgRef:   "dummyPkgRef",
+														Outcome:  model.OpOutcomeKilled,
+														RootOpId: rootOpId,
+													},
+												}
 
-											fakeCliExiter := new(cliexiter.Fake)
+												fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PkgManifest{}, nil)
+												fakePkg := new(pkg.Fake)
+												fakePkg.ResolveReturns("", true)
+												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-											fakeConsumeNodeApi := new(consumenodeapi.Fake)
-											eventChannel := make(chan model.Event, 10)
-											eventChannel <- opEndedEvent
-											defer close(eventChannel)
-											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
-											objectUnderTest := _core{
-												pkg:               fakePkg,
-												cliColorer:        clicolorer.New(),
-												consumeNodeApi:    fakeConsumeNodeApi,
-												cliExiter:         fakeCliExiter,
-												cliOutput:         new(clioutput.Fake),
-												cliParamSatisfier: new(cliparamsatisfier.Fake),
-												nodeProvider:      new(nodeprovider.Fake),
-												vos:               new(vos.Fake),
-											}
+												objectUnderTest := _core{
+													pkg:               fakePkg,
+													cliColorer:        clicolorer.New(),
+													consumeNodeApi:    fakeConsumeNodeApi,
+													cliExiter:         fakeCliExiter,
+													cliOutput:         new(clioutput.Fake),
+													cliParamSatisfier: new(cliparamsatisfier.Fake),
+													nodeProvider:      new(nodeprovider.Fake),
+													vos:               new(vos.Fake),
+												}
 
-											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyPkgName")
-											Expect(fakeCliExiter.ExitArgsForCall(0)).
-												Should(Equal(cliexiter.ExitReq{Code: 137}))
+												/* act/assert */
+												objectUnderTest.Run([]string{}, "dummyPkgName")
+												Expect(fakeCliExiter.ExitArgsForCall(0)).
+													Should(Equal(cliexiter.ExitReq{Code: 137}))
+											})
+
 										})
+										Context("Outcome==FAILED", func() {
+											It("should call exiter w/ expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:     rootOpId,
+														PkgRef:   "dummyPkgRef",
+														Outcome:  model.OpOutcomeFailed,
+														RootOpId: rootOpId,
+													},
+												}
 
-									})
-									Context("Outcome==FAILED", func() {
-										It("should call exiter w/ expected args", func() {
-											/* arrange */
-											opEndedEvent := model.Event{
-												Timestamp: time.Now(),
-												OpEnded: &model.OpEndedEvent{
-													OpId:     rootOpId,
-													PkgRef:   "dummyPkgRef",
-													Outcome:  model.OpOutcomeFailed,
-													RootOpId: rootOpId,
-												},
-											}
+												fakeCliExiter := new(cliexiter.Fake)
 
-											fakeCliExiter := new(cliexiter.Fake)
+												fakePkg := new(pkg.Fake)
+												fakePkg.ResolveReturns("", true)
+												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PkgManifest{}, nil)
+												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
-											fakeConsumeNodeApi := new(consumenodeapi.Fake)
-											eventChannel := make(chan model.Event, 10)
-											eventChannel <- opEndedEvent
-											defer close(eventChannel)
-											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												objectUnderTest := _core{
+													pkg:               fakePkg,
+													cliColorer:        clicolorer.New(),
+													consumeNodeApi:    fakeConsumeNodeApi,
+													cliExiter:         fakeCliExiter,
+													cliOutput:         new(clioutput.Fake),
+													cliParamSatisfier: new(cliparamsatisfier.Fake),
+													nodeProvider:      new(nodeprovider.Fake),
+													vos:               new(vos.Fake),
+												}
 
-											objectUnderTest := _core{
-												pkg:               fakePkg,
-												cliColorer:        clicolorer.New(),
-												consumeNodeApi:    fakeConsumeNodeApi,
-												cliExiter:         fakeCliExiter,
-												cliOutput:         new(clioutput.Fake),
-												cliParamSatisfier: new(cliparamsatisfier.Fake),
-												nodeProvider:      new(nodeprovider.Fake),
-												vos:               new(vos.Fake),
-											}
-
-											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyPkgName")
-											Expect(fakeCliExiter.ExitArgsForCall(0)).
-												Should(Equal(cliexiter.ExitReq{Code: 1}))
+												/* act/assert */
+												objectUnderTest.Run([]string{}, "dummyPkgName")
+												Expect(fakeCliExiter.ExitArgsForCall(0)).
+													Should(Equal(cliexiter.ExitReq{Code: 1}))
+											})
 										})
-									})
-									Context("Outcome==?", func() {
-										It("should call exiter w/ expected args", func() {
-											/* arrange */
-											opEndedEvent := model.Event{
-												Timestamp: time.Now(),
-												OpEnded: &model.OpEndedEvent{
-													OpId:     rootOpId,
-													PkgRef:   "dummyPkgRef",
-													Outcome:  "some unexpected outcome",
-													RootOpId: rootOpId,
-												},
-											}
+										Context("Outcome==?", func() {
+											It("should call exiter w/ expected args", func() {
+												/* arrange */
+												opEndedEvent := model.Event{
+													Timestamp: time.Now(),
+													OpEnded: &model.OpEndedEvent{
+														OpId:     rootOpId,
+														PkgRef:   "dummyPkgRef",
+														Outcome:  "some unexpected outcome",
+														RootOpId: rootOpId,
+													},
+												}
 
-											fakeCliExiter := new(cliexiter.Fake)
+												fakeCliExiter := new(cliexiter.Fake)
 
-											fakePkg := new(pkg.Fake)
-											fakePkg.GetReturns(&model.PkgManifest{}, nil)
+												fakePkg := new(pkg.Fake)
+												fakePkg.ResolveReturns("", true)
+												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-											fakeConsumeNodeApi := new(consumenodeapi.Fake)
-											eventChannel := make(chan model.Event, 10)
-											eventChannel <- opEndedEvent
-											defer close(eventChannel)
-											fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-											fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												eventChannel := make(chan model.Event, 10)
+												eventChannel <- opEndedEvent
+												defer close(eventChannel)
+												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
-											objectUnderTest := _core{
-												pkg:               fakePkg,
-												cliColorer:        clicolorer.New(),
-												consumeNodeApi:    fakeConsumeNodeApi,
-												cliExiter:         fakeCliExiter,
-												cliOutput:         new(clioutput.Fake),
-												cliParamSatisfier: new(cliparamsatisfier.Fake),
-												nodeProvider:      new(nodeprovider.Fake),
-												vos:               new(vos.Fake),
-											}
+												objectUnderTest := _core{
+													pkg:               fakePkg,
+													cliColorer:        clicolorer.New(),
+													consumeNodeApi:    fakeConsumeNodeApi,
+													cliExiter:         fakeCliExiter,
+													cliOutput:         new(clioutput.Fake),
+													cliParamSatisfier: new(cliparamsatisfier.Fake),
+													nodeProvider:      new(nodeprovider.Fake),
+													vos:               new(vos.Fake),
+												}
 
-											/* act/assert */
-											objectUnderTest.RunOp([]string{}, "dummyPkgName")
-											Expect(fakeCliExiter.ExitArgsForCall(0)).
-												Should(Equal(cliexiter.ExitReq{Code: 1}))
+												/* act/assert */
+												objectUnderTest.Run([]string{}, "dummyPkgName")
+												Expect(fakeCliExiter.ExitArgsForCall(0)).
+													Should(Equal(cliexiter.ExitReq{Code: 1}))
+											})
 										})
 									})
 								})

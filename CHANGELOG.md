@@ -12,7 +12,11 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
 - [Support since in event filter](https://github.com/opctl/opctl/issues/187)
 
-## Fixed
+### Removed
+
+- `pkg set` command
+
+### Fixed
 
 - [Param defaults w/ values equal to type default are not defaulted](https://github.com/opctl/opctl/issues/185)
 - [stdOut/stdErr output race condition](https://github.com/opctl/opctl/issues/174)
