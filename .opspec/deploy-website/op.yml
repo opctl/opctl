@@ -15,7 +15,10 @@ inputs:
       isSecret: true
 run:
   serial:
-    - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}
+    - op:
+        pkg: { ref: compile-website }
+        inputs: { srcDir }
+        outputs: { srcDir }
     - container:
         cmd:
           - sh

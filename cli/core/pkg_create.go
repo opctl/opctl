@@ -5,7 +5,7 @@ import (
 	pathPkg "path"
 )
 
-func (this _core) Create(
+func (this _core) PkgCreate(
 	path string,
 	description string,
 	name string,

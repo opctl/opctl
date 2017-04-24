@@ -4,16 +4,16 @@ Updates the current version of opctl.
 
 > if a node is running, it will be automatically killed
 
-### channels
+## Options
 
-The `self-update` command takes an optional `-c` (or `--channel`)
-argument which allows updating from any available release channel:
+### `-c` or `--channel`
+The release channel to update from
 
 - `stable`(default)
 - `beta` (smoke tested alpha channel)
 - `alpha` (all bets are off)
 
-### examples
+## Examples
 
 ```shell
 # get latest stable release

@@ -10,7 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Context("streamEvents", func() {
+var _ = Context("events", func() {
 	Context("Execute", func() {
 		It("should call pkg.GetEventStream", func() {
 			/* arrange */
@@ -28,7 +28,7 @@ var _ = Context("streamEvents", func() {
 			}
 
 			/* act */
-			objectUnderTest.StreamEvents()
+			objectUnderTest.Events()
 
 			/* assert */
 			Expect(fakeConsumeNodeApi.GetEventStreamCallCount()).Should(Equal(1))
@@ -50,7 +50,7 @@ var _ = Context("streamEvents", func() {
 				}
 
 				/* act */
-				objectUnderTest.StreamEvents()
+				objectUnderTest.Events()
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -75,7 +75,7 @@ var _ = Context("streamEvents", func() {
 					}
 
 					/* act */
-					objectUnderTest.StreamEvents()
+					objectUnderTest.Events()
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).

@@ -19,5 +19,10 @@ inputs:
       description: version of opctl being released
 run:
   serial:
-  - op: { ref: compile-docker-image, inputs: { dockerDSocket, version }, outputs: { dockerImageRef } }
-  - op: { ref: push-docker-image, inputs: { dockerDSocket, dockerImageRef, dockerPassword, dockerUsername } }
+  - op:
+      pkg: { ref: compile-docker-image }
+      inputs: { dockerDSocket, version }
+      outputs: { dockerImageRef }
+  - op:
+      pkg: { ref: push-docker-image }
+      inputs: { dockerDSocket, dockerImageRef, dockerPassword, dockerUsername }

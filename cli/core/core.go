@@ -20,18 +20,8 @@ import (
 )
 
 type Core interface {
-	Create(
-		path string,
-		description string,
-		name string,
-	)
-
 	OpKill(
 		opId string,
-	)
-
-	ListPackages(
-		path string,
 	)
 
 	NodeCreate()
@@ -43,11 +33,27 @@ type Core interface {
 		pkgRef string,
 	)
 
+	PkgCreate(
+		path string,
+		description string,
+		name string,
+	)
+
+	PkgLs(
+		path string,
+	)
+
+	PkgPull(
+		pkgRef,
+		username,
+		password string,
+	)
+
 	PkgValidate(
 		pkgRef string,
 	)
 
-	StreamEvents()
+	Events()
 
 	SelfUpdate(
 		channel string,

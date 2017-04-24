@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("listPackages", func() {
+var _ = Context("pkgLs", func() {
 	Context("Execute", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -31,7 +31,7 @@ var _ = Context("listPackages", func() {
 				}
 
 				/* act */
-				objectUnderTest.ListPackages("")
+				objectUnderTest.PkgLs("")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -57,7 +57,7 @@ var _ = Context("listPackages", func() {
 				}
 
 				/* act */
-				objectUnderTest.ListPackages(providedPath)
+				objectUnderTest.PkgLs(providedPath)
 
 				/* assert */
 
@@ -80,7 +80,7 @@ var _ = Context("listPackages", func() {
 					}
 
 					/* act */
-					objectUnderTest.ListPackages("dummyPath")
+					objectUnderTest.PkgLs("dummyPath")
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).

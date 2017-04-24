@@ -29,15 +29,15 @@ func newCli(
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
-			core.StreamEvents()
+			core.Events()
 		}
 	})
 
 	cli.Command(
-		"ls", "List packages (only v0.1.3 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
+		"ls", "List packages (only v0.1.4 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
 			path := lsCmd.StringOpt("path", ".opspec", "Path to list packages from")
 			lsCmd.Action = func() {
-				core.ListPackages(*path)
+				core.PkgLs(*path)
 			}
 		})
 
@@ -78,7 +78,19 @@ func newCli(
 				name := createCmd.StringArg("NAME", "", "Package name")
 
 				createCmd.Action = func() {
-					core.Create(*path, *description, *name)
+					core.PkgCreate(*path, *description, *name)
+				}
+			})
+
+		pkgCmd.Command(
+			"pull", "Pulls a package from a remote git repo to the local pkg cache",
+			func(pullCmd *mow.Cmd) {
+				pkgRef := pullCmd.StringArg("PACKAGE_REF", "", "Package reference")
+				username := pullCmd.StringOpt("u username", "", "Username for auth")
+				password := pullCmd.StringOpt("p password", "", "Password for auth")
+
+				pullCmd.Action = func() {
+					core.PkgPull(*pkgRef, *username, *password)
 				}
 			})
 

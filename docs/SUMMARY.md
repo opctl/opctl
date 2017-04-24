@@ -11,7 +11,7 @@
         * [kill](cli/node/kill.md)
     * [pkg](cli/pkg/README.md)
         * [create](cli/pkg/create.md)
-        * [set](cli/pkg/set.md)
+        * [set](cli/pkg/pull.md)
         * [validate](cli/pkg/validate.md)
     * [run](cli/run.md)
     * [self-update](cli/self_update.md)
