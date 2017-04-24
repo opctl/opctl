@@ -11,9 +11,24 @@ outputs:
       description: directory containing the projects source code
 run:
   serial:
-    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: fmt-code, inputs: { srcDir }, outputs: { srcDir } }
+    - op:
+        pkg: { ref: clean }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: fmt-code }
+        inputs: { srcDir }
+        outputs: { srcDir }
     - parallel:
-      - op: { ref: test-lint, inputs: { srcDir }, outputs: { srcDir } }
-      - op: { ref: test-unit, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: test-coverage, inputs: { srcDir }, outputs: { srcDir } }
+      - op:
+          pkg: { ref: test-lint }
+          inputs: { srcDir }
+          outputs: { srcDir }
+      - op:
+          pkg: { ref: test-unit }
+          inputs: { srcDir }
+          outputs: { srcDir }
+    - op:
+        pkg: { ref: test-coverage }
+        inputs: { srcDir }
+        outputs: { srcDir }

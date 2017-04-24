@@ -16,5 +16,10 @@ outputs:
       description: directory containing the projects source code
 run:
   serial:
-    - op: { ref: test, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: publish-coverage, inputs: { gitBranch, srcDir } }
+    - op:
+        pkg: { ref: test }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: publish-coverage }
+        inputs: { gitBranch, srcDir }
