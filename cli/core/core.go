@@ -14,6 +14,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"github.com/virtual-go/fs/osfs"
+	"github.com/virtual-go/vioutil"
 	"github.com/virtual-go/vos"
 	"io"
 	"os"
@@ -29,8 +30,8 @@ type Core interface {
 	NodeKill()
 
 	Run(
-		args []string,
 		pkgRef string,
+		opts *RunOpts,
 	)
 
 	PkgCreate(
@@ -76,11 +77,12 @@ func New(
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
-		cliParamSatisfier: cliparamsatisfier.New(cliColorer, cliExiter, cliOutput, validate.New(), _os),
+		cliParamSatisfier: cliparamsatisfier.New(cliExiter, cliOutput, validate.New()),
 		nodeProvider:      local.New(),
 		updater:           updater.New(),
-		vos:               _os,
+		os:                _os,
 		writer:            os.Stdout,
+		ioutil:            vioutil.New(_fs),
 	}
 
 }
@@ -94,6 +96,7 @@ type _core struct {
 	cliParamSatisfier cliparamsatisfier.CliParamSatisfier
 	nodeProvider      nodeprovider.NodeProvider
 	updater           updater.Updater
-	vos               vos.VOS
+	os                vos.VOS
 	writer            io.Writer
+	ioutil            vioutil.VIOUtil
 }

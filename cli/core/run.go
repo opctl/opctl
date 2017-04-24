@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"os/signal"
@@ -11,8 +12,8 @@ import (
 )
 
 func (this _core) Run(
-	args []string,
 	pkgRef string,
+	opts *RunOpts,
 ) {
 
 	// ensure node running
@@ -24,7 +25,7 @@ func (this _core) Run(
 		this.nodeProvider.CreateNode()
 	}
 
-	cwd, err := this.vos.Getwd()
+	cwd, err := this.os.Getwd()
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
@@ -45,7 +46,18 @@ func (this _core) Run(
 		return // support fake exiter
 	}
 
-	argsMap := this.cliParamSatisfier.Satisfy(args, pkgManifest.Inputs)
+	argsMap := this.cliParamSatisfier.Satisfy(
+		cliparamsatisfier.NewInputSourcer(
+			[]cliparamsatisfier.InputSrc{
+				cliparamsatisfier.NewSliceInputSrc(opts.Args, "="),
+				cliparamsatisfier.NewYMLFileInputSrc(opts.ArgFile, this.ioutil),
+				cliparamsatisfier.NewEnvVarInputSrc(),
+				cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
+				cliparamsatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
+			},
+		),
+		pkgManifest.Inputs,
+	)
 
 	// init signal channel
 	intSignalsReceived := 0

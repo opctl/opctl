@@ -1,6 +1,11 @@
-## `pkg create` (since v0.1.15)
+## `pkg create [OPTIONS] NAME` (since v0.1.15)
 
 Creates a package
+
+## Arguments
+
+### `NAME`
+Name of the package
 
 ## Options
 

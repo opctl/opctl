@@ -5,6 +5,8 @@
 * [node](node/README.md)
     * [node create](node/create.md)
     * [node kill](node/kill.md)
+* [op](op/README.md)
+    * [op kill](op/kill.md)
 * [pkg](pkg/README.md)
     * [pkg create](pkg/create.md)
     * [pkg pull](pkg/pull.md)

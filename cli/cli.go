@@ -4,7 +4,7 @@ package main
 
 import (
 	mow "github.com/jawher/mow.cli"
-	"github.com/opctl/opctl/cli/core"
+	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
 )
 
@@ -13,7 +13,7 @@ type cli interface {
 }
 
 func newCli(
-	core core.Core,
+	core corePkg.Core,
 	cliColorer clicolorer.CliColorer,
 ) cli {
 
@@ -85,7 +85,7 @@ func newCli(
 		pkgCmd.Command(
 			"pull", "Pulls a package from a remote git repo to the local pkg cache",
 			func(pullCmd *mow.Cmd) {
-				pkgRef := pullCmd.StringArg("PACKAGE_REF", "", "Package reference")
+				pkgRef := pullCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
 				username := pullCmd.StringOpt("u username", "", "Username for auth")
 				password := pullCmd.StringOpt("p password", "", "Password for auth")
 
@@ -97,7 +97,7 @@ func newCli(
 		pkgCmd.Command(
 			"validate", "Validates a package",
 			func(validateCmd *mow.Cmd) {
-				pkgRef := validateCmd.StringArg("PACKAGE_REF", "", "Package reference")
+				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
 
 				validateCmd.Action = func() {
 					core.PkgValidate(*pkgRef)
@@ -106,16 +106,17 @@ func newCli(
 	})
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
-		args := runCmd.StringsOpt("a", []string{}, "Pass args in format: NAME[=VALUE] (gets from env if not provided)")
-		pkgRef := runCmd.StringArg("PACKAGE_REF", "", "Package reference")
+		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
+		argFile := runCmd.StringOpt("arg-file", ".opspec/args.yml", "Read in a file of args in yml format")
+		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `path` (if local ref) or `host/path/repo#tag` (if global ref))")
 
 		runCmd.Action = func() {
-			core.Run(*args, *pkgRef)
+			core.Run(*pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
 		}
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
-		channel := selfUpdateCmd.StringOpt("c channel ", "stable", "Release channel to update from (either 'stable' or 'beta'; defaults to 'stable' )")
+		channel := selfUpdateCmd.StringOpt("c channel ", "stable", "Release channel to update from (either `stable` or `beta`; defaults to `stable` )")
 		selfUpdateCmd.Action = func() {
 			core.SelfUpdate(*channel)
 		}

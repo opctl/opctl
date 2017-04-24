@@ -24,7 +24,7 @@ var _ = Context("core", func() {
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					vos:       fakeVOS,
+					os:        fakeVOS,
 				}
 
 				/* act */
@@ -54,7 +54,7 @@ var _ = Context("core", func() {
 
 				objectUnderTest := _core{
 					pkg: fakePkg,
-					vos: fakeVOS,
+					os:  fakeVOS,
 				}
 
 				/* act */
@@ -81,7 +81,7 @@ var _ = Context("core", func() {
 					objectUnderTest := _core{
 						pkg:       fakePkg,
 						cliExiter: fakeCliExiter,
-						vos:       new(vos.Fake),
+						os:        new(vos.Fake),
 					}
 
 					/* act */

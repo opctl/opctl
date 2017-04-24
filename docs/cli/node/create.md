@@ -5,6 +5,9 @@ stderr/stdout/stdin/PGId (process group id) and blocks until killed.
 
 > There can be only one node running at a time on a given machine.
 
+
+## Notes
+
 ### lockfile
 
 Upon creation, nodes populate a lockfile at

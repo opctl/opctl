@@ -17,11 +17,11 @@ type Fake struct {
 	NodeKillStub          func()
 	nodeKillMutex         sync.RWMutex
 	nodeKillArgsForCall   []struct{}
-	RunStub               func(args []string, pkgRef string)
+	RunStub               func(pkgRef string, opts *RunOpts)
 	runMutex              sync.RWMutex
 	runArgsForCall        []struct {
-		args   []string
 		pkgRef string
+		opts   *RunOpts
 	}
 	PkgCreateStub        func(path string, description string, name string)
 	pkgCreateMutex       sync.RWMutex
@@ -115,21 +115,16 @@ func (fake *Fake) NodeKillCallCount() int {
 	return len(fake.nodeKillArgsForCall)
 }
 
-func (fake *Fake) Run(args []string, pkgRef string) {
-	var argsCopy []string
-	if args != nil {
-		argsCopy = make([]string, len(args))
-		copy(argsCopy, args)
-	}
+func (fake *Fake) Run(pkgRef string, opts *RunOpts) {
 	fake.runMutex.Lock()
 	fake.runArgsForCall = append(fake.runArgsForCall, struct {
-		args   []string
 		pkgRef string
-	}{argsCopy, pkgRef})
-	fake.recordInvocation("Run", []interface{}{argsCopy, pkgRef})
+		opts   *RunOpts
+	}{pkgRef, opts})
+	fake.recordInvocation("Run", []interface{}{pkgRef, opts})
 	fake.runMutex.Unlock()
 	if fake.RunStub != nil {
-		fake.RunStub(args, pkgRef)
+		fake.RunStub(pkgRef, opts)
 	}
 }
 
@@ -139,10 +134,10 @@ func (fake *Fake) RunCallCount() int {
 	return len(fake.runArgsForCall)
 }
 
-func (fake *Fake) RunArgsForCall(i int) ([]string, string) {
+func (fake *Fake) RunArgsForCall(i int) (string, *RunOpts) {
 	fake.runMutex.RLock()
 	defer fake.runMutex.RUnlock()
-	return fake.runArgsForCall[i].args, fake.runArgsForCall[i].pkgRef
+	return fake.runArgsForCall[i].pkgRef, fake.runArgsForCall[i].opts
 }
 
 func (fake *Fake) PkgCreate(path string, description string, name string) {
