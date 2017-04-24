@@ -2,10 +2,12 @@
 
 List packages.
 
-### Path (since v0.1.15)
+## Options
 
-The optional `--path` argument allows specifying the path to list
-packages from; defaults to .opspec
+### `--path` (since v0.1.15)
+Path to list packages from; defaults to `.opspec`
+
+## Examples
 
 ```shell
 $ opctl ls -c somePath

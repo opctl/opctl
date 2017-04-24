@@ -10,8 +10,8 @@ import (
 	"path"
 )
 
-var _ = Context("create", func() {
-	Context("Execute", func() {
+var _ = Context("core", func() {
+	Context("PkgCreate", func() {
 		Context("vos.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
@@ -28,7 +28,7 @@ var _ = Context("create", func() {
 				}
 
 				/* act */
-				objectUnderTest.Create("", "", "")
+				objectUnderTest.PkgCreate("", "", "")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -58,7 +58,7 @@ var _ = Context("create", func() {
 				}
 
 				/* act */
-				objectUnderTest.Create(providedPath, providedPkgDescription, providedPkgName)
+				objectUnderTest.PkgCreate(providedPath, providedPkgDescription, providedPkgName)
 
 				/* assert */
 				actualPath,
@@ -85,7 +85,7 @@ var _ = Context("create", func() {
 					}
 
 					/* act */
-					objectUnderTest.Create("", "", "")
+					objectUnderTest.PkgCreate("", "", "")
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).

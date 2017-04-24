@@ -7,7 +7,7 @@ import (
 	"text/tabwriter"
 )
 
-func (this _core) ListPackages(
+func (this _core) PkgLs(
 	path string,
 ) {
 	_tabWriter := new(tabwriter.Writer)

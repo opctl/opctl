@@ -10,7 +10,10 @@ outputs:
       description: dir containing the doc source
 run:
   serial:
-    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir }}
+    - op:
+        pkg: { ref: clean }
+        inputs: { srcDir }
+        outputs: { srcDir }
     - container:
         cmd:
           - sh

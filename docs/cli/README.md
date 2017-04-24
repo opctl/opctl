@@ -7,7 +7,7 @@
     * [node kill](node/kill.md)
 * [pkg](pkg/README.md)
     * [pkg create](pkg/create.md)
-    * [pkg set](pkg/set.md)
+    * [pkg pull](pkg/pull.md)
     * [pkg validate](pkg/validate.md)
 * [run](run.md)
 * [self-update](self_update.md)

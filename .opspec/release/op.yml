@@ -37,7 +37,16 @@ inputs:
       description: version of opctl being released
 run:
   serial:
-    - op: { ref: set-version, inputs: { srcDir, version }, outputs: { srcDir } }
-    - op: { ref: build, inputs: { srcDir, gitBranch, srcDir } }
-    - op: { ref: release-to-equinox, inputs: { equinoxSigningKey, equinoxToken, srcDir, version } }
-    - op: { ref: release-to-docker, inputs: { dockerDSocket, dockerPassword, dockerUsername, version } }
+    - op:
+        pkg: { ref: set-version }
+        inputs: { srcDir, version }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: build }
+        inputs: { srcDir, gitBranch, srcDir }
+    - op:
+        pkg: { ref: release-to-equinox }
+        inputs: { equinoxSigningKey, equinoxToken, srcDir, version }
+    - op:
+        pkg: { ref: release-to-docker }
+        inputs: { dockerDSocket, dockerPassword, dockerUsername, version }

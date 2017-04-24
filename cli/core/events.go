@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (this _core) StreamEvents() {
+func (this _core) Events() {
 
 	// ensure node running
 	nodes, err := this.nodeProvider.ListNodes()
