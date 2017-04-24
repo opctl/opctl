@@ -64,7 +64,7 @@ func (this _caller) Call(
 		err = this.opCaller.Call(
 			inboundScope,
 			callId,
-			path.Join(path.Dir(pkgRef), scg.Op.Pkg.Ref),
+			path.Dir(pkgRef),
 			rootOpId,
 			scg.Op,
 		)

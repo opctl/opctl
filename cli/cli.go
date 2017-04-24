@@ -82,17 +82,6 @@ func newCli(
 				}
 			})
 
-		pkgCmd.Command("set", "Set attributes of a package", func(setCmd *mow.Cmd) {
-			setCmd.Command("description", "Set the description of a package", func(descriptionCmd *mow.Cmd) {
-				description := descriptionCmd.StringArg("DESCRIPTION", "", "Package description")
-				pkgRef := descriptionCmd.StringArg("PACKAGE_REF", "", "Package reference")
-
-				descriptionCmd.Action = func() {
-					core.PkgSetDescription(*description, *pkgRef)
-				}
-			})
-		})
-
 		pkgCmd.Command(
 			"validate", "Validates a package",
 			func(validateCmd *mow.Cmd) {
@@ -109,7 +98,7 @@ func newCli(
 		pkgRef := runCmd.StringArg("PACKAGE_REF", "", "Package reference")
 
 		runCmd.Action = func() {
-			core.RunOp(*args, *pkgRef)
+			core.Run(*args, *pkgRef)
 		}
 	})
 

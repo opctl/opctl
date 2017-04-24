@@ -6,7 +6,7 @@ import (
 
 // Get gets a package according to opspec package resolution rules
 func (this pkg) Get(
-	req *GetReq,
+	pkgRef string,
 ) (*model.PkgManifest, error) {
-	return this.getter.Get(req)
+	return this.manifestUnmarshaller.Unmarshal(pkgRef)
 }

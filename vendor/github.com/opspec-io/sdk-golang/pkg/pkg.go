@@ -5,20 +5,36 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/fs"
+	"github.com/opspec-io/sdk-golang/util/vgit"
+	fsPkg "github.com/virtual-go/fs"
 	"github.com/virtual-go/fs/osfs"
 	"github.com/virtual-go/vioutil"
+	"github.com/virtual-go/vos"
 )
 
 type Pkg interface {
 	// Create creates an opspec package
 	Create(
-		req CreateReq,
+		path,
+		pkgName,
+		pkgDescription string,
 	) error
 
-	// Get gets a package according to opspec package resolution rules
+	// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
+	Resolve(
+		basePath,
+		pkgRef string,
+	) (string, bool)
+
+	// Pull pulls a package from a remote source
+	Pull(
+		pkgRef string,
+		req *PullOpts,
+	) error
+
+	// Get gets a local package
 	Get(
-		req *GetReq,
+		pkgPath string,
 	) (*model.PkgManifest, error)
 
 	// List lists packages according to opspec package resolution rules
@@ -28,34 +44,37 @@ type Pkg interface {
 
 	// SetDescription sets the description of a package
 	SetDescription(
-		req SetDescriptionReq,
+		pkgPath,
+		pkgDescription string,
 	) error
 
 	// Validate validates an opspec package
 	Validate(
-		pkgRef string,
+		pkgPath string,
 	) []error
 }
 
 func New() Pkg {
-	fileSystem := osfs.New()
-	ioUtil := vioutil.New(fileSystem)
-	validator := newValidator(fileSystem)
-	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, validator)
+	fs := osfs.New()
+	ioUtil := vioutil.New(fs)
+	manifestValidator := newManifestValidator(fs)
+	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
-		fileSystem:           fileSystem,
-		getter:               newGetter(fileSystem, manifestUnmarshaller),
+		fs:                   fs,
+		git:                  vgit.New(),
 		ioUtil:               ioUtil,
-		validator:            validator,
+		os:                   vos.New(fs),
 		manifestUnmarshaller: manifestUnmarshaller,
+		manifestValidator:    manifestValidator,
 	}
 }
 
 type pkg struct {
-	fileSystem           fs.FS
-	getter               getter
+	fs                   fsPkg.FS
+	git                  vgit.VGit
 	ioUtil               vioutil.VIOUtil
-	validator            validator
+	os                   vos.VOS
+	manifestValidator    manifestValidator
 	manifestUnmarshaller manifestUnmarshaller
 }

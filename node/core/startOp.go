@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"path"
 )
 
 func (this _core) StartOp(
@@ -11,12 +12,15 @@ func (this _core) StartOp(
 	err error,
 ) {
 
+	pkgBasePath := path.Dir(req.PkgRef)
+	pkgName := path.Base(req.PkgRef)
+
 	opId = this.uniqueStringFactory.Construct()
 
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
 		Pkg: &model.SCGOpCallPkg{
-			Ref: req.PkgRef,
+			Ref: pkgName,
 		},
 		Inputs: map[string]string{},
 	}
@@ -29,7 +33,7 @@ func (this _core) StartOp(
 		this.opCaller.Call(
 			req.Args,
 			opId,
-			req.PkgRef,
+			pkgBasePath,
 			opId,
 			scgOpCall,
 		)

@@ -7,7 +7,7 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/virtual-go/vos"
-	"path/filepath"
+	"path"
 )
 
 var _ = Context("create", func() {
@@ -41,17 +41,16 @@ var _ = Context("create", func() {
 				fakePkg := new(pkg.Fake)
 
 				providedPath := "dummyPath"
-				providedName := "dummyName"
+				providedPkgName := "dummyPkgName"
+				providedPkgDescription := "dummyPkgDescription"
 				wdReturnedFromVOS := "dummyWorkDir"
+
+				expectedPath := path.Join(wdReturnedFromVOS, providedPath, providedPkgName)
+				expectedPkgName := providedPkgName
+				expectedPkgDescription := providedPkgDescription
 
 				fakeVOS := new(vos.Fake)
 				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
-
-				expectedReq := pkg.CreateReq{
-					Path:        filepath.Join(wdReturnedFromVOS, providedPath, providedName),
-					Name:        providedName,
-					Description: "dummyPkgDescription",
-				}
 
 				objectUnderTest := _core{
 					pkg: fakePkg,
@@ -59,11 +58,16 @@ var _ = Context("create", func() {
 				}
 
 				/* act */
-				objectUnderTest.Create(providedPath, expectedReq.Description, expectedReq.Name)
+				objectUnderTest.Create(providedPath, providedPkgDescription, providedPkgName)
 
 				/* assert */
+				actualPath,
+					actualPkgName,
+					actualPkgDescription := fakePkg.CreateArgsForCall(0)
 
-				Expect(fakePkg.CreateArgsForCall(0)).Should(Equal(expectedReq))
+				Expect(actualPath).To(Equal(expectedPath))
+				Expect(actualPkgName).To(Equal(expectedPkgName))
+				Expect(actualPkgDescription).To(Equal(expectedPkgDescription))
 			})
 			Context("pkg.Create errors", func() {
 				It("should call exiter w/ expected args", func() {

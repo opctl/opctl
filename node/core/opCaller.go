@@ -21,7 +21,7 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Data,
 		opId string,
-		pkgRef string,
+		pkgBasePath string,
 		rootOpId string,
 		scgOpCall *model.SCGOpCall,
 	) (
@@ -59,12 +59,18 @@ type _opCaller struct {
 func (this _opCaller) Call(
 	inboundScope map[string]*model.Data,
 	opId string,
-	pkgRef string,
+	pkgBasePath string,
 	rootOpId string,
 	scgOpCall *model.SCGOpCall,
 ) (
 	err error,
 ) {
+
+	pkgRef, err := this.getPkgPath(pkgBasePath, inboundScope, scgOpCall.Pkg)
+	if nil != err {
+		return
+	}
+
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
@@ -136,7 +142,7 @@ func (this _opCaller) Call(
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
-	_pkg, err := this.getPkg(inboundScope, scgOpCall.Pkg)
+	_pkg, err := this.pkg.Get(pkgRef)
 	if nil != err {
 		return
 	}
@@ -186,13 +192,11 @@ func (this _opCaller) Call(
 
 }
 
-func (this _opCaller) getPkg(
+func (this _opCaller) getPkgPath(
+	pkgBasePath string,
 	inboundScope map[string]*model.Data,
 	scgOpCallPkg *model.SCGOpCallPkg,
-) (
-	pkgManifest *model.PkgManifest,
-	err error,
-) {
+) (string, error) {
 
 	// interpolate strings
 	interpolate := interpolatePkg.New()
@@ -204,13 +208,21 @@ func (this _opCaller) getPkg(
 		password = interpolate.Interpolate(scgPullAuth.Password, inboundScope)
 	}
 
-	return this.pkg.Get(
-		&pkg.GetReq{
-			PkgRef:   pkgRef,
-			Username: username,
-			Password: password,
-		},
-	)
+	pkgPath, ok := this.pkg.Resolve(pkgBasePath, pkgRef)
+	if !ok {
+		// pkg not resolved; attempt to pull it
+		err := this.pkg.Pull(pkgRef, &pkg.PullOpts{Username: username, Password: password})
+		if nil != err {
+			return "", err
+		}
+
+		// resolve pulled pkg
+		pkgPath, ok = this.pkg.Resolve(pkgBasePath, pkgRef)
+		if !ok {
+			return "", fmt.Errorf("Unable to resolve pulled pkg '%v' from '%v'", pkgRef, pkgBasePath)
+		}
+	}
+	return pkgPath, nil
 }
 
 func (this _opCaller) txOutputs(

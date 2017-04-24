@@ -22,12 +22,12 @@ func (this _core) PkgValidate(
 		}
 
 		// make our pkgRef absolute
-		pwd, err := this.vos.Getwd()
+		cwd, err := this.vos.Getwd()
 		if nil != err {
 			this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 			return // support fake exiter
 		}
-		pkgRef = path.Join(pwd, pkgRef)
+		pkgRef = path.Join(cwd, pkgRef)
 	}
 
 	errs := this.pkg.Validate(pkgRef)

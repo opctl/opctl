@@ -16,14 +16,14 @@ func (this _core) ListPackages(
 
 	fmt.Fprintln(_tabWriter, "NAME\tDESCRIPTION")
 
-	pwd, err := this.vos.Getwd()
+	cwd, err := this.vos.Getwd()
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
 	packages, err := this.pkg.List(
-		pathPkg.Join(pwd, path),
+		pathPkg.Join(cwd, path),
 	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})

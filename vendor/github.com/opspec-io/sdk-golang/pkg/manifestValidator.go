@@ -1,6 +1,6 @@
 package pkg
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
+//go:generate counterfeiter -o ./fakeManifestValidator.go --fake-name fakeManifestValidator ./ manifestValidator
 
 import (
 	"fmt"
@@ -11,13 +11,13 @@ import (
 	"path"
 )
 
-type validator interface {
-	Validate(pkgRef string) []error
+type manifestValidator interface {
+	Validate(pkgPath string) []error
 }
 
-func newValidator(
+func newManifestValidator(
 	fs fs.FS,
-) validator {
+) manifestValidator {
 	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
@@ -30,37 +30,37 @@ func newValidator(
 		panic(err)
 	}
 
-	return _validator{
+	return _manifestValidator{
 		ioUtil:         vioutil.New(fs),
 		manifestSchema: manifestSchema,
 	}
 
 }
 
-type _validator struct {
+type _manifestValidator struct {
 	ioUtil         vioutil.VIOUtil
 	manifestSchema *gojsonschema.Schema
 }
 
-func (this _validator) Validate(
-	pkgRef string,
+func (this _manifestValidator) Validate(
+	pkgPath string,
 ) []error {
-	var errs []error
 
 	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path.Join(pkgRef, ManifestFileName),
+		path.Join(pkgPath, OpDotYmlFileName),
 	)
 	if nil != err {
 		// handle syntax errors specially
-		return append(errs, err)
+		return []error{err}
 	}
 
 	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
 	if nil != err {
 		// handle syntax errors specially
-		return append(errs, err)
+		return []error{err}
 	}
 
+	var errs []error
 	result, err := this.manifestSchema.Validate(
 		gojsonschema.NewBytesLoader(manifestJSONBytes),
 	)

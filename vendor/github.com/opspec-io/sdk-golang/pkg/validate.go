@@ -2,7 +2,7 @@ package pkg
 
 // Validate validates an opspec package
 func (this pkg) Validate(
-	pkgRef string,
+	pkgPath string,
 ) []error {
-	return this.validator.Validate(pkgRef)
+	return this.manifestValidator.Validate(pkgPath)
 }
