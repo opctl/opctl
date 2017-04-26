@@ -12,6 +12,8 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 - [Validate file/dir inputs are valid files/dirs (respectively)](https://github.com/opctl/opctl/issues/175)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
 - [Support since in event filter](https://github.com/opctl/opctl/issues/187)
+- [Add github style heading links to web docs](https://github.com/opctl/opctl/issues/194)
+- [Add copy code to clipboard link to web docs](https://github.com/opctl/opctl/issues/195)
 
 ### Removed
 

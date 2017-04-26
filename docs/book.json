@@ -1,5 +1,6 @@
 {
   "plugins": [
+    "copy-code-button",
     "anchors",
     "include-codeblock",
     "edit-link",

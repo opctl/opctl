@@ -3,9 +3,9 @@
 To disable color, include a `--no-color` flag w/ your
 command.
 > this may increase readability in environments not supporting
-> color escape codes
+> color escape codes or piping output to another program
 
-example:
+## Examples
 
 ```shell
 opctl --no-color events

@@ -7,14 +7,14 @@ Start and wait on an op
 ## Arguments
 
 ### `PKG_REF`
-Package reference (either `path` (if local ref) or `host/path/repo#tag` (if global ref)
+Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))
 
 ## Options
 
 ### `-a`
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
-### `--arg-file`
+### `--arg-file` *default: `.opspec/arg.yml`* (since v0.1.19)
 Read in a file of args in yml format
 
 ## Examples
@@ -36,6 +36,7 @@ $ opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" g
 Input sources are checked according to the following precedence:
 
 - arg provided via `-a` option
+- arg file (since v0.1.19)
 - env var
 - default
 - prompt

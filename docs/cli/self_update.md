@@ -1,4 +1,4 @@
-## `self-update`
+## `self-update [OPTIONS]`
 
 Updates the current version of opctl.
 
@@ -6,10 +6,10 @@ Updates the current version of opctl.
 
 ## Options
 
-### `-c` or `--channel`
+### `-c` or `--channel` *default: `stable`*
 The release channel to update from
 
-- `stable`(default)
+- `stable`
 - `beta` (smoke tested alpha channel)
 - `alpha` (all bets are off)
 

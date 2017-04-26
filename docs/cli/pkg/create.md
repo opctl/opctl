@@ -12,7 +12,7 @@ Name of the package
 ### `-d` or `--description`
 Description of the package
 
-### `--path`
+### `--path` *default: `.opspec`*
 Path to create the package at
 
 ## Examples

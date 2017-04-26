@@ -1,11 +1,11 @@
-## `ls`
+## `ls [OPTIONS]`
 
 List packages.
 
 ## Options
 
-### `--path` (since v0.1.15)
-Path to list packages from; defaults to `.opspec`
+### `--path` *default: `.opspec`* (since v0.1.15)
+Path to list packages from
 
 ## Examples
 

@@ -9,4 +9,4 @@ Validates a package according to:
 ## Arguments
 
 ### `PKG_REF`
-Package reference (`host/path/repo#tag`)
+Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))

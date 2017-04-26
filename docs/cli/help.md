@@ -1,9 +1,9 @@
-## `-h` (or `--help`)
+## `-h` or `--help`
 
 For context specific help, include a `-h` (or `--help`) flag w/ your
 command.
 
-example:
+## Examples
 
 ```shell
 opctl node create -h
