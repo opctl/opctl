@@ -4,6 +4,8 @@ listen to node events.
 
 > if a node isn't running, one will be automatically created.
 
+## Notes
+
 ### replaying
 
 Events are persisted to disk and can be replayed (since v0.1.15).

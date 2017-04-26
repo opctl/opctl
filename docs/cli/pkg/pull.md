@@ -10,10 +10,10 @@ Package reference (`host/path/repo#tag`)
 ## Options
 
 ### `-u` or `--username`
-Username used for auth w/ source
+Username used for pull auth
 
 ### `-p` or `--password`
-Password used for auth w/ source
+Password used for pull auth
 
 ## Examples
 

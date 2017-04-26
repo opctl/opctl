@@ -86,8 +86,8 @@ func newCli(
 			"pull", "Pulls a package from a remote git repo to the local pkg cache",
 			func(pullCmd *mow.Cmd) {
 				pkgRef := pullCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
-				username := pullCmd.StringOpt("u username", "", "Username for auth")
-				password := pullCmd.StringOpt("p password", "", "Password for auth")
+				username := pullCmd.StringOpt("u username", "", "Username used for pull auth")
+				password := pullCmd.StringOpt("p password", "", "Password used for pull auth")
 
 				pullCmd.Action = func() {
 					core.PkgPull(*pkgRef, *username, *password)
@@ -97,7 +97,7 @@ func newCli(
 		pkgCmd.Command(
 			"validate", "Validates a package",
 			func(validateCmd *mow.Cmd) {
-				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
+				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))")
 
 				validateCmd.Action = func() {
 					core.PkgValidate(*pkgRef)
@@ -108,7 +108,7 @@ func newCli(
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
 		argFile := runCmd.StringOpt("arg-file", ".opspec/args.yml", "Read in a file of args in yml format")
-		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `path` (if local ref) or `host/path/repo#tag` (if global ref))")
+		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))")
 
 		runCmd.Action = func() {
 			core.Run(*pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
@@ -116,7 +116,7 @@ func newCli(
 	})
 
 	cli.Command("self-update", "Update opctl", func(selfUpdateCmd *mow.Cmd) {
-		channel := selfUpdateCmd.StringOpt("c channel ", "stable", "Release channel to update from (either `stable` or `beta`; defaults to `stable` )")
+		channel := selfUpdateCmd.StringOpt("c channel ", "stable", "Release channel to update from (either `stable`, `alpha`, or `beta`)")
 		selfUpdateCmd.Action = func() {
 			core.SelfUpdate(*channel)
 		}
