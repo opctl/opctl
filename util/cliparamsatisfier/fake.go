@@ -8,37 +8,38 @@ import (
 )
 
 type Fake struct {
-	SatisfyStub        func(options []string, params map[string]*model.Param) (argMap map[string]*model.Data)
+	SatisfyStub        func(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Data
 	satisfyMutex       sync.RWMutex
 	satisfyArgsForCall []struct {
-		options []string
-		params  map[string]*model.Param
+		inputSourcer InputSourcer
+		inputs       map[string]*model.Param
 	}
 	satisfyReturns struct {
+		result1 map[string]*model.Data
+	}
+	satisfyReturnsOnCall map[int]struct {
 		result1 map[string]*model.Data
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Satisfy(options []string, params map[string]*model.Param) (argMap map[string]*model.Data) {
-	var optionsCopy []string
-	if options != nil {
-		optionsCopy = make([]string, len(options))
-		copy(optionsCopy, options)
-	}
+func (fake *Fake) Satisfy(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Data {
 	fake.satisfyMutex.Lock()
+	ret, specificReturn := fake.satisfyReturnsOnCall[len(fake.satisfyArgsForCall)]
 	fake.satisfyArgsForCall = append(fake.satisfyArgsForCall, struct {
-		options []string
-		params  map[string]*model.Param
-	}{optionsCopy, params})
-	fake.recordInvocation("Satisfy", []interface{}{optionsCopy, params})
+		inputSourcer InputSourcer
+		inputs       map[string]*model.Param
+	}{inputSourcer, inputs})
+	fake.recordInvocation("Satisfy", []interface{}{inputSourcer, inputs})
 	fake.satisfyMutex.Unlock()
 	if fake.SatisfyStub != nil {
-		return fake.SatisfyStub(options, params)
-	} else {
-		return fake.satisfyReturns.result1
+		return fake.SatisfyStub(inputSourcer, inputs)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.satisfyReturns.result1
 }
 
 func (fake *Fake) SatisfyCallCount() int {
@@ -47,15 +48,27 @@ func (fake *Fake) SatisfyCallCount() int {
 	return len(fake.satisfyArgsForCall)
 }
 
-func (fake *Fake) SatisfyArgsForCall(i int) ([]string, map[string]*model.Param) {
+func (fake *Fake) SatisfyArgsForCall(i int) (InputSourcer, map[string]*model.Param) {
 	fake.satisfyMutex.RLock()
 	defer fake.satisfyMutex.RUnlock()
-	return fake.satisfyArgsForCall[i].options, fake.satisfyArgsForCall[i].params
+	return fake.satisfyArgsForCall[i].inputSourcer, fake.satisfyArgsForCall[i].inputs
 }
 
 func (fake *Fake) SatisfyReturns(result1 map[string]*model.Data) {
 	fake.SatisfyStub = nil
 	fake.satisfyReturns = struct {
+		result1 map[string]*model.Data
+	}{result1}
+}
+
+func (fake *Fake) SatisfyReturnsOnCall(i int, result1 map[string]*model.Data) {
+	fake.SatisfyStub = nil
+	if fake.satisfyReturnsOnCall == nil {
+		fake.satisfyReturnsOnCall = make(map[int]struct {
+			result1 map[string]*model.Data
+		})
+	}
+	fake.satisfyReturnsOnCall[i] = struct {
 		result1 map[string]*model.Data
 	}{result1}
 }

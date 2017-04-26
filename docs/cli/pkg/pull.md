@@ -1,6 +1,11 @@
-## `pkg pull` (since v0.1.19)
+## `pkg pull [OPTIONS] PKG_REF` (since v0.1.19)
 
 Pulls a package from a remote git repo to the local pkg cache
+
+## Arguments
+
+### `PKG_REF`
+Package reference (`host/path/repo#tag`)
 
 ## Options
 

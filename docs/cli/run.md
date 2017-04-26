@@ -1,12 +1,37 @@
-## `run`
+## `run [OPTIONS] PKG_REF`
 
-Run an op.
+Start and wait on an op
 
 > if a node isn't running, one will be automatically created
 
-### inputs
+## Arguments
 
-#### sources
+### `PKG_REF`
+Package reference (either `path` (if local ref) or `host/path/repo#tag` (if global ref)
+
+## Options
+
+### `-a`
+Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
+
+### `--arg-file`
+Read in a file of args in yml format
+
+## Examples
+
+### local ref w/out args
+```shell
+$ opctl run myop
+```
+
+### global ref w/ args
+```shell
+$ opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/chrisdostert/slack-msg-chan#0.1.1
+```
+
+## Notes
+
+### input sources
 
 Input sources are checked according to the following precedence:
 
@@ -15,7 +40,7 @@ Input sources are checked according to the following precedence:
 - default
 - prompt
 
-#### prompt
+### input prompts
 
 Inputs which are invalid or missing will result in the cli prompting for
 them.
@@ -27,6 +52,7 @@ them.
 example:
 
 ```shell
+
 -
   Please provide value for parameter.
   Name: version

@@ -25,7 +25,7 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					vos:       fakeVOS,
+					os:        fakeVOS,
 				}
 
 				/* act */
@@ -51,7 +51,7 @@ var _ = Context("pkgValidate", func() {
 			objectUnderTest := _core{
 				pkg:       fakePkg,
 				cliExiter: new(cliexiter.Fake),
-				vos:       fakeVOS,
+				os:        fakeVOS,
 			}
 
 			/* act */
@@ -82,7 +82,7 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest := _core{
 					pkg:       fakePkg,
 					cliExiter: fakeCliExiter,
-					vos:       new(vos.Fake),
+					os:        new(vos.Fake),
 				}
 
 				/* act */
@@ -111,7 +111,7 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest := _core{
 					pkg:       fakePkg,
 					cliExiter: fakeCliExiter,
-					vos:       new(vos.Fake),
+					os:        new(vos.Fake),
 				}
 
 				/* act */

@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/nodeprovider"
@@ -13,13 +12,14 @@ import (
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/virtual-go/vioutil"
 	"github.com/virtual-go/vos"
 	"time"
 )
 
 var _ = Context("Run", func() {
 	Context("Execute", func() {
-		Context("vos.Getwd errors", func() {
+		Context("os.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				fakeVOS := new(vos.Fake)
@@ -32,18 +32,18 @@ var _ = Context("Run", func() {
 					pkg:          new(pkg.Fake),
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					vos:          fakeVOS,
+					os:           fakeVOS,
 				}
 
 				/* act */
-				objectUnderTest.Run([]string{}, "dummyName")
+				objectUnderTest.Run("dummyName", &RunOpts{})
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
 					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		Context("vos.Getwd doesn't error", func() {
+		Context("os.Getwd doesn't error", func() {
 			It("should call pkg.Resolve w/ expected args", func() {
 				/* arrange */
 				providedPkgRef := "dummyPkgName"
@@ -62,11 +62,12 @@ var _ = Context("Run", func() {
 					pkg:          fakePkg,
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					vos:          fakeVOS,
+					os:           fakeVOS,
+					ioutil:       new(vioutil.Fake),
 				}
 
 				/* act */
-				objectUnderTest.Run([]string{}, providedPkgRef)
+				objectUnderTest.Run(providedPkgRef, &RunOpts{})
 
 				/* assert */
 				actualPkgBasePath, actualPkgRef := fakePkg.ResolveArgsForCall(0)
@@ -102,11 +103,12 @@ var _ = Context("Run", func() {
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
 						nodeProvider:      new(nodeprovider.Fake),
-						vos:               fakeVOS,
+						os:                fakeVOS,
+						ioutil:            new(vioutil.Fake),
 					}
 
 					/* act */
-					objectUnderTest.Run([]string{}, "")
+					objectUnderTest.Run("", &RunOpts{})
 
 					/* assert */
 					Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedPkgRef))
@@ -126,11 +128,12 @@ var _ = Context("Run", func() {
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							nodeProvider:      new(nodeprovider.Fake),
-							vos:               new(vos.Fake),
+							os:                new(vos.Fake),
+							ioutil:            new(vioutil.Fake),
 						}
 
 						/* act */
-						objectUnderTest.Run([]string{}, "dummyName")
+						objectUnderTest.Run("", &RunOpts{})
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -141,23 +144,20 @@ var _ = Context("Run", func() {
 					It("should call paramSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
 						param1Name := "DUMMY_PARAM1_NAME"
-						arg1ValueString := "dummyParam1Value"
-						arg1Value := &model.Data{String: &arg1ValueString}
-
-						providedArgs := []string{fmt.Sprintf("%v=%v", param1Name, arg1Value.String)}
-
-						expectedParams := map[string]*model.Param{
-							param1Name: {
-								String: &model.StringParam{},
+						pkgManifest := &model.PkgManifest{
+							Inputs: map[string]*model.Param{
+								param1Name: {
+									String: &model.StringParam{},
+								},
 							},
 						}
+
+						expectedParams := pkgManifest.Inputs
 
 						fakePkg := new(pkg.Fake)
 						fakePkg.ResolveReturns("", true)
 						fakePkg.GetReturns(
-							&model.PkgManifest{
-								Inputs: expectedParams,
-							},
+							pkgManifest,
 							nil,
 						)
 
@@ -175,15 +175,16 @@ var _ = Context("Run", func() {
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: fakeCliParamSatisfier,
 							nodeProvider:      new(nodeprovider.Fake),
-							vos:               new(vos.Fake),
+							os:                new(vos.Fake),
+							ioutil:            new(vioutil.Fake),
 						}
 
 						/* act */
-						objectUnderTest.Run(providedArgs, "dummyPkgName")
+						objectUnderTest.Run("", &RunOpts{})
 
 						/* assert */
-						actualArgs, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
-						Expect(actualArgs).To(Equal(providedArgs))
+						_, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
+
 						Expect(actualParams).To(Equal(expectedParams))
 					})
 					It("should call consumeNodeApi.StartOp w/ expected args", func() {
@@ -221,11 +222,12 @@ var _ = Context("Run", func() {
 							cliExiter:         new(cliexiter.Fake),
 							cliParamSatisfier: fakeCliParamSatisfier,
 							nodeProvider:      new(nodeprovider.Fake),
-							vos:               fakeVOS,
+							os:                fakeVOS,
+							ioutil:            new(vioutil.Fake),
 						}
 
 						/* act */
-						objectUnderTest.Run([]string{}, "")
+						objectUnderTest.Run("", &RunOpts{})
 
 						/* assert */
 						actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
@@ -250,11 +252,12 @@ var _ = Context("Run", func() {
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
 								nodeProvider:      new(nodeprovider.Fake),
-								vos:               new(vos.Fake),
+								os:                new(vos.Fake),
+								ioutil:            new(vioutil.Fake),
 							}
 
 							/* act */
-							objectUnderTest.Run([]string{}, "dummyPkgName")
+							objectUnderTest.Run("", &RunOpts{})
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -288,11 +291,12 @@ var _ = Context("Run", func() {
 								cliExiter:         new(cliexiter.Fake),
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
 								nodeProvider:      new(nodeprovider.Fake),
-								vos:               new(vos.Fake),
+								os:                new(vos.Fake),
+								ioutil:            new(vioutil.Fake),
 							}
 
 							/* act */
-							objectUnderTest.Run([]string{}, "dummyPkgName")
+							objectUnderTest.Run("", &RunOpts{})
 
 							/* assert */
 							actualReq := fakeConsumeNodeApi.GetEventStreamArgsForCall(0)
@@ -323,11 +327,12 @@ var _ = Context("Run", func() {
 									cliExiter:         fakeCliExiter,
 									cliParamSatisfier: new(cliparamsatisfier.Fake),
 									nodeProvider:      new(nodeprovider.Fake),
-									vos:               new(vos.Fake),
+									os:                new(vos.Fake),
+									ioutil:            new(vioutil.Fake),
 								}
 
 								/* act */
-								objectUnderTest.Run([]string{}, "dummyPkgName")
+								objectUnderTest.Run("", &RunOpts{})
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -355,11 +360,12 @@ var _ = Context("Run", func() {
 										cliExiter:         fakeCliExiter,
 										cliParamSatisfier: new(cliparamsatisfier.Fake),
 										nodeProvider:      new(nodeprovider.Fake),
-										vos:               new(vos.Fake),
+										os:                new(vos.Fake),
+										ioutil:            new(vioutil.Fake),
 									}
 
 									/* act */
-									objectUnderTest.Run([]string{}, "dummyPkgName")
+									objectUnderTest.Run("", &RunOpts{})
 
 									/* assert */
 									Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -404,11 +410,12 @@ var _ = Context("Run", func() {
 													cliOutput:         new(clioutput.Fake),
 													cliParamSatisfier: new(cliparamsatisfier.Fake),
 													nodeProvider:      new(nodeprovider.Fake),
-													vos:               new(vos.Fake),
+													os:                new(vos.Fake),
+													ioutil:            new(vioutil.Fake),
 												}
 
 												/* act/assert */
-												objectUnderTest.Run([]string{}, "dummyPkgName")
+												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
 													Should(Equal(cliexiter.ExitReq{Code: 0}))
 											})
@@ -447,11 +454,12 @@ var _ = Context("Run", func() {
 													cliOutput:         new(clioutput.Fake),
 													cliParamSatisfier: new(cliparamsatisfier.Fake),
 													nodeProvider:      new(nodeprovider.Fake),
-													vos:               new(vos.Fake),
+													os:                new(vos.Fake),
+													ioutil:            new(vioutil.Fake),
 												}
 
 												/* act/assert */
-												objectUnderTest.Run([]string{}, "dummyPkgName")
+												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
 													Should(Equal(cliexiter.ExitReq{Code: 137}))
 											})
@@ -491,11 +499,12 @@ var _ = Context("Run", func() {
 													cliOutput:         new(clioutput.Fake),
 													cliParamSatisfier: new(cliparamsatisfier.Fake),
 													nodeProvider:      new(nodeprovider.Fake),
-													vos:               new(vos.Fake),
+													os:                new(vos.Fake),
+													ioutil:            new(vioutil.Fake),
 												}
 
 												/* act/assert */
-												objectUnderTest.Run([]string{}, "dummyPkgName")
+												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
 													Should(Equal(cliexiter.ExitReq{Code: 1}))
 											})
@@ -534,11 +543,12 @@ var _ = Context("Run", func() {
 													cliOutput:         new(clioutput.Fake),
 													cliParamSatisfier: new(cliparamsatisfier.Fake),
 													nodeProvider:      new(nodeprovider.Fake),
-													vos:               new(vos.Fake),
+													os:                new(vos.Fake),
+													ioutil:            new(vioutil.Fake),
 												}
 
 												/* act/assert */
-												objectUnderTest.Run([]string{}, "dummyPkgName")
+												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
 													Should(Equal(cliexiter.ExitReq{Code: 1}))
 											})
