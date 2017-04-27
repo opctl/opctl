@@ -12,24 +12,17 @@ type CallEndedEventBase struct {
 }
 
 type CallEndedEvent struct {
+	*CallEndedEventBase
 	Container *ContainerCallEndedEvent `json:"container,omitempty"`
 	Op        *OpCallEndedEvent        `json:"op,omitempty"`
 	Parallel  *ParallelCallEndedEvent  `json:"parallel,omitempty"`
 	Serial    *SerialCallEndedEvent    `json:"serial,omitempty"`
 }
 
-type ContainerCallEndedEvent struct {
-	*CallEndedEventBase
-}
+type ContainerCallEndedEvent struct{}
 
-type OpCallEndedEvent struct {
-	*CallEndedEventBase
-}
+type OpCallEndedEvent struct{}
 
-type ParallelCallEndedEvent struct {
-	*CallEndedEventBase
-}
+type ParallelCallEndedEvent struct{}
 
-type SerialCallEndedEvent struct {
-	*CallEndedEventBase
-}
+type SerialCallEndedEvent struct{}

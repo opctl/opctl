@@ -6,24 +6,17 @@ type CallErredEventBase struct {
 }
 
 type CallErredEvent struct {
+	*CallErredEventBase
 	Container *ContainerCallErredEvent `json:"container,omitempty"`
 	Op        *OpCallErredEvent        `json:"op,omitempty"`
 	Parallel  *ParallelCallErredEvent  `json:"parallel,omitempty"`
 	Serial    *SerialCallErredEvent    `json:"serial,omitempty"`
 }
 
-type ContainerCallErredEvent struct {
-	*CallErredEventBase
-}
+type ContainerCallErredEvent struct{}
 
-type OpCallErredEvent struct {
-	*CallErredEventBase
-}
+type OpCallErredEvent struct{}
 
-type ParallelCallErredEvent struct {
-	*CallErredEventBase
-}
+type ParallelCallErredEvent struct{}
 
-type SerialCallErredEvent struct {
-	*CallErredEventBase
-}
+type SerialCallErredEvent struct{}

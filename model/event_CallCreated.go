@@ -1,6 +1,7 @@
 package model
 
 type EventCallCreated struct {
+	*EventCallBase
 	Container *ContainerCallCreatedEvent `json:"container,omitempty"`
 	Op        *OpCallCreatedEvent        `json:"op,omitempty"`
 	Parallel  *ParallelCallCreatedEvent  `json:"parallel,omitempty"`
@@ -8,19 +9,13 @@ type EventCallCreated struct {
 }
 
 type ContainerCallCreatedEvent struct {
-	*EventCallBase
 	ImageRef string
 }
 
 type OpCallCreatedEvent struct {
-	*EventCallBase
 	PkgRef string
 }
 
-type ParallelCallCreatedEvent struct {
-	*EventCallBase
-}
+type ParallelCallCreatedEvent struct{}
 
-type SerialCallCreatedEvent struct {
-	*EventCallBase
-}
+type SerialCallCreatedEvent struct{}
