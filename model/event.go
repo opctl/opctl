@@ -8,7 +8,7 @@ type Event struct {
 	CallCreated              *EventCallCreated              `json:"callCreated,omitempty"`
 	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty"`
 	CallErred                *CallErredEvent                `json:"callErred,omitempty"`
-	CallStartedEvent         *EventCallStarted              `json:"callStartedEvent,omitempty"`
+	CallStarted              *EventCallStarted              `json:"callStartedEvent,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrEOFRead   *ContainerStdErrEOFReadEvent   `json:"containerStdErrEofRead,omitempty"`
