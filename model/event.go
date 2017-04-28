@@ -5,10 +5,10 @@ import "time"
 type Event struct {
 	Timestamp                time.Time
 	CallCancelled            *CallCancelledEvent            `json:"callCancelled,omitempty"`
-	CallCreated              *EventCallCreated              `json:"callCreated,omitempty"`
 	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty"`
 	CallErred                *CallErredEvent                `json:"callErred,omitempty"`
-	CallStarted              *EventCallStarted              `json:"callStartedEvent,omitempty"`
+	CallRequested            *CallRequestedEvent            `json:"callRequested,omitempty"`
+	CallStarted              *CallStartedEvent              `json:"callStartedEvent,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrEOFRead   *ContainerStdErrEOFReadEvent   `json:"containerStdErrEofRead,omitempty"`

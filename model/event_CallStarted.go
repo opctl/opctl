@@ -1,6 +1,6 @@
 package model
 
-type EventCallStarted struct {
+type CallStartedEvent struct {
 	*CallEventBase
 	Container *ContainerCallStartedEvent `json:"container,omitempty"`
 	Op        *OpCallStartedEvent        `json:"op,omitempty"`
