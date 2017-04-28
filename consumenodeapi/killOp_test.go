@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/http"
+	"github.com/opspec-io/sdk-golang/util/vhttp"
 	netHttp "net/http"
 )
 
@@ -22,23 +22,23 @@ var _ = Describe("KillOp", func() {
 
 		expectedBytes, _ := json.Marshal(providedKillOpReq)
 
-		expectedHttpReq, _ := netHttp.NewRequest(
+		expectedHTTPReq, _ := netHttp.NewRequest(
 			"POST",
 			fmt.Sprintf("http://%v/ops/kills", "localhost:42224"),
 			bytes.NewBuffer(expectedBytes),
 		)
 
-		fakeHttpClient := new(http.Fake)
+		fakeHTTPClient := new(vhttp.Fake)
 
 		objectUnderTest := consumeNodeApi{
-			httpClient: fakeHttpClient,
+			httpClient: fakeHTTPClient,
 		}
 
 		/* act */
 		objectUnderTest.KillOp(providedKillOpReq)
 
 		/* assert */
-		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))
+		Expect(expectedHTTPReq).To(Equal(fakeHTTPClient.DoArgsForCall(0)))
 
 	})
 })

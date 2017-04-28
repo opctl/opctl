@@ -1,7 +1,7 @@
 package model
 
 type CallErredEventBase struct {
-	*EventCallBase
+	*CallEventBase
 	Msg string
 }
 

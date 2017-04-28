@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/http"
+	"github.com/opspec-io/sdk-golang/util/vhttp"
 	"io/ioutil"
 	netHttp "net/http"
 )
@@ -31,18 +31,18 @@ var _ = Describe("StartOp", func() {
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
-		fakeHttpClient := new(http.Fake)
-		fakeHttpClient.DoReturns(&netHttp.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
+		fakeHTTPClient := new(vhttp.Fake)
+		fakeHTTPClient.DoReturns(&netHttp.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
 		objectUnderTest := consumeNodeApi{
-			httpClient: fakeHttpClient,
+			httpClient: fakeHTTPClient,
 		}
 
 		/* act */
 		actualResult, _ := objectUnderTest.StartOp(providedStartOpReq)
 
 		/* assert */
-		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))
+		Expect(expectedHttpReq).To(Equal(fakeHTTPClient.DoArgsForCall(0)))
 		Expect(expectedResult).To(Equal(actualResult))
 
 	})

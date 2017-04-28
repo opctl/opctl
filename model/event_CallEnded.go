@@ -7,7 +7,7 @@ const (
 )
 
 type CallEndedEventBase struct {
-	*EventCallBase
+	*CallEventBase
 	Outcome string
 }
 
