@@ -38,11 +38,11 @@ func (e Event) String() string {
 	case nil != e.CallStarted:
 		pre = e.CallStarted.String()
 	case nil != e.ContainerStdErrWrittenTo:
-		pre = e.ContainerStdErrWrittenTo.String()
+		return e.ContainerStdErrWrittenTo.String()
 	case nil != e.ContainerStdOutWrittenTo:
-		pre = e.ContainerStdOutWrittenTo.String()
+		return e.ContainerStdOutWrittenTo.String()
 	case nil != e.OutputInitialized:
-		pre = e.OutputInitialized.String()
+		return ""
 	}
 
 	return strings.Join(
@@ -96,9 +96,4 @@ type OutputInitializedEvent struct {
 	*CallEventBase
 	Name  string
 	Value *Data
-}
-
-// implement fmt.Stringer interface
-func (oie OutputInitializedEvent) String() string {
-	return ""
 }
