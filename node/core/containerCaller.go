@@ -171,27 +171,13 @@ func (this _containerCaller) txOutputs(
 		eventChannel,
 	)
 
-	// need to track EOF reads
-	var isStdErrEOFRead, isStdOutEOFRead bool
-
 	// send string outputs
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.ContainerStdErrEOFRead &&
-			event.ContainerStdErrEOFRead.ContainerId == dcgContainerCall.ContainerId:
-			isStdErrEOFRead = true
-			if isStdOutEOFRead {
-				// no more events we care about; break eventLoop
-				break eventLoop
-			}
-		case nil != event.ContainerStdOutEOFRead &&
-			event.ContainerStdOutEOFRead.ContainerId == dcgContainerCall.ContainerId:
-			isStdOutEOFRead = true
-			if isStdErrEOFRead {
-				// no more events we care about; break eventLoop
-				break eventLoop
-			}
+		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgContainerCall.ContainerId:
+			// ContainerExitedEvent signifies no further stdErr or stdOut writes will take place
+			break eventLoop
 		case nil != event.ContainerStdErrWrittenTo &&
 			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
 			for boundPrefix, name := range scgContainerCall.StdErr {

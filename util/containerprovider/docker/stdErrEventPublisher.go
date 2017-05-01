@@ -6,7 +6,6 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/net/context"
-	"io"
 	"time"
 )
 
@@ -18,7 +17,6 @@ func (this _containerProvider) stdErrEventPublisher(
 	rootOpId string,
 ) error {
 
-	var readCloser io.ReadCloser
 	readCloser, err := this.dockerClient.ContainerLogs(
 		context.Background(),
 		containerId,
@@ -28,38 +26,22 @@ func (this _containerProvider) stdErrEventPublisher(
 			Details:    false,
 		},
 	)
+	defer readCloser.Close()
 	if nil != err {
 		return err
 	}
 
-	go func() {
-		scanner := bufio.NewScanner(readCloser)
+	scanner := bufio.NewScanner(readCloser)
 
-		// scan writes until EOF or error
-		for scanner.Scan() {
+	// scan writes until EOF or error
+	for scanner.Scan() {
 
-			// publish writes
-			eventPublisher.Publish(
-				&model.Event{
-					Timestamp: time.Now().UTC(),
-					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
-						Data:        scanner.Bytes(),
-						ContainerId: containerId,
-						ImageRef:    imageRef,
-						PkgRef:      pkgRef,
-						RootOpId:    rootOpId,
-					},
-				},
-			)
-
-		}
-		// @TODO: handle scanner.Err()
-
-		// publish EOF
+		// publish writes
 		eventPublisher.Publish(
 			&model.Event{
 				Timestamp: time.Now().UTC(),
-				ContainerStdErrEOFRead: &model.ContainerStdErrEOFReadEvent{
+				ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+					Data:        scanner.Bytes(),
 					ContainerId: containerId,
 					ImageRef:    imageRef,
 					PkgRef:      pkgRef,
@@ -68,8 +50,8 @@ func (this _containerProvider) stdErrEventPublisher(
 			},
 		)
 
-		defer readCloser.Close()
-	}()
+	}
 
-	return nil
+	return scanner.Err()
+
 }

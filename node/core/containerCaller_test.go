@@ -7,7 +7,6 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/pkg/errors"
-	"sync"
 	"time"
 )
 
@@ -268,7 +267,7 @@ var _ = Context("containerCaller", func() {
 
 		Expect(actualEvent).To(Equal(expectedEvent))
 	})
-	XIt("should call pubSub.Publish w/ expected OutputInitializedEvents", func() {
+	It("should call pubSub.Publish w/ expected OutputInitializedEvents", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Data{}
 		providedContainerId := "dummyContainerId"
@@ -290,10 +289,10 @@ var _ = Context("containerCaller", func() {
 			{
 				Timestamp: expectedEventTimestamp,
 				OutputInitialized: &model.OutputInitializedEvent{
+					CallId:   providedContainerId,
+					RootOpId: providedRootOpId,
 					Name:     providedSCGContainerCall.Sockets["0.0.0.0"],
 					Value:    &model.Data{Socket: &providedContainerId},
-					RootOpId: providedRootOpId,
-					CallId:   providedContainerId,
 				},
 			},
 		}
@@ -301,13 +300,12 @@ var _ = Context("containerCaller", func() {
 		fakePubSub := new(pubsub.Fake)
 
 		// record actual published events
-		var actualOutputInitEventMutex sync.Mutex
-		actualOutputInitEvents := []*model.Event{}
+		actualOutputInitEvents := make(chan *model.Event, 1)
 		fakePubSub.PublishStub = func(event *model.Event) {
 			event.Timestamp = expectedEventTimestamp
-			actualOutputInitEventMutex.Lock()
-			actualOutputInitEvents = append(actualOutputInitEvents, event)
-			actualOutputInitEventMutex.Unlock()
+			if event.OutputInitialized != nil {
+				actualOutputInitEvents <- event
+			}
 		}
 		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
 			close(eventChannel)
@@ -330,9 +328,9 @@ var _ = Context("containerCaller", func() {
 
 		/* assert */
 		for _, expectedOutputInitEvent := range expectedOutputInitEvents {
-			Eventually(func() []*model.Event {
-				return actualOutputInitEvents
-			}, 5*time.Second, 1*time.Second).Should(ContainElement(expectedOutputInitEvent))
+			Eventually(func() *model.Event {
+				return <-actualOutputInitEvents
+			}, 5*time.Second, 1*time.Second).Should(Equal(expectedOutputInitEvent))
 		}
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
