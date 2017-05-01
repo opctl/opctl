@@ -1,6 +1,6 @@
 # prerequisites
 
-ensure docker is installed and running
+ensure docker-machine is installed and running
 > for greatest performance, we recommend using a
 > [virtualbox docker-machine](https://docs.docker.com/machine/drivers/virtualbox/)
 > and

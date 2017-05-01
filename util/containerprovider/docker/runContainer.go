@@ -13,6 +13,7 @@ import (
 	"golang.org/x/net/context"
 	"sort"
 	"strings"
+	"sync"
 )
 
 func (this _containerProvider) RunContainer(
@@ -137,38 +138,58 @@ func (this _containerProvider) RunContainer(
 		return err
 	}
 
-	err = this.stdErrEventPublisher(
-		eventPublisher,
-		req.ContainerId,
-		req.Image.Ref,
-		req.PkgRef,
-		req.RootOpId,
-	)
-	if nil != err {
-		return err
-	}
-	err = this.stdOutEventPublisher(
-		eventPublisher,
-		req.ContainerId,
-		req.Image.Ref,
-		req.PkgRef,
-		req.RootOpId,
-	)
-	if nil != err {
-		return err
-	}
+	var waitGroup sync.WaitGroup
+	errChan := make(chan error, 3)
+	waitGroup.Add(3)
 
-	// wait for exit
-	exitCode, waitError := this.dockerClient.ContainerWait(
-		context.Background(),
-		req.ContainerId,
-	)
-	if nil != waitError {
-		return errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
-	} else if 0 != exitCode {
-		return errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
-	}
+	go func() {
+		if err := this.stdErrEventPublisher(
+			eventPublisher,
+			req.ContainerId,
+			req.Image.Ref,
+			req.PkgRef,
+			req.RootOpId,
+		); nil != err {
+			errChan <- err
+		}
 
-	return err
+		waitGroup.Done()
+	}()
+
+	go func() {
+		if err = this.stdOutEventPublisher(
+			eventPublisher,
+			req.ContainerId,
+			req.Image.Ref,
+			req.PkgRef,
+			req.RootOpId,
+		); nil != err {
+			errChan <- err
+		}
+
+		waitGroup.Done()
+	}()
+
+	go func() {
+		exitCode, waitError := this.dockerClient.ContainerWait(
+			context.Background(),
+			req.ContainerId,
+		)
+		if nil != waitError {
+			errChan <- errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
+		} else if 0 != exitCode {
+			errChan <- errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
+		}
+
+		waitGroup.Done()
+	}()
+
+	// ensure exit code, stdout, and stderr all read before returning
+	waitGroup.Wait()
+
+	if len(errChan) > 0 {
+		return <-errChan
+	}
+	return nil
 
 }
