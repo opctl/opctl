@@ -8,5 +8,5 @@ import (
 
 func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "sdk-golang/consumenodeapi")
+	RunSpecs(t, "sdk-golang/apiclient")
 }

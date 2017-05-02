@@ -1,99 +1,96 @@
 package model
 
-import (
-	"fmt"
-	"strings"
-	"time"
-)
+import "time"
 
 // Event represents a distributed state change
-// Events implement the fmt.Stringer interface in addition to maintaining json and yaml struct tags.
 type Event struct {
-	Timestamp                time.Time
-	CallAccepted             *CallAcceptedEvent             `json:"callAccepted,omitempty" yaml:"callAccepted,omitempty"`
-	CallCancelled            *CallCancelledEvent            `json:"callCancelled,omitempty" yaml:"callCancelled,omitempty"`
-	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty" yaml:"callEnded,omitempty"`
-	CallErred                *CallErredEvent                `json:"callErred,omitempty" yaml:"callErred,omitempty"`
-	CallRequested            *CallRequestedEvent            `json:"callRequested,omitempty" yaml:"callRequested,omitempty"`
-	CallStarted              *CallStartedEvent              `json:"callStartedEvent,omitempty" yaml:"callStartedEvent,omitempty"`
-	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty" yaml:"containerStdErrWrittenTo,omitempty"`
-	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty" yaml:"containerStdOutWrittenTo,omitempty"`
-	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty" yaml:"outputInitialized,omitempty"`
+	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
+	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
+	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
+	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
+	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
+	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
+	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
+	Timestamp                time.Time                      `json:"timestamp"`
+	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
+	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
+	SerialCallEnded          *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
 }
 
-// implement fmt.Stringer interface
-func (e Event) String() string {
-	var pre string
-	switch {
-	case nil != e.CallAccepted:
-		pre = e.CallAccepted.String()
-	case nil != e.CallCancelled:
-		pre = e.CallCancelled.String()
-	case nil != e.CallEnded:
-		pre = e.CallEnded.String()
-	case nil != e.CallErred:
-		pre = e.CallErred.String()
-	case nil != e.CallRequested:
-		pre = e.CallRequested.String()
-	case nil != e.CallStarted:
-		pre = e.CallStarted.String()
-	case nil != e.ContainerStdErrWrittenTo:
-		return e.ContainerStdErrWrittenTo.String()
-	case nil != e.ContainerStdOutWrittenTo:
-		return e.ContainerStdOutWrittenTo.String()
-	case nil != e.OutputInitialized:
-		return ""
-	}
+const (
+	OpOutcomeSucceeded = "SUCCEEDED"
+	OpOutcomeFailed    = "FAILED"
+	OpOutcomeKilled    = "KILLED"
+)
 
-	return strings.Join(
-		[]string{
-			pre,
-			fmt.Sprintf("Timestamp='%v'", e.Timestamp.Format(time.RFC3339)),
-		},
-		" ",
-	)
+// ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
+type ContainerExitedEvent struct {
+	ImageRef    string `json:"imageRef"`
+	ExitCode    int    `json:"exitCode"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
-type CallEventBase struct {
-	CallID     string `json:"callId"`
-	RootCallID string `json:"rootCallId"`
-}
-
-// implement fmt.Stringer interface
-func (ceb CallEventBase) String() string {
-	return strings.Join(
-		[]string{
-			fmt.Sprintf("RootCallId='%v'", ceb.RootCallID),
-			fmt.Sprintf("CallId='%v'", ceb.CallID),
-		},
-		" ",
-	)
+type ContainerStartedEvent struct {
+	ImageRef    string `json:"imageRef"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 // ContainerStdErrWrittenToEvent represents a single write to a containers std err.
 type ContainerStdErrWrittenToEvent struct {
-	*CallEventBase
-	Data []byte
-}
-
-// implement fmt.Stringer interface
-func (csewte ContainerStdErrWrittenToEvent) String() string {
-	return string(csewte.Data)
+	ImageRef    string `json:"imageRef"`
+	Data        []byte `json:"data"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
 // ContainerStdOutWrittenToEvent represents a single write to a containers std out.
 type ContainerStdOutWrittenToEvent struct {
-	*CallEventBase
-	Data []byte
+	ImageRef    string `json:"imageRef"`
+	Data        []byte `json:"data"`
+	RootOpId    string `json:"rootOpId"`
+	ContainerId string `json:"containerId"`
+	PkgRef      string `json:"pkgRef"`
 }
 
-// implement fmt.Stringer interface
-func (csowte ContainerStdOutWrittenToEvent) String() string {
-	return string(csowte.Data)
+type OpEncounteredErrorEvent struct {
+	RootOpId string `json:"rootOpId"`
+	Msg      string `json:"msg"`
+	OpId     string `json:"opId"`
+	PkgRef   string `json:"pkgRef"`
+}
+
+// OpEndedEvent represents the end of an op; no further events will occur for the op.
+type OpEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	OpId     string `json:"opId"`
+	PkgRef   string `json:"pkgRef"`
+	Outcome  string `json:"outcome"`
+}
+
+type OpStartedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	OpId     string `json:"opId"`
+	PkgRef   string `json:"pkgRef"`
 }
 
 type OutputInitializedEvent struct {
-	*CallEventBase
-	Name  string
-	Value *Data
+	Name     string `json:"name"`
+	CallId   string `json:"callId"`
+	Value    *Data  `json:"value"`
+	RootOpId string `json:"rootOpId"`
+}
+
+type ParallelCallEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	CallId   string `json:"callId"`
+}
+
+type SerialCallEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	CallId   string `json:"callId"`
 }

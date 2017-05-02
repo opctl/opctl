@@ -1,4 +1,4 @@
-package vhttp
+package http
 
 //go:generate counterfeiter -o fake.go --fake-name Fake ./ Client
 
