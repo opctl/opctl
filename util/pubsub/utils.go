@@ -32,12 +32,8 @@ func getEventRootOpId(
 		return event.ContainerExited.RootOpId
 	case nil != event.ContainerStarted:
 		return event.ContainerStarted.RootOpId
-	case nil != event.ContainerStdErrEOFRead:
-		return event.ContainerStdErrEOFRead.RootOpId
 	case nil != event.ContainerStdErrWrittenTo:
 		return event.ContainerStdErrWrittenTo.RootOpId
-	case nil != event.ContainerStdOutEOFRead:
-		return event.ContainerStdOutEOFRead.RootOpId
 	case nil != event.ContainerStdOutWrittenTo:
 		return event.ContainerStdOutWrittenTo.RootOpId
 	case nil != event.OpEncounteredError:

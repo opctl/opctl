@@ -22,8 +22,7 @@ func (this _containerProvider) stdOutEventPublisher(
 		containerId,
 		types.ContainerLogsOptions{
 			Follow:     true,
-			ShowStderr: true,
-			Details:    false,
+			ShowStdout: true,
 		},
 	)
 	defer readCloser.Close()

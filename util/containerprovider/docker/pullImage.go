@@ -2,9 +2,7 @@ package docker
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/reference"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
@@ -18,18 +16,12 @@ func (this _containerProvider) pullImage(
 	rootOpId string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
-	// ensure tag present in image string.
-	// if not present, docker defaults to downloading all tags
-	imageName, tag, err := reference.Parse(dcgContainerImage.Ref)
-	if nil != err {
-		return err
-	}
-	imageRef := fmt.Sprintf("%v:%v", imageName, tag)
 
 	imagePullOptions := types.ImagePullOptions{}
 	if nil != dcgContainerImage.PullAuth &&
 		"" != dcgContainerImage.PullAuth.Username &&
 		"" != dcgContainerImage.PullAuth.Password {
+		var err error
 		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
 			dcgContainerImage.PullAuth.Username,
 			dcgContainerImage.PullAuth.Password,
@@ -41,7 +33,7 @@ func (this _containerProvider) pullImage(
 
 	imagePullResp, err := this.dockerClient.ImagePull(
 		context.Background(),
-		imageRef,
+		dcgContainerImage.Ref,
 		imagePullOptions,
 	)
 	if nil != err {
@@ -60,6 +52,6 @@ func (this _containerProvider) pullImage(
 			}
 			return err
 		}
-		jm.Display(stdOutWriter, false)
+		jm.Display(stdOutWriter, nil)
 	}
 }

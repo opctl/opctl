@@ -12,7 +12,7 @@ import (
 
 // NodeInspectWithRaw returns the node information.
 func (cli *Client) NodeInspectWithRaw(ctx context.Context, nodeID string) (swarm.Node, []byte, error) {
-	serverResp, err := cli.get(ctx, "/pkg/nodes/"+nodeID, nil, nil)
+	serverResp, err := cli.get(ctx, "/nodes/"+nodeID, nil, nil)
 	if err != nil {
 		if serverResp.statusCode == http.StatusNotFound {
 			return swarm.Node{}, nil, nodeNotFoundError{nodeID}

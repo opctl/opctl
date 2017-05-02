@@ -23,6 +23,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 - [Param defaults w/ values equal to type default are not defaulted](https://github.com/opctl/opctl/issues/185)
 - [stdOut/stdErr output race condition](https://github.com/opctl/opctl/issues/174)
+- [Unable to run ops w/ containers if using docker 4 windows](https://github.com/opctl/opctl/issues/200)
 
 
 ## 0.1.18 - 2017-03-28

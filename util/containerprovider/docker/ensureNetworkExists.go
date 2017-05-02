@@ -14,6 +14,7 @@ func (this _containerProvider) EnsureNetworkExists(
 	_, networkInspectErr := this.dockerClient.NetworkInspect(
 		context.Background(),
 		networkId,
+		false,
 	)
 	if nil == networkInspectErr {
 		// if network exists, we're done

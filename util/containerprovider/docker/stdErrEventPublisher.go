@@ -23,7 +23,6 @@ func (this _containerProvider) stdErrEventPublisher(
 		types.ContainerLogsOptions{
 			Follow:     true,
 			ShowStderr: true,
-			Details:    false,
 		},
 	)
 	defer readCloser.Close()
