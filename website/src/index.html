@@ -3,9 +3,15 @@ layout: landing.hbs
 title: opspec
 ---
 <div class="alert alert-warning text-xs-center">
-  <strong>whats new? v0.1.3 released! check it out with the <a
-    href="https://schema-visualizer.opspec.io/?schema=https://archive.opspec.io/0.1.3/spec/package-manifest.schema.json">schema
-    visualizer</a></strong>
+  <strong>whats new? v0.1.3 released! check out the
+    <a href="//schema-visualizer.opspec.io/?schema=https://archive.opspec.io/0.1.3/spec/package-manifest.schema.json"
+       target="_blank">
+      schema visualizer
+    </a> or
+    <a href="//editor.swagger.io/?url=https://archive.opspec.io/0.1.3/spec/node-api.spec.yml" target="_blank">
+      swagger editor
+    </a>
+  </strong>
 </div>
 <div style="padding:15px 10px 15px 10px;">
   <h1 class="text-xs-center">Like OpenAPI spec... but for ops</h1>
@@ -52,8 +58,10 @@ title: opspec
       <div class="card">
         <div class="card-block">
           <h3 class="card-title">schema visualizer</h3>
-          <p class="card-text">interactive schema visualizer for opspec</p>
-          <a href="https://github.com/opspec-io/schema-visualizer" class="btn btn-primary">homepage</a>
+          <p class="card-text">interactive schema visualizer wired up to the opspec pkg manifest schema</p>
+          <a
+            href="//schema-visualizer.opspec.io/?schema=https://archive.opspec.io/0.1.3/spec/package-manifest.schema.json"
+            target="_blank" class="btn btn-primary">open</a>
         </div>
       </div>
     </div>
@@ -62,7 +70,7 @@ title: opspec
         <div class="card-block">
           <h3 class="card-title">opctl</h3>
           <p class="card-text">distributed operation control system</p>
-          <a href="https://opctl.io" class="btn btn-primary">homepage</a>
+          <a href="https://opctl.io" target="_blank" class="btn btn-primary">open</a>
         </div>
       </div>
     </div>
@@ -71,7 +79,19 @@ title: opspec
         <div class="card-block">
           <h3 class="card-title">sdk-golang</h3>
           <p class="card-text">opspec SDK for golang</p>
-          <a href="https://github.com/opspec-io/sdk-golang" class="btn btn-primary">homepage</a>
+          <a href="https://github.com/opspec-io/sdk-golang" target="_blank" class="btn btn-primary">open</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="offset-md-4 col-md-4">
+      <div class="card">
+        <div class="card-block">
+          <h3 class="card-title">swagger editor</h3>
+          <p class="card-text">swagger editor wired up to the opspec node API</p>
+          <a href="//editor.swagger.io/?url=https://archive.opspec.io/0.1.3/spec/node-api.spec.yml" target="_blank"
+             class="btn btn-primary">open</a>
         </div>
       </div>
     </div>

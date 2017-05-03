@@ -7,8 +7,19 @@ inputs:
       description: directory containing the projects source code
 run:
   serial:
-    - op: { ref: clean, inputs: { srcDir }, outputs: { srcDir } }
-    - op: { ref: test, inputs: { srcDir } }
+    - op:
+        pkg: { ref: clean }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: test }
+        inputs: { srcDir }
     - parallel:
-      - op: { ref: compile-spec, inputs: { srcDir }, outputs: { srcDir }}
-      - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}
+      - op:
+          pkg: { ref: compile-spec }
+          inputs: { srcDir }
+          outputs: { srcDir }
+      - op:
+          pkg: { ref: compile-website }
+          inputs: { srcDir }
+          outputs: { srcDir }
