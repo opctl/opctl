@@ -7,5 +7,9 @@ inputs:
       description: directory containing the projects source code
 run:
   parallel:
-    - op: { ref: test-json-schema, inputs: { srcDir } }
-    - op: { ref: test-oai-spec, inputs: { srcDir }  }
+    - op:
+        pkg: { ref: test-json-schema }
+        inputs: { srcDir }
+    - op:
+        pkg: { ref: test-oai-spec }
+        inputs: { srcDir }

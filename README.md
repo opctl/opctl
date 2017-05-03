@@ -11,17 +11,7 @@ of containerized processes \[ops].
 
 # Documentation
 
-see [website](https://opspec.io/spec)
-
-# ALM
-
-- [issues/feat requests](https://github.com/opspec-io/spec/issues)
-- [source](https://github.com/opspec-io/spec)
-- [kanban board](https://waffle.io/opspec-io/spec)
-
-# Community
-
-- [chat](https://gitter.im/opspec-io/spec)
+see [website](https://opspec.io)
 
 # Releases
 

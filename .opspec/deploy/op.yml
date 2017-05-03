@@ -20,7 +20,10 @@ inputs:
       description: version of the spec being deployed
 run:
   serial:
-    - op: { ref: build, inputs: { srcDir }, outputs: { srcDir }}
+    - op:
+        pkg: { ref: build }
+        inputs: { srcDir }
+        outputs: { srcDir }
     - container:
         cmd:
           - sh
