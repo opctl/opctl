@@ -129,11 +129,12 @@ type fakeDockerClient struct {
 		result1 types.NetworkCreateResponse
 		result2 error
 	}
-	NetworkInspectStub        func(ctx context.Context, networkID string) (types.NetworkResource, error)
+	NetworkInspectStub        func(ctx context.Context, networkID string, verbose bool) (types.NetworkResource, error)
 	networkInspectMutex       sync.RWMutex
 	networkInspectArgsForCall []struct {
 		ctx       context.Context
 		networkID string
+		verbose   bool
 	}
 	networkInspectReturns struct {
 		result1 types.NetworkResource
@@ -578,17 +579,18 @@ func (fake *fakeDockerClient) NetworkCreateReturnsOnCall(i int, result1 types.Ne
 	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) NetworkInspect(ctx context.Context, networkID string) (types.NetworkResource, error) {
+func (fake *fakeDockerClient) NetworkInspect(ctx context.Context, networkID string, verbose bool) (types.NetworkResource, error) {
 	fake.networkInspectMutex.Lock()
 	ret, specificReturn := fake.networkInspectReturnsOnCall[len(fake.networkInspectArgsForCall)]
 	fake.networkInspectArgsForCall = append(fake.networkInspectArgsForCall, struct {
 		ctx       context.Context
 		networkID string
-	}{ctx, networkID})
-	fake.recordInvocation("NetworkInspect", []interface{}{ctx, networkID})
+		verbose   bool
+	}{ctx, networkID, verbose})
+	fake.recordInvocation("NetworkInspect", []interface{}{ctx, networkID, verbose})
 	fake.networkInspectMutex.Unlock()
 	if fake.NetworkInspectStub != nil {
-		return fake.NetworkInspectStub(ctx, networkID)
+		return fake.NetworkInspectStub(ctx, networkID, verbose)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -602,10 +604,10 @@ func (fake *fakeDockerClient) NetworkInspectCallCount() int {
 	return len(fake.networkInspectArgsForCall)
 }
 
-func (fake *fakeDockerClient) NetworkInspectArgsForCall(i int) (context.Context, string) {
+func (fake *fakeDockerClient) NetworkInspectArgsForCall(i int) (context.Context, string, bool) {
 	fake.networkInspectMutex.RLock()
 	defer fake.networkInspectMutex.RUnlock()
-	return fake.networkInspectArgsForCall[i].ctx, fake.networkInspectArgsForCall[i].networkID
+	return fake.networkInspectArgsForCall[i].ctx, fake.networkInspectArgsForCall[i].networkID, fake.networkInspectArgsForCall[i].verbose
 }
 
 func (fake *fakeDockerClient) NetworkInspectReturns(result1 types.NetworkResource, result2 error) {

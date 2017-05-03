@@ -39,8 +39,6 @@ type SCGContainerCallImage struct {
 }
 
 type SCGOpCall struct {
-	// @DEPRECATED as of 0.1.4; use Pkg object
-	Ref *string       `yaml:"ref,omitempty"`
 	Pkg *SCGOpCallPkg `yaml:"pkg"`
 	// binds in scope variables to inputs of referenced op
 	Inputs map[string]string `yaml:"inputs,omitempty"`

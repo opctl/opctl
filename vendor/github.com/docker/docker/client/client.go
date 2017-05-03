@@ -53,12 +53,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/docker/docker/api"
 	"github.com/docker/go-connections/sockets"
 	"github.com/docker/go-connections/tlsconfig"
 )
-
-// DefaultVersion is the version of the current stable API
-const DefaultVersion string = "1.26"
 
 // Client is the API client that performs all operations
 // against a docker server.
@@ -71,8 +69,8 @@ type Client struct {
 	proto string
 	// addr holds the client address.
 	addr string
-	// pkgBasePath holds the path to prepend to the requests.
-	pkgBasePath string
+	// basePath holds the path to prepend to the requests.
+	basePath string
 	// client used to send and receive http requests.
 	client *http.Client
 	// version of the server to talk to.
@@ -115,7 +113,7 @@ func NewEnvClient() (*Client, error) {
 	}
 	version := os.Getenv("DOCKER_API_VERSION")
 	if version == "" {
-		version = DefaultVersion
+		version = api.DefaultVersion
 	}
 
 	cli, err := NewClient(host, version, client, nil)
@@ -136,7 +134,7 @@ func NewEnvClient() (*Client, error) {
 // highly recommended that you set a version or your client may break if the
 // server is upgraded.
 func NewClient(host string, version string, client *http.Client, httpHeaders map[string]string) (*Client, error) {
-	proto, addr, pkgBasePath, err := ParseHost(host)
+	proto, addr, basePath, err := ParseHost(host)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +167,7 @@ func NewClient(host string, version string, client *http.Client, httpHeaders map
 		host:              host,
 		proto:             proto,
 		addr:              addr,
-		pkgBasePath:          pkgBasePath,
+		basePath:          basePath,
 		client:            client,
 		version:           version,
 		customHTTPHeaders: httpHeaders,
@@ -195,9 +193,9 @@ func (cli *Client) getAPIPath(p string, query url.Values) string {
 	var apiPath string
 	if cli.version != "" {
 		v := strings.TrimPrefix(cli.version, "v")
-		apiPath = fmt.Sprintf("%s/v%s%s", cli.pkgBasePath, v, p)
+		apiPath = fmt.Sprintf("%s/v%s%s", cli.basePath, v, p)
 	} else {
-		apiPath = fmt.Sprintf("%s%s", cli.pkgBasePath, p)
+		apiPath = fmt.Sprintf("%s%s", cli.basePath, p)
 	}
 
 	u := &url.URL{
@@ -233,7 +231,7 @@ func ParseHost(host string) (string, string, string, error) {
 		return "", "", "", fmt.Errorf("unable to parse docker host `%s`", host)
 	}
 
-	var pkgBasePath string
+	var basePath string
 	proto, addr := protoAddrParts[0], protoAddrParts[1]
 	if proto == "tcp" {
 		parsed, err := url.Parse("tcp://" + addr)
@@ -241,9 +239,9 @@ func ParseHost(host string) (string, string, string, error) {
 			return "", "", "", err
 		}
 		addr = parsed.Host
-		pkgBasePath = parsed.Path
+		basePath = parsed.Path
 	}
-	return proto, addr, pkgBasePath, nil
+	return proto, addr, basePath, nil
 }
 
 // CustomHTTPHeaders returns the custom http headers associated with this

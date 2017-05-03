@@ -23,8 +23,9 @@ var _ = Context("EnsureNetworkExists", func() {
 		objectUnderTest.EnsureNetworkExists(providedContainerId)
 
 		/* assert */
-		_, actualContainerId := fakeDockerClient.NetworkInspectArgsForCall(0)
+		_, actualContainerId, actualVerbose := fakeDockerClient.NetworkInspectArgsForCall(0)
 		Expect(actualContainerId).To(Equal(providedContainerId))
+		Expect(actualVerbose).To(Equal(false))
 	})
 	Context("dockerClient.NetworkInspect doesn't err", func() {
 		It("should return nil and not call dockerClient.NetworkCreate", func() {

@@ -41,7 +41,7 @@ type dockerClient interface {
 	NetworkCreate(ctx context.Context, name string, options types.NetworkCreate) (types.NetworkCreateResponse, error)
 
 	// NetworkInspect returns the information for a specific network configured in the docker host.
-	NetworkInspect(ctx context.Context, networkID string) (types.NetworkResource, error)
+	NetworkInspect(ctx context.Context, networkID string, verbose bool) (types.NetworkResource, error)
 
 	// RegistryLogin authenticates the docker server with a given docker registry.
 	// It returns unauthorizedError when the authentication fails.

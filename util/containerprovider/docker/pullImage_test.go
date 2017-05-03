@@ -2,9 +2,7 @@ package docker
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/reference"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/pubsub"
@@ -14,33 +12,10 @@ import (
 )
 
 var _ = Context("pullImage", func() {
-	Context("imageRef invalid", func() {
-		It("should return expected error", func() {
-			/* arrange */
-			providedImage := &model.DCGContainerCallImage{Ref: "%$^"}
-			_, _, expectedError := reference.Parse(providedImage.Ref)
-
-			objectUnderTest := _containerProvider{
-				dockerClient: new(fakeDockerClient),
-			}
-
-			/* act */
-			actualError := objectUnderTest.pullImage(
-				providedImage,
-				"",
-				"",
-				new(pubsub.FakeEventPublisher),
-			)
-
-			/* assert */
-			Expect(actualError).To(Equal(expectedError))
-		})
-	})
 	Context("imageRef valid", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
 			providedImage := &model.DCGContainerCallImage{Ref: "dummy-ref"}
-			expectedImageRef := fmt.Sprintf("%v:latest", providedImage.Ref)
 			expectedImagePullOptions := types.ImagePullOptions{}
 
 			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
@@ -65,7 +40,7 @@ var _ = Context("pullImage", func() {
 
 			/* assert */
 			_, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
-			Expect(actualImageRef).To(Equal(expectedImageRef))
+			Expect(actualImageRef).To(Equal(providedImage.Ref))
 			Expect(actualImagePullOptions).To(Equal(expectedImagePullOptions))
 		})
 		Context("dockerClient.ImagePull errors", func() {
