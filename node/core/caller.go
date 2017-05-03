@@ -15,9 +15,7 @@ type caller interface {
 		scg *model.SCG,
 		pkgRef string,
 		rootOpId string,
-	) (
-		err error,
-	)
+	) error
 }
 
 func newCaller(
@@ -42,18 +40,16 @@ func (this _caller) Call(
 	scg *model.SCG,
 	pkgRef string,
 	rootOpId string,
-) (
-	err error,
-) {
+) error {
 
 	if nil == scg {
 		// No Op; equivalent to an empty fn body in a programming language
-		return
+		return nil
 	}
 
 	switch {
 	case nil != scg.Container:
-		err = this.containerCaller.Call(
+		return this.containerCaller.Call(
 			inboundScope,
 			callId,
 			scg.Container,
@@ -61,7 +57,7 @@ func (this _caller) Call(
 			rootOpId,
 		)
 	case nil != scg.Op:
-		err = this.opCaller.Call(
+		return this.opCaller.Call(
 			inboundScope,
 			callId,
 			path.Dir(pkgRef),
@@ -69,7 +65,7 @@ func (this _caller) Call(
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
-		err = this.parallelCaller.Call(
+		return this.parallelCaller.Call(
 			callId,
 			inboundScope,
 			rootOpId,
@@ -77,7 +73,7 @@ func (this _caller) Call(
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
-		err = this.serialCaller.Call(
+		return this.serialCaller.Call(
 			callId,
 			inboundScope,
 			rootOpId,
@@ -85,10 +81,10 @@ func (this _caller) Call(
 			scg.Serial,
 		)
 	default:
-		err = fmt.Errorf("Invalid call graph %+v\n", scg)
+		fmt.Printf("Invalid call graph %+v\n", scg)
 	}
 
-	return
+	return nil
 
 }
 

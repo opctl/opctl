@@ -20,9 +20,7 @@ type parallelCaller interface {
 		rootOpId string,
 		pkgRef string,
 		scgParallelCall []*model.SCG,
-	) (
-		err error,
-	)
+	) error
 }
 
 func newParallelCaller(
@@ -54,9 +52,7 @@ func (this _parallelCaller) Call(
 	rootOpId string,
 	pkgRef string,
 	scgParallelCall []*model.SCG,
-) (
-	err error,
-) {
+) error {
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
@@ -74,18 +70,13 @@ func (this _parallelCaller) Call(
 	}()
 
 	var wg sync.WaitGroup
-	childErrChannel := make(chan error, 1)
+	childErrChannel := make(chan error, len(scgParallelCall))
 
 	// setup cancellation
 	cancellationChannel := make(chan struct{})
-	cancellationRequestChannel := make(chan error, len(scgParallelCall))
+	cancellationReqChannel := make(chan struct{}, len(scgParallelCall))
 	go func() {
-		// process cancellation requests
-		childErr := <-cancellationRequestChannel
-
-		// record error
-		childErrChannel <- childErr
-
+		<-cancellationReqChannel
 		close(cancellationChannel)
 	}()
 
@@ -99,15 +90,16 @@ func (this _parallelCaller) Call(
 			childDoneChannel := make(chan struct{})
 			go func() {
 				defer close(childDoneChannel)
-				childErr := this.caller.Call(
+				if childErr := this.caller.Call(
 					this.uniqueStringFactory.Construct(),
 					inboundScope,
 					childCall,
 					pkgRef,
 					rootOpId,
-				)
-				if nil != childErr {
-					cancellationRequestChannel <- childErr
+				); nil != childErr {
+					childErrChannel <- childErr
+					// trigger cancellation
+					cancellationReqChannel <- struct{}{}
 				}
 			}()
 
@@ -123,7 +115,7 @@ func (this _parallelCaller) Call(
 
 	if len(childErrChannel) == 0 {
 		// don't leak go routine
-		close(cancellationRequestChannel)
+		close(cancellationReqChannel)
 	} else {
 
 		messageBuffer := bytes.NewBufferString(
@@ -136,11 +128,11 @@ func (this _parallelCaller) Call(
     - %v`,
 			childErr.Error(),
 		))
-		err = fmt.Errorf(
+		return fmt.Errorf(
 			`%v
 -`, messageBuffer.String())
 	}
 
-	return
+	return nil
 
 }
