@@ -3,7 +3,7 @@ package pkg
 import (
 	"errors"
 	"fmt"
-	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
+	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
@@ -19,6 +19,10 @@ import (
 )
 
 var _ = Describe("Pkg", func() {
+	perUserAppDataPath, err := appdatapath.New().PerUser()
+	if nil != err {
+		panic(err)
+	}
 	Context("Pull", func() {
 		Context("pkgRef invalid format", func() {
 			It("should return expected result", func() {
@@ -53,7 +57,7 @@ var _ = Describe("Pkg", func() {
 				repoRefName := stringParts[1]
 
 				expectedPath := path.Join(
-					appdatapath.New().PerUser(),
+					perUserAppDataPath,
 					"opspec",
 					"cache",
 					"pkgs",
@@ -125,7 +129,7 @@ var _ = Describe("Pkg", func() {
 						repoRefName := stringParts[1]
 
 						expectedPath := path.Join(
-							appdatapath.New().PerUser(),
+							perUserAppDataPath,
 							"opspec",
 							"cache",
 							"pkgs",
@@ -164,7 +168,7 @@ var _ = Describe("Pkg", func() {
 						repoRefName := stringParts[1]
 
 						expectedPath := path.Join(
-							appdatapath.New().PerUser(),
+							perUserAppDataPath,
 							"opspec",
 							"cache",
 							"pkgs",

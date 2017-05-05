@@ -3,16 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "MaPlAyX79JQHiHjrXw3L86id0lc=",
-			"path": "github.com/appdataspec/sdk-golang/pkg/appdatapath",
-			"revision": "b32672275597be1ad222cb6eeb05ecd85e497dee",
-			"revisionTime": "2017-02-21T17:29:40Z"
-		},
-		{
-			"checksumSHA1": "AwXANSZYLE1oVjK3RlV6D0SbKOc=",
-			"path": "github.com/appdataspec/sdk-golang/util/vos",
-			"revision": "b32672275597be1ad222cb6eeb05ecd85e497dee",
-			"revisionTime": "2017-02-21T17:29:40Z"
+			"checksumSHA1": "49vqQwShLZkGnUTq8x2MgaWwsVQ=",
+			"path": "github.com/appdataspec/sdk-golang/appdatapath",
+			"revision": "36badffe020fa632e930cc0daf66fe8f0930cdef",
+			"revisionTime": "2017-05-05T22:10:25Z"
 		},
 		{
 			"checksumSHA1": "gntLgvUzJqZWf4NYxJr3p/3gcvk=",
