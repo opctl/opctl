@@ -7,10 +7,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/vgit"
 	"github.com/virtual-go/fs"
+	"github.com/virtual-go/gopkg.in-src-d-go-git.v4"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
 	"path"
@@ -98,7 +99,7 @@ var _ = Describe("Pkg", func() {
 						fakeFS := new(fs.Fake)
 
 						fakeGit := new(vgit.Fake)
-						fakeGit.PlainCloneReturns(git.ErrRepositoryAlreadyExists)
+						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
 						objectUnderTest := pkg{
 							fs:  fakeFS,
@@ -113,7 +114,46 @@ var _ = Describe("Pkg", func() {
 						Expect(fakeFS.RemoveAllCallCount()).To(Equal(0))
 					})
 				})
-				Context("err.Error() doesn't return git.ErrRepositoryAlreadyExists", func() {
+				Context("err.Error() returns transport.ErrAuthorizationRequired error", func() {
+					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
+
+						/* arrange */
+						providedPkgRef := "dummyPkgRef#0.0.0"
+
+						stringParts := strings.Split(providedPkgRef, "#")
+						repoName := stringParts[0]
+						repoRefName := stringParts[1]
+
+						expectedPath := path.Join(
+							appdatapath.New().PerUser(),
+							"opspec",
+							"cache",
+							"pkgs",
+							repoName,
+							repoRefName,
+						)
+
+						fakeFS := new(fs.Fake)
+
+						expectedError := ErrAuthenticationFailed{}
+
+						fakeGit := new(vgit.Fake)
+						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
+
+						objectUnderTest := pkg{
+							fs:  fakeFS,
+							git: fakeGit,
+						}
+
+						/* act */
+						actualError := objectUnderTest.Pull(providedPkgRef, nil)
+
+						/* assert */
+						Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+						Expect(actualError).To(Equal(expectedError))
+					})
+				})
+				Context("err.Error() returns other error", func() {
 					It("should call fs.RemoveAll w/ expected args & return error", func() {
 
 						/* arrange */
@@ -137,7 +177,7 @@ var _ = Describe("Pkg", func() {
 						expectedError := errors.New("dummyError")
 
 						fakeGit := new(vgit.Fake)
-						fakeGit.PlainCloneReturns(expectedError)
+						fakeGit.PlainCloneReturns(nil, expectedError)
 
 						objectUnderTest := pkg{
 							fs:  fakeFS,

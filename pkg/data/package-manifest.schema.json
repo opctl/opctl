@@ -492,13 +492,11 @@
               "additionalProperties": false
             },
             "name": {
-              "description": "Name of the container; note: this field is deprecated",
-              "deprecated": true,
+              "description": "Name the container can be referenced by from other containers",
               "type": "string"
             },
             "ports": {
-              "description": "Ports bound from the container to the host; note: this field is deprecated",
-              "deprecated": true,
+              "description": "Ports bound from the container to the host",
               "type": "object",
               "patternProperties": {
                 "[0-9]+(-[0-9]+)?(tcp|udp)?": {
@@ -562,6 +560,11 @@
         "op": {
           "type": "object",
           "properties": {
+            "ref": {
+              "description": "Reference to a package",
+              "deprecated": true,
+              "$ref": "#/definitions/interpolatedString"
+            },
             "pkg":{
               "type":"object",
               "properties":{

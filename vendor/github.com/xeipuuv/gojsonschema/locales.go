@@ -191,7 +191,7 @@ func (l DefaultLocale) NumberLT() string {
 	return `Must be less than {{.max}}`
 }
 
-// Schema manifestValidators
+// Schema validators
 func (l DefaultLocale) RegexPattern() string {
 	return `Invalid regex pattern '{{.pattern}}'`
 }

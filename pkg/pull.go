@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
 	"strings"
 )
 
 // Pull pulls a package from a remote source
+// returns ErrAuthenticationFailed on authentication failure
 func (this pkg) Pull(
 	pkgRef string,
 	opts *PullOpts,
@@ -40,9 +42,14 @@ func (this pkg) Pull(
 		return err
 	}
 
-	err = this.git.PlainClone(pkgPath, false, cloneOptions)
+	_, err = this.git.PlainClone(pkgPath, false, cloneOptions)
 	if nil != err {
 		switch err.Error() {
+		// @TODO update to handle authentication & authorization errors separately once go-git does so
+		case transport.ErrAuthorizationRequired.Error():
+			// clone failed; cleanup remnants
+			this.fs.RemoveAll(pkgPath)
+			return ErrAuthenticationFailed{}
 		case git.ErrRepositoryAlreadyExists.Error():
 		// NoOp on repo already exists
 		default:

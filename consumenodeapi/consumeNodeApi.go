@@ -4,8 +4,8 @@ package consumenodeapi
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/http"
 	"github.com/sethgrid/pester"
+	"github.com/virtual-go/vhttp"
 )
 
 type ConsumeNodeApi interface {
@@ -41,5 +41,5 @@ func New() ConsumeNodeApi {
 }
 
 type consumeNodeApi struct {
-	httpClient http.Client
+	httpClient vhttp.Client
 }

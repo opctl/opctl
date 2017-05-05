@@ -5,9 +5,9 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/vgit"
 	fsPkg "github.com/virtual-go/fs"
 	"github.com/virtual-go/fs/osfs"
+	"github.com/virtual-go/gopkg.in-src-d-go-git.v4"
 	"github.com/virtual-go/vioutil"
 	"github.com/virtual-go/vos"
 )
@@ -27,6 +27,7 @@ type Pkg interface {
 	) (string, bool)
 
 	// Pull pulls a package from a remote source
+	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
 		pkgRef string,
 		req *PullOpts,
