@@ -4,7 +4,7 @@ package vioutil
 
 import (
 	"bytes"
-	"github.com/virtual-go/fs"
+	"github.com/golang-interfaces/vos"
 	"io"
 	"os"
 	"sort"
@@ -28,14 +28,14 @@ type VIOUtil interface {
 	WriteFile(filename string, data []byte, perm os.FileMode) error
 }
 
-func New(fs fs.FS) VIOUtil {
+func New() VIOUtil {
 	return _VIOUtil{
-		fs: fs,
+		vos: vos.New(),
 	}
 }
 
 type _VIOUtil struct {
-	fs fs.FS
+  vos vos.VOS
 }
 
 // readAll reads from r until an error or EOF and returns the data it read
@@ -68,7 +68,7 @@ func (f byName) Less(i, j int) bool { return f[i].Name() < f[j].Name() }
 func (f byName) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
 
 func (this _VIOUtil) ReadDir(dirname string) ([]os.FileInfo, error) {
-	f, err := this.fs.Open(dirname)
+	f, err := this.vos.Open(dirname)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (this _VIOUtil) ReadDir(dirname string) ([]os.FileInfo, error) {
 }
 
 func (this _VIOUtil) ReadFile(filename string) ([]byte, error) {
-	f, err := this.fs.Open(filename)
+	f, err := this.vos.Open(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (this _VIOUtil) ReadFile(filename string) ([]byte, error) {
 }
 
 func (this _VIOUtil) WriteFile(filename string, data []byte, perm os.FileMode) error {
-	f, err := this.fs.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
+	f, err := this.vos.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
 	if err != nil {
 		return err
 	}

@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[virtual-go/vioutil](https://github.com/virtual-go/vioutil) is an
+[golang-interfaces/vos](https://github.com/golang-interfaces/vos) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[virtual-go/vioutil](https://github.com/virtual-go/vioutil), big and
+[golang-interfaces/vos](https://github.com/golang-interfaces/vos), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

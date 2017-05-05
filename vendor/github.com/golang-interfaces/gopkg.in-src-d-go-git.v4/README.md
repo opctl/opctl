@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/virtual-go/gopkg.in-src-d-go-git.v4.svg?branch=master)](https://travis-ci.org/virtual-go/gopkg.in-src-d-go-git.v4)
-[![Coverage](https://codecov.io/gh/virtual-go/gopkg.in-src-d-go-git.v4/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/gopkg.in-src-d-go-git.v4)
+[![Build Status](https://travis-ci.org/golang-interfaces/gopkg.in-src-d-go-git.v4.svg?branch=master)](https://travis-ci.org/golang-interfaces/gopkg.in-src-d-go-git.v4)
+[![Coverage](https://codecov.io/gh/golang-interfaces/gopkg.in-src-d-go-git.v4/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/gopkg.in-src-d-go-git.v4)
 
 # problem statement
 
@@ -19,7 +19,7 @@
 
 for every release:
 
-- source code will be [tagged](https://github.com/virtual-go/gopkg.in-src-d-go-git.v4/tags).
+- source code will be [tagged](https://github.com/golang-interfaces/gopkg.in-src-d-go-git.v4/tags).
 
 # Versioning
 

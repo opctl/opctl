@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
+	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/fs"
-	"github.com/virtual-go/gopkg.in-src-d-go-git.v4"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -96,13 +96,13 @@ var _ = Describe("Pkg", func() {
 						/* arrange */
 						providedPkgRef := "dummyPkgRef#0.0.0"
 
-						fakeFS := new(fs.Fake)
+						fakeOS := new(vos.Fake)
 
 						fakeGit := new(vgit.Fake)
 						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
 						objectUnderTest := pkg{
-							fs:  fakeFS,
+							os:  fakeOS,
 							git: fakeGit,
 						}
 
@@ -111,7 +111,7 @@ var _ = Describe("Pkg", func() {
 
 						/* assert */
 						Expect(actualError).To(BeNil())
-						Expect(fakeFS.RemoveAllCallCount()).To(Equal(0))
+						Expect(fakeOS.RemoveAllCallCount()).To(Equal(0))
 					})
 				})
 				Context("err.Error() returns transport.ErrAuthorizationRequired error", func() {
@@ -133,7 +133,7 @@ var _ = Describe("Pkg", func() {
 							repoRefName,
 						)
 
-						fakeFS := new(fs.Fake)
+						fakeOS := new(vos.Fake)
 
 						expectedError := ErrAuthenticationFailed{}
 
@@ -141,7 +141,7 @@ var _ = Describe("Pkg", func() {
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
 
 						objectUnderTest := pkg{
-							fs:  fakeFS,
+							os:  fakeOS,
 							git: fakeGit,
 						}
 
@@ -149,7 +149,7 @@ var _ = Describe("Pkg", func() {
 						actualError := objectUnderTest.Pull(providedPkgRef, nil)
 
 						/* assert */
-						Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 						Expect(actualError).To(Equal(expectedError))
 					})
 				})
@@ -172,7 +172,7 @@ var _ = Describe("Pkg", func() {
 							repoRefName,
 						)
 
-						fakeFS := new(fs.Fake)
+						fakeOS := new(vos.Fake)
 
 						expectedError := errors.New("dummyError")
 
@@ -180,7 +180,7 @@ var _ = Describe("Pkg", func() {
 						fakeGit.PlainCloneReturns(nil, expectedError)
 
 						objectUnderTest := pkg{
-							fs:  fakeFS,
+							os:  fakeOS,
 							git: fakeGit,
 						}
 
@@ -188,7 +188,7 @@ var _ = Describe("Pkg", func() {
 						actualError := objectUnderTest.Pull(providedPkgRef, nil)
 
 						/* assert */
-						Expect(fakeFS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 						Expect(actualError).To(Equal(expectedError))
 					})
 				})

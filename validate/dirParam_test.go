@@ -3,10 +3,10 @@ package validate
 import (
 	"errors"
 	"fmt"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/fs"
 	"io/ioutil"
 )
 
@@ -69,19 +69,19 @@ var _ = Describe("Param", func() {
 					Dir: &model.DirParam{},
 				}
 
-				fakeFS := new(fs.Fake)
+				fakeOS := new(vos.Fake)
 				// error to trigger immediate return
-				fakeFS.StatReturns(nil, errors.New("dummyError"))
+				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := validate{
-					fs: fakeFS,
+					os: fakeOS,
 				}
 
 				/* act */
 				objectUnderTest.Param(providedValue, providedParam)
 
 				/* assert */
-				Expect(fakeFS.StatArgsForCall(0)).To(Equal(*providedValue.Dir))
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedValue.Dir))
 
 			})
 			Context("fs.Stat errors", func() {
@@ -100,11 +100,11 @@ var _ = Describe("Param", func() {
 						errors.New("dummyError"),
 					}
 
-					fakeFs := new(fs.Fake)
-					fakeFs.StatReturns(nil, expectedErrors[0])
+					fakeOS := new(vos.Fake)
+					fakeOS.StatReturns(nil, expectedErrors[0])
 
 					objectUnderTest := validate{
-						fs: fakeFs,
+						os: fakeOS,
 					}
 
 					/* act */

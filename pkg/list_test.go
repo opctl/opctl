@@ -2,9 +2,9 @@ package pkg
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/virtual-go/vioutil"
 )
 
 var _ = Describe("List", func() {

@@ -2,11 +2,11 @@ package pkg
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/fs"
-	"github.com/virtual-go/vioutil"
 	"gopkg.in/yaml.v2"
 	"os"
 	"path"
@@ -16,15 +16,15 @@ var _ = Describe("pkg", func() {
 
 	Context("Create", func() {
 
-		It("should call FileSystem.MkdirAll with expected args", func() {
+		It("should call os.MkdirAll with expected args", func() {
 			/* arrange */
 			providedPath := "dummyPath"
 			expectedPerm := os.FileMode(0777)
 
-			fakeFileSystem := new(fs.Fake)
+			fakeOS := new(vos.Fake)
 
 			objectUnderTest := &pkg{
-				fs:     fakeFileSystem,
+				os:     fakeOS,
 				ioUtil: new(vioutil.Fake),
 			}
 
@@ -32,22 +32,22 @@ var _ = Describe("pkg", func() {
 			objectUnderTest.Create(providedPath, "", "")
 
 			/* assert */
-			actualPath, actualPerm := fakeFileSystem.MkdirAllArgsForCall(0)
+			actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
 			Expect(actualPath).To(Equal(providedPath))
 			Expect(actualPerm).To(Equal(expectedPerm))
 		})
 
-		Context("when FileSystem.MkdirAll returns an error", func() {
+		Context("when os.MkdirAll returns an error", func() {
 			It("should be returned", func() {
 
 				/* arrange */
 				expectedError := errors.New("AddDirError")
 
-				fakeFileSystem := new(fs.Fake)
-				fakeFileSystem.MkdirAllReturns(expectedError)
+				fakeOS := new(vos.Fake)
+				fakeOS.MkdirAllReturns(expectedError)
 
 				objectUnderTest := &pkg{
-					fs: fakeFileSystem,
+					os: fakeOS,
 				}
 
 				/* act */
@@ -82,7 +82,7 @@ var _ = Describe("pkg", func() {
 		fakeIOUtil := new(vioutil.Fake)
 
 		objectUnderTest := &pkg{
-			fs:     new(fs.Fake),
+			os:     new(vos.Fake),
 			ioUtil: fakeIOUtil,
 		}
 

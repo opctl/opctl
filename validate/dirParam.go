@@ -22,7 +22,7 @@ func (this validate) dirParam(
 		return []error{errors.New("Dir required")}
 	}
 
-	fileInfo, err := this.fs.Stat(*value)
+	fileInfo, err := this.os.Stat(*value)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.IsDir() {

@@ -39,6 +39,30 @@
 			"revisionTime": "2017-03-27T23:54:44Z"
 		},
 		{
+			"checksumSHA1": "C90B0Jvyzg7UTEQ3kE7SLfx1NII=",
+			"path": "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4",
+			"revision": "4555304d9f58ad1ae4199b32f739963bc5f0c31d",
+			"revisionTime": "2017-05-05T19:51:12Z"
+		},
+		{
+			"checksumSHA1": "keTCI63iHqMh5WQXUKOR3c+dQos=",
+			"path": "github.com/golang-interfaces/vhttp",
+			"revision": "4c1a0c1692b75f5f6d8b7648d47e2bcb2725c077",
+			"revisionTime": "2017-05-05T19:51:54Z"
+		},
+		{
+			"checksumSHA1": "prsLVkXgip6JWPJzSH1dwcZSY+U=",
+			"path": "github.com/golang-interfaces/vioutil",
+			"revision": "235e00f8e01fda6a6cdd7dae68ab88bf9444a055",
+			"revisionTime": "2017-05-05T20:10:39Z"
+		},
+		{
+			"checksumSHA1": "eXHTkU5A7nVRyKyCGdPX4btNA4g=",
+			"path": "github.com/golang-interfaces/vos",
+			"revision": "04338253a0e5d04cb37f95663685ccea6bc77930",
+			"revisionTime": "2017-05-05T19:56:45Z"
+		},
+		{
 			"checksumSHA1": "yc/AtS4YqKJrwaJTbHKmDYVrtVE=",
 			"path": "github.com/gorilla/websocket",
 			"revision": "e2e3d8414d0fbae04004f151979f4e27c6747fe7",
@@ -79,42 +103,6 @@
 			"path": "github.com/src-d/gcfg/types",
 			"revision": "f187355171c936ac84a82793659ebb4936bc1c23",
 			"revisionTime": "2016-10-26T10:01:55Z"
-		},
-		{
-			"checksumSHA1": "bUW2EgOVl2ylWG3ApLnDokrjNYg=",
-			"path": "github.com/virtual-go/fs",
-			"revision": "42a86c1b4bd9306c3785a29510411e22e566b2b3",
-			"revisionTime": "2017-04-02T18:23:26Z"
-		},
-		{
-			"checksumSHA1": "tIGJS5KKcTT2usSrVQie9+ou6X8=",
-			"path": "github.com/virtual-go/fs/osfs",
-			"revision": "42a86c1b4bd9306c3785a29510411e22e566b2b3",
-			"revisionTime": "2017-04-02T18:23:26Z"
-		},
-		{
-			"checksumSHA1": "Y5R14D0I7GdOmzYw1xE+kGtYm7M=",
-			"path": "github.com/virtual-go/gopkg.in-src-d-go-git.v4",
-			"revision": "453b9c3bbb4a14901465c2b85054613573d424a0",
-			"revisionTime": "2017-05-05T17:38:40Z"
-		},
-		{
-			"checksumSHA1": "B84756UCkLNzSaN/jU/Jx/+BtVk=",
-			"path": "github.com/virtual-go/vhttp",
-			"revision": "283f5acce117c1568f51800048f3fd1bf3d055a2",
-			"revisionTime": "2017-05-05T17:07:07Z"
-		},
-		{
-			"checksumSHA1": "pMR9UnJMECitr7tuHS0wCjhMJCY=",
-			"path": "github.com/virtual-go/vioutil",
-			"revision": "3316a693f8eecaf34c0cccc495ead16da9e68348",
-			"revisionTime": "2017-04-02T18:27:10Z"
-		},
-		{
-			"checksumSHA1": "LPiDoIbKjs9rgdWqAsR+tPXXdEo=",
-			"path": "github.com/virtual-go/vos",
-			"revision": "5f4be7180188d93df1aed9500e1ba2f3b1ce1059",
-			"revisionTime": "2017-04-03T03:19:18Z"
 		},
 		{
 			"checksumSHA1": "B9K+5clCq0PU8n8/utbKT0QjQyU=",

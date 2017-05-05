@@ -3,9 +3,9 @@ package consumenodeapi
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ConsumeNodeApi
 
 import (
+	"github.com/golang-interfaces/vhttp"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/sethgrid/pester"
-	"github.com/virtual-go/vhttp"
 )
 
 type ConsumeNodeApi interface {

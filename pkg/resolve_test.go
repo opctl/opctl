@@ -2,9 +2,9 @@ package pkg
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/virtual-go/vos"
 	"path"
 )
 

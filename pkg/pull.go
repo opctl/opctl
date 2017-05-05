@@ -48,13 +48,13 @@ func (this pkg) Pull(
 		// @TODO update to handle authentication & authorization errors separately once go-git does so
 		case transport.ErrAuthorizationRequired.Error():
 			// clone failed; cleanup remnants
-			this.fs.RemoveAll(pkgPath)
+			this.os.RemoveAll(pkgPath)
 			return ErrAuthenticationFailed{}
 		case git.ErrRepositoryAlreadyExists.Error():
 		// NoOp on repo already exists
 		default:
 			// clone failed; cleanup remnants
-			this.fs.RemoveAll(pkgPath)
+			this.os.RemoveAll(pkgPath)
 			return err
 		}
 	}

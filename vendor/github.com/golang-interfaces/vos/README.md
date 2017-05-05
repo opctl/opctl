@@ -1,14 +1,13 @@
-[![Build Status](https://travis-ci.org/virtual-go/vioutil.svg?branch=master)](https://travis-ci.org/virtual-go/vioutil)
-[![Coverage](https://codecov.io/gh/virtual-go/vioutil/branch/master/graph/badge.svg)](https://codecov.io/gh/virtual-go/vioutil)
+[![Build Status](https://travis-ci.org/golang-interfaces/vos.svg?branch=master)](https://travis-ci.org/golang-interfaces/vos)
+[![Coverage](https://codecov.io/gh/golang-interfaces/vos/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/vos)
 
 # problem statement
 
-ioutil package for virtual-go
+native [os package](https://golang.org/pkg/os/) exposed via interface
 
 # features
 
-- API compatible w/ native [ioutil](https://golang.org/pkg/io/ioutil/) package
-- API exposed via interface
+- API compatible w/ native [os package](https://golang.org/pkg/os/) exposed via interface
 - fake implementation to allow faking interactions
 
 > *Be advised: this project is currently at Major version zero. Per the
@@ -20,7 +19,7 @@ ioutil package for virtual-go
 
 for every release:
 
-- source code will be [tagged](https://github.com/virtual-go/vioutil/tags).
+- source code will be [tagged](https://github.com/golang-interfaces/vos/tags).
 
 # Versioning
 

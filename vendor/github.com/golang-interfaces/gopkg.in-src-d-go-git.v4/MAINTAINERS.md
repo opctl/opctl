@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[virtual-go/gopkg.in-src-d-go-git.v4](https://github.com/virtual-go/gopkg.in-src-d-go-git.v4) is an
+[golang-interfaces/gopkg.in-src-d-go-git.v4](https://github.com/golang-interfaces/gopkg.in-src-d-go-git.v4) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[virtual-go/gopkg.in-src-d-go-git.v4](https://github.com/virtual-go/gopkg.in-src-d-go-git.v4), big and
+[golang-interfaces/gopkg.in-src-d-go-git.v4](https://github.com/golang-interfaces/gopkg.in-src-d-go-git.v4), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

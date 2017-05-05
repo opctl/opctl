@@ -5,7 +5,6 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/virtual-go/fs/osfs"
 	"os"
 )
 
@@ -14,7 +13,7 @@ var _ = Describe("manifestValidator", func() {
 	if nil != err {
 		panic(err)
 	}
-	objectUnderTest := newManifestValidator(osfs.New())
+	objectUnderTest := newManifestValidator()
 	Context("invalid__yml", func() {
 		It("should return expected errs", func() {
 			/* arrange */
