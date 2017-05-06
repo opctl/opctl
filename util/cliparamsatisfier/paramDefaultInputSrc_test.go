@@ -11,7 +11,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 	Context("NewParamDefaultInputSrc()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewParamDefaultInputSrc(map[string]*model.Param{})).Should(Not(BeNil()))
+			Expect(NewParamDefaultInputSrc(map[string]*model.Param{})).To(Not(BeNil()))
 		})
 	})
 	Context("Read()", func() {

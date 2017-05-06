@@ -18,7 +18,7 @@ var _ = Context("containerCaller", func() {
 				new(containerprovider.Fake),
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
-			)).Should(Not(BeNil()))
+			)).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {

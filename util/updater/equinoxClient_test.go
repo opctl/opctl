@@ -10,7 +10,7 @@ var _ = Context("equinoxClient", func() {
 	Context("New", func() {
 		It("should return equinoxClient", func() {
 			/* arrange/act/assert */
-			Expect(newEquinoxClient()).Should(Not(BeNil()))
+			Expect(newEquinoxClient()).To(Not(BeNil()))
 		})
 	})
 	Context("Check", func() {

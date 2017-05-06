@@ -10,7 +10,7 @@ var _ = Context("vruntime", func() {
 	Context("New", func() {
 		It("should return Vruntime", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(New()).To(Not(BeNil()))
 		})
 	})
 	Context("GOOS", func() {

@@ -1,12 +1,11 @@
 package core
 
 import (
-	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
+	"github.com/appdataspec/sdk-golang/appdatapath"
+	"github.com/golang-utils/dircopier"
+	"github.com/golang-utils/filecopier"
 	interpolatePkg "github.com/opspec-io/sdk-golang/interpolate"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/dircopier"
-	"github.com/virtual-go/filecopier"
-	"github.com/virtual-go/fs/osfs"
 	"os"
 	"path"
 	"strings"
@@ -18,13 +17,12 @@ func constructDCGContainerCall(
 	containerId string,
 	rootOpId string,
 	pkgRef string,
-) (dcgContainerCall *model.DCGContainerCall, err error) {
-	fs := osfs.New()
+) (*model.DCGContainerCall, error) {
 	fileCopier := filecopier.New()
 	dirCopier := dircopier.New()
 	interpolate := interpolatePkg.New()
 
-	dcgContainerCall = &model.DCGContainerCall{
+	dcgContainerCall := &model.DCGContainerCall{
 		DCGBaseCall: &model.DCGBaseCall{
 			RootOpId: rootOpId,
 			PkgRef:   pkgRef,
@@ -39,9 +37,14 @@ func constructDCGContainerCall(
 		Ports:       scgContainerCall.Ports,
 	}
 
+	perUserAppDataPath, err := appdatapath.New().PerUser()
+	if nil != err {
+		return nil, err
+	}
+
 	// create scratch dir for container
 	scratchDirPath := path.Join(
-		appdatapath.New().PerUser(),
+		perUserAppDataPath,
 		"opctl",
 		"dcg",
 		rootOpId,
@@ -49,9 +52,9 @@ func constructDCGContainerCall(
 		containerId,
 		"fs",
 	)
-	err = fs.MkdirAll(scratchDirPath, 0700)
+	err = os.MkdirAll(scratchDirPath, 0700)
 	if nil != err {
-		return
+		return nil, err
 	}
 
 	// construct cmd
@@ -70,7 +73,7 @@ func constructDCGContainerCall(
 		if strings.HasPrefix(scgContainerDirBind, "/") {
 			// is bound to pkg path
 			dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirBind)
-			err = dirCopier.Fs(
+			err = dirCopier.OS(
 				path.Join(pkgRef, scgContainerDirBind),
 				dcgContainerCall.Dirs[scgContainerDirPath],
 			)
@@ -83,11 +86,11 @@ func constructDCGContainerCall(
 				// bound to output
 				// create placeholder dir on host so the output points to something
 				dcgContainerCall.Dirs[scgContainerDirPath] = path.Join(scratchDirPath, scgContainerDirPath)
-				err = fs.MkdirAll(dcgContainerCall.Dirs[scgContainerDirPath], 0700)
+				err = os.MkdirAll(dcgContainerCall.Dirs[scgContainerDirPath], 0700)
 			}
 		}
 		if nil != err {
-			return
+			return nil, err
 		}
 	}
 
@@ -107,7 +110,7 @@ func constructDCGContainerCall(
 		if strings.HasPrefix(scgContainerFileBind, "/") {
 			// is bound to pkg path
 			dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFileBind)
-			err = fileCopier.Fs(
+			err = fileCopier.OS(
 				path.Join(pkgRef, scgContainerFileBind),
 				dcgContainerCall.Files[scgContainerFilePath],
 			)
@@ -121,18 +124,18 @@ func constructDCGContainerCall(
 				// create outputFile on host so the output points to something
 				dcgContainerCall.Files[scgContainerFilePath] = path.Join(scratchDirPath, scgContainerFilePath)
 				// create dir
-				err = fs.MkdirAll(path.Dir(dcgContainerCall.Files[scgContainerFilePath]), 0700)
+				err = os.MkdirAll(path.Dir(dcgContainerCall.Files[scgContainerFilePath]), 0700)
 				if nil != err {
-					return
+					return nil, err
 				}
 				// create file
 				var outputFile *os.File
-				outputFile, err = fs.Create(dcgContainerCall.Files[scgContainerFilePath])
+				outputFile, err = os.Create(dcgContainerCall.Files[scgContainerFilePath])
 				outputFile.Close()
 			}
 		}
 		if nil != err {
-			return
+			return nil, err
 		}
 	}
 
@@ -161,20 +164,20 @@ func constructDCGContainerCall(
 			if isUnixSocketAddress(scgContainerSocketAddress) {
 				dcgHostSocketAddress := path.Join(scratchDirPath, scgContainerSocketAddress)
 				var outputSocket *os.File
-				outputSocket, err = fs.Create(dcgHostSocketAddress)
+				outputSocket, err = os.Create(dcgHostSocketAddress)
 				outputSocket.Close()
 				if nil != err {
-					return
+					return nil, err
 				}
-				err = fs.Chmod(dcgHostSocketAddress, os.ModeSocket)
+				err = os.Chmod(dcgHostSocketAddress, os.ModeSocket)
 				if nil != err {
-					return
+					return nil, err
 				}
 				dcgContainerCall.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
 			}
 		}
 	}
 
-	return
+	return dcgContainerCall, nil
 
 }

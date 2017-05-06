@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/appdataspec/sdk-golang/pkg/appdatapath"
+	"github.com/appdataspec/sdk-golang/appdatapath"
 	"path"
 	"strings"
 )
@@ -19,8 +19,13 @@ func constructCachePath(pkgRef string) (string, error) {
 	repoName := stringParts[0]
 	repoRefName := stringParts[1]
 
+	perUserAppDataPath, err := appdatapath.New().PerUser()
+	if nil != err {
+		return "", err
+	}
+
 	return path.Join(
-		appdatapath.New().PerUser(),
+		perUserAppDataPath,
 		"opspec",
 		"cache",
 		"pkgs",

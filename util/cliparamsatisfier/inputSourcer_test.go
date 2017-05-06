@@ -9,7 +9,7 @@ var _ = Describe("inputSourcer", func() {
 	Context("NewInputSourcer()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewInputSourcer([]InputSrc{})).Should(Not(BeNil()))
+			Expect(NewInputSourcer()).To(Not(BeNil()))
 		})
 	})
 	Context("Source()", func() {
@@ -19,9 +19,7 @@ var _ = Describe("inputSourcer", func() {
 
 			fakeSource := new(FakeInputSrc)
 
-			sources := []InputSrc{fakeSource}
-
-			objectUnderTest := NewInputSourcer(sources)
+			objectUnderTest := NewInputSourcer(fakeSource)
 
 			/* act */
 			objectUnderTest.Source(providedInputName)
@@ -35,9 +33,7 @@ var _ = Describe("inputSourcer", func() {
 					/* arrange */
 					fakeSource := new(FakeInputSrc)
 
-					sources := []InputSrc{fakeSource}
-
-					objectUnderTest := NewInputSourcer(sources)
+					objectUnderTest := NewInputSourcer(fakeSource)
 
 					/* act */
 					actualValue := objectUnderTest.Source("")
@@ -53,9 +49,7 @@ var _ = Describe("inputSourcer", func() {
 
 					fakeSource2 := new(FakeInputSrc)
 
-					sources := []InputSrc{new(FakeInputSrc), fakeSource2}
-
-					objectUnderTest := NewInputSourcer(sources)
+					objectUnderTest := NewInputSourcer(new(FakeInputSrc), fakeSource2)
 
 					/* act */
 					objectUnderTest.Source(providedInputName)
@@ -74,9 +68,7 @@ var _ = Describe("inputSourcer", func() {
 				fakeSource := new(FakeInputSrc)
 				fakeSource.ReadReturns(&expectedValue)
 
-				sources := []InputSrc{fakeSource}
-
-				objectUnderTest := NewInputSourcer(sources)
+				objectUnderTest := NewInputSourcer(fakeSource)
 
 				/* act */
 				actualValue := objectUnderTest.Source(providedInputName)

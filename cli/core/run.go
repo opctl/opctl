@@ -48,13 +48,11 @@ func (this _core) Run(
 
 	argsMap := this.cliParamSatisfier.Satisfy(
 		cliparamsatisfier.NewInputSourcer(
-			[]cliparamsatisfier.InputSrc{
-				cliparamsatisfier.NewSliceInputSrc(opts.Args, "="),
-				cliparamsatisfier.NewYMLFileInputSrc(opts.ArgFile, this.ioutil),
-				cliparamsatisfier.NewEnvVarInputSrc(),
-				cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
-				cliparamsatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
-			},
+			cliparamsatisfier.NewSliceInputSrc(opts.Args, "="),
+			cliparamsatisfier.NewYMLFileInputSrc(opts.ArgFile, this.ioutil),
+			cliparamsatisfier.NewEnvVarInputSrc(),
+			cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
+			cliparamsatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
 		),
 		pkgManifest.Inputs,
 	)

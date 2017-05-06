@@ -2,12 +2,12 @@ package core
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/virtual-go/vos"
 	"os"
 	"path/filepath"
 )
@@ -35,7 +35,7 @@ var _ = Context("pkgLs", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
@@ -61,7 +61,7 @@ var _ = Context("pkgLs", func() {
 
 				/* assert */
 
-				Expect(fakePkg.ListArgsForCall(0)).Should(Equal(expectedPath))
+				Expect(fakePkg.ListArgsForCall(0)).To(Equal(expectedPath))
 			})
 			Context("pkg.List errors", func() {
 				It("should call exiter w/ expected args", func() {
@@ -84,7 +84,7 @@ var _ = Context("pkgLs", func() {
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+						To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 				})
 			})
 		})

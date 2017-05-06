@@ -8,7 +8,7 @@ type InputSourcer interface {
 }
 
 func NewInputSourcer(
-	sources []InputSrc,
+	sources ...InputSrc,
 ) InputSourcer {
 	return inputSourcer{
 		sources: sources,

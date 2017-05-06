@@ -10,7 +10,7 @@ var _ = Context("cliColorer", func() {
 	Context("New", func() {
 		It("should return CliColorer", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(New()).To(Not(BeNil()))
 		})
 	})
 	Context("Disable", func() {

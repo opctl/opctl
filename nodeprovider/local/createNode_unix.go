@@ -8,7 +8,7 @@ import (
 	"syscall"
 )
 
-func (this nodeProvider) CreateNode() (nodeInfo *node.InfoView, err error) {
+func (np nodeProvider) CreateNode() (nodeInfo *node.InfoView, err error) {
 	nodeCmd := exec.Command(
 		"opctl",
 		"node",

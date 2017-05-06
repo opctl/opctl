@@ -31,7 +31,7 @@ var _ = Context("events", func() {
 			objectUnderTest.Events()
 
 			/* assert */
-			Expect(fakeConsumeNodeApi.GetEventStreamCallCount()).Should(Equal(1))
+			Expect(fakeConsumeNodeApi.GetEventStreamCallCount()).To(Equal(1))
 
 		})
 		Context("pkg.GetEventStream errors", func() {
@@ -54,7 +54,7 @@ var _ = Context("events", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 			})
 		})
 		Context("pkg.GetEventStream doesn't error", func() {
@@ -79,7 +79,7 @@ var _ = Context("events", func() {
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: "Connection to event stream lost", Code: 1}))
+						To(Equal(cliexiter.ExitReq{Message: "Connection to event stream lost", Code: 1}))
 				})
 			})
 		})

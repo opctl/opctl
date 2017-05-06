@@ -16,7 +16,7 @@ var _ = Context("core", func() {
 					new(pubsub.Fake),
 					new(containerprovider.Fake),
 				),
-			).Should(Not(BeNil()))
+			).To(Not(BeNil()))
 		})
 	})
 })

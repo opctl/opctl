@@ -18,9 +18,7 @@ type containerCaller interface {
 		scgContainerCall *model.SCGContainerCall,
 		pkgRef string,
 		rootOpId string,
-	) (
-		err error,
-	)
+	) error
 }
 
 func newContainerCaller(
@@ -49,9 +47,7 @@ func (this _containerCaller) Call(
 	scgContainerCall *model.SCGContainerCall,
 	pkgRef string,
 	rootOpId string,
-) (
-	err error,
-) {
+) error {
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
@@ -83,7 +79,7 @@ func (this _containerCaller) Call(
 
 	dcgContainerCall, err := constructDCGContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
-		return
+		return err
 	}
 
 	go this.txOutputs(dcgContainerCall, scgContainerCall)
@@ -103,7 +99,7 @@ func (this _containerCaller) Call(
 		this.pubSub,
 	)
 
-	return
+	return err
 }
 
 func (this _containerCaller) txOutputs(

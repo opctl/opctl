@@ -17,6 +17,7 @@ run:
       - |
         echo "installing deps"
         go get github.com/onsi/ginkgo/ginkgo
+        go get github.com/onsi/gomega
 
         echo "unit testing code"
         ginkgo --v -cover -race -r

@@ -1,16 +1,16 @@
 package cliparamsatisfier
 
 import (
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/virtual-go/vos"
 )
 
 var _ = Describe("envVarInputSrc", func() {
 	Context("NewEnvVarInputSrc()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewEnvVarInputSrc()).Should(Not(BeNil()))
+			Expect(NewEnvVarInputSrc()).To(Not(BeNil()))
 		})
 	})
 	Context("Read()", func() {

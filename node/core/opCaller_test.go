@@ -24,7 +24,7 @@ var _ = Context("opCaller", func() {
 				new(fakeCaller),
 				new(uniquestring.Fake),
 				new(validate.Fake),
-			)).Should(Not(BeNil()))
+			)).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {

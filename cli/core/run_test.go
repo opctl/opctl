@@ -2,6 +2,8 @@ package core
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/nodeprovider"
@@ -12,8 +14,6 @@ import (
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/virtual-go/vioutil"
-	"github.com/virtual-go/vos"
 	"time"
 )
 
@@ -40,7 +40,7 @@ var _ = Context("Run", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 		Context("os.Getwd doesn't error", func() {
@@ -71,8 +71,8 @@ var _ = Context("Run", func() {
 
 				/* assert */
 				actualPkgBasePath, actualPkgRef := fakePkg.ResolveArgsForCall(0)
-				Expect(actualPkgBasePath).Should(Equal(expectedPkgBasePath))
-				Expect(actualPkgRef).Should(Equal(expectedPkgRef))
+				Expect(actualPkgBasePath).To(Equal(expectedPkgBasePath))
+				Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			})
 			Context("pkg.Resolve fails", func() {
 
@@ -111,7 +111,7 @@ var _ = Context("Run", func() {
 					objectUnderTest.Run("", &RunOpts{})
 
 					/* assert */
-					Expect(fakePkg.GetArgsForCall(0)).Should(Equal(expectedPkgRef))
+					Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
 				})
 				Context("pkg.Get errors", func() {
 					It("should call exiter w/ expected args", func() {
@@ -137,7 +137,7 @@ var _ = Context("Run", func() {
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
-							Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+							To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 					})
 				})
 				Context("pkg.Get doesn't error", func() {
@@ -261,7 +261,7 @@ var _ = Context("Run", func() {
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
-								Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+								To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
 					Context("consumeNodeApi.StartOp doesn't error", func() {
@@ -306,7 +306,7 @@ var _ = Context("Run", func() {
 							// set temporal fields to expected vals since they're already asserted
 							actualReq.Filter.Since = &startTime
 
-							Expect(actualReq).Should(Equal(expectedReq))
+							Expect(actualReq).To(Equal(expectedReq))
 						})
 						Context("consumeNodeApi.GetEventStream errors", func() {
 							It("should call exiter w/ expected args", func() {
@@ -336,7 +336,7 @@ var _ = Context("Run", func() {
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+									To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 							})
 						})
 						Context("consumeNodeApi.GetEventStream doesn't error", func() {
@@ -369,7 +369,7 @@ var _ = Context("Run", func() {
 
 									/* assert */
 									Expect(fakeCliExiter.ExitArgsForCall(0)).
-										Should(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
+										To(Equal(cliexiter.ExitReq{Message: "Event channel closed unexpectedly", Code: 1}))
 								})
 							})
 							Context("event channel doesn't close", func() {
@@ -417,7 +417,7 @@ var _ = Context("Run", func() {
 												/* act/assert */
 												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
-													Should(Equal(cliexiter.ExitReq{Code: 0}))
+													To(Equal(cliexiter.ExitReq{Code: 0}))
 											})
 										})
 										Context("Outcome==KILLED", func() {
@@ -461,7 +461,7 @@ var _ = Context("Run", func() {
 												/* act/assert */
 												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
-													Should(Equal(cliexiter.ExitReq{Code: 137}))
+													To(Equal(cliexiter.ExitReq{Code: 137}))
 											})
 
 										})
@@ -506,7 +506,7 @@ var _ = Context("Run", func() {
 												/* act/assert */
 												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
-													Should(Equal(cliexiter.ExitReq{Code: 1}))
+													To(Equal(cliexiter.ExitReq{Code: 1}))
 											})
 										})
 										Context("Outcome==?", func() {
@@ -550,7 +550,7 @@ var _ = Context("Run", func() {
 												/* act/assert */
 												objectUnderTest.Run("", &RunOpts{})
 												Expect(fakeCliExiter.ExitArgsForCall(0)).
-													Should(Equal(cliexiter.ExitReq{Code: 1}))
+													To(Equal(cliexiter.ExitReq{Code: 1}))
 											})
 										})
 									})

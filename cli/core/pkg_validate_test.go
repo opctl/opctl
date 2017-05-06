@@ -3,11 +3,11 @@ package core
 import (
 	"errors"
 	"fmt"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/virtual-go/vos"
 	"path"
 )
 
@@ -33,7 +33,7 @@ var _ = Context("pkgValidate", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 		It("should call pkg.Validate w/ expected args", func() {
@@ -59,7 +59,7 @@ var _ = Context("pkgValidate", func() {
 
 			/* assert */
 
-			Expect(fakePkg.ValidateArgsForCall(0)).Should(Equal(expectedPkgRef))
+			Expect(fakePkg.ValidateArgsForCall(0)).To(Equal(expectedPkgRef))
 		})
 		Context("pkg.Validate returns errors", func() {
 			It("should call cliExiter.Exit w/ expected args", func() {
@@ -90,7 +90,7 @@ var _ = Context("pkgValidate", func() {
 
 				/* assert */
 
-				Expect(fakeCliExiter.ExitArgsForCall(0)).Should(Equal(expectedExitReq))
+				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
 			})
 		})
 		Context("pkg.Validate doesn't return errors", func() {
@@ -119,7 +119,7 @@ var _ = Context("pkgValidate", func() {
 
 				/* assert */
 
-				Expect(fakeCliExiter.ExitArgsForCall(0)).Should(Equal(expectedExitReq))
+				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
 			})
 		})
 	})

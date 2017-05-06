@@ -5,8 +5,8 @@ package pkg
 import (
 	"bytes"
 	"fmt"
+	"github.com/golang-interfaces/vioutil"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/virtual-go/vioutil"
 	"gopkg.in/yaml.v2"
 	"path"
 )

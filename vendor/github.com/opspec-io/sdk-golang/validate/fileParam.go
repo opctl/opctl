@@ -22,7 +22,7 @@ func (this validate) fileParam(
 		return []error{errors.New("File required")}
 	}
 
-	fileInfo, err := this.fs.Stat(*value)
+	fileInfo, err := this.os.Stat(*value)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.Mode().IsRegular() {

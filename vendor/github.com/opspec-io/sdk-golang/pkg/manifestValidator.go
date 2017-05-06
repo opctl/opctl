@@ -5,8 +5,7 @@ package pkg
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/virtual-go/fs"
-	"github.com/virtual-go/vioutil"
+	"github.com/golang-interfaces/vioutil"
 	"github.com/xeipuuv/gojsonschema"
 	"path"
 )
@@ -15,9 +14,7 @@ type manifestValidator interface {
 	Validate(pkgPath string) []error
 }
 
-func newManifestValidator(
-	fs fs.FS,
-) manifestValidator {
+func newManifestValidator() manifestValidator {
 	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
@@ -31,7 +28,7 @@ func newManifestValidator(
 	}
 
 	return _manifestValidator{
-		ioUtil:         vioutil.New(fs),
+		ioUtil:         vioutil.New(),
 		manifestSchema: manifestSchema,
 	}
 

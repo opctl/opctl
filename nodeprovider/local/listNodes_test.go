@@ -1,21 +1,22 @@
 package local
 
 import (
+	"github.com/golang-utils/lockfile"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/node"
-	"github.com/opctl/opctl/util/lockfile"
 )
 
 var _ = Context("listNodes", func() {
 	It("should call lockfile.PIdOfOwner w/ expected args", func() {
 		/* arrange */
-		expectedFilePath := lockFilePath()
-
 		fakeLockFile := new(lockfile.Fake)
 
+		expectedFilePath := "dummyLockFilePath"
+
 		objectUnderTest := nodeProvider{
-			lockfile: fakeLockFile,
+			lockfile:     fakeLockFile,
+			lockFilePath: expectedFilePath,
 		}
 
 		/* act */

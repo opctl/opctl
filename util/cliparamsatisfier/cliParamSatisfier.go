@@ -60,12 +60,7 @@ func (this _cliParamSatisfier) Satisfy(
 			if nil == rawArg {
 				msg := fmt.Sprintf(`
 -
-  Prompt for input parameter "%v" failed.
-
-  To specify the parameter either:
-    a) provide it explicitly to the run command (via the -a option)
-    b) set it as an environment variable
-    c) run the op from an interactive shell and enter it when prompted
+  Prompt for "%v" failed; running in non-interactive terminal
 -`, paramName)
 				this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
 			}

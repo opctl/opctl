@@ -53,8 +53,7 @@ func (this cliPromptInputSrc) Read(
 
 		this.cliOutput.Attention(`
 -
-  Please provide value for parameter.
-  Name: %v
+  Please provide "%v".
   Description: %v
 -`, inputName, description)
 

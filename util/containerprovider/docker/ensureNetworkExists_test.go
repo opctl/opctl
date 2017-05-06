@@ -76,7 +76,7 @@ var _ = Context("EnsureNetworkExists", func() {
 				/* assert */
 				_, actualContainerId, actualNetworkCreations := fakeDockerClient.NetworkCreateArgsForCall(0)
 				Expect(actualContainerId).To(Equal(expectedContainerId))
-				Expect(actualNetworkCreations).Should(Equal(expectedNetworkCreations))
+				Expect(actualNetworkCreations).To(Equal(expectedNetworkCreations))
 			})
 			Context("dockerClient.NetworkCreate errors", func() {
 				It("should return expected error", func() {
