@@ -12,7 +12,7 @@ var _ = Context("caller", func() {
 	Context("newCaller", func() {
 		It("should return caller", func() {
 			/* arrange/act/assert */
-			Expect(newCaller(new(fakeContainerCaller))).Should(Not(BeNil()))
+			Expect(newCaller(new(fakeContainerCaller))).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {

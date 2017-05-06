@@ -13,7 +13,7 @@ func (this pkg) Create(
 	pkgDescription string,
 ) error {
 
-	err := this.fs.MkdirAll(
+	err := this.os.MkdirAll(
 		path,
 		0777,
 	)

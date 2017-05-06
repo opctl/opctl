@@ -15,7 +15,7 @@ type Core interface {
 	GetEventStream(
 		req *model.GetEventStreamReq,
 		eventChannel chan *model.Event,
-	) (err error)
+	) error
 
 	KillOp(
 		req model.KillOpReq,

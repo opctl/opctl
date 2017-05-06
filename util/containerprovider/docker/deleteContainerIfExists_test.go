@@ -30,7 +30,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 		/* assert */
 		_, actualContainerId, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
 		Expect(actualContainerId).To(Equal(expectedContainerId))
-		Expect(actualContainerRemoveOptions).Should(Equal(expectedContainerRemoveOptions))
+		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
 	})
 	Context("dockerClient.ContainerRemove errors", func() {
 		It("should return", func() {

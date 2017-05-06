@@ -1,10 +1,10 @@
 package cliexiter
 
 import (
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/clioutput"
-	"github.com/virtual-go/vos"
 )
 
 var _ = Context("cliExiter", func() {
@@ -14,7 +14,7 @@ var _ = Context("cliExiter", func() {
 			Expect(New(
 				new(clioutput.Fake),
 				new(vos.Fake)),
-			).Should(Not(BeNil()))
+			).To(Not(BeNil()))
 		})
 	})
 	Context("Exit", func() {
@@ -37,7 +37,7 @@ var _ = Context("cliExiter", func() {
 
 				/* assert */
 				Expect(fakeOutput.ErrorArgsForCall(0)).
-					Should(Equal(providedExitReq.Message))
+					To(Equal(providedExitReq.Message))
 			})
 			It("should call vos.Exit w/ expected args", func() {
 				/* arrange */
@@ -54,7 +54,7 @@ var _ = Context("cliExiter", func() {
 				objectUnderTest.Exit(providedExitReq)
 
 				/* assert */
-				Expect(fakeVOS.ExitArgsForCall(0)).Should(Equal(providedExitReq.Code))
+				Expect(fakeVOS.ExitArgsForCall(0)).To(Equal(providedExitReq.Code))
 			})
 		})
 		Context("req.Code <= 0", func() {
@@ -75,7 +75,7 @@ var _ = Context("cliExiter", func() {
 
 				/* assert */
 				Expect(fakeOutput.SuccessArgsForCall(0)).
-					Should(Equal(providedExitReq.Message))
+					To(Equal(providedExitReq.Message))
 			})
 			It("should call vos.Exit w/ expected args", func() {
 				/* arrange */
@@ -92,7 +92,7 @@ var _ = Context("cliExiter", func() {
 				objectUnderTest.Exit(providedExitReq)
 
 				/* assert */
-				Expect(fakeVOS.ExitArgsForCall(0)).Should(Equal(0))
+				Expect(fakeVOS.ExitArgsForCall(0)).To(Equal(0))
 			})
 		})
 	})

@@ -3,8 +3,8 @@ package consumenodeapi
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ConsumeNodeApi
 
 import (
+	"github.com/golang-interfaces/vhttp"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/http"
 	"github.com/sethgrid/pester"
 )
 
@@ -41,5 +41,5 @@ func New() ConsumeNodeApi {
 }
 
 type consumeNodeApi struct {
-	httpClient http.Client
+	httpClient vhttp.Client
 }

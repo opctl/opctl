@@ -33,7 +33,7 @@ var _ = Context("NetworkContainer", func() {
 
 		Expect(actualNetworkId).To(Equal(expectedNetworkId))
 		Expect(actualContainerId).To(Equal(expectedContainerId))
-		Expect(actualNetworkConnectOptions).Should(Equal(expectedEndpointSettings))
+		Expect(actualNetworkConnectOptions).To(Equal(expectedEndpointSettings))
 	})
 	Context("dockerClient.NetworkConnect errors", func() {
 		It("should return", func() {

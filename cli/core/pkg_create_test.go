@@ -2,11 +2,11 @@ package core
 
 import (
 	"errors"
+	"github.com/golang-interfaces/vos"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/virtual-go/vos"
 	"path"
 )
 
@@ -32,7 +32,7 @@ var _ = Context("core", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 		Context("vos.Getwd doesn't error", func() {
@@ -89,7 +89,7 @@ var _ = Context("core", func() {
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+						To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 
 				})
 			})

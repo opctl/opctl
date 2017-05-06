@@ -18,7 +18,7 @@ var _ = Context("pubSub", func() {
 		It("should return PubSub", func() {
 			/* arrange/act/assert */
 
-			Expect(New(tempEventRepo)).Should(Not(BeNil()))
+			Expect(New(tempEventRepo)).To(Not(BeNil()))
 		})
 	})
 	Context("Publish", func() {

@@ -18,7 +18,7 @@ var _ = Context("serialCaller", func() {
 				new(fakeCaller),
 				new(pubsub.Fake),
 				new(uniquestring.Fake),
-			)).Should(Not(BeNil()))
+			)).To(Not(BeNil()))
 		})
 	})
 	Context("Call", func() {

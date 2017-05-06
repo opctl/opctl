@@ -22,7 +22,7 @@ var _ = Context("nodeKill", func() {
 			objectUnderTest.NodeKill()
 
 			/* assert */
-			Expect(fakeNodeProvider.KillNodeIfExistsArgsForCall(0)).Should(BeEquivalentTo(""))
+			Expect(fakeNodeProvider.KillNodeIfExistsArgsForCall(0)).To(BeEquivalentTo(""))
 		})
 		Context("nodeProvider.NodeKill errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -43,7 +43,7 @@ var _ = Context("nodeKill", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 	})

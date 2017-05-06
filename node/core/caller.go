@@ -81,10 +81,8 @@ func (this _caller) Call(
 			scg.Serial,
 		)
 	default:
-		fmt.Printf("Invalid call graph %+v\n", scg)
+		return fmt.Errorf("Invalid call graph %+v\n", scg)
 	}
-
-	return nil
 
 }
 

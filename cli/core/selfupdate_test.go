@@ -28,7 +28,7 @@ var _ = Context("selfUpdate", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: fmt.Sprintf(
+					To(Equal(cliexiter.ExitReq{Message: fmt.Sprintf(
 						"%v is not an available release channel. "+
 							"Available release channels are 'alpha', 'beta', and 'stable'. \n", providedReleaseChannel), Code: 1}))
 			})
@@ -49,7 +49,7 @@ var _ = Context("selfUpdate", func() {
 				objectUnderTest.SelfUpdate(providedChannel)
 
 				/* assert */
-				Expect(fakeUpdater.GetUpdateIfExistsArgsForCall(0)).Should(Equal(providedChannel))
+				Expect(fakeUpdater.GetUpdateIfExistsArgsForCall(0)).To(Equal(providedChannel))
 			})
 			Context("updater.GetUpdateIfExists errors", func() {
 				It("should call exiter w/ expected args", func() {
@@ -70,7 +70,7 @@ var _ = Context("selfUpdate", func() {
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+						To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 				})
 			})
 			Context("updater.GetUpdateIfExists doesn't error", func() {
@@ -92,7 +92,7 @@ var _ = Context("selfUpdate", func() {
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
-							Should(Equal(cliexiter.ExitReq{Message: "No update available, already at the latest version!", Code: 0}))
+							To(Equal(cliexiter.ExitReq{Message: "No update available, already at the latest version!", Code: 0}))
 					})
 				})
 				Context("update exists", func() {
@@ -116,7 +116,7 @@ var _ = Context("selfUpdate", func() {
 
 						/* assert */
 						Expect(fakeUpdater.ApplyUpdateArgsForCall(0)).
-							Should(Equal(returnedUpdate))
+							To(Equal(returnedUpdate))
 					})
 					Context("updater.ApplyUpdate errors", func() {
 						It("should call exiter w/ expected args", func() {
@@ -140,7 +140,7 @@ var _ = Context("selfUpdate", func() {
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
-								Should(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
+								To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
 					Context("updater.ApplyUpdate doesn't error", func() {
@@ -192,7 +192,7 @@ var _ = Context("selfUpdate", func() {
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									Should(Equal(cliexiter.ExitReq{Message: expectedExitMsg, Code: 1}))
+									To(Equal(cliexiter.ExitReq{Message: expectedExitMsg, Code: 1}))
 							})
 						})
 						Context("nodeProvider.KillNodeIfExists doesn't error", func() {
@@ -216,7 +216,7 @@ var _ = Context("selfUpdate", func() {
 
 								/* assert */
 								Expect(fakeCliExiter.ExitArgsForCall(0)).
-									Should(Equal(cliexiter.ExitReq{
+									To(Equal(cliexiter.ExitReq{
 										Message: fmt.Sprintf("Updated to new version: %s!\n", returnedUpdate.Version),
 										Code:    0,
 									}))

@@ -1,7 +1,7 @@
 package cliparamsatisfier
 
 import (
-	"github.com/virtual-go/vioutil"
+	"github.com/golang-interfaces/vioutil"
 	"gopkg.in/yaml.v2"
 )
 

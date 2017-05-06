@@ -11,13 +11,13 @@ var _ = Context("updater", func() {
 	Context("New", func() {
 		It("should return Updater", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(New()).To(Not(BeNil()))
 		})
 	})
 	Context("_new", func() {
 		It("should return Updater", func() {
 			/* arrange/act/assert */
-			Expect(_new(new(fakeEquinoxClient))).Should(Not(BeNil()))
+			Expect(_new(new(fakeEquinoxClient))).To(Not(BeNil()))
 		})
 	})
 	Context("GetUpdateIfExists", func() {

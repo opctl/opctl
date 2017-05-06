@@ -28,7 +28,7 @@ var _ = Context("opKill", func() {
 
 			/* assert */
 
-			Expect(fakeConsumeNodeApi.KillOpArgsForCall(0)).Should(BeEquivalentTo(expectedReq))
+			Expect(fakeConsumeNodeApi.KillOpArgsForCall(0)).To(BeEquivalentTo(expectedReq))
 		})
 		Context("consumeNodeApi.OpKill errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -49,7 +49,7 @@ var _ = Context("opKill", func() {
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					Should(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
 	})

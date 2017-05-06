@@ -4,12 +4,10 @@ package pkg
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
 
 import (
+	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
+	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/vos"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/vgit"
-	fsPkg "github.com/virtual-go/fs"
-	"github.com/virtual-go/fs/osfs"
-	"github.com/virtual-go/vioutil"
-	"github.com/virtual-go/vos"
 )
 
 type Pkg interface {
@@ -27,6 +25,7 @@ type Pkg interface {
 	) (string, bool)
 
 	// Pull pulls a package from a remote source
+	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
 		pkgRef string,
 		req *PullOpts,
@@ -55,23 +54,20 @@ type Pkg interface {
 }
 
 func New() Pkg {
-	fs := osfs.New()
-	ioUtil := vioutil.New(fs)
-	manifestValidator := newManifestValidator(fs)
+	ioUtil := vioutil.New()
+	manifestValidator := newManifestValidator()
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
-		fs:                   fs,
 		git:                  vgit.New(),
 		ioUtil:               ioUtil,
-		os:                   vos.New(fs),
+		os:                   vos.New(),
 		manifestUnmarshaller: manifestUnmarshaller,
 		manifestValidator:    manifestValidator,
 	}
 }
 
 type pkg struct {
-	fs                   fsPkg.FS
 	git                  vgit.VGit
 	ioUtil               vioutil.VIOUtil
 	os                   vos.VOS

@@ -3,6 +3,8 @@ package core
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 import (
+	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/vos"
 	"github.com/opctl/opctl/nodeprovider"
 	"github.com/opctl/opctl/nodeprovider/local"
 	"github.com/opctl/opctl/util/clicolorer"
@@ -13,9 +15,6 @@ import (
 	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
-	"github.com/virtual-go/fs/osfs"
-	"github.com/virtual-go/vioutil"
-	"github.com/virtual-go/vos"
 	"io"
 	"os"
 )
@@ -65,8 +64,7 @@ func New(
 	cliColorer clicolorer.CliColorer,
 ) Core {
 
-	_fs := osfs.New()
-	_os := vos.New(_fs)
+	_os := vos.New()
 
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
 	cliExiter := cliexiter.New(cliOutput, _os)
@@ -82,7 +80,7 @@ func New(
 		updater:           updater.New(),
 		os:                _os,
 		writer:            os.Stdout,
-		ioutil:            vioutil.New(_fs),
+		ioutil:            vioutil.New(),
 	}
 
 }

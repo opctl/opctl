@@ -17,7 +17,7 @@ var _ = Context("output", func() {
 				new(clicolorer.Fake),
 				new(fakeWriter),
 				new(fakeWriter),
-			)).Should(Not(BeNil()))
+			)).To(Not(BeNil()))
 		})
 	})
 	_cliColorer := clicolorer.New()
@@ -40,7 +40,7 @@ var _ = Context("output", func() {
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
-				Should(Equal(expectedWriteArg))
+				To(Equal(expectedWriteArg))
 		})
 	})
 	Context("Error", func() {
@@ -62,7 +62,7 @@ var _ = Context("output", func() {
 
 			/* assert */
 			Expect(fakeErrWriter.WriteArgsForCall(0)).
-				Should(Equal(expectedWriteArg))
+				To(Equal(expectedWriteArg))
 		})
 	})
 	Context("Event", func() {
@@ -99,7 +99,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 		Context("ContainerStarted", func() {
@@ -133,7 +133,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 		Context("ContainerStdErrWrittenTo", func() {
@@ -159,7 +159,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeErrWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 		Context("ContainerOutWrittenTo", func() {
@@ -185,7 +185,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 		Context("OpEncounteredError", func() {
@@ -221,7 +221,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeErrWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 		Context("OpEnded", func() {
@@ -258,7 +258,7 @@ var _ = Context("output", func() {
 
 					/* assert */
 					Expect(fakeStdWriter.WriteArgsForCall(0)).
-						Should(Equal(expectedWriteArg))
+						To(Equal(expectedWriteArg))
 				})
 			})
 			Context("Outcome==KILLED", func() {
@@ -294,7 +294,7 @@ var _ = Context("output", func() {
 
 					/* assert */
 					Expect(fakeStdWriter.WriteArgsForCall(0)).
-						Should(Equal(expectedWriteArg))
+						To(Equal(expectedWriteArg))
 				})
 			})
 			Context("Outcome==FAILED", func() {
@@ -330,7 +330,7 @@ var _ = Context("output", func() {
 
 					/* assert */
 					Expect(fakeErrWriter.WriteArgsForCall(0)).
-						Should(Equal(expectedWriteArg))
+						To(Equal(expectedWriteArg))
 				})
 			})
 		})
@@ -365,7 +365,7 @@ var _ = Context("output", func() {
 
 				/* assert */
 				Expect(fakeStdWriter.WriteArgsForCall(0)).
-					Should(Equal(expectedWriteArg))
+					To(Equal(expectedWriteArg))
 			})
 		})
 	})
@@ -390,7 +390,7 @@ var _ = Context("output", func() {
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
-				Should(Equal(expectedWriteArg))
+				To(Equal(expectedWriteArg))
 		})
 	})
 	Context("Success", func() {
@@ -414,7 +414,7 @@ var _ = Context("output", func() {
 
 			/* assert */
 			Expect(fakeStdWriter.WriteArgsForCall(0)).
-				Should(Equal(expectedWriteArg))
+				To(Equal(expectedWriteArg))
 		})
 	})
 })

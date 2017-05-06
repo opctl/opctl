@@ -4,14 +4,14 @@ import (
 	"os"
 )
 
-func (this nodeProvider) KillNodeIfExists(
+func (np nodeProvider) KillNodeIfExists(
 	nodeId string,
 ) (err error) {
 
-	pIdOfLockOwner := this.lockfile.PIdOfOwner(lockFilePath())
+	pIdOfLockOwner := np.lockfile.PIdOfOwner(np.lockFilePath)
 	if 0 != pIdOfLockOwner {
 		var nodeProcess *os.Process
-		nodeProcess, err = this.os.FindProcess(pIdOfLockOwner)
+		nodeProcess, err = np.os.FindProcess(pIdOfLockOwner)
 		if nil != nodeProcess {
 			err = nodeProcess.Kill()
 		}

@@ -1,13 +1,12 @@
 package cliparamsatisfier
 
 import (
-	"github.com/virtual-go/fs/osfs"
-	"github.com/virtual-go/vos"
+	"github.com/golang-interfaces/vos"
 )
 
 func NewEnvVarInputSrc() InputSrc {
 	return envVarInputSrc{
-		os:          vos.New(osfs.New()),
+		os:          vos.New(),
 		readHistory: map[string]struct{}{},
 	}
 }

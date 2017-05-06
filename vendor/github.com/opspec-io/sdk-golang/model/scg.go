@@ -39,6 +39,8 @@ type SCGContainerCallImage struct {
 }
 
 type SCGOpCall struct {
+	// will be interpolated
+	Ref string        `yaml:"ref"`
 	Pkg *SCGOpCallPkg `yaml:"pkg"`
 	// binds in scope variables to inputs of referenced op
 	Inputs map[string]string `yaml:"inputs,omitempty"`
