@@ -1,6 +1,8 @@
+# `pkg`
+
 Manage packages
 
-## Commands
+## Sub commands
 
 * [pkg create](create.md)
 * [pkg pull](pull.md)

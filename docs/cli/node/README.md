@@ -1,6 +1,8 @@
+## `node`
+
 Manage nodes
 
-## Commands
+## Sub commands
 
 * [node create](create.md)
 * [node kill](kill.md)
