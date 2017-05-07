@@ -1,5 +1,7 @@
+## `op`
+
 Manage ops
 
-## Commands
+## Sub commands
 
 * [op kill](kill.md)

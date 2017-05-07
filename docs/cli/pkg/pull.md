@@ -18,7 +18,7 @@ Password used for pull auth
 ## Examples
 
 ```shell
-$ opctl pkg pull -u someUser -p somePass host/path/repo#tag
+opctl pkg pull -u someUser -p somePass host/path/repo#tag
 ```
 
 ## Notes

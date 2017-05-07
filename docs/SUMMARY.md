@@ -22,4 +22,7 @@
 * [integrate](integrate/README.md)
     * [docker](integrate/docker.md)
     * [travis](integrate/travis.md)
+* [node](node/README.md)
+    * [api](node/api.md)
+    * [filesystem](node/filesystem.md)
 * [update](update/README.md)
