@@ -10,8 +10,8 @@ Packages MUST follow the [package format](#format)
 
 ```
 pkg-name
-  |-- op.yml
-  ... (pkg specific files/dirs)
+  |-- op.yml (manifest *required)
+  ... (pkg specific files/dirs *optional)
 ```
 
 Constraints:
