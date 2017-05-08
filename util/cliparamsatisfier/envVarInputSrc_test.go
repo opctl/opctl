@@ -1,7 +1,7 @@
 package cliparamsatisfier
 
 import (
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -18,7 +18,7 @@ var _ = Describe("envVarInputSrc", func() {
 			/* arrange */
 			providedInputName := "dummyInputName"
 
-			fakeOS := new(vos.Fake)
+			fakeOS := new(ios.Fake)
 			objectUnderTest := envVarInputSrc{
 				os:          fakeOS,
 				readHistory: map[string]struct{}{},
@@ -33,7 +33,7 @@ var _ = Describe("envVarInputSrc", func() {
 		Context("os.Getenv returns empty value", func() {
 			It("should return nil", func() {
 				/* arrange */
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 
 				objectUnderTest := envVarInputSrc{
 					os:          fakeOS,
@@ -52,7 +52,7 @@ var _ = Describe("envVarInputSrc", func() {
 				/* arrange */
 				expectedValue := "dummyValue"
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				fakeOS.GetenvReturns(expectedValue)
 
 				objectUnderTest := envVarInputSrc{
@@ -70,7 +70,7 @@ var _ = Describe("envVarInputSrc", func() {
 				/* arrange */
 				expectedValue := "dummyValue"
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				fakeOS.GetenvReturns(expectedValue)
 
 				objectUnderTest := envVarInputSrc{

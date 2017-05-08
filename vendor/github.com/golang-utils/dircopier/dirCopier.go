@@ -4,8 +4,8 @@ package dircopier
 
 import (
 	"fmt"
-	"github.com/golang-interfaces/vioutil"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"path"
 )
@@ -17,15 +17,15 @@ type DirCopier interface {
 
 func New() DirCopier {
 	return dirCopier{
-		os:         vos.New(),
-		ioutil:     vioutil.New(),
+		os:         ios.New(),
+		ioutil:     iioutil.New(),
 		fileCopier: filecopier.New(),
 	}
 }
 
 type dirCopier struct {
-	os         vos.VOS
-	ioutil     vioutil.VIOUtil
+	os         ios.IOS
+	ioutil     iioutil.Iioutil
 	fileCopier filecopier.FileCopier
 }
 

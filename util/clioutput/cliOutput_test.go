@@ -188,11 +188,11 @@ var _ = Context("output", func() {
 					To(Equal(expectedWriteArg))
 			})
 		})
-		Context("OpEncounteredError", func() {
+		Context("OpErred", func() {
 			It("should call errWriter w/ expected args", func() {
 				/* arrange */
 				providedEvent := &model.Event{
-					OpEncounteredError: &model.OpEncounteredErrorEvent{
+					OpErred: &model.OpErredEvent{
 						OpId:   "dummyOpId",
 						PkgRef: "dummyPkgRef",
 						Msg:    "dummyMsg",
@@ -201,11 +201,11 @@ var _ = Context("output", func() {
 				}
 				expectedWriteArg := []byte(fmt.Sprintln(
 					_cliColorer.Error(
-						"OpEncounteredError Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
-						providedEvent.OpEncounteredError.OpId,
-						providedEvent.OpEncounteredError.PkgRef,
+						"OpErred Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
+						providedEvent.OpErred.OpId,
+						providedEvent.OpErred.PkgRef,
 						providedEvent.Timestamp.Format(time.RFC3339),
-						providedEvent.OpEncounteredError.Msg,
+						providedEvent.OpErred.Msg,
 					),
 				))
 

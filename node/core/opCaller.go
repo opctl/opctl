@@ -97,7 +97,7 @@ func (this _opCaller) Call(
 			this.pubSub.Publish(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
-					OpEncounteredError: &model.OpEncounteredErrorEvent{
+					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
 						OpId:     opId,
 						PkgRef:   pkgRef,

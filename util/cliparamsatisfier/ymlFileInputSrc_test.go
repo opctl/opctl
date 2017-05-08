@@ -2,7 +2,7 @@ package cliparamsatisfier
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"gopkg.in/yaml.v2"
@@ -13,7 +13,7 @@ var _ = Describe("ymlFileInputSrc", func() {
 		It("should call ioutil.ReadFile w/ expected args", func() {
 			/* arrange */
 			providedFilePath := "dummyFilePath"
-			providedIOUtil := new(vioutil.Fake)
+			providedIOUtil := new(iioutil.Fake)
 			providedIOUtil.ReadFileReturns(nil, errors.New(""))
 
 			/* act */
@@ -32,7 +32,7 @@ var _ = Describe("ymlFileInputSrc", func() {
 				if nil != err {
 					panic(err)
 				}
-				providedIOUtil := new(vioutil.Fake)
+				providedIOUtil := new(iioutil.Fake)
 				providedIOUtil.ReadFileReturns(ymlBytes, nil)
 
 				objectUnderTest := NewYMLFileInputSrc("", providedIOUtil)
@@ -56,7 +56,7 @@ var _ = Describe("ymlFileInputSrc", func() {
 				if nil != err {
 					panic(err)
 				}
-				providedIOUtil := new(vioutil.Fake)
+				providedIOUtil := new(iioutil.Fake)
 				providedIOUtil.ReadFileReturns(ymlBytes, nil)
 
 				objectUnderTest := NewYMLFileInputSrc("", providedIOUtil)
@@ -78,7 +78,7 @@ var _ = Describe("ymlFileInputSrc", func() {
 				if nil != err {
 					panic(err)
 				}
-				providedIOUtil := new(vioutil.Fake)
+				providedIOUtil := new(iioutil.Fake)
 				providedIOUtil.ReadFileReturns(ymlBytes, nil)
 
 				objectUnderTest := NewYMLFileInputSrc("", providedIOUtil)

@@ -68,7 +68,7 @@ func (this _core) Run(
 	)
 
 	// start op
-	rootOpId, err := this.consumeNodeApi.StartOp(
+	rootOpId, err := this.opspecNodeAPIClient.StartOp(
 		model.StartOpReq{
 			Args:   argsMap,
 			PkgRef: pkgPath,
@@ -80,7 +80,7 @@ func (this _core) Run(
 	}
 
 	// start event loop
-	eventChannel, err := this.consumeNodeApi.GetEventStream(
+	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
 		&model.GetEventStreamReq{
 			Filter: &model.EventFilter{
 				RootOpIds: []string{rootOpId},
@@ -102,7 +102,7 @@ func (this _core) Run(
 				intSignalsReceived++
 				fmt.Println(this.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
-				this.consumeNodeApi.KillOp(
+				this.opspecNodeAPIClient.KillOp(
 					model.KillOpReq{
 						OpId: rootOpId,
 					},

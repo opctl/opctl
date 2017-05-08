@@ -2,8 +2,8 @@ package core
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vioutil"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/nodeprovider"
@@ -11,8 +11,8 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api/client"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"time"
 )
@@ -22,9 +22,9 @@ var _ = Context("Run", func() {
 		Context("os.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVOS := new(vos.Fake)
+				fakeIOS := new(ios.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVOS.GetwdReturns("", expectedError)
+				fakeIOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
@@ -32,7 +32,7 @@ var _ = Context("Run", func() {
 					pkg:          new(pkg.Fake),
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					os:           fakeVOS,
+					os:           fakeIOS,
 				}
 
 				/* act */
@@ -55,15 +55,15 @@ var _ = Context("Run", func() {
 
 				fakeCliExiter := new(cliexiter.Fake)
 
-				fakeVOS := new(vos.Fake)
-				fakeVOS.GetwdReturns(expectedPkgBasePath, nil)
+				fakeIOS := new(ios.Fake)
+				fakeIOS.GetwdReturns(expectedPkgBasePath, nil)
 
 				objectUnderTest := _core{
 					pkg:          fakePkg,
 					cliExiter:    fakeCliExiter,
 					nodeProvider: new(nodeprovider.Fake),
-					os:           fakeVOS,
-					ioutil:       new(vioutil.Fake),
+					os:           fakeIOS,
+					ioutil:       new(iioutil.Fake),
 				}
 
 				/* act */
@@ -81,7 +81,7 @@ var _ = Context("Run", func() {
 				It("should call pkg.Get w/ expected args", func() {
 					/* arrange */
 					resolvedPkgRef := "dummyPkgName"
-					wdReturnedFromVOS := "dummyWorkDir"
+					wdReturnedFromIOS := "dummyWorkDir"
 
 					expectedPkgRef := resolvedPkgRef
 
@@ -89,22 +89,22 @@ var _ = Context("Run", func() {
 					// err to trigger immediate return
 					fakePkg.GetReturns(&model.PkgManifest{}, errors.New("dummyError"))
 
-					fakeConsumeNodeApi := new(consumenodeapi.Fake)
+					fakeOpspecNodeAPIClient := new(client.Fake)
 
 					fakeCliExiter := new(cliexiter.Fake)
 
-					fakeVOS := new(vos.Fake)
+					fakeIOS := new(ios.Fake)
 					fakePkg.ResolveReturns(resolvedPkgRef, true)
-					fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+					fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
 
 					objectUnderTest := _core{
-						pkg:               fakePkg,
-						consumeNodeApi:    fakeConsumeNodeApi,
-						cliExiter:         fakeCliExiter,
-						cliParamSatisfier: new(cliparamsatisfier.Fake),
-						nodeProvider:      new(nodeprovider.Fake),
-						os:                fakeVOS,
-						ioutil:            new(vioutil.Fake),
+						pkg:                 fakePkg,
+						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+						cliExiter:           fakeCliExiter,
+						cliParamSatisfier:   new(cliparamsatisfier.Fake),
+						nodeProvider:        new(nodeprovider.Fake),
+						os:                  fakeIOS,
+						ioutil:              new(iioutil.Fake),
 					}
 
 					/* act */
@@ -128,8 +128,8 @@ var _ = Context("Run", func() {
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
 							nodeProvider:      new(nodeprovider.Fake),
-							os:                new(vos.Fake),
-							ioutil:            new(vioutil.Fake),
+							os:                new(ios.Fake),
+							ioutil:            new(iioutil.Fake),
 						}
 
 						/* act */
@@ -162,21 +162,21 @@ var _ = Context("Run", func() {
 						)
 
 						// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-						fakeConsumeNodeApi := new(consumenodeapi.Fake)
+						fakeOpspecNodeAPIClient := new(client.Fake)
 						eventChannel := make(chan model.Event)
 						close(eventChannel)
-						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+						fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 						objectUnderTest := _core{
-							pkg:               fakePkg,
-							consumeNodeApi:    fakeConsumeNodeApi,
-							cliExiter:         new(cliexiter.Fake),
-							cliParamSatisfier: fakeCliParamSatisfier,
-							nodeProvider:      new(nodeprovider.Fake),
-							os:                new(vos.Fake),
-							ioutil:            new(vioutil.Fake),
+							pkg:                 fakePkg,
+							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+							cliExiter:           new(cliexiter.Fake),
+							cliParamSatisfier:   fakeCliParamSatisfier,
+							nodeProvider:        new(nodeprovider.Fake),
+							os:                  new(ios.Fake),
+							ioutil:              new(iioutil.Fake),
 						}
 
 						/* act */
@@ -187,11 +187,11 @@ var _ = Context("Run", func() {
 
 						Expect(actualParams).To(Equal(expectedParams))
 					})
-					It("should call consumeNodeApi.StartOp w/ expected args", func() {
+					It("should call opspecNodeAPIClient.StartOp w/ expected args", func() {
 						/* arrange */
 						cwd := "dummyWorkDir"
-						fakeVOS := new(vos.Fake)
-						fakeVOS.GetwdReturns(cwd, nil)
+						fakeIOS := new(ios.Fake)
+						fakeIOS.GetwdReturns(cwd, nil)
 
 						resolvedPkgRef := "dummyPkgRef"
 
@@ -208,32 +208,32 @@ var _ = Context("Run", func() {
 						fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
 						// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-						fakeConsumeNodeApi := new(consumenodeapi.Fake)
+						fakeOpspecNodeAPIClient := new(client.Fake)
 						eventChannel := make(chan model.Event)
 						close(eventChannel)
-						fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+						fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 						objectUnderTest := _core{
-							pkg:               fakePkg,
-							consumeNodeApi:    fakeConsumeNodeApi,
-							cliExiter:         new(cliexiter.Fake),
-							cliParamSatisfier: fakeCliParamSatisfier,
-							nodeProvider:      new(nodeprovider.Fake),
-							os:                fakeVOS,
-							ioutil:            new(vioutil.Fake),
+							pkg:                 fakePkg,
+							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+							cliExiter:           new(cliexiter.Fake),
+							cliParamSatisfier:   fakeCliParamSatisfier,
+							nodeProvider:        new(nodeprovider.Fake),
+							os:                  fakeIOS,
+							ioutil:              new(iioutil.Fake),
 						}
 
 						/* act */
 						objectUnderTest.Run("", &RunOpts{})
 
 						/* assert */
-						actualArgs := fakeConsumeNodeApi.StartOpArgsForCall(0)
+						actualArgs := fakeOpspecNodeAPIClient.StartOpArgsForCall(0)
 						Expect(actualArgs).To(Equal(expectedArgs))
 					})
-					Context("consumeNodeApi.StartOp errors", func() {
+					Context("opspecNodeAPIClient.StartOp errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
@@ -243,17 +243,17 @@ var _ = Context("Run", func() {
 							fakePkg.ResolveReturns("", true)
 							fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-							fakeConsumeNodeApi := new(consumenodeapi.Fake)
-							fakeConsumeNodeApi.StartOpReturns("dummyOpId", returnedError)
+							fakeOpspecNodeAPIClient := new(client.Fake)
+							fakeOpspecNodeAPIClient.StartOpReturns("dummyOpId", returnedError)
 
 							objectUnderTest := _core{
-								pkg:               fakePkg,
-								consumeNodeApi:    fakeConsumeNodeApi,
-								cliExiter:         fakeCliExiter,
-								cliParamSatisfier: new(cliparamsatisfier.Fake),
-								nodeProvider:      new(nodeprovider.Fake),
-								os:                new(vos.Fake),
-								ioutil:            new(vioutil.Fake),
+								pkg:                 fakePkg,
+								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+								cliExiter:           fakeCliExiter,
+								cliParamSatisfier:   new(cliparamsatisfier.Fake),
+								nodeProvider:        new(nodeprovider.Fake),
+								os:                  new(ios.Fake),
+								ioutil:              new(iioutil.Fake),
 							}
 
 							/* act */
@@ -264,8 +264,8 @@ var _ = Context("Run", func() {
 								To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
-					Context("consumeNodeApi.StartOp doesn't error", func() {
-						It("should call consumeNodeApi.GetEventStream w/ expected args", func() {
+					Context("opspecNodeAPIClient.StartOp doesn't error", func() {
+						It("should call opspecNodeAPIClient.GetEventStream w/ expected args", func() {
 							/* arrange */
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns("", true)
@@ -279,36 +279,36 @@ var _ = Context("Run", func() {
 								},
 							}
 
-							fakeConsumeNodeApi := new(consumenodeapi.Fake)
-							fakeConsumeNodeApi.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
+							fakeOpspecNodeAPIClient := new(client.Fake)
+							fakeOpspecNodeAPIClient.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
 							eventChannel := make(chan model.Event)
 							close(eventChannel)
-							fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+							fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 							objectUnderTest := _core{
-								pkg:               fakePkg,
-								consumeNodeApi:    fakeConsumeNodeApi,
-								cliExiter:         new(cliexiter.Fake),
-								cliParamSatisfier: new(cliparamsatisfier.Fake),
-								nodeProvider:      new(nodeprovider.Fake),
-								os:                new(vos.Fake),
-								ioutil:            new(vioutil.Fake),
+								pkg:                 fakePkg,
+								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+								cliExiter:           new(cliexiter.Fake),
+								cliParamSatisfier:   new(cliparamsatisfier.Fake),
+								nodeProvider:        new(nodeprovider.Fake),
+								os:                  new(ios.Fake),
+								ioutil:              new(iioutil.Fake),
 							}
 
 							/* act */
 							objectUnderTest.Run("", &RunOpts{})
 
 							/* assert */
-							actualReq := fakeConsumeNodeApi.GetEventStreamArgsForCall(0)
+							actualReq := fakeOpspecNodeAPIClient.GetEventStreamArgsForCall(0)
 
-							// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+							// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 							Expect(*actualReq.Filter.Since).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
 							// set temporal fields to expected vals since they're already asserted
 							actualReq.Filter.Since = &startTime
 
 							Expect(actualReq).To(Equal(expectedReq))
 						})
-						Context("consumeNodeApi.GetEventStream errors", func() {
+						Context("opspecNodeAPIClient.GetEventStream errors", func() {
 							It("should call exiter w/ expected args", func() {
 								/* arrange */
 								fakeCliExiter := new(cliexiter.Fake)
@@ -318,17 +318,17 @@ var _ = Context("Run", func() {
 								fakePkg.ResolveReturns("", true)
 								fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-								fakeConsumeNodeApi := new(consumenodeapi.Fake)
-								fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
+								fakeOpspecNodeAPIClient := new(client.Fake)
+								fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 								objectUnderTest := _core{
-									pkg:               fakePkg,
-									consumeNodeApi:    fakeConsumeNodeApi,
-									cliExiter:         fakeCliExiter,
-									cliParamSatisfier: new(cliparamsatisfier.Fake),
-									nodeProvider:      new(nodeprovider.Fake),
-									os:                new(vos.Fake),
-									ioutil:            new(vioutil.Fake),
+									pkg:                 fakePkg,
+									opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+									cliExiter:           fakeCliExiter,
+									cliParamSatisfier:   new(cliparamsatisfier.Fake),
+									nodeProvider:        new(nodeprovider.Fake),
+									os:                  new(ios.Fake),
+									ioutil:              new(iioutil.Fake),
 								}
 
 								/* act */
@@ -339,7 +339,7 @@ var _ = Context("Run", func() {
 									To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 							})
 						})
-						Context("consumeNodeApi.GetEventStream doesn't error", func() {
+						Context("opspecNodeAPIClient.GetEventStream doesn't error", func() {
 							Context("event channel closes", func() {
 								It("should call exiter w/ expected args", func() {
 									/* arrange */
@@ -349,19 +349,19 @@ var _ = Context("Run", func() {
 									fakePkg.ResolveReturns("", true)
 									fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-									fakeConsumeNodeApi := new(consumenodeapi.Fake)
+									fakeOpspecNodeAPIClient := new(client.Fake)
 									eventChannel := make(chan model.Event)
 									close(eventChannel)
-									fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+									fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 									objectUnderTest := _core{
-										pkg:               fakePkg,
-										consumeNodeApi:    fakeConsumeNodeApi,
-										cliExiter:         fakeCliExiter,
-										cliParamSatisfier: new(cliparamsatisfier.Fake),
-										nodeProvider:      new(nodeprovider.Fake),
-										os:                new(vos.Fake),
-										ioutil:            new(vioutil.Fake),
+										pkg:                 fakePkg,
+										opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+										cliExiter:           fakeCliExiter,
+										cliParamSatisfier:   new(cliparamsatisfier.Fake),
+										nodeProvider:        new(nodeprovider.Fake),
+										os:                  new(ios.Fake),
+										ioutil:              new(iioutil.Fake),
 									}
 
 									/* act */
@@ -395,23 +395,23 @@ var _ = Context("Run", func() {
 												fakePkg.ResolveReturns("", true)
 												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												fakeOpspecNodeAPIClient := new(client.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
-												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+												fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 												objectUnderTest := _core{
-													pkg:               fakePkg,
-													cliColorer:        clicolorer.New(),
-													consumeNodeApi:    fakeConsumeNodeApi,
-													cliExiter:         fakeCliExiter,
-													cliOutput:         new(clioutput.Fake),
-													cliParamSatisfier: new(cliparamsatisfier.Fake),
-													nodeProvider:      new(nodeprovider.Fake),
-													os:                new(vos.Fake),
-													ioutil:            new(vioutil.Fake),
+													pkg:                 fakePkg,
+													cliColorer:          clicolorer.New(),
+													opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+													cliExiter:           fakeCliExiter,
+													cliOutput:           new(clioutput.Fake),
+													cliParamSatisfier:   new(cliparamsatisfier.Fake),
+													nodeProvider:        new(nodeprovider.Fake),
+													os:                  new(ios.Fake),
+													ioutil:              new(iioutil.Fake),
 												}
 
 												/* act/assert */
@@ -439,23 +439,23 @@ var _ = Context("Run", func() {
 												fakePkg.ResolveReturns("", true)
 												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												fakeOpspecNodeAPIClient := new(client.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
-												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+												fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 												objectUnderTest := _core{
-													pkg:               fakePkg,
-													cliColorer:        clicolorer.New(),
-													consumeNodeApi:    fakeConsumeNodeApi,
-													cliExiter:         fakeCliExiter,
-													cliOutput:         new(clioutput.Fake),
-													cliParamSatisfier: new(cliparamsatisfier.Fake),
-													nodeProvider:      new(nodeprovider.Fake),
-													os:                new(vos.Fake),
-													ioutil:            new(vioutil.Fake),
+													pkg:                 fakePkg,
+													cliColorer:          clicolorer.New(),
+													opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+													cliExiter:           fakeCliExiter,
+													cliOutput:           new(clioutput.Fake),
+													cliParamSatisfier:   new(cliparamsatisfier.Fake),
+													nodeProvider:        new(nodeprovider.Fake),
+													os:                  new(ios.Fake),
+													ioutil:              new(iioutil.Fake),
 												}
 
 												/* act/assert */
@@ -484,23 +484,23 @@ var _ = Context("Run", func() {
 												fakePkg.ResolveReturns("", true)
 												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												fakeOpspecNodeAPIClient := new(client.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
-												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+												fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 												objectUnderTest := _core{
-													pkg:               fakePkg,
-													cliColorer:        clicolorer.New(),
-													consumeNodeApi:    fakeConsumeNodeApi,
-													cliExiter:         fakeCliExiter,
-													cliOutput:         new(clioutput.Fake),
-													cliParamSatisfier: new(cliparamsatisfier.Fake),
-													nodeProvider:      new(nodeprovider.Fake),
-													os:                new(vos.Fake),
-													ioutil:            new(vioutil.Fake),
+													pkg:                 fakePkg,
+													cliColorer:          clicolorer.New(),
+													opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+													cliExiter:           fakeCliExiter,
+													cliOutput:           new(clioutput.Fake),
+													cliParamSatisfier:   new(cliparamsatisfier.Fake),
+													nodeProvider:        new(nodeprovider.Fake),
+													os:                  new(ios.Fake),
+													ioutil:              new(iioutil.Fake),
 												}
 
 												/* act/assert */
@@ -528,23 +528,23 @@ var _ = Context("Run", func() {
 												fakePkg.ResolveReturns("", true)
 												fakePkg.GetReturns(&model.PkgManifest{}, nil)
 
-												fakeConsumeNodeApi := new(consumenodeapi.Fake)
+												fakeOpspecNodeAPIClient := new(client.Fake)
 												eventChannel := make(chan model.Event, 10)
 												eventChannel <- opEndedEvent
 												defer close(eventChannel)
-												fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
-												fakeConsumeNodeApi.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+												fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+												fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 												objectUnderTest := _core{
-													pkg:               fakePkg,
-													cliColorer:        clicolorer.New(),
-													consumeNodeApi:    fakeConsumeNodeApi,
-													cliExiter:         fakeCliExiter,
-													cliOutput:         new(clioutput.Fake),
-													cliParamSatisfier: new(cliparamsatisfier.Fake),
-													nodeProvider:      new(nodeprovider.Fake),
-													os:                new(vos.Fake),
-													ioutil:            new(vioutil.Fake),
+													pkg:                 fakePkg,
+													cliColorer:          clicolorer.New(),
+													opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+													cliExiter:           fakeCliExiter,
+													cliOutput:           new(clioutput.Fake),
+													cliParamSatisfier:   new(cliparamsatisfier.Fake),
+													nodeProvider:        new(nodeprovider.Fake),
+													os:                  new(ios.Fake),
+													ioutil:              new(iioutil.Fake),
 												}
 
 												/* act/assert */

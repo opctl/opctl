@@ -5,7 +5,7 @@ package pkg
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
 	"path"
 )
@@ -28,14 +28,14 @@ func newManifestValidator() manifestValidator {
 	}
 
 	return _manifestValidator{
-		ioUtil:         vioutil.New(),
+		ioUtil:         iioutil.New(),
 		manifestSchema: manifestSchema,
 	}
 
 }
 
 type _manifestValidator struct {
-	ioUtil         vioutil.VIOUtil
+	ioUtil         iioutil.Iioutil
 	manifestSchema *gojsonschema.Schema
 }
 

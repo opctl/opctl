@@ -1,12 +1,12 @@
-// Pkg implements use cases for managing opspec packages
+// Package pkg implements use cases for managing opspec packages
 package pkg
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
 
 import (
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
-	"github.com/golang-interfaces/vioutil"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -54,23 +54,23 @@ type Pkg interface {
 }
 
 func New() Pkg {
-	ioUtil := vioutil.New()
+	ioUtil := iioutil.New()
 	manifestValidator := newManifestValidator()
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
-		git:                  vgit.New(),
+		git:                  igit.New(),
 		ioUtil:               ioUtil,
-		os:                   vos.New(),
+		os:                   ios.New(),
 		manifestUnmarshaller: manifestUnmarshaller,
 		manifestValidator:    manifestValidator,
 	}
 }
 
 type pkg struct {
-	git                  vgit.VGit
-	ioUtil               vioutil.VIOUtil
-	os                   vos.VOS
+	git                  igit.IGit
+	ioUtil               iioutil.Iioutil
+	os                   ios.IOS
 	manifestValidator    manifestValidator
 	manifestUnmarshaller manifestUnmarshaller
 }

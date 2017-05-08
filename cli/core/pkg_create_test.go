@@ -2,7 +2,7 @@ package core
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
@@ -12,19 +12,19 @@ import (
 
 var _ = Context("core", func() {
 	Context("PkgCreate", func() {
-		Context("vos.Getwd errors", func() {
+		Context("ios.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVOS := new(vos.Fake)
+				fakeIOS := new(ios.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVOS.GetwdReturns("", expectedError)
+				fakeIOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					os:        fakeVOS,
+					os:        fakeIOS,
 				}
 
 				/* act */
@@ -35,7 +35,7 @@ var _ = Context("core", func() {
 					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		Context("vos.Getwd doesn't error", func() {
+		Context("ios.Getwd doesn't error", func() {
 			It("should call pkg.Create w/ expected args", func() {
 				/* arrange */
 				fakePkg := new(pkg.Fake)
@@ -43,18 +43,18 @@ var _ = Context("core", func() {
 				providedPath := "dummyPath"
 				providedPkgName := "dummyPkgName"
 				providedPkgDescription := "dummyPkgDescription"
-				wdReturnedFromVOS := "dummyWorkDir"
+				wdReturnedFromIOS := "dummyWorkDir"
 
-				expectedPath := path.Join(wdReturnedFromVOS, providedPath, providedPkgName)
+				expectedPath := path.Join(wdReturnedFromIOS, providedPath, providedPkgName)
 				expectedPkgName := providedPkgName
 				expectedPkgDescription := providedPkgDescription
 
-				fakeVOS := new(vos.Fake)
-				fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+				fakeIOS := new(ios.Fake)
+				fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
 
 				objectUnderTest := _core{
 					pkg: fakePkg,
-					os:  fakeVOS,
+					os:  fakeIOS,
 				}
 
 				/* act */
@@ -81,7 +81,7 @@ var _ = Context("core", func() {
 					objectUnderTest := _core{
 						pkg:       fakePkg,
 						cliExiter: fakeCliExiter,
-						os:        new(vos.Fake),
+						os:        new(ios.Fake),
 					}
 
 					/* act */

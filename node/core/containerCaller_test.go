@@ -102,7 +102,7 @@ var _ = Context("containerCaller", func() {
 			/* assert */
 			actualEvent := fakePubSub.PublishArgsForCall(0)
 
-			// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+			// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 			Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
 			// set temporal fields to expected vals since they're already asserted
 			actualEvent.Timestamp = expectedEvent.Timestamp
@@ -260,7 +260,7 @@ var _ = Context("containerCaller", func() {
 		/* assert */
 		actualEvent := fakePubSub.PublishArgsForCall(1)
 
-		// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+		// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 		Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
 		// set temporal fields to expected vals since they're already asserted
 		actualEvent.Timestamp = expectedEvent.Timestamp
@@ -373,7 +373,7 @@ var _ = Context("containerCaller", func() {
 		/* assert */
 		actualEvent := fakePubSub.PublishArgsForCall(1)
 
-		// @TODO: implement/use VTime (similar to VOS & VFS) so we don't need custom assertions on temporal fields
+		// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 		Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
 		// set temporal fields to expected vals since they're already asserted
 		actualEvent.Timestamp = expectedEvent.Timestamp

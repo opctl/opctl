@@ -1,38 +1,18 @@
 package core
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
-
 import (
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/model"
+	opspecNodeCorePkg "github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 )
 
-type Core interface {
-	GetEventStream(
-		req *model.GetEventStreamReq,
-		eventChannel chan *model.Event,
-	) error
-
-	KillOp(
-		req model.KillOpReq,
-	)
-
-	StartOp(
-		req model.StartOpReq,
-	) (
-		callId string,
-		err error,
-	)
-}
-
 func New(
 	pubSub pubsub.PubSub,
 	containerProvider containerprovider.ContainerProvider,
-) (core Core) {
+) (core opspecNodeCorePkg.Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
 	dcgNodeRepo := newDCGNodeRepo()

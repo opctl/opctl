@@ -5,7 +5,7 @@ package pkg
 import (
 	"bytes"
 	"fmt"
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
 	"path"
@@ -18,7 +18,7 @@ type manifestUnmarshaller interface {
 }
 
 func newManifestUnmarshaller(
-	ioUtil vioutil.VIOUtil,
+	ioUtil iioutil.Iioutil,
 	manifestValidator manifestValidator,
 ) manifestUnmarshaller {
 
@@ -30,7 +30,7 @@ func newManifestUnmarshaller(
 }
 
 type _manifestUnmarshaller struct {
-	ioUtil            vioutil.VIOUtil
+	ioUtil            iioutil.Iioutil
 	manifestValidator manifestValidator
 }
 

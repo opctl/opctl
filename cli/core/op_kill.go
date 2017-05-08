@@ -9,7 +9,7 @@ func (this _core) OpKill(
 	opId string,
 ) {
 
-	err := this.consumeNodeApi.KillOp(
+	err := this.opspecNodeAPIClient.KillOp(
 		model.KillOpReq{
 			OpId: opId,
 		},

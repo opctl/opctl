@@ -1,19 +1,19 @@
 package cliparamsatisfier
 
 import (
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 )
 
 func NewEnvVarInputSrc() InputSrc {
 	return envVarInputSrc{
-		os:          vos.New(),
+		os:          ios.New(),
 		readHistory: map[string]struct{}{},
 	}
 }
 
 // envVarInputSrc implements InputSrc interface by sourcing inputs from env vars
 type envVarInputSrc struct {
-	os          vos.VOS
+	os          ios.IOS
 	readHistory map[string]struct{} // tracks reads
 }
 

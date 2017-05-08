@@ -3,7 +3,7 @@ package cliexiter
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliExiter
 
 import (
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/util/clioutput"
 )
 
@@ -19,25 +19,25 @@ type CliExiter interface {
 
 func New(
 	cliOutput clioutput.CliOutput,
-	vos vos.VOS,
+	ios ios.IOS,
 ) CliExiter {
 	return cliExiter{
 		cliOutput: cliOutput,
-		vos:       vos,
+		ios:       ios,
 	}
 }
 
 type cliExiter struct {
 	cliOutput clioutput.CliOutput
-	vos       vos.VOS
+	ios       ios.IOS
 }
 
 func (this cliExiter) Exit(req ExitReq) {
 	if req.Code > 0 {
 		this.cliOutput.Error(req.Message)
-		this.vos.Exit(req.Code)
+		this.ios.Exit(req.Code)
 	} else {
 		this.cliOutput.Success(req.Message)
-		this.vos.Exit(0)
+		this.ios.Exit(0)
 	}
 }

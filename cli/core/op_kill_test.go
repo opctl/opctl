@@ -5,22 +5,22 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api/client"
 )
 
 var _ = Context("opKill", func() {
 	Context("Execute", func() {
-		It("should call consumeNodeApi.OpKill w/ expected args", func() {
+		It("should call opspecNodeAPIClient.OpKill w/ expected args", func() {
 			/* arrange */
-			fakeConsumeNodeApi := new(consumenodeapi.Fake)
+			fakeOpspecNodeAPIClient := new(client.Fake)
 
 			expectedReq := model.KillOpReq{
 				OpId: "dummyOpId",
 			}
 
 			objectUnderTest := _core{
-				consumeNodeApi: fakeConsumeNodeApi,
+				opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 			}
 
 			/* act */
@@ -28,20 +28,20 @@ var _ = Context("opKill", func() {
 
 			/* assert */
 
-			Expect(fakeConsumeNodeApi.KillOpArgsForCall(0)).To(BeEquivalentTo(expectedReq))
+			Expect(fakeOpspecNodeAPIClient.KillOpArgsForCall(0)).To(BeEquivalentTo(expectedReq))
 		})
-		Context("consumeNodeApi.OpKill errors", func() {
+		Context("opspecNodeAPIClient.OpKill errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeConsumeNodeApi := new(consumenodeapi.Fake)
+				fakeOpspecNodeAPIClient := new(client.Fake)
 				expectedError := errors.New("dummyError")
-				fakeConsumeNodeApi.KillOpReturns(expectedError)
+				fakeOpspecNodeAPIClient.KillOpReturns(expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					consumeNodeApi: fakeConsumeNodeApi,
-					cliExiter:      fakeCliExiter,
+					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+					cliExiter:           fakeCliExiter,
 				}
 
 				/* act */
