@@ -1,4 +1,4 @@
-// Pkg implements use cases for managing opspec packages
+// Package pkg implements use cases for managing opspec packages
 package pkg
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
@@ -59,7 +59,7 @@ func New() Pkg {
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
 	return pkg{
-		git:                  vgit.New(),
+		git:                  igit.New(),
 		ioUtil:               ioUtil,
 		os:                   vos.New(),
 		manifestUnmarshaller: manifestUnmarshaller,
@@ -68,7 +68,7 @@ func New() Pkg {
 }
 
 type pkg struct {
-	git                  vgit.VGit
+	git                  igit.IGit
 	ioUtil               vioutil.VIOUtil
 	os                   vos.VOS
 	manifestValidator    manifestValidator

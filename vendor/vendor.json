@@ -33,10 +33,16 @@
 			"revisionTime": "2017-03-27T23:54:44Z"
 		},
 		{
-			"checksumSHA1": "C90B0Jvyzg7UTEQ3kE7SLfx1NII=",
+			"checksumSHA1": "E8g9oX0RvkYs1pm8sQBL11i35eM=",
+			"path": "github.com/golang-interfaces/github.com-gorilla-websocket",
+			"revision": "af8ad05f6e6aad8e64f74928e4ef2321e7dab482",
+			"revisionTime": "2017-05-07T22:53:46Z"
+		},
+		{
+			"checksumSHA1": "SmlrXyU22EKbfWXEASeOXkEEN2U=",
 			"path": "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4",
-			"revision": "4555304d9f58ad1ae4199b32f739963bc5f0c31d",
-			"revisionTime": "2017-05-05T19:51:12Z"
+			"revision": "b02a5bfac515f58a9633cfa3f73865625ef0b702",
+			"revisionTime": "2017-05-07T19:17:43Z"
 		},
 		{
 			"checksumSHA1": "keTCI63iHqMh5WQXUKOR3c+dQos=",
@@ -57,10 +63,22 @@
 			"revisionTime": "2017-05-05T19:56:45Z"
 		},
 		{
-			"checksumSHA1": "yc/AtS4YqKJrwaJTbHKmDYVrtVE=",
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "zmCk+lgIeiOf0Ng9aFP9aFy8ksE=",
+			"path": "github.com/gorilla/mux",
+			"revision": "4c1c3952b7d9d0a061a3fa7b36fd373ba0398ebc",
+			"revisionTime": "2017-04-27T04:12:50Z"
+		},
+		{
+			"checksumSHA1": "hEnH6sgR83Qfx7UNnphNNlelmj0=",
 			"path": "github.com/gorilla/websocket",
-			"revision": "e2e3d8414d0fbae04004f151979f4e27c6747fe7",
-			"revisionTime": "2016-03-13T18:57:37Z"
+			"revision": "a91eba7f97777409bc2c443f5534d41dd20c5720",
+			"revisionTime": "2017-03-19T17:27:27Z"
 		},
 		{
 			"checksumSHA1": "iWCtyR1TkJ22Bi/ygzfKDvOQdQY=",

@@ -75,7 +75,7 @@ var _ = Describe("Pkg", func() {
 					Progress:      os.Stdout,
 				}
 
-				fakeGit := new(vgit.Fake)
+				fakeGit := new(igit.Fake)
 
 				objectUnderTest := pkg{
 					git: fakeGit,
@@ -102,7 +102,7 @@ var _ = Describe("Pkg", func() {
 
 						fakeOS := new(vos.Fake)
 
-						fakeGit := new(vgit.Fake)
+						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
 						objectUnderTest := pkg{
@@ -141,7 +141,7 @@ var _ = Describe("Pkg", func() {
 
 						expectedError := ErrAuthenticationFailed{}
 
-						fakeGit := new(vgit.Fake)
+						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
 
 						objectUnderTest := pkg{
@@ -180,7 +180,7 @@ var _ = Describe("Pkg", func() {
 
 						expectedError := errors.New("dummyError")
 
-						fakeGit := new(vgit.Fake)
+						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, expectedError)
 
 						objectUnderTest := pkg{
@@ -209,7 +209,7 @@ var _ = Describe("Pkg", func() {
 					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
 
 					objectUnderTest := pkg{
-						git: new(vgit.Fake),
+						git: new(igit.Fake),
 					}
 
 					/* act */

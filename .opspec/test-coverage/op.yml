@@ -60,6 +60,6 @@ run:
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: srcDir
     envVars:
-      MINIMUM_COVERAGE: "67"
+      MINIMUM_COVERAGE: "61"
     image: { ref: 'golang:1.8' }
     workDir: /go/src/github.com/opspec-io/sdk-golang

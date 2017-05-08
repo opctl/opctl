@@ -1,15 +1,16 @@
-package consumenodeapi
+package client
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/golang-interfaces/vhttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 var _ = Describe("StartOp", func() {
@@ -17,29 +18,32 @@ var _ = Describe("StartOp", func() {
 	It("should call httpClient.Do() with expected args", func() {
 
 		/* arrange */
-		providedStartOpReq := model.StartOpReq{
+		providedReq := model.StartOpReq{
 			Args:   map[string]*model.Data{},
 			PkgRef: "dummyPkgRef",
 		}
 
-		expectedReqBytes, _ := json.Marshal(providedStartOpReq)
+		expectedReqUrl := url.URL{}
+		expectedReqUrl.Path = api.Ops_StartsURLTpl
+
+		expectedReqBytes, _ := json.Marshal(providedReq)
 		expectedResult := "dummyOpId"
 
 		expectedHttpReq, _ := http.NewRequest(
 			"POST",
-			fmt.Sprintf("http://%v/ops/starts", "localhost:42224"),
+			expectedReqUrl.String(),
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
 		fakeHttpClient := new(vhttp.Fake)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
-		objectUnderTest := consumeNodeApi{
+		objectUnderTest := client{
 			httpClient: fakeHttpClient,
 		}
 
 		/* act */
-		actualResult, _ := objectUnderTest.StartOp(providedStartOpReq)
+		actualResult, _ := objectUnderTest.StartOp(providedReq)
 
 		/* assert */
 		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))

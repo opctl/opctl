@@ -1,12 +1,13 @@
-package consumenodeapi
+package handler
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
 	"testing"
 )
 
-func TestSdk(t *testing.T) {
+func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "sdk-golang/consumenodeapi")
+	RunSpecs(t, "sdk-golang/node/api/handler")
 }

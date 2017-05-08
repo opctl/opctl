@@ -1,34 +1,35 @@
-package consumenodeapi
+package client
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api"
 	"net/http"
 )
 
-func (this consumeNodeApi) KillOp(
+func (c client) KillOp(
 	req model.KillOpReq,
-) (
-	err error,
-) {
+) error {
 
 	reqBytes, err := json.Marshal(req)
 	if nil != err {
-		return
+		return err
 	}
+
+	reqUrl := c.baseUrl
+	reqUrl.Path = api.Ops_KillsURLTpl
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		fmt.Sprintf("http://%v/ops/kills", "localhost:42224"),
+		reqUrl.String(),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {
-		return
+		return err
 	}
 
-	_, err = this.httpClient.Do(httpReq)
-	return
+	_, err = c.httpClient.Do(httpReq)
+	return err
 
 }
