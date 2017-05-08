@@ -10,7 +10,7 @@ type Event struct {
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
-	OpEncounteredError       *OpErredEvent                  `json:"opEncounteredError,omitempty"`
+	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
 	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
 	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
