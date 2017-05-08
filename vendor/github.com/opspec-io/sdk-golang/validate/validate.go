@@ -3,7 +3,7 @@ package validate
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Validate
 
 import (
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -22,10 +22,10 @@ func New() Validate {
 	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
 	return validate{
-		os: vos.New(),
+		os: ios.New(),
 	}
 }
 
 type validate struct {
-	os vos.VOS
+	os ios.IOS
 }

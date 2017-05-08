@@ -2,7 +2,7 @@ package local
 
 import (
 	"github.com/appdataspec/sdk-golang/appdatapath"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/lockfile"
 	"github.com/opctl/opctl/nodeprovider"
 	"path"
@@ -17,13 +17,13 @@ func New() nodeprovider.NodeProvider {
 
 	return nodeProvider{
 		lockfile:     lockfile.New(),
-		os:           vos.New(),
+		os:           ios.New(),
 		lockFilePath: path.Join(perUserAppDataPath, "opctl", "pid.lock"),
 	}
 }
 
 type nodeProvider struct {
 	lockfile     lockfile.LockFile
-	os           vos.VOS
+	os           ios.IOS
 	lockFilePath string
 }

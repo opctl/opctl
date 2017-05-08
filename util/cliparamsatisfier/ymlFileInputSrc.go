@@ -1,14 +1,14 @@
 package cliparamsatisfier
 
 import (
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	"gopkg.in/yaml.v2"
 )
 
 // NewYMLFileInputSrc constructs a new ymlFileInputSrc, ignoring any errors encountered
 func NewYMLFileInputSrc(
 	filePath string,
-	ioutil vioutil.VIOUtil,
+	ioutil iioutil.Iioutil,
 ) InputSrc {
 	argMap := map[string]string{}
 

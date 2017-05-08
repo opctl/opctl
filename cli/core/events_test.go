@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/nodeprovider"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/consumenodeapi"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api/client"
 )
 
 var _ = Context("events", func() {
@@ -16,22 +16,22 @@ var _ = Context("events", func() {
 			/* arrange */
 			fakeCliExiter := new(cliexiter.Fake)
 
-			fakeConsumeNodeApi := new(consumenodeapi.Fake)
+			fakeOpspecNodeAPIClient := new(client.Fake)
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
-			fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+			fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _core{
-				consumeNodeApi: fakeConsumeNodeApi,
-				cliExiter:      fakeCliExiter,
-				nodeProvider:   new(nodeprovider.Fake),
+				opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+				cliExiter:           fakeCliExiter,
+				nodeProvider:        new(nodeprovider.Fake),
 			}
 
 			/* act */
 			objectUnderTest.Events()
 
 			/* assert */
-			Expect(fakeConsumeNodeApi.GetEventStreamCallCount()).To(Equal(1))
+			Expect(fakeOpspecNodeAPIClient.GetEventStreamCallCount()).To(Equal(1))
 
 		})
 		Context("pkg.GetEventStream errors", func() {
@@ -40,13 +40,13 @@ var _ = Context("events", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 				returnedError := errors.New("dummyError")
 
-				fakeConsumeNodeApi := new(consumenodeapi.Fake)
-				fakeConsumeNodeApi.GetEventStreamReturns(nil, returnedError)
+				fakeOpspecNodeAPIClient := new(client.Fake)
+				fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _core{
-					consumeNodeApi: fakeConsumeNodeApi,
-					cliExiter:      fakeCliExiter,
-					nodeProvider:   new(nodeprovider.Fake),
+					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+					cliExiter:           fakeCliExiter,
+					nodeProvider:        new(nodeprovider.Fake),
 				}
 
 				/* act */
@@ -63,15 +63,15 @@ var _ = Context("events", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
 
-					fakeConsumeNodeApi := new(consumenodeapi.Fake)
+					fakeOpspecNodeAPIClient := new(client.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeConsumeNodeApi.GetEventStreamReturns(eventChannel, nil)
+					fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						consumeNodeApi: fakeConsumeNodeApi,
-						cliExiter:      fakeCliExiter,
-						nodeProvider:   new(nodeprovider.Fake),
+						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+						cliExiter:           fakeCliExiter,
+						nodeProvider:        new(nodeprovider.Fake),
 					}
 
 					/* act */

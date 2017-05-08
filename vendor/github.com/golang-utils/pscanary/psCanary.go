@@ -1,6 +1,6 @@
 package pscanary
 
-import "github.com/golang-interfaces/vos"
+import "github.com/golang-interfaces/ios"
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PsCanary
 
@@ -10,10 +10,10 @@ type PsCanary interface {
 
 func New() PsCanary {
 	return _PsCanary{
-		os: vos.New(),
+		os: ios.New(),
 	}
 }
 
 type _PsCanary struct {
-	os vos.VOS
+	os ios.IOS
 }

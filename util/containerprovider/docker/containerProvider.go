@@ -2,7 +2,8 @@ package docker
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/golang-interfaces/vos"
+	iclient "github.com/golang-interfaces/github.com-moby-moby/client"
+	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/vruntime"
 	"golang.org/x/net/context"
@@ -27,7 +28,7 @@ func New() (
 
 	objectUnderConstruction := _containerProvider{
 		dockerClient: dockerClient,
-		os:           vos.New(),
+		os:           ios.New(),
 		runtime:      vruntime.New(),
 	}
 	containerProvider = objectUnderConstruction
@@ -40,8 +41,8 @@ func New() (
 }
 
 type _containerProvider struct {
-	dockerClient dockerClient
-	os           vos.VOS
+	dockerClient iclient.Client
+	os           ios.IOS
 	runtime      vruntime.Vruntime
 }
 

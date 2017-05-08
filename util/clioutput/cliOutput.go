@@ -65,8 +65,8 @@ func (this _cliOutput) Event(event *model.Event) {
 		this.containerStdErrWrittenTo(event)
 	case nil != event.ContainerStdOutWrittenTo:
 		this.containerStdOutWrittenTo(event)
-	case nil != event.OpEncounteredError:
-		this.opEncounteredError(event)
+	case nil != event.OpErred:
+		this.opErred(event)
 	case nil != event.OpEnded:
 		this.opEnded(event)
 	case nil != event.OpStarted:
@@ -101,13 +101,13 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 	fmt.Fprintln(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
-func (this _cliOutput) opEncounteredError(event *model.Event) {
+func (this _cliOutput) opErred(event *model.Event) {
 	this.Error(
-		"OpEncounteredError Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
-		event.OpEncounteredError.OpId,
-		event.OpEncounteredError.PkgRef,
+		"OpErred Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
+		event.OpErred.OpId,
+		event.OpErred.PkgRef,
 		event.Timestamp.Format(time.RFC3339),
-		event.OpEncounteredError.Msg,
+		event.OpErred.Msg,
 	)
 }
 

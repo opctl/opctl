@@ -10,7 +10,7 @@ type Event struct {
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
-	OpEncounteredError       *OpEncounteredErrorEvent       `json:"opEncounteredError,omitempty"`
+	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
 	OutputInitialized        *OutputInitializedEvent        `json:"outputInitialized,omitempty"`
 	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
@@ -57,7 +57,8 @@ type ContainerStdOutWrittenToEvent struct {
 	PkgRef      string `json:"pkgRef"`
 }
 
-type OpEncounteredErrorEvent struct {
+// OpErredEvent represents an op encountering an error condition
+type OpErredEvent struct {
 	RootOpId string `json:"rootOpId"`
 	Msg      string `json:"msg"`
 	OpId     string `json:"opId"`
@@ -85,11 +86,34 @@ type OutputInitializedEvent struct {
 	RootOpId string `json:"rootOpId"`
 }
 
+// ParallelCallEndedEvent represents the exit of a parallel call; no further events will occur for the call.
 type ParallelCallEndedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	CallId   string `json:"callId"`
 }
 
+type PkgPullStartedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	PkgRef   string `json:"pkgRef"`
+}
+
+type PkgPullErredEvent struct {
+	RootOpId string `json:"rootOpId"`
+	PkgRef   string `json:"pkgRef"`
+}
+
+// PkgPullEndedEvent represents the end of a pkg pull; no further events will occur for the pkg pull.
+type PkgPullEndedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	PkgRef   string `json:"pkgRef"`
+}
+
+type PkgPullProgressedEvent struct {
+	RootOpId string `json:"rootOpId"`
+	PkgRef   string `json:"pkgRef"`
+}
+
+// SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	CallId   string `json:"callId"`

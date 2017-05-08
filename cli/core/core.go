@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 import (
-	"github.com/golang-interfaces/vioutil"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/nodeprovider"
 	"github.com/opctl/opctl/nodeprovider/local"
 	"github.com/opctl/opctl/util/clicolorer"
@@ -12,10 +12,11 @@ import (
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
-	"github.com/opspec-io/sdk-golang/consumenodeapi"
+	"github.com/opspec-io/sdk-golang/node/api/client"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"io"
+	"net/url"
 	"os"
 )
 
@@ -64,37 +65,42 @@ func New(
 	cliColorer clicolorer.CliColorer,
 ) Core {
 
-	_os := vos.New()
+	_os := ios.New()
 
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
 	cliExiter := cliexiter.New(cliOutput, _os)
 
+	opspecNodeURL, err := url.Parse("http://localhost:42224")
+	if nil != err {
+		panic(err)
+	}
+
 	return &_core{
-		consumeNodeApi:    consumenodeapi.New(),
-		pkg:               pkg.New(),
-		cliColorer:        cliColorer,
-		cliExiter:         cliExiter,
-		cliOutput:         cliOutput,
-		cliParamSatisfier: cliparamsatisfier.New(cliExiter, cliOutput, validate.New()),
-		nodeProvider:      local.New(),
-		updater:           updater.New(),
-		os:                _os,
-		writer:            os.Stdout,
-		ioutil:            vioutil.New(),
+		opspecNodeAPIClient: client.New(*opspecNodeURL),
+		pkg:                 pkg.New(),
+		cliColorer:          cliColorer,
+		cliExiter:           cliExiter,
+		cliOutput:           cliOutput,
+		cliParamSatisfier:   cliparamsatisfier.New(cliExiter, cliOutput, validate.New()),
+		nodeProvider:        local.New(),
+		updater:             updater.New(),
+		os:                  _os,
+		writer:              os.Stdout,
+		ioutil:              iioutil.New(),
 	}
 
 }
 
 type _core struct {
-	consumeNodeApi    consumenodeapi.ConsumeNodeApi
-	pkg               pkg.Pkg
-	cliColorer        clicolorer.CliColorer
-	cliExiter         cliexiter.CliExiter
-	cliOutput         clioutput.CliOutput
-	cliParamSatisfier cliparamsatisfier.CliParamSatisfier
-	nodeProvider      nodeprovider.NodeProvider
-	updater           updater.Updater
-	os                vos.VOS
-	writer            io.Writer
-	ioutil            vioutil.VIOUtil
+	opspecNodeAPIClient client.Client
+	pkg                 pkg.Pkg
+	cliColorer          clicolorer.CliColorer
+	cliExiter           cliexiter.CliExiter
+	cliOutput           clioutput.CliOutput
+	cliParamSatisfier   cliparamsatisfier.CliParamSatisfier
+	nodeProvider        nodeprovider.NodeProvider
+	updater             updater.Updater
+	os                  ios.IOS
+	writer              io.Writer
+	ioutil              iioutil.Iioutil
 }

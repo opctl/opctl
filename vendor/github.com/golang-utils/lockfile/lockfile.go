@@ -5,7 +5,7 @@ package lockfile
 import (
 	"bufio"
 	"fmt"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/pscanary"
 	"path"
 	"strconv"
@@ -22,13 +22,13 @@ type LockFile interface {
 func New() LockFile {
 
 	return lockfile{
-		os:       vos.New(),
+		os:       ios.New(),
 		psCanary: pscanary.New(),
 	}
 }
 
 type lockfile struct {
-	os       vos.VOS
+	os       ios.IOS
 	psCanary pscanary.PsCanary
 }
 

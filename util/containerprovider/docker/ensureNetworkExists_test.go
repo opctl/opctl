@@ -160,3 +160,11 @@ var _ = Context("EnsureNetworkExists", func() {
 		})
 	})
 })
+
+type dockerNotFoundError struct {
+	error
+}
+
+func (this dockerNotFoundError) NotFound() bool {
+	return true
+}

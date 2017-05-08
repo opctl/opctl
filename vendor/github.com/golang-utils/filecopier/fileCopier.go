@@ -3,7 +3,7 @@ package filecopier
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ FileCopier
 
 import (
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	"io"
 )
 
@@ -14,12 +14,12 @@ type FileCopier interface {
 
 func New() FileCopier {
 	return fileCopier{
-		os: vos.New(),
+		os: ios.New(),
 	}
 }
 
 type fileCopier struct {
-	os vos.VOS
+	os ios.IOS
 }
 
 func (fc fileCopier) OS(srcPath string, dstPath string) (err error) {

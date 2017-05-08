@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
@@ -13,19 +13,19 @@ import (
 
 var _ = Context("pkgValidate", func() {
 	Context("Execute", func() {
-		Context("vos.Getwd errors", func() {
+		Context("ios.Getwd errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeVOS := new(vos.Fake)
+				fakeIOS := new(ios.Fake)
 				expectedError := errors.New("dummyError")
-				fakeVOS.GetwdReturns("", expectedError)
+				fakeIOS.GetwdReturns("", expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
 					pkg:       new(pkg.Fake),
 					cliExiter: fakeCliExiter,
-					os:        fakeVOS,
+					os:        fakeIOS,
 				}
 
 				/* act */
@@ -41,17 +41,17 @@ var _ = Context("pkgValidate", func() {
 			fakePkg := new(pkg.Fake)
 
 			providedPkgRef := "dummyPkgRef"
-			wdReturnedFromVOS := "dummyWorkDir"
+			wdReturnedFromIOS := "dummyWorkDir"
 
-			fakeVOS := new(vos.Fake)
-			fakeVOS.GetwdReturns(wdReturnedFromVOS, nil)
+			fakeIOS := new(ios.Fake)
+			fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
 
-			expectedPkgRef := path.Join(wdReturnedFromVOS, ".opspec", providedPkgRef)
+			expectedPkgRef := path.Join(wdReturnedFromIOS, ".opspec", providedPkgRef)
 
 			objectUnderTest := _core{
 				pkg:       fakePkg,
 				cliExiter: new(cliexiter.Fake),
-				os:        fakeVOS,
+				os:        fakeIOS,
 			}
 
 			/* act */
@@ -82,7 +82,7 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest := _core{
 					pkg:       fakePkg,
 					cliExiter: fakeCliExiter,
-					os:        new(vos.Fake),
+					os:        new(ios.Fake),
 				}
 
 				/* act */
@@ -111,7 +111,7 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest := _core{
 					pkg:       fakePkg,
 					cliExiter: fakeCliExiter,
-					os:        new(vos.Fake),
+					os:        new(ios.Fake),
 				}
 
 				/* act */
