@@ -5,7 +5,7 @@ package client
 
 import (
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
-	"github.com/golang-interfaces/vhttp"
+	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
@@ -37,18 +37,18 @@ type Client interface {
 
 func New(
 	baseUrl url.URL,
-) (Client, error) {
+) Client {
 	return &client{
 		baseUrl: baseUrl,
 		httpClient: &http.Client{
-			Timeout: time.Second * 10,
+			Timeout: time.Second * 1,
 		},
 		wsDialer: websocket.DefaultDialer,
-	}, nil
+	}
 }
 
 type client struct {
 	baseUrl    url.URL
-	httpClient vhttp.Client
+	httpClient ihttp.Client
 	wsDialer   iwebsocket.Dialer
 }

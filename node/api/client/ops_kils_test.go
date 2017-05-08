@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/golang-interfaces/vhttp"
+	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -32,7 +32,7 @@ var _ = Describe("KillOp", func() {
 			bytes.NewBuffer(expectedBytes),
 		)
 
-		fakeHttpClient := new(vhttp.Fake)
+		fakeHttpClient := new(ihttp.Fake)
 
 		objectUnderTest := client{
 			httpClient: fakeHttpClient,

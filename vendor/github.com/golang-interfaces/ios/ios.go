@@ -1,13 +1,13 @@
-package vos
+package ios
 
 import (
 	"os"
 )
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ VOS
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ IOS
 
 // virtual operating system interface
-type VOS interface {
+type IOS interface {
 	// Chmod changes the mode of the named file to mode.
 	// If the file is a symbolic link, it changes the mode of the link's target.
 	// If there is an error, it will be of type *PathError.
@@ -84,60 +84,60 @@ type VOS interface {
 	Stat(name string) (os.FileInfo, error)
 }
 
-func New() VOS {
-	return _VOS{}
+func New() IOS {
+	return _IOS{}
 }
 
-type _VOS struct{}
+type _IOS struct{}
 
-func (vos _VOS) Chmod(name string, mode os.FileMode) error {
+func (ios _IOS) Chmod(name string, mode os.FileMode) error {
 	return os.Chmod(name, mode)
 }
 
-func (vos _VOS) Create(name string) (*os.File, error) {
+func (ios _IOS) Create(name string) (*os.File, error) {
 	return os.Create(name)
 }
 
-func (vos _VOS) Exit(code int) {
+func (ios _IOS) Exit(code int) {
 	os.Exit(code)
 }
 
-func (vos _VOS) FindProcess(pid int) (*os.Process, error) {
+func (ios _IOS) FindProcess(pid int) (*os.Process, error) {
 	return os.FindProcess(pid)
 }
 
-func (vos _VOS) Getenv(key string) string {
+func (ios _IOS) Getenv(key string) string {
 	return os.Getenv(key)
 }
 
-func (vos _VOS) Getpid() int {
+func (ios _IOS) Getpid() int {
 	return os.Getpid()
 }
 
-func (vos _VOS) MkdirAll(path string, perm os.FileMode) error {
+func (ios _IOS) MkdirAll(path string, perm os.FileMode) error {
 	return os.MkdirAll(path, perm)
 }
 
-func (vos _VOS) Open(name string) (*os.File, error) {
+func (ios _IOS) Open(name string) (*os.File, error) {
 	return os.Open(name)
 }
 
-func (vos _VOS) OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
+func (ios _IOS) OpenFile(name string, flag int, perm os.FileMode) (*os.File, error) {
 	return os.OpenFile(name, flag, perm)
 }
 
-func (vos _VOS) RemoveAll(path string) error {
+func (ios _IOS) RemoveAll(path string) error {
 	return os.RemoveAll(path)
 }
 
-func (vos _VOS) Setenv(key, value string) error {
+func (ios _IOS) Setenv(key, value string) error {
 	return os.Setenv(key, value)
 }
 
-func (vos _VOS) Stat(name string) (os.FileInfo, error) {
+func (ios _IOS) Stat(name string) (os.FileInfo, error) {
 	return os.Stat(name)
 }
 
-func (vos _VOS) Getwd() (string, error) {
+func (ios _IOS) Getwd() (string, error) {
 	return os.Getwd()
 }

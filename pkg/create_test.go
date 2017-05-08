@@ -2,8 +2,8 @@ package pkg
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vioutil"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -21,11 +21,11 @@ var _ = Describe("pkg", func() {
 			providedPath := "dummyPath"
 			expectedPerm := os.FileMode(0777)
 
-			fakeOS := new(vos.Fake)
+			fakeOS := new(ios.Fake)
 
 			objectUnderTest := &pkg{
 				os:     fakeOS,
-				ioUtil: new(vioutil.Fake),
+				ioUtil: new(iioutil.Fake),
 			}
 
 			/* act */
@@ -43,7 +43,7 @@ var _ = Describe("pkg", func() {
 				/* arrange */
 				expectedError := errors.New("AddDirError")
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				fakeOS.MkdirAllReturns(expectedError)
 
 				objectUnderTest := &pkg{
@@ -79,10 +79,10 @@ var _ = Describe("pkg", func() {
 		expectedData := expectedPkgManifestBytes
 		expectedPerms := os.FileMode(0777)
 
-		fakeIOUtil := new(vioutil.Fake)
+		fakeIOUtil := new(iioutil.Fake)
 
 		objectUnderTest := &pkg{
-			os:     new(vos.Fake),
+			os:     new(ios.Fake),
 			ioUtil: fakeIOUtil,
 		}
 

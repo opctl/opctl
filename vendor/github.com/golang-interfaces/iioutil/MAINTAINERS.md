@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[golang-interfaces/vos](https://github.com/golang-interfaces/vos) is an
+[golang-interfaces/iioutil](https://github.com/golang-interfaces/iioutil) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[golang-interfaces/vos](https://github.com/golang-interfaces/vos), big and
+[golang-interfaces/iioutil](https://github.com/golang-interfaces/iioutil), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

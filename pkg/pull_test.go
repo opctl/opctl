@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -100,7 +100,7 @@ var _ = Describe("Pkg", func() {
 						/* arrange */
 						providedPkgRef := "dummyPkgRef#0.0.0"
 
-						fakeOS := new(vos.Fake)
+						fakeOS := new(ios.Fake)
 
 						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
@@ -137,7 +137,7 @@ var _ = Describe("Pkg", func() {
 							repoRefName,
 						)
 
-						fakeOS := new(vos.Fake)
+						fakeOS := new(ios.Fake)
 
 						expectedError := ErrAuthenticationFailed{}
 
@@ -176,7 +176,7 @@ var _ = Describe("Pkg", func() {
 							repoRefName,
 						)
 
-						fakeOS := new(vos.Fake)
+						fakeOS := new(ios.Fake)
 
 						expectedError := errors.New("dummyError")
 

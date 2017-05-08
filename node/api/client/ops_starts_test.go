@@ -3,7 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/golang-interfaces/vhttp"
+	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -35,7 +35,7 @@ var _ = Describe("StartOp", func() {
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
-		fakeHttpClient := new(vhttp.Fake)
+		fakeHttpClient := new(ihttp.Fake)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
 		objectUnderTest := client{

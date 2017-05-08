@@ -3,7 +3,7 @@ package validate
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -69,7 +69,7 @@ var _ = Describe("Param", func() {
 					File: &model.FileParam{},
 				}
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				// error to trigger immediate return
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
@@ -100,7 +100,7 @@ var _ = Describe("Param", func() {
 						errors.New("dummyError"),
 					}
 
-					fakeOS := new(vos.Fake)
+					fakeOS := new(ios.Fake)
 					fakeOS.StatReturns(nil, expectedErrors[0])
 
 					objectUnderTest := validate{

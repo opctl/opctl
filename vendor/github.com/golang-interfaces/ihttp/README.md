@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/golang-interfaces/vhttp.svg?branch=master)](https://travis-ci.org/golang-interfaces/vhttp)
+[![Build Status](https://travis-ci.org/golang-interfaces/ihttp.svg?branch=master)](https://travis-ci.org/golang-interfaces/ihttp)
 
 # problem statement
 
@@ -18,7 +18,7 @@ native [http package](https://golang.org/pkg/http/) exposed via interface
 
 for every release:
 
-- source code will be [tagged](https://github.com/golang-interfaces/vhttp/tags).
+- source code will be [tagged](https://github.com/golang-interfaces/ihttp/tags).
 
 # Versioning
 

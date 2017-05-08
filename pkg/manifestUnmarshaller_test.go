@@ -3,7 +3,7 @@ package pkg
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -67,7 +67,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 				/* arrange */
 				providedPkgRef := "dummyPkgRef"
 
-				fakeIOUtil := new(vioutil.Fake)
+				fakeIOUtil := new(iioutil.Fake)
 				// err to cause immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
@@ -91,7 +91,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 					/* arrange */
 					expectedError := errors.New("dummyError")
 
-					fakeIOUtil := new(vioutil.Fake)
+					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadFileReturns(nil, expectedError)
 
 					objectUnderTest := newManifestUnmarshaller(
@@ -145,7 +145,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 					Version: "dummyVersion",
 				}
 
-				fakeIoUtil := new(vioutil.Fake)
+				fakeIoUtil := new(iioutil.Fake)
 				fakeIoUtil.ReadFileReturns(yaml.Marshal(expectedPkgManifest))
 
 				objectUnderTest := newManifestUnmarshaller(

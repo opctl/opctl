@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/golang-interfaces/vioutil.svg?branch=master)](https://travis-ci.org/golang-interfaces/vioutil)
-[![Coverage](https://codecov.io/gh/golang-interfaces/vioutil/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/vioutil)
+[![Build Status](https://travis-ci.org/golang-interfaces/iioutil.svg?branch=master)](https://travis-ci.org/golang-interfaces/iioutil)
+[![Coverage](https://codecov.io/gh/golang-interfaces/iioutil/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/iioutil)
 
 # problem statement
 
@@ -19,7 +19,7 @@ native [ioutil](https://golang.org/pkg/io/ioutil/) package exposed via interface
 
 for every release:
 
-- source code will be [tagged](https://github.com/golang-interfaces/vioutil/tags).
+- source code will be [tagged](https://github.com/golang-interfaces/iioutil/tags).
 
 # Versioning
 

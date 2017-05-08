@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vioutil"
+	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -16,7 +16,7 @@ var _ = Describe("List", func() {
 			/* arrange */
 			expectedError := errors.New("dummyError")
 
-			fakeIOUtil := new(vioutil.Fake)
+			fakeIOUtil := new(iioutil.Fake)
 			fakeIOUtil.ReadDirReturns(nil, expectedError)
 
 			objectUnderTest := pkg{

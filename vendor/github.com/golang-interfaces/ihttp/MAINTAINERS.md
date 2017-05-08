@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[golang-interfaces/vioutil](https://github.com/golang-interfaces/vioutil) is an
+[golang-interfaces/ihttp](https://github.com/golang-interfaces/ihttp) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[golang-interfaces/vioutil](https://github.com/golang-interfaces/vioutil), big and
+[golang-interfaces/ihttp](https://github.com/golang-interfaces/ihttp), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

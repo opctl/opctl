@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"errors"
-	"github.com/golang-interfaces/vos"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"path"
@@ -17,7 +17,7 @@ var _ = Describe("Pkg", func() {
 
 			expectedName := path.Join(providedBasePath, DotOpspecDirName, providedPkgRef)
 
-			fakeOS := new(vos.Fake)
+			fakeOS := new(ios.Fake)
 			fakeOS.StatReturns(nil, nil)
 
 			objectUnderTest := pkg{
@@ -39,7 +39,7 @@ var _ = Describe("Pkg", func() {
 				expectedPath := path.Join(providedBasePath, DotOpspecDirName, providedPkgRef)
 				expectedOk := true
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, nil)
 
 				objectUnderTest := pkg{
@@ -63,7 +63,7 @@ var _ = Describe("Pkg", func() {
 				expectedPath := ""
 				expectedOk := false
 
-				fakeOS := new(vos.Fake)
+				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := pkg{

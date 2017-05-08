@@ -1,6 +1,6 @@
 package appdatapath
 
-import "github.com/golang-interfaces/vos"
+import "github.com/golang-interfaces/ios"
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ AppDataPath
 
@@ -15,10 +15,10 @@ type AppDataPath interface {
 
 func New() AppDataPath {
 	return appDataPath{
-		os: vos.New(),
+		os: ios.New(),
 	}
 }
 
 type appDataPath struct {
-	os vos.VOS
+	os ios.IOS
 }
