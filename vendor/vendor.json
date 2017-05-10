@@ -303,6 +303,12 @@
 			"revisionTime": "2017-05-08T03:44:42Z"
 		},
 		{
+			"checksumSHA1": "IvuedRzW0qwcRih299UOMvVh0fk=",
+			"path": "github.com/golang-interfaces/iio",
+			"revision": "dbff38817198d4fd3f3193e5f66c64cfebe4efa4",
+			"revisionTime": "2017-05-10T14:20:33Z"
+		},
+		{
 			"checksumSHA1": "pY2Cs8d3h1ltPNThOUgEA0xSI7E=",
 			"path": "github.com/golang-interfaces/iioutil",
 			"revision": "1dd3da9a91c7533b8d2eba6cf89dc82a1046c1cf",
