@@ -44,7 +44,7 @@ func New(
 	opts *Opts,
 ) Client {
 
-	httpClient := pester.DefaultClient
+	httpClient := pester.New()
 
 	if nil != opts {
 		// handle options
