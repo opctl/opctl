@@ -8,6 +8,10 @@ of containerized processes \[ops].
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
+>
+> While Major version remains zero, a backwards compatibility guarantee
+> of 2 weeks will be strictly followed to allow implementers lead time
+> to implement breaking changes.
 
 # Documentation
 

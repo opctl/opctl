@@ -484,6 +484,16 @@
                 },
                 "pullAuth":{
                   "$ref":"#/definitions/usernamePasswordAuth"
+                },
+                "pullIdentity":{
+                  "description": "Identity/username for pull Auth",
+                  "type": "string",
+                  "deprecated": true
+                },
+                "pullSecret":{
+                  "description": "Secret/password for pull Auth",
+                  "type": "string",
+                  "deprecated": true
                 }
               },
               "required": [
@@ -616,8 +626,13 @@
               "additionalProperties": false
             }
           },
-          "required":[
-            "pkg"
+          "oneOf":[
+            {
+              "required": ["pkg"]
+            },
+            {
+              "required": ["ref"]
+            }
           ],
           "additionalProperties": false
         }
