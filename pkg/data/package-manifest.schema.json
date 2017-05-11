@@ -616,8 +616,13 @@
               "additionalProperties": false
             }
           },
-          "required":[
-            "pkg"
+          "oneOf":[
+            {
+              "required": ["pkg"]
+            },
+            {
+              "required": ["ref"]
+            }
           ],
           "additionalProperties": false
         }
