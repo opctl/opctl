@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"github.com/pkg/errors"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -66,8 +67,15 @@ func (this _opCaller) Call(
 	err error,
 ) {
 
-	pkgRef, err := this.getPkgPath(pkgBasePath, inboundScope, scgOpCall.Pkg)
-	if nil != err {
+	var pkgRef string
+	if "" != scgOpCall.Ref {
+		// handle deprecated pkgRef format
+		pkgRef = filepath.Join(pkgBasePath, scgOpCall.Ref)
+	} else if pkgRef, err = this.getPkgPath(
+		pkgBasePath,
+		inboundScope,
+		scgOpCall.Pkg,
+	); nil != err {
 		return
 	}
 

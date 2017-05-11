@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
 	"github.com/pkg/errors"
+	"path/filepath"
 	"time"
 )
 
@@ -28,6 +29,41 @@ var _ = Context("opCaller", func() {
 		})
 	})
 	Context("Call", func() {
+		Context("deprecated pkg format", func() {
+			It("should call pkg.Get w/ expected args", func() {
+				/* arrange */
+				providedPkgBasePath := "dummyPkgBasePath"
+				providedSCGOpCall := &model.SCGOpCall{
+					Ref: "dummySCGOpCallPkgRef",
+				}
+
+				expectedPkgRef := filepath.Join(providedPkgBasePath, providedSCGOpCall.Ref)
+
+				fakePkg := new(pkg.Fake)
+				fakePkg.GetReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := newOpCaller(
+					fakePkg,
+					new(pubsub.Fake),
+					new(fakeDCGNodeRepo),
+					new(fakeCaller),
+					new(uniquestring.Fake),
+					new(validate.Fake),
+				)
+
+				/* act */
+				objectUnderTest.Call(
+					map[string]*model.Data{},
+					"dummyOpId",
+					providedPkgBasePath,
+					"dummyRootOpId",
+					providedSCGOpCall,
+				)
+
+				/* assert */
+				Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
+			})
+		})
 		It("should call pkg.resolve w/ expected args", func() {
 			/* arrange */
 			providedPkgBasePath := "dummyPkgBasePath"
