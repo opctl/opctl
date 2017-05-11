@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -33,6 +34,7 @@ var _ = Describe("KillOp", func() {
 		)
 
 		fakeHttpClient := new(ihttp.Fake)
+		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
 
 		objectUnderTest := client{
 			httpClient: fakeHttpClient,

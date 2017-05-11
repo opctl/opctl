@@ -29,7 +29,13 @@ func (c client) KillOp(
 		return err
 	}
 
-	_, err = c.httpClient.Do(httpReq)
-	return err
+	httpResp, err := c.httpClient.Do(httpReq)
+	if nil != err {
+		return err
+	}
+	// don't leak resources
+	defer httpResp.Body.Close()
+
+	return nil
 
 }
