@@ -91,30 +91,30 @@ func (this _containerCaller) Call(
 	)
 
 	var wg sync.WaitGroup
-  errChan := make(chan error, 2)
+	errChan := make(chan error, 2)
 	wg.Add(2)
 
 	containerStdOutReader, containerStdOutWriter := this.io.Pipe()
 	go func() {
 		if err := this.handleStdOut(
-      containerStdOutReader,
-      dcgContainerCall,
-      scgContainerCall,
-    ); nil != err{
+			containerStdOutReader,
+			dcgContainerCall,
+			scgContainerCall,
+		); nil != err {
 
-    }
+		}
 		wg.Done()
 	}()
 
 	containerStdErrReader, containerStdErrWriter := this.io.Pipe()
 	go func() {
 		if err := this.handleStdErr(
-      containerStdErrReader,
-      dcgContainerCall,
-      scgContainerCall,
-    ); nil != err{
+			containerStdErrReader,
+			dcgContainerCall,
+			scgContainerCall,
+		); nil != err {
 
-    }
+		}
 		wg.Done()
 	}()
 
@@ -144,9 +144,9 @@ func (this _containerCaller) Call(
 		},
 	)
 
-  if nil == err && len(errChan) > 0 {
-    err = <-errChan
-  }
+	if nil == err && len(errChan) > 0 {
+		err = <-errChan
+	}
 	return err
 }
 

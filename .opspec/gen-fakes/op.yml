@@ -19,7 +19,7 @@ run:
         go get github.com/kardianos/govendor github.com/maxbrunsfeld/counterfeiter
 
         echo "generating fakes"
-        govendor generate util/containerprovider/containerProvider.go #+local
+        govendor generate +local
     dirs:
       /go/src/github.com/opctl/opctl: srcDir
     image: { ref: 'golang:1.8' }
