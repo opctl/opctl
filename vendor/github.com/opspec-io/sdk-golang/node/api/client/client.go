@@ -8,9 +8,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
-	"net/http"
+	"github.com/sethgrid/pester"
 	"net/url"
-	"time"
 )
 
 type Client interface {
@@ -35,15 +34,30 @@ type Client interface {
 	)
 }
 
+type Opts struct {
+	// RetryLogHook will be executed anytime a request is retried
+	RetryLogHook func(err error)
+}
+
 func New(
 	baseUrl url.URL,
+	opts *Opts,
 ) Client {
+
+	httpClient := pester.New()
+
+	if nil != opts {
+		// handle options
+		httpClient.LogHook = func(errEntry pester.ErrEntry) {
+			// wire up retry log hook
+			opts.RetryLogHook(errEntry.Err)
+		}
+	}
+
 	return &client{
-		baseUrl: baseUrl,
-		httpClient: &http.Client{
-			Timeout: time.Second * 1,
-		},
-		wsDialer: websocket.DefaultDialer,
+		baseUrl:    baseUrl,
+		httpClient: httpClient,
+		wsDialer:   websocket.DefaultDialer,
 	}
 }
 

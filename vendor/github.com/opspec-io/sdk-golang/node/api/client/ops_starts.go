@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// StartOp starts an op & returns its root op id (ROID)
+// StartOp starts an op & returns its root op id (ROId)
 func (c client) StartOp(
 	req model.StartOpReq,
 ) (string, error) {
@@ -35,6 +35,8 @@ func (c client) StartOp(
 	if nil != err {
 		return "", err
 	}
+	// don't leak resources
+	defer httpResp.Body.Close()
 
 	opIdBuffer, err := ioutil.ReadAll(httpResp.Body)
 	return string(opIdBuffer), nil
