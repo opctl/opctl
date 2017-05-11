@@ -26,7 +26,7 @@ const (
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
 type ContainerExitedEvent struct {
 	ImageRef    string `json:"imageRef"`
-	ExitCode    int    `json:"exitCode"`
+	ExitCode    int64   `json:"exitCode"`
 	RootOpId    string `json:"rootOpId"`
 	ContainerId string `json:"containerId"`
 	PkgRef      string `json:"pkgRef"`

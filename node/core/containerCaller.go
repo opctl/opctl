@@ -3,10 +3,14 @@ package core
 //go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
+	"bufio"
+	"github.com/golang-interfaces/iio"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
+	"io"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -31,6 +35,7 @@ func newContainerCaller(
 		containerProvider: containerProvider,
 		pubSub:            pubSub,
 		dcgNodeRepo:       dcgNodeRepo,
+		io:                iio.New(),
 	}
 
 }
@@ -39,6 +44,7 @@ type _containerCaller struct {
 	containerProvider containerprovider.ContainerProvider
 	pubSub            pubsub.PubSub
 	dcgNodeRepo       dcgNodeRepo
+	io                iio.IIO
 }
 
 func (this _containerCaller) Call(
@@ -54,17 +60,6 @@ func (this _containerCaller) Call(
 		this.dcgNodeRepo.DeleteIfExists(containerId)
 
 		this.containerProvider.DeleteContainerIfExists(containerId)
-
-		this.pubSub.Publish(
-			&model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerExited: &model.ContainerExitedEvent{
-					ContainerId: containerId,
-					PkgRef:      pkgRef,
-					RootOpId:    rootOpId,
-				},
-			},
-		)
 
 	}()
 
@@ -82,7 +77,7 @@ func (this _containerCaller) Call(
 		return err
 	}
 
-	go this.txOutputs(dcgContainerCall, scgContainerCall)
+	this.txOutputs(dcgContainerCall, scgContainerCall)
 
 	this.pubSub.Publish(
 		&model.Event{
@@ -94,12 +89,152 @@ func (this _containerCaller) Call(
 			},
 		},
 	)
-	err = this.containerProvider.RunContainer(
+
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
+	wg.Add(2)
+
+	containerStdOutReader, containerStdOutWriter := this.io.Pipe()
+	go func() {
+		if err := this.handleStdOut(
+			containerStdOutReader,
+			dcgContainerCall,
+			scgContainerCall,
+		); nil != err {
+
+		}
+		wg.Done()
+	}()
+
+	containerStdErrReader, containerStdErrWriter := this.io.Pipe()
+	go func() {
+		if err := this.handleStdErr(
+			containerStdErrReader,
+			dcgContainerCall,
+			scgContainerCall,
+		); nil != err {
+
+		}
+		wg.Done()
+	}()
+
+	rawExitCode, err := this.containerProvider.RunContainer(
 		dcgContainerCall,
 		this.pubSub,
+		containerStdOutWriter,
+		containerStdErrWriter,
+	)
+	// @TODO: handle no exit code
+	var exitCode int64
+	if nil != rawExitCode {
+		exitCode = *rawExitCode
+	}
+
+	wg.Wait()
+
+	this.pubSub.Publish(
+		&model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerExited: &model.ContainerExitedEvent{
+				ContainerId: containerId,
+				PkgRef:      pkgRef,
+				RootOpId:    rootOpId,
+				ExitCode:    exitCode,
+			},
+		},
 	)
 
+	if nil == err && len(errChan) > 0 {
+		err = <-errChan
+	}
 	return err
+}
+
+func (this _containerCaller) handleStdErr(
+	stdErrReader io.ReadCloser,
+	dcgContainerCall *model.DCGContainerCall,
+	scgContainerCall *model.SCGContainerCall,
+) error {
+	defer stdErrReader.Close()
+	scanner := bufio.NewScanner(stdErrReader)
+
+	// scan writes until EOF or error
+	for scanner.Scan() {
+
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+					Data:        scanner.Bytes(),
+					ContainerId: dcgContainerCall.ContainerId,
+					ImageRef:    dcgContainerCall.Image.Ref,
+					PkgRef:      dcgContainerCall.PkgRef,
+					RootOpId:    dcgContainerCall.RootOpId,
+				},
+			},
+		)
+
+		for boundPrefix, name := range scgContainerCall.StdErr {
+			rawOutput := scanner.Text()
+			trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
+			if trimmedOutput != rawOutput {
+				// if output trimming had effect we've got a match
+				this.pubSub.Publish(&model.Event{
+					Timestamp: time.Now().UTC(),
+					OutputInitialized: &model.OutputInitializedEvent{
+						Name:     name,
+						Value:    &model.Data{String: &trimmedOutput},
+						RootOpId: dcgContainerCall.RootOpId,
+						CallId:   dcgContainerCall.ContainerId,
+					},
+				})
+			}
+		}
+	}
+	return scanner.Err()
+}
+
+func (this _containerCaller) handleStdOut(
+	stdOutReader io.ReadCloser,
+	dcgContainerCall *model.DCGContainerCall,
+	scgContainerCall *model.SCGContainerCall,
+) error {
+	defer stdOutReader.Close()
+	scanner := bufio.NewScanner(stdOutReader)
+
+	// scan writes until EOF or error
+	for scanner.Scan() {
+
+		this.pubSub.Publish(
+			&model.Event{
+				Timestamp: time.Now().UTC(),
+				ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+					Data:        scanner.Bytes(),
+					ContainerId: dcgContainerCall.ContainerId,
+					ImageRef:    dcgContainerCall.Image.Ref,
+					PkgRef:      dcgContainerCall.PkgRef,
+					RootOpId:    dcgContainerCall.RootOpId,
+				},
+			},
+		)
+		for boundPrefix, name := range scgContainerCall.StdOut {
+			rawOutput := scanner.Text()
+			trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
+			if trimmedOutput != rawOutput {
+				// if output trimming had effect we've got a match
+				this.pubSub.Publish(&model.Event{
+					Timestamp: time.Now().UTC(),
+					OutputInitialized: &model.OutputInitializedEvent{
+						Name:     name,
+						Value:    &model.Data{String: &trimmedOutput},
+						RootOpId: dcgContainerCall.RootOpId,
+						CallId:   dcgContainerCall.ContainerId,
+					},
+				})
+			}
+		}
+	}
+	return scanner.Err()
 }
 
 func (this _containerCaller) txOutputs(
@@ -152,63 +287,6 @@ func (this _containerCaller) txOutputs(
 						CallId:   dcgContainerCall.ContainerId,
 					},
 				})
-			}
-		}
-	}
-
-	// subscribe to events
-	eventChannel := make(chan *model.Event, 150)
-	eventFilterSince := time.Now().UTC()
-	this.pubSub.Subscribe(
-		&model.EventFilter{
-			RootOpIds: []string{dcgContainerCall.RootOpId},
-			Since:     &eventFilterSince,
-		},
-		eventChannel,
-	)
-
-	// send string outputs
-eventLoop:
-	for event := range eventChannel {
-		switch {
-		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgContainerCall.ContainerId:
-			// ContainerExitedEvent signifies no further stdErr or stdOut writes will take place
-			break eventLoop
-		case nil != event.ContainerStdErrWrittenTo &&
-			event.ContainerStdErrWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, name := range scgContainerCall.StdErr {
-				rawOutput := string(event.ContainerStdErrWrittenTo.Data)
-				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
-				if trimmedOutput != rawOutput {
-					// if output trimming had effect we've got a match
-					this.pubSub.Publish(&model.Event{
-						Timestamp: time.Now().UTC(),
-						OutputInitialized: &model.OutputInitializedEvent{
-							Name:     name,
-							Value:    &model.Data{String: &trimmedOutput},
-							RootOpId: dcgContainerCall.RootOpId,
-							CallId:   dcgContainerCall.ContainerId,
-						},
-					})
-				}
-			}
-		case nil != event.ContainerStdOutWrittenTo &&
-			event.ContainerStdOutWrittenTo.ContainerId == dcgContainerCall.ContainerId:
-			for boundPrefix, name := range scgContainerCall.StdOut {
-				rawOutput := string(event.ContainerStdOutWrittenTo.Data)
-				trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
-				if trimmedOutput != rawOutput {
-					// if output trimming had effect we've got a match
-					this.pubSub.Publish(&model.Event{
-						Timestamp: time.Now().UTC(),
-						OutputInitialized: &model.OutputInitializedEvent{
-							Name:     name,
-							Value:    &model.Data{String: &trimmedOutput},
-							RootOpId: dcgContainerCall.RootOpId,
-							CallId:   dcgContainerCall.ContainerId,
-						},
-					})
-				}
 			}
 		}
 	}

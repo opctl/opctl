@@ -11,6 +11,7 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/net/context"
+	"io"
 	"sort"
 	"strings"
 	"sync"
@@ -19,14 +20,16 @@ import (
 func (this _containerProvider) RunContainer(
 	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
-) error {
+	stdout io.WriteCloser,
+	stderr io.WriteCloser,
+) (*int64, error) {
 
 	// construct port bindings
 	portBindings := nat.PortMap{}
 	for containerPort, hostPort := range req.Ports {
 		portMappings, err := nat.ParsePortSpec(fmt.Sprintf("%v:%v", hostPort, containerPort))
 		if nil != err {
-			return err
+			return nil, err
 		}
 		for _, portMapping := range portMappings {
 			if _, ok := portBindings[portMapping.Port]; ok {
@@ -103,7 +106,7 @@ func (this _containerProvider) RunContainer(
 
 	if nil != err {
 		if !client.IsErrImageNotFound(err) {
-			return err
+			return nil, err
 		}
 
 		// pull image
@@ -112,7 +115,7 @@ func (this _containerProvider) RunContainer(
 
 		err = this.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
 		if nil != err {
-			return err
+			return nil, err
 		}
 
 		// retry create
@@ -124,31 +127,27 @@ func (this _containerProvider) RunContainer(
 			req.ContainerId,
 		)
 		if nil != err {
-			return err
+			return nil, err
 		}
 	}
 
 	// start container
-	err = this.dockerClient.ContainerStart(
+	if err := this.dockerClient.ContainerStart(
 		context.Background(),
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
-	)
-	if nil != err {
-		return err
+	); nil != err {
+		return nil, err
 	}
 
 	var waitGroup sync.WaitGroup
 	errChan := make(chan error, 3)
-	waitGroup.Add(3)
+	waitGroup.Add(2)
 
 	go func() {
-		if err := this.stdErrEventPublisher(
-			eventPublisher,
+		if err := this.streamContainerStdErr(
 			req.ContainerId,
-			req.Image.Ref,
-			req.PkgRef,
-			req.RootOpId,
+			stderr,
 		); nil != err {
 			errChan <- err
 		}
@@ -157,12 +156,9 @@ func (this _containerProvider) RunContainer(
 	}()
 
 	go func() {
-		if err = this.stdOutEventPublisher(
-			eventPublisher,
+		if err := this.streamContainerStdOut(
 			req.ContainerId,
-			req.Image.Ref,
-			req.PkgRef,
-			req.RootOpId,
+			stdout,
 		); nil != err {
 			errChan <- err
 		}
@@ -170,26 +166,22 @@ func (this _containerProvider) RunContainer(
 		waitGroup.Done()
 	}()
 
-	go func() {
-		exitCode, waitError := this.dockerClient.ContainerWait(
-			context.Background(),
-			req.ContainerId,
-		)
-		if nil != waitError {
-			errChan <- errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
-		} else if 0 != exitCode {
-			errChan <- errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
-		}
+	exitCode, waitError := this.dockerClient.ContainerWait(
+		context.Background(),
+		req.ContainerId,
+	)
+	if nil != waitError {
+		errChan <- errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
+	} else if 0 != exitCode {
+		errChan <- errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
+	}
 
-		waitGroup.Done()
-	}()
-
-	// ensure exit code, stdout, and stderr all read before returning
+	// ensure stdout, and stderr all read before returning
 	waitGroup.Wait()
 
 	if len(errChan) > 0 {
-		return <-errChan
+		err = <-errChan
 	}
-	return nil
+	return &exitCode, err
 
 }

@@ -14,11 +14,6 @@ import (
 )
 
 func New() {
-	containerProvider, err := docker.New()
-	if nil != err {
-		panic(err)
-	}
-
 	dataDirPath, err := dataDirPath()
 	if nil != err {
 		panic(err)
@@ -30,6 +25,11 @@ func New() {
 	if nil != err {
 		pIdOExistingNode := lockFile.PIdOfOwner(lockFilePath(dataDirPath))
 		panic(fmt.Errorf("node already running w/ PId: %v\n", pIdOExistingNode))
+	}
+
+	containerProvider, err := docker.New()
+	if nil != err {
+		panic(err)
 	}
 
 	// cleanup [legacy] opspec.engine container if exists; ignore errors

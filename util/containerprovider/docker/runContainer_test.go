@@ -109,7 +109,12 @@ var _ = Context("RunContainer", func() {
 		}
 
 		/* act */
-		objectUnderTest.RunContainer(providedReq, new(pubsub.FakeEventPublisher))
+		objectUnderTest.RunContainer(
+			providedReq,
+			new(pubsub.FakeEventPublisher),
+			nopWriteCloser{ioutil.Discard},
+			nopWriteCloser{ioutil.Discard},
+		)
 
 		/* assert */
 		_,
@@ -123,3 +128,9 @@ var _ = Context("RunContainer", func() {
 		Expect(actualContainerName).To(Equal(providedReq.ContainerId))
 	})
 })
+
+type nopWriteCloser struct {
+	io.Writer
+}
+
+func (w nopWriteCloser) Close() error { return nil }
