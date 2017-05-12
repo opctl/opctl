@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '0.1.3'
+  version: '0.1.4'
   title: Node API
 consumes:
   - application/json
@@ -13,7 +13,6 @@ paths:
       summary: Get an event stream
       description: |
         The connection will be upgraded to use the websocket protocol.
-        Inspired by Docker Remote API [GET /events endpoint](https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/monitor-dockers-events)
       parameters:
         - name: filter
           in: query
@@ -28,8 +27,7 @@ paths:
           required: false
           type: string
           format: json
-      tags:
-        - events
+      tags: [ events ]
       responses:
         '101':
           description: Switching Protocols
@@ -53,8 +51,7 @@ paths:
   /liveness:
     get:
       summary: Get liveness of node
-      tags:
-        - liveness
+      tags: [ liveness ]
       responses:
         '200':
           description: OK
@@ -63,22 +60,33 @@ paths:
   /ops/starts:
     post:
       summary: Starts an op
-      tags:
-        - ops
+      tags: [ ops ]
       parameters:
         - name: body
           in: body
+          required: true
           schema:
-            type: object
-            required:
-              - pkgRef
+            required: [ pkg ]
             properties:
               args:
+                description: arguments to pass to the op as inputs
                 type: array
                 items:
                   $ref: '#/definitions/OpArg'
-              pkgRef:
-                type: string
+              pkg:
+                required: [ ref ]
+                properties:
+                  ref:
+                    type: string
+                    description: a pkg reference in the form of a URL or absolute file path
+                  pullAuth:
+                    description: username & password to use for pullAuth
+                    required: [ username, password ]
+                    properties:
+                      username:
+                        type: string
+                      password:
+                        type: string
       responses:
         '201':
           description: Created
@@ -96,16 +104,13 @@ paths:
   /ops/kills:
     post:
       summary: Kills an op
-      tags:
-        - ops
+      tags: [ ops ]
       parameters:
         - name: body
           in: body
           required: true
           schema:
-            type: object
-            required:
-              - opRunId
+            required: [ opRunId ]
             properties:
               opRunId:
                 type: string
@@ -122,7 +127,6 @@ paths:
             type: string
 definitions:
   Event:
-    type: object
     properties:
       timestamp:
         type: string
@@ -132,12 +136,8 @@ definitions:
         $ref: '#/definitions/ContainerExitedEvent'
       containerStarted:
         $ref: '#/definitions/ContainerStartedEvent'
-      containerStdErrEOFRead:
-        $ref: '#/definitions/ContainerStdErrEOFReadEvent'
       containerStdErrWrittenTo:
         $ref: '#/definitions/ContainerStdErrWrittenToEvent'
-      containerStdOutEOFRead:
-        $ref: '#/definitions/ContainerStdOutEOFReadEvent'
       containerStdOutWrittenTo:
         $ref: '#/definitions/ContainerStdOutWrittenToEvent'
       opEnded:
@@ -147,7 +147,6 @@ definitions:
       opEncounteredError:
         $ref: '#/definitions/OpEncounteredErrorEvent'
   ContainerExitedEvent:
-    type: object
     properties:
       containerRef:
         type: string
@@ -160,18 +159,6 @@ definitions:
       pkgRef:
         type: string
   ContainerStartedEvent:
-    type: object
-    properties:
-      containerRef:
-        type: string
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
-  ContainerStdErrEOFReadEvent:
-    type: object
     properties:
       containerRef:
         type: string
@@ -182,7 +169,6 @@ definitions:
       pkgRef:
         type: string
   ContainerStdErrWrittenToEvent:
-    type: object
     properties:
       containerRef:
         type: string
@@ -195,19 +181,7 @@ definitions:
         type: string
       pkgRef:
         type: string
-  ContainerStdOutEOFReadEvent:
-    type: object
-    properties:
-      containerRef:
-        type: string
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
   ContainerStdOutWrittenToEvent:
-    type: object
     properties:
       containerRef:
         type: string
@@ -221,7 +195,6 @@ definitions:
       pkgRef:
         type: string
   OpEncounteredErrorEvent:
-    type: object
     properties:
       rootOpId:
         type: string
@@ -232,7 +205,6 @@ definitions:
       pkgRef:
         type: string
   OpEndedEvent:
-    type: object
     properties:
       rootOpId:
         type: string
@@ -244,7 +216,6 @@ definitions:
         enum: [ SUCCEEDED, FAILED, KILLED]
         type: string
   OpStartedEvent:
-    type: object
     properties:
       rootOpId:
         type: string
