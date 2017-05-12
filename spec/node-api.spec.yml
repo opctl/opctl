@@ -69,7 +69,7 @@ paths:
             required: [ pkg ]
             properties:
               args:
-                description: arguments to pass to the op as inputs
+                description: arguments passed to the op to satisfy inputs
                 type: array
                 items:
                   $ref: '#/definitions/OpArg'
@@ -78,9 +78,10 @@ paths:
                 properties:
                   ref:
                     type: string
-                    description: a pkg reference in the form of a URL or absolute file path
-                  pullAuth:
-                    description: username & password to use for pullAuth
+                    format: uri-reference
+                    description: reference to a pkg
+                  pullCreds:
+                    description: credentials used during authentication with the source of the package
                     required: [ username, password ]
                     properties:
                       username:
