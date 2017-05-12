@@ -5,14 +5,18 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 
 ## \[Unreleased]
 
+### Added
+
+- [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opspec-io/spec/issues/117)
+
 ### Deprecated
 
 - `ref` attribute in
   [package-manifest.schema.json#/definitions/opCall](spec/package-manifest.schema.json#/definitions/opCall).
   Use new `pkg` attribute.
 - `pullIdentity` & `pullSecret` attributes in
-    [package-manifest.schema.json#/definitions/containerCall](spec/package-manifest.schema.json#/definitions/containerCall).
-    Use new `pullAuth` attribute.
+  [package-manifest.schema.json#/definitions/containerCall](spec/package-manifest.schema.json#/definitions/containerCall).
+  Use new `pullCreds` attribute.
 
 ## \[0.1.3] - 2017-03-06
 
