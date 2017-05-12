@@ -35,7 +35,7 @@ type SCGContainerCall struct {
 type SCGContainerCallImage struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`
-	pullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
+	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }
 
 type SCGOpCall struct {
@@ -51,5 +51,5 @@ type SCGOpCall struct {
 type SCGOpCallPkg struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`
-	pullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
+	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }

@@ -41,7 +41,7 @@ type DCGContainerCall struct {
 type DCGContainerCallImage struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`
-	pullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
+	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
 }
 
 type DCGOp struct{}
@@ -55,5 +55,5 @@ type DCGOpCall struct {
 type DCGOpCallPkg struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`
-	pullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
+	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
 }
