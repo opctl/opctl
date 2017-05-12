@@ -85,9 +85,9 @@
         "file"
       ]
     },
-    "usernamePasswordAuth":{
+    "pullCreds":{
       "type": "object",
-      "description": "Authentication via username and password",
+      "description": "Credentials used during authentication with the source of an image or package",
       "properties": {
         "username": {
           "$ref": "#/definitions/interpolatedString"
@@ -434,11 +434,11 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(Container & package dir path are identical)",
+                      "description": "(will be bound to same path in package)",
                       "type": "null"
                     },
                     {
-                      "description": "dir variable or path in package",
+                      "description": "dir ref or path in package",
                       "type": "string"
                     }
                   ]
@@ -451,7 +451,16 @@
               "description": "Environment variables in the container",
               "patternProperties": {
                 "^[^=]+$": {
-                  "$ref": "#/definitions/interpolatedString"
+                  "oneOf": [
+                    {
+                      "description": "(will be bound to in scope ref w/ same name)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "string/number ref or string value",
+                      "$ref": "#/definitions/interpolatedString"
+                    }
+                  ]
                 }
               },
               "additionalProperties": false
@@ -463,11 +472,11 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(Container & package file path are identical)",
+                      "description": "(will be bound to same path in package)",
                       "type": "null"
                     },
                     {
-                      "description": "file variable or path in package",
+                      "description": "file ref or path in package",
                       "type": "string"
                     }
                   ]
@@ -482,16 +491,16 @@
                   "description": "Reference to an image",
                   "$ref": "#/definitions/interpolatedString"
                 },
-                "pullAuth":{
-                  "$ref":"#/definitions/usernamePasswordAuth"
+                "pullCreds":{
+                  "$ref":"#/definitions/pullCreds"
                 },
                 "pullIdentity":{
-                  "description": "Identity/username for pull Auth",
+                  "description": "Identity/username used to pull the image; deprecated, use pullCreds instead",
                   "type": "string",
                   "deprecated": true
                 },
                 "pullSecret":{
-                  "description": "Secret/password for pull Auth",
+                  "description": "Secret/password used to pull the image; deprecated, use pullCreds instead",
                   "type": "string",
                   "deprecated": true
                 }
@@ -521,7 +530,7 @@
               "type": "object",
               "patternProperties": {
                 "[:a-zA-Z0-9]+": {
-                  "description": "Container socket address mapped to a socket variable",
+                  "description": "Container socket address mapped to a socket ref",
                   "type": "string"
                 }
               },
@@ -531,7 +540,7 @@
               "type": "object",
               "patternProperties": {
                 "^.+$": {
-                  "description": "Container stderr prefix mapped to a string variable",
+                  "description": "Container stderr prefix mapped to a string ref",
                   "type": "string"
                 }
               },
@@ -541,7 +550,7 @@
               "type": "object",
               "patternProperties": {
                 "^.+$": {
-                  "description": "Container stdout prefix mapped to a string variable",
+                  "description": "Container stdout prefix mapped to a string ref",
                   "type": "string"
                 }
               },
@@ -573,17 +582,18 @@
             "ref": {
               "description": "Reference to a package",
               "deprecated": true,
-              "$ref": "#/definitions/interpolatedString"
+              "type": "string"
             },
             "pkg":{
               "type":"object",
               "properties":{
                 "ref": {
-                  "description": "Reference to a package",
-                  "$ref": "#/definitions/interpolatedString"
+                  "description": "Reference to a pkg",
+                  "type": "string",
+                  "format": "uri-reference"
                 },
-                "pullAuth":{
-                  "$ref":"#/definitions/usernamePasswordAuth"
+                "pullCreds":{
+                  "$ref":"#/definitions/pullCreds"
                 }
               },
               "required": [

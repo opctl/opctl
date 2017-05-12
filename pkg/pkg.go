@@ -28,7 +28,7 @@ type Pkg interface {
 	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
 		pkgRef string,
-		req *PullOpts,
+		opts *PullOpts,
 	) error
 
 	// Get gets a local package
