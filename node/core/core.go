@@ -7,7 +7,7 @@ import (
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/interpolate"
+	"github.com/opspec-io/sdk-golang/interpolater"
 	opspecNodeCorePkg "github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/validate"
@@ -24,10 +24,10 @@ func New(
 
 	opKiller := newOpKiller(dcgNodeRepo, containerProvider)
 
-	dcgFactory := newDCGFactory(
-		filecopier.New(),
+	dcgContainerCallFactory := newDCGContainerCallFactory(
 		dircopier.New(),
-		interpolate.New(),
+		filecopier.New(),
+		interpolater.New(),
 		ios.New(),
 		rootFSPath,
 	)
@@ -35,7 +35,7 @@ func New(
 	caller := newCaller(
 		newContainerCaller(
 			containerProvider,
-			dcgFactory,
+			dcgContainerCallFactory,
 			pubSub,
 			dcgNodeRepo,
 		),
@@ -65,6 +65,7 @@ func New(
 		caller,
 		uniqueStringFactory,
 		validate.New(),
+		rootFSPath,
 	)
 
 	caller.setOpCaller(

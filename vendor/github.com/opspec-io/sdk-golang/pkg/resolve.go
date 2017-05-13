@@ -1,35 +1,30 @@
 package pkg
 
 import (
-	"path"
+	"path/filepath"
 )
 
-// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
-func (this pkg) Resolve(
-	basePath,
-	pkgRef string,
+// Resolve attempts to resolve a package from lookPaths according to opspec package resolution rules.
+// each lookPath will be tried in the provided order until either resolution succeeds or all lookPaths are exhausted
+// if successful, the absolute path of the resolved package will be returned along w/ true
+func (this _Pkg) Resolve(
+	pkgRef *PkgRef,
+	lookPaths ...string,
 ) (string, bool) {
-	var testPath string
+	for _, lookPath := range lookPaths {
+		// 1. attempt to resolve from lookPath/.opspec dir
+		testPath := filepath.Join(lookPath, DotOpspecDirName, pkgRef.FullyQualifiedName, pkgRef.Version)
+		if _, err := this.os.Stat(testPath); nil == err {
+			return testPath, true
+		}
 
-	// 1. attempt to resolve from basePath/.opspec dir
-	testPath = path.Join(basePath, DotOpspecDirName, pkgRef)
-	if _, err := this.os.Stat(testPath); nil == err {
-		return testPath, true
-	}
-
-	// 2. attempt to resolve from basePath
-	testPath = path.Join(basePath, pkgRef)
-	if _, err := this.os.Stat(testPath); nil == err {
-		return testPath, true
-	}
-
-	// 3. attempt to resolve from cache
-	if testPath, err := constructCachePath(pkgRef); nil == err {
-		if _, err = this.os.Stat(testPath); nil == err {
+		// 2. attempt to resolve from lookPath
+		testPath = filepath.Join(lookPath, pkgRef.FullyQualifiedName, pkgRef.Version)
+		if _, err := this.os.Stat(testPath); nil == err {
 			return testPath, true
 		}
 	}
 
-	// 4. giveup
+	// resolution unsuccessful
 	return "", false
 }

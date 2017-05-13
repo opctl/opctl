@@ -27,27 +27,27 @@ type containerCaller interface {
 
 func newContainerCaller(
 	containerProvider containerprovider.ContainerProvider,
-	dcgFactory dcgFactory,
+	dcgContainerCallFactory dcgContainerCallFactory,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
-		containerProvider: containerProvider,
-		dcgFactory:        dcgFactory,
-		pubSub:            pubSub,
-		dcgNodeRepo:       dcgNodeRepo,
-		io:                iio.New(),
+		containerProvider:       containerProvider,
+		dcgContainerCallFactory: dcgContainerCallFactory,
+		pubSub:                  pubSub,
+		dcgNodeRepo:             dcgNodeRepo,
+		io:                      iio.New(),
 	}
 
 }
 
 type _containerCaller struct {
-	containerProvider containerprovider.ContainerProvider
-	dcgFactory        dcgFactory
-	pubSub            pubsub.PubSub
-	dcgNodeRepo       dcgNodeRepo
-	io                iio.IIO
+	containerProvider       containerprovider.ContainerProvider
+	dcgContainerCallFactory dcgContainerCallFactory
+	pubSub                  pubsub.PubSub
+	dcgNodeRepo             dcgNodeRepo
+	io                      iio.IIO
 }
 
 func (cc _containerCaller) Call(
@@ -75,7 +75,7 @@ func (cc _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := cc.dcgFactory.Construct(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
+	dcgContainerCall, err := cc.dcgContainerCallFactory.Construct(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
 		return err
 	}

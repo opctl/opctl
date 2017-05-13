@@ -6,7 +6,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
 	"github.com/golang-utils/filecopier"
-	interpolatePkg "github.com/opspec-io/sdk-golang/interpolate"
+	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path"
@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-type dcgFactory interface {
+type dcgContainerCallFactory interface {
 	Construct(
 		currentScope map[string]*model.Data,
 		scgContainerCall *model.SCGContainerCall,
@@ -25,31 +25,31 @@ type dcgFactory interface {
 	) (*model.DCGContainerCall, error)
 }
 
-func newDCGFactory(
+func newDCGContainerCallFactory(
 	dirCopier dircopier.DirCopier,
 	fileCopier filecopier.FileCopier,
-	interpolate interpolatePkg.Interpolate,
+	interpolate interpolater.Interpolater,
 	os ios.IOS,
 	rootFSPath string,
-) dcgFactory {
-	return _dcgFactory{
-		dirCopier:   dirCopier,
-		fileCopier:  fileCopier,
-		interpolate: interpolate,
-		os:          os,
-		rootFSPath:  rootFSPath,
+) dcgContainerCallFactory {
+	return _dcgContainerCallFactory{
+		dirCopier:    dirCopier,
+		fileCopier:   fileCopier,
+		interpolater: interpolate,
+		os:           os,
+		rootFSPath:   rootFSPath,
 	}
 }
 
-type _dcgFactory struct {
-	dirCopier   dircopier.DirCopier
-	fileCopier  filecopier.FileCopier
-	interpolate interpolatePkg.Interpolate
-	os          ios.IOS
-	rootFSPath  string
+type _dcgContainerCallFactory struct {
+	dirCopier    dircopier.DirCopier
+	fileCopier   filecopier.FileCopier
+	interpolater interpolater.Interpolater
+	os           ios.IOS
+	rootFSPath   string
 }
 
-func (df _dcgFactory) Construct(
+func (df _dcgContainerCallFactory) Construct(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.SCGContainerCall,
 	containerId string,
@@ -81,11 +81,14 @@ func (df _dcgFactory) Construct(
 		containerId,
 		"fs",
 	)
+	if err := df.os.MkdirAll(scratchDirPath, 0700); nil != err {
+		return nil, err
+	}
 
 	// construct cmd
 	for _, cmdEntry := range scgContainerCall.Cmd {
 		// interpolate each entry
-		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, df.interpolate.Interpolate(cmdEntry, currentScope))
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, df.interpolater.Interpolate(cmdEntry, currentScope))
 	}
 
 	// construct dirs
@@ -138,7 +141,7 @@ func (df _dcgFactory) Construct(
 		}
 
 		// otherwise interpolate value
-		dcgContainerCall.EnvVars[scgContainerEnvVarName] = df.interpolate.Interpolate(scgContainerEnvVar, currentScope)
+		dcgContainerCall.EnvVars[scgContainerEnvVarName] = df.interpolater.Interpolate(scgContainerEnvVar, currentScope)
 
 	}
 
@@ -188,13 +191,12 @@ func (df _dcgFactory) Construct(
 	// construct image
 	if scgContainerCallImage := scgContainerCall.Image; scgContainerCallImage != nil {
 		dcgContainerCall.Image = &model.DCGContainerCallImage{
-			Ref: scgContainerCall.Image.Ref,
+			Ref: df.interpolater.Interpolate(scgContainerCall.Image.Ref, currentScope),
 		}
 		if nil != scgContainerCallImage.PullCreds {
 			dcgContainerCall.Image.PullCreds = &model.DCGPullCreds{
-				// interpolate Username & Password strings
-				Username: df.interpolate.Interpolate(scgContainerCall.Image.PullCreds.Username, currentScope),
-				Password: df.interpolate.Interpolate(scgContainerCall.Image.PullCreds.Password, currentScope),
+				Username: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Username, currentScope),
+				Password: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Password, currentScope),
 			}
 		}
 	}
@@ -207,22 +209,20 @@ func (df _dcgFactory) Construct(
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {
 			// bound to output
 			// create outputSocket on host so the output points to something
-			if isUnixSocketAddress(scgContainerSocketAddress) {
-				dcgHostSocketAddress := filepath.Join(scratchDirPath, scgContainerSocketAddress)
-				var outputSocket *os.File
-				outputSocket, err := df.os.Create(dcgHostSocketAddress)
-				outputSocket.Close()
-				if nil != err {
-					return nil, err
-				}
-				if err := os.Chmod(
-					dcgHostSocketAddress,
-					os.ModeSocket,
-				); nil != err {
-					return nil, err
-				}
-				dcgContainerCall.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
+			dcgHostSocketAddress := filepath.Join(scratchDirPath, scgContainerSocketAddress)
+			var outputSocket *os.File
+			outputSocket, err := df.os.Create(dcgHostSocketAddress)
+			outputSocket.Close()
+			if nil != err {
+				return nil, err
 			}
+			if err := os.Chmod(
+				dcgHostSocketAddress,
+				os.ModeSocket,
+			); nil != err {
+				return nil, err
+			}
+			dcgContainerCall.Sockets[scgContainerSocketAddress] = dcgHostSocketAddress
 		}
 	}
 

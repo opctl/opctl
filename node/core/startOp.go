@@ -1,21 +1,22 @@
 package core
 
 import (
+	"errors"
 	"github.com/opspec-io/sdk-golang/model"
 	"path"
 )
 
 func (this _core) StartOp(
 	req model.StartOpReq,
-) (
-	opId string,
-	err error,
-) {
+) (string, error) {
+	if nil == req.Pkg {
+		return "", errors.New("pkg required")
+	}
 
-	pkgBasePath := path.Dir(req.PkgRef)
-	pkgName := path.Base(req.PkgRef)
+	pkgBasePath := path.Dir(req.Pkg.Ref)
+	pkgName := path.Base(req.Pkg.Ref)
 
-	opId = this.uniqueStringFactory.Construct()
+	opId := this.uniqueStringFactory.Construct()
 
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
@@ -39,6 +40,6 @@ func (this _core) StartOp(
 		)
 	}()
 
-	return
+	return opId, nil
 
 }

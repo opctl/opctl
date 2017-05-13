@@ -1,18 +1,63 @@
 package core
 
 import (
+	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/interpolate"
+	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/pkg/errors"
+	"os"
 	"path/filepath"
 	"strconv"
 )
 
-var _ = Context("dcgFactory", func() {
-	Context("containerCall", func() {
+var _ = Context("dcgContainerCallFactory", func() {
+	Context("construct", func() {
+		It("calls os.MkdirAll w/ expected scratchdir path & returns error", func() {
+			/* arrange */
+			rootFSPath := "/dummyRootFSPath"
+			providedContainerId := "dummyContainerId"
+			providedRootOpId := "dummyRootOpId"
+
+			expectedScratchDirPath := filepath.Join(
+				rootFSPath,
+				"dcg",
+				providedRootOpId,
+				"containers",
+				providedContainerId,
+				"fs",
+			)
+			expectedScratchDirMode := os.FileMode(0700)
+
+			expectedError := errors.New("dummyError")
+
+			fakeOS := new(ios.Fake)
+			// error to trigger immediate return
+			fakeOS.MkdirAllReturns(expectedError)
+
+			objectUnderTest := _dcgContainerCallFactory{
+				os:         fakeOS,
+				rootFSPath: rootFSPath,
+			}
+
+			/* act */
+			_, actualError := objectUnderTest.Construct(
+				map[string]*model.Data{},
+				&model.SCGContainerCall{},
+				providedContainerId,
+				providedRootOpId,
+				"dummyPkgRef",
+			)
+
+			/* assert */
+			actualScratchDirPath, actualScratchDirMode := fakeOS.MkdirAllArgsForCall(0)
+			Expect(actualScratchDirPath).To(Equal(expectedScratchDirPath))
+			Expect(actualScratchDirMode).To(Equal(expectedScratchDirMode))
+			Expect(actualError).To(Equal(expectedError))
+		})
 		Context("scg.Cmd not empty", func() {
 			It("should call interpolate w/ expected args for each scg.Cmd entry", func() {
 				/* arrange */
@@ -28,10 +73,11 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				fakeInterpolate := new(interpolate.Fake)
+				fakeInterpolater := new(interpolater.Fake)
 
-				objectUnderTest := _dcgFactory{
-					interpolate: fakeInterpolate,
+				objectUnderTest := _dcgContainerCallFactory{
+					interpolater: fakeInterpolater,
+					os:           new(ios.Fake),
 				}
 
 				/* act */
@@ -45,7 +91,7 @@ var _ = Context("dcgFactory", func() {
 
 				/* assert */
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
-					actualCmdEntry, actualScope := fakeInterpolate.InterpolateArgsForCall(expectedCmdIndex)
+					actualCmdEntry, actualScope := fakeInterpolater.InterpolateArgsForCall(expectedCmdIndex)
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
 				}
@@ -64,12 +110,13 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				fakeInterpolate := new(interpolate.Fake)
-				fakeInterpolate.InterpolateReturnsOnCall(0, expectedCmd[0])
-				fakeInterpolate.InterpolateReturnsOnCall(1, expectedCmd[1])
+				fakeInterpolater := new(interpolater.Fake)
+				fakeInterpolater.InterpolateReturnsOnCall(0, expectedCmd[0])
+				fakeInterpolater.InterpolateReturnsOnCall(1, expectedCmd[1])
 
-				objectUnderTest := _dcgFactory{
-					interpolate: fakeInterpolate,
+				objectUnderTest := _dcgContainerCallFactory{
+					interpolater: fakeInterpolater,
+					os:           new(ios.Fake),
 				}
 
 				/* act */
@@ -114,8 +161,9 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				objectUnderTest := _dcgFactory{
+				objectUnderTest := _dcgContainerCallFactory{
 					dirCopier:  new(dircopier.Fake),
+					os:         new(ios.Fake),
 					rootFSPath: rootFSPath,
 				}
 
@@ -159,7 +207,9 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				objectUnderTest := _dcgFactory{}
+				objectUnderTest := _dcgContainerCallFactory{
+					os: new(ios.Fake),
+				}
 
 				/* act */
 				actualDCGContainerCall, _ := objectUnderTest.Construct(
@@ -203,8 +253,9 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				objectUnderTest := _dcgFactory{
+				objectUnderTest := _dcgContainerCallFactory{
 					fileCopier: new(filecopier.Fake),
+					os:         new(ios.Fake),
 					rootFSPath: rootFSPath,
 				}
 
@@ -222,7 +273,7 @@ var _ = Context("dcgFactory", func() {
 			})
 		})
 		Context("scg.Image not empty", func() {
-			It("should call interpolate w/ expected args for scg.Image.PullCreds.Username/Password", func() {
+			It("should call interpolate w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Data{
@@ -239,10 +290,11 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				fakeInterpolate := new(interpolate.Fake)
+				fakeInterpolater := new(interpolater.Fake)
 
-				objectUnderTest := _dcgFactory{
-					interpolate: fakeInterpolate,
+				objectUnderTest := _dcgContainerCallFactory{
+					interpolater: fakeInterpolater,
+					os:           new(ios.Fake),
 				}
 
 				/* act */
@@ -255,11 +307,15 @@ var _ = Context("dcgFactory", func() {
 				)
 
 				/* assert */
-				actualUsername, actualUsernameScope := fakeInterpolate.InterpolateArgsForCall(0)
+				actualImageRef, actualImageRefScope := fakeInterpolater.InterpolateArgsForCall(0)
+				Expect(actualImageRef).To(Equal(providedSCGContainerCall.Image.Ref))
+				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
+
+				actualUsername, actualUsernameScope := fakeInterpolater.InterpolateArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCall.Image.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
 
-				actualPassword, actualPasswordScope := fakeInterpolate.InterpolateArgsForCall(1)
+				actualPassword, actualPasswordScope := fakeInterpolater.InterpolateArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCall.Image.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
 			})
@@ -273,23 +329,28 @@ var _ = Context("dcgFactory", func() {
 					},
 				}
 
-				fakeInterpolate := new(interpolate.Fake)
+				fakeInterpolater := new(interpolater.Fake)
+
+				expectedImageRef := "expectedImageRef"
+				fakeInterpolater.InterpolateReturnsOnCall(0, expectedImageRef)
+
 				expectedUsername := "expectedUsername"
-				fakeInterpolate.InterpolateReturnsOnCall(0, expectedUsername)
+				fakeInterpolater.InterpolateReturnsOnCall(1, expectedUsername)
 
 				expectedPassword := "expectedPassword"
-				fakeInterpolate.InterpolateReturnsOnCall(1, expectedPassword)
+				fakeInterpolater.InterpolateReturnsOnCall(2, expectedPassword)
 
 				expectedImage := &model.DCGContainerCallImage{
-					Ref: providedSCGContainerCall.Image.Ref,
+					Ref: expectedImageRef,
 					PullCreds: &model.DCGPullCreds{
 						Username: expectedUsername,
 						Password: expectedPassword,
 					},
 				}
 
-				objectUnderTest := _dcgFactory{
-					interpolate: fakeInterpolate,
+				objectUnderTest := _dcgContainerCallFactory{
+					interpolater: fakeInterpolater,
+					os:           new(ios.Fake),
 				}
 
 				/* act */
