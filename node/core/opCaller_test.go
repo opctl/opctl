@@ -107,7 +107,7 @@ var _ = Context("opCaller", func() {
 				providedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
 						Ref: "dummyPkgRef",
-						PullAuth: &model.SCGUsernamePasswordAuth{
+						PullCreds: &model.SCGPullCreds{
 							Username: "dummyUsername",
 							Password: "dummyPassword",
 						},
@@ -115,8 +115,8 @@ var _ = Context("opCaller", func() {
 
 				expectedPkgRef := providedSCGOpCall.Pkg.Ref
 				expectedPullOpts := &pkg.PullOpts{
-					Username: providedSCGOpCall.Pkg.PullAuth.Username,
-					Password: providedSCGOpCall.Pkg.PullAuth.Password,
+					Username: providedSCGOpCall.Pkg.PullCreds.Username,
+					Password: providedSCGOpCall.Pkg.PullCreds.Password,
 				}
 
 				fakePkg := new(pkg.Fake)
@@ -235,7 +235,7 @@ var _ = Context("opCaller", func() {
 				providedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
 						Ref: "dummySCGOpCallPkgRef",
-						PullAuth: &model.SCGUsernamePasswordAuth{
+						PullCreds: &model.SCGPullCreds{
 							Username: "$(username)",
 							Password: "dummyPassword",
 						},

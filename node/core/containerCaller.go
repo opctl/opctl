@@ -27,12 +27,14 @@ type containerCaller interface {
 
 func newContainerCaller(
 	containerProvider containerprovider.ContainerProvider,
+	dcgFactory dcgFactory,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
 		containerProvider: containerProvider,
+		dcgFactory:        dcgFactory,
 		pubSub:            pubSub,
 		dcgNodeRepo:       dcgNodeRepo,
 		io:                iio.New(),
@@ -42,12 +44,13 @@ func newContainerCaller(
 
 type _containerCaller struct {
 	containerProvider containerprovider.ContainerProvider
+	dcgFactory        dcgFactory
 	pubSub            pubsub.PubSub
 	dcgNodeRepo       dcgNodeRepo
 	io                iio.IIO
 }
 
-func (this _containerCaller) Call(
+func (cc _containerCaller) Call(
 	inboundScope map[string]*model.Data,
 	containerId string,
 	scgContainerCall *model.SCGContainerCall,
@@ -57,13 +60,13 @@ func (this _containerCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
-		this.dcgNodeRepo.DeleteIfExists(containerId)
+		cc.dcgNodeRepo.DeleteIfExists(containerId)
 
-		this.containerProvider.DeleteContainerIfExists(containerId)
+		cc.containerProvider.DeleteContainerIfExists(containerId)
 
 	}()
 
-	this.dcgNodeRepo.Add(
+	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerId,
 			PkgRef:    pkgRef,
@@ -72,14 +75,14 @@ func (this _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := constructDCGContainerCall(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
+	dcgContainerCall, err := cc.dcgFactory.Construct(inboundScope, scgContainerCall, containerId, rootOpId, pkgRef)
 	if nil != err {
 		return err
 	}
 
-	this.txOutputs(dcgContainerCall, scgContainerCall)
+	cc.txOutputs(dcgContainerCall, scgContainerCall)
 
-	this.pubSub.Publish(
+	cc.pubSub.Publish(
 		&model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
@@ -94,33 +97,33 @@ func (this _containerCaller) Call(
 	errChan := make(chan error, 2)
 	wg.Add(2)
 
-	containerStdOutReader, containerStdOutWriter := this.io.Pipe()
+	containerStdOutReader, containerStdOutWriter := cc.io.Pipe()
 	go func() {
-		if err := this.handleStdOut(
+		if err := cc.handleStdOut(
 			containerStdOutReader,
 			dcgContainerCall,
 			scgContainerCall,
 		); nil != err {
-
+			errChan <- err
 		}
 		wg.Done()
 	}()
 
-	containerStdErrReader, containerStdErrWriter := this.io.Pipe()
+	containerStdErrReader, containerStdErrWriter := cc.io.Pipe()
 	go func() {
-		if err := this.handleStdErr(
+		if err := cc.handleStdErr(
 			containerStdErrReader,
 			dcgContainerCall,
 			scgContainerCall,
 		); nil != err {
-
+			errChan <- err
 		}
 		wg.Done()
 	}()
 
-	rawExitCode, err := this.containerProvider.RunContainer(
+	rawExitCode, err := cc.containerProvider.RunContainer(
 		dcgContainerCall,
-		this.pubSub,
+		cc.pubSub,
 		containerStdOutWriter,
 		containerStdErrWriter,
 	)
@@ -132,7 +135,7 @@ func (this _containerCaller) Call(
 
 	wg.Wait()
 
-	this.pubSub.Publish(
+	cc.pubSub.Publish(
 		&model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{

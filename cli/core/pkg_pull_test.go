@@ -72,7 +72,7 @@ var _ = Context("core", func() {
 
 					/* assert */
 					_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
-					Expect(actualInputs).To(Equal(pullAuthPromptInputs))
+					Expect(actualInputs).To(Equal(pullCredsPromptInputs))
 				})
 				It("should retry pkg.Pull w/ expected args", func() {
 					/* arrange */

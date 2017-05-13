@@ -2,5 +2,5 @@
 package main
 
 const (
-	version = "0.1.19-beta.4"
+	version = "0.1.19-alpha.97"
 )
