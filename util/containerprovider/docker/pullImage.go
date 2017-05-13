@@ -18,13 +18,13 @@ func (this _containerProvider) pullImage(
 ) error {
 
 	imagePullOptions := types.ImagePullOptions{}
-	if nil != dcgContainerImage.PullAuth &&
-		"" != dcgContainerImage.PullAuth.Username &&
-		"" != dcgContainerImage.PullAuth.Password {
+	if nil != dcgContainerImage.PullCreds &&
+		"" != dcgContainerImage.PullCreds.Username &&
+		"" != dcgContainerImage.PullCreds.Password {
 		var err error
 		imagePullOptions.RegistryAuth, err = constructRegistryAuth(
-			dcgContainerImage.PullAuth.Username,
-			dcgContainerImage.PullAuth.Password,
+			dcgContainerImage.PullCreds.Username,
+			dcgContainerImage.PullCreds.Password,
 		)
 		if nil != err {
 			return err

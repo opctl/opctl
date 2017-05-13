@@ -21,6 +21,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
 				new(containerprovider.Fake),
+				new(fakeDCGFactory),
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
 			)).To(Not(BeNil()))
@@ -36,9 +37,6 @@ var _ = Context("containerCaller", func() {
 			providedRootOpId := "dummyRootOpId"
 
 			fakePubSub := new(pubsub.Fake)
-			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-				close(eventChannel)
-			}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
@@ -54,6 +52,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider: new(containerprovider.Fake),
+				dcgFactory:        new(fakeDCGFactory),
 				pubSub:            fakePubSub,
 				dcgNodeRepo:       fakeDCGNodeRepo,
 				io:                fakeIIO,
@@ -89,15 +88,13 @@ var _ = Context("containerCaller", func() {
 			}
 
 			fakePubSub := new(pubsub.Fake)
-			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-				close(eventChannel)
-			}
 
 			fakeIIO := new(iio.Fake)
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
 				containerProvider: new(containerprovider.Fake),
+				dcgFactory:        new(fakeDCGFactory),
 				pubSub:            fakePubSub,
 				dcgNodeRepo:       new(fakeDCGNodeRepo),
 				io:                fakeIIO,
@@ -130,26 +127,21 @@ var _ = Context("containerCaller", func() {
 			providedPkgRef := "dummyPkgRef"
 			providedRootOpId := "dummyRootOpId"
 
-			expectedReq, _ := constructDCGContainerCall(
-				providedInboundScope,
-				providedSCGContainerCall,
-				providedContainerId,
-				providedRootOpId,
-				providedPkgRef,
-			)
+			expectedDCGContainerCall := &model.DCGContainerCall{}
+
+			fakeDCGFactory := new(fakeDCGFactory)
+			fakeDCGFactory.ConstructReturns(expectedDCGContainerCall, nil)
 
 			fakeContainerProvider := new(containerprovider.Fake)
 
 			fakePubSub := new(pubsub.Fake)
-			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-				close(eventChannel)
-			}
 
 			fakeIIO := new(iio.Fake)
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
 				containerProvider: fakeContainerProvider,
+				dcgFactory:        fakeDCGFactory,
 				pubSub:            fakePubSub,
 				dcgNodeRepo:       new(fakeDCGNodeRepo),
 				io:                fakeIIO,
@@ -165,8 +157,8 @@ var _ = Context("containerCaller", func() {
 			)
 
 			/* assert */
-			actualReq, actualEventPublisher, _, _ := fakeContainerProvider.RunContainerArgsForCall(0)
-			Expect(actualReq).To(Equal(expectedReq))
+			actualDCGContainerCall, actualEventPublisher, _, _ := fakeContainerProvider.RunContainerArgsForCall(0)
+			Expect(actualDCGContainerCall).To(Equal(expectedDCGContainerCall))
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
 		Context("containerProvider.RunContainer errors", func() {
@@ -188,6 +180,7 @@ var _ = Context("containerCaller", func() {
 
 				objectUnderTest := _containerCaller{
 					containerProvider: fakeContainerProvider,
+					dcgFactory:        new(fakeDCGFactory),
 					pubSub:            new(pubsub.Fake),
 					dcgNodeRepo:       new(fakeDCGNodeRepo),
 					io:                fakeIIO,
@@ -215,11 +208,6 @@ var _ = Context("containerCaller", func() {
 		providedPkgRef := "dummyPkgRef"
 		providedRootOpId := "dummyRootOpId"
 
-		fakePubSub := new(pubsub.Fake)
-		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-			close(eventChannel)
-		}
-
 		fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 		fakeIIO := new(iio.Fake)
@@ -227,7 +215,8 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerProvider: new(containerprovider.Fake),
-			pubSub:            fakePubSub,
+			dcgFactory:        new(fakeDCGFactory),
+			pubSub:            new(pubsub.Fake),
 			dcgNodeRepo:       fakeDCGNodeRepo,
 			io:                fakeIIO,
 		}
@@ -263,15 +252,13 @@ var _ = Context("containerCaller", func() {
 		}
 
 		fakePubSub := new(pubsub.Fake)
-		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-			close(eventChannel)
-		}
 
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
 			containerProvider: new(containerprovider.Fake),
+			dcgFactory:        new(fakeDCGFactory),
 			pubSub:            fakePubSub,
 			dcgNodeRepo:       new(fakeDCGNodeRepo),
 			io:                fakeIIO,
@@ -326,6 +313,17 @@ var _ = Context("containerCaller", func() {
 			},
 		}
 
+		fakeDCGFactory := new(fakeDCGFactory)
+		fakeDCGFactory.ConstructReturns(
+			&model.DCGContainerCall{
+				DCGBaseCall: &model.DCGBaseCall{
+					RootOpId: providedRootOpId,
+				},
+				ContainerId: providedContainerId,
+			},
+			nil,
+		)
+
 		fakePubSub := new(pubsub.Fake)
 
 		// record actual published events
@@ -336,15 +334,13 @@ var _ = Context("containerCaller", func() {
 				actualOutputInitEvents <- event
 			}
 		}
-		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-			close(eventChannel)
-		}
 
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
 			containerProvider: new(containerprovider.Fake),
+			dcgFactory:        fakeDCGFactory,
 			pubSub:            fakePubSub,
 			dcgNodeRepo:       new(fakeDCGNodeRepo),
 			io:                fakeIIO,
@@ -384,15 +380,13 @@ var _ = Context("containerCaller", func() {
 		}
 
 		fakePubSub := new(pubsub.Fake)
-		fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-			close(eventChannel)
-		}
 
 		fakeIIO := new(iio.Fake)
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
 			containerProvider: new(containerprovider.Fake),
+			dcgFactory:        new(fakeDCGFactory),
 			pubSub:            fakePubSub,
 			dcgNodeRepo:       new(fakeDCGNodeRepo),
 			io:                fakeIIO,

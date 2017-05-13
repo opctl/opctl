@@ -211,9 +211,9 @@ func (this _opCaller) getPkgPath(
 	pkgRef := interpolate.Interpolate(scgOpCallPkg.Ref, inboundScope)
 
 	var username, password string
-	if scgPullAuth := scgOpCallPkg.PullAuth; nil != scgPullAuth {
-		username = interpolate.Interpolate(scgPullAuth.Username, inboundScope)
-		password = interpolate.Interpolate(scgPullAuth.Password, inboundScope)
+	if scgPullCreds := scgOpCallPkg.PullCreds; nil != scgPullCreds {
+		username = interpolate.Interpolate(scgPullCreds.Username, inboundScope)
+		password = interpolate.Interpolate(scgPullCreds.Password, inboundScope)
 	}
 
 	pkgPath, ok := this.pkg.Resolve(pkgBasePath, pkgRef)

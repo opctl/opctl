@@ -31,9 +31,9 @@ func (this _core) PkgPull(
 			// auth errors can be fixed by supplying correct creds so don't give up; prompt
 			argMap := this.cliParamSatisfier.Satisfy(
 				cliparamsatisfier.NewInputSourcer(
-					cliparamsatisfier.NewCliPromptInputSrc(pullAuthPromptInputs),
+					cliparamsatisfier.NewCliPromptInputSrc(pullCredsPromptInputs),
 				),
-				pullAuthPromptInputs,
+				pullCredsPromptInputs,
 			)
 
 			// save providedArgs & re-attempt
@@ -56,7 +56,7 @@ const (
 )
 
 var (
-	pullAuthPromptInputs = map[string]*model.Param{
+	pullCredsPromptInputs = map[string]*model.Param{
 		usernameInputName: {
 			String: &model.StringParam{
 				Description: "username used for pull auth",

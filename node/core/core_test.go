@@ -15,6 +15,7 @@ var _ = Context("core", func() {
 				New(
 					new(pubsub.Fake),
 					new(containerprovider.Fake),
+					"dummyFSRootPath",
 				),
 			).To(Not(BeNil()))
 		})

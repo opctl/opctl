@@ -14,16 +14,16 @@ import (
 )
 
 func New() {
-	dataDirPath, err := dataDirPath()
+	rootFSPath, err := rootFSPath()
 	if nil != err {
 		panic(err)
 	}
 
 	lockFile := lockfile.New()
 	// ensure we're the only node around these parts
-	err = lockFile.Lock(lockFilePath(dataDirPath))
+	err = lockFile.Lock(lockFilePath(rootFSPath))
 	if nil != err {
-		pIdOExistingNode := lockFile.PIdOfOwner(lockFilePath(dataDirPath))
+		pIdOExistingNode := lockFile.PIdOfOwner(lockFilePath(rootFSPath))
 		panic(fmt.Errorf("node already running w/ PId: %v\n", pIdOExistingNode))
 	}
 
@@ -36,7 +36,7 @@ func New() {
 	containerProvider.DeleteContainerIfExists("opspec.engine")
 
 	// cleanup existing DCG (dynamic call graph) data
-	dcgDataDirPath := dcgDataDirPath(dataDirPath)
+	dcgDataDirPath := dcgDataDirPath(rootFSPath)
 	err = os.RemoveAll(dcgDataDirPath)
 	if nil != err {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
@@ -46,6 +46,7 @@ func New() {
 		core.New(
 			pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
 			containerProvider,
+			rootFSPath,
 		),
 	))
 	if nil != err {
@@ -54,7 +55,8 @@ func New() {
 
 }
 
-func dataDirPath() (string, error) {
+// fsRootPath returns the root fs path for the node
+func rootFSPath() (string, error) {
 	perUserAppDataPath, err := appdatapath.New().PerUser()
 	if nil != err {
 		return "", err
@@ -66,9 +68,9 @@ func dataDirPath() (string, error) {
 	), nil
 }
 
-func dcgDataDirPath(dataDirPath string) string {
+func dcgDataDirPath(rootFSPath string) string {
 	return path.Join(
-		dataDirPath,
+		rootFSPath,
 		"dcg",
 	)
 }
@@ -80,9 +82,9 @@ func eventDbPath(dcgDataDirPath string) string {
 	)
 }
 
-func lockFilePath(dataDirPath string) string {
+func lockFilePath(rootFSPath string) string {
 	return path.Join(
-		dataDirPath,
+		rootFSPath,
 		"pid.lock",
 	)
 }

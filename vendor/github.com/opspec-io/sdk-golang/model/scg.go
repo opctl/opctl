@@ -8,7 +8,7 @@ type SCG struct {
 	Serial    []*SCG            `yaml:"serial,omitempty"`
 }
 
-type SCGUsernamePasswordAuth struct {
+type SCGPullCreds struct {
 	// will be interpolated
 	Username string `yaml:"username"`
 	// will be interpolated
@@ -34,8 +34,8 @@ type SCGContainerCall struct {
 
 type SCGContainerCallImage struct {
 	// will be interpolated
-	Ref      string                   `yaml:"ref"`
-	PullAuth *SCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
+	Ref       string        `yaml:"ref"`
+	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }
 
 type SCGOpCall struct {
@@ -50,6 +50,6 @@ type SCGOpCall struct {
 
 type SCGOpCallPkg struct {
 	// will be interpolated
-	Ref      string                   `yaml:"ref"`
-	PullAuth *SCGUsernamePasswordAuth `yaml:"pullAuth,omitempty"`
+	Ref       string        `yaml:"ref"`
+	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }
