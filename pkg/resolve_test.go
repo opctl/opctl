@@ -25,7 +25,7 @@ var _ = Describe("Pkg", func() {
 			}
 
 			/* act */
-			objectUnderTest.Resolve(providedBasePath, providedPkgRef)
+			objectUnderTest.Resolve(providedPkgRef, providedBasePath)
 
 			/* assert */
 			Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedName))
@@ -47,7 +47,7 @@ var _ = Describe("Pkg", func() {
 				}
 
 				/* act */
-				actualPath, actualOk := objectUnderTest.Resolve(providedBasePath, providedPkgRef)
+				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
 
 				/* assert */
 				Expect(actualPath).To(Equal(expectedPath))
@@ -71,7 +71,7 @@ var _ = Describe("Pkg", func() {
 				}
 
 				/* act */
-				actualPath, actualOk := objectUnderTest.Resolve(providedBasePath, providedPkgRef)
+				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
 
 				/* assert */
 				Expect(actualPath).To(Equal(expectedPath))

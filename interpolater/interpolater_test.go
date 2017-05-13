@@ -1,4 +1,4 @@
-package interpolate
+package interpolater
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Describe("Interpolate", func() {
+var _ = Describe("_Interpolater", func() {
 	Context("New()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
@@ -31,7 +31,7 @@ var _ = Describe("Interpolate", func() {
 			fakeStringInterpolater := new(fakeStringInterpolater)
 			fakeStringInterpolater.InterpolateReturns(expectedResult)
 
-			objectUnderTest := interpolate{
+			objectUnderTest := _Interpolater{
 				stringInterpolater: fakeStringInterpolater,
 			}
 
@@ -67,7 +67,7 @@ var _ = Describe("Interpolate", func() {
 			fakeNumberInterpolater := new(fakeNumberInterpolater)
 			fakeNumberInterpolater.InterpolateReturns(expectedResult)
 
-			objectUnderTest := interpolate{
+			objectUnderTest := _Interpolater{
 				numberInterpolater: fakeNumberInterpolater,
 			}
 

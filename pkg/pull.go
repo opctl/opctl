@@ -7,12 +7,14 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
-// Pull pulls a package from a remote source
+// Pull pulls 'pkgRef' to 'path'
 // returns ErrAuthenticationFailed on authentication failure
 func (this pkg) Pull(
+	path string,
 	pkgRef string,
 	opts *PullOpts,
 ) error {
@@ -37,10 +39,12 @@ func (this pkg) Pull(
 		cloneOptions.Auth = http.NewBasicAuth(opts.Username, opts.Password)
 	}
 
-	pkgPath, err := constructCachePath(pkgRef)
+	parsedPkgRef, err := parsePkgRef(pkgRef)
 	if nil != err {
 		return err
 	}
+
+	pkgPath := filepath.Join(path, parsedPkgRef.FullyQualifiedName, parsedPkgRef.Version)
 
 	_, err = this.git.PlainClone(pkgPath, false, cloneOptions)
 	if nil != err {

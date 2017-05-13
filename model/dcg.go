@@ -12,9 +12,7 @@ type DCGBaseCall struct {
 }
 
 type DCGPullCreds struct {
-	// will be interpolated
 	Username string `yaml:"username"`
-	// will be interpolated
 	Password string `yaml:"password"`
 }
 
@@ -39,7 +37,6 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
-	// will be interpolated
 	Ref       string        `yaml:"ref"`
 	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
 }
@@ -53,7 +50,6 @@ type DCGOpCall struct {
 }
 
 type DCGOpCallPkg struct {
-	// will be interpolated
 	Ref       string        `yaml:"ref"`
 	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
 }

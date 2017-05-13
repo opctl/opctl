@@ -18,15 +18,17 @@ type Pkg interface {
 		pkgDescription string,
 	) error
 
-	// Resolve resolves a local package according to opspec package resolution rules and returns it's absolute path.
+	// Resolve attempts to resolve a package from lookPaths according to opspec package resolution rules.
+	// if successful it's absolute path will be returned along w/ true
 	Resolve(
-		basePath,
 		pkgRef string,
+		lookPaths ...string,
 	) (string, bool)
 
-	// Pull pulls a package from a remote source
+	// Pull pulls 'pkgRef' to 'path'
 	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
+		path string,
 		pkgRef string,
 		opts *PullOpts,
 	) error

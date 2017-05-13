@@ -1,4 +1,4 @@
-package interpolate
+package interpolater
 
 import (
 	. "github.com/onsi/ginkgo"

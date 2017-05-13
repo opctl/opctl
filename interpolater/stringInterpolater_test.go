@@ -1,4 +1,4 @@
-package interpolate
+package interpolater
 
 import (
 	"fmt"
@@ -11,10 +11,11 @@ var _ = Describe("Interpolate", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := 1.0
+			providedVarValue := "dummyVarValue"
 			providedInput := "dummyInput"
 			expectedResult := providedInput
-			objectUnderTest := newNumberInterpolater()
+
+			objectUnderTest := newStringInterpolater()
 
 			/* act */
 			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
@@ -27,11 +28,11 @@ var _ = Describe("Interpolate", func() {
 		It("should return input unmodified", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := 1.0
+			providedVarValue := "dummyVarValue"
 			providedInput := "dummyInput $(var1) $(var2)"
 			expectedResult := providedInput
 
-			objectUnderTest := newNumberInterpolater()
+			objectUnderTest := newStringInterpolater()
 
 			/* act */
 			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
@@ -44,11 +45,11 @@ var _ = Describe("Interpolate", func() {
 		It("should replace all placeholders referencing varName", func() {
 			/* arrange */
 			providedVarName := "dummyVarName"
-			providedVarValue := 1.0
+			providedVarValue := "dummyVarValue"
 			providedInput := fmt.Sprintf("dummyInput $(%v) $(%v)", providedVarName, providedVarName)
 			expectedResult := fmt.Sprintf("dummyInput %v %v", providedVarValue, providedVarValue)
 
-			objectUnderTest := newNumberInterpolater()
+			objectUnderTest := newStringInterpolater()
 
 			/* act */
 			actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)
@@ -60,11 +61,11 @@ var _ = Describe("Interpolate", func() {
 			It("should replace only placeholders referencing varName", func() {
 				/* arrange */
 				providedVarName := "dummyVarName"
-				providedVarValue := 1.0
+				providedVarValue := "dummyVarValue"
 				providedInput := fmt.Sprintf("dummyInput $(%v) $(not%v) $(%v)", providedVarName, providedVarName, providedVarName)
 				expectedResult := fmt.Sprintf("dummyInput %v $(not%v) %v", providedVarValue, providedVarName, providedVarValue)
 
-				objectUnderTest := newNumberInterpolater()
+				objectUnderTest := newStringInterpolater()
 
 				/* act */
 				actualResult := objectUnderTest.Interpolate(providedInput, providedVarName, providedVarValue)

@@ -19,8 +19,14 @@ var _ = Describe("StartOp", func() {
 
 		/* arrange */
 		providedReq := model.StartOpReq{
-			Args:   map[string]*model.Data{},
-			PkgRef: "dummyPkgRef",
+			Args: map[string]*model.Data{},
+			Pkg: &model.DCGOpCallPkg{
+				Ref: "dummyPkgRef",
+				PullCreds: &model.DCGPullCreds{
+					Username: "dummyUsername",
+					Password: "dummyPassword",
+				},
+			},
 		}
 
 		expectedReqUrl := url.URL{}

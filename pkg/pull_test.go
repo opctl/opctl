@@ -3,7 +3,6 @@ package pkg
 import (
 	"errors"
 	"fmt"
-	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
@@ -15,14 +14,11 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
 var _ = Describe("Pkg", func() {
-	perUserAppDataPath, err := appdatapath.New().PerUser()
-	if nil != err {
-		panic(err)
-	}
 	Context("Pull", func() {
 		Context("pkgRef invalid format", func() {
 			It("should return expected result", func() {
@@ -36,7 +32,7 @@ var _ = Describe("Pkg", func() {
 				objectUnderTest := pkg{}
 
 				/* act */
-				actualError := objectUnderTest.Pull(providedPkgRef, nil)
+				actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedErr))
@@ -46,6 +42,7 @@ var _ = Describe("Pkg", func() {
 			It("should call git.PlainClone w/ expected args", func() {
 
 				/* arrange */
+				providedPath := "dummyPath"
 				providedPkgRef := "dummyPkgRef#0.0.0"
 				providedOpts := &PullOpts{
 					Username: "dummyUsername",
@@ -56,11 +53,8 @@ var _ = Describe("Pkg", func() {
 				repoName := stringParts[0]
 				repoRefName := stringParts[1]
 
-				expectedPath := path.Join(
-					perUserAppDataPath,
-					"opspec",
-					"cache",
-					"pkgs",
+				expectedPath := filepath.Join(
+					providedPath,
 					repoName,
 					repoRefName,
 				)
@@ -82,7 +76,7 @@ var _ = Describe("Pkg", func() {
 				}
 
 				/* act */
-				objectUnderTest.Pull(providedPkgRef, providedOpts)
+				objectUnderTest.Pull(providedPath, providedPkgRef, providedOpts)
 
 				/* assert */
 				actualPath,
@@ -111,7 +105,7 @@ var _ = Describe("Pkg", func() {
 						}
 
 						/* act */
-						actualError := objectUnderTest.Pull(providedPkgRef, nil)
+						actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
 
 						/* assert */
 						Expect(actualError).To(BeNil())
@@ -122,6 +116,7 @@ var _ = Describe("Pkg", func() {
 					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
 
 						/* arrange */
+						providedPath := "dummyPath"
 						providedPkgRef := "dummyPkgRef#0.0.0"
 
 						stringParts := strings.Split(providedPkgRef, "#")
@@ -129,10 +124,7 @@ var _ = Describe("Pkg", func() {
 						repoRefName := stringParts[1]
 
 						expectedPath := path.Join(
-							perUserAppDataPath,
-							"opspec",
-							"cache",
-							"pkgs",
+							providedPath,
 							repoName,
 							repoRefName,
 						)
@@ -150,7 +142,7 @@ var _ = Describe("Pkg", func() {
 						}
 
 						/* act */
-						actualError := objectUnderTest.Pull(providedPkgRef, nil)
+						actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
 
 						/* assert */
 						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
@@ -161,6 +153,7 @@ var _ = Describe("Pkg", func() {
 					It("should call fs.RemoveAll w/ expected args & return error", func() {
 
 						/* arrange */
+						providedPath := "dummypath"
 						providedPkgRef := "dummyPkgRef#0.0.0"
 
 						stringParts := strings.Split(providedPkgRef, "#")
@@ -168,10 +161,7 @@ var _ = Describe("Pkg", func() {
 						repoRefName := stringParts[1]
 
 						expectedPath := path.Join(
-							perUserAppDataPath,
-							"opspec",
-							"cache",
-							"pkgs",
+							providedPath,
 							repoName,
 							repoRefName,
 						)
@@ -189,7 +179,7 @@ var _ = Describe("Pkg", func() {
 						}
 
 						/* act */
-						actualError := objectUnderTest.Pull(providedPkgRef, nil)
+						actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
 
 						/* assert */
 						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
@@ -213,7 +203,7 @@ var _ = Describe("Pkg", func() {
 					}
 
 					/* act */
-					actualErr := objectUnderTest.Pull(providedPkgRef, nil)
+					actualErr := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
 
 					/* assert */
 					Expect(actualErr).To(BeNil())
