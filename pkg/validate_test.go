@@ -19,7 +19,7 @@ var _ = Describe("Validate", func() {
 
 		fakeManifestValidator.ValidateReturns(expectedErrs)
 
-		objectUnderTest := pkg{
+		objectUnderTest := _Pkg{
 			manifestValidator: fakeManifestValidator,
 		}
 

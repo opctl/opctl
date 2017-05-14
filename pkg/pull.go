@@ -8,29 +8,19 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // Pull pulls 'pkgRef' to 'path'
 // returns ErrAuthenticationFailed on authentication failure
-func (this pkg) Pull(
+func (this _Pkg) Pull(
 	path string,
-	pkgRef string,
+	pkgRef *PkgRef,
 	opts *PullOpts,
 ) error {
-	stringParts := strings.Split(pkgRef, "#")
-	if len(stringParts) != 2 {
-		return fmt.Errorf(
-			"Invalid remote pkgRef: '%v'. Valid remote pkgRef's are of the form: 'host/path#semver",
-			pkgRef,
-		)
-	}
-	repoName := stringParts[0]
-	repoRefName := stringParts[1]
 
 	cloneOptions := &git.CloneOptions{
-		URL:           fmt.Sprintf("https://%v", repoName),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
+		URL:           fmt.Sprintf("https://%v", pkgRef.FullyQualifiedName),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", pkgRef.Version)),
 		Depth:         1,
 		Progress:      os.Stdout,
 	}
@@ -39,15 +29,13 @@ func (this pkg) Pull(
 		cloneOptions.Auth = http.NewBasicAuth(opts.Username, opts.Password)
 	}
 
-	parsedPkgRef, err := parsePkgRef(pkgRef)
-	if nil != err {
-		return err
-	}
+	pkgPath := filepath.Join(path, pkgRef.FullyQualifiedName, pkgRef.Version)
 
-	pkgPath := filepath.Join(path, parsedPkgRef.FullyQualifiedName, parsedPkgRef.Version)
-
-	_, err = this.git.PlainClone(pkgPath, false, cloneOptions)
-	if nil != err {
+	if _, err := this.git.PlainClone(
+		pkgPath,
+		false,
+		cloneOptions,
+	); nil != err {
 		switch err.Error() {
 		// @TODO update to handle authentication & authorization errors separately once go-git does so
 		case transport.ErrAuthorizationRequired.Error():
@@ -62,5 +50,6 @@ func (this pkg) Pull(
 			return err
 		}
 	}
+
 	return nil
 }

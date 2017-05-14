@@ -5,22 +5,30 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"path"
+	"path/filepath"
 )
 
-var _ = Describe("Pkg", func() {
+var _ = Describe("_Pkg", func() {
 	Context("Resolve", func() {
 		It("should call fs.Stat w/ expected args", func() {
 			/* arrange */
 			providedBasePath := "dummyBasePath"
-			providedPkgRef := "dummyPkgRef"
+			providedPkgRef := &PkgRef{
+				FullyQualifiedName: "dummyPkgRef",
+				Version:            "0.0.0",
+			}
 
-			expectedName := path.Join(providedBasePath, DotOpspecDirName, providedPkgRef)
+			expectedPath := filepath.Join(
+				providedBasePath,
+				DotOpspecDirName,
+				providedPkgRef.FullyQualifiedName,
+				providedPkgRef.Version,
+			)
 
 			fakeOS := new(ios.Fake)
 			fakeOS.StatReturns(nil, nil)
 
-			objectUnderTest := pkg{
+			objectUnderTest := _Pkg{
 				os: fakeOS,
 			}
 
@@ -28,21 +36,29 @@ var _ = Describe("Pkg", func() {
 			objectUnderTest.Resolve(providedPkgRef, providedBasePath)
 
 			/* assert */
-			Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedName))
+			Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
 		})
 		Context("fs.Stat doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedBasePath := "dummyBasePath"
-				providedPkgRef := "dummyPkgRef"
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "dummyPkgRef",
+					Version:            "0.0.0",
+				}
 
-				expectedPath := path.Join(providedBasePath, DotOpspecDirName, providedPkgRef)
+				expectedPath := filepath.Join(
+					providedBasePath,
+					DotOpspecDirName,
+					providedPkgRef.FullyQualifiedName,
+					providedPkgRef.Version,
+				)
 				expectedOk := true
 
 				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, nil)
 
-				objectUnderTest := pkg{
+				objectUnderTest := _Pkg{
 					os: fakeOS,
 				}
 
@@ -58,7 +74,10 @@ var _ = Describe("Pkg", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedBasePath := "dummyBasePath"
-				providedPkgRef := "dummyPkgRef"
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "dummyPkgRef",
+					Version:            "0.0.0",
+				}
 
 				expectedPath := ""
 				expectedOk := false
@@ -66,7 +85,7 @@ var _ = Describe("Pkg", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := pkg{
+				objectUnderTest := _Pkg{
 					os: fakeOS,
 				}
 

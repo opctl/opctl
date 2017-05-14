@@ -8,7 +8,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"path"
+	"path/filepath"
 )
 
 type manifestUnmarshaller interface {
@@ -60,7 +60,7 @@ func (this _manifestUnmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	packageManifestPath := path.Join(pkgRef, OpDotYmlFileName)
+	packageManifestPath := filepath.Join(pkgRef, OpDotYmlFileName)
 
 	packageManifestBytes, err := this.ioUtil.ReadFile(
 		packageManifestPath,

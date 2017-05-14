@@ -21,10 +21,10 @@ type Fake struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ResolveStub        func(pkgRef string, lookPaths ...string) (string, bool)
+	ResolveStub        func(pkgRef *PkgRef, lookPaths ...string) (string, bool)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
-		pkgRef    string
+		pkgRef    *PkgRef
 		lookPaths []string
 	}
 	resolveReturns struct {
@@ -35,11 +35,24 @@ type Fake struct {
 		result1 string
 		result2 bool
 	}
-	PullStub        func(path string, pkgRef string, opts *PullOpts) error
+	ParseRefStub        func(pkgRef string) (*PkgRef, error)
+	parseRefMutex       sync.RWMutex
+	parseRefArgsForCall []struct {
+		pkgRef string
+	}
+	parseRefReturns struct {
+		result1 *PkgRef
+		result2 error
+	}
+	parseRefReturnsOnCall map[int]struct {
+		result1 *PkgRef
+		result2 error
+	}
+	PullStub        func(path string, pkgRef *PkgRef, opts *PullOpts) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
 		path   string
-		pkgRef string
+		pkgRef *PkgRef
 		opts   *PullOpts
 	}
 	pullReturns struct {
@@ -151,11 +164,11 @@ func (fake *Fake) CreateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) Resolve(pkgRef string, lookPaths ...string) (string, bool) {
+func (fake *Fake) Resolve(pkgRef *PkgRef, lookPaths ...string) (string, bool) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
-		pkgRef    string
+		pkgRef    *PkgRef
 		lookPaths []string
 	}{pkgRef, lookPaths})
 	fake.recordInvocation("Resolve", []interface{}{pkgRef, lookPaths})
@@ -175,7 +188,7 @@ func (fake *Fake) ResolveCallCount() int {
 	return len(fake.resolveArgsForCall)
 }
 
-func (fake *Fake) ResolveArgsForCall(i int) (string, []string) {
+func (fake *Fake) ResolveArgsForCall(i int) (*PkgRef, []string) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
 	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].lookPaths
@@ -203,12 +216,63 @@ func (fake *Fake) ResolveReturnsOnCall(i int, result1 string, result2 bool) {
 	}{result1, result2}
 }
 
-func (fake *Fake) Pull(path string, pkgRef string, opts *PullOpts) error {
+func (fake *Fake) ParseRef(pkgRef string) (*PkgRef, error) {
+	fake.parseRefMutex.Lock()
+	ret, specificReturn := fake.parseRefReturnsOnCall[len(fake.parseRefArgsForCall)]
+	fake.parseRefArgsForCall = append(fake.parseRefArgsForCall, struct {
+		pkgRef string
+	}{pkgRef})
+	fake.recordInvocation("ParseRef", []interface{}{pkgRef})
+	fake.parseRefMutex.Unlock()
+	if fake.ParseRefStub != nil {
+		return fake.ParseRefStub(pkgRef)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.parseRefReturns.result1, fake.parseRefReturns.result2
+}
+
+func (fake *Fake) ParseRefCallCount() int {
+	fake.parseRefMutex.RLock()
+	defer fake.parseRefMutex.RUnlock()
+	return len(fake.parseRefArgsForCall)
+}
+
+func (fake *Fake) ParseRefArgsForCall(i int) string {
+	fake.parseRefMutex.RLock()
+	defer fake.parseRefMutex.RUnlock()
+	return fake.parseRefArgsForCall[i].pkgRef
+}
+
+func (fake *Fake) ParseRefReturns(result1 *PkgRef, result2 error) {
+	fake.ParseRefStub = nil
+	fake.parseRefReturns = struct {
+		result1 *PkgRef
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) ParseRefReturnsOnCall(i int, result1 *PkgRef, result2 error) {
+	fake.ParseRefStub = nil
+	if fake.parseRefReturnsOnCall == nil {
+		fake.parseRefReturnsOnCall = make(map[int]struct {
+			result1 *PkgRef
+			result2 error
+		})
+	}
+	fake.parseRefReturnsOnCall[i] = struct {
+		result1 *PkgRef
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) Pull(path string, pkgRef *PkgRef, opts *PullOpts) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
 		path   string
-		pkgRef string
+		pkgRef *PkgRef
 		opts   *PullOpts
 	}{path, pkgRef, opts})
 	fake.recordInvocation("Pull", []interface{}{path, pkgRef, opts})
@@ -228,7 +292,7 @@ func (fake *Fake) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *Fake) PullArgsForCall(i int) (string, string, *PullOpts) {
+func (fake *Fake) PullArgsForCall(i int) (string, *PkgRef, *PullOpts) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
 	return fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].pkgRef, fake.pullArgsForCall[i].opts
@@ -459,6 +523,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.createMutex.RUnlock()
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
+	fake.parseRefMutex.RLock()
+	defer fake.parseRefMutex.RUnlock()
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
 	fake.getMutex.RLock()

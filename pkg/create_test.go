@@ -9,7 +9,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 var _ = Describe("pkg", func() {
@@ -23,7 +23,7 @@ var _ = Describe("pkg", func() {
 
 			fakeOS := new(ios.Fake)
 
-			objectUnderTest := &pkg{
+			objectUnderTest := &_Pkg{
 				os:     fakeOS,
 				ioUtil: new(iioutil.Fake),
 			}
@@ -46,7 +46,7 @@ var _ = Describe("pkg", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.MkdirAllReturns(expectedError)
 
-				objectUnderTest := &pkg{
+				objectUnderTest := &_Pkg{
 					os: fakeOS,
 				}
 
@@ -75,13 +75,13 @@ var _ = Describe("pkg", func() {
 			panic(err)
 		}
 
-		expectedPath := path.Join(providedPath, OpDotYmlFileName)
+		expectedPath := filepath.Join(providedPath, OpDotYmlFileName)
 		expectedData := expectedPkgManifestBytes
 		expectedPerms := os.FileMode(0777)
 
 		fakeIOUtil := new(iioutil.Fake)
 
-		objectUnderTest := &pkg{
+		objectUnderTest := &_Pkg{
 			os:     new(ios.Fake),
 			ioUtil: fakeIOUtil,
 		}

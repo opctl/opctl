@@ -17,7 +17,7 @@ var _ = Describe("SetDescription", func() {
 		// return error to trigger immediate return
 		fakeManifestUnmarshaller.UnmarshalReturns(nil, errors.New("dummyError"))
 
-		objectUnderTest := pkg{
+		objectUnderTest := _Pkg{
 			manifestUnmarshaller: fakeManifestUnmarshaller,
 		}
 
@@ -36,7 +36,7 @@ var _ = Describe("SetDescription", func() {
 			// return error to trigger immediate return
 			fakeManifestUnmarshaller.UnmarshalReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := pkg{
+			objectUnderTest := _Pkg{
 				manifestUnmarshaller: fakeManifestUnmarshaller,
 			}
 

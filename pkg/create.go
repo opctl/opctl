@@ -3,11 +3,11 @@ package pkg
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	pathPkg "path"
+	"path/filepath"
 )
 
 // Create creates an opspec package
-func (this pkg) Create(
+func (this _Pkg) Create(
 	path,
 	pkgName,
 	pkgDescription string,
@@ -32,7 +32,7 @@ func (this pkg) Create(
 	}
 
 	return this.ioUtil.WriteFile(
-		pathPkg.Join(path, OpDotYmlFileName),
+		filepath.Join(path, OpDotYmlFileName),
 		pkgManifestBytes,
 		0777,
 	)

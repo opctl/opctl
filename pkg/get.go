@@ -5,7 +5,7 @@ import (
 )
 
 // Get gets a package according to opspec package resolution rules
-func (this pkg) Get(
+func (this _Pkg) Get(
 	pkgRef string,
 ) (*model.PkgManifest, error) {
 	return this.manifestUnmarshaller.Unmarshal(pkgRef)

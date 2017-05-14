@@ -21,15 +21,20 @@ type Pkg interface {
 	// Resolve attempts to resolve a package from lookPaths according to opspec package resolution rules.
 	// if successful it's absolute path will be returned along w/ true
 	Resolve(
-		pkgRef string,
+		pkgRef *PkgRef,
 		lookPaths ...string,
 	) (string, bool)
+
+	// ParseRef parses a pkgRef
+	ParseRef(
+		pkgRef string,
+	) (*PkgRef, error)
 
 	// Pull pulls 'pkgRef' to 'path'
 	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
 		path string,
-		pkgRef string,
+		pkgRef *PkgRef,
 		opts *PullOpts,
 	) error
 
@@ -60,7 +65,7 @@ func New() Pkg {
 	manifestValidator := newManifestValidator()
 	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
 
-	return pkg{
+	return _Pkg{
 		git:                  igit.New(),
 		ioUtil:               ioUtil,
 		os:                   ios.New(),
@@ -69,7 +74,7 @@ func New() Pkg {
 	}
 }
 
-type pkg struct {
+type _Pkg struct {
 	git                  igit.IGit
 	ioUtil               iioutil.Iioutil
 	os                   ios.IOS

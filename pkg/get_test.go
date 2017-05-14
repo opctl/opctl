@@ -16,7 +16,7 @@ var _ = Describe("Get", func() {
 
 		fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 
-		objectUnderTest := &pkg{
+		objectUnderTest := &_Pkg{
 			manifestUnmarshaller: fakeManifestUnmarshaller,
 		}
 
@@ -38,7 +38,7 @@ var _ = Describe("Get", func() {
 		fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
 		fakeManifestUnmarshaller.UnmarshalReturns(expectedPkgManifest, expectedError)
 
-		objectUnderTest := &pkg{
+		objectUnderTest := &_Pkg{
 			manifestUnmarshaller: fakeManifestUnmarshaller,
 		}
 

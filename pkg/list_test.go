@@ -19,7 +19,7 @@ var _ = Describe("List", func() {
 			fakeIOUtil := new(iioutil.Fake)
 			fakeIOUtil.ReadDirReturns(nil, expectedError)
 
-			objectUnderTest := pkg{
+			objectUnderTest := _Pkg{
 				ioUtil:               fakeIOUtil,
 				manifestUnmarshaller: new(fakeManifestUnmarshaller),
 			}

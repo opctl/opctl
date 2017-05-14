@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"path"
+	"path/filepath"
 )
 
 var _ = Describe("_manifestUnmarshaller", func() {
@@ -81,7 +81,7 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).
-					To(Equal(path.Join(providedPkgRef, OpDotYmlFileName)))
+					To(Equal(filepath.Join(providedPkgRef, OpDotYmlFileName)))
 
 			})
 			Context("ioutil.ReadFile returns an error", func() {

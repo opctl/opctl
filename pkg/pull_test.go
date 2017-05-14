@@ -13,201 +13,182 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
-	"path"
 	"path/filepath"
-	"strings"
 )
 
 var _ = Describe("Pkg", func() {
 	Context("Pull", func() {
-		Context("pkgRef invalid format", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedPkgRef := "notValid"
-				expectedErr := fmt.Errorf(
-					"Invalid remote pkgRef: '%v'. Valid remote pkgRef's are of the form: 'host/path#semver",
-					providedPkgRef,
-				)
+		It("should call git.PlainClone w/ expected args", func() {
 
-				objectUnderTest := pkg{}
+			/* arrange */
+			providedPath := "dummyPath"
+			providedPkgRef := &PkgRef{
+				FullyQualifiedName: "dummyPkgRef",
+				Version:            "0.0.0",
+			}
+			providedOpts := &PullOpts{
+				Username: "dummyUsername",
+				Password: "dummyPassword",
+			}
 
-				/* act */
-				actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
+			expectedPath := filepath.Join(
+				providedPath,
+				providedPkgRef.FullyQualifiedName,
+				providedPkgRef.Version,
+			)
 
-				/* assert */
-				Expect(actualError).To(Equal(expectedErr))
-			})
+			expectedIsBare := false
+
+			expectedCloneOptions := &git.CloneOptions{
+				Auth:          http.NewBasicAuth(providedOpts.Username, providedOpts.Password),
+				URL:           fmt.Sprintf("https://%v", providedPkgRef.FullyQualifiedName),
+				ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", providedPkgRef.Version)),
+				Depth:         1,
+				Progress:      os.Stdout,
+			}
+
+			fakeGit := new(igit.Fake)
+
+			objectUnderTest := _Pkg{
+				git: fakeGit,
+			}
+
+			/* act */
+			objectUnderTest.Pull(providedPath, providedPkgRef, providedOpts)
+
+			/* assert */
+			actualPath,
+				actualIsBare,
+				actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
+
+			Expect(actualPath).To(Equal(expectedPath))
+			Expect(actualIsBare).To(Equal(expectedIsBare))
+			Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
 		})
-		Context("pkgRef valid format", func() {
-			It("should call git.PlainClone w/ expected args", func() {
+		Context("git.PlainClone errors", func() {
+			Context("err.Error() returns git.ErrRepositoryAlreadyExists", func() {
+				It("shouldn't call fs.RemoveAll or error", func() {
 
-				/* arrange */
-				providedPath := "dummyPath"
-				providedPkgRef := "dummyPkgRef#0.0.0"
-				providedOpts := &PullOpts{
-					Username: "dummyUsername",
-					Password: "dummyPassword",
-				}
-
-				stringParts := strings.Split(providedPkgRef, "#")
-				repoName := stringParts[0]
-				repoRefName := stringParts[1]
-
-				expectedPath := filepath.Join(
-					providedPath,
-					repoName,
-					repoRefName,
-				)
-
-				expectedIsBare := false
-
-				expectedCloneOptions := &git.CloneOptions{
-					Auth:          http.NewBasicAuth(providedOpts.Username, providedOpts.Password),
-					URL:           fmt.Sprintf("https://%v", repoName),
-					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", repoRefName)),
-					Depth:         1,
-					Progress:      os.Stdout,
-				}
-
-				fakeGit := new(igit.Fake)
-
-				objectUnderTest := pkg{
-					git: fakeGit,
-				}
-
-				/* act */
-				objectUnderTest.Pull(providedPath, providedPkgRef, providedOpts)
-
-				/* assert */
-				actualPath,
-					actualIsBare,
-					actualCloneOptions := fakeGit.PlainCloneArgsForCall(0)
-
-				Expect(actualPath).To(Equal(expectedPath))
-				Expect(actualIsBare).To(Equal(expectedIsBare))
-				Expect(actualCloneOptions).To(Equal(expectedCloneOptions))
-			})
-			Context("git.PlainClone errors", func() {
-				Context("err.Error() returns git.ErrRepositoryAlreadyExists", func() {
-					It("shouldn't call fs.RemoveAll or error", func() {
-
-						/* arrange */
-						providedPkgRef := "dummyPkgRef#0.0.0"
-
-						fakeOS := new(ios.Fake)
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
-
-						objectUnderTest := pkg{
-							os:  fakeOS,
-							git: fakeGit,
-						}
-
-						/* act */
-						actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
-
-						/* assert */
-						Expect(actualError).To(BeNil())
-						Expect(fakeOS.RemoveAllCallCount()).To(Equal(0))
-					})
-				})
-				Context("err.Error() returns transport.ErrAuthorizationRequired error", func() {
-					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
-
-						/* arrange */
-						providedPath := "dummyPath"
-						providedPkgRef := "dummyPkgRef#0.0.0"
-
-						stringParts := strings.Split(providedPkgRef, "#")
-						repoName := stringParts[0]
-						repoRefName := stringParts[1]
-
-						expectedPath := path.Join(
-							providedPath,
-							repoName,
-							repoRefName,
-						)
-
-						fakeOS := new(ios.Fake)
-
-						expectedError := ErrAuthenticationFailed{}
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
-
-						objectUnderTest := pkg{
-							os:  fakeOS,
-							git: fakeGit,
-						}
-
-						/* act */
-						actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
-
-						/* assert */
-						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
-						Expect(actualError).To(Equal(expectedError))
-					})
-				})
-				Context("err.Error() returns other error", func() {
-					It("should call fs.RemoveAll w/ expected args & return error", func() {
-
-						/* arrange */
-						providedPath := "dummypath"
-						providedPkgRef := "dummyPkgRef#0.0.0"
-
-						stringParts := strings.Split(providedPkgRef, "#")
-						repoName := stringParts[0]
-						repoRefName := stringParts[1]
-
-						expectedPath := path.Join(
-							providedPath,
-							repoName,
-							repoRefName,
-						)
-
-						fakeOS := new(ios.Fake)
-
-						expectedError := errors.New("dummyError")
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, expectedError)
-
-						objectUnderTest := pkg{
-							os:  fakeOS,
-							git: fakeGit,
-						}
-
-						/* act */
-						actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
-
-						/* assert */
-						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
-						Expect(actualError).To(Equal(expectedError))
-					})
-				})
-			})
-			Context("git.PlainClone doesn't error", func() {
-				It("shouldn't err", func() {
 					/* arrange */
-					providedPkgRef := "dummyPkgRef#0.0.0"
+					providedPkgRef := &PkgRef{
+						FullyQualifiedName: "dummyPkgRef",
+						Version:            "0.0.0",
+					}
 
-					expectedView := &model.PkgManifest{Name: "dummyName"}
-					expectedErr := errors.New("dummyError")
+					fakeOS := new(ios.Fake)
 
-					fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
-					fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
+					fakeGit := new(igit.Fake)
+					fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
-					objectUnderTest := pkg{
-						git: new(igit.Fake),
+					objectUnderTest := _Pkg{
+						os:  fakeOS,
+						git: fakeGit,
 					}
 
 					/* act */
-					actualErr := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
+					actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
 
 					/* assert */
-					Expect(actualErr).To(BeNil())
+					Expect(actualError).To(BeNil())
+					Expect(fakeOS.RemoveAllCallCount()).To(Equal(0))
 				})
+			})
+			Context("err.Error() returns transport.ErrAuthorizationRequired error", func() {
+				It("should call fs.RemoveAll w/ expected args & return expected error", func() {
+
+					/* arrange */
+					providedPath := "dummyPath"
+					providedPkgRef := &PkgRef{
+						FullyQualifiedName: "dummyPkgRef",
+						Version:            "0.0.0",
+					}
+
+					expectedPath := filepath.Join(
+						providedPath,
+						providedPkgRef.FullyQualifiedName,
+						providedPkgRef.Version,
+					)
+
+					fakeOS := new(ios.Fake)
+
+					expectedError := ErrAuthenticationFailed{}
+
+					fakeGit := new(igit.Fake)
+					fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
+
+					objectUnderTest := _Pkg{
+						os:  fakeOS,
+						git: fakeGit,
+					}
+
+					/* act */
+					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
+
+					/* assert */
+					Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+					Expect(actualError).To(Equal(expectedError))
+				})
+			})
+			Context("err.Error() returns other error", func() {
+				It("should call fs.RemoveAll w/ expected args & return error", func() {
+
+					/* arrange */
+					providedPath := "dummypath"
+					providedPkgRef := &PkgRef{
+						FullyQualifiedName: "dummyPkgRef",
+						Version:            "0.0.0",
+					}
+
+					expectedPath := filepath.Join(
+						providedPath,
+						providedPkgRef.FullyQualifiedName,
+						providedPkgRef.Version,
+					)
+
+					fakeOS := new(ios.Fake)
+
+					expectedError := errors.New("dummyError")
+
+					fakeGit := new(igit.Fake)
+					fakeGit.PlainCloneReturns(nil, expectedError)
+
+					objectUnderTest := _Pkg{
+						os:  fakeOS,
+						git: fakeGit,
+					}
+
+					/* act */
+					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
+
+					/* assert */
+					Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+					Expect(actualError).To(Equal(expectedError))
+				})
+			})
+		})
+		Context("git.PlainClone doesn't error", func() {
+			It("shouldn't err", func() {
+				/* arrange */
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "dummyPkgRef",
+					Version:            "0.0.0",
+				}
+
+				expectedView := &model.PkgManifest{Name: "dummyName"}
+				expectedErr := errors.New("dummyError")
+
+				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
+				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
+
+				objectUnderTest := _Pkg{
+					git: new(igit.Fake),
+				}
+
+				/* act */
+				actualErr := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
+
+				/* assert */
+				Expect(actualErr).To(BeNil())
 			})
 		})
 	})
