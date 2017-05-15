@@ -4,6 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
+	"path/filepath"
 )
 
 var _ = Describe("Validate", func() {
@@ -11,23 +13,25 @@ var _ = Describe("Validate", func() {
 		/* arrange */
 		providedPkgPath := "dummyPkgPath"
 
+		expectedPath := filepath.Join(providedPkgPath, OpDotYmlFileName)
+
 		expectedErrs := []error{
 			errors.New("dummyErr1"),
 			errors.New("dummyErr2"),
 		}
-		fakeManifestValidator := new(fakeManifestValidator)
+		fakeManifest := new(manifest.Fake)
 
-		fakeManifestValidator.ValidateReturns(expectedErrs)
+		fakeManifest.ValidateReturns(expectedErrs)
 
 		objectUnderTest := _Pkg{
-			manifestValidator: fakeManifestValidator,
+			manifest: fakeManifest,
 		}
 
 		/* act */
 		actualErrs := objectUnderTest.Validate(providedPkgPath)
 
 		/* assert */
-		Expect(fakeManifestValidator.ValidateArgsForCall(0)).To(Equal(providedPkgPath))
+		Expect(fakeManifest.ValidateArgsForCall(0)).To(Equal(expectedPath))
 		Expect(actualErrs).To(Equal(expectedErrs))
 	})
 })

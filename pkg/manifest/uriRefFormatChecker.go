@@ -1,4 +1,4 @@
-package pkg
+package manifest
 
 import (
 	"net/url"

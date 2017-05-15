@@ -1,4 +1,4 @@
-package pkg
+package manifest
 
 import (
 	"errors"
@@ -8,12 +8,12 @@ import (
 	"os"
 )
 
-var _ = Describe("manifestValidator", func() {
+var _ = Describe("validator", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
 	}
-	objectUnderTest := newManifestValidator()
+	objectUnderTest := New()
 	Context("invalid__yml", func() {
 		It("should return expected errs", func() {
 			/* arrange */

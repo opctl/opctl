@@ -1,4 +1,4 @@
-package pkg
+package manifest
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"path/filepath"
 )
 
 var _ = Describe("_manifestUnmarshaller", func() {
@@ -17,24 +16,24 @@ var _ = Describe("_manifestUnmarshaller", func() {
 
 		It("should call validate w/ expected inputs", func() {
 			/* arrange */
-			providedPkgRef := "/dummy/path"
+			providedPath := "/dummy/path"
 
-			fakeManifestValidator := new(fakeManifestValidator)
+			fakeValidator := new(fakeValidator)
 
 			// err to cause immediate return
-			fakeManifestValidator.ValidateReturns([]error{errors.New("dummyError")})
+			fakeValidator.ValidateReturns([]error{errors.New("dummyError")})
 
-			objectUnderTest := _manifestUnmarshaller{
-				manifestValidator: fakeManifestValidator,
+			objectUnderTest := _Manifest{
+				validator: fakeValidator,
 			}
 
 			/* act */
-			objectUnderTest.Unmarshal(providedPkgRef)
+			objectUnderTest.Unmarshal(providedPath)
 
 			/* assert */
-			Expect(fakeManifestValidator.ValidateArgsForCall(0)).To(Equal(providedPkgRef))
+			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedPath))
 		})
-		Context("manifestValidator.Validate returns errors", func() {
+		Context("validator.Validate returns errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
 
@@ -46,13 +45,13 @@ var _ = Describe("_manifestUnmarshaller", func() {
     - %v
 -`, errs[0], errs[1])
 
-				fakeManifestValidator := new(fakeManifestValidator)
+				fakeValidator := new(fakeValidator)
 
 				// err to cause immediate return
-				fakeManifestValidator.ValidateReturns(errs)
+				fakeValidator.ValidateReturns(errs)
 
-				objectUnderTest := _manifestUnmarshaller{
-					manifestValidator: fakeManifestValidator,
+				objectUnderTest := _Manifest{
+					validator: fakeValidator,
 				}
 
 				/* act */
@@ -62,26 +61,26 @@ var _ = Describe("_manifestUnmarshaller", func() {
 				Expect(actualError).To(Equal(expectedErr))
 			})
 		})
-		Context("manifestValidator.Validate doesn't return errors", func() {
+		Context("validator.Validate doesn't return errors", func() {
 			It("should call ioutil.ReadFile w/expected args", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
+				providedPath := "dummyPath"
 
 				fakeIOUtil := new(iioutil.Fake)
 				// err to cause immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := newManifestUnmarshaller(
-					fakeIOUtil,
-					new(fakeManifestValidator),
-				)
+				objectUnderTest := _Manifest{
+					ioUtil:    fakeIOUtil,
+					validator: new(fakeValidator),
+				}
 
 				/* act */
-				objectUnderTest.Unmarshal(providedPkgRef)
+				objectUnderTest.Unmarshal(providedPath)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).
-					To(Equal(filepath.Join(providedPkgRef, OpDotYmlFileName)))
+					To(Equal(providedPath))
 
 			})
 			Context("ioutil.ReadFile returns an error", func() {
@@ -94,10 +93,10 @@ var _ = Describe("_manifestUnmarshaller", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadFileReturns(nil, expectedError)
 
-					objectUnderTest := newManifestUnmarshaller(
-						fakeIOUtil,
-						new(fakeManifestValidator),
-					)
+					objectUnderTest := _Manifest{
+						ioUtil:    fakeIOUtil,
+						validator: new(fakeValidator),
+					}
 
 					/* act */
 					_, actualError := objectUnderTest.Unmarshal("/dummy/path")
@@ -145,13 +144,13 @@ var _ = Describe("_manifestUnmarshaller", func() {
 					Version: "dummyVersion",
 				}
 
-				fakeIoUtil := new(iioutil.Fake)
-				fakeIoUtil.ReadFileReturns(yaml.Marshal(expectedPkgManifest))
+				fakeIOUtil := new(iioutil.Fake)
+				fakeIOUtil.ReadFileReturns(yaml.Marshal(expectedPkgManifest))
 
-				objectUnderTest := newManifestUnmarshaller(
-					fakeIoUtil,
-					new(fakeManifestValidator),
-				)
+				objectUnderTest := _Manifest{
+					ioUtil:    fakeIOUtil,
+					validator: new(fakeValidator),
+				}
 
 				/* act */
 				actualPkgManifest, _ := objectUnderTest.Unmarshal("")

@@ -1,24 +1,27 @@
-package pkg
+package manifest
 
-//go:generate counterfeiter -o ./fakeManifestValidator.go --fake-name fakeManifestValidator ./ manifestValidator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
-	"path/filepath"
 )
 
-type manifestValidator interface {
-	Validate(pkgPath string) []error
+type validator interface {
+	// Validate validates the pkg manifest at path
+	Validate(
+		path string,
+	) []error
 }
 
-func newManifestValidator() manifestValidator {
+func newValidator() validator {
+
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
 
-	manifestSchemaBytes, err := pkgDataPackageManifestSchemaJsonBytes()
+	manifestSchemaBytes, err := pkgManifestDataPackageManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}
@@ -30,24 +33,23 @@ func newManifestValidator() manifestValidator {
 		panic(err)
 	}
 
-	return _manifestValidator{
+	return _validator{
 		ioUtil:         iioutil.New(),
 		manifestSchema: manifestSchema,
 	}
-
 }
 
-type _manifestValidator struct {
+type _validator struct {
 	ioUtil         iioutil.Iioutil
 	manifestSchema *gojsonschema.Schema
 }
 
-func (this _manifestValidator) Validate(
-	pkgPath string,
+func (this _validator) Validate(
+	path string,
 ) []error {
 
 	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		filepath.Join(pkgPath, OpDotYmlFileName),
+		path,
 	)
 	if nil != err {
 		// handle syntax errors specially

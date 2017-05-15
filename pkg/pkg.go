@@ -8,6 +8,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
 )
 
 type Pkg interface {
@@ -38,12 +39,7 @@ type Pkg interface {
 		opts *PullOpts,
 	) error
 
-	// Get gets a local package
-	Get(
-		pkgPath string,
-	) (*model.PkgManifest, error)
-
-	// List lists packages according to opspec package resolution rules
+  // List recursively lists packages in dirPath
 	List(
 		dirPath string,
 	) ([]*model.PkgManifest, error)
@@ -61,23 +57,17 @@ type Pkg interface {
 }
 
 func New() Pkg {
-	ioUtil := iioutil.New()
-	manifestValidator := newManifestValidator()
-	manifestUnmarshaller := newManifestUnmarshaller(ioUtil, manifestValidator)
-
 	return _Pkg{
-		git:                  igit.New(),
-		ioUtil:               ioUtil,
-		os:                   ios.New(),
-		manifestUnmarshaller: manifestUnmarshaller,
-		manifestValidator:    manifestValidator,
+		git:      igit.New(),
+		ioUtil:   iioutil.New(),
+		os:       ios.New(),
+		manifest: manifest.New(),
 	}
 }
 
 type _Pkg struct {
-	git                  igit.IGit
-	ioUtil               iioutil.Iioutil
-	os                   ios.IOS
-	manifestValidator    manifestValidator
-	manifestUnmarshaller manifestUnmarshaller
+	git      igit.IGit
+	ioUtil   iioutil.Iioutil
+	os       ios.IOS
+	manifest manifest.Manifest
 }

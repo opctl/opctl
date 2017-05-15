@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -177,8 +178,8 @@ var _ = Describe("Pkg", func() {
 				expectedView := &model.PkgManifest{Name: "dummyName"}
 				expectedErr := errors.New("dummyError")
 
-				fakeManifestUnmarshaller := new(fakeManifestUnmarshaller)
-				fakeManifestUnmarshaller.UnmarshalReturns(expectedView, expectedErr)
+				fakeManifest := new(manifest.Fake)
+				fakeManifest.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _Pkg{
 					git: new(igit.Fake),
