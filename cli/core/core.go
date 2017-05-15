@@ -79,7 +79,7 @@ func New(
 		*opspecNodeURL,
 		&client.Opts{
 			RetryLogHook: func(err error) {
-				cliOutput.Error("request resulted in a recoverable error & will be retried; error was: %v", err.Error())
+				cliOutput.Attention("request resulted in a recoverable error & will be retried; error was: %v", err.Error())
 			},
 		},
 	)

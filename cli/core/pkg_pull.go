@@ -5,6 +5,7 @@ import (
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"path/filepath"
 )
 
 func (this _core) PkgPull(
@@ -13,9 +14,22 @@ func (this _core) PkgPull(
 	password string,
 ) {
 
+	cwd, err := this.os.Getwd()
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
 	for {
 		err := this.pkg.Pull(
-			pkgRef,
+			filepath.Join(cwd, pkg.DotOpspecDirName),
+			parsedPkgRef,
 			&pkg.PullOpts{
 				Username: username,
 				Password: password,

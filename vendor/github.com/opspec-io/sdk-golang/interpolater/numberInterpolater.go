@@ -1,4 +1,4 @@
-package interpolate
+package interpolater
 
 //go:generate counterfeiter -o ./fakeNumberInterpolater.go --fake-name fakeNumberInterpolater ./ numberInterpolater
 

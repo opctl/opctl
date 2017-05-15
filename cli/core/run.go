@@ -31,9 +31,15 @@ func (this _core) Run(
 		return // support fake exiter
 	}
 
+	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
 	startTime := time.Now().UTC()
 
-	pkgPath, ok := this.pkg.Resolve(cwd, pkgRef)
+	pkgPath, ok := this.pkg.Resolve(parsedPkgRef, cwd)
 	if !ok {
 		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'; pull required", pkgRef, cwd)
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
@@ -70,8 +76,10 @@ func (this _core) Run(
 	// start op
 	rootOpId, err := this.opspecNodeAPIClient.StartOp(
 		model.StartOpReq{
-			Args:   argsMap,
-			PkgRef: pkgPath,
+			Args: argsMap,
+			Pkg: &model.DCGOpCallPkg{
+				Ref: pkgPath,
+			},
 		},
 	)
 	if nil != err {

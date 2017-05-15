@@ -7,7 +7,7 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
-	"path"
+	"path/filepath"
 )
 
 type manifestValidator interface {
@@ -47,7 +47,7 @@ func (this _manifestValidator) Validate(
 ) []error {
 
 	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path.Join(pkgPath, OpDotYmlFileName),
+		filepath.Join(pkgPath, OpDotYmlFileName),
 	)
 	if nil != err {
 		// handle syntax errors specially

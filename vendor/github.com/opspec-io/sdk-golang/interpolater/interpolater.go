@@ -1,28 +1,30 @@
-package interpolate
+// Package interpolater implements an interpolater for string templates
+package interpolater
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolate
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
 
 import "github.com/opspec-io/sdk-golang/model"
 
-type Interpolate interface {
-	// interpolates a template according to opspec
+type Interpolater interface {
+	// Interpolate interpolates a string template
 	Interpolate(template string, scope map[string]*model.Data) string
 }
 
-func New() Interpolate {
-	return interpolate{
+func New() Interpolater {
+	return _Interpolater{
 		numberInterpolater: newNumberInterpolater(),
 		stringInterpolater: newStringInterpolater(),
 	}
 }
 
-type interpolate struct {
+type _Interpolater struct {
 	numberInterpolater numberInterpolater
 	stringInterpolater stringInterpolater
 }
 
+// Interpolate interpolates a string template
 // O(n) complexity (n being len(scope))
-func (this interpolate) Interpolate(
+func (this _Interpolater) Interpolate(
 	template string,
 	scope map[string]*model.Data,
 ) string {

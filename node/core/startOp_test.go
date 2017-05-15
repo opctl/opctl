@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/containerprovider"
@@ -13,69 +14,87 @@ import (
 
 var _ = Context("core", func() {
 	Context("StartOp", func() {
-		It("should call opCaller.Call w/ expected args", func() {
-			/* arrange */
+		Context("req.Pkg nil", func() {
+			It("should return expected error", func() {
+				/* arrange */
+				expectedErr := errors.New("pkg required")
 
-			providedArg1String := "dummyArg1Value"
-			providedArg2Dir := "dummyArg2Value"
-			providedArg3Dir := "dummyArg3Value"
-			providedArg4Dir := "dummyArg4Value"
-			providedReq := model.StartOpReq{
-				Args: map[string]*model.Data{
-					"dummyArg1Name": {String: &providedArg1String},
-					"dummyArg2Name": {Dir: &providedArg2Dir},
-					"dummyArg3Name": {Dir: &providedArg3Dir},
-					"dummyArg4Name": {Dir: &providedArg4Dir},
-				},
-				PkgRef: "/something/dummyPkg",
-			}
+				objectUnderTest := _core{}
 
-			expectedPkgRef := path.Base(providedReq.PkgRef)
-			expectedPkgBasePath := path.Dir(providedReq.PkgRef)
+				/* act */
+				_, actualErr := objectUnderTest.StartOp(model.StartOpReq{})
 
-			expectedSCGOpCall := &model.SCGOpCall{
-				Pkg: &model.SCGOpCallPkg{
-					Ref: expectedPkgRef,
-				},
-				Inputs: map[string]string{},
-			}
-			for name := range providedReq.Args {
-				// map as passed
-				expectedSCGOpCall.Inputs[name] = name
-			}
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("req.Pkg not nill", func() {
+			It("should call opCaller.Call w/ expected args", func() {
+				/* arrange */
 
-			expectedOpId := "dummyOpId"
+				providedArg1String := "dummyArg1Value"
+				providedArg2Dir := "dummyArg2Value"
+				providedArg3Dir := "dummyArg3Value"
+				providedArg4Dir := "dummyArg4Value"
+				providedReq := model.StartOpReq{
+					Args: map[string]*model.Data{
+						"dummyArg1Name": {String: &providedArg1String},
+						"dummyArg2Name": {Dir: &providedArg2Dir},
+						"dummyArg3Name": {Dir: &providedArg3Dir},
+						"dummyArg4Name": {Dir: &providedArg4Dir},
+					},
+					Pkg: &model.DCGOpCallPkg{
+						Ref: "/something/dummyPkg",
+					},
+				}
 
-			fakeOpCaller := new(fakeOpCaller)
+				expectedPkgRef := path.Base(providedReq.Pkg.Ref)
+				expectedPkgBasePath := path.Dir(providedReq.Pkg.Ref)
 
-			fakeUniqueStringFactory := new(uniquestring.Fake)
-			fakeUniqueStringFactory.ConstructReturns(expectedOpId)
+				expectedSCGOpCall := &model.SCGOpCall{
+					Pkg: &model.SCGOpCallPkg{
+						Ref: expectedPkgRef,
+					},
+					Inputs: map[string]string{},
+				}
+				for name := range providedReq.Args {
+					// map as passed
+					expectedSCGOpCall.Inputs[name] = name
+				}
 
-			objectUnderTest := _core{
-				containerProvider:   new(containerprovider.Fake),
-				pubSub:              new(pubsub.Fake),
-				opCaller:            fakeOpCaller,
-				dcgNodeRepo:         new(fakeDCGNodeRepo),
-				uniqueStringFactory: fakeUniqueStringFactory,
-			}
+				expectedOpId := "dummyOpId"
 
-			/* act */
-			objectUnderTest.StartOp(providedReq)
+				fakeOpCaller := new(fakeOpCaller)
 
-			/* assert */
-			// Call happens in go routine; wait 500ms to allow it to occur
-			time.Sleep(time.Millisecond * 500)
-			actualInboundScope,
-				actualOpId,
-				actualPkgBasePath,
-				actualRootOpId,
-				actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
+				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory.ConstructReturns(expectedOpId)
 
-			Expect(actualInboundScope).To(Equal(providedReq.Args))
-			Expect(actualOpId).To(Equal(expectedOpId))
-			Expect(actualPkgBasePath).To(Equal(expectedPkgBasePath))
-			Expect(actualRootOpId).To(Equal(actualOpId))
-			Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
+				objectUnderTest := _core{
+					containerProvider:   new(containerprovider.Fake),
+					pubSub:              new(pubsub.Fake),
+					opCaller:            fakeOpCaller,
+					dcgNodeRepo:         new(fakeDCGNodeRepo),
+					uniqueStringFactory: fakeUniqueStringFactory,
+				}
+
+				/* act */
+				objectUnderTest.StartOp(providedReq)
+
+				/* assert */
+				// Call happens in go routine; wait 500ms to allow it to occur
+				time.Sleep(time.Millisecond * 500)
+				actualInboundScope,
+					actualOpId,
+					actualPkgBasePath,
+					actualRootOpId,
+					actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
+
+				Expect(actualInboundScope).To(Equal(providedReq.Args))
+				Expect(actualOpId).To(Equal(expectedOpId))
+				Expect(actualPkgBasePath).To(Equal(expectedPkgBasePath))
+				Expect(actualRootOpId).To(Equal(actualOpId))
+				Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
+			})
 		})
 	})
 })

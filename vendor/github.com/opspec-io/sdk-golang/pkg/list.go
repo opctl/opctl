@@ -8,7 +8,7 @@ import (
 )
 
 // List lists packages in a directory
-func (this pkg) List(
+func (this _Pkg) List(
 	dirPath string,
 ) ([]*model.PkgManifest, error) {
 
