@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
+	"path/filepath"
 	"text/tabwriter"
-  "path/filepath"
 )
 
 func (this _core) PkgLs(

@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/opctl/opctl/util/cliexiter"
-	pathPkg "path"
+	"path/filepath"
 )
 
 func (this _core) PkgCreate(
@@ -10,18 +10,11 @@ func (this _core) PkgCreate(
 	description string,
 	name string,
 ) {
-	cwd, err := this.os.Getwd()
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
-
-	err = this.pkg.Create(
-		pathPkg.Join(cwd, path, name),
+	if err := this.pkg.Create(
+		filepath.Join(path, name),
 		name,
 		description,
-	)
-	if nil != err {
+	); nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}

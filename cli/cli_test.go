@@ -230,11 +230,12 @@ var _ = Context("cli", func() {
 				})
 			})
 
-			Context("pull", func() {
-				It("should call core.Pull w/ expected args", func() {
+			Context("install", func() {
+				It("should call core.Install w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
+					expectedPath := "dummyPath"
 					expectedPkgRef := "dummyPkgRef"
 					expectedUsername := "dummyUsername"
 					expectedPassword := "dummyPassword"
@@ -245,7 +246,9 @@ var _ = Context("cli", func() {
 					objectUnderTest.Run([]string{
 						"opctl",
 						"pkg",
-						"pull",
+						"install",
+						"--path",
+						expectedPath,
 						"-u",
 						expectedUsername,
 						"-p",
@@ -254,7 +257,8 @@ var _ = Context("cli", func() {
 					})
 
 					/* assert */
-					actualPkgRef, actualUsername, actualPassword := fakeCore.PkgPullArgsForCall(0)
+					actualPath, actualPkgRef, actualUsername, actualPassword := fakeCore.PkgInstallArgsForCall(0)
+					Expect(actualPath).To(Equal(expectedPath))
 					Expect(actualPkgRef).To(Equal(expectedPkgRef))
 					Expect(actualUsername).To(Equal(expectedUsername))
 					Expect(actualPassword).To(Equal(expectedPassword))

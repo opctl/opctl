@@ -45,7 +45,8 @@ type Core interface {
 		path string,
 	)
 
-	PkgPull(
+	PkgInstall(
+		path,
 		pkgRef,
 		username,
 		password string,

@@ -18,5 +18,5 @@ Path to create the package at
 ## Examples
 
 ```shell
-opctl pkg create -d "my awesome pkg description" -p some/path my-awesome-pkg-name
+opctl pkg create -d "my awesome pkg description" --path some/path my-awesome-pkg-name
 ```
