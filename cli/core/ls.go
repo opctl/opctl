@@ -3,8 +3,8 @@ package core
 import (
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
-	pathPkg "path"
 	"text/tabwriter"
+  "path/filepath"
 )
 
 func (this _core) PkgLs(
@@ -23,7 +23,7 @@ func (this _core) PkgLs(
 	}
 
 	packages, err := this.pkg.List(
-		pathPkg.Join(cwd, path),
+		filepath.Join(cwd, path),
 	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})

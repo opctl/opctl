@@ -12,7 +12,7 @@ import (
 
 var _ = Context("events", func() {
 	Context("Execute", func() {
-		It("should call pkg.GetEventStream", func() {
+		It("should call client.GetEventStream", func() {
 			/* arrange */
 			fakeCliExiter := new(cliexiter.Fake)
 
@@ -34,7 +34,7 @@ var _ = Context("events", func() {
 			Expect(fakeOpspecNodeAPIClient.GetEventStreamCallCount()).To(Equal(1))
 
 		})
-		Context("pkg.GetEventStream errors", func() {
+		Context("client.GetEventStream errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				fakeCliExiter := new(cliexiter.Fake)
@@ -57,7 +57,7 @@ var _ = Context("events", func() {
 					To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 			})
 		})
-		Context("pkg.GetEventStream doesn't error", func() {
+		Context("client.GetEventStream doesn't error", func() {
 			Context("channel closes unexpectedly", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */

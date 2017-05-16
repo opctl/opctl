@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/interpolater"
 	opspecNodeCorePkg "github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"github.com/opspec-io/sdk-golang/validate"
 )
 
@@ -59,6 +60,7 @@ func New(
 	)
 
 	opCaller := newOpCaller(
+		manifest.New(),
 		pkg.New(),
 		pubSub,
 		dcgNodeRepo,

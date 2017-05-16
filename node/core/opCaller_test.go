@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"github.com/opspec-io/sdk-golang/validate"
 	"github.com/pkg/errors"
 	"path/filepath"
@@ -19,6 +20,7 @@ var _ = Context("opCaller", func() {
 		It("should return opCaller", func() {
 			/* arrange/act/assert */
 			Expect(newOpCaller(
+				new(manifest.Fake),
 				new(pkg.Fake),
 				new(pubsub.Fake),
 				newDCGNodeRepo(),
@@ -31,20 +33,21 @@ var _ = Context("opCaller", func() {
 	})
 	Context("Call", func() {
 		Context("deprecated pkg format", func() {
-			It("should call pkg.Get w/ expected args", func() {
+			It("should call manifest.Unmarshal w/ expected args", func() {
 				/* arrange */
 				providedPkgBasePath := "dummyPkgBasePath"
 				providedSCGOpCall := &model.SCGOpCall{
 					Ref: "dummySCGOpCallPkgRef",
 				}
 
-				expectedPkgRef := filepath.Join(providedPkgBasePath, providedSCGOpCall.Ref)
+				expectedPath := filepath.Join(providedPkgBasePath, providedSCGOpCall.Ref, pkg.OpDotYmlFileName)
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetReturns(nil, errors.New("dummyError"))
+				fakeManifest := new(manifest.Fake)
+				fakeManifest.UnmarshalReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := newOpCaller(
-					fakePkg,
+					fakeManifest,
+					new(pkg.Fake),
 					new(pubsub.Fake),
 					new(fakeDCGNodeRepo),
 					new(fakeCaller),
@@ -63,7 +66,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				/* assert */
-				Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
+				Expect(fakeManifest.UnmarshalArgsForCall(0)).To(Equal(expectedPath))
 			})
 		})
 		It("should call pkg.ParseRef w/ expected args", func() {
@@ -82,6 +85,7 @@ var _ = Context("opCaller", func() {
 			fakePkg.ParseRefReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := newOpCaller(
+				new(manifest.Fake),
 				fakePkg,
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
@@ -120,6 +124,7 @@ var _ = Context("opCaller", func() {
 				fakePkg.ParseRefReturns(nil, expectedError)
 
 				objectUnderTest := newOpCaller(
+					new(manifest.Fake),
 					fakePkg,
 					new(pubsub.Fake),
 					new(fakeDCGNodeRepo),
@@ -159,6 +164,7 @@ var _ = Context("opCaller", func() {
 				fakePkg.ParseRefReturns(expectedPkgRef, nil)
 
 				objectUnderTest := newOpCaller(
+					new(manifest.Fake),
 					fakePkg,
 					new(pubsub.Fake),
 					new(fakeDCGNodeRepo),
@@ -210,6 +216,7 @@ var _ = Context("opCaller", func() {
 					fakePkg.ParseRefReturns(expectedPkgRef, nil)
 
 					objectUnderTest := newOpCaller(
+						new(manifest.Fake),
 						fakePkg,
 						new(pubsub.Fake),
 						new(fakeDCGNodeRepo),
@@ -244,6 +251,7 @@ var _ = Context("opCaller", func() {
 						fakePkg.PullReturns(expectedErr)
 
 						objectUnderTest := newOpCaller(
+							new(manifest.Fake),
 							fakePkg,
 							new(pubsub.Fake),
 							new(fakeDCGNodeRepo),
@@ -289,11 +297,14 @@ var _ = Context("opCaller", func() {
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.ResolveReturns(resolvedPkgPath, true)
-					fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+					fakeManifest := new(manifest.Fake)
+					fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 					objectUnderTest := newOpCaller(
+						fakeManifest,
 						fakePkg,
 						new(pubsub.Fake),
 						fakeDCGNodeRepo,
@@ -315,7 +326,7 @@ var _ = Context("opCaller", func() {
 					/* assert */
 					Expect(fakeDCGNodeRepo.AddArgsForCall(0)).To(Equal(expectedDCGNodeDescriptor))
 				})
-				It("should call pkg.Get w/ expected args", func() {
+				It("should call manifest.Unmarshal w/ expected args", func() {
 					/* arrange */
 					providedUsernameString := "name1Value"
 					providedInboundScope := map[string]*model.Data{
@@ -334,14 +345,16 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					resolvedPkgRef := "dummyResolvedPkgRef"
-					expectedPkgRef := resolvedPkgRef
+					pkgPath := "dummyResolvedPkgRef"
+					expectedPath := filepath.Join(pkgPath, pkg.OpDotYmlFileName)
 
 					fakePkg := new(pkg.Fake)
-					fakePkg.ResolveReturns(resolvedPkgRef, true)
-					fakePkg.GetReturns(nil, errors.New("dummyError"))
+					fakePkg.ResolveReturns(pkgPath, true)
+					fakeManifest := new(manifest.Fake)
+					fakeManifest.UnmarshalReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := newOpCaller(
+						fakeManifest,
 						fakePkg,
 						new(pubsub.Fake),
 						new(fakeDCGNodeRepo),
@@ -361,9 +374,9 @@ var _ = Context("opCaller", func() {
 					)
 
 					/* assert */
-					Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
+					Expect(fakeManifest.UnmarshalArgsForCall(0)).To(Equal(expectedPath))
 				})
-				Context("pkg.Get errors", func() {
+				Context("manifest.Unmarshal errors", func() {
 					It("should call pubSub.Publish w/ expected args", func() {
 						/* arrange */
 						providedInboundScope := map[string]*model.Data{}
@@ -386,7 +399,9 @@ var _ = Context("opCaller", func() {
 
 						fakePkg := new(pkg.Fake)
 						fakePkg.ResolveReturns(resolvedPkgRef, true)
-						fakePkg.GetReturns(
+
+						fakeManifest := new(manifest.Fake)
+						fakeManifest.UnmarshalReturns(
 							&model.PkgManifest{},
 							errors.New(expectedEvent.OpErred.Msg),
 						)
@@ -398,6 +413,7 @@ var _ = Context("opCaller", func() {
 						fakePubSub := new(pubsub.Fake)
 
 						objectUnderTest := newOpCaller(
+							fakeManifest,
 							fakePkg,
 							fakePubSub,
 							fakeDCGNodeRepo,
@@ -427,7 +443,7 @@ var _ = Context("opCaller", func() {
 						Expect(actualEvent).To(Equal(expectedEvent))
 					})
 				})
-				Context("pkg.Get doesn't error", func() {
+				Context("manifest.Unmarshal doesn't error", func() {
 					It("should call validate.Param w/ expected args", func() {
 						/* arrange */
 						providedInboundVar1String := "val1"
@@ -473,7 +489,9 @@ var _ = Context("opCaller", func() {
 						}
 						fakePkg := new(pkg.Fake)
 						fakePkg.ResolveReturns("", true)
-						fakePkg.GetReturns(returnedPkg, nil)
+
+						fakeManifest := new(manifest.Fake)
+						fakeManifest.UnmarshalReturns(returnedPkg, nil)
 
 						expectedCalls := map[model.Data]*model.Param{
 							// from scope
@@ -494,6 +512,7 @@ var _ = Context("opCaller", func() {
 						fakeValidate := new(validate.Fake)
 
 						objectUnderTest := newOpCaller(
+							fakeManifest,
 							fakePkg,
 							new(pubsub.Fake),
 							new(fakeDCGNodeRepo),
@@ -544,7 +563,9 @@ var _ = Context("opCaller", func() {
 							}
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns(resolvedPkgRef, true)
-							fakePkg.GetReturns(opReturnedFromPkg, nil)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(opReturnedFromPkg, nil)
 
 							fakeValidate := new(validate.Fake)
 
@@ -574,6 +595,7 @@ var _ = Context("opCaller", func() {
 							}
 
 							objectUnderTest := newOpCaller(
+								fakeManifest,
 								fakePkg,
 								fakePubSub,
 								fakeDCGNodeRepo,
@@ -624,11 +646,14 @@ var _ = Context("opCaller", func() {
 
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns(resolvedPkgRef, true)
-							fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 							fakePubSub := new(pubsub.Fake)
 
 							objectUnderTest := newOpCaller(
+								fakeManifest,
 								fakePkg,
 								fakePubSub,
 								new(fakeDCGNodeRepo),
@@ -677,7 +702,9 @@ var _ = Context("opCaller", func() {
 							}
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns(resolvedPkgRef, true)
-							fakePkg.GetReturns(opReturnedFromPkg, nil)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(opReturnedFromPkg, nil)
 
 							fakeUniqueStringFactory := new(uniquestring.Fake)
 							expectedNodeId := "dummyNodeId"
@@ -686,6 +713,7 @@ var _ = Context("opCaller", func() {
 							fakeCaller := new(fakeCaller)
 
 							objectUnderTest := newOpCaller(
+								fakeManifest,
 								fakePkg,
 								new(pubsub.Fake),
 								new(fakeDCGNodeRepo),
@@ -727,11 +755,14 @@ var _ = Context("opCaller", func() {
 
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns("", true)
-							fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 							fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 							objectUnderTest := newOpCaller(
+								fakeManifest,
 								fakePkg,
 								new(pubsub.Fake),
 								fakeDCGNodeRepo,
@@ -775,11 +806,14 @@ var _ = Context("opCaller", func() {
 
 								fakePkg := new(pkg.Fake)
 								fakePkg.ResolveReturns(resolvedPkgRef, true)
-								fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+								fakeManifest := new(manifest.Fake)
+								fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 								fakePubSub := new(pubsub.Fake)
 
 								objectUnderTest := newOpCaller(
+									fakeManifest,
 									fakePkg,
 									fakePubSub,
 									new(fakeDCGNodeRepo),
@@ -819,12 +853,15 @@ var _ = Context("opCaller", func() {
 
 								fakePkg := new(pkg.Fake)
 								fakePkg.ResolveReturns("", true)
-								fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+								fakeManifest := new(manifest.Fake)
+								fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 								fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 								fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 								objectUnderTest := newOpCaller(
+									fakeManifest,
 									fakePkg,
 									new(pubsub.Fake),
 									fakeDCGNodeRepo,
@@ -869,7 +906,9 @@ var _ = Context("opCaller", func() {
 
 									fakePkg := new(pkg.Fake)
 									fakePkg.ResolveReturns(resolvedPkgRef, true)
-									fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+									fakeManifest := new(manifest.Fake)
+									fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 									fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 									fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -882,6 +921,7 @@ var _ = Context("opCaller", func() {
 									)
 
 									objectUnderTest := newOpCaller(
+										fakeManifest,
 										fakePkg,
 										fakePubSub,
 										fakeDCGNodeRepo,
@@ -931,7 +971,9 @@ var _ = Context("opCaller", func() {
 
 									fakePkg := new(pkg.Fake)
 									fakePkg.ResolveReturns(resolvedPkgRef, true)
-									fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+									fakeManifest := new(manifest.Fake)
+									fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 									fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 									fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -944,6 +986,7 @@ var _ = Context("opCaller", func() {
 									)
 
 									objectUnderTest := newOpCaller(
+										fakeManifest,
 										fakePkg,
 										fakePubSub,
 										fakeDCGNodeRepo,
@@ -995,7 +1038,9 @@ var _ = Context("opCaller", func() {
 
 									fakePkg := new(pkg.Fake)
 									fakePkg.ResolveReturns(resolvedPkgRef, true)
-									fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+									fakeManifest := new(manifest.Fake)
+									fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 									fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 									fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -1003,6 +1048,7 @@ var _ = Context("opCaller", func() {
 									fakePubSub := new(pubsub.Fake)
 
 									objectUnderTest := newOpCaller(
+										fakeManifest,
 										fakePkg,
 										fakePubSub,
 										fakeDCGNodeRepo,
