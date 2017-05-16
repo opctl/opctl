@@ -1,0 +1,4 @@
+name: invalid_outputs_type
+outputs:
+  - file1:
+      file: {}

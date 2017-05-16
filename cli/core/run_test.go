@@ -14,6 +14,8 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api/client"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
+	"path/filepath"
 	"time"
 )
 
@@ -133,26 +135,29 @@ var _ = Context("Run", func() {
 
 				})
 				Context("pkg.Resolve succeeds", func() {
-					It("should call pkg.Get w/ expected args", func() {
+					It("should call manifest.Unmarshal w/ expected args", func() {
 						/* arrange */
-						resolvedPkgRef := "dummyPkgName"
+						pkgPath := "dummyPkgName"
 						wdReturnedFromIOS := "dummyWorkDir"
 
-						expectedPkgRef := resolvedPkgRef
+						expectedPkgRef := filepath.Join(pkgPath, pkg.OpDotYmlFileName)
 
-						fakePkg := new(pkg.Fake)
+						fakeManifest := new(manifest.Fake)
 						// err to trigger immediate return
-						fakePkg.GetReturns(&model.PkgManifest{}, errors.New("dummyError"))
+						fakeManifest.UnmarshalReturns(&model.PkgManifest{}, errors.New("dummyError"))
 
 						fakeOpspecNodeAPIClient := new(client.Fake)
 
 						fakeCliExiter := new(cliexiter.Fake)
 
 						fakeIOS := new(ios.Fake)
-						fakePkg.ResolveReturns(resolvedPkgRef, true)
 						fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
 
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns(pkgPath, true)
+
 						objectUnderTest := _core{
+							manifest:            fakeManifest,
 							pkg:                 fakePkg,
 							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 							cliExiter:           fakeCliExiter,
@@ -166,9 +171,9 @@ var _ = Context("Run", func() {
 						objectUnderTest.Run("", &RunOpts{})
 
 						/* assert */
-						Expect(fakePkg.GetArgsForCall(0)).To(Equal(expectedPkgRef))
+						Expect(fakeManifest.UnmarshalArgsForCall(0)).To(Equal(expectedPkgRef))
 					})
-					Context("pkg.Get errors", func() {
+					Context("manifest.Unmarshal errors", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
@@ -176,9 +181,12 @@ var _ = Context("Run", func() {
 
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns("", true)
-							fakePkg.GetReturns(&model.PkgManifest{}, returnedError)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(&model.PkgManifest{}, returnedError)
 
 							objectUnderTest := _core{
+								manifest:          fakeManifest,
 								pkg:               fakePkg,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -195,7 +203,7 @@ var _ = Context("Run", func() {
 								To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 						})
 					})
-					Context("pkg.Get doesn't error", func() {
+					Context("manifest.Unmarshal doesn't error", func() {
 						It("should call paramSatisfier.Satisfy w/ expected args", func() {
 							/* arrange */
 							param1Name := "DUMMY_PARAM1_NAME"
@@ -211,7 +219,9 @@ var _ = Context("Run", func() {
 
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns("", true)
-							fakePkg.GetReturns(
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(
 								pkgManifest,
 								nil,
 							)
@@ -225,6 +235,7 @@ var _ = Context("Run", func() {
 							fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 							objectUnderTest := _core{
+								manifest:            fakeManifest,
 								pkg:                 fakePkg,
 								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 								cliExiter:           new(cliexiter.Fake),
@@ -262,7 +273,9 @@ var _ = Context("Run", func() {
 
 							fakePkg := new(pkg.Fake)
 							fakePkg.ResolveReturns(resolvedPkgRef, true)
-							fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+							fakeManifest := new(manifest.Fake)
+							fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 							// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 							fakeOpspecNodeAPIClient := new(client.Fake)
@@ -274,6 +287,7 @@ var _ = Context("Run", func() {
 							fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 							objectUnderTest := _core{
+								manifest:            fakeManifest,
 								pkg:                 fakePkg,
 								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 								cliExiter:           new(cliexiter.Fake),
@@ -298,12 +312,15 @@ var _ = Context("Run", func() {
 
 								fakePkg := new(pkg.Fake)
 								fakePkg.ResolveReturns("", true)
-								fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+								fakeManifest := new(manifest.Fake)
+								fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 								fakeOpspecNodeAPIClient := new(client.Fake)
 								fakeOpspecNodeAPIClient.StartOpReturns("dummyOpId", returnedError)
 
 								objectUnderTest := _core{
+									manifest:            fakeManifest,
 									pkg:                 fakePkg,
 									opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 									cliExiter:           fakeCliExiter,
@@ -326,7 +343,10 @@ var _ = Context("Run", func() {
 								/* arrange */
 								fakePkg := new(pkg.Fake)
 								fakePkg.ResolveReturns("", true)
-								fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+								fakeManifest := new(manifest.Fake)
+								fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
+
 								rootOpIdReturnedFromStartOp := "dummyRootOpId"
 								startTime := time.Now().UTC()
 								expectedReq := &model.GetEventStreamReq{
@@ -343,6 +363,7 @@ var _ = Context("Run", func() {
 								fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 								objectUnderTest := _core{
+									manifest:            fakeManifest,
 									pkg:                 fakePkg,
 									opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 									cliExiter:           new(cliexiter.Fake),
@@ -373,12 +394,15 @@ var _ = Context("Run", func() {
 
 									fakePkg := new(pkg.Fake)
 									fakePkg.ResolveReturns("", true)
-									fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+									fakeManifest := new(manifest.Fake)
+									fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 									fakeOpspecNodeAPIClient := new(client.Fake)
 									fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 									objectUnderTest := _core{
+										manifest:            fakeManifest,
 										pkg:                 fakePkg,
 										opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 										cliExiter:           fakeCliExiter,
@@ -404,7 +428,9 @@ var _ = Context("Run", func() {
 
 										fakePkg := new(pkg.Fake)
 										fakePkg.ResolveReturns("", true)
-										fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+										fakeManifest := new(manifest.Fake)
+										fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 										fakeOpspecNodeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event)
@@ -412,6 +438,7 @@ var _ = Context("Run", func() {
 										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 										objectUnderTest := _core{
+											manifest:            fakeManifest,
 											pkg:                 fakePkg,
 											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 											cliExiter:           fakeCliExiter,
@@ -450,7 +477,9 @@ var _ = Context("Run", func() {
 
 													fakePkg := new(pkg.Fake)
 													fakePkg.ResolveReturns("", true)
-													fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+													fakeManifest := new(manifest.Fake)
+													fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 													fakeOpspecNodeAPIClient := new(client.Fake)
 													eventChannel := make(chan model.Event, 10)
@@ -460,6 +489,7 @@ var _ = Context("Run", func() {
 													fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 													objectUnderTest := _core{
+														manifest:            fakeManifest,
 														pkg:                 fakePkg,
 														cliColorer:          clicolorer.New(),
 														opspecNodeAPIClient: fakeOpspecNodeAPIClient,
@@ -494,7 +524,9 @@ var _ = Context("Run", func() {
 
 													fakePkg := new(pkg.Fake)
 													fakePkg.ResolveReturns("", true)
-													fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+													fakeManifest := new(manifest.Fake)
+													fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 													fakeOpspecNodeAPIClient := new(client.Fake)
 													eventChannel := make(chan model.Event, 10)
@@ -504,6 +536,7 @@ var _ = Context("Run", func() {
 													fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 													objectUnderTest := _core{
+														manifest:            fakeManifest,
 														pkg:                 fakePkg,
 														cliColorer:          clicolorer.New(),
 														opspecNodeAPIClient: fakeOpspecNodeAPIClient,
@@ -539,7 +572,9 @@ var _ = Context("Run", func() {
 
 													fakePkg := new(pkg.Fake)
 													fakePkg.ResolveReturns("", true)
-													fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+													fakeManifest := new(manifest.Fake)
+													fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 													fakeOpspecNodeAPIClient := new(client.Fake)
 													eventChannel := make(chan model.Event, 10)
@@ -549,6 +584,7 @@ var _ = Context("Run", func() {
 													fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 													objectUnderTest := _core{
+														manifest:            fakeManifest,
 														pkg:                 fakePkg,
 														cliColorer:          clicolorer.New(),
 														opspecNodeAPIClient: fakeOpspecNodeAPIClient,
@@ -583,7 +619,9 @@ var _ = Context("Run", func() {
 
 													fakePkg := new(pkg.Fake)
 													fakePkg.ResolveReturns("", true)
-													fakePkg.GetReturns(&model.PkgManifest{}, nil)
+
+													fakeManifest := new(manifest.Fake)
+													fakeManifest.UnmarshalReturns(&model.PkgManifest{}, nil)
 
 													fakeOpspecNodeAPIClient := new(client.Fake)
 													eventChannel := make(chan model.Event, 10)
@@ -593,6 +631,7 @@ var _ = Context("Run", func() {
 													fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 													objectUnderTest := _core{
+														manifest:            fakeManifest,
 														pkg:                 fakePkg,
 														cliColorer:          clicolorer.New(),
 														opspecNodeAPIClient: fakeOpspecNodeAPIClient,

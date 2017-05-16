@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"gopkg.in/yaml.v2"
-	"path/filepath"
 )
 
 // SetDescription sets the description of a package
@@ -11,7 +10,7 @@ func (this _Pkg) SetDescription(
 	pkgDescription string,
 ) error {
 
-	pkgManifest, err := this.manifestUnmarshaller.Unmarshal(pkgPath)
+	pkgManifest, err := this.manifest.Unmarshal(pkgPath)
 	if nil != err {
 		return err
 	}
@@ -24,7 +23,7 @@ func (this _Pkg) SetDescription(
 	}
 
 	return this.ioUtil.WriteFile(
-		filepath.Join(pkgPath, OpDotYmlFileName),
+		pkgPath,
 		pkgManifestBytes,
 		0777,
 	)

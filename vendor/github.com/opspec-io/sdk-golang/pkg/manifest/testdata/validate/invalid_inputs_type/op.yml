@@ -1,0 +1,4 @@
+name: invalid_inputs_type
+inputs:
+  - dir1:
+      dir: {}

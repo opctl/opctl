@@ -1,0 +1,75 @@
+name: valid__all
+description: dummyDescription
+inputs:
+  inputDir1:
+    dir:
+      description: description of inputDir1
+      default: .
+      isSecret: true
+  inputFile1:
+    file:
+      description: description of inputFile1
+      default: ../inputFile1Name.inputFile1Extension
+      isSecret: false
+  inputString1:
+    string:
+      description: description of inputString1
+      default: inputString1Default
+  inputString2:
+    string:
+      description: description of inputString2
+      default: inputString2Default
+      isSecret: true
+outputs:
+  outputDir1:
+    dir:
+      description: description of outputDir1
+      default: .
+      isSecret: true
+  outputFile1:
+    file:
+      description: description of outputFile1
+      default: ../outputFile1Name.outputFile1Extension
+      isSecret: false
+  outputString1:
+    string:
+      description: description of outputString1
+      default: outputString1Default
+  outputString2:
+    string:
+      description: description of outputString2
+      default: outputString2Default
+      isSecret: true
+run:
+  parallel:
+    - container:
+        cmd:
+          - some
+          - $(inputString1)
+          - cmd
+        dirs:
+          /inputDir1: inputDir1
+          /outputDir1: outputDir1
+        files:
+          /inputFile1: inputFile1
+          /outputFile1: outputFile1
+        image:
+          ref: imageRef$(inputString1)
+          pullCreds:
+            username: image$(inputString1)Username
+            password: image$(inputString2)Password
+    - op:
+        pkg:
+          ref: pkgRef
+          pullCreds:
+            username: pkg$(inputString1)Username
+            password: pkg$(inputString2)Password
+        inputs:
+          opInput1: # bind
+          opInput2: inputDir1 # named bind
+        outputs:
+          opOutput1: # bind
+          opOutput2.b: opOutput2.a # named bind
+    - serial:
+      - parallel: []
+version: 1.2.3

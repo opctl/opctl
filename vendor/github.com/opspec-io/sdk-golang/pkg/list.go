@@ -4,10 +4,10 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"path"
+	"path/filepath"
 )
 
-// List lists packages in a directory
+// List recursively lists packages in dirPath
 func (this _Pkg) List(
 	dirPath string,
 ) ([]*model.PkgManifest, error) {
@@ -19,13 +19,23 @@ func (this _Pkg) List(
 
 	var pkgs []*model.PkgManifest
 	for _, childFileInfo := range childFileInfos {
-		pkgManifest, err := this.manifestUnmarshaller.Unmarshal(
-			path.Join(dirPath, childFileInfo.Name()),
-		)
-		if nil == err {
-			// ignore err'd pkgs
-			pkgs = append(pkgs, pkgManifest)
+
+		childPath := filepath.Join(dirPath, childFileInfo.Name())
+
+		if childFileInfo.IsDir() {
+			// recurse into child dirs
+			childPkgs, err := this.List(childPath)
+			if nil != err {
+				return nil, err
+			}
+			pkgs = append(pkgs, childPkgs...)
+		} else if childFileInfo.Name() == OpDotYmlFileName {
+			if pkgManifest, err := this.manifest.Unmarshal(childPath); nil == err {
+				// ignore err'd pkgs
+				pkgs = append(pkgs, pkgManifest)
+			}
 		}
+
 	}
 
 	return pkgs, err

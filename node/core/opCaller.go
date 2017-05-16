@@ -10,6 +10,7 @@ import (
 	interpolatePkg "github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"github.com/opspec-io/sdk-golang/validate"
 	"github.com/pkg/errors"
 	"path/filepath"
@@ -31,6 +32,7 @@ type opCaller interface {
 }
 
 func newOpCaller(
+	manifest manifest.Manifest,
 	pkg pkg.Pkg,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
@@ -40,6 +42,7 @@ func newOpCaller(
 	rootFSPath string,
 ) opCaller {
 	return _opCaller{
+		manifest:            manifest,
 		pkg:                 pkg,
 		pubSub:              pubSub,
 		dcgNodeRepo:         dcgNodeRepo,
@@ -51,6 +54,7 @@ func newOpCaller(
 }
 
 type _opCaller struct {
+	manifest            manifest.Manifest
 	pkg                 pkg.Pkg
 	pubSub              pubsub.PubSub
 	dcgNodeRepo         dcgNodeRepo
@@ -70,11 +74,11 @@ func (this _opCaller) Call(
 	err error,
 ) {
 
-	var pkgRef string
+	var pkgPath string
 	if "" != scgOpCall.Ref {
 		// handle deprecated pkgRef format
-		pkgRef = filepath.Join(pkgBasePath, scgOpCall.Ref)
-	} else if pkgRef, err = this.getPkgPath(
+		pkgPath = filepath.Join(pkgBasePath, scgOpCall.Ref)
+	} else if pkgPath, err = this.getPkgPath(
 		pkgBasePath,
 		inboundScope,
 		scgOpCall.Pkg,
@@ -94,7 +98,7 @@ func (this _opCaller) Call(
 						OpId:     opId,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpId: rootOpId,
-						PkgRef:   pkgRef,
+						PkgRef:   pkgPath,
 					},
 				},
 			)
@@ -111,7 +115,7 @@ func (this _opCaller) Call(
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
 						OpId:     opId,
-						PkgRef:   pkgRef,
+						PkgRef:   pkgPath,
 						RootOpId: rootOpId,
 					},
 				},
@@ -126,7 +130,7 @@ func (this _opCaller) Call(
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpId:     opId,
-					PkgRef:   pkgRef,
+					PkgRef:   pkgPath,
 					Outcome:  opOutcome,
 					RootOpId: rootOpId,
 				},
@@ -138,7 +142,7 @@ func (this _opCaller) Call(
 	this.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:       opId,
-			PkgRef:   pkgRef,
+			PkgRef:   pkgPath,
 			RootOpId: rootOpId,
 			Op:       &dcgOpDescriptor{},
 		},
@@ -147,13 +151,13 @@ func (this _opCaller) Call(
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: &model.DCGBaseCall{
 			RootOpId: rootOpId,
-			PkgRef:   pkgRef,
+			PkgRef:   pkgPath,
 		},
 		OpId:        opId,
 		ChildCallId: this.uniqueStringFactory.Construct(),
 	}
 
-	_pkg, err := this.pkg.Get(pkgRef)
+	_pkg, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
 	if nil != err {
 		return
 	}
@@ -180,7 +184,7 @@ func (this _opCaller) Call(
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
 				OpId:     opId,
-				PkgRef:   pkgRef,
+				PkgRef:   pkgPath,
 				RootOpId: rootOpId,
 			},
 		},
@@ -192,7 +196,7 @@ func (this _opCaller) Call(
 		dcgOpCall.ChildCallId,
 		inputs,
 		_pkg.Run,
-		pkgRef,
+		pkgPath,
 		rootOpId,
 	)
 	if nil != err {

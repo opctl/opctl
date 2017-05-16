@@ -5,8 +5,10 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -41,12 +43,12 @@ func (this _core) Run(
 
 	pkgPath, ok := this.pkg.Resolve(parsedPkgRef, cwd)
 	if !ok {
-		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'; pull required", pkgRef, cwd)
+		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'", pkgRef, cwd)
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
 		return // support fake exiter
 	}
 
-	pkgManifest, err := this.pkg.Get(pkgPath)
+	pkgManifest, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
