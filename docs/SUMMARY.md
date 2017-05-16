@@ -13,7 +13,7 @@
         * [kill](cli/op/kill.md)
     * [pkg](cli/pkg/README.md)
         * [create](cli/pkg/create.md)
-        * [pull](cli/pkg/pull.md)
+        * [install](cli/pkg/install.md)
         * [validate](cli/pkg/validate.md)
     * [run](cli/run.md)
     * [self-update](cli/self_update.md)

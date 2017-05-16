@@ -6,6 +6,7 @@ import (
 	mow "github.com/jawher/mow.cli"
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
+	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 type cli interface {
@@ -35,7 +36,7 @@ func newCli(
 
 	cli.Command(
 		"ls", "List packages (only v0.1.4 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
-			path := lsCmd.StringOpt("path", ".opspec", "Path to list packages from")
+			path := lsCmd.StringOpt("path", pkg.DotOpspecDirName, "Path to list packages from")
 			lsCmd.Action = func() {
 				core.PkgLs(*path)
 			}
@@ -73,7 +74,7 @@ func newCli(
 		pkgCmd.Command(
 			"create", "Create a package",
 			func(createCmd *mow.Cmd) {
-				path := createCmd.StringOpt("path", ".opspec", "Path the package will be created at")
+				path := createCmd.StringOpt("path", pkg.DotOpspecDirName, "Path the package will be created at")
 				description := createCmd.StringOpt("d description", "", "Package description")
 				name := createCmd.StringArg("NAME", "", "Package name")
 
@@ -83,14 +84,15 @@ func newCli(
 			})
 
 		pkgCmd.Command(
-			"pull", "Pulls a package from a remote git repo to the local pkg cache",
-			func(pullCmd *mow.Cmd) {
-				pkgRef := pullCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
-				username := pullCmd.StringOpt("u username", "", "Username used for pull auth")
-				password := pullCmd.StringOpt("p password", "", "Password used for pull auth")
+			"install", "Installs a package",
+			func(installCmd *mow.Cmd) {
+				path := installCmd.StringOpt("path", pkg.DotOpspecDirName, "Path the package will be installed at")
+				pkgRef := installCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
+				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
+				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
-				pullCmd.Action = func() {
-					core.PkgPull(*pkgRef, *username, *password)
+				installCmd.Action = func() {
+					core.PkgInstall(*path, *pkgRef, *username, *password)
 				}
 			})
 

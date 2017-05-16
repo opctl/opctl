@@ -5,20 +5,14 @@ import (
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"path/filepath"
 )
 
-func (this _core) PkgPull(
+func (this _core) PkgInstall(
+	path,
 	pkgRef,
 	username,
 	password string,
 ) {
-
-	cwd, err := this.os.Getwd()
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
 
 	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
 	if nil != err {
@@ -28,7 +22,7 @@ func (this _core) PkgPull(
 
 	for {
 		err := this.pkg.Pull(
-			filepath.Join(cwd, pkg.DotOpspecDirName),
+			path,
 			parsedPkgRef,
 			&pkg.PullOpts{
 				Username: username,
@@ -45,9 +39,9 @@ func (this _core) PkgPull(
 			// auth errors can be fixed by supplying correct creds so don't give up; prompt
 			argMap := this.cliParamSatisfier.Satisfy(
 				cliparamsatisfier.NewInputSourcer(
-					cliparamsatisfier.NewCliPromptInputSrc(pullCredsPromptInputs),
+					cliparamsatisfier.NewCliPromptInputSrc(credsPromptInputs),
 				),
-				pullCredsPromptInputs,
+				credsPromptInputs,
 			)
 
 			// save providedArgs & re-attempt
@@ -70,10 +64,10 @@ const (
 )
 
 var (
-	pullCredsPromptInputs = map[string]*model.Param{
+	credsPromptInputs = map[string]*model.Param{
 		usernameInputName: {
 			String: &model.StringParam{
-				Description: "username used for pull auth",
+				Description: "username used to auth w/ the pkg source",
 				Constraints: &model.StringConstraints{
 					MinLength: 1,
 				},
@@ -81,7 +75,7 @@ var (
 		},
 		passwordInputName: {
 			String: &model.StringParam{
-				Description: "password used for pull auth",
+				Description: "password used to auth w/ the pkg source",
 				Constraints: &model.StringConstraints{
 					MinLength: 1,
 				},

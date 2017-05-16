@@ -19,7 +19,6 @@ func (this _containerProvider) streamContainerStdErr(
 			ShowStderr: true,
 		},
 	)
-	defer readCloser.Close()
 	if nil != err {
 		return err
 	}
