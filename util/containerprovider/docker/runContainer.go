@@ -23,6 +23,8 @@ func (this _containerProvider) RunContainer(
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
+	defer stdout.Close()
+	defer stderr.Close()
 
 	// construct port bindings
 	portBindings := nat.PortMap{}
@@ -95,9 +97,11 @@ func (this _containerProvider) RunContainer(
 		},
 	}
 
+	ctx, cancelFn := context.WithCancel(context.Background())
+
 	// create container
 	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
-		context.Background(),
+		ctx,
 		containerConfig,
 		hostConfig,
 		networkingConfig,
@@ -120,7 +124,7 @@ func (this _containerProvider) RunContainer(
 
 		// retry create
 		containerCreatedResponse, err = this.dockerClient.ContainerCreate(
-			context.Background(),
+			ctx,
 			containerConfig,
 			hostConfig,
 			networkingConfig,
@@ -133,7 +137,7 @@ func (this _containerProvider) RunContainer(
 
 	// start container
 	if err := this.dockerClient.ContainerStart(
-		context.Background(),
+		ctx,
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
 	); nil != err {
@@ -146,9 +150,11 @@ func (this _containerProvider) RunContainer(
 
 	go func() {
 		if err := this.streamContainerStdErr(
+			ctx,
 			req.ContainerId,
 			stderr,
 		); nil != err {
+			cancelFn()
 			errChan <- err
 		}
 
@@ -157,9 +163,11 @@ func (this _containerProvider) RunContainer(
 
 	go func() {
 		if err := this.streamContainerStdOut(
+			ctx,
 			req.ContainerId,
 			stdout,
 		); nil != err {
+			cancelFn()
 			errChan <- err
 		}
 
@@ -167,12 +175,14 @@ func (this _containerProvider) RunContainer(
 	}()
 
 	exitCode, waitError := this.dockerClient.ContainerWait(
-		context.Background(),
+		ctx,
 		req.ContainerId,
 	)
 	if nil != waitError {
+		cancelFn()
 		errChan <- errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
 	} else if 0 != exitCode {
+		cancelFn()
 		errChan <- errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
 	}
 
