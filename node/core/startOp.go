@@ -3,7 +3,7 @@ package core
 import (
 	"errors"
 	"github.com/opspec-io/sdk-golang/model"
-	"path"
+	"path/filepath"
 )
 
 func (this _core) StartOp(
@@ -13,8 +13,8 @@ func (this _core) StartOp(
 		return "", errors.New("pkg required")
 	}
 
-	pkgBasePath := path.Dir(req.Pkg.Ref)
-	pkgName := path.Base(req.Pkg.Ref)
+	pkgBasePath := filepath.Dir(req.Pkg.Ref)
+	pkgName := filepath.Base(req.Pkg.Ref)
 
 	opId := this.uniqueStringFactory.Construct()
 

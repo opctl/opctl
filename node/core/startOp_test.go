@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
 	"github.com/opspec-io/sdk-golang/model"
-	"path"
+	"path/filepath"
 	"time"
 )
 
@@ -48,8 +48,8 @@ var _ = Context("core", func() {
 					},
 				}
 
-				expectedPkgRef := path.Base(providedReq.Pkg.Ref)
-				expectedPkgBasePath := path.Dir(providedReq.Pkg.Ref)
+				expectedPkgRef := filepath.Base(providedReq.Pkg.Ref)
+				expectedPkgBasePath := filepath.Dir(providedReq.Pkg.Ref)
 
 				expectedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
