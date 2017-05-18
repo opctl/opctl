@@ -5,7 +5,7 @@ package core
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"path"
+	"path/filepath"
 )
 
 type caller interface {
@@ -60,7 +60,7 @@ func (this _caller) Call(
 		return this.opCaller.Call(
 			inboundScope,
 			callId,
-			path.Dir(pkgRef),
+			filepath.Dir(pkgRef),
 			rootOpId,
 			scg.Op,
 		)

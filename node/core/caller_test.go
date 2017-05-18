@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"path"
+	"path/filepath"
 )
 
 var _ = Context("caller", func() {
@@ -108,7 +108,7 @@ var _ = Context("caller", func() {
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
 				Expect(actualCallId).To(Equal(providedCallId))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualPkgRef).To(Equal(path.Dir(providedPkgRef)))
+				Expect(actualPkgRef).To(Equal(filepath.Dir(providedPkgRef)))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
