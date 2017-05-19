@@ -10,4 +10,4 @@ semantics:
 
 #### NODE_ROOT_PATH
 
-The root path of a nodes filesystem is `PER_USER_APP_DATA_PATH/opspec`
+The root path of a nodes filesystem is `PER_USER_APP_DATA_PATH/opctl`

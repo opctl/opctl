@@ -109,7 +109,8 @@ func (cc _containerCaller) Call(
 			containerStdOutReader,
 			dcgContainerCall,
 			scgContainerCall,
-		); nil != err {
+		); nil != err && err != io.ErrClosedPipe {
+			// ErrClosedPipe is expected if multiple pipe closes
 			errChan <- err
 		}
 		wg.Done()
@@ -121,7 +122,8 @@ func (cc _containerCaller) Call(
 			containerStdErrReader,
 			dcgContainerCall,
 			scgContainerCall,
-		); nil != err {
+		); nil != err && err != io.ErrClosedPipe {
+			// ErrClosedPipe is expected if multiple pipe closes
 			errChan <- err
 		}
 		wg.Done()
@@ -165,6 +167,7 @@ func (this _containerCaller) handleStdErr(
 	scgContainerCall *model.SCGContainerCall,
 ) error {
 	defer stdErrReader.Close()
+
 	scanner := bufio.NewScanner(stdErrReader)
 
 	// scan writes until EOF or error
@@ -209,6 +212,7 @@ func (this _containerCaller) handleStdOut(
 	scgContainerCall *model.SCGContainerCall,
 ) error {
 	defer stdOutReader.Close()
+
 	scanner := bufio.NewScanner(stdOutReader)
 
 	// scan writes until EOF or error

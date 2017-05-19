@@ -5,19 +5,15 @@ inputs:
     dir:
       default: .
       description: directory containing the projects source code
+  opts:
+    string:
+      default: -ffXd -e !.idea/
 outputs:
   srcDir:
     dir:
       description: directory containing the projects source code
 run:
-  container:
-    cmd:
-      - sh
-      - -ce
-      - |
-        echo "cleaning untracked files from workdir"
-        git clean -fXd -e !.idea/
-    dirs:
-      /go/src/github.com/opctl/opctl: srcDir
-    image: { ref: 'golang:1.8' }
-    workDir: /go/src/github.com/opctl/opctl
+  op:
+    pkg: { ref: github.com/opspec-pkgs/git.clean#0.0.1 }
+    inputs: { srcDir, opts: opts }
+    outputs: { srcDir }

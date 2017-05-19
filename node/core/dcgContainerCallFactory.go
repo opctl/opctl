@@ -16,6 +16,7 @@ import (
 )
 
 type dcgContainerCallFactory interface {
+	// Construct constructs a DCGContainerCall
 	Construct(
 		currentScope map[string]*model.Data,
 		scgContainerCall *model.SCGContainerCall,
