@@ -316,7 +316,7 @@ var _ = Context("cli", func() {
 
 					/* assert */
 					Expect(fakeCore.RunCallCount()).To(Equal(1))
-					actualOpUrl, actualRunOpts := fakeCore.RunArgsForCall(0)
+					_, actualOpUrl, actualRunOpts := fakeCore.RunArgsForCall(0)
 					Expect(actualOpUrl).To(Equal(expectedPkgRef))
 					Expect(actualRunOpts).To(Equal(expectedRunOpts))
 				})
@@ -337,7 +337,7 @@ var _ = Context("cli", func() {
 					/* assert */
 					Expect(fakeCore.RunCallCount()).To(Equal(1))
 
-					actualPkgRef, actualRunOpts := fakeCore.RunArgsForCall(0)
+					_, actualPkgRef, actualRunOpts := fakeCore.RunArgsForCall(0)
 					Expect(actualPkgRef).To(Equal(expectedPkgRef))
 					Expect(actualRunOpts).To(BeEmpty())
 				})

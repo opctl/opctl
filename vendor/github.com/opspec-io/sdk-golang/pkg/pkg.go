@@ -39,7 +39,7 @@ type Pkg interface {
 		opts *PullOpts,
 	) error
 
-  // List recursively lists packages in dirPath
+	// List recursively lists packages in dirPath
 	List(
 		dirPath string,
 	) ([]*model.PkgManifest, error)

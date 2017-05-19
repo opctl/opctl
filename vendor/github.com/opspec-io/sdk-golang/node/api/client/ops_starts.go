@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
@@ -11,6 +12,7 @@ import (
 
 // StartOp starts an op & returns its root op id (ROId)
 func (c client) StartOp(
+	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
 
@@ -30,6 +32,8 @@ func (c client) StartOp(
 	if nil != err {
 		return "", nil
 	}
+
+	httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

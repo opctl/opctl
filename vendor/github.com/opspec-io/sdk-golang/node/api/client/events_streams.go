@@ -2,35 +2,30 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
-	"net/url"
-	"strings"
 )
 
 func (c client) GetEventStream(
 	req *model.GetEventStreamReq,
 ) (chan model.Event, error) {
 
-	// construct query params
-	queryParams := []string{}
-	if filter := req.Filter; nil != filter {
-		var filterBytes []byte
-		filterBytes, err := json.Marshal(filter)
-		if nil != err {
-			return nil, err
-		}
-		queryParams = append(
-			queryParams,
-			fmt.Sprintf("filter=%v", url.QueryEscape(string(filterBytes))),
-		)
-	}
-
 	reqUrl := c.baseUrl
 	reqUrl.Scheme = "ws"
 	reqUrl.Path = api.Events_StreamsURLTpl
-	reqUrl.RawQuery = strings.Join(queryParams, "&")
+
+	if nil != req.Filter {
+		// add non-nil filter
+		var filterBytes []byte
+		filterBytes, err := json.Marshal(req.Filter)
+		if nil != err {
+			return nil, err
+		}
+		queryValues := reqUrl.Query()
+		queryValues.Add("filter", string(filterBytes))
+
+		reqUrl.RawQuery = queryValues.Encode()
+	}
 
 	wsConn, _, err := c.wsDialer.Dial(
 		reqUrl.String(),

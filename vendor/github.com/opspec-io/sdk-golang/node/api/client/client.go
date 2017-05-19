@@ -4,6 +4,7 @@ package client
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Client
 
 import (
+	"context"
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
@@ -21,12 +22,14 @@ type Client interface {
 	)
 
 	KillOp(
+		ctx context.Context,
 		req model.KillOpReq,
 	) (
 		err error,
 	)
 
 	StartOp(
+		ctx context.Context,
 		req model.StartOpReq,
 	) (
 		opId string,
