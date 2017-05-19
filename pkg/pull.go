@@ -7,7 +7,6 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
-	"path/filepath"
 )
 
 // Pull pulls 'pkgRef' to 'path'
@@ -29,7 +28,7 @@ func (this _Pkg) Pull(
 		cloneOptions.Auth = http.NewBasicAuth(opts.Username, opts.Password)
 	}
 
-	pkgPath := filepath.Join(path, pkgRef.FullyQualifiedName, pkgRef.Version)
+	pkgPath := pkgRef.ToPath(path)
 
 	if _, err := this.git.PlainClone(
 		pkgPath,

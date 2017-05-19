@@ -32,11 +32,7 @@ var _ = Describe("Pkg", func() {
 				Password: "dummyPassword",
 			}
 
-			expectedPath := filepath.Join(
-				providedPath,
-				providedPkgRef.FullyQualifiedName,
-				providedPkgRef.Version,
-			)
+			expectedPath := providedPkgRef.ToPath(providedPath)
 
 			expectedIsBare := false
 
@@ -140,11 +136,7 @@ var _ = Describe("Pkg", func() {
 						Version:            "0.0.0",
 					}
 
-					expectedPath := filepath.Join(
-						providedPath,
-						providedPkgRef.FullyQualifiedName,
-						providedPkgRef.Version,
-					)
+					expectedPath := providedPkgRef.ToPath(providedPath)
 
 					fakeOS := new(ios.Fake)
 

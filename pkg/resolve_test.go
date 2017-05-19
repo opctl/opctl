@@ -18,11 +18,11 @@ var _ = Describe("_Pkg", func() {
 				Version:            "0.0.0",
 			}
 
-			expectedPath := filepath.Join(
-				providedBasePath,
-				DotOpspecDirName,
-				providedPkgRef.FullyQualifiedName,
-				providedPkgRef.Version,
+			expectedPath := providedPkgRef.ToPath(
+				filepath.Join(
+					providedBasePath,
+					DotOpspecDirName,
+				),
 			)
 
 			fakeOS := new(ios.Fake)
@@ -47,11 +47,11 @@ var _ = Describe("_Pkg", func() {
 					Version:            "0.0.0",
 				}
 
-				expectedPath := filepath.Join(
-					providedBasePath,
-					DotOpspecDirName,
-					providedPkgRef.FullyQualifiedName,
-					providedPkgRef.Version,
+				expectedPath := providedPkgRef.ToPath(
+					filepath.Join(
+						providedBasePath,
+						DotOpspecDirName,
+					),
 				)
 				expectedOk := true
 

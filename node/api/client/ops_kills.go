@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
@@ -9,6 +10,7 @@ import (
 )
 
 func (c client) KillOp(
+	ctx context.Context,
 	req model.KillOpReq,
 ) error {
 
@@ -28,6 +30,8 @@ func (c client) KillOp(
 	if nil != err {
 		return err
 	}
+
+	httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

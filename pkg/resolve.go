@@ -13,13 +13,13 @@ func (this _Pkg) Resolve(
 ) (string, bool) {
 	for _, lookPath := range lookPaths {
 		// 1. attempt to resolve from lookPath/.opspec dir
-		testPath := filepath.Join(lookPath, DotOpspecDirName, pkgRef.FullyQualifiedName, pkgRef.Version)
+		testPath := pkgRef.ToPath(filepath.Join(lookPath, DotOpspecDirName))
 		if _, err := this.os.Stat(testPath); nil == err {
 			return testPath, true
 		}
 
 		// 2. attempt to resolve from lookPath
-		testPath = filepath.Join(lookPath, pkgRef.FullyQualifiedName, pkgRef.Version)
+		testPath = pkgRef.ToPath(lookPath)
 		if _, err := this.os.Stat(testPath); nil == err {
 			return testPath, true
 		}

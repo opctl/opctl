@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
@@ -18,6 +19,7 @@ var _ = Describe("KillOp", func() {
 	It("should call httpClient.Do() with expected args", func() {
 
 		/* arrange */
+		providedCtx := context.TODO()
 		providedReq := model.KillOpReq{
 			OpId: "dummyRootOpId",
 		}
@@ -32,6 +34,7 @@ var _ = Describe("KillOp", func() {
 			expectedReqUrl.String(),
 			bytes.NewBuffer(expectedBytes),
 		)
+		expectedHttpReq.WithContext(providedCtx)
 
 		fakeHttpClient := new(ihttp.Fake)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
@@ -41,7 +44,7 @@ var _ = Describe("KillOp", func() {
 		}
 
 		/* act */
-		objectUnderTest.KillOp(providedReq)
+		objectUnderTest.KillOp(providedCtx, providedReq)
 
 		/* assert */
 		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))

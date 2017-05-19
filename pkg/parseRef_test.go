@@ -4,9 +4,34 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"path/filepath"
 )
 
 var _ = Describe("_Pkg", func() {
+	Describe("PkgRef", func() {
+		Describe("ToPath", func() {
+			It("should return expected path", func() {
+				/* arrange */
+				providedBasePath := "/dummy/path"
+				objectUnderTest := &PkgRef{
+					FullyQualifiedName: "test.com/org/pkg-name",
+					Version:            "0.0.0",
+				}
+
+				expectedPath := filepath.Join(
+					providedBasePath,
+					filepath.FromSlash(objectUnderTest.FullyQualifiedName),
+					objectUnderTest.Version,
+				)
+
+				/* act */
+				actualPath := objectUnderTest.ToPath(providedBasePath)
+
+				/* assert */
+				Expect(actualPath).To(Equal(expectedPath))
+			})
+		})
+	})
 	Describe("ParseRef", func() {
 		Describe("url.Parse errors", func() {
 			It("should error", func() {
