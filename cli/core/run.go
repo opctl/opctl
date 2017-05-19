@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
@@ -14,6 +15,7 @@ import (
 )
 
 func (this _core) Run(
+	ctx context.Context,
 	pkgRef string,
 	opts *RunOpts,
 ) {
@@ -77,6 +79,7 @@ func (this _core) Run(
 
 	// start op
 	rootOpId, err := this.opspecNodeAPIClient.StartOp(
+		ctx,
 		model.StartOpReq{
 			Args: argsMap,
 			Pkg: &model.DCGOpCallPkg{
@@ -113,6 +116,7 @@ func (this _core) Run(
 				fmt.Println(this.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
 				this.opspecNodeAPIClient.KillOp(
+					ctx,
 					model.KillOpReq{
 						OpId: rootOpId,
 					},

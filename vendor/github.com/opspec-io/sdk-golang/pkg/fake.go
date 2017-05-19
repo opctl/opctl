@@ -61,19 +61,6 @@ type Fake struct {
 	pullReturnsOnCall map[int]struct {
 		result1 error
 	}
-	GetStub        func(pkgPath string) (*model.PkgManifest, error)
-	getMutex       sync.RWMutex
-	getArgsForCall []struct {
-		pkgPath string
-	}
-	getReturns struct {
-		result1 *model.PkgManifest
-		result2 error
-	}
-	getReturnsOnCall map[int]struct {
-		result1 *model.PkgManifest
-		result2 error
-	}
 	ListStub        func(dirPath string) ([]*model.PkgManifest, error)
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
@@ -317,57 +304,6 @@ func (fake *Fake) PullReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) Get(pkgPath string) (*model.PkgManifest, error) {
-	fake.getMutex.Lock()
-	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
-	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		pkgPath string
-	}{pkgPath})
-	fake.recordInvocation("Get", []interface{}{pkgPath})
-	fake.getMutex.Unlock()
-	if fake.GetStub != nil {
-		return fake.GetStub(pkgPath)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fake.getReturns.result1, fake.getReturns.result2
-}
-
-func (fake *Fake) GetCallCount() int {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return len(fake.getArgsForCall)
-}
-
-func (fake *Fake) GetArgsForCall(i int) string {
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].pkgPath
-}
-
-func (fake *Fake) GetReturns(result1 *model.PkgManifest, result2 error) {
-	fake.GetStub = nil
-	fake.getReturns = struct {
-		result1 *model.PkgManifest
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *Fake) GetReturnsOnCall(i int, result1 *model.PkgManifest, result2 error) {
-	fake.GetStub = nil
-	if fake.getReturnsOnCall == nil {
-		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *model.PkgManifest
-			result2 error
-		})
-	}
-	fake.getReturnsOnCall[i] = struct {
-		result1 *model.PkgManifest
-		result2 error
-	}{result1, result2}
-}
-
 func (fake *Fake) List(dirPath string) ([]*model.PkgManifest, error) {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
@@ -527,8 +463,6 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.parseRefMutex.RUnlock()
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
-	fake.getMutex.RLock()
-	defer fake.getMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	fake.setDescriptionMutex.RLock()

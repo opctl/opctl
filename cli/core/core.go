@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
 
 import (
+	"context"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/nodeprovider"
@@ -23,6 +24,7 @@ import (
 
 type Core interface {
 	OpKill(
+		ctx context.Context,
 		opId string,
 	)
 
@@ -31,6 +33,7 @@ type Core interface {
 	NodeKill()
 
 	Run(
+		ctx context.Context,
 		pkgRef string,
 		opts *RunOpts,
 	)

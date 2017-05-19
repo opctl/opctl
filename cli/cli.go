@@ -3,10 +3,12 @@ package main
 //go:generate counterfeiter -o ./fakeCli.go --fake-name FakeCli ./ cli
 
 import (
+	"context"
 	mow "github.com/jawher/mow.cli"
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"path/filepath"
 )
 
 type cli interface {
@@ -63,7 +65,7 @@ func newCli(
 			opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 			killCmd.Action = func() {
-				core.OpKill(*opId)
+				core.OpKill(context.TODO(), *opId)
 			}
 		})
 
@@ -109,11 +111,11 @@ func newCli(
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
-		argFile := runCmd.StringOpt("arg-file", ".opspec/args.yml", "Read in a file of args in yml format")
+		argFile := runCmd.StringOpt("arg-file", filepath.Join(pkg.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
 		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))")
 
 		runCmd.Action = func() {
-			core.Run(*pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
+			core.Run(context.TODO(), *pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
 		}
 	})
 

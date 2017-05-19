@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,6 +16,9 @@ var _ = Context("opKill", func() {
 			/* arrange */
 			fakeOpspecNodeAPIClient := new(client.Fake)
 
+			providedCtx := context.TODO()
+
+			expectedCtx := providedCtx
 			expectedReq := model.KillOpReq{
 				OpId: "dummyOpId",
 			}
@@ -24,11 +28,12 @@ var _ = Context("opKill", func() {
 			}
 
 			/* act */
-			objectUnderTest.OpKill(expectedReq.OpId)
+			objectUnderTest.OpKill(expectedCtx, expectedReq.OpId)
 
 			/* assert */
-
-			Expect(fakeOpspecNodeAPIClient.KillOpArgsForCall(0)).To(BeEquivalentTo(expectedReq))
+			actualCtx, actualReq := fakeOpspecNodeAPIClient.KillOpArgsForCall(0)
+			Expect(actualCtx).To(Equal(expectedCtx))
+			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
 		Context("opspecNodeAPIClient.OpKill errors", func() {
 			It("should call exiter w/ expected args", func() {
@@ -45,7 +50,7 @@ var _ = Context("opKill", func() {
 				}
 
 				/* act */
-				objectUnderTest.OpKill("")
+				objectUnderTest.OpKill(context.TODO(), "")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
