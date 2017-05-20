@@ -9,9 +9,10 @@ import (
 )
 
 type caller interface {
+	// Call executes a call
 	Call(
-		callId string,
-		inboundScope map[string]*model.Data,
+		id string,
+		scope map[string]*model.Data,
 		scg *model.SCG,
 		pkgRef string,
 		rootOpId string,
@@ -33,10 +34,9 @@ type _caller struct {
 	serialCaller    serialCaller
 }
 
-// Executes/runs an op
 func (this _caller) Call(
-	callId string,
-	inboundScope map[string]*model.Data,
+	id string,
+	scope map[string]*model.Data,
 	scg *model.SCG,
 	pkgRef string,
 	rootOpId string,
@@ -50,32 +50,32 @@ func (this _caller) Call(
 	switch {
 	case nil != scg.Container:
 		return this.containerCaller.Call(
-			inboundScope,
-			callId,
+			scope,
+			id,
 			scg.Container,
 			pkgRef,
 			rootOpId,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
-			inboundScope,
-			callId,
+			scope,
+			id,
 			filepath.Dir(pkgRef),
 			rootOpId,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
 		return this.parallelCaller.Call(
-			callId,
-			inboundScope,
+			id,
+			scope,
 			rootOpId,
 			pkgRef,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
 		return this.serialCaller.Call(
-			callId,
-			inboundScope,
+			id,
+			scope,
 			rootOpId,
 			pkgRef,
 			scg.Serial,

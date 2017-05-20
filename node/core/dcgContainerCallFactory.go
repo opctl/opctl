@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeDCGFactory.go --fake-name fakeDCGFactory ./ dcgFactory
+//go:generate counterfeiter -o ./fakeDCGContainerCallFactory.go --fake-name fakeDCGContainerCallFactory ./ dcgContainerCallFactory
 
 import (
 	"github.com/golang-interfaces/ios"
@@ -194,6 +194,14 @@ func (df _dcgContainerCallFactory) Construct(
 		dcgContainerCall.Image = &model.DCGContainerCallImage{
 			Ref: df.interpolater.Interpolate(scgContainerCall.Image.Ref, currentScope),
 		}
+		if "" != scgContainerCallImage.PullIdentity && "" != scgContainerCallImage.PullSecret {
+			// fallback for deprecated cred format
+			scgContainerCallImage.PullCreds = &model.SCGPullCreds{
+				Username: scgContainerCallImage.PullIdentity,
+				Password: scgContainerCallImage.PullSecret,
+			}
+		}
+
 		if nil != scgContainerCallImage.PullCreds {
 			dcgContainerCall.Image.PullCreds = &model.DCGPullCreds{
 				Username: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Username, currentScope),
