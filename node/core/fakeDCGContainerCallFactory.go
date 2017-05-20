@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type fakeDCGFactory struct {
+type fakeDCGContainerCallFactory struct {
 	ConstructStub        func(currentScope map[string]*model.Data, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error)
 	constructMutex       sync.RWMutex
 	constructArgsForCall []struct {
@@ -29,7 +29,7 @@ type fakeDCGFactory struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeDCGFactory) Construct(currentScope map[string]*model.Data, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error) {
+func (fake *fakeDCGContainerCallFactory) Construct(currentScope map[string]*model.Data, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error) {
 	fake.constructMutex.Lock()
 	ret, specificReturn := fake.constructReturnsOnCall[len(fake.constructArgsForCall)]
 	fake.constructArgsForCall = append(fake.constructArgsForCall, struct {
@@ -50,19 +50,19 @@ func (fake *fakeDCGFactory) Construct(currentScope map[string]*model.Data, scgCo
 	return fake.constructReturns.result1, fake.constructReturns.result2
 }
 
-func (fake *fakeDCGFactory) ConstructCallCount() int {
+func (fake *fakeDCGContainerCallFactory) ConstructCallCount() int {
 	fake.constructMutex.RLock()
 	defer fake.constructMutex.RUnlock()
 	return len(fake.constructArgsForCall)
 }
 
-func (fake *fakeDCGFactory) ConstructArgsForCall(i int) (map[string]*model.Data, *model.SCGContainerCall, string, string, string) {
+func (fake *fakeDCGContainerCallFactory) ConstructArgsForCall(i int) (map[string]*model.Data, *model.SCGContainerCall, string, string, string) {
 	fake.constructMutex.RLock()
 	defer fake.constructMutex.RUnlock()
 	return fake.constructArgsForCall[i].currentScope, fake.constructArgsForCall[i].scgContainerCall, fake.constructArgsForCall[i].containerId, fake.constructArgsForCall[i].rootOpId, fake.constructArgsForCall[i].pkgRef
 }
 
-func (fake *fakeDCGFactory) ConstructReturns(result1 *model.DCGContainerCall, result2 error) {
+func (fake *fakeDCGContainerCallFactory) ConstructReturns(result1 *model.DCGContainerCall, result2 error) {
 	fake.ConstructStub = nil
 	fake.constructReturns = struct {
 		result1 *model.DCGContainerCall
@@ -70,7 +70,7 @@ func (fake *fakeDCGFactory) ConstructReturns(result1 *model.DCGContainerCall, re
 	}{result1, result2}
 }
 
-func (fake *fakeDCGFactory) ConstructReturnsOnCall(i int, result1 *model.DCGContainerCall, result2 error) {
+func (fake *fakeDCGContainerCallFactory) ConstructReturnsOnCall(i int, result1 *model.DCGContainerCall, result2 error) {
 	fake.ConstructStub = nil
 	if fake.constructReturnsOnCall == nil {
 		fake.constructReturnsOnCall = make(map[int]struct {
@@ -84,15 +84,19 @@ func (fake *fakeDCGFactory) ConstructReturnsOnCall(i int, result1 *model.DCGCont
 	}{result1, result2}
 }
 
-func (fake *fakeDCGFactory) Invocations() map[string][][]interface{} {
+func (fake *fakeDCGContainerCallFactory) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.constructMutex.RLock()
 	defer fake.constructMutex.RUnlock()
-	return fake.invocations
+	copiedInvocations := map[string][][]interface{}{}
+	for key, value := range fake.invocations {
+		copiedInvocations[key] = value
+	}
+	return copiedInvocations
 }
 
-func (fake *fakeDCGFactory) recordInvocation(key string, args []interface{}) {
+func (fake *fakeDCGContainerCallFactory) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {

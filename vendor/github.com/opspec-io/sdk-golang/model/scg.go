@@ -34,7 +34,13 @@ type SCGContainerCall struct {
 
 type SCGContainerCallImage struct {
 	// will be interpolated
-	Ref       string        `yaml:"ref"`
+	Ref string `yaml:"ref"`
+
+	// @DEPRECATED; use PullCreds. will be interpolated
+	PullIdentity string `yaml:"pullIdentity,omitempty"`
+	// @DEPRECATED; use PullCreds. will be interpolated
+	PullSecret string `yaml:"pullSecret,omitempty"`
+
 	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }
 

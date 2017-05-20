@@ -21,7 +21,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
 				new(containerprovider.Fake),
-				new(fakeDCGFactory),
+				new(fakeDCGContainerCallFactory),
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
 			)).To(Not(BeNil()))
@@ -52,7 +52,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider:       new(containerprovider.Fake),
-				dcgContainerCallFactory: new(fakeDCGFactory),
+				dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 				pubSub:                  fakePubSub,
 				dcgNodeRepo:             fakeDCGNodeRepo,
 				io:                      fakeIIO,
@@ -94,7 +94,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider:       new(containerprovider.Fake),
-				dcgContainerCallFactory: new(fakeDCGFactory),
+				dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 				pubSub:                  fakePubSub,
 				dcgNodeRepo:             new(fakeDCGNodeRepo),
 				io:                      fakeIIO,
@@ -129,8 +129,8 @@ var _ = Context("containerCaller", func() {
 
 			expectedDCGContainerCall := &model.DCGContainerCall{}
 
-			fakeDCGFactory := new(fakeDCGFactory)
-			fakeDCGFactory.ConstructReturns(expectedDCGContainerCall, nil)
+			fakeDCGContainerCallFactory := new(fakeDCGContainerCallFactory)
+			fakeDCGContainerCallFactory.ConstructReturns(expectedDCGContainerCall, nil)
 
 			fakeContainerProvider := new(containerprovider.Fake)
 
@@ -141,7 +141,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider:       fakeContainerProvider,
-				dcgContainerCallFactory: fakeDCGFactory,
+				dcgContainerCallFactory: fakeDCGContainerCallFactory,
 				pubSub:                  fakePubSub,
 				dcgNodeRepo:             new(fakeDCGNodeRepo),
 				io:                      fakeIIO,
@@ -180,7 +180,7 @@ var _ = Context("containerCaller", func() {
 
 				objectUnderTest := _containerCaller{
 					containerProvider:       fakeContainerProvider,
-					dcgContainerCallFactory: new(fakeDCGFactory),
+					dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 					pubSub:                  new(pubsub.Fake),
 					dcgNodeRepo:             new(fakeDCGNodeRepo),
 					io:                      fakeIIO,
@@ -215,7 +215,7 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGFactory),
+			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 			pubSub:                  new(pubsub.Fake),
 			dcgNodeRepo:             fakeDCGNodeRepo,
 			io:                      fakeIIO,
@@ -258,7 +258,7 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGFactory),
+			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 			pubSub:                  fakePubSub,
 			dcgNodeRepo:             new(fakeDCGNodeRepo),
 			io:                      fakeIIO,
@@ -313,8 +313,8 @@ var _ = Context("containerCaller", func() {
 			},
 		}
 
-		fakeDCGFactory := new(fakeDCGFactory)
-		fakeDCGFactory.ConstructReturns(
+		fakeDCGContainerCallFactory := new(fakeDCGContainerCallFactory)
+		fakeDCGContainerCallFactory.ConstructReturns(
 			&model.DCGContainerCall{
 				DCGBaseCall: &model.DCGBaseCall{
 					RootOpId: providedRootOpId,
@@ -340,7 +340,7 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: fakeDCGFactory,
+			dcgContainerCallFactory: fakeDCGContainerCallFactory,
 			pubSub:                  fakePubSub,
 			dcgNodeRepo:             new(fakeDCGNodeRepo),
 			io:                      fakeIIO,
@@ -386,7 +386,7 @@ var _ = Context("containerCaller", func() {
 
 		objectUnderTest := _containerCaller{
 			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGFactory),
+			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
 			pubSub:                  fakePubSub,
 			dcgNodeRepo:             new(fakeDCGNodeRepo),
 			io:                      fakeIIO,
