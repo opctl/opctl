@@ -1,4 +1,4 @@
-package validate
+package validator
 
 import (
 	"encoding/json"
@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/xeipuuv/gojsonschema"
+	"math"
 	"strings"
 )
 
-// validates an value against a string parameter
-func (this validate) stringParam(
-	rawValue *string,
-	param *model.StringParam,
+// validateNumber validates an value against a string parameter
+func (this _Validator) validateNumber(
+	rawValue *float64,
+	param *model.NumberParam,
 ) (errs []error) {
 	errs = []error{}
 
@@ -23,12 +24,19 @@ func (this validate) stringParam(
 	}
 
 	if nil == value {
-		errs = append(errs, errors.New("String required"))
+		errs = append(errs, errors.New("Number required"))
 		return
 	}
 
 	// guard no constraints
-	if paramConstraints := param.Constraints; nil != paramConstraints {
+	if paramConstraints := param.Constraints; nil != param.Constraints {
+
+		// perform validations not supported by gojsonschema
+		if integerConstraint := paramConstraints.Format; integerConstraint == "integer" {
+			if ceiledValue := math.Ceil(*value); ceiledValue != *value {
+				errs = append(errs, fmt.Errorf("Does not match format '%v'", integerConstraint))
+			}
+		}
 
 		// perform validations supported by gojsonschema
 		constraintsJsonBytes, err := json.Marshal(paramConstraints)
@@ -59,7 +67,6 @@ func (this validate) stringParam(
 			// enum validation errors include `(root) ` prefix we don't want
 			errs = append(errs, errors.New(strings.TrimPrefix(errString.Description(), "(root) ")))
 		}
-
 	}
 
 	return

@@ -5,6 +5,7 @@ package core
 import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/opcall"
 	"time"
 )
 
@@ -28,18 +29,18 @@ func newOpCaller(
 	rootFSPath string,
 ) opCaller {
 	return _opCaller{
-		dcgOpCallFactory: newDCGOpCallFactory(rootFSPath),
-		pubSub:           pubSub,
-		dcgNodeRepo:      dcgNodeRepo,
-		caller:           caller,
+		opCall:      opcall.New(rootFSPath),
+		pubSub:      pubSub,
+		dcgNodeRepo: dcgNodeRepo,
+		caller:      caller,
 	}
 }
 
 type _opCaller struct {
-	dcgOpCallFactory dcgOpCallFactory
-	pubSub           pubsub.PubSub
-	dcgNodeRepo      dcgNodeRepo
-	caller           caller
+	opCall      opcall.OpCall
+	pubSub      pubsub.PubSub
+	dcgNodeRepo dcgNodeRepo
+	caller      caller
 }
 
 func (this _opCaller) Call(
@@ -120,7 +121,7 @@ func (this _opCaller) Call(
 		},
 	)
 
-	dcgOpCall, err := this.dcgOpCallFactory.Construct(
+	dcgOpCall, err := this.opCall.Interpret(
 		inboundScope,
 		scgOpCall,
 		opId,

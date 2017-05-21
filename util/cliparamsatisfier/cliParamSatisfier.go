@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/opspec-io/sdk-golang/opcall/input/validator"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -27,20 +27,20 @@ type CliParamSatisfier interface {
 func New(
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
-	validate validate.Validate,
+	validate validator.Validator,
 ) CliParamSatisfier {
 
 	return &_cliParamSatisfier{
-		cliExiter: cliExiter,
-		cliOutput: cliOutput,
-		validate:  validate,
+		cliExiter:      cliExiter,
+		cliOutput:      cliOutput,
+		inputValidator: validate,
 	}
 }
 
 type _cliParamSatisfier struct {
-	cliExiter cliexiter.CliExiter
-	cliOutput clioutput.CliOutput
-	validate  validate.Validate
+	cliExiter      cliexiter.CliExiter
+	cliOutput      clioutput.CliOutput
+	inputValidator validator.Validator
 }
 
 func (this _cliParamSatisfier) Satisfy(
@@ -96,7 +96,7 @@ func (this _cliParamSatisfier) Satisfy(
 				arg = &model.Data{Socket: rawArg}
 			}
 
-			argErrors := this.validate.Param(arg, param)
+			argErrors := this.inputValidator.Validate(arg, param)
 			if len(argErrors) > 0 {
 				this.notifyOfArgErrors(argErrors, paramName)
 

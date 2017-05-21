@@ -1,4 +1,4 @@
-package validate
+package validator
 
 import (
 	"errors"
@@ -6,12 +6,12 @@ import (
 )
 
 // validates a value against a parameter
-func (this validate) Param(
+func (this _Validator) Validate(
 	rawValue *model.Data,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {
-		return []error{errors.New("Param required")}
+		return []error{errors.New("Validate required")}
 	}
 
 	switch {
@@ -20,31 +20,31 @@ func (this validate) Param(
 		if nil != rawValue {
 			value = rawValue.Dir
 		}
-		errs = this.dirParam(value, param.Dir)
+		errs = this.validateDir(value, param.Dir)
 	case nil != param.File:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.File
 		}
-		errs = this.fileParam(value, param.File)
+		errs = this.validateFile(value, param.File)
 	case nil != param.String:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.String
 		}
-		errs = this.stringParam(value, param.String)
+		errs = this.validateString(value, param.String)
 	case nil != param.Number:
 		var value *float64
 		if nil != rawValue {
 			value = rawValue.Number
 		}
-		errs = this.numberParam(value, param.Number)
+		errs = this.validateNumber(value, param.Number)
 	case nil != param.Socket:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.Socket
 		}
-		errs = this.socketParam(value, param.Socket)
+		errs = this.validateSocket(value, param.Socket)
 	}
 	return
 }

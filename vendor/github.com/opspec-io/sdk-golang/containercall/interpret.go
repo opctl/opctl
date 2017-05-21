@@ -1,12 +1,6 @@
-package core
-
-//go:generate counterfeiter -o ./fakeDCGContainerCallFactory.go --fake-name fakeDCGContainerCallFactory ./ dcgContainerCallFactory
+package containercall
 
 import (
-	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/dircopier"
-	"github.com/golang-utils/filecopier"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path"
@@ -15,42 +9,7 @@ import (
 	"strings"
 )
 
-type dcgContainerCallFactory interface {
-	// Construct constructs a DCGContainerCall
-	Construct(
-		currentScope map[string]*model.Data,
-		scgContainerCall *model.SCGContainerCall,
-		containerId string,
-		rootOpId string,
-		pkgRef string,
-	) (*model.DCGContainerCall, error)
-}
-
-func newDCGContainerCallFactory(
-	dirCopier dircopier.DirCopier,
-	fileCopier filecopier.FileCopier,
-	interpolate interpolater.Interpolater,
-	os ios.IOS,
-	rootFSPath string,
-) dcgContainerCallFactory {
-	return _dcgContainerCallFactory{
-		dirCopier:    dirCopier,
-		fileCopier:   fileCopier,
-		interpolater: interpolate,
-		os:           os,
-		rootFSPath:   rootFSPath,
-	}
-}
-
-type _dcgContainerCallFactory struct {
-	dirCopier    dircopier.DirCopier
-	fileCopier   filecopier.FileCopier
-	interpolater interpolater.Interpolater
-	os           ios.IOS
-	rootFSPath   string
-}
-
-func (df _dcgContainerCallFactory) Construct(
+func (df _ContainerCall) Interpret(
 	currentScope map[string]*model.Data,
 	scgContainerCall *model.SCGContainerCall,
 	containerId string,
@@ -129,7 +88,7 @@ func (df _dcgContainerCallFactory) Construct(
 
 	// construct envVars
 	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
-		if "" == scgContainerCall.EnvVars[scgContainerEnvVarName] {
+		if "" == scgContainerEnvVar {
 			// implicitly bound
 			value := currentScope[scgContainerEnvVarName]
 			switch {

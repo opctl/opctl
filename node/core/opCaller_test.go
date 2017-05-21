@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/opcall"
 	"time"
 )
 
@@ -17,7 +18,7 @@ var _ = Context("opCaller", func() {
 				new(pubsub.Fake),
 				newDCGNodeRepo(),
 				new(fakeCaller),
-				"dummyRootFSPath",
+				"",
 			)).To(Not(BeNil()))
 		})
 	})
@@ -38,12 +39,16 @@ var _ = Context("opCaller", func() {
 
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
-				objectUnderTest := newOpCaller(
-					new(pubsub.Fake),
-					fakeDCGNodeRepo,
-					new(fakeCaller),
-					"dummyRootFSPath",
-				)
+				fakeOpCall := new(opcall.Fake)
+				// error to trigger immediate return
+				fakeOpCall.InterpretReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _opCaller{
+					opCall:      fakeOpCall,
+					pubSub:      new(pubsub.Fake),
+					dcgNodeRepo: fakeDCGNodeRepo,
+					caller:      new(fakeCaller),
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -76,12 +81,16 @@ var _ = Context("opCaller", func() {
 
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
-			objectUnderTest := newOpCaller(
-				new(pubsub.Fake),
-				fakeDCGNodeRepo,
-				new(fakeCaller),
-				"dummyRootFSPath",
-			)
+			fakeOpCall := new(opcall.Fake)
+			// error to trigger immediate return
+			fakeOpCall.InterpretReturns(nil, errors.New("dummyError"))
+
+			objectUnderTest := _opCaller{
+				opCall:      fakeOpCall,
+				pubSub:      new(pubsub.Fake),
+				dcgNodeRepo: fakeDCGNodeRepo,
+				caller:      new(fakeCaller),
+			}
 
 			/* act */
 			objectUnderTest.Call(
@@ -95,14 +104,61 @@ var _ = Context("opCaller", func() {
 			/* assert */
 			Expect(fakeDCGNodeRepo.AddArgsForCall(0)).To(Equal(expectedDCGNodeDescriptor))
 		})
-		It("should call dcgOpCallFactory.Construct w/ expected args & return errors", func() {
+		It("should call opCall.Construct w/ expected args & return errors", func() {
 			/* arrange */
+			providedScope := map[string]*model.Data{}
+			providedOpId := "dummyOpId"
+			providedRootOpId := "dummyRootOpId"
+			providedPkgBasePath := "dummyPkgBasePath"
+			providedSCGOpCall := &model.SCGOpCall{
+				Pkg: &model.SCGOpCallPkg{
+					Ref: "dummyPkgRef",
+				},
+			}
+
+			fakeOpCall := new(opcall.Fake)
+
+			// error to trigger immediate return
+			expectedErr := errors.New("dummyError")
+			fakeOpCall.InterpretReturns(
+				&model.DCGOpCall{
+					DCGBaseCall: &model.DCGBaseCall{},
+				},
+				expectedErr,
+			)
+
+			objectUnderTest := _opCaller{
+				opCall:      fakeOpCall,
+				pubSub:      new(pubsub.Fake),
+				dcgNodeRepo: new(fakeDCGNodeRepo),
+				caller:      new(fakeCaller),
+			}
 
 			/* act */
+			actualErr := objectUnderTest.Call(
+				providedScope,
+				providedOpId,
+				providedPkgBasePath,
+				providedRootOpId,
+				providedSCGOpCall,
+			)
 
 			/* assert */
+			actualScope,
+				actualSCGOpCall,
+				actualOpId,
+				actualPkgBasePath,
+				actualRootOpId := fakeOpCall.InterpretArgsForCall(0)
+
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualSCGOpCall).To(Equal(providedSCGOpCall))
+			Expect(actualOpId).To(Equal(providedOpId))
+			Expect(actualPkgBasePath).To(Equal(providedPkgBasePath))
+			Expect(actualRootOpId).To(Equal(providedRootOpId))
+
+			Expect(actualErr).To(Equal(expectedErr))
 		})
-		Context("dcgOpCallFactory.Construct errors", func() {
+		Context("opCall.Construct errors", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedOpId := "dummyOpId"
@@ -123,8 +179,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-				fakeDCGOpCallFactory.ConstructReturns(
+				fakeOpCall := new(opcall.Fake)
+				fakeOpCall.InterpretReturns(
 					nil,
 					errors.New(expectedEvent.OpErred.Msg),
 				)
@@ -135,10 +191,10 @@ var _ = Context("opCaller", func() {
 				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := _opCaller{
-					dcgOpCallFactory: fakeDCGOpCallFactory,
-					pubSub:           fakePubSub,
-					dcgNodeRepo:      fakeDCGNodeRepo,
-					caller:           new(fakeCaller),
+					opCall:      fakeOpCall,
+					pubSub:      fakePubSub,
+					dcgNodeRepo: fakeDCGNodeRepo,
+					caller:      new(fakeCaller),
 				}
 
 				/* act */
@@ -161,7 +217,7 @@ var _ = Context("opCaller", func() {
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
 		})
-		Context("dcgOpCallFactory.Construct doesn't error", func() {
+		Context("opCall.Construct doesn't error", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
 				/* arrange */
 				providedOpId := "dummyOpId"
@@ -181,8 +237,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-				fakeDCGOpCallFactory.ConstructReturns(
+				fakeOpCall := new(opcall.Fake)
+				fakeOpCall.InterpretReturns(
 					&model.DCGOpCall{
 						DCGBaseCall: &model.DCGBaseCall{},
 					},
@@ -192,10 +248,10 @@ var _ = Context("opCaller", func() {
 				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := _opCaller{
-					dcgOpCallFactory: fakeDCGOpCallFactory,
-					pubSub:           fakePubSub,
-					dcgNodeRepo:      new(fakeDCGNodeRepo),
-					caller:           new(fakeCaller),
+					opCall:      fakeOpCall,
+					pubSub:      fakePubSub,
+					dcgNodeRepo: new(fakeDCGNodeRepo),
+					caller:      new(fakeCaller),
 				}
 
 				/* act */
@@ -238,8 +294,8 @@ var _ = Context("opCaller", func() {
 						"dummyScopeName": {String: &dummyString},
 					},
 				}
-				fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-				fakeDCGOpCallFactory.ConstructReturns(
+				fakeOpCall := new(opcall.Fake)
+				fakeOpCall.InterpretReturns(
 					&dcgOpCall,
 					nil,
 				)
@@ -247,10 +303,10 @@ var _ = Context("opCaller", func() {
 				fakeCaller := new(fakeCaller)
 
 				objectUnderTest := _opCaller{
-					dcgOpCallFactory: fakeDCGOpCallFactory,
-					pubSub:           new(pubsub.Fake),
-					dcgNodeRepo:      new(fakeDCGNodeRepo),
-					caller:           fakeCaller,
+					opCall:      fakeOpCall,
+					pubSub:      new(pubsub.Fake),
+					dcgNodeRepo: new(fakeDCGNodeRepo),
+					caller:      fakeCaller,
 				}
 
 				/* act */
@@ -279,8 +335,8 @@ var _ = Context("opCaller", func() {
 				/* arrange */
 				providedRootOpId := "dummyRootOpId"
 
-				fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-				fakeDCGOpCallFactory.ConstructReturns(
+				fakeOpCall := new(opcall.Fake)
+				fakeOpCall.InterpretReturns(
 					&model.DCGOpCall{
 						DCGBaseCall: &model.DCGBaseCall{},
 					},
@@ -290,10 +346,10 @@ var _ = Context("opCaller", func() {
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 				objectUnderTest := _opCaller{
-					pubSub:           new(pubsub.Fake),
-					dcgOpCallFactory: fakeDCGOpCallFactory,
-					dcgNodeRepo:      fakeDCGNodeRepo,
-					caller:           new(fakeCaller),
+					pubSub:      new(pubsub.Fake),
+					opCall:      fakeOpCall,
+					dcgNodeRepo: fakeDCGNodeRepo,
+					caller:      new(fakeCaller),
 				}
 
 				/* act */
@@ -329,8 +385,8 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-					fakeDCGOpCallFactory.ConstructReturns(
+					fakeOpCall := new(opcall.Fake)
+					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
 							DCGBaseCall: &model.DCGBaseCall{},
 						},
@@ -340,10 +396,10 @@ var _ = Context("opCaller", func() {
 					fakePubSub := new(pubsub.Fake)
 
 					objectUnderTest := _opCaller{
-						pubSub:           fakePubSub,
-						dcgOpCallFactory: fakeDCGOpCallFactory,
-						dcgNodeRepo:      new(fakeDCGNodeRepo),
-						caller:           new(fakeCaller),
+						pubSub:      fakePubSub,
+						opCall:      fakeOpCall,
+						dcgNodeRepo: new(fakeDCGNodeRepo),
+						caller:      new(fakeCaller),
 					}
 
 					/* act */
@@ -371,8 +427,8 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedOpId := "dummyOpId"
 
-					fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-					fakeDCGOpCallFactory.ConstructReturns(
+					fakeOpCall := new(opcall.Fake)
+					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
 							DCGBaseCall: &model.DCGBaseCall{},
 						},
@@ -383,10 +439,10 @@ var _ = Context("opCaller", func() {
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 					objectUnderTest := _opCaller{
-						pubSub:           new(pubsub.Fake),
-						dcgOpCallFactory: fakeDCGOpCallFactory,
-						dcgNodeRepo:      fakeDCGNodeRepo,
-						caller:           new(fakeCaller),
+						pubSub:      new(pubsub.Fake),
+						opCall:      fakeOpCall,
+						dcgNodeRepo: fakeDCGNodeRepo,
+						caller:      new(fakeCaller),
 					}
 
 					/* act */
@@ -424,8 +480,8 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-						fakeDCGOpCallFactory.ConstructReturns(
+						fakeOpCall := new(opcall.Fake)
+						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
 								DCGBaseCall: &model.DCGBaseCall{},
 							},
@@ -441,10 +497,10 @@ var _ = Context("opCaller", func() {
 						fakeCaller.CallReturns(callErr)
 
 						objectUnderTest := _opCaller{
-							pubSub:           fakePubSub,
-							dcgOpCallFactory: fakeDCGOpCallFactory,
-							dcgNodeRepo:      fakeDCGNodeRepo,
-							caller:           fakeCaller,
+							pubSub:      fakePubSub,
+							opCall:      fakeOpCall,
+							dcgNodeRepo: fakeDCGNodeRepo,
+							caller:      fakeCaller,
 						}
 
 						/* act */
@@ -486,8 +542,8 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-						fakeDCGOpCallFactory.ConstructReturns(
+						fakeOpCall := new(opcall.Fake)
+						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
 								DCGBaseCall: &model.DCGBaseCall{},
 							},
@@ -505,10 +561,10 @@ var _ = Context("opCaller", func() {
 						)
 
 						objectUnderTest := _opCaller{
-							pubSub:           fakePubSub,
-							dcgOpCallFactory: fakeDCGOpCallFactory,
-							dcgNodeRepo:      fakeDCGNodeRepo,
-							caller:           fakeCaller,
+							pubSub:      fakePubSub,
+							opCall:      fakeOpCall,
+							dcgNodeRepo: fakeDCGNodeRepo,
+							caller:      fakeCaller,
 						}
 
 						/* act */
@@ -552,8 +608,8 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeDCGOpCallFactory := new(fakeDCGOpCallFactory)
-						fakeDCGOpCallFactory.ConstructReturns(
+						fakeOpCall := new(opcall.Fake)
+						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
 								DCGBaseCall: &model.DCGBaseCall{},
 							},
@@ -566,10 +622,10 @@ var _ = Context("opCaller", func() {
 						fakePubSub := new(pubsub.Fake)
 
 						objectUnderTest := _opCaller{
-							pubSub:           fakePubSub,
-							dcgOpCallFactory: fakeDCGOpCallFactory,
-							dcgNodeRepo:      fakeDCGNodeRepo,
-							caller:           new(fakeCaller),
+							pubSub:      fakePubSub,
+							opCall:      fakeOpCall,
+							dcgNodeRepo: fakeDCGNodeRepo,
+							caller:      new(fakeCaller),
 						}
 
 						/* act */

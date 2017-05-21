@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/pkg/errors"
 	"io"
@@ -21,7 +22,7 @@ var _ = Context("containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
 				new(containerprovider.Fake),
-				new(fakeDCGContainerCallFactory),
+				new(containercall.Fake),
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
 			)).To(Not(BeNil()))
@@ -51,11 +52,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider:       new(containerprovider.Fake),
-				dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-				pubSub:                  fakePubSub,
-				dcgNodeRepo:             fakeDCGNodeRepo,
-				io:                      fakeIIO,
+				containerProvider: new(containerprovider.Fake),
+				containerCall:     new(containercall.Fake),
+				pubSub:            fakePubSub,
+				dcgNodeRepo:       fakeDCGNodeRepo,
+				io:                fakeIIO,
 			}
 
 			/* act */
@@ -93,11 +94,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider:       new(containerprovider.Fake),
-				dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-				pubSub:                  fakePubSub,
-				dcgNodeRepo:             new(fakeDCGNodeRepo),
-				io:                      fakeIIO,
+				containerProvider: new(containerprovider.Fake),
+				containerCall:     new(containercall.Fake),
+				pubSub:            fakePubSub,
+				dcgNodeRepo:       new(fakeDCGNodeRepo),
+				io:                fakeIIO,
 			}
 
 			/* act */
@@ -129,8 +130,8 @@ var _ = Context("containerCaller", func() {
 
 			expectedDCGContainerCall := &model.DCGContainerCall{}
 
-			fakeDCGContainerCallFactory := new(fakeDCGContainerCallFactory)
-			fakeDCGContainerCallFactory.ConstructReturns(expectedDCGContainerCall, nil)
+			fakeContainerCall := new(containercall.Fake)
+			fakeContainerCall.InterpretReturns(expectedDCGContainerCall, nil)
 
 			fakeContainerProvider := new(containerprovider.Fake)
 
@@ -140,11 +141,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider:       fakeContainerProvider,
-				dcgContainerCallFactory: fakeDCGContainerCallFactory,
-				pubSub:                  fakePubSub,
-				dcgNodeRepo:             new(fakeDCGNodeRepo),
-				io:                      fakeIIO,
+				containerProvider: fakeContainerProvider,
+				containerCall:     fakeContainerCall,
+				pubSub:            fakePubSub,
+				dcgNodeRepo:       new(fakeDCGNodeRepo),
+				io:                fakeIIO,
 			}
 
 			/* act */
@@ -179,11 +180,11 @@ var _ = Context("containerCaller", func() {
 				fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 				objectUnderTest := _containerCaller{
-					containerProvider:       fakeContainerProvider,
-					dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-					pubSub:                  new(pubsub.Fake),
-					dcgNodeRepo:             new(fakeDCGNodeRepo),
-					io:                      fakeIIO,
+					containerProvider: fakeContainerProvider,
+					containerCall:     new(containercall.Fake),
+					pubSub:            new(pubsub.Fake),
+					dcgNodeRepo:       new(fakeDCGNodeRepo),
+					io:                fakeIIO,
 				}
 
 				/* act */
@@ -214,11 +215,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-			pubSub:                  new(pubsub.Fake),
-			dcgNodeRepo:             fakeDCGNodeRepo,
-			io:                      fakeIIO,
+			containerProvider: new(containerprovider.Fake),
+			containerCall:     new(containercall.Fake),
+			pubSub:            new(pubsub.Fake),
+			dcgNodeRepo:       fakeDCGNodeRepo,
+			io:                fakeIIO,
 		}
 
 		/* act */
@@ -257,11 +258,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-			pubSub:                  fakePubSub,
-			dcgNodeRepo:             new(fakeDCGNodeRepo),
-			io:                      fakeIIO,
+			containerProvider: new(containerprovider.Fake),
+			containerCall:     new(containercall.Fake),
+			pubSub:            fakePubSub,
+			dcgNodeRepo:       new(fakeDCGNodeRepo),
+			io:                fakeIIO,
 		}
 
 		/* act */
@@ -313,8 +314,8 @@ var _ = Context("containerCaller", func() {
 			},
 		}
 
-		fakeDCGContainerCallFactory := new(fakeDCGContainerCallFactory)
-		fakeDCGContainerCallFactory.ConstructReturns(
+		fakeContainerCall := new(containercall.Fake)
+		fakeContainerCall.InterpretReturns(
 			&model.DCGContainerCall{
 				DCGBaseCall: &model.DCGBaseCall{
 					RootOpId: providedRootOpId,
@@ -339,11 +340,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: fakeDCGContainerCallFactory,
-			pubSub:                  fakePubSub,
-			dcgNodeRepo:             new(fakeDCGNodeRepo),
-			io:                      fakeIIO,
+			containerProvider: new(containerprovider.Fake),
+			containerCall:     fakeContainerCall,
+			pubSub:            fakePubSub,
+			dcgNodeRepo:       new(fakeDCGNodeRepo),
+			io:                fakeIIO,
 		}
 
 		/* act */
@@ -385,11 +386,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider:       new(containerprovider.Fake),
-			dcgContainerCallFactory: new(fakeDCGContainerCallFactory),
-			pubSub:                  fakePubSub,
-			dcgNodeRepo:             new(fakeDCGNodeRepo),
-			io:                      fakeIIO,
+			containerProvider: new(containerprovider.Fake),
+			containerCall:     new(containercall.Fake),
+			pubSub:            fakePubSub,
+			dcgNodeRepo:       new(fakeDCGNodeRepo),
+			io:                fakeIIO,
 		}
 
 		/* act */

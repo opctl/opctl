@@ -6,7 +6,7 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/validate"
+	"github.com/opspec-io/sdk-golang/opcall/input/validator"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -20,14 +20,14 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			expectedInputNames := map[string]struct{}{
-				"input1": struct{}{},
-				"input2": struct{}{},
+				"input1": {},
+				"input2": {},
 			}
 
 			objectUnderTest := New(
 				new(cliexiter.Fake),
 				new(clioutput.Fake),
-				new(validate.Fake),
+				new(validator.Fake),
 			)
 
 			/* act */
