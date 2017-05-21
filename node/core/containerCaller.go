@@ -7,6 +7,7 @@ import (
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
+	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
 	"strings"
@@ -27,27 +28,27 @@ type containerCaller interface {
 
 func newContainerCaller(
 	containerProvider containerprovider.ContainerProvider,
-	dcgContainerCallFactory dcgContainerCallFactory,
+	containerCall containercall.ContainerCall,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
-		containerProvider:       containerProvider,
-		dcgContainerCallFactory: dcgContainerCallFactory,
-		pubSub:                  pubSub,
-		dcgNodeRepo:             dcgNodeRepo,
-		io:                      iio.New(),
+		containerProvider: containerProvider,
+		containerCall:     containerCall,
+		pubSub:            pubSub,
+		dcgNodeRepo:       dcgNodeRepo,
+		io:                iio.New(),
 	}
 
 }
 
 type _containerCaller struct {
-	containerProvider       containerprovider.ContainerProvider
-	dcgContainerCallFactory dcgContainerCallFactory
-	pubSub                  pubsub.PubSub
-	dcgNodeRepo             dcgNodeRepo
-	io                      iio.IIO
+	containerProvider containerprovider.ContainerProvider
+	containerCall     containercall.ContainerCall
+	pubSub            pubsub.PubSub
+	dcgNodeRepo       dcgNodeRepo
+	io                iio.IIO
 }
 
 func (cc _containerCaller) Call(
@@ -75,7 +76,7 @@ func (cc _containerCaller) Call(
 		},
 	)
 
-	dcgContainerCall, err := cc.dcgContainerCallFactory.Construct(
+	dcgContainerCall, err := cc.containerCall.Interpret(
 		inboundScope,
 		scgContainerCall,
 		containerId,

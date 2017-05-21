@@ -321,6 +321,12 @@
 			"revisionTime": "2017-05-08T03:57:45Z"
 		},
 		{
+			"checksumSHA1": "sfVshwOHn35VPuz3xkSJpH0dXrI=",
+			"path": "github.com/golang-interfaces/satori-go.uuid",
+			"revision": "6c789cd6dd0f7580d7b9e10d164ba5b779479021",
+			"revisionTime": "2017-05-21T16:41:36Z"
+		},
+		{
 			"checksumSHA1": "Yw3n8Dv8jrXJlJIiOdqjzz+/qLk=",
 			"path": "github.com/golang-utils/dircopier",
 			"revision": "bab6a659e38eaf0c021fbd8fb17a480fff548ee8",
@@ -375,58 +381,76 @@
 			"revisionTime": "2017-01-06T00:34:57Z"
 		},
 		{
-			"checksumSHA1": "6W63pLuPTZFTmz3N/j1NAV/S5qg=",
+			"checksumSHA1": "mRxWCoxdlu6YNxU5fnxLrOLvrN8=",
+			"path": "github.com/opspec-io/sdk-golang/containercall",
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
+		},
+		{
+			"checksumSHA1": "Gt+Ji9gF1O2AsR4Uxyu7iDCiuTQ=",
 			"path": "github.com/opspec-io/sdk-golang/interpolater",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "/qRu+wKOFxEytiYmZp3srGQO+7w=",
 			"path": "github.com/opspec-io/sdk-golang/model",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "/laBrOLRfa4AmM0+kvgx1P4kwMA=",
 			"path": "github.com/opspec-io/sdk-golang/node/api",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "WJ5bNwVVE/k/IP/N82Np+E9yRIU=",
 			"path": "github.com/opspec-io/sdk-golang/node/api/client",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "rye5nieyirLZwbMIXaQ6EGVM+gU=",
 			"path": "github.com/opspec-io/sdk-golang/node/api/handler",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "nN9m3l8Vo61Cc3lOth5afdGf75E=",
 			"path": "github.com/opspec-io/sdk-golang/node/core",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
+		},
+		{
+			"checksumSHA1": "wRYxLEsLRMxZ6KTveRanvqKVzCs=",
+			"path": "github.com/opspec-io/sdk-golang/opcall",
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
+		},
+		{
+			"checksumSHA1": "UqMHQg89b5IYwUuHwZuoPLbyJUs=",
+			"path": "github.com/opspec-io/sdk-golang/opcall/paramvalidator",
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "8zcR8vGpPMsjuqR+AES89Z4t0/I=",
 			"path": "github.com/opspec-io/sdk-golang/pkg",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "RxvJKj9j06wHydfxydgJGI48e3U=",
 			"path": "github.com/opspec-io/sdk-golang/pkg/manifest",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "GI1eD5CKVIp8kQxSwsfeJrnzm5Q=",
 			"path": "github.com/opspec-io/sdk-golang/validate",
-			"revision": "623ee288e9750e3b263e3c0f2ab5c82be7f0ba1a",
-			"revisionTime": "2017-05-20T18:21:08Z"
+			"revision": "09b4a8eb4ae31d8689059a759ed3507ba519eba9",
+			"revisionTime": "2017-05-22T01:42:03Z"
 		},
 		{
 			"checksumSHA1": "BcKVRsLhMzSj4ksVqslEThK6tjA=",
@@ -439,6 +463,12 @@
 			"path": "github.com/pkg/errors",
 			"revision": "248dadf4e9068a0b3e79f02ed0a610d935de5302",
 			"revisionTime": "2016-10-29T09:36:37Z"
+		},
+		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
 		},
 		{
 			"checksumSHA1": "iWCtyR1TkJ22Bi/ygzfKDvOQdQY=",

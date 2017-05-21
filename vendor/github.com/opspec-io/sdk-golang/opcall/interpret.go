@@ -1,55 +1,17 @@
-package core
-
-//go:generate counterfeiter -o ./fakeDCGOpCallFactory.go --fake-name fakeDCGOpCallFactory ./ dcgOpCallFactory
+package opcall
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/pkg/manifest"
-	"github.com/opspec-io/sdk-golang/validate"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
-type dcgOpCallFactory interface {
-	// Construct constructs a DCGOpCall
-	Construct(
-		scope map[string]*model.Data,
-		scgOpCall *model.SCGOpCall,
-		opId string,
-		pkgBasePath string,
-		rootOpId string,
-	) (*model.DCGOpCall, error)
-}
-
-func newDCGOpCallFactory(
-	rootFSPath string,
-) dcgOpCallFactory {
-	return _dcgOpCallFactory{
-		interpolater:        interpolater.New(),
-		manifest:            manifest.New(),
-		pkg:                 pkg.New(),
-		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
-		validate:            validate.New(),
-	}
-}
-
-type _dcgOpCallFactory struct {
-	interpolater        interpolater.Interpolater
-	manifest            manifest.Manifest
-	pkg                 pkg.Pkg
-	pkgCachePath        string
-	uniqueStringFactory uniquestring.UniqueStringFactory
-	validate            validate.Validate
-}
-
-func (this _dcgOpCallFactory) Construct(
+func (this _OpCall) Interpret(
 	scope map[string]*model.Data,
 	scgOpCall *model.SCGOpCall,
 	opId string,
@@ -77,24 +39,42 @@ func (this _dcgOpCallFactory) Construct(
 			PkgRef:   pkgPath,
 		},
 		OpId:           opId,
-		ChildCallId:    this.uniqueStringFactory.Construct(),
+		ChildCallId:    this.uuid.NewV4().String(),
 		ChildCallSCG:   _pkg.Run,
 		ChildCallScope: map[string]*model.Data{},
 	}
 
-	for inputName, scopeRef := range scgOpCall.Inputs {
-		if "" == scopeRef {
-			// when not explicitly provided, use inputName as scopeRef
-			scopeRef = inputName
-		}
-		if scopeVal, ok := scope[scopeRef]; ok {
-			dcgOpCall.ChildCallScope[inputName] = scopeVal
+	for inputName, scgInputVal := range scgOpCall.Inputs {
+		fmt.Printf("inputName: '%v'\nscgInputVal: '%v'\n", inputName, scgInputVal)
+		switch {
+		case "" == scgInputVal:
+			fmt.Printf("empty: '%v'\n", scgInputVal)
+			// bind implicit scopeRef
+			if scopeVal, ok := scope[inputName]; ok {
+				dcgOpCall.ChildCallScope[inputName] = scopeVal
+			}
+		case "" != this.scopeRef(scgInputVal):
+			fmt.Printf("scopeRef: '%v'\n", scgInputVal)
+			// bind explicit scopeRef
+			if scopeVal, ok := scope[this.scopeRef(scgInputVal)]; ok {
+				dcgOpCall.ChildCallScope[inputName] = scopeVal
+			}
+		default:
+			fmt.Printf("default: '%v'\n", scgInputVal)
+			// interpolate
+			interpolatedVal := this.interpolater.Interpolate(scgInputVal, scope)
+			if floatVal, err := strconv.ParseFloat(interpolatedVal, 64); nil == err {
+				// bind number
+				dcgOpCall.ChildCallScope[inputName] = &model.Data{Number: &floatVal}
+				continue
+			}
+			dcgOpCall.ChildCallScope[inputName] = &model.Data{String: &interpolatedVal}
 		}
 	}
 
 	this.applyParamDefaultsToScope(dcgOpCall.ChildCallScope, _pkg.Inputs)
 
-	// validate inputs
+	// paramvalidator inputs
 	err = this.validateScope("input", dcgOpCall.ChildCallScope, _pkg.Inputs)
 	if nil != err {
 		return nil, err
@@ -103,7 +83,19 @@ func (this _dcgOpCallFactory) Construct(
 	return dcgOpCall, nil
 }
 
-func (this _dcgOpCallFactory) getPkgPath(
+// scopeRef gets a scopeRef from s; if unsuccessful returns empty string
+func (this _OpCall) scopeRef(s string) string {
+	i := strings.Index(s, "$(")
+	if i >= 0 {
+		j := strings.Index(s[i:], ")")
+		if j >= 0 {
+			return s[i+1 : j-i]
+		}
+	}
+	return ""
+}
+
+func (this _OpCall) getPkgPath(
 	pkgBasePath string,
 	scope map[string]*model.Data,
 	scgOpCallPkg *model.SCGOpCallPkg,
@@ -136,7 +128,7 @@ func (this _dcgOpCallFactory) getPkgPath(
 	return pkgPath, nil
 }
 
-func (this _dcgOpCallFactory) applyParamDefaultsToScope(
+func (this _OpCall) applyParamDefaultsToScope(
 	scope map[string]*model.Data,
 	params map[string]*model.Param,
 ) {
@@ -145,7 +137,7 @@ func (this _dcgOpCallFactory) applyParamDefaultsToScope(
 	}
 }
 
-func (this _dcgOpCallFactory) getValueOrDefault(
+func (this _OpCall) getValueOrDefault(
 	varName string,
 	varValue *model.Data,
 	param *model.Param,
@@ -164,12 +156,14 @@ func (this _dcgOpCallFactory) getValueOrDefault(
 	return varValue
 }
 
-func (this _dcgOpCallFactory) validateParam(
+func (this _OpCall) validateParam(
 	paramType string,
 	varName string,
 	varValue *model.Data,
 	param *model.Param,
 ) error {
+
+	fmt.Printf("paramType:'%#v'\nvarName:'%#v'\nvarValue:'%#v'\nparam'%#v'\n", paramType, varName, varValue, param)
 	var (
 		argDisplayValue string
 	)
@@ -197,8 +191,8 @@ func (this _dcgOpCallFactory) validateParam(
 		}
 	}
 
-	// validate
-	validationErrors := this.validate.Param(varValue, param)
+	// paramvalidator
+	validationErrors := this.validate.Validate(varValue, param)
 
 	messageBuffer := bytes.NewBufferString(``)
 
@@ -226,7 +220,7 @@ func (this _dcgOpCallFactory) validateParam(
 	return nil
 }
 
-func (this _dcgOpCallFactory) validateScope(
+func (this _OpCall) validateScope(
 	scopeType string,
 	scope map[string]*model.Data,
 	params map[string]*model.Param,
