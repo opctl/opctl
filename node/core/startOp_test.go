@@ -59,7 +59,7 @@ var _ = Context("core", func() {
 				}
 				for name := range providedReq.Args {
 					// map as passed
-					expectedSCGOpCall.Inputs[name] = name
+					expectedSCGOpCall.Inputs[name] = ""
 				}
 
 				expectedOpId := "dummyOpId"

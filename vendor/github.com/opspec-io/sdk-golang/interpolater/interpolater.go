@@ -1,4 +1,4 @@
-// Package interpolater implements an interpolater for string templates
+// Package interpolater interpolates SCG string templates into DCG strings
 package interpolater
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
