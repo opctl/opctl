@@ -57,6 +57,24 @@
 			"revisionTime": "2017-05-08T03:57:45Z"
 		},
 		{
+			"checksumSHA1": "sfVshwOHn35VPuz3xkSJpH0dXrI=",
+			"path": "github.com/golang-interfaces/satori-go.uuid",
+			"revision": "6c789cd6dd0f7580d7b9e10d164ba5b779479021",
+			"revisionTime": "2017-05-21T16:41:36Z"
+		},
+		{
+			"checksumSHA1": "Yw3n8Dv8jrXJlJIiOdqjzz+/qLk=",
+			"path": "github.com/golang-utils/dircopier",
+			"revision": "bab6a659e38eaf0c021fbd8fb17a480fff548ee8",
+			"revisionTime": "2017-05-14T19:06:04Z"
+		},
+		{
+			"checksumSHA1": "qKT1QUHAGfQwg2pEcvU+saSSfwo=",
+			"path": "github.com/golang-utils/filecopier",
+			"revision": "c2f224f204e73d33bdd70a8465441d4c652ce955",
+			"revisionTime": "2017-05-08T04:10:37Z"
+		},
+		{
 			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
 			"path": "github.com/gorilla/context",
 			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
@@ -73,6 +91,12 @@
 			"path": "github.com/gorilla/websocket",
 			"revision": "a91eba7f97777409bc2c443f5534d41dd20c5720",
 			"revisionTime": "2017-03-19T17:27:27Z"
+		},
+		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
 		},
 		{
 			"checksumSHA1": "iWCtyR1TkJ22Bi/ygzfKDvOQdQY=",

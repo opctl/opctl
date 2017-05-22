@@ -1,13 +1,12 @@
-package interpolater
+package containercall
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "interpreter/interpolater")
+	RunSpecs(t, "containercall")
 }
