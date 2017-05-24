@@ -7,6 +7,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
+	"path/filepath"
 )
 
 // Pull pulls 'pkgRef' to 'path'
@@ -42,6 +43,7 @@ func (this _Pkg) Pull(
 			this.os.RemoveAll(pkgPath)
 			return ErrAuthenticationFailed{}
 		case git.ErrRepositoryAlreadyExists.Error():
+			return nil
 		// NoOp on repo already exists
 		default:
 			// clone failed; cleanup remnants
@@ -50,5 +52,6 @@ func (this _Pkg) Pull(
 		}
 	}
 
-	return nil
+	// remove pkg '.git' sub dir
+	return this.os.RemoveAll(filepath.Join(pkgPath, ".git"))
 }

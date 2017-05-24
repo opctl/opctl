@@ -1,13 +1,10 @@
 package core
 
 import (
-	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/dircopier"
-	"github.com/golang-utils/filecopier"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opctl/opctl/util/uniquestring"
-	"github.com/opspec-io/sdk-golang/interpolater"
+	"github.com/opspec-io/sdk-golang/containercall"
 	opspecNodeCorePkg "github.com/opspec-io/sdk-golang/node/core"
 )
 
@@ -22,18 +19,10 @@ func New(
 
 	opKiller := newOpKiller(dcgNodeRepo, containerProvider)
 
-	dcgContainerCallFactory := newDCGContainerCallFactory(
-		dircopier.New(),
-		filecopier.New(),
-		interpolater.New(),
-		ios.New(),
-		rootFSPath,
-	)
-
 	caller := newCaller(
 		newContainerCaller(
 			containerProvider,
-			dcgContainerCallFactory,
+			containercall.New(rootFSPath),
 			pubSub,
 			dcgNodeRepo,
 		),

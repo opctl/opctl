@@ -8,7 +8,7 @@ accordance with [keepachangelog.com](http://keepachangelog.com/)
 ### Added
 
 - Add opspec 0.1.4 support
-- `pkg pull` command
+- `pkg install` command
 - [Validate file/dir inputs are valid files/dirs (respectively)](https://github.com/opctl/opctl/issues/175)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
 - [Support since in event filter](https://github.com/opctl/opctl/issues/187)

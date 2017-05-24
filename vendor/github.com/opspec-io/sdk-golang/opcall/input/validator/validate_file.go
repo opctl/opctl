@@ -1,4 +1,4 @@
-package validate
+package validator
 
 import (
 	"errors"
@@ -6,10 +6,10 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-// validates an value against a dir parameter
-func (this validate) dirParam(
+// validateFile validates an value against a file parameter
+func (this _Validator) validateFile(
 	rawValue *string,
-	param *model.DirParam,
+	param *model.FileParam,
 ) []error {
 
 	value := rawValue
@@ -19,14 +19,14 @@ func (this validate) dirParam(
 	}
 
 	if nil == value {
-		return []error{errors.New("Dir required")}
+		return []error{errors.New("File required")}
 	}
 
 	fileInfo, err := this.os.Stat(*value)
 	if nil != err {
 		return []error{err}
-	} else if !fileInfo.IsDir() {
-		return []error{fmt.Errorf("%v not a dir", *value)}
+	} else if !fileInfo.Mode().IsRegular() {
+		return []error{fmt.Errorf("%v not a file", *value)}
 	}
 	return []error{}
 }

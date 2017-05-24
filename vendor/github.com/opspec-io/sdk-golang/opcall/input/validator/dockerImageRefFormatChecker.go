@@ -1,4 +1,4 @@
-package validate
+package validator
 
 import (
 	"github.com/docker/distribution/reference"

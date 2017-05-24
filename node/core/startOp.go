@@ -27,7 +27,7 @@ func (this _core) StartOp(
 	}
 	for name := range req.Args {
 		// map as passed
-		scgOpCall.Inputs[name] = name
+		scgOpCall.Inputs[name] = ""
 	}
 
 	go func() {
