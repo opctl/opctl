@@ -1,13 +1,12 @@
-package interpolater
+package interpreter
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "interpolater")
+	RunSpecs(t, "opcall/input/interpreter")
 }

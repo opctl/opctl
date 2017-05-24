@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "sdk-golang/node/api/handler")
+	RunSpecs(t, "node/api/handler")
 }

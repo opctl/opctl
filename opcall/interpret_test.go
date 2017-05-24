@@ -2,13 +2,12 @@ package opcall
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-interfaces/satori-go.uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall/paramvalidator"
+	inputInterpreter "github.com/opspec-io/sdk-golang/opcall/input/interpreter"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"path/filepath"
@@ -196,78 +195,41 @@ var _ = Context("OpCall", func() {
 			Expect(actualErr).To(Equal(expectedErr))
 		})
 		Context("manifest.Unmarshal succeeds", func() {
-			It("should call paramvalidator.Validate w/ expected args", func() {
+			It("should call inputInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
-				providedScopeVar1String := "val1"
-				providedScopeVarFile := "val2"
-				providedScopeVar3Dir := "val3"
-				providedScopeVar4Socket := "val4"
-				providedScopeVar5Number := float64(5)
 				providedScope := map[string]*model.Data{
-					"name1": {String: &providedScopeVar1String},
-					"name2": {File: &providedScopeVarFile},
-					"name3": {Dir: &providedScopeVar3Dir},
-					"name4": {Socket: &providedScopeVar4Socket},
-					"name5": {Number: &providedScopeVar5Number},
+					"dummyScopeRef1Name": {String: new(string)},
 				}
+				expectedScope := providedScope
+
+				expectedName := "dummySCGOpCallInputName"
+				expectedValue := "dummyScgOpCallInputValue"
 				providedSCGOpCall := &model.SCGOpCall{
-					Pkg: &model.SCGOpCallPkg{},
-					Inputs: map[string]string{
-						"name1": "",
-						"name2": "",
-						"name3": "",
-						"name4": "",
-						"name5": "",
-						"name6": "",
-						"name7": "",
-					},
+					Inputs: map[string]string{expectedName: expectedValue},
+					Pkg:    &model.SCGOpCallPkg{},
 				}
 
-				returnedPkgInput6Default := float64(6)
-				returnedPkgInput7Default := "seven"
-				returnedPkg := &model.PkgManifest{
-					Inputs: map[string]*model.Param{
-						"name1": {String: &model.StringParam{}},
-						"name2": {File: &model.FileParam{}},
-						"name3": {Dir: &model.DirParam{}},
-						"name4": {Socket: &model.SocketParam{}},
-						"name5": {Number: &model.NumberParam{}},
-						"name6": {Number: &model.NumberParam{Default: &returnedPkgInput6Default}},
-						"name7": {String: &model.StringParam{Default: &returnedPkgInput7Default}},
-					},
-				}
 				fakePkg := new(pkg.Fake)
 				fakePkg.ParseRefReturns(&pkg.PkgRef{}, nil)
-				fakePkg.ResolveReturns("", true)
-
+				fakePkg.ResolveReturns("dummyPath", true)
 				fakeManifest := new(manifest.Fake)
-				fakeManifest.UnmarshalReturns(returnedPkg, nil)
 
-				expectedCalls := map[model.Data]*model.Param{
-					// from scope
-					*providedScope["name1"]: returnedPkg.Inputs["name1"],
-					*providedScope["name2"]: returnedPkg.Inputs["name2"],
-					*providedScope["name3"]: returnedPkg.Inputs["name3"],
-					*providedScope["name4"]: returnedPkg.Inputs["name4"],
-					*providedScope["name5"]: returnedPkg.Inputs["name5"],
-					// from defaults
-					model.Data{
-						Number: returnedPkg.Inputs["name6"].Number.Default,
-					}: returnedPkg.Inputs["name6"],
-					model.Data{
-						String: returnedPkg.Inputs["name7"].String.Default,
-					}: returnedPkg.Inputs["name7"],
+				expectedParams := map[string]*model.Param{
+					"dummyParam1Name": {String: &model.StringParam{}},
 				}
 
-				fakeParamValidator := new(paramvalidator.Fake)
-				// error to trigger immediate return
-				fakeParamValidator.ValidateReturns([]error{errors.New("dummyError")})
+				returnedManifest := &model.PkgManifest{
+					Inputs: expectedParams,
+				}
+				fakeManifest.UnmarshalReturns(returnedManifest, nil)
+
+				fakeInputInterpreter := new(inputInterpreter.Fake)
 
 				objectUnderTest := _OpCall{
-					manifest: fakeManifest,
-					pkg:      fakePkg,
-					uuid:     new(iuuid.Fake),
-					validate: fakeParamValidator,
+					manifest:         fakeManifest,
+					pkg:              fakePkg,
+					uuid:             new(iuuid.Fake),
+					inputInterpreter: fakeInputInterpreter,
 				}
 
 				/* act */
@@ -280,73 +242,11 @@ var _ = Context("OpCall", func() {
 				)
 
 				/* assert */
-				actualCalls := map[model.Data]*model.Param{}
-				for i := 0; i < fakeParamValidator.ValidateCallCount(); i++ {
-					actualVarData, actualParam := fakeParamValidator.ValidateArgsForCall(i)
-					actualCalls[*actualVarData] = actualParam
-				}
-				Expect(actualCalls).To(Equal(expectedCalls))
-			})
-
-			Context("paramvalidator.Validate errors", func() {
-				It("should return error", func() {
-					/* arrange */
-					opReturnedFromPkg := &model.PkgManifest{
-						Inputs: map[string]*model.Param{
-							"dummyVar1Name": {
-								String: &model.StringParam{
-									IsSecret: true,
-								},
-							},
-						},
-					}
-					fakePkg := new(pkg.Fake)
-					fakePkg.ParseRefReturns(&pkg.PkgRef{}, nil)
-					fakePkg.ResolveReturns("", true)
-
-					fakeManifest := new(manifest.Fake)
-					fakeManifest.UnmarshalReturns(opReturnedFromPkg, nil)
-
-					fakeParamValidator := new(paramvalidator.Fake)
-
-					errorReturnedFromValidate := "validationError0"
-					fakeParamValidator.ValidateReturns([]error{errors.New(errorReturnedFromValidate)})
-
-					expectedErr := fmt.Errorf(`
--
-  validation of the following input failed:
-
-  Name: %v
-  Value: %v
-  Error(s):
-    - %v
-
--`, "dummyVar1Name", "************", errorReturnedFromValidate)
-
-					objectUnderTest := _OpCall{
-						manifest: fakeManifest,
-						pkg:      fakePkg,
-						uuid:     new(iuuid.Fake),
-						validate: fakeParamValidator,
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Data{},
-						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
-						"dummyOpId",
-						"dummyPkgBasePath",
-						"dummyRootOpId",
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			Context("paramvalidator.Validate doesn't error", func() {
-				Context("It should return expected result", func() {
-
-				})
+				actualName, actualValue, actualParams, actualScope := fakeInputInterpreter.InterpretArgsForCall(0)
+				Expect(actualName).To(Equal(expectedName))
+				Expect(actualValue).To(Equal(expectedValue))
+				Expect(actualParams).To(Equal(expectedParams))
+				Expect(actualScope).To(Equal(expectedScope))
 			})
 		})
 	})

@@ -35,6 +35,10 @@ func (this _Interpolater) Interpolate(
 				template = this.numberInterpolater.Interpolate(template, varName, *varData.Number)
 			case nil != varData.String:
 				template = this.stringInterpolater.Interpolate(template, varName, *varData.String)
+			case nil != varData.Dir:
+				template = this.stringInterpolater.Interpolate(template, varName, *varData.Dir)
+			case nil != varData.File:
+				template = this.stringInterpolater.Interpolate(template, varName, *varData.File)
 			}
 		}
 	}

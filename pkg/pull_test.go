@@ -48,6 +48,7 @@ var _ = Describe("Pkg", func() {
 
 			objectUnderTest := _Pkg{
 				git: fakeGit,
+				os:  new(ios.Fake),
 			}
 
 			/* act */
@@ -175,6 +176,7 @@ var _ = Describe("Pkg", func() {
 
 				objectUnderTest := _Pkg{
 					git: new(igit.Fake),
+					os:  new(ios.Fake),
 				}
 
 				/* act */
@@ -182,6 +184,34 @@ var _ = Describe("Pkg", func() {
 
 				/* assert */
 				Expect(actualErr).To(BeNil())
+			})
+
+			It("should remove pkg '.git' sub dir & return result", func() {
+
+				/* arrange */
+				providedPath := "dummypath"
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "dummyPkgRef",
+					Version:            "0.0.0",
+				}
+
+				expectedPath := filepath.Join(providedPkgRef.ToPath(providedPath), ".git")
+
+				fakeOS := new(ios.Fake)
+				expectedError := errors.New("dummyError")
+				fakeOS.RemoveAllReturns(expectedError)
+
+				objectUnderTest := _Pkg{
+					os:  fakeOS,
+					git: new(igit.Fake),
+				}
+
+				/* act */
+				actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
+
+				/* assert */
+				Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+				Expect(actualError).To(Equal(expectedError))
 			})
 		})
 	})
