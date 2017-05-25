@@ -27,6 +27,9 @@ func (itp _Interpreter) Interpret(
 		if !ok {
 			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref. '%v' is not in scope", name, name)
 		}
+	} else if deprecatedExplicitRef, ok := scope[value]; ok {
+		// deprecated explicit arg
+		dcgValue = deprecatedExplicitRef
 	} else if explicitRef := strings.TrimSuffix(strings.TrimPrefix(value, "$("), ")"); len(explicitRef) == (len(value) - 3) {
 		// explicit arg
 		dcgValue, ok = scope[explicitRef]

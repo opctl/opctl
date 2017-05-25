@@ -94,6 +94,34 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
+		Context("Deprecated explicit arg", func() {
+			It("should call validate.Validate w/ expected args & return result", func() {
+				/* arrange */
+				providedName := "dummyName"
+				providedValue := "dummyValue"
+				providedParams := map[string]*model.Param{providedName: {}}
+				expectedValue := &model.Data{String: new(string)}
+				providedScope := map[string]*model.Data{providedValue: expectedValue}
+
+				fakeValidator := new(validator.Fake)
+
+				objectUnderTest := _Interpreter{
+					validator: fakeValidator,
+				}
+
+				/* act */
+				actualValue, actualError := objectUnderTest.Interpret(
+					providedName,
+					providedValue,
+					providedParams,
+					providedScope,
+				)
+
+				/* assert */
+				Expect(actualValue).To(Equal(expectedValue))
+				Expect(actualError).To(BeNil())
+			})
+		})
 		Context("Explicit arg", func() {
 			Context("Ref not in scope", func() {
 				It("should return expected error", func() {
