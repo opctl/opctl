@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall/input/validator"
+	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -27,20 +27,19 @@ type CliParamSatisfier interface {
 func New(
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
-	validate validator.Validator,
 ) CliParamSatisfier {
 
 	return &_cliParamSatisfier{
-		cliExiter:      cliExiter,
-		cliOutput:      cliOutput,
-		inputValidator: validate,
+		cliExiter: cliExiter,
+		cliOutput: cliOutput,
+		inputs:    inputs.New(),
 	}
 }
 
 type _cliParamSatisfier struct {
-	cliExiter      cliexiter.CliExiter
-	cliOutput      clioutput.CliOutput
-	inputValidator validator.Validator
+	cliExiter cliexiter.CliExiter
+	cliOutput clioutput.CliOutput
+	inputs    inputs.Inputs
 }
 
 func (this _cliParamSatisfier) Satisfy(
@@ -96,9 +95,12 @@ func (this _cliParamSatisfier) Satisfy(
 				arg = &model.Data{Socket: rawArg}
 			}
 
-			argErrors := this.inputValidator.Validate(arg, param)
+			argErrors := this.inputs.Validate(
+				map[string]*model.Data{paramName: arg},
+				map[string]*model.Param{paramName: param},
+			)
 			if len(argErrors) > 0 {
-				this.notifyOfArgErrors(argErrors, paramName)
+				this.notifyOfArgErrors(argErrors[paramName], paramName)
 
 				// param not satisfied; re-attempt it!
 				continue

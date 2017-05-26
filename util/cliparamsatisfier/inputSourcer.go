@@ -16,7 +16,6 @@ func NewInputSourcer(
 }
 
 type inputSourcer struct {
-	history map[string]string
 	sources []InputSrc
 }
 

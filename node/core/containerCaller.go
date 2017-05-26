@@ -4,6 +4,7 @@ package core
 
 import (
 	"bufio"
+	"bytes"
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
@@ -110,7 +111,7 @@ func (cc _containerCaller) Call(
 			containerStdOutReader,
 			dcgContainerCall,
 			scgContainerCall,
-		); nil != err && err != io.ErrClosedPipe {
+		); nil != err {
 			// ErrClosedPipe is expected if multiple pipe closes
 			errChan <- err
 		}
@@ -123,7 +124,7 @@ func (cc _containerCaller) Call(
 			containerStdErrReader,
 			dcgContainerCall,
 			scgContainerCall,
-		); nil != err && err != io.ErrClosedPipe {
+		); nil != err {
 			// ErrClosedPipe is expected if multiple pipe closes
 			errChan <- err
 		}
@@ -162,93 +163,213 @@ func (cc _containerCaller) Call(
 	return err
 }
 
+func (this _containerCaller) streamBinder(
+	stream io.Reader,
+	bindings map[string]string,
+	onBind func(name string, value *string),
+) error {
+	reader := bufio.NewReader(stream)
+
+	var err error
+	for {
+		var buffer bytes.Buffer
+		var l []byte
+		var isPrefix bool
+
+		for {
+			// use ReadString NOT Scanner to support long lines
+			l, isPrefix, err = reader.ReadLine()
+			buffer.Write(l)
+
+			// If we've reached the end of the line, stop reading.
+			if !isPrefix {
+				break
+			}
+
+			// If we're just at the EOF, break
+			if err != nil {
+				break
+			}
+		}
+
+		line := buffer.String()
+		for boundPrefix, name := range bindings {
+			trimmedLine := strings.TrimPrefix(line, boundPrefix)
+			if trimmedLine != line {
+				// if output trimming had effect we've got a match
+				onBind(name, &trimmedLine)
+			}
+		}
+
+		if err != nil {
+			break
+		}
+	}
+
+	if err != io.EOF {
+		return err
+	}
+	return nil
+}
+
+func (this _containerCaller) streamTransmitter(
+	stdOutReader io.Reader,
+	onChunk func(n int, chunk []byte),
+) error {
+	chunk := make([]byte, 1024)
+	var n int
+	var err error
+
+	for {
+		// rather than chunking by line, we chunk by time at a rate of 30 FPS (frames per second)
+		// why? chunking by line would make TTY behaviors such as line editing behave non-TTY like
+		<-time.After(33 * time.Millisecond)
+		if n, err = stdOutReader.Read(chunk); n > 0 {
+			// always call onChunk if n > 0 to ensure full stream sent; even under error conditions
+			onChunk(n, chunk)
+		}
+
+		if nil != err {
+			break
+		}
+	}
+
+	if io.EOF == err {
+		return nil
+	}
+	return err
+}
+
 func (this _containerCaller) handleStdErr(
-	stdErrReader io.ReadCloser,
+	stdErrReader io.Reader,
 	dcgContainerCall *model.DCGContainerCall,
 	scgContainerCall *model.SCGContainerCall,
 ) error {
-	defer stdErrReader.Close()
+	errChan := make(chan error, 2)
+	var wg sync.WaitGroup
+	pr, pw := io.Pipe()
+	tr := io.TeeReader(stdErrReader, pw)
 
-	scanner := bufio.NewScanner(stdErrReader)
-
-	// scan writes until EOF or error
-	for scanner.Scan() {
-
-		this.pubSub.Publish(
-			&model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
-					Data:        scanner.Bytes(),
-					ContainerId: dcgContainerCall.ContainerId,
-					ImageRef:    dcgContainerCall.Image.Ref,
-					PkgRef:      dcgContainerCall.PkgRef,
-					RootOpId:    dcgContainerCall.RootOpId,
-				},
-			},
-		)
-
-		for boundPrefix, name := range scgContainerCall.StdErr {
-			rawOutput := scanner.Text()
-			trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
-			if trimmedOutput != rawOutput {
-				// if output trimming had effect we've got a match
+	wg.Add(1)
+	go func() {
+		if err := this.streamBinder(
+			tr,
+			scgContainerCall.StdErr,
+			func(name string, value *string) {
 				this.pubSub.Publish(&model.Event{
 					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
-						Value:    &model.Data{String: &trimmedOutput},
+						Value:    &model.Data{String: value},
 						RootOpId: dcgContainerCall.RootOpId,
 						CallId:   dcgContainerCall.ContainerId,
 					},
 				})
-			}
+			}); nil != err {
+			errChan <- err
 		}
+
+		// close Pipe
+		pw.Close()
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		if err := this.streamTransmitter(
+			pr,
+			func(n int, chunk []byte) {
+				this.pubSub.Publish(
+					&model.Event{
+						Timestamp: time.Now().UTC(),
+						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+							Data:        chunk[0:n],
+							ContainerId: dcgContainerCall.ContainerId,
+							ImageRef:    dcgContainerCall.Image.Ref,
+							PkgRef:      dcgContainerCall.PkgRef,
+							RootOpId:    dcgContainerCall.RootOpId,
+						},
+					},
+				)
+			}); nil != err {
+			errChan <- err
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+	close(errChan)
+
+	if len(errChan) > 0 {
+		return <-errChan
 	}
-	return scanner.Err()
+	return nil
 }
 
 func (this _containerCaller) handleStdOut(
-	stdOutReader io.ReadCloser,
+	stdOutReader io.Reader,
 	dcgContainerCall *model.DCGContainerCall,
 	scgContainerCall *model.SCGContainerCall,
 ) error {
-	defer stdOutReader.Close()
+	errChan := make(chan error, 2)
+	var wg sync.WaitGroup
+	pr, pw := io.Pipe()
+	tr := io.TeeReader(stdOutReader, pw)
 
-	scanner := bufio.NewScanner(stdOutReader)
-
-	// scan writes until EOF or error
-	for scanner.Scan() {
-
-		this.pubSub.Publish(
-			&model.Event{
-				Timestamp: time.Now().UTC(),
-				ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
-					Data:        scanner.Bytes(),
-					ContainerId: dcgContainerCall.ContainerId,
-					ImageRef:    dcgContainerCall.Image.Ref,
-					PkgRef:      dcgContainerCall.PkgRef,
-					RootOpId:    dcgContainerCall.RootOpId,
-				},
-			},
-		)
-		for boundPrefix, name := range scgContainerCall.StdOut {
-			rawOutput := scanner.Text()
-			trimmedOutput := strings.TrimPrefix(rawOutput, boundPrefix)
-			if trimmedOutput != rawOutput {
-				// if output trimming had effect we've got a match
+	wg.Add(1)
+	go func() {
+		if err := this.streamBinder(
+			tr,
+			scgContainerCall.StdOut,
+			func(name string, value *string) {
 				this.pubSub.Publish(&model.Event{
 					Timestamp: time.Now().UTC(),
 					OutputInitialized: &model.OutputInitializedEvent{
 						Name:     name,
-						Value:    &model.Data{String: &trimmedOutput},
+						Value:    &model.Data{String: value},
 						RootOpId: dcgContainerCall.RootOpId,
 						CallId:   dcgContainerCall.ContainerId,
 					},
 				})
-			}
+			}); nil != err {
+			errChan <- err
 		}
+
+		// close Pipe
+		pw.Close()
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		if err := this.streamTransmitter(
+			pr,
+			func(n int, chunk []byte) {
+				this.pubSub.Publish(
+					&model.Event{
+						Timestamp: time.Now().UTC(),
+						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+							Data:        chunk[0:n],
+							ContainerId: dcgContainerCall.ContainerId,
+							ImageRef:    dcgContainerCall.Image.Ref,
+							PkgRef:      dcgContainerCall.PkgRef,
+							RootOpId:    dcgContainerCall.RootOpId,
+						},
+					},
+				)
+			}); nil != err {
+			errChan <- err
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+	close(errChan)
+
+	if len(errChan) > 0 {
+		return <-errChan
 	}
-	return scanner.Err()
+	return nil
 }
 
 func (this _containerCaller) txOutputs(

@@ -39,6 +39,10 @@ var _ = Context("containerCaller", func() {
 
 			fakePubSub := new(pubsub.Fake)
 
+			fakeContainerCall := new(containercall.Fake)
+			// error to trigger immediate return
+			fakeContainerCall.InterpretReturns(nil, errors.New("dummyError"))
+
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
 				PkgRef:    providedPkgRef,
@@ -53,7 +57,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider: new(containerprovider.Fake),
-				containerCall:     new(containercall.Fake),
+				containerCall:     fakeContainerCall,
 				pubSub:            fakePubSub,
 				dcgNodeRepo:       fakeDCGNodeRepo,
 				io:                fakeIIO,
@@ -88,6 +92,9 @@ var _ = Context("containerCaller", func() {
 				},
 			}
 
+			fakeContainerCall := new(containercall.Fake)
+			fakeContainerCall.InterpretReturns(&model.DCGContainerCall{Image: &model.DCGContainerCallImage{}}, nil)
+
 			fakePubSub := new(pubsub.Fake)
 
 			fakeIIO := new(iio.Fake)
@@ -95,7 +102,7 @@ var _ = Context("containerCaller", func() {
 
 			objectUnderTest := _containerCaller{
 				containerProvider: new(containerprovider.Fake),
-				containerCall:     new(containercall.Fake),
+				containerCall:     fakeContainerCall,
 				pubSub:            fakePubSub,
 				dcgNodeRepo:       new(fakeDCGNodeRepo),
 				io:                fakeIIO,

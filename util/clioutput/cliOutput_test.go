@@ -145,7 +145,7 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(string(providedEvent.ContainerStdErrWrittenTo.Data)))
+				expectedWriteArg := []byte(fmt.Sprint(string(providedEvent.ContainerStdErrWrittenTo.Data)))
 
 				fakeErrWriter := new(fakeWriter)
 				objectUnderTest := New(
@@ -171,7 +171,7 @@ var _ = Context("output", func() {
 					},
 					Timestamp: time.Now(),
 				}
-				expectedWriteArg := []byte(fmt.Sprintln(string(providedEvent.ContainerStdOutWrittenTo.Data)))
+				expectedWriteArg := []byte(fmt.Sprint(string(providedEvent.ContainerStdOutWrittenTo.Data)))
 
 				fakeStdWriter := new(fakeWriter)
 				objectUnderTest := New(

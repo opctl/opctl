@@ -290,7 +290,7 @@ var _ = Context("opCaller", func() {
 							},
 						},
 					},
-					ChildCallScope: map[string]*model.Data{
+					Inputs: map[string]*model.Data{
 						"dummyScopeName": {String: &dummyString},
 					},
 				}
@@ -326,7 +326,7 @@ var _ = Context("opCaller", func() {
 					actualRootOpId := fakeCaller.CallArgsForCall(0)
 
 				Expect(actualChildCallId).To(Equal(dcgOpCall.ChildCallId))
-				Expect(actualChildCallScope).To(Equal(dcgOpCall.ChildCallScope))
+				Expect(actualChildCallScope).To(Equal(dcgOpCall.Inputs))
 				Expect(actualChildSCG).To(Equal(dcgOpCall.ChildCallSCG))
 				Expect(actualPkgRef).To(Equal(dcgOpCall.PkgRef))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
