@@ -153,8 +153,7 @@ func (this _containerProvider) RunContainer(
 			ctx,
 			req.ContainerId,
 			stderr,
-		); nil != err && err != io.ErrClosedPipe {
-			// ErrClosedPipe is expected if multiple pipe closes
+		); nil != err {
 			cancelFn()
 			errChan <- err
 		}
@@ -167,8 +166,7 @@ func (this _containerProvider) RunContainer(
 			ctx,
 			req.ContainerId,
 			stdout,
-		); nil != err && err != io.ErrClosedPipe {
-			// ErrClosedPipe is expected if multiple pipe closes
+		); nil != err {
 			cancelFn()
 			errChan <- err
 		}

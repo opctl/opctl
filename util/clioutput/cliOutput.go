@@ -94,11 +94,11 @@ func (this _cliOutput) containerStarted(event *model.Event) {
 }
 
 func (this _cliOutput) containerStdErrWrittenTo(event *model.Event) {
-	fmt.Fprintln(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
+	fmt.Fprint(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
 }
 
 func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
-	fmt.Fprintln(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
+	fmt.Fprint(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
 func (this _cliOutput) opErred(event *model.Event) {

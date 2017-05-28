@@ -14,7 +14,6 @@ import (
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
 	"github.com/opspec-io/sdk-golang/node/api/client"
-	"github.com/opspec-io/sdk-golang/opcall/input/validator"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"io"
@@ -96,7 +95,7 @@ func New(
 		cliColorer:          cliColorer,
 		cliExiter:           cliExiter,
 		cliOutput:           cliOutput,
-		cliParamSatisfier:   cliparamsatisfier.New(cliExiter, cliOutput, validator.New()),
+		cliParamSatisfier:   cliparamsatisfier.New(cliExiter, cliOutput),
 		nodeProvider:        local.New(),
 		updater:             updater.New(),
 		os:                  _os,

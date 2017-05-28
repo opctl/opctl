@@ -147,7 +147,7 @@ func (this _opCaller) Call(
 
 	err = this.caller.Call(
 		dcgOpCall.ChildCallId,
-		dcgOpCall.ChildCallScope,
+		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
 		dcgOpCall.PkgRef,
 		rootOpId,

@@ -36,13 +36,14 @@ func (this _containerProvider) pullImage(
 		dcgContainerImage.Ref,
 		imagePullOptions,
 	)
+	defer imagePullResp.Close()
 	if nil != err {
 		return err
 	}
 
-	defer imagePullResp.Close()
+	stdOutWriter := NewStdOutWriteCloser(eventPublisher, containerId, rootOpId)
+	defer stdOutWriter.Close()
 
-	stdOutWriter := NewStdOutWriter(eventPublisher, containerId, rootOpId)
 	dec := json.NewDecoder(imagePullResp)
 	for {
 		var jm jsonmessage.JSONMessage

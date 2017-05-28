@@ -6,7 +6,7 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall/input/validator"
+	"github.com/opspec-io/sdk-golang/opcall/inputs"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -24,11 +24,11 @@ var _ = Context("parameterSatisfier", func() {
 				"input2": {},
 			}
 
-			objectUnderTest := New(
-				new(cliexiter.Fake),
-				new(clioutput.Fake),
-				new(validator.Fake),
-			)
+			objectUnderTest := _cliParamSatisfier{
+				cliExiter: new(cliexiter.Fake),
+				cliOutput: new(clioutput.Fake),
+				inputs:    new(inputs.Fake),
+			}
 
 			/* act */
 			objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
