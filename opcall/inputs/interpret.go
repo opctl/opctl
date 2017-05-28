@@ -44,7 +44,7 @@ func (_inputs _Inputs) Interpret(
 
 	for inputName, inputValue := range dcgOpCallInputs {
 		// validate inputs
-		_inputs.validator.Validate(inputValue, inputParams[inputName])
+		errs = append(errs, _inputs.validator.Validate(inputValue, inputParams[inputName])...)
 	}
 
 	return dcgOpCallInputs, errs
