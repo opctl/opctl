@@ -1,17 +1,43 @@
-package validator
+package inputs
+
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"errors"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/xeipuuv/gojsonschema"
 )
 
+type validator interface {
+	Validate(
+		value *model.Data,
+		param *model.Param,
+	) (errors []error)
+}
+
+func newValidator() validator {
+	// register custom format checkers
+	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
+	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
+	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
+
+	return _validator{
+		os: ios.New(),
+	}
+}
+
+type _validator struct {
+	os ios.IOS
+}
+
 // validates a value against a parameter
-func (this _Validator) Validate(
+func (this _validator) Validate(
 	rawValue *model.Data,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {
-		return []error{errors.New("Validate required")}
+		return []error{errors.New("param required")}
 	}
 
 	switch {

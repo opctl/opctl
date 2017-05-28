@@ -1,4 +1,4 @@
-package interpreter
+package manifest
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opcall/input/interpreter")
+	RunSpecs(t, "pkg/manifest")
 }

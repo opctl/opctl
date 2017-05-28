@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSdk(t *testing.T) {
+func TestSDK(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "node/api/client")
 }

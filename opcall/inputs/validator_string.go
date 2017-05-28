@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	"encoding/json"
@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/xeipuuv/gojsonschema"
-	"math"
 	"strings"
 )
 
-// validateNumber validates an value against a string parameter
-func (this _Validator) validateNumber(
-	rawValue *float64,
-	param *model.NumberParam,
+// validateString validates an value against a string parameter
+func (this _validator) validateString(
+	rawValue *string,
+	param *model.StringParam,
 ) (errs []error) {
 	errs = []error{}
 
@@ -24,19 +23,12 @@ func (this _Validator) validateNumber(
 	}
 
 	if nil == value {
-		errs = append(errs, errors.New("Number required"))
+		errs = append(errs, errors.New("String required"))
 		return
 	}
 
 	// guard no constraints
-	if paramConstraints := param.Constraints; nil != param.Constraints {
-
-		// perform validations not supported by gojsonschema
-		if integerConstraint := paramConstraints.Format; integerConstraint == "integer" {
-			if ceiledValue := math.Ceil(*value); ceiledValue != *value {
-				errs = append(errs, fmt.Errorf("Does not match format '%v'", integerConstraint))
-			}
-		}
+	if paramConstraints := param.Constraints; nil != paramConstraints {
 
 		// perform validations supported by gojsonschema
 		constraintsJsonBytes, err := json.Marshal(paramConstraints)
@@ -67,6 +59,7 @@ func (this _Validator) validateNumber(
 			// enum validation errors include `(root) ` prefix we don't want
 			errs = append(errs, errors.New(strings.TrimPrefix(errString.Description(), "(root) ")))
 		}
+
 	}
 
 	return

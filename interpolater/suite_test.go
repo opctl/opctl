@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestSDK(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "interpolater")
 }

@@ -22,7 +22,7 @@ var _ = Describe("validator", func() {
 			)}
 
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid__yml", wd))
+			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid__yml/op.yml", wd))
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -37,7 +37,7 @@ var _ = Describe("validator", func() {
 			)}
 
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_inputs_type", wd))
+			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_inputs_type/op.yml", wd))
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -52,7 +52,7 @@ var _ = Describe("validator", func() {
 			)}
 
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_outputs_type", wd))
+			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_outputs_type/op.yml", wd))
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -68,7 +68,7 @@ var _ = Describe("validator", func() {
 			}
 
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_run_type", wd))
+			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_run_type/op.yml", wd))
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -77,7 +77,7 @@ var _ = Describe("validator", func() {
 	Context("valid__all", func() {
 		It("should return no errors", func() {
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/valid__all", wd))
+			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/valid__all/op.yml", wd))
 
 			/* assert */
 			Expect(actualErrs).To(BeNil())

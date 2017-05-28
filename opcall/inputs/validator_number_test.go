@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	objectUnderTest := New()
+	objectUnderTest := newValidator()
 	Context("invoked w/ non-nil param.Number", func() {
 		Context("& non-zero value.Number", func() {
 			Context("AllOf constraint", func() {

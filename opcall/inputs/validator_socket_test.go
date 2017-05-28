@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	objectUnderTest := New()
+	objectUnderTest := newValidator()
 	Context("invoked w/ non-nil param.Socket", func() {
 		Context("& non-empty value.Socket", func() {
 			It("should return no errors", func() {

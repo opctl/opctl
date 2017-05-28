@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	"errors"
@@ -8,13 +8,13 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	objectUnderTest := New()
+	objectUnderTest := newValidator()
 	Context("invoked w/ nil param", func() {
 		It("should return expected error", func() {
 			/* arrange */
 			providedValue := &model.Data{}
 
-			expectedErrs := []error{errors.New("Validate required")}
+			expectedErrs := []error{errors.New("param required")}
 
 			/* act */
 			actualErrs := objectUnderTest.Validate(providedValue, nil)

@@ -2,7 +2,6 @@ package opcall
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -26,7 +25,7 @@ func (this _OpCall) Interpret(
 		return nil, err
 	}
 
-	_pkg, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
+	opManifest, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
 	if nil != err {
 		return nil, err
 	}
@@ -36,31 +35,30 @@ func (this _OpCall) Interpret(
 			RootOpId: rootOpId,
 			PkgRef:   pkgPath,
 		},
-		OpId:           opId,
-		ChildCallId:    this.uuid.NewV4().String(),
-		ChildCallSCG:   _pkg.Run,
-		ChildCallScope: map[string]*model.Data{},
+		OpId:         opId,
+		ChildCallId:  this.uuid.NewV4().String(),
+		ChildCallSCG: opManifest.Run,
 	}
 
-	messageBuffer := bytes.NewBufferString("")
-	for inputName, scgInputValue := range scgOpCall.Inputs {
-		// interpret inputs
-		dcgOpCall.ChildCallScope[inputName], err = this.inputInterpreter.Interpret(
-			inputName,
-			scgInputValue,
-			_pkg.Inputs,
-			scope,
-		)
-
-		if nil != err {
-			// aggregate errors
-			messageBuffer.WriteString(err.Error())
-			err = nil
+	var argErrors []error
+	dcgOpCall.Inputs, argErrors = this.inputs.Interpret(
+		scgOpCall.Inputs,
+		opManifest.Inputs,
+		scope,
+	)
+	if len(argErrors) > 0 {
+		messageBuffer := bytes.NewBufferString("")
+		for _, validationError := range argErrors {
+			messageBuffer.WriteString(fmt.Sprintf(`
+    - %v`, validationError.Error()))
 		}
-	}
-
-	if messageBuffer.Len() > 0 {
-		return nil, errors.New(messageBuffer.String())
+		messageBuffer.WriteString(`
+`)
+		return nil, fmt.Errorf(`
+-
+  error(s) occurred interpreting call to %v:
+%v
+-`, dcgOpCall.PkgRef, messageBuffer.String())
 	}
 
 	return dcgOpCall, nil

@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	"errors"
@@ -6,7 +6,7 @@ import (
 )
 
 // validateSocket validates an value against a socket parameter
-func (this _Validator) validateSocket(
+func (this _validator) validateSocket(
 	rawValue *string,
 	param *model.SocketParam,
 ) (errs []error) {

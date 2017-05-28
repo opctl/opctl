@@ -1,4 +1,4 @@
-package validator
+package inputs
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test(t *testing.T) {
+func TestSdk(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opcall/input/validator")
+	RunSpecs(t, "opcall/inputs")
 }
