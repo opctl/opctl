@@ -3,16 +3,13 @@ package core
 //go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
-	"bufio"
-	"bytes"
+	"fmt"
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/opctl/util/containerprovider"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
-	"strings"
-	"sync"
 	"time"
 )
 
@@ -88,8 +85,6 @@ func (cc _containerCaller) Call(
 		return err
 	}
 
-	cc.txOutputs(dcgContainerCall, scgContainerCall)
-
 	cc.pubSub.Publish(
 		&model.Event{
 			Timestamp: time.Now().UTC(),
@@ -101,41 +96,58 @@ func (cc _containerCaller) Call(
 		},
 	)
 
-	var wg sync.WaitGroup
-	errChan := make(chan error, 2)
-	wg.Add(2)
+	// we need 2 stdOut readers
+	stdOutReader, stdOutWriter := cc.io.Pipe()
+	logStdOutPR, logStdOutPW := cc.io.Pipe()
+	outputsStdOutTR := io.TeeReader(stdOutReader, logStdOutPW)
 
-	containerStdOutReader, containerStdOutWriter := cc.io.Pipe()
+	// we need 2 stdErr readers
+	stdErrReader, stdErrWriter := cc.io.Pipe()
+	logStdErrPR, logStdErrPW := cc.io.Pipe()
+	outputsStdErrTR := io.TeeReader(stdErrReader, logStdErrPW)
+
+	// interpret logs
+	logChan := make(chan error, 1)
 	go func() {
-		if err := cc.handleStdOut(
-			containerStdOutReader,
-			dcgContainerCall,
+		logChan <- cc.interpretLogs(
+			logStdOutPR,
+			logStdErrPR,
 			scgContainerCall,
-		); nil != err {
-			// ErrClosedPipe is expected if multiple pipe closes
-			errChan <- err
-		}
-		wg.Done()
+			dcgContainerCall,
+		)
 	}()
 
-	containerStdErrReader, containerStdErrWriter := cc.io.Pipe()
+	// interpret outputs
+	outputsChan := make(
+		chan struct {
+			outputs map[string]*model.Data
+			err     error
+		}, 1)
 	go func() {
-		if err := cc.handleStdErr(
-			containerStdErrReader,
-			dcgContainerCall,
+		// close pipes
+		defer logStdOutPW.Close()
+		defer logStdErrPW.Close()
+
+		outputs, err := cc.interpretOutputs(
+			outputsStdOutTR,
+			outputsStdErrTR,
 			scgContainerCall,
-		); nil != err {
-			// ErrClosedPipe is expected if multiple pipe closes
-			errChan <- err
+			dcgContainerCall,
+		)
+		outputsChan <- struct {
+			outputs map[string]*model.Data
+			err     error
+		}{
+			outputs: outputs,
+			err:     err,
 		}
-		wg.Done()
 	}()
 
 	rawExitCode, err := cc.containerProvider.RunContainer(
 		dcgContainerCall,
 		cc.pubSub,
-		containerStdOutWriter,
-		containerStdErrWriter,
+		stdOutWriter,
+		stdErrWriter,
 	)
 	// @TODO: handle no exit code
 	var exitCode int64
@@ -143,7 +155,22 @@ func (cc _containerCaller) Call(
 		exitCode = *rawExitCode
 	}
 
-	wg.Wait()
+	if exitCode != 0 {
+		err = fmt.Errorf("nonzero container exit code. Exit code was: %v", exitCode)
+	}
+
+	// wait on logChan
+	if logChanErr := <-logChan; nil == err {
+		// non-destructively set err
+		err = logChanErr
+	}
+
+	// wait on outputsChan
+	interpretOutputsResult := <-outputsChan
+	if nil == err {
+		// non-destructively set err
+		err = interpretOutputsResult.err
+	}
 
 	cc.pubSub.Publish(
 		&model.Event{
@@ -153,203 +180,30 @@ func (cc _containerCaller) Call(
 				PkgRef:      pkgRef,
 				RootOpId:    rootOpId,
 				ExitCode:    exitCode,
+				Outputs:     interpretOutputsResult.outputs,
 			},
 		},
 	)
-
-	if nil == err && len(errChan) > 0 {
-		err = <-errChan
-	}
 	return err
 }
 
-func (this _containerCaller) streamBinder(
-	stream io.Reader,
-	bindings map[string]string,
-	onBind func(name string, value *string),
-) error {
-	reader := bufio.NewReader(stream)
-
-	var err error
-	for {
-		var buffer bytes.Buffer
-		var l []byte
-		var isPrefix bool
-
-		for {
-			// use ReadString NOT Scanner to support long lines
-			l, isPrefix, err = reader.ReadLine()
-			buffer.Write(l)
-
-			// If we've reached the end of the line, stop reading.
-			if !isPrefix {
-				break
-			}
-
-			// If we're just at the EOF, break
-			if err != nil {
-				break
-			}
-		}
-
-		line := buffer.String()
-		for boundPrefix, name := range bindings {
-			trimmedLine := strings.TrimPrefix(line, boundPrefix)
-			if trimmedLine != line {
-				// if output trimming had effect we've got a match
-				onBind(name, &trimmedLine)
-			}
-		}
-
-		if err != nil {
-			break
-		}
-	}
-
-	if err != io.EOF {
-		return err
-	}
-	return nil
-}
-
-func (this _containerCaller) streamTransmitter(
+func (this _containerCaller) interpretLogs(
 	stdOutReader io.Reader,
-	onChunk func(n int, chunk []byte),
-) error {
-	chunk := make([]byte, 1024)
-	var n int
-	var err error
-
-	for {
-		// rather than chunking by line, we chunk by time at a rate of 30 FPS (frames per second)
-		// why? chunking by line would make TTY behaviors such as line editing behave non-TTY like
-		<-time.After(33 * time.Millisecond)
-		if n, err = stdOutReader.Read(chunk); n > 0 {
-			// always call onChunk if n > 0 to ensure full stream sent; even under error conditions
-			onChunk(n, chunk)
-		}
-
-		if nil != err {
-			break
-		}
-	}
-
-	if io.EOF == err {
-		return nil
-	}
-	return err
-}
-
-func (this _containerCaller) handleStdErr(
 	stdErrReader io.Reader,
-	dcgContainerCall *model.DCGContainerCall,
 	scgContainerCall *model.SCGContainerCall,
-) error {
-	errChan := make(chan error, 2)
-	var wg sync.WaitGroup
-	pr, pw := io.Pipe()
-	tr := io.TeeReader(stdErrReader, pw)
-
-	wg.Add(1)
-	go func() {
-		if err := this.streamBinder(
-			tr,
-			scgContainerCall.StdErr,
-			func(name string, value *string) {
-				this.pubSub.Publish(&model.Event{
-					Timestamp: time.Now().UTC(),
-					OutputInitialized: &model.OutputInitializedEvent{
-						Name:     name,
-						Value:    &model.Data{String: value},
-						RootOpId: dcgContainerCall.RootOpId,
-						CallId:   dcgContainerCall.ContainerId,
-					},
-				})
-			}); nil != err {
-			errChan <- err
-		}
-
-		// close Pipe
-		pw.Close()
-		wg.Done()
-	}()
-
-	wg.Add(1)
-	go func() {
-		if err := this.streamTransmitter(
-			pr,
-			func(n int, chunk []byte) {
-				this.pubSub.Publish(
-					&model.Event{
-						Timestamp: time.Now().UTC(),
-						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
-							Data:        chunk[0:n],
-							ContainerId: dcgContainerCall.ContainerId,
-							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.PkgRef,
-							RootOpId:    dcgContainerCall.RootOpId,
-						},
-					},
-				)
-			}); nil != err {
-			errChan <- err
-		}
-		wg.Done()
-	}()
-
-	wg.Wait()
-	close(errChan)
-
-	if len(errChan) > 0 {
-		return <-errChan
-	}
-	return nil
-}
-
-func (this _containerCaller) handleStdOut(
-	stdOutReader io.Reader,
 	dcgContainerCall *model.DCGContainerCall,
-	scgContainerCall *model.SCGContainerCall,
 ) error {
-	errChan := make(chan error, 2)
-	var wg sync.WaitGroup
-	pr, pw := io.Pipe()
-	tr := io.TeeReader(stdOutReader, pw)
-
-	wg.Add(1)
+	stdOutLogChan := make(chan error, 1)
 	go func() {
-		if err := this.streamBinder(
-			tr,
-			scgContainerCall.StdOut,
-			func(name string, value *string) {
-				this.pubSub.Publish(&model.Event{
-					Timestamp: time.Now().UTC(),
-					OutputInitialized: &model.OutputInitializedEvent{
-						Name:     name,
-						Value:    &model.Data{String: value},
-						RootOpId: dcgContainerCall.RootOpId,
-						CallId:   dcgContainerCall.ContainerId,
-					},
-				})
-			}); nil != err {
-			errChan <- err
-		}
-
-		// close Pipe
-		pw.Close()
-		wg.Done()
-	}()
-
-	wg.Add(1)
-	go func() {
-		if err := this.streamTransmitter(
-			pr,
-			func(n int, chunk []byte) {
+		// interpret stdOut
+		stdOutLogChan <- readChunks(
+			stdOutReader,
+			func(chunk []byte) {
 				this.pubSub.Publish(
 					&model.Event{
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
-							Data:        chunk[0:n],
+							Data:        chunk,
 							ContainerId: dcgContainerCall.ContainerId,
 							ImageRef:    dcgContainerCall.Image.Ref,
 							PkgRef:      dcgContainerCall.PkgRef,
@@ -357,74 +211,135 @@ func (this _containerCaller) handleStdOut(
 						},
 					},
 				)
-			}); nil != err {
-			errChan <- err
-		}
-		wg.Done()
+			})
 	}()
 
-	wg.Wait()
-	close(errChan)
+	stdErrLogChan := make(chan error, 1)
+	go func() {
+		// interpret stdErr
+		stdErrLogChan <- readChunks(
+			stdErrReader,
+			func(chunk []byte) {
+				this.pubSub.Publish(
+					&model.Event{
+						Timestamp: time.Now().UTC(),
+						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+							Data:        chunk,
+							ContainerId: dcgContainerCall.ContainerId,
+							ImageRef:    dcgContainerCall.Image.Ref,
+							PkgRef:      dcgContainerCall.PkgRef,
+							RootOpId:    dcgContainerCall.RootOpId,
+						},
+					},
+				)
+			})
+	}()
 
-	if len(errChan) > 0 {
-		return <-errChan
+	// wait on logs
+	stdOutLogErr := <-stdOutLogChan
+	stdErrLogErr := <-stdErrLogChan
+
+	// return errs
+	if nil != stdOutLogErr {
+		return stdOutLogErr
 	}
+	if nil != stdErrLogErr {
+		return stdErrLogErr
+	}
+
 	return nil
 }
 
-func (this _containerCaller) txOutputs(
-	dcgContainerCall *model.DCGContainerCall,
+func (this _containerCaller) interpretOutputs(
+	stdOutReader io.Reader,
+	stdErrReader io.Reader,
 	scgContainerCall *model.SCGContainerCall,
-) {
+	dcgContainerCall *model.DCGContainerCall,
+) (map[string]*model.Data, error) {
+	outputs := map[string]*model.Data{}
 
-	// send socket outputs
 	for socketAddr, name := range scgContainerCall.Sockets {
+		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			this.pubSub.Publish(&model.Event{
-				Timestamp: time.Now().UTC(),
-				OutputInitialized: &model.OutputInitializedEvent{
-					Name:     name,
-					Value:    &model.Data{Socket: &dcgContainerCall.ContainerId},
-					RootOpId: dcgContainerCall.RootOpId,
-					CallId:   dcgContainerCall.ContainerId,
-				},
-			})
+			outputs[name] = &model.Data{Socket: &dcgContainerCall.ContainerId}
 		}
 	}
-
-	// send file outputs
 	for scgContainerFilePath, name := range scgContainerCall.Files {
+		// add file outputs
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
-				this.pubSub.Publish(&model.Event{
-					Timestamp: time.Now().UTC(),
-					OutputInitialized: &model.OutputInitializedEvent{
-						Name:     name,
-						Value:    &model.Data{File: &dcgHostFilePath},
-						RootOpId: dcgContainerCall.RootOpId,
-						CallId:   dcgContainerCall.ContainerId,
-					},
-				})
+				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
+				value := dcgHostFilePath
+				outputs[name] = &model.Data{File: &value}
 			}
 		}
 	}
-
-	// send dir outputs
-	for scgContainerDirPath, name := range scgContainerCall.Dirs {
+	for containerPath, binding := range scgContainerCall.Dirs {
+		// add dir outputs
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
-			if scgContainerDirPath == dcgContainerDirPath {
-				this.pubSub.Publish(&model.Event{
-					Timestamp: time.Now().UTC(),
-					OutputInitialized: &model.OutputInitializedEvent{
-						Name:     name,
-						Value:    &model.Data{Dir: &dcgHostDirPath},
-						RootOpId: dcgContainerCall.RootOpId,
-						CallId:   dcgContainerCall.ContainerId,
-					},
-				})
+			if containerPath == dcgContainerDirPath {
+				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
+				value := dcgHostDirPath
+				outputs[binding] = &model.Data{Dir: &value}
 			}
 		}
 	}
 
-	return
+	stdErrOutputsChan := make(chan struct {
+		outputs map[string]*model.Data
+		err     error
+	}, 1)
+	go func() {
+		// add stdErr stdErrOutputs
+		stdErrOutputs := map[string]*model.Data{}
+		err := bindLines(
+			stdErrReader,
+			scgContainerCall.StdErr,
+			func(name string, value *string) {
+				stdErrOutputs[name] = &model.Data{String: value}
+			})
+		stdErrOutputsChan <- struct {
+			outputs map[string]*model.Data
+			err     error
+		}{outputs: stdErrOutputs, err: err}
+	}()
+
+	stdOutOutputsChan := make(chan struct {
+		outputs map[string]*model.Data
+		err     error
+	}, 1)
+	go func() {
+		// add stdOut stdOutOutputs
+		stdOutOutputs := map[string]*model.Data{}
+		err := bindLines(
+			stdOutReader,
+			scgContainerCall.StdOut,
+			func(name string, value *string) {
+				stdOutOutputs[name] = &model.Data{String: value}
+			})
+		stdOutOutputsChan <- struct {
+			outputs map[string]*model.Data
+			err     error
+		}{outputs: stdOutOutputs, err: err}
+	}()
+
+	// wait for stdErr result
+	chanResult := <-stdErrOutputsChan
+	if nil != chanResult.err {
+		return nil, chanResult.err
+	}
+	for name, value := range chanResult.outputs {
+		outputs[name] = value
+	}
+
+	// wait for stdOut result
+	chanResult = <-stdOutOutputsChan
+	if nil != chanResult.err {
+		return nil, chanResult.err
+	}
+	for name, value := range chanResult.outputs {
+		outputs[name] = value
+	}
+
+	return outputs, nil
 }

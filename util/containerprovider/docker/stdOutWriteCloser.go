@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bufio"
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
@@ -12,36 +13,35 @@ func NewStdOutWriteCloser(
 	containerId string,
 	rootOpId string,
 ) io.WriteCloser {
-	reader, writer := io.Pipe()
+	pr, pw := io.Pipe()
 	go func() {
-		chunk := make([]byte, 1024)
-		var n int
+		// support lines up to 4MB
+		reader := bufio.NewReaderSize(pr, 4e6)
 		var err error
+		var b []byte
 
 		for {
-			// rather than chunking by line, we chunk by time at a rate of 30 FPS (frames per second)
-			// why? chunking by line would make TTY behaviors such as line editing behave non-TTY like
-			<-time.After(33 * time.Millisecond)
-			n, err = reader.Read(chunk)
-			if n > 0 {
-				// always call onChunk if n > 0 to ensure full stream sent; even under error conditions
+			// chunk on newlines
+			if b, err = reader.ReadBytes('\n'); len(b) > 0 {
+				// always publish if len(bytes) read to ensure full stream sent; even under error conditions
 				eventPublisher.Publish(
 					&model.Event{
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
-							Data:        chunk[0:n],
+							Data:        b,
 							ContainerId: containerId,
 							RootOpId:    rootOpId,
 						},
 					},
 				)
 			}
+
 			if nil != err {
 				return
 			}
 		}
 	}()
 
-	return writer
+	return pw
 
 }

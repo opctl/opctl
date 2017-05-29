@@ -7,13 +7,12 @@ import (
 )
 
 func (this _containerProvider) streamContainerStdOut(
-	ctx context.Context,
 	containerId string,
 	writeCloser io.WriteCloser,
 ) error {
 
 	readCloser, err := this.dockerClient.ContainerLogs(
-		ctx,
+		context.TODO(),
 		containerId,
 		types.ContainerLogsOptions{
 			Follow:     true,

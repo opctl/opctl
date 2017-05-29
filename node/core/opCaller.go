@@ -17,9 +17,7 @@ type opCaller interface {
 		pkgBasePath string,
 		rootOpId string,
 		scgOpCall *model.SCGOpCall,
-	) (
-		err error,
-	)
+	) error
 }
 
 func newOpCaller(
@@ -43,28 +41,27 @@ type _opCaller struct {
 	caller      caller
 }
 
-func (this _opCaller) Call(
+func (oc _opCaller) Call(
 	inboundScope map[string]*model.Data,
 	opId string,
 	pkgBasePath string,
 	rootOpId string,
 	scgOpCall *model.SCGOpCall,
-) (
-	err error,
-) {
+) error {
+	var err error
+	var isKilled bool
+	var outputs map[string]*model.Data
 	if "" != scgOpCall.Ref {
 		// fallback for deprecated pkg ref format
 		scgOpCall.Pkg = &model.SCGOpCallPkg{
 			Ref: scgOpCall.Ref,
 		}
 	}
-
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-
-		if nil == this.dcgNodeRepo.GetIfExists(rootOpId) {
+		if isKilled {
 			// guard: op killed (we got preempted)
-			this.pubSub.Publish(
+			oc.pubSub.Publish(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
@@ -78,11 +75,11 @@ func (this _opCaller) Call(
 			return
 		}
 
-		this.dcgNodeRepo.DeleteIfExists(opId)
+		oc.dcgNodeRepo.DeleteIfExists(opId)
 
 		var opOutcome string
 		if nil != err {
-			this.pubSub.Publish(
+			oc.pubSub.Publish(
 				&model.Event{
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
@@ -98,7 +95,7 @@ func (this _opCaller) Call(
 			opOutcome = model.OpOutcomeSucceeded
 		}
 
-		this.pubSub.Publish(
+		oc.pubSub.Publish(
 			&model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
@@ -106,13 +103,14 @@ func (this _opCaller) Call(
 					PkgRef:   scgOpCall.Pkg.Ref,
 					Outcome:  opOutcome,
 					RootOpId: rootOpId,
+					Outputs:  outputs,
 				},
 			},
 		)
 
 	}()
 
-	this.dcgNodeRepo.Add(
+	oc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:       opId,
 			PkgRef:   scgOpCall.Pkg.Ref,
@@ -121,7 +119,7 @@ func (this _opCaller) Call(
 		},
 	)
 
-	dcgOpCall, err := this.opCall.Interpret(
+	dcgOpCall, err := oc.opCall.Interpret(
 		inboundScope,
 		scgOpCall,
 		opId,
@@ -129,10 +127,10 @@ func (this _opCaller) Call(
 		rootOpId,
 	)
 	if nil != err {
-		return
+		return err
 	}
 
-	this.pubSub.Publish(
+	oc.pubSub.Publish(
 		&model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
@@ -143,31 +141,44 @@ func (this _opCaller) Call(
 		},
 	)
 
-	go this.txOutputs(dcgOpCall, scgOpCall)
+	// interpret outputs
+	outputsChan := make(chan map[string]*model.Data, 1)
+	go func() {
+		outputsChan <- oc.interpretOutputs(
+			scgOpCall,
+			dcgOpCall,
+		)
+	}()
 
-	err = this.caller.Call(
+	err = oc.caller.Call(
 		dcgOpCall.ChildCallId,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
 		dcgOpCall.PkgRef,
 		rootOpId,
 	)
+
+	isKilled = nil == oc.dcgNodeRepo.GetIfExists(rootOpId)
+
 	if nil != err {
-		return
+		return err
 	}
 
-	return
+	// wait on outputs
+	outputs = <-outputsChan
 
+	return nil
 }
 
-func (this _opCaller) txOutputs(
-	dcgOpCall *model.DCGOpCall,
+func (oc _opCaller) interpretOutputs(
 	scgOpCall *model.SCGOpCall,
-) {
+	dcgOpCall *model.DCGOpCall,
+) map[string]*model.Data {
+
 	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)
 	eventFilterSince := time.Now().UTC()
-	this.pubSub.Subscribe(
+	oc.pubSub.Subscribe(
 		&model.EventFilter{
 			RootOpIds: []string{dcgOpCall.RootOpId},
 			Since:     &eventFilterSince,
@@ -175,25 +186,47 @@ func (this _opCaller) txOutputs(
 		eventChannel,
 	)
 
-	// send outputs
+	childOutputs := map[string]*model.Data{}
 eventLoop:
 	for event := range eventChannel {
 		switch {
 		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.OpId:
+			// parent ended prematurely
+			return nil
+		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.ChildCallId:
+			for name, value := range event.OpEnded.Outputs {
+				childOutputs[name] = value
+			}
 			break eventLoop
-		case nil != event.OutputInitialized && event.OutputInitialized.CallId == dcgOpCall.ChildCallId:
-			childOutput := event.OutputInitialized
-			if _, ok := scgOpCall.Outputs[childOutput.Name]; ok {
-				this.pubSub.Publish(&model.Event{
-					Timestamp: time.Now().UTC(),
-					OutputInitialized: &model.OutputInitializedEvent{
-						Name:     childOutput.Name,
-						Value:    childOutput.Value,
-						RootOpId: dcgOpCall.RootOpId,
-						CallId:   dcgOpCall.OpId,
-					},
-				})
+		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgOpCall.ChildCallId:
+			for name, value := range event.ContainerExited.Outputs {
+				childOutputs[name] = value
+			}
+			break eventLoop
+		case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == dcgOpCall.ChildCallId:
+			for name, value := range event.SerialCallEnded.Outputs {
+				childOutputs[name] = value
+			}
+			break eventLoop
+		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == dcgOpCall.ChildCallId:
+			// parallel calls have no outputs
+			return nil
+		}
+	}
+
+	outputs := map[string]*model.Data{}
+	for boundName, boundValue := range scgOpCall.Outputs {
+		// return bound outputs
+		if "" == boundValue {
+			// implicit value
+			boundValue = boundName
+		}
+		for childOutputName, childOutputValue := range childOutputs {
+			if boundValue == childOutputName {
+				outputs[boundName] = childOutputValue
 			}
 		}
 	}
+
+	return outputs
 }

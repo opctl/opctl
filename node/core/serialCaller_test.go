@@ -223,17 +223,13 @@ var _ = Context("serialCaller", func() {
 						defer func() {
 							subscribeCallIndex++
 						}()
-						for outputName, outputValue := range firstChildOutputs {
-							eventChannel <- &model.Event{
-								OutputInitialized: &model.OutputInitializedEvent{
-									Name:     outputName,
-									Value:    outputValue,
-									RootOpId: providedRootOpId,
-									CallId:   fmt.Sprintf("%v", subscribeCallIndex),
-								},
-							}
+						eventChannel <- &model.Event{
+							ContainerExited: &model.ContainerExitedEvent{
+								RootOpId:    providedRootOpId,
+								ContainerId: fmt.Sprintf("%v", subscribeCallIndex),
+								Outputs:     firstChildOutputs,
+							},
 						}
-						eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
 					}
 
 					fakeCaller := new(fakeCaller)
