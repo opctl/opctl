@@ -1,7 +1,6 @@
 package docker
 
 import (
-	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -97,11 +96,9 @@ func (this _containerProvider) RunContainer(
 		},
 	}
 
-	ctx, cancelFn := context.WithCancel(context.Background())
-
 	// create container
 	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
-		ctx,
+		context.TODO(),
 		containerConfig,
 		hostConfig,
 		networkingConfig,
@@ -124,7 +121,7 @@ func (this _containerProvider) RunContainer(
 
 		// retry create
 		containerCreatedResponse, err = this.dockerClient.ContainerCreate(
-			ctx,
+			context.TODO(),
 			containerConfig,
 			hostConfig,
 			networkingConfig,
@@ -137,7 +134,7 @@ func (this _containerProvider) RunContainer(
 
 	// start container
 	if err := this.dockerClient.ContainerStart(
-		ctx,
+		context.TODO(),
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
 	); nil != err {
@@ -150,46 +147,37 @@ func (this _containerProvider) RunContainer(
 
 	go func() {
 		if err := this.streamContainerStdErr(
-			ctx,
 			req.ContainerId,
 			stderr,
 		); nil != err {
-			cancelFn()
 			errChan <- err
 		}
-
 		waitGroup.Done()
 	}()
 
 	go func() {
 		if err := this.streamContainerStdOut(
-			ctx,
 			req.ContainerId,
 			stdout,
 		); nil != err {
-			cancelFn()
 			errChan <- err
 		}
-
 		waitGroup.Done()
 	}()
 
 	exitCode, waitError := this.dockerClient.ContainerWait(
-		ctx,
+		context.TODO(),
 		req.ContainerId,
 	)
 	if nil != waitError {
-		cancelFn()
-		errChan <- errors.New(fmt.Sprintf("unable to read container exit code. Error was: %v", waitError))
-	} else if 0 != exitCode {
-		cancelFn()
-		errChan <- errors.New(fmt.Sprintf("nonzero container exit code. Exit code was: %v", exitCode))
+		err = fmt.Errorf("unable to read container exit code. Error was: %v", waitError)
 	}
 
 	// ensure stdout, and stderr all read before returning
 	waitGroup.Wait()
 
-	if len(errChan) > 0 {
+	if nil != err && len(errChan) > 0 {
+		// non-destructively set err
 		err = <-errChan
 	}
 	return &exitCode, err

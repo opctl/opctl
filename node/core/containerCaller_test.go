@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -8,7 +9,6 @@ import (
 	"github.com/opctl/opctl/util/pubsub"
 	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/pkg/errors"
 	"io"
 	"time"
 )
@@ -290,85 +290,6 @@ var _ = Context("containerCaller", func() {
 		actualEvent.Timestamp = expectedEvent.Timestamp
 
 		Expect(actualEvent).To(Equal(expectedEvent))
-	})
-	It("should call pubSub.Publish w/ expected OutputInitializedEvents", func() {
-		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
-		providedContainerId := "dummyContainerId"
-		providedSCGContainerCall := &model.SCGContainerCall{
-			Sockets: map[string]string{
-				"0.0.0.0": "socket0Name",
-			},
-			Files:  map[string]string{},
-			Dirs:   map[string]string{},
-			StdErr: map[string]string{},
-			StdOut: map[string]string{},
-		}
-		providedPkgRef := "dummyPkgRef"
-		providedRootOpId := "dummyRootOpId"
-
-		expectedEventTimestamp := time.Now().UTC()
-
-		expectedOutputInitEvents := []*model.Event{
-			{
-				Timestamp: expectedEventTimestamp,
-				OutputInitialized: &model.OutputInitializedEvent{
-					CallId:   providedContainerId,
-					RootOpId: providedRootOpId,
-					Name:     providedSCGContainerCall.Sockets["0.0.0.0"],
-					Value:    &model.Data{Socket: &providedContainerId},
-				},
-			},
-		}
-
-		fakeContainerCall := new(containercall.Fake)
-		fakeContainerCall.InterpretReturns(
-			&model.DCGContainerCall{
-				DCGBaseCall: &model.DCGBaseCall{
-					RootOpId: providedRootOpId,
-				},
-				ContainerId: providedContainerId,
-			},
-			nil,
-		)
-
-		fakePubSub := new(pubsub.Fake)
-
-		// record actual published events
-		actualOutputInitEvents := make(chan *model.Event, 1)
-		fakePubSub.PublishStub = func(event *model.Event) {
-			event.Timestamp = expectedEventTimestamp
-			if event.OutputInitialized != nil {
-				actualOutputInitEvents <- event
-			}
-		}
-
-		fakeIIO := new(iio.Fake)
-		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
-
-		objectUnderTest := _containerCaller{
-			containerProvider: new(containerprovider.Fake),
-			containerCall:     fakeContainerCall,
-			pubSub:            fakePubSub,
-			dcgNodeRepo:       new(fakeDCGNodeRepo),
-			io:                fakeIIO,
-		}
-
-		/* act */
-		objectUnderTest.Call(
-			providedInboundScope,
-			providedContainerId,
-			providedSCGContainerCall,
-			providedPkgRef,
-			providedRootOpId,
-		)
-
-		/* assert */
-		for _, expectedOutputInitEvent := range expectedOutputInitEvents {
-			Eventually(func() *model.Event {
-				return <-actualOutputInitEvents
-			}, 5*time.Second, 1*time.Second).Should(Equal(expectedOutputInitEvent))
-		}
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */

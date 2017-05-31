@@ -17,9 +17,7 @@ type serialCaller interface {
 		rootOpId string,
 		pkgRef string,
 		scgSerialCall []*model.SCG,
-	) (
-		err error,
-	)
+	) error
 }
 
 func newSerialCaller(
@@ -48,42 +46,38 @@ func (this _serialCaller) Call(
 	rootOpId string,
 	pkgRef string,
 	scgSerialCall []*model.SCG,
-) (
-	err error,
-) {
+) error {
+	outputs := map[string]*model.Data{}
+	for varName, varData := range inboundScope {
+		outputs[varName] = varData
+	}
+
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-
 		this.pubSub.Publish(
 			&model.Event{
 				Timestamp: time.Now().UTC(),
 				SerialCallEnded: &model.SerialCallEndedEvent{
 					CallId:   callId,
 					RootOpId: rootOpId,
+					Outputs:  outputs,
 				},
 			},
 		)
-
 	}()
 
-	scope := map[string]*model.Data{}
-	for varName, varData := range inboundScope {
-		scope[varName] = varData
-	}
-
-	eventFilterSince := time.Now().UTC()
 	for _, scgCall := range scgSerialCall {
+		eventFilterSince := time.Now().UTC()
 		childCallId := this.uniqueStringFactory.Construct()
-		err = this.caller.Call(
+		if err := this.caller.Call(
 			childCallId,
-			scope,
+			outputs,
 			scgCall,
 			pkgRef,
 			rootOpId,
-		)
-		if nil != err {
+		); nil != err {
 			// end run immediately on any error
-			return
+			return err
 		}
 
 		// subscribe to events
@@ -96,48 +90,32 @@ func (this _serialCaller) Call(
 			eventChannel,
 		)
 
-		// send outputs
 	eventLoop:
 		for event := range eventChannel {
+			// merge child outputs w/ outputs, child outputs having precedence
 			switch {
 			case nil != event.OpEnded && event.OpEnded.OpId == childCallId:
+				for name, value := range event.OpEnded.Outputs {
+					outputs[name] = value
+				}
 				break eventLoop
 			case nil != event.ContainerExited && event.ContainerExited.ContainerId == childCallId:
+				for name, value := range event.ContainerExited.Outputs {
+					outputs[name] = value
+				}
 				break eventLoop
 			case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == childCallId:
+				for name, value := range event.SerialCallEnded.Outputs {
+					outputs[name] = value
+				}
 				break eventLoop
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == childCallId:
 				break eventLoop
-			case nil != event.OutputInitialized && event.OutputInitialized.CallId == childCallId:
-				childOutput := event.OutputInitialized
-				if scgOpCall := scgCall.Op; nil != scgCall.Op {
-					// apply bound child outputs to current scope
-					for currentScopeVarName, childScopeVarName := range scgOpCall.Outputs {
-						if currentScopeVarName == childOutput.Name || childScopeVarName == childOutput.Name {
-							scope[currentScopeVarName] = childOutput.Value
-						}
-					}
-				} else {
-					// apply child outputs to current scope
-					scope[childOutput.Name] = childOutput.Value
-				}
 			}
 		}
 
 	}
 
-	// @TODO: stream outputs from last child
-	for childOutputName, childOutputValue := range scope {
-		this.pubSub.Publish(&model.Event{
-			OutputInitialized: &model.OutputInitializedEvent{
-				Name:     childOutputName,
-				Value:    childOutputValue,
-				RootOpId: rootOpId,
-				CallId:   callId,
-			},
-		})
-	}
-
-	return
+	return nil
 
 }

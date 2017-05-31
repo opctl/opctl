@@ -158,8 +158,8 @@ var _ = Context("opCaller", func() {
 
 			Expect(actualErr).To(Equal(expectedErr))
 		})
-		Context("opCall.Construct errors", func() {
-			It("should call pubSub.Publish w/ expected args", func() {
+		Context("opCall.Interpret errors", func() {
+			It("should return expected error", func() {
 				/* arrange */
 				providedOpId := "dummyOpId"
 				providedRootOpId := "dummyRootOpId"
@@ -246,6 +246,10 @@ var _ = Context("opCaller", func() {
 				)
 
 				fakePubSub := new(pubsub.Fake)
+				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+					// close eventChannel to trigger immediate return
+					close(eventChannel)
+				}
 
 				objectUnderTest := _opCaller{
 					opCall:      fakeOpCall,
@@ -300,11 +304,17 @@ var _ = Context("opCaller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+					// close eventChannel to trigger immediate return
+					close(eventChannel)
+				}
+
 				fakeCaller := new(fakeCaller)
 
 				objectUnderTest := _opCaller{
 					opCall:      fakeOpCall,
-					pubSub:      new(pubsub.Fake),
+					pubSub:      fakePubSub,
 					dcgNodeRepo: new(fakeDCGNodeRepo),
 					caller:      fakeCaller,
 				}
@@ -343,10 +353,16 @@ var _ = Context("opCaller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+					// close eventChannel to trigger immediate return
+					close(eventChannel)
+				}
+
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 				objectUnderTest := _opCaller{
-					pubSub:      new(pubsub.Fake),
+					pubSub:      fakePubSub,
 					opCall:      fakeOpCall,
 					dcgNodeRepo: fakeDCGNodeRepo,
 					caller:      new(fakeCaller),
@@ -394,6 +410,10 @@ var _ = Context("opCaller", func() {
 					)
 
 					fakePubSub := new(pubsub.Fake)
+					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+						// close eventChannel to trigger immediate return
+						close(eventChannel)
+					}
 
 					objectUnderTest := _opCaller{
 						pubSub:      fakePubSub,
@@ -438,8 +458,14 @@ var _ = Context("opCaller", func() {
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
+					fakePubSub := new(pubsub.Fake)
+					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+						// close eventChannel to trigger immediate return
+						close(eventChannel)
+					}
+
 					objectUnderTest := _opCaller{
-						pubSub:      new(pubsub.Fake),
+						pubSub:      fakePubSub,
 						opCall:      fakeOpCall,
 						dcgNodeRepo: fakeDCGNodeRepo,
 						caller:      new(fakeCaller),
@@ -458,70 +484,6 @@ var _ = Context("opCaller", func() {
 					Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedOpId))
 				})
 				Context("caller.Call errs", func() {
-					It("should call pubSub.Publish w/ expected args", func() {
-						/* arrange */
-						providedOpId := "dummyOpId"
-						providedRootOpId := "dummyRootOpId"
-						providedSCGOpCall := &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyPkgRef",
-							},
-						}
-
-						callErr := errors.New("dummyError")
-
-						expectedEvent := &model.Event{
-							Timestamp: time.Now().UTC(),
-							OpErred: &model.OpErredEvent{
-								Msg:      callErr.Error(),
-								OpId:     providedOpId,
-								PkgRef:   providedSCGOpCall.Pkg.Ref,
-								RootOpId: providedRootOpId,
-							},
-						}
-
-						fakeOpCall := new(opcall.Fake)
-						fakeOpCall.InterpretReturns(
-							&model.DCGOpCall{
-								DCGBaseCall: &model.DCGBaseCall{},
-							},
-							nil,
-						)
-
-						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
-						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
-
-						fakePubSub := new(pubsub.Fake)
-
-						fakeCaller := new(fakeCaller)
-						fakeCaller.CallReturns(callErr)
-
-						objectUnderTest := _opCaller{
-							pubSub:      fakePubSub,
-							opCall:      fakeOpCall,
-							dcgNodeRepo: fakeDCGNodeRepo,
-							caller:      fakeCaller,
-						}
-
-						/* act */
-						objectUnderTest.Call(
-							map[string]*model.Data{},
-							providedOpId,
-							"dummyPkgBasePath",
-							providedRootOpId,
-							providedSCGOpCall,
-						)
-
-						/* assert */
-						actualEvent := fakePubSub.PublishArgsForCall(1)
-
-						// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
-						Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
-						// set temporal fields to expected vals since they're already asserted
-						actualEvent.Timestamp = expectedEvent.Timestamp
-
-						Expect(actualEvent).To(Equal(expectedEvent))
-					})
 					It("should call pubSub.Publish w/ expected args", func() {
 						/* arrange */
 						providedOpId := "dummyOpId"
@@ -554,6 +516,10 @@ var _ = Context("opCaller", func() {
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						fakePubSub := new(pubsub.Fake)
+						fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+							// close eventChannel to trigger immediate return
+							close(eventChannel)
+						}
 
 						fakeCaller := new(fakeCaller)
 						fakeCaller.CallReturns(
@@ -605,6 +571,7 @@ var _ = Context("opCaller", func() {
 								PkgRef:   providedSCGOpCall.Pkg.Ref,
 								Outcome:  model.OpOutcomeSucceeded,
 								RootOpId: providedRootOpId,
+								Outputs:  map[string]*model.Data{},
 							},
 						}
 
@@ -620,6 +587,10 @@ var _ = Context("opCaller", func() {
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						fakePubSub := new(pubsub.Fake)
+						fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+							// close eventChannel to trigger immediate return
+							close(eventChannel)
+						}
 
 						objectUnderTest := _opCaller{
 							pubSub:      fakePubSub,

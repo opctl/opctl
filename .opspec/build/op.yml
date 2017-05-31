@@ -6,6 +6,10 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
+  gitCommit:
+    string:
+      constraints: { minLength: 1 }
+      description: git commit the coverage should be associated with
   srcDir:
     dir:
       default: .
@@ -21,5 +25,5 @@ run:
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: publish-coverage }
-        inputs: { gitBranch, srcDir }
+        pkg: { ref: github.com/opspec-pkgs/codecov.upload#0.0.1 }
+        inputs: { gitBranch, gitCommit, token: b432a3b8-8220-4c1d-bcee-db76e68d0128, report: $(srcDir)/coverage.txt }
