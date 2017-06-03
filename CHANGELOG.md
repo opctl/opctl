@@ -3,19 +3,21 @@
 All notable changes to the spec will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
-## \[Unreleased]
+## \[0.1.4] - 2017-06-02
 
 ### Added
 
+- [Allow path expansion w/in sub op call inputs](https://github.com/opspec-io/spec/issues/120)
+- [Allow string/number literals as sub op call inputs](https://github.com/opspec-io/spec/issues/121)
 - [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opspec-io/spec/issues/117)
 
 ### Deprecated
 
 - `ref` attribute in
-  [package-manifest.schema.json#/definitions/opCall](spec/package-manifest.schema.json#/definitions/opCall).
+  [pkg-manifest.schema.json#/definitions/opCall](spec/pkg-manifest.schema.json#/definitions/opCall).
   Use new `pkg` attribute.
 - `pullIdentity` & `pullSecret` attributes in
-  [package-manifest.schema.json#/definitions/containerCall](spec/package-manifest.schema.json#/definitions/containerCall).
+  [pkg-manifest.schema.json#/definitions/containerCall](spec/pkg-manifest.schema.json#/definitions/containerCall).
   Use new `pullCreds` attribute.
 
 ## \[0.1.3] - 2017-03-06

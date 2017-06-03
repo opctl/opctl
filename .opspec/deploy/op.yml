@@ -5,11 +5,11 @@ inputs:
     dir:
       default: .
       description: dir containing the doc source
-  awsAccessKeyId:
+  AWS_ACCESS_KEY_ID:
     string:
       constraints: { minLength: 20 }
       description: access key for AWS
-  awsSecretAccessKey:
+  AWS_SECRET_ACCESS_KEY:
     string:
       constraints: { minLength: 20 }
       description: secret access key for AWS
@@ -32,16 +32,16 @@ run:
             echo "installing deps"
             pip install awscli
 
-            echo "deploy"
+            echo "deploying to /"
             aws s3 sync . s3://opspec.io --delete
 
-            echo "archive"
-            aws s3 sync . s3://archive.opspec.io/$(version) --delete
+            echo "deploying to /$(version)"
+            aws s3 sync latest s3://opspec.io/$(version) --delete
         dirs:
           /src: srcDir
         envVars:
-          AWS_ACCESS_KEY_ID: $(awsAccessKeyId)
-          AWS_SECRET_ACCESS_KEY: $(awsSecretAccessKey)
+          AWS_ACCESS_KEY_ID:
+          AWS_SECRET_ACCESS_KEY:
           AWS_DEFAULT_REGION: us-west-2
         image: { ref: 'python:2.7' }
         workDir: /src/build

@@ -31,10 +31,10 @@ run:
             gitbook install
 
             echo "compiling website"
-            gitbook build . ../build/spec
+            gitbook build . ../build/latest
 
             echo "compiling pdf"
-            gitbook pdf . ../build/spec/opspec.pdf
+            gitbook pdf . ../build/latest/opspec0.1.4.pdf
         dirs:
           /src: srcDir
         image: { ref: 'node:7.7' }

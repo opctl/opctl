@@ -10,14 +10,7 @@ outputs:
     dir:
       description: directory containing the projects source code
 run:
-  container:
-    cmd:
-      - sh
-      - -ce
-      - |
-        echo "cleaning untracked files from workdir"
-        git clean -ffXd -e !.idea/
-    dirs:
-      /src: srcDir
-    image: { ref: 'node:7.7' }
-    workDir: /src
+  op:
+    pkg: { ref: github.com/opspec-pkgs/git.clean#0.0.3 }
+    inputs: { srcDir: $(srcDir), opts: -ffXd -e !.idea/ }
+    outputs: { srcDir }
