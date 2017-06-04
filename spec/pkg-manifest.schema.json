@@ -42,7 +42,7 @@
               "type": "string"
             },
             "default": {
-              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -69,7 +69,7 @@
               "type": "string"
             },
             "default": {
-              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {

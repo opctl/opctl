@@ -3,10 +3,11 @@
 All notable changes to the spec will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
-## \[0.1.4] - 2017-06-02
+## \[0.1.4] - 2017-06-04
 
 ### Added
 
+- [Support using pkg dir/file as input/output param default](https://github.com/opspec-io/spec/issues/127)
 - [Allow path expansion w/in sub op call inputs](https://github.com/opspec-io/spec/issues/120)
 - [Allow string/number literals as sub op call inputs](https://github.com/opspec-io/spec/issues/121)
 - [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opspec-io/spec/issues/117)
