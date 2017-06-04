@@ -69,10 +69,12 @@ paths:
             required: [ pkg ]
             properties:
               args:
+                type: object
+                # @TODO: use patternProperties if/when OpenAPI spec supports it
                 description: arguments passed to the op to satisfy inputs
-                type: array
-                items:
-                  $ref: '#/definitions/OpArg'
+                additionalProperties:
+                  # @TODO: use oneOf if/when OpenAPI spec supports it
+                  type: string
               pkg:
                 required: [ ref ]
                 properties:
@@ -127,6 +129,23 @@ paths:
           schema:
             type: string
 definitions:
+  Value:
+    description: a typed value
+    properties:
+      # @TODO: use oneOf as soon as OpenAPI v3 is released
+      dir:
+        description: path
+        type: string
+      file:
+        description: path
+        type: string
+      number:
+        type: number
+      socket:
+        description: socket address
+        type: string
+      string:
+        type: string
   Event:
     properties:
       timestamp:
@@ -145,11 +164,15 @@ definitions:
         $ref: '#/definitions/OpEndedEvent'
       opStarted:
         $ref: '#/definitions/OpStartedEvent'
-      opEncounteredError:
-        $ref: '#/definitions/OpEncounteredErrorEvent'
+      opErred:
+        $ref: '#/definitions/OpErredEvent'
+      parallelCallEnded:
+        $ref: '#/definitions/ParallelCallEndedEvent'
+      serialCallEnded:
+        $ref: '#/definitions/SerialCallEndedEvent'
   ContainerExitedEvent:
     properties:
-      containerRef:
+      imageRef:
         type: string
       exitCode:
         type: integer
@@ -159,9 +182,14 @@ definitions:
         type: string
       pkgRef:
         type: string
+      outputs:
+        type: object
+        # @TODO: use patternProperties if/when OpenAPI spec supports it
+        additionalProperties:
+          $ref: '#/definitions/Value'
   ContainerStartedEvent:
     properties:
-      containerRef:
+      imageRef:
         type: string
       rootOpId:
         type: string
@@ -171,7 +199,7 @@ definitions:
         type: string
   ContainerStdErrWrittenToEvent:
     properties:
-      containerRef:
+      imageRef:
         type: string
       data:
         type: string
@@ -184,7 +212,7 @@ definitions:
         type: string
   ContainerStdOutWrittenToEvent:
     properties:
-      containerRef:
+      imageRef:
         type: string
       data:
         type: string
@@ -195,7 +223,7 @@ definitions:
         type: string
       pkgRef:
         type: string
-  OpEncounteredErrorEvent:
+  OpErredEvent:
     properties:
       rootOpId:
         type: string
@@ -216,6 +244,11 @@ definitions:
       outcome:
         enum: [ SUCCEEDED, FAILED, KILLED]
         type: string
+      outputs:
+        type: object
+        # @TODO: use patternProperties if/when OpenAPI spec supports it
+        additionalProperties:
+          $ref: '#/definitions/Value'
   OpStartedEvent:
     properties:
       rootOpId:
@@ -224,7 +257,20 @@ definitions:
         type: string
       pkgRef:
         type: string
-  OpArg:
-    description: An arg to be provided to the op
-    type: object
-    # @TODO: use patternProperties if/when OpenAPI spec supports it
+  ParallelCallEndedEvent:
+    properties:
+      rootOpId:
+        type: string
+      callId:
+        type: string
+  SerialCallEndedEvent:
+    properties:
+      rootOpId:
+        type: string
+      callId:
+        type: string
+      outputs:
+        type: object
+        # @TODO: use patternProperties if/when OpenAPI spec supports it
+        additionalProperties:
+          $ref: '#/definitions/Value'
