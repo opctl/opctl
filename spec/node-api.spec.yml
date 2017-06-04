@@ -72,9 +72,9 @@ paths:
                 type: object
                 # @TODO: use patternProperties if/when OpenAPI spec supports it
                 description: arguments passed to the op to satisfy inputs
+                # @TODO: use patternProperties if/when OpenAPI spec supports it
                 additionalProperties:
-                  # @TODO: use oneOf if/when OpenAPI spec supports it
-                  type: string
+                  $ref: '#/definitions/Value'
               pkg:
                 required: [ ref ]
                 properties:
