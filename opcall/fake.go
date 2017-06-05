@@ -8,10 +8,10 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(scope map[string]*model.Data, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error)
+	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		scope       map[string]*model.Data
+		scope       map[string]*model.Value
 		scgOpCall   *model.SCGOpCall
 		opId        string
 		pkgBasePath string
@@ -29,11 +29,11 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(scope map[string]*model.Data, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error) {
+func (fake *Fake) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		scope       map[string]*model.Data
+		scope       map[string]*model.Value
 		scgOpCall   *model.SCGOpCall
 		opId        string
 		pkgBasePath string
@@ -56,7 +56,7 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Data, *model.SCGOpCall, string, string, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGOpCall, string, string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opId, fake.interpretArgsForCall[i].pkgBasePath, fake.interpretArgsForCall[i].rootOpId

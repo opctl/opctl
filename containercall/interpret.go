@@ -1,6 +1,7 @@
 package containercall
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path"
@@ -10,17 +11,17 @@ import (
 )
 
 func (df _ContainerCall) Interpret(
-	currentScope map[string]*model.Data,
+	scope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
 	containerId string,
 	rootOpId string,
-	pkgRef string,
+	pkgPath string,
 ) (*model.DCGContainerCall, error) {
 
 	dcgContainerCall := &model.DCGContainerCall{
 		DCGBaseCall: &model.DCGBaseCall{
 			RootOpId: rootOpId,
-			PkgRef:   pkgRef,
+			PkgRef:   pkgPath,
 		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
@@ -48,110 +49,163 @@ func (df _ContainerCall) Interpret(
 	// construct cmd
 	for _, cmdEntry := range scgContainerCall.Cmd {
 		// interpolate each entry
-		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, df.interpolater.Interpolate(cmdEntry, currentScope))
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, df.interpolater.Interpolate(cmdEntry, scope))
 	}
 
 	// construct dirs
 	for scgContainerDirPath, scgContainerDirBind := range scgContainerCall.Dirs {
-		if "" == scgContainerDirBind {
-			// implicitly bound
-			scgContainerDirBind = scgContainerDirPath
-		}
 
-		if strings.HasPrefix(scgContainerDirBind, "/") {
-			// is bound to pkg path
-			dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirBind)
-			if err := df.dirCopier.OS(
-				filepath.Join(pkgRef, scgContainerDirBind),
-				dcgContainerCall.Dirs[scgContainerDirPath],
-			); nil != err {
-				return nil, err
-			}
-		} else {
-			// is bound to variable
-			if varData, ok := currentScope[scgContainerDirBind]; ok {
-				// bound to input
-				dcgContainerCall.Dirs[scgContainerDirPath] = *varData.Dir
-			} else {
-				// bound to output
-				// create placeholder dir on host so the output points to something
-				dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
-				if err := df.os.MkdirAll(
-					dcgContainerCall.Dirs[scgContainerDirPath],
-					0700,
-				); nil != err {
-					return nil, err
-				}
-			}
-		}
+    if "" == scgContainerDirBind {
+      // bound implicitly
+      scgContainerDirBind = scgContainerDirPath
+    }
+
+    isBoundToPkg := strings.HasPrefix(scgContainerDirBind, "/")
+    value, isBoundToScope := scope[scgContainerDirBind]
+
+    switch {
+    case isBoundToPkg:
+      // bound to pkg dir
+      dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirBind)
+
+      // pkg dirs must be passed by value
+      if err := df.dirCopier.OS(
+        filepath.Join(pkgPath, scgContainerDirBind),
+        dcgContainerCall.Dirs[scgContainerDirPath],
+      ); nil != err {
+        return nil, err
+      }
+    case isBoundToScope:
+      // bound to scope
+      if nil == value || nil == value.Dir {
+        return nil, fmt.Errorf(
+          "Unable to bind dir '%v' to '%v'. '%v' not a dir",
+          scgContainerDirPath,
+          scgContainerDirBind,
+          scgContainerDirBind,
+        )
+      }
+
+      if strings.HasPrefix(*value.Dir, df.rootFSPath) {
+        // bound to rootFS dir
+        dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+
+        // rootFS dirs must be passed by value
+        if err := df.dirCopier.OS(
+          *value.Dir,
+          dcgContainerCall.Dirs[scgContainerDirPath],
+        ); nil != err {
+          return nil, err
+        }
+      } else {
+        // bound to non rootFS dir
+        dcgContainerCall.Dirs[scgContainerDirPath] = *value.Dir
+      }
+    default:
+      // unbound; create tree
+      dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+      if err := df.os.MkdirAll(
+        dcgContainerCall.Dirs[scgContainerDirPath],
+        0700,
+      ); nil != err {
+        return nil, err
+      }
+    }
 	}
 
 	// construct envVars
-	for scgContainerEnvVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
+	for envVarName, scgContainerEnvVar := range scgContainerCall.EnvVars {
 		if "" == scgContainerEnvVar {
 			// implicitly bound
-			value := currentScope[scgContainerEnvVarName]
+			value, ok := scope[envVarName]
+			if !ok {
+				return nil, fmt.Errorf("Unable to bind env var to '%v' via implicit ref. '%v' is not in scope", envVarName, envVarName)
+			}
+
 			switch {
 			case nil != value.String:
-				dcgContainerCall.EnvVars[scgContainerEnvVarName] = *value.String
+				dcgContainerCall.EnvVars[envVarName] = *value.String
 			case nil != value.Number:
-				dcgContainerCall.EnvVars[scgContainerEnvVarName] = strconv.FormatFloat(*value.Number, 'f', -1, 64)
+				dcgContainerCall.EnvVars[envVarName] = strconv.FormatFloat(*value.Number, 'f', -1, 64)
 			}
 			continue
 		}
 
 		// otherwise interpolate value
-		dcgContainerCall.EnvVars[scgContainerEnvVarName] = df.interpolater.Interpolate(scgContainerEnvVar, currentScope)
+		dcgContainerCall.EnvVars[envVarName] = df.interpolater.Interpolate(scgContainerEnvVar, scope)
 
 	}
 
 	// construct files
 	for scgContainerFilePath, scgContainerFileBind := range scgContainerCall.Files {
-		if "" == scgContainerFileBind {
-			// implicitly bound
-			scgContainerFileBind = scgContainerFilePath
-		}
 
-		if strings.HasPrefix(scgContainerFileBind, "/") {
-			// is bound to pkg path
-			dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFileBind)
-			if err := df.fileCopier.OS(
-				filepath.Join(pkgRef, scgContainerFileBind),
-				dcgContainerCall.Files[scgContainerFilePath],
-			); nil != err {
-				return nil, err
-			}
-		} else {
-			// is bound to variable
-			if varData, ok := currentScope[scgContainerFileBind]; ok {
-				// bound to input
-				dcgContainerCall.Files[scgContainerFilePath] = *varData.File
-			} else {
-				// bound to output
-				// create outputFile on host so the output points to something
-				dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-				// create dir
-				if err := df.os.MkdirAll(
-					path.Dir(dcgContainerCall.Files[scgContainerFilePath]),
-					0700,
-				); nil != err {
-					return nil, err
-				}
-				// create file
-				var outputFile *os.File
-				outputFile, err := df.os.Create(dcgContainerCall.Files[scgContainerFilePath])
-				outputFile.Close()
-				if nil != err {
-					return nil, err
-				}
-			}
-		}
+    if "" == scgContainerFileBind {
+      // bound implicitly
+      scgContainerFileBind = scgContainerFilePath
+    }
+
+    isBoundToPkg := strings.HasPrefix(scgContainerFileBind, "/")
+    value, isBoundToScope := scope[scgContainerFileBind]
+
+    switch{
+    case isBoundToPkg:
+      // bound to pkg file
+      dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFileBind)
+
+      // pkg files must be passed by value
+      if err := df.fileCopier.OS(
+        filepath.Join(pkgPath, scgContainerFileBind),
+        dcgContainerCall.Files[scgContainerFilePath],
+      ); nil != err {
+        return nil, err
+      }
+    case isBoundToScope:
+      // bound to scope
+      if nil == value || nil == value.File {
+        return nil, fmt.Errorf(
+          "Unable to bind file '%v' to '%v'. '%v' not a file",
+          scgContainerFilePath,
+          scgContainerFileBind,
+          scgContainerFileBind,
+        )
+      }
+
+      if strings.HasPrefix(*value.Dir, df.rootFSPath) {
+        // rootFS dirs must be passed by value
+        if err := df.fileCopier.OS(
+          *value.Dir,
+          dcgContainerCall.Files[scgContainerFilePath],
+        ); nil != err {
+          return nil, err
+        }
+      } else {
+        // bound to non rootFS dir
+        dcgContainerCall.Files[scgContainerFilePath] = *value.File
+      }
+    default:
+      // unbound; create tree
+      dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+      // create dir
+      if err := df.os.MkdirAll(
+        path.Dir(dcgContainerCall.Files[scgContainerFilePath]),
+        0700,
+      ); nil != err {
+        return nil, err
+      }
+      // create file
+      var outputFile *os.File
+      outputFile, err := df.os.Create(dcgContainerCall.Files[scgContainerFilePath])
+      outputFile.Close()
+      if nil != err {
+        return nil, err
+      }
+    }
 	}
 
 	// construct image
 	if scgContainerCallImage := scgContainerCall.Image; scgContainerCallImage != nil {
 		dcgContainerCall.Image = &model.DCGContainerCallImage{
-			Ref: df.interpolater.Interpolate(scgContainerCall.Image.Ref, currentScope),
+			Ref: df.interpolater.Interpolate(scgContainerCall.Image.Ref, scope),
 		}
 		if "" != scgContainerCallImage.PullIdentity && "" != scgContainerCallImage.PullSecret {
 			// fallback for deprecated cred format
@@ -163,15 +217,15 @@ func (df _ContainerCall) Interpret(
 
 		if nil != scgContainerCallImage.PullCreds {
 			dcgContainerCall.Image.PullCreds = &model.DCGPullCreds{
-				Username: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Username, currentScope),
-				Password: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Password, currentScope),
+				Username: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Username, scope),
+				Password: df.interpolater.Interpolate(scgContainerCall.Image.PullCreds.Password, scope),
 			}
 		}
 	}
 
 	// construct sockets
 	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCall.Sockets {
-		if boundArg, ok := currentScope[scgContainerSocketBind]; ok {
+		if boundArg, ok := scope[scgContainerSocketBind]; ok {
 			// bound to var
 			dcgContainerCall.Sockets[scgContainerSocketAddress] = *boundArg.Socket
 		} else if isUnixSocketAddress(scgContainerSocketAddress) {

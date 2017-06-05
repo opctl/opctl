@@ -26,7 +26,8 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					"dummyValue",
 					nil,
-					map[string]*model.Data{},
+					"dummyPkgPath",
+					map[string]*model.Value{},
 				)
 
 				/* assert */
@@ -48,7 +49,8 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						"",
 						&model.Param{},
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -61,8 +63,8 @@ var _ = Context("argInterpreter", func() {
 					providedName := "dummyName"
 					providedValue := ""
 					providedParam := &model.Param{}
-					expectedValue := &model.Data{String: new(string)}
-					providedScope := map[string]*model.Data{providedName: expectedValue}
+					expectedValue := &model.Value{String: new(string)}
+					providedScope := map[string]*model.Value{providedName: expectedValue}
 
 					objectUnderTest := _argInterpreter{}
 
@@ -71,6 +73,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
+						"dummyPkgPath",
 						providedScope,
 					)
 
@@ -85,8 +88,8 @@ var _ = Context("argInterpreter", func() {
 				/* arrange */
 				providedValue := "dummyValue"
 				providedParam := &model.Param{}
-				expectedValue := &model.Data{String: new(string)}
-				providedScope := map[string]*model.Data{providedValue: expectedValue}
+				expectedValue := &model.Value{String: new(string)}
+				providedScope := map[string]*model.Value{providedValue: expectedValue}
 
 				objectUnderTest := _argInterpreter{}
 
@@ -95,6 +98,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					providedValue,
 					providedParam,
+					"dummyPkgPath",
 					providedScope,
 				)
 
@@ -121,7 +125,8 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -134,8 +139,8 @@ var _ = Context("argInterpreter", func() {
 					explicitRef := "dummyRef"
 					providedValue := fmt.Sprintf("$(%v)", explicitRef)
 					providedParam := &model.Param{}
-					expectedValue := &model.Data{String: new(string)}
-					providedScope := map[string]*model.Data{explicitRef: expectedValue}
+					expectedValue := &model.Value{String: new(string)}
+					providedScope := map[string]*model.Value{explicitRef: expectedValue}
 
 					objectUnderTest := _argInterpreter{}
 
@@ -144,6 +149,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						providedValue,
 						providedParam,
+						"dummyPkgPath",
 						providedScope,
 					)
 
@@ -158,7 +164,7 @@ var _ = Context("argInterpreter", func() {
 				/* arrange */
 				providedValue := "dummyValue"
 				providedParam := &model.Param{}
-				providedScope := map[string]*model.Data{"dummyScopeRef": {}}
+				providedScope := map[string]*model.Value{"dummyScopeRef": {}}
 
 				fakeInterpolater := new(interpolater.Fake)
 
@@ -171,6 +177,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					providedValue,
 					providedParam,
+					"dummyPkgPath",
 					providedScope,
 				)
 
@@ -188,7 +195,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := "dummyValue"
 					fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-					expectedResult := &model.Data{String: &interpolatedValue}
+					expectedResult := &model.Value{String: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -199,7 +206,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -208,6 +216,42 @@ var _ = Context("argInterpreter", func() {
 				})
 			})
 			Context("Input is Dir", func() {
+				Context("bound to pkg dir", func() {
+					It("should return expected results", func() {
+						/* arrange */
+						providedValue := "/somePkgDir"
+
+						providedParam := &model.Param{Dir: &model.DirParam{}}
+
+						providedPkgPath := "/dummyPkgPath"
+
+						fakeInterpolater := new(interpolater.Fake)
+
+						interpolatedValue := "dummyValue"
+						fakeInterpolater.InterpolateReturns(interpolatedValue)
+
+						expectedValue := filepath.Join(providedPkgPath, interpolatedValue)
+
+						expectedResult := &model.Value{Dir: &expectedValue}
+
+						objectUnderTest := _argInterpreter{
+							interpolater: fakeInterpolater,
+						}
+
+						/* act */
+						actualResult, actualError := objectUnderTest.Interpret(
+							"dummyName",
+							providedValue,
+							providedParam,
+							providedPkgPath,
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						Expect(actualResult).To(Equal(expectedResult))
+						Expect(actualError).To(BeNil())
+					})
+				})
 				It("should return expected result", func() {
 					/* arrange */
 					providedParam := &model.Param{Dir: &model.DirParam{}}
@@ -216,7 +260,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := "dummyValue"
 					fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-					expectedResult := &model.Data{Dir: &interpolatedValue}
+					expectedResult := &model.Value{Dir: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -227,7 +271,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -244,7 +289,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
 					fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-					expectedResult := &model.Data{Dir: &expectedValue}
+					expectedResult := &model.Value{Dir: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -255,7 +300,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -276,7 +322,7 @@ var _ = Context("argInterpreter", func() {
 					if nil != err {
 						panic(err)
 					}
-					expectedResult := &model.Data{Number: &expectedValue}
+					expectedResult := &model.Value{Number: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -287,7 +333,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -296,7 +343,43 @@ var _ = Context("argInterpreter", func() {
 				})
 			})
 			Context("Input is File", func() {
-				It("should return expeted validate w/ expected args", func() {
+				Context("bound to pkg file", func() {
+					It("should return expected results", func() {
+						/* arrange */
+						providedValue := "/somePkgFile"
+
+						providedParam := &model.Param{File: &model.FileParam{}}
+
+						providedPkgPath := "/dummyPkgPath"
+
+						fakeInterpolater := new(interpolater.Fake)
+
+						interpolatedValue := "dummyValue"
+						fakeInterpolater.InterpolateReturns(interpolatedValue)
+
+						expectedValue := filepath.Join(providedPkgPath, interpolatedValue)
+
+						expectedResult := &model.Value{File: &expectedValue}
+
+						objectUnderTest := _argInterpreter{
+							interpolater: fakeInterpolater,
+						}
+
+						/* act */
+						actualResult, actualError := objectUnderTest.Interpret(
+							"dummyName",
+							providedValue,
+							providedParam,
+							providedPkgPath,
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						Expect(actualResult).To(Equal(expectedResult))
+						Expect(actualError).To(BeNil())
+					})
+				})
+				It("should return expected results", func() {
 					/* arrange */
 					providedParam := &model.Param{File: &model.FileParam{}}
 
@@ -305,7 +388,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := "dummyValue"
 					fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-					expectedResult := &model.Data{File: &interpolatedValue}
+					expectedResult := &model.Value{File: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -316,7 +399,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -333,7 +417,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
 					fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-					expectedResult := &model.Data{File: &expectedValue}
+					expectedResult := &model.Value{File: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
 						interpolater: fakeInterpolater,
@@ -344,7 +428,8 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */
@@ -374,7 +459,8 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						"dummyValue",
 						providedParam,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */

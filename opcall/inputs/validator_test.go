@@ -12,7 +12,7 @@ var _ = Describe("Validate", func() {
 	Context("invoked w/ nil param", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			providedValue := &model.Data{}
+			providedValue := &model.Value{}
 
 			expectedErrs := []error{errors.New("param required")}
 

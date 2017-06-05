@@ -2,23 +2,29 @@ package inputs
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"strings"
 )
 
 func (_inputs _Inputs) Interpret(
 	inputArgs map[string]string,
 	inputParams map[string]*model.Param,
-	scope map[string]*model.Data,
-) (map[string]*model.Data, []error) {
-	dcgOpCallInputs := map[string]*model.Data{}
+	pkgPath string,
+	scope map[string]*model.Value,
+) (map[string]*model.Value, []error) {
+	dcgOpCallInputs := map[string]*model.Value{}
 
 	for paramName, paramValue := range inputParams {
 		// apply defaults
 		if nil != paramValue {
 			switch {
 			case nil != paramValue.String && nil != paramValue.String.Default:
-				dcgOpCallInputs[paramName] = &model.Data{String: paramValue.String.Default}
+				dcgOpCallInputs[paramName] = &model.Value{String: paramValue.String.Default}
 			case nil != paramValue.Number && nil != paramValue.Number.Default:
-				dcgOpCallInputs[paramName] = &model.Data{Number: paramValue.Number.Default}
+				dcgOpCallInputs[paramName] = &model.Value{Number: paramValue.Number.Default}
+			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
+				dcgOpCallInputs[paramName] = &model.Value{Dir: paramValue.Dir.Default}
+			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
+				dcgOpCallInputs[paramName] = &model.Value{File: paramValue.File.Default}
 			}
 		}
 	}
@@ -31,6 +37,7 @@ func (_inputs _Inputs) Interpret(
 			argName,
 			argValue,
 			inputParams[argName],
+			pkgPath,
 			scope,
 		)
 		if nil != err {

@@ -8,10 +8,10 @@ import (
 )
 
 type fakeValidator struct {
-	ValidateStub        func(value *model.Data, param *model.Param) (errors []error)
+	ValidateStub        func(value *model.Value, param *model.Param) (errors []error)
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		value *model.Data
+		value *model.Value
 		param *model.Param
 	}
 	validateReturns struct {
@@ -24,11 +24,11 @@ type fakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeValidator) Validate(value *model.Data, param *model.Param) (errors []error) {
+func (fake *fakeValidator) Validate(value *model.Value, param *model.Param) (errors []error) {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		value *model.Data
+		value *model.Value
 		param *model.Param
 	}{value, param})
 	fake.recordInvocation("Validate", []interface{}{value, param})
@@ -48,7 +48,7 @@ func (fake *fakeValidator) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *fakeValidator) ValidateArgsForCall(i int) (*model.Data, *model.Param) {
+func (fake *fakeValidator) ValidateArgsForCall(i int) (*model.Value, *model.Param) {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	return fake.validateArgsForCall[i].value, fake.validateArgsForCall[i].param

@@ -1,7 +1,7 @@
 package model
 
-// typed data
-type Data struct {
+// Value represents a typed value
+type Value struct {
 	Dir    *string  `json:"dir,omitempty"`
 	File   *string  `json:"file,omitempty"`
 	Number *float64 `json:"number,omitempty"`

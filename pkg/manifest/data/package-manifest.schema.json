@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://archive.opspec.io/0.1.4/spec/package-manifest.schema.json",
+  "id": "https://opspec.io/0.1.4/pkg-manifest.schema.json",
   "title": "packageManifest",
   "description": "Manifest for a package",
   "properties": {
@@ -602,7 +602,7 @@
               "additionalProperties": false
             },
             "inputs": {
-              "description": "Initializes a child input from a name in the current scope in format of `childInputName: currentScopeName`. If `currentScopeName` is null, `childInputName` will be assumed",
+              "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE = $(INPUT_NAME)",
               "type": "object",
               "patternProperties": {
                 "[-_.a-zA-Z0-9]+": {
@@ -611,7 +611,10 @@
                       "type": "null"
                     },
                     {
-                      "type": "string"
+                      "$ref": "#/definitions/interpolatedString"
+                    },
+                    {
+                      "type": "number"
                     }
                   ]
                 }
@@ -619,7 +622,7 @@
               "additionalProperties": false
             },
             "outputs": {
-              "description": "Initializes a name in the current scope from a child output in format of `currentScopeName: childOutputName`. If `childOutputName` is null, `currentScopeName` will be assumed",
+              "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME = $(OUTPUT_NAME)",
               "type": "object",
               "patternProperties": {
                 "[-_.a-zA-Z0-9]+": {
@@ -686,7 +689,7 @@
     },
     "interpolatedString": {
       "title": "interpolatedString",
-      "description": "String supporting $(IN_SCOPE_VAR) substitution syntax where $(IN_SCOPE_VAR) will be replaced by the value of IN_SCOPE_VAR at runtime.",
+      "description": "String supporting $(NAME) substitution syntax where $(NAME) will be replaced by the value of NAME at runtime",
       "type": "string"
     },
     "semVer": {

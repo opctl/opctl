@@ -15,7 +15,7 @@ var _ = Describe("Validate", func() {
 
 				/* arrange */
 				providedValueSocket := "dummySocket"
-				providedValue := &model.Data{
+				providedValue := &model.Value{
 					Socket: &providedValueSocket,
 				}
 				providedParam := &model.Param{
@@ -36,7 +36,7 @@ var _ = Describe("Validate", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Data{}
+				providedValue := &model.Value{}
 				providedParam := &model.Param{
 					Socket: &model.SocketParam{},
 				}

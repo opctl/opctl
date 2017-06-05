@@ -33,7 +33,7 @@ var _ = Context("OpCall", func() {
 
 			/* act */
 			_, actualError := objectUnderTest.Interpret(
-				map[string]*model.Data{},
+				map[string]*model.Value{},
 				providedSCGOpCall,
 				"dummyOpId",
 				"dummyPkgBasePath",
@@ -66,7 +66,7 @@ var _ = Context("OpCall", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				map[string]*model.Data{},
+				map[string]*model.Value{},
 				&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 				"dummyOpId",
 				providedPkgBasePath,
@@ -118,7 +118,7 @@ var _ = Context("OpCall", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedSCGOpCall,
 					"dummyOpId",
 					providedPkgBasePath,
@@ -148,7 +148,7 @@ var _ = Context("OpCall", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Data{},
+						map[string]*model.Value{},
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 						"dummyOpId",
 						"dummyPkgBasePath",
@@ -182,7 +182,7 @@ var _ = Context("OpCall", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					"dummyOpId",
 					"dummyPkgBasePath",
@@ -196,7 +196,7 @@ var _ = Context("OpCall", func() {
 			Context("manifest.Unmarshal succeeds", func() {
 				It("should call inputs.Interpret w/ expected inputs", func() {
 					/* arrange */
-					providedScope := map[string]*model.Data{
+					providedScope := map[string]*model.Value{
 						"dummyScopeRef1Name": {String: new(string)},
 					}
 					expectedScope := providedScope
@@ -207,9 +207,12 @@ var _ = Context("OpCall", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
+					resolvedPkgPath := "resolvedPkgPath"
+					expectedPkgPath := resolvedPkgPath
+
 					fakePkg := new(pkg.Fake)
 					fakePkg.ParseRefReturns(&pkg.PkgRef{}, nil)
-					fakePkg.ResolveReturns("dummyPath", true)
+					fakePkg.ResolveReturns(resolvedPkgPath, true)
 					fakeManifest := new(manifest.Fake)
 
 					expectedInputParams := map[string]*model.Param{
@@ -240,9 +243,10 @@ var _ = Context("OpCall", func() {
 					)
 
 					/* assert */
-					actualSCGArgs, actualSCGInputs, actualScope := fakeArgs.InterpretArgsForCall(0)
+					actualSCGArgs, actualSCGInputs, actualPkgPath, actualScope := fakeArgs.InterpretArgsForCall(0)
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
+					Expect(actualPkgPath).To(Equal(expectedPkgPath))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 				})
 			})

@@ -17,14 +17,14 @@ var _ = Context("inputs", func() {
 						providedInputDefault := "inputDefault"
 
 						providedInputParams := map[string]*model.Param{
-							"inputName": {String: &model.StringParam{Default: &providedInputDefault}},
+							providedInputName: {String: &model.StringParam{Default: &providedInputDefault}},
 						}
 
 						objectUnderTest := _Inputs{
 							validator: new(fakeValidator),
 						}
 
-						expectedInputs := map[string]*model.Data{
+						expectedInputs := map[string]*model.Value{
 							providedInputName: {String: &providedInputDefault},
 						}
 
@@ -32,7 +32,8 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							map[string]*model.Data{},
+							"dummyPkgPath",
+							map[string]*model.Value{},
 						)
 
 						/* assert */
@@ -44,11 +45,11 @@ var _ = Context("inputs", func() {
 						providedInputDefault := "inputDefault"
 
 						providedInputParams := map[string]*model.Param{
-							"inputName": {String: &model.StringParam{Default: &providedInputDefault}},
+							providedInputName: {String: &model.StringParam{Default: &providedInputDefault}},
 						}
 
 						expectedParam := providedInputParams[providedInputName]
-						expectedInput := &model.Data{String: &providedInputDefault}
+						expectedInput := &model.Value{String: &providedInputDefault}
 
 						fakeValidator := new(fakeValidator)
 
@@ -60,7 +61,8 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							map[string]*model.Data{},
+							"dummyPkgPath",
+							map[string]*model.Value{},
 						)
 
 						/* assert */
@@ -79,14 +81,14 @@ var _ = Context("inputs", func() {
 						providedInputDefault := 2.2
 
 						providedInputParams := map[string]*model.Param{
-							"inputName": {Number: &model.NumberParam{Default: &providedInputDefault}},
+							providedInputName: {Number: &model.NumberParam{Default: &providedInputDefault}},
 						}
 
 						objectUnderTest := _Inputs{
 							validator: new(fakeValidator),
 						}
 
-						expectedInputs := map[string]*model.Data{
+						expectedInputs := map[string]*model.Value{
 							providedInputName: {Number: &providedInputDefault},
 						}
 
@@ -94,11 +96,172 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							map[string]*model.Data{},
+							"dummyPkgPath",
+							map[string]*model.Value{},
 						)
 
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
+					})
+					It("should call validator.Validate w/ expected args", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := 2.2
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {Number: &model.NumberParam{Default: &providedInputDefault}},
+						}
+
+						expectedParam := providedInputParams[providedInputName]
+						expectedInput := &model.Value{Number: &providedInputDefault}
+
+						fakeValidator := new(fakeValidator)
+
+						objectUnderTest := _Inputs{
+							validator: fakeValidator,
+						}
+
+						/* act */
+						objectUnderTest.Interpret(
+							map[string]string{},
+							providedInputParams,
+							"dummyPkgPath",
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+
+						Expect(actualInput).To(Equal(expectedInput))
+						Expect(actualParam).To(Equal(expectedParam))
+					})
+				})
+			})
+			Context("param is dir", func() {
+				Context("default exists", func() {
+					It("should set input to default", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := "/pkgDirDefault"
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
+						}
+
+						objectUnderTest := _Inputs{
+							validator: new(fakeValidator),
+						}
+
+						expectedInputs := map[string]*model.Value{
+							providedInputName: {Dir: &providedInputDefault},
+						}
+
+						/* act */
+						actualInputs, _ := objectUnderTest.Interpret(
+							map[string]string{},
+							providedInputParams,
+							"dummyPkgPath",
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						Expect(actualInputs).To(Equal(expectedInputs))
+					})
+					It("should call validator.Validate w/ expected args", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := "/pkgDirDefault"
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
+						}
+
+						expectedParam := providedInputParams[providedInputName]
+						expectedInput := &model.Value{Dir: &providedInputDefault}
+
+						fakeValidator := new(fakeValidator)
+
+						objectUnderTest := _Inputs{
+							validator: fakeValidator,
+						}
+
+						/* act */
+						objectUnderTest.Interpret(
+							map[string]string{},
+							providedInputParams,
+							"dummyPkgPath",
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+
+						Expect(actualInput).To(Equal(expectedInput))
+						Expect(actualParam).To(Equal(expectedParam))
+					})
+				})
+			})
+			Context("param is file", func() {
+				Context("default exists", func() {
+					It("should set input to default", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := "/pkgFileDefault"
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
+						}
+
+						objectUnderTest := _Inputs{
+							validator: new(fakeValidator),
+						}
+
+						expectedInputs := map[string]*model.Value{
+							providedInputName: {File: &providedInputDefault},
+						}
+
+						/* act */
+						actualInputs, _ := objectUnderTest.Interpret(
+							map[string]string{},
+							providedInputParams,
+							"dummyPkgPath",
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						Expect(actualInputs).To(Equal(expectedInputs))
+					})
+					It("should call validator.Validate w/ expected args", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := "/pkgFileDefault"
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
+						}
+
+						expectedParam := providedInputParams[providedInputName]
+						expectedInput := &model.Value{File: &providedInputDefault}
+
+						fakeValidator := new(fakeValidator)
+
+						objectUnderTest := _Inputs{
+							validator: fakeValidator,
+						}
+
+						/* act */
+						objectUnderTest.Interpret(
+							map[string]string{},
+							providedInputParams,
+							"dummyPkgPath",
+							map[string]*model.Value{},
+						)
+
+						/* assert */
+						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+
+						Expect(actualInput).To(Equal(expectedInput))
+						Expect(actualParam).To(Equal(expectedParam))
 					})
 				})
 			})
@@ -119,7 +282,9 @@ var _ = Context("inputs", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedScope := map[string]*model.Data{
+				providedPkgPath := "pkgPath"
+
+				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
 				}
 
@@ -134,6 +299,7 @@ var _ = Context("inputs", func() {
 				objectUnderTest.Interpret(
 					providedInputArgs,
 					providedInputParams,
+					providedPkgPath,
 					providedScope,
 				)
 
@@ -141,11 +307,13 @@ var _ = Context("inputs", func() {
 				actualArgName,
 					actualArgValue,
 					actualParam,
+					actualPkgPath,
 					actualScope := fakeArgInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
+				Expect(actualPkgPath).To(Equal(providedPkgPath))
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("argInterpreter.Interpret doesn't error", func() {
@@ -163,7 +331,7 @@ var _ = Context("inputs", func() {
 
 					expectedParam := providedInputParams[providedArgName]
 
-					expectedInput := &model.Data{String: new(string)}
+					expectedInput := &model.Value{String: new(string)}
 					fakeArgInterpreter := new(fakeArgInterpreter)
 					fakeArgInterpreter.InterpretReturns(expectedInput, nil)
 
@@ -178,7 +346,8 @@ var _ = Context("inputs", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedInputParams,
-						map[string]*model.Data{},
+						"dummyPkgPath",
+						map[string]*model.Value{},
 					)
 
 					/* assert */

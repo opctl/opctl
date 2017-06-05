@@ -11,7 +11,7 @@ import (
 
 type validator interface {
 	Validate(
-		value *model.Data,
+		value *model.Value,
 		param *model.Param,
 	) (errors []error)
 }
@@ -33,7 +33,7 @@ type _validator struct {
 
 // validates a value against a parameter
 func (this _validator) Validate(
-	rawValue *model.Data,
+	rawValue *model.Value,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {

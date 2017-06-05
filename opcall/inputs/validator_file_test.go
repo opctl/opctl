@@ -16,7 +16,7 @@ var _ = Describe("Validate", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Data{}
+				providedValue := &model.Value{}
 				providedParam := &model.Param{
 					File: &model.FileParam{},
 				}
@@ -62,7 +62,7 @@ var _ = Describe("Validate", func() {
 
 				/* arrange */
 				providedValueFile := "dummyFile"
-				providedValue := &model.Data{
+				providedValue := &model.Value{
 					File: &providedValueFile,
 				}
 				providedParam := &model.Param{
@@ -89,7 +89,7 @@ var _ = Describe("Validate", func() {
 
 					/* arrange */
 					providedValueFile := "dummyFile"
-					providedValue := &model.Data{
+					providedValue := &model.Value{
 						File: &providedValueFile,
 					}
 					providedParam := &model.Param{
@@ -129,7 +129,7 @@ var _ = Describe("Validate", func() {
 
 						tmpFilePath := tmpFile.Name()
 
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							File: &tmpFilePath,
 						}
 						providedParam := &model.Param{
@@ -158,7 +158,7 @@ var _ = Describe("Validate", func() {
 							panic(err)
 						}
 
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							File: &tmpDirPath,
 						}
 						providedParam := &model.Param{

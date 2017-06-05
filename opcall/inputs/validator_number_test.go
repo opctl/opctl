@@ -19,7 +19,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -50,7 +50,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(2)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -89,7 +89,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(4)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -120,7 +120,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(2)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -159,7 +159,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(4)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -186,7 +186,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(7.2)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -221,7 +221,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueNumber := float64(3.3)
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								Number: &providedValueNumber,
 							}
 							providedParam := &model.Param{
@@ -253,7 +253,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueNumber := float64(1)
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								Number: &providedValueNumber,
 							}
 							providedParam := &model.Param{
@@ -283,7 +283,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(2)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -310,7 +310,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(2)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -342,7 +342,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -371,7 +371,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -398,7 +398,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -430,7 +430,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -459,7 +459,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -490,7 +490,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -521,7 +521,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -552,7 +552,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(1)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -589,7 +589,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueNumber := float64(4)
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							Number: &providedValueNumber,
 						}
 						providedParam := &model.Param{
@@ -629,7 +629,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -659,7 +659,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -697,7 +697,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -727,7 +727,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -765,7 +765,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -791,7 +791,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -824,7 +824,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -850,7 +850,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -881,7 +881,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -909,7 +909,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -935,7 +935,7 @@ var _ = Describe("Validate", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -966,7 +966,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -994,7 +994,7 @@ var _ = Describe("Validate", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1024,7 +1024,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1054,7 +1054,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1084,7 +1084,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{
@@ -1120,7 +1120,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := float64(3)
 							providedParam := &model.Param{
 								Number: &model.NumberParam{

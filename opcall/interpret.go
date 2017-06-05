@@ -9,7 +9,7 @@ import (
 )
 
 func (this _OpCall) Interpret(
-	scope map[string]*model.Data,
+	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
 	opId string,
 	pkgBasePath string,
@@ -44,6 +44,7 @@ func (this _OpCall) Interpret(
 	dcgOpCall.Inputs, argErrors = this.inputs.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
+		pkgPath,
 		scope,
 	)
 	if len(argErrors) > 0 {
@@ -66,7 +67,7 @@ func (this _OpCall) Interpret(
 
 func (this _OpCall) getPkgPath(
 	pkgBasePath string,
-	scope map[string]*model.Data,
+	scope map[string]*model.Value,
 	scgOpCallPkg *model.SCGOpCallPkg,
 ) (string, error) {
 	pkgRef, err := this.pkg.ParseRef(scgOpCallPkg.Ref)

@@ -2,6 +2,7 @@ package containercall
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
 	"github.com/golang-utils/filecopier"
@@ -45,7 +46,7 @@ var _ = Context("ContainerCall", func() {
 
 			/* act */
 			_, actualError := objectUnderTest.Interpret(
-				map[string]*model.Data{},
+				map[string]*model.Value{},
 				&model.SCGContainerCall{},
 				providedContainerId,
 				providedRootOpId,
@@ -62,7 +63,7 @@ var _ = Context("ContainerCall", func() {
 			It("should call interpolate w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Data{
+				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
 
@@ -121,7 +122,7 @@ var _ = Context("ContainerCall", func() {
 
 				/* act */
 				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedSCGContainerCall,
 					"dummyContainerId",
 					"dummyRootOpId",
@@ -133,12 +134,49 @@ var _ = Context("ContainerCall", func() {
 			})
 		})
 		Context("container.Dirs not empty", func() {
+			Context("bound to non dir", func() {
+				It("should return expected error", func() {
+					/* arrange */
+					containerDirBind := "dummyContainerDirBind"
+
+					providedScope := map[string]*model.Value{
+						containerDirBind: {String: new(string)},
+					}
+
+					containerPath := "dummyEnvVarName"
+					providedSCGContainerCall := &model.SCGContainerCall{
+						Dirs: map[string]string{
+							// explicitly bound
+							containerPath: containerDirBind,
+						},
+					}
+
+					expectedErr := fmt.Errorf("Unable to bind dir '%v' to '%v'. '%v' not a dir", containerPath, containerDirBind, containerDirBind)
+
+					objectUnderTest := _ContainerCall{
+						os: new(ios.Fake),
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.Interpret(
+						providedScope,
+						providedSCGContainerCall,
+						"dummyContainerId",
+						"dummyRootOpId",
+						"dummyPkgRef",
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
 			It("should return expected dcg.Dirs", func() {
 
 				/* arrange */
 				rootFSPath := "/dummyRootFSPath"
 				providedContainerId := "dummyContainerId"
 				providedRootOpId := "dummyRootOpId"
+				providedPkgPath := "pkgPath"
 
 				expectedScratchDirPath := filepath.Join(
 					rootFSPath,
@@ -169,11 +207,11 @@ var _ = Context("ContainerCall", func() {
 
 				/* act */
 				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedSCGContainerCall,
 					providedContainerId,
 					providedRootOpId,
-					"dummyPkgRef",
+					providedPkgPath,
 				)
 
 				/* assert */
@@ -181,6 +219,38 @@ var _ = Context("ContainerCall", func() {
 			})
 		})
 		Context("container.EnvVars not empty", func() {
+			Context("implicitly bound", func() {
+				Context("name not in scope", func() {
+					It("should return expected error", func() {
+						/* arrange */
+						envVarName := "dummyEnvVarName"
+						providedSCGContainerCall := &model.SCGContainerCall{
+							EnvVars: map[string]string{
+								// implicitly bound
+								envVarName: "",
+							},
+						}
+
+						expectedErr := fmt.Errorf("Unable to bind env var to '%v' via implicit ref. '%v' is not in scope", envVarName, envVarName)
+
+						objectUnderTest := _ContainerCall{
+							os: new(ios.Fake),
+						}
+
+						/* act */
+						_, actualErr := objectUnderTest.Interpret(
+							map[string]*model.Value{},
+							providedSCGContainerCall,
+							"dummyContainerId",
+							"dummyRootOpId",
+							"dummyPkgRef",
+						)
+
+						/* assert */
+						Expect(actualErr).To(Equal(expectedErr))
+					})
+				})
+			})
 			It("should return expected dcg.EnvVars", func() {
 
 				/* arrange */
@@ -188,7 +258,7 @@ var _ = Context("ContainerCall", func() {
 				providedCurrentScopeRef1String := "dummyScopeRef1String"
 				providedCurrentScopeRef2 := "dummyScopeRef2"
 				providedCurrentScopeRef2Number := float64(2.3)
-				providedCurrentScope := map[string]*model.Data{
+				providedCurrentScope := map[string]*model.Value{
 					providedCurrentScopeRef1: {String: &providedCurrentScopeRef1String},
 					providedCurrentScopeRef2: {Number: &providedCurrentScopeRef2Number},
 				}
@@ -225,6 +295,42 @@ var _ = Context("ContainerCall", func() {
 			})
 		})
 		Context("container.Files not empty", func() {
+			Context("bound to non file", func() {
+				It("should return expected error", func() {
+					/* arrange */
+					containerFileBind := "dummyContainerFileBind"
+
+					providedScope := map[string]*model.Value{
+						containerFileBind: {String: new(string)},
+					}
+
+					containerPath := "dummyEnvVarName"
+					providedSCGContainerCall := &model.SCGContainerCall{
+						Files: map[string]string{
+							// explicitly bound
+							containerPath: containerFileBind,
+						},
+					}
+
+					expectedErr := fmt.Errorf("Unable to bind file '%v' to '%v'. '%v' not a file", containerPath, containerFileBind, containerFileBind)
+
+					objectUnderTest := _ContainerCall{
+						os: new(ios.Fake),
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.Interpret(
+						providedScope,
+						providedSCGContainerCall,
+						"dummyContainerId",
+						"dummyRootOpId",
+						"dummyPkgRef",
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
 			It("should return expected dcg.Files", func() {
 
 				/* arrange */
@@ -261,7 +367,7 @@ var _ = Context("ContainerCall", func() {
 
 				/* act */
 				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedSCGContainerCall,
 					providedContainerId,
 					providedRootOpId,
@@ -276,7 +382,7 @@ var _ = Context("ContainerCall", func() {
 			It("should call interpolate w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Data{
+				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
 
@@ -355,7 +461,7 @@ var _ = Context("ContainerCall", func() {
 
 				/* act */
 				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedSCGContainerCall,
 					"dummyContainerId",
 					"dummyRootOpId",

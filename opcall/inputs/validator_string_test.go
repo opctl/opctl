@@ -19,7 +19,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -53,7 +53,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue==\""
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -95,7 +95,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -129,7 +129,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -171,7 +171,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -198,7 +198,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -233,7 +233,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "notDateTime"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -265,7 +265,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "0000-01-01T00:00:01.0Z"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -294,7 +294,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "$notADockerImageRef"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -326,7 +326,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -355,7 +355,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "notEmail"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -387,7 +387,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "dummy-email@dummy-domain.com"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -416,7 +416,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "$notAHostname$"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -448,7 +448,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "dummy.com"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -477,7 +477,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "notAnIpV4"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -509,7 +509,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "0.0.0.0"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -538,7 +538,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "notAnIpV6"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -570,7 +570,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "0000:0000:0000:0000:0000:0000:0000:0000"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -599,7 +599,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "$notASemver$"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -631,7 +631,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "1.1.1"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -660,7 +660,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "notUri"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -692,7 +692,7 @@ var _ = Describe("Validate", func() {
 
 							/* arrange */
 							providedValueString := "https://dummyuri.com:8080/somepath?somequery#somefragment"
-							providedValue := &model.Data{
+							providedValue := &model.Value{
 								String: &providedValueString,
 							}
 							providedParam := &model.Param{
@@ -722,7 +722,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -749,7 +749,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -781,7 +781,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -810,7 +810,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -837,7 +837,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -869,7 +869,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -898,7 +898,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -929,7 +929,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -960,7 +960,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -994,7 +994,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -1034,7 +1034,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -1072,7 +1072,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -1104,7 +1104,7 @@ var _ = Describe("Validate", func() {
 
 						/* arrange */
 						providedValueString := "dummyValue"
-						providedValue := &model.Data{
+						providedValue := &model.Value{
 							String: &providedValueString,
 						}
 						providedParam := &model.Param{
@@ -1135,7 +1135,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1168,7 +1168,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1209,7 +1209,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1242,7 +1242,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1283,7 +1283,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1309,7 +1309,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1343,7 +1343,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "notDateTime"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1374,7 +1374,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "0000-01-01T00:00:01.0Z"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1402,7 +1402,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "$notADockerImageRef"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1433,7 +1433,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "dummy-registry.com/dummy-namespace/dummy-repo:dummy-tag"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1461,7 +1461,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "notEmail"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1492,7 +1492,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "dummy-email@dummy-domain.com"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1520,7 +1520,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "$notAHostname$"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1551,7 +1551,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "dummy.com"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1579,7 +1579,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "notAnIpV4"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1610,7 +1610,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "0.0.0.0"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1638,7 +1638,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "notAnIpV6"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1669,7 +1669,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "0000:0000:0000:0000:0000:0000:0000:0000"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1697,7 +1697,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "$notASemver$"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1728,7 +1728,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "1.1.1"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1756,7 +1756,7 @@ var _ = Describe("Validate", func() {
 							It("should return expected errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "notUri"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1787,7 +1787,7 @@ var _ = Describe("Validate", func() {
 							It("should return no errors", func() {
 
 								/* arrange */
-								providedValue := &model.Data{}
+								providedValue := &model.Value{}
 								providedDefault := "https://dummyuri.com:8080/somepath?somequery#somefragment"
 								providedParam := &model.Param{
 									String: &model.StringParam{
@@ -1816,7 +1816,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1842,7 +1842,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1873,7 +1873,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1901,7 +1901,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1927,7 +1927,7 @@ var _ = Describe("Validate", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1958,7 +1958,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -1986,7 +1986,7 @@ var _ = Describe("Validate", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2016,7 +2016,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2046,7 +2046,7 @@ var _ = Describe("Validate", func() {
 						It("returns no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2079,7 +2079,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2118,7 +2118,7 @@ var _ = Describe("Validate", func() {
 						It("returns expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2155,7 +2155,7 @@ var _ = Describe("Validate", func() {
 						It("should return expected errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{
@@ -2186,7 +2186,7 @@ var _ = Describe("Validate", func() {
 						It("should return no errors", func() {
 
 							/* arrange */
-							providedValue := &model.Data{}
+							providedValue := &model.Value{}
 							providedDefault := "dummyDefault"
 							providedParam := &model.Param{
 								String: &model.StringParam{

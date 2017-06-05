@@ -19,7 +19,7 @@ var _ = Describe("_Interpolater", func() {
 			providedTemplate := "dummyTemplate"
 			providedVarName := "dummyVarName"
 			providedVarData := "dummyVarData"
-			providedScope := map[string]*model.Data{
+			providedScope := map[string]*model.Value{
 				providedVarName: {String: &providedVarData},
 			}
 
@@ -55,7 +55,7 @@ var _ = Describe("_Interpolater", func() {
 			providedTemplate := "dummyTemplate"
 			providedVarName := "dummyVarName"
 			providedVarData := "dummyVarData"
-			providedScope := map[string]*model.Data{
+			providedScope := map[string]*model.Value{
 				providedVarName: {File: &providedVarData},
 			}
 
@@ -91,7 +91,7 @@ var _ = Describe("_Interpolater", func() {
 			providedTemplate := "dummyTemplate"
 			providedVarName := "dummyVarName"
 			providedVarData := "dummyVarData"
-			providedScope := map[string]*model.Data{
+			providedScope := map[string]*model.Value{
 				providedVarName: {Dir: &providedVarData},
 			}
 
@@ -127,7 +127,7 @@ var _ = Describe("_Interpolater", func() {
 			providedTemplate := "dummyTemplate"
 			providedVarName := "dummyVarName"
 			providedVarData := 1.2
-			providedScope := map[string]*model.Data{
+			providedScope := map[string]*model.Value{
 				providedVarName: {Number: &providedVarData},
 			}
 
