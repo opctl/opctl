@@ -10,3 +10,9 @@ Validates a package according to:
 
 ### `PKG_REF`
 Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))
+
+## Examples
+
+```shell
+opctl pkg validate myop
+```

@@ -21,12 +21,12 @@ Read in a file of args in yml format
 
 ### local ref w/out args
 ```shell
-$ opctl run myop
+opctl run myop
 ```
 
 ### global ref w/ args
 ```shell
-$ opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/chrisdostert/slack-msg-chan#0.1.1
+opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#0.1.1
 ```
 
 ## Notes

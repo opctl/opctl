@@ -10,6 +10,6 @@ Path to list packages from
 ## Examples
 
 ```shell
-$ opctl ls -c somePath
+opctl ls --path somePath
 ```
 

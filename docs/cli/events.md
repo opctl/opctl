@@ -13,32 +13,43 @@ Events are persisted to disk and can be replayed (since v0.1.15).
 > clears its event db.
 
 example:
+
+step 1: open terminal & generate some events by running an op
+
 ```shell
-$ opctl run some-op
+opctl run some-op
+```
 
-# exit & reopen terminal
-$ exit
+step 2: exit terminal
 
-# previous events still available
-$ opctl run events
+```shell
+exit
+```
+
+step 3: re open terminal & replay events
+
+```shell
+opctl run events
 ```
 
 ### streaming
 
-Events are streamed in realtime as they occur. They can be
-streamed in parallel to any number of terminals.
+Events are streamed in realtime as they occur. They can be streamed in
+parallel to any number of terminals.
 > behind the scenes, events are delivered over websockets
 
 example:
+
+step 1: open multiple terminals & open event stream on each
+
 ```shell
-# from terminal1
-$ opctl events
-
-# from terminal2
-$ opctl events
-
-# from terminal3
-$ opctl run some-op
-
-# events show up on all terminals simultaneously as they occur
+opctl events
 ```
+
+step 2: open another terminal & run an op; watch events show up on all
+terminals simultaneously in real-time
+
+```shell
+opctl run some-op
+```
+
