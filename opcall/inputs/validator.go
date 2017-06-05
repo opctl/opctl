@@ -31,7 +31,8 @@ type _validator struct {
 	os ios.IOS
 }
 
-// validates a value against a parameter
+// Validate validates a value against a parameter
+// note: param defaults aren't considered
 func (this _validator) Validate(
 	rawValue *model.Value,
 	param *model.Param,

@@ -8,6 +8,7 @@ import (
 
 type Inputs interface {
 	// Validate validates inputVals against inputParams
+	// note: param defaults aren't considered
 	Validate(
 		inputVals map[string]*model.Value,
 		inputParams map[string]*model.Param,

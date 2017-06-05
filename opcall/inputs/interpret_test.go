@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 )
 
 var _ = Context("inputs", func() {
@@ -143,6 +144,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -152,15 +154,16 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
-							providedInputName: {Dir: &providedInputDefault},
+							providedInputName: {Dir: &expectedInputValue},
 						}
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyPkgPath",
+							providedPkgPath,
 							map[string]*model.Value{},
 						)
 
@@ -171,13 +174,16 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
 						}
 
 						expectedParam := providedInputParams[providedInputName]
-						expectedInput := &model.Value{Dir: &providedInputDefault}
+
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
+						expectedInput := &model.Value{Dir: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
 
@@ -189,7 +195,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyPkgPath",
+							providedPkgPath,
 							map[string]*model.Value{},
 						)
 
@@ -207,6 +213,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -216,15 +223,16 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
-							providedInputName: {File: &providedInputDefault},
+							providedInputName: {File: &expectedInputValue},
 						}
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyPkgPath",
+							providedPkgPath,
 							map[string]*model.Value{},
 						)
 
@@ -235,13 +243,16 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
+						providedPkgPath := "pkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
 						}
 
 						expectedParam := providedInputParams[providedInputName]
-						expectedInput := &model.Value{File: &providedInputDefault}
+
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
+						expectedInput := &model.Value{File: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
 
@@ -253,7 +264,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyPkgPath",
+							providedPkgPath,
 							map[string]*model.Value{},
 						)
 

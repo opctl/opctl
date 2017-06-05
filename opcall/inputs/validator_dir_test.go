@@ -11,81 +11,70 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	Context("invoked w/ non-nil param.Dir", func() {
-		Context("value.Dir is empty", func() {
-			It("should return expected errors", func() {
-
-				/* arrange */
-				providedValue := &model.Value{}
-				providedParam := &model.Param{
-					Dir: &model.DirParam{},
-				}
-
-				expectedErrors := []error{
-					errors.New("Dir required"),
-				}
-
-				objectUnderTest := newValidator()
-
-				/* act */
-				actualErrors := objectUnderTest.Validate(providedValue, providedParam)
-
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
-
-			})
-		})
+	Context("param.Dir not nil", func() {
 		Context("value nil", func() {
-			It("should return expected errors", func() {
+			Context("param.Dir.Default nil", func() {
+				It("should return expected errors", func() {
 
-				/* arrange */
-				providedParam := &model.Param{
-					Dir: &model.DirParam{},
-				}
+					/* arrange */
+					providedValue := &model.Value{}
+					providedParam := &model.Param{
+						Dir: &model.DirParam{},
+					}
 
-				expectedErrors := []error{
-					errors.New("Dir required"),
-				}
+					expectedErrors := []error{
+						errors.New("Dir required"),
+					}
 
-				objectUnderTest := newValidator()
+					objectUnderTest := newValidator()
 
-				/* act */
-				actualErrors := objectUnderTest.Validate(nil, providedParam)
+					/* act */
+					actualErrors := objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
 
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
+					/* assert */
+					Expect(actualErrors).To(Equal(expectedErrors))
 
+				})
+			})
+			Context("param.Dir.Default not nil", func() {
+				It("should call fs.Stat w/ expected args", func() {
+
+					/* arrange */
+					providedValue := &model.Value{}
+
+					defaultValue := "defaultValue"
+					providedParam := &model.Param{
+						Dir: &model.DirParam{
+							Default: &defaultValue,
+						},
+					}
+
+					fakeOS := new(ios.Fake)
+					// error to trigger immediate return
+					fakeOS.StatReturns(nil, errors.New("dummyError"))
+
+					objectUnderTest := _validator{
+						os: fakeOS,
+					}
+
+					/* act */
+					objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
+
+					/* assert */
+					Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedParam.Dir.Default))
+
+				})
 			})
 		})
-		Context("value.Dir isn't empty", func() {
-			It("should call fs.Stat w/ expected args", func() {
-
-				/* arrange */
-				providedValueDir := "dummyDir"
-				providedValue := &model.Value{
-					Dir: &providedValueDir,
-				}
-				providedParam := &model.Param{
-					Dir: &model.DirParam{},
-				}
-
-				fakeOS := new(ios.Fake)
-				// error to trigger immediate return
-				fakeOS.StatReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _validator{
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.Validate(providedValue, providedParam)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedValue.Dir))
-
-			})
-			Context("fs.Stat errors", func() {
-				It("should return expected errors", func() {
+		Context("value not nil", func() {
+			Context("value.Dir not nil", func() {
+				It("should call fs.Stat w/ expected args", func() {
 
 					/* arrange */
 					providedValueDir := "dummyDir"
@@ -96,91 +85,130 @@ var _ = Describe("Validate", func() {
 						Dir: &model.DirParam{},
 					}
 
-					expectedErrors := []error{
-						errors.New("dummyError"),
-					}
-
 					fakeOS := new(ios.Fake)
-					fakeOS.StatReturns(nil, expectedErrors[0])
+					// error to trigger immediate return
+					fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _validator{
 						os: fakeOS,
 					}
 
 					/* act */
-					actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+					objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
 
 					/* assert */
-					Expect(actualErrors).To(Equal(expectedErrors))
+					Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedValue.Dir))
 
 				})
-
-			})
-			Context("fs.Stat doesn't error", func() {
-				Context("FileInfo.IsDir returns true", func() {
-					It("should return no errors", func() {
-
-						/* arrange */
-						// no good way to fake fileinfo
-						tmpDirPath, err := ioutil.TempDir("", "")
-						if nil != err {
-							panic(err)
-						}
-
-						providedValue := &model.Value{
-							Dir: &tmpDirPath,
-						}
-						providedParam := &model.Param{
-							Dir: &model.DirParam{},
-						}
-
-						expectedErrors := []error{}
-
-						objectUnderTest := newValidator()
-
-						/* act */
-						actualErrors := objectUnderTest.Validate(providedValue, providedParam)
-
-						/* assert */
-						Expect(actualErrors).To(Equal(expectedErrors))
-
-					})
-				})
-				Context("FileInfo.IsDir returns false", func() {
+				Context("fs.Stat errors", func() {
 					It("should return expected errors", func() {
 
 						/* arrange */
-						// no good way to fake fileinfo
-						tmpFile, err := ioutil.TempFile("", "")
-						if nil != err {
-							panic(err)
-						}
-
-						tmpFilePath := tmpFile.Name()
-
+						providedValueDir := "dummyDir"
 						providedValue := &model.Value{
-							Dir: &tmpFilePath,
+							Dir: &providedValueDir,
 						}
 						providedParam := &model.Param{
 							Dir: &model.DirParam{},
 						}
 
 						expectedErrors := []error{
-							fmt.Errorf("%v not a dir", tmpFilePath),
+							errors.New("dummyError"),
 						}
 
-						objectUnderTest := newValidator()
+						fakeOS := new(ios.Fake)
+						fakeOS.StatReturns(nil, expectedErrors[0])
+
+						objectUnderTest := _validator{
+							os: fakeOS,
+						}
 
 						/* act */
-						actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+						actualErrors := objectUnderTest.Validate(
+							providedValue,
+							providedParam,
+						)
 
 						/* assert */
 						Expect(actualErrors).To(Equal(expectedErrors))
 
 					})
+
+				})
+				Context("fs.Stat doesn't error", func() {
+					Context("FileInfo.IsDir returns true", func() {
+						It("should return no errors", func() {
+
+							/* arrange */
+							// no good way to fake fileinfo
+							tmpDirPath, err := ioutil.TempDir("", "")
+							if nil != err {
+								panic(err)
+							}
+
+							providedValue := &model.Value{
+								Dir: &tmpDirPath,
+							}
+							providedParam := &model.Param{
+								Dir: &model.DirParam{},
+							}
+
+							expectedErrors := []error{}
+
+							objectUnderTest := newValidator()
+
+							/* act */
+							actualErrors := objectUnderTest.Validate(
+								providedValue,
+								providedParam,
+							)
+
+							/* assert */
+							Expect(actualErrors).To(Equal(expectedErrors))
+
+						})
+					})
+					Context("FileInfo.IsDir returns false", func() {
+						It("should return expected errors", func() {
+
+							/* arrange */
+							// no good way to fake fileinfo
+							tmpFile, err := ioutil.TempFile("", "")
+							if nil != err {
+								panic(err)
+							}
+
+							tmpFilePath := tmpFile.Name()
+
+							providedValue := &model.Value{
+								Dir: &tmpFilePath,
+							}
+							providedParam := &model.Param{
+								Dir: &model.DirParam{},
+							}
+
+							expectedErrors := []error{
+								fmt.Errorf("%v not a dir", tmpFilePath),
+							}
+
+							objectUnderTest := newValidator()
+
+							/* act */
+							actualErrors := objectUnderTest.Validate(
+								providedValue,
+								providedParam,
+							)
+
+							/* assert */
+							Expect(actualErrors).To(Equal(expectedErrors))
+
+						})
+					})
 				})
 			})
 		})
 	})
-
 })

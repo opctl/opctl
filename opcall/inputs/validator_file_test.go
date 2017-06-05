@@ -11,50 +11,64 @@ import (
 )
 
 var _ = Describe("Validate", func() {
-	Context("invoked w/ non-nil param.File", func() {
-		Context("value.File is empty", func() {
-			It("should return expected errors", func() {
+	Context("param.File not nil", func() {
+		Context("value.File nil", func() {
+			Context("param.File.Default nil", func() {
+				It("should return expected errors", func() {
 
-				/* arrange */
-				providedValue := &model.Value{}
-				providedParam := &model.Param{
-					File: &model.FileParam{},
-				}
+					/* arrange */
+					providedValue := &model.Value{}
+					providedParam := &model.Param{
+						File: &model.FileParam{},
+					}
 
-				expectedErrors := []error{
-					errors.New("File required"),
-				}
+					expectedErrors := []error{
+						errors.New("File required"),
+					}
 
-				objectUnderTest := newValidator()
+					objectUnderTest := newValidator()
 
-				/* act */
-				actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+					/* act */
+					actualErrors := objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
 
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
+					/* assert */
+					Expect(actualErrors).To(Equal(expectedErrors))
 
+				})
 			})
-		})
-		Context("value nil", func() {
-			It("should return expected errors", func() {
+			Context("param.File.Default not nil", func() {
+				It("should call fs.Stat w/ expected args", func() {
 
-				/* arrange */
-				providedParam := &model.Param{
-					File: &model.FileParam{},
-				}
+					/* arrange */
+					providedValue := &model.Value{}
+					defaultFile := "defaultFile"
+					providedParam := &model.Param{
+						File: &model.FileParam{
+							Default: &defaultFile,
+						},
+					}
 
-				expectedErrors := []error{
-					errors.New("File required"),
-				}
+					fakeOS := new(ios.Fake)
+					// error to trigger immediate return
+					fakeOS.StatReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := newValidator()
+					objectUnderTest := _validator{
+						os: fakeOS,
+					}
 
-				/* act */
-				actualErrors := objectUnderTest.Validate(nil, providedParam)
+					/* act */
+					objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
 
-				/* assert */
-				Expect(actualErrors).To(Equal(expectedErrors))
+					/* assert */
+					Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedParam.File.Default))
 
+				})
 			})
 		})
 		Context("value.File isn't empty", func() {
@@ -78,7 +92,10 @@ var _ = Describe("Validate", func() {
 				}
 
 				/* act */
-				objectUnderTest.Validate(providedValue, providedParam)
+				objectUnderTest.Validate(
+					providedValue,
+					providedParam,
+				)
 
 				/* assert */
 				Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedValue.File))
@@ -108,7 +125,10 @@ var _ = Describe("Validate", func() {
 					}
 
 					/* act */
-					actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+					actualErrors := objectUnderTest.Validate(
+						providedValue,
+						providedParam,
+					)
 
 					/* assert */
 					Expect(actualErrors).To(Equal(expectedErrors))
@@ -141,7 +161,10 @@ var _ = Describe("Validate", func() {
 						objectUnderTest := newValidator()
 
 						/* act */
-						actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+						actualErrors := objectUnderTest.Validate(
+							providedValue,
+							providedParam,
+						)
 
 						/* assert */
 						Expect(actualErrors).To(Equal(expectedErrors))
@@ -172,7 +195,10 @@ var _ = Describe("Validate", func() {
 						objectUnderTest := newValidator()
 
 						/* act */
-						actualErrors := objectUnderTest.Validate(providedValue, providedParam)
+						actualErrors := objectUnderTest.Validate(
+							providedValue,
+							providedParam,
+						)
 
 						/* assert */
 						Expect(actualErrors).To(Equal(expectedErrors))

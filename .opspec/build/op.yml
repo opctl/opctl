@@ -21,5 +21,9 @@ run:
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: publish-coverage }
-        inputs: { gitBranch, srcDir }
+        pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.0 }
+        inputs: { dotGitDir: $(srcDir)/.git }
+        outputs: { gitCommit: commit }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/codecov.upload#1.0.0 }
+        inputs: { gitBranch, gitCommit, token: 5f64e6aa-5117-410b-aceb-3188c58e4a18, report: $(srcDir)/coverage.txt }

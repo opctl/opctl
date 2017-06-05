@@ -2,6 +2,7 @@ package inputs
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 	"strings"
 )
 
@@ -22,9 +23,11 @@ func (_inputs _Inputs) Interpret(
 			case nil != paramValue.Number && nil != paramValue.Number.Default:
 				dcgOpCallInputs[paramName] = &model.Value{Number: paramValue.Number.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
-				dcgOpCallInputs[paramName] = &model.Value{Dir: paramValue.Dir.Default}
+				dirValue := filepath.Join(pkgPath, *paramValue.Dir.Default)
+				dcgOpCallInputs[paramName] = &model.Value{Dir: &dirValue}
 			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
-				dcgOpCallInputs[paramName] = &model.Value{File: paramValue.File.Default}
+				fileValue := filepath.Join(pkgPath, *paramValue.File.Default)
+				dcgOpCallInputs[paramName] = &model.Value{File: &fileValue}
 			}
 		}
 	}
