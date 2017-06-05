@@ -19,12 +19,12 @@ Read in a file of args in yml format
 
 ## Examples
 
-### local ref w/out args
+### local pkg ref w/out args
 ```shell
 opctl run myop
 ```
 
-### global ref w/ args
+### remote pkg ref w/ args (must be installed first)
 ```shell
 opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#0.1.1
 ```
