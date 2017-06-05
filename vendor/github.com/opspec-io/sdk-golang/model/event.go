@@ -24,12 +24,12 @@ const (
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
 type ContainerExitedEvent struct {
-	ImageRef    string           `json:"imageRef"`
-	ExitCode    int64            `json:"exitCode"`
-	RootOpId    string           `json:"rootOpId"`
-	ContainerId string           `json:"containerId"`
-	PkgRef      string           `json:"pkgRef"`
-	Outputs     map[string]*Data `json:"outputs"`
+	ImageRef    string            `json:"imageRef"`
+	ExitCode    int64             `json:"exitCode"`
+	RootOpId    string            `json:"rootOpId"`
+	ContainerId string            `json:"containerId"`
+	PkgRef      string            `json:"pkgRef"`
+	Outputs     map[string]*Value `json:"outputs"`
 }
 
 type ContainerStartedEvent struct {
@@ -67,11 +67,11 @@ type OpErredEvent struct {
 
 // OpEndedEvent represents the end of an op; no further events will occur for the op.
 type OpEndedEvent struct {
-	RootOpId string           `json:"rootOpId"`
-	OpId     string           `json:"opId"`
-	PkgRef   string           `json:"pkgRef"`
-	Outcome  string           `json:"outcome"`
-	Outputs  map[string]*Data `json:"outputs"`
+	RootOpId string            `json:"rootOpId"`
+	OpId     string            `json:"opId"`
+	PkgRef   string            `json:"pkgRef"`
+	Outcome  string            `json:"outcome"`
+	Outputs  map[string]*Value `json:"outputs"`
 }
 
 type OpStartedEvent struct {
@@ -88,7 +88,7 @@ type ParallelCallEndedEvent struct {
 
 // SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
-	RootOpId string           `json:"rootOpId"`
-	CallId   string           `json:"callId"`
-	Outputs  map[string]*Data `json:"outputs"`
+	RootOpId string            `json:"rootOpId"`
+	CallId   string            `json:"callId"`
+	Outputs  map[string]*Value `json:"outputs"`
 }

@@ -8,10 +8,10 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(currentScope map[string]*model.Data, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error)
+	InterpretStub        func(currentScope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		currentScope     map[string]*model.Data
+		currentScope     map[string]*model.Value
 		scgContainerCall *model.SCGContainerCall
 		containerId      string
 		rootOpId         string
@@ -29,11 +29,11 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(currentScope map[string]*model.Data, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error) {
+func (fake *Fake) Interpret(currentScope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, pkgRef string) (*model.DCGContainerCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		currentScope     map[string]*model.Data
+		currentScope     map[string]*model.Value
 		scgContainerCall *model.SCGContainerCall
 		containerId      string
 		rootOpId         string
@@ -56,7 +56,7 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Data, *model.SCGContainerCall, string, string, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGContainerCall, string, string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].currentScope, fake.interpretArgsForCall[i].scgContainerCall, fake.interpretArgsForCall[i].containerId, fake.interpretArgsForCall[i].rootOpId, fake.interpretArgsForCall[i].pkgRef

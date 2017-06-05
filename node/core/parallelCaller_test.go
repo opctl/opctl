@@ -26,7 +26,7 @@ var _ = Context("parallelCaller", func() {
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
 			providedCallId := "dummyCallId"
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Value{}
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedSCGParallelCalls := []*model.SCG{
@@ -86,7 +86,7 @@ var _ = Context("parallelCaller", func() {
 			It("should fail fast on childCall error & return expected error", func() {
 				/* arrange */
 				providedCallId := "dummyCallId"
-				providedInboundScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedSCGParallelCalls := []*model.SCG{
@@ -146,7 +146,7 @@ var _ = Context("parallelCaller", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
 				providedCallId := "dummyCallId"
-				providedInboundScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedSCGParallelCalls := []*model.SCG{

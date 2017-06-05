@@ -16,7 +16,7 @@ type parallelCaller interface {
 	// Executes a parallel call
 	Call(
 		callId string,
-		inboundScope map[string]*model.Data,
+		inboundScope map[string]*model.Value,
 		rootOpId string,
 		pkgRef string,
 		scgParallelCall []*model.SCG,
@@ -48,7 +48,7 @@ type _parallelCaller struct {
 
 func (this _parallelCaller) Call(
 	callId string,
-	inboundScope map[string]*model.Data,
+	inboundScope map[string]*model.Value,
 	rootOpId string,
 	pkgRef string,
 	scgParallelCall []*model.SCG,

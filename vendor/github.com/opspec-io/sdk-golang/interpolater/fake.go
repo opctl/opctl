@@ -8,11 +8,11 @@ import (
 )
 
 type Fake struct {
-	InterpolateStub        func(template string, scope map[string]*model.Data) string
+	InterpolateStub        func(template string, scope map[string]*model.Value) string
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
 		template string
-		scope    map[string]*model.Data
+		scope    map[string]*model.Value
 	}
 	interpolateReturns struct {
 		result1 string
@@ -24,12 +24,12 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(template string, scope map[string]*model.Data) string {
+func (fake *Fake) Interpolate(template string, scope map[string]*model.Value) string {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
 		template string
-		scope    map[string]*model.Data
+		scope    map[string]*model.Value
 	}{template, scope})
 	fake.recordInvocation("Interpolate", []interface{}{template, scope})
 	fake.interpolateMutex.Unlock()
@@ -48,7 +48,7 @@ func (fake *Fake) InterpolateCallCount() int {
 	return len(fake.interpolateArgsForCall)
 }
 
-func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Data) {
+func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
 	return fake.interpolateArgsForCall[i].template, fake.interpolateArgsForCall[i].scope

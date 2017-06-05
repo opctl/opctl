@@ -16,7 +16,7 @@ import (
 type OpCall interface {
 	// Interpret interprets an SCGOpCall into a DCGOpCall
 	Interpret(
-		scope map[string]*model.Data,
+		scope map[string]*model.Value,
 		scgOpCall *model.SCGOpCall,
 		opId string,
 		pkgBasePath string,

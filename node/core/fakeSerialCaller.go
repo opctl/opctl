@@ -8,11 +8,11 @@ import (
 )
 
 type fakeSerialCaller struct {
-	CallStub        func(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgSerialCall []*model.SCG) (err error)
+	CallStub        func(callId string, inboundScope map[string]*model.Value, rootOpId string, pkgRef string, scgSerialCall []*model.SCG) (err error)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		callId        string
-		inboundScope  map[string]*model.Data
+		inboundScope  map[string]*model.Value
 		rootOpId      string
 		pkgRef        string
 		scgSerialCall []*model.SCG
@@ -27,7 +27,7 @@ type fakeSerialCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeSerialCaller) Call(callId string, inboundScope map[string]*model.Data, rootOpId string, pkgRef string, scgSerialCall []*model.SCG) (err error) {
+func (fake *fakeSerialCaller) Call(callId string, inboundScope map[string]*model.Value, rootOpId string, pkgRef string, scgSerialCall []*model.SCG) (err error) {
 	var scgSerialCallCopy []*model.SCG
 	if scgSerialCall != nil {
 		scgSerialCallCopy = make([]*model.SCG, len(scgSerialCall))
@@ -37,7 +37,7 @@ func (fake *fakeSerialCaller) Call(callId string, inboundScope map[string]*model
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		callId        string
-		inboundScope  map[string]*model.Data
+		inboundScope  map[string]*model.Value
 		rootOpId      string
 		pkgRef        string
 		scgSerialCall []*model.SCG
@@ -59,7 +59,7 @@ func (fake *fakeSerialCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeSerialCaller) CallArgsForCall(i int) (string, map[string]*model.Data, string, string, []*model.SCG) {
+func (fake *fakeSerialCaller) CallArgsForCall(i int) (string, map[string]*model.Value, string, string, []*model.SCG) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return fake.callArgsForCall[i].callId, fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgRef, fake.callArgsForCall[i].scgSerialCall

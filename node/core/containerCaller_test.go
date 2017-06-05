@@ -31,7 +31,7 @@ var _ = Context("containerCaller", func() {
 	Context("Call", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -77,7 +77,7 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -129,7 +129,7 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call containerProvider.RunContainer w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
 			providedPkgRef := "dummyPkgRef"
@@ -172,7 +172,7 @@ var _ = Context("containerCaller", func() {
 		Context("containerProvider.RunContainer errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Value{}
 				providedContainerId := "dummyContainerId"
 				providedSCGContainerCall := &model.SCGContainerCall{}
 				providedPkgRef := "dummyPkgRef"
@@ -210,7 +210,7 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
+		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -244,7 +244,7 @@ var _ = Context("containerCaller", func() {
 
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
+		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"
@@ -293,7 +293,7 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Data{}
+		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
 		providedPkgRef := "dummyPkgRef"

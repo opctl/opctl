@@ -5,4 +5,4 @@ before_script:
 services:
 - docker
 script:
-- opctl run -a gitBranch=$TRAVIS_BRANCH -a gitCommit=$TRAVIS_COMMIT build
+- opctl run -a gitBranch=$TRAVIS_BRANCH build

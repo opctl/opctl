@@ -3,7 +3,7 @@ package inputs
 import "github.com/opspec-io/sdk-golang/model"
 
 func (_inputs _Inputs) Validate(
-	inputs map[string]*model.Data,
+	inputs map[string]*model.Value,
 	params map[string]*model.Param,
 ) map[string][]error {
 	errMap := map[string][]error{}

@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"path"
 )
 
 var _ = Context("pkgValidate", func() {
@@ -29,88 +28,27 @@ var _ = Context("pkgValidate", func() {
 				}
 
 				/* act */
-				objectUnderTest.PkgValidate("")
+				objectUnderTest.PkgValidate("dummyPkgRef")
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
 					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 			})
 		})
-		It("should call pkg.Validate w/ expected args", func() {
-			/* arrange */
-			fakePkg := new(pkg.Fake)
+		Context("ios.Getwd doesn't error", func() {
 
-			providedPkgRef := "dummyPkgRef"
-			wdReturnedFromIOS := "dummyWorkDir"
-
-			fakeIOS := new(ios.Fake)
-			fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
-
-			expectedPkgRef := path.Join(wdReturnedFromIOS, ".opspec", providedPkgRef)
-
-			objectUnderTest := _core{
-				pkg:       fakePkg,
-				cliExiter: new(cliexiter.Fake),
-				os:        fakeIOS,
-			}
-
-			/* act */
-			objectUnderTest.PkgValidate(providedPkgRef)
-
-			/* assert */
-
-			Expect(fakePkg.ValidateArgsForCall(0)).To(Equal(expectedPkgRef))
-		})
-		Context("pkg.Validate returns errors", func() {
-			It("should call cliExiter.Exit w/ expected args", func() {
+			It("should call pkg.ParseRef w/ expected args", func() {
 				/* arrange */
+				providedPkgRef := "dummyPkgName"
+				expectedPkgRef := providedPkgRef
+
 				fakePkg := new(pkg.Fake)
-				errsReturnedFromValidate := []error{errors.New("dummyError")}
-				fakePkg.ValidateReturns(errsReturnedFromValidate)
-
-				expectedExitReq := cliexiter.ExitReq{
-					Message: fmt.Sprintf(`
--
-  Error(s):
-    - %v
--`, errsReturnedFromValidate[0]),
-					Code: 1,
-				}
-
-				fakeCliExiter := new(cliexiter.Fake)
+				// error to trigger immediate return
+				fakePkg.ParseRefReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
 					pkg:       fakePkg,
-					cliExiter: fakeCliExiter,
-					os:        new(ios.Fake),
-				}
-
-				/* act */
-				objectUnderTest.PkgValidate("dummyPkgRef")
-
-				/* assert */
-
-				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
-			})
-		})
-		Context("pkg.Validate doesn't return errors", func() {
-			It("should call cliExiter.Exit w/ expected args", func() {
-				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-
-				fakePkg := new(pkg.Fake)
-				errsReturnedFromValidate := []error{}
-				fakePkg.ValidateReturns(errsReturnedFromValidate)
-
-				expectedExitReq := cliexiter.ExitReq{
-					Message: fmt.Sprintf("%v is valid", providedPkgRef),
-				}
-
-				fakeCliExiter := new(cliexiter.Fake)
-
-				objectUnderTest := _core{
-					pkg:       fakePkg,
-					cliExiter: fakeCliExiter,
+					cliExiter: new(cliexiter.Fake),
 					os:        new(ios.Fake),
 				}
 
@@ -118,8 +56,192 @@ var _ = Context("pkgValidate", func() {
 				objectUnderTest.PkgValidate(providedPkgRef)
 
 				/* assert */
+				actualPkgRef := fakePkg.ParseRefArgsForCall(0)
+				Expect(actualPkgRef).To(Equal(expectedPkgRef))
 
-				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+			})
+			Context("pkg.ParseRef errors", func() {
+
+				It("should call exiter w/ expected args", func() {
+					/* arrange */
+					expectedError := errors.New("dummyError")
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.ParseRefReturns(nil, expectedError)
+
+					fakeCliExiter := new(cliexiter.Fake)
+
+					objectUnderTest := _core{
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+						os:        new(ios.Fake),
+					}
+
+					/* act */
+					objectUnderTest.PkgValidate("dummyPkgRef")
+
+					/* assert */
+					Expect(fakeCliExiter.ExitArgsForCall(0)).
+						To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+				})
+			})
+			Context("pkg.ParseRef doesn't error", func() {
+
+				It("should call pkg.Resolve w/ expected args", func() {
+					/* arrange */
+					providedPkgRef := "dummyPkgRef"
+
+					expectedLookPaths := []string{"dummyWorkDir"}
+					expectedPkgRef := &pkg.PkgRef{
+						FullyQualifiedName: "dummyName",
+						Version:            "dummyVersion",
+					}
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.ParseRefReturns(expectedPkgRef, nil)
+
+					fakeCliExiter := new(cliexiter.Fake)
+
+					fakeIOS := new(ios.Fake)
+					fakeIOS.GetwdReturns(expectedLookPaths[0], nil)
+
+					objectUnderTest := _core{
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+						os:        fakeIOS,
+					}
+
+					/* act */
+					objectUnderTest.PkgValidate(providedPkgRef)
+
+					/* assert */
+					actualPkgRef, actualLookPaths := fakePkg.ResolveArgsForCall(0)
+					Expect(actualLookPaths).To(Equal(expectedLookPaths))
+					Expect(actualPkgRef).To(Equal(expectedPkgRef))
+				})
+				Context("pkg.Resolve fails", func() {
+
+					It("should call exiter w/ expected args", func() {
+						/* arrange */
+						providedPkgRef := "dummyPkgRef"
+						wdReturnedFromIOS := "dummyWorkDir"
+
+						fakeIOS := new(ios.Fake)
+						fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
+
+						expectedMsg := fmt.Sprintf("Unable to resolve package '%v' from '%v'", providedPkgRef, wdReturnedFromIOS)
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns("", false)
+
+						fakeCliExiter := new(cliexiter.Fake)
+
+						objectUnderTest := _core{
+							pkg:       fakePkg,
+							cliExiter: fakeCliExiter,
+							os:        fakeIOS,
+						}
+
+						/* act */
+						objectUnderTest.PkgValidate(providedPkgRef)
+
+						/* assert */
+						Expect(fakeCliExiter.ExitArgsForCall(0)).
+							To(Equal(cliexiter.ExitReq{Message: expectedMsg, Code: 1}))
+					})
+				})
+				Context("pkg.Resolve succeeds", func() {
+					It("should call pkg.Validate w/ expected args", func() {
+						/* arrange */
+						pkgPath := "dummyPkgName"
+						wdReturnedFromIOS := "dummyWorkDir"
+
+						fakeIOS := new(ios.Fake)
+						fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns(pkgPath, true)
+
+						objectUnderTest := _core{
+							pkg:       fakePkg,
+							cliExiter: new(cliexiter.Fake),
+							os:        fakeIOS,
+						}
+
+						/* act */
+						objectUnderTest.PkgValidate("dummyPkgRef")
+
+						/* assert */
+						Expect(fakePkg.ValidateArgsForCall(0)).To(Equal(pkgPath))
+					})
+					Context("pkg.Validate returns errors", func() {
+						It("should call cliExiter.Exit w/ expected args", func() {
+							/* arrange */
+							fakePkg := new(pkg.Fake)
+							fakePkg.ResolveReturns("dummyPkgName", true)
+
+							errsReturnedFromValidate := []error{errors.New("dummyError")}
+							fakePkg.ValidateReturns(errsReturnedFromValidate)
+
+							expectedExitReq := cliexiter.ExitReq{
+								Message: fmt.Sprintf(`
+-
+  Error(s):
+    - %v
+-`, errsReturnedFromValidate[0]),
+								Code: 1,
+							}
+
+							fakeCliExiter := new(cliexiter.Fake)
+
+							objectUnderTest := _core{
+								pkg:       fakePkg,
+								cliExiter: fakeCliExiter,
+								os:        new(ios.Fake),
+							}
+
+							/* act */
+							objectUnderTest.PkgValidate("dummyPkgRef")
+
+							/* assert */
+
+							Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+						})
+					})
+					Context("pkg.Validate doesn't return errors", func() {
+						It("should call cliExiter.Exit w/ expected args", func() {
+							/* arrange */
+							pkgPath := "dummyPkgName"
+							wdReturnedFromIOS := "dummyWorkDir"
+
+							fakeIOS := new(ios.Fake)
+							fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
+
+							fakePkg := new(pkg.Fake)
+							fakePkg.ResolveReturns(pkgPath, true)
+							fakePkg.ValidateReturns([]error{})
+
+							expectedExitReq := cliexiter.ExitReq{
+								Message: fmt.Sprintf("%v is valid", pkgPath),
+							}
+
+							fakeCliExiter := new(cliexiter.Fake)
+
+							objectUnderTest := _core{
+								pkg:       fakePkg,
+								cliExiter: fakeCliExiter,
+								os:        fakeIOS,
+							}
+
+							/* act */
+							objectUnderTest.PkgValidate("dummyPkgRef")
+
+							/* assert */
+
+							Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+						})
+					})
+				})
 			})
 		})
 	})

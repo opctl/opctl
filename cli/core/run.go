@@ -61,7 +61,7 @@ func (this _core) Run(
 			cliparamsatisfier.NewSliceInputSrc(opts.Args, "="),
 			cliparamsatisfier.NewYMLFileInputSrc(opts.ArgFile, this.ioutil),
 			cliparamsatisfier.NewEnvVarInputSrc(),
-			cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
+			cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs, pkgPath),
 			cliparamsatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
 		),
 		pkgManifest.Inputs,

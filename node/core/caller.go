@@ -12,7 +12,7 @@ type caller interface {
 	// Call executes a call
 	Call(
 		id string,
-		scope map[string]*model.Data,
+		scope map[string]*model.Value,
 		scg *model.SCG,
 		pkgRef string,
 		rootOpId string,
@@ -36,7 +36,7 @@ type _caller struct {
 
 func (this _caller) Call(
 	id string,
-	scope map[string]*model.Data,
+	scope map[string]*model.Value,
 	scg *model.SCG,
 	pkgRef string,
 	rootOpId string,
