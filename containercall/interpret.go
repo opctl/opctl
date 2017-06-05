@@ -171,6 +171,9 @@ func (df _ContainerCall) Interpret(
 			}
 
 			if strings.HasPrefix(*value.File, df.rootFSPath) {
+        // bound to rootFS file
+        dcgContainerCall.Dirs[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+
 				// rootFS files must be passed by value
 				if err := df.fileCopier.OS(
 					*value.File,
