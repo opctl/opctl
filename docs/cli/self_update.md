@@ -15,16 +15,20 @@ The release channel to update from
 
 ## Examples
 
+get latest stable release
 ```shell
-# get latest stable release
-$ opctl self-update
-Updated to new version: 0.1.14!
+opctl self-update
+# output: Updated to new version: 0.1.19!
+```
 
-# play around w/ latest beta release
-$ opctl self-update -c beta
-Updated to new version: 0.1.15-beta.122!
+play around w/ latest beta release
+ ```shell
+opctl self-update -c beta
+# output: Updated to new version: 0.1.20-beta.1!
+```
 
-# play times over; switch back to latest stable release
-$ opctl self-update
-Updated to new version: 0.1.14!
+play times over; switch back to latest stable release
+```shell
+opctl self-update
+# output: Updated to new version: 0.1.19!
 ```
