@@ -55,62 +55,62 @@ func (df _ContainerCall) Interpret(
 	// construct dirs
 	for scgContainerDirPath, scgContainerDirBind := range scgContainerCall.Dirs {
 
-    if "" == scgContainerDirBind {
-      // bound implicitly
-      scgContainerDirBind = scgContainerDirPath
-    }
+		if "" == scgContainerDirBind {
+			// bound implicitly
+			scgContainerDirBind = scgContainerDirPath
+		}
 
-    isBoundToPkg := strings.HasPrefix(scgContainerDirBind, "/")
-    value, isBoundToScope := scope[scgContainerDirBind]
+		isBoundToPkg := strings.HasPrefix(scgContainerDirBind, "/")
+		value, isBoundToScope := scope[scgContainerDirBind]
 
-    switch {
-    case isBoundToPkg:
-      // bound to pkg dir
-      dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirBind)
+		switch {
+		case isBoundToPkg:
+			// bound to pkg dir
+			dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirBind)
 
-      // pkg dirs must be passed by value
-      if err := df.dirCopier.OS(
-        filepath.Join(pkgPath, scgContainerDirBind),
-        dcgContainerCall.Dirs[scgContainerDirPath],
-      ); nil != err {
-        return nil, err
-      }
-    case isBoundToScope:
-      // bound to scope
-      if nil == value || nil == value.Dir {
-        return nil, fmt.Errorf(
-          "Unable to bind dir '%v' to '%v'. '%v' not a dir",
-          scgContainerDirPath,
-          scgContainerDirBind,
-          scgContainerDirBind,
-        )
-      }
+			// pkg dirs must be passed by value
+			if err := df.dirCopier.OS(
+				filepath.Join(pkgPath, scgContainerDirBind),
+				dcgContainerCall.Dirs[scgContainerDirPath],
+			); nil != err {
+				return nil, err
+			}
+		case isBoundToScope:
+			// bound to scope
+			if nil == value || nil == value.Dir {
+				return nil, fmt.Errorf(
+					"Unable to bind dir '%v' to '%v'. '%v' not a dir",
+					scgContainerDirPath,
+					scgContainerDirBind,
+					scgContainerDirBind,
+				)
+			}
 
-      if strings.HasPrefix(*value.Dir, df.rootFSPath) {
-        // bound to rootFS dir
-        dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+			if strings.HasPrefix(*value.Dir, df.rootFSPath) {
+				// bound to rootFS dir
+				dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
 
-        // rootFS dirs must be passed by value
-        if err := df.dirCopier.OS(
-          *value.Dir,
-          dcgContainerCall.Dirs[scgContainerDirPath],
-        ); nil != err {
-          return nil, err
-        }
-      } else {
-        // bound to non rootFS dir
-        dcgContainerCall.Dirs[scgContainerDirPath] = *value.Dir
-      }
-    default:
-      // unbound; create tree
-      dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
-      if err := df.os.MkdirAll(
-        dcgContainerCall.Dirs[scgContainerDirPath],
-        0700,
-      ); nil != err {
-        return nil, err
-      }
-    }
+				// rootFS dirs must be passed by value
+				if err := df.dirCopier.OS(
+					*value.Dir,
+					dcgContainerCall.Dirs[scgContainerDirPath],
+				); nil != err {
+					return nil, err
+				}
+			} else {
+				// bound to non rootFS dir
+				dcgContainerCall.Dirs[scgContainerDirPath] = *value.Dir
+			}
+		default:
+			// unbound; create tree
+			dcgContainerCall.Dirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+			if err := df.os.MkdirAll(
+				dcgContainerCall.Dirs[scgContainerDirPath],
+				0700,
+			); nil != err {
+				return nil, err
+			}
+		}
 	}
 
 	// construct envVars
@@ -139,67 +139,67 @@ func (df _ContainerCall) Interpret(
 	// construct files
 	for scgContainerFilePath, scgContainerFileBind := range scgContainerCall.Files {
 
-    if "" == scgContainerFileBind {
-      // bound implicitly
-      scgContainerFileBind = scgContainerFilePath
-    }
+		if "" == scgContainerFileBind {
+			// bound implicitly
+			scgContainerFileBind = scgContainerFilePath
+		}
 
-    isBoundToPkg := strings.HasPrefix(scgContainerFileBind, "/")
-    value, isBoundToScope := scope[scgContainerFileBind]
+		isBoundToPkg := strings.HasPrefix(scgContainerFileBind, "/")
+		value, isBoundToScope := scope[scgContainerFileBind]
 
-    switch{
-    case isBoundToPkg:
-      // bound to pkg file
-      dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFileBind)
+		switch {
+		case isBoundToPkg:
+			// bound to pkg file
+			dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFileBind)
 
-      // pkg files must be passed by value
-      if err := df.fileCopier.OS(
-        filepath.Join(pkgPath, scgContainerFileBind),
-        dcgContainerCall.Files[scgContainerFilePath],
-      ); nil != err {
-        return nil, err
-      }
-    case isBoundToScope:
-      // bound to scope
-      if nil == value || nil == value.File {
-        return nil, fmt.Errorf(
-          "Unable to bind file '%v' to '%v'. '%v' not a file",
-          scgContainerFilePath,
-          scgContainerFileBind,
-          scgContainerFileBind,
-        )
-      }
+			// pkg files must be passed by value
+			if err := df.fileCopier.OS(
+				filepath.Join(pkgPath, scgContainerFileBind),
+				dcgContainerCall.Files[scgContainerFilePath],
+			); nil != err {
+				return nil, err
+			}
+		case isBoundToScope:
+			// bound to scope
+			if nil == value || nil == value.File {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to '%v'. '%v' not a file",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					scgContainerFileBind,
+				)
+			}
 
-      if strings.HasPrefix(*value.Dir, df.rootFSPath) {
-        // rootFS dirs must be passed by value
-        if err := df.fileCopier.OS(
-          *value.Dir,
-          dcgContainerCall.Files[scgContainerFilePath],
-        ); nil != err {
-          return nil, err
-        }
-      } else {
-        // bound to non rootFS dir
-        dcgContainerCall.Files[scgContainerFilePath] = *value.File
-      }
-    default:
-      // unbound; create tree
-      dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-      // create dir
-      if err := df.os.MkdirAll(
-        path.Dir(dcgContainerCall.Files[scgContainerFilePath]),
-        0700,
-      ); nil != err {
-        return nil, err
-      }
-      // create file
-      var outputFile *os.File
-      outputFile, err := df.os.Create(dcgContainerCall.Files[scgContainerFilePath])
-      outputFile.Close()
-      if nil != err {
-        return nil, err
-      }
-    }
+			if strings.HasPrefix(*value.File, df.rootFSPath) {
+				// rootFS files must be passed by value
+				if err := df.fileCopier.OS(
+					*value.File,
+					dcgContainerCall.Files[scgContainerFilePath],
+				); nil != err {
+					return nil, err
+				}
+			} else {
+				// bound to non rootFS file
+				dcgContainerCall.Files[scgContainerFilePath] = *value.File
+			}
+		default:
+			// unbound; create tree
+			dcgContainerCall.Files[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+			// create dir
+			if err := df.os.MkdirAll(
+				path.Dir(dcgContainerCall.Files[scgContainerFilePath]),
+				0700,
+			); nil != err {
+				return nil, err
+			}
+			// create file
+			var outputFile *os.File
+			outputFile, err := df.os.Create(dcgContainerCall.Files[scgContainerFilePath])
+			outputFile.Close()
+			if nil != err {
+				return nil, err
+			}
+		}
 	}
 
 	// construct image
