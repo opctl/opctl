@@ -107,7 +107,7 @@ var _ = Context("core", func() {
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Data{
+							map[string]*model.Value{
 								usernameInputName: {String: &username},
 								passwordInputName: {String: &password},
 							},
@@ -150,7 +150,7 @@ var _ = Context("core", func() {
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Data{
+							map[string]*model.Value{
 								usernameInputName: {String: &(expectedPullOpts.Username)},
 								passwordInputName: {String: &(expectedPullOpts.Password)},
 							},

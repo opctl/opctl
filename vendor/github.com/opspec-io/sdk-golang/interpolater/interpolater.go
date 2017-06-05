@@ -7,7 +7,7 @@ import "github.com/opspec-io/sdk-golang/model"
 
 type Interpolater interface {
 	// Interpolate interpolates a string template
-	Interpolate(template string, scope map[string]*model.Data) string
+	Interpolate(template string, scope map[string]*model.Value) string
 }
 
 func New() Interpolater {
@@ -26,7 +26,7 @@ type _Interpolater struct {
 // O(n) complexity (n being len(scope))
 func (this _Interpolater) Interpolate(
 	template string,
-	scope map[string]*model.Data,
+	scope map[string]*model.Value,
 ) string {
 	for varName, varData := range scope {
 		if nil != varData {

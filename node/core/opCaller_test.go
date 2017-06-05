@@ -52,7 +52,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedOpId,
 					"dummyPkgBasePath",
 					providedRootOpId,
@@ -94,7 +94,7 @@ var _ = Context("opCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				map[string]*model.Data{},
+				map[string]*model.Value{},
 				providedOpId,
 				"dummyPkgBasePath",
 				providedRootOpId,
@@ -106,7 +106,7 @@ var _ = Context("opCaller", func() {
 		})
 		It("should call opCall.Construct w/ expected args & return errors", func() {
 			/* arrange */
-			providedScope := map[string]*model.Data{}
+			providedScope := map[string]*model.Value{}
 			providedOpId := "dummyOpId"
 			providedRootOpId := "dummyRootOpId"
 			providedPkgBasePath := "dummyPkgBasePath"
@@ -199,7 +199,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedOpId,
 					"dummyPkgBasePath",
 					providedRootOpId,
@@ -260,7 +260,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					providedOpId,
 					"dummyPkgBasePath",
 					providedRootOpId,
@@ -294,7 +294,7 @@ var _ = Context("opCaller", func() {
 							},
 						},
 					},
-					Inputs: map[string]*model.Data{
+					Inputs: map[string]*model.Value{
 						"dummyScopeName": {String: &dummyString},
 					},
 				}
@@ -321,7 +321,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					"dummyOpId",
 					"dummyPkgBasePath",
 					providedRootOpId,
@@ -370,7 +370,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					"dummyOpId",
 					"dummyPkgBasePath",
 					providedRootOpId,
@@ -424,7 +424,7 @@ var _ = Context("opCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						map[string]*model.Data{},
+						map[string]*model.Value{},
 						providedOpId,
 						"dummyPkgBasePath",
 						providedRootOpId,
@@ -473,7 +473,7 @@ var _ = Context("opCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						map[string]*model.Data{},
+						map[string]*model.Value{},
 						providedOpId,
 						"dummyPkgBasePath",
 						"dummyRootOpId",
@@ -535,7 +535,7 @@ var _ = Context("opCaller", func() {
 
 						/* act */
 						objectUnderTest.Call(
-							map[string]*model.Data{},
+							map[string]*model.Value{},
 							providedOpId,
 							"dummyPkgBasePath",
 							providedRootOpId,
@@ -571,7 +571,7 @@ var _ = Context("opCaller", func() {
 								PkgRef:   providedSCGOpCall.Pkg.Ref,
 								Outcome:  model.OpOutcomeSucceeded,
 								RootOpId: providedRootOpId,
-								Outputs:  map[string]*model.Data{},
+								Outputs:  map[string]*model.Value{},
 							},
 						}
 
@@ -601,7 +601,7 @@ var _ = Context("opCaller", func() {
 
 						/* act */
 						objectUnderTest.Call(
-							map[string]*model.Data{},
+							map[string]*model.Value{},
 							providedOpId,
 							"dummyPkgBasePath",
 							providedRootOpId,

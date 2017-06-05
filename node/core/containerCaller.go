@@ -16,7 +16,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
-		inboundScope map[string]*model.Data,
+		inboundScope map[string]*model.Value,
 		containerId string,
 		scgContainerCall *model.SCGContainerCall,
 		pkgRef string,
@@ -50,7 +50,7 @@ type _containerCaller struct {
 }
 
 func (cc _containerCaller) Call(
-	inboundScope map[string]*model.Data,
+	inboundScope map[string]*model.Value,
 	containerId string,
 	scgContainerCall *model.SCGContainerCall,
 	pkgRef string,
@@ -120,7 +120,7 @@ func (cc _containerCaller) Call(
 	// interpret outputs
 	outputsChan := make(
 		chan struct {
-			outputs map[string]*model.Data
+			outputs map[string]*model.Value
 			err     error
 		}, 1)
 	go func() {
@@ -135,7 +135,7 @@ func (cc _containerCaller) Call(
 			dcgContainerCall,
 		)
 		outputsChan <- struct {
-			outputs map[string]*model.Data
+			outputs map[string]*model.Value
 			err     error
 		}{
 			outputs: outputs,
@@ -255,13 +255,13 @@ func (this _containerCaller) interpretOutputs(
 	stdErrReader io.Reader,
 	scgContainerCall *model.SCGContainerCall,
 	dcgContainerCall *model.DCGContainerCall,
-) (map[string]*model.Data, error) {
-	outputs := map[string]*model.Data{}
+) (map[string]*model.Value, error) {
+	outputs := map[string]*model.Value{}
 
 	for socketAddr, name := range scgContainerCall.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			outputs[name] = &model.Data{Socket: &dcgContainerCall.ContainerId}
+			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerId}
 		}
 	}
 	for scgContainerFilePath, name := range scgContainerCall.Files {
@@ -270,7 +270,7 @@ func (this _containerCaller) interpretOutputs(
 			if scgContainerFilePath == dcgContainerFilePath {
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
-				outputs[name] = &model.Data{File: &value}
+				outputs[name] = &model.Value{File: &value}
 			}
 		}
 	}
@@ -280,45 +280,45 @@ func (this _containerCaller) interpretOutputs(
 			if containerPath == dcgContainerDirPath {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath
-				outputs[binding] = &model.Data{Dir: &value}
+				outputs[binding] = &model.Value{Dir: &value}
 			}
 		}
 	}
 
 	stdErrOutputsChan := make(chan struct {
-		outputs map[string]*model.Data
+		outputs map[string]*model.Value
 		err     error
 	}, 1)
 	go func() {
 		// add stdErr stdErrOutputs
-		stdErrOutputs := map[string]*model.Data{}
+		stdErrOutputs := map[string]*model.Value{}
 		err := bindLines(
 			stdErrReader,
 			scgContainerCall.StdErr,
 			func(name string, value *string) {
-				stdErrOutputs[name] = &model.Data{String: value}
+				stdErrOutputs[name] = &model.Value{String: value}
 			})
 		stdErrOutputsChan <- struct {
-			outputs map[string]*model.Data
+			outputs map[string]*model.Value
 			err     error
 		}{outputs: stdErrOutputs, err: err}
 	}()
 
 	stdOutOutputsChan := make(chan struct {
-		outputs map[string]*model.Data
+		outputs map[string]*model.Value
 		err     error
 	}, 1)
 	go func() {
 		// add stdOut stdOutOutputs
-		stdOutOutputs := map[string]*model.Data{}
+		stdOutOutputs := map[string]*model.Value{}
 		err := bindLines(
 			stdOutReader,
 			scgContainerCall.StdOut,
 			func(name string, value *string) {
-				stdOutOutputs[name] = &model.Data{String: value}
+				stdOutOutputs[name] = &model.Value{String: value}
 			})
 		stdOutOutputsChan <- struct {
-			outputs map[string]*model.Data
+			outputs map[string]*model.Value
 			err     error
 		}{outputs: stdOutOutputs, err: err}
 	}()

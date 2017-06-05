@@ -27,7 +27,7 @@ var _ = Context("caller", func() {
 				/* assert */
 				objectUnderTest.Call(
 					"dummyCallId",
-					map[string]*model.Data{},
+					map[string]*model.Value{},
 					nil,
 					"dummyPkgRef",
 					"dummyRootOpId",
@@ -40,7 +40,7 @@ var _ = Context("caller", func() {
 				fakeContainerCaller := new(fakeContainerCaller)
 
 				providedCallId := "dummyCallId"
-				providedArgs := map[string]*model.Data{}
+				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
 				}
@@ -77,7 +77,7 @@ var _ = Context("caller", func() {
 				fakeOpCaller := new(fakeOpCaller)
 
 				providedCallId := "dummyCallId"
-				providedArgs := map[string]*model.Data{}
+				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Op: &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
@@ -119,7 +119,7 @@ var _ = Context("caller", func() {
 				fakeParallelCaller := new(fakeParallelCaller)
 
 				providedCallId := "dummyCallId"
-				providedArgs := map[string]*model.Data{}
+				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Parallel: []*model.SCG{
 						{Container: &model.SCGContainerCall{}},
@@ -159,7 +159,7 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(fakeSerialCaller)
 
 				providedCallId := "dummyCallId"
-				providedArgs := map[string]*model.Data{}
+				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Serial: []*model.SCG{
 						{Container: &model.SCGContainerCall{}},
@@ -199,7 +199,7 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(fakeSerialCaller)
 
 				providedCallId := "dummyCallId"
-				providedArgs := map[string]*model.Data{}
+				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
 				providedPkgRef := "dummyPkgRef"
 				providedRootOpId := "dummyRootOpId"

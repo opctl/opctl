@@ -17,8 +17,9 @@ type argInterpreter interface {
 		name,
 		value string,
 		param *model.Param,
-		scope map[string]*model.Data,
-	) (*model.Data, error)
+		pkgPath string,
+		scope map[string]*model.Value,
+	) (*model.Value, error)
 }
 
 func newArgInterpreter() argInterpreter {
@@ -35,10 +36,11 @@ func (ai _argInterpreter) Interpret(
 	name,
 	value string,
 	param *model.Param,
-	scope map[string]*model.Data,
-) (*model.Data, error) {
+	pkgPath string,
+	scope map[string]*model.Value,
+) (*model.Value, error) {
 
-	var dcgValue *model.Data
+	var dcgValue *model.Value
 	if nil == param {
 		return nil, fmt.Errorf("Unable to bind to '%v'. '%v' is not a defined input", name, name)
 	} else if "" == value {
@@ -62,19 +64,25 @@ func (ai _argInterpreter) Interpret(
 		switch {
 		// interpolated arg
 		case nil != param.String:
-			dcgValue = &model.Data{String: &interpolatedVal}
+			dcgValue = &model.Value{String: &interpolatedVal}
 		case nil != param.Dir:
-			interpolatedVal = ai.rootPath(interpolatedVal)
-			dcgValue = &model.Data{Dir: &interpolatedVal}
+			if strings.HasPrefix(value, "/") {
+				// bound to pkg dir
+				interpolatedVal = filepath.Join(pkgPath, interpolatedVal)
+			}
+			dcgValue = &model.Value{Dir: ai.rootPath(interpolatedVal)}
 		case nil != param.Number:
 			floatVal, err := strconv.ParseFloat(interpolatedVal, 64)
 			if nil != err {
 				return nil, fmt.Errorf("Unable to bind '%v' to '%v' as number; error was: '%v'", name, interpolatedVal, err.Error())
 			}
-			dcgValue = &model.Data{Number: &floatVal}
+			dcgValue = &model.Value{Number: &floatVal}
 		case nil != param.File:
-			interpolatedVal = ai.rootPath(interpolatedVal)
-			dcgValue = &model.Data{File: &interpolatedVal}
+			if strings.HasPrefix(value, "/") {
+				// bound to pkg file
+				interpolatedVal = filepath.Join(pkgPath, interpolatedVal)
+			}
+			dcgValue = &model.Value{File: ai.rootPath(interpolatedVal)}
 		case nil != param.Socket:
 			return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, interpolatedVal)
 		}
@@ -87,8 +95,9 @@ func (ai _argInterpreter) Interpret(
 // accessible (which would break encapsulation)
 func (ai _argInterpreter) rootPath(
 	path string,
-) string {
+) *string {
 	path = strings.Replace(path, "../", string(os.PathSeparator), -1)
 	path = strings.Replace(path, "..\\", string(os.PathSeparator), -1)
-	return filepath.Clean(path)
+	path = filepath.Clean(path)
+	return &path
 }

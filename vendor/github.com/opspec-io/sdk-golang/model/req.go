@@ -18,7 +18,7 @@ type KillOpReq struct {
 }
 
 type StartOpReq struct {
-	// map of args keyed by param name
-	Args map[string]*Data
+	// map of args keyed by input name
+	Args map[string]*Value
 	Pkg  *DCGOpCallPkg
 }

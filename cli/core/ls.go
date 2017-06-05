@@ -14,7 +14,7 @@ func (this _core) PkgLs(
 	defer _tabWriter.Flush()
 	_tabWriter.Init(this.writer, 0, 8, 1, '\t', 0)
 
-	fmt.Fprintln(_tabWriter, "NAME\tDESCRIPTION")
+	fmt.Fprintln(_tabWriter, "NAME\tVERSION\tDESCRIPTION")
 
 	cwd, err := this.os.Getwd()
 	if nil != err {
@@ -32,7 +32,7 @@ func (this _core) PkgLs(
 
 	for _, _package := range packages {
 
-		fmt.Fprintf(_tabWriter, "%v\t%v", _package.Name, _package.Description)
+		fmt.Fprintf(_tabWriter, "%v\t%v\t%v", _package.Name, _package.Version, _package.Description)
 		fmt.Fprintln(_tabWriter)
 
 	}

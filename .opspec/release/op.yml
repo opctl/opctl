@@ -27,10 +27,6 @@ inputs:
       constraints: { minLength: 1 }
       description: git branch the coverage should be associated with
       default: master
-  gitCommit:
-    string:
-      constraints: { minLength: 1 }
-      description: git commit the coverage should be associated with
   srcDir:
     dir:
       default: .
@@ -47,7 +43,7 @@ run:
         outputs: { srcDir }
     - op:
         pkg: { ref: build }
-        inputs: { srcDir, gitBranch, gitCommit }
+        inputs: { srcDir, gitBranch }
     - op:
         pkg: { ref: release-to-equinox }
         inputs: { equinoxSigningKey, equinoxToken, srcDir, version }

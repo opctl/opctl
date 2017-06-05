@@ -8,8 +8,9 @@ import (
 
 type Inputs interface {
 	// Validate validates inputVals against inputParams
+	// note: param defaults aren't considered
 	Validate(
-		inputVals map[string]*model.Data,
+		inputVals map[string]*model.Value,
 		inputParams map[string]*model.Param,
 	) map[string][]error
 
@@ -17,8 +18,9 @@ type Inputs interface {
 	Interpret(
 		inputArgs map[string]string,
 		inputParams map[string]*model.Param,
-		scope map[string]*model.Data,
-	) (map[string]*model.Data, []error)
+		pkgPath string,
+		scope map[string]*model.Value,
+	) (map[string]*model.Value, []error)
 }
 
 func New() Inputs {

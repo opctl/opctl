@@ -13,7 +13,7 @@ type serialCaller interface {
 	// Executes a serial call
 	Call(
 		callId string,
-		inboundScope map[string]*model.Data,
+		inboundScope map[string]*model.Value,
 		rootOpId string,
 		pkgRef string,
 		scgSerialCall []*model.SCG,
@@ -42,12 +42,12 @@ type _serialCaller struct {
 
 func (this _serialCaller) Call(
 	callId string,
-	inboundScope map[string]*model.Data,
+	inboundScope map[string]*model.Value,
 	rootOpId string,
 	pkgRef string,
 	scgSerialCall []*model.SCG,
 ) error {
-	outputs := map[string]*model.Data{}
+	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
 	}

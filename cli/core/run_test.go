@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
@@ -86,7 +87,6 @@ var _ = Context("Run", func() {
 						cliExiter:    fakeCliExiter,
 						nodeProvider: new(nodeprovider.Fake),
 						os:           new(ios.Fake),
-						ioutil:       new(iioutil.Fake),
 					}
 
 					/* act */
@@ -133,7 +133,35 @@ var _ = Context("Run", func() {
 					Expect(actualPkgRef).To(Equal(expectedPkgRef))
 				})
 				Context("pkg.Resolve fails", func() {
+					It("should call exiter w/ expected args", func() {
+						/* arrange */
+						providedPkgRef := "dummyPkgRef"
+						wdReturnedFromIOS := "dummyWorkDir"
 
+						fakeIOS := new(ios.Fake)
+						fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
+
+						expectedMsg := fmt.Sprintf("Unable to resolve package '%v' from '%v'", providedPkgRef, wdReturnedFromIOS)
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.ResolveReturns("", false)
+
+						fakeCliExiter := new(cliexiter.Fake)
+
+						objectUnderTest := _core{
+							pkg:          fakePkg,
+							cliExiter:    fakeCliExiter,
+							os:           fakeIOS,
+							nodeProvider: new(nodeprovider.Fake),
+						}
+
+						/* act */
+						objectUnderTest.Run(context.TODO(), providedPkgRef, &RunOpts{})
+
+						/* assert */
+						Expect(fakeCliExiter.ExitArgsForCall(0)).
+							To(Equal(cliexiter.ExitReq{Message: expectedMsg, Code: 1}))
+					})
 				})
 				Context("pkg.Resolve succeeds", func() {
 					It("should call manifest.Unmarshal w/ expected args", func() {
@@ -193,7 +221,6 @@ var _ = Context("Run", func() {
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
 								nodeProvider:      new(nodeprovider.Fake),
 								os:                new(ios.Fake),
-								ioutil:            new(iioutil.Fake),
 							}
 
 							/* act */
@@ -267,7 +294,7 @@ var _ = Context("Run", func() {
 
 							expectedArg1ValueString := "dummyArg1Value"
 							expectedArgs := model.StartOpReq{
-								Args: map[string]*model.Data{
+								Args: map[string]*model.Value{
 									"dummyArg1Name": {String: &expectedArg1ValueString},
 								},
 								Pkg: &model.DCGOpCallPkg{

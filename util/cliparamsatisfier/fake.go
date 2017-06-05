@@ -8,23 +8,23 @@ import (
 )
 
 type Fake struct {
-	SatisfyStub        func(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Data
+	SatisfyStub        func(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Value
 	satisfyMutex       sync.RWMutex
 	satisfyArgsForCall []struct {
 		inputSourcer InputSourcer
 		inputs       map[string]*model.Param
 	}
 	satisfyReturns struct {
-		result1 map[string]*model.Data
+		result1 map[string]*model.Value
 	}
 	satisfyReturnsOnCall map[int]struct {
-		result1 map[string]*model.Data
+		result1 map[string]*model.Value
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Satisfy(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Data {
+func (fake *Fake) Satisfy(inputSourcer InputSourcer, inputs map[string]*model.Param) map[string]*model.Value {
 	fake.satisfyMutex.Lock()
 	ret, specificReturn := fake.satisfyReturnsOnCall[len(fake.satisfyArgsForCall)]
 	fake.satisfyArgsForCall = append(fake.satisfyArgsForCall, struct {
@@ -54,22 +54,22 @@ func (fake *Fake) SatisfyArgsForCall(i int) (InputSourcer, map[string]*model.Par
 	return fake.satisfyArgsForCall[i].inputSourcer, fake.satisfyArgsForCall[i].inputs
 }
 
-func (fake *Fake) SatisfyReturns(result1 map[string]*model.Data) {
+func (fake *Fake) SatisfyReturns(result1 map[string]*model.Value) {
 	fake.SatisfyStub = nil
 	fake.satisfyReturns = struct {
-		result1 map[string]*model.Data
+		result1 map[string]*model.Value
 	}{result1}
 }
 
-func (fake *Fake) SatisfyReturnsOnCall(i int, result1 map[string]*model.Data) {
+func (fake *Fake) SatisfyReturnsOnCall(i int, result1 map[string]*model.Value) {
 	fake.SatisfyStub = nil
 	if fake.satisfyReturnsOnCall == nil {
 		fake.satisfyReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Data
+			result1 map[string]*model.Value
 		})
 	}
 	fake.satisfyReturnsOnCall[i] = struct {
-		result1 map[string]*model.Data
+		result1 map[string]*model.Value
 	}{result1}
 }
 

@@ -21,7 +21,7 @@ type CliParamSatisfier interface {
 	Satisfy(
 		inputSourcer InputSourcer,
 		inputs map[string]*model.Param,
-	) map[string]*model.Data
+	) map[string]*model.Value
 }
 
 func New(
@@ -45,15 +45,15 @@ type _cliParamSatisfier struct {
 func (this _cliParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
 	inputs map[string]*model.Param,
-) map[string]*model.Data {
+) map[string]*model.Value {
 
-	argMap := map[string]*model.Data{}
+	argMap := map[string]*model.Value{}
 	for _, paramName := range this.getSortedParamNames(inputs) {
 		param := inputs[paramName]
 
 	paramLoop:
 		for {
-			var arg *model.Data
+			var arg *model.Value
 
 			rawArg := inputSourcer.Source(paramName)
 			if nil == rawArg {
@@ -66,7 +66,7 @@ func (this _cliParamSatisfier) Satisfy(
 
 			switch {
 			case nil != param.String:
-				arg = &model.Data{String: rawArg}
+				arg = &model.Value{String: rawArg}
 			case nil != param.Dir:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
@@ -74,7 +74,7 @@ func (this _cliParamSatisfier) Satisfy(
 					this.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Data{Dir: &absPath}
+				arg = &model.Value{Dir: &absPath}
 			case nil != param.File:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
@@ -82,7 +82,7 @@ func (this _cliParamSatisfier) Satisfy(
 					this.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Data{File: &absPath}
+				arg = &model.Value{File: &absPath}
 			case nil != param.Number:
 				argValue, err := strconv.ParseFloat(*rawArg, 64)
 				if nil != err {
@@ -90,13 +90,13 @@ func (this _cliParamSatisfier) Satisfy(
 					this.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Data{Number: &argValue}
+				arg = &model.Value{Number: &argValue}
 			case nil != param.Socket:
-				arg = &model.Data{Socket: rawArg}
+				arg = &model.Value{Socket: rawArg}
 			}
 
 			argErrors := this.inputs.Validate(
-				map[string]*model.Data{paramName: arg},
+				map[string]*model.Value{paramName: arg},
 				map[string]*model.Param{paramName: param},
 			)
 			if len(argErrors) > 0 {

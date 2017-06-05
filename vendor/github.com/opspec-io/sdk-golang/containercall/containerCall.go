@@ -14,11 +14,11 @@ import (
 type ContainerCall interface {
 	// Interpret interprets an SCGContainerCall into a DCGContainerCall
 	Interpret(
-		currentScope map[string]*model.Data,
+		scope map[string]*model.Value,
 		scgContainerCall *model.SCGContainerCall,
 		containerId string,
 		rootOpId string,
-		pkgRef string,
+		pkgPath string,
 	) (*model.DCGContainerCall, error)
 }
 

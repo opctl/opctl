@@ -12,7 +12,7 @@ import (
 type opCaller interface {
 	// Executes an op call
 	Call(
-		inboundScope map[string]*model.Data,
+		inboundScope map[string]*model.Value,
 		opId string,
 		pkgBasePath string,
 		rootOpId string,
@@ -42,7 +42,7 @@ type _opCaller struct {
 }
 
 func (oc _opCaller) Call(
-	inboundScope map[string]*model.Data,
+	inboundScope map[string]*model.Value,
 	opId string,
 	pkgBasePath string,
 	rootOpId string,
@@ -50,7 +50,7 @@ func (oc _opCaller) Call(
 ) error {
 	var err error
 	var isKilled bool
-	var outputs map[string]*model.Data
+	var outputs map[string]*model.Value
 	if "" != scgOpCall.Ref {
 		// fallback for deprecated pkg ref format
 		scgOpCall.Pkg = &model.SCGOpCallPkg{
@@ -142,7 +142,7 @@ func (oc _opCaller) Call(
 	)
 
 	// interpret outputs
-	outputsChan := make(chan map[string]*model.Data, 1)
+	outputsChan := make(chan map[string]*model.Value, 1)
 	go func() {
 		outputsChan <- oc.interpretOutputs(
 			scgOpCall,
@@ -173,7 +173,7 @@ func (oc _opCaller) Call(
 func (oc _opCaller) interpretOutputs(
 	scgOpCall *model.SCGOpCall,
 	dcgOpCall *model.DCGOpCall,
-) map[string]*model.Data {
+) map[string]*model.Value {
 
 	// subscribe to events
 	eventChannel := make(chan *model.Event, 150)
@@ -186,7 +186,7 @@ func (oc _opCaller) interpretOutputs(
 		eventChannel,
 	)
 
-	childOutputs := map[string]*model.Data{}
+	childOutputs := map[string]*model.Value{}
 eventLoop:
 	for event := range eventChannel {
 		switch {
@@ -214,7 +214,7 @@ eventLoop:
 		}
 	}
 
-	outputs := map[string]*model.Data{}
+	outputs := map[string]*model.Value{}
 	for boundName, boundValue := range scgOpCall.Outputs {
 		// return bound outputs
 		if "" == boundValue {

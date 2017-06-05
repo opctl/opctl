@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 	"strconv"
 )
 
@@ -11,7 +12,10 @@ var _ = Describe("paramDefaultInputSrc", func() {
 	Context("NewParamDefaultInputSrc()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewParamDefaultInputSrc(map[string]*model.Param{})).To(Not(BeNil()))
+			Expect(NewParamDefaultInputSrc(
+				map[string]*model.Param{},
+				"dummyPkgPath",
+			)).To(Not(BeNil()))
 		})
 	})
 	Context("Read()", func() {
@@ -26,6 +30,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 					}
 					objectUnderTest := NewParamDefaultInputSrc(
 						map[string]*model.Param{inputName: param},
+						"dummyPkgPath",
 					)
 
 					/* act */
@@ -39,47 +44,101 @@ var _ = Describe("paramDefaultInputSrc", func() {
 			})
 			Context("input not yet read", func() {
 				Context("input is dir", func() {
-					It("should return param default", func() {
-						/* arrange */
-						inputName := "dummyInputName"
-						paramDefault := "dummyParamDefault"
-						param := &model.Param{
-							Dir: &model.DirParam{Default: &paramDefault},
-						}
+					Context("default is pkg path", func() {
+						It("should return expected result", func() {
+							/* arrange */
+							inputName := "dummyInputName"
+							paramDefault := "/dummyParamDefault"
+							pkgPath := "dummyPkgPath"
+							param := &model.Param{
+								Dir: &model.DirParam{Default: &paramDefault},
+							}
 
-						expectedValue := param.Dir.Default
+							expectedValue := filepath.Join(pkgPath, *param.Dir.Default)
 
-						objectUnderTest := NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
-						)
+							objectUnderTest := NewParamDefaultInputSrc(
+								map[string]*model.Param{inputName: param},
+								pkgPath,
+							)
 
-						/* act */
-						actualValue := objectUnderTest.Read(inputName)
+							/* act */
+							actualValue := objectUnderTest.Read(inputName)
 
-						/* assert */
-						Expect(actualValue).To(Equal(expectedValue))
+							/* assert */
+							Expect(*actualValue).To(Equal(expectedValue))
+						})
+					})
+					Context("default is relative path", func() {
+						It("should return expected result", func() {
+							/* arrange */
+							inputName := "dummyInputName"
+							paramDefault := "dummyParamDefault"
+							param := &model.Param{
+								Dir: &model.DirParam{Default: &paramDefault},
+							}
+
+							expectedValue := param.Dir.Default
+
+							objectUnderTest := NewParamDefaultInputSrc(
+								map[string]*model.Param{inputName: param},
+								"dummyPkgPath",
+							)
+
+							/* act */
+							actualValue := objectUnderTest.Read(inputName)
+
+							/* assert */
+							Expect(actualValue).To(Equal(expectedValue))
+						})
 					})
 				})
 				Context("input is file", func() {
-					It("should return param default", func() {
-						/* arrange */
-						inputName := "dummyInputName"
-						paramDefault := "dummyParamDefault"
-						param := &model.Param{
-							File: &model.FileParam{Default: &paramDefault},
-						}
+					Context("default is pkg path", func() {
+						It("should return expected result", func() {
+							/* arrange */
+							inputName := "dummyInputName"
+							paramDefault := "/dummyParamDefault"
+							pkgPath := "dummyPkgPath"
+							param := &model.Param{
+								File: &model.FileParam{Default: &paramDefault},
+							}
 
-						expectedValue := param.File.Default
+							expectedValue := filepath.Join(pkgPath, *param.File.Default)
 
-						objectUnderTest := NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
-						)
+							objectUnderTest := NewParamDefaultInputSrc(
+								map[string]*model.Param{inputName: param},
+								pkgPath,
+							)
 
-						/* act */
-						actualValue := objectUnderTest.Read(inputName)
+							/* act */
+							actualValue := objectUnderTest.Read(inputName)
 
-						/* assert */
-						Expect(actualValue).To(Equal(expectedValue))
+							/* assert */
+							Expect(*actualValue).To(Equal(expectedValue))
+						})
+					})
+					Context("default is relative path", func() {
+						It("should return expected result", func() {
+							/* arrange */
+							inputName := "dummyInputName"
+							paramDefault := "dummyParamDefault"
+							param := &model.Param{
+								File: &model.FileParam{Default: &paramDefault},
+							}
+
+							expectedValue := param.File.Default
+
+							objectUnderTest := NewParamDefaultInputSrc(
+								map[string]*model.Param{inputName: param},
+								"dummyPkgPath",
+							)
+
+							/* act */
+							actualValue := objectUnderTest.Read(inputName)
+
+							/* assert */
+							Expect(actualValue).To(Equal(expectedValue))
+						})
 					})
 				})
 				Context("input is number", func() {
@@ -95,6 +154,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 
 						objectUnderTest := NewParamDefaultInputSrc(
 							map[string]*model.Param{inputName: param},
+							"dummyPkgPath",
 						)
 
 						/* act */
@@ -118,6 +178,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 
 					objectUnderTest := NewParamDefaultInputSrc(
 						map[string]*model.Param{inputName: param},
+						"dummyPkgPath",
 					)
 
 					/* act */
@@ -134,6 +195,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 			/* arrange */
 			objectUnderTest := NewParamDefaultInputSrc(
 				map[string]*model.Param{},
+				"dummyPkgPath",
 			)
 
 			/* act */

@@ -25,7 +25,7 @@ var _ = Context("serialCaller", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
 			providedCallId := "dummyCallId"
-			providedInboundScope := map[string]*model.Data{}
+			providedInboundScope := map[string]*model.Value{}
 			providedRootOpId := "dummyRootOpId"
 			providedPkgRef := "dummyPkgRef"
 			providedSCGSerialCalls := []*model.SCG{
@@ -92,7 +92,7 @@ var _ = Context("serialCaller", func() {
 			It("should return the expected error", func() {
 				/* arrange */
 				providedCallId := "dummyCallId"
-				providedInboundScope := map[string]*model.Data{}
+				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
 				providedPkgRef := "dummyPkgRef"
 				providedSCGSerialCalls := []*model.SCG{
@@ -128,7 +128,7 @@ var _ = Context("serialCaller", func() {
 					providedCallId := "dummyCallId"
 					providedScopeName1String := "dummyParentVar1Data"
 					providedScopeName2Dir := "dummyParentVar2Data"
-					providedInboundScope := map[string]*model.Data{
+					providedInboundScope := map[string]*model.Value{
 						"dummyVar1Name": {String: &providedScopeName1String},
 						"dummyVar2Name": {Dir: &providedScopeName2Dir},
 					}
@@ -188,7 +188,7 @@ var _ = Context("serialCaller", func() {
 					providedInboundVar1String := "dummyParentVar1Data"
 					providedInboundVar2Dir := "dummyParentVar2Data"
 					providedInboundVar3File := "dummyParentVar3Data"
-					providedInboundScope := map[string]*model.Data{
+					providedInboundScope := map[string]*model.Value{
 						"dummyVar1Name": {String: &providedInboundVar1String},
 						"dummyVar2Name": {Dir: &providedInboundVar2Dir},
 						"dummyVar3Name": {File: &providedInboundVar3File},
@@ -196,12 +196,12 @@ var _ = Context("serialCaller", func() {
 
 					firstChildOutput1String := "dummyFirstChildVar1Data"
 					firstChildOutput2String := "dummyFirstChildVar2Data"
-					firstChildOutputs := map[string]*model.Data{
+					firstChildOutputs := map[string]*model.Value{
 						"dummyVar1Name": {String: &firstChildOutput1String},
 						"dummyVar2Name": {Dir: &firstChildOutput2String},
 					}
 
-					expectedInboundScopeToSecondChild := map[string]*model.Data{
+					expectedInboundScopeToSecondChild := map[string]*model.Value{
 						"dummyVar1Name": firstChildOutputs["dummyVar1Name"],
 						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],

@@ -37,7 +37,7 @@ var _ = Context("core", func() {
 				providedArg3Dir := "dummyArg3Value"
 				providedArg4Dir := "dummyArg4Value"
 				providedReq := model.StartOpReq{
-					Args: map[string]*model.Data{
+					Args: map[string]*model.Value{
 						"dummyArg1Name": {String: &providedArg1String},
 						"dummyArg2Name": {Dir: &providedArg2Dir},
 						"dummyArg3Name": {Dir: &providedArg3Dir},

@@ -4,33 +4,31 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
-	"path"
 )
 
 func (this _core) PkgValidate(
 	pkgRef string,
 ) {
-	originalPkgRef := pkgRef
-	if !path.IsAbs(pkgRef) {
-		pkgDir := path.Dir(pkgRef)
-
-		if "." == pkgDir {
-			// default package location is .opspec subdir of current working directory
-			// so if they only provided us a name let's look there
-			pkgName := path.Base(pkgRef)
-			pkgRef = path.Join(pkgDir, ".opspec", pkgName)
-		}
-
-		// make our pkgRef absolute
-		cwd, err := this.os.Getwd()
-		if nil != err {
-			this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-			return // support fake exiter
-		}
-		pkgRef = path.Join(cwd, pkgRef)
+	cwd, err := this.os.Getwd()
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
 	}
 
-	errs := this.pkg.Validate(pkgRef)
+	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	pkgPath, ok := this.pkg.Resolve(parsedPkgRef, cwd)
+	if !ok {
+		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'", pkgRef, cwd)
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
+		return // support fake exiter
+	}
+
+	errs := this.pkg.Validate(pkgPath)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`
@@ -47,7 +45,7 @@ func (this _core) PkgValidate(
 			Code: 1})
 	} else {
 		this.cliExiter.Exit(cliexiter.ExitReq{
-			Message: fmt.Sprintf("%v is valid", originalPkgRef),
+			Message: fmt.Sprintf("%v is valid", pkgPath),
 		})
 	}
 }

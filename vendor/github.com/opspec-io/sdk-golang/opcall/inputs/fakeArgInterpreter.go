@@ -8,39 +8,41 @@ import (
 )
 
 type fakeArgInterpreter struct {
-	InterpretStub        func(name, value string, param *model.Param, scope map[string]*model.Data) (*model.Data, error)
+	InterpretStub        func(name, value string, param *model.Param, pkgPath string, scope map[string]*model.Value) (*model.Value, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		name  string
-		value string
-		param *model.Param
-		scope map[string]*model.Data
+		name    string
+		value   string
+		param   *model.Param
+		pkgPath string
+		scope   map[string]*model.Value
 	}
 	interpretReturns struct {
-		result1 *model.Data
+		result1 *model.Value
 		result2 error
 	}
 	interpretReturnsOnCall map[int]struct {
-		result1 *model.Data
+		result1 *model.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeArgInterpreter) Interpret(name string, value string, param *model.Param, scope map[string]*model.Data) (*model.Data, error) {
+func (fake *fakeArgInterpreter) Interpret(name string, value string, param *model.Param, pkgPath string, scope map[string]*model.Value) (*model.Value, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		name  string
-		value string
-		param *model.Param
-		scope map[string]*model.Data
-	}{name, value, param, scope})
-	fake.recordInvocation("Interpret", []interface{}{name, value, param, scope})
+		name    string
+		value   string
+		param   *model.Param
+		pkgPath string
+		scope   map[string]*model.Value
+	}{name, value, param, pkgPath, scope})
+	fake.recordInvocation("Interpret", []interface{}{name, value, param, pkgPath, scope})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(name, value, param, scope)
+		return fake.InterpretStub(name, value, param, pkgPath, scope)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -54,30 +56,30 @@ func (fake *fakeArgInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *fakeArgInterpreter) InterpretArgsForCall(i int) (string, string, *model.Param, map[string]*model.Data) {
+func (fake *fakeArgInterpreter) InterpretArgsForCall(i int) (string, string, *model.Param, string, map[string]*model.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].scope
+	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].pkgPath, fake.interpretArgsForCall[i].scope
 }
 
-func (fake *fakeArgInterpreter) InterpretReturns(result1 *model.Data, result2 error) {
+func (fake *fakeArgInterpreter) InterpretReturns(result1 *model.Value, result2 error) {
 	fake.InterpretStub = nil
 	fake.interpretReturns = struct {
-		result1 *model.Data
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeArgInterpreter) InterpretReturnsOnCall(i int, result1 *model.Data, result2 error) {
+func (fake *fakeArgInterpreter) InterpretReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.InterpretStub = nil
 	if fake.interpretReturnsOnCall == nil {
 		fake.interpretReturnsOnCall = make(map[int]struct {
-			result1 *model.Data
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.interpretReturnsOnCall[i] = struct {
-		result1 *model.Data
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }

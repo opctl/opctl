@@ -45,10 +45,10 @@ type DCGOp struct{}
 
 type DCGOpCall struct {
 	*DCGBaseCall
-	OpId         string           `json:"opId"`
-	Inputs       map[string]*Data `json:"inputs"`
-	ChildCallSCG *SCG             `json:"childCallSCG"`
-	ChildCallId  string           `json:"childCallId"`
+	OpId         string            `json:"opId"`
+	Inputs       map[string]*Value `json:"inputs"`
+	ChildCallSCG *SCG              `json:"childCallSCG"`
+	ChildCallId  string            `json:"childCallId"`
 }
 
 type DCGOpCallPkg struct {

@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 func New() {
@@ -35,10 +36,15 @@ func New() {
 	// cleanup [legacy] opspec.engine container if exists; ignore errors
 	containerProvider.DeleteContainerIfExists("opspec.engine")
 
+	// cleanup existing pkg cache
+	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
+	if err := os.RemoveAll(pkgCachePath); nil != err {
+		panic(fmt.Errorf("unable to cleanup pkg cache at path: %v\n", pkgCachePath))
+	}
+
 	// cleanup existing DCG (dynamic call graph) data
 	dcgDataDirPath := dcgDataDirPath(rootFSPath)
-	err = os.RemoveAll(dcgDataDirPath)
-	if nil != err {
+	if err := os.RemoveAll(dcgDataDirPath); nil != err {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
 	}
 

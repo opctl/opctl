@@ -2,15 +2,19 @@ package cliparamsatisfier
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 func NewParamDefaultInputSrc(
 	inputs map[string]*model.Param,
+	pkgPath string,
 ) InputSrc {
 	return paramDefaultInputSrc{
 		inputs:      inputs,
 		readHistory: map[string]struct{}{},
+		pkgPath:     pkgPath,
 	}
 }
 
@@ -18,6 +22,7 @@ func NewParamDefaultInputSrc(
 type paramDefaultInputSrc struct {
 	inputs      map[string]*model.Param
 	readHistory map[string]struct{} // tracks reads
+	pkgPath     string
 }
 
 func (this paramDefaultInputSrc) Read(
@@ -33,9 +38,19 @@ func (this paramDefaultInputSrc) Read(
 		this.readHistory[inputName] = struct{}{}
 
 		switch {
-		case nil != inputValue.Dir:
+		case nil != inputValue.Dir && nil != inputValue.Dir.Default:
+			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
+				// defaulted to pkg dir
+				value := filepath.Join(this.pkgPath, *inputValue.Dir.Default)
+				return &value
+			}
 			return inputValue.Dir.Default
-		case nil != inputValue.File:
+		case nil != inputValue.File && nil != inputValue.File.Default:
+			if strings.HasPrefix(*inputValue.File.Default, "/") {
+				// defaulted to pkg file
+				value := filepath.Join(this.pkgPath, *inputValue.File.Default)
+				return &value
+			}
 			return inputValue.File.Default
 		case nil != inputValue.Number && nil != inputValue.Number.Default:
 			floatString := strconv.FormatFloat(*inputValue.Number.Default, 'E', -1, 64)
