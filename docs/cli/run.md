@@ -14,7 +14,7 @@ Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#
 ### `-a`
 Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`
 
-### `--arg-file` *default: `.opspec/arg.yml`* (since v0.1.19)
+### `--arg-file` *default: `.opspec/args.yml`* (since v0.1.19)
 Read in a file of args in yml format
 
 ## Examples
