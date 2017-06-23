@@ -6,5 +6,5 @@ ensure docker-machine is installed and running; docker4windows is currently not 
 # installation
 
 download and run the
-[windows installer](https://github.com/opctl/opctl/releases/download/0.1.19/opctl0.1.19.windows.msi)
+[windows installer](https://github.com/opctl/opctl/releases/download/0.1.20/opctl0.1.20.windows.msi)
 
