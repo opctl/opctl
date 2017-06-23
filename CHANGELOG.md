@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## 0.1.20 - 2017-06-23
+
+### Fixed
+
+- [Unexpected git capabilities encountered during pkg pull not gracefully handled](https://github.com/opctl/opctl/issues/257)
+
 ## 0.1.19 - 2017-06-05
 
 ### Added
