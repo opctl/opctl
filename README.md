@@ -18,21 +18,16 @@ or [open an issue](https://github.com/opctl/opctl/issues)
 
 # Releases
 
-for every release:
+releases are comprised of:
 
-- source code will be [tagged](https://github.com/opctl/opctl/tags).
-- installation instructions will be made available at
-  [opctl.io](https://opctl.io/)
+- version adhering to [![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 
-# Versioning
+- changelog adhering to [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/). See [CHANGELOG.md](CHANGELOG.md). 
 
-This project adheres to the [Semantic Versioning](http://semver.org/)
-specification
+- git tag matching version. See [tags](https://github.com/opctl/opctl/tags)
 
 # Contributing
 
 see [CONTRIBUTING.md](CONTRIBUTING.md)
 
-# Changelog
 
-see [CHANGELOG.md](CHANGELOG.md)
