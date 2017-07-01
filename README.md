@@ -17,26 +17,17 @@ of containerized processes \[ops].
 
 see [website](https://opspec.io)
 
+# Support
+
+join us on [![Slack](https://opspec-slackin.herokuapp.com/badge.svg)](https://opspec-slackin.herokuapp.com/)
+or [open an issue](https://github.com/opspec-io/sdk-golang/issues)
+
 # Releases
 
-All releases will be [tagged](https://github.com/opspec-io/spec/tags)
-
-and made available on the
-[releases](https://github.com/opspec-io/spec/releases) page with release
-notes.
-
-# Versioning
-
-This project adheres to the [Semantic Versioning](http://semver.org/)
-specification
-
-# Contributing
-
-see [CONTRIBUTING.md](./CONTRIBUTING.md)
-
-# Changelog
-
-see [CHANGELOG.md](./CHANGELOG.md)
+releases are versioned according to
+[![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
+and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
+[CHANGELOG.md](CHANGELOG.md) for release notes
 
 # Influences
 
