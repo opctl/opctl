@@ -11,6 +11,11 @@
 
 see [website](https://opctl.io)
 
+# Support
+
+join us on [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
+or [open an issue](https://github.com/opctl/opctl/issues)
+
 # Releases
 
 for every release:
