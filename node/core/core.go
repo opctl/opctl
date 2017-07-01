@@ -2,8 +2,14 @@
 package core
 
 import "github.com/opspec-io/sdk-golang/model"
+import "io"
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
+
+type ReadSeekCloser interface {
+	io.ReadCloser
+	io.Seeker
+}
 
 type Core interface {
 	GetEventStream(
@@ -21,4 +27,16 @@ type Core interface {
 		callId string,
 		err error,
 	)
+
+	ListPkgContents(
+		pkgRef string,
+	) (
+		[]*model.PkgContent,
+		error,
+	)
+
+	GetPkgContent(
+		pkgRef string,
+		path string,
+	) (ReadSeekCloser, error)
 }

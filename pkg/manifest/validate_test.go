@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Validate", func() {
+var _ = Context("Validate", func() {
 	It("should call validator.Validate w/ expected args & return result", func() {
 		/* arrange */
 		providedPkgPath := "dummyPkgPath"

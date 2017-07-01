@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var _ = Describe("List", func() {
+var _ = Context("List", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)

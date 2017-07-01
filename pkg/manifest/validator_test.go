@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var _ = Describe("validator", func() {
+var _ = Context("validator", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)

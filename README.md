@@ -7,23 +7,18 @@ Golang SDK for [opspec](https://opspec.io)
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
+# Support
+
+join us on [![Slack](https://opspec-slackin.herokuapp.com/badge.svg)](https://opspec-slackin.herokuapp.com/)
+or [open an issue](https://github.com/opspec-io/sdk-golang/issues)
+
 # Releases
 
-All releases will be
-[tagged](https://github.com/opspec-io/sdk-golang/tags) and made
-available on the
-[releases](https://github.com/opspec-io/sdk-golang/releases) page with
-links to docs.
-
-# Versioning
-
-This project adheres to the [Semantic Versioning](http://semver.org/)
-specification
+releases are versioned according to
+[![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
+and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
+[CHANGELOG.md](CHANGELOG.md) for release notes
 
 # Contributing
 
 see [CONTRIBUTING.md](CONTRIBUTING.md)
-
-# Changelog
-
-see [CHANGELOG.md](CHANGELOG.md)

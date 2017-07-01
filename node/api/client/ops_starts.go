@@ -22,7 +22,7 @@ func (c client) StartOp(
 	}
 
 	reqUrl := c.baseUrl
-	reqUrl.Path = api.Ops_StartsURLTpl
+	reqUrl.Path = api.URLOps_Starts
 
 	httpReq, err := http.NewRequest(
 		"POST",

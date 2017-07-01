@@ -2,37 +2,16 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
 	"net/http"
 )
 
-func newGetEventStreamHandler(
-	core core.Core,
-) http.Handler {
-
-	return getEventStreamHandler{
-		core: core,
-		upgrader: &websocket.Upgrader{
-			ReadBufferSize:  4096,
-			WriteBufferSize: 4096,
-			CheckOrigin: func(r *http.Request) bool {
-				return true
-			},
-		},
-	}
-
-}
-
-type getEventStreamHandler struct {
-	core     core.Core
-	upgrader iwebsocket.Upgrader
-}
-
-func (gesh getEventStreamHandler) ServeHTTP(httpResp http.ResponseWriter, httpReq *http.Request) {
-	conn, err := gesh.upgrader.Upgrade(httpResp, httpReq, nil)
+func (hdlr _handler) events_streams(
+	httpResp http.ResponseWriter,
+	httpReq *http.Request,
+) {
+	conn, err := hdlr.upgrader.Upgrade(httpResp, httpReq, nil)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)
 		return
@@ -53,7 +32,7 @@ func (gesh getEventStreamHandler) ServeHTTP(httpResp http.ResponseWriter, httpRe
 
 	eventChannel := make(chan *model.Event)
 
-	err = gesh.core.GetEventStream(
+	err = hdlr.core.GetEventStream(
 		req,
 		eventChannel,
 	)

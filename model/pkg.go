@@ -8,3 +8,8 @@ type PkgManifest struct {
 	Run         *SCG              `yaml:"run,omitempty"`
 	Version     string            `yaml:"version,omitempty"`
 }
+
+type PkgContent struct {
+	Path string
+	Size int64
+}

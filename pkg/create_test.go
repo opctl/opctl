@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("pkg", func() {
+var _ = Context("pkg", func() {
 
 	Context("Create", func() {
 

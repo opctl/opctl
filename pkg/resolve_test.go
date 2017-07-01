@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("_Pkg", func() {
+var _ = Context("_Pkg", func() {
 	Context("Resolve", func() {
 		It("should call fs.Stat w/ expected args", func() {
 			/* arrange */

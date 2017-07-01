@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var _ = Describe("SetDescription", func() {
+var _ = Context("SetDescription", func() {
 
 	It("should call manifestUnmarshaller w/ expected args", func() {
 		/* arrange */

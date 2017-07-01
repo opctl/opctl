@@ -39,16 +39,22 @@
 			"revisionTime": "2017-05-07T19:17:43Z"
 		},
 		{
-			"checksumSHA1": "brI96gp3AX0Mrx/HvYEmXW7oyCE=",
+			"checksumSHA1": "UuS+t5mxUcYPEUK+3gIAVgBy4AM=",
 			"path": "github.com/golang-interfaces/ihttp",
-			"revision": "5cc27089b3148755d7b25cd005eeaca5a72bdfd2",
-			"revisionTime": "2017-05-08T03:44:42Z"
+			"revision": "ce41701ce7925e8186d89af6c4e159d40933bdd7",
+			"revisionTime": "2017-07-01T20:12:47Z"
 		},
 		{
 			"checksumSHA1": "pY2Cs8d3h1ltPNThOUgEA0xSI7E=",
 			"path": "github.com/golang-interfaces/iioutil",
 			"revision": "1dd3da9a91c7533b8d2eba6cf89dc82a1046c1cf",
 			"revisionTime": "2017-05-08T04:05:31Z"
+		},
+		{
+			"checksumSHA1": "YhIMOglqzmgxpeF8/g8AerGZ69c=",
+			"path": "github.com/golang-interfaces/ijson",
+			"revision": "8d13e3ff12d2b278fba004887d2e9529410391f2",
+			"revisionTime": "2017-06-30T14:06:32Z"
 		},
 		{
 			"checksumSHA1": "Lzqqp5gtWRp1o3h4rCZPF4je+Hw=",

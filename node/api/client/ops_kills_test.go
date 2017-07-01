@@ -14,7 +14,7 @@ import (
 	"net/url"
 )
 
-var _ = Describe("KillOp", func() {
+var _ = Context("KillOp", func() {
 
 	It("should call httpClient.Do() with expected args", func() {
 
@@ -25,7 +25,7 @@ var _ = Describe("KillOp", func() {
 		}
 
 		expectedReqUrl := url.URL{}
-		expectedReqUrl.Path = api.Ops_KillsURLTpl
+		expectedReqUrl.Path = api.URLOps_Kills
 
 		expectedBytes, _ := json.Marshal(providedReq)
 
@@ -36,7 +36,7 @@ var _ = Describe("KillOp", func() {
 		)
 		expectedHttpReq.WithContext(providedCtx)
 
-		fakeHttpClient := new(ihttp.Fake)
+		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
 
 		objectUnderTest := client{

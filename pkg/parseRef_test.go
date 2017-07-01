@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("_Pkg", func() {
-	Describe("PkgRef", func() {
-		Describe("ToPath", func() {
+var _ = Context("_Pkg", func() {
+	Context("PkgRef", func() {
+		Context("ToPath", func() {
 			It("should return expected path", func() {
 				/* arrange */
 				providedBasePath := "/dummy/path"
@@ -32,8 +32,8 @@ var _ = Describe("_Pkg", func() {
 			})
 		})
 	})
-	Describe("ParseRef", func() {
-		Describe("url.Parse errors", func() {
+	Context("ParseRef", func() {
+		Context("url.Parse errors", func() {
 			It("should error", func() {
 				/* arrange */
 				providedPkgRef := "::"
@@ -47,7 +47,7 @@ var _ = Describe("_Pkg", func() {
 				Expect(actualErr).To(Not(BeNil()))
 			})
 		})
-		Describe("url.Parse doesn't error", func() {
+		Context("url.Parse doesn't error", func() {
 			It("should return expected PkgRef", func() {
 				/* arrange */
 				providedFullyQualifiedPkgName := "somehost.com/path/pkgName"

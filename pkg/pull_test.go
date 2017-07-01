@@ -17,7 +17,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("Pkg", func() {
+var _ = Context("Pkg", func() {
 	Context("Pull", func() {
 		It("should call git.PlainClone w/ expected args", func() {
 

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Describe("Validate", func() {
+var _ = Context("Validate", func() {
 	It("should call manifestValidator.Validate w/ expected args & return result", func() {
 		/* arrange */
 		providedPkgPath := "dummyPkgPath"

@@ -8,7 +8,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Describe("Validate", func() {
+var _ = Context("Validate", func() {
 	objectUnderTest := newValidator()
 	Context("invoked w/ non-nil param.String", func() {
 		Context("& non-empty value.String", func() {

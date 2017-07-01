@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var _ = Describe("_manifestUnmarshaller", func() {
+var _ = Context("_manifestUnmarshaller", func() {
 
 	Context("Unmarshal", func() {
 

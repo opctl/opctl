@@ -14,7 +14,7 @@ import (
 	"net/url"
 )
 
-var _ = Describe("StartOp", func() {
+var _ = Context("StartOp", func() {
 
 	It("should call httpClient.Do() with expected args", func() {
 
@@ -32,7 +32,7 @@ var _ = Describe("StartOp", func() {
 		}
 
 		expectedReqUrl := url.URL{}
-		expectedReqUrl.Path = api.Ops_StartsURLTpl
+		expectedReqUrl.Path = api.URLOps_Starts
 
 		expectedReqBytes, _ := json.Marshal(providedReq)
 		expectedResult := "dummyOpId"
@@ -44,7 +44,7 @@ var _ = Describe("StartOp", func() {
 		)
 		expectedHttpReq.WithContext(providedCtx)
 
-		fakeHttpClient := new(ihttp.Fake)
+		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
 
 		objectUnderTest := client{

@@ -6,7 +6,7 @@ import (
 	"net/url"
 )
 
-var _ = Describe("nodeApiClient", func() {
+var _ = Context("nodeApiClient", func() {
 
 	Context("New()", func() {
 		Context("opts nil", func() {

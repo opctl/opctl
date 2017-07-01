@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 )
 
-var _ = Describe("Validate", func() {
+var _ = Context("Validate", func() {
 	Context("param.File not nil", func() {
 		Context("value.File nil", func() {
 			Context("param.File.Default nil", func() {

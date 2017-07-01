@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("ErrAuthenticationFailed", func() {
-	Describe("Error", func() {
+var _ = Context("ErrAuthenticationFailed", func() {
+	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			expectedResult := "Authentication failed while attempting to transport package"

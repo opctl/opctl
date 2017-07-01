@@ -11,7 +11,7 @@ import (
 	"net/url"
 )
 
-var _ = Describe("GetEventStream", func() {
+var _ = Context("GetEventStream", func() {
 
 	It("should call wsDialer.Dial() w/ expected args", func() {
 
@@ -27,7 +27,7 @@ var _ = Describe("GetEventStream", func() {
 		// construct expected URL
 		expectedReqUrl := url.URL{}
 		expectedReqUrl.Scheme = "ws"
-		expectedReqUrl.Path = api.Events_StreamsURLTpl
+		expectedReqUrl.Path = api.URLEvents_Stream
 
 		if nil != providedReq.Filter {
 			// add non-nil filter

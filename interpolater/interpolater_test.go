@@ -6,7 +6,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Describe("_Interpolater", func() {
+var _ = Context("_Interpolater", func() {
 	Context("New()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */

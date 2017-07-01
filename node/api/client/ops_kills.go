@@ -20,7 +20,7 @@ func (c client) KillOp(
 	}
 
 	reqUrl := c.baseUrl
-	reqUrl.Path = api.Ops_KillsURLTpl
+	reqUrl.Path = api.URLOps_Kills
 
 	httpReq, err := http.NewRequest(
 		"POST",

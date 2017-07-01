@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("pkg/manifest", func() {
+var _ = Context("pkg/manifest", func() {
 
 	Context("New()", func() {
 		It("should not return nil", func() {
