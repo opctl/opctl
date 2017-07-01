@@ -19,13 +19,7 @@ or [open an issue](https://github.com/opctl/opctl/issues)
 
 # Releases
 
-releases are comprised of:
-
-- version adhering to [![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
-
-- changelog adhering to [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/). See [CHANGELOG.md](CHANGELOG.md). 
-
-- git tag matching version. See [tags](https://github.com/opctl/opctl/tags)
+releases are versioned according to [![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html) and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see [CHANGELOG.md](CHANGELOG.md) for release notes
 
 # Contributing
 
