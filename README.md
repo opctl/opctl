@@ -1,7 +1,6 @@
 [![In Progress](https://img.shields.io/waffle/label/opctl/opctl/in%20progress.svg)](https://waffle.io/opctl/opctl)
 [![Build Status](https://travis-ci.org/opctl/opctl.svg?branch=master)](https://travis-ci.org/opctl/opctl)
 [![Coverage](https://codecov.io/gh/opctl/opctl/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/opctl)
-[![opspec 0.1.4](https://img.shields.io/badge/opspec-0.1.4-brightgreen.svg)](https://opspec.io/0.1.4)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
