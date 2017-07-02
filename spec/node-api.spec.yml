@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '0.1.4'
+  version: '0.1.5'
   title: Node API
 consumes:
   - application/json
@@ -30,7 +30,7 @@ paths:
       tags: [ events ]
       responses:
         '101':
-          description: Switching Protocols
+          description: HTTP/1.1 ["Switching Protocols" response status code](https://tools.ietf.org/html/rfc7231#section-6.2.2)
           headers:
             Upgrade:
               type: string
@@ -45,7 +45,7 @@ paths:
             items:
               $ref: '#/definitions/Event'
         '400':
-          description: Bad Request
+          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
           schema:
             type: string
   /liveness:
@@ -54,9 +54,9 @@ paths:
       tags: [ liveness ]
       responses:
         '200':
-          description: OK
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
         '500':
-          description: Internal Server Error
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
   /ops/starts:
     post:
       summary: Starts an op
@@ -92,16 +92,16 @@ paths:
                         type: string
       responses:
         '201':
-          description: Created
+          description: HTTP/1.1 ["Created" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.2)
           schema:
             description: The id of the [started] op
             type: string
         '400':
-          description: Bad Request
+          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
           schema:
             type: string
         '500':
-          description: Internal Server Error
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
           schema:
             type: string
   /ops/kills:
@@ -119,13 +119,164 @@ paths:
                 type: string
       responses:
         '201':
-          description: Created
+          description: HTTP/1.1 ["Created" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.2)
         '400':
-          description: Bad Request
+          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
           schema:
             type: string
         '500':
-          description: Internal Server Error
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          schema:
+            type: string
+  /pkgs/{ref}/contents:
+    get:
+      summary: Lists package contents
+      tags: [ pkgs ]
+      produces:
+        - application/json
+      parameters:
+        - name: ref
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
+          schema:
+            properties:
+              path:
+                type: string
+              size:
+                type: integer
+          headers:
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              type: integer
+        '400':
+          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+          schema:
+            type: string
+        '404':
+          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          schema:
+            type: string
+        '500':
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          schema:
+            type: string
+  /pkgs/{ref}/contents/{path}:
+    get:
+      summary: Gets pkg content at path
+      tags: [ pkgs ]
+      produces:
+        - application/octet-stream
+        - multipart/byteranges
+        - text/plain
+      parameters:
+        - name: ref
+          in: path
+          required: true
+          type: string
+        - name: path
+          in: path
+          required: true
+          type: string
+        - name: Range
+          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
+          in: header
+          required: false
+          type: string
+      responses:
+        '200':
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
+          schema:
+            type: file
+          headers:
+            Accept-Ranges:
+              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
+              type: string
+              enum:
+                - bytes
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              type: integer
+        '206':
+          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
+          schema:
+            type: string
+          headers:
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              type: integer
+            Content-Range:
+              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
+              type: string
+        '404':
+          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          schema:
+            type: string
+        '416':
+          description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
+          schema:
+            type: string
+        '500':
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          schema:
+            type: string
+    head:
+      summary: Gets pkg content at path
+      tags: [ pkgs ]
+      produces:
+        - application/octet-stream
+        - multipart/byteranges
+        - text/plain
+      parameters:
+        - name: ref
+          in: path
+          required: true
+          type: string
+        - name: path
+          in: path
+          required: true
+          type: string
+        - name: Range
+          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
+          in: header
+          required: false
+          type: string
+      responses:
+        '200':
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
+          headers:
+            Accept-Ranges:
+              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
+              type: string
+              enum:
+                - bytes
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              type: integer
+        '206':
+          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
+          schema:
+            type: string
+          headers:
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              type: integer
+            Content-Range:
+              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
+              type: string
+        '404':
+          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          schema:
+            type: string
+        '416':
+          description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
+          schema:
+            type: string
+        '500':
+          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
           schema:
             type: string
 definitions:

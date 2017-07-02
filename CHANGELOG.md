@@ -3,6 +3,12 @@
 All notable changes to the spec will be documented in this file in
 accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
+## \[Unreleased]
+
+### Added
+
+- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
+
 ## \[0.1.4] - 2017-06-04
 
 ### Added
