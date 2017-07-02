@@ -3,6 +3,12 @@
 All notable changes to the spec will be documented in this file in
 accordance with [keepachangelog.com](http://keepachangelog.com/)
 
+## \[Unreleased]
+
+### Added
+
+- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
+
 ## \[0.1.4] - 2017-06-04
 
 ### Added
