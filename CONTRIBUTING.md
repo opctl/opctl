@@ -1,8 +1,8 @@
 # Dev Ops
 
-This project maintains an [op spec](https://opspec.io/).
+Ops are maintained in [![opspec 0.1.4](https://img.shields.io/badge/opspec-0.1.4-brightgreen.svg)](https://opspec.io/0.1.4/packages.html#format) package format.
 
-It can be consumed via tools like [opctl](https://opspec.io/opctl).
+They can be consumed via tools like [opctl](https://opspec.io/opctl).
 
 # Acceptance criteria
 
