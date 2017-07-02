@@ -34,7 +34,6 @@ var _ = Context("KillOp", func() {
 			expectedReqUrl.String(),
 			bytes.NewBuffer(expectedBytes),
 		)
-		expectedHttpReq.WithContext(providedCtx)
 
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte{}))}, nil)
@@ -47,7 +46,12 @@ var _ = Context("KillOp", func() {
 		objectUnderTest.KillOp(providedCtx, providedReq)
 
 		/* assert */
-		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))
+		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+
+		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
+		Expect(actualHttpReq.Body).To(Equal(expectedHttpReq.Body))
+		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
+		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
 
 	})
 })

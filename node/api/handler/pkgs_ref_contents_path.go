@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	"net/url"
 	"path"
 	"time"
 )
@@ -12,10 +13,21 @@ func (hdlr _handler) pkgs_ref_contents_path(
 	httpReq *http.Request,
 ) {
 	vars := mux.Vars(httpReq)
-	contentPath := vars["path"]
+
+	pkgRef, err := url.PathUnescape(vars["ref"])
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	contentPath, err := url.PathUnescape(vars["path"])
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	pkgContent, err := hdlr.core.GetPkgContent(
-		vars["ref"],
+		pkgRef,
 		contentPath,
 	)
 	if nil != err {

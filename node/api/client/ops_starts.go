@@ -33,7 +33,7 @@ func (c client) StartOp(
 		return "", nil
 	}
 
-	httpReq.WithContext(ctx)
+	httpReq = httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

@@ -42,7 +42,6 @@ var _ = Context("StartOp", func() {
 			expectedReqUrl.String(),
 			bytes.NewBuffer(expectedReqBytes),
 		)
-		expectedHttpReq.WithContext(providedCtx)
 
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
@@ -55,7 +54,13 @@ var _ = Context("StartOp", func() {
 		actualResult, _ := objectUnderTest.StartOp(providedCtx, providedReq)
 
 		/* assert */
-		Expect(expectedHttpReq).To(Equal(fakeHttpClient.DoArgsForCall(0)))
+		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+
+		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
+		Expect(actualHttpReq.Body).To(Equal(expectedHttpReq.Body))
+		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
+		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+
 		Expect(expectedResult).To(Equal(actualResult))
 
 	})

@@ -31,7 +31,7 @@ func (c client) KillOp(
 		return err
 	}
 
-	httpReq.WithContext(ctx)
+	httpReq = httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {
