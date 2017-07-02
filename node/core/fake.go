@@ -51,18 +51,18 @@ type Fake struct {
 		result1 []*model.PkgContent
 		result2 error
 	}
-	GetPkgContentStub        func(pkgRef string, path string) (ReadSeekCloser, error)
+	GetPkgContentStub        func(pkgRef string, path string) (model.ReadSeekCloser, error)
 	getPkgContentMutex       sync.RWMutex
 	getPkgContentArgsForCall []struct {
 		pkgRef string
 		path   string
 	}
 	getPkgContentReturns struct {
-		result1 ReadSeekCloser
+		result1 model.ReadSeekCloser
 		result2 error
 	}
 	getPkgContentReturnsOnCall map[int]struct {
-		result1 ReadSeekCloser
+		result1 model.ReadSeekCloser
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -244,7 +244,7 @@ func (fake *Fake) ListPkgContentsReturnsOnCall(i int, result1 []*model.PkgConten
 	}{result1, result2}
 }
 
-func (fake *Fake) GetPkgContent(pkgRef string, path string) (ReadSeekCloser, error) {
+func (fake *Fake) GetPkgContent(pkgRef string, path string) (model.ReadSeekCloser, error) {
 	fake.getPkgContentMutex.Lock()
 	ret, specificReturn := fake.getPkgContentReturnsOnCall[len(fake.getPkgContentArgsForCall)]
 	fake.getPkgContentArgsForCall = append(fake.getPkgContentArgsForCall, struct {
@@ -274,24 +274,24 @@ func (fake *Fake) GetPkgContentArgsForCall(i int) (string, string) {
 	return fake.getPkgContentArgsForCall[i].pkgRef, fake.getPkgContentArgsForCall[i].path
 }
 
-func (fake *Fake) GetPkgContentReturns(result1 ReadSeekCloser, result2 error) {
+func (fake *Fake) GetPkgContentReturns(result1 model.ReadSeekCloser, result2 error) {
 	fake.GetPkgContentStub = nil
 	fake.getPkgContentReturns = struct {
-		result1 ReadSeekCloser
+		result1 model.ReadSeekCloser
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) GetPkgContentReturnsOnCall(i int, result1 ReadSeekCloser, result2 error) {
+func (fake *Fake) GetPkgContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
 	fake.GetPkgContentStub = nil
 	if fake.getPkgContentReturnsOnCall == nil {
 		fake.getPkgContentReturnsOnCall = make(map[int]struct {
-			result1 ReadSeekCloser
+			result1 model.ReadSeekCloser
 			result2 error
 		})
 	}
 	fake.getPkgContentReturnsOnCall[i] = struct {
-		result1 ReadSeekCloser
+		result1 model.ReadSeekCloser
 		result2 error
 	}{result1, result2}
 }

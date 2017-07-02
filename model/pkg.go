@@ -1,5 +1,12 @@
 package model
 
+import "io"
+
+type ReadSeekCloser interface {
+	io.ReadCloser
+	io.Seeker
+}
+
 type PkgManifest struct {
 	Description string            `yaml:"description"`
 	Inputs      map[string]*Param `yaml:"inputs,omitempty"`

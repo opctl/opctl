@@ -50,6 +50,23 @@ type Pkg interface {
 		pkgDescription string,
 	) error
 
+	// ListContents lists contents of a package
+	ListContents(
+		pkgRef string,
+	) (
+		[]*model.PkgContent,
+		error,
+	)
+
+	// GetContent gets content from a package
+	GetContent(
+		pkgRef string,
+		contentPath string,
+	) (
+		model.ReadSeekCloser,
+		error,
+	)
+
 	// Validate validates an opspec package
 	Validate(
 		pkgPath string,
