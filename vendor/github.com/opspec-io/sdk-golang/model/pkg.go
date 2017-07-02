@@ -1,5 +1,12 @@
 package model
 
+import "io"
+
+type ReadSeekCloser interface {
+	io.ReadCloser
+	io.Seeker
+}
+
 type PkgManifest struct {
 	Description string            `yaml:"description"`
 	Inputs      map[string]*Param `yaml:"inputs,omitempty"`
@@ -7,4 +14,9 @@ type PkgManifest struct {
 	Outputs     map[string]*Param `yaml:"outputs,omitempty"`
 	Run         *SCG              `yaml:"run,omitempty"`
 	Version     string            `yaml:"version,omitempty"`
+}
+
+type PkgContent struct {
+	Path string
+	Size int64
 }

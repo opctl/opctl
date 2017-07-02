@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
-	"github.com/opctl/opctl/node/core"
-	"github.com/opctl/opctl/util/containerprovider/docker"
-	"github.com/opctl/opctl/util/pubsub"
+	"github.com/gorilla/handlers"
 	"github.com/opspec-io/sdk-golang/node/api/handler"
+	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opspec-io/sdk-golang/util/containerprovider/docker"
+	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"net/http"
 	"os"
 	"path"
@@ -48,13 +49,15 @@ func New() {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
 	}
 
-	err = http.ListenAndServe(":42224", handler.New(
+	apiHandler := handler.New(
 		core.New(
 			pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
 			containerProvider,
 			rootFSPath,
 		),
-	))
+	)
+
+	err = http.ListenAndServe(":42224", handlers.CORS()(apiHandler))
 	if nil != err {
 		panic(err)
 	}

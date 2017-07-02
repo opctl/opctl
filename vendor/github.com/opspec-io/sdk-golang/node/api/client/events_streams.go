@@ -12,7 +12,7 @@ func (c client) GetEventStream(
 
 	reqUrl := c.baseUrl
 	reqUrl.Scheme = "ws"
-	reqUrl.Path = api.Events_StreamsURLTpl
+	reqUrl.Path = api.URLEvents_Stream
 
 	if nil != req.Filter {
 		// add non-nil filter
