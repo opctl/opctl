@@ -17,7 +17,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("Pkg", func() {
+var _ = Context("puller", func() {
 	Context("Pull", func() {
 		It("should call git.PlainClone w/ expected args", func() {
 
@@ -46,12 +46,10 @@ var _ = Context("Pkg", func() {
 
 			fakeGit := new(igit.Fake)
 
-			objectUnderTest := _Pkg{
-				puller: _puller{
-					git: fakeGit,
-					os:  new(ios.Fake),
-				},
-			}
+			objectUnderTest := _puller{
+        git: fakeGit,
+        os:  new(ios.Fake),
+      }
 
 			/* act */
 			objectUnderTest.Pull(providedPath, providedPkgRef, providedOpts)
@@ -80,12 +78,10 @@ var _ = Context("Pkg", func() {
 					fakeGit := new(igit.Fake)
 					fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
-					objectUnderTest := _Pkg{
-						puller: _puller{
-							git: fakeGit,
-							os:  fakeOS,
-						},
-					}
+					objectUnderTest := _puller{
+            git: fakeGit,
+            os:  fakeOS,
+          }
 
 					/* act */
 					actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
@@ -118,12 +114,10 @@ var _ = Context("Pkg", func() {
 					fakeGit := new(igit.Fake)
 					fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
 
-					objectUnderTest := _Pkg{
-						puller: _puller{
-							git: fakeGit,
-							os:  fakeOS,
-						},
-					}
+					objectUnderTest := _puller{
+            git: fakeGit,
+            os:  fakeOS,
+          }
 
 					/* act */
 					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
@@ -152,12 +146,10 @@ var _ = Context("Pkg", func() {
 					fakeGit := new(igit.Fake)
 					fakeGit.PlainCloneReturns(nil, expectedError)
 
-					objectUnderTest := _Pkg{
-						puller: _puller{
-							git: fakeGit,
-							os:  fakeOS,
-						},
-					}
+					objectUnderTest := _puller{
+            git: fakeGit,
+            os:  fakeOS,
+          }
 
 					/* act */
 					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
@@ -182,12 +174,10 @@ var _ = Context("Pkg", func() {
 				fakeManifest := new(manifest.Fake)
 				fakeManifest.UnmarshalReturns(expectedView, expectedErr)
 
-				objectUnderTest := _Pkg{
-					puller: _puller{
-						git: new(igit.Fake),
-						os:  new(ios.Fake),
-					},
-				}
+				objectUnderTest := _puller{
+          git: new(igit.Fake),
+          os:  new(ios.Fake),
+        }
 
 				/* act */
 				actualErr := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
@@ -211,12 +201,10 @@ var _ = Context("Pkg", func() {
 				expectedError := errors.New("dummyError")
 				fakeOS.RemoveAllReturns(expectedError)
 
-				objectUnderTest := _Pkg{
-					puller: _puller{
-						git: new(igit.Fake),
-						os:  fakeOS,
-					},
-				}
+				objectUnderTest := _puller{
+          git: new(igit.Fake),
+          os:  fakeOS,
+        }
 
 				/* act */
 				actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)

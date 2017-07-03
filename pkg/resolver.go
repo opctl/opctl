@@ -35,6 +35,12 @@ func (this _resolver) Resolve(
 	string,
 	bool,
 ) {
+
+	if filepath.IsAbs(pkgRef.FullyQualifiedName) {
+		_, err := this.os.Stat(pkgRef.FullyQualifiedName)
+		return pkgRef.FullyQualifiedName, nil != err
+	}
+
 	for _, lookPath := range lookPaths {
 		// 1. attempt to resolve from lookPath/.opspec dir
 		testPath := pkgRef.ToPath(filepath.Join(lookPath, DotOpspecDirName))

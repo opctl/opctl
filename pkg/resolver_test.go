@@ -8,37 +8,58 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("_Pkg", func() {
+var _ = Context("resolver", func() {
 	Context("Resolve", func() {
-		It("should call fs.Stat w/ expected args", func() {
-			/* arrange */
-			providedBasePath := "dummyBasePath"
-			providedPkgRef := &PkgRef{
-				FullyQualifiedName: "dummyPkgRef",
-				Version:            "0.0.0",
-			}
+		Context("pkgRef is absolute path", func() {
+			It("should call fs.Stat w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "/dummyPkgRef",
+				}
 
-			expectedPath := providedPkgRef.ToPath(
-				filepath.Join(
-					providedBasePath,
-					DotOpspecDirName,
-				),
-			)
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, nil)
 
-			fakeOS := new(ios.Fake)
-			fakeOS.StatReturns(nil, nil)
+				objectUnderTest := _resolver{
+          os: fakeOS,
+        }
 
-			objectUnderTest := _Pkg{
-				resolver: _resolver{
-					os: fakeOS,
-				},
-			}
+				/* act */
+				objectUnderTest.Resolve(providedPkgRef)
 
-			/* act */
-			objectUnderTest.Resolve(providedPkgRef, providedBasePath)
+				/* assert */
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef.FullyQualifiedName))
+			})
+		})
+		Context("pkgRef isn't absolute path", func() {
+			It("should call fs.Stat w/ expected args", func() {
+				/* arrange */
+				providedBasePath := "dummyBasePath"
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "dummyPkgRef",
+					Version:            "0.0.0",
+				}
 
-			/* assert */
-			Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
+				expectedPath := providedPkgRef.ToPath(
+					filepath.Join(
+						providedBasePath,
+						DotOpspecDirName,
+					),
+				)
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, nil)
+
+				objectUnderTest := _resolver{
+          os: fakeOS,
+        }
+
+				/* act */
+				objectUnderTest.Resolve(providedPkgRef, providedBasePath)
+
+				/* assert */
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
+			})
 		})
 		Context("fs.Stat doesn't err", func() {
 			It("should return expected result", func() {
@@ -60,11 +81,9 @@ var _ = Context("_Pkg", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, nil)
 
-				objectUnderTest := _Pkg{
-					resolver: _resolver{
-						os: fakeOS,
-					},
-				}
+				objectUnderTest := _resolver{
+          os: fakeOS,
+        }
 
 				/* act */
 				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
@@ -89,11 +108,9 @@ var _ = Context("_Pkg", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _Pkg{
-					resolver: _resolver{
-						os: fakeOS,
-					},
-				}
+				objectUnderTest := _resolver{
+          os: fakeOS,
+        }
 
 				/* act */
 				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)

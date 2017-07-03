@@ -23,6 +23,7 @@ func newOpener(
 		cachePath: cachePath,
 		puller:    newPuller(),
 		refParser: newRefParser(),
+		resolver:  newResolver(),
 	}
 }
 
