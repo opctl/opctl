@@ -29,7 +29,9 @@ var _ = Context("_Pkg", func() {
 			fakeOS.StatReturns(nil, nil)
 
 			objectUnderTest := _Pkg{
-				os: fakeOS,
+				resolver: _resolver{
+					os: fakeOS,
+				},
 			}
 
 			/* act */
@@ -59,7 +61,9 @@ var _ = Context("_Pkg", func() {
 				fakeOS.StatReturns(nil, nil)
 
 				objectUnderTest := _Pkg{
-					os: fakeOS,
+					resolver: _resolver{
+						os: fakeOS,
+					},
 				}
 
 				/* act */
@@ -86,7 +90,9 @@ var _ = Context("_Pkg", func() {
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _Pkg{
-					os: fakeOS,
+					resolver: _resolver{
+						os: fakeOS,
+					},
 				}
 
 				/* act */

@@ -6,6 +6,22 @@ import (
 	"path/filepath"
 )
 
+// refParser parses pkg refs
+type refParser interface {
+	ParseRef(
+		pkgRef string,
+	) (
+		*PkgRef,
+		error,
+	)
+}
+
+func newRefParser() refParser {
+	return _refParser{}
+}
+
+type _refParser struct{}
+
 type PkgRef struct {
 	FullyQualifiedName string
 	Version            string
@@ -17,7 +33,7 @@ func (pr PkgRef) ToPath(basePath string) string {
 }
 
 // ParseRef parses a pkgRef
-func (p _Pkg) ParseRef(
+func (rp _refParser) ParseRef(
 	pkgRef string,
 ) (*PkgRef, error) {
 	refURI, err := url.Parse(filepath.ToSlash(pkgRef))

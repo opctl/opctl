@@ -27,11 +27,12 @@ type OpCall interface {
 func New(
 	rootFSPath string,
 ) OpCall {
+	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
 		interpolater: interpolater.New(),
 		manifest:     manifest.New(),
-		pkg:          pkg.New(),
-		pkgCachePath: filepath.Join(rootFSPath, "pkgs"),
+		pkg:          pkg.New(pkgCachePath),
+		pkgCachePath: pkgCachePath,
 		uuid:         iuuid.New(),
 		inputs:       inputs.New(),
 	}

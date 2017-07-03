@@ -1,91 +1,80 @@
 package pkg
 
 import (
-	"errors"
-	"fmt"
-	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("pkg", func() {
-	wd, err := os.Getwd()
-	if nil != err {
-		panic(err)
-	}
+
 	Context("ListContents", func() {
-		It("should call ioutil.ReadDir w/ expected args", func() {
+
+		It("should call opener.Open w/ expected args", func() {
 			/* arrange */
-			providedPkgPath := "dummyPkgPath"
+			providedPkgRef := "dummyPkgRef"
 
-			fakeIOUtil := new(iioutil.Fake)
+			fakeOpener := new(fakeOpener)
+			// err to trigger immediate return
+			fakeOpener.OpenReturns(nil, errors.New("dummyError"))
 
-			// error to trigger immediate return
-			fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
-
-			objectUnderTest := _Pkg{
-				ioUtil: fakeIOUtil,
+			objectUnderTest := &_Pkg{
+				opener: fakeOpener,
 			}
 
 			/* act */
-			objectUnderTest.ListContents(providedPkgPath)
+			objectUnderTest.ListContents(providedPkgRef)
 
 			/* assert */
-			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedPkgPath))
+			Expect(fakeOpener.OpenArgsForCall(0)).To(Equal(providedPkgRef))
 		})
-		Context("ioutil.ReadDir errors", func() {
-			It("should be returned", func() {
+		Context("opener.Open errs", func() {
+			It("should return expected error", func() {
+				expectedErr := errors.New("dummyError")
 
-				/* arrange */
-				expectedError := errors.New("dummyError")
+				fakeOpener := new(fakeOpener)
+				fakeOpener.OpenReturns(nil, expectedErr)
 
-				fakeIOUtil := new(iioutil.Fake)
-				fakeIOUtil.ReadDirReturns(nil, expectedError)
-
-				objectUnderTest := _Pkg{
-					ioUtil: fakeIOUtil,
+				objectUnderTest := &_Pkg{
+					opener: fakeOpener,
 				}
 
 				/* act */
-				_, actualError := objectUnderTest.ListContents("")
+				_, actualErr := objectUnderTest.ListContents("pkgPath")
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
-
+				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("ioutil.ReadDir doesn't error", func() {
-			It("should return expected contentList", func() {
-				/* arrange */
-				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
-				expectedContents := []*model.PkgContent{
+		Context("opener.Open doesn't err", func() {
+			It("should call handle.ListContents w/ expected args & return result", func() {
+
+				expectedPkgContents := []*model.PkgContent{
 					{
-						Path: fmt.Sprintf("%v/dir1/file2.txt", rootPkgPath),
-						Size: 34,
+						Path: "dummyPath1",
 					},
 					{
-						Path: fmt.Sprintf("%v/file1.txt", rootPkgPath),
-						Size: 18,
+						Path: "dummyPath2",
 					},
 				}
 
-				objectUnderTest := _Pkg{
-					ioUtil: iioutil.New(),
+				fakeHandle := new(fakeHandle)
+				fakeHandle.ListContentsReturns(expectedPkgContents, nil)
+
+				fakeOpener := new(fakeOpener)
+				fakeOpener.OpenReturns(fakeHandle, nil)
+
+				objectUnderTest := &_Pkg{
+					opener: fakeOpener,
 				}
 
 				/* act */
-				actualContents, err := objectUnderTest.ListContents(rootPkgPath)
-				if nil != err {
-					panic(err)
-				}
+				actualReadSeekCloser, _ := objectUnderTest.ListContents("pkgPath")
 
 				/* assert */
-				Expect(actualContents).To(Equal(expectedContents))
-
+				Expect(actualReadSeekCloser).To(Equal(expectedPkgContents))
 			})
 		})
-
 	})
 })

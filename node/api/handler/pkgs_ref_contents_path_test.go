@@ -13,49 +13,118 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"path"
 	"strings"
 	"time"
 )
 
 var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
-	It("should call core.GetPkgContent w/ expected args", func() {
-		/* arrange */
-		providedPkgRef := "dummyPkgRef"
-		providedPkgPath := "dummyPkgPath"
+	Context("pkgRef isn't valid URL encoded segment", func() {
+		It("should return expected error", func() {
+			/* arrange */
+			invalidURLEncoding := "%%"
+			providedPath := fmt.Sprintf("/pkgs/dummyRef%v/contents/dummyPath", invalidURLEncoding)
+			expectedBody := fmt.Sprintf("invalid URL escape \"%v\"", invalidURLEncoding)
 
-		fakeCore := new(core.Fake)
-		// error to trigger immediate return
-		fakeCore.GetPkgContentReturns(nil, errors.New("dummyError"))
+			fakeCore := new(core.Fake)
+			// error to trigger immediate return
+			fakeCore.GetPkgContentReturns(nil, errors.New("dummyError"))
 
-		objectUnderTest := New(fakeCore)
-		recorder := httptest.NewRecorder()
+			objectUnderTest := New(fakeCore)
+			recorder := httptest.NewRecorder()
 
-		httpReq, err := http.NewRequest(
-			http.MethodGet,
-			fmt.Sprintf("/pkgs/%v/contents/%v", providedPkgRef, providedPkgPath),
-			nil,
-		)
-		if nil != err {
-			Fail(err.Error())
-		}
+			// manually construct request so path doesn't get parsed
+			httpReq := &http.Request{
+				Method: http.MethodGet,
+				URL:    &url.URL{Path: providedPath},
+			}
 
-		/* act */
-		objectUnderTest.ServeHTTP(recorder, httpReq)
+			/* act */
+			objectUnderTest.ServeHTTP(recorder, httpReq)
 
-		/* assert */
-		actualPkgRef, actualPkgPath := fakeCore.GetPkgContentArgsForCall(0)
-		Expect(actualPkgRef).To(Equal(providedPkgRef))
-		Expect(actualPkgPath).To(Equal(providedPkgPath))
+			/* assert */
+			Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
+			Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+			actualBody := strings.TrimSpace(recorder.Body.String())
+			Expect(actualBody).To(Equal(expectedBody))
+		})
+	})
+	Context("contentPath isn't valid URL encoded segment", func() {
+		It("should return expected error", func() {
+			/* arrange */
+			invalidURLEncoding := "%%"
+			providedPath := fmt.Sprintf("/pkgs/dummyRef/contents/dummyPath%v", invalidURLEncoding)
+			expectedBody := fmt.Sprintf("invalid URL escape \"%v\"", invalidURLEncoding)
+
+			fakeCore := new(core.Fake)
+			// error to trigger immediate return
+			fakeCore.GetPkgContentReturns(nil, errors.New("dummyError"))
+
+			objectUnderTest := New(fakeCore)
+			recorder := httptest.NewRecorder()
+
+			// manually construct request so path doesn't get parsed
+			httpReq := &http.Request{
+				Method: http.MethodGet,
+				URL:    &url.URL{Path: providedPath},
+			}
+
+			/* act */
+			objectUnderTest.ServeHTTP(recorder, httpReq)
+
+			/* assert */
+			Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
+			Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+			actualBody := strings.TrimSpace(recorder.Body.String())
+			Expect(actualBody).To(Equal(expectedBody))
+		})
+	})
+	Context("pkgRef & contentPath are valid URL encoded segments", func() {
+		It("should call core.GetPkgContent w/ expected args", func() {
+			/* arrange */
+			providedPkgRef := "dummyPkgRef%2F"
+			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			providedPkgPath := "dummyPkgPath%2F"
+			expectedPkgPath, err := url.PathUnescape(providedPkgPath)
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			fakeCore := new(core.Fake)
+			// error to trigger immediate return
+			fakeCore.GetPkgContentReturns(nil, errors.New("dummyError"))
+
+			objectUnderTest := New(fakeCore)
+			recorder := httptest.NewRecorder()
+
+			// manually construct request so path doesn't get parsed
+			httpReq := &http.Request{
+				Method: http.MethodGet,
+				URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/%v", providedPkgRef, providedPkgPath)},
+			}
+
+			/* act */
+			objectUnderTest.ServeHTTP(recorder, httpReq)
+
+			/* assert */
+			actualPkgRef, actualPkgPath := fakeCore.GetPkgContentArgsForCall(0)
+			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgPath).To(Equal(expectedPkgPath))
+		})
 	})
 	Context("core.GetPkgContent errs", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			expectedErrMsg := "dummyErrorMsg"
+			expectedBody := "dummyErrorMsg"
 
 			fakeCore := new(core.Fake)
 			// error to trigger immediate return
-			fakeCore.GetPkgContentReturns(nil, errors.New(expectedErrMsg))
+			fakeCore.GetPkgContentReturns(nil, errors.New(expectedBody))
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -75,8 +144,8 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			/* assert */
 			Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
 			Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-			actualErrMsg := strings.TrimSpace(recorder.Body.String())
-			Expect(actualErrMsg).To(Equal(expectedErrMsg))
+			actualBody := strings.TrimSpace(recorder.Body.String())
+			Expect(actualBody).To(Equal(expectedBody))
 		})
 	})
 	Context("core.GetPkgContent doesn't err", func() {

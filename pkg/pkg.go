@@ -4,7 +4,6 @@ package pkg
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
 
 import (
-	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
@@ -73,18 +72,28 @@ type Pkg interface {
 	) []error
 }
 
-func New() Pkg {
+func New(
+	cachePath string,
+) Pkg {
 	return _Pkg{
-		git:      igit.New(),
-		ioUtil:   iioutil.New(),
-		os:       ios.New(),
-		manifest: manifest.New(),
+		ioUtil:    iioutil.New(),
+		os:        ios.New(),
+		puller:    newPuller(),
+		refParser: newRefParser(),
+		resolver:  newResolver(),
+		manifest:  manifest.New(),
+		opener:    newOpener(cachePath),
+		cachePath: cachePath,
 	}
 }
 
 type _Pkg struct {
-	git      igit.IGit
-	ioUtil   iioutil.Iioutil
-	os       ios.IOS
-	manifest manifest.Manifest
+	ioUtil iioutil.Iioutil
+	os     ios.IOS
+	puller
+	refParser
+	resolver
+	manifest  manifest.Manifest
+	opener    opener
+	cachePath string
 }

@@ -10,7 +10,7 @@ var _ = Context("pkg", func() {
 	Context("New()", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(New("")).Should(Not(BeNil()))
 		})
 	})
 

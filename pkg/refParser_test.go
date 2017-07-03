@@ -38,7 +38,9 @@ var _ = Context("_Pkg", func() {
 				/* arrange */
 				providedPkgRef := "::"
 
-				objectUnderTest := _Pkg{}
+				objectUnderTest := _Pkg{
+					refParser: newRefParser(),
+				}
 
 				/* act */
 				_, actualErr := objectUnderTest.ParseRef(providedPkgRef)
@@ -57,7 +59,9 @@ var _ = Context("_Pkg", func() {
 					FullyQualifiedName: providedFullyQualifiedPkgName,
 					Version:            providedPkgVersion,
 				}
-				objectUnderTest := _Pkg{}
+				objectUnderTest := _Pkg{
+					refParser: newRefParser(),
+				}
 
 				/* act */
 				actualPkgRef, actualErr := objectUnderTest.ParseRef(providedPkgRef)

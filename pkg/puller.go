@@ -2,6 +2,8 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
+	"github.com/golang-interfaces/ios"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -10,9 +12,31 @@ import (
 	"path/filepath"
 )
 
+type puller interface {
+	// Pull pulls 'pkgRef' to 'path'
+	// returns ErrAuthenticationFailed on authentication failure
+	Pull(
+		path string,
+		pkgRef *PkgRef,
+		opts *PullOpts,
+	) error
+}
+
+func newPuller() puller {
+	return _puller{
+		git: igit.New(),
+		os:  ios.New(),
+	}
+}
+
+type _puller struct {
+	git igit.IGit
+	os  ios.IOS
+}
+
 // Pull pulls 'pkgRef' to 'path'
 // returns ErrAuthenticationFailed on authentication failure
-func (this _Pkg) Pull(
+func (this _puller) Pull(
 	path string,
 	pkgRef *PkgRef,
 	opts *PullOpts,

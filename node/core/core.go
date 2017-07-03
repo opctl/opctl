@@ -8,6 +8,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
+	"path/filepath"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
@@ -100,7 +101,7 @@ func New(
 		opKiller:            opKiller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
-		pkg:                 pkg.New(),
+		pkg:                 pkg.New(filepath.Join(rootFSPath, "pkgs")),
 	}
 
 	return

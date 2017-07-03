@@ -20,6 +20,8 @@ func New(
 
 	router := mux.NewRouter()
 
+	router.UseEncodedPath()
+
 	handler := _handler{
 		core:   core,
 		http:   ihttp.New(),

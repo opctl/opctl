@@ -47,8 +47,10 @@ var _ = Context("Pkg", func() {
 			fakeGit := new(igit.Fake)
 
 			objectUnderTest := _Pkg{
-				git: fakeGit,
-				os:  new(ios.Fake),
+				puller: _puller{
+					git: fakeGit,
+					os:  new(ios.Fake),
+				},
 			}
 
 			/* act */
@@ -79,8 +81,10 @@ var _ = Context("Pkg", func() {
 					fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
 					objectUnderTest := _Pkg{
-						os:  fakeOS,
-						git: fakeGit,
+						puller: _puller{
+							git: fakeGit,
+							os:  fakeOS,
+						},
 					}
 
 					/* act */
@@ -115,8 +119,10 @@ var _ = Context("Pkg", func() {
 					fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
 
 					objectUnderTest := _Pkg{
-						os:  fakeOS,
-						git: fakeGit,
+						puller: _puller{
+							git: fakeGit,
+							os:  fakeOS,
+						},
 					}
 
 					/* act */
@@ -147,8 +153,10 @@ var _ = Context("Pkg", func() {
 					fakeGit.PlainCloneReturns(nil, expectedError)
 
 					objectUnderTest := _Pkg{
-						os:  fakeOS,
-						git: fakeGit,
+						puller: _puller{
+							git: fakeGit,
+							os:  fakeOS,
+						},
 					}
 
 					/* act */
@@ -175,8 +183,10 @@ var _ = Context("Pkg", func() {
 				fakeManifest.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _Pkg{
-					git: new(igit.Fake),
-					os:  new(ios.Fake),
+					puller: _puller{
+						git: new(igit.Fake),
+						os:  new(ios.Fake),
+					},
 				}
 
 				/* act */
@@ -202,8 +212,10 @@ var _ = Context("Pkg", func() {
 				fakeOS.RemoveAllReturns(expectedError)
 
 				objectUnderTest := _Pkg{
-					os:  fakeOS,
-					git: new(igit.Fake),
+					puller: _puller{
+						git: new(igit.Fake),
+						os:  fakeOS,
+					},
 				}
 
 				/* act */

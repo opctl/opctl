@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
 )
 
 func (this _Pkg) GetContent(
@@ -12,5 +11,11 @@ func (this _Pkg) GetContent(
 	model.ReadSeekCloser,
 	error,
 ) {
-	return this.os.Open(filepath.Join(pkgRef, contentPath))
+
+	handle, err := this.opener.Open(pkgRef)
+	if nil != err {
+		return nil, err
+	}
+
+	return handle.GetContent(contentPath)
 }
