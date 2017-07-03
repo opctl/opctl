@@ -47,9 +47,9 @@ var _ = Context("puller", func() {
 			fakeGit := new(igit.Fake)
 
 			objectUnderTest := _puller{
-        git: fakeGit,
-        os:  new(ios.Fake),
-      }
+				git: fakeGit,
+				os:  new(ios.Fake),
+			}
 
 			/* act */
 			objectUnderTest.Pull(providedPath, providedPkgRef, providedOpts)
@@ -79,9 +79,9 @@ var _ = Context("puller", func() {
 					fakeGit.PlainCloneReturns(nil, git.ErrRepositoryAlreadyExists)
 
 					objectUnderTest := _puller{
-            git: fakeGit,
-            os:  fakeOS,
-          }
+						git: fakeGit,
+						os:  fakeOS,
+					}
 
 					/* act */
 					actualError := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
@@ -115,9 +115,9 @@ var _ = Context("puller", func() {
 					fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
 
 					objectUnderTest := _puller{
-            git: fakeGit,
-            os:  fakeOS,
-          }
+						git: fakeGit,
+						os:  fakeOS,
+					}
 
 					/* act */
 					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
@@ -147,9 +147,9 @@ var _ = Context("puller", func() {
 					fakeGit.PlainCloneReturns(nil, expectedError)
 
 					objectUnderTest := _puller{
-            git: fakeGit,
-            os:  fakeOS,
-          }
+						git: fakeGit,
+						os:  fakeOS,
+					}
 
 					/* act */
 					actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)
@@ -175,9 +175,9 @@ var _ = Context("puller", func() {
 				fakeManifest.UnmarshalReturns(expectedView, expectedErr)
 
 				objectUnderTest := _puller{
-          git: new(igit.Fake),
-          os:  new(ios.Fake),
-        }
+					git: new(igit.Fake),
+					os:  new(ios.Fake),
+				}
 
 				/* act */
 				actualErr := objectUnderTest.Pull("dummyPath", providedPkgRef, nil)
@@ -202,9 +202,9 @@ var _ = Context("puller", func() {
 				fakeOS.RemoveAllReturns(expectedError)
 
 				objectUnderTest := _puller{
-          git: new(igit.Fake),
-          os:  fakeOS,
-        }
+					git: new(igit.Fake),
+					os:  fakeOS,
+				}
 
 				/* act */
 				actualError := objectUnderTest.Pull(providedPath, providedPkgRef, nil)

@@ -38,7 +38,7 @@ func (this _resolver) Resolve(
 
 	if filepath.IsAbs(pkgRef.FullyQualifiedName) {
 		_, err := this.os.Stat(pkgRef.FullyQualifiedName)
-		return pkgRef.FullyQualifiedName, nil != err
+		return pkgRef.FullyQualifiedName, nil == err
 	}
 
 	for _, lookPath := range lookPaths {

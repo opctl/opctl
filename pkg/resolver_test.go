@@ -5,6 +5,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"io/ioutil"
 	"path/filepath"
 )
 
@@ -14,21 +15,51 @@ var _ = Context("resolver", func() {
 			It("should call fs.Stat w/ expected args", func() {
 				/* arrange */
 				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "/dummyPkgRef",
+					FullyQualifiedName: "/dummyFullyQualifiedName",
 				}
 
 				fakeOS := new(ios.Fake)
 				fakeOS.StatReturns(nil, nil)
 
 				objectUnderTest := _resolver{
-          os: fakeOS,
-        }
+					os: fakeOS,
+				}
 
 				/* act */
 				objectUnderTest.Resolve(providedPkgRef)
 
 				/* assert */
 				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef.FullyQualifiedName))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				providedPkgRef := &PkgRef{
+					FullyQualifiedName: "/dummyFullyQualifiedName",
+				}
+
+				file, err := ioutil.TempFile("", "")
+				if nil != err {
+					panic(err)
+				}
+
+				expectedFileInfo, err := file.Stat()
+				if nil != err {
+					panic(err)
+				}
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(expectedFileInfo, nil)
+
+				objectUnderTest := _resolver{
+					os: fakeOS,
+				}
+
+				/* act */
+				actualPkgPath, actualIsResolved := objectUnderTest.Resolve(providedPkgRef)
+
+				/* assert */
+				Expect(actualPkgPath).To(Equal(providedPkgRef.FullyQualifiedName))
+				Expect(actualIsResolved).To(Equal(true))
 			})
 		})
 		Context("pkgRef isn't absolute path", func() {
@@ -51,8 +82,8 @@ var _ = Context("resolver", func() {
 				fakeOS.StatReturns(nil, nil)
 
 				objectUnderTest := _resolver{
-          os: fakeOS,
-        }
+					os: fakeOS,
+				}
 
 				/* act */
 				objectUnderTest.Resolve(providedPkgRef, providedBasePath)
@@ -82,8 +113,8 @@ var _ = Context("resolver", func() {
 				fakeOS.StatReturns(nil, nil)
 
 				objectUnderTest := _resolver{
-          os: fakeOS,
-        }
+					os: fakeOS,
+				}
 
 				/* act */
 				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
@@ -109,8 +140,8 @@ var _ = Context("resolver", func() {
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _resolver{
-          os: fakeOS,
-        }
+					os: fakeOS,
+				}
 
 				/* act */
 				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
