@@ -1,6 +1,6 @@
 package pkg
 
-// ErrAuthenticationFailed is used convey authentication failed while attempting to transport a package
+// ErrAuthenticationFailed conveys authentication failed while attempting to transport a package
 type ErrAuthenticationFailed struct{}
 
 func (ear ErrAuthenticationFailed) Error() string {

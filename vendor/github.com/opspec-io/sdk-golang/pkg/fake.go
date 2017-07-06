@@ -86,6 +86,33 @@ type Fake struct {
 	setDescriptionReturnsOnCall map[int]struct {
 		result1 error
 	}
+	ListContentsStub        func(pkgRef string) ([]*model.PkgContent, error)
+	listContentsMutex       sync.RWMutex
+	listContentsArgsForCall []struct {
+		pkgRef string
+	}
+	listContentsReturns struct {
+		result1 []*model.PkgContent
+		result2 error
+	}
+	listContentsReturnsOnCall map[int]struct {
+		result1 []*model.PkgContent
+		result2 error
+	}
+	GetContentStub        func(pkgRef string, path string) (model.ReadSeekCloser, error)
+	getContentMutex       sync.RWMutex
+	getContentArgsForCall []struct {
+		pkgRef string
+		path   string
+	}
+	getContentReturns struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
+	getContentReturnsOnCall map[int]struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
 	ValidateStub        func(pkgPath string) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
@@ -404,6 +431,109 @@ func (fake *Fake) SetDescriptionReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *Fake) ListContents(pkgRef string) ([]*model.PkgContent, error) {
+	fake.listContentsMutex.Lock()
+	ret, specificReturn := fake.listContentsReturnsOnCall[len(fake.listContentsArgsForCall)]
+	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct {
+		pkgRef string
+	}{pkgRef})
+	fake.recordInvocation("ListContents", []interface{}{pkgRef})
+	fake.listContentsMutex.Unlock()
+	if fake.ListContentsStub != nil {
+		return fake.ListContentsStub(pkgRef)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.listContentsReturns.result1, fake.listContentsReturns.result2
+}
+
+func (fake *Fake) ListContentsCallCount() int {
+	fake.listContentsMutex.RLock()
+	defer fake.listContentsMutex.RUnlock()
+	return len(fake.listContentsArgsForCall)
+}
+
+func (fake *Fake) ListContentsArgsForCall(i int) string {
+	fake.listContentsMutex.RLock()
+	defer fake.listContentsMutex.RUnlock()
+	return fake.listContentsArgsForCall[i].pkgRef
+}
+
+func (fake *Fake) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
+	fake.ListContentsStub = nil
+	fake.listContentsReturns = struct {
+		result1 []*model.PkgContent
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) ListContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
+	fake.ListContentsStub = nil
+	if fake.listContentsReturnsOnCall == nil {
+		fake.listContentsReturnsOnCall = make(map[int]struct {
+			result1 []*model.PkgContent
+			result2 error
+		})
+	}
+	fake.listContentsReturnsOnCall[i] = struct {
+		result1 []*model.PkgContent
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) GetContent(pkgRef string, path string) (model.ReadSeekCloser, error) {
+	fake.getContentMutex.Lock()
+	ret, specificReturn := fake.getContentReturnsOnCall[len(fake.getContentArgsForCall)]
+	fake.getContentArgsForCall = append(fake.getContentArgsForCall, struct {
+		pkgRef string
+		path   string
+	}{pkgRef, path})
+	fake.recordInvocation("GetContent", []interface{}{pkgRef, path})
+	fake.getContentMutex.Unlock()
+	if fake.GetContentStub != nil {
+		return fake.GetContentStub(pkgRef, path)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.getContentReturns.result1, fake.getContentReturns.result2
+}
+
+func (fake *Fake) GetContentCallCount() int {
+	fake.getContentMutex.RLock()
+	defer fake.getContentMutex.RUnlock()
+	return len(fake.getContentArgsForCall)
+}
+
+func (fake *Fake) GetContentArgsForCall(i int) (string, string) {
+	fake.getContentMutex.RLock()
+	defer fake.getContentMutex.RUnlock()
+	return fake.getContentArgsForCall[i].pkgRef, fake.getContentArgsForCall[i].path
+}
+
+func (fake *Fake) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
+	fake.GetContentStub = nil
+	fake.getContentReturns = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) GetContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
+	fake.GetContentStub = nil
+	if fake.getContentReturnsOnCall == nil {
+		fake.getContentReturnsOnCall = make(map[int]struct {
+			result1 model.ReadSeekCloser
+			result2 error
+		})
+	}
+	fake.getContentReturnsOnCall[i] = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) Validate(pkgPath string) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
@@ -467,6 +597,10 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.listMutex.RUnlock()
 	fake.setDescriptionMutex.RLock()
 	defer fake.setDescriptionMutex.RUnlock()
+	fake.listContentsMutex.RLock()
+	defer fake.listContentsMutex.RUnlock()
+	fake.getContentMutex.RLock()
+	defer fake.getContentMutex.RUnlock()
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

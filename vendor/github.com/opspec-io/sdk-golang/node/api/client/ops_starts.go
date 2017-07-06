@@ -22,7 +22,7 @@ func (c client) StartOp(
 	}
 
 	reqUrl := c.baseUrl
-	reqUrl.Path = api.Ops_StartsURLTpl
+	reqUrl.Path = api.URLOps_Starts
 
 	httpReq, err := http.NewRequest(
 		"POST",
@@ -33,7 +33,7 @@ func (c client) StartOp(
 		return "", nil
 	}
 
-	httpReq.WithContext(ctx)
+	httpReq = httpReq.WithContext(ctx)
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {
