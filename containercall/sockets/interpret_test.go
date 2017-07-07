@@ -1,0 +1,56 @@
+package sockets
+
+import (
+	"github.com/golang-interfaces/ios"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
+)
+
+var _ = Context("Sockets", func() {
+	Context("Interpret", func() {
+		It("should return expected dcg.Sockets", func() {
+			/* arrange */
+			providedCurrentScopeRef1 := "dummyScopeRef1"
+			providedCurrentScopeRef1String := "dummyScopeRef1String"
+			providedCurrentScopeRef2 := "/dummy-unix-socket"
+			providedCurrentScopeRef2String := "dummyScopeRef2String"
+
+			providedCurrentScope := map[string]*model.Value{
+				providedCurrentScopeRef1: {Socket: &providedCurrentScopeRef1String},
+			}
+
+			providedSCGContainerCallSockets := map[string]string{
+				// explicitly bound to scope
+				providedCurrentScopeRef1: providedCurrentScopeRef1,
+				// bound as unix socket
+				providedCurrentScopeRef2: providedCurrentScopeRef2String,
+			}
+
+			providedScratchDirPath := "dummyScratchDirPath"
+
+			expectedSockets := map[string]string{
+				providedCurrentScopeRef1: providedCurrentScopeRef1String,
+				providedCurrentScopeRef2: filepath.Join(providedScratchDirPath, providedCurrentScopeRef2),
+			}
+
+			objectUnderTest := _Sockets{
+				os: new(ios.Fake),
+			}
+
+			/* act */
+			actualDCGContainerCallSockets, err := objectUnderTest.Interpret(
+				providedCurrentScope,
+				providedSCGContainerCallSockets,
+				providedScratchDirPath,
+			)
+			if nil != err {
+				panic(err)
+			}
+
+			/* assert */
+			Expect(actualDCGContainerCallSockets).To(Equal(expectedSockets))
+		})
+	})
+})

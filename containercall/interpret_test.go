@@ -2,21 +2,22 @@ package containercall
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/dircopier"
-	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/containercall/dirs"
+	"github.com/opspec-io/sdk-golang/containercall/envvars"
+	"github.com/opspec-io/sdk-golang/containercall/files"
+	"github.com/opspec-io/sdk-golang/containercall/image"
+	"github.com/opspec-io/sdk-golang/containercall/sockets"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path/filepath"
-	"strconv"
 )
 
 var _ = Context("ContainerCall", func() {
-	Context("interpret", func() {
+	Context("Interpret", func() {
 		It("calls os.MkdirAll w/ expected scratchdir path & returns error", func() {
 			/* arrange */
 			rootFSPath := "/dummyRootFSPath"
@@ -59,6 +60,7 @@ var _ = Context("ContainerCall", func() {
 			Expect(actualScratchDirMode).To(Equal(expectedScratchDirMode))
 			Expect(actualError).To(Equal(expectedError))
 		})
+
 		Context("container.Cmd not empty", func() {
 			It("should call interpolate w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
@@ -77,8 +79,13 @@ var _ = Context("ContainerCall", func() {
 				fakeInterpolater := new(interpolater.Fake)
 
 				objectUnderTest := _ContainerCall{
+					dirs:         new(dirs.Fake),
+					envVars:      new(envvars.Fake),
+					files:        new(files.Fake),
+					image:        new(image.Fake),
 					interpolater: fakeInterpolater,
 					os:           new(ios.Fake),
+					sockets:      new(sockets.Fake),
 				}
 
 				/* act */
@@ -116,8 +123,13 @@ var _ = Context("ContainerCall", func() {
 				fakeInterpolater.InterpolateReturnsOnCall(1, expectedCmd[1])
 
 				objectUnderTest := _ContainerCall{
+					dirs:         new(dirs.Fake),
+					envVars:      new(envvars.Fake),
+					files:        new(files.Fake),
+					image:        new(image.Fake),
 					interpolater: fakeInterpolater,
 					os:           new(ios.Fake),
+					sockets:      new(sockets.Fake),
 				}
 
 				/* act */
@@ -133,343 +145,566 @@ var _ = Context("ContainerCall", func() {
 				Expect(actualDCGContainerCall.Cmd).To(Equal(expectedCmd))
 			})
 		})
-		Context("container.Dirs not empty", func() {
-			Context("bound to non dir", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					containerDirBind := "dummyContainerDirBind"
 
-					providedScope := map[string]*model.Value{
-						containerDirBind: {String: new(string)},
-					}
+		It("should call dirs w/ expected args", func() {
+			/* arrange */
+			containerDirBind := "dummyContainerDirBind"
 
-					containerPath := "dummyEnvVarName"
-					providedSCGContainerCall := &model.SCGContainerCall{
-						Dirs: map[string]string{
-							// explicitly bound
-							containerPath: containerDirBind,
-						},
-					}
+			providedScope := map[string]*model.Value{
+				containerDirBind: {String: new(string)},
+			}
 
-					expectedErr := fmt.Errorf("Unable to bind dir '%v' to '%v'. '%v' not a dir", containerPath, containerDirBind, containerDirBind)
+			dirName := "dummyDirName"
+			providedSCGContainerCall := &model.SCGContainerCall{
+				Dirs: map[string]string{
+					// implicitly bound
+					dirName: "",
+				},
+			}
 
-					objectUnderTest := _ContainerCall{
-						os: new(ios.Fake),
-					}
+			providedRootFSPath := "dummyRootFSPath"
+			providedContainerId := "dummyContainerId"
+			providedRootOpId := "dummyRootOpId"
+			providedPkgRef := "dummyPkgRef"
 
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						providedScope,
-						providedSCGContainerCall,
-						"dummyContainerId",
-						"dummyRootOpId",
-						"dummyPkgRef",
-					)
+			expectedScratchDirPath := filepath.Join(
+				providedRootFSPath,
+				"dcg",
+				providedRootOpId,
+				"containers",
+				providedContainerId,
+				"fs",
+			)
 
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			It("should return expected dcg.Dirs", func() {
+			fakeDirs := new(dirs.Fake)
 
-				/* arrange */
-				rootFSPath := "/dummyRootFSPath"
-				providedContainerId := "dummyContainerId"
-				providedRootOpId := "dummyRootOpId"
-				providedPkgPath := "pkgPath"
+			objectUnderTest := _ContainerCall{
+				dirs:       fakeDirs,
+				envVars:    new(envvars.Fake),
+				files:      new(files.Fake),
+				image:      new(image.Fake),
+				os:         new(ios.Fake),
+				rootFSPath: providedRootFSPath,
+				sockets:    new(sockets.Fake),
+			}
 
-				expectedScratchDirPath := filepath.Join(
-					rootFSPath,
-					"dcg",
-					providedRootOpId,
-					"containers",
-					providedContainerId,
-					"fs",
-				)
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				providedContainerId,
+				providedRootOpId,
+				providedPkgRef,
+			)
 
-				expectedDir1Path := "/dummyFile1Path.txt"
-				expectedDirs := map[string]string{
-					expectedDir1Path: filepath.Join(expectedScratchDirPath, expectedDir1Path),
-				}
-
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Dirs: map[string]string{
-						// implicitly bound
-						expectedDir1Path: "",
-					},
-				}
-
-				objectUnderTest := _ContainerCall{
-					dirCopier:  new(dircopier.Fake),
-					os:         new(ios.Fake),
-					rootFSPath: rootFSPath,
-				}
-
-				/* act */
-				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					providedSCGContainerCall,
-					providedContainerId,
-					providedRootOpId,
-					providedPkgPath,
-				)
-
-				/* assert */
-				Expect(actualDCGContainerCall.Dirs).To(Equal(expectedDirs))
-			})
+			/* assert */
+			actualPkgPath, actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirs.InterpretArgsForCall(0)
+			Expect(actualPkgPath).To(Equal(providedPkgRef))
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallDirs).To(Equal(providedSCGContainerCall.Dirs))
+			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
 		})
-		Context("container.EnvVars not empty", func() {
-			Context("implicitly bound", func() {
-				Context("name not in scope", func() {
-					It("should return expected error", func() {
-						/* arrange */
-						envVarName := "dummyEnvVarName"
-						providedSCGContainerCall := &model.SCGContainerCall{
-							EnvVars: map[string]string{
-								// implicitly bound
-								envVarName: "",
-							},
-						}
-
-						expectedErr := fmt.Errorf("Unable to bind env var to '%v' via implicit ref. '%v' is not in scope", envVarName, envVarName)
-
-						objectUnderTest := _ContainerCall{
-							os: new(ios.Fake),
-						}
-
-						/* act */
-						_, actualErr := objectUnderTest.Interpret(
-							map[string]*model.Value{},
-							providedSCGContainerCall,
-							"dummyContainerId",
-							"dummyRootOpId",
-							"dummyPkgRef",
-						)
-
-						/* assert */
-						Expect(actualErr).To(Equal(expectedErr))
-					})
-				})
-			})
-			It("should return expected dcg.EnvVars", func() {
-
+		Context("dirs.Interpret errors", func() {
+			It("should return expected error", func() {
 				/* arrange */
-				providedCurrentScopeRef1 := "dummyScopeRef1"
-				providedCurrentScopeRef1String := "dummyScopeRef1String"
-				providedCurrentScopeRef2 := "dummyScopeRef2"
-				providedCurrentScopeRef2Number := float64(2.3)
-				providedCurrentScope := map[string]*model.Value{
-					providedCurrentScopeRef1: {String: &providedCurrentScopeRef1String},
-					providedCurrentScopeRef2: {Number: &providedCurrentScopeRef2Number},
-				}
-
-				expectedEnvVars := map[string]string{
-					providedCurrentScopeRef1: providedCurrentScopeRef1String,
-					providedCurrentScopeRef2: strconv.FormatFloat(providedCurrentScopeRef2Number, 'f', -1, 64),
-				}
-
-				providedSCGContainerCall := &model.SCGContainerCall{
-					EnvVars: map[string]string{
-						// implicitly bound to string
-						providedCurrentScopeRef1: "",
-						// implicitly bound to number
-						providedCurrentScopeRef2: "",
-					},
-				}
+				expectedErr := errors.New("dummyError")
+				fakeDirs := new(dirs.Fake)
+				fakeDirs.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _ContainerCall{
-					os: new(ios.Fake),
+					dirs:    fakeDirs,
+					envVars: new(envvars.Fake),
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
 				}
 
 				/* act */
-				actualDCGContainerCall, _ := objectUnderTest.Interpret(
-					providedCurrentScope,
-					providedSCGContainerCall,
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
 					"dummyPkgRef",
 				)
 
 				/* assert */
-				Expect(actualDCGContainerCall.EnvVars).To(Equal(expectedEnvVars))
+				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("container.Files not empty", func() {
-			Context("bound to non file", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					containerFileBind := "dummyContainerFileBind"
-
-					providedScope := map[string]*model.Value{
-						containerFileBind: {String: new(string)},
-					}
-
-					containerPath := "dummyEnvVarName"
-					providedSCGContainerCall := &model.SCGContainerCall{
-						Files: map[string]string{
-							// explicitly bound
-							containerPath: containerFileBind,
-						},
-					}
-
-					expectedErr := fmt.Errorf("Unable to bind file '%v' to '%v'. '%v' not a file", containerPath, containerFileBind, containerFileBind)
-
-					objectUnderTest := _ContainerCall{
-						os: new(ios.Fake),
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						providedScope,
-						providedSCGContainerCall,
-						"dummyContainerId",
-						"dummyRootOpId",
-						"dummyPkgRef",
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			It("should return expected dcg.Files", func() {
-
+		Context("dirs.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.Dirs", func() {
 				/* arrange */
-				rootFSPath := "/dummyRootFSPath"
-				providedContainerId := "dummyContainerId"
-				providedRootOpId := "dummyRootOpId"
-
-				expectedScratchDirPath := filepath.Join(
-					rootFSPath,
-					"dcg",
-					providedRootOpId,
-					"containers",
-					providedContainerId,
-					"fs",
-				)
-
-				expectedFile1Path := "/dummyFile1Path.txt"
-				expectedFiles := map[string]string{
-					expectedFile1Path: filepath.Join(expectedScratchDirPath, expectedFile1Path),
+				expectedDCGContainerCallDirs := map[string]string{
+					"dummyName": "dummyValue",
 				}
 
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Files: map[string]string{
-						// implicitly bound
-						expectedFile1Path: "",
-					},
-				}
+				fakeDirs := new(dirs.Fake)
+				fakeDirs.InterpretReturns(expectedDCGContainerCallDirs, nil)
 
 				objectUnderTest := _ContainerCall{
-					fileCopier: new(filecopier.Fake),
-					os:         new(ios.Fake),
-					rootFSPath: rootFSPath,
+					dirs:    fakeDirs,
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
 				}
 
 				/* act */
-				actualDCGContainerCall, _ := objectUnderTest.Interpret(
+				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGContainerCall,
-					providedContainerId,
-					providedRootOpId,
-					"dummyPkgRef",
-				)
-
-				/* assert */
-				Expect(actualDCGContainerCall.Files).To(Equal(expectedFiles))
-			})
-		})
-		Context("container.Image not empty", func() {
-			It("should call interpolate w/ expected args", func() {
-				/* arrange */
-				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Value{
-					"name1": {String: &providedString1},
-				}
-
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Image: &model.SCGContainerCallImage{
-						Ref: "dummyImageRef",
-						PullCreds: &model.SCGPullCreds{
-							Username: "dummyUsername",
-							Password: "dummyPassword",
-						},
-					},
-				}
-
-				fakeInterpolater := new(interpolater.Fake)
-
-				objectUnderTest := _ContainerCall{
-					interpolater: fakeInterpolater,
-					os:           new(ios.Fake),
-				}
-
-				/* act */
-				objectUnderTest.Interpret(
-					providedCurrentScope,
-					providedSCGContainerCall,
+					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
 					"dummyPkgRef",
 				)
 
 				/* assert */
-				actualImageRef, actualImageRefScope := fakeInterpolater.InterpolateArgsForCall(0)
-				Expect(actualImageRef).To(Equal(providedSCGContainerCall.Image.Ref))
-				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
-
-				actualUsername, actualUsernameScope := fakeInterpolater.InterpolateArgsForCall(1)
-				Expect(actualUsername).To(Equal(providedSCGContainerCall.Image.PullCreds.Username))
-				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
-
-				actualPassword, actualPasswordScope := fakeInterpolater.InterpolateArgsForCall(2)
-				Expect(actualPassword).To(Equal(providedSCGContainerCall.Image.PullCreds.Password))
-				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
+				Expect(actualResult.Dirs).To(Equal(expectedDCGContainerCallDirs))
 			})
-			It("should return expected dcg.Image", func() {
+		})
 
+		It("should call envVars w/ expected args", func() {
+			/* arrange */
+			containerFileBind := "dummyContainerFileBind"
+
+			providedScope := map[string]*model.Value{
+				containerFileBind: {String: new(string)},
+			}
+
+			envVarName := "dummyEnvVarName"
+			providedSCGContainerCall := &model.SCGContainerCall{
+				EnvVars: map[string]string{
+					// implicitly bound
+					envVarName: "",
+				},
+			}
+
+			fakeEnvVars := new(envvars.Fake)
+
+			objectUnderTest := _ContainerCall{
+				dirs:    new(dirs.Fake),
+				envVars: fakeEnvVars,
+				files:   new(files.Fake),
+				image:   new(image.Fake),
+				os:      new(ios.Fake),
+				sockets: new(sockets.Fake),
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				"dummyContainerId",
+				"dummyRootOpId",
+				"dummyPkgRef",
+			)
+
+			/* assert */
+			actualScope, actualScgContainerCallEnvVars := fakeEnvVars.InterpretArgsForCall(0)
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallEnvVars).To(Equal(providedSCGContainerCall.EnvVars))
+		})
+		Context("envVars.Interpret errors", func() {
+			It("should return expected error", func() {
 				/* arrange */
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Image: &model.SCGContainerCallImage{
-						Ref:       "dummyImageRef",
-						PullCreds: &model.SCGPullCreds{},
-					},
+				expectedErr := errors.New("dummyError")
+				fakeEnvVars := new(envvars.Fake)
+				fakeEnvVars.InterpretReturns(nil, expectedErr)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: fakeEnvVars,
+					os:      new(ios.Fake),
 				}
 
-				fakeInterpolater := new(interpolater.Fake)
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
 
-				expectedImageRef := "expectedImageRef"
-				fakeInterpolater.InterpolateReturnsOnCall(0, expectedImageRef)
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("envVars.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.EnvVars", func() {
+				/* arrange */
+				expectedDCGContainerCallEnvVars := map[string]string{
+					"dummyName": "dummyValue",
+				}
 
-				expectedUsername := "expectedUsername"
-				fakeInterpolater.InterpolateReturnsOnCall(1, expectedUsername)
+				fakeEnvVars := new(envvars.Fake)
+				fakeEnvVars.InterpretReturns(expectedDCGContainerCallEnvVars, nil)
 
-				expectedPassword := "expectedPassword"
-				fakeInterpolater.InterpolateReturnsOnCall(2, expectedPassword)
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: fakeEnvVars,
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
+				}
 
-				expectedImage := &model.DCGContainerCallImage{
-					Ref: expectedImageRef,
+				/* act */
+				actualResult, _ := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualResult.EnvVars).To(Equal(expectedDCGContainerCallEnvVars))
+			})
+		})
+
+		It("should call files w/ expected args", func() {
+			/* arrange */
+			containerFileBind := "dummyContainerFileBind"
+
+			providedScope := map[string]*model.Value{
+				containerFileBind: {String: new(string)},
+			}
+
+			fileName := "dummyFileName"
+			providedSCGContainerCall := &model.SCGContainerCall{
+				Files: map[string]string{
+					// implicitly bound
+					fileName: "",
+				},
+			}
+
+			providedRootFSPath := "dummyRootFSPath"
+			providedContainerId := "dummyContainerId"
+			providedRootOpId := "dummyRootOpId"
+			providedPkgRef := "dummyPkgRef"
+
+			expectedScratchDirPath := filepath.Join(
+				providedRootFSPath,
+				"dcg",
+				providedRootOpId,
+				"containers",
+				providedContainerId,
+				"fs",
+			)
+
+			fakeFiles := new(files.Fake)
+
+			objectUnderTest := _ContainerCall{
+				dirs:       new(dirs.Fake),
+				envVars:    new(envvars.Fake),
+				files:      fakeFiles,
+				image:      new(image.Fake),
+				os:         new(ios.Fake),
+				rootFSPath: providedRootFSPath,
+				sockets:    new(sockets.Fake),
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				providedContainerId,
+				providedRootOpId,
+				providedPkgRef,
+			)
+
+			/* assert */
+			actualPkgPath, actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFiles.InterpretArgsForCall(0)
+			Expect(actualPkgPath).To(Equal(providedPkgRef))
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallFiles).To(Equal(providedSCGContainerCall.Files))
+			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
+		})
+		Context("files.Interpret errors", func() {
+			It("should return expected error", func() {
+				/* arrange */
+				expectedErr := errors.New("dummyError")
+				fakeFiles := new(files.Fake)
+				fakeFiles.InterpretReturns(nil, expectedErr)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   fakeFiles,
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("files.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.Files", func() {
+				/* arrange */
+				expectedDCGContainerCallFiles := map[string]string{
+					"dummyName": "dummyValue",
+				}
+
+				fakeFiles := new(files.Fake)
+				fakeFiles.InterpretReturns(expectedDCGContainerCallFiles, nil)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   fakeFiles,
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
+				}
+
+				/* act */
+				actualResult, _ := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualResult.Files).To(Equal(expectedDCGContainerCallFiles))
+			})
+		})
+
+		It("should call image w/ expected args", func() {
+			/* arrange */
+			containerFileBind := "dummyContainerFileBind"
+
+			providedScope := map[string]*model.Value{
+				containerFileBind: {String: new(string)},
+			}
+			providedSCGContainerCall := &model.SCGContainerCall{
+				Image: &model.SCGContainerCallImage{
+					Ref: "dummyImageRef",
+					PullCreds: &model.SCGPullCreds{
+						Username: "dummyUsername",
+						Password: "dummyPassword",
+					},
+				},
+			}
+
+			fakeImage := new(image.Fake)
+
+			objectUnderTest := _ContainerCall{
+				dirs:    new(dirs.Fake),
+				envVars: new(envvars.Fake),
+				files:   new(files.Fake),
+				image:   fakeImage,
+				os:      new(ios.Fake),
+				sockets: new(sockets.Fake),
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				"dummyContainerId",
+				"dummyRootOpId",
+				"dummyPkgRef",
+			)
+
+			/* assert */
+			actualScope, actualScgContainerCallImage := fakeImage.InterpretArgsForCall(0)
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallImage).To(Equal(providedSCGContainerCall.Image))
+		})
+		Context("image.Interpret errors", func() {
+			It("should return expected error", func() {
+				/* arrange */
+				expectedErr := errors.New("dummyError")
+				fakeImage := new(image.Fake)
+				fakeImage.InterpretReturns(nil, expectedErr)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   fakeImage,
+					os:      new(ios.Fake),
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("image.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.Image", func() {
+				/* arrange */
+				expectedDCGContainerCallImage := &model.DCGContainerCallImage{
+					Ref: "dummyImageRef",
 					PullCreds: &model.DCGPullCreds{
-						Username: expectedUsername,
-						Password: expectedPassword,
+						Username: "dummyUsername",
+						Password: "dummyPassword",
 					},
 				}
 
+				fakeImage := new(image.Fake)
+				fakeImage.InterpretReturns(expectedDCGContainerCallImage, nil)
+
 				objectUnderTest := _ContainerCall{
-					interpolater: fakeInterpolater,
-					os:           new(ios.Fake),
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   fakeImage,
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
 				}
 
 				/* act */
-				actualDCGContainerCall, _ := objectUnderTest.Interpret(
+				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGContainerCall,
+					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
 					"dummyPkgRef",
 				)
 
 				/* assert */
-				Expect(actualDCGContainerCall.Image).To(Equal(expectedImage))
+				Expect(actualResult.Image).To(Equal(expectedDCGContainerCallImage))
+			})
+		})
+
+		It("should call sockets w/ expected args", func() {
+			/* arrange */
+			containerFileBind := "dummyContainerFileBind"
+
+			providedScope := map[string]*model.Value{
+				containerFileBind: {String: new(string)},
+			}
+
+			envVarName := "dummyEnvVarName"
+			providedSCGContainerCall := &model.SCGContainerCall{
+				Sockets: map[string]string{
+					// implicitly bound
+					envVarName: "",
+				},
+			}
+
+			providedRootFSPath := "dummyRootFSPath"
+			providedContainerId := "dummyContainerId"
+			providedRootOpId := "dummyRootOpId"
+
+			expectedScratchDirPath := filepath.Join(
+				providedRootFSPath,
+				"dcg",
+				providedRootOpId,
+				"containers",
+				providedContainerId,
+				"fs",
+			)
+
+			fakeSockets := new(sockets.Fake)
+
+			objectUnderTest := _ContainerCall{
+				dirs:       new(dirs.Fake),
+				envVars:    new(envvars.Fake),
+				files:      new(files.Fake),
+				image:      new(image.Fake),
+				os:         new(ios.Fake),
+				rootFSPath: providedRootFSPath,
+				sockets:    fakeSockets,
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				providedContainerId,
+				providedRootOpId,
+				"dummyPkgRef",
+			)
+
+			/* assert */
+			actualScope, actualScgContainerCallSockets, actualScratchDir := fakeSockets.InterpretArgsForCall(0)
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallSockets).To(Equal(providedSCGContainerCall.Sockets))
+			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
+		})
+		Context("sockets.Interpret errors", func() {
+			It("should return expected error", func() {
+				/* arrange */
+				expectedErr := errors.New("dummyError")
+				fakeSockets := new(sockets.Fake)
+				fakeSockets.InterpretReturns(nil, expectedErr)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+					sockets: fakeSockets,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("sockets.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.Sockets", func() {
+				/* arrange */
+				expectedDCGContainerCallSockets := map[string]string{
+					"dummyName": "dummyValue",
+				}
+
+				fakeSockets := new(sockets.Fake)
+				fakeSockets.InterpretReturns(expectedDCGContainerCallSockets, nil)
+
+				objectUnderTest := _ContainerCall{
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					os:      new(ios.Fake),
+					sockets: fakeSockets,
+				}
+
+				/* act */
+				actualResult, _ := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerId",
+					"dummyRootOpId",
+					"dummyPkgRef",
+				)
+
+				/* assert */
+				Expect(actualResult.Sockets).To(Equal(expectedDCGContainerCallSockets))
 			})
 		})
 	})
