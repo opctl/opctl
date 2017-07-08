@@ -16,7 +16,6 @@ import (
 	"github.com/opctl/opctl/util/updater"
 	"github.com/opspec-io/sdk-golang/node/api/client"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"io"
 	"net/url"
 	"os"
@@ -97,7 +96,6 @@ func New(
 
 	return &_core{
 		opspecNodeAPIClient: opspecNodeAPIClient,
-		manifest:            manifest.New(),
 		pkg:                 pkg.New(pkgCachePath),
 		cliColorer:          cliColorer,
 		cliExiter:           cliExiter,
@@ -114,17 +112,16 @@ func New(
 
 type _core struct {
 	opspecNodeAPIClient client.Client
-	manifest            manifest.Manifest
 	pkg                 pkg.Pkg
 	cliColorer          clicolorer.CliColorer
 	cliExiter           cliexiter.CliExiter
 	cliOutput           clioutput.CliOutput
-	cliParamSatisfier   cliparamsatisfier.CliParamSatisfier
+	cliParamSatisfier   cliparamsatisfier.CLIParamSatisfier
 	nodeProvider        nodeprovider.NodeProvider
 	updater             updater.Updater
 	os                  ios.IOS
 	writer              io.Writer
-	ioutil              iioutil.Iioutil
+	ioutil              iioutil.IIOUtil
 }
 
 // fsRootPath returns the root fs path for the node

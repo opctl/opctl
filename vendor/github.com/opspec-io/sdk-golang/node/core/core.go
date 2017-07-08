@@ -30,18 +30,14 @@ type Core interface {
 		err error,
 	)
 
-	ListPkgContents(
+	// Resolve attempts to resolve a package according to opspec package resolution rules
+	// nil opts will be ignored
+	// returns ErrAuthenticationFailed on authentication failure
+	ResolvePkg(
 		pkgRef string,
+		opts *pkg.ResolveOpts,
 	) (
-		[]*model.PkgContent,
-		error,
-	)
-
-	GetPkgContent(
-		pkgRef,
-		contentPath string,
-	) (
-		model.ReadSeekCloser,
+		pkg.Handle,
 		error,
 	)
 }

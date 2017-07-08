@@ -66,6 +66,12 @@ func (this _validator) Validate(
 			value = rawValue.Number
 		}
 		errs = this.validateNumber(value, param.Number)
+	case nil != param.Object:
+		var value map[string]interface{}
+		if nil != rawValue {
+			value = rawValue.Object
+		}
+		errs = this.validateObject(value, param.Object)
 	case nil != param.Socket:
 		var value *string
 		if nil != rawValue {

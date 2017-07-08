@@ -13,12 +13,14 @@ type Interpolater interface {
 func New() Interpolater {
 	return _Interpolater{
 		numberInterpolater: newNumberInterpolater(),
+		objectInterpolater: newObjectInterpolater(),
 		stringInterpolater: newStringInterpolater(),
 	}
 }
 
 type _Interpolater struct {
 	numberInterpolater numberInterpolater
+	objectInterpolater objectInterpolater
 	stringInterpolater stringInterpolater
 }
 
@@ -31,14 +33,16 @@ func (this _Interpolater) Interpolate(
 	for varName, varData := range scope {
 		if nil != varData {
 			switch {
-			case nil != varData.Number:
-				template = this.numberInterpolater.Interpolate(template, varName, *varData.Number)
-			case nil != varData.String:
-				template = this.stringInterpolater.Interpolate(template, varName, *varData.String)
 			case nil != varData.Dir:
 				template = this.stringInterpolater.Interpolate(template, varName, *varData.Dir)
 			case nil != varData.File:
 				template = this.stringInterpolater.Interpolate(template, varName, *varData.File)
+			case nil != varData.Object:
+				template = this.objectInterpolater.Interpolate(template, varName, varData.Object)
+			case nil != varData.Number:
+				template = this.numberInterpolater.Interpolate(template, varName, *varData.Number)
+			case nil != varData.String:
+				template = this.stringInterpolater.Interpolate(template, varName, *varData.String)
 			}
 		}
 	}

@@ -7,17 +7,19 @@ import (
 )
 
 var _ = Describe("sliceInputSrc", func() {
-	Context("Read()", func() {
+	Context("ReadString()", func() {
 		Context("args doesn't contain delimited entry w/ provided inputName", func() {
-			It("should return nil", func() {
+			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := NewSliceInputSrc([]string{}, "")
+				inputSrcFactory := _InputSrcFactory{}
+				objectUnderTest := inputSrcFactory.NewSliceInputSrc([]string{}, "")
 
 				/* act */
-				actualValue := objectUnderTest.Read("nonExistentInputName")
+				actualValue, actualOk := objectUnderTest.ReadString("nonExistentInputName")
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
+				Expect(actualOk).To(BeFalse())
 			})
 		})
 		Context("args contains delimited entry w/ provided inputName", func() {
@@ -27,7 +29,8 @@ var _ = Describe("sliceInputSrc", func() {
 				sep := "="
 				expectedValue := "dummyValue"
 
-				objectUnderTest := NewSliceInputSrc(
+				inputSrcFactory := _InputSrcFactory{}
+				objectUnderTest := inputSrcFactory.NewSliceInputSrc(
 					[]string{
 						fmt.Sprintf("%v%v%v", providedInputName, sep, expectedValue),
 					},
@@ -35,10 +38,11 @@ var _ = Describe("sliceInputSrc", func() {
 				)
 
 				/* act */
-				actualValue := objectUnderTest.Read(providedInputName)
+				actualValue, actualOk := objectUnderTest.ReadString(providedInputName)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(expectedValue))
+				Expect(actualOk).To(BeTrue())
 			})
 			It("should return value only once", func() {
 				/* arrange */
@@ -46,7 +50,8 @@ var _ = Describe("sliceInputSrc", func() {
 				sep := "="
 				expectedValue := "dummyValue"
 
-				objectUnderTest := NewSliceInputSrc(
+				inputSrcFactory := _InputSrcFactory{}
+				objectUnderTest := inputSrcFactory.NewSliceInputSrc(
 					[]string{
 						fmt.Sprintf("%v%v%v", providedInputName, sep, expectedValue),
 					},
@@ -54,12 +59,15 @@ var _ = Describe("sliceInputSrc", func() {
 				)
 
 				/* act */
-				actualValue1 := objectUnderTest.Read(providedInputName)
-				actualValue2 := objectUnderTest.Read(providedInputName)
+				actualValue1, actualOk1 := objectUnderTest.ReadString(providedInputName)
+				actualValue2, actualOk2 := objectUnderTest.ReadString(providedInputName)
 
 				/* assert */
 				Expect(*actualValue1).To(Equal(expectedValue))
+				Expect(actualOk1).To(BeTrue())
+
 				Expect(actualValue2).To(BeNil())
+				Expect(actualOk2).To(BeFalse())
 			})
 		})
 	})

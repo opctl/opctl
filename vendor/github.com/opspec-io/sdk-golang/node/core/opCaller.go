@@ -51,12 +51,6 @@ func (oc _opCaller) Call(
 	var err error
 	var isKilled bool
 	var outputs map[string]*model.Value
-	if "" != scgOpCall.Ref {
-		// fallback for deprecated pkg ref format
-		scgOpCall.Pkg = &model.SCGOpCallPkg{
-			Ref: scgOpCall.Ref,
-		}
-	}
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		if isKilled {

@@ -5,8 +5,11 @@ package containercall
 
 import (
 	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/dircopier"
-	"github.com/golang-utils/filecopier"
+	"github.com/opspec-io/sdk-golang/containercall/dirs"
+	"github.com/opspec-io/sdk-golang/containercall/envvars"
+	"github.com/opspec-io/sdk-golang/containercall/files"
+	"github.com/opspec-io/sdk-golang/containercall/image"
+	"github.com/opspec-io/sdk-golang/containercall/sockets"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -26,18 +29,24 @@ func New(
 	rootFSPath string,
 ) ContainerCall {
 	return _ContainerCall{
-		dirCopier:    dircopier.New(),
-		fileCopier:   filecopier.New(),
+		dirs:         dirs.New(rootFSPath),
+		envVars:      envvars.New(),
+		files:        files.New(rootFSPath),
+		image:        image.New(),
 		interpolater: interpolater.New(),
 		os:           ios.New(),
 		rootFSPath:   rootFSPath,
+		sockets:      sockets.New(),
 	}
 }
 
 type _ContainerCall struct {
-	dirCopier    dircopier.DirCopier
-	fileCopier   filecopier.FileCopier
+	dirs         dirs.Dirs
+	envVars      envvars.EnvVars
+	files        files.Files
+	image        image.Image
 	interpolater interpolater.Interpolater
 	os           ios.IOS
 	rootFSPath   string
+	sockets      sockets.Sockets
 }

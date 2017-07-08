@@ -25,21 +25,22 @@ var _ = Describe("inputSourcer", func() {
 			objectUnderTest.Source(providedInputName)
 
 			/* assert */
-			Expect(fakeSource.ReadArgsForCall(0)).To(Equal(providedInputName))
+			Expect(fakeSource.ReadStringArgsForCall(0)).To(Equal(providedInputName))
 		})
-		Context("source returns nil", func() {
+		Context("source fails", func() {
 			Context("2nd src doesn't exist", func() {
-				It("should return nil", func() {
+				It("should return expected result", func() {
 					/* arrange */
 					fakeSource := new(FakeInputSrc)
 
 					objectUnderTest := NewInputSourcer(fakeSource)
 
 					/* act */
-					actualValue := objectUnderTest.Source("")
+					actualValue, actualOk := objectUnderTest.Source("")
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
+					Expect(actualOk).To(BeFalse())
 				})
 			})
 			Context("2nd source exists", func() {
@@ -55,26 +56,27 @@ var _ = Describe("inputSourcer", func() {
 					objectUnderTest.Source(providedInputName)
 
 					/* assert */
-					Expect(fakeSource2.ReadArgsForCall(0)).To(Equal(providedInputName))
+					Expect(fakeSource2.ReadStringArgsForCall(0)).To(Equal(providedInputName))
 				})
 			})
 		})
-		Context("1st source doesn't return nil", func() {
-			It("should return value", func() {
+		Context("1st source succeeds", func() {
+			It("should return expected result", func() {
 				/* arrange */
 				providedInputName := "dummyInputName"
 				expectedValue := "dummyValue"
 
 				fakeSource := new(FakeInputSrc)
-				fakeSource.ReadReturns(&expectedValue)
+				fakeSource.ReadStringReturns(&expectedValue, true)
 
 				objectUnderTest := NewInputSourcer(fakeSource)
 
 				/* act */
-				actualValue := objectUnderTest.Source(providedInputName)
+				actualValue, actualOk := objectUnderTest.Source(providedInputName)
 
 				/* assert */
 				Expect(actualValue).To(Equal(&expectedValue))
+				Expect(actualOk).To(BeTrue())
 			})
 		})
 	})

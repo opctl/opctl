@@ -1,8 +1,10 @@
 package cliparamsatisfier
 
-import "strings"
+import (
+	"strings"
+)
 
-func NewSliceInputSrc(
+func (isf _InputSrcFactory) NewSliceInputSrc(
 	args []string,
 	sep string,
 ) InputSrc {
@@ -23,14 +25,14 @@ type sliceInputSrc struct {
 	argMap map[string]string
 }
 
-func (this sliceInputSrc) Read(
+func (this sliceInputSrc) ReadString(
 	inputName string,
-) *string {
+) (*string, bool) {
 	if inputValue, ok := this.argMap[inputName]; ok {
 		// enforce read at most once.
 		delete(this.argMap, inputName)
 
-		return &inputValue
+		return &inputValue, true
 	}
-	return nil
+	return nil, false
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"path/filepath"
 )
 
@@ -30,7 +29,6 @@ func New(
 	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
 		interpolater: interpolater.New(),
-		manifest:     manifest.New(),
 		pkg:          pkg.New(pkgCachePath),
 		pkgCachePath: pkgCachePath,
 		uuid:         iuuid.New(),
@@ -40,7 +38,6 @@ func New(
 
 type _OpCall struct {
 	interpolater interpolater.Interpolater
-	manifest     manifest.Manifest
 	pkg          pkg.Pkg
 	pkgCachePath string
 	uuid         iuuid.IUUID

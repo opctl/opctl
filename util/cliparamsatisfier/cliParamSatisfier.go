@@ -1,10 +1,12 @@
 package cliparamsatisfier
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliParamSatisfier
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CLIParamSatisfier
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/model"
@@ -17,7 +19,9 @@ import (
 // attempts to satisfy the provided inputs via the provided inputSourcer
 //
 // if all fails an error is logged and we exit with a nonzero code.
-type CliParamSatisfier interface {
+type CLIParamSatisfier interface {
+	InputSrcFactory
+
 	Satisfy(
 		inputSourcer InputSourcer,
 		inputs map[string]*model.Param,
@@ -27,22 +31,24 @@ type CliParamSatisfier interface {
 func New(
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
-) CliParamSatisfier {
+) CLIParamSatisfier {
 
-	return &_cliParamSatisfier{
-		cliExiter: cliExiter,
-		cliOutput: cliOutput,
-		inputs:    inputs.New(),
+	return &_CLIParamSatisfier{
+		cliExiter:       cliExiter,
+		cliOutput:       cliOutput,
+		inputs:          inputs.New(),
+		InputSrcFactory: newInputSrcFactory(),
 	}
 }
 
-type _cliParamSatisfier struct {
+type _CLIParamSatisfier struct {
 	cliExiter cliexiter.CliExiter
 	cliOutput clioutput.CliOutput
 	inputs    inputs.Inputs
+	InputSrcFactory
 }
 
-func (this _cliParamSatisfier) Satisfy(
+func (this _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
 	inputs map[string]*model.Param,
 ) map[string]*model.Value {
@@ -55,8 +61,8 @@ func (this _cliParamSatisfier) Satisfy(
 		for {
 			var arg *model.Value
 
-			rawArg := inputSourcer.Source(paramName)
-			if nil == rawArg {
+			rawArg, ok := inputSourcer.Source(paramName)
+			if !ok {
 				msg := fmt.Sprintf(`
 -
   Prompt for "%v" failed; running in non-interactive terminal
@@ -65,8 +71,8 @@ func (this _cliParamSatisfier) Satisfy(
 			}
 
 			switch {
-			case nil != param.String:
-				arg = &model.Value{String: rawArg}
+			case nil == rawArg:
+				// handle nil (returned by inputSourcer.Source for static defaults)
 			case nil != param.Dir:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
@@ -91,8 +97,25 @@ func (this _cliParamSatisfier) Satisfy(
 					continue
 				}
 				arg = &model.Value{Number: &argValue}
+			case nil != param.Object:
+				argValue := map[string]interface{}{}
+				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
+				if nil != err {
+					// param not satisfied; notify & re-attempt!
+					this.notifyOfArgErrors([]error{err}, paramName)
+					continue
+				}
+				err = json.Unmarshal(argJsonBytes, &argValue)
+				if nil != err {
+					// param not satisfied; notify & re-attempt!
+					this.notifyOfArgErrors([]error{err}, paramName)
+					continue
+				}
+				arg = &model.Value{Object: argValue}
 			case nil != param.Socket:
 				arg = &model.Value{Socket: rawArg}
+			case nil != param.String:
+				arg = &model.Value{String: rawArg}
 			}
 
 			argErrors := this.inputs.Validate(
@@ -106,8 +129,12 @@ func (this _cliParamSatisfier) Satisfy(
 				continue
 			}
 
-			// param satisfied; store & move to next!
-			argMap[paramName] = arg
+			if nil != arg {
+				// only store non-nil args
+				argMap[paramName] = arg
+			}
+
+			// param satisfied; move to next!
 			break paramLoop
 		}
 	}
@@ -115,7 +142,7 @@ func (this _cliParamSatisfier) Satisfy(
 	return argMap
 }
 
-func (this _cliParamSatisfier) getSortedParamNames(
+func (this _CLIParamSatisfier) getSortedParamNames(
 	params map[string]*model.Param,
 ) []string {
 	paramNames := []string{}
@@ -126,7 +153,7 @@ func (this _cliParamSatisfier) getSortedParamNames(
 	return paramNames
 }
 
-func (this _cliParamSatisfier) notifyOfArgErrors(
+func (this _CLIParamSatisfier) notifyOfArgErrors(
 	errors []error,
 	paramName string,
 ) {

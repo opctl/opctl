@@ -26,8 +26,16 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		return
 	}
 
-	pkgContent, err := hdlr.core.GetPkgContent(
+	pkgHandle, err := hdlr.core.ResolvePkg(
 		pkgRef,
+		nil,
+	)
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pkgContentReader, err := pkgHandle.GetContent(
 		contentPath,
 	)
 	if nil != err {
@@ -40,6 +48,6 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		httpReq,
 		path.Base(contentPath),
 		time.Time{},
-		pkgContent,
+		pkgContentReader,
 	)
 }

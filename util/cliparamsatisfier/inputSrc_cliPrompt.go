@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func NewCliPromptInputSrc(
+func (isf _InputSrcFactory) NewCliPromptInputSrc(
 	inputs map[string]*model.Param,
 ) InputSrc {
 	return cliPromptInputSrc{
@@ -23,9 +23,9 @@ type cliPromptInputSrc struct {
 	cliOutput clioutput.CliOutput
 }
 
-func (this cliPromptInputSrc) Read(
+func (this cliPromptInputSrc) ReadString(
 	inputName string,
-) *string {
+) (*string, bool) {
 	if param := this.inputs[inputName]; nil != param {
 		var (
 			isSecret    bool
@@ -40,6 +40,8 @@ func (this cliPromptInputSrc) Read(
 		case nil != param.Number:
 			isSecret = param.Number.IsSecret
 			description = param.Number.Description
+		case nil != param.Object:
+			description = param.Object.Description
 		case nil != param.Socket:
 			description = param.Socket.Description
 		case nil != param.String:
@@ -68,9 +70,9 @@ func (this cliPromptInputSrc) Read(
 			rawArg, err = line.Prompt("")
 		}
 		if nil == err {
-			return &rawArg
+			return &rawArg, true
 		}
 	}
 
-	return nil
+	return nil, false
 }

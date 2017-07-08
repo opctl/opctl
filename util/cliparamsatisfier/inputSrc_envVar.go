@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/ios"
 )
 
-func NewEnvVarInputSrc() InputSrc {
+func (isf _InputSrcFactory) NewEnvVarInputSrc() InputSrc {
 	return envVarInputSrc{
 		os:          ios.New(),
 		readHistory: map[string]struct{}{},
@@ -17,19 +17,19 @@ type envVarInputSrc struct {
 	readHistory map[string]struct{} // tracks reads
 }
 
-func (this envVarInputSrc) Read(
+func (this envVarInputSrc) ReadString(
 	inputName string,
-) *string {
+) (*string, bool) {
 	if _, ok := this.readHistory[inputName]; ok {
 		// enforce read at most once.
-		return nil
+		return nil, false
 	}
 
 	if inputValue := this.os.Getenv(inputName); "" != inputValue {
 		// track read history
 		this.readHistory[inputName] = struct{}{}
 
-		return &inputValue
+		return &inputValue, true
 	}
-	return nil
+	return nil, false
 }

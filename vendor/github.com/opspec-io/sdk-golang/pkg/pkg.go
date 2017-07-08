@@ -1,4 +1,4 @@
-// Package pkg implements use cases for managing opspec packages
+// Package pkg implements use cases specific to opspec packages
 package pkg
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
@@ -18,57 +18,24 @@ type Pkg interface {
 		pkgDescription string,
 	) error
 
-	// Resolve attempts to resolve a package from lookPaths according to opspec package resolution rules.
-	// if successful it's absolute path will be returned along w/ true
-	Resolve(
-		pkgRef *PkgRef,
-		lookPaths ...string,
-	) (string, bool)
-
-	// ParseRef parses a pkgRef
-	ParseRef(
-		pkgRef string,
-	) (*PkgRef, error)
-
-	// Pull pulls 'pkgRef' to 'path'
-	// returns ErrAuthenticationFailed on authentication failure
-	Pull(
-		path string,
-		pkgRef *PkgRef,
-		opts *PullOpts,
-	) error
+	// GetManifest gets the manifest of a package
+	GetManifest(
+		pkgHandle Handle,
+	) (
+		*model.PkgManifest,
+		error,
+	)
 
 	// List recursively lists packages in dirPath
 	List(
 		dirPath string,
 	) ([]*model.PkgManifest, error)
 
-	// SetDescription sets the description of a package
-	SetDescription(
-		pkgPath,
-		pkgDescription string,
-	) error
-
-	// ListContents lists contents of a package
-	ListContents(
-		pkgRef string,
-	) (
-		[]*model.PkgContent,
-		error,
-	)
-
-	// GetContent gets content from a package
-	GetContent(
-		pkgRef string,
-		contentPath string,
-	) (
-		model.ReadSeekCloser,
-		error,
-	)
+	Resolver
 
 	// Validate validates an opspec package
 	Validate(
-		pkgPath string,
+		pkgHandle Handle,
 	) []error
 }
 
@@ -80,20 +47,16 @@ func New(
 		os:        ios.New(),
 		puller:    newPuller(),
 		refParser: newRefParser(),
-		resolver:  newResolver(),
+		Resolver:  newResolver(cachePath),
 		manifest:  manifest.New(),
-		opener:    newOpener(cachePath),
-		cachePath: cachePath,
 	}
 }
 
 type _Pkg struct {
-	ioUtil iioutil.Iioutil
+	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 	puller
 	refParser
-	resolver
-	manifest  manifest.Manifest
-	opener    opener
-	cachePath string
+	Resolver
+	manifest manifest.Manifest
 }
