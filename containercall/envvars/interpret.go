@@ -16,7 +16,7 @@ func (ev _EnvVars) Interpret(
 			// implicitly bound
 			value, ok := scope[envVarName]
 			if !ok {
-				return nil, fmt.Errorf("Unable to bind env var to '%v' via implicit ref. '%v' is not in scope", envVarName, envVarName)
+				return nil, fmt.Errorf("Unable to bind env var to '%v' via implicit ref; '%v' not in scope", envVarName, envVarName)
 			}
 
 			switch {

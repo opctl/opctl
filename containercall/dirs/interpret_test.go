@@ -27,7 +27,7 @@ var _ = Context("Files", func() {
 					containerPath: containerDirBind,
 				}
 
-				expectedErr := fmt.Errorf("Unable to bind dir '%v' to '%v'. '%v' not a dir", containerPath, containerDirBind, containerDirBind)
+				expectedErr := fmt.Errorf("Unable to bind dir '%v' to '%v'; '%v' not a dir", containerPath, containerDirBind, containerDirBind)
 
 				objectUnderTest := _Dirs{
 					os: new(ios.Fake),

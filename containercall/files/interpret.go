@@ -3,9 +3,10 @@ package files
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
+	"io"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ func (f _Files) Interpret(
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallFiles := map[string]string{}
+fileLoop:
 	for scgContainerFilePath, scgContainerFileBind := range scgContainerCallFiles {
 
 		if "" == scgContainerFileBind {
@@ -23,65 +25,81 @@ func (f _Files) Interpret(
 			scgContainerFileBind = scgContainerFilePath
 		}
 
-		isBoundToPkg := strings.HasPrefix(scgContainerFileBind, "/")
+		isBoundToPkgContent := strings.HasPrefix(scgContainerFileBind, "/")
 		value, isBoundToScope := scope[scgContainerFileBind]
 
+		var contentSrc io.Reader
+		var err error
 		switch {
-		case isBoundToPkg:
+		case isBoundToPkgContent:
 			// bound to pkg file
-			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFileBind)
-
-			// pkg files must be passed by value
-			if err := f.fileCopier.OS(
-				filepath.Join(pkgPath, scgContainerFileBind),
-				dcgContainerCallFiles[scgContainerFilePath],
-			); nil != err {
-				return nil, err
+			contentSrc, err = f.os.Open(filepath.Join(pkgPath, scgContainerFileBind))
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					err.Error(),
+				)
 			}
 		case isBoundToScope:
-			// bound to scope
-			if nil == value || (nil == value.File && nil == value.Number && nil == value.String) {
+			switch {
+			case nil == value:
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'. '%v' not a file, number, or string",
+					"Unable to bind file '%v' to '%v'; '%v' null",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					scgContainerFileBind,
+				)
+			case nil != value.Number:
+				contentSrc = strings.NewReader(strconv.FormatFloat(*value.Number, 'f', -1, 64))
+			case nil != value.String:
+				contentSrc = strings.NewReader(*value.String)
+			case nil != value.File:
+				if strings.HasPrefix(*value.File, f.rootFSPath) {
+					// bound to rootFS file
+					contentSrc, err = f.os.Open(*value.File)
+					if nil != err {
+						return nil, err
+					}
+				} else {
+					// bound to non rootFS file
+					dcgContainerCallFiles[scgContainerFilePath] = *value.File
+					continue fileLoop
+				}
+			default:
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to '%v'; '%v' not a file, number, or string",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					scgContainerFileBind,
 				)
 			}
-
-			if strings.HasPrefix(*value.File, f.rootFSPath) {
-				// bound to rootFS file
-				dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-
-				// rootFS files must be passed by value
-				if err := f.fileCopier.OS(
-					*value.File,
-					dcgContainerCallFiles[scgContainerFilePath],
-				); nil != err {
-					return nil, err
-				}
-			} else {
-				// bound to non rootFS file
-				dcgContainerCallFiles[scgContainerFilePath] = *value.File
-			}
 		default:
-			// unbound; create tree
-			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-			// create dir
-			if err := f.os.MkdirAll(
-				path.Dir(dcgContainerCallFiles[scgContainerFilePath]),
-				0700,
-			); nil != err {
-				return nil, err
-			}
-			// create file
-			var outputFile *os.File
-			outputFile, err := f.os.Create(dcgContainerCallFiles[scgContainerFilePath])
-			outputFile.Close()
-			if nil != err {
-				return nil, err
-			}
+			// unbound
+			contentSrc = strings.NewReader("")
 		}
+		dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+
+		// create file
+		if err := f.os.MkdirAll(
+			path.Dir(dcgContainerCallFiles[scgContainerFilePath]),
+			0700,
+		); nil != err {
+			return nil, err
+		}
+		outputFile, err := f.os.Create(dcgContainerCallFiles[scgContainerFilePath])
+		if nil != err {
+			return nil, err
+		}
+
+		// copy content to file
+		_, err = f.io.Copy(outputFile, contentSrc)
+		outputFile.Close()
+		if nil != err {
+			return nil, err
+		}
+
 	}
 	return dcgContainerCallFiles, nil
 }

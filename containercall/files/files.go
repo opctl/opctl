@@ -3,9 +3,8 @@ package files
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Files
 
 import (
+	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/filecopier"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -22,16 +21,13 @@ func New(
 	rootFSPath string,
 ) Files {
 	return _Files{
-		fileCopier:   filecopier.New(),
-		interpolater: interpolater.New(),
-		os:           ios.New(),
-		rootFSPath:   rootFSPath,
+		os:         ios.New(),
+		rootFSPath: rootFSPath,
 	}
 }
 
 type _Files struct {
-	fileCopier   filecopier.FileCopier
-	interpolater interpolater.Interpolater
-	os           ios.IOS
-	rootFSPath   string
+	io         iio.IIO
+	os         ios.IOS
+	rootFSPath string
 }

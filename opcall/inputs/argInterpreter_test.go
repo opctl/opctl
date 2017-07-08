@@ -17,7 +17,7 @@ var _ = Context("argInterpreter", func() {
 				/* arrange */
 				providedName := "dummyName"
 
-				expectedError := fmt.Errorf("Unable to bind to '%v'. '%v' is not a defined input", providedName, providedName)
+				expectedError := fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", providedName, providedName)
 
 				objectUnderTest := _argInterpreter{}
 
@@ -40,7 +40,7 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedName := "dummyName"
 
-					expectedError := fmt.Errorf("Unable to bind to '%v' via implicit ref. '%v' is not in scope", providedName, providedName)
+					expectedError := fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
 
 					objectUnderTest := _argInterpreter{}
 
@@ -116,7 +116,7 @@ var _ = Context("argInterpreter", func() {
 					providedValue := fmt.Sprintf("$(%v)", explicitRef)
 					providedParam := &model.Param{}
 
-					expectedError := fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref. '%v' is not in scope", providedName, explicitRef, explicitRef)
+					expectedError := fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref; '%v' not in scope", providedName, explicitRef, explicitRef)
 
 					objectUnderTest := _argInterpreter{}
 
