@@ -9,6 +9,15 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 
 - [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
 
+### Removed
+
+- `ref` attribute in
+  [pkg-manifest.schema.json#/definitions/opCall](spec/pkg-manifest.schema.json#/definitions/opCall).
+  Use new `pkg` attribute.
+- `pullIdentity` & `pullSecret` attributes in
+  [pkg-manifest.schema.json#/definitions/containerCall](spec/pkg-manifest.schema.json#/definitions/containerCall).
+  Use new `pullCreds` attribute.
+
 ## \[0.1.4] - 2017-06-04
 
 ### Added
