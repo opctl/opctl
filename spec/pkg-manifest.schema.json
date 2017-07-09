@@ -493,16 +493,6 @@
                 },
                 "pullCreds":{
                   "$ref":"#/definitions/pullCreds"
-                },
-                "pullIdentity":{
-                  "description": "Identity/username used to pull the image; deprecated, use pullCreds instead",
-                  "type": "string",
-                  "deprecated": true
-                },
-                "pullSecret":{
-                  "description": "Secret/password used to pull the image; deprecated, use pullCreds instead",
-                  "type": "string",
-                  "deprecated": true
                 }
               },
               "required": [
@@ -579,11 +569,6 @@
         "op": {
           "type": "object",
           "properties": {
-            "ref": {
-              "description": "Reference to a package",
-              "deprecated": true,
-              "type": "string"
-            },
             "pkg":{
               "type":"object",
               "properties":{
