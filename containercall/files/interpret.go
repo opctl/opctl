@@ -33,7 +33,11 @@ fileLoop:
 		switch {
 		case isBoundToPkgContent:
 			// bound to pkg file
-			contentSrc, err = f.os.Open(filepath.Join(pkgPath, scgContainerFileBind))
+			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+			err = f.fileCopier.OS(
+				filepath.Join(pkgPath, scgContainerFileBind),
+				dcgContainerCallFiles[scgContainerFilePath],
+			)
 			if nil != err {
 				return nil, fmt.Errorf(
 					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -42,6 +46,7 @@ fileLoop:
 					err.Error(),
 				)
 			}
+			continue fileLoop
 		case isBoundToScope:
 			switch {
 			case nil == value:
@@ -58,15 +63,27 @@ fileLoop:
 			case nil != value.File:
 				if strings.HasPrefix(*value.File, f.rootFSPath) {
 					// bound to rootFS file
-					contentSrc, err = f.os.Open(*value.File)
+					dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
+					err = f.fileCopier.OS(
+						filepath.Join(*value.File),
+						dcgContainerCallFiles[scgContainerFilePath],
+					)
+					if nil != err {
+						return nil, fmt.Errorf(
+							"Unable to bind file '%v' to '%v'; error was: %v",
+							scgContainerFilePath,
+							scgContainerFileBind,
+							err.Error(),
+						)
+					}
 					if nil != err {
 						return nil, err
 					}
 				} else {
 					// bound to non rootFS file
 					dcgContainerCallFiles[scgContainerFilePath] = *value.File
-					continue fileLoop
 				}
+				continue fileLoop
 			default:
 				return nil, fmt.Errorf(
 					"Unable to bind file '%v' to '%v'; '%v' not a file, number, or string",

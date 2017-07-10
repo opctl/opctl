@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
-  "path/filepath"
+	"path/filepath"
 )
 
 type DirCopier interface {
@@ -25,7 +25,7 @@ func New() DirCopier {
 
 type dirCopier struct {
 	os         ios.IOS
-	ioutil     iioutil.Iioutil
+	ioutil     iioutil.IIOUtil
 	fileCopier filecopier.FileCopier
 }
 
@@ -42,11 +42,11 @@ func (dc dirCopier) OS(srcPath string, dstPath string) error {
 
 	// create dstPath
 	if err := dc.os.MkdirAll(
-    dstPath,
-    fi.Mode(),
-  ); nil != err{
-    return err
-  }
+		dstPath,
+		fi.Mode(),
+	); nil != err {
+		return err
+	}
 
 	entries, err := dc.ioutil.ReadDir(srcPath)
 
@@ -55,21 +55,21 @@ func (dc dirCopier) OS(srcPath string, dstPath string) error {
 		sfp := filepath.Join(srcPath, entry.Name())
 		dfp := filepath.Join(dstPath, entry.Name())
 		if entry.IsDir() {
-      // dir copy
+			// dir copy
 			if err := dc.OS(
-        sfp,
-        dfp,
-      ); nil != err{
-        return err
-      }
+				sfp,
+				dfp,
+			); nil != err {
+				return err
+			}
 		} else {
 			// file copy
 			if err := dc.fileCopier.OS(
-        sfp,
-        dfp,
-      ); nil != err{
-        return err
-      }
+				sfp,
+				dfp,
+			); nil != err {
+				return err
+			}
 		}
 
 	}

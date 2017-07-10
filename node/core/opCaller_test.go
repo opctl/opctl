@@ -23,46 +23,6 @@ var _ = Context("opCaller", func() {
 		})
 	})
 	Context("Call", func() {
-		Context("deprecated pkg format", func() {
-			It("should call dcgNodeRepo.add w/ expected args", func() {
-				/* arrange */
-				providedOpId := "dummyOpId"
-				providedRootOpId := "dummyRootOpId"
-				providedSCGOpCall := &model.SCGOpCall{Ref: "dummyPkgRef"}
-
-				expectedDCGNodeDescriptor := &dcgNodeDescriptor{
-					Id:       providedOpId,
-					PkgRef:   providedSCGOpCall.Ref,
-					RootOpId: providedRootOpId,
-					Op:       &dcgOpDescriptor{},
-				}
-
-				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
-
-				fakeOpCall := new(opcall.Fake)
-				// error to trigger immediate return
-				fakeOpCall.InterpretReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _opCaller{
-					opCall:      fakeOpCall,
-					pubSub:      new(pubsub.Fake),
-					dcgNodeRepo: fakeDCGNodeRepo,
-					caller:      new(fakeCaller),
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					map[string]*model.Value{},
-					providedOpId,
-					"dummyPkgBasePath",
-					providedRootOpId,
-					providedSCGOpCall,
-				)
-
-				/* assert */
-				Expect(fakeDCGNodeRepo.AddArgsForCall(0)).To(Equal(expectedDCGNodeDescriptor))
-			})
-		})
 		It("should call dcgNodeRepo.add w/ expected args", func() {
 			/* arrange */
 			providedOpId := "dummyOpId"

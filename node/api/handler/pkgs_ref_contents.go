@@ -18,14 +18,23 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
-	pkgContents, err := hdlr.core.ListPkgContents(pkgRef)
+	pkgHandle, err := hdlr.core.ResolvePkg(
+		pkgRef,
+		nil,
+	)
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pkgContentsList, err := pkgHandle.ListContents()
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// @TODO: replace w/ json.NewEncoder(w).Encode(p); more performant
-	pkgContentsBytes, err := hdlr.json.Marshal(pkgContents)
+	pkgContentsListBytes, err := hdlr.json.Marshal(pkgContentsList)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
@@ -33,5 +42,5 @@ func (hdlr _handler) pkgs_ref_contents(
 
 	httpResp.WriteHeader(http.StatusOK)
 	httpResp.Header().Set("Content-Type", "application/json")
-	httpResp.Write(pkgContentsBytes)
+	httpResp.Write(pkgContentsListBytes)
 }

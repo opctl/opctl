@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("handleLocal", func() {
+var _ = Context("localHandle", func() {
 
 	Context("GetContent", func() {
 
@@ -23,7 +23,7 @@ var _ = Context("handleLocal", func() {
 
 			fakeOS := new(ios.Fake)
 
-			objectUnderTest := handleLocal{
+			objectUnderTest := localHandle{
 				os:   fakeOS,
 				path: providedPkgPath,
 			}
@@ -50,7 +50,7 @@ var _ = Context("handleLocal", func() {
 			// error to trigger immediate return
 			fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := handleLocal{
+			objectUnderTest := localHandle{
 				ioUtil: fakeIOUtil,
 				path:   providedPkgPath,
 			}
@@ -70,7 +70,7 @@ var _ = Context("handleLocal", func() {
 				fakeIOUtil := new(iioutil.Fake)
 				fakeIOUtil.ReadDirReturns(nil, expectedError)
 
-				objectUnderTest := handleLocal{
+				objectUnderTest := localHandle{
 					ioUtil: fakeIOUtil,
 				}
 
@@ -97,7 +97,7 @@ var _ = Context("handleLocal", func() {
 					},
 				}
 
-				objectUnderTest := handleLocal{
+				objectUnderTest := localHandle{
 					ioUtil: iioutil.New(),
 					path:   rootPkgPath,
 				}

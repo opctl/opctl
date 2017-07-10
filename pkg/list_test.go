@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
@@ -58,7 +59,7 @@ var _ = Context("List", func() {
 		})
 	})
 	Context("ioutil.ReadDir doesn't error", func() {
-		It("should call manifestUnmarshaller.Unmarshal for each childDir", func() {
+		It("should call manifest.Unmarshal for each childDir", func() {
 			/* arrange */
 			rootPkgPath := fmt.Sprintf("%v/testdata/list", wd)
 
@@ -66,6 +67,7 @@ var _ = Context("List", func() {
 
 			objectUnderTest := _Pkg{
 				ioUtil:   iioutil.New(),
+				os:       ios.New(),
 				manifest: fakeManifest,
 			}
 

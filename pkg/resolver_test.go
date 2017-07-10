@@ -9,134 +9,15 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("resolver", func() {
+var _ = Context("Resolver", func() {
 	Context("Resolve", func() {
 		Context("pkgRef is absolute path", func() {
 			It("should call fs.Stat w/ expected args", func() {
 				/* arrange */
-				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "/dummyFullyQualifiedName",
-				}
+				providedPkgRef := "/dummyFullyQualifiedName"
 
 				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.Resolve(providedPkgRef)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef.FullyQualifiedName))
-			})
-			It("should return expected result", func() {
-				/* arrange */
-				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "/dummyFullyQualifiedName",
-				}
-
-				file, err := ioutil.TempFile("", "")
-				if nil != err {
-					panic(err)
-				}
-
-				expectedFileInfo, err := file.Stat()
-				if nil != err {
-					panic(err)
-				}
-
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(expectedFileInfo, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				actualPkgPath, actualIsResolved := objectUnderTest.Resolve(providedPkgRef)
-
-				/* assert */
-				Expect(actualPkgPath).To(Equal(providedPkgRef.FullyQualifiedName))
-				Expect(actualIsResolved).To(Equal(true))
-			})
-		})
-		Context("pkgRef isn't absolute path", func() {
-			It("should call fs.Stat w/ expected args", func() {
-				/* arrange */
-				providedBasePath := "dummyBasePath"
-				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "dummyPkgRef",
-					Version:            "0.0.0",
-				}
-
-				expectedPath := providedPkgRef.ToPath(
-					filepath.Join(
-						providedBasePath,
-						DotOpspecDirName,
-					),
-				)
-
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.Resolve(providedPkgRef, providedBasePath)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
-			})
-		})
-		Context("fs.Stat doesn't err", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedBasePath := "dummyBasePath"
-				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "dummyPkgRef",
-					Version:            "0.0.0",
-				}
-
-				expectedPath := providedPkgRef.ToPath(
-					filepath.Join(
-						providedBasePath,
-						DotOpspecDirName,
-					),
-				)
-				expectedOk := true
-
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
-
-				/* assert */
-				Expect(actualPath).To(Equal(expectedPath))
-				Expect(actualOk).To(Equal(expectedOk))
-			})
-		})
-		Context("fs.Stat errors", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedBasePath := "dummyBasePath"
-				providedPkgRef := &PkgRef{
-					FullyQualifiedName: "dummyPkgRef",
-					Version:            "0.0.0",
-				}
-
-				expectedPath := ""
-				expectedOk := false
-
-				fakeOS := new(ios.Fake)
+				// error to trigger immediate return
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _resolver{
@@ -144,11 +25,115 @@ var _ = Context("resolver", func() {
 				}
 
 				/* act */
-				actualPath, actualOk := objectUnderTest.Resolve(providedPkgRef, providedBasePath)
+				objectUnderTest.Resolve(providedPkgRef, nil)
 
 				/* assert */
-				Expect(actualPath).To(Equal(expectedPath))
-				Expect(actualOk).To(Equal(expectedOk))
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				file, err := ioutil.TempFile("", "")
+				if nil != err {
+					panic(err)
+				}
+
+				expectedHandle := newLocalHandle(file.Name())
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, nil)
+
+				objectUnderTest := _resolver{
+					os: fakeOS,
+				}
+
+				/* act */
+				actualHandle, actualError := objectUnderTest.Resolve(file.Name(), nil)
+
+				/* assert */
+				Expect(actualHandle).To(Equal(expectedHandle))
+				Expect(actualError).To(BeNil())
+			})
+		})
+		Context("pkgRef isn't absolute path", func() {
+			It("should call fs.Stat w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef"
+				providedOpts := &ResolveOpts{
+					BasePath: "dummyBasePath",
+				}
+
+				expectedPath := filepath.Join(
+					providedOpts.BasePath,
+					DotOpspecDirName,
+					providedPkgRef,
+				)
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, nil)
+
+				objectUnderTest := _resolver{
+					os: fakeOS,
+				}
+
+				/* act */
+				objectUnderTest.Resolve(providedPkgRef, providedOpts)
+
+				/* assert */
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
+			})
+		})
+		Context("fs.Stat errors", func() {
+			It("should return err", func() {
+				/* arrange */
+				expectedErr := errors.New("dummyError")
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, expectedErr)
+
+				objectUnderTest := _resolver{
+					os: fakeOS,
+				}
+
+				/* act */
+				_, actualError := objectUnderTest.Resolve(
+					"dummyPkgRef",
+					nil,
+				)
+
+				/* assert */
+				Expect(actualError).To(Equal(expectedErr))
+			})
+		})
+		Context("fs.Stat doesn't err", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef"
+				providedOpts := &ResolveOpts{
+					BasePath: "dummyBasePath",
+				}
+
+				expectedHandle := newLocalHandle(filepath.Join(
+					providedOpts.BasePath,
+					DotOpspecDirName,
+					providedPkgRef,
+				))
+
+				fakeOS := new(ios.Fake)
+				fakeOS.StatReturns(nil, nil)
+
+				objectUnderTest := _resolver{
+					os: fakeOS,
+				}
+
+				/* act */
+				actualHandle, actualError := objectUnderTest.Resolve(
+					providedPkgRef,
+					providedOpts,
+				)
+
+				/* assert */
+				Expect(actualHandle).To(Equal(expectedHandle))
+				Expect(actualError).To(BeNil())
 			})
 		})
 	})

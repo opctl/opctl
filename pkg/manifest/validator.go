@@ -1,22 +1,23 @@
 package manifest
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
+	"io"
 )
 
-type validator interface {
+type Validator interface {
 	// Validate validates the pkg manifest at path
 	Validate(
-		path string,
+		manifestReader io.Reader,
 	) []error
 }
 
-func newValidator() validator {
+func newValidator() Validator {
 
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
@@ -40,17 +41,15 @@ func newValidator() validator {
 }
 
 type _validator struct {
-	ioUtil         iioutil.Iioutil
+	ioUtil         iioutil.IIOUtil
 	manifestSchema *gojsonschema.Schema
 }
 
 func (this _validator) Validate(
-	path string,
+	manifestReader io.Reader,
 ) []error {
 
-	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path,
-	)
+	ManifestYAMLBytes, err := this.ioUtil.ReadAll(manifestReader)
 	if nil != err {
 		// handle syntax errors specially
 		return []error{err}

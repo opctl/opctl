@@ -34,19 +34,11 @@ type SCGContainerCall struct {
 
 type SCGContainerCallImage struct {
 	// will be interpolated
-	Ref string `yaml:"ref"`
-
-	// @DEPRECATED; use PullCreds. will be interpolated
-	PullIdentity string `yaml:"pullIdentity,omitempty"`
-	// @DEPRECATED; use PullCreds. will be interpolated
-	PullSecret string `yaml:"pullSecret,omitempty"`
-
+	Ref       string        `yaml:"ref"`
 	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 }
 
 type SCGOpCall struct {
-	// will be interpolated
-	Ref string        `yaml:"ref"`
 	Pkg *SCGOpCallPkg `yaml:"pkg"`
 	// binds in scope variables to inputs of referenced op
 	Inputs map[string]string `yaml:"inputs,omitempty"`

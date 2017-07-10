@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
+	"strings"
 )
 
 var _ = Context("_manifestUnmarshaller", func() {
@@ -16,7 +17,7 @@ var _ = Context("_manifestUnmarshaller", func() {
 
 		It("should call validate w/ expected inputs", func() {
 			/* arrange */
-			providedPath := "/dummy/path"
+			providedReader := strings.NewReader("")
 
 			fakeValidator := new(fakeValidator)
 
@@ -24,16 +25,16 @@ var _ = Context("_manifestUnmarshaller", func() {
 			fakeValidator.ValidateReturns([]error{errors.New("dummyError")})
 
 			objectUnderTest := _Manifest{
-				validator: fakeValidator,
+				Validator: fakeValidator,
 			}
 
 			/* act */
-			objectUnderTest.Unmarshal(providedPath)
+			objectUnderTest.Unmarshal(providedReader)
 
 			/* assert */
-			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedPath))
+			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedReader))
 		})
-		Context("validator.Validate returns errors", func() {
+		Context("Validator.Validate returns errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
 
@@ -51,39 +52,39 @@ var _ = Context("_manifestUnmarshaller", func() {
 				fakeValidator.ValidateReturns(errs)
 
 				objectUnderTest := _Manifest{
-					validator: fakeValidator,
+					Validator: fakeValidator,
 				}
 
 				/* act */
-				_, actualError := objectUnderTest.Unmarshal("")
+				_, actualError := objectUnderTest.Unmarshal(nil)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedErr))
 			})
 		})
-		Context("validator.Validate doesn't return errors", func() {
-			It("should call ioutil.ReadFile w/expected args", func() {
+		Context("Validator.Validate doesn't return errors", func() {
+			It("should call ioutil.ReadAll w/expected args", func() {
 				/* arrange */
-				providedPath := "dummyPath"
+				providedReader := strings.NewReader("dummyManifest")
 
 				fakeIOUtil := new(iioutil.Fake)
 				// err to cause immediate return
-				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
+				fakeIOUtil.ReadAllReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _Manifest{
 					ioUtil:    fakeIOUtil,
-					validator: new(fakeValidator),
+					Validator: new(fakeValidator),
 				}
 
 				/* act */
-				objectUnderTest.Unmarshal(providedPath)
+				objectUnderTest.Unmarshal(providedReader)
 
 				/* assert */
-				Expect(fakeIOUtil.ReadFileArgsForCall(0)).
-					To(Equal(providedPath))
+				Expect(fakeIOUtil.ReadAllArgsForCall(0)).
+					To(Equal(providedReader))
 
 			})
-			Context("ioutil.ReadFile returns an error", func() {
+			Context("ioutil.ReadAll returns an error", func() {
 
 				It("should return expected error", func() {
 
@@ -91,15 +92,15 @@ var _ = Context("_manifestUnmarshaller", func() {
 					expectedError := errors.New("dummyError")
 
 					fakeIOUtil := new(iioutil.Fake)
-					fakeIOUtil.ReadFileReturns(nil, expectedError)
+					fakeIOUtil.ReadAllReturns(nil, expectedError)
 
 					objectUnderTest := _Manifest{
 						ioUtil:    fakeIOUtil,
-						validator: new(fakeValidator),
+						Validator: new(fakeValidator),
 					}
 
 					/* act */
-					_, actualError := objectUnderTest.Unmarshal("/dummy/path")
+					_, actualError := objectUnderTest.Unmarshal(nil)
 
 					/* assert */
 					Expect(actualError).To(Equal(expectedError))
@@ -145,15 +146,15 @@ var _ = Context("_manifestUnmarshaller", func() {
 				}
 
 				fakeIOUtil := new(iioutil.Fake)
-				fakeIOUtil.ReadFileReturns(yaml.Marshal(expectedPkgManifest))
+				fakeIOUtil.ReadAllReturns(yaml.Marshal(expectedPkgManifest))
 
 				objectUnderTest := _Manifest{
 					ioUtil:    fakeIOUtil,
-					validator: new(fakeValidator),
+					Validator: new(fakeValidator),
 				}
 
 				/* act */
-				actualPkgManifest, _ := objectUnderTest.Unmarshal("")
+				actualPkgManifest, _ := objectUnderTest.Unmarshal(nil)
 
 				/* assert */
 				Expect(actualPkgManifest).To(Equal(expectedPkgManifest))

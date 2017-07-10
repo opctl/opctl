@@ -1,17 +1,21 @@
 package iioutil
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Iioutil
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ IIOUtil
 
 import (
-	"bytes"
-	"github.com/golang-interfaces/ios"
 	"io"
+	"io/ioutil"
 	"os"
-	"sort"
 )
 
 // virtual filesystem interface
-type Iioutil interface {
+type IIOUtil interface {
+	// ReadAll reads from r until an error or EOF and returns the data it read.
+	// A successful call returns err == nil, not err == EOF. Because ReadAll is
+	// defined to read from src until EOF, it does not treat an EOF from Read
+	// as an error to be reported.
+	ReadAll(r io.Reader) ([]byte, error)
+
 	// ReadDir reads the directory named by dirname and returns
 	// a list of directory entries sorted by filename.
 	ReadDir(dirname string) ([]os.FileInfo, error)
@@ -28,94 +32,24 @@ type Iioutil interface {
 	WriteFile(filename string, data []byte, perm os.FileMode) error
 }
 
-func New() Iioutil {
-	return _Iioutil{
-		ios: ios.New(),
-	}
+func New() IIOUtil {
+	return _IIOUtil{}
 }
 
-type _Iioutil struct {
-  ios ios.IOS
+type _IIOUtil struct{}
+
+func (iou _IIOUtil) ReadAll(r io.Reader) ([]byte, error) {
+	return ioutil.ReadAll(r)
 }
 
-// readAll reads from r until an error or EOF and returns the data it read
-// from the internal buffer allocated with a specified capacity.
-func readAll(r io.Reader, capacity int64) (
-	b []byte, err error) {
-	buf := bytes.NewBuffer(make([]byte, 0, capacity))
-	// If the buffer overflows, we will get bytes.ErrTooLarge.
-	// Return that as an error. Any other panic remains.
-	defer func() {
-		e := recover()
-		if e == nil {
-			return
-		}
-		if panicErr, ok := e.(error); ok && panicErr == bytes.ErrTooLarge {
-			err = panicErr
-		} else {
-			panic(e)
-		}
-	}()
-	_, err = buf.ReadFrom(r)
-	return buf.Bytes(), err
+func (iou _IIOUtil) ReadDir(dirname string) ([]os.FileInfo, error) {
+	return ioutil.ReadDir(dirname)
 }
 
-// byName implements sort.Interface.
-type byName []os.FileInfo
-
-func (f byName) Len() int           { return len(f) }
-func (f byName) Less(i, j int) bool { return f[i].Name() < f[j].Name() }
-func (f byName) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
-
-func (this _Iioutil) ReadDir(dirname string) ([]os.FileInfo, error) {
-	f, err := this.ios.Open(dirname)
-	if err != nil {
-		return nil, err
-	}
-	list, err := f.Readdir(-1)
-	f.Close()
-	if err != nil {
-		return nil, err
-	}
-	sort.Sort(byName(list))
-	return list, nil
+func (iou _IIOUtil) ReadFile(filename string) ([]byte, error) {
+	return ioutil.ReadFile(filename)
 }
 
-func (this _Iioutil) ReadFile(filename string) ([]byte, error) {
-	f, err := this.ios.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	// It's a good but not certain bet that FileInfo will tell us exactly how much to
-	// read, so let's try it but be prepared for the answer to be wrong.
-	var n int64
-
-	if fi, err := f.Stat(); err == nil {
-		// Don't preallocate a huge buffer, just in case.
-		if size := fi.Size(); size < 1e9 {
-			n = size
-		}
-	}
-	// As initial capacity for readAll, use n + a little extra in case Size is zero,
-	// and to avoid another allocation after Read has filled the buffer. The readAll
-	// call will read into its allocated internal buffer cheaply. If the size was
-	// wrong, we'll either waste some space off the end or reallocate as needed, but
-	// in the overwhelmingly common case we'll get it just right.
-	return readAll(f, n+bytes.MinRead)
-}
-
-func (this _Iioutil) WriteFile(filename string, data []byte, perm os.FileMode) error {
-	f, err := this.ios.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, perm)
-	if err != nil {
-		return err
-	}
-	n, err := f.Write(data)
-	if err == nil && n < len(data) {
-		err = io.ErrShortWrite
-	}
-	if err1 := f.Close(); err == nil {
-		err = err1
-	}
-	return err
+func (iou _IIOUtil) WriteFile(filename string, data []byte, perm os.FileMode) error {
+	return ioutil.WriteFile(filename, data, perm)
 }

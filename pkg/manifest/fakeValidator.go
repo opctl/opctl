@@ -2,14 +2,15 @@
 package manifest
 
 import (
+	"io"
 	"sync"
 )
 
 type fakeValidator struct {
-	ValidateStub        func(path string) []error
+	ValidateStub        func(manifestReader io.Reader) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		path string
+		manifestReader io.Reader
 	}
 	validateReturns struct {
 		result1 []error
@@ -21,16 +22,16 @@ type fakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeValidator) Validate(path string) []error {
+func (fake *fakeValidator) Validate(manifestReader io.Reader) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		path string
-	}{path})
-	fake.recordInvocation("Validate", []interface{}{path})
+		manifestReader io.Reader
+	}{manifestReader})
+	fake.recordInvocation("Validate", []interface{}{manifestReader})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		return fake.ValidateStub(path)
+		return fake.ValidateStub(manifestReader)
 	}
 	if specificReturn {
 		return ret.result1
@@ -44,10 +45,10 @@ func (fake *fakeValidator) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *fakeValidator) ValidateArgsForCall(i int) string {
+func (fake *fakeValidator) ValidateArgsForCall(i int) io.Reader {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
-	return fake.validateArgsForCall[i].path
+	return fake.validateArgsForCall[i].manifestReader
 }
 
 func (fake *fakeValidator) ValidateReturns(result1 []error) {
@@ -92,3 +93,5 @@ func (fake *fakeValidator) recordInvocation(key string, args []interface{}) {
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ Validator = new(fakeValidator)

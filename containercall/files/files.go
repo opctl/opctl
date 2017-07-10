@@ -5,6 +5,7 @@ package files
 import (
 	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
+	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -21,12 +22,15 @@ func New(
 	rootFSPath string,
 ) Files {
 	return _Files{
+		fileCopier: filecopier.New(),
+		io:         iio.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
 	}
 }
 
 type _Files struct {
+	fileCopier filecopier.FileCopier
 	io         iio.IIO
 	os         ios.IOS
 	rootFSPath string

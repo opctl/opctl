@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
+	"io"
 )
 
 func (this _Manifest) Unmarshal(
-	path string,
+	manifestReader io.Reader,
 ) (*model.PkgManifest, error) {
 
 	var err error
 
 	// 1) ensure valid
-	errs := this.validator.Validate(path)
+	errs := this.Validate(manifestReader)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`
@@ -33,9 +34,8 @@ func (this _Manifest) Unmarshal(
 	}
 
 	// 2) build
-
-	packageManifestBytes, err := this.ioUtil.ReadFile(
-		path,
+	packageManifestBytes, err := this.ioUtil.ReadAll(
+		manifestReader,
 	)
 	if nil != err {
 		return nil, err

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
+	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -18,7 +19,7 @@ import (
 var _ = Context("Files", func() {
 	Context("Interpret", func() {
 		Context("bound value is absolute path", func() {
-			It("should call os.Open w/ expected args", func() {
+			It("should call fileCopier.OS w/ expected args", func() {
 				/* arrange */
 
 				containerFilePath := "/dummyFile1Path.txt"
@@ -30,11 +31,15 @@ var _ = Context("Files", func() {
 
 				providedPkgPath := "dummyPkgPath"
 
-				fakeOS := new(ios.Fake)
+				providedScratchDirPath := "dummyScratchDirPath"
+
+				fakeFileCopier := new(filecopier.Fake)
+				// error to trigger immediate return
+				fakeFileCopier.OSReturns(errors.New("dummyError"))
 
 				objectUnderTest := _Files{
-					io: new(iio.Fake),
-					os: fakeOS,
+					io:         new(iio.Fake),
+					fileCopier: fakeFileCopier,
 				}
 
 				/* act */
@@ -42,15 +47,16 @@ var _ = Context("Files", func() {
 					providedPkgPath,
 					map[string]*model.Value{},
 					providedSCGContainerCallFiles,
-					"dummyScratchDir",
+					providedScratchDirPath,
 				)
 
 				/* assert */
 
-				actualPath := fakeOS.OpenArgsForCall(0)
-				Expect(actualPath).To(Equal(filepath.Join(providedPkgPath, containerFilePath)))
+				actualSrcPath, actualDstPath := fakeFileCopier.OSArgsForCall(0)
+				Expect(actualSrcPath).To(Equal(filepath.Join(providedPkgPath, containerFilePath)))
+				Expect(actualDstPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
 			})
-			Context("os.Open errs", func() {
+			Context("fileCopier.OS errs", func() {
 
 				It("should return expected error", func() {
 					/* arrange */
@@ -60,9 +66,9 @@ var _ = Context("Files", func() {
 						containerFilePath: "",
 					}
 
-					fakeOS := new(ios.Fake)
+					fakeFileCopier := new(filecopier.Fake)
 					openError := fmt.Errorf("dummyError")
-					fakeOS.OpenReturns(nil, openError)
+					fakeFileCopier.OSReturns(openError)
 
 					expectedErr := fmt.Errorf(
 						"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -72,7 +78,7 @@ var _ = Context("Files", func() {
 					)
 
 					objectUnderTest := _Files{
-						os: fakeOS,
+						fileCopier: fakeFileCopier,
 					}
 
 					/* act */
@@ -87,11 +93,9 @@ var _ = Context("Files", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("os.Open doesn't err", func() {
+			Context("fileCopier.OS doesn't err", func() {
 				It("should return expected results", func() {
 					/* arrange */
-					providedRootFSPath := "/dummyRootFSPath"
-
 					providedScratchDir := "dummyScratchDir"
 
 					containerFilePath := "/dummyFile1Path.txt"
@@ -105,9 +109,7 @@ var _ = Context("Files", func() {
 					}
 
 					objectUnderTest := _Files{
-						io:         new(iio.Fake),
-						os:         new(ios.Fake),
-						rootFSPath: providedRootFSPath,
+						fileCopier: new(filecopier.Fake),
 					}
 
 					/* act */
@@ -231,7 +233,7 @@ var _ = Context("Files", func() {
 			})
 			Context("value.File not nil", func() {
 				Context("value.File prefixed by rootFSPath", func() {
-					It("should call os.Open w/ expected args", func() {
+					It("should call fileCopier.OS w/ expected args", func() {
 						/* arrange */
 						providedRootFSPath := "dummyRootFSPath"
 
@@ -242,17 +244,20 @@ var _ = Context("Files", func() {
 							scopeName: {File: &scopeValue},
 						}
 
+						containerFilePath := "dummyContainerFilePath"
 						providedSCGContainerCallFiles := map[string]string{
 							// explicitly bound
-							"dummyContainerFilePath": scopeName,
+							containerFilePath: scopeName,
 						}
 
-						fakeOS := new(ios.Fake)
+						providedScratchDirPath := "dummyScratchDirPath"
+
+						fakeFileCopier := new(filecopier.Fake)
 						// err to trigger immediate return
-						fakeOS.OpenReturns(nil, errors.New("dummyError"))
+						fakeFileCopier.OSReturns(errors.New("dummyError"))
 
 						objectUnderTest := _Files{
-							os:         fakeOS,
+							fileCopier: fakeFileCopier,
 							rootFSPath: providedRootFSPath,
 						}
 
@@ -261,14 +266,15 @@ var _ = Context("Files", func() {
 							"dummyPkgPath",
 							providedScope,
 							providedSCGContainerCallFiles,
-							"dummyScratchDirPath",
+							providedScratchDirPath,
 						)
 
 						/* assert */
-						actualPath := fakeOS.OpenArgsForCall(0)
-						Expect(actualPath).To(Equal(scopeValue))
+						actualSrcPath, actualDstPath := fakeFileCopier.OSArgsForCall(0)
+						Expect(actualSrcPath).To(Equal(scopeValue))
+						Expect(actualDstPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
 					})
-					Context("os.Open errs", func() {
+					Context("fileCopier.OS errs", func() {
 						It("should return expected error", func() {
 							/* arrange */
 							scopeName := "dummyScopeName"
@@ -277,17 +283,25 @@ var _ = Context("Files", func() {
 								scopeName: {File: new(string)},
 							}
 
+							containerFilePath := "dummyContainerFilePath"
 							providedSCGContainerCallFiles := map[string]string{
 								// explicitly bound
-								"dummyContainerFilePath": scopeName,
+								containerFilePath: scopeName,
 							}
 
-							fakeOS := new(ios.Fake)
-							expectedErr := fmt.Errorf("dummyError")
-							fakeOS.OpenReturns(nil, expectedErr)
+							fakeFileCopier := new(filecopier.Fake)
+							copyErr := errors.New("dummyError")
+							fakeFileCopier.OSReturns(copyErr)
+
+							expectedErr := fmt.Errorf(
+								"Unable to bind file '%v' to '%v'; error was: %v",
+								containerFilePath,
+								scopeName,
+								copyErr,
+							)
 
 							objectUnderTest := _Files{
-								os: fakeOS,
+								fileCopier: fakeFileCopier,
 							}
 
 							/* act */
@@ -302,7 +316,7 @@ var _ = Context("Files", func() {
 							Expect(actualErr).To(Equal(expectedErr))
 						})
 					})
-					Context("os.Open doesn't err", func() {
+					Context("fileCopier.OS doesn't err", func() {
 						It("should return expected results", func() {
 							/* arrange */
 							scopeName := "dummyScopeName"
@@ -325,8 +339,7 @@ var _ = Context("Files", func() {
 							}
 
 							objectUnderTest := _Files{
-								os: new(ios.Fake),
-								io: new(iio.Fake),
+								fileCopier: new(filecopier.Fake),
 							}
 
 							/* act */

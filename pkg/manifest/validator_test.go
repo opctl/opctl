@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var _ = Context("validator", func() {
+var _ = Context("Validator", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
@@ -21,8 +21,13 @@ var _ = Context("validator", func() {
 				"yaml: did not find expected alphabetic or numeric character",
 			)}
 
+			providedManifestReader, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid__yml/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid__yml/op.yml", wd))
+			actualErrs := objectUnderTest.Validate(providedManifestReader)
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -36,8 +41,13 @@ var _ = Context("validator", func() {
 				"inputs: Invalid type. Expected: object, given: array",
 			)}
 
+			providedManifestReader, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_inputs_type/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_inputs_type/op.yml", wd))
+			actualErrs := objectUnderTest.Validate(providedManifestReader)
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -51,8 +61,13 @@ var _ = Context("validator", func() {
 				"outputs: Invalid type. Expected: object, given: array",
 			)}
 
+			providedManifestReader, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_outputs_type/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_outputs_type/op.yml", wd))
+			actualErrs := objectUnderTest.Validate(providedManifestReader)
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -67,8 +82,13 @@ var _ = Context("validator", func() {
 				errors.New("run: Invalid type. Expected: object, given: array"),
 			}
 
+			providedManifestReader, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_run_type/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/invalid_run_type/op.yml", wd))
+			actualErrs := objectUnderTest.Validate(providedManifestReader)
 
 			/* assert */
 			Expect(actualErrs).To(Equal(expectedErrs))
@@ -76,8 +96,15 @@ var _ = Context("validator", func() {
 	})
 	Context("valid__all", func() {
 		It("should return no errors", func() {
+
+			/* arrange */
+			providedManifestReader, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid__all/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
 			/* act */
-			actualErrs := objectUnderTest.Validate(fmt.Sprintf("%v/testdata/validate/valid__all/op.yml", wd))
+			actualErrs := objectUnderTest.Validate(providedManifestReader)
 
 			/* assert */
 			Expect(actualErrs).To(BeNil())

@@ -279,10 +279,10 @@
 			"revisionTime": "2017-06-30T16:26:44Z"
 		},
 		{
-			"checksumSHA1": "pY2Cs8d3h1ltPNThOUgEA0xSI7E=",
+			"checksumSHA1": "BBIa4lwPc/cE46u+ou8Jmk/6tj8=",
 			"path": "github.com/golang-interfaces/iioutil",
-			"revision": "1dd3da9a91c7533b8d2eba6cf89dc82a1046c1cf",
-			"revisionTime": "2017-05-08T04:05:31Z"
+			"revision": "ba86c72fcf56f2d7d1140fbae876d8a87477978f",
+			"revisionTime": "2017-07-09T04:07:51Z"
 		},
 		{
 			"checksumSHA1": "YhIMOglqzmgxpeF8/g8AerGZ69c=",
@@ -303,10 +303,10 @@
 			"revisionTime": "2017-05-21T16:41:36Z"
 		},
 		{
-			"checksumSHA1": "Yw3n8Dv8jrXJlJIiOdqjzz+/qLk=",
+			"checksumSHA1": "9pRflBLq//lEXxlJLm1z1oxFfPk=",
 			"path": "github.com/golang-utils/dircopier",
-			"revision": "bab6a659e38eaf0c021fbd8fb17a480fff548ee8",
-			"revisionTime": "2017-05-14T19:06:04Z"
+			"revision": "6b3277d64c9a5e464ae49db9e495fdfcb6aca493",
+			"revisionTime": "2017-07-09T04:21:12Z"
 		},
 		{
 			"checksumSHA1": "qKT1QUHAGfQwg2pEcvU+saSSfwo=",

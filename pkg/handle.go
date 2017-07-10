@@ -1,13 +1,13 @@
 package pkg
 
-//go:generate counterfeiter -o ./fakeHandle.go --fake-name fakeHandle ./ handle
+//go:generate counterfeiter -o ./fakeHandle.go --fake-name FakeHandle ./ Handle
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-// handle represents an open pkg
-type handle interface {
+// Handle provides a source agnostic interface for interacting w/ packages
+type Handle interface {
 	// ListContents lists contents of a package
 	ListContents() (
 		[]*model.PkgContent,
@@ -21,4 +21,7 @@ type handle interface {
 		model.ReadSeekCloser,
 		error,
 	)
+
+	// Ref returns the absolute pkg ref of the open pkg
+	Ref() string
 }

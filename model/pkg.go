@@ -1,6 +1,8 @@
 package model
 
-import "io"
+import (
+	"io"
+)
 
 type ReadSeekCloser interface {
 	io.ReadCloser

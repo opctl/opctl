@@ -14,13 +14,6 @@ func (img _Image) Interpret(
 		dcgContainerCallImage := &model.DCGContainerCallImage{
 			Ref: img.interpolater.Interpolate(scgContainerCallImage.Ref, scope),
 		}
-		if "" != scgContainerCallImage.PullIdentity && "" != scgContainerCallImage.PullSecret {
-			// fallback for deprecated cred format
-			scgContainerCallImage.PullCreds = &model.SCGPullCreds{
-				Username: scgContainerCallImage.PullIdentity,
-				Password: scgContainerCallImage.PullSecret,
-			}
-		}
 
 		if nil != scgContainerCallImage.PullCreds {
 			dcgContainerCallImage.PullCreds = &model.DCGPullCreds{

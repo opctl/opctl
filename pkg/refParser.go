@@ -1,5 +1,7 @@
 package pkg
 
+//go:generate counterfeiter -o ./fakeRefParser.go --fake-name fakeRefParser ./ refParser
+
 import (
 	"net/url"
 	"path"
@@ -8,10 +10,10 @@ import (
 
 // refParser parses pkg refs
 type refParser interface {
-	ParseRef(
+	Parse(
 		pkgRef string,
 	) (
-		*PkgRef,
+		*Ref,
 		error,
 	)
 }
@@ -22,27 +24,27 @@ func newRefParser() refParser {
 
 type _refParser struct{}
 
-type PkgRef struct {
-	FullyQualifiedName string
-	Version            string
+type Ref struct {
+	Name    string
+	Version string
 }
 
-// ToPath constructs a filesystem path for a PkgRef, assuming the provided base path
-func (pr PkgRef) ToPath(basePath string) string {
-	return filepath.Join(basePath, filepath.FromSlash(pr.FullyQualifiedName), pr.Version)
+// ToPath constructs a filesystem path for a Ref, assuming the provided base path
+func (pr Ref) ToPath(basePath string) string {
+	return filepath.Join(basePath, filepath.FromSlash(pr.Name), pr.Version)
 }
 
-// ParseRef parses a pkgRef
-func (rp _refParser) ParseRef(
+// Parse parses a pkgRef
+func (rp _refParser) Parse(
 	pkgRef string,
-) (*PkgRef, error) {
+) (*Ref, error) {
 	refURI, err := url.Parse(filepath.ToSlash(pkgRef))
 	if nil != err {
 		return nil, err
 	}
 
-	return &PkgRef{
-		FullyQualifiedName: path.Join(refURI.Host, refURI.Path),
-		Version:            refURI.Fragment,
+	return &Ref{
+		Name:    path.Join(refURI.Host, refURI.Path),
+		Version: refURI.Fragment,
 	}, nil
 }

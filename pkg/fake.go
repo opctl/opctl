@@ -21,45 +21,18 @@ type Fake struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ResolveStub        func(pkgRef *PkgRef, lookPaths ...string) (string, bool)
-	resolveMutex       sync.RWMutex
-	resolveArgsForCall []struct {
-		pkgRef    *PkgRef
-		lookPaths []string
+	GetManifestStub        func(pkgHandle Handle) (*model.PkgManifest, error)
+	getManifestMutex       sync.RWMutex
+	getManifestArgsForCall []struct {
+		pkgHandle Handle
 	}
-	resolveReturns struct {
-		result1 string
-		result2 bool
-	}
-	resolveReturnsOnCall map[int]struct {
-		result1 string
-		result2 bool
-	}
-	ParseRefStub        func(pkgRef string) (*PkgRef, error)
-	parseRefMutex       sync.RWMutex
-	parseRefArgsForCall []struct {
-		pkgRef string
-	}
-	parseRefReturns struct {
-		result1 *PkgRef
+	getManifestReturns struct {
+		result1 *model.PkgManifest
 		result2 error
 	}
-	parseRefReturnsOnCall map[int]struct {
-		result1 *PkgRef
+	getManifestReturnsOnCall map[int]struct {
+		result1 *model.PkgManifest
 		result2 error
-	}
-	PullStub        func(path string, pkgRef *PkgRef, opts *PullOpts) error
-	pullMutex       sync.RWMutex
-	pullArgsForCall []struct {
-		path   string
-		pkgRef *PkgRef
-		opts   *PullOpts
-	}
-	pullReturns struct {
-		result1 error
-	}
-	pullReturnsOnCall map[int]struct {
-		result1 error
 	}
 	ListStub        func(dirPath string) ([]*model.PkgManifest, error)
 	listMutex       sync.RWMutex
@@ -74,49 +47,24 @@ type Fake struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}
-	SetDescriptionStub        func(pkgPath, pkgDescription string) error
-	setDescriptionMutex       sync.RWMutex
-	setDescriptionArgsForCall []struct {
-		pkgPath        string
-		pkgDescription string
-	}
-	setDescriptionReturns struct {
-		result1 error
-	}
-	setDescriptionReturnsOnCall map[int]struct {
-		result1 error
-	}
-	ListContentsStub        func(pkgRef string) ([]*model.PkgContent, error)
-	listContentsMutex       sync.RWMutex
-	listContentsArgsForCall []struct {
+	ResolveStub        func(pkgRef string, opts *ResolveOpts) (Handle, error)
+	resolveMutex       sync.RWMutex
+	resolveArgsForCall []struct {
 		pkgRef string
+		opts   *ResolveOpts
 	}
-	listContentsReturns struct {
-		result1 []*model.PkgContent
+	resolveReturns struct {
+		result1 Handle
 		result2 error
 	}
-	listContentsReturnsOnCall map[int]struct {
-		result1 []*model.PkgContent
+	resolveReturnsOnCall map[int]struct {
+		result1 Handle
 		result2 error
 	}
-	GetContentStub        func(pkgRef string, path string) (model.ReadSeekCloser, error)
-	getContentMutex       sync.RWMutex
-	getContentArgsForCall []struct {
-		pkgRef string
-		path   string
-	}
-	getContentReturns struct {
-		result1 model.ReadSeekCloser
-		result2 error
-	}
-	getContentReturnsOnCall map[int]struct {
-		result1 model.ReadSeekCloser
-		result2 error
-	}
-	ValidateStub        func(pkgPath string) []error
+	ValidateStub        func(pkgHandle Handle) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		pkgPath string
+		pkgHandle Handle
 	}
 	validateReturns struct {
 		result1 []error
@@ -178,157 +126,55 @@ func (fake *Fake) CreateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) Resolve(pkgRef *PkgRef, lookPaths ...string) (string, bool) {
-	fake.resolveMutex.Lock()
-	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
-	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
-		pkgRef    *PkgRef
-		lookPaths []string
-	}{pkgRef, lookPaths})
-	fake.recordInvocation("Resolve", []interface{}{pkgRef, lookPaths})
-	fake.resolveMutex.Unlock()
-	if fake.ResolveStub != nil {
-		return fake.ResolveStub(pkgRef, lookPaths...)
+func (fake *Fake) GetManifest(pkgHandle Handle) (*model.PkgManifest, error) {
+	fake.getManifestMutex.Lock()
+	ret, specificReturn := fake.getManifestReturnsOnCall[len(fake.getManifestArgsForCall)]
+	fake.getManifestArgsForCall = append(fake.getManifestArgsForCall, struct {
+		pkgHandle Handle
+	}{pkgHandle})
+	fake.recordInvocation("GetManifest", []interface{}{pkgHandle})
+	fake.getManifestMutex.Unlock()
+	if fake.GetManifestStub != nil {
+		return fake.GetManifestStub(pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.resolveReturns.result1, fake.resolveReturns.result2
+	return fake.getManifestReturns.result1, fake.getManifestReturns.result2
 }
 
-func (fake *Fake) ResolveCallCount() int {
-	fake.resolveMutex.RLock()
-	defer fake.resolveMutex.RUnlock()
-	return len(fake.resolveArgsForCall)
+func (fake *Fake) GetManifestCallCount() int {
+	fake.getManifestMutex.RLock()
+	defer fake.getManifestMutex.RUnlock()
+	return len(fake.getManifestArgsForCall)
 }
 
-func (fake *Fake) ResolveArgsForCall(i int) (*PkgRef, []string) {
-	fake.resolveMutex.RLock()
-	defer fake.resolveMutex.RUnlock()
-	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].lookPaths
+func (fake *Fake) GetManifestArgsForCall(i int) Handle {
+	fake.getManifestMutex.RLock()
+	defer fake.getManifestMutex.RUnlock()
+	return fake.getManifestArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) ResolveReturns(result1 string, result2 bool) {
-	fake.ResolveStub = nil
-	fake.resolveReturns = struct {
-		result1 string
-		result2 bool
-	}{result1, result2}
-}
-
-func (fake *Fake) ResolveReturnsOnCall(i int, result1 string, result2 bool) {
-	fake.ResolveStub = nil
-	if fake.resolveReturnsOnCall == nil {
-		fake.resolveReturnsOnCall = make(map[int]struct {
-			result1 string
-			result2 bool
-		})
-	}
-	fake.resolveReturnsOnCall[i] = struct {
-		result1 string
-		result2 bool
-	}{result1, result2}
-}
-
-func (fake *Fake) ParseRef(pkgRef string) (*PkgRef, error) {
-	fake.parseRefMutex.Lock()
-	ret, specificReturn := fake.parseRefReturnsOnCall[len(fake.parseRefArgsForCall)]
-	fake.parseRefArgsForCall = append(fake.parseRefArgsForCall, struct {
-		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("ParseRef", []interface{}{pkgRef})
-	fake.parseRefMutex.Unlock()
-	if fake.ParseRefStub != nil {
-		return fake.ParseRefStub(pkgRef)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fake.parseRefReturns.result1, fake.parseRefReturns.result2
-}
-
-func (fake *Fake) ParseRefCallCount() int {
-	fake.parseRefMutex.RLock()
-	defer fake.parseRefMutex.RUnlock()
-	return len(fake.parseRefArgsForCall)
-}
-
-func (fake *Fake) ParseRefArgsForCall(i int) string {
-	fake.parseRefMutex.RLock()
-	defer fake.parseRefMutex.RUnlock()
-	return fake.parseRefArgsForCall[i].pkgRef
-}
-
-func (fake *Fake) ParseRefReturns(result1 *PkgRef, result2 error) {
-	fake.ParseRefStub = nil
-	fake.parseRefReturns = struct {
-		result1 *PkgRef
+func (fake *Fake) GetManifestReturns(result1 *model.PkgManifest, result2 error) {
+	fake.GetManifestStub = nil
+	fake.getManifestReturns = struct {
+		result1 *model.PkgManifest
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ParseRefReturnsOnCall(i int, result1 *PkgRef, result2 error) {
-	fake.ParseRefStub = nil
-	if fake.parseRefReturnsOnCall == nil {
-		fake.parseRefReturnsOnCall = make(map[int]struct {
-			result1 *PkgRef
+func (fake *Fake) GetManifestReturnsOnCall(i int, result1 *model.PkgManifest, result2 error) {
+	fake.GetManifestStub = nil
+	if fake.getManifestReturnsOnCall == nil {
+		fake.getManifestReturnsOnCall = make(map[int]struct {
+			result1 *model.PkgManifest
 			result2 error
 		})
 	}
-	fake.parseRefReturnsOnCall[i] = struct {
-		result1 *PkgRef
+	fake.getManifestReturnsOnCall[i] = struct {
+		result1 *model.PkgManifest
 		result2 error
 	}{result1, result2}
-}
-
-func (fake *Fake) Pull(path string, pkgRef *PkgRef, opts *PullOpts) error {
-	fake.pullMutex.Lock()
-	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
-	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
-		path   string
-		pkgRef *PkgRef
-		opts   *PullOpts
-	}{path, pkgRef, opts})
-	fake.recordInvocation("Pull", []interface{}{path, pkgRef, opts})
-	fake.pullMutex.Unlock()
-	if fake.PullStub != nil {
-		return fake.PullStub(path, pkgRef, opts)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.pullReturns.result1
-}
-
-func (fake *Fake) PullCallCount() int {
-	fake.pullMutex.RLock()
-	defer fake.pullMutex.RUnlock()
-	return len(fake.pullArgsForCall)
-}
-
-func (fake *Fake) PullArgsForCall(i int) (string, *PkgRef, *PullOpts) {
-	fake.pullMutex.RLock()
-	defer fake.pullMutex.RUnlock()
-	return fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].pkgRef, fake.pullArgsForCall[i].opts
-}
-
-func (fake *Fake) PullReturns(result1 error) {
-	fake.PullStub = nil
-	fake.pullReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) PullReturnsOnCall(i int, result1 error) {
-	fake.PullStub = nil
-	if fake.pullReturnsOnCall == nil {
-		fake.pullReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.pullReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *Fake) List(dirPath string) ([]*model.PkgManifest, error) {
@@ -382,168 +228,68 @@ func (fake *Fake) ListReturnsOnCall(i int, result1 []*model.PkgManifest, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) SetDescription(pkgPath string, pkgDescription string) error {
-	fake.setDescriptionMutex.Lock()
-	ret, specificReturn := fake.setDescriptionReturnsOnCall[len(fake.setDescriptionArgsForCall)]
-	fake.setDescriptionArgsForCall = append(fake.setDescriptionArgsForCall, struct {
-		pkgPath        string
-		pkgDescription string
-	}{pkgPath, pkgDescription})
-	fake.recordInvocation("SetDescription", []interface{}{pkgPath, pkgDescription})
-	fake.setDescriptionMutex.Unlock()
-	if fake.SetDescriptionStub != nil {
-		return fake.SetDescriptionStub(pkgPath, pkgDescription)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fake.setDescriptionReturns.result1
-}
-
-func (fake *Fake) SetDescriptionCallCount() int {
-	fake.setDescriptionMutex.RLock()
-	defer fake.setDescriptionMutex.RUnlock()
-	return len(fake.setDescriptionArgsForCall)
-}
-
-func (fake *Fake) SetDescriptionArgsForCall(i int) (string, string) {
-	fake.setDescriptionMutex.RLock()
-	defer fake.setDescriptionMutex.RUnlock()
-	return fake.setDescriptionArgsForCall[i].pkgPath, fake.setDescriptionArgsForCall[i].pkgDescription
-}
-
-func (fake *Fake) SetDescriptionReturns(result1 error) {
-	fake.SetDescriptionStub = nil
-	fake.setDescriptionReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) SetDescriptionReturnsOnCall(i int, result1 error) {
-	fake.SetDescriptionStub = nil
-	if fake.setDescriptionReturnsOnCall == nil {
-		fake.setDescriptionReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.setDescriptionReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *Fake) ListContents(pkgRef string) ([]*model.PkgContent, error) {
-	fake.listContentsMutex.Lock()
-	ret, specificReturn := fake.listContentsReturnsOnCall[len(fake.listContentsArgsForCall)]
-	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct {
+func (fake *Fake) Resolve(pkgRef string, opts *ResolveOpts) (Handle, error) {
+	fake.resolveMutex.Lock()
+	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
+	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
 		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("ListContents", []interface{}{pkgRef})
-	fake.listContentsMutex.Unlock()
-	if fake.ListContentsStub != nil {
-		return fake.ListContentsStub(pkgRef)
+		opts   *ResolveOpts
+	}{pkgRef, opts})
+	fake.recordInvocation("Resolve", []interface{}{pkgRef, opts})
+	fake.resolveMutex.Unlock()
+	if fake.ResolveStub != nil {
+		return fake.ResolveStub(pkgRef, opts)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.listContentsReturns.result1, fake.listContentsReturns.result2
+	return fake.resolveReturns.result1, fake.resolveReturns.result2
 }
 
-func (fake *Fake) ListContentsCallCount() int {
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
-	return len(fake.listContentsArgsForCall)
+func (fake *Fake) ResolveCallCount() int {
+	fake.resolveMutex.RLock()
+	defer fake.resolveMutex.RUnlock()
+	return len(fake.resolveArgsForCall)
 }
 
-func (fake *Fake) ListContentsArgsForCall(i int) string {
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
-	return fake.listContentsArgsForCall[i].pkgRef
+func (fake *Fake) ResolveArgsForCall(i int) (string, *ResolveOpts) {
+	fake.resolveMutex.RLock()
+	defer fake.resolveMutex.RUnlock()
+	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].opts
 }
 
-func (fake *Fake) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
-	fake.ListContentsStub = nil
-	fake.listContentsReturns = struct {
-		result1 []*model.PkgContent
+func (fake *Fake) ResolveReturns(result1 Handle, result2 error) {
+	fake.ResolveStub = nil
+	fake.resolveReturns = struct {
+		result1 Handle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ListContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
-	fake.ListContentsStub = nil
-	if fake.listContentsReturnsOnCall == nil {
-		fake.listContentsReturnsOnCall = make(map[int]struct {
-			result1 []*model.PkgContent
+func (fake *Fake) ResolveReturnsOnCall(i int, result1 Handle, result2 error) {
+	fake.ResolveStub = nil
+	if fake.resolveReturnsOnCall == nil {
+		fake.resolveReturnsOnCall = make(map[int]struct {
+			result1 Handle
 			result2 error
 		})
 	}
-	fake.listContentsReturnsOnCall[i] = struct {
-		result1 []*model.PkgContent
+	fake.resolveReturnsOnCall[i] = struct {
+		result1 Handle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) GetContent(pkgRef string, path string) (model.ReadSeekCloser, error) {
-	fake.getContentMutex.Lock()
-	ret, specificReturn := fake.getContentReturnsOnCall[len(fake.getContentArgsForCall)]
-	fake.getContentArgsForCall = append(fake.getContentArgsForCall, struct {
-		pkgRef string
-		path   string
-	}{pkgRef, path})
-	fake.recordInvocation("GetContent", []interface{}{pkgRef, path})
-	fake.getContentMutex.Unlock()
-	if fake.GetContentStub != nil {
-		return fake.GetContentStub(pkgRef, path)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fake.getContentReturns.result1, fake.getContentReturns.result2
-}
-
-func (fake *Fake) GetContentCallCount() int {
-	fake.getContentMutex.RLock()
-	defer fake.getContentMutex.RUnlock()
-	return len(fake.getContentArgsForCall)
-}
-
-func (fake *Fake) GetContentArgsForCall(i int) (string, string) {
-	fake.getContentMutex.RLock()
-	defer fake.getContentMutex.RUnlock()
-	return fake.getContentArgsForCall[i].pkgRef, fake.getContentArgsForCall[i].path
-}
-
-func (fake *Fake) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
-	fake.GetContentStub = nil
-	fake.getContentReturns = struct {
-		result1 model.ReadSeekCloser
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *Fake) GetContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
-	fake.GetContentStub = nil
-	if fake.getContentReturnsOnCall == nil {
-		fake.getContentReturnsOnCall = make(map[int]struct {
-			result1 model.ReadSeekCloser
-			result2 error
-		})
-	}
-	fake.getContentReturnsOnCall[i] = struct {
-		result1 model.ReadSeekCloser
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *Fake) Validate(pkgPath string) []error {
+func (fake *Fake) Validate(pkgHandle Handle) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		pkgPath string
-	}{pkgPath})
-	fake.recordInvocation("Validate", []interface{}{pkgPath})
+		pkgHandle Handle
+	}{pkgHandle})
+	fake.recordInvocation("Validate", []interface{}{pkgHandle})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		return fake.ValidateStub(pkgPath)
+		return fake.ValidateStub(pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1
@@ -557,10 +303,10 @@ func (fake *Fake) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *Fake) ValidateArgsForCall(i int) string {
+func (fake *Fake) ValidateArgsForCall(i int) Handle {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
-	return fake.validateArgsForCall[i].pkgPath
+	return fake.validateArgsForCall[i].pkgHandle
 }
 
 func (fake *Fake) ValidateReturns(result1 []error) {
@@ -587,20 +333,12 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
-	fake.resolveMutex.RLock()
-	defer fake.resolveMutex.RUnlock()
-	fake.parseRefMutex.RLock()
-	defer fake.parseRefMutex.RUnlock()
-	fake.pullMutex.RLock()
-	defer fake.pullMutex.RUnlock()
+	fake.getManifestMutex.RLock()
+	defer fake.getManifestMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
-	fake.setDescriptionMutex.RLock()
-	defer fake.setDescriptionMutex.RUnlock()
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
-	fake.getContentMutex.RLock()
-	defer fake.getContentMutex.RUnlock()
+	fake.resolveMutex.RLock()
+	defer fake.resolveMutex.RUnlock()
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

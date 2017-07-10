@@ -8,19 +8,19 @@ import (
 )
 
 var _ = Context("refParser", func() {
-	Context("PkgRef", func() {
+	Context("Ref", func() {
 		Context("ToPath", func() {
 			It("should return expected path", func() {
 				/* arrange */
 				providedBasePath := "/dummy/path"
-				objectUnderTest := &PkgRef{
-					FullyQualifiedName: "test.com/org/pkg-name",
-					Version:            "0.0.0",
+				objectUnderTest := &Ref{
+					Name:    "test.com/org/pkg-name",
+					Version: "0.0.0",
 				}
 
 				expectedPath := filepath.Join(
 					providedBasePath,
-					filepath.FromSlash(objectUnderTest.FullyQualifiedName),
+					filepath.FromSlash(objectUnderTest.Name),
 					objectUnderTest.Version,
 				)
 
@@ -32,8 +32,8 @@ var _ = Context("refParser", func() {
 			})
 		})
 	})
-	Context("ParseRef", func() {
-		Context("url.ParseRef errors", func() {
+	Context("Parse", func() {
+		Context("url.Parse errors", func() {
 			It("should error", func() {
 				/* arrange */
 				providedPkgRef := "::"
@@ -43,28 +43,28 @@ var _ = Context("refParser", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ParseRef(providedPkgRef)
+				_, actualErr := objectUnderTest.Parse(providedPkgRef)
 
 				/* assert */
 				Expect(actualErr).To(Not(BeNil()))
 			})
 		})
-		Context("url.ParseRef doesn't error", func() {
-			It("should return expected PkgRef", func() {
+		Context("url.Parse doesn't error", func() {
+			It("should return expected Ref", func() {
 				/* arrange */
 				providedFullyQualifiedPkgName := "somehost.com/path/pkgName"
 				providedPkgVersion := "0.0.0"
 				providedPkgRef := fmt.Sprintf("%v#%v", providedFullyQualifiedPkgName, providedPkgVersion)
-				expectedPkgRef := &PkgRef{
-					FullyQualifiedName: providedFullyQualifiedPkgName,
-					Version:            providedPkgVersion,
+				expectedPkgRef := &Ref{
+					Name:    providedFullyQualifiedPkgName,
+					Version: providedPkgVersion,
 				}
 				objectUnderTest := _Pkg{
 					refParser: newRefParser(),
 				}
 
 				/* act */
-				actualPkgRef, actualErr := objectUnderTest.ParseRef(providedPkgRef)
+				actualPkgRef, actualErr := objectUnderTest.Parse(providedPkgRef)
 
 				/* assert */
 				Expect(actualPkgRef).To(Equal(expectedPkgRef))
