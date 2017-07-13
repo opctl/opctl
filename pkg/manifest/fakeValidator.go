@@ -2,15 +2,14 @@
 package manifest
 
 import (
-	"io"
 	"sync"
 )
 
 type fakeValidator struct {
-	ValidateStub        func(manifestReader io.Reader) []error
+	ValidateStub        func(manifestBytes []byte) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		manifestReader io.Reader
+		manifestBytes []byte
 	}
 	validateReturns struct {
 		result1 []error
@@ -22,16 +21,21 @@ type fakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeValidator) Validate(manifestReader io.Reader) []error {
+func (fake *fakeValidator) Validate(manifestBytes []byte) []error {
+	var manifestBytesCopy []byte
+	if manifestBytes != nil {
+		manifestBytesCopy = make([]byte, len(manifestBytes))
+		copy(manifestBytesCopy, manifestBytes)
+	}
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		manifestReader io.Reader
-	}{manifestReader})
-	fake.recordInvocation("Validate", []interface{}{manifestReader})
+		manifestBytes []byte
+	}{manifestBytesCopy})
+	fake.recordInvocation("Validate", []interface{}{manifestBytesCopy})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		return fake.ValidateStub(manifestReader)
+		return fake.ValidateStub(manifestBytes)
 	}
 	if specificReturn {
 		return ret.result1
@@ -45,10 +49,10 @@ func (fake *fakeValidator) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *fakeValidator) ValidateArgsForCall(i int) io.Reader {
+func (fake *fakeValidator) ValidateArgsForCall(i int) []byte {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
-	return fake.validateArgsForCall[i].manifestReader
+	return fake.validateArgsForCall[i].manifestBytes
 }
 
 func (fake *fakeValidator) ValidateReturns(result1 []error) {

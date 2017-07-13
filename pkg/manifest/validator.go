@@ -7,13 +7,12 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
-	"io"
 )
 
 type Validator interface {
 	// Validate validates the pkg manifest at path
 	Validate(
-		manifestReader io.Reader,
+		manifestBytes []byte,
 	) []error
 }
 
@@ -46,16 +45,10 @@ type _validator struct {
 }
 
 func (this _validator) Validate(
-	manifestReader io.Reader,
+	manifestBytes []byte,
 ) []error {
 
-	ManifestYAMLBytes, err := this.ioUtil.ReadAll(manifestReader)
-	if nil != err {
-		// handle syntax errors specially
-		return []error{err}
-	}
-
-	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
+	manifestJSONBytes, err := yaml.YAMLToJSON(manifestBytes)
 	if nil != err {
 		// handle syntax errors specially
 		return []error{err}

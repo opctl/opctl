@@ -80,5 +80,5 @@ func (lh localHandle) GetContent(
 }
 
 func (lh localHandle) Ref() string {
-	return lh.Ref()
+	return lh.path
 }

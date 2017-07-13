@@ -13,5 +13,10 @@ func (this _Pkg) GetManifest(
 		return nil, err
 	}
 
-	return this.manifest.Unmarshal(manifestReader)
+	manifestBytes, err := this.ioUtil.ReadAll(manifestReader)
+	if nil != err {
+		return nil, err
+	}
+
+	return this.manifest.Unmarshal(manifestBytes)
 }

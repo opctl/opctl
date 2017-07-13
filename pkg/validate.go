@@ -8,5 +8,10 @@ func (this _Pkg) Validate(
 		return []error{err}
 	}
 
-	return this.manifest.Validate(manifestReader)
+	manifestBytes, err := this.ioUtil.ReadAll(manifestReader)
+	if nil != err {
+		return []error{err}
+	}
+
+	return this.manifest.Validate(manifestBytes)
 }

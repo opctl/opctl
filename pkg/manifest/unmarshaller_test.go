@@ -3,12 +3,10 @@ package manifest
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"strings"
 )
 
 var _ = Context("_manifestUnmarshaller", func() {
@@ -17,7 +15,7 @@ var _ = Context("_manifestUnmarshaller", func() {
 
 		It("should call validate w/ expected inputs", func() {
 			/* arrange */
-			providedReader := strings.NewReader("")
+			providedBytes := []byte("dummyBytes")
 
 			fakeValidator := new(fakeValidator)
 
@@ -29,10 +27,10 @@ var _ = Context("_manifestUnmarshaller", func() {
 			}
 
 			/* act */
-			objectUnderTest.Unmarshal(providedReader)
+			objectUnderTest.Unmarshal(providedBytes)
 
 			/* assert */
-			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedReader))
+			Expect(fakeValidator.ValidateArgsForCall(0)).To(Equal(providedBytes))
 		})
 		Context("Validator.Validate returns errors", func() {
 			It("should return the expected error", func() {
@@ -63,51 +61,6 @@ var _ = Context("_manifestUnmarshaller", func() {
 			})
 		})
 		Context("Validator.Validate doesn't return errors", func() {
-			It("should call ioutil.ReadAll w/expected args", func() {
-				/* arrange */
-				providedReader := strings.NewReader("dummyManifest")
-
-				fakeIOUtil := new(iioutil.Fake)
-				// err to cause immediate return
-				fakeIOUtil.ReadAllReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _Manifest{
-					ioUtil:    fakeIOUtil,
-					Validator: new(fakeValidator),
-				}
-
-				/* act */
-				objectUnderTest.Unmarshal(providedReader)
-
-				/* assert */
-				Expect(fakeIOUtil.ReadAllArgsForCall(0)).
-					To(Equal(providedReader))
-
-			})
-			Context("ioutil.ReadAll returns an error", func() {
-
-				It("should return expected error", func() {
-
-					/* arrange */
-					expectedError := errors.New("dummyError")
-
-					fakeIOUtil := new(iioutil.Fake)
-					fakeIOUtil.ReadAllReturns(nil, expectedError)
-
-					objectUnderTest := _Manifest{
-						ioUtil:    fakeIOUtil,
-						Validator: new(fakeValidator),
-					}
-
-					/* act */
-					_, actualError := objectUnderTest.Unmarshal(nil)
-
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-
-				})
-
-			})
 
 			It("should return expected pkgManifest", func() {
 
@@ -144,17 +97,17 @@ var _ = Context("_manifestUnmarshaller", func() {
 					},
 					Version: "dummyVersion",
 				}
-
-				fakeIOUtil := new(iioutil.Fake)
-				fakeIOUtil.ReadAllReturns(yaml.Marshal(expectedPkgManifest))
+				providedBytes, err := yaml.Marshal(expectedPkgManifest)
+				if nil != err {
+					Fail(err.Error())
+				}
 
 				objectUnderTest := _Manifest{
-					ioUtil:    fakeIOUtil,
 					Validator: new(fakeValidator),
 				}
 
 				/* act */
-				actualPkgManifest, _ := objectUnderTest.Unmarshal(nil)
+				actualPkgManifest, _ := objectUnderTest.Unmarshal(providedBytes)
 
 				/* assert */
 				Expect(actualPkgManifest).To(Equal(expectedPkgManifest))

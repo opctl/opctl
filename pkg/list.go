@@ -30,13 +30,23 @@ func (this _Pkg) List(
 			}
 			pkgs = append(pkgs, childPkgs...)
 		} else if childFileInfo.Name() == OpDotYmlFileName {
+
 			manifestReader, err := this.os.Open(childPath)
-			if nil == err {
-				if manifest, err := this.manifest.Unmarshal(manifestReader); nil == err {
-					manifestReader.Close()
-					// ignore err'd pkgs
-					pkgs = append(pkgs, manifest)
-				}
+			if nil != err {
+				// ignore errors for now;
+				continue
+			}
+
+			manifestBytes, err := this.ioUtil.ReadAll(manifestReader)
+			manifestReader.Close()
+			if nil != err {
+				// ignore errors for now;
+				continue
+			}
+
+			if manifest, err := this.manifest.Unmarshal(manifestBytes); nil == err {
+				// ignore err'd pkgs
+				pkgs = append(pkgs, manifest)
 			}
 		}
 

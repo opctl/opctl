@@ -2,17 +2,16 @@
 package manifest
 
 import (
-	"io"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	ValidateStub        func(manifestReader io.Reader) []error
+	ValidateStub        func(manifestBytes []byte) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		manifestReader io.Reader
+		manifestBytes []byte
 	}
 	validateReturns struct {
 		result1 []error
@@ -20,10 +19,10 @@ type Fake struct {
 	validateReturnsOnCall map[int]struct {
 		result1 []error
 	}
-	UnmarshalStub        func(manifestReader io.Reader) (*model.PkgManifest, error)
+	UnmarshalStub        func(manifestBytes []byte) (*model.PkgManifest, error)
 	unmarshalMutex       sync.RWMutex
 	unmarshalArgsForCall []struct {
-		manifestReader io.Reader
+		manifestBytes []byte
 	}
 	unmarshalReturns struct {
 		result1 *model.PkgManifest
@@ -37,16 +36,21 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Validate(manifestReader io.Reader) []error {
+func (fake *Fake) Validate(manifestBytes []byte) []error {
+	var manifestBytesCopy []byte
+	if manifestBytes != nil {
+		manifestBytesCopy = make([]byte, len(manifestBytes))
+		copy(manifestBytesCopy, manifestBytes)
+	}
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		manifestReader io.Reader
-	}{manifestReader})
-	fake.recordInvocation("Validate", []interface{}{manifestReader})
+		manifestBytes []byte
+	}{manifestBytesCopy})
+	fake.recordInvocation("Validate", []interface{}{manifestBytesCopy})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		return fake.ValidateStub(manifestReader)
+		return fake.ValidateStub(manifestBytes)
 	}
 	if specificReturn {
 		return ret.result1
@@ -60,10 +64,10 @@ func (fake *Fake) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *Fake) ValidateArgsForCall(i int) io.Reader {
+func (fake *Fake) ValidateArgsForCall(i int) []byte {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
-	return fake.validateArgsForCall[i].manifestReader
+	return fake.validateArgsForCall[i].manifestBytes
 }
 
 func (fake *Fake) ValidateReturns(result1 []error) {
@@ -85,16 +89,21 @@ func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
 	}{result1}
 }
 
-func (fake *Fake) Unmarshal(manifestReader io.Reader) (*model.PkgManifest, error) {
+func (fake *Fake) Unmarshal(manifestBytes []byte) (*model.PkgManifest, error) {
+	var manifestBytesCopy []byte
+	if manifestBytes != nil {
+		manifestBytesCopy = make([]byte, len(manifestBytes))
+		copy(manifestBytesCopy, manifestBytes)
+	}
 	fake.unmarshalMutex.Lock()
 	ret, specificReturn := fake.unmarshalReturnsOnCall[len(fake.unmarshalArgsForCall)]
 	fake.unmarshalArgsForCall = append(fake.unmarshalArgsForCall, struct {
-		manifestReader io.Reader
-	}{manifestReader})
-	fake.recordInvocation("Unmarshal", []interface{}{manifestReader})
+		manifestBytes []byte
+	}{manifestBytesCopy})
+	fake.recordInvocation("Unmarshal", []interface{}{manifestBytesCopy})
 	fake.unmarshalMutex.Unlock()
 	if fake.UnmarshalStub != nil {
-		return fake.UnmarshalStub(manifestReader)
+		return fake.UnmarshalStub(manifestBytes)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -108,10 +117,10 @@ func (fake *Fake) UnmarshalCallCount() int {
 	return len(fake.unmarshalArgsForCall)
 }
 
-func (fake *Fake) UnmarshalArgsForCall(i int) io.Reader {
+func (fake *Fake) UnmarshalArgsForCall(i int) []byte {
 	fake.unmarshalMutex.RLock()
 	defer fake.unmarshalMutex.RUnlock()
-	return fake.unmarshalArgsForCall[i].manifestReader
+	return fake.unmarshalArgsForCall[i].manifestBytes
 }
 
 func (fake *Fake) UnmarshalReturns(result1 *model.PkgManifest, result2 error) {

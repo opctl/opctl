@@ -2,10 +2,10 @@ package pkg
 
 import (
 	"errors"
+	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
-	"io/ioutil"
 )
 
 var _ = Context("Validate", func() {
@@ -43,13 +43,12 @@ var _ = Context("Validate", func() {
 	Context("handle.GetContent doesn't err", func() {
 		It("should call manifestValidator.Validate w/ expected args & return result", func() {
 			/* arrange */
-			expectedManifestReader, err := ioutil.TempFile("", "")
-			if nil != err {
-				Fail(err.Error())
-			}
 
 			providedFileHandle := new(FakeHandle)
-			providedFileHandle.GetContentReturns(expectedManifestReader, nil)
+
+			expectedManifestBytes := []byte{2, 5, 61}
+			fakeIOUtil := new(iioutil.Fake)
+			fakeIOUtil.ReadAllReturns(expectedManifestBytes, nil)
 
 			expectedErrs := []error{
 				errors.New("dummyErr1"),
@@ -60,6 +59,7 @@ var _ = Context("Validate", func() {
 			fakeManifest.ValidateReturns(expectedErrs)
 
 			objectUnderTest := _Pkg{
+				ioUtil:   fakeIOUtil,
 				manifest: fakeManifest,
 			}
 
@@ -67,7 +67,7 @@ var _ = Context("Validate", func() {
 			actualErrs := objectUnderTest.Validate(providedFileHandle)
 
 			/* assert */
-			Expect(fakeManifest.ValidateArgsForCall(0)).To(Equal(expectedManifestReader))
+			Expect(fakeManifest.ValidateArgsForCall(0)).To(Equal(expectedManifestBytes))
 			Expect(actualErrs).To(Equal(expectedErrs))
 		})
 	})
