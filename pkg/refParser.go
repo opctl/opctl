@@ -3,6 +3,7 @@ package pkg
 //go:generate counterfeiter -o ./fakeRefParser.go --fake-name fakeRefParser ./ refParser
 
 import (
+	"fmt"
 	"net/url"
 	"path"
 	"path/filepath"
@@ -31,7 +32,7 @@ type Ref struct {
 
 // ToPath constructs a filesystem path for a Ref, assuming the provided base path
 func (pr Ref) ToPath(basePath string) string {
-	return filepath.Join(basePath, filepath.FromSlash(pr.Name), pr.Version)
+	return filepath.Join(basePath, filepath.FromSlash(fmt.Sprintf("%v#%v", pr.Name, pr.Version)))
 }
 
 // Parse parses a pkgRef

@@ -161,8 +161,7 @@ var _ = Context("puller", func() {
 
 						expectedPath := filepath.Join(
 							providedPath,
-							ref.Name,
-							ref.Version,
+							fmt.Sprintf("%v#%v", ref.Name, ref.Version),
 						)
 
 						fakeOS := new(ios.Fake)

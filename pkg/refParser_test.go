@@ -20,8 +20,7 @@ var _ = Context("refParser", func() {
 
 				expectedPath := filepath.Join(
 					providedBasePath,
-					filepath.FromSlash(objectUnderTest.Name),
-					objectUnderTest.Version,
+					filepath.FromSlash(fmt.Sprintf("%v#%v", objectUnderTest.Name, objectUnderTest.Version)),
 				)
 
 				/* act */

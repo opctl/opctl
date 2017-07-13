@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/0.1.4/pkg-manifest.schema.json",
+  "id": "https://opspec.io/0.1.5/pkg-manifest.schema.json",
   "title": "packageManifest",
   "description": "Manifest for a package",
   "properties": {
@@ -42,7 +42,7 @@
               "type": "string"
             },
             "default": {
-              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -69,7 +69,7 @@
               "type": "string"
             },
             "default": {
-              "description": "Default value; a relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
               "type": "string"
             },
             "isSecret": {
@@ -493,16 +493,6 @@
                 },
                 "pullCreds":{
                   "$ref":"#/definitions/pullCreds"
-                },
-                "pullIdentity":{
-                  "description": "Identity/username used to pull the image; deprecated, use pullCreds instead",
-                  "type": "string",
-                  "deprecated": true
-                },
-                "pullSecret":{
-                  "description": "Secret/password used to pull the image; deprecated, use pullCreds instead",
-                  "type": "string",
-                  "deprecated": true
                 }
               },
               "required": [
@@ -579,11 +569,6 @@
         "op": {
           "type": "object",
           "properties": {
-            "ref": {
-              "description": "Reference to a package",
-              "deprecated": true,
-              "type": "string"
-            },
             "pkg":{
               "type":"object",
               "properties":{

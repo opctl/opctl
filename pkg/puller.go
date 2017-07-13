@@ -25,8 +25,9 @@ type puller interface {
 
 func newPuller() puller {
 	return _puller{
-		git: igit.New(),
-		os:  ios.New(),
+		git:       igit.New(),
+		os:        ios.New(),
+		refParser: newRefParser(),
 	}
 }
 
