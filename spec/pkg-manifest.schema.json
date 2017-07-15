@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/0.1.4/pkg-manifest.schema.json",
+  "id": "https://opspec.io/0.1.5/pkg-manifest.schema.json",
   "title": "packageManifest",
   "description": "Manifest for a package",
   "properties": {
@@ -85,7 +85,7 @@
         "file"
       ]
     },
-    "pullCreds":{
+    "pullCreds": {
       "type": "object",
       "description": "Credentials used during authentication with the source of an image or package",
       "properties": {
@@ -96,7 +96,7 @@
           "$ref": "#/definitions/interpolatedString"
         }
       },
-      "required":[
+      "required": [
         "username",
         "password"
       ],
@@ -107,21 +107,21 @@
       "type": "object",
       "properties": {
         "allOf": {
-          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/numberConstraints"
           }
         },
         "anyOf": {
-          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/numberConstraints"
           }
         },
         "enum": {
-          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
           "type": "array",
           "items": {
             "type": "number"
@@ -140,23 +140,23 @@
           ]
         },
         "maximum": {
-          "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.2)",
+          "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.2)",
           "type": "number"
         },
         "minimum": {
-          "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.4)",
+          "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.4)",
           "type": "number"
         },
         "multipleOf": {
-          "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.1)",
+          "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.1)",
           "type": "number"
         },
         "not": {
-          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
           "$ref": "#/definitions/numberConstraints"
         },
         "oneOf": {
-          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/numberConstraints"
@@ -194,6 +194,140 @@
         "number"
       ]
     },
+    "objectConstraints": {
+      "title": "objectConstraints",
+      "type": "object",
+      "properties": {
+        "maxProperties": {
+          "description": "JSON Schema [maxProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.13)",
+          "type": "integer",
+          "minimum": 0
+        },
+        "minProperties": {
+          "description": "JSON Schema [minProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.14)",
+          "type": "integer",
+          "minimum": 0
+        },
+        "required": {
+          "description": "JSON Schema [required keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.15)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "JSON Schema [properties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.16)",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "http://json-schema.org/draft-04/schema#"
+          }
+        },
+        "patternProperties": {
+          "description": "JSON Schema [patternProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.17)",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "http://json-schema.org/draft-04/schema#"
+          }
+        },
+        "additionalProperties": {
+          "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.18)",
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "$ref": "http://json-schema.org/draft-04/schema#"
+              }
+            ]
+          }
+        },
+        "dependencies": {
+          "description": "JSON Schema [dependencies keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.19)",
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "object",
+                "$ref": "http://json-schema.org/draft-04/schema#"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          }
+        },
+        "enum": {
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
+          "type": "array",
+          "items": {
+            "type": [
+              "null",
+              "object"
+            ]
+          }
+        },
+        "allOf": {
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectConstraints"
+          }
+        },
+        "anyOf": {
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectConstraints"
+          }
+        },
+        "oneOf": {
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectConstraints"
+          }
+        },
+        "not": {
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
+          "$ref": "#/definitions/objectConstraints"
+        }
+      },
+      "additionalProperties": false
+    },
+    "objectParam": {
+      "title": "objectParam",
+      "description": "Object parameter of an op",
+      "type": "object",
+      "properties": {
+        "object": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "type": "object"
+            },
+            "isSecret": {
+              "description": "If the object is secret",
+              "type": "boolean"
+            },
+            "constraints": {
+              "$ref": "#/definitions/objectConstraints"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "object"
+      ]
+    },
     "socketParam": {
       "title": "socketParam",
       "type": "object",
@@ -222,32 +356,32 @@
       "type": "object",
       "properties": {
         "allOf": {
-          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.22)",
+          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/stringConstraints"
           }
         },
         "anyOf": {
-          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.23)",
+          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/stringConstraints"
           }
         },
         "enum": {
-          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.20)",
+          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "format": {
-          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7)",
+          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7)",
           "oneOf": [
             {
               "title": "date-time",
-              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.1)",
+              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.1)",
               "type": "string",
               "enum": [
                 "date-time"
@@ -263,7 +397,7 @@
             },
             {
               "title": "email",
-              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.2)",
+              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.2)",
               "type": "string",
               "enum": [
                 "email"
@@ -271,7 +405,7 @@
             },
             {
               "title": "hostname",
-              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.3)",
+              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.3)",
               "type": "string",
               "enum": [
                 "hostname"
@@ -279,7 +413,7 @@
             },
             {
               "title": "ipv4",
-              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.4)",
+              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.4)",
               "type": "string",
               "enum": [
                 "ipv4"
@@ -287,7 +421,7 @@
             },
             {
               "title": "ipv6",
-              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.5)",
+              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.5)",
               "type": "string",
               "enum": [
                 "ipv6"
@@ -295,7 +429,7 @@
             },
             {
               "title": "uri",
-              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.3.6)",
+              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.6)",
               "type": "string",
               "enum": [
                 "uri"
@@ -312,29 +446,29 @@
           ]
         },
         "maxLength": {
-          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.6)",
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.6)",
           "type": "integer",
           "minimum": 1
         },
         "minLength": {
-          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.7)",
+          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.7)",
           "type": "integer",
           "minimum": 0,
           "default": 0
         },
         "not": {
-          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.25)",
+          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
           "$ref": "#/definitions/stringConstraints"
         },
         "oneOf": {
-          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.24)",
+          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
           "type": "array",
           "items": {
             "$ref": "#/definitions/stringConstraints"
           }
         },
         "pattern": {
-          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-zyp-json-schema-04#section-5.8)",
+          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.8)",
           "type": "string",
           "format": "regex"
         }
@@ -384,6 +518,9 @@
             },
             {
               "$ref": "#/definitions/numberParam"
+            },
+            {
+              "$ref": "#/definitions/objectParam"
             },
             {
               "$ref": "#/definitions/socketParam"
@@ -452,15 +589,15 @@
               "patternProperties": {
                 "^[^=]+$": {
                   "oneOf": [
-                  {
-                    "description": "(will be bound to in scope ref w/ same name)",
-                    "type": "null"
-                  },
-                  {
-                    "description": "string/number ref or string value",
-                    "$ref": "#/definitions/interpolatedString"
-                  }
-                ]
+                    {
+                      "description": "(will be bound to in scope ref w/ same name)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "string/number ref or string value",
+                      "$ref": "#/definitions/interpolatedString"
+                    }
+                  ]
                 }
               },
               "additionalProperties": false
@@ -476,7 +613,7 @@
                       "type": "null"
                     },
                     {
-                      "description": "file ref or path in package",
+                      "description": "file/string/number ref or path in package",
                       "type": "string"
                     }
                   ]
@@ -491,8 +628,8 @@
                   "description": "Reference to an image",
                   "$ref": "#/definitions/interpolatedString"
                 },
-                "pullCreds":{
-                  "$ref":"#/definitions/pullCreds"
+                "pullCreds": {
+                  "$ref": "#/definitions/pullCreds"
                 }
               },
               "required": [
@@ -569,16 +706,16 @@
         "op": {
           "type": "object",
           "properties": {
-            "pkg":{
-              "type":"object",
-              "properties":{
+            "pkg": {
+              "type": "object",
+              "properties": {
                 "ref": {
                   "description": "Reference to a pkg",
                   "type": "string",
                   "format": "uri-reference"
                 },
-                "pullCreds":{
-                  "$ref":"#/definitions/pullCreds"
+                "pullCreds": {
+                  "$ref": "#/definitions/pullCreds"
                 }
               },
               "required": [
@@ -624,12 +761,16 @@
               "additionalProperties": false
             }
           },
-          "oneOf":[
+          "oneOf": [
             {
-              "required": ["pkg"]
+              "required": [
+                "pkg"
+              ]
             },
             {
-              "required": ["ref"]
+              "required": [
+                "ref"
+              ]
             }
           ],
           "additionalProperties": false
