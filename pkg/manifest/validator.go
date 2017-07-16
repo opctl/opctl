@@ -21,7 +21,7 @@ func newValidator() Validator {
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
 
-	manifestSchemaBytes, err := pkgManifestDataPackageManifestSchemaJsonBytes()
+	manifestSchemaBytes, err := pkgManifestDataPkgManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}
