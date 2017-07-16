@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
+[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)[![Go Report Card](https://goreportcard.com/badge/github.com/opspec-io/sdk-golang)](https://goreportcard.com/report/github.com/opspec-io/sdk-golang)[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
 
 Golang SDK for [opspec](https://opspec.io)
 
