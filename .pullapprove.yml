@@ -4,6 +4,6 @@ reject_regex: ^[Rr]eject
 reset_on_push: true
 reviewers:
   teams:
-    - spec-maintainers
+    - maintainers
   name: default
   required: 1
