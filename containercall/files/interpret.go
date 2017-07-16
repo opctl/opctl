@@ -1,6 +1,7 @@
 package files
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
@@ -56,10 +57,6 @@ fileLoop:
 					scgContainerFileBind,
 					scgContainerFileBind,
 				)
-			case nil != value.Number:
-				contentSrc = strings.NewReader(strconv.FormatFloat(*value.Number, 'f', -1, 64))
-			case nil != value.String:
-				contentSrc = strings.NewReader(*value.String)
 			case nil != value.File:
 				if strings.HasPrefix(*value.File, f.rootFSPath) {
 					// bound to rootFS file
@@ -84,9 +81,24 @@ fileLoop:
 					dcgContainerCallFiles[scgContainerFilePath] = *value.File
 				}
 				continue fileLoop
+			case nil != value.Number:
+				contentSrc = strings.NewReader(strconv.FormatFloat(*value.Number, 'f', -1, 64))
+			case nil != value.Object:
+				objectBytes, err := f.json.Marshal(value.Object)
+				if nil != err {
+					return nil, fmt.Errorf(
+						"Unable to bind file '%v' to %v; error was: %v",
+						scgContainerFilePath,
+						scgContainerFileBind,
+						err.Error(),
+					)
+				}
+				contentSrc = bytes.NewReader(objectBytes)
+			case nil != value.String:
+				contentSrc = strings.NewReader(*value.String)
 			default:
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'; '%v' not a file, number, or string",
+					"Unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					scgContainerFileBind,

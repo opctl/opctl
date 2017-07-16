@@ -4,6 +4,7 @@ package files
 
 import (
 	"github.com/golang-interfaces/iio"
+	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/model"
@@ -24,6 +25,7 @@ func New(
 	return _Files{
 		fileCopier: filecopier.New(),
 		io:         iio.New(),
+		json:       ijson.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
 	}
@@ -32,6 +34,7 @@ func New(
 type _Files struct {
 	fileCopier filecopier.FileCopier
 	io         iio.IIO
+	json       ijson.IJSON
 	os         ios.IOS
 	rootFSPath string
 }
