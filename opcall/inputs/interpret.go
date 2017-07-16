@@ -18,16 +18,18 @@ func (_inputs _Inputs) Interpret(
 		// apply defaults
 		if nil != paramValue {
 			switch {
-			case nil != paramValue.String && nil != paramValue.String.Default:
-				dcgOpCallInputs[paramName] = &model.Value{String: paramValue.String.Default}
-			case nil != paramValue.Number && nil != paramValue.Number.Default:
-				dcgOpCallInputs[paramName] = &model.Value{Number: paramValue.Number.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
 				dirValue := filepath.Join(pkgPath, *paramValue.Dir.Default)
 				dcgOpCallInputs[paramName] = &model.Value{Dir: &dirValue}
 			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
 				fileValue := filepath.Join(pkgPath, *paramValue.File.Default)
 				dcgOpCallInputs[paramName] = &model.Value{File: &fileValue}
+			case nil != paramValue.Number && nil != paramValue.Number.Default:
+				dcgOpCallInputs[paramName] = &model.Value{Number: paramValue.Number.Default}
+			case nil != paramValue.Object && nil != paramValue.Object.Default:
+				dcgOpCallInputs[paramName] = &model.Value{Object: paramValue.Object.Default}
+			case nil != paramValue.String && nil != paramValue.String.Default:
+				dcgOpCallInputs[paramName] = &model.Value{String: paramValue.String.Default}
 			}
 		}
 	}
