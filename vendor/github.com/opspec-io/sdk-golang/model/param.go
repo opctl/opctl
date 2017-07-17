@@ -1,15 +1,16 @@
 package model
 
-// Parameter of an op
+// Param represents a typed param of an op
 type Param struct {
 	Dir    *DirParam    `yaml:"dir,omitempty"`
 	File   *FileParam   `yaml:"file,omitempty"`
 	Number *NumberParam `yaml:"number,omitempty"`
+	Object *ObjectParam `yaml:"object,omitempty"`
 	Socket *SocketParam `yaml:"socket,omitempty"`
 	String *StringParam `yaml:"string,omitempty"`
 }
 
-// Number parameter
+// NumberParam represents a parameter of type number
 type NumberParam struct {
 	Constraints *NumberConstraints `yaml:"constraints,omitempty"`
 	Default     *float64           `yaml:"default,omitempty"`
@@ -17,7 +18,7 @@ type NumberParam struct {
 	IsSecret    bool               `yaml:"isSecret,omitempty"`
 }
 
-// Number parameter constraints
+// NumberConstraints represents constraints of a NumberParam
 type NumberConstraints struct {
 	// json struct tags used for validating via gojsonschema
 	AllOf      []*NumberConstraints `json:"allOf,omitempty" yaml:"allOf,omitempty"`
@@ -27,32 +28,78 @@ type NumberConstraints struct {
 	Maximum    float64              `json:"maximum,omitempty" yaml:"maximum,omitempty"`
 	Minimum    float64              `json:"minimum,omitempty" yaml:"minimum,omitempty"`
 	MultipleOf float64              `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
-	Integer    bool                 `json:"integer,omitempty" yaml:"integer,omitempty"`
 	Not        *NumberConstraints   `json:"not,omitempty" yaml:"not,omitempty"`
 	OneOf      []*NumberConstraints `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
 }
 
-// Directory parameter
+// DirParam represents a parameter of type directory
 type DirParam struct {
 	Default     *string `yaml:"default,omitempty"`
 	Description string  `yaml:"description,omitempty"`
 	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
-// File parameter
+// FileParam represents a parameter of type file
 type FileParam struct {
 	Default     *string `yaml:"default,omitempty"`
 	Description string  `yaml:"description,omitempty"`
 	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
-// Socket parameter
+// ObjectParam represents a parameter of type object
+type ObjectParam struct {
+	Constraints *ObjectConstraints     `yaml:"constraints,omitempty"`
+	Default     map[string]interface{} `yaml:"default,omitempty"`
+	Description string                 `yaml:"description,omitempty"`
+	IsSecret    bool                   `yaml:"isSecret,omitempty"`
+}
+
+// ObjectConstraints represents constraints of a ObjectParam
+type ObjectConstraints struct {
+	// json struct tags used for validating via gojsonschema
+	AdditionalProperties *JSONSchema              `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
+	AllOf                []*ObjectConstraints     `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf                []*ObjectConstraints     `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
+	Enum                 []map[string]interface{} `json:"enum,omitempty" yaml:"enum,omitempty"`
+	MaxProperties        int                      `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
+	MinProperties        int                      `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
+	Not                  *ObjectConstraints       `json:"not,omitempty" yaml:"not,omitempty"`
+	OneOf                []*ObjectConstraints     `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
+	PatternProperties    map[string]*JSONSchema   `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
+	Properties           map[string]*JSONSchema   `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Required             []string                 `json:"required,omitempty" yaml:"required,omitempty"`
+}
+
+// JSONSchema represents a JSON Schema
+type JSONSchema struct {
+	// json struct tags used for validating via gojsonschema
+	AdditionalProperties *JSONSchema            `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
+	AllOf                []*JSONSchema          `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf                []*JSONSchema          `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
+	Enum                 []interface{}          `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Format               string                 `json:"format,omitempty" yaml:"format,omitempty"`
+	Maximum              float64                `json:"maximum,omitempty" yaml:"maximum,omitempty"`
+	MaxLength            int                    `json:"maxLength,omitempty" yaml:"maxLength,omitempty"`
+	MaxProperties        int                    `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
+	Minimum              float64                `json:"minimum,omitempty" yaml:"minimum,omitempty"`
+	MinLength            int                    `json:"minLength,omitempty" yaml:"minLength,omitempty"`
+	MinProperties        int                    `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
+	MultipleOf           float64                `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
+	Not                  *JSONSchema            `json:"not,omitempty" yaml:"not,omitempty"`
+	OneOf                []*JSONSchema          `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
+	Pattern              string                 `json:"pattern,omitempty" yaml:"pattern,omitempty"`
+	PatternProperties    map[string]*JSONSchema `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
+	Properties           map[string]*JSONSchema `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Required             []string               `json:"required,omitempty" yaml:"required,omitempty"`
+}
+
+// SocketParam represents a parameter of type socket
 type SocketParam struct {
 	Description string `yaml:"description,omitempty"`
 	IsSecret    bool   `yaml:"isSecret,omitempty"`
 }
 
-// String parameter
+// StringParam represents a parameter of type string
 type StringParam struct {
 	Constraints *StringConstraints `yaml:"constraints,omitempty"`
 	Default     *string            `yaml:"default,omitempty"`
@@ -60,7 +107,7 @@ type StringParam struct {
 	IsSecret    bool               `yaml:"isSecret,omitempty"`
 }
 
-// String parameter constraints
+// StringConstraints represents constraints of a StringParam
 type StringConstraints struct {
 	// json struct tags used for validating via gojsonschema
 	AllOf     []*StringConstraints `json:"allOf,omitempty" yaml:"allOf,omitempty"`

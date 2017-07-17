@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"path/filepath"
 )
 
 func (this _OpCall) Interpret(
@@ -16,16 +15,24 @@ func (this _OpCall) Interpret(
 	rootOpId string,
 ) (*model.DCGOpCall, error) {
 
-	pkgPath, err := this.getPkgPath(
-		pkgBasePath,
-		scope,
-		scgOpCall.Pkg,
+	var username, password string
+	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
+		username = this.interpolater.Interpolate(scgPullCreds.Username, scope)
+		password = this.interpolater.Interpolate(scgPullCreds.Password, scope)
+	}
+
+	pkgHandle, err := this.pkg.Resolve(
+		scgOpCall.Pkg.Ref,
+		&pkg.ResolveOpts{
+			PullCreds: &pkg.PullCreds{Username: username, Password: password},
+			BasePath:  pkgBasePath,
+		},
 	)
 	if nil != err {
 		return nil, err
 	}
 
-	opManifest, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
+	opManifest, err := this.pkg.GetManifest(pkgHandle)
 	if nil != err {
 		return nil, err
 	}
@@ -33,7 +40,7 @@ func (this _OpCall) Interpret(
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: &model.DCGBaseCall{
 			RootOpId: rootOpId,
-			PkgRef:   pkgPath,
+			PkgRef:   pkgHandle.Ref(),
 		},
 		OpId:         opId,
 		ChildCallId:  this.uuid.NewV4().String(),
@@ -44,7 +51,7 @@ func (this _OpCall) Interpret(
 	dcgOpCall.Inputs, argErrors = this.inputs.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
-		pkgPath,
+		pkgHandle.Ref(),
 		scope,
 	)
 	if len(argErrors) > 0 {
@@ -63,37 +70,4 @@ func (this _OpCall) Interpret(
 	}
 
 	return dcgOpCall, nil
-}
-
-func (this _OpCall) getPkgPath(
-	pkgBasePath string,
-	scope map[string]*model.Value,
-	scgOpCallPkg *model.SCGOpCallPkg,
-) (string, error) {
-	pkgRef, err := this.pkg.ParseRef(scgOpCallPkg.Ref)
-	if nil != err {
-		return "", err
-	}
-
-	var username, password string
-	if scgPullCreds := scgOpCallPkg.PullCreds; nil != scgPullCreds {
-		username = this.interpolater.Interpolate(scgPullCreds.Username, scope)
-		password = this.interpolater.Interpolate(scgPullCreds.Password, scope)
-	}
-
-	pkgPath, ok := this.pkg.Resolve(pkgRef, pkgBasePath, this.pkgCachePath)
-	if !ok {
-		// pkg not resolved; attempt to pull it
-		err := this.pkg.Pull(this.pkgCachePath, pkgRef, &pkg.PullOpts{Username: username, Password: password})
-		if nil != err {
-			return "", err
-		}
-
-		// resolve pulled pkg
-		pkgPath, ok = this.pkg.Resolve(pkgRef, pkgBasePath, this.pkgCachePath)
-		if !ok {
-			return "", fmt.Errorf("Unable to resolve pulled pkg '%v' from '%v'", pkgRef, this.pkgCachePath)
-		}
-	}
-	return pkgPath, nil
 }

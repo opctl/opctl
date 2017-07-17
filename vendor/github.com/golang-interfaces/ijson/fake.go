@@ -19,6 +19,18 @@ type Fake struct {
 		result1 []byte
 		result2 error
 	}
+	UnmarshalStub        func(data []byte, v interface{}) error
+	unmarshalMutex       sync.RWMutex
+	unmarshalArgsForCall []struct {
+		data []byte
+		v    interface{}
+	}
+	unmarshalReturns struct {
+		result1 error
+	}
+	unmarshalReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -74,11 +86,67 @@ func (fake *Fake) MarshalReturnsOnCall(i int, result1 []byte, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *Fake) Unmarshal(data []byte, v interface{}) error {
+	var dataCopy []byte
+	if data != nil {
+		dataCopy = make([]byte, len(data))
+		copy(dataCopy, data)
+	}
+	fake.unmarshalMutex.Lock()
+	ret, specificReturn := fake.unmarshalReturnsOnCall[len(fake.unmarshalArgsForCall)]
+	fake.unmarshalArgsForCall = append(fake.unmarshalArgsForCall, struct {
+		data []byte
+		v    interface{}
+	}{dataCopy, v})
+	fake.recordInvocation("Unmarshal", []interface{}{dataCopy, v})
+	fake.unmarshalMutex.Unlock()
+	if fake.UnmarshalStub != nil {
+		return fake.UnmarshalStub(data, v)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.unmarshalReturns.result1
+}
+
+func (fake *Fake) UnmarshalCallCount() int {
+	fake.unmarshalMutex.RLock()
+	defer fake.unmarshalMutex.RUnlock()
+	return len(fake.unmarshalArgsForCall)
+}
+
+func (fake *Fake) UnmarshalArgsForCall(i int) ([]byte, interface{}) {
+	fake.unmarshalMutex.RLock()
+	defer fake.unmarshalMutex.RUnlock()
+	return fake.unmarshalArgsForCall[i].data, fake.unmarshalArgsForCall[i].v
+}
+
+func (fake *Fake) UnmarshalReturns(result1 error) {
+	fake.UnmarshalStub = nil
+	fake.unmarshalReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *Fake) UnmarshalReturnsOnCall(i int, result1 error) {
+	fake.UnmarshalStub = nil
+	if fake.unmarshalReturnsOnCall == nil {
+		fake.unmarshalReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.unmarshalReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.marshalMutex.RLock()
 	defer fake.marshalMutex.RUnlock()
+	fake.unmarshalMutex.RLock()
+	defer fake.unmarshalMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

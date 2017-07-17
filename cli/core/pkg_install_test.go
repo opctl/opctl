@@ -12,15 +12,15 @@ import (
 
 var _ = Context("core", func() {
 	Context("PkgInstall", func() {
-		It("should call pkg.ParseRef w/ expected args", func() {
+		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
-			fakePkg := new(pkg.Fake)
-
 			providedPkgRef := "dummyPkgRef"
-			expectedPkgRef := providedPkgRef
+			providedUsername := "dummyUsername"
+			providedPassword := "dummyPassword"
 
-			// error to trigger immediate return
-			fakePkg.ParseRefReturns(nil, errors.New("dummyError"))
+			fakePkg := new(pkg.Fake)
+			// err to trigger immediate return
+			fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _core{
 				pkg:       fakePkg,
@@ -28,177 +28,116 @@ var _ = Context("core", func() {
 			}
 
 			/* act */
-			objectUnderTest.PkgInstall("", providedPkgRef, "", "")
+			objectUnderTest.PkgInstall("dummyPath", providedPkgRef, providedUsername, providedPassword)
 
 			/* assert */
-			Expect(fakePkg.ParseRefArgsForCall(0)).To(Equal(expectedPkgRef))
-		})
-		Context("pkg.ParseRef errors", func() {
-			It("should call exiter w/ expected args", func() {
-				/* arrange */
-				fakePkg := new(pkg.Fake)
-				expectedError := errors.New("dummyError")
-				fakePkg.ParseRefReturns(nil, expectedError)
+			actualPkgRef, actualResolveOpts := fakePkg.ResolveArgsForCall(0)
 
-				fakeCliExiter := new(cliexiter.Fake)
-
-				objectUnderTest := _core{
-					pkg:       fakePkg,
-					cliExiter: fakeCliExiter,
-				}
-
-				/* act */
-				objectUnderTest.PkgInstall("", "", "", "")
-
-				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
-
-			})
-		})
-		Context("pkg.ParseRef doesn't error", func() {
-			It("should call pkg.Pull w/ expected args", func() {
-				/* arrange */
-				providedPath := "dummyPath"
-				providedPkgRef := "dummyPkgRef"
-				providedUsername := "dummyUsername"
-				providedPassword := "dummyPassword"
-
-				expectedPath := providedPath
-				expectedPkgRef := &pkg.PkgRef{
-					FullyQualifiedName: "dummyFQName",
-					Version:            "dummyVersion",
-				}
-
-				fakePkg := new(pkg.Fake)
-				fakePkg.ParseRefReturns(expectedPkgRef, nil)
-
-				expectedPullOpts := &pkg.PullOpts{
+			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualResolveOpts).To(Equal(&pkg.ResolveOpts{
+				PullCreds: &pkg.PullCreds{
 					Username: providedUsername,
 					Password: providedPassword,
-				}
+				},
+			}))
+		})
+		Context("pkg.Resolve errors", func() {
+			Context("pkg.ErrAuthenticationFailed", func() {
+				It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
+					/* arrange */
+					fakePkg := new(pkg.Fake)
+					expectedError := pkg.ErrAuthenticationFailed{}
+					fakePkg.ResolveReturnsOnCall(0, nil, expectedError)
 
-				objectUnderTest := _core{
-					pkg: fakePkg,
-				}
+					username := "dummyUsername"
+					password := "dummyPassword"
 
-				/* act */
-				objectUnderTest.PkgInstall(providedPath, providedPkgRef, providedUsername, providedPassword)
+					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+					fakeCliParamSatisfier.SatisfyReturns(
+						map[string]*model.Value{
+							usernameInputName: {String: &username},
+							passwordInputName: {String: &password},
+						},
+					)
 
-				/* assert */
-				actualPath,
-					actualPkgRef,
-					actualPullOpts := fakePkg.PullArgsForCall(0)
+					objectUnderTest := _core{
+						pkg:               fakePkg,
+						cliParamSatisfier: fakeCliParamSatisfier,
+						cliExiter:         new(cliexiter.Fake),
+					}
 
-				Expect(actualPath).To(Equal(expectedPath))
-				Expect(actualPkgRef).To(Equal(expectedPkgRef))
-				Expect(actualPullOpts).To(Equal(expectedPullOpts))
-			})
-			Context("pkg.Pull errors", func() {
-				Context("pkg.ErrAuthenticationFailed", func() {
-					It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
-						/* arrange */
-						fakePkg := new(pkg.Fake)
-						expectedError := pkg.ErrAuthenticationFailed{}
-						fakePkg.PullReturnsOnCall(0, expectedError)
+					/* act */
+					objectUnderTest.PkgInstall("", "", "", "")
 
-						username := "dummyUsername"
-						password := "dummyPassword"
+					/* assert */
+					_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
+					Expect(actualInputs).To(Equal(credsPromptInputs))
+				})
+				It("should retry pkg.Resolve w/ expected args", func() {
+					/* arrange */
+					expectedPkgRef := "dummyPkgRef"
 
-						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
-						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Value{
-								usernameInputName: {String: &username},
-								passwordInputName: {String: &password},
-							},
-						)
+					fakePkg := new(pkg.Fake)
+					expectedError := pkg.ErrAuthenticationFailed{}
+					fakePkg.ResolveReturnsOnCall(0, nil, expectedError)
 
-						fakeCliExiter := new(cliexiter.Fake)
-
-						objectUnderTest := _core{
-							pkg:               fakePkg,
-							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         fakeCliExiter,
-						}
-
-						/* act */
-						objectUnderTest.PkgInstall("", "", "", "")
-
-						/* assert */
-						_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
-						Expect(actualInputs).To(Equal(credsPromptInputs))
-					})
-					It("should retry pkg.Pull w/ expected args", func() {
-						/* arrange */
-						providedPath := "dummyPath"
-
-						expectedPath := providedPath
-						expectedPkgRef := &pkg.PkgRef{
-							FullyQualifiedName: "dummyFQName",
-							Version:            "dummyVersion",
-						}
-
-						fakePkg := new(pkg.Fake)
-						fakePkg.ParseRefReturns(expectedPkgRef, nil)
-						expectedError := pkg.ErrAuthenticationFailed{}
-						fakePkg.PullReturnsOnCall(0, expectedError)
-
-						expectedPullOpts := &pkg.PullOpts{
+					expectedResolveOpts := &pkg.ResolveOpts{
+						PullCreds: &pkg.PullCreds{
 							Username: "dummyUsername",
 							Password: "dummyPassword",
-						}
+						},
+					}
 
-						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
-						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Value{
-								usernameInputName: {String: &(expectedPullOpts.Username)},
-								passwordInputName: {String: &(expectedPullOpts.Password)},
-							},
-						)
+					fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
+					fakeCliParamSatisfier.SatisfyReturns(
+						map[string]*model.Value{
+							usernameInputName: {String: &(expectedResolveOpts).PullCreds.Username},
+							passwordInputName: {String: &(expectedResolveOpts.PullCreds.Password)},
+						},
+					)
 
-						fakeCliExiter := new(cliexiter.Fake)
+					objectUnderTest := _core{
+						pkg:               fakePkg,
+						cliParamSatisfier: fakeCliParamSatisfier,
+						cliExiter:         new(cliexiter.Fake),
+					}
 
-						objectUnderTest := _core{
-							pkg:               fakePkg,
-							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         fakeCliExiter,
-						}
+					/* act */
+					objectUnderTest.PkgInstall(
+						"dummyPath",
+						"dummyPkgRef",
+						"dummyUsername",
+						"dummyPassword",
+					)
 
-						/* act */
-						objectUnderTest.PkgInstall(providedPath, "dummyPkgRef", "dummyUsername", "dummyPassword")
+					/* assert */
+					actualPkgRef, actualResolveOpts := fakePkg.ResolveArgsForCall(1)
 
-						/* assert */
-						actualPath,
-							actualPkgRef,
-							actualPullOpts := fakePkg.PullArgsForCall(1)
-
-						Expect(actualPath).To(Equal(expectedPath))
-						Expect(actualPkgRef).To(Equal(expectedPkgRef))
-						Expect(actualPullOpts).To(Equal(expectedPullOpts))
-					})
+					Expect(actualPkgRef).To(Equal(expectedPkgRef))
+					Expect(actualResolveOpts).To(Equal(expectedResolveOpts))
 				})
-				Context("not pkg.ErrAuthenticationFailed", func() {
-					It("should call exiter w/ expected args", func() {
-						/* arrange */
-						fakePkg := new(pkg.Fake)
-						expectedError := errors.New("dummyError")
-						fakePkg.PullReturns(expectedError)
+			})
+			Context("not pkg.ErrAuthenticationFailed", func() {
+				It("should call exiter w/ expected args", func() {
+					/* arrange */
+					fakePkg := new(pkg.Fake)
+					expectedError := errors.New("dummyError")
+					fakePkg.ResolveReturns(nil, expectedError)
 
-						fakeCliExiter := new(cliexiter.Fake)
+					fakeCliExiter := new(cliexiter.Fake)
 
-						objectUnderTest := _core{
-							pkg:       fakePkg,
-							cliExiter: fakeCliExiter,
-						}
+					objectUnderTest := _core{
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+					}
 
-						/* act */
-						objectUnderTest.PkgInstall("", "", "", "")
+					/* act */
+					objectUnderTest.PkgInstall("", "", "", "")
 
-						/* assert */
-						Expect(fakeCliExiter.ExitArgsForCall(0)).
-							To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+					/* assert */
+					Expect(fakeCliExiter.ExitArgsForCall(0)).
+						To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
 
-					})
 				})
 			})
 		})

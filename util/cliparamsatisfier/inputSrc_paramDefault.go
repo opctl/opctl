@@ -2,19 +2,15 @@ package cliparamsatisfier
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
-	"strconv"
 	"strings"
 )
 
-func NewParamDefaultInputSrc(
+func (isf _InputSrcFactory) NewParamDefaultInputSrc(
 	inputs map[string]*model.Param,
-	pkgPath string,
 ) InputSrc {
 	return paramDefaultInputSrc{
 		inputs:      inputs,
 		readHistory: map[string]struct{}{},
-		pkgPath:     pkgPath,
 	}
 }
 
@@ -22,15 +18,14 @@ func NewParamDefaultInputSrc(
 type paramDefaultInputSrc struct {
 	inputs      map[string]*model.Param
 	readHistory map[string]struct{} // tracks reads
-	pkgPath     string
 }
 
-func (this paramDefaultInputSrc) Read(
+func (this paramDefaultInputSrc) ReadString(
 	inputName string,
-) *string {
+) (*string, bool) {
 	if _, ok := this.readHistory[inputName]; ok {
 		// enforce read at most once.
-		return nil
+		return nil, false
 	}
 
 	if inputValue, ok := this.inputs[inputName]; ok {
@@ -41,23 +36,22 @@ func (this paramDefaultInputSrc) Read(
 		case nil != inputValue.Dir && nil != inputValue.Dir.Default:
 			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
 				// defaulted to pkg dir
-				value := filepath.Join(this.pkgPath, *inputValue.Dir.Default)
-				return &value
+				return nil, true
 			}
-			return inputValue.Dir.Default
+			return inputValue.Dir.Default, true
 		case nil != inputValue.File && nil != inputValue.File.Default:
 			if strings.HasPrefix(*inputValue.File.Default, "/") {
 				// defaulted to pkg file
-				value := filepath.Join(this.pkgPath, *inputValue.File.Default)
-				return &value
+				return nil, true
 			}
-			return inputValue.File.Default
+			return inputValue.File.Default, true
 		case nil != inputValue.Number && nil != inputValue.Number.Default:
-			floatString := strconv.FormatFloat(*inputValue.Number.Default, 'E', -1, 64)
-			return &floatString
-		case nil != inputValue.String:
-			return inputValue.String.Default
+			return nil, true
+		case nil != inputValue.Object && nil != inputValue.Object.Default:
+			return nil, true
+		case nil != inputValue.String && nil != inputValue.String.Default:
+			return nil, true
 		}
 	}
-	return nil
+	return nil, false
 }

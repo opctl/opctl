@@ -18,6 +18,20 @@ type Fake struct {
 		result1 *io.PipeReader
 		result2 *io.PipeWriter
 	}
+	CopyStub        func(dst io.Writer, src io.Reader) (written int64, err error)
+	copyMutex       sync.RWMutex
+	copyArgsForCall []struct {
+		dst io.Writer
+		src io.Reader
+	}
+	copyReturns struct {
+		result1 int64
+		result2 error
+	}
+	copyReturnsOnCall map[int]struct {
+		result1 int64
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -65,12 +79,70 @@ func (fake *Fake) PipeReturnsOnCall(i int, result1 *io.PipeReader, result2 *io.P
 	}{result1, result2}
 }
 
+func (fake *Fake) Copy(dst io.Writer, src io.Reader) (written int64, err error) {
+	fake.copyMutex.Lock()
+	ret, specificReturn := fake.copyReturnsOnCall[len(fake.copyArgsForCall)]
+	fake.copyArgsForCall = append(fake.copyArgsForCall, struct {
+		dst io.Writer
+		src io.Reader
+	}{dst, src})
+	fake.recordInvocation("Copy", []interface{}{dst, src})
+	fake.copyMutex.Unlock()
+	if fake.CopyStub != nil {
+		return fake.CopyStub(dst, src)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.copyReturns.result1, fake.copyReturns.result2
+}
+
+func (fake *Fake) CopyCallCount() int {
+	fake.copyMutex.RLock()
+	defer fake.copyMutex.RUnlock()
+	return len(fake.copyArgsForCall)
+}
+
+func (fake *Fake) CopyArgsForCall(i int) (io.Writer, io.Reader) {
+	fake.copyMutex.RLock()
+	defer fake.copyMutex.RUnlock()
+	return fake.copyArgsForCall[i].dst, fake.copyArgsForCall[i].src
+}
+
+func (fake *Fake) CopyReturns(result1 int64, result2 error) {
+	fake.CopyStub = nil
+	fake.copyReturns = struct {
+		result1 int64
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) CopyReturnsOnCall(i int, result1 int64, result2 error) {
+	fake.CopyStub = nil
+	if fake.copyReturnsOnCall == nil {
+		fake.copyReturnsOnCall = make(map[int]struct {
+			result1 int64
+			result2 error
+		})
+	}
+	fake.copyReturnsOnCall[i] = struct {
+		result1 int64
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.pipeMutex.RLock()
 	defer fake.pipeMutex.RUnlock()
-	return fake.invocations
+	fake.copyMutex.RLock()
+	defer fake.copyMutex.RUnlock()
+	copiedInvocations := map[string][][]interface{}{}
+	for key, value := range fake.invocations {
+		copiedInvocations[key] = value
+	}
+	return copiedInvocations
 }
 
 func (fake *Fake) recordInvocation(key string, args []interface{}) {

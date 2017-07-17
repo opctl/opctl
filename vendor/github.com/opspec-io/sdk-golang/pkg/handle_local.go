@@ -7,31 +7,32 @@ import (
 	"path/filepath"
 )
 
-func newHandleLocal(
+func newLocalHandle(
 	path string,
-) handle {
-	return handleLocal{
+) Handle {
+	return localHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),
 		path:   path,
 	}
 }
 
-type handleLocal struct {
-	ioUtil iioutil.Iioutil
+// localHandle is a provider which operates on a relative pkg ref
+type localHandle struct {
+	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 	path   string
 }
 
-func (lh handleLocal) ListContents() (
+func (lh localHandle) ListContents() (
 	[]*model.PkgContent,
 	error,
 ) {
-	return lh.listContents(lh.path)
+	return lh.rListContents(lh.path)
 }
 
-// listContents is same as ListContents but requires path as a param
-func (lh handleLocal) listContents(
+// rListContents recursively lists pkg contents at path
+func (lh localHandle) rListContents(
 	path string,
 ) (
 	[]*model.PkgContent,
@@ -49,7 +50,7 @@ func (lh handleLocal) listContents(
 
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
-			childContents, err := lh.listContents(contentPath)
+			childContents, err := lh.rListContents(contentPath)
 			if nil != err {
 				return nil, err
 			}
@@ -69,11 +70,15 @@ func (lh handleLocal) listContents(
 	return contents, err
 }
 
-func (lh handleLocal) GetContent(
+func (lh localHandle) GetContent(
 	contentPath string,
 ) (
 	model.ReadSeekCloser,
 	error,
 ) {
 	return lh.os.Open(filepath.Join(lh.path, contentPath))
+}
+
+func (lh localHandle) Ref() string {
+	return lh.path
 }

@@ -1,6 +1,6 @@
 package manifest
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
 
 import (
 	"fmt"
@@ -9,19 +9,19 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type validator interface {
+type Validator interface {
 	// Validate validates the pkg manifest at path
 	Validate(
-		path string,
+		manifestBytes []byte,
 	) []error
 }
 
-func newValidator() validator {
+func newValidator() Validator {
 
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
 
-	manifestSchemaBytes, err := pkgManifestDataPackageManifestSchemaJsonBytes()
+	manifestSchemaBytes, err := pkgManifestDataPkgManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}
@@ -40,23 +40,15 @@ func newValidator() validator {
 }
 
 type _validator struct {
-	ioUtil         iioutil.Iioutil
+	ioUtil         iioutil.IIOUtil
 	manifestSchema *gojsonschema.Schema
 }
 
 func (this _validator) Validate(
-	path string,
+	manifestBytes []byte,
 ) []error {
 
-	ManifestYAMLBytes, err := this.ioUtil.ReadFile(
-		path,
-	)
-	if nil != err {
-		// handle syntax errors specially
-		return []error{err}
-	}
-
-	manifestJSONBytes, err := yaml.YAMLToJSON(ManifestYAMLBytes)
+	manifestJSONBytes, err := yaml.YAMLToJSON(manifestBytes)
 	if nil != err {
 		// handle syntax errors specially
 		return []error{err}

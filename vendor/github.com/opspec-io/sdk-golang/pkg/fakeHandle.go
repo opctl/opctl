@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type fakeHandle struct {
+type FakeHandle struct {
 	ListContentsStub        func() ([]*model.PkgContent, error)
 	listContentsMutex       sync.RWMutex
 	listContentsArgsForCall []struct{}
@@ -32,11 +32,20 @@ type fakeHandle struct {
 		result1 model.ReadSeekCloser
 		result2 error
 	}
+	RefStub        func() string
+	refMutex       sync.RWMutex
+	refArgsForCall []struct{}
+	refReturns     struct {
+		result1 string
+	}
+	refReturnsOnCall map[int]struct {
+		result1 string
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeHandle) ListContents() ([]*model.PkgContent, error) {
+func (fake *FakeHandle) ListContents() ([]*model.PkgContent, error) {
 	fake.listContentsMutex.Lock()
 	ret, specificReturn := fake.listContentsReturnsOnCall[len(fake.listContentsArgsForCall)]
 	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct{}{})
@@ -51,13 +60,13 @@ func (fake *fakeHandle) ListContents() ([]*model.PkgContent, error) {
 	return fake.listContentsReturns.result1, fake.listContentsReturns.result2
 }
 
-func (fake *fakeHandle) ListContentsCallCount() int {
+func (fake *FakeHandle) ListContentsCallCount() int {
 	fake.listContentsMutex.RLock()
 	defer fake.listContentsMutex.RUnlock()
 	return len(fake.listContentsArgsForCall)
 }
 
-func (fake *fakeHandle) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
+func (fake *FakeHandle) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
 	fake.ListContentsStub = nil
 	fake.listContentsReturns = struct {
 		result1 []*model.PkgContent
@@ -65,7 +74,7 @@ func (fake *fakeHandle) ListContentsReturns(result1 []*model.PkgContent, result2
 	}{result1, result2}
 }
 
-func (fake *fakeHandle) ListContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
+func (fake *FakeHandle) ListContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
 	fake.ListContentsStub = nil
 	if fake.listContentsReturnsOnCall == nil {
 		fake.listContentsReturnsOnCall = make(map[int]struct {
@@ -79,7 +88,7 @@ func (fake *fakeHandle) ListContentsReturnsOnCall(i int, result1 []*model.PkgCon
 	}{result1, result2}
 }
 
-func (fake *fakeHandle) GetContent(contentPath string) (model.ReadSeekCloser, error) {
+func (fake *FakeHandle) GetContent(contentPath string) (model.ReadSeekCloser, error) {
 	fake.getContentMutex.Lock()
 	ret, specificReturn := fake.getContentReturnsOnCall[len(fake.getContentArgsForCall)]
 	fake.getContentArgsForCall = append(fake.getContentArgsForCall, struct {
@@ -96,19 +105,19 @@ func (fake *fakeHandle) GetContent(contentPath string) (model.ReadSeekCloser, er
 	return fake.getContentReturns.result1, fake.getContentReturns.result2
 }
 
-func (fake *fakeHandle) GetContentCallCount() int {
+func (fake *FakeHandle) GetContentCallCount() int {
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
 	return len(fake.getContentArgsForCall)
 }
 
-func (fake *fakeHandle) GetContentArgsForCall(i int) string {
+func (fake *FakeHandle) GetContentArgsForCall(i int) string {
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
 	return fake.getContentArgsForCall[i].contentPath
 }
 
-func (fake *fakeHandle) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
+func (fake *FakeHandle) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
 	fake.GetContentStub = nil
 	fake.getContentReturns = struct {
 		result1 model.ReadSeekCloser
@@ -116,7 +125,7 @@ func (fake *fakeHandle) GetContentReturns(result1 model.ReadSeekCloser, result2 
 	}{result1, result2}
 }
 
-func (fake *fakeHandle) GetContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
+func (fake *FakeHandle) GetContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
 	fake.GetContentStub = nil
 	if fake.getContentReturnsOnCall == nil {
 		fake.getContentReturnsOnCall = make(map[int]struct {
@@ -130,13 +139,55 @@ func (fake *fakeHandle) GetContentReturnsOnCall(i int, result1 model.ReadSeekClo
 	}{result1, result2}
 }
 
-func (fake *fakeHandle) Invocations() map[string][][]interface{} {
+func (fake *FakeHandle) Ref() string {
+	fake.refMutex.Lock()
+	ret, specificReturn := fake.refReturnsOnCall[len(fake.refArgsForCall)]
+	fake.refArgsForCall = append(fake.refArgsForCall, struct{}{})
+	fake.recordInvocation("Ref", []interface{}{})
+	fake.refMutex.Unlock()
+	if fake.RefStub != nil {
+		return fake.RefStub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.refReturns.result1
+}
+
+func (fake *FakeHandle) RefCallCount() int {
+	fake.refMutex.RLock()
+	defer fake.refMutex.RUnlock()
+	return len(fake.refArgsForCall)
+}
+
+func (fake *FakeHandle) RefReturns(result1 string) {
+	fake.RefStub = nil
+	fake.refReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeHandle) RefReturnsOnCall(i int, result1 string) {
+	fake.RefStub = nil
+	if fake.refReturnsOnCall == nil {
+		fake.refReturnsOnCall = make(map[int]struct {
+			result1 string
+		})
+	}
+	fake.refReturnsOnCall[i] = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeHandle) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.listContentsMutex.RLock()
 	defer fake.listContentsMutex.RUnlock()
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
+	fake.refMutex.RLock()
+	defer fake.refMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
@@ -144,7 +195,7 @@ func (fake *fakeHandle) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *fakeHandle) recordInvocation(key string, args []interface{}) {
+func (fake *FakeHandle) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -155,3 +206,5 @@ func (fake *fakeHandle) recordInvocation(key string, args []interface{}) {
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ Handle = new(FakeHandle)

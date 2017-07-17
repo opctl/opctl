@@ -1,10 +1,17 @@
 package pkg
 
-import "path/filepath"
-
-// Validate validates an opspec package
 func (this _Pkg) Validate(
-	pkgPath string,
+	pkgHandle Handle,
 ) []error {
-	return this.manifest.Validate(filepath.Join(pkgPath, OpDotYmlFileName))
+	manifestReader, err := pkgHandle.GetContent(OpDotYmlFileName)
+	if nil != err {
+		return []error{err}
+	}
+
+	manifestBytes, err := this.ioUtil.ReadAll(manifestReader)
+	if nil != err {
+		return []error{err}
+	}
+
+	return this.manifest.Validate(manifestBytes)
 }

@@ -14,19 +14,14 @@ func (this _core) PkgInstall(
 	password string,
 ) {
 
-	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
-
 	for {
-		err := this.pkg.Pull(
-			path,
-			parsedPkgRef,
-			&pkg.PullOpts{
-				Username: username,
-				Password: password,
+		_, err := this.pkg.Resolve(
+			pkgRef,
+			&pkg.ResolveOpts{
+				PullCreds: &pkg.PullCreds{
+					Username: username,
+					Password: password,
+				},
 			},
 		)
 
@@ -39,7 +34,7 @@ func (this _core) PkgInstall(
 			// auth errors can be fixed by supplying correct creds so don't give up; prompt
 			argMap := this.cliParamSatisfier.Satisfy(
 				cliparamsatisfier.NewInputSourcer(
-					cliparamsatisfier.NewCliPromptInputSrc(credsPromptInputs),
+					this.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs),
 				),
 				credsPromptInputs,
 			)

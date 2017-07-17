@@ -4,7 +4,7 @@ package cliparamsatisfier
 
 type InputSourcer interface {
 	// Source obtains values for inputs in order of precedence.
-	Source(inputName string) *string
+	Source(inputName string) (*string, bool)
 }
 
 func NewInputSourcer(
@@ -21,11 +21,11 @@ type inputSourcer struct {
 
 func (this inputSourcer) Source(
 	inputName string,
-) *string {
+) (*string, bool) {
 	for _, source := range this.sources {
-		if inputValue := source.Read(inputName); nil != inputValue {
-			return inputValue
+		if inputValue, ok := source.ReadString(inputName); ok {
+			return inputValue, true
 		}
 	}
-	return nil
+	return nil, false
 }

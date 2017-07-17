@@ -42,13 +42,13 @@ func (ai _argInterpreter) Interpret(
 
 	var dcgValue *model.Value
 	if nil == param {
-		return nil, fmt.Errorf("Unable to bind to '%v'. '%v' is not a defined input", name, name)
+		return nil, fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", name, name)
 	} else if "" == value {
 		// implicit arg
 		var ok bool
 		dcgValue, ok = scope[name]
 		if !ok {
-			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref. '%v' is not in scope", name, name)
+			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
 		}
 	} else if deprecatedExplicitRef, ok := scope[value]; ok {
 		// deprecated explicit arg
@@ -57,7 +57,7 @@ func (ai _argInterpreter) Interpret(
 		// explicit arg
 		dcgValue, ok = scope[explicitRef]
 		if !ok {
-			return nil, fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref. '%v' is not in scope", name, explicitRef, explicitRef)
+			return nil, fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref; '%v' not in scope", name, explicitRef, explicitRef)
 		}
 	} else {
 		interpolatedVal := ai.interpolater.Interpolate(value, scope)

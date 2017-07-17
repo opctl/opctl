@@ -2,19 +2,20 @@ package manifest
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/ghodss/yaml"
 	"github.com/opspec-io/sdk-golang/model"
-	"gopkg.in/yaml.v2"
 )
 
 func (this _Manifest) Unmarshal(
-	path string,
+	manifestBytes []byte,
 ) (*model.PkgManifest, error) {
 
 	var err error
 
 	// 1) ensure valid
-	errs := this.validator.Validate(path)
+	errs := this.Validate(manifestBytes)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`
@@ -33,15 +34,12 @@ func (this _Manifest) Unmarshal(
 	}
 
 	// 2) build
+	pkgManifest := model.PkgManifest{}
 
-	packageManifestBytes, err := this.ioUtil.ReadFile(
-		path,
-	)
+	manifestJSONBytes, err := yaml.YAMLToJSON([]byte(manifestBytes))
 	if nil != err {
 		return nil, err
 	}
-
-	pkgManifest := model.PkgManifest{}
-	return &pkgManifest, yaml.Unmarshal(packageManifestBytes, &pkgManifest)
+	return &pkgManifest, json.Unmarshal(manifestJSONBytes, &pkgManifest)
 
 }

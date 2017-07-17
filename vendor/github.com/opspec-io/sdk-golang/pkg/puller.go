@@ -14,46 +14,52 @@ import (
 
 type puller interface {
 	// Pull pulls 'pkgRef' to 'path'
+	// nil pullCreds will be ignored
 	// returns ErrAuthenticationFailed on authentication failure
 	Pull(
 		path string,
-		pkgRef *PkgRef,
-		opts *PullOpts,
+		pkgRef string,
+		pullCreds *PullCreds,
 	) error
 }
 
 func newPuller() puller {
 	return _puller{
-		git: igit.New(),
-		os:  ios.New(),
+		git:       igit.New(),
+		os:        ios.New(),
+		refParser: newRefParser(),
 	}
 }
 
 type _puller struct {
-	git igit.IGit
-	os  ios.IOS
+	git       igit.IGit
+	os        ios.IOS
+	refParser refParser
 }
 
-// Pull pulls 'pkgRef' to 'path'
-// returns ErrAuthenticationFailed on authentication failure
 func (this _puller) Pull(
 	path string,
-	pkgRef *PkgRef,
-	opts *PullOpts,
+	pkgRef string,
+	authOpts *PullCreds,
 ) error {
 
+	parsedPkgRef, err := this.refParser.Parse(pkgRef)
+	if nil != err {
+		return err
+	}
+
 	cloneOptions := &git.CloneOptions{
-		URL:           fmt.Sprintf("https://%v", pkgRef.FullyQualifiedName),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", pkgRef.Version)),
+		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
 		Depth:         1,
 		Progress:      os.Stdout,
 	}
 
-	if nil != opts {
-		cloneOptions.Auth = http.NewBasicAuth(opts.Username, opts.Password)
+	if nil != authOpts {
+		cloneOptions.Auth = http.NewBasicAuth(authOpts.Username, authOpts.Password)
 	}
 
-	pkgPath := pkgRef.ToPath(path)
+	pkgPath := parsedPkgRef.ToPath(path)
 
 	if _, err := this.git.PlainClone(
 		pkgPath,
@@ -61,7 +67,7 @@ func (this _puller) Pull(
 		cloneOptions,
 	); nil != err {
 		switch err.Error() {
-		// @TODO update to handle authentication & authorization errors separately once go-git does so
+		// @TODO update to Handle authentication & authorization errors separately once go-git does so
 		case transport.ErrAuthorizationRequired.Error():
 			// clone failed; cleanup remnants
 			this.os.RemoveAll(pkgPath)

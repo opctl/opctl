@@ -9,7 +9,6 @@ import (
 	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -35,34 +34,36 @@ func (this _core) Run(
 		return // support fake exiter
 	}
 
-	parsedPkgRef, err := this.pkg.ParseRef(pkgRef)
+	startTime := time.Now().UTC()
+
+	pkgHandle, err := this.pkg.Resolve(pkgRef, &pkg.ResolveOpts{BasePath: cwd})
+	if nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{
+			Message: fmt.Sprintf("Unable to resolve package '%v' from '%v'; error was: %v", pkgRef, cwd, err),
+			Code:    1})
+		return // support fake exiter
+	}
+
+	pkgManifest, err := this.pkg.GetManifest(pkgHandle)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
-	startTime := time.Now().UTC()
-
-	pkgPath, ok := this.pkg.Resolve(parsedPkgRef, cwd)
-	if !ok {
-		msg := fmt.Sprintf("Unable to resolve package '%v' from '%v'", pkgRef, cwd)
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
-		return // support fake exiter
-	}
-
-	pkgManifest, err := this.manifest.Unmarshal(filepath.Join(pkgPath, pkg.OpDotYmlFileName))
+	ymlFileInputSrc, err := this.cliParamSatisfier.NewYMLFileInputSrc(opts.ArgFile)
 	if nil != err {
+		err = fmt.Errorf("Unable to load arg file at '%v'; error was: %v", opts.ArgFile, err.Error())
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}
 
 	argsMap := this.cliParamSatisfier.Satisfy(
 		cliparamsatisfier.NewInputSourcer(
-			cliparamsatisfier.NewSliceInputSrc(opts.Args, "="),
-			cliparamsatisfier.NewYMLFileInputSrc(opts.ArgFile, this.ioutil),
-			cliparamsatisfier.NewEnvVarInputSrc(),
-			cliparamsatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs, pkgPath),
-			cliparamsatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
+			this.cliParamSatisfier.NewSliceInputSrc(opts.Args, "="),
+			ymlFileInputSrc,
+			this.cliParamSatisfier.NewEnvVarInputSrc(),
+			this.cliParamSatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
+			this.cliParamSatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
 		),
 		pkgManifest.Inputs,
 	)
@@ -83,7 +84,7 @@ func (this _core) Run(
 		model.StartOpReq{
 			Args: argsMap,
 			Pkg: &model.DCGOpCallPkg{
-				Ref: pkgPath,
+				Ref: pkgHandle.Ref(),
 			},
 		},
 	)
