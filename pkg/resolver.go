@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path/filepath"
 )
@@ -44,7 +45,7 @@ func (this _resolver) Resolve(
 ) {
 	var (
 		lookPaths []string = []string{this.cachePath}
-		pullCreds *PullCreds
+		pullCreds *model.PullCreds
 	)
 	if nil != opts {
 		if "" != opts.BasePath {

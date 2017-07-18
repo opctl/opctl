@@ -24,7 +24,7 @@ func (this _OpCall) Interpret(
 	pkgHandle, err := this.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
 		&pkg.ResolveOpts{
-			PullCreds: &pkg.PullCreds{Username: username, Password: password},
+			PullCreds: &model.PullCreds{Username: username, Password: password},
 			BasePath:  pkgBasePath,
 		},
 	)

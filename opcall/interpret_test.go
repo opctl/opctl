@@ -31,7 +31,7 @@ var _ = Context("OpCall", func() {
 			expectedPkgRef := providedSCGOpCall.Pkg.Ref
 
 			expectedOpts := &pkg.ResolveOpts{
-				PullCreds: &pkg.PullCreds{
+				PullCreds: &model.PullCreds{
 					Username: providedSCGOpCall.Pkg.PullCreds.Username,
 					Password: providedSCGOpCall.Pkg.PullCreds.Password,
 				},

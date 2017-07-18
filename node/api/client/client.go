@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/sethgrid/pester"
+	"io"
 	"net/url"
 )
 
@@ -19,6 +20,14 @@ type Client interface {
 	) (
 		stream chan model.Event,
 		err error,
+	)
+
+	GetPkgContent(
+		ctx context.Context,
+		req model.GetPkgContentReq,
+	) (
+		io.ReadCloser,
+		error,
 	)
 
 	KillOp(

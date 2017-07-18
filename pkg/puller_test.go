@@ -69,7 +69,7 @@ var _ = Context("puller", func() {
 
 				/* arrange */
 				providedPath := "dummyPath"
-				providedPullCreds := &PullCreds{
+				providedPullCreds := &model.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}

@@ -3,6 +3,7 @@ package client
 
 import (
 	"context"
+	"io"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
@@ -20,6 +21,20 @@ type Fake struct {
 	}
 	getEventStreamReturnsOnCall map[int]struct {
 		result1 chan model.Event
+		result2 error
+	}
+	GetPkgContentStub        func(ctx context.Context, req model.GetPkgContentReq) (io.ReadCloser, error)
+	getPkgContentMutex       sync.RWMutex
+	getPkgContentArgsForCall []struct {
+		ctx context.Context
+		req model.GetPkgContentReq
+	}
+	getPkgContentReturns struct {
+		result1 io.ReadCloser
+		result2 error
+	}
+	getPkgContentReturnsOnCall map[int]struct {
+		result1 io.ReadCloser
 		result2 error
 	}
 	KillOpStub        func(ctx context.Context, req model.KillOpReq) (err error)
@@ -99,6 +114,58 @@ func (fake *Fake) GetEventStreamReturnsOnCall(i int, result1 chan model.Event, r
 	}
 	fake.getEventStreamReturnsOnCall[i] = struct {
 		result1 chan model.Event
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) GetPkgContent(ctx context.Context, req model.GetPkgContentReq) (io.ReadCloser, error) {
+	fake.getPkgContentMutex.Lock()
+	ret, specificReturn := fake.getPkgContentReturnsOnCall[len(fake.getPkgContentArgsForCall)]
+	fake.getPkgContentArgsForCall = append(fake.getPkgContentArgsForCall, struct {
+		ctx context.Context
+		req model.GetPkgContentReq
+	}{ctx, req})
+	fake.recordInvocation("GetPkgContent", []interface{}{ctx, req})
+	fake.getPkgContentMutex.Unlock()
+	if fake.GetPkgContentStub != nil {
+		return fake.GetPkgContentStub(ctx, req)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.getPkgContentReturns.result1, fake.getPkgContentReturns.result2
+}
+
+func (fake *Fake) GetPkgContentCallCount() int {
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
+	return len(fake.getPkgContentArgsForCall)
+}
+
+func (fake *Fake) GetPkgContentArgsForCall(i int) (context.Context, model.GetPkgContentReq) {
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
+	return fake.getPkgContentArgsForCall[i].ctx, fake.getPkgContentArgsForCall[i].req
+}
+
+func (fake *Fake) GetPkgContentReturns(result1 io.ReadCloser, result2 error) {
+	fake.GetPkgContentStub = nil
+	fake.getPkgContentReturns = struct {
+		result1 io.ReadCloser
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) GetPkgContentReturnsOnCall(i int, result1 io.ReadCloser, result2 error) {
+	fake.GetPkgContentStub = nil
+	if fake.getPkgContentReturnsOnCall == nil {
+		fake.getPkgContentReturnsOnCall = make(map[int]struct {
+			result1 io.ReadCloser
+			result2 error
+		})
+	}
+	fake.getPkgContentReturnsOnCall[i] = struct {
+		result1 io.ReadCloser
 		result2 error
 	}{result1, result2}
 }
@@ -209,6 +276,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
 	fake.startOpMutex.RLock()

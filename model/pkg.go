@@ -22,3 +22,9 @@ type PkgContent struct {
 	Path string
 	Size int64
 }
+
+// PullCreds contains optional authentication attributes
+type PullCreds struct {
+	Username,
+	Password string
+}

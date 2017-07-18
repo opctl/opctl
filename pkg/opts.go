@@ -1,13 +1,9 @@
 package pkg
 
-// PullCreds contains optional authentication attributes
-type PullCreds struct {
-	Username,
-	Password string
-}
+import "github.com/opspec-io/sdk-golang/model"
 
 type ResolveOpts struct {
-	PullCreds *PullCreds
+	PullCreds *model.PullCreds
 	// BasePath provides the base path for relative reference resolution
 	BasePath string
 }

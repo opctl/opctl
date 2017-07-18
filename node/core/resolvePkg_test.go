@@ -3,6 +3,7 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 )
 
@@ -12,7 +13,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
 			providedOpts := &pkg.ResolveOpts{
-				PullCreds: &pkg.PullCreds{
+				PullCreds: &model.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				},
