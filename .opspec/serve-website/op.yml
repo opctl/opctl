@@ -1,5 +1,5 @@
-name: host-website
-description: 'hosts the spec website on port 80 of the current node; note: requires running build first'
+name: serve-website
+description: serves the website locally
 inputs:
   srcDir:
     dir:
