@@ -1,0 +1,12 @@
+name: host-website
+description: 'hosts the spec website on port 80 of the current node; note: requires running build first'
+inputs:
+  srcDir:
+    dir:
+      default: build
+      description: dir containing the doc source
+run:
+  container:
+    image: { ref: 'httpd:2.4.25-alpine' }
+    dirs: { /usr/local/apache2/htdocs/: srcDir }
+    ports: { '80': '80' }
