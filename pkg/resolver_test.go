@@ -1,139 +1,62 @@
 package pkg
 
 import (
-	"errors"
-	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"io/ioutil"
-	"path/filepath"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("Resolver", func() {
 	Context("Resolve", func() {
-		Context("pkgRef is absolute path", func() {
-			It("should call fs.Stat w/ expected args", func() {
-				/* arrange */
-				providedPkgRef := "/dummyFullyQualifiedName"
+		It("should call providers[0].TryResolve w/ expected args", func() {
+			/* arrange */
+			providedPkgRef := "dummyPkgRef"
+			fakeProvider0 := new(FakeProvider)
+			providedProviders := []Provider{fakeProvider0}
 
-				fakeOS := new(ios.Fake)
-				// error to trigger immediate return
-				fakeOS.StatReturns(nil, errors.New("dummyError"))
+			objectUnderTest := _Resolver{}
 
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
+			/* act */
+			objectUnderTest.Resolve(providedPkgRef, providedProviders...)
 
-				/* act */
-				objectUnderTest.Resolve(providedPkgRef, nil)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef))
-			})
-			It("should return expected result", func() {
-				/* arrange */
-				file, err := ioutil.TempFile("", "")
-				if nil != err {
-					panic(err)
-				}
-
-				expectedHandle := newLocalHandle(file.Name())
-
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				actualHandle, actualError := objectUnderTest.Resolve(file.Name(), nil)
-
-				/* assert */
-				Expect(actualHandle).To(Equal(expectedHandle))
-				Expect(actualError).To(BeNil())
-			})
+			/* assert */
+			Expect(fakeProvider0.TryResolveArgsForCall(0)).To(Equal(providedPkgRef))
 		})
-		Context("pkgRef isn't absolute path", func() {
-			It("should call fs.Stat w/ expected args", func() {
+		Context("providers[0].TryResolve errs", func() {
+			It("should return error", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-				providedOpts := &ResolveOpts{
-					BasePath: "dummyBasePath",
-				}
-
-				expectedPath := filepath.Join(
-					providedOpts.BasePath,
-					DotOpspecDirName,
-					providedPkgRef,
-				)
-
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.Resolve(providedPkgRef, providedOpts)
-
-				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
-			})
-		})
-		Context("fs.Stat errors", func() {
-			It("should return err", func() {
-				/* arrange */
+				fakeProvider0 := new(FakeProvider)
 				expectedErr := errors.New("dummyError")
+				fakeProvider0.TryResolveReturns(nil, expectedErr)
 
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, expectedErr)
+				providedProviders := []Provider{fakeProvider0}
 
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
+				objectUnderTest := _Resolver{}
 
 				/* act */
-				_, actualError := objectUnderTest.Resolve(
-					"dummyPkgRef",
-					nil,
-				)
+				_, actualErr := objectUnderTest.Resolve("dummyPkgRef", providedProviders...)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedErr))
+				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("fs.Stat doesn't err", func() {
-			It("should return expected result", func() {
+		Context("providers[0].TryResolve doesn't err", func() {
+			It("should return expected results", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-				providedOpts := &ResolveOpts{
-					BasePath: "dummyBasePath",
-				}
+				fakeProvider0 := new(FakeProvider)
+				expectedHandle := new(FakeHandle)
+				fakeProvider0.TryResolveReturnsOnCall(0, expectedHandle, nil)
 
-				expectedHandle := newLocalHandle(filepath.Join(
-					providedOpts.BasePath,
-					DotOpspecDirName,
-					providedPkgRef,
-				))
+				providedProviders := []Provider{fakeProvider0}
 
-				fakeOS := new(ios.Fake)
-				fakeOS.StatReturns(nil, nil)
-
-				objectUnderTest := _resolver{
-					os: fakeOS,
-				}
+				objectUnderTest := _Resolver{}
 
 				/* act */
-				actualHandle, actualError := objectUnderTest.Resolve(
-					providedPkgRef,
-					providedOpts,
-				)
+				actualHandle, actualErr := objectUnderTest.Resolve("dumyPkgRef", providedProviders...)
 
 				/* assert */
 				Expect(actualHandle).To(Equal(expectedHandle))
-				Expect(actualError).To(BeNil())
+				Expect(actualErr).To(BeNil())
 			})
 		})
 	})

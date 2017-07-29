@@ -30,19 +30,19 @@ var _ = Context("OpCall", func() {
 
 			expectedPkgRef := providedSCGOpCall.Pkg.Ref
 
-			expectedOpts := &pkg.ResolveOpts{
-				PullCreds: &model.PullCreds{
-					Username: providedSCGOpCall.Pkg.PullCreds.Username,
-					Password: providedSCGOpCall.Pkg.PullCreds.Password,
-				},
-				BasePath: providedPkgBasePath,
-			}
-
 			fakeInterpolater := new(interpolater.Fake)
 			fakeInterpolater.InterpolateReturnsOnCall(0, providedSCGOpCall.Pkg.PullCreds.Username)
 			fakeInterpolater.InterpolateReturnsOnCall(1, providedSCGOpCall.Pkg.PullCreds.Password)
 
 			fakePkg := new(pkg.Fake)
+
+			expectedPkgProviders := []pkg.Provider{
+				new(pkg.FakeProvider),
+				new(pkg.FakeProvider),
+			}
+			fakePkg.NewLocalFSProviderReturns(expectedPkgProviders[0])
+			fakePkg.NewGitProviderReturns(expectedPkgProviders[1])
+
 			// error to trigger immediate return
 			fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
@@ -62,9 +62,9 @@ var _ = Context("OpCall", func() {
 			)
 
 			/* assert */
-			actualPkgRef, actualOpts := fakePkg.ResolveArgsForCall(0)
+			actualPkgRef, actualPkgProviders := fakePkg.ResolveArgsForCall(0)
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
-			Expect(actualOpts).To(Equal(expectedOpts))
+			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
 		})
 		Context("pkg.Resolve errs", func() {
 			It("should return err", func() {

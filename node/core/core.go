@@ -35,7 +35,7 @@ type Core interface {
 	// returns ErrAuthenticationFailed on authentication failure
 	ResolvePkg(
 		pkgRef string,
-		opts *pkg.ResolveOpts,
+		pullCreds *model.PullCreds,
 	) (
 		pkg.Handle,
 		error,
@@ -96,8 +96,9 @@ func New(
 		opCaller:            opCaller,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
+		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
-		pkg:                 pkg.New(filepath.Join(rootFSPath, "pkgs")),
+		pkg:                 pkg.New(),
 	}
 
 	return
@@ -110,5 +111,6 @@ type _core struct {
 	opKiller            opKiller
 	pubSub              pubsub.PubSub
 	pkg                 pkg.Pkg
+	pkgCachePath        string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

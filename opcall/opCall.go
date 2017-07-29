@@ -29,7 +29,7 @@ func New(
 	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
 		interpolater: interpolater.New(),
-		pkg:          pkg.New(pkgCachePath),
+		pkg:          pkg.New(),
 		pkgCachePath: pkgCachePath,
 		uuid:         iuuid.New(),
 		inputs:       inputs.New(),

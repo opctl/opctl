@@ -8,6 +8,29 @@ import (
 )
 
 type Fake struct {
+	NewLocalFSProviderStub        func(basePaths ...string) Provider
+	newLocalFSProviderMutex       sync.RWMutex
+	newLocalFSProviderArgsForCall []struct {
+		basePaths []string
+	}
+	newLocalFSProviderReturns struct {
+		result1 Provider
+	}
+	newLocalFSProviderReturnsOnCall map[int]struct {
+		result1 Provider
+	}
+	NewGitProviderStub        func(basePath string, pullCreds *model.PullCreds) Provider
+	newGitProviderMutex       sync.RWMutex
+	newGitProviderArgsForCall []struct {
+		basePath  string
+		pullCreds *model.PullCreds
+	}
+	newGitProviderReturns struct {
+		result1 Provider
+	}
+	newGitProviderReturnsOnCall map[int]struct {
+		result1 Provider
+	}
 	CreateStub        func(path, pkgName, pkgDescription string) error
 	createMutex       sync.RWMutex
 	createArgsForCall []struct {
@@ -47,11 +70,11 @@ type Fake struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}
-	ResolveStub        func(pkgRef string, opts *ResolveOpts) (Handle, error)
+	ResolveStub        func(pkgRef string, providers ...Provider) (Handle, error)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
-		pkgRef string
-		opts   *ResolveOpts
+		pkgRef    string
+		providers []Provider
 	}
 	resolveReturns struct {
 		result1 Handle
@@ -74,6 +97,103 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) NewLocalFSProvider(basePaths ...string) Provider {
+	fake.newLocalFSProviderMutex.Lock()
+	ret, specificReturn := fake.newLocalFSProviderReturnsOnCall[len(fake.newLocalFSProviderArgsForCall)]
+	fake.newLocalFSProviderArgsForCall = append(fake.newLocalFSProviderArgsForCall, struct {
+		basePaths []string
+	}{basePaths})
+	fake.recordInvocation("NewLocalFSProvider", []interface{}{basePaths})
+	fake.newLocalFSProviderMutex.Unlock()
+	if fake.NewLocalFSProviderStub != nil {
+		return fake.NewLocalFSProviderStub(basePaths...)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.newLocalFSProviderReturns.result1
+}
+
+func (fake *Fake) NewLocalFSProviderCallCount() int {
+	fake.newLocalFSProviderMutex.RLock()
+	defer fake.newLocalFSProviderMutex.RUnlock()
+	return len(fake.newLocalFSProviderArgsForCall)
+}
+
+func (fake *Fake) NewLocalFSProviderArgsForCall(i int) []string {
+	fake.newLocalFSProviderMutex.RLock()
+	defer fake.newLocalFSProviderMutex.RUnlock()
+	return fake.newLocalFSProviderArgsForCall[i].basePaths
+}
+
+func (fake *Fake) NewLocalFSProviderReturns(result1 Provider) {
+	fake.NewLocalFSProviderStub = nil
+	fake.newLocalFSProviderReturns = struct {
+		result1 Provider
+	}{result1}
+}
+
+func (fake *Fake) NewLocalFSProviderReturnsOnCall(i int, result1 Provider) {
+	fake.NewLocalFSProviderStub = nil
+	if fake.newLocalFSProviderReturnsOnCall == nil {
+		fake.newLocalFSProviderReturnsOnCall = make(map[int]struct {
+			result1 Provider
+		})
+	}
+	fake.newLocalFSProviderReturnsOnCall[i] = struct {
+		result1 Provider
+	}{result1}
+}
+
+func (fake *Fake) NewGitProvider(basePath string, pullCreds *model.PullCreds) Provider {
+	fake.newGitProviderMutex.Lock()
+	ret, specificReturn := fake.newGitProviderReturnsOnCall[len(fake.newGitProviderArgsForCall)]
+	fake.newGitProviderArgsForCall = append(fake.newGitProviderArgsForCall, struct {
+		basePath  string
+		pullCreds *model.PullCreds
+	}{basePath, pullCreds})
+	fake.recordInvocation("NewGitProvider", []interface{}{basePath, pullCreds})
+	fake.newGitProviderMutex.Unlock()
+	if fake.NewGitProviderStub != nil {
+		return fake.NewGitProviderStub(basePath, pullCreds)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.newGitProviderReturns.result1
+}
+
+func (fake *Fake) NewGitProviderCallCount() int {
+	fake.newGitProviderMutex.RLock()
+	defer fake.newGitProviderMutex.RUnlock()
+	return len(fake.newGitProviderArgsForCall)
+}
+
+func (fake *Fake) NewGitProviderArgsForCall(i int) (string, *model.PullCreds) {
+	fake.newGitProviderMutex.RLock()
+	defer fake.newGitProviderMutex.RUnlock()
+	return fake.newGitProviderArgsForCall[i].basePath, fake.newGitProviderArgsForCall[i].pullCreds
+}
+
+func (fake *Fake) NewGitProviderReturns(result1 Provider) {
+	fake.NewGitProviderStub = nil
+	fake.newGitProviderReturns = struct {
+		result1 Provider
+	}{result1}
+}
+
+func (fake *Fake) NewGitProviderReturnsOnCall(i int, result1 Provider) {
+	fake.NewGitProviderStub = nil
+	if fake.newGitProviderReturnsOnCall == nil {
+		fake.newGitProviderReturnsOnCall = make(map[int]struct {
+			result1 Provider
+		})
+	}
+	fake.newGitProviderReturnsOnCall[i] = struct {
+		result1 Provider
+	}{result1}
 }
 
 func (fake *Fake) Create(path string, pkgName string, pkgDescription string) error {
@@ -228,17 +348,17 @@ func (fake *Fake) ListReturnsOnCall(i int, result1 []*model.PkgManifest, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) Resolve(pkgRef string, opts *ResolveOpts) (Handle, error) {
+func (fake *Fake) Resolve(pkgRef string, providers ...Provider) (Handle, error) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
-		pkgRef string
-		opts   *ResolveOpts
-	}{pkgRef, opts})
-	fake.recordInvocation("Resolve", []interface{}{pkgRef, opts})
+		pkgRef    string
+		providers []Provider
+	}{pkgRef, providers})
+	fake.recordInvocation("Resolve", []interface{}{pkgRef, providers})
 	fake.resolveMutex.Unlock()
 	if fake.ResolveStub != nil {
-		return fake.ResolveStub(pkgRef, opts)
+		return fake.ResolveStub(pkgRef, providers...)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -252,10 +372,10 @@ func (fake *Fake) ResolveCallCount() int {
 	return len(fake.resolveArgsForCall)
 }
 
-func (fake *Fake) ResolveArgsForCall(i int) (string, *ResolveOpts) {
+func (fake *Fake) ResolveArgsForCall(i int) (string, []Provider) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
-	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].opts
+	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].providers
 }
 
 func (fake *Fake) ResolveReturns(result1 Handle, result2 error) {
@@ -331,6 +451,10 @@ func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.newLocalFSProviderMutex.RLock()
+	defer fake.newLocalFSProviderMutex.RUnlock()
+	fake.newGitProviderMutex.RLock()
+	defer fake.newGitProviderMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	fake.getManifestMutex.RLock()

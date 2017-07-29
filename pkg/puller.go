@@ -1,5 +1,7 @@
 package pkg
 
+//go:generate counterfeiter -o ./fakePuller.go --fake-name fakePuller ./ puller
+
 import (
 	"fmt"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"

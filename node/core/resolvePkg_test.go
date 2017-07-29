@@ -12,14 +12,19 @@ var _ = Context("core", func() {
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
-			providedOpts := &pkg.ResolveOpts{
-				PullCreds: &model.PullCreds{
-					Username: "dummyUsername",
-					Password: "dummyPassword",
-				},
+			providedPullCreds := &model.PullCreds{
+				Username: "dummyUsername",
+				Password: "dummyPassword",
 			}
 
 			fakePkg := new(pkg.Fake)
+
+			expectedPkgProviders := []pkg.Provider{
+				new(pkg.FakeProvider),
+				new(pkg.FakeProvider),
+			}
+			fakePkg.NewLocalFSProviderReturns(expectedPkgProviders[0])
+			fakePkg.NewGitProviderReturns(expectedPkgProviders[1])
 
 			objectUnderTest := _core{
 				pkg: fakePkg,
@@ -28,13 +33,13 @@ var _ = Context("core", func() {
 			/* act */
 			objectUnderTest.ResolvePkg(
 				providedPkgRef,
-				providedOpts,
+				providedPullCreds,
 			)
 
 			/* assert */
-			actualPkgRef, actualPullCreds := fakePkg.ResolveArgsForCall(0)
+			actualPkgRef, actualPkgProviders := fakePkg.ResolveArgsForCall(0)
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
-			Expect(actualPullCreds).To(Equal(providedOpts))
+			Expect(actualPkgProviders).To(ConsistOf(expectedPkgProviders))
 		})
 	})
 })
