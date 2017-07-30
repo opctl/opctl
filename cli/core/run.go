@@ -6,7 +6,6 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"os/signal"
 	"syscall"
@@ -36,7 +35,11 @@ func (this _core) Run(
 
 	startTime := time.Now().UTC()
 
-	pkgHandle, err := this.pkg.Resolve(pkgRef, &pkg.ResolveOpts{BasePath: cwd})
+	pkgHandle, err := this.pkg.Resolve(
+		pkgRef,
+		this.pkg.NewFSProvider(cwd),
+		this.pkg.NewNodeProvider(this.nodeURL, nil),
+	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{
 			Message: fmt.Sprintf("Unable to resolve package '%v' from '%v'; error was: %v", pkgRef, cwd, err),

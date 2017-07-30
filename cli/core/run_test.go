@@ -16,6 +16,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api/client"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"net/url"
 	"time"
 )
 
@@ -46,11 +47,12 @@ var _ = Context("Run", func() {
 			})
 		})
 		Context("os.Getwd doesn't error", func() {
-			It("should call pkg.Resolve w/ expected args", func() {
+			It("should call pkg.NewFSProvider w/ expected args", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-
 				fakePkg := new(pkg.Fake)
+				fakeFSProvider := new(pkg.FakeProvider)
+				fakePkg.NewFSProviderReturns(fakeFSProvider)
+
 				// error to trigger immediate return
 				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
@@ -58,11 +60,74 @@ var _ = Context("Run", func() {
 				workDir := "dummyWorkDir"
 				fakeIOS.GetwdReturns(workDir, nil)
 
+				nodeURL := url.URL{Path: "dummyPath"}
+
 				objectUnderTest := _core{
 					pkg:          fakePkg,
 					cliExiter:    new(cliexiter.Fake),
 					nodeProvider: new(nodeprovider.Fake),
+					nodeURL:      nodeURL,
 					os:           fakeIOS,
+					ioutil:       new(iioutil.Fake),
+				}
+
+				/* act */
+				objectUnderTest.Run(context.TODO(), "dummyPkgRef", &RunOpts{})
+
+				/* assert */
+				Expect(fakePkg.NewFSProviderArgsForCall(0)).To(ConsistOf(workDir))
+			})
+			It("should call pkg.NewNodeProvider w/ expected args", func() {
+				/* arrange */
+				fakePkg := new(pkg.Fake)
+				fakeNodeProvider := new(pkg.FakeProvider)
+				fakePkg.NewNodeProviderReturns(fakeNodeProvider)
+
+				// error to trigger immediate return
+				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+
+				nodeURL := url.URL{Path: "dummyPath"}
+
+				objectUnderTest := _core{
+					pkg:          fakePkg,
+					cliExiter:    new(cliexiter.Fake),
+					nodeProvider: new(nodeprovider.Fake),
+					nodeURL:      nodeURL,
+					os:           new(ios.Fake),
+					ioutil:       new(iioutil.Fake),
+				}
+
+				/* act */
+				objectUnderTest.Run(context.TODO(), "dummyPkgRef", &RunOpts{})
+
+				/* assert */
+				actualNodeURL,
+					actualPullCreds := fakePkg.NewNodeProviderArgsForCall(0)
+				Expect(actualNodeURL).To(Equal(nodeURL))
+				Expect(actualPullCreds).To(BeNil())
+			})
+			It("should call pkg.Resolve w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef"
+
+				fakePkg := new(pkg.Fake)
+				fakeNodeProvider := new(pkg.FakeProvider)
+				fakePkg.NewNodeProviderReturns(fakeNodeProvider)
+
+				fakeFSProvider := new(pkg.FakeProvider)
+				fakePkg.NewFSProviderReturns(fakeFSProvider)
+
+				// error to trigger immediate return
+				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+
+				nodeURL := url.URL{Path: "dummyPath"}
+
+				objectUnderTest := _core{
+					pkg:          fakePkg,
+					cliExiter:    new(cliexiter.Fake),
+					nodeProvider: new(nodeprovider.Fake),
+					nodeURL:      nodeURL,
+					os:           new(ios.Fake),
 					ioutil:       new(iioutil.Fake),
 				}
 
@@ -70,9 +135,9 @@ var _ = Context("Run", func() {
 				objectUnderTest.Run(context.TODO(), providedPkgRef, &RunOpts{})
 
 				/* assert */
-				actualPkgRef, actualResolveOpts := fakePkg.ResolveArgsForCall(0)
+				actualPkgRef, actualProviders := fakePkg.ResolveArgsForCall(0)
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
-				Expect(actualResolveOpts).To(Equal(&pkg.ResolveOpts{BasePath: workDir}))
+				Expect(actualProviders).To(ConsistOf(fakeNodeProvider, fakeFSProvider))
 			})
 			Context("pkg.Resolve errs", func() {
 				It("should call exiter w/ expected args", func() {
@@ -102,6 +167,7 @@ var _ = Context("Run", func() {
 						cliExiter:    fakeCliExiter,
 						os:           fakeIOS,
 						nodeProvider: new(nodeprovider.Fake),
+						nodeURL:      url.URL{},
 					}
 
 					/* act */
@@ -127,6 +193,7 @@ var _ = Context("Run", func() {
 						cliExiter:           new(cliexiter.Fake),
 						cliParamSatisfier:   new(cliparamsatisfier.Fake),
 						nodeProvider:        new(nodeprovider.Fake),
+						nodeURL:             url.URL{},
 						os:                  new(ios.Fake),
 						ioutil:              new(iioutil.Fake),
 					}
@@ -197,6 +264,7 @@ var _ = Context("Run", func() {
 							cliExiter:           new(cliexiter.Fake),
 							cliParamSatisfier:   fakeCliParamSatisfier,
 							nodeProvider:        new(nodeprovider.Fake),
+							nodeURL:             url.URL{},
 							os:                  new(ios.Fake),
 							ioutil:              new(iioutil.Fake),
 						}
@@ -247,6 +315,7 @@ var _ = Context("Run", func() {
 							cliExiter:           new(cliexiter.Fake),
 							cliParamSatisfier:   fakeCliParamSatisfier,
 							nodeProvider:        new(nodeprovider.Fake),
+							nodeURL:             url.URL{},
 							os:                  new(ios.Fake),
 							ioutil:              new(iioutil.Fake),
 						}
@@ -279,6 +348,7 @@ var _ = Context("Run", func() {
 								cliExiter:           fakeCliExiter,
 								cliParamSatisfier:   new(cliparamsatisfier.Fake),
 								nodeProvider:        new(nodeprovider.Fake),
+								nodeURL:             url.URL{},
 								os:                  new(ios.Fake),
 								ioutil:              new(iioutil.Fake),
 							}
@@ -320,6 +390,7 @@ var _ = Context("Run", func() {
 								cliExiter:           new(cliexiter.Fake),
 								cliParamSatisfier:   new(cliparamsatisfier.Fake),
 								nodeProvider:        new(nodeprovider.Fake),
+								nodeURL:             url.URL{},
 								os:                  new(ios.Fake),
 								ioutil:              new(iioutil.Fake),
 							}
@@ -357,6 +428,7 @@ var _ = Context("Run", func() {
 									cliExiter:           fakeCliExiter,
 									cliParamSatisfier:   new(cliparamsatisfier.Fake),
 									nodeProvider:        new(nodeprovider.Fake),
+									nodeURL:             url.URL{},
 									os:                  new(ios.Fake),
 									ioutil:              new(iioutil.Fake),
 								}
@@ -391,6 +463,7 @@ var _ = Context("Run", func() {
 										cliExiter:           fakeCliExiter,
 										cliParamSatisfier:   new(cliparamsatisfier.Fake),
 										nodeProvider:        new(nodeprovider.Fake),
+										nodeURL:             url.URL{},
 										os:                  new(ios.Fake),
 										ioutil:              new(iioutil.Fake),
 									}
@@ -442,6 +515,7 @@ var _ = Context("Run", func() {
 													cliOutput:           new(clioutput.Fake),
 													cliParamSatisfier:   new(cliparamsatisfier.Fake),
 													nodeProvider:        new(nodeprovider.Fake),
+													nodeURL:             url.URL{},
 													os:                  new(ios.Fake),
 													ioutil:              new(iioutil.Fake),
 												}
@@ -487,6 +561,7 @@ var _ = Context("Run", func() {
 													cliOutput:           new(clioutput.Fake),
 													cliParamSatisfier:   new(cliparamsatisfier.Fake),
 													nodeProvider:        new(nodeprovider.Fake),
+													nodeURL:             url.URL{},
 													os:                  new(ios.Fake),
 													ioutil:              new(iioutil.Fake),
 												}
@@ -533,6 +608,7 @@ var _ = Context("Run", func() {
 													cliOutput:           new(clioutput.Fake),
 													cliParamSatisfier:   new(cliparamsatisfier.Fake),
 													nodeProvider:        new(nodeprovider.Fake),
+													nodeURL:             url.URL{},
 													os:                  new(ios.Fake),
 													ioutil:              new(iioutil.Fake),
 												}
@@ -578,6 +654,7 @@ var _ = Context("Run", func() {
 													cliOutput:           new(clioutput.Fake),
 													cliParamSatisfier:   new(cliparamsatisfier.Fake),
 													nodeProvider:        new(nodeprovider.Fake),
+													nodeURL:             url.URL{},
 													os:                  new(ios.Fake),
 													ioutil:              new(iioutil.Fake),
 												}

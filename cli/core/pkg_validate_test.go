@@ -36,33 +36,55 @@ var _ = Context("pkgValidate", func() {
 			})
 		})
 		Context("ios.Getwd doesn't error", func() {
-			It("should call pkg.Resolve w/ expected args", func() {
+			It("should call pkg.NewFSProvider w/ expected args", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-				workDir := "dummyWorkDir"
-
 				fakePkg := new(pkg.Fake)
+				fakeFSProvider := new(pkg.FakeProvider)
+				fakePkg.NewFSProviderReturns(fakeFSProvider)
+
 				// error to trigger immediate return
 				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
-				fakeCliExiter := new(cliexiter.Fake)
-
 				fakeIOS := new(ios.Fake)
+				workDir := "dummyWorkDir"
 				fakeIOS.GetwdReturns(workDir, nil)
 
 				objectUnderTest := _core{
 					pkg:       fakePkg,
-					cliExiter: fakeCliExiter,
+					cliExiter: new(cliexiter.Fake),
 					os:        fakeIOS,
+				}
+
+				/* act */
+				objectUnderTest.PkgValidate("dummyPkgRef")
+
+				/* assert */
+				Expect(fakePkg.NewFSProviderArgsForCall(0)).To(ConsistOf(workDir))
+			})
+			It("should call pkg.Resolve w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef"
+
+				fakePkg := new(pkg.Fake)
+				fakeFSProvider := new(pkg.FakeProvider)
+				fakePkg.NewFSProviderReturns(fakeFSProvider)
+
+				// error to trigger immediate return
+				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _core{
+					pkg:       fakePkg,
+					cliExiter: new(cliexiter.Fake),
+					os:        new(ios.Fake),
 				}
 
 				/* act */
 				objectUnderTest.PkgValidate(providedPkgRef)
 
 				/* assert */
-				actualPkgRef, actualResolveOpts := fakePkg.ResolveArgsForCall(0)
+				actualPkgRef, actualProviders := fakePkg.ResolveArgsForCall(0)
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
-				Expect(actualResolveOpts).To(Equal(&pkg.ResolveOpts{BasePath: workDir}))
+				Expect(actualProviders).To(ConsistOf(fakeFSProvider))
 			})
 			Context("pkg.Resolve errs", func() {
 

@@ -1,30 +1,43 @@
 package pkg
 
 import (
+	"context"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
 )
 
-func newLocalHandle(
+func newFSHandle(
 	path string,
 ) Handle {
-	return localHandle{
+	return fsHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),
 		path:   path,
 	}
 }
 
-// localHandle is a provider which operates on a relative pkg ref
-type localHandle struct {
+// fsHandle allows interacting w/ a package sourced from the filesystem
+type fsHandle struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 	path   string
 }
 
-func (lh localHandle) ListContents() (
+func (lh fsHandle) GetContent(
+	ctx context.Context,
+	contentPath string,
+) (
+	model.ReadSeekCloser,
+	error,
+) {
+	return lh.os.Open(filepath.Join(lh.path, contentPath))
+}
+
+func (lh fsHandle) ListContents(
+	ctx context.Context,
+) (
 	[]*model.PkgContent,
 	error,
 ) {
@@ -32,7 +45,7 @@ func (lh localHandle) ListContents() (
 }
 
 // rListContents recursively lists pkg contents at path
-func (lh localHandle) rListContents(
+func (lh fsHandle) rListContents(
 	path string,
 ) (
 	[]*model.PkgContent,
@@ -70,15 +83,6 @@ func (lh localHandle) rListContents(
 	return contents, err
 }
 
-func (lh localHandle) GetContent(
-	contentPath string,
-) (
-	model.ReadSeekCloser,
-	error,
-) {
-	return lh.os.Open(filepath.Join(lh.path, contentPath))
-}
-
-func (lh localHandle) Ref() string {
+func (lh fsHandle) Ref() string {
 	return lh.path
 }

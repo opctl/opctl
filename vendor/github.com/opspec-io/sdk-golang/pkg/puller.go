@@ -1,9 +1,12 @@
 package pkg
 
+//go:generate counterfeiter -o ./fakePuller.go --fake-name fakePuller ./ puller
+
 import (
 	"fmt"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -19,7 +22,7 @@ type puller interface {
 	Pull(
 		path string,
 		pkgRef string,
-		pullCreds *PullCreds,
+		pullCreds *model.PullCreds,
 	) error
 }
 
@@ -40,7 +43,7 @@ type _puller struct {
 func (this _puller) Pull(
 	path string,
 	pkgRef string,
-	authOpts *PullCreds,
+	authOpts *model.PullCreds,
 ) error {
 
 	parsedPkgRef, err := this.refParser.Parse(pkgRef)

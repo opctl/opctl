@@ -17,12 +17,13 @@ func (this _core) PkgInstall(
 	for {
 		_, err := this.pkg.Resolve(
 			pkgRef,
-			&pkg.ResolveOpts{
-				PullCreds: &pkg.PullCreds{
+			this.pkg.NewNodeProvider(
+				this.nodeURL,
+				&model.PullCreds{
 					Username: username,
 					Password: password,
 				},
-			},
+			),
 		)
 
 		_, isAuthError := err.(pkg.ErrAuthenticationFailed)
