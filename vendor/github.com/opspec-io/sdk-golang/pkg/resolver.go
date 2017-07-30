@@ -1,106 +1,40 @@
 package pkg
 
-import (
-	"github.com/golang-interfaces/ios"
-	"os"
-	"path/filepath"
-)
-
 type Resolver interface {
-	// Resolve attempts to resolve a package according to opspec package resolution rules
-	// nil opts will be ignored
+	// TryResolve attempts to resolve a package from providers in order
 	// returns ErrAuthenticationFailed on authentication failure
+	// returns ErrPkgNotFound on resolution failure
 	Resolve(
 		pkgRef string,
-		opts *ResolveOpts,
+		providers ...Provider,
 	) (
 		Handle,
 		error,
 	)
 }
 
-func newResolver(
-	cachePath string,
-) Resolver {
-	return _resolver{
-		cachePath: cachePath,
-		os:        ios.New(),
-		puller:    newPuller(),
-	}
+func newResolver() Resolver {
+	return _Resolver{}
 }
 
-type _resolver struct {
-	cachePath string
-	os        ios.IOS
-	puller    puller
-}
+type _Resolver struct{}
 
-func (this _resolver) Resolve(
+func (this _Resolver) Resolve(
 	pkgRef string,
-	opts *ResolveOpts,
+	providers ...Provider,
 ) (
 	Handle,
 	error,
 ) {
-	var (
-		lookPaths []string = []string{this.cachePath}
-		pullCreds *PullCreds
-	)
-	if nil != opts {
-		if "" != opts.BasePath {
-			// resolve from provided base path first
-			lookPaths = []string{opts.BasePath, this.cachePath}
-		}
-		pullCreds = opts.PullCreds
-	}
-
-	// attempt local resolve
-	var resolvedPkgRef string
-	if filepath.IsAbs(pkgRef) {
-		if _, err := this.os.Stat(pkgRef); nil != err && !os.IsNotExist(err) {
-			// return actual errors
-			return nil, err
-		}
-		resolvedPkgRef = pkgRef
-	} else {
-		for _, lookPath := range lookPaths {
-
-			// attempt to resolve from lookPath/.opspec dir
-			testPath := filepath.Join(lookPath, DotOpspecDirName, pkgRef)
-			_, err := this.os.Stat(testPath)
-			if err == nil {
-				// record & break on resolve
-				resolvedPkgRef = testPath
-				break
-			}
-			if nil != err && !os.IsNotExist(err) {
-				// return actual errors
-				return nil, err
-			}
-
-			// attempt to resolve from lookPath
-			testPath = filepath.Join(lookPath, pkgRef)
-			_, err = this.os.Stat(testPath)
-			if err == nil {
-				// record & break on resolve
-				resolvedPkgRef = testPath
-				break
-			}
-			if nil != err && !os.IsNotExist(err) {
-				// return actual errors
-				return nil, err
-			}
-		}
-	}
-
-	// attempt pull if local resolve failed
-	if "" == resolvedPkgRef {
-		err := this.puller.Pull(this.cachePath, pkgRef, pullCreds)
+	for _, src := range providers {
+		handle, err := src.TryResolve(pkgRef)
 		if nil != err {
 			return nil, err
+		} else if nil != handle {
+			return handle, nil
 		}
-		resolvedPkgRef = filepath.Join(this.cachePath, pkgRef)
 	}
 
-	return newLocalHandle(resolvedPkgRef), nil
+	// if we reached this point resolution failed, return err
+	return nil, ErrPkgNotFound{}
 }

@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type EventFilter struct {
 	// filter to events from these root op id's
@@ -11,6 +13,17 @@ type EventFilter struct {
 
 type GetEventStreamReq struct {
 	Filter *EventFilter
+}
+
+type GetPkgContentReq struct {
+	ContentPath string
+	PullCreds   *PullCreds
+	PkgRef      string
+}
+
+type ListPkgContentsReq struct {
+	PullCreds *PullCreds
+	PkgRef    string
 }
 
 type KillOpReq struct {

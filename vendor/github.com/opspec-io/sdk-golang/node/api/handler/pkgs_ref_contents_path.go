@@ -36,6 +36,7 @@ func (hdlr _handler) pkgs_ref_contents_path(
 	}
 
 	pkgContentReader, err := pkgHandle.GetContent(
+		httpReq.Context(),
 		contentPath,
 	)
 	if nil != err {

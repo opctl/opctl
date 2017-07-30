@@ -39,11 +39,11 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolvePkgStub        func(pkgRef string, opts *pkg.ResolveOpts) (pkg.Handle, error)
+	ResolvePkgStub        func(pkgRef string, pullCreds *model.PullCreds) (pkg.Handle, error)
 	resolvePkgMutex       sync.RWMutex
 	resolvePkgArgsForCall []struct {
-		pkgRef string
-		opts   *pkg.ResolveOpts
+		pkgRef    string
+		pullCreds *model.PullCreds
 	}
 	resolvePkgReturns struct {
 		result1 pkg.Handle
@@ -181,17 +181,17 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkg(pkgRef string, opts *pkg.ResolveOpts) (pkg.Handle, error) {
+func (fake *Fake) ResolvePkg(pkgRef string, pullCreds *model.PullCreds) (pkg.Handle, error) {
 	fake.resolvePkgMutex.Lock()
 	ret, specificReturn := fake.resolvePkgReturnsOnCall[len(fake.resolvePkgArgsForCall)]
 	fake.resolvePkgArgsForCall = append(fake.resolvePkgArgsForCall, struct {
-		pkgRef string
-		opts   *pkg.ResolveOpts
-	}{pkgRef, opts})
-	fake.recordInvocation("ResolvePkg", []interface{}{pkgRef, opts})
+		pkgRef    string
+		pullCreds *model.PullCreds
+	}{pkgRef, pullCreds})
+	fake.recordInvocation("ResolvePkg", []interface{}{pkgRef, pullCreds})
 	fake.resolvePkgMutex.Unlock()
 	if fake.ResolvePkgStub != nil {
-		return fake.ResolvePkgStub(pkgRef, opts)
+		return fake.ResolvePkgStub(pkgRef, pullCreds)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -205,10 +205,10 @@ func (fake *Fake) ResolvePkgCallCount() int {
 	return len(fake.resolvePkgArgsForCall)
 }
 
-func (fake *Fake) ResolvePkgArgsForCall(i int) (string, *pkg.ResolveOpts) {
+func (fake *Fake) ResolvePkgArgsForCall(i int) (string, *model.PullCreds) {
 	fake.resolvePkgMutex.RLock()
 	defer fake.resolvePkgMutex.RUnlock()
-	return fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].opts
+	return fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
 }
 
 func (fake *Fake) ResolvePkgReturns(result1 pkg.Handle, result2 error) {

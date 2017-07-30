@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 func (this _core) PkgValidate(
@@ -16,7 +15,10 @@ func (this _core) PkgValidate(
 		return // support fake exiter
 	}
 
-	pkgHandle, err := this.pkg.Resolve(pkgRef, &pkg.ResolveOpts{BasePath: cwd})
+	pkgHandle, err := this.pkg.Resolve(
+		pkgRef,
+		this.pkg.NewFSProvider(cwd),
+	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{
 			Message: fmt.Sprintf("Unable to resolve package '%v' from '%v'; error was: %v", pkgRef, cwd, err),

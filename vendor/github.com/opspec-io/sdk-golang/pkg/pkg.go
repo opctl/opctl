@@ -11,6 +11,8 @@ import (
 )
 
 type Pkg interface {
+	ProviderFactory
+
 	// Create creates an opspec package
 	Create(
 		path,
@@ -39,24 +41,24 @@ type Pkg interface {
 	) []error
 }
 
-func New(
-	cachePath string,
-) Pkg {
+func New() Pkg {
 	return _Pkg{
-		ioUtil:    iioutil.New(),
-		os:        ios.New(),
-		puller:    newPuller(),
-		refParser: newRefParser(),
-		Resolver:  newResolver(cachePath),
-		manifest:  manifest.New(),
+		ioUtil:          iioutil.New(),
+		manifest:        manifest.New(),
+		os:              ios.New(),
+		puller:          newPuller(),
+		refParser:       newRefParser(),
+		Resolver:        newResolver(),
+		ProviderFactory: newProviderFactory(),
 	}
 }
 
 type _Pkg struct {
-	ioUtil iioutil.IIOUtil
-	os     ios.IOS
+	ioUtil   iioutil.IIOUtil
+	manifest manifest.Manifest
+	os       ios.IOS
 	puller
 	refParser
 	Resolver
-	manifest manifest.Manifest
+	ProviderFactory
 }

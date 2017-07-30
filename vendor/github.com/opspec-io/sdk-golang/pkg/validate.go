@@ -1,9 +1,14 @@
 package pkg
 
+import "context"
+
 func (this _Pkg) Validate(
 	pkgHandle Handle,
 ) []error {
-	manifestReader, err := pkgHandle.GetContent(OpDotYmlFileName)
+	manifestReader, err := pkgHandle.GetContent(
+		context.TODO(),
+		OpDotYmlFileName,
+	)
 	if nil != err {
 		return []error{err}
 	}

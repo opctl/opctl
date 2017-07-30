@@ -4,7 +4,6 @@ package core
 
 import (
 	"context"
-	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/nodeprovider"
@@ -19,7 +18,6 @@ import (
 	"io"
 	"net/url"
 	"os"
-	"path"
 )
 
 type Core interface {
@@ -89,19 +87,15 @@ func New(
 		},
 	)
 
-	pkgCachePath, err := pkgCachePath()
-	if nil != err {
-		panic(err)
-	}
-
 	return &_core{
 		opspecNodeAPIClient: opspecNodeAPIClient,
-		pkg:                 pkg.New(pkgCachePath),
+		pkg:                 pkg.New(),
 		cliColorer:          cliColorer,
 		cliExiter:           cliExiter,
 		cliOutput:           cliOutput,
 		cliParamSatisfier:   cliparamsatisfier.New(cliExiter, cliOutput),
 		nodeProvider:        local.New(),
+		nodeURL:             *opspecNodeURL,
 		updater:             updater.New(),
 		os:                  _os,
 		writer:              os.Stdout,
@@ -118,22 +112,9 @@ type _core struct {
 	cliOutput           clioutput.CliOutput
 	cliParamSatisfier   cliparamsatisfier.CLIParamSatisfier
 	nodeProvider        nodeprovider.NodeProvider
+	nodeURL             url.URL
 	updater             updater.Updater
 	os                  ios.IOS
 	writer              io.Writer
 	ioutil              iioutil.IIOUtil
-}
-
-// fsRootPath returns the root fs path for the node
-func pkgCachePath() (string, error) {
-	perUserAppDataPath, err := appdatapath.New().PerUser()
-	if nil != err {
-		return "", err
-	}
-
-	return path.Join(
-		perUserAppDataPath,
-		"opctl",
-		"pkgs",
-	), nil
 }

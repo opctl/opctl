@@ -21,11 +21,27 @@ type Client interface {
 		err error,
 	)
 
+	GetPkgContent(
+		ctx context.Context,
+		req model.GetPkgContentReq,
+	) (
+		model.ReadSeekCloser,
+		error,
+	)
+
 	KillOp(
 		ctx context.Context,
 		req model.KillOpReq,
 	) (
 		err error,
+	)
+
+	ListPkgContents(
+		ctx context.Context,
+		req model.ListPkgContentsReq,
+	) (
+		[]*model.PkgContent,
+		error,
 	)
 
 	StartOp(
@@ -42,6 +58,8 @@ type Opts struct {
 	RetryLogHook func(err error)
 }
 
+// New returns a new client
+// nil opts will be ignored
 func New(
 	baseUrl url.URL,
 	opts *Opts,

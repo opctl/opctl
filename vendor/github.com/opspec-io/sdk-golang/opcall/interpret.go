@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 func (this _OpCall) Interpret(
@@ -23,10 +22,8 @@ func (this _OpCall) Interpret(
 
 	pkgHandle, err := this.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
-		&pkg.ResolveOpts{
-			PullCreds: &pkg.PullCreds{Username: username, Password: password},
-			BasePath:  pkgBasePath,
-		},
+		this.pkg.NewFSProvider(pkgBasePath),
+		this.pkg.NewGitProvider(this.pkgCachePath, &model.PullCreds{Username: username, Password: password}),
 	)
 	if nil != err {
 		return nil, err

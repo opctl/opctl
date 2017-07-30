@@ -22,6 +22,20 @@ type Fake struct {
 		result1 chan model.Event
 		result2 error
 	}
+	GetPkgContentStub        func(ctx context.Context, req model.GetPkgContentReq) (model.ReadSeekCloser, error)
+	getPkgContentMutex       sync.RWMutex
+	getPkgContentArgsForCall []struct {
+		ctx context.Context
+		req model.GetPkgContentReq
+	}
+	getPkgContentReturns struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
+	getPkgContentReturnsOnCall map[int]struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}
 	KillOpStub        func(ctx context.Context, req model.KillOpReq) (err error)
 	killOpMutex       sync.RWMutex
 	killOpArgsForCall []struct {
@@ -33,6 +47,20 @@ type Fake struct {
 	}
 	killOpReturnsOnCall map[int]struct {
 		result1 error
+	}
+	ListPkgContentsStub        func(ctx context.Context, req model.ListPkgContentsReq) ([]*model.PkgContent, error)
+	listPkgContentsMutex       sync.RWMutex
+	listPkgContentsArgsForCall []struct {
+		ctx context.Context
+		req model.ListPkgContentsReq
+	}
+	listPkgContentsReturns struct {
+		result1 []*model.PkgContent
+		result2 error
+	}
+	listPkgContentsReturnsOnCall map[int]struct {
+		result1 []*model.PkgContent
+		result2 error
 	}
 	StartOpStub        func(ctx context.Context, req model.StartOpReq) (opId string, err error)
 	startOpMutex       sync.RWMutex
@@ -103,6 +131,58 @@ func (fake *Fake) GetEventStreamReturnsOnCall(i int, result1 chan model.Event, r
 	}{result1, result2}
 }
 
+func (fake *Fake) GetPkgContent(ctx context.Context, req model.GetPkgContentReq) (model.ReadSeekCloser, error) {
+	fake.getPkgContentMutex.Lock()
+	ret, specificReturn := fake.getPkgContentReturnsOnCall[len(fake.getPkgContentArgsForCall)]
+	fake.getPkgContentArgsForCall = append(fake.getPkgContentArgsForCall, struct {
+		ctx context.Context
+		req model.GetPkgContentReq
+	}{ctx, req})
+	fake.recordInvocation("GetPkgContent", []interface{}{ctx, req})
+	fake.getPkgContentMutex.Unlock()
+	if fake.GetPkgContentStub != nil {
+		return fake.GetPkgContentStub(ctx, req)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.getPkgContentReturns.result1, fake.getPkgContentReturns.result2
+}
+
+func (fake *Fake) GetPkgContentCallCount() int {
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
+	return len(fake.getPkgContentArgsForCall)
+}
+
+func (fake *Fake) GetPkgContentArgsForCall(i int) (context.Context, model.GetPkgContentReq) {
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
+	return fake.getPkgContentArgsForCall[i].ctx, fake.getPkgContentArgsForCall[i].req
+}
+
+func (fake *Fake) GetPkgContentReturns(result1 model.ReadSeekCloser, result2 error) {
+	fake.GetPkgContentStub = nil
+	fake.getPkgContentReturns = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) GetPkgContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
+	fake.GetPkgContentStub = nil
+	if fake.getPkgContentReturnsOnCall == nil {
+		fake.getPkgContentReturnsOnCall = make(map[int]struct {
+			result1 model.ReadSeekCloser
+			result2 error
+		})
+	}
+	fake.getPkgContentReturnsOnCall[i] = struct {
+		result1 model.ReadSeekCloser
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) KillOp(ctx context.Context, req model.KillOpReq) (err error) {
 	fake.killOpMutex.Lock()
 	ret, specificReturn := fake.killOpReturnsOnCall[len(fake.killOpArgsForCall)]
@@ -150,6 +230,58 @@ func (fake *Fake) KillOpReturnsOnCall(i int, result1 error) {
 	fake.killOpReturnsOnCall[i] = struct {
 		result1 error
 	}{result1}
+}
+
+func (fake *Fake) ListPkgContents(ctx context.Context, req model.ListPkgContentsReq) ([]*model.PkgContent, error) {
+	fake.listPkgContentsMutex.Lock()
+	ret, specificReturn := fake.listPkgContentsReturnsOnCall[len(fake.listPkgContentsArgsForCall)]
+	fake.listPkgContentsArgsForCall = append(fake.listPkgContentsArgsForCall, struct {
+		ctx context.Context
+		req model.ListPkgContentsReq
+	}{ctx, req})
+	fake.recordInvocation("ListPkgContents", []interface{}{ctx, req})
+	fake.listPkgContentsMutex.Unlock()
+	if fake.ListPkgContentsStub != nil {
+		return fake.ListPkgContentsStub(ctx, req)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.listPkgContentsReturns.result1, fake.listPkgContentsReturns.result2
+}
+
+func (fake *Fake) ListPkgContentsCallCount() int {
+	fake.listPkgContentsMutex.RLock()
+	defer fake.listPkgContentsMutex.RUnlock()
+	return len(fake.listPkgContentsArgsForCall)
+}
+
+func (fake *Fake) ListPkgContentsArgsForCall(i int) (context.Context, model.ListPkgContentsReq) {
+	fake.listPkgContentsMutex.RLock()
+	defer fake.listPkgContentsMutex.RUnlock()
+	return fake.listPkgContentsArgsForCall[i].ctx, fake.listPkgContentsArgsForCall[i].req
+}
+
+func (fake *Fake) ListPkgContentsReturns(result1 []*model.PkgContent, result2 error) {
+	fake.ListPkgContentsStub = nil
+	fake.listPkgContentsReturns = struct {
+		result1 []*model.PkgContent
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) ListPkgContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
+	fake.ListPkgContentsStub = nil
+	if fake.listPkgContentsReturnsOnCall == nil {
+		fake.listPkgContentsReturnsOnCall = make(map[int]struct {
+			result1 []*model.PkgContent
+			result2 error
+		})
+	}
+	fake.listPkgContentsReturnsOnCall[i] = struct {
+		result1 []*model.PkgContent
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) StartOp(ctx context.Context, req model.StartOpReq) (opId string, err error) {
@@ -209,8 +341,12 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
+	fake.getPkgContentMutex.RLock()
+	defer fake.getPkgContentMutex.RUnlock()
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
+	fake.listPkgContentsMutex.RLock()
+	defer fake.listPkgContentsMutex.RUnlock()
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

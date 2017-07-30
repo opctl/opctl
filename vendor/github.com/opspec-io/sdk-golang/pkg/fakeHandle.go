@@ -2,16 +2,19 @@
 package pkg
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type FakeHandle struct {
-	ListContentsStub        func() ([]*model.PkgContent, error)
+	ListContentsStub        func(ctx context.Context) ([]*model.PkgContent, error)
 	listContentsMutex       sync.RWMutex
-	listContentsArgsForCall []struct{}
-	listContentsReturns     struct {
+	listContentsArgsForCall []struct {
+		ctx context.Context
+	}
+	listContentsReturns struct {
 		result1 []*model.PkgContent
 		result2 error
 	}
@@ -19,9 +22,10 @@ type FakeHandle struct {
 		result1 []*model.PkgContent
 		result2 error
 	}
-	GetContentStub        func(contentPath string) (model.ReadSeekCloser, error)
+	GetContentStub        func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error)
 	getContentMutex       sync.RWMutex
 	getContentArgsForCall []struct {
+		ctx         context.Context
 		contentPath string
 	}
 	getContentReturns struct {
@@ -45,14 +49,16 @@ type FakeHandle struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandle) ListContents() ([]*model.PkgContent, error) {
+func (fake *FakeHandle) ListContents(ctx context.Context) ([]*model.PkgContent, error) {
 	fake.listContentsMutex.Lock()
 	ret, specificReturn := fake.listContentsReturnsOnCall[len(fake.listContentsArgsForCall)]
-	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct{}{})
-	fake.recordInvocation("ListContents", []interface{}{})
+	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct {
+		ctx context.Context
+	}{ctx})
+	fake.recordInvocation("ListContents", []interface{}{ctx})
 	fake.listContentsMutex.Unlock()
 	if fake.ListContentsStub != nil {
-		return fake.ListContentsStub()
+		return fake.ListContentsStub(ctx)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -64,6 +70,12 @@ func (fake *FakeHandle) ListContentsCallCount() int {
 	fake.listContentsMutex.RLock()
 	defer fake.listContentsMutex.RUnlock()
 	return len(fake.listContentsArgsForCall)
+}
+
+func (fake *FakeHandle) ListContentsArgsForCall(i int) context.Context {
+	fake.listContentsMutex.RLock()
+	defer fake.listContentsMutex.RUnlock()
+	return fake.listContentsArgsForCall[i].ctx
 }
 
 func (fake *FakeHandle) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
@@ -88,16 +100,17 @@ func (fake *FakeHandle) ListContentsReturnsOnCall(i int, result1 []*model.PkgCon
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) GetContent(contentPath string) (model.ReadSeekCloser, error) {
+func (fake *FakeHandle) GetContent(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
 	fake.getContentMutex.Lock()
 	ret, specificReturn := fake.getContentReturnsOnCall[len(fake.getContentArgsForCall)]
 	fake.getContentArgsForCall = append(fake.getContentArgsForCall, struct {
+		ctx         context.Context
 		contentPath string
-	}{contentPath})
-	fake.recordInvocation("GetContent", []interface{}{contentPath})
+	}{ctx, contentPath})
+	fake.recordInvocation("GetContent", []interface{}{ctx, contentPath})
 	fake.getContentMutex.Unlock()
 	if fake.GetContentStub != nil {
-		return fake.GetContentStub(contentPath)
+		return fake.GetContentStub(ctx, contentPath)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -111,10 +124,10 @@ func (fake *FakeHandle) GetContentCallCount() int {
 	return len(fake.getContentArgsForCall)
 }
 
-func (fake *FakeHandle) GetContentArgsForCall(i int) string {
+func (fake *FakeHandle) GetContentArgsForCall(i int) (context.Context, string) {
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
-	return fake.getContentArgsForCall[i].contentPath
+	return fake.getContentArgsForCall[i].ctx, fake.getContentArgsForCall[i].contentPath
 }
 
 func (fake *FakeHandle) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
