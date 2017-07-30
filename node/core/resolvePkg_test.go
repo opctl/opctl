@@ -23,7 +23,7 @@ var _ = Context("core", func() {
 				new(pkg.FakeProvider),
 				new(pkg.FakeProvider),
 			}
-			fakePkg.NewLocalFSProviderReturns(expectedPkgProviders[0])
+			fakePkg.NewFSProviderReturns(expectedPkgProviders[0])
 			fakePkg.NewGitProviderReturns(expectedPkgProviders[1])
 
 			objectUnderTest := _core{

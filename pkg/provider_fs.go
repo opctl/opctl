@@ -6,22 +6,21 @@ import (
 	"path/filepath"
 )
 
-// NewLocalFSProvider returns a pkg provider which sources pkgs from the local filesystem
-func (pf _ProviderFactory) NewLocalFSProvider(
+func (pf _ProviderFactory) NewFSProvider(
 	basePaths ...string,
 ) Provider {
-	return localFSProvider{
+	return fsProvider{
 		os:        ios.New(),
 		basePaths: basePaths,
 	}
 }
 
-type localFSProvider struct {
+type fsProvider struct {
 	os        ios.IOS
 	basePaths []string
 }
 
-func (lfsp localFSProvider) TryResolve(
+func (lfsp fsProvider) TryResolve(
 	pkgRef string,
 ) (Handle, error) {
 
@@ -30,7 +29,7 @@ func (lfsp localFSProvider) TryResolve(
 			// return actual errors
 			return nil, err
 		}
-		return newLocalHandle(pkgRef), nil
+		return newFSHandle(pkgRef), nil
 	}
 
 	for _, basePath := range lfsp.basePaths {
@@ -39,7 +38,7 @@ func (lfsp localFSProvider) TryResolve(
 		testPath := filepath.Join(basePath, DotOpspecDirName, pkgRef)
 		_, err := lfsp.os.Stat(testPath)
 		if err == nil {
-			return newLocalHandle(testPath), nil
+			return newFSHandle(testPath), nil
 		}
 		if nil != err && !os.IsNotExist(err) {
 			// return actual errors
@@ -50,7 +49,7 @@ func (lfsp localFSProvider) TryResolve(
 		testPath = filepath.Join(basePath, pkgRef)
 		_, err = lfsp.os.Stat(testPath)
 		if err == nil {
-			return newLocalHandle(testPath), nil
+			return newFSHandle(testPath), nil
 		}
 		if nil != err && !os.IsNotExist(err) {
 			// return actual errors

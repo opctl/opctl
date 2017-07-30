@@ -333,6 +333,24 @@
 			"revisionTime": "2017-03-19T17:27:27Z"
 		},
 		{
+			"checksumSHA1": "g46WnPAlsmkyNDUFdObDgP6DP+s=",
+			"path": "github.com/jfbus/httprs",
+			"revision": "e879ae6bf984ca6c009eb44696e9f400ec3ed2d9",
+			"revisionTime": "2017-07-03T13:54:35Z"
+		},
+		{
+			"checksumSHA1": "+p4JY4wmFQAppCdlrJ8Kxybmht8=",
+			"path": "github.com/mitchellh/copystructure",
+			"revision": "d23ffcb85de31694d6ccaa23ccb4a03e55c1303f",
+			"revisionTime": "2017-05-25T01:39:02Z"
+		},
+		{
+			"checksumSHA1": "AMU63CNOg4XmIhVR/S/Xttt1/f0=",
+			"path": "github.com/mitchellh/reflectwalk",
+			"revision": "63d60e9d0dbc60cf9164e6510889b0db6683d98c",
+			"revisionTime": "2017-07-26T20:21:17Z"
+		},
+		{
 			"checksumSHA1": "OFNit1Qx2DdWhotfREKodDNUwCM=",
 			"path": "github.com/opencontainers/go-digest",
 			"revision": "279bed98673dd5bef374d3b6e4b09e2af76183bf",

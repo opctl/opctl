@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("localFSProvider", func() {
+var _ = Context("fsProvider", func() {
 	Context("TryResolve", func() {
 		Context("pkgRef is absolute path", func() {
 			It("should call fs.Stat w/ expected args", func() {
@@ -21,7 +21,7 @@ var _ = Context("localFSProvider", func() {
 				// error to trigger immediate return
 				fakeOS.StatReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := localFSProvider{
+				objectUnderTest := fsProvider{
 					os: fakeOS,
 				}
 
@@ -39,7 +39,7 @@ var _ = Context("localFSProvider", func() {
 					fakeOS := new(ios.Fake)
 					fakeOS.StatReturns(nil, expectedErr)
 
-					objectUnderTest := localFSProvider{
+					objectUnderTest := fsProvider{
 						os: fakeOS,
 					}
 
@@ -60,12 +60,12 @@ var _ = Context("localFSProvider", func() {
 						panic(err)
 					}
 
-					expectedHandle := newLocalHandle(file.Name())
+					expectedHandle := newFSHandle(file.Name())
 
 					fakeOS := new(ios.Fake)
 					fakeOS.StatReturns(nil, nil)
 
-					objectUnderTest := localFSProvider{
+					objectUnderTest := fsProvider{
 						os: fakeOS,
 					}
 
@@ -95,7 +95,7 @@ var _ = Context("localFSProvider", func() {
 						fakeOS := new(ios.Fake)
 						fakeOS.StatReturns(nil, nil)
 
-						objectUnderTest := localFSProvider{
+						objectUnderTest := fsProvider{
 							basePaths: []string{basePath},
 							os:        fakeOS,
 						}
@@ -114,7 +114,7 @@ var _ = Context("localFSProvider", func() {
 							fakeOS := new(ios.Fake)
 							fakeOS.StatReturns(nil, expectedErr)
 
-							objectUnderTest := localFSProvider{
+							objectUnderTest := fsProvider{
 								basePaths: []string{"dummyBasePath"},
 								os:        fakeOS,
 							}
@@ -132,7 +132,7 @@ var _ = Context("localFSProvider", func() {
 							providedPkgRef := "dummyPkgRef"
 							basePath := "dummyBasePath"
 
-							expectedHandle := newLocalHandle(filepath.Join(
+							expectedHandle := newFSHandle(filepath.Join(
 								basePath,
 								DotOpspecDirName,
 								providedPkgRef,
@@ -141,7 +141,7 @@ var _ = Context("localFSProvider", func() {
 							fakeOS := new(ios.Fake)
 							fakeOS.StatReturns(nil, nil)
 
-							objectUnderTest := localFSProvider{
+							objectUnderTest := fsProvider{
 								basePaths: []string{basePath},
 								os:        fakeOS,
 							}
@@ -169,7 +169,7 @@ var _ = Context("localFSProvider", func() {
 						fakeOS := new(ios.Fake)
 						fakeOS.StatReturnsOnCall(0, nil, os.ErrNotExist)
 
-						objectUnderTest := localFSProvider{
+						objectUnderTest := fsProvider{
 							basePaths: []string{basePath},
 							os:        fakeOS,
 						}
@@ -189,7 +189,7 @@ var _ = Context("localFSProvider", func() {
 							fakeOS.StatReturnsOnCall(0, nil, os.ErrNotExist)
 							fakeOS.StatReturnsOnCall(1, nil, expectedErr)
 
-							objectUnderTest := localFSProvider{
+							objectUnderTest := fsProvider{
 								basePaths: []string{"dummyBasePath"},
 								os:        fakeOS,
 							}
@@ -207,7 +207,7 @@ var _ = Context("localFSProvider", func() {
 							providedPkgRef := "dummyPkgRef"
 							basePath := "dummyBasePath"
 
-							expectedHandle := newLocalHandle(filepath.Join(
+							expectedHandle := newFSHandle(filepath.Join(
 								basePath,
 								providedPkgRef,
 							))
@@ -215,7 +215,7 @@ var _ = Context("localFSProvider", func() {
 							fakeOS := new(ios.Fake)
 							fakeOS.StatReturnsOnCall(0, nil, os.ErrNotExist)
 
-							objectUnderTest := localFSProvider{
+							objectUnderTest := fsProvider{
 								basePaths: []string{basePath},
 								os:        fakeOS,
 							}

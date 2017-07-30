@@ -40,7 +40,7 @@ var _ = Context("OpCall", func() {
 				new(pkg.FakeProvider),
 				new(pkg.FakeProvider),
 			}
-			fakePkg.NewLocalFSProviderReturns(expectedPkgProviders[0])
+			fakePkg.NewFSProviderReturns(expectedPkgProviders[0])
 			fakePkg.NewGitProviderReturns(expectedPkgProviders[1])
 
 			// error to trigger immediate return

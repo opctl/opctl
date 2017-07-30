@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"errors"
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
@@ -21,7 +22,11 @@ var _ = Context("Validate", func() {
 		objectUnderTest.Validate(providedFileHandle)
 
 		/* assert */
-		Expect(providedFileHandle.GetContentArgsForCall(0)).To(Equal(OpDotYmlFileName))
+		actualCtx,
+			actualContentName := providedFileHandle.GetContentArgsForCall(0)
+
+		Expect(actualCtx).To(Equal(context.TODO()))
+		Expect(actualContentName).To(Equal(OpDotYmlFileName))
 	})
 	Context("handle.GetContent errs", func() {
 		It("should return err", func() {

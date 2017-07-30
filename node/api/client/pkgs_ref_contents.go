@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	"github.com/jfbus/httprs"
+	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"net/http"
@@ -10,17 +10,16 @@ import (
 	"strings"
 )
 
-func (c client) GetPkgContent(
+func (c client) ListPkgContents(
 	ctx context.Context,
-	req model.GetPkgContentReq,
+	req model.ListPkgContentsReq,
 ) (
-	model.ReadSeekCloser,
+	[]*model.PkgContent,
 	error,
 ) {
 
 	// build url
-	path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(req.PkgRef), 1)
-	path = strings.Replace(path, "{path}", url.PathEscape(req.ContentPath), 1)
+	path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(req.PkgRef), 1)
 	reqUrl := c.baseUrl
 	reqUrl.Path = path
 
@@ -40,6 +39,9 @@ func (c client) GetPkgContent(
 		return nil, err
 	}
 
-	return httprs.NewHttpReadSeeker(httpResp), nil
+	defer httpResp.Body.Close()
+	var contentList []*model.PkgContent
+
+	return contentList, json.NewDecoder(httpResp.Body).Decode(contentList)
 
 }

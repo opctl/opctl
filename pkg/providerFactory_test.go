@@ -5,9 +5,27 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"net/url"
 )
 
 var _ = Context("providerFactory", func() {
+	Context("NewFSProvider", func() {
+		It("should return expected Provider", func() {
+			/* arrange */
+			providedBasePaths := []string{"dummyBasePath"}
+
+			objectUnderTest := _ProviderFactory{}
+
+			/* act */
+			actualProvider := objectUnderTest.NewFSProvider(providedBasePaths...)
+
+			/* assert */
+			Expect(actualProvider).To(Equal(fsProvider{
+				os:        ios.New(),
+				basePaths: providedBasePaths,
+			}))
+		})
+	})
 	Context("NewGitProvider", func() {
 		It("should return expected Provider", func() {
 			/* arrange */
@@ -24,7 +42,7 @@ var _ = Context("providerFactory", func() {
 
 			/* assert */
 			Expect(actualProvider).To(Equal(gitProvider{
-				localFSProvider: localFSProvider{
+				localFSProvider: fsProvider{
 					os:        ios.New(),
 					basePaths: []string{providedBasePath},
 				},
@@ -34,21 +52,28 @@ var _ = Context("providerFactory", func() {
 			}))
 		})
 	})
-	Context("NewLocalFSProvider", func() {
-		It("should return expected Provider", func() {
+	Context("NewNodeProvider", func() {
+		It("should return nodeProvider", func() {
 			/* arrange */
-			providedBasePaths := []string{"dummyBasePath"}
+			providedAPIBaseURL, err := url.Parse("dummyAPIBaseURL")
+			if nil != err {
+				panic(err)
+			}
 
 			objectUnderTest := _ProviderFactory{}
 
 			/* act */
-			actualProvider := objectUnderTest.NewLocalFSProvider(providedBasePaths...)
+			actualProvider := objectUnderTest.NewNodeProvider(
+				*providedAPIBaseURL,
+				&model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"},
+			)
 
 			/* assert */
-			Expect(actualProvider).To(Equal(localFSProvider{
-				os:        ios.New(),
-				basePaths: providedBasePaths,
-			}))
+			// can't check for equality because of nested private props so we check what we can
+			if _, ok := actualProvider.(nodeProvider); !ok {
+				Fail("actualProvider wrong type")
+			}
+			Expect(actualProvider).NotTo(BeNil())
 		})
 	})
 })

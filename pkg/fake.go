@@ -2,21 +2,22 @@
 package pkg
 
 import (
+	"net/url"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	NewLocalFSProviderStub        func(basePaths ...string) Provider
-	newLocalFSProviderMutex       sync.RWMutex
-	newLocalFSProviderArgsForCall []struct {
+	NewFSProviderStub        func(basePaths ...string) Provider
+	newFSProviderMutex       sync.RWMutex
+	newFSProviderArgsForCall []struct {
 		basePaths []string
 	}
-	newLocalFSProviderReturns struct {
+	newFSProviderReturns struct {
 		result1 Provider
 	}
-	newLocalFSProviderReturnsOnCall map[int]struct {
+	newFSProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
 	NewGitProviderStub        func(basePath string, pullCreds *model.PullCreds) Provider
@@ -29,6 +30,18 @@ type Fake struct {
 		result1 Provider
 	}
 	newGitProviderReturnsOnCall map[int]struct {
+		result1 Provider
+	}
+	NewNodeProviderStub        func(apiBaseURL url.URL, pullCreds *model.PullCreds) Provider
+	newNodeProviderMutex       sync.RWMutex
+	newNodeProviderArgsForCall []struct {
+		apiBaseURL url.URL
+		pullCreds  *model.PullCreds
+	}
+	newNodeProviderReturns struct {
+		result1 Provider
+	}
+	newNodeProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
 	CreateStub        func(path, pkgName, pkgDescription string) error
@@ -99,50 +112,50 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) NewLocalFSProvider(basePaths ...string) Provider {
-	fake.newLocalFSProviderMutex.Lock()
-	ret, specificReturn := fake.newLocalFSProviderReturnsOnCall[len(fake.newLocalFSProviderArgsForCall)]
-	fake.newLocalFSProviderArgsForCall = append(fake.newLocalFSProviderArgsForCall, struct {
+func (fake *Fake) NewFSProvider(basePaths ...string) Provider {
+	fake.newFSProviderMutex.Lock()
+	ret, specificReturn := fake.newFSProviderReturnsOnCall[len(fake.newFSProviderArgsForCall)]
+	fake.newFSProviderArgsForCall = append(fake.newFSProviderArgsForCall, struct {
 		basePaths []string
 	}{basePaths})
-	fake.recordInvocation("NewLocalFSProvider", []interface{}{basePaths})
-	fake.newLocalFSProviderMutex.Unlock()
-	if fake.NewLocalFSProviderStub != nil {
-		return fake.NewLocalFSProviderStub(basePaths...)
+	fake.recordInvocation("NewFSProvider", []interface{}{basePaths})
+	fake.newFSProviderMutex.Unlock()
+	if fake.NewFSProviderStub != nil {
+		return fake.NewFSProviderStub(basePaths...)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.newLocalFSProviderReturns.result1
+	return fake.newFSProviderReturns.result1
 }
 
-func (fake *Fake) NewLocalFSProviderCallCount() int {
-	fake.newLocalFSProviderMutex.RLock()
-	defer fake.newLocalFSProviderMutex.RUnlock()
-	return len(fake.newLocalFSProviderArgsForCall)
+func (fake *Fake) NewFSProviderCallCount() int {
+	fake.newFSProviderMutex.RLock()
+	defer fake.newFSProviderMutex.RUnlock()
+	return len(fake.newFSProviderArgsForCall)
 }
 
-func (fake *Fake) NewLocalFSProviderArgsForCall(i int) []string {
-	fake.newLocalFSProviderMutex.RLock()
-	defer fake.newLocalFSProviderMutex.RUnlock()
-	return fake.newLocalFSProviderArgsForCall[i].basePaths
+func (fake *Fake) NewFSProviderArgsForCall(i int) []string {
+	fake.newFSProviderMutex.RLock()
+	defer fake.newFSProviderMutex.RUnlock()
+	return fake.newFSProviderArgsForCall[i].basePaths
 }
 
-func (fake *Fake) NewLocalFSProviderReturns(result1 Provider) {
-	fake.NewLocalFSProviderStub = nil
-	fake.newLocalFSProviderReturns = struct {
+func (fake *Fake) NewFSProviderReturns(result1 Provider) {
+	fake.NewFSProviderStub = nil
+	fake.newFSProviderReturns = struct {
 		result1 Provider
 	}{result1}
 }
 
-func (fake *Fake) NewLocalFSProviderReturnsOnCall(i int, result1 Provider) {
-	fake.NewLocalFSProviderStub = nil
-	if fake.newLocalFSProviderReturnsOnCall == nil {
-		fake.newLocalFSProviderReturnsOnCall = make(map[int]struct {
+func (fake *Fake) NewFSProviderReturnsOnCall(i int, result1 Provider) {
+	fake.NewFSProviderStub = nil
+	if fake.newFSProviderReturnsOnCall == nil {
+		fake.newFSProviderReturnsOnCall = make(map[int]struct {
 			result1 Provider
 		})
 	}
-	fake.newLocalFSProviderReturnsOnCall[i] = struct {
+	fake.newFSProviderReturnsOnCall[i] = struct {
 		result1 Provider
 	}{result1}
 }
@@ -192,6 +205,55 @@ func (fake *Fake) NewGitProviderReturnsOnCall(i int, result1 Provider) {
 		})
 	}
 	fake.newGitProviderReturnsOnCall[i] = struct {
+		result1 Provider
+	}{result1}
+}
+
+func (fake *Fake) NewNodeProvider(apiBaseURL url.URL, pullCreds *model.PullCreds) Provider {
+	fake.newNodeProviderMutex.Lock()
+	ret, specificReturn := fake.newNodeProviderReturnsOnCall[len(fake.newNodeProviderArgsForCall)]
+	fake.newNodeProviderArgsForCall = append(fake.newNodeProviderArgsForCall, struct {
+		apiBaseURL url.URL
+		pullCreds  *model.PullCreds
+	}{apiBaseURL, pullCreds})
+	fake.recordInvocation("NewNodeProvider", []interface{}{apiBaseURL, pullCreds})
+	fake.newNodeProviderMutex.Unlock()
+	if fake.NewNodeProviderStub != nil {
+		return fake.NewNodeProviderStub(apiBaseURL, pullCreds)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.newNodeProviderReturns.result1
+}
+
+func (fake *Fake) NewNodeProviderCallCount() int {
+	fake.newNodeProviderMutex.RLock()
+	defer fake.newNodeProviderMutex.RUnlock()
+	return len(fake.newNodeProviderArgsForCall)
+}
+
+func (fake *Fake) NewNodeProviderArgsForCall(i int) (url.URL, *model.PullCreds) {
+	fake.newNodeProviderMutex.RLock()
+	defer fake.newNodeProviderMutex.RUnlock()
+	return fake.newNodeProviderArgsForCall[i].apiBaseURL, fake.newNodeProviderArgsForCall[i].pullCreds
+}
+
+func (fake *Fake) NewNodeProviderReturns(result1 Provider) {
+	fake.NewNodeProviderStub = nil
+	fake.newNodeProviderReturns = struct {
+		result1 Provider
+	}{result1}
+}
+
+func (fake *Fake) NewNodeProviderReturnsOnCall(i int, result1 Provider) {
+	fake.NewNodeProviderStub = nil
+	if fake.newNodeProviderReturnsOnCall == nil {
+		fake.newNodeProviderReturnsOnCall = make(map[int]struct {
+			result1 Provider
+		})
+	}
+	fake.newNodeProviderReturnsOnCall[i] = struct {
 		result1 Provider
 	}{result1}
 }
@@ -451,10 +513,12 @@ func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.newLocalFSProviderMutex.RLock()
-	defer fake.newLocalFSProviderMutex.RUnlock()
+	fake.newFSProviderMutex.RLock()
+	defer fake.newFSProviderMutex.RUnlock()
 	fake.newGitProviderMutex.RLock()
 	defer fake.newGitProviderMutex.RUnlock()
+	fake.newNodeProviderMutex.RLock()
+	defer fake.newNodeProviderMutex.RUnlock()
 	fake.createMutex.RLock()
 	defer fake.createMutex.RUnlock()
 	fake.getManifestMutex.RLock()

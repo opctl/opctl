@@ -5,13 +5,12 @@ import (
 	"path/filepath"
 )
 
-// NewGitProvider returns a pkg provider which sources pkgs from git repos
 func (pf _ProviderFactory) NewGitProvider(
 	basePath string,
 	pullCreds *model.PullCreds,
 ) Provider {
 	return gitProvider{
-		localFSProvider: pf.NewLocalFSProvider(basePath),
+		localFSProvider: pf.NewFSProvider(basePath),
 		basePath:        basePath,
 		puller:          newPuller(),
 		pullCreds:       pullCreds,
@@ -19,7 +18,7 @@ func (pf _ProviderFactory) NewGitProvider(
 }
 
 type gitProvider struct {
-	// composed of localFSProvider
+	// composed of fsProvider
 	localFSProvider Provider
 	basePath        string
 	puller          puller
@@ -43,5 +42,5 @@ func (grp gitProvider) TryResolve(
 	if nil != err {
 		return nil, err
 	}
-	return newLocalHandle(filepath.Join(grp.basePath, pkgRef)), nil
+	return newFSHandle(filepath.Join(grp.basePath, pkgRef)), nil
 }

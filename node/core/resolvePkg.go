@@ -18,7 +18,7 @@ func (this _core) ResolvePkg(
 ) {
 	return this.pkg.Resolve(
 		pkgRef,
-		this.pkg.NewLocalFSProvider(),
+		this.pkg.NewFSProvider(),
 		this.pkg.NewGitProvider(this.pkgCachePath, pullCreds),
 	)
 }

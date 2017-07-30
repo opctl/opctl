@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/sethgrid/pester"
-	"io"
 	"net/url"
 )
 
@@ -26,7 +25,7 @@ type Client interface {
 		ctx context.Context,
 		req model.GetPkgContentReq,
 	) (
-		io.ReadCloser,
+		model.ReadSeekCloser,
 		error,
 	)
 
@@ -35,6 +34,14 @@ type Client interface {
 		req model.KillOpReq,
 	) (
 		err error,
+	)
+
+	ListPkgContents(
+		ctx context.Context,
+		req model.ListPkgContentsReq,
+	) (
+		[]*model.PkgContent,
+		error,
 	)
 
 	StartOp(
@@ -51,6 +58,8 @@ type Opts struct {
 	RetryLogHook func(err error)
 }
 
+// New returns a new client
+// nil opts will be ignored
 func New(
 	baseUrl url.URL,
 	opts *Opts,

@@ -10,7 +10,7 @@ import (
 
 var _ = Context("gitProvider", func() {
 	Context("TryResolve", func() {
-		It("should call localFSProvider.TryResolve w/ expected args", func() {
+		It("should call FSProvider.TryResolve w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
 
@@ -28,7 +28,7 @@ var _ = Context("gitProvider", func() {
 			/* assert */
 			Expect(fakeLocalFSProvider.TryResolveArgsForCall(0)).To(Equal(providedPkgRef))
 		})
-		Context("localFSProvider.TryResolve errors", func() {
+		Context("FSProvider.TryResolve errors", func() {
 			It("should return err", func() {
 				/* arrange */
 				expectedErr := errors.New("dummyError")
@@ -48,8 +48,8 @@ var _ = Context("gitProvider", func() {
 				Expect(actualError).To(Equal(expectedErr))
 			})
 		})
-		Context("localFSProvider.TryResolve doesn't err", func() {
-			Context("localFSProvider.TryResolve returns handle", func() {
+		Context("FSProvider.TryResolve doesn't err", func() {
+			Context("FSProvider.TryResolve returns handle", func() {
 				It("should return handle", func() {
 					/* arrange */
 					expectedHandle := new(FakeHandle)
@@ -70,7 +70,7 @@ var _ = Context("gitProvider", func() {
 					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("localFSProvider.TryResolve doesn't return a handle", func() {
+			Context("FSProvider.TryResolve doesn't return a handle", func() {
 				It("should call puller.Pull w/ expected args", func() {
 					/* arrange */
 					providedPkgRef := "dummyPkgRef"
@@ -136,7 +136,7 @@ var _ = Context("gitProvider", func() {
 						actualHandle, actualError := objectUnderTest.TryResolve(providedPkgRef)
 
 						/* assert */
-						Expect(actualHandle).To(Equal(newLocalHandle(filepath.Join(basePath, providedPkgRef))))
+						Expect(actualHandle).To(Equal(newFSHandle(filepath.Join(basePath, providedPkgRef))))
 						Expect(actualError).To(BeNil())
 					})
 				})

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"github.com/golang-interfaces/ihttp"
-	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -15,15 +14,14 @@ import (
 	"strings"
 )
 
-var _ = Context("GetPkgContent", func() {
+var _ = Context("ListPkgContents", func() {
 
-	It("should call httpClient.Do() with expected args & return result", func() {
+	It("should call httpClient.Do() w/ expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.GetPkgContentReq{
-			ContentPath: "dummy/content/path",
-			PkgRef:      "dummyPkgRef",
+		providedReq := model.ListPkgContentsReq{
+			PkgRef: "dummyPkgRef",
 			PullCreds: &model.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
@@ -31,13 +29,10 @@ var _ = Context("GetPkgContent", func() {
 		}
 
 		expectedReqUrl := url.URL{}
-		path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
-		path = strings.Replace(path, "{path}", url.PathEscape(providedReq.ContentPath), 1)
+		path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
 		expectedReqUrl.Path = path
 
-		pkgContent := "dummyPkgContent"
-		httpResp := &http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(pkgContent)))}
-		expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)
+		httpResp := &http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte("[]")))}
 
 		expectedHttpReq, _ := http.NewRequest(
 			"GET",
@@ -53,7 +48,7 @@ var _ = Context("GetPkgContent", func() {
 		}
 
 		/* act */
-		actualReadSeekCloser, _ := objectUnderTest.GetPkgContent(providedCtx, providedReq)
+		actualContentsList, _ := objectUnderTest.ListPkgContents(providedCtx, providedReq)
 
 		/* assert */
 		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
@@ -63,7 +58,7 @@ var _ = Context("GetPkgContent", func() {
 		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
 		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
 
-		Expect(actualReadSeekCloser).To(Equal(expectedReadSeekCloser))
+		Expect(actualContentsList).To(BeNil())
 
 	})
 })

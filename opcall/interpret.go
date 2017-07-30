@@ -22,7 +22,7 @@ func (this _OpCall) Interpret(
 
 	pkgHandle, err := this.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
-		this.pkg.NewLocalFSProvider(pkgBasePath),
+		this.pkg.NewFSProvider(pkgBasePath),
 		this.pkg.NewGitProvider(this.pkgCachePath, &model.PullCreds{Username: username, Password: password}),
 	)
 	if nil != err {

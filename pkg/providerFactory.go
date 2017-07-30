@@ -2,7 +2,10 @@ package pkg
 
 //go:generate counterfeiter -o ./fakeProvider.go --fake-name FakeProvider ./ Provider
 
-import "github.com/opspec-io/sdk-golang/model"
+import (
+	"github.com/opspec-io/sdk-golang/model"
+	"net/url"
+)
 
 // Provider is the interface for something that provides pkgs
 type Provider interface {
@@ -14,12 +17,20 @@ type Provider interface {
 }
 
 type ProviderFactory interface {
-	NewLocalFSProvider(
+	// NewFSProvider returns a pkg provider which sources pkgs from the filesystem
+	NewFSProvider(
 		basePaths ...string,
 	) Provider
 
+	// NewGitProvider returns a pkg provider which sources pkgs from git repos
 	NewGitProvider(
 		basePath string,
+		pullCreds *model.PullCreds,
+	) Provider
+
+	// NewNodeProvider returns a pkg provider which sources pkgs from a node
+	NewNodeProvider(
+		apiBaseURL url.URL,
 		pullCreds *model.PullCreds,
 	) Provider
 }

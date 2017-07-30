@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("localHandle", func() {
+var _ = Context("fsHandle", func() {
 
 	Context("GetContent", func() {
 
@@ -23,13 +23,13 @@ var _ = Context("localHandle", func() {
 
 			fakeOS := new(ios.Fake)
 
-			objectUnderTest := localHandle{
+			objectUnderTest := fsHandle{
 				os:   fakeOS,
 				path: providedPkgPath,
 			}
 
 			/* act */
-			objectUnderTest.GetContent(providedContentPath)
+			objectUnderTest.GetContent(nil, providedContentPath)
 
 			/* assert */
 			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedPkgPath, providedContentPath)))
@@ -50,13 +50,13 @@ var _ = Context("localHandle", func() {
 			// error to trigger immediate return
 			fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := localHandle{
+			objectUnderTest := fsHandle{
 				ioUtil: fakeIOUtil,
 				path:   providedPkgPath,
 			}
 
 			/* act */
-			objectUnderTest.ListContents()
+			objectUnderTest.ListContents(nil)
 
 			/* assert */
 			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedPkgPath))
@@ -70,12 +70,12 @@ var _ = Context("localHandle", func() {
 				fakeIOUtil := new(iioutil.Fake)
 				fakeIOUtil.ReadDirReturns(nil, expectedError)
 
-				objectUnderTest := localHandle{
+				objectUnderTest := fsHandle{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				_, actualError := objectUnderTest.ListContents()
+				_, actualError := objectUnderTest.ListContents(nil)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
@@ -97,13 +97,13 @@ var _ = Context("localHandle", func() {
 					},
 				}
 
-				objectUnderTest := localHandle{
+				objectUnderTest := fsHandle{
 					ioUtil: iioutil.New(),
 					path:   rootPkgPath,
 				}
 
 				/* act */
-				actualContents, err := objectUnderTest.ListContents()
+				actualContents, err := objectUnderTest.ListContents(nil)
 				if nil != err {
 					panic(err)
 				}
@@ -114,5 +114,21 @@ var _ = Context("localHandle", func() {
 			})
 		})
 
+	})
+	Context("Ref", func() {
+		It("should return expected ref", func() {
+			/* arrange */
+			pkgRef := "dummyPkgRef"
+
+			objectUnderTest := fsHandle{
+				path: pkgRef,
+			}
+
+			/* act */
+			actualRef := objectUnderTest.Ref()
+
+			/* assert */
+			Expect(actualRef).To(Equal(pkgRef))
+		})
 	})
 })

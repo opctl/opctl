@@ -21,6 +21,11 @@ type GetPkgContentReq struct {
 	PkgRef      string
 }
 
+type ListPkgContentsReq struct {
+	PullCreds *PullCreds
+	PkgRef    string
+}
+
 type KillOpReq struct {
 	OpId string
 }

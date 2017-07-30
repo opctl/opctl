@@ -1,6 +1,9 @@
 package pkg
 
-import "github.com/opspec-io/sdk-golang/model"
+import (
+	"context"
+	"github.com/opspec-io/sdk-golang/model"
+)
 
 func (this _Pkg) GetManifest(
 	pkgHandle Handle,
@@ -8,7 +11,7 @@ func (this _Pkg) GetManifest(
 	*model.PkgManifest,
 	error,
 ) {
-	manifestReader, err := pkgHandle.GetContent(OpDotYmlFileName)
+	manifestReader, err := pkgHandle.GetContent(context.TODO(), OpDotYmlFileName)
 	if nil != err {
 		return nil, err
 	}

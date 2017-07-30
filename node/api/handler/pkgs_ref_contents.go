@@ -27,7 +27,9 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
-	pkgContentsList, err := pkgHandle.ListContents()
+	pkgContentsList, err := pkgHandle.ListContents(
+		httpReq.Context(),
+	)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return

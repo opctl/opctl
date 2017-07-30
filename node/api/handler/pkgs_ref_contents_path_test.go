@@ -171,7 +171,9 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				objectUnderTest.ServeHTTP(recorder, httpReq)
 
 				/* assert */
-				actualPkgRef := fakePkgHandle.GetContentArgsForCall(0)
+				_,
+					actualPkgRef := fakePkgHandle.GetContentArgsForCall(0)
+
 				Expect(actualPkgRef).To(Equal(expectedContentPath))
 			})
 			Context("handle.GetContent errors", func() {
