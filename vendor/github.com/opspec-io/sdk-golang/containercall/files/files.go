@@ -3,8 +3,8 @@ package files
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Files
 
 import (
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iio"
-	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/model"

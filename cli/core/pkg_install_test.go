@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -80,7 +81,7 @@ var _ = Context("core", func() {
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualProviders).To(ConsistOf(fakeNodeProvider))
 		})
-		Context("pkg.Resolve errors", func() {
+		Context("pkg.Resolve errs", func() {
 			Context("pkg.ErrAuthenticationFailed", func() {
 				It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 					/* arrange */
@@ -205,6 +206,66 @@ var _ = Context("core", func() {
 					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
 					fakePkg.ResolveReturns(nil, expectedError)
+
+					fakeCliExiter := new(cliexiter.Fake)
+
+					objectUnderTest := _core{
+						pkg:       fakePkg,
+						cliExiter: fakeCliExiter,
+						nodeURL:   url.URL{},
+					}
+
+					/* act */
+					objectUnderTest.PkgInstall("", "", "", "")
+
+					/* assert */
+					Expect(fakeCliExiter.ExitArgsForCall(0)).
+						To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
+
+				})
+			})
+		})
+		Context("pkg.Resolve doesn't err", func() {
+			It("should call pkg.Install w/ expected args", func() {
+				/* arrange */
+				providedPath := "dummyPath"
+
+				fakePkg := new(pkg.Fake)
+				fakeHandle := new(pkg.FakeHandle)
+
+				// err to trigger immediate return
+				fakePkg.ResolveReturns(fakeHandle, nil)
+
+				objectUnderTest := _core{
+					pkg:     fakePkg,
+					nodeURL: url.URL{},
+				}
+
+				/* act */
+				objectUnderTest.PkgInstall(
+					providedPath,
+					"dummyPkgRef",
+					"dummyUsername",
+					"dummyPassword",
+				)
+
+				/* assert */
+				actualContext, actualPath, actualHandle := fakePkg.InstallArgsForCall(0)
+
+				Expect(actualContext).To(Equal(context.TODO()))
+				Expect(actualPath).To(Equal(providedPath))
+				Expect(actualHandle).To(Equal(fakeHandle))
+			})
+			Context("pkg.Install errs", func() {
+				It("should call exiter w/ expected args", func() {
+					/* arrange */
+					fakePkg := new(pkg.Fake)
+					fakeHandle := new(pkg.FakeHandle)
+
+					fakePkg.ResolveReturns(fakeHandle, nil)
+
+					expectedError := errors.New("dummyError")
+					fakePkg.InstallReturns(expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 

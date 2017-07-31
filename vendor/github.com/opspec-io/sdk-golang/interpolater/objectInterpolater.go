@@ -3,7 +3,7 @@ package interpolater
 //go:generate counterfeiter -o ./fakeObjectInterpolater.go --fake-name fakeObjectInterpolater ./ objectInterpolater
 
 import (
-	"github.com/golang-interfaces/ijson"
+	"github.com/golang-interfaces/encoding-ijson"
 )
 
 type objectInterpolater interface {

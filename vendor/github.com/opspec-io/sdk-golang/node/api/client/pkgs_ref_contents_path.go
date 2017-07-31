@@ -21,12 +21,10 @@ func (c client) GetPkgContent(
 	// build url
 	path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(req.PkgRef), 1)
 	path = strings.Replace(path, "{path}", url.PathEscape(req.ContentPath), 1)
-	reqUrl := c.baseUrl
-	reqUrl.Path = path
 
 	httpReq, err := http.NewRequest(
 		"GET",
-		reqUrl.String(),
+		c.baseUrl.String()+path,
 		nil,
 	)
 	if nil != err {
@@ -40,6 +38,7 @@ func (c client) GetPkgContent(
 		return nil, err
 	}
 
+	// @TODO: rework to be true read seek closer; httprs seems to do a call w/ no end range
 	return httprs.NewHttpReadSeeker(httpResp), nil
 
 }

@@ -2,6 +2,7 @@
 package pkg
 
 import (
+	"context"
 	"net/url"
 	"sync"
 
@@ -69,6 +70,19 @@ type Fake struct {
 	getManifestReturnsOnCall map[int]struct {
 		result1 *model.PkgManifest
 		result2 error
+	}
+	InstallStub        func(ctx context.Context, path string, pkgHandle Handle) error
+	installMutex       sync.RWMutex
+	installArgsForCall []struct {
+		ctx       context.Context
+		path      string
+		pkgHandle Handle
+	}
+	installReturns struct {
+		result1 error
+	}
+	installReturnsOnCall map[int]struct {
+		result1 error
 	}
 	ListStub        func(dirPath string) ([]*model.PkgManifest, error)
 	listMutex       sync.RWMutex
@@ -359,6 +373,56 @@ func (fake *Fake) GetManifestReturnsOnCall(i int, result1 *model.PkgManifest, re
 	}{result1, result2}
 }
 
+func (fake *Fake) Install(ctx context.Context, path string, pkgHandle Handle) error {
+	fake.installMutex.Lock()
+	ret, specificReturn := fake.installReturnsOnCall[len(fake.installArgsForCall)]
+	fake.installArgsForCall = append(fake.installArgsForCall, struct {
+		ctx       context.Context
+		path      string
+		pkgHandle Handle
+	}{ctx, path, pkgHandle})
+	fake.recordInvocation("Install", []interface{}{ctx, path, pkgHandle})
+	fake.installMutex.Unlock()
+	if fake.InstallStub != nil {
+		return fake.InstallStub(ctx, path, pkgHandle)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.installReturns.result1
+}
+
+func (fake *Fake) InstallCallCount() int {
+	fake.installMutex.RLock()
+	defer fake.installMutex.RUnlock()
+	return len(fake.installArgsForCall)
+}
+
+func (fake *Fake) InstallArgsForCall(i int) (context.Context, string, Handle) {
+	fake.installMutex.RLock()
+	defer fake.installMutex.RUnlock()
+	return fake.installArgsForCall[i].ctx, fake.installArgsForCall[i].path, fake.installArgsForCall[i].pkgHandle
+}
+
+func (fake *Fake) InstallReturns(result1 error) {
+	fake.InstallStub = nil
+	fake.installReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *Fake) InstallReturnsOnCall(i int, result1 error) {
+	fake.InstallStub = nil
+	if fake.installReturnsOnCall == nil {
+		fake.installReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.installReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *Fake) List(dirPath string) ([]*model.PkgManifest, error) {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
@@ -523,6 +587,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.createMutex.RUnlock()
 	fake.getManifestMutex.RLock()
 	defer fake.getManifestMutex.RUnlock()
+	fake.installMutex.RLock()
+	defer fake.installMutex.RUnlock()
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	fake.resolveMutex.RLock()

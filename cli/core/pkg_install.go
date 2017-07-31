@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
@@ -15,7 +16,7 @@ func (this _core) PkgInstall(
 ) {
 
 	for {
-		_, err := this.pkg.Resolve(
+		pkgHandle, err := this.pkg.Resolve(
 			pkgRef,
 			this.pkg.NewNodeProvider(
 				this.nodeURL,
@@ -30,6 +31,9 @@ func (this _core) PkgInstall(
 
 		switch {
 		case nil == err:
+			if err := this.pkg.Install(context.TODO(), path, pkgHandle); nil != err {
+				this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
+			}
 			return
 		case isAuthError:
 			// auth errors can be fixed by supplying correct creds so don't give up; prompt

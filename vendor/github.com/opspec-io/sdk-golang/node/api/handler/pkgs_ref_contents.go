@@ -35,14 +35,9 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
-	// @TODO: replace w/ json.NewEncoder(w).Encode(p); more performant
-	pkgContentsListBytes, err := hdlr.json.Marshal(pkgContentsList)
-	if nil != err {
+	if err := hdlr.json.NewEncoder(httpResp).Encode(pkgContentsList); nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	httpResp.WriteHeader(http.StatusOK)
 	httpResp.Header().Set("Content-Type", "application/json")
-	httpResp.Write(pkgContentsListBytes)
 }

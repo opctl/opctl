@@ -4,9 +4,9 @@ Package handler implements an http.Handler for an opspec node
 package handler
 
 import (
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
-	"github.com/golang-interfaces/ijson"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/node/api"
