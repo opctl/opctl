@@ -46,7 +46,6 @@ func (this _containerProvider) RunContainer(
 		Entrypoint:   req.Cmd,
 		Image:        req.Image.Ref,
 		WorkingDir:   req.WorkDir,
-		Tty:          true,
 		ExposedPorts: nat.PortSet{},
 	}
 	for port := range portBindings {

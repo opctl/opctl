@@ -66,7 +66,6 @@ var _ = Context("RunContainer", func() {
 				"8081/tcp": struct{}{},
 			},
 			Image:      providedReq.Image.Ref,
-			Tty:        true,
 			WorkingDir: providedReq.WorkDir,
 		}
 		expectedHostConfig := &container.HostConfig{

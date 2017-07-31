@@ -4,6 +4,7 @@ package pkg
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
 
 import (
+	"context"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
@@ -13,7 +14,7 @@ import (
 type Pkg interface {
 	ProviderFactory
 
-	// Create creates an opspec package
+	// Create creates a package
 	Create(
 		path,
 		pkgName,
@@ -28,6 +29,13 @@ type Pkg interface {
 		error,
 	)
 
+  // Install installs a pkg; path will be created if it doesn't exist
+	Install(
+		ctx context.Context,
+		path string,
+		pkgHandle Handle,
+	) error
+
 	// List recursively lists packages in dirPath
 	List(
 		dirPath string,
@@ -35,7 +43,7 @@ type Pkg interface {
 
 	Resolver
 
-	// Validate validates an opspec package
+	// Validate validates a package
 	Validate(
 		pkgHandle Handle,
 	) []error
