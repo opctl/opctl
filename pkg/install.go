@@ -54,6 +54,7 @@ func (this _Pkg) Install(
 		}
 
 		_, err = io.Copy(dst, src)
+		src.Close()
 		dst.Close()
 	}
 

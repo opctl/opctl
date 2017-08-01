@@ -145,7 +145,7 @@ var _ = Context("puller", func() {
 						Expect(fakeOS.RemoveAllCallCount()).To(Equal(0))
 					})
 				})
-				Context("err.Error() returns transport.ErrAuthorizationRequired error", func() {
+				Context("err.Error() returns transport.ErrAuthenticationRequired error", func() {
 					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
 
 						/* arrange */
@@ -168,7 +168,50 @@ var _ = Context("puller", func() {
 						expectedError := ErrAuthenticationFailed{}
 
 						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationRequired)
+						fakeGit.PlainCloneReturns(nil, transport.ErrAuthenticationRequired)
+
+						objectUnderTest := _puller{
+							git:       fakeGit,
+							os:        fakeOS,
+							refParser: fakeRefParser,
+						}
+
+						/* act */
+						actualError := objectUnderTest.Pull(
+							providedPath,
+							"dummyPkgRef",
+							nil,
+						)
+
+						/* assert */
+						Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
+						Expect(actualError).To(Equal(expectedError))
+					})
+				})
+				Context("err.Error() returns transport.ErrAuthorizationFailed error", func() {
+					It("should call fs.RemoveAll w/ expected args & return expected error", func() {
+
+						/* arrange */
+						providedPath := "dummyPath"
+
+						ref := &Ref{
+							Name:    "dummyPkgRef",
+							Version: "0.0.0",
+						}
+
+						fakeRefParser := new(fakeRefParser)
+						fakeRefParser.ParseReturns(ref, nil)
+
+						expectedPath := filepath.Join(
+							providedPath,
+							fmt.Sprintf("%v#%v", ref.Name, ref.Version),
+						)
+
+						fakeOS := new(ios.Fake)
+						expectedError := ErrAuthenticationFailed{}
+
+						fakeGit := new(igit.Fake)
+						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationFailed)
 
 						objectUnderTest := _puller{
 							git:       fakeGit,

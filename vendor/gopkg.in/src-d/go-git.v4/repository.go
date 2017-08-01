@@ -3,8 +3,10 @@ package git
 import (
 	"errors"
 	"fmt"
+	stdioutil "io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/internal/revision"
@@ -13,13 +15,13 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 	"gopkg.in/src-d/go-git.v4/storage"
 	"gopkg.in/src-d/go-git.v4/storage/filesystem"
+	"gopkg.in/src-d/go-git.v4/utils/ioutil"
 
-	"gopkg.in/src-d/go-billy.v2"
-	"gopkg.in/src-d/go-billy.v2/osfs"
+	"gopkg.in/src-d/go-billy.v3"
+	"gopkg.in/src-d/go-billy.v3/osfs"
 )
 
 var (
-	ErrObjectNotFound          = errors.New("object not found")
 	ErrInvalidReference        = errors.New("invalid reference, should be a tag or a branch")
 	ErrRepositoryNotExists     = errors.New("repository not exists")
 	ErrRepositoryAlreadyExists = errors.New("repository already exists")
@@ -41,6 +43,10 @@ type Repository struct {
 // The worktree Filesystem is optional, if nil a bare repository is created. If
 // the given storer is not empty ErrRepositoryAlreadyExists is returned
 func Init(s storage.Storer, worktree billy.Filesystem) (*Repository, error) {
+	if err := initStorer(s); err != nil {
+		return nil, err
+	}
+
 	r := newRepository(s, worktree)
 	_, err := r.Reference(plumbing.HEAD, false)
 	switch err {
@@ -64,6 +70,15 @@ func Init(s storage.Storer, worktree billy.Filesystem) (*Repository, error) {
 	return r, setWorktreeAndStoragePaths(r, worktree)
 }
 
+func initStorer(s storer.Storer) error {
+	i, ok := s.(storer.Initializer)
+	if !ok {
+		return nil
+	}
+
+	return i.Init()
+}
+
 func setWorktreeAndStoragePaths(r *Repository, worktree billy.Filesystem) error {
 	type fsBased interface {
 		Filesystem() billy.Filesystem
@@ -76,11 +91,6 @@ func setWorktreeAndStoragePaths(r *Repository, worktree billy.Filesystem) error 
 		return nil
 	}
 
-	_, isOS := fs.Filesystem().(*osfs.OS)
-	if !isOS {
-		return nil
-	}
-
 	if err := createDotGitFile(worktree, fs.Filesystem()); err != nil {
 		return err
 	}
@@ -89,9 +99,9 @@ func setWorktreeAndStoragePaths(r *Repository, worktree billy.Filesystem) error 
 }
 
 func createDotGitFile(worktree, storage billy.Filesystem) error {
-	path, err := filepath.Rel(worktree.Base(), storage.Base())
+	path, err := filepath.Rel(worktree.Root(), storage.Root())
 	if err != nil {
-		path = storage.Base()
+		path = storage.Root()
 	}
 
 	if path == ".git" {
@@ -110,9 +120,9 @@ func createDotGitFile(worktree, storage billy.Filesystem) error {
 }
 
 func setConfigWorktree(r *Repository, worktree, storage billy.Filesystem) error {
-	path, err := filepath.Rel(storage.Base(), worktree.Base())
+	path, err := filepath.Rel(storage.Root(), worktree.Root())
 	if err != nil {
-		path = worktree.Base()
+		path = worktree.Root()
 	}
 
 	if path == ".." {
@@ -178,7 +188,7 @@ func PlainInit(path string, isBare bool) (*Repository, error) {
 		dot = osfs.New(path)
 	} else {
 		wt = osfs.New(path)
-		dot = wt.Dir(".git")
+		dot, _ = wt.Chroot(".git")
 	}
 
 	s, err := filesystem.NewStorage(dot)
@@ -193,18 +203,17 @@ func PlainInit(path string, isBare bool) (*Repository, error) {
 // repository is bare or a normal one. If the path doesn't contain a valid
 // repository ErrRepositoryNotExists is returned
 func PlainOpen(path string) (*Repository, error) {
-	var wt, dot billy.Filesystem
+	dot, wt, err := dotGitToOSFilesystems(path)
+	if err != nil {
+		return nil, err
+	}
 
-	fs := osfs.New(path)
-	if _, err := fs.Stat(".git"); err != nil {
-		if !os.IsNotExist(err) {
-			return nil, err
+	if _, err := dot.Stat(""); err != nil {
+		if os.IsNotExist(err) {
+			return nil, ErrRepositoryNotExists
 		}
 
-		dot = fs
-	} else {
-		wt = fs
-		dot = fs.Dir(".git")
+		return nil, err
 	}
 
 	s, err := filesystem.NewStorage(dot)
@@ -213,6 +222,59 @@ func PlainOpen(path string) (*Repository, error) {
 	}
 
 	return Open(s, wt)
+}
+
+func dotGitToOSFilesystems(path string) (dot, wt billy.Filesystem, err error) {
+	fs := osfs.New(path)
+	fi, err := fs.Stat(".git")
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return nil, nil, err
+		}
+
+		return fs, nil, nil
+	}
+
+	if fi.IsDir() {
+		dot, err = fs.Chroot(".git")
+		return dot, fs, err
+	}
+
+	dot, err = dotGitFileToOSFilesystem(path, fs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return dot, fs, nil
+}
+
+func dotGitFileToOSFilesystem(path string, fs billy.Filesystem) (billy.Filesystem, error) {
+	var err error
+
+	f, err := fs.Open(".git")
+	if err != nil {
+		return nil, err
+	}
+	defer ioutil.CheckClose(f, &err)
+
+	b, err := stdioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+
+	line := string(b)
+	const prefix = "gitdir: "
+	if !strings.HasPrefix(line, prefix) {
+		return nil, fmt.Errorf(".git file has no %s prefix", prefix)
+	}
+
+	gitdir := line[len(prefix):]
+	gitdir = strings.TrimSpace(gitdir)
+	if filepath.IsAbs(gitdir) {
+		return osfs.New(gitdir), nil
+	}
+
+	return osfs.New(fs.Join(path, gitdir)), nil
 }
 
 // PlainClone a repository into the path with the given options, isBare defines
@@ -340,11 +402,11 @@ func (r *Repository) clone(o *CloneOptions) error {
 		return err
 	}
 
-	if _, err := r.updateReferences(c.Fetch, o.ReferenceName, head); err != nil {
+	if _, err := r.updateReferences(c.Fetch, head); err != nil {
 		return err
 	}
 
-	if err := r.updateWorktree(); err != nil {
+	if err := r.updateWorktree(head.Name()); err != nil {
 		return err
 	}
 
@@ -429,7 +491,7 @@ func (r *Repository) updateRemoteConfig(remote *Remote, o *CloneOptions,
 }
 
 func (r *Repository) updateReferences(spec []config.RefSpec,
-	headName plumbing.ReferenceName, resolvedHead *plumbing.Reference) (updated bool, err error) {
+	resolvedHead *plumbing.Reference) (updated bool, err error) {
 
 	if !resolvedHead.IsBranch() {
 		// Detached HEAD mode
@@ -534,7 +596,7 @@ func (r *Repository) Pull(o *PullOptions) error {
 		return err
 	}
 
-	refsUpdated, err := r.updateReferences(remote.c.Fetch, o.ReferenceName, head)
+	refsUpdated, err := r.updateReferences(remote.c.Fetch, head)
 	if err != nil {
 		return err
 	}
@@ -547,7 +609,7 @@ func (r *Repository) Pull(o *PullOptions) error {
 		return NoErrAlreadyUpToDate
 	}
 
-	if err := r.updateWorktree(); err != nil {
+	if err := r.updateWorktree(head.Name()); err != nil {
 		return err
 	}
 
@@ -560,9 +622,14 @@ func (r *Repository) Pull(o *PullOptions) error {
 	return nil
 }
 
-func (r *Repository) updateWorktree() error {
+func (r *Repository) updateWorktree(branch plumbing.ReferenceName) error {
 	if r.wt == nil {
 		return nil
+	}
+
+	b, err := r.Reference(branch, true)
+	if err != nil {
+		return err
 	}
 
 	w, err := r.Worktree()
@@ -570,12 +637,9 @@ func (r *Repository) updateWorktree() error {
 		return err
 	}
 
-	h, err := r.Head()
-	if err != nil {
-		return err
-	}
-
-	return w.Checkout(h.Hash())
+	return w.Reset(&ResetOptions{
+		Commit: b.Hash(),
+	})
 }
 
 // Fetch fetches changes from a remote repository.
@@ -606,6 +670,26 @@ func (r *Repository) Push(o *PushOptions) error {
 	}
 
 	return remote.Push(o)
+}
+
+// Log returns the commit history from the given LogOptions.
+func (r *Repository) Log(o *LogOptions) (object.CommitIter, error) {
+	h := o.From
+	if o.From == plumbing.ZeroHash {
+		head, err := r.Head()
+		if err != nil {
+			return nil, err
+		}
+
+		h = head.Hash()
+	}
+
+	commit, err := r.CommitObject(h)
+	if err != nil {
+		return nil, err
+	}
+
+	return object.NewCommitPreorderIter(commit), nil
 }
 
 // Tags returns all the References from Tags. This method returns all the tag
@@ -671,7 +755,7 @@ func (r *Repository) CommitObject(h plumbing.Hash) (*object.Commit, error) {
 }
 
 // CommitObjects returns an unsorted CommitIter with all the commits in the repository.
-func (r *Repository) CommitObjects() (*object.CommitIter, error) {
+func (r *Repository) CommitObjects() (object.CommitIter, error) {
 	iter, err := r.Storer.IterEncodedObjects(plumbing.CommitObject)
 	if err != nil {
 		return nil, err
@@ -719,10 +803,6 @@ func (r *Repository) TagObjects() (*object.TagIter, error) {
 func (r *Repository) Object(t plumbing.ObjectType, h plumbing.Hash) (object.Object, error) {
 	obj, err := r.Storer.EncodedObject(t, h)
 	if err != nil {
-		if err == plumbing.ErrObjectNotFound {
-			return nil, ErrObjectNotFound
-		}
-
 		return nil, err
 	}
 
@@ -838,29 +918,28 @@ func (r *Repository) ResolveRevision(rev plumbing.Revision) (*plumbing.Hash, err
 				commit = c
 			}
 		case revision.CaretReg:
-			history, err := commit.History()
-
-			if err != nil {
-				return &plumbing.ZeroHash, err
-			}
+			history := object.NewCommitPreorderIter(commit)
 
 			re := item.(revision.CaretReg).Regexp
 			negate := item.(revision.CaretReg).Negate
 
 			var c *object.Commit
 
-			for i := 0; i < len(history); i++ {
-				if !negate && re.MatchString(history[i].Message) {
-					c = history[i]
-
-					break
+			err := history.ForEach(func(hc *object.Commit) error {
+				if !negate && re.MatchString(hc.Message) {
+					c = hc
+					return storer.ErrStop
 				}
 
-				if negate && !re.MatchString(history[i].Message) {
-					c = history[i]
-
-					break
+				if negate && !re.MatchString(hc.Message) {
+					c = hc
+					return storer.ErrStop
 				}
+
+				return nil
+			})
+			if err != nil {
+				return &plumbing.ZeroHash, err
 			}
 
 			if c == nil {
@@ -869,21 +948,21 @@ func (r *Repository) ResolveRevision(rev plumbing.Revision) (*plumbing.Hash, err
 
 			commit = c
 		case revision.AtDate:
-			history, err := commit.History()
-
-			if err != nil {
-				return &plumbing.ZeroHash, err
-			}
+			history := object.NewCommitPreorderIter(commit)
 
 			date := item.(revision.AtDate).Date
+
 			var c *object.Commit
-
-			for i := 0; i < len(history); i++ {
-				if date.Equal(history[i].Committer.When.UTC()) || history[i].Committer.When.UTC().Before(date) {
-					c = history[i]
-
-					break
+			err := history.ForEach(func(hc *object.Commit) error {
+				if date.Equal(hc.Committer.When.UTC()) || hc.Committer.When.UTC().Before(date) {
+					c = hc
+					return storer.ErrStop
 				}
+
+				return nil
+			})
+			if err != nil {
+				return &plumbing.ZeroHash, err
 			}
 
 			if c == nil {

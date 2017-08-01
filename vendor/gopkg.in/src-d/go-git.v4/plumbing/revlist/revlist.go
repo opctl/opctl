@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/filemode"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 )
@@ -22,6 +23,14 @@ func Objects(
 
 	seen := hashListToSet(ignore)
 	result := make(map[plumbing.Hash]bool)
+
+	cleanerFunc := func(h plumbing.Hash) {
+		seen[h] = true
+	}
+
+	for _, h := range ignore {
+		processObject(s, h, hashListToSet([]plumbing.Hash{}), cleanerFunc)
+	}
 
 	walkerFunc := func(h plumbing.Hash) {
 		if !seen[h] {
@@ -82,20 +91,21 @@ func reachableObjects(
 	commit *object.Commit,
 	seen map[plumbing.Hash]bool,
 	cb func(h plumbing.Hash)) error {
-	return object.WalkCommitHistory(commit, func(commit *object.Commit) error {
-		if seen[commit.Hash] {
-			return nil
-		}
+	return object.NewCommitPreorderIter(commit).
+		ForEach(func(commit *object.Commit) error {
+			if seen[commit.Hash] {
+				return nil
+			}
 
-		cb(commit.Hash)
+			cb(commit.Hash)
 
-		tree, err := commit.Tree()
-		if err != nil {
-			return err
-		}
+			tree, err := commit.Tree()
+			if err != nil {
+				return err
+			}
 
-		return iterateCommitTrees(seen, tree, cb)
-	})
+			return iterateCommitTrees(seen, tree, cb)
+		})
 }
 
 // iterateCommitTrees iterate all reachable trees from the given commit
@@ -118,6 +128,10 @@ func iterateCommitTrees(
 		}
 		if err != nil {
 			return err
+		}
+
+		if e.Mode == filemode.Submodule {
+			continue
 		}
 
 		if seen[e.Hash] {
