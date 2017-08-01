@@ -136,7 +136,7 @@ var _ = Context("gitProvider", func() {
 						actualHandle, actualError := objectUnderTest.TryResolve(providedPkgRef)
 
 						/* assert */
-						Expect(actualHandle).To(Equal(newFSHandle(filepath.Join(basePath, providedPkgRef))))
+						Expect(actualHandle).To(Equal(newGitHandle(filepath.Join(basePath, providedPkgRef), providedPkgRef)))
 						Expect(actualError).To(BeNil())
 					})
 				})

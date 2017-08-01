@@ -3,7 +3,7 @@ package envvars
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ EnvVars
 
 import (
-	"github.com/golang-interfaces/ijson"
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )

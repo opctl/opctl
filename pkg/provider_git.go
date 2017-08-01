@@ -42,5 +42,5 @@ func (grp gitProvider) TryResolve(
 	if nil != err {
 		return nil, err
 	}
-	return newFSHandle(filepath.Join(grp.basePath, pkgRef)), nil
+	return newGitHandle(filepath.Join(grp.basePath, pkgRef), pkgRef), nil
 }

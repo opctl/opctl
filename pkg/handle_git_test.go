@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("fsHandle", func() {
+var _ = Context("gitHandle", func() {
 
 	Context("GetContent", func() {
 
@@ -23,7 +23,7 @@ var _ = Context("fsHandle", func() {
 
 			fakeOS := new(ios.Fake)
 
-			objectUnderTest := fsHandle{
+			objectUnderTest := gitHandle{
 				os:   fakeOS,
 				path: providedPkgPath,
 			}
@@ -50,7 +50,7 @@ var _ = Context("fsHandle", func() {
 			// error to trigger immediate return
 			fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := fsHandle{
+			objectUnderTest := gitHandle{
 				ioUtil: fakeIOUtil,
 				path:   providedPkgPath,
 			}
@@ -70,7 +70,7 @@ var _ = Context("fsHandle", func() {
 				fakeIOUtil := new(iioutil.Fake)
 				fakeIOUtil.ReadDirReturns(nil, expectedError)
 
-				objectUnderTest := fsHandle{
+				objectUnderTest := gitHandle{
 					ioUtil: fakeIOUtil,
 				}
 
@@ -88,16 +88,16 @@ var _ = Context("fsHandle", func() {
 				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
 				expectedContents := []*model.PkgContent{
 					{
-						Path: fmt.Sprintf("%v/dir1/file2.txt", rootPkgPath),
+						Path: "/dir1/file2.txt",
 						Size: 34,
 					},
 					{
-						Path: fmt.Sprintf("%v/file1.txt", rootPkgPath),
+						Path: "/file1.txt",
 						Size: 18,
 					},
 				}
 
-				objectUnderTest := fsHandle{
+				objectUnderTest := gitHandle{
 					ioUtil: iioutil.New(),
 					path:   rootPkgPath,
 				}
@@ -118,17 +118,17 @@ var _ = Context("fsHandle", func() {
 	Context("Ref", func() {
 		It("should return expected ref", func() {
 			/* arrange */
-			path := "dummyPath"
+			pkgRef := "dummyPkgRef"
 
-			objectUnderTest := fsHandle{
-				path: path,
+			objectUnderTest := gitHandle{
+				pkgRef: pkgRef,
 			}
 
 			/* act */
 			actualRef := objectUnderTest.Ref()
 
 			/* assert */
-			Expect(actualRef).To(Equal(path))
+			Expect(actualRef).To(Equal(pkgRef))
 		})
 	})
 })

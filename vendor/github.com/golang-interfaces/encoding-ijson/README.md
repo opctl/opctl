@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/golang-interfaces/ijson.svg?branch=master)](https://travis-ci.org/golang-interfaces/ijson)
-[![Coverage](https://codecov.io/gh/golang-interfaces/ijson/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/ijson)
+[![Build Status](https://travis-ci.org/golang-interfaces/encoding-ijson.svg?branch=master)](https://travis-ci.org/golang-interfaces/encoding-ijson)
+[![Coverage](https://codecov.io/gh/golang-interfaces/encoding-ijson/branch/master/graph/badge.svg)](https://codecov.io/gh/golang-interfaces/encoding-ijson)
 
 # problem statement
 
@@ -19,7 +19,7 @@ native [json package](https://golang.org/pkg/json/) exposed via interface
 
 for every release:
 
-- source code will be [tagged](https://github.com/golang-interfaces/ijson/tags).
+- source code will be [tagged](https://github.com/golang-interfaces/encoding-ijson/tags).
 
 # Versioning
 

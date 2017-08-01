@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/ijson"
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/node/api"
 	"github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -173,52 +175,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			})
 		})
 		Context("handle.ListContents doesn't err", func() {
-			It("should call json.Marshal w/ expected args", func() {
-				/* arrange */
-				expectedPkgList := []*model.PkgContent{
-					{Path: "dummyPath"},
-					{Path: "dummyPath2"},
-				}
-
-				fakePkgHandle := new(pkg.FakeHandle)
-				// error to trigger immediate return
-				fakePkgHandle.ListContentsReturns(expectedPkgList, nil)
-
-				fakeCore := new(core.Fake)
-				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
-
-				fakeJSON := new(ijson.Fake)
-				// error to trigger immediate return
-				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
-
-				// construct objectUnderTest
-				router := mux.NewRouter()
-				objectUnderTest := _handler{
-					core:   fakeCore,
-					json:   fakeJSON,
-					Router: router,
-				}
-				router.HandleFunc(api.URLPkgs_Ref_Contents, objectUnderTest.pkgs_ref_contents).Methods(http.MethodGet)
-
-				recorder := httptest.NewRecorder()
-
-				httpReq, err := http.NewRequest(
-					http.MethodGet,
-					"/pkgs/dummy/contents",
-					nil,
-				)
-				if nil != err {
-					Fail(err.Error())
-				}
-
-				/* act */
-				objectUnderTest.ServeHTTP(recorder, httpReq)
-
-				/* assert */
-				actualPkgList := fakeJSON.MarshalArgsForCall(0)
-				Expect(actualPkgList).To(Equal(expectedPkgList))
-			})
-			Context("json.Marshal errs", func() {
+			Context("encoder.Encode errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					expectedBody := "dummyErrorMsg"
@@ -227,7 +184,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 					fakeCore.ResolvePkgReturns(new(pkg.FakeHandle), nil)
 
 					fakeJSON := new(ijson.Fake)
-					fakeJSON.MarshalReturns(nil, errors.New(expectedBody))
+					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
 
 					// construct objectUnderTest
 					router := mux.NewRouter()
@@ -259,16 +216,31 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 					Expect(actualBody).To(Equal(expectedBody))
 				})
 			})
-			Context("json.Marshal doesn't err", func() {
+			Context("encoder.Encode doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
 					fakeCore := new(core.Fake)
-					fakeCore.ResolvePkgReturns(new(pkg.FakeHandle), nil)
 
-					expectedBody := "dummyJSON"
+					fakeHandle := new(pkg.FakeHandle)
+
+					contentsList := []*model.PkgContent{
+						{Path: "dummyPath"},
+					}
+
+					expectedBodyBytes, err := json.Marshal(contentsList)
+					if nil != err {
+						panic(err)
+					}
+
+					fakeHandle.ListContentsReturns(contentsList, nil)
+
+					fakeCore.ResolvePkgReturns(fakeHandle, nil)
+
 					fakeJSON := new(ijson.Fake)
-					fakeJSON.MarshalReturns([]byte(expectedBody), nil)
+					fakeJSON.NewEncoderStub = func(w io.Writer) *json.Encoder {
+						return json.NewEncoder(w)
+					}
 
 					// construct objectUnderTest
 					router := mux.NewRouter()
@@ -297,9 +269,18 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 					Expect(recorder.Code).To(Equal(http.StatusOK))
 					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("application/json"))
 					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(expectedBody))
+					Expect(actualBody).To(Equal(string(expectedBodyBytes)))
 				})
 			})
 		})
 	})
 })
+
+// errWriter always errs
+type errWriter struct {
+	Msg string
+}
+
+func (this errWriter) Write(p []byte) (n int, err error) {
+	return 0, errors.New(this.Msg)
+}

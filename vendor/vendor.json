@@ -249,6 +249,12 @@
 			"revisionTime": "2017-03-27T23:54:44Z"
 		},
 		{
+			"checksumSHA1": "lueB7NVifPSvLfqwGyQrnwv7REA=",
+			"path": "github.com/golang-interfaces/encoding-ijson",
+			"revision": "49fbc3963d10028a25a59482d802a17659a65ed8",
+			"revisionTime": "2017-07-31T14:40:08Z"
+		},
+		{
 			"checksumSHA1": "E8g9oX0RvkYs1pm8sQBL11i35eM=",
 			"path": "github.com/golang-interfaces/github.com-gorilla-websocket",
 			"revision": "af8ad05f6e6aad8e64f74928e4ef2321e7dab482",
@@ -283,12 +289,6 @@
 			"path": "github.com/golang-interfaces/iioutil",
 			"revision": "ba86c72fcf56f2d7d1140fbae876d8a87477978f",
 			"revisionTime": "2017-07-09T04:07:51Z"
-		},
-		{
-			"checksumSHA1": "YhIMOglqzmgxpeF8/g8AerGZ69c=",
-			"path": "github.com/golang-interfaces/ijson",
-			"revision": "8d13e3ff12d2b278fba004887d2e9529410391f2",
-			"revisionTime": "2017-06-30T14:06:32Z"
 		},
 		{
 			"checksumSHA1": "Lzqqp5gtWRp1o3h4rCZPF4je+Hw=",

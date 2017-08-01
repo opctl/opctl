@@ -3,8 +3,8 @@ package files
 import (
 	"bytes"
 	"fmt"
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iio"
-	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"

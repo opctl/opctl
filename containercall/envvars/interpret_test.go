@@ -3,7 +3,7 @@ package envvars
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/golang-interfaces/ijson"
+	"github.com/golang-interfaces/encoding-ijson"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"

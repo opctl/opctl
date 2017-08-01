@@ -49,14 +49,14 @@ The current chief maintainer for the project is Chris Dostert
 
 ## Decision Making
 
-[golang-interfaces/ijson](https://github.com/golang-interfaces/ijson) is an
+[golang-interfaces/encoding-ijson](https://github.com/golang-interfaces/encoding-ijson) is an
 open-source project with an open design philosophy. This means that the
 repository is the source of truth for EVERY aspect of the project,
 including its philosophy, design, roadmap and APIs. *If it's part of the
 project, it's in the repo.*
 
 All decisions affecting
-[golang-interfaces/ijson](https://github.com/golang-interfaces/ijson), big and
+[golang-interfaces/encoding-ijson](https://github.com/golang-interfaces/encoding-ijson), big and
 small, follow the same steps:
 
 * Step 1: A pull request is opened.

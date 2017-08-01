@@ -20,12 +20,10 @@ func (c client) ListPkgContents(
 
 	// build url
 	path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(req.PkgRef), 1)
-	reqUrl := c.baseUrl
-	reqUrl.Path = path
 
 	httpReq, err := http.NewRequest(
 		"GET",
-		reqUrl.String(),
+		c.baseUrl.String()+path,
 		nil,
 	)
 	if nil != err {

@@ -29,7 +29,7 @@ type Pkg interface {
 		error,
 	)
 
-  // Install installs a pkg; path will be created if it doesn't exist
+	// Install installs a pkg; path will be created if it doesn't exist
 	Install(
 		ctx context.Context,
 		path string,

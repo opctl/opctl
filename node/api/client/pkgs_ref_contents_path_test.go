@@ -30,10 +30,13 @@ var _ = Context("GetPkgContent", func() {
 			},
 		}
 
-		expectedReqUrl := url.URL{}
 		path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
 		path = strings.Replace(path, "{path}", url.PathEscape(providedReq.ContentPath), 1)
-		expectedReqUrl.Path = path
+
+		expectedReqUrl, err := url.Parse(path)
+		if nil != err {
+			panic(err)
+		}
 
 		pkgContent := "dummyPkgContent"
 		httpResp := &http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(pkgContent)))}
