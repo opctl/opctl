@@ -48,6 +48,11 @@ func (this _Pkg) Install(
 			return err
 		}
 
+		err = this.os.Chmod(dstPath, content.Mode)
+		if nil != err {
+			return err
+		}
+
 		_, err = io.Copy(dst, src)
 		dst.Close()
 	}

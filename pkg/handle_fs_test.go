@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
@@ -85,14 +84,22 @@ var _ = Context("fsHandle", func() {
 		Context("ioutil.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
-				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
+				rootPkgPath := filepath.Join(wd, "/testdata/listContents")
+
+				fileInfo, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
+				if nil != err {
+					panic(err)
+				}
+
 				expectedContents := []*model.PkgContent{
 					{
-						Path: fmt.Sprintf("%v/dir1/file2.txt", rootPkgPath),
+						Mode: fileInfo.Mode(),
+						Path: filepath.Join(rootPkgPath, "/dir1/file2.txt"),
 						Size: 34,
 					},
 					{
-						Path: fmt.Sprintf("%v/file1.txt", rootPkgPath),
+						Mode: fileInfo.Mode(),
+						Path: filepath.Join(rootPkgPath, "/file1.txt"),
 						Size: 18,
 					},
 				}

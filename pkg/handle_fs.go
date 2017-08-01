@@ -72,6 +72,7 @@ func (lh fsHandle) rListContents(
 			contents = append(
 				contents,
 				&model.PkgContent{
+					Mode: contentFileInfo.Mode(),
 					Path: contentPath,
 					Size: contentFileInfo.Size(),
 				},

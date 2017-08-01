@@ -86,12 +86,20 @@ var _ = Context("gitHandle", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
 				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
+
+				fileInfo, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
+				if nil != err {
+					panic(err)
+				}
+
 				expectedContents := []*model.PkgContent{
 					{
+						Mode: fileInfo.Mode(),
 						Path: "/dir1/file2.txt",
 						Size: 34,
 					},
 					{
+						Mode: fileInfo.Mode(),
 						Path: "/file1.txt",
 						Size: 18,
 					},

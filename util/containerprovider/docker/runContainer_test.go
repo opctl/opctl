@@ -67,6 +67,7 @@ var _ = Context("RunContainer", func() {
 			},
 			Image:      providedReq.Image.Ref,
 			WorkingDir: providedReq.WorkDir,
+			Tty:        true,
 		}
 		expectedHostConfig := &container.HostConfig{
 			Binds: []string{

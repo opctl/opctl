@@ -5,8 +5,8 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"os"
 	"path/filepath"
-	"strings"
 )
 
 func newGitHandle(
@@ -72,10 +72,16 @@ func (gh gitHandle) rListContents(
 			}
 			contents = append(contents, childContents...)
 		} else {
+			relContentPath, err := filepath.Rel(gh.path, absContentPath)
+			if nil != err {
+				return nil, err
+			}
+
 			contents = append(
 				contents,
 				&model.PkgContent{
-					Path: strings.TrimPrefix(absContentPath, gh.path),
+					Mode: contentFileInfo.Mode(),
+					Path: filepath.Join(string(os.PathSeparator), relContentPath),
 					Size: contentFileInfo.Size(),
 				},
 			)
