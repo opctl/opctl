@@ -58,7 +58,7 @@ var _ = Context("ListPkgContents", func() {
 		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
 		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
 
-		Expect(actualContentsList).To(BeNil())
+		Expect(actualContentsList).To(Equal([]*model.PkgContent{}))
 
 	})
 })

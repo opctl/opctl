@@ -40,6 +40,6 @@ func (c client) ListPkgContents(
 	defer httpResp.Body.Close()
 	var contentList []*model.PkgContent
 
-	return contentList, json.NewDecoder(httpResp.Body).Decode(contentList)
+	return contentList, json.NewDecoder(httpResp.Body).Decode(&contentList)
 
 }

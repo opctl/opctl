@@ -152,6 +152,9 @@ var _ = Context("pkg", func() {
 						providedPath := "dummyPath"
 
 						fakeHandle := new(FakeHandle)
+						pkgRef := "dummyPkgRef"
+						fakeHandle.RefReturns(pkgRef)
+
 						contentsList := []*model.PkgContent{
 							{
 								Path: "pkgContent1Path",
@@ -179,7 +182,7 @@ var _ = Context("pkg", func() {
 
 						Expect(actualPath).To(Equal(
 							filepath.Dir(
-								filepath.Join(providedPath, contentsList[0].Path),
+								filepath.Join(providedPath, pkgRef, contentsList[0].Path),
 							),
 						))
 

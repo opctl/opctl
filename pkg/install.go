@@ -32,7 +32,7 @@ func (this _Pkg) Install(
 			return err
 		}
 
-		dstPath := filepath.Join(path, content.Path)
+		dstPath := filepath.Join(path, handle.Ref(), content.Path)
 
 		// ensure content path exists
 		err = this.os.MkdirAll(
