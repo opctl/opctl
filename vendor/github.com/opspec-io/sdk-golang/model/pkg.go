@@ -2,6 +2,7 @@ package model
 
 import (
 	"io"
+	"os"
 )
 
 type ReadSeekCloser interface {
@@ -21,6 +22,7 @@ type PkgManifest struct {
 type PkgContent struct {
 	Path string
 	Size int64
+	Mode os.FileMode
 }
 
 // PullCreds contains optional authentication attributes

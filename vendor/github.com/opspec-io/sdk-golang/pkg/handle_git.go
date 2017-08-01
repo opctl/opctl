@@ -5,75 +5,83 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"os"
 	"path/filepath"
 )
 
-func newFSHandle(
+func newGitHandle(
 	path string,
+	pkgRef string,
 ) Handle {
-	return fsHandle{
+	return gitHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),
 		path:   path,
+		pkgRef: pkgRef,
 	}
 }
 
-// fsHandle allows interacting w/ a package sourced from the filesystem
-type fsHandle struct {
+// gitHandle allows interacting w/ a package sourced from the filesystem
+type gitHandle struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 	path   string
+	pkgRef string
 }
 
-func (lh fsHandle) GetContent(
+func (gh gitHandle) GetContent(
 	ctx context.Context,
 	contentPath string,
 ) (
 	model.ReadSeekCloser,
 	error,
 ) {
-	return lh.os.Open(filepath.Join(lh.path, contentPath))
+	return gh.os.Open(filepath.Join(gh.path, contentPath))
 }
 
-func (lh fsHandle) ListContents(
+func (gh gitHandle) ListContents(
 	ctx context.Context,
 ) (
 	[]*model.PkgContent,
 	error,
 ) {
-	return lh.rListContents(lh.path)
+	return gh.rListContents(gh.path)
 }
 
 // rListContents recursively lists pkg contents at path
-func (lh fsHandle) rListContents(
+func (gh gitHandle) rListContents(
 	path string,
 ) (
 	[]*model.PkgContent,
 	error,
 ) {
-	childFileInfos, err := lh.ioUtil.ReadDir(path)
+	childFileInfos, err := gh.ioUtil.ReadDir(path)
 	if nil != err {
 		return nil, err
 	}
 
 	var contents []*model.PkgContent
 	for _, contentFileInfo := range childFileInfos {
-
-		contentPath := filepath.Join(path, contentFileInfo.Name())
+		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
-			childContents, err := lh.rListContents(contentPath)
+			childContents, err := gh.rListContents(absContentPath)
 			if nil != err {
 				return nil, err
 			}
 			contents = append(contents, childContents...)
 		} else {
+			relContentPath, err := filepath.Rel(gh.path, absContentPath)
+			if nil != err {
+				return nil, err
+			}
+
 			contents = append(
 				contents,
 				&model.PkgContent{
 					Mode: contentFileInfo.Mode(),
-					Path: contentPath,
+					Path: filepath.Join(string(os.PathSeparator), relContentPath),
 					Size: contentFileInfo.Size(),
 				},
 			)
@@ -84,6 +92,6 @@ func (lh fsHandle) rListContents(
 	return contents, err
 }
 
-func (lh fsHandle) Ref() string {
-	return lh.path
+func (gh gitHandle) Ref() string {
+	return gh.pkgRef
 }
