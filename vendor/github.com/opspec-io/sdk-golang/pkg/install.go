@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"github.com/opspec-io/sdk-golang/model"
 	"io"
 	"path/filepath"
 )
@@ -10,7 +11,7 @@ import (
 func (this _Pkg) Install(
 	ctx context.Context,
 	path string,
-	handle Handle,
+	handle model.PkgHandle,
 ) error {
 
 	err := this.os.MkdirAll(
@@ -54,6 +55,7 @@ func (this _Pkg) Install(
 		}
 
 		_, err = io.Copy(dst, src)
+		src.Close()
 		dst.Close()
 	}
 

@@ -13,7 +13,7 @@ type Provider interface {
 	// returns ErrPkgNotFound on failure to find package
 	TryResolve(
 		pkgRef string,
-	) (Handle, error)
+	) (model.PkgHandle, error)
 }
 
 type ProviderFactory interface {

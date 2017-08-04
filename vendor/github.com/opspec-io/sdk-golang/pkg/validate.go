@@ -1,9 +1,12 @@
 package pkg
 
-import "context"
+import (
+	"context"
+	"github.com/opspec-io/sdk-golang/model"
+)
 
 func (this _Pkg) Validate(
-	pkgHandle Handle,
+	pkgHandle model.PkgHandle,
 ) []error {
 	manifestReader, err := pkgHandle.GetContent(
 		context.TODO(),

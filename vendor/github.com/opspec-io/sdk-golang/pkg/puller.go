@@ -54,8 +54,9 @@ func (this _puller) Pull(
 	cloneOptions := &git.CloneOptions{
 		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
 		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
-		Depth:         1,
-		Progress:      os.Stdout,
+		// @TODO re-enable once https://github.com/src-d/go-git/issues/529 released
+		// Depth:         1,
+		Progress: os.Stdout,
 	}
 
 	if nil != authOpts {
@@ -70,8 +71,11 @@ func (this _puller) Pull(
 		cloneOptions,
 	); nil != err {
 		switch err.Error() {
-		// @TODO update to Handle authentication & authorization errors separately once go-git does so
-		case transport.ErrAuthorizationRequired.Error():
+		case transport.ErrAuthenticationRequired.Error():
+			// clone failed; cleanup remnants
+			this.os.RemoveAll(pkgPath)
+			return ErrAuthenticationFailed{}
+		case transport.ErrAuthorizationFailed.Error():
 			// clone failed; cleanup remnants
 			this.os.RemoveAll(pkgPath)
 			return ErrAuthenticationFailed{}

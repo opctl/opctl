@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 // Resolve attempts to resolve a pkg via local filesystem or git
@@ -13,7 +12,7 @@ func (this _core) ResolvePkg(
 	pkgRef string,
 	pullCreds *model.PullCreds,
 ) (
-	pkg.Handle,
+	model.PkgHandle,
 	error,
 ) {
 	return this.pkg.Resolve(

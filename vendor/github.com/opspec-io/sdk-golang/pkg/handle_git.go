@@ -12,7 +12,7 @@ import (
 func newGitHandle(
 	path string,
 	pkgRef string,
-) Handle {
+) model.PkgHandle {
 	return gitHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),

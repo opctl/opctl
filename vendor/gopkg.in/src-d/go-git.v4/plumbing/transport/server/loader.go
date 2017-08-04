@@ -5,8 +5,8 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/storage/filesystem"
 
-	"gopkg.in/src-d/go-billy.v2"
-	"gopkg.in/src-d/go-billy.v2/osfs"
+	"gopkg.in/src-d/go-billy.v3"
+	"gopkg.in/src-d/go-billy.v3/osfs"
 )
 
 // DefaultLoader is a filesystem loader ignoring host and resolving paths to /.
@@ -34,7 +34,11 @@ func NewFilesystemLoader(base billy.Filesystem) Loader {
 // storer for it. Returns transport.ErrRepositoryNotFound if a repository does
 // not exist in the given path.
 func (l *fsLoader) Load(ep transport.Endpoint) (storer.Storer, error) {
-	fs := l.base.Dir(ep.Path)
+	fs, err := l.base.Chroot(ep.Path())
+	if err != nil {
+		return nil, err
+	}
+
 	if _, err := fs.Stat("config"); err != nil {
 		return nil, transport.ErrRepositoryNotFound
 	}
@@ -44,13 +48,13 @@ func (l *fsLoader) Load(ep transport.Endpoint) (storer.Storer, error) {
 
 // MapLoader is a Loader that uses a lookup map of storer.Storer by
 // transport.Endpoint.
-type MapLoader map[transport.Endpoint]storer.Storer
+type MapLoader map[string]storer.Storer
 
 // Load returns a storer.Storer for given a transport.Endpoint by looking it up
 // in the map. Returns transport.ErrRepositoryNotFound if the endpoint does not
 // exist.
 func (l MapLoader) Load(ep transport.Endpoint) (storer.Storer, error) {
-	s, ok := l[ep]
+	s, ok := l[ep.String()]
 	if !ok {
 		return nil, transport.ErrRepositoryNotFound
 	}

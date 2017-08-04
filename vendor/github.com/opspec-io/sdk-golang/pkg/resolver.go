@@ -1,5 +1,7 @@
 package pkg
 
+import "github.com/opspec-io/sdk-golang/model"
+
 type Resolver interface {
 	// TryResolve attempts to resolve a package from providers in order
 	// returns ErrAuthenticationFailed on authentication failure
@@ -8,7 +10,7 @@ type Resolver interface {
 		pkgRef string,
 		providers ...Provider,
 	) (
-		Handle,
+		model.PkgHandle,
 		error,
 	)
 }
@@ -23,7 +25,7 @@ func (this _Resolver) Resolve(
 	pkgRef string,
 	providers ...Provider,
 ) (
-	Handle,
+	model.PkgHandle,
 	error,
 ) {
 	for _, src := range providers {

@@ -18,7 +18,7 @@ type OpCall interface {
 		scope map[string]*model.Value,
 		scgOpCall *model.SCGOpCall,
 		opId string,
-		pkgBasePath string,
+		parentPkgHandle model.PkgHandle,
 		rootOpId string,
 	) (*model.DCGOpCall, error)
 }

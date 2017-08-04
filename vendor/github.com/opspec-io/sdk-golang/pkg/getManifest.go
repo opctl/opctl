@@ -6,7 +6,7 @@ import (
 )
 
 func (this _Pkg) GetManifest(
-	pkgHandle Handle,
+	pkgHandle model.PkgHandle,
 ) (
 	*model.PkgManifest,
 	error,

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"io"
 	"os"
 )
@@ -8,6 +9,29 @@ import (
 type ReadSeekCloser interface {
 	io.ReadCloser
 	io.Seeker
+}
+
+// PkgHandle is a provider agnostic interface for interacting w/ pkg content
+type PkgHandle interface {
+	// ListContents lists contents of a package
+	ListContents(
+		ctx context.Context,
+	) (
+		[]*PkgContent,
+		error,
+	)
+
+	// GetContent gets content from a package
+	GetContent(
+		ctx context.Context,
+		contentPath string,
+	) (
+		ReadSeekCloser,
+		error,
+	)
+
+	// Ref returns the pkgRef of the pkg
+	Ref() string
 }
 
 type PkgManifest struct {

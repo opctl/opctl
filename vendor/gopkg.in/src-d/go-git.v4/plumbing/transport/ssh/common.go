@@ -3,7 +3,7 @@ package ssh
 
 import (
 	"fmt"
-	"strings"
+	"reflect"
 
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/internal/common"
@@ -12,12 +12,27 @@ import (
 )
 
 // DefaultClient is the default SSH client.
-var DefaultClient = common.NewClient(&runner{})
+var DefaultClient = NewClient(nil)
 
-type runner struct{}
+// NewClient creates a new SSH client with an optional *ssh.ClientConfig.
+func NewClient(config *ssh.ClientConfig) transport.Transport {
+	return common.NewClient(&runner{config: config})
+}
+
+// DefaultAuthBuilder is the function used to create a default AuthMethod, when
+// the user doesn't provide any.
+var DefaultAuthBuilder = func(user string) (AuthMethod, error) {
+	return NewSSHAgentAuth(user)
+}
+
+const DefaultPort = 22
+
+type runner struct {
+	config *ssh.ClientConfig
+}
 
 func (r *runner) Command(cmd string, ep transport.Endpoint, auth transport.AuthMethod) (common.Command, error) {
-	c := &command{command: cmd, endpoint: ep}
+	c := &command{command: cmd, endpoint: ep, config: r.config}
 	if auth != nil {
 		c.setAuth(auth)
 	}
@@ -35,6 +50,7 @@ type command struct {
 	endpoint  transport.Endpoint
 	client    *ssh.Client
 	auth      AuthMethod
+	config    *ssh.ClientConfig
 }
 
 func (c *command) setAuth(auth transport.AuthMethod) error {
@@ -82,7 +98,15 @@ func (c *command) connect() error {
 	}
 
 	var err error
-	c.client, err = ssh.Dial("tcp", c.getHostWithPort(), c.auth.clientConfig())
+	config := c.auth.clientConfig()
+	config.HostKeyCallback, err = c.auth.hostKeyCallback()
+	if err != nil {
+		return err
+	}
+
+	overrideConfig(c.config, config)
+
+	c.client, err = ssh.Dial("tcp", c.getHostWithPort(), config)
 	if err != nil {
 		return err
 	}
@@ -98,25 +122,43 @@ func (c *command) connect() error {
 }
 
 func (c *command) getHostWithPort() string {
-	host := c.endpoint.Host
-	if strings.Index(c.endpoint.Host, ":") == -1 {
-		host += ":22"
+	host := c.endpoint.Host()
+	port := c.endpoint.Port()
+	if port <= 0 {
+		port = DefaultPort
 	}
 
-	return host
+	return fmt.Sprintf("%s:%d", host, port)
 }
 
 func (c *command) setAuthFromEndpoint() error {
-	var u string
-	if info := c.endpoint.User; info != nil {
-		u = info.Username()
-	}
-
 	var err error
-	c.auth, err = NewSSHAgentAuth(u)
+	c.auth, err = DefaultAuthBuilder(c.endpoint.User())
 	return err
 }
 
 func endpointToCommand(cmd string, ep transport.Endpoint) string {
-	return fmt.Sprintf("%s '%s'", cmd, ep.Path)
+	return fmt.Sprintf("%s '%s'", cmd, ep.Path())
+}
+
+func overrideConfig(overrides *ssh.ClientConfig, c *ssh.ClientConfig) {
+	if overrides == nil {
+		return
+	}
+
+	vo := reflect.ValueOf(*overrides)
+	vc := reflect.ValueOf(*c)
+	for i := 0; i < vc.Type().NumField(); i++ {
+		vcf := vc.Field(i)
+		vof := vo.Field(i)
+		if isZeroValue(vcf) {
+			vcf.Set(vof)
+		}
+	}
+
+	*c = vc.Interface().(ssh.ClientConfig)
+}
+
+func isZeroValue(v reflect.Value) bool {
+	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }

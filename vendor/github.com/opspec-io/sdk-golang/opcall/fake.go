@@ -8,14 +8,14 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error)
+	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgHandle model.PkgHandle, rootOpId string) (*model.DCGOpCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		scope       map[string]*model.Value
-		scgOpCall   *model.SCGOpCall
-		opId        string
-		pkgBasePath string
-		rootOpId    string
+		scope     map[string]*model.Value
+		scgOpCall *model.SCGOpCall
+		opId      string
+		pkgHandle model.PkgHandle
+		rootOpId  string
 	}
 	interpretReturns struct {
 		result1 *model.DCGOpCall
@@ -29,20 +29,20 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgBasePath string, rootOpId string) (*model.DCGOpCall, error) {
+func (fake *Fake) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, pkgHandle model.PkgHandle, rootOpId string) (*model.DCGOpCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		scope       map[string]*model.Value
-		scgOpCall   *model.SCGOpCall
-		opId        string
-		pkgBasePath string
-		rootOpId    string
-	}{scope, scgOpCall, opId, pkgBasePath, rootOpId})
-	fake.recordInvocation("Interpret", []interface{}{scope, scgOpCall, opId, pkgBasePath, rootOpId})
+		scope     map[string]*model.Value
+		scgOpCall *model.SCGOpCall
+		opId      string
+		pkgHandle model.PkgHandle
+		rootOpId  string
+	}{scope, scgOpCall, opId, pkgHandle, rootOpId})
+	fake.recordInvocation("Interpret", []interface{}{scope, scgOpCall, opId, pkgHandle, rootOpId})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, scgOpCall, opId, pkgBasePath, rootOpId)
+		return fake.InterpretStub(scope, scgOpCall, opId, pkgHandle, rootOpId)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -56,10 +56,10 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGOpCall, string, string, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGOpCall, string, model.PkgHandle, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opId, fake.interpretArgsForCall[i].pkgBasePath, fake.interpretArgsForCall[i].rootOpId
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opId, fake.interpretArgsForCall[i].pkgHandle, fake.interpretArgsForCall[i].rootOpId
 }
 
 func (fake *Fake) InterpretReturns(result1 *model.DCGOpCall, result2 error) {
