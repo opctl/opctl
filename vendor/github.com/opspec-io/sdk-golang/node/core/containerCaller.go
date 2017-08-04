@@ -19,7 +19,7 @@ type containerCaller interface {
 		inboundScope map[string]*model.Value,
 		containerId string,
 		scgContainerCall *model.SCGContainerCall,
-		pkgRef string,
+		pkgHandle model.PkgHandle,
 		rootOpId string,
 	) error
 }
@@ -53,7 +53,7 @@ func (cc _containerCaller) Call(
 	inboundScope map[string]*model.Value,
 	containerId string,
 	scgContainerCall *model.SCGContainerCall,
-	pkgRef string,
+	pkgHandle model.PkgHandle,
 	rootOpId string,
 ) error {
 	defer func() {
@@ -68,7 +68,7 @@ func (cc _containerCaller) Call(
 	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerId,
-			PkgRef:    pkgRef,
+			PkgRef:    pkgHandle.Ref(),
 			RootOpId:  rootOpId,
 			Container: &dcgContainerDescriptor{},
 		},
@@ -79,7 +79,7 @@ func (cc _containerCaller) Call(
 		scgContainerCall,
 		containerId,
 		rootOpId,
-		pkgRef,
+		pkgHandle,
 	)
 	if nil != err {
 		return err
@@ -90,7 +90,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerId: containerId,
-				PkgRef:      pkgRef,
+				PkgRef:      pkgHandle.Ref(),
 				RootOpId:    rootOpId,
 			},
 		},
@@ -177,7 +177,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: containerId,
-				PkgRef:      pkgRef,
+				PkgRef:      pkgHandle.Ref(),
 				RootOpId:    rootOpId,
 				ExitCode:    exitCode,
 				Outputs:     interpretOutputsResult.outputs,
@@ -206,7 +206,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerId: dcgContainerCall.ContainerId,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.PkgRef,
+							PkgRef:      dcgContainerCall.PkgHandle.Ref(),
 							RootOpId:    dcgContainerCall.RootOpId,
 						},
 					},
@@ -227,7 +227,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerId: dcgContainerCall.ContainerId,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.PkgRef,
+							PkgRef:      dcgContainerCall.PkgHandle.Ref(),
 							RootOpId:    dcgContainerCall.RootOpId,
 						},
 					},

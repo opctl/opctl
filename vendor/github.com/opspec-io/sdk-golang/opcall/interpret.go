@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 )
 
 func (this _OpCall) Interpret(
 	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
 	opId string,
-	pkgBasePath string,
+	parentPkgHandle model.PkgHandle,
 	rootOpId string,
 ) (*model.DCGOpCall, error) {
 
@@ -22,7 +23,7 @@ func (this _OpCall) Interpret(
 
 	pkgHandle, err := this.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
-		this.pkg.NewFSProvider(pkgBasePath),
+		this.pkg.NewFSProvider(filepath.Dir(parentPkgHandle.Ref())),
 		this.pkg.NewGitProvider(this.pkgCachePath, &model.PullCreds{Username: username, Password: password}),
 	)
 	if nil != err {
@@ -36,8 +37,8 @@ func (this _OpCall) Interpret(
 
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: &model.DCGBaseCall{
-			RootOpId: rootOpId,
-			PkgRef:   pkgHandle.Ref(),
+			RootOpId:  rootOpId,
+			PkgHandle: pkgHandle,
 		},
 		OpId:         opId,
 		ChildCallId:  this.uuid.NewV4().String(),
@@ -48,7 +49,7 @@ func (this _OpCall) Interpret(
 	dcgOpCall.Inputs, argErrors = this.inputs.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
-		pkgHandle.Ref(),
+		parentPkgHandle.Ref(),
 		scope,
 	)
 	if len(argErrors) > 0 {
@@ -63,7 +64,7 @@ func (this _OpCall) Interpret(
 -
   error(s) occurred interpreting call to %v:
 %v
--`, dcgOpCall.PkgRef, messageBuffer.String())
+-`, dcgOpCall.PkgHandle.Ref(), messageBuffer.String())
 	}
 
 	return dcgOpCall, nil

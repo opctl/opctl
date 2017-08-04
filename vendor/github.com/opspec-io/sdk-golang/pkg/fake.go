@@ -58,10 +58,10 @@ type Fake struct {
 	createReturnsOnCall map[int]struct {
 		result1 error
 	}
-	GetManifestStub        func(pkgHandle Handle) (*model.PkgManifest, error)
+	GetManifestStub        func(pkgHandle model.PkgHandle) (*model.PkgManifest, error)
 	getManifestMutex       sync.RWMutex
 	getManifestArgsForCall []struct {
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}
 	getManifestReturns struct {
 		result1 *model.PkgManifest
@@ -71,12 +71,12 @@ type Fake struct {
 		result1 *model.PkgManifest
 		result2 error
 	}
-	InstallStub        func(ctx context.Context, path string, pkgHandle Handle) error
+	InstallStub        func(ctx context.Context, path string, pkgHandle model.PkgHandle) error
 	installMutex       sync.RWMutex
 	installArgsForCall []struct {
 		ctx       context.Context
 		path      string
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}
 	installReturns struct {
 		result1 error
@@ -97,24 +97,24 @@ type Fake struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}
-	ResolveStub        func(pkgRef string, providers ...Provider) (Handle, error)
+	ResolveStub        func(pkgRef string, providers ...Provider) (model.PkgHandle, error)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
 		pkgRef    string
 		providers []Provider
 	}
 	resolveReturns struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}
 	resolveReturnsOnCall map[int]struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}
-	ValidateStub        func(pkgHandle Handle) []error
+	ValidateStub        func(pkgHandle model.PkgHandle) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}
 	validateReturns struct {
 		result1 []error
@@ -322,11 +322,11 @@ func (fake *Fake) CreateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) GetManifest(pkgHandle Handle) (*model.PkgManifest, error) {
+func (fake *Fake) GetManifest(pkgHandle model.PkgHandle) (*model.PkgManifest, error) {
 	fake.getManifestMutex.Lock()
 	ret, specificReturn := fake.getManifestReturnsOnCall[len(fake.getManifestArgsForCall)]
 	fake.getManifestArgsForCall = append(fake.getManifestArgsForCall, struct {
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}{pkgHandle})
 	fake.recordInvocation("GetManifest", []interface{}{pkgHandle})
 	fake.getManifestMutex.Unlock()
@@ -345,7 +345,7 @@ func (fake *Fake) GetManifestCallCount() int {
 	return len(fake.getManifestArgsForCall)
 }
 
-func (fake *Fake) GetManifestArgsForCall(i int) Handle {
+func (fake *Fake) GetManifestArgsForCall(i int) model.PkgHandle {
 	fake.getManifestMutex.RLock()
 	defer fake.getManifestMutex.RUnlock()
 	return fake.getManifestArgsForCall[i].pkgHandle
@@ -373,13 +373,13 @@ func (fake *Fake) GetManifestReturnsOnCall(i int, result1 *model.PkgManifest, re
 	}{result1, result2}
 }
 
-func (fake *Fake) Install(ctx context.Context, path string, pkgHandle Handle) error {
+func (fake *Fake) Install(ctx context.Context, path string, pkgHandle model.PkgHandle) error {
 	fake.installMutex.Lock()
 	ret, specificReturn := fake.installReturnsOnCall[len(fake.installArgsForCall)]
 	fake.installArgsForCall = append(fake.installArgsForCall, struct {
 		ctx       context.Context
 		path      string
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}{ctx, path, pkgHandle})
 	fake.recordInvocation("Install", []interface{}{ctx, path, pkgHandle})
 	fake.installMutex.Unlock()
@@ -398,7 +398,7 @@ func (fake *Fake) InstallCallCount() int {
 	return len(fake.installArgsForCall)
 }
 
-func (fake *Fake) InstallArgsForCall(i int) (context.Context, string, Handle) {
+func (fake *Fake) InstallArgsForCall(i int) (context.Context, string, model.PkgHandle) {
 	fake.installMutex.RLock()
 	defer fake.installMutex.RUnlock()
 	return fake.installArgsForCall[i].ctx, fake.installArgsForCall[i].path, fake.installArgsForCall[i].pkgHandle
@@ -474,7 +474,7 @@ func (fake *Fake) ListReturnsOnCall(i int, result1 []*model.PkgManifest, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) Resolve(pkgRef string, providers ...Provider) (Handle, error) {
+func (fake *Fake) Resolve(pkgRef string, providers ...Provider) (model.PkgHandle, error) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
@@ -504,33 +504,33 @@ func (fake *Fake) ResolveArgsForCall(i int) (string, []Provider) {
 	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].providers
 }
 
-func (fake *Fake) ResolveReturns(result1 Handle, result2 error) {
+func (fake *Fake) ResolveReturns(result1 model.PkgHandle, result2 error) {
 	fake.ResolveStub = nil
 	fake.resolveReturns = struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolveReturnsOnCall(i int, result1 Handle, result2 error) {
+func (fake *Fake) ResolveReturnsOnCall(i int, result1 model.PkgHandle, result2 error) {
 	fake.ResolveStub = nil
 	if fake.resolveReturnsOnCall == nil {
 		fake.resolveReturnsOnCall = make(map[int]struct {
-			result1 Handle
+			result1 model.PkgHandle
 			result2 error
 		})
 	}
 	fake.resolveReturnsOnCall[i] = struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) Validate(pkgHandle Handle) []error {
+func (fake *Fake) Validate(pkgHandle model.PkgHandle) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		pkgHandle Handle
+		pkgHandle model.PkgHandle
 	}{pkgHandle})
 	fake.recordInvocation("Validate", []interface{}{pkgHandle})
 	fake.validateMutex.Unlock()
@@ -549,7 +549,7 @@ func (fake *Fake) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *Fake) ValidateArgsForCall(i int) Handle {
+func (fake *Fake) ValidateArgsForCall(i int) model.PkgHandle {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	return fake.validateArgsForCall[i].pkgHandle

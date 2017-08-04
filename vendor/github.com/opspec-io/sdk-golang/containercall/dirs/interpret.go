@@ -8,7 +8,7 @@ import (
 )
 
 func (d _Dirs) Interpret(
-	pkgPath string,
+	pkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
 	scgContainerCallDirs map[string]string,
 	scratchDirPath string,
@@ -31,7 +31,7 @@ func (d _Dirs) Interpret(
 
 			// pkg dirs must be passed by value
 			if err := d.dirCopier.OS(
-				filepath.Join(pkgPath, scgContainerDirBind),
+				filepath.Join(pkgHandle.Ref(), scgContainerDirBind),
 				dcgContainerCallDirs[scgContainerDirPath],
 			); nil != err {
 				return nil, err

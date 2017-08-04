@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/model"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +23,7 @@ type fsProvider struct {
 
 func (lfsp fsProvider) TryResolve(
 	pkgRef string,
-) (Handle, error) {
+) (model.PkgHandle, error) {
 
 	if filepath.IsAbs(pkgRef) {
 		if _, err := lfsp.os.Stat(pkgRef); nil != err && !os.IsNotExist(err) {

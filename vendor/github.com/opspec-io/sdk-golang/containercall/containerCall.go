@@ -21,7 +21,7 @@ type ContainerCall interface {
 		scgContainerCall *model.SCGContainerCall,
 		containerId string,
 		rootOpId string,
-		pkgPath string,
+		pkgHandle model.PkgHandle,
 	) (*model.DCGContainerCall, error)
 }
 

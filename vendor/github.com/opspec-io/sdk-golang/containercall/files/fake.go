@@ -2,15 +2,16 @@
 package files
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	InterpretStub        func(pkgPath string, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error)
+	InterpretStub        func(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		pkgPath               string
+		pkgHandle             model.PkgHandle
 		scope                 map[string]*model.Value
 		scgContainerCallFiles map[string]string
 		scratchDirPath        string
@@ -27,19 +28,19 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(pkgPath string, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error) {
+func (fake *Fake) Interpret(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		pkgPath               string
+		pkgHandle             model.PkgHandle
 		scope                 map[string]*model.Value
 		scgContainerCallFiles map[string]string
 		scratchDirPath        string
-	}{pkgPath, scope, scgContainerCallFiles, scratchDirPath})
-	fake.recordInvocation("Interpret", []interface{}{pkgPath, scope, scgContainerCallFiles, scratchDirPath})
+	}{pkgHandle, scope, scgContainerCallFiles, scratchDirPath})
+	fake.recordInvocation("Interpret", []interface{}{pkgHandle, scope, scgContainerCallFiles, scratchDirPath})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(pkgPath, scope, scgContainerCallFiles, scratchDirPath)
+		return fake.InterpretStub(pkgHandle, scope, scgContainerCallFiles, scratchDirPath)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -53,10 +54,10 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (string, map[string]*model.Value, map[string]string, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (model.PkgHandle, map[string]*model.Value, map[string]string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].pkgPath, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath
+	return fake.interpretArgsForCall[i].pkgHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath
 }
 
 func (fake *Fake) InterpretReturns(result1 map[string]string, result2 error) {

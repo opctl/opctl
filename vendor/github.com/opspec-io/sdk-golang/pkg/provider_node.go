@@ -26,7 +26,7 @@ type nodeProvider struct {
 
 func (np nodeProvider) TryResolve(
 	pkgRef string,
-) (Handle, error) {
+) (model.PkgHandle, error) {
 
 	// @TODO: handle not found rather than blindly returning handle
 	return newNodeHandle(np.nodeClient, pkgRef, np.pullCreds), nil

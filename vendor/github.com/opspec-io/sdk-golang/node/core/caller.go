@@ -5,7 +5,6 @@ package core
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
 )
 
 type caller interface {
@@ -14,7 +13,7 @@ type caller interface {
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
-		pkgRef string,
+		pkgHandle model.PkgHandle,
 		rootOpId string,
 	) error
 }
@@ -38,12 +37,12 @@ func (this _caller) Call(
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
-	pkgRef string,
+	pkgHandle model.PkgHandle,
 	rootOpId string,
 ) error {
 
 	if nil == scg {
-		// No Op; equivalent to an empty fn body in a programming language
+		// No Op
 		return nil
 	}
 
@@ -53,14 +52,14 @@ func (this _caller) Call(
 			scope,
 			id,
 			scg.Container,
-			pkgRef,
+			pkgHandle,
 			rootOpId,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
 			scope,
 			id,
-			filepath.Dir(pkgRef),
+			pkgHandle,
 			rootOpId,
 			scg.Op,
 		)
@@ -69,7 +68,7 @@ func (this _caller) Call(
 			id,
 			scope,
 			rootOpId,
-			pkgRef,
+			pkgHandle,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
@@ -77,7 +76,7 @@ func (this _caller) Call(
 			id,
 			scope,
 			rootOpId,
-			pkgRef,
+			pkgHandle,
 			scg.Serial,
 		)
 	default:
