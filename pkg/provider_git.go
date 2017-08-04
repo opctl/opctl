@@ -27,7 +27,7 @@ type gitProvider struct {
 
 func (grp gitProvider) TryResolve(
 	pkgRef string,
-) (Handle, error) {
+) (model.PkgHandle, error) {
 
 	// attempt to resolve from cache
 	handle, err := grp.localFSProvider.TryResolve(pkgRef)

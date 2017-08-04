@@ -23,7 +23,7 @@ type Pkg interface {
 
 	// GetManifest gets the manifest of a package
 	GetManifest(
-		pkgHandle Handle,
+		pkgHandle model.PkgHandle,
 	) (
 		*model.PkgManifest,
 		error,
@@ -33,7 +33,7 @@ type Pkg interface {
 	Install(
 		ctx context.Context,
 		path string,
-		pkgHandle Handle,
+		pkgHandle model.PkgHandle,
 	) error
 
 	// List recursively lists packages in dirPath
@@ -45,7 +45,7 @@ type Pkg interface {
 
 	// Validate validates a package
 	Validate(
-		pkgHandle Handle,
+		pkgHandle model.PkgHandle,
 	) []error
 }
 

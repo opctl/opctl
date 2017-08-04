@@ -10,7 +10,7 @@ import (
 
 func newFSHandle(
 	path string,
-) Handle {
+) model.PkgHandle {
 	return fsHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),

@@ -86,7 +86,6 @@ var _ = Context("puller", func() {
 					Auth:          http.NewBasicAuth(providedPullCreds.Username, providedPullCreds.Password),
 					URL:           fmt.Sprintf("https://%v", ref.Name),
 					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", ref.Version)),
-					Depth:         1,
 					Progress:      os.Stdout,
 				}
 

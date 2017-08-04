@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 type Fake struct {
@@ -39,18 +38,18 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolvePkgStub        func(pkgRef string, pullCreds *model.PullCreds) (pkg.Handle, error)
+	ResolvePkgStub        func(pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error)
 	resolvePkgMutex       sync.RWMutex
 	resolvePkgArgsForCall []struct {
 		pkgRef    string
 		pullCreds *model.PullCreds
 	}
 	resolvePkgReturns struct {
-		result1 pkg.Handle
+		result1 model.PkgHandle
 		result2 error
 	}
 	resolvePkgReturnsOnCall map[int]struct {
-		result1 pkg.Handle
+		result1 model.PkgHandle
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -181,7 +180,7 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkg(pkgRef string, pullCreds *model.PullCreds) (pkg.Handle, error) {
+func (fake *Fake) ResolvePkg(pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error) {
 	fake.resolvePkgMutex.Lock()
 	ret, specificReturn := fake.resolvePkgReturnsOnCall[len(fake.resolvePkgArgsForCall)]
 	fake.resolvePkgArgsForCall = append(fake.resolvePkgArgsForCall, struct {
@@ -211,24 +210,24 @@ func (fake *Fake) ResolvePkgArgsForCall(i int) (string, *model.PullCreds) {
 	return fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
 }
 
-func (fake *Fake) ResolvePkgReturns(result1 pkg.Handle, result2 error) {
+func (fake *Fake) ResolvePkgReturns(result1 model.PkgHandle, result2 error) {
 	fake.ResolvePkgStub = nil
 	fake.resolvePkgReturns = struct {
-		result1 pkg.Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkgReturnsOnCall(i int, result1 pkg.Handle, result2 error) {
+func (fake *Fake) ResolvePkgReturnsOnCall(i int, result1 model.PkgHandle, result2 error) {
 	fake.ResolvePkgStub = nil
 	if fake.resolvePkgReturnsOnCall == nil {
 		fake.resolvePkgReturnsOnCall = make(map[int]struct {
-			result1 pkg.Handle
+			result1 model.PkgHandle
 			result2 error
 		})
 	}
 	fake.resolvePkgReturnsOnCall[i] = struct {
-		result1 pkg.Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }

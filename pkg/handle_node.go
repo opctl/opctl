@@ -10,7 +10,7 @@ func newNodeHandle(
 	client client.Client,
 	pkgRef string,
 	pullCreds *model.PullCreds,
-) Handle {
+) model.PkgHandle {
 	return nodeHandle{
 		client:    client,
 		pkgRef:    pkgRef,

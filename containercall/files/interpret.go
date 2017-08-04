@@ -2,6 +2,7 @@ package files
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
@@ -12,7 +13,7 @@ import (
 )
 
 func (f _Files) Interpret(
-	pkgPath string,
+	pkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
 	scgContainerCallFiles map[string]string,
 	scratchDirPath string,
@@ -35,10 +36,28 @@ fileLoop:
 		case isBoundToPkgContent:
 			// bound to pkg file
 			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-			err = f.fileCopier.OS(
-				filepath.Join(pkgPath, scgContainerFileBind),
-				dcgContainerCallFiles[scgContainerFilePath],
-			)
+
+			pkgContentReadSeekCloser, err := pkgHandle.GetContent(context.TODO(), scgContainerFileBind)
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					err.Error(),
+				)
+			}
+
+			containerFileWriter, err := f.os.Open(dcgContainerCallFiles[scgContainerFilePath])
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					err.Error(),
+				)
+			}
+
+			_, err = f.io.Copy(containerFileWriter, pkgContentReadSeekCloser)
 			if nil != err {
 				return nil, fmt.Errorf(
 					"Unable to bind file '%v' to pkg content '%v'; error was: %v",

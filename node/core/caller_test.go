@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
+	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 var _ = Context("caller", func() {
@@ -29,7 +29,7 @@ var _ = Context("caller", func() {
 					"dummyCallId",
 					map[string]*model.Value{},
 					nil,
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 					"dummyRootOpId",
 				)
 			})
@@ -44,7 +44,7 @@ var _ = Context("caller", func() {
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
 				}
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedRootOpId := "dummyRootOpId"
 
 				objectUnderTest := newCaller(fakeContainerCaller)
@@ -54,7 +54,7 @@ var _ = Context("caller", func() {
 					providedCallId,
 					providedArgs,
 					providedSCG,
-					providedPkgRef,
+					providedPkgHandle,
 					providedRootOpId,
 				)
 
@@ -62,12 +62,12 @@ var _ = Context("caller", func() {
 				actualArgs,
 					actualCallId,
 					actualSCG,
-					actualPkgRef,
+					actualPkgHandle,
 					actualRootOpId := fakeContainerCaller.CallArgsForCall(0)
 				Expect(actualCallId).To(Equal(providedCallId))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualSCG).To(Equal(providedSCG.Container))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			})
 		})
@@ -85,7 +85,7 @@ var _ = Context("caller", func() {
 						},
 					},
 				}
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedRootOpId := "dummyRootOpId"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
@@ -96,7 +96,7 @@ var _ = Context("caller", func() {
 					providedCallId,
 					providedArgs,
 					providedSCG,
-					providedPkgRef,
+					providedPkgHandle,
 					providedRootOpId,
 				)
 
@@ -108,7 +108,7 @@ var _ = Context("caller", func() {
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
 				Expect(actualCallId).To(Equal(providedCallId))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualPkgRef).To(Equal(filepath.Dir(providedPkgRef)))
+				Expect(actualPkgRef).To(Equal(providedPkgHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
@@ -125,7 +125,7 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedRootOpId := "dummyRootOpId"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
@@ -136,7 +136,7 @@ var _ = Context("caller", func() {
 					providedCallId,
 					providedArgs,
 					providedSCG,
-					providedPkgRef,
+					providedPkgHandle,
 					providedRootOpId,
 				)
 
@@ -144,11 +144,11 @@ var _ = Context("caller", func() {
 				providedCallId,
 					actualArgs,
 					actualRootOpId,
-					actualPkgRef,
+					actualPkgHandle,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 				Expect(actualSCG).To(Equal(providedSCG.Parallel))
 			})
 		})
@@ -165,7 +165,7 @@ var _ = Context("caller", func() {
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedRootOpId := "dummyRootOpId"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
@@ -176,7 +176,7 @@ var _ = Context("caller", func() {
 					providedCallId,
 					providedArgs,
 					providedSCG,
-					providedPkgRef,
+					providedPkgHandle,
 					providedRootOpId,
 				)
 
@@ -184,12 +184,12 @@ var _ = Context("caller", func() {
 				actualCallId,
 					actualArgs,
 					actualRootOpId,
-					actualPkgRef,
+					actualPkgHandle,
 					actualSCG := fakeSerialCaller.CallArgsForCall(0)
 				Expect(actualCallId).To(Equal(providedCallId))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 				Expect(actualSCG).To(Equal(providedSCG.Serial))
 			})
 		})
@@ -201,7 +201,7 @@ var _ = Context("caller", func() {
 				providedCallId := "dummyCallId"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedRootOpId := "dummyRootOpId"
 				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
 
@@ -213,7 +213,7 @@ var _ = Context("caller", func() {
 					providedCallId,
 					providedArgs,
 					providedSCG,
-					providedPkgRef,
+					providedPkgHandle,
 					providedRootOpId,
 				)
 

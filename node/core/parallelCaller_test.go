@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 )
@@ -28,7 +29,7 @@ var _ = Context("parallelCaller", func() {
 			providedCallId := "dummyCallId"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpId := "dummyRootOpId"
-			providedPkgRef := "dummyPkgRef"
+			providedPkgHandle := new(pkg.FakeHandle)
 			providedSCGParallelCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -62,7 +63,7 @@ var _ = Context("parallelCaller", func() {
 				providedCallId,
 				providedInboundScope,
 				providedRootOpId,
-				providedPkgRef,
+				providedPkgHandle,
 				providedSCGParallelCalls,
 			)
 
@@ -72,11 +73,11 @@ var _ = Context("parallelCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
-					actualPkgRef,
+					actualPkgHandle,
 					actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 				actualSCGParallelCalls = append(actualSCGParallelCalls, actualSCG)
 			}
@@ -88,7 +89,7 @@ var _ = Context("parallelCaller", func() {
 				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedSCGParallelCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -134,7 +135,7 @@ var _ = Context("parallelCaller", func() {
 					providedCallId,
 					providedInboundScope,
 					providedRootOpId,
-					providedPkgRef,
+					providedPkgHandle,
 					providedSCGParallelCalls,
 				)
 
@@ -148,7 +149,7 @@ var _ = Context("parallelCaller", func() {
 				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
-				providedPkgRef := "dummyPkgRef"
+				providedPkgHandle := new(pkg.FakeHandle)
 				providedSCGParallelCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -182,7 +183,7 @@ var _ = Context("parallelCaller", func() {
 					providedCallId,
 					providedInboundScope,
 					providedRootOpId,
-					providedPkgRef,
+					providedPkgHandle,
 					providedSCGParallelCalls,
 				)
 
@@ -192,11 +193,11 @@ var _ = Context("parallelCaller", func() {
 					actualNodeId,
 						actualChildOutboundScope,
 						actualSCG,
-						actualPkgRef,
+						actualPkgHandle,
 						actualRootOpId := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
-					Expect(actualPkgRef).To(Equal(providedPkgRef))
+					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 					Expect(actualRootOpId).To(Equal(providedRootOpId))
 					actualSCGParallelCalls = append(actualSCGParallelCalls, actualSCG)
 				}

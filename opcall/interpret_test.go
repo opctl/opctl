@@ -17,7 +17,6 @@ var _ = Context("OpCall", func() {
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
 			providedRootFSPath := "dummyRootFSPath"
-			providedPkgBasePath := "dummyPkgBasePath"
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
 					Ref: "dummyPkgRef",
@@ -57,7 +56,7 @@ var _ = Context("OpCall", func() {
 				map[string]*model.Value{},
 				providedSCGOpCall,
 				"dummyOpId",
-				providedPkgBasePath,
+				new(pkg.FakeHandle),
 				"dummyRootOpId",
 			)
 
@@ -65,6 +64,75 @@ var _ = Context("OpCall", func() {
 			actualPkgRef, actualPkgProviders := fakePkg.ResolveArgsForCall(0)
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
+		})
+		It("should call pkg.NewFSProvider w/ expected args", func() {
+			/* arrange */
+			providedParentPkgHandle := new(pkg.FakeHandle)
+
+			fakePkg := new(pkg.Fake)
+			// error to trigger immediate return
+			fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+
+			objectUnderTest := _OpCall{
+				interpolater: new(interpolater.Fake),
+				pkg:          fakePkg,
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				&model.SCGOpCall{
+					Pkg: &model.SCGOpCallPkg{
+						Ref: "dummyPkgRef",
+					},
+				},
+				"dummyOpId",
+				providedParentPkgHandle,
+				"dummyRootOpId",
+			)
+
+			/* assert */
+			Expect(fakePkg.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedParentPkgHandle.Ref())))
+		})
+		It("should call pkg.NewGitProvider w/ expected args", func() {
+			/* arrange */
+			providedPkgCachePath := "dummyPkgCachePath"
+
+			fakeInterpolater := new(interpolater.Fake)
+			expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			fakeInterpolater.InterpolateReturnsOnCall(0, expectedPullCreds.Username)
+			fakeInterpolater.InterpolateReturnsOnCall(1, expectedPullCreds.Password)
+
+			fakePkg := new(pkg.Fake)
+			// error to trigger immediate return
+			fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+
+			objectUnderTest := _OpCall{
+				interpolater: fakeInterpolater,
+				pkg:          fakePkg,
+				pkgCachePath: providedPkgCachePath,
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				&model.SCGOpCall{
+					Pkg: &model.SCGOpCallPkg{
+						Ref:       "dummyPkgRef",
+						PullCreds: &model.SCGPullCreds{},
+					},
+				},
+				"dummyOpId",
+				new(pkg.FakeHandle),
+				"dummyRootOpId",
+			)
+
+			/* assert */
+			actualBasePath,
+				actualPullCreds := fakePkg.NewGitProviderArgsForCall(0)
+
+			Expect(actualBasePath).To(Equal(providedPkgCachePath))
+			Expect(actualPullCreds).To(Equal(expectedPullCreds))
 		})
 		Context("pkg.Resolve errs", func() {
 			It("should return err", func() {
@@ -83,7 +151,7 @@ var _ = Context("OpCall", func() {
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					"dummyOpId",
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					"dummyRootOpId",
 				)
 
@@ -113,7 +181,7 @@ var _ = Context("OpCall", func() {
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					"dummyOpId",
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					"dummyRootOpId",
 				)
 
@@ -138,7 +206,7 @@ var _ = Context("OpCall", func() {
 						map[string]*model.Value{},
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 						"dummyOpId",
-						"dummyPkgBasePath",
+						new(pkg.FakeHandle),
 						"dummyRootOpId",
 					)
 
@@ -160,9 +228,7 @@ var _ = Context("OpCall", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
-					pkgRef := "dummyPkgHandle"
 					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.RefReturns(pkgRef)
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.ResolveReturns(fakePkgHandle, nil)
@@ -189,15 +255,15 @@ var _ = Context("OpCall", func() {
 						providedScope,
 						providedSCGOpCall,
 						"dummyOpId",
-						"dummyPkgBasePath",
+						fakePkgHandle,
 						"dummyRootOpId",
 					)
 
 					/* assert */
-					actualSCGArgs, actualSCGInputs, actualPkgPath, actualScope := fakeArgs.InterpretArgsForCall(0)
+					actualSCGArgs, actualSCGInputs, actualPkgRef, actualScope := fakeArgs.InterpretArgsForCall(0)
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
-					Expect(actualPkgPath).To(Equal(pkgRef))
+					Expect(actualPkgRef).To(Equal(fakePkgHandle.Ref()))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 				})
 			})

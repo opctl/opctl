@@ -2,28 +2,29 @@
 package pkg
 
 import (
+	"github.com/opspec-io/sdk-golang/model"
 	"sync"
 )
 
 type FakeProvider struct {
-	TryResolveStub        func(pkgRef string) (Handle, error)
+	TryResolveStub        func(pkgRef string) (model.PkgHandle, error)
 	tryResolveMutex       sync.RWMutex
 	tryResolveArgsForCall []struct {
 		pkgRef string
 	}
 	tryResolveReturns struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}
 	tryResolveReturnsOnCall map[int]struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProvider) TryResolve(pkgRef string) (Handle, error) {
+func (fake *FakeProvider) TryResolve(pkgRef string) (model.PkgHandle, error) {
 	fake.tryResolveMutex.Lock()
 	ret, specificReturn := fake.tryResolveReturnsOnCall[len(fake.tryResolveArgsForCall)]
 	fake.tryResolveArgsForCall = append(fake.tryResolveArgsForCall, struct {
@@ -52,24 +53,24 @@ func (fake *FakeProvider) TryResolveArgsForCall(i int) string {
 	return fake.tryResolveArgsForCall[i].pkgRef
 }
 
-func (fake *FakeProvider) TryResolveReturns(result1 Handle, result2 error) {
+func (fake *FakeProvider) TryResolveReturns(result1 model.PkgHandle, result2 error) {
 	fake.TryResolveStub = nil
 	fake.tryResolveReturns = struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeProvider) TryResolveReturnsOnCall(i int, result1 Handle, result2 error) {
+func (fake *FakeProvider) TryResolveReturnsOnCall(i int, result1 model.PkgHandle, result2 error) {
 	fake.TryResolveStub = nil
 	if fake.tryResolveReturnsOnCall == nil {
 		fake.tryResolveReturnsOnCall = make(map[int]struct {
-			result1 Handle
+			result1 model.PkgHandle
 			result2 error
 		})
 	}
 	fake.tryResolveReturnsOnCall[i] = struct {
-		result1 Handle
+		result1 model.PkgHandle
 		result2 error
 	}{result1, result2}
 }

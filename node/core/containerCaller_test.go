@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"io"
@@ -34,7 +35,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedPkgRef := "dummyPkgRef"
+			providedPkgHandle := new(pkg.FakeHandle)
 			providedRootOpId := "dummyRootOpId"
 
 			fakePubSub := new(pubsub.Fake)
@@ -45,7 +46,7 @@ var _ = Context("containerCaller", func() {
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
-				PkgRef:    providedPkgRef,
+				PkgRef:    providedPkgHandle.Ref(),
 				RootOpId:  providedRootOpId,
 				Container: &dcgContainerDescriptor{},
 			}
@@ -68,7 +69,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedSCGContainerCall,
-				providedPkgRef,
+				providedPkgHandle,
 				providedRootOpId,
 			)
 
@@ -80,14 +81,14 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedPkgRef := "dummyPkgRef"
+			providedPkgHandle := new(pkg.FakeHandle)
 			providedRootOpId := "dummyRootOpId"
 
 			expectedEvent := &model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerId: providedContainerId,
-					PkgRef:      providedPkgRef,
+					PkgRef:      providedPkgHandle.Ref(),
 					RootOpId:    providedRootOpId,
 				},
 			}
@@ -113,7 +114,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedSCGContainerCall,
-				providedPkgRef,
+				providedPkgHandle,
 				providedRootOpId,
 			)
 
@@ -129,12 +130,6 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call containerProvider.RunContainer w/ expected args", func() {
 			/* arrange */
-			providedInboundScope := map[string]*model.Value{}
-			providedContainerId := "dummyContainerId"
-			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedPkgRef := "dummyPkgRef"
-			providedRootOpId := "dummyRootOpId"
-
 			expectedDCGContainerCall := &model.DCGContainerCall{}
 
 			fakeContainerCall := new(containercall.Fake)
@@ -157,11 +152,11 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedInboundScope,
-				providedContainerId,
-				providedSCGContainerCall,
-				providedPkgRef,
-				providedRootOpId,
+				map[string]*model.Value{},
+				"dummyContainerId",
+				&model.SCGContainerCall{},
+				new(pkg.FakeHandle),
+				"dummyRootOpId",
 			)
 
 			/* assert */
@@ -172,12 +167,6 @@ var _ = Context("containerCaller", func() {
 		Context("containerProvider.RunContainer errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				providedInboundScope := map[string]*model.Value{}
-				providedContainerId := "dummyContainerId"
-				providedSCGContainerCall := &model.SCGContainerCall{}
-				providedPkgRef := "dummyPkgRef"
-				providedRootOpId := "dummyRootOpId"
-
 				expectedError := errors.New("dummyError")
 
 				fakeContainerProvider := new(containerprovider.Fake)
@@ -196,11 +185,11 @@ var _ = Context("containerCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedInboundScope,
-					providedContainerId,
-					providedSCGContainerCall,
-					providedPkgRef,
-					providedRootOpId,
+					map[string]*model.Value{},
+					"dummyContainerId",
+					&model.SCGContainerCall{},
+					new(pkg.FakeHandle),
+					"dummyRootOpId",
 				)
 
 				/* assert */
@@ -210,11 +199,7 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
-		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
-		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedPkgRef := "dummyPkgRef"
-		providedRootOpId := "dummyRootOpId"
 
 		fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -231,11 +216,11 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			providedInboundScope,
+			map[string]*model.Value{},
 			providedContainerId,
-			providedSCGContainerCall,
-			providedPkgRef,
-			providedRootOpId,
+			&model.SCGContainerCall{},
+			new(pkg.FakeHandle),
+			"dummyRootOpId",
 		)
 
 		/* assert */
@@ -247,14 +232,14 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedPkgRef := "dummyPkgRef"
+		providedPkgHandle := new(pkg.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := &model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				PkgRef:      providedPkgRef,
+				PkgRef:      providedPkgHandle.Ref(),
 				RootOpId:    providedRootOpId,
 			},
 		}
@@ -277,7 +262,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedSCGContainerCall,
-			providedPkgRef,
+			providedPkgHandle,
 			providedRootOpId,
 		)
 
@@ -296,14 +281,14 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedPkgRef := "dummyPkgRef"
+		providedPkgHandle := new(pkg.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := &model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				PkgRef:      providedPkgRef,
+				PkgRef:      providedPkgHandle.Ref(),
 				RootOpId:    providedRootOpId,
 			},
 		}
@@ -326,7 +311,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedSCGContainerCall,
-			providedPkgRef,
+			providedPkgHandle,
 			providedRootOpId,
 		)
 

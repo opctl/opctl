@@ -14,7 +14,7 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Value,
 		opId string,
-		pkgBasePath string,
+		pkgHandle model.PkgHandle,
 		rootOpId string,
 		scgOpCall *model.SCGOpCall,
 	) error
@@ -44,7 +44,7 @@ type _opCaller struct {
 func (oc _opCaller) Call(
 	inboundScope map[string]*model.Value,
 	opId string,
-	pkgBasePath string,
+	pkgHandle model.PkgHandle,
 	rootOpId string,
 	scgOpCall *model.SCGOpCall,
 ) error {
@@ -117,7 +117,7 @@ func (oc _opCaller) Call(
 		inboundScope,
 		scgOpCall,
 		opId,
-		pkgBasePath,
+		pkgHandle,
 		rootOpId,
 	)
 	if nil != err {
@@ -148,7 +148,7 @@ func (oc _opCaller) Call(
 		dcgOpCall.ChildCallId,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
-		dcgOpCall.PkgRef,
+		dcgOpCall.PkgHandle,
 		rootOpId,
 	)
 

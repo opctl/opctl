@@ -5,10 +5,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
-	"path/filepath"
 	"time"
 )
 
@@ -44,16 +44,17 @@ var _ = Context("core", func() {
 						"dummyArg4Name": {Dir: &providedArg4Dir},
 					},
 					Pkg: &model.DCGOpCallPkg{
-						Ref: "/something/dummyPkg",
+						Ref: "dummyPkgRef",
 					},
 				}
 
-				expectedPkgRef := filepath.Base(providedReq.Pkg.Ref)
-				expectedPkgBasePath := filepath.Dir(providedReq.Pkg.Ref)
+				fakePkgHandle := new(pkg.FakeHandle)
+				fakePkg := new(pkg.Fake)
+				fakePkg.ResolveReturns(fakePkgHandle, nil)
 
 				expectedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
-						Ref: expectedPkgRef,
+						Ref: fakePkgHandle.Ref(),
 					},
 					Inputs: map[string]string{},
 				}
@@ -72,6 +73,7 @@ var _ = Context("core", func() {
 				objectUnderTest := _core{
 					containerProvider:   new(containerprovider.Fake),
 					pubSub:              new(pubsub.Fake),
+					pkg:                 fakePkg,
 					opCaller:            fakeOpCaller,
 					dcgNodeRepo:         new(fakeDCGNodeRepo),
 					uniqueStringFactory: fakeUniqueStringFactory,
@@ -85,13 +87,13 @@ var _ = Context("core", func() {
 				time.Sleep(time.Millisecond * 500)
 				actualInboundScope,
 					actualOpId,
-					actualPkgBasePath,
+					actualPkgHandle,
 					actualRootOpId,
 					actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 				Expect(actualInboundScope).To(Equal(providedReq.Args))
 				Expect(actualOpId).To(Equal(expectedOpId))
-				Expect(actualPkgBasePath).To(Equal(expectedPkgBasePath))
+				Expect(actualPkgHandle).To(Equal(fakePkgHandle))
 				Expect(actualRootOpId).To(Equal(actualOpId))
 				Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 			})

@@ -2,6 +2,7 @@ package files
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iio"
@@ -10,6 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
@@ -21,7 +23,7 @@ import (
 var _ = Context("Files", func() {
 	Context("Interpret", func() {
 		Context("bound value is absolute path", func() {
-			It("should call fileCopier.OS w/ expected args", func() {
+			It("should call pkgHandle.GetContent w/ expected args", func() {
 				/* arrange */
 
 				containerFilePath := "/dummyFile1Path.txt"
@@ -31,34 +33,26 @@ var _ = Context("Files", func() {
 					containerFilePath: "",
 				}
 
-				providedPkgPath := "dummyPkgPath"
-
-				providedScratchDirPath := "dummyScratchDirPath"
-
-				fakeFileCopier := new(filecopier.Fake)
+				providedParentOpPkgHandle := new(pkg.FakeHandle)
 				// error to trigger immediate return
-				fakeFileCopier.OSReturns(errors.New("dummyError"))
+				providedParentOpPkgHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _Files{
-					io:         new(iio.Fake),
-					fileCopier: fakeFileCopier,
-				}
+				objectUnderTest := _Files{}
 
 				/* act */
 				objectUnderTest.Interpret(
-					providedPkgPath,
+					providedParentOpPkgHandle,
 					map[string]*model.Value{},
 					providedSCGContainerCallFiles,
-					providedScratchDirPath,
+					"dummyScratchDir",
 				)
 
 				/* assert */
-
-				actualSrcPath, actualDstPath := fakeFileCopier.OSArgsForCall(0)
-				Expect(actualSrcPath).To(Equal(filepath.Join(providedPkgPath, containerFilePath)))
-				Expect(actualDstPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
+				actualContext, actualContentPath := providedParentOpPkgHandle.GetContentArgsForCall(0)
+				Expect(actualContext).To(Equal(context.TODO()))
+				Expect(actualContentPath).To(Equal(containerFilePath))
 			})
-			Context("fileCopier.OS errs", func() {
+			Context("pkgHandle.GetContent errs", func() {
 
 				It("should return expected error", func() {
 					/* arrange */
@@ -68,24 +62,23 @@ var _ = Context("Files", func() {
 						containerFilePath: "",
 					}
 
-					fakeFileCopier := new(filecopier.Fake)
-					openError := fmt.Errorf("dummyError")
-					fakeFileCopier.OSReturns(openError)
+					getContentErr := fmt.Errorf("dummyError")
+
+					providedParentOpPkgHandle := new(pkg.FakeHandle)
+					providedParentOpPkgHandle.GetContentReturns(nil, getContentErr)
 
 					expectedErr := fmt.Errorf(
 						"Unable to bind file '%v' to pkg content '%v'; error was: %v",
 						containerFilePath,
 						containerFilePath,
-						openError,
+						getContentErr,
 					)
 
-					objectUnderTest := _Files{
-						fileCopier: fakeFileCopier,
-					}
+					objectUnderTest := _Files{}
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
+						providedParentOpPkgHandle,
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -95,36 +88,94 @@ var _ = Context("Files", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("fileCopier.OS doesn't err", func() {
-				It("should return expected results", func() {
-					/* arrange */
-					providedScratchDir := "dummyScratchDir"
+			Context("pkgHandle.GetContent doesn't err", func() {
+				It("should call os.Open w/ expected args", func() {
 
-					containerFilePath := "/dummyFile1Path.txt"
-					expectedDCGContainerCallFiles := map[string]string{
-						containerFilePath: filepath.Join(providedScratchDir, containerFilePath),
-					}
+				})
+				Context("os.Open errs", func() {
+					It("should return expected err", func() {
+						/* arrange */
+						containerFilePath := "/dummyFile1Path.txt"
+						providedSCGContainerCallFiles := map[string]string{
+							// implicitly bound
+							containerFilePath: "",
+						}
 
-					providedSCGContainerCallFiles := map[string]string{
-						// implicitly bound
-						containerFilePath: "",
-					}
+						openErr := fmt.Errorf("dummyError")
 
-					objectUnderTest := _Files{
-						fileCopier: new(filecopier.Fake),
-					}
+						fakeOS := new(ios.Fake)
+						fakeOS.OpenReturns(nil, openErr)
 
-					/* act */
-					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
-						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
-						providedScratchDir,
-					)
+						expectedErr := fmt.Errorf(
+							"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+							containerFilePath,
+							containerFilePath,
+							openErr,
+						)
 
-					/* assert */
-					Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
-					Expect(actualErr).To(BeNil())
+						objectUnderTest := _Files{
+							os: fakeOS,
+						}
+
+						/* act */
+						_, actualErr := objectUnderTest.Interpret(
+							new(pkg.FakeHandle),
+							map[string]*model.Value{},
+							providedSCGContainerCallFiles,
+							"dummyScratchDirPath",
+						)
+
+						/* assert */
+						Expect(actualErr).To(Equal(expectedErr))
+					})
+				})
+				Context("os.Open doesn't err", func() {
+					It("should call io.Copy w/ expected args", func() {
+
+					})
+					Context("io.Copy errs", func() {
+						It("should return expected err", func() {
+							/* arrange */
+							containerFilePath := "/dummyFile1Path.txt"
+							providedSCGContainerCallFiles := map[string]string{
+								// implicitly bound
+								containerFilePath: "",
+							}
+
+							copyErr := fmt.Errorf("dummyError")
+
+							fakeIO := new(iio.Fake)
+							fakeIO.CopyReturns(0, copyErr)
+
+							expectedErr := fmt.Errorf(
+								"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+								containerFilePath,
+								containerFilePath,
+								copyErr,
+							)
+
+							objectUnderTest := _Files{
+								os: new(ios.Fake),
+								io: fakeIO,
+							}
+
+							/* act */
+							_, actualErr := objectUnderTest.Interpret(
+								new(pkg.FakeHandle),
+								map[string]*model.Value{},
+								providedSCGContainerCallFiles,
+								"dummyScratchDirPath",
+							)
+
+							/* assert */
+							Expect(actualErr).To(Equal(expectedErr))
+						})
+					})
+					Context("io.Copy doesn't err", func() {
+						It("should return expected results", func() {
+
+						})
+					})
 				})
 			})
 		})
@@ -157,7 +208,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -195,7 +246,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -237,7 +288,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -280,7 +331,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -318,7 +369,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,
@@ -360,7 +411,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							"dummyScratchDirPath",
@@ -398,7 +449,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						providedScratchDirPath,
@@ -437,7 +488,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							"dummyScratchDirPath",
@@ -473,7 +524,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -510,7 +561,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -551,7 +602,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,
@@ -589,7 +640,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								_, actualErr := objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									"dummyScratchDirPath",
@@ -630,7 +681,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									providedScratchDirPath,
@@ -670,7 +721,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						providedScratchDirPath,
@@ -715,7 +766,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -752,7 +803,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -792,7 +843,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -829,7 +880,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,
@@ -867,7 +918,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								_, actualErr := objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									"dummyScratchDirPath",
@@ -912,7 +963,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									providedScratchDirPath,
@@ -951,7 +1002,7 @@ var _ = Context("Files", func() {
 
 									/* act */
 									_, actualErr := objectUnderTest.Interpret(
-										"dummyPkgPath",
+										new(pkg.FakeHandle),
 										providedScope,
 										providedSCGContainerCallFiles,
 										"dummyScratchDirPath",
@@ -993,7 +1044,7 @@ var _ = Context("Files", func() {
 
 									/* act */
 									actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-										"dummyPkgPath",
+										new(pkg.FakeHandle),
 										providedScope,
 										providedSCGContainerCallFiles,
 										providedScratchDirPath,
@@ -1036,7 +1087,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -1072,7 +1123,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						providedScope,
 						providedSCGContainerCallFiles,
 						providedScratchDirPath,
@@ -1110,7 +1161,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							"dummyScratchDirPath",
@@ -1146,7 +1197,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							providedScope,
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -1183,7 +1234,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -1224,7 +1275,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								providedScope,
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,
@@ -1262,7 +1313,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								_, actualErr := objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									"dummyScratchDirPath",
@@ -1303,7 +1354,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-									"dummyPkgPath",
+									new(pkg.FakeHandle),
 									providedScope,
 									providedSCGContainerCallFiles,
 									providedScratchDirPath,
@@ -1338,7 +1389,7 @@ var _ = Context("Files", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					"dummyPkgPath",
+					new(pkg.FakeHandle),
 					map[string]*model.Value{},
 					providedSCGContainerCallFiles,
 					providedScratchDirPath,
@@ -1370,7 +1421,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -1400,7 +1451,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						"dummyPkgPath",
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						providedScratchDirPath,
@@ -1431,7 +1482,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							map[string]*model.Value{},
 							providedSCGContainerCallFiles,
 							"dummyScratchDirPath",
@@ -1465,7 +1516,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							"dummyPkgPath",
+							new(pkg.FakeHandle),
 							map[string]*model.Value{},
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -1497,7 +1548,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								map[string]*model.Value{},
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -1532,7 +1583,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-								"dummyPkgPath",
+								new(pkg.FakeHandle),
 								map[string]*model.Value{},
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,

@@ -37,7 +37,7 @@ type Core interface {
 		pkgRef string,
 		pullCreds *model.PullCreds,
 	) (
-		pkg.Handle,
+		model.PkgHandle,
 		error,
 	)
 }

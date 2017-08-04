@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/containercall/sockets"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"os"
 	"path/filepath"
 )
@@ -51,7 +52,7 @@ var _ = Context("ContainerCall", func() {
 				&model.SCGContainerCall{},
 				providedContainerId,
 				providedRootOpId,
-				"dummyPkgRef",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */
@@ -94,7 +95,7 @@ var _ = Context("ContainerCall", func() {
 					providedSCGContainerCall,
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -138,7 +139,7 @@ var _ = Context("ContainerCall", func() {
 					providedSCGContainerCall,
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -165,7 +166,7 @@ var _ = Context("ContainerCall", func() {
 			providedRootFSPath := "dummyRootFSPath"
 			providedContainerId := "dummyContainerId"
 			providedRootOpId := "dummyRootOpId"
-			providedPkgRef := "dummyPkgRef"
+			providedPkgHandle := new(pkg.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
 				providedRootFSPath,
@@ -194,12 +195,12 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				providedContainerId,
 				providedRootOpId,
-				providedPkgRef,
+				providedPkgHandle,
 			)
 
 			/* assert */
-			actualPkgPath, actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirs.InterpretArgsForCall(0)
-			Expect(actualPkgPath).To(Equal(providedPkgRef))
+			actualPkgHandle, actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirs.InterpretArgsForCall(0)
+			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallDirs).To(Equal(providedSCGContainerCall.Dirs))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
@@ -224,7 +225,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -256,7 +257,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -297,7 +298,7 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				"dummyContainerId",
 				"dummyRootOpId",
-				"dummyPkgRef",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */
@@ -324,7 +325,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -356,7 +357,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -383,7 +384,7 @@ var _ = Context("ContainerCall", func() {
 			providedRootFSPath := "dummyRootFSPath"
 			providedContainerId := "dummyContainerId"
 			providedRootOpId := "dummyRootOpId"
-			providedPkgRef := "dummyPkgRef"
+			providedPkgHandle := new(pkg.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
 				providedRootFSPath,
@@ -412,12 +413,12 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				providedContainerId,
 				providedRootOpId,
-				providedPkgRef,
+				providedPkgHandle,
 			)
 
 			/* assert */
-			actualPkgPath, actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFiles.InterpretArgsForCall(0)
-			Expect(actualPkgPath).To(Equal(providedPkgRef))
+			actualPkgHandle, actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFiles.InterpretArgsForCall(0)
+			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallFiles).To(Equal(providedSCGContainerCall.Files))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
@@ -443,7 +444,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -475,7 +476,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -517,7 +518,7 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				"dummyContainerId",
 				"dummyRootOpId",
-				"dummyPkgRef",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */
@@ -546,7 +547,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -582,7 +583,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -637,7 +638,7 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				providedContainerId,
 				providedRootOpId,
-				"dummyPkgRef",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */
@@ -668,7 +669,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -700,7 +701,7 @@ var _ = Context("ContainerCall", func() {
 					&model.SCGContainerCall{},
 					"dummyContainerId",
 					"dummyRootOpId",
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */

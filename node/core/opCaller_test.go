@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -56,7 +57,7 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				map[string]*model.Value{},
 				providedOpId,
-				"dummyPkgBasePath",
+				new(pkg.FakeHandle),
 				providedRootOpId,
 				providedSCGOpCall,
 			)
@@ -69,7 +70,7 @@ var _ = Context("opCaller", func() {
 			providedScope := map[string]*model.Value{}
 			providedOpId := "dummyOpId"
 			providedRootOpId := "dummyRootOpId"
-			providedPkgBasePath := "dummyPkgBasePath"
+			providedPkgHandle := new(pkg.FakeHandle)
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
 					Ref: "dummyPkgRef",
@@ -98,7 +99,7 @@ var _ = Context("opCaller", func() {
 			actualErr := objectUnderTest.Call(
 				providedScope,
 				providedOpId,
-				providedPkgBasePath,
+				providedPkgHandle,
 				providedRootOpId,
 				providedSCGOpCall,
 			)
@@ -107,13 +108,13 @@ var _ = Context("opCaller", func() {
 			actualScope,
 				actualSCGOpCall,
 				actualOpId,
-				actualPkgBasePath,
+				actualPkgHandle,
 				actualRootOpId := fakeOpCall.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualSCGOpCall).To(Equal(providedSCGOpCall))
 			Expect(actualOpId).To(Equal(providedOpId))
-			Expect(actualPkgBasePath).To(Equal(providedPkgBasePath))
+			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 			Expect(actualRootOpId).To(Equal(providedRootOpId))
 
 			Expect(actualErr).To(Equal(expectedErr))
@@ -161,7 +162,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					providedOpId,
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					providedRootOpId,
 					providedSCGOpCall,
 				)
@@ -222,7 +223,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					providedOpId,
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					providedRootOpId,
 					providedSCGOpCall,
 				)
@@ -244,7 +245,7 @@ var _ = Context("opCaller", func() {
 				dummyString := "dummyString"
 				dcgOpCall := model.DCGOpCall{
 					DCGBaseCall: &model.DCGBaseCall{
-						PkgRef: "dummyPkgRef",
+						PkgHandle: new(pkg.FakeHandle),
 					},
 					ChildCallId: "dummyChildCallId",
 					ChildCallSCG: &model.SCG{
@@ -283,7 +284,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					"dummyOpId",
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					providedRootOpId,
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 				)
@@ -298,7 +299,7 @@ var _ = Context("opCaller", func() {
 				Expect(actualChildCallId).To(Equal(dcgOpCall.ChildCallId))
 				Expect(actualChildCallScope).To(Equal(dcgOpCall.Inputs))
 				Expect(actualChildSCG).To(Equal(dcgOpCall.ChildCallSCG))
-				Expect(actualPkgRef).To(Equal(dcgOpCall.PkgRef))
+				Expect(actualPkgRef).To(Equal(dcgOpCall.PkgHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			})
 			It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
@@ -332,7 +333,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					"dummyOpId",
-					"dummyPkgBasePath",
+					new(pkg.FakeHandle),
 					providedRootOpId,
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 				)
@@ -386,7 +387,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						map[string]*model.Value{},
 						providedOpId,
-						"dummyPkgBasePath",
+						new(pkg.FakeHandle),
 						providedRootOpId,
 						providedSCGOpCall,
 					)
@@ -435,7 +436,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						map[string]*model.Value{},
 						providedOpId,
-						"dummyPkgBasePath",
+						new(pkg.FakeHandle),
 						"dummyRootOpId",
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					)
@@ -497,7 +498,7 @@ var _ = Context("opCaller", func() {
 						objectUnderTest.Call(
 							map[string]*model.Value{},
 							providedOpId,
-							"dummyPkgBasePath",
+							new(pkg.FakeHandle),
 							providedRootOpId,
 							providedSCGOpCall,
 						)
@@ -563,7 +564,7 @@ var _ = Context("opCaller", func() {
 						objectUnderTest.Call(
 							map[string]*model.Value{},
 							providedOpId,
-							"dummyPkgBasePath",
+							new(pkg.FakeHandle),
 							providedRootOpId,
 							providedSCGOpCall,
 						)

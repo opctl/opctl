@@ -12,7 +12,7 @@ import (
 
 type Files interface {
 	Interpret(
-		pkgPath string,
+		pkgHandle model.PkgHandle,
 		scope map[string]*model.Value,
 		scgContainerCallFiles map[string]string,
 		scratchDirPath string,

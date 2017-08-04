@@ -10,13 +10,13 @@ func (cc _ContainerCall) Interpret(
 	scgContainerCall *model.SCGContainerCall,
 	containerId string,
 	rootOpId string,
-	pkgPath string,
+	pkgHandle model.PkgHandle,
 ) (*model.DCGContainerCall, error) {
 
 	dcgContainerCall := &model.DCGContainerCall{
 		DCGBaseCall: &model.DCGBaseCall{
-			RootOpId: rootOpId,
-			PkgRef:   pkgPath,
+			RootOpId:  rootOpId,
+			PkgHandle: pkgHandle,
 		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
@@ -49,7 +49,7 @@ func (cc _ContainerCall) Interpret(
 
 	// interpret dirs
 	var err error
-	dcgContainerCall.Dirs, err = cc.dirs.Interpret(pkgPath, scope, scgContainerCall.Dirs, scratchDirPath)
+	dcgContainerCall.Dirs, err = cc.dirs.Interpret(pkgHandle, scope, scgContainerCall.Dirs, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (cc _ContainerCall) Interpret(
 	}
 
 	// interpret files
-	dcgContainerCall.Files, err = cc.files.Interpret(pkgPath, scope, scgContainerCall.Files, scratchDirPath)
+	dcgContainerCall.Files, err = cc.files.Interpret(pkgHandle, scope, scgContainerCall.Files, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}

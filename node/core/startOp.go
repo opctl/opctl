@@ -3,7 +3,6 @@ package core
 import (
 	"errors"
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
 )
 
 func (this _core) StartOp(
@@ -13,15 +12,29 @@ func (this _core) StartOp(
 		return "", errors.New("pkg required")
 	}
 
-	pkgBasePath := filepath.Dir(req.Pkg.Ref)
-	pkgName := filepath.Base(req.Pkg.Ref)
+	var pullCreds *model.PullCreds
+	if nil != req.Pkg.PullCreds {
+		pullCreds = &model.PullCreds{
+			Username: req.Pkg.PullCreds.Username,
+			Password: req.Pkg.PullCreds.Password,
+		}
+	}
+
+	pkgHandle, err := this.pkg.Resolve(
+		req.Pkg.Ref,
+		this.pkg.NewFSProvider(),
+		this.pkg.NewGitProvider(this.pkgCachePath, pullCreds),
+	)
+	if nil != err {
+		return "", err
+	}
 
 	opId := this.uniqueStringFactory.Construct()
 
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
 		Pkg: &model.SCGOpCallPkg{
-			Ref: pkgName,
+			Ref: pkgHandle.Ref(),
 		},
 		Inputs: map[string]string{},
 	}
@@ -34,7 +47,7 @@ func (this _core) StartOp(
 		this.opCaller.Call(
 			req.Args,
 			opId,
-			pkgBasePath,
+			pkgHandle,
 			opId,
 			scgOpCall,
 		)

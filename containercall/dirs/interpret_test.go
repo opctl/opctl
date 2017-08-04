@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 )
 
@@ -35,7 +36,7 @@ var _ = Context("Files", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					"dummyPkgRef",
+					new(pkg.FakeHandle),
 					providedScope,
 					providedSCGContainerCallDirs,
 					"dummyScratchDir",
@@ -51,7 +52,7 @@ var _ = Context("Files", func() {
 			rootFSPath := "/dummyRootFSPath"
 			providedContainerId := "dummyContainerId"
 			providedRootOpId := "dummyRootOpId"
-			providedPkgPath := "pkgPath"
+			providedParentOpPkgRef := new(pkg.FakeHandle)
 
 			providedScratchDirPath := filepath.Join(
 				rootFSPath,
@@ -80,7 +81,7 @@ var _ = Context("Files", func() {
 
 			/* act */
 			actualDCGContainerCallDirs, _ := objectUnderTest.Interpret(
-				providedPkgPath,
+				providedParentOpPkgRef,
 				map[string]*model.Value{},
 				providedSCGContainerCallDirs,
 				providedScratchDirPath,

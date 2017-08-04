@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/iruntime"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"golang.org/x/net/context"
@@ -24,8 +25,8 @@ var _ = Context("RunContainer", func() {
 		/* arrange */
 		providedReq := &model.DCGContainerCall{
 			DCGBaseCall: &model.DCGBaseCall{
-				RootOpId: "dummyRootOpId",
-				PkgRef:   "dummyPkgRef",
+				RootOpId:  "dummyRootOpId",
+				PkgHandle: new(pkg.FakeHandle),
 			},
 			ContainerId: "dummyContainerId",
 			Dirs: map[string]string{
