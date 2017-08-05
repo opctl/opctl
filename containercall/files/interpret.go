@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -38,6 +39,7 @@ fileLoop:
 			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
 
 			pkgContentReadSeekCloser, err := pkgHandle.GetContent(context.TODO(), scgContainerFileBind)
+			defer pkgContentReadSeekCloser.Close()
 			if nil != err {
 				return nil, fmt.Errorf(
 					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -47,7 +49,37 @@ fileLoop:
 				)
 			}
 
-			containerFileWriter, err := f.os.Open(dcgContainerCallFiles[scgContainerFilePath])
+			pkgContentsList, err := pkgHandle.ListContents(context.TODO())
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					err.Error(),
+				)
+			}
+
+			// @TODO: return mode from GetContent so this isn't needed
+			var contentMode os.FileMode
+			for _, pkgContent := range pkgContentsList {
+				if pkgContent.Path == scgContainerFileBind {
+					contentMode = pkgContent.Mode
+					break
+				}
+			}
+
+			containerFileWriter, err := f.os.Create(dcgContainerCallFiles[scgContainerFilePath])
+			defer containerFileWriter.Close()
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					scgContainerFilePath,
+					scgContainerFileBind,
+					err.Error(),
+				)
+			}
+
+			err = f.os.Chmod(dcgContainerCallFiles[scgContainerFilePath], contentMode)
 			if nil != err {
 				return nil, fmt.Errorf(
 					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -66,6 +98,10 @@ fileLoop:
 					err.Error(),
 				)
 			}
+
+			containerFileWriter.Close()
+			pkgContentReadSeekCloser.Close()
+
 			continue fileLoop
 		case isBoundToScope:
 			switch {

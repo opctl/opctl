@@ -94,12 +94,12 @@ var _ = Context("fsHandle", func() {
 				expectedContents := []*model.PkgContent{
 					{
 						Mode: fileInfo.Mode(),
-						Path: filepath.Join(rootPkgPath, "/dir1/file2.txt"),
+						Path: "/dir1/file2.txt",
 						Size: 34,
 					},
 					{
 						Mode: fileInfo.Mode(),
-						Path: filepath.Join(rootPkgPath, "/file1.txt"),
+						Path: "/file1.txt",
 						Size: 18,
 					},
 				}
