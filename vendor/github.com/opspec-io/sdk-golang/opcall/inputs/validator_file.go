@@ -3,23 +3,14 @@ package inputs
 import (
 	"errors"
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
 )
 
 // validateFile validates an value against a file parameter
 func (this _validator) validateFile(
-	rawValue *string,
-	param *model.FileParam,
+	value *string,
 ) []error {
-
-	value := rawValue
-	if nil == value && nil != param.Default {
-		// apply default if value not set
-		value = param.Default
-	}
-
 	if nil == value {
-		return []error{errors.New("File required")}
+		return []error{errors.New("file required")}
 	}
 
 	fileInfo, err := this.os.Stat(*value)

@@ -47,37 +47,37 @@ func (this _validator) Validate(
 		if nil != rawValue {
 			value = rawValue.Dir
 		}
-		errs = this.validateDir(value, param.Dir)
+		errs = this.validateDir(value)
 	case nil != param.File:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.File
 		}
-		errs = this.validateFile(value, param.File)
+		errs = this.validateFile(value)
 	case nil != param.String:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.String
 		}
-		errs = this.validateString(value, param.String)
+		errs = this.validateString(value, param.String.Constraints)
 	case nil != param.Number:
 		var value *float64
 		if nil != rawValue {
 			value = rawValue.Number
 		}
-		errs = this.validateNumber(value, param.Number)
+		errs = this.validateNumber(value, param.Number.Constraints)
 	case nil != param.Object:
 		var value map[string]interface{}
 		if nil != rawValue {
 			value = rawValue.Object
 		}
-		errs = this.validateObject(value, param.Object)
+		errs = this.validateObject(value, param.Object.Constraints)
 	case nil != param.Socket:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.Socket
 		}
-		errs = this.validateSocket(value, param.Socket)
+		errs = this.validateSocket(value)
 	}
 	return
 }
