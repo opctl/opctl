@@ -16,7 +16,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedParentOpPkgRef := "dummyParentOpPkgRef"
+						providedParentPkgRef := "dummyParentPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -26,7 +26,7 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
-						expectedInputValue := filepath.Join(providedParentOpPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {Dir: &expectedInputValue},
 						}
@@ -35,7 +35,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -46,7 +46,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedParentOpPkgRef := "dummyParentOpPkgRef"
+						providedParentPkgRef := "dummyParentPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -54,7 +54,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedParentOpPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
 						expectedInput := &model.Value{Dir: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
@@ -67,7 +67,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -85,7 +85,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedParentOpPkgRef := "dummyParentOpPkgRef"
+						providedParentPkgRef := "dummyParentPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -95,7 +95,7 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
-						expectedInputValue := filepath.Join(providedParentOpPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {File: &expectedInputValue},
 						}
@@ -104,7 +104,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -115,7 +115,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedParentOpPkgRef := "parentOpPkgRef"
+						providedParentPkgRef := "parentPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -123,7 +123,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedParentOpPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
 						expectedInput := &model.Value{File: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
@@ -136,7 +136,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -171,7 +171,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -200,7 +200,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -235,7 +235,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -264,7 +264,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -299,7 +299,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -328,7 +328,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]string{},
 							providedInputParams,
-							"dummyParentOpPkgRef",
+							"dummyParentPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -357,7 +357,7 @@ var _ = Context("inputs", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedParentOpPkgRef := "parentOpPkgRef"
+				providedParentPkgRef := "parentPkgRef"
 
 				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
@@ -374,7 +374,7 @@ var _ = Context("inputs", func() {
 				objectUnderTest.Interpret(
 					providedInputArgs,
 					providedInputParams,
-					providedParentOpPkgRef,
+					providedParentPkgRef,
 					providedScope,
 				)
 
@@ -382,13 +382,13 @@ var _ = Context("inputs", func() {
 				actualArgName,
 					actualArgValue,
 					actualParam,
-					actualParentOpPkgRef,
+					actualParentPkgRef,
 					actualScope := fakeArgInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
-				Expect(actualParentOpPkgRef).To(Equal(providedParentOpPkgRef))
+				Expect(actualParentPkgRef).To(Equal(providedParentPkgRef))
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("argInterpreter.Interpret doesn't error", func() {
@@ -421,7 +421,7 @@ var _ = Context("inputs", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedInputParams,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 

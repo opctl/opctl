@@ -37,22 +37,22 @@ var _ = Context("Files", func() {
 					containerFilePath: "",
 				}
 
-				providedParentOpPkgHandle := new(pkg.FakeHandle)
+				providedParentPkgHandle := new(pkg.FakeHandle)
 				// error to trigger immediate return
-				providedParentOpPkgHandle.GetContentReturns(tempFile, errors.New("dummyError"))
+				providedParentPkgHandle.GetContentReturns(tempFile, errors.New("dummyError"))
 
 				objectUnderTest := _Files{}
 
 				/* act */
 				objectUnderTest.Interpret(
-					providedParentOpPkgHandle,
+					providedParentPkgHandle,
 					map[string]*model.Value{},
 					providedSCGContainerCallFiles,
 					"dummyScratchDir",
 				)
 
 				/* assert */
-				actualContext, actualContentPath := providedParentOpPkgHandle.GetContentArgsForCall(0)
+				actualContext, actualContentPath := providedParentPkgHandle.GetContentArgsForCall(0)
 				Expect(actualContext).To(Equal(context.TODO()))
 				Expect(actualContentPath).To(Equal(containerFilePath))
 			})
@@ -68,8 +68,8 @@ var _ = Context("Files", func() {
 
 					getContentErr := fmt.Errorf("dummyError")
 
-					providedParentOpPkgHandle := new(pkg.FakeHandle)
-					providedParentOpPkgHandle.GetContentReturns(tempFile, getContentErr)
+					providedParentPkgHandle := new(pkg.FakeHandle)
+					providedParentPkgHandle.GetContentReturns(tempFile, getContentErr)
 
 					expectedErr := fmt.Errorf(
 						"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -82,7 +82,7 @@ var _ = Context("Files", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						providedParentOpPkgHandle,
+						providedParentPkgHandle,
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
@@ -103,10 +103,10 @@ var _ = Context("Files", func() {
 
 					providedScratchDirPath := "dummyScratchDirPath"
 
-					providedParentOpPkgHandle := new(pkg.FakeHandle)
-					providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+					providedParentPkgHandle := new(pkg.FakeHandle)
+					providedParentPkgHandle.GetContentReturns(tempFile, nil)
 					// err to trigger immediate return
-					providedParentOpPkgHandle.ListContentsReturns(nil, errors.New("dummyErr"))
+					providedParentPkgHandle.ListContentsReturns(nil, errors.New("dummyErr"))
 
 					fakeOS := new(ios.Fake)
 					// err to trigger immediate return
@@ -118,14 +118,14 @@ var _ = Context("Files", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						providedParentOpPkgHandle,
+						providedParentPkgHandle,
 						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						providedScratchDirPath,
 					)
 
 					/* assert */
-					Expect(providedParentOpPkgHandle.ListContentsArgsForCall(0)).To(Equal(context.TODO()))
+					Expect(providedParentPkgHandle.ListContentsArgsForCall(0)).To(Equal(context.TODO()))
 				})
 				Context("pkgHandle.ListContents errs", func() {
 
@@ -137,11 +137,11 @@ var _ = Context("Files", func() {
 							containerFilePath: "",
 						}
 
-						providedParentOpPkgHandle := new(pkg.FakeHandle)
-						providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+						providedParentPkgHandle := new(pkg.FakeHandle)
+						providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 						getContentErr := fmt.Errorf("dummyError")
-						providedParentOpPkgHandle.ListContentsReturns(nil, getContentErr)
+						providedParentPkgHandle.ListContentsReturns(nil, getContentErr)
 
 						expectedErr := fmt.Errorf(
 							"Unable to bind file '%v' to pkg content '%v'; error was: %v",
@@ -154,7 +154,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
-							providedParentOpPkgHandle,
+							providedParentPkgHandle,
 							map[string]*model.Value{},
 							providedSCGContainerCallFiles,
 							"dummyScratchDirPath",
@@ -175,8 +175,8 @@ var _ = Context("Files", func() {
 
 						providedScratchDirPath := "dummyScratchDirPath"
 
-						providedParentOpPkgHandle := new(pkg.FakeHandle)
-						providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+						providedParentPkgHandle := new(pkg.FakeHandle)
+						providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 						fakeOS := new(ios.Fake)
 						// err to trigger immediate return
@@ -188,7 +188,7 @@ var _ = Context("Files", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							providedParentOpPkgHandle,
+							providedParentPkgHandle,
 							map[string]*model.Value{},
 							providedSCGContainerCallFiles,
 							providedScratchDirPath,
@@ -207,8 +207,8 @@ var _ = Context("Files", func() {
 								containerFilePath: "",
 							}
 
-							providedParentOpPkgHandle := new(pkg.FakeHandle)
-							providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+							providedParentPkgHandle := new(pkg.FakeHandle)
+							providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 							openErr := fmt.Errorf("dummyError")
 
@@ -228,7 +228,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
-								providedParentOpPkgHandle,
+								providedParentPkgHandle,
 								map[string]*model.Value{},
 								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
@@ -249,11 +249,11 @@ var _ = Context("Files", func() {
 
 							providedScratchDirPath := "dummyScratchDirPath"
 
-							providedParentOpPkgHandle := new(pkg.FakeHandle)
-							providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+							providedParentPkgHandle := new(pkg.FakeHandle)
+							providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 							mode := os.FileMode(0777)
-							providedParentOpPkgHandle.ListContentsReturns(
+							providedParentPkgHandle.ListContentsReturns(
 								[]*model.PkgContent{
 									{
 										Path: containerFilePath,
@@ -274,7 +274,7 @@ var _ = Context("Files", func() {
 
 							/* act */
 							objectUnderTest.Interpret(
-								providedParentOpPkgHandle,
+								providedParentPkgHandle,
 								map[string]*model.Value{},
 								providedSCGContainerCallFiles,
 								providedScratchDirPath,
@@ -295,8 +295,8 @@ var _ = Context("Files", func() {
 									containerFilePath: "",
 								}
 
-								providedParentOpPkgHandle := new(pkg.FakeHandle)
-								providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+								providedParentPkgHandle := new(pkg.FakeHandle)
+								providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(tempFile, nil)
@@ -317,7 +317,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								_, actualErr := objectUnderTest.Interpret(
-									providedParentOpPkgHandle,
+									providedParentPkgHandle,
 									map[string]*model.Value{},
 									providedSCGContainerCallFiles,
 									"dummyScratchDirPath",
@@ -341,8 +341,8 @@ var _ = Context("Files", func() {
 									panic(err)
 								}
 
-								providedParentOpPkgHandle := new(pkg.FakeHandle)
-								providedParentOpPkgHandle.GetContentReturns(readSeekCloser, nil)
+								providedParentPkgHandle := new(pkg.FakeHandle)
+								providedParentPkgHandle.GetContentReturns(readSeekCloser, nil)
 
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(tempFile, nil)
@@ -360,7 +360,7 @@ var _ = Context("Files", func() {
 
 								/* act */
 								objectUnderTest.Interpret(
-									providedParentOpPkgHandle,
+									providedParentPkgHandle,
 									map[string]*model.Value{},
 									providedSCGContainerCallFiles,
 									"dummyScratchDirPath",
@@ -380,8 +380,8 @@ var _ = Context("Files", func() {
 										containerFilePath: "",
 									}
 
-									providedParentOpPkgHandle := new(pkg.FakeHandle)
-									providedParentOpPkgHandle.GetContentReturns(tempFile, nil)
+									providedParentPkgHandle := new(pkg.FakeHandle)
+									providedParentPkgHandle.GetContentReturns(tempFile, nil)
 
 									fakeOS := new(ios.Fake)
 									fakeOS.CreateReturns(tempFile, nil)
@@ -405,7 +405,7 @@ var _ = Context("Files", func() {
 
 									/* act */
 									_, actualErr := objectUnderTest.Interpret(
-										providedParentOpPkgHandle,
+										providedParentPkgHandle,
 										map[string]*model.Value{},
 										providedSCGContainerCallFiles,
 										"dummyScratchDirPath",

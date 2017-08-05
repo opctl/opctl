@@ -26,7 +26,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					"dummyValue",
 					nil,
-					"dummyParentOpPkgRef",
+					"dummyParentPkgRef",
 					map[string]*model.Value{},
 				)
 
@@ -49,7 +49,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						"",
 						&model.Param{},
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -73,7 +73,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						providedScope,
 					)
 
@@ -98,7 +98,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					providedValue,
 					providedParam,
-					"dummyParentOpPkgRef",
+					"dummyParentPkgRef",
 					providedScope,
 				)
 
@@ -125,7 +125,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -149,7 +149,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						providedValue,
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						providedScope,
 					)
 
@@ -177,7 +177,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					providedValue,
 					providedParam,
-					"dummyParentOpPkgRef",
+					"dummyParentPkgRef",
 					providedScope,
 				)
 
@@ -206,7 +206,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -223,14 +223,14 @@ var _ = Context("argInterpreter", func() {
 
 						providedParam := &model.Param{Dir: &model.DirParam{}}
 
-						providedParentOpPkgRef := "/dummyParentOpPkgRef"
+						providedParentPkgRef := "/dummyParentPkgRef"
 
 						fakeInterpolater := new(interpolater.Fake)
 
 						interpolatedValue := "dummyValue"
 						fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-						expectedValue := filepath.Join(providedParentOpPkgRef, interpolatedValue)
+						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
 
 						expectedResult := &model.Value{Dir: &expectedValue}
 
@@ -243,7 +243,7 @@ var _ = Context("argInterpreter", func() {
 							"dummyName",
 							providedValue,
 							providedParam,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -271,7 +271,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -300,7 +300,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -333,7 +333,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -350,14 +350,14 @@ var _ = Context("argInterpreter", func() {
 
 						providedParam := &model.Param{File: &model.FileParam{}}
 
-						providedParentOpPkgRef := "/dummyParentOpPkgRef"
+						providedParentPkgRef := "/dummyParentPkgRef"
 
 						fakeInterpolater := new(interpolater.Fake)
 
 						interpolatedValue := "dummyValue"
 						fakeInterpolater.InterpolateReturns(interpolatedValue)
 
-						expectedValue := filepath.Join(providedParentOpPkgRef, interpolatedValue)
+						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
 
 						expectedResult := &model.Value{File: &expectedValue}
 
@@ -370,7 +370,7 @@ var _ = Context("argInterpreter", func() {
 							"dummyName",
 							providedValue,
 							providedParam,
-							providedParentOpPkgRef,
+							providedParentPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -399,7 +399,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -428,7 +428,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 
@@ -459,7 +459,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						"dummyValue",
 						providedParam,
-						"dummyParentOpPkgRef",
+						"dummyParentPkgRef",
 						map[string]*model.Value{},
 					)
 

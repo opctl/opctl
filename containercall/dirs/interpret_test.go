@@ -52,7 +52,7 @@ var _ = Context("Files", func() {
 			rootFSPath := "/dummyRootFSPath"
 			providedContainerId := "dummyContainerId"
 			providedRootOpId := "dummyRootOpId"
-			providedParentOpPkgRef := new(pkg.FakeHandle)
+			providedParentPkgRef := new(pkg.FakeHandle)
 
 			providedScratchDirPath := filepath.Join(
 				rootFSPath,
@@ -81,7 +81,7 @@ var _ = Context("Files", func() {
 
 			/* act */
 			actualDCGContainerCallDirs, _ := objectUnderTest.Interpret(
-				providedParentOpPkgRef,
+				providedParentPkgRef,
 				map[string]*model.Value{},
 				providedSCGContainerCallDirs,
 				providedScratchDirPath,
