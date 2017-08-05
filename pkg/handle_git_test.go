@@ -87,19 +87,29 @@ var _ = Context("gitHandle", func() {
 				/* arrange */
 				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
 
-				fileInfo, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
+				dirStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1"))
+				if nil != err {
+					panic(err)
+				}
+
+				fileStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
 				if nil != err {
 					panic(err)
 				}
 
 				expectedContents := []*model.PkgContent{
 					{
-						Mode: fileInfo.Mode(),
+						Mode: fileStat.Mode(),
 						Path: "/dir1/file2.txt",
 						Size: 34,
 					},
 					{
-						Mode: fileInfo.Mode(),
+						Mode: dirStat.Mode(),
+						Path: "/dir1",
+						Size: dirStat.Size(),
+					},
+					{
+						Mode: fileStat.Mode(),
 						Path: "/file1.txt",
 						Size: 18,
 					},

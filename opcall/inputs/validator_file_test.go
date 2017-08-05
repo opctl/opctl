@@ -13,62 +13,29 @@ import (
 var _ = Context("Validate", func() {
 	Context("param.File not nil", func() {
 		Context("value.File nil", func() {
-			Context("param.File.Default nil", func() {
-				It("should return expected errors", func() {
+			It("should return expected errors", func() {
 
-					/* arrange */
-					providedValue := &model.Value{}
-					providedParam := &model.Param{
-						File: &model.FileParam{},
-					}
+				/* arrange */
+				providedValue := &model.Value{}
+				providedParam := &model.Param{
+					File: &model.FileParam{},
+				}
 
-					expectedErrors := []error{
-						errors.New("File required"),
-					}
+				expectedErrors := []error{
+					errors.New("file required"),
+				}
 
-					objectUnderTest := newValidator()
+				objectUnderTest := newValidator()
 
-					/* act */
-					actualErrors := objectUnderTest.Validate(
-						providedValue,
-						providedParam,
-					)
+				/* act */
+				actualErrors := objectUnderTest.Validate(
+					providedValue,
+					providedParam,
+				)
 
-					/* assert */
-					Expect(actualErrors).To(Equal(expectedErrors))
+				/* assert */
+				Expect(actualErrors).To(Equal(expectedErrors))
 
-				})
-			})
-			Context("param.File.Default not nil", func() {
-				It("should call fs.Stat w/ expected args", func() {
-
-					/* arrange */
-					providedValue := &model.Value{}
-					defaultFile := "defaultFile"
-					providedParam := &model.Param{
-						File: &model.FileParam{
-							Default: &defaultFile,
-						},
-					}
-
-					fakeOS := new(ios.Fake)
-					// error to trigger immediate return
-					fakeOS.StatReturns(nil, errors.New("dummyError"))
-
-					objectUnderTest := _validator{
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Validate(
-						providedValue,
-						providedParam,
-					)
-
-					/* assert */
-					Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedParam.File.Default))
-
-				})
 			})
 		})
 		Context("value.File isn't empty", func() {

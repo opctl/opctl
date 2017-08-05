@@ -13,63 +13,29 @@ import (
 var _ = Context("Validate", func() {
 	Context("param.Dir not nil", func() {
 		Context("value nil", func() {
-			Context("param.Dir.Default nil", func() {
-				It("should return expected errors", func() {
+			It("should return expected errors", func() {
 
-					/* arrange */
-					providedValue := &model.Value{}
-					providedParam := &model.Param{
-						Dir: &model.DirParam{},
-					}
+				/* arrange */
+				providedValue := &model.Value{}
+				providedParam := &model.Param{
+					Dir: &model.DirParam{},
+				}
 
-					expectedErrors := []error{
-						errors.New("Dir required"),
-					}
+				expectedErrors := []error{
+					errors.New("dir required"),
+				}
 
-					objectUnderTest := newValidator()
+				objectUnderTest := newValidator()
 
-					/* act */
-					actualErrors := objectUnderTest.Validate(
-						providedValue,
-						providedParam,
-					)
+				/* act */
+				actualErrors := objectUnderTest.Validate(
+					providedValue,
+					providedParam,
+				)
 
-					/* assert */
-					Expect(actualErrors).To(Equal(expectedErrors))
+				/* assert */
+				Expect(actualErrors).To(Equal(expectedErrors))
 
-				})
-			})
-			Context("param.Dir.Default not nil", func() {
-				It("should call fs.Stat w/ expected args", func() {
-
-					/* arrange */
-					providedValue := &model.Value{}
-
-					defaultValue := "defaultValue"
-					providedParam := &model.Param{
-						Dir: &model.DirParam{
-							Default: &defaultValue,
-						},
-					}
-
-					fakeOS := new(ios.Fake)
-					// error to trigger immediate return
-					fakeOS.StatReturns(nil, errors.New("dummyError"))
-
-					objectUnderTest := _validator{
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Validate(
-						providedValue,
-						providedParam,
-					)
-
-					/* assert */
-					Expect(fakeOS.StatArgsForCall(0)).To(Equal(*providedParam.Dir.Default))
-
-				})
 			})
 		})
 		Context("value not nil", func() {

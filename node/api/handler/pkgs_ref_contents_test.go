@@ -267,7 +267,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 					/* assert */
 					Expect(recorder.Code).To(Equal(http.StatusOK))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("application/json"))
+					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("application/json; charset=UTF-8"))
 					actualBody := strings.TrimSpace(recorder.Body.String())
 					Expect(actualBody).To(Equal(string(expectedBodyBytes)))
 				})

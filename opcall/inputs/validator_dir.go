@@ -3,23 +3,14 @@ package inputs
 import (
 	"errors"
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
 )
 
 // validateDir validates an value against a dir parameter
 func (this _validator) validateDir(
-	rawValue *string,
-	param *model.DirParam,
+	value *string,
 ) []error {
-
-	value := rawValue
-	if nil == value && nil != param.Default {
-		// apply default if value not set
-		value = param.Default
-	}
-
 	if nil == value {
-		return []error{errors.New("Dir required")}
+		return []error{errors.New("dir required")}
 	}
 
 	fileInfo, err := this.os.Stat(*value)

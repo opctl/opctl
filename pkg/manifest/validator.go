@@ -10,7 +10,7 @@ import (
 )
 
 type Validator interface {
-	// Validate validates the pkg manifest at path
+	// Validate validates the pkg manifest
 	Validate(
 		manifestBytes []byte,
 	) []error

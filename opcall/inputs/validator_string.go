@@ -11,38 +11,34 @@ import (
 
 // validateString validates an value against a string parameter
 func (this _validator) validateString(
-	rawValue *string,
-	param *model.StringParam,
-) (errs []error) {
-	errs = []error{}
-
-	value := rawValue
-	if nil == value && nil != param.Default {
-		// apply default if value not set
-		value = param.Default
-	}
-
+	value *string,
+	constraints *model.StringConstraints,
+) []error {
 	if nil == value {
-		errs = append(errs, errors.New("String required"))
-		return
+		return []error{errors.New("string required")}
 	}
 
 	// guard no constraints
-	if paramConstraints := param.Constraints; nil != paramConstraints {
+	if nil != constraints {
+		errs := []error{}
 
 		// perform validations supported by gojsonschema
-		constraintsJsonBytes, err := json.Marshal(paramConstraints)
+		constraintsJsonBytes, err := json.Marshal(constraints)
 		if err != nil {
 			// handle syntax errors specially
-			errs = append(errs, fmt.Errorf("Error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()))
-			return
+			return append(
+				errs,
+				fmt.Errorf("Error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()),
+			)
 		}
 
 		valueJsonBytes, err := json.Marshal(value)
 		if err != nil {
 			// handle syntax errors specially
-			errs = append(errs, fmt.Errorf("Error validating parameter. Details: %v", err.Error()))
-			return
+			return append(
+				errs,
+				fmt.Errorf("Error validating parameter. Details: %v", err.Error()),
+			)
 		}
 
 		result, err := gojsonschema.Validate(
@@ -51,8 +47,10 @@ func (this _validator) validateString(
 		)
 		if err != nil {
 			// handle syntax errors specially
-			errs = append(errs, fmt.Errorf("Error validating param. Details: %v", err.Error()))
-			return
+			return append(
+				errs,
+				fmt.Errorf("Error validating param. Details: %v", err.Error()),
+			)
 		}
 
 		for _, errString := range result.Errors() {
@@ -60,7 +58,8 @@ func (this _validator) validateString(
 			errs = append(errs, errors.New(strings.TrimPrefix(errString.Description(), "(root) ")))
 		}
 
+		return errs
 	}
 
-	return
+	return []error{}
 }
