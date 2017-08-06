@@ -14,18 +14,65 @@ var _ = Context("cliColorer", func() {
 		})
 	})
 	Context("Disable", func() {
-		It("should cause calls to Attention() to not color string", func() {
-			/* arrange */
-			objectUnderTest := New()
-			providedFormatString := "%v"
-			providedValue1 := "dummyString"
-			expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+		Context("Attention", func() {
+			It("should cause calls to Attention() to not color string", func() {
+				/* arrange */
+				objectUnderTest := New()
+				providedFormatString := "%v"
+				providedValue1 := "dummyString"
+				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
 
-			/* act */
-			objectUnderTest.Disable()
+				/* act */
+				objectUnderTest.Disable()
 
-			/* assert */
-			Expect(objectUnderTest.Attention(providedFormatString, providedValue1)).To(Equal(expectedString))
+				/* assert */
+				Expect(objectUnderTest.Attention(providedFormatString, providedValue1)).To(Equal(expectedString))
+			})
+		})
+		Context("Error", func() {
+			It("should cause calls to Error() to not color string", func() {
+				/* arrange */
+				objectUnderTest := New()
+				providedFormatString := "%v"
+				providedValue1 := "dummyString"
+				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+
+				/* act */
+				objectUnderTest.Disable()
+
+				/* assert */
+				Expect(objectUnderTest.Error(providedFormatString, providedValue1)).To(Equal(expectedString))
+			})
+		})
+		Context("Info", func() {
+			It("should cause calls to Info() to not color string", func() {
+				/* arrange */
+				objectUnderTest := New()
+				providedFormatString := "%v"
+				providedValue1 := "dummyString"
+				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+
+				/* act */
+				objectUnderTest.Disable()
+
+				/* assert */
+				Expect(objectUnderTest.Info(providedFormatString, providedValue1)).To(Equal(expectedString))
+			})
+		})
+		Context("Success", func() {
+			It("should cause calls to Success() to not color string", func() {
+				/* arrange */
+				objectUnderTest := New()
+				providedFormatString := "%v"
+				providedValue1 := "dummyString"
+				expectedString := fmt.Sprintf(providedFormatString, providedValue1)
+
+				/* act */
+				objectUnderTest.Disable()
+
+				/* assert */
+				Expect(objectUnderTest.Success(providedFormatString, providedValue1)).To(Equal(expectedString))
+			})
 		})
 	})
 	Context("Attention", func() {

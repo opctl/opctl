@@ -36,50 +36,52 @@ type CliColorer interface {
 }
 
 func New() CliColorer {
-	color.NoColor = false
 	return &cliColorer{
-		attentionCliColorer: color.New(color.FgHiYellow, color.Bold).SprintfFunc(),
-		errorCliColorer:     color.New(color.FgHiRed, color.Bold).SprintfFunc(),
-		infoCliColorer:      color.New(color.FgHiCyan, color.Bold).SprintfFunc(),
-		successCliColorer:   color.New(color.FgHiGreen, color.Bold).SprintfFunc(),
+		attentionCliColorer: color.New(color.FgHiYellow, color.Bold),
+		errorCliColorer:     color.New(color.FgHiRed, color.Bold),
+		infoCliColorer:      color.New(color.FgHiCyan, color.Bold),
+		successCliColorer:   color.New(color.FgHiGreen, color.Bold),
 	}
 }
 
 type cliColorer struct {
-	attentionCliColorer func(format string, a ...interface{}) string
-	errorCliColorer     func(format string, a ...interface{}) string
-	infoCliColorer      func(format string, a ...interface{}) string
-	successCliColorer   func(format string, a ...interface{}) string
+	attentionCliColorer *color.Color
+	errorCliColorer     *color.Color
+	infoCliColorer      *color.Color
+	successCliColorer   *color.Color
 }
 
 func (this cliColorer) Disable() {
-	color.NoColor = true
+	this.attentionCliColorer.DisableColor()
+	this.errorCliColorer.DisableColor()
+	this.infoCliColorer.DisableColor()
+	this.successCliColorer.DisableColor()
 }
 
 func (this cliColorer) Attention(
 	format string,
 	values ...interface{},
 ) string {
-	return this.attentionCliColorer(format, values...)
+	return this.attentionCliColorer.SprintfFunc()(format, values...)
 }
 
 func (this cliColorer) Error(
 	format string,
 	values ...interface{},
 ) string {
-	return this.errorCliColorer(format, values...)
+	return this.errorCliColorer.SprintfFunc()(format, values...)
 }
 
 func (this cliColorer) Info(
 	format string,
 	values ...interface{},
 ) string {
-	return this.infoCliColorer(format, values...)
+	return this.infoCliColorer.SprintfFunc()(format, values...)
 }
 
 func (this cliColorer) Success(
 	format string,
 	values ...interface{},
 ) string {
-	return this.successCliColorer(format, values...)
+	return this.successCliColorer.SprintfFunc()(format, values...)
 }
