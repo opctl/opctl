@@ -73,6 +73,7 @@ func (this _CLIParamSatisfier) Satisfy(
 			switch {
 			case nil == rawArg:
 				// handle nil (returned by inputSourcer.Source for static defaults)
+				break paramLoop
 			case nil != param.Dir:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {

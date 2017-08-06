@@ -5,8 +5,8 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"os"
 	"path/filepath"
-  "os"
 )
 
 func newFSHandle(
@@ -60,7 +60,7 @@ func (lh fsHandle) rListContents(
 	var contents []*model.PkgContent
 	for _, contentFileInfo := range childFileInfos {
 
-    absContentPath := filepath.Join(path, contentFileInfo.Name())
+		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
@@ -69,20 +69,20 @@ func (lh fsHandle) rListContents(
 				return nil, err
 			}
 			contents = append(contents, childContents...)
-		} else {
-      relContentPath, err := filepath.Rel(lh.path, absContentPath)
-      if nil != err {
-        return nil, err
-      }
-			contents = append(
-				contents,
-				&model.PkgContent{
-					Mode: contentFileInfo.Mode(),
-          Path: filepath.Join(string(os.PathSeparator), relContentPath),
-					Size: contentFileInfo.Size(),
-				},
-			)
 		}
+
+		relContentPath, err := filepath.Rel(lh.path, absContentPath)
+		if nil != err {
+			return nil, err
+		}
+		contents = append(
+			contents,
+			&model.PkgContent{
+				Mode: contentFileInfo.Mode(),
+				Path: filepath.Join(string(os.PathSeparator), relContentPath),
+				Size: contentFileInfo.Size(),
+			},
+		)
 
 	}
 

@@ -17,7 +17,7 @@ type argInterpreter interface {
 		name,
 		value string,
 		param *model.Param,
-		parentOpPkgRef string,
+		parentPkgRef string,
 		scope map[string]*model.Value,
 	) (*model.Value, error)
 }
@@ -36,7 +36,7 @@ func (ai _argInterpreter) Interpret(
 	name,
 	value string,
 	param *model.Param,
-	parentOpPkgRef string,
+	parentPkgRef string,
 	scope map[string]*model.Value,
 ) (*model.Value, error) {
 
@@ -68,7 +68,7 @@ func (ai _argInterpreter) Interpret(
 		case nil != param.Dir:
 			if strings.HasPrefix(value, "/") {
 				// bound to pkg dir
-				interpolatedVal = filepath.Join(parentOpPkgRef, interpolatedVal)
+				interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
 			}
 			dcgValue = &model.Value{Dir: ai.rootPath(interpolatedVal)}
 		case nil != param.Number:
@@ -80,7 +80,7 @@ func (ai _argInterpreter) Interpret(
 		case nil != param.File:
 			if strings.HasPrefix(value, "/") {
 				// bound to pkg file
-				interpolatedVal = filepath.Join(parentOpPkgRef, interpolatedVal)
+				interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
 			}
 			dcgValue = &model.Value{File: ai.rootPath(interpolatedVal)}
 		case nil != param.Socket:

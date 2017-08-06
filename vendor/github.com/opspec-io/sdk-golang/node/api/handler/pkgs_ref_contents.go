@@ -35,9 +35,10 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
+	httpResp.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	if err := hdlr.json.NewEncoder(httpResp).Encode(pkgContentsList); nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	httpResp.Header().Set("Content-Type", "application/json")
 }
