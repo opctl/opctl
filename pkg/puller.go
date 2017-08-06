@@ -7,6 +7,7 @@ import (
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"golang.org/x/sync/singleflight"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -14,6 +15,9 @@ import (
 	"os"
 	"path/filepath"
 )
+
+// pullerSingleFlightGroup is used to ensures pulls don't race across puller intances
+var pullerSingleFlightGroup singleflight.Group
 
 type puller interface {
 	// Pull pulls 'pkgRef' to 'path'
@@ -51,44 +55,55 @@ func (this _puller) Pull(
 		return err
 	}
 
-	cloneOptions := &git.CloneOptions{
-		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
-		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
-		// @TODO re-enable once https://github.com/src-d/go-git/issues/529 released
-		// Depth:         1,
-		Progress: os.Stdout,
-	}
-
-	if nil != authOpts {
-		cloneOptions.Auth = http.NewBasicAuth(authOpts.Username, authOpts.Password)
-	}
-
 	pkgPath := parsedPkgRef.ToPath(path)
 
-	if _, err := this.git.PlainClone(
-		pkgPath,
-		false,
-		cloneOptions,
-	); nil != err {
-		switch err.Error() {
-		case transport.ErrAuthenticationRequired.Error():
-			// clone failed; cleanup remnants
-			this.os.RemoveAll(pkgPath)
-			return ErrAuthenticationFailed{}
-		case transport.ErrAuthorizationFailed.Error():
-			// clone failed; cleanup remnants
-			this.os.RemoveAll(pkgPath)
-			return ErrAuthenticationFailed{}
-		case git.ErrRepositoryAlreadyExists.Error():
-			return nil
-		// NoOp on repo already exists
-		default:
-			// clone failed; cleanup remnants
-			this.os.RemoveAll(pkgPath)
-			return err
+	// ensure pull done only once
+	_, err, _ = pullerSingleFlightGroup.Do(pkgPath, func() (interface{}, error) {
+		cloneOptions := &git.CloneOptions{
+			URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
+			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
+			// @TODO re-enable once https://github.com/src-d/go-git/issues/529 released
+			// Depth:         1,
+			Progress: os.Stdout,
 		}
+
+		if nil != authOpts {
+			cloneOptions.Auth = http.NewBasicAuth(authOpts.Username, authOpts.Password)
+		}
+
+		if _, err := this.git.PlainClone(
+			pkgPath,
+			false,
+			cloneOptions,
+		); nil != err {
+			switch err.Error() {
+			case transport.ErrAuthenticationRequired.Error():
+				// clone failed; cleanup remnants
+				this.os.RemoveAll(pkgPath)
+				return nil, ErrAuthenticationFailed{}
+			case transport.ErrAuthorizationFailed.Error():
+				// clone failed; cleanup remnants
+				this.os.RemoveAll(pkgPath)
+				return nil, ErrAuthenticationFailed{}
+			case git.ErrRepositoryAlreadyExists.Error():
+				return nil, nil
+				// NoOp on repo already exists
+			default:
+				// clone failed; cleanup remnants
+				this.os.RemoveAll(pkgPath)
+				return nil, err
+			}
+		}
+
+		// remove pkg '.git' sub dir
+		return nil, this.os.RemoveAll(filepath.Join(pkgPath, ".git"))
+	})
+
+	// if err, don't track (allows retrying)
+	if nil != err {
+		pullerSingleFlightGroup.Forget(pkgPath)
 	}
 
-	// remove pkg '.git' sub dir
-	return this.os.RemoveAll(filepath.Join(pkgPath, ".git"))
+	return err
+
 }
