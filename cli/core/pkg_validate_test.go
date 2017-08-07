@@ -12,201 +12,124 @@ import (
 
 var _ = Context("pkgValidate", func() {
 	Context("Execute", func() {
-		Context("ios.Getwd errors", func() {
-			It("should call exiter w/ expected args", func() {
-				/* arrange */
-				fakeIOS := new(ios.Fake)
-				expectedError := errors.New("dummyError")
-				fakeIOS.GetwdReturns("", expectedError)
+		It("should call pkgResolver.Resolve w/ expected args", func() {
+			/* arrange */
+			providedPkgRef := "dummyPkgRef"
 
-				fakeCliExiter := new(cliexiter.Fake)
+			fakePkgResolver := new(fakePkgResolver)
+			fakePkgResolver.ResolveReturns(nil)
 
-				objectUnderTest := _core{
-					pkg:       new(pkg.Fake),
-					cliExiter: fakeCliExiter,
-					os:        fakeIOS,
-				}
+			fakePkg := new(pkg.Fake)
+			// error to trigger immediate return
+			fakePkg.ValidateReturns([]error{errors.New("dummyError")})
 
-				/* act */
-				objectUnderTest.PkgValidate("dummyPkgRef")
+			objectUnderTest := _core{
+				pkgResolver: fakePkgResolver,
+				pkg:         fakePkg,
+				cliExiter:   new(cliexiter.Fake),
+				os:          new(ios.Fake),
+			}
 
-				/* assert */
-				Expect(fakeCliExiter.ExitArgsForCall(0)).
-					To(Equal(cliexiter.ExitReq{Message: expectedError.Error(), Code: 1}))
-			})
+			/* act */
+			objectUnderTest.PkgValidate(providedPkgRef)
+
+			/* assert */
+			actualPkgRef, actualPullCreds := fakePkgResolver.ResolveArgsForCall(0)
+			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPullCreds).To(BeNil())
 		})
-		Context("ios.Getwd doesn't error", func() {
-			It("should call pkg.NewFSProvider w/ expected args", func() {
+		It("should call pkg.Validate w/ expected args", func() {
+			/* arrange */
+			fakePkg := new(pkg.Fake)
+
+			fakePkgResolver := new(fakePkgResolver)
+
+			fakePkgHandle := new(pkg.FakeHandle)
+			fakePkgResolver.ResolveReturns(fakePkgHandle)
+
+			objectUnderTest := _core{
+				pkg:         fakePkg,
+				pkgResolver: fakePkgResolver,
+				cliExiter:   new(cliexiter.Fake),
+				os:          new(ios.Fake),
+			}
+
+			/* act */
+			objectUnderTest.PkgValidate("dummyPkgRef")
+
+			/* assert */
+			Expect(fakePkg.ValidateArgsForCall(0)).To(Equal(fakePkgHandle))
+		})
+		Context("pkg.Validate returns errors", func() {
+			It("should call cliExiter.Exit w/ expected args", func() {
 				/* arrange */
 				fakePkg := new(pkg.Fake)
-				fakeFSProvider := new(pkg.FakeProvider)
-				fakePkg.NewFSProviderReturns(fakeFSProvider)
 
-				// error to trigger immediate return
-				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
+				fakePkgResolver := new(fakePkgResolver)
 
-				fakeIOS := new(ios.Fake)
-				workDir := "dummyWorkDir"
-				fakeIOS.GetwdReturns(workDir, nil)
+				fakePkgHandle := new(pkg.FakeHandle)
+				fakePkgResolver.ResolveReturns(fakePkgHandle)
 
-				objectUnderTest := _core{
-					pkg:       fakePkg,
-					cliExiter: new(cliexiter.Fake),
-					os:        fakeIOS,
-				}
+				errsReturnedFromValidate := []error{errors.New("dummyError")}
+				fakePkg.ValidateReturns(errsReturnedFromValidate)
 
-				/* act */
-				objectUnderTest.PkgValidate("dummyPkgRef")
-
-				/* assert */
-				Expect(fakePkg.NewFSProviderArgsForCall(0)).To(ConsistOf(workDir))
-			})
-			It("should call pkg.Resolve w/ expected args", func() {
-				/* arrange */
-				providedPkgRef := "dummyPkgRef"
-
-				fakePkg := new(pkg.Fake)
-				fakeFSProvider := new(pkg.FakeProvider)
-				fakePkg.NewFSProviderReturns(fakeFSProvider)
-
-				// error to trigger immediate return
-				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := _core{
-					pkg:       fakePkg,
-					cliExiter: new(cliexiter.Fake),
-					os:        new(ios.Fake),
-				}
-
-				/* act */
-				objectUnderTest.PkgValidate(providedPkgRef)
-
-				/* assert */
-				actualPkgRef, actualProviders := fakePkg.ResolveArgsForCall(0)
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
-				Expect(actualProviders).To(ConsistOf(fakeFSProvider))
-			})
-			Context("pkg.Resolve errs", func() {
-
-				It("should call exiter w/ expected args", func() {
-					/* arrange */
-					providedPkgRef := "dummyPkgRef"
-					wdReturnedFromIOS := "dummyWorkDir"
-
-					fakeIOS := new(ios.Fake)
-					fakeIOS.GetwdReturns(wdReturnedFromIOS, nil)
-
-					resolveError := errors.New("dummyError")
-					expectedMsg := fmt.Sprintf(
-						"Unable to resolve package '%v' from '%v'; error was: %v",
-						providedPkgRef,
-						wdReturnedFromIOS,
-						resolveError.Error(),
-					)
-
-					fakePkg := new(pkg.Fake)
-					fakePkg.ResolveReturns(nil, resolveError)
-
-					fakeCliExiter := new(cliexiter.Fake)
-
-					objectUnderTest := _core{
-						pkg:       fakePkg,
-						cliExiter: fakeCliExiter,
-						os:        fakeIOS,
-					}
-
-					/* act */
-					objectUnderTest.PkgValidate(providedPkgRef)
-
-					/* assert */
-					Expect(fakeCliExiter.ExitArgsForCall(0)).
-						To(Equal(cliexiter.ExitReq{Message: expectedMsg, Code: 1}))
-				})
-			})
-			Context("pkg.Resolve doesn't error", func() {
-				It("should call pkg.Validate w/ expected args", func() {
-					/* arrange */
-
-					fakePkgHandle := new(pkg.FakeHandle)
-
-					fakePkg := new(pkg.Fake)
-					fakePkg.ResolveReturns(fakePkgHandle, nil)
-
-					objectUnderTest := _core{
-						pkg:       fakePkg,
-						cliExiter: new(cliexiter.Fake),
-						os:        new(ios.Fake),
-					}
-
-					/* act */
-					objectUnderTest.PkgValidate("dummyPkgRef")
-
-					/* assert */
-					Expect(fakePkg.ValidateArgsForCall(0)).To(Equal(fakePkgHandle))
-				})
-				Context("pkg.Validate returns errors", func() {
-					It("should call cliExiter.Exit w/ expected args", func() {
-						/* arrange */
-						fakePkg := new(pkg.Fake)
-
-						errsReturnedFromValidate := []error{errors.New("dummyError")}
-						fakePkg.ValidateReturns(errsReturnedFromValidate)
-
-						expectedExitReq := cliexiter.ExitReq{
-							Message: fmt.Sprintf(`
+				expectedExitReq := cliexiter.ExitReq{
+					Message: fmt.Sprintf(`
 -
   Error(s):
     - %v
 -`, errsReturnedFromValidate[0]),
-							Code: 1,
-						}
+					Code: 1,
+				}
 
-						fakeCliExiter := new(cliexiter.Fake)
+				fakeCliExiter := new(cliexiter.Fake)
 
-						objectUnderTest := _core{
-							pkg:       fakePkg,
-							cliExiter: fakeCliExiter,
-							os:        new(ios.Fake),
-						}
+				objectUnderTest := _core{
+					pkg:         fakePkg,
+					pkgResolver: fakePkgResolver,
+					cliExiter:   fakeCliExiter,
+					os:          new(ios.Fake),
+				}
 
-						/* act */
-						objectUnderTest.PkgValidate("dummyPkgRef")
+				/* act */
+				objectUnderTest.PkgValidate("dummyPkgRef")
 
-						/* assert */
+				/* assert */
 
-						Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
-					})
-				})
-				Context("pkg.Validate doesn't return errors", func() {
-					It("should call cliExiter.Exit w/ expected args", func() {
-						/* arrange */
-						fakePkgHandle := new(pkg.FakeHandle)
-						pkgRef := "dummyPkgRef"
-						fakePkgHandle.RefReturns(pkgRef)
+				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
+			})
+		})
+		Context("pkg.Validate doesn't return errors", func() {
+			It("should call cliExiter.Exit w/ expected args", func() {
+				/* arrange */
+				fakePkg := new(pkg.Fake)
 
-						fakePkg := new(pkg.Fake)
-						fakePkg.ResolveReturns(fakePkgHandle, nil)
+				fakePkgHandle := new(pkg.FakeHandle)
+				pkgRef := "dummyPkgRef"
+				fakePkgHandle.RefReturns(pkgRef)
 
-						expectedExitReq := cliexiter.ExitReq{
-							Message: fmt.Sprintf("%v is valid", pkgRef),
-						}
+				fakePkgResolver := new(fakePkgResolver)
+				fakePkgResolver.ResolveReturns(fakePkgHandle)
 
-						fakeCliExiter := new(cliexiter.Fake)
+				expectedExitReq := cliexiter.ExitReq{
+					Message: fmt.Sprintf("%v is valid", pkgRef),
+				}
 
-						objectUnderTest := _core{
-							pkg:       fakePkg,
-							cliExiter: fakeCliExiter,
-							os:        new(ios.Fake),
-						}
+				fakeCliExiter := new(cliexiter.Fake)
 
-						/* act */
-						objectUnderTest.PkgValidate("dummyPkgRef")
+				objectUnderTest := _core{
+					pkg:         fakePkg,
+					pkgResolver: fakePkgResolver,
+					cliExiter:   fakeCliExiter,
+					os:          new(ios.Fake),
+				}
 
-						/* assert */
+				/* act */
+				objectUnderTest.PkgValidate("dummyPkgRef")
 
-						Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
-					})
-				})
+				/* assert */
+
+				Expect(fakeCliExiter.ExitArgsForCall(0)).To(Equal(expectedExitReq))
 			})
 		})
 	})
