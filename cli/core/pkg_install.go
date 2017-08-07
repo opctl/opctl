@@ -3,9 +3,7 @@ package core
 import (
 	"context"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 func (this _core) PkgInstall(
@@ -15,72 +13,16 @@ func (this _core) PkgInstall(
 	password string,
 ) {
 
-	for {
-		pkgHandle, err := this.pkg.Resolve(
-			pkgRef,
-			this.pkg.NewNodeProvider(
-				this.nodeURL,
-				&model.PullCreds{
-					Username: username,
-					Password: password,
-				},
-			),
-		)
+	pkgHandle := this.pkgResolver.Resolve(
+		pkgRef,
+		&model.PullCreds{
+			Username: username,
+			Password: password,
+		},
+	)
 
-		_, isAuthError := err.(pkg.ErrAuthenticationFailed)
-
-		switch {
-		case nil == err:
-			if err := this.pkg.Install(context.TODO(), path, pkgHandle); nil != err {
-				this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-			}
-			return
-		case isAuthError:
-			// auth errors can be fixed by supplying correct creds so don't give up; prompt
-			argMap := this.cliParamSatisfier.Satisfy(
-				cliparamsatisfier.NewInputSourcer(
-					this.cliParamSatisfier.NewCliPromptInputSrc(credsPromptInputs),
-				),
-				credsPromptInputs,
-			)
-
-			// save providedArgs & re-attempt
-			username = *(argMap[usernameInputName].String)
-			password = *(argMap[passwordInputName].String)
-			continue
-		default:
-			// uncorrectable error.. give up
-			this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-			return // support fake exiter
-		}
-
+	if err := this.pkg.Install(context.TODO(), path, pkgHandle); nil != err {
+		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 	}
 
 }
-
-const (
-	usernameInputName = "username"
-	passwordInputName = "password"
-)
-
-var (
-	credsPromptInputs = map[string]*model.Param{
-		usernameInputName: {
-			String: &model.StringParam{
-				Description: "username used to auth w/ the pkg source",
-				Constraints: &model.StringConstraints{
-					MinLength: 1,
-				},
-			},
-		},
-		passwordInputName: {
-			String: &model.StringParam{
-				Description: "password used to auth w/ the pkg source",
-				Constraints: &model.StringConstraints{
-					MinLength: 1,
-				},
-				IsSecret: true,
-			},
-		},
-	}
-)

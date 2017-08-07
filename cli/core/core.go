@@ -72,6 +72,7 @@ func New(
 
 	cliOutput := clioutput.New(cliColorer, os.Stderr, os.Stdout)
 	cliExiter := cliexiter.New(cliOutput, _os)
+	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
 
 	opspecNodeURL, err := url.Parse("http://localhost:42224")
 	if nil != err {
@@ -90,12 +91,12 @@ func New(
 	return &_core{
 		opspecNodeAPIClient: opspecNodeAPIClient,
 		pkg:                 pkg.New(),
+		pkgResolver:         newPkgResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
 		cliColorer:          cliColorer,
 		cliExiter:           cliExiter,
 		cliOutput:           cliOutput,
-		cliParamSatisfier:   cliparamsatisfier.New(cliExiter, cliOutput),
+		cliParamSatisfier:   cliParamSatisfier,
 		nodeProvider:        local.New(),
-		nodeURL:             *opspecNodeURL,
 		updater:             updater.New(),
 		os:                  _os,
 		writer:              os.Stdout,
@@ -107,12 +108,12 @@ func New(
 type _core struct {
 	opspecNodeAPIClient client.Client
 	pkg                 pkg.Pkg
+	pkgResolver         pkgResolver
 	cliColorer          clicolorer.CliColorer
 	cliExiter           cliexiter.CliExiter
 	cliOutput           clioutput.CliOutput
 	cliParamSatisfier   cliparamsatisfier.CLIParamSatisfier
 	nodeProvider        nodeprovider.NodeProvider
-	nodeURL             url.URL
 	updater             updater.Updater
 	os                  ios.IOS
 	writer              io.Writer

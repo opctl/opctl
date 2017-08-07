@@ -9,22 +9,10 @@ import (
 func (this _core) PkgValidate(
 	pkgRef string,
 ) {
-	cwd, err := this.os.Getwd()
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
-
-	pkgHandle, err := this.pkg.Resolve(
+	pkgHandle := this.pkgResolver.Resolve(
 		pkgRef,
-		this.pkg.NewFSProvider(cwd),
+		nil,
 	)
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{
-			Message: fmt.Sprintf("Unable to resolve package '%v' from '%v'; error was: %v", pkgRef, cwd, err),
-			Code:    1})
-		return // support fake exiter
-	}
 
 	errs := this.pkg.Validate(pkgHandle)
 	if len(errs) > 0 {
