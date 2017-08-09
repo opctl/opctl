@@ -1,4 +1,5 @@
-name: deploy-website
+description: deploys the website
+name: website/deploy
 inputs:
   srcDir:
     dir:

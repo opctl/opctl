@@ -1,5 +1,5 @@
-description: serves the website locally
-name: serve-website
+description: serves the website locally on port 80
+name: website/serve
 inputs:
   srcDir:
     dir:
@@ -7,7 +7,10 @@ inputs:
       description: directory containing the projects source code
 run:
   serial:
-    - op: { ref: compile-website, inputs: { srcDir }, outputs: { srcDir }}
+    - op:
+        pkg: { ref: compile-website }
+        inputs: { srcDir }
+        outputs: { srcDir }
     - container:
         cmd:
           - sh

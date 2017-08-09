@@ -1,1 +1,1 @@
-cli/ contains opctl CLI implementation
+opctl CLI implementation
