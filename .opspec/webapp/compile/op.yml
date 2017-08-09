@@ -13,13 +13,13 @@ run:
           - |
             echo "installing deps"
             npm install -q
-        image: { ref: 'node:8.1.0-alpine' }
+        image: { ref: 'node:7.10.1-alpine' }
         dirs:
           /src: src
         workDir: /src
     - container:
         cmd: [ npm, run, build ]
-        image: { ref: 'node:8.1.0-alpine' }
+        image: { ref: 'node:7.10.1-alpine' }
         dirs:
           /src: src
         workDir: /src
