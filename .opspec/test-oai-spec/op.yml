@@ -12,10 +12,10 @@ run:
       - -ce
       - |
         echo "installing deps"
-        npm install swagger-cli -g --quiet
+        npm install swagger2openapi -g --quiet
 
         echo "testing OpenAPI specs"
-        swagger validate node-api.spec.yml
+        swagger2openapi -y node-api.spec.yml
     dirs:
       /src: srcDir
     image: { ref: 'node:7.7' }

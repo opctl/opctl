@@ -1,12 +1,8 @@
-swagger: '2.0'
+openapi: 3.0.0
+servers: []
 info:
-  version: '0.1.5'
+  version: 0.1.5
   title: Node API
-consumes:
-  - application/json
-produces:
-  - application/json
-  - text/plain
 paths:
   /events/stream:
     get:
@@ -23,35 +19,51 @@ paths:
             |--|--|--|
             |rootOpIds|array of strings|allows filtering events to those w/ rootOpId matching one of those provided|
             |since|datetime|allows filtering events to those occurring on/after the provided datetime|
-
           required: false
-          type: string
-          format: json
-      tags: [ events ]
+          schema:
+            type: string
+            format: json
+      tags:
+        - events
       responses:
         '101':
           description: HTTP/1.1 ["Switching Protocols" response status code](https://tools.ietf.org/html/rfc7231#section-6.2.2)
           headers:
             Upgrade:
-              type: string
-              enum:
-                - websocket
+              schema:
+                type: string
+                enum:
+                  - websocket
             Connection:
-              type: string
-              enum:
-                - Upgrade
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Event'
+              schema:
+                type: string
+                enum:
+                  - Upgrade
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
         '400':
           description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
-          schema:
-            type: string
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /liveness:
     get:
       summary: Get liveness of node
-      tags: [ liveness ]
+      tags:
+        - liveness
       responses:
         '200':
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
@@ -60,368 +72,556 @@ paths:
   /ops/starts:
     post:
       summary: Starts an op
-      tags: [ ops ]
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            required: [ pkg ]
-            properties:
-              args:
-                type: object
-                # @TODO: use patternProperties if/when OpenAPI spec supports it
-                description: arguments passed to the op to satisfy inputs
-                # @TODO: use patternProperties if/when OpenAPI spec supports it
-                additionalProperties:
-                  $ref: '#/definitions/Value'
-              pkg:
-                required: [ ref ]
-                properties:
-                  ref:
-                    type: string
-                    format: uri-reference
-                    description: reference to a pkg
-                  pullCreds:
-                    description: credentials used during authentication with the source of the package
-                    required: [ username, password ]
-                    properties:
-                      username:
-                        type: string
-                      password:
-                        type: string
+      tags:
+        - ops
       responses:
         '201':
           description: HTTP/1.1 ["Created" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.2)
-          schema:
-            description: The id of the [started] op
-            type: string
+          content:
+            application/json:
+              schema:
+                description: 'The id of the [started] op'
+                type: string
+            text/plain:
+              schema:
+                description: 'The id of the [started] op'
+                type: string
         '400':
           description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
-          schema:
-            type: string
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
         '500':
           description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
-          schema:
-            type: string
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - pkg
+              properties:
+                args:
+                  type: object
+                  description: arguments passed to the op to satisfy inputs
+                  additionalProperties:
+                    $ref: '#/components/schemas/Value'
+                pkg:
+                  required:
+                    - ref
+                  properties:
+                    ref:
+                      type: string
+                      format: uri-reference
+                      description: reference to a pkg
+                    pullCreds:
+                      description: credentials used during authentication with the source of the package
+                      required:
+                        - username
+                        - password
+                      properties:
+                        username:
+                          type: string
+                        password:
+                          type: string
+                      type: object
+                  type: object
+              type: object
+        required: true
   /ops/kills:
     post:
       summary: Kills an op
-      tags: [ ops ]
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            required: [ opRunId ]
-            properties:
-              opRunId:
-                type: string
+      tags:
+        - ops
       responses:
         '201':
           description: HTTP/1.1 ["Created" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.2)
         '400':
-          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
-          schema:
-            type: string
+          description: >-
+            HTTP/1.1 ["Bad Request" response status
+            code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
         '500':
           description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
-          schema:
-            type: string
-  /pkgs/{ref}/contents:
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - opRunId
+              properties:
+                opRunId:
+                  type: string
+              type: object
+        required: true
+  '/pkgs/{ref}/contents':
     get:
       summary: Lists package contents
-      tags: [ pkgs ]
-      produces:
-        - application/json
+      tags:
+        - pkgs
       parameters:
         - name: ref
           in: path
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
-          schema:
-            properties:
-              path:
-                type: string
-              size:
-                type: integer
           headers:
             Content-Length:
               description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              type: integer
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                properties:
+                  path:
+                    type: string
+                  size:
+                    type: integer
+                type: object
+            text/plain:
+              schema:
+                properties:
+                  path:
+                    type: string
+                  size:
+                    type: integer
+                type: object
         '400':
           description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
-          schema:
-            type: string
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
-          schema:
-            type: string
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
         '500':
           description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
-          schema:
-            type: string
-  /pkgs/{ref}/contents/{path}:
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+  '/pkgs/{ref}/contents/{path}':
     get:
       summary: Gets pkg content at path
-      tags: [ pkgs ]
-      produces:
-        - application/octet-stream
-        - multipart/byteranges
-        - text/plain
+      tags:
+        - pkgs
       parameters:
         - name: ref
           in: path
           required: true
-          type: string
+          schema:
+            type: string
         - name: path
           in: path
           required: true
-          type: string
+          schema:
+            type: string
         - name: Range
           description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
           in: header
           required: false
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
-          schema:
-            type: file
           headers:
             Accept-Ranges:
               description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
-              type: string
-              enum:
-                - bytes
+              schema:
+                type: string
+                enum:
+                  - bytes
             Content-Length:
               description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              type: integer
+              schema:
+                type: integer
+          content:
+            application/octet-stream: {}
+            multipart/byteranges: {}
+            text/plain: {}
+            application/json: {}
         '206':
           description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
-          schema:
-            type: string
           headers:
             Content-Length:
               description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              type: integer
+              schema:
+                type: integer
             Content-Range:
               description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
-              type: string
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
-          schema:
-            type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '416':
           description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
-          schema:
-            type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '500':
           description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
-          schema:
-            type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
     head:
       summary: Gets pkg content at path
-      tags: [ pkgs ]
-      produces:
-        - application/octet-stream
-        - multipart/byteranges
-        - text/plain
+      tags:
+        - pkgs
       parameters:
         - name: ref
           in: path
           required: true
-          type: string
+          schema:
+            type: string
         - name: path
           in: path
           required: true
-          type: string
+          schema:
+            type: string
         - name: Range
           description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
           in: header
           required: false
-          type: string
+          schema:
+            type: string
       responses:
         '200':
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
           headers:
             Accept-Ranges:
               description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
-              type: string
-              enum:
-                - bytes
+              schema:
+                type: string
+                enum:
+                  - bytes
             Content-Length:
               description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              type: integer
+              schema:
+                type: integer
         '206':
           description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
-          schema:
-            type: string
           headers:
             Content-Length:
               description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
-              type: integer
+              schema:
+                type: integer
             Content-Range:
               description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
-              type: string
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
-          schema:
-            type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '416':
           description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
-          schema:
-            type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
         '500':
           description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
-          schema:
-            type: string
-definitions:
-  Value:
-    description: a typed value
-    properties:
-      # @TODO: use oneOf as soon as OpenAPI v3 is released
-      dir:
-        description: path
-        type: string
-      file:
-        description: path
-        type: string
-      number:
-        type: number
-      socket:
-        description: socket address
-        type: string
-      string:
-        type: string
-  Event:
-    properties:
-      timestamp:
-        type: string
-        format: dateTime
-      # @TODO: use oneOf as soon as OpenAPI v3 is released
-      containerExited:
-        $ref: '#/definitions/ContainerExitedEvent'
-      containerStarted:
-        $ref: '#/definitions/ContainerStartedEvent'
-      containerStdErrWrittenTo:
-        $ref: '#/definitions/ContainerStdErrWrittenToEvent'
-      containerStdOutWrittenTo:
-        $ref: '#/definitions/ContainerStdOutWrittenToEvent'
-      opEnded:
-        $ref: '#/definitions/OpEndedEvent'
-      opStarted:
-        $ref: '#/definitions/OpStartedEvent'
-      opErred:
-        $ref: '#/definitions/OpErredEvent'
-      parallelCallEnded:
-        $ref: '#/definitions/ParallelCallEndedEvent'
-      serialCallEnded:
-        $ref: '#/definitions/SerialCallEndedEvent'
-  ContainerExitedEvent:
-    properties:
-      imageRef:
-        type: string
-      exitCode:
-        type: integer
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
-      outputs:
-        type: object
-        # @TODO: use patternProperties if/when OpenAPI spec supports it
-        additionalProperties:
-          $ref: '#/definitions/Value'
-  ContainerStartedEvent:
-    properties:
-      imageRef:
-        type: string
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
-  ContainerStdErrWrittenToEvent:
-    properties:
-      imageRef:
-        type: string
-      data:
-        type: string
-        format: binary
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
-  ContainerStdOutWrittenToEvent:
-    properties:
-      imageRef:
-        type: string
-      data:
-        type: string
-        format: binary
-      rootOpId:
-        type: string
-      containerId:
-        type: string
-      pkgRef:
-        type: string
-  OpErredEvent:
-    properties:
-      rootOpId:
-        type: string
-      msg:
-        type: string
-      opId:
-        type: string
-      pkgRef:
-        type: string
-  OpEndedEvent:
-    properties:
-      rootOpId:
-        type: string
-      opId:
-        type: string
-      pkgRef:
-        type: string
-      outcome:
-        enum: [ SUCCEEDED, FAILED, KILLED]
-        type: string
-      outputs:
-        type: object
-        # @TODO: use patternProperties if/when OpenAPI spec supports it
-        additionalProperties:
-          $ref: '#/definitions/Value'
-  OpStartedEvent:
-    properties:
-      rootOpId:
-        type: string
-      opId:
-        type: string
-      pkgRef:
-        type: string
-  ParallelCallEndedEvent:
-    properties:
-      rootOpId:
-        type: string
-      callId:
-        type: string
-  SerialCallEndedEvent:
-    properties:
-      rootOpId:
-        type: string
-      callId:
-        type: string
-      outputs:
-        type: object
-        # @TODO: use patternProperties if/when OpenAPI spec supports it
-        additionalProperties:
-          $ref: '#/definitions/Value'
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    Value:
+      description: a typed value
+      oneOf:
+        - properties:
+            dir:
+              description: path
+              type: string
+        - properties:
+            file:
+              description: path
+              type: string
+        - properties:
+            number:
+              type: number
+        - properties:
+            socket:
+              description: socket address
+              type: string
+        - properties:
+            string:
+              type: string
+      type: object
+    Event:
+      properties:
+        timestamp:
+          type: string
+          format: dateTime
+      oneOf:
+        - properties:
+            containerExited:
+              $ref: '#/components/schemas/ContainerExitedEvent'
+        - properties:
+            containerStarted:
+              $ref: '#/components/schemas/ContainerStartedEvent'
+        - properties:
+            containerStdErrWrittenTo:
+              $ref: '#/components/schemas/ContainerStdErrWrittenToEvent'
+        - properties:
+            containerStdOutWrittenTo:
+              $ref: '#/components/schemas/ContainerStdOutWrittenToEvent'
+        - properties:
+            opEnded:
+              $ref: '#/components/schemas/OpEndedEvent'
+        - properties:
+            opStarted:
+              $ref: '#/components/schemas/OpStartedEvent'
+        - properties:
+            opErred:
+              $ref: '#/components/schemas/OpErredEvent'
+        - properties:
+            parallelCallEnded:
+              $ref: '#/components/schemas/ParallelCallEndedEvent'
+        - properties:
+            serialCallEnded:
+              $ref: '#/components/schemas/SerialCallEndedEvent'
+      type: object
+    ContainerExitedEvent:
+      properties:
+        imageRef:
+          type: string
+        exitCode:
+          type: integer
+        rootOpId:
+          type: string
+        containerId:
+          type: string
+        pkgRef:
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+      type: object
+    ContainerStartedEvent:
+      properties:
+        imageRef:
+          type: string
+        rootOpId:
+          type: string
+        containerId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    ContainerStdErrWrittenToEvent:
+      properties:
+        imageRef:
+          type: string
+        data:
+          type: string
+          format: binary
+        rootOpId:
+          type: string
+        containerId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    ContainerStdOutWrittenToEvent:
+      properties:
+        imageRef:
+          type: string
+        data:
+          type: string
+          format: binary
+        rootOpId:
+          type: string
+        containerId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    OpErredEvent:
+      properties:
+        rootOpId:
+          type: string
+        msg:
+          type: string
+        opId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    OpEndedEvent:
+      properties:
+        rootOpId:
+          type: string
+        opId:
+          type: string
+        pkgRef:
+          type: string
+        outcome:
+          enum:
+            - SUCCEEDED
+            - FAILED
+            - KILLED
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+      type: object
+    OpStartedEvent:
+      properties:
+        rootOpId:
+          type: string
+        opId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    ParallelCallEndedEvent:
+      properties:
+        rootOpId:
+          type: string
+        callId:
+          type: string
+      type: object
+    SerialCallEndedEvent:
+      properties:
+        rootOpId:
+          type: string
+        callId:
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Value'
+      type: object
