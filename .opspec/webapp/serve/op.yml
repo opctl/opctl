@@ -5,11 +5,23 @@ inputs:
     dir:
       default: webapp
 run:
-  container:
-    cmd: [ npm, start ]
-    image: { ref: 'node:8.1.0-alpine' }
-    dirs:
-      /src: src
-    ports:
-      '80': '80'
-    workDir: /src
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            npm install -q
+        image: { ref: 'node:7.10.1-alpine' }
+        dirs:
+          /src: src
+        workDir: /src
+    - container:
+        cmd: [ npm, start ]
+        image: { ref: 'node:7.10.1-alpine' }
+        dirs:
+          /src: src
+        ports:
+          '80': '80'
+        workDir: /src
