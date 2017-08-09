@@ -20,6 +20,11 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
   [pkg-manifest.schema.json#/definitions/containerCall](spec/pkg-manifest.schema.json#/definitions/containerCall).
   Use new `pullCreds` attribute.
 
+### Changed
+
+- [node-api.spec.yml](spec/node-api.spec.yml) updated to OAS 3.0.0 syntax
+
+
 ## \[0.1.4] - 2017-06-04
 
 ### Added
