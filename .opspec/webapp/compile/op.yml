@@ -1,0 +1,25 @@
+description: compiles the webapp
+name: webapp/compile
+inputs:
+  src:
+    dir:
+      default: webapp
+run:
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            npm install -q
+        image: { ref: 'node:8.1.0-alpine' }
+        dirs:
+          /src: src
+        workDir: /src
+    - container:
+        cmd: [ npm, run, build ]
+        image: { ref: 'node:8.1.0-alpine' }
+        dirs:
+          /src: src
+        workDir: /src

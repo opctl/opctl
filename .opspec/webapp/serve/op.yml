@@ -1,0 +1,15 @@
+description: serves the webapp locally on port 80
+name: webapp/serve
+inputs:
+  src:
+    dir:
+      default: webapp
+run:
+  container:
+    cmd: [ npm, start ]
+    image: { ref: 'node:8.1.0-alpine' }
+    dirs:
+      /src: src
+    ports:
+      '80': '80'
+    workDir: /src

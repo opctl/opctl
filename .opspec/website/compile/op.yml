@@ -1,4 +1,5 @@
-name: compile-website
+description: compiles the website
+name: website/compile
 inputs:
   srcDir:
     dir:
@@ -10,10 +11,6 @@ outputs:
       description: dir containing the doc source
 run:
   serial:
-    - op:
-        pkg: { ref: clean }
-        inputs: { srcDir }
-        outputs: { srcDir }
     - container:
         cmd:
           - sh
