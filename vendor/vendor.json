@@ -573,6 +573,12 @@
 			"revisionTime": "2016-10-29T09:36:37Z"
 		},
 		{
+			"checksumSHA1": "++Uxr4F++QrnFEbBlQsJ3VuQoNM=",
+			"path": "github.com/rakyll/statik/fs",
+			"revision": "25d6cab4d68d2a9b7c5965aa381726dd5dd6d7b8",
+			"revisionTime": "2017-07-28T21:09:30Z"
+		},
+		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
 			"path": "github.com/satori/go.uuid",
 			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
