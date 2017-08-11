@@ -15,6 +15,7 @@ func (this _Pkg) GetManifest(
 	if nil != err {
 		return nil, err
 	}
+  defer manifestReader.Close()
 
 	manifestBytes, err := this.ioUtil.ReadAll(manifestReader)
 	if nil != err {
