@@ -10,6 +10,7 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 - [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
 - [Support binding strings &/or numbers to/from container files](https://github.com/opspec-io/spec/issues/131)
 - [Add support for object param type](https://github.com/opspec-io/spec/issues/65)
+- [Tag support](https://github.com/opspec-io/spec/issues/147)
 
 ### Removed
 

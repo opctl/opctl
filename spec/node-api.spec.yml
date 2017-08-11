@@ -7,22 +7,34 @@ paths:
   /events/stream:
     get:
       summary: Get an event stream
-      description: |
-        The connection will be upgraded to use the websocket protocol.
+      description: The connection will be upgraded to use the websocket protocol.
       parameters:
-        - name: filter
+        - name: since
           in: query
-          description: |
-            A json encoded object supporting the following:
-
-            |attribute|type|description|
-            |--|--|--|
-            |rootOpIds|array of strings|allows filtering events to those w/ rootOpId matching one of those provided|
-            |since|datetime|allows filtering events to those occurring on/after the provided datetime|
+          description: Filters events to those occurring on/after the provided instant
           required: false
           schema:
             type: string
-            format: json
+            format: date-time
+          explode: false
+        - name: roots
+          in: query
+          description: Filters events to those w/ the provided root op id's
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          explode: false
+        - name: tags
+          in: query
+          description: Filters events to those w/ the provided tags
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          explode: false
       tags:
         - events
       responses:
@@ -41,11 +53,6 @@ paths:
                   - Upgrade
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-            text/plain:
               schema:
                 type: array
                 items:
@@ -483,6 +490,10 @@ components:
         timestamp:
           type: string
           format: dateTime
+        tags:
+          type: object
+          additionalProperties:
+            type: string
       oneOf:
         - properties:
             containerExited:
