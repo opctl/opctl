@@ -57,7 +57,7 @@ func (this _puller) Pull(
 
 	pkgPath := parsedPkgRef.ToPath(path)
 
-	// ensure pull done only once
+	// ensure only a single pull done at once
 	_, err, _ = pullerSingleFlightGroup.Do(pkgPath, func() (interface{}, error) {
 		cloneOptions := &git.CloneOptions{
 			URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
@@ -98,11 +98,6 @@ func (this _puller) Pull(
 		// remove pkg '.git' sub dir
 		return nil, this.os.RemoveAll(filepath.Join(pkgPath, ".git"))
 	})
-
-	// if err, don't track (allows retrying)
-	if nil != err {
-		pullerSingleFlightGroup.Forget(pkgPath)
-	}
 
 	return err
 

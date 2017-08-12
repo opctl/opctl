@@ -4,12 +4,13 @@ import Inputs from './Inputs'
 import Outputs from './Outputs'
 
 export default function Pkg(props) {
+  const pkg = props.value;
   return (
     <div>
-      <h1><PkgRef name={props.name} version={props.version}/></h1>
-      <p className="lead">{props.description}</p>
-      <Inputs value={props.inputs}/>
-      <Outputs value={props.outputs}/>
+      <h1><PkgRef name={pkg.name} version={pkg.version}/></h1>
+      <p className="lead">{pkg.description}</p>
+      <Inputs value={pkg.inputs}/>
+      <Outputs value={pkg.outputs}/>
     </div>
   );
 }

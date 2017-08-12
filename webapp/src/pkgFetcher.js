@@ -2,7 +2,7 @@ import jsYaml from 'js-yaml';
 
 class PkgFetcher {
     async fetch(pkgRef) {
-        return fetch(`http://localhost:42224/pkgs/${encodeURIComponent(pkgRef)}/contents/op.yml`)
+        return fetch(`/pkgs/${encodeURIComponent(pkgRef)}/contents/op.yml`)
             .then(response => (response.text()))
             .then(PkgFetcher._parse);
     }

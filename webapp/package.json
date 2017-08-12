@@ -2,7 +2,7 @@
   "name": "opctl",
   "version": "0.1.0",
   "private": true,
-  "homepage" : ".",
+  "homepage": ".",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "js-yaml": "^3.8.4",

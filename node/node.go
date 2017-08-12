@@ -61,18 +61,16 @@ func New() {
 	globalHandler.Handle("/app/", http.StripPrefix("/app/", http.FileServer(statikFS)))
 
 	globalHandler.Handle("/",
-		handlers.CORS()(
-			handler.New(
-				core.New(
-					pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
-					containerProvider,
-					rootFSPath,
-				),
+		handler.New(
+			core.New(
+				pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
+				containerProvider,
+				rootFSPath,
 			),
 		),
 	)
 
-	err = http.ListenAndServe(":42224", globalHandler)
+	err = http.ListenAndServe(":42224", handlers.CORS()(globalHandler))
 	if nil != err {
 		panic(err)
 	}
