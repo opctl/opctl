@@ -26,15 +26,6 @@ paths:
             items:
               type: string
           explode: false
-        - name: tags
-          in: query
-          description: Filters events to those w/ the provided tags
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-          explode: false
       tags:
         - events
       responses:
@@ -490,10 +481,6 @@ components:
         timestamp:
           type: string
           format: dateTime
-        tags:
-          type: object
-          additionalProperties:
-            type: string
       oneOf:
         - properties:
             containerExited:
