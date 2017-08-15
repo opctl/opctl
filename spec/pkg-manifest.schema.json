@@ -12,13 +12,6 @@
       "description": "Description of the op",
       "type": "string"
     },
-    "tags": {
-      "description": "Key value pairs used to identify, filter, and group objects associated w/ the pkg",
-      "type": "object",
-      "additionalProperties":{
-        "type": "string"
-      }
-    },
     "inputs": {
       "$ref": "#/definitions/param"
     },
