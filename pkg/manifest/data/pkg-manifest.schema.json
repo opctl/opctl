@@ -737,6 +737,9 @@
                     },
                     {
                       "type": "number"
+                    },
+                    {
+                      "type": "object"
                     }
                   ]
                 }
