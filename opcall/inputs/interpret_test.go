@@ -33,7 +33,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							providedParentPkgRef,
 							map[string]*model.Value{},
@@ -65,7 +65,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							providedParentPkgRef,
 							map[string]*model.Value{},
@@ -102,7 +102,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							providedParentPkgRef,
 							map[string]*model.Value{},
@@ -134,7 +134,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							providedParentPkgRef,
 							map[string]*model.Value{},
@@ -169,7 +169,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -198,7 +198,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -233,7 +233,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -262,7 +262,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -297,7 +297,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						actualInputs, _ := objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -326,7 +326,7 @@ var _ = Context("inputs", func() {
 
 						/* act */
 						objectUnderTest.Interpret(
-							map[string]string{},
+							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
 							map[string]*model.Value{},
@@ -347,7 +347,7 @@ var _ = Context("inputs", func() {
 				providedArgName := "argName"
 				providedArgValue := "argValue"
 
-				providedInputArgs := map[string]string{
+				providedInputArgs := map[string]interface{}{
 					providedArgName: providedArgValue,
 				}
 
@@ -396,7 +396,7 @@ var _ = Context("inputs", func() {
 					/* arrange */
 					providedArgName := "argName"
 
-					providedInputArgs := map[string]string{
+					providedInputArgs := map[string]interface{}{
 						providedArgName: "",
 					}
 

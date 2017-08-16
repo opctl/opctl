@@ -16,7 +16,7 @@ type Inputs interface {
 
 	// Interpret interprets inputs via the provided inputArgs, inputParams, and scope
 	Interpret(
-		inputArgs map[string]string,
+		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
 		pkgPath string,
 		scope map[string]*model.Value,

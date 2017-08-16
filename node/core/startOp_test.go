@@ -56,7 +56,7 @@ var _ = Context("core", func() {
 					Pkg: &model.SCGOpCallPkg{
 						Ref: fakePkgHandle.Ref(),
 					},
-					Inputs: map[string]string{},
+					Inputs: map[string]interface{}{},
 				}
 				for name := range providedReq.Args {
 					// map as passed

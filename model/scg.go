@@ -41,7 +41,7 @@ type SCGContainerCallImage struct {
 type SCGOpCall struct {
 	Pkg *SCGOpCallPkg `yaml:"pkg"`
 	// binds scope to inputs of referenced op
-	Inputs map[string]string `yaml:"inputs,omitempty"`
+	Inputs map[string]interface{} `yaml:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
 	Outputs map[string]string `yaml:"outputs,omitempty"`
 }

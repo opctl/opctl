@@ -222,7 +222,8 @@ var _ = Context("OpCall", func() {
 					}
 					expectedScope := providedScope
 
-					expectedInputArgs := map[string]string{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
+					expectedInputArgs := map[string]interface{}{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
+
 					providedSCGOpCall := &model.SCGOpCall{
 						Inputs: expectedInputArgs,
 						Pkg:    &model.SCGOpCallPkg{},
