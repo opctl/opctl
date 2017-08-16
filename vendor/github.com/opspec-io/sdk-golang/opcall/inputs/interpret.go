@@ -7,7 +7,7 @@ import (
 )
 
 func (_inputs _Inputs) Interpret(
-	inputArgs map[string]string,
+	inputArgs map[string]interface{},
 	inputParams map[string]*model.Param,
 	parentPkgRef string,
 	scope map[string]*model.Value,
