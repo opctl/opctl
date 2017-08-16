@@ -4,6 +4,8 @@ import PkgBrowser from './PkgBrowser';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
-    <PkgBrowser location={location}/>, // eslint-disable-line no-restricted-globals
+    <div>
+      <PkgBrowser/>
+    </div>,
     document.getElementById('root')
 );

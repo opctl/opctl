@@ -60,13 +60,7 @@ class PkgBrowser extends Component {
       <Grid>
         <div>
           {form}
-          <Pkg
-            description={this.state.pkg.description}
-            inputs={this.state.pkg.inputs}
-            name={this.state.pkg.name}
-            outputs={this.state.pkg.outputs}
-            version={this.state.pkg.version}
-          />
+          <Pkg value={this.state.pkg}/>
         </div>
       </Grid>
     );
