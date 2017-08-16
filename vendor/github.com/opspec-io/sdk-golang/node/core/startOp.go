@@ -36,7 +36,7 @@ func (this _core) StartOp(
 		Pkg: &model.SCGOpCallPkg{
 			Ref: pkgHandle.Ref(),
 		},
-		Inputs: map[string]string{},
+		Inputs: map[string]interface{}{},
 	}
 	for name := range req.Args {
 		// map as passed
