@@ -5,6 +5,7 @@ import (
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
 	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	_ "github.com/opctl/opctl/node/statik"
 	"github.com/opspec-io/sdk-golang/node/api/handler"
 	"github.com/opspec-io/sdk-golang/node/core"
@@ -51,26 +52,25 @@ func New() {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
 	}
 
-	globalHandler := http.NewServeMux()
-
 	statikFS, err := fs.New()
 	if nil != err {
 		panic(err)
 	}
 
-	globalHandler.Handle("/app/", http.StripPrefix("/app/", http.FileServer(statikFS)))
+	router := mux.NewRouter()
+	router.UseEncodedPath()
 
-	globalHandler.Handle("/",
-		handler.New(
-			core.New(
-				pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
-				containerProvider,
-				rootFSPath,
-			),
+	router.PathPrefix("/app/").Handler(http.StripPrefix("/app/", http.FileServer(statikFS)))
+
+	router.PathPrefix("/").Handler(handler.New(
+		core.New(
+			pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
+			containerProvider,
+			rootFSPath,
 		),
-	)
+	))
 
-	err = http.ListenAndServe(":42224", handlers.CORS()(globalHandler))
+	err = http.ListenAndServe(":42224", handlers.CORS()(router))
 	if nil != err {
 		panic(err)
 	}
