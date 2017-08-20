@@ -3,8 +3,8 @@ package image
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Image
 
 import (
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type Image interface {
@@ -16,10 +16,10 @@ type Image interface {
 
 func New() Image {
 	return _Image{
-		interpolater: interpolater.New(),
+		string: stringPkg.New(),
 	}
 }
 
 type _Image struct {
-	interpolater interpolater.Interpolater
+	string stringPkg.String
 }
