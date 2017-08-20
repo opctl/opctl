@@ -42,9 +42,13 @@ func (cc _ContainerCall) Interpret(
 	}
 
 	// construct cmd
-	for _, cmdEntry := range scgContainerCall.Cmd {
-		// interpolate each entry
-		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, cc.interpolater.Interpolate(cmdEntry, scope))
+	for _, cmdEntryExpression := range scgContainerCall.Cmd {
+		// interpret each entry as string
+		cmdEntry, err := cc.string.Interpret(scope, cmdEntryExpression)
+		if nil != err {
+			return nil, err
+		}
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, cmdEntry)
 	}
 
 	// interpret dirs

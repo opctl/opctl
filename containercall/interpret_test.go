@@ -13,6 +13,7 @@ import (
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"os"
 	"path/filepath"
 )
@@ -63,7 +64,7 @@ var _ = Context("ContainerCall", func() {
 		})
 
 		Context("container.Cmd not empty", func() {
-			It("should call interpolate w/ expected args for each container.Cmd entry", func() {
+			It("should call string.Interpret w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -77,14 +78,15 @@ var _ = Context("ContainerCall", func() {
 					},
 				}
 
-				fakeInterpolater := new(interpolater.Fake)
+				fakeString := new(stringPkg.Fake)
 
 				objectUnderTest := _ContainerCall{
 					dirs:         new(dirs.Fake),
 					envVars:      new(envvars.Fake),
 					files:        new(files.Fake),
 					image:        new(image.Fake),
-					interpolater: fakeInterpolater,
+					interpolater: new(interpolater.Fake),
+					string:       fakeString,
 					os:           new(ios.Fake),
 					sockets:      new(sockets.Fake),
 				}
@@ -100,7 +102,7 @@ var _ = Context("ContainerCall", func() {
 
 				/* assert */
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
-					actualCmdEntry, actualScope := fakeInterpolater.InterpolateArgsForCall(expectedCmdIndex)
+					actualScope, actualCmdEntry := fakeString.InterpretArgsForCall(expectedCmdIndex)
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
 				}
@@ -119,16 +121,17 @@ var _ = Context("ContainerCall", func() {
 					},
 				}
 
-				fakeInterpolater := new(interpolater.Fake)
-				fakeInterpolater.InterpolateReturnsOnCall(0, expectedCmd[0])
-				fakeInterpolater.InterpolateReturnsOnCall(1, expectedCmd[1])
+				fakeString := new(stringPkg.Fake)
+				fakeString.InterpretReturnsOnCall(0, expectedCmd[0], nil)
+				fakeString.InterpretReturnsOnCall(1, expectedCmd[1], nil)
 
 				objectUnderTest := _ContainerCall{
 					dirs:         new(dirs.Fake),
 					envVars:      new(envvars.Fake),
 					files:        new(files.Fake),
 					image:        new(image.Fake),
-					interpolater: fakeInterpolater,
+					interpolater: new(interpolater.Fake),
+					string:       fakeString,
 					os:           new(ios.Fake),
 					sockets:      new(sockets.Fake),
 				}

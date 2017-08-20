@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 var _ = Context("Image", func() {
@@ -15,7 +15,7 @@ var _ = Context("Image", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				objectUnderTest := _Image{
-					interpolater: new(interpolater.Fake),
+					string: new(stringPkg.Fake),
 				}
 
 				/* act */
@@ -29,7 +29,7 @@ var _ = Context("Image", func() {
 			})
 		})
 		Context("scgContainerCallImage isn't nill", func() {
-			It("should call interpolate w/ expected args", func() {
+			It("should call string.Interpret w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -44,10 +44,10 @@ var _ = Context("Image", func() {
 					},
 				}
 
-				fakeInterpolater := new(interpolater.Fake)
+				fakeString := new(stringPkg.Fake)
 
 				objectUnderTest := _Image{
-					interpolater: fakeInterpolater,
+					string: fakeString,
 				}
 
 				/* act */
@@ -57,15 +57,15 @@ var _ = Context("Image", func() {
 				)
 
 				/* assert */
-				actualImageRef, actualImageRefScope := fakeInterpolater.InterpolateArgsForCall(0)
+				actualImageRefScope, actualImageRef := fakeString.InterpretArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
 
-				actualUsername, actualUsernameScope := fakeInterpolater.InterpolateArgsForCall(1)
+				actualUsernameScope, actualUsername := fakeString.InterpretArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
 
-				actualPassword, actualPasswordScope := fakeInterpolater.InterpolateArgsForCall(2)
+				actualPasswordScope, actualPassword := fakeString.InterpretArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
 			})
@@ -77,16 +77,16 @@ var _ = Context("Image", func() {
 					PullCreds: &model.SCGPullCreds{},
 				}
 
-				fakeInterpolater := new(interpolater.Fake)
+				fakeString := new(stringPkg.Fake)
 
 				expectedImageRef := "expectedImageRef"
-				fakeInterpolater.InterpolateReturnsOnCall(0, expectedImageRef)
+				fakeString.InterpretReturnsOnCall(0, expectedImageRef, nil)
 
 				expectedUsername := "expectedUsername"
-				fakeInterpolater.InterpolateReturnsOnCall(1, expectedUsername)
+				fakeString.InterpretReturnsOnCall(1, expectedUsername, nil)
 
 				expectedPassword := "expectedPassword"
-				fakeInterpolater.InterpolateReturnsOnCall(2, expectedPassword)
+				fakeString.InterpretReturnsOnCall(2, expectedPassword, nil)
 
 				expectedImage := &model.DCGContainerCallImage{
 					Ref: expectedImageRef,
@@ -97,7 +97,7 @@ var _ = Context("Image", func() {
 				}
 
 				objectUnderTest := _Image{
-					interpolater: fakeInterpolater,
+					string: fakeString,
 				}
 
 				/* act */

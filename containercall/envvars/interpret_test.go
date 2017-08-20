@@ -1,13 +1,12 @@
 package envvars
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/golang-interfaces/encoding-ijson"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"strconv"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
+	"github.com/pkg/errors"
 )
 
 var _ = Context("EnvVars", func() {
@@ -37,58 +36,100 @@ var _ = Context("EnvVars", func() {
 				})
 			})
 		})
-		It("should return expected dcg.EnvVars", func() {
+		It("should call string.Interpret w/ expected args", func() {
 			/* arrange */
-			providedCurrentScopeRef1 := "dummyScopeRef1"
-			providedCurrentScopeRef1String := "dummyScopeRef1String"
-
-			providedCurrentScopeRef2 := "dummyScopeRef2"
-			providedCurrentScopeRef2Number := float64(2.3)
-
-			providedCurrentScopeRef3 := "dummyScopeRef3"
-			providedScopeRef3Object := map[string]interface{}{"dummyProp1Name": "dummyProp1Value"}
-
-			providedCurrentScope := map[string]*model.Value{
-				providedCurrentScopeRef1: {String: &providedCurrentScopeRef1String},
-				providedCurrentScopeRef2: {Number: &providedCurrentScopeRef2Number},
-				providedCurrentScopeRef3: {Object: providedScopeRef3Object},
+			envVarName := "dummyEnvVar"
+			providedScope := map[string]*model.Value{
+				envVarName: nil,
 			}
 
-			providedScopeRef3ObjectJsonBytes, err := json.Marshal(providedScopeRef3Object)
-			if nil != err {
-				Fail(err.Error())
-			}
-
-			fakeJson := new(ijson.Fake)
-			fakeJson.MarshalReturns(providedScopeRef3ObjectJsonBytes, err)
-
-			expectedEnvVars := map[string]string{
-				providedCurrentScopeRef1: providedCurrentScopeRef1String,
-				providedCurrentScopeRef2: strconv.FormatFloat(providedCurrentScopeRef2Number, 'f', -1, 64),
-				providedCurrentScopeRef3: string(providedScopeRef3ObjectJsonBytes),
-			}
-
-			providedSCGContainerCallEnvVars := map[string]string{
-				// implicitly bound to string
-				providedCurrentScopeRef1: "",
-				// implicitly bound to number
-				providedCurrentScopeRef2: "",
-				// implicitly bound to object
-				providedCurrentScopeRef3: "",
-			}
-
+			fakeString := new(stringPkg.Fake)
 			objectUnderTest := _EnvVars{
-				json: fakeJson,
+				string: fakeString,
 			}
 
 			/* act */
-			actualDCGContainerCallEnvVars, _ := objectUnderTest.Interpret(
-				providedCurrentScope,
-				providedSCGContainerCallEnvVars,
+			objectUnderTest.Interpret(
+				providedScope,
+				map[string]string{
+					// implicitly bound to string
+					envVarName: "",
+				},
 			)
 
 			/* assert */
-			Expect(actualDCGContainerCallEnvVars).To(Equal(expectedEnvVars))
+			actualScope, actualExpression := fakeString.InterpretArgsForCall(0)
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", envVarName)))
+		})
+		Context("string.Interpret errs", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				envVarName := "dummyEnvVar"
+
+				fakeString := new(stringPkg.Fake)
+
+				interpretErr := errors.New("dummyError")
+				fakeString.InterpretReturns("", interpretErr)
+
+				expectedErr := fmt.Errorf(
+					"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+					envVarName,
+					envVarName,
+				)
+
+				objectUnderTest := _EnvVars{
+					string: fakeString,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{
+						envVarName: nil,
+					},
+					map[string]string{
+						// implicitly bound to string
+						envVarName: "",
+					},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("string.Interpret doesn't err", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				envVarName := "dummyEnvVar"
+
+				fakeString := new(stringPkg.Fake)
+
+				interpretedEnvVar := "dummyEnvVarValue"
+				fakeString.InterpretReturns(interpretedEnvVar, nil)
+
+				expectedEnvVars := map[string]string{
+					envVarName: interpretedEnvVar,
+				}
+
+				objectUnderTest := _EnvVars{
+					string: fakeString,
+				}
+
+				/* act */
+				actualValue, _ := objectUnderTest.Interpret(
+					map[string]*model.Value{
+						envVarName: nil,
+					},
+					map[string]string{
+						// implicitly bound to string
+						envVarName: "",
+					},
+				)
+
+				/* assert */
+				Expect(actualValue).To(Equal(expectedEnvVars))
+
+			})
 		})
 	})
 })

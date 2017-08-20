@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/number"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
-	"strconv"
 )
 
 var _ = Context("argInterpreter", func() {
@@ -316,18 +316,15 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{Number: &model.NumberParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
-					interpolatedValue := "2.1"
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeNumber := new(number.Fake)
+					interpretedValue := float64(2.1)
+					fakeNumber.InterpretReturns(interpretedValue, nil)
 
-					expectedValue, err := strconv.ParseFloat(interpolatedValue, 64)
-					if nil != err {
-						panic(err)
-					}
-					expectedResult := &model.Value{Number: &expectedValue}
+					expectedResult := &model.Value{Number: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						interpolater: new(interpolater.Fake),
+						number:       fakeNumber,
 					}
 
 					/* act */
