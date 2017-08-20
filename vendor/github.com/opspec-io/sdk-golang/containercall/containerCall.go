@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/containercall/sockets"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type ContainerCall interface {
@@ -36,6 +37,7 @@ func New(
 		interpolater: interpolater.New(),
 		os:           ios.New(),
 		rootFSPath:   rootFSPath,
+		string:       stringPkg.New(),
 		sockets:      sockets.New(),
 	}
 }
@@ -48,5 +50,6 @@ type _ContainerCall struct {
 	interpolater interpolater.Interpolater
 	os           ios.IOS
 	rootFSPath   string
+	string       stringPkg.String
 	sockets      sockets.Sockets
 }

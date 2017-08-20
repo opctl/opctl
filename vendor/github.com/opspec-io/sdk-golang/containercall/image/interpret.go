@@ -11,14 +11,29 @@ func (img _Image) Interpret(
 ) (*model.DCGContainerCallImage, error) {
 	// construct image
 	if scgContainerCallImage := scgContainerCallImage; scgContainerCallImage != nil {
+		ref, err := img.string.Interpret(scope, scgContainerCallImage.Ref)
+		if nil != err {
+			return nil, err
+		}
+
 		dcgContainerCallImage := &model.DCGContainerCallImage{
-			Ref: img.interpolater.Interpolate(scgContainerCallImage.Ref, scope),
+			Ref: ref,
 		}
 
 		if nil != scgContainerCallImage.PullCreds {
+			username, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Username)
+			if nil != err {
+				return nil, err
+			}
+
+			password, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Password)
+			if nil != err {
+				return nil, err
+			}
+
 			dcgContainerCallImage.PullCreds = &model.DCGPullCreds{
-				Username: img.interpolater.Interpolate(scgContainerCallImage.PullCreds.Username, scope),
-				Password: img.interpolater.Interpolate(scgContainerCallImage.PullCreds.Password, scope),
+				Username: username,
+				Password: password,
 			}
 		}
 		return dcgContainerCallImage, nil
