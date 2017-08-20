@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
 	"strconv"
 )
@@ -191,14 +192,15 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{String: &model.StringParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
-					interpolatedValue := "dummyValue"
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString := new(stringPkg.Fake)
+					interpretedValue := "dummyValue"
+					fakeString.InterpretReturns(interpretedValue, nil)
 
-					expectedResult := &model.Value{String: &interpolatedValue}
+					expectedResult := &model.Value{String: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						interpolater: new(interpolater.Fake),
+						string:       fakeString,
 					}
 
 					/* act */

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -25,11 +26,13 @@ type argInterpreter interface {
 func newArgInterpreter() argInterpreter {
 	return _argInterpreter{
 		interpolater: interpolater.New(),
+		string:       stringPkg.New(),
 	}
 }
 
 type _argInterpreter struct {
 	interpolater interpolater.Interpolater
+	string       stringPkg.String
 }
 
 func (ai _argInterpreter) Interpret(
@@ -44,14 +47,14 @@ func (ai _argInterpreter) Interpret(
 		return nil, fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", name, name)
 	}
 
-  if nil == value || "" == value {
-    // implicitly bound
-    dcgValue, ok := scope[name]
-    if !ok {
-      return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
-    }
-    return dcgValue, nil
-  }
+	if nil == value || "" == value {
+		// implicitly bound
+		dcgValue, ok := scope[name]
+		if !ok {
+			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
+		}
+		return dcgValue, nil
+	}
 
 	if numberValue, ok := value.(float64); ok {
 		switch {
@@ -67,11 +70,12 @@ func (ai _argInterpreter) Interpret(
 		return &model.Value{Object: objectValue}, nil
 	}
 
-	if stringValue, ok := value.(string); ok {
-		if deprecatedExplicitRef, ok := scope[stringValue]; ok {
+	if stringExpression, ok := value.(string); ok {
+		if deprecatedExplicitRef, ok := scope[stringExpression]; ok {
 			// deprecated explicit arg
 			return deprecatedExplicitRef, nil
-		} else if explicitRef := strings.TrimSuffix(strings.TrimPrefix(stringValue, "$("), ")"); len(explicitRef) == (len(stringValue) - 3) {
+		} else if explicitRef := strings.TrimSuffix(strings.TrimPrefix(stringExpression, "$("), ")"); len(explicitRef) == (len(stringExpression) - 3) {
+			// @FIXME this won't handle $(ref1)$(ref2) properly
 			// explicit arg
 			dcgValue, ok := scope[explicitRef]
 			if !ok {
@@ -79,13 +83,17 @@ func (ai _argInterpreter) Interpret(
 			}
 			return dcgValue, nil
 		} else {
-			interpolatedVal := ai.interpolater.Interpolate(stringValue, scope)
+			interpolatedVal := ai.interpolater.Interpolate(stringExpression, scope)
 			switch {
 			// interpolated arg
 			case nil != param.String:
-				return &model.Value{String: &interpolatedVal}, nil
+				stringValue, err := ai.string.Interpret(scope, stringExpression)
+				if nil != err {
+					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+				}
+				return &model.Value{String: &stringValue}, nil
 			case nil != param.Dir:
-				if strings.HasPrefix(stringValue, "/") {
+				if strings.HasPrefix(stringExpression, "/") {
 					// bound to pkg dir
 					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
 				}
@@ -97,7 +105,7 @@ func (ai _argInterpreter) Interpret(
 				}
 				return &model.Value{Number: &floatVal}, nil
 			case nil != param.File:
-				if strings.HasPrefix(stringValue, "/") {
+				if strings.HasPrefix(stringExpression, "/") {
 					// bound to pkg file
 					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
 				}
