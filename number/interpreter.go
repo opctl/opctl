@@ -38,8 +38,13 @@ func (itp _interpreter) Interpret(
 		switch {
 		case '$' == expression[i]:
 			possibleRefBuffer.WriteByte('$')
-		case possibleRefBuffer.Len() == 1 && '(' == expression[i]:
-			possibleRefBuffer.WriteByte('(')
+		case possibleRefBuffer.Len() == 1:
+			if '(' == expression[i] {
+				possibleRefBuffer.WriteByte('(')
+			} else {
+				possibleRefBuffer.Reset()
+				resultBuffer.WriteByte(expression[i])
+			}
 		case possibleRefBuffer.Len() > 0 && ')' == expression[i]:
 			// we've got a ref
 			ref := possibleRefBuffer.String()[2:]

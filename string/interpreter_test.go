@@ -25,8 +25,8 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualString).To(BeEmpty())
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret string; %v not in scope", providedRef)))
+				Expect(actualString).To(Equal(providedExpression))
+				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("ref is in scope", func() {
@@ -116,19 +116,24 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedRef1 := "dummyRef1"
-				providedExpression := fmt.Sprintf("$(%v)$(dummyRef2)", providedRef1)
+				providedRef2 := "dummyRef2"
+				providedExpression := fmt.Sprintf("$(%v)$(%v)", providedRef1, providedRef2)
 
-				objectUnderTest := _interpreter{}
+				objectUnderTest := _interpreter{
+					coercer: new(fakeCoercer),
+				}
 
 				/* act */
 				actualString, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*model.Value{
+						providedRef2: {},
+					},
 					providedExpression,
 				)
 
 				/* assert */
-				Expect(actualString).To(BeEmpty())
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret string; %v not in scope", providedRef1)))
+				Expect(actualString).To(Equal(fmt.Sprintf("$(%v)", providedRef1)))
+				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("second ref not in scope", func() {
@@ -153,8 +158,8 @@ var _ = Context("Interpret", func() {
 				)
 
 				/* assert */
-				Expect(actualString).To(BeEmpty())
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret string; %v not in scope", providedRef2)))
+				Expect(actualString).To(Equal(fmt.Sprintf("$(%v)", providedRef2)))
+				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("refs in scope", func() {

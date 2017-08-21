@@ -37,16 +37,23 @@ func (itp _interpreter) Interpret(
 		switch {
 		case '$' == expression[i]:
 			possibleRefBuffer.WriteByte('$')
-		case possibleRefBuffer.Len() == 1 && '(' == expression[i]:
-			possibleRefBuffer.WriteByte('(')
+		case possibleRefBuffer.Len() == 1:
+			if '(' == expression[i] {
+				possibleRefBuffer.WriteByte('(')
+			} else {
+				possibleRefBuffer.Reset()
+				resultBuffer.WriteByte(expression[i])
+			}
 		case possibleRefBuffer.Len() > 0 && ')' == expression[i]:
-			// we've got a ref
+			// syntactically valid ref
 			ref := possibleRefBuffer.String()[2:]
 			possibleRefBuffer.Reset()
 
 			value, ok := scope[ref]
 			if !ok {
-				return "", fmt.Errorf("Unable to interpret string; %v not in scope", ref)
+				// @TODO: replace w/ error once spec supports escapes; for now treat as literal text
+				resultBuffer.WriteString(fmt.Sprintf("$(%v)", ref))
+				break
 			}
 
 			stringValue, err := itp.coercer.Coerce(value)
