@@ -16,7 +16,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedParentPkgRef := "dummyParentPkgRef"
+						providedPkgRef := "dummyPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -26,7 +26,7 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
-						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {Dir: &expectedInputValue},
 						}
@@ -35,7 +35,8 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							providedParentPkgRef,
+							"dummyParentPkgRef",
+							providedPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -46,7 +47,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedParentPkgRef := "dummyParentPkgRef"
+						providedPkgRef := "dummyPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -54,7 +55,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInput := &model.Value{Dir: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
@@ -67,7 +68,8 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							providedParentPkgRef,
+							"dummyParentPkgRef",
+							providedPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -85,7 +87,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedParentPkgRef := "dummyParentPkgRef"
+						providedPkgRef := "dummyPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -95,7 +97,7 @@ var _ = Context("inputs", func() {
 							validator: new(fakeValidator),
 						}
 
-						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {File: &expectedInputValue},
 						}
@@ -104,7 +106,8 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							providedParentPkgRef,
+							"dummyParentPkgRef",
+							providedPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -115,7 +118,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedParentPkgRef := "parentPkgRef"
+						providedPkgRef := "dummyPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -123,7 +126,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedParentPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInput := &model.Value{File: &expectedInputValue}
 
 						fakeValidator := new(fakeValidator)
@@ -136,7 +139,8 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							providedParentPkgRef,
+							"dummyParentPkgRef",
+							providedPkgRef,
 							map[string]*model.Value{},
 						)
 
@@ -172,6 +176,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -201,6 +206,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -236,6 +242,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -265,6 +272,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -300,6 +308,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -329,6 +338,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							"dummyParentPkgRef",
+							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
 
@@ -375,6 +385,7 @@ var _ = Context("inputs", func() {
 					providedInputArgs,
 					providedInputParams,
 					providedParentPkgRef,
+					"dummyPkgRef",
 					providedScope,
 				)
 
@@ -422,6 +433,7 @@ var _ = Context("inputs", func() {
 						providedInputArgs,
 						providedInputParams,
 						"dummyParentPkgRef",
+						"dummyPkgRef",
 						map[string]*model.Value{},
 					)
 

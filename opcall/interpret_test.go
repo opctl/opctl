@@ -229,7 +229,11 @@ var _ = Context("OpCall", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
+					fakeParentPkgHandle := new(pkg.FakeHandle)
+					fakeParentPkgHandle.RefReturns("dummyParentPkgRef")
+
 					fakePkgHandle := new(pkg.FakeHandle)
+					fakePkgHandle.RefReturns("dummyPkgRef")
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.ResolveReturns(fakePkgHandle, nil)
@@ -256,14 +260,19 @@ var _ = Context("OpCall", func() {
 						providedScope,
 						providedSCGOpCall,
 						"dummyOpId",
-						fakePkgHandle,
+						fakeParentPkgHandle,
 						"dummyRootOpId",
 					)
 
 					/* assert */
-					actualSCGArgs, actualSCGInputs, actualPkgRef, actualScope := fakeArgs.InterpretArgsForCall(0)
+					actualSCGArgs,
+						actualSCGInputs,
+						actualParentPkgRef,
+						actualPkgRef,
+						actualScope := fakeArgs.InterpretArgsForCall(0)
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
+					Expect(actualParentPkgRef).To(Equal(fakeParentPkgHandle.Ref()))
 					Expect(actualPkgRef).To(Equal(fakePkgHandle.Ref()))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 				})

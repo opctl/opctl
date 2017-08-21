@@ -50,6 +50,7 @@ func (this _OpCall) Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
 		parentPkgHandle.Ref(),
+		pkgHandle.Ref(),
 		scope,
 	)
 	if len(argErrors) > 0 {
