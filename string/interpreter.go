@@ -42,7 +42,7 @@ func (itp _interpreter) Interpret(
 				possibleRefBuffer.WriteByte('(')
 			} else {
 				possibleRefBuffer.Reset()
-				resultBuffer.WriteByte(expression[i])
+				resultBuffer.WriteString(fmt.Sprintf("$%v", expression[i]))
 			}
 		case possibleRefBuffer.Len() > 0 && ')' == expression[i]:
 			// syntactically valid ref
