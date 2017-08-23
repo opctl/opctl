@@ -1,0 +1,31 @@
+name: valid_run_container
+inputs:
+  inputString1:
+    string: {}
+  inputDir1:
+    dir: {}
+  inputFile1:
+    file: {}
+run:
+  op:
+    pkg:
+      ref: prefix$(inputString1)suffix
+      pullCreds:
+        username: prefix$(inputString1)suffix # interpolated
+        password: $(inputString1) # explicit
+    inputs:
+      inputString1: # implicit
+      explicit: $(inputDir1)
+      interpolated: prefix$(inputFile1)middle$(inputString1)suffix
+      string: hello
+      dirDereference: $(inputDir1)/child
+      file: $()
+      number: 4
+      object:
+        arr: []
+        string: hello
+        obj: { p1: v1 }
+        number: 2
+    outputs:
+      implicit:
+      explicit: someOutput

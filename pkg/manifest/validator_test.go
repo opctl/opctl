@@ -136,5 +136,47 @@ var _ = Context("Validator", func() {
 			Expect(actualErrs).To(BeNil())
 		})
 	})
+	Context("valid_run.container_all", func() {
+		It("should return no errors", func() {
+
+			/* arrange */
+			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid_run.container_all/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			manifestBytes, err := ioutil.ReadAll(manifestFile)
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			/* act */
+			actualErrs := objectUnderTest.Validate(manifestBytes)
+
+			/* assert */
+			Expect(actualErrs).To(BeNil())
+		})
+	})
+	Context("valid_run.op_all", func() {
+		It("should return no errors", func() {
+
+			/* arrange */
+			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid_run.op_all/op.yml", wd))
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			manifestBytes, err := ioutil.ReadAll(manifestFile)
+			if nil != err {
+				Fail(err.Error())
+			}
+
+			/* act */
+			actualErrs := objectUnderTest.Validate(manifestBytes)
+
+			/* assert */
+			Expect(actualErrs).To(BeNil())
+		})
+	})
 
 })

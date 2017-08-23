@@ -1,0 +1,44 @@
+name: valid_run_container
+inputs:
+  inputString1:
+    string: {}
+  inputDir1:
+    dir: {}
+  inputDir2:
+    dir: {}
+  inputFile1:
+    file: {}
+  inputFile2:
+    file: {}
+run:
+  container:
+    cmd:
+      - some
+      - $(inputString1)
+      - cmd
+    dirs:
+      /inputDir1: # implicitly bound
+      /inputDir12: inputDir2 # explicitly bound
+      /outputDir1: outputDir1
+    files:
+      /inputFile1: # implicitly bound
+      /inputFile2: inputFile2 # explicitly bound
+      /outputFile1: outputFile1
+    image:
+      ref: imageRef
+      pullCreds:
+        username: imageUsername
+        password: imagePassword
+    name: myName
+    ports:
+      '2': # implicit
+      '2': '3' # map
+      '0-2': # implicit range
+      '0-2': '2-3' # range map
+    stdOut:
+      linePrefix1: stdOutOutput1
+      linePrefix2: stdOutOutput1
+    stdErr:
+      linePrefix1: stdErrOutput1
+      linePrefix2: stdErrOutput2
+    workDir: /some/path
