@@ -11,9 +11,10 @@ const (
 
 // ValueSourcer de references references
 type DeReferencer interface {
+	// DeReference returns the de referenced value (if any), whether de referencing occurred, and any err
 	DeReference(
 		ref string,
-	) (string, error)
+	) (string, bool, error)
 }
 
 type Interpolater interface {
@@ -38,15 +39,11 @@ func (itp _Interpolater) Interpolate(
 	for i < len(expression) {
 		switch {
 		case operator == expression[i]:
-			value, consumed, ok, err := itp.tryDeRef(expression[i+1:], deReferencer)
+			result, consumed, err := itp.tryDeRef(expression[i+1:], deReferencer)
 			if nil != err {
 				return "", err
 			}
-			if ok {
-				refBuffer = append(refBuffer, value...)
-			} else {
-				refBuffer = append(refBuffer, expression[i:i+consumed+1]...)
-			}
+			refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
 			refBuffer = append(refBuffer, expression[i])
@@ -66,28 +63,31 @@ func (itp _Interpolater) Interpolate(
 func (itp _Interpolater) tryDeRef(
 	possibleRef string,
 	deReferencer DeReferencer,
-) (string, int, bool, error) {
+) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0
 	for i < len(possibleRef) {
 		switch {
-		case i == 0:
-			if refOpener != possibleRef[i] {
-				return "", 1, false, nil
-			}
+		case refOpener == possibleRef[i]:
+      if i != 0 {
+        refBuffer = append(refBuffer, possibleRef[i])
+      }
 		case refCloser == possibleRef[i]:
-			value, err := deReferencer.DeReference(string(refBuffer))
-			return value, i + 1, true, err
-		case operator == possibleRef[i]:
-			value, consumed, ok, err := itp.tryDeRef(possibleRef[i+1:], deReferencer)
-			if nil != err {
-				return "", 0, false, err
-			}
+			ref := string(refBuffer)
+			result, ok, err := deReferencer.DeReference(ref)
+      if nil != err {
+        return "", 0, err
+      }
 			if ok {
-				refBuffer = append(refBuffer, value...)
-			} else {
-				refBuffer = append(refBuffer, possibleRef[i:i+consumed]...)
+        return result, i + 1, err
 			}
+      refBuffer = append(refBuffer, possibleRef[i])
+		case operator == possibleRef[i]:
+			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], deReferencer)
+			if nil != err {
+				return "", 0, err
+			}
+      refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
 			refBuffer = append(refBuffer, possibleRef[i])
@@ -97,5 +97,5 @@ func (itp _Interpolater) tryDeRef(
 		i++
 	}
 
-	return "", len(possibleRef), false, nil
+	return "$(" + string(refBuffer), len(possibleRef), nil
 }

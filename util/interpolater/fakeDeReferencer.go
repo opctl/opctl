@@ -6,24 +6,26 @@ import (
 )
 
 type FakeDeReferencer struct {
-	DeReferenceStub        func(ref string) (string, error)
+	DeReferenceStub        func(ref string) (string, bool, error)
 	deReferenceMutex       sync.RWMutex
 	deReferenceArgsForCall []struct {
 		ref string
 	}
 	deReferenceReturns struct {
 		result1 string
-		result2 error
+		result2 bool
+		result3 error
 	}
 	deReferenceReturnsOnCall map[int]struct {
 		result1 string
-		result2 error
+		result2 bool
+		result3 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDeReferencer) DeReference(ref string) (string, error) {
+func (fake *FakeDeReferencer) DeReference(ref string) (string, bool, error) {
 	fake.deReferenceMutex.Lock()
 	ret, specificReturn := fake.deReferenceReturnsOnCall[len(fake.deReferenceArgsForCall)]
 	fake.deReferenceArgsForCall = append(fake.deReferenceArgsForCall, struct {
@@ -35,9 +37,9 @@ func (fake *FakeDeReferencer) DeReference(ref string) (string, error) {
 		return fake.DeReferenceStub(ref)
 	}
 	if specificReturn {
-		return ret.result1, ret.result2
+		return ret.result1, ret.result2, ret.result3
 	}
-	return fake.deReferenceReturns.result1, fake.deReferenceReturns.result2
+	return fake.deReferenceReturns.result1, fake.deReferenceReturns.result2, fake.deReferenceReturns.result3
 }
 
 func (fake *FakeDeReferencer) DeReferenceCallCount() int {
@@ -52,26 +54,29 @@ func (fake *FakeDeReferencer) DeReferenceArgsForCall(i int) string {
 	return fake.deReferenceArgsForCall[i].ref
 }
 
-func (fake *FakeDeReferencer) DeReferenceReturns(result1 string, result2 error) {
+func (fake *FakeDeReferencer) DeReferenceReturns(result1 string, result2 bool, result3 error) {
 	fake.DeReferenceStub = nil
 	fake.deReferenceReturns = struct {
 		result1 string
-		result2 error
-	}{result1, result2}
+		result2 bool
+		result3 error
+	}{result1, result2, result3}
 }
 
-func (fake *FakeDeReferencer) DeReferenceReturnsOnCall(i int, result1 string, result2 error) {
+func (fake *FakeDeReferencer) DeReferenceReturnsOnCall(i int, result1 string, result2 bool, result3 error) {
 	fake.DeReferenceStub = nil
 	if fake.deReferenceReturnsOnCall == nil {
 		fake.deReferenceReturnsOnCall = make(map[int]struct {
 			result1 string
-			result2 error
+			result2 bool
+			result3 error
 		})
 	}
 	fake.deReferenceReturnsOnCall[i] = struct {
 		result1 string
-		result2 error
-	}{result1, result2}
+		result2 bool
+		result3 error
+	}{result1, result2, result3}
 }
 
 func (fake *FakeDeReferencer) Invocations() map[string][][]interface{} {

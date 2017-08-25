@@ -19,12 +19,13 @@ var _ = Context("deReferencer", func() {
 			}
 
 			/* act */
-			actualString, actualErr := objectUnderTest.DeReference(
+			actualString, actualOk, actualErr := objectUnderTest.DeReference(
 				providedRef,
 			)
 
 			/* assert */
 			Expect(actualString).To(Equal(providedRef))
+			Expect(actualOk).To(Equal(false))
 			Expect(actualErr).To(BeNil())
 		})
 	})
@@ -71,11 +72,12 @@ var _ = Context("deReferencer", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.DeReference(
+				_, actualOk, actualErr := objectUnderTest.DeReference(
 					providedRef,
 				)
 
 				/* assert */
+				Expect(actualOk).To(Equal(false))
 				Expect(actualErr).To(Equal(fmt.Errorf("Unable to deReference '%v' as string; error was: %v", providedRef, coerceError.Error())))
 			})
 		})
@@ -97,12 +99,13 @@ var _ = Context("deReferencer", func() {
 				}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.DeReference(
+				actualString, actualOk, actualErr := objectUnderTest.DeReference(
 					providedRef,
 				)
 
 				/* assert */
 				Expect(actualString).To(Equal(coercedString))
+				Expect(actualOk).To(Equal(true))
 				Expect(actualErr).To(BeNil())
 			})
 		})

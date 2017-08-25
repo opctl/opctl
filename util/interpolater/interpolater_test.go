@@ -417,12 +417,12 @@ var _ = Context("Interpolate", func() {
 				refdValue := "dummyRefdValue"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef:
-						return refdValue, nil
+						return refdValue, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -453,12 +453,12 @@ var _ = Context("Interpolate", func() {
 				refdValue := "dummyRefdValue"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef:
-						return refdValue, nil
+						return refdValue, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -489,12 +489,12 @@ var _ = Context("Interpolate", func() {
 				refdValue := "dummyRefdValue"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef:
-						return refdValue, nil
+						return refdValue, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -525,12 +525,12 @@ var _ = Context("Interpolate", func() {
 				refdValue := "dummyRefdValue"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef:
-						return refdValue, nil
+						return refdValue, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -565,14 +565,14 @@ var _ = Context("Interpolate", func() {
 				refdValue2 := "dummyRefdValue2"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef1:
-						return refdValue1, nil
+						return refdValue1, true, nil
 					case providedRef2:
-						return refdValue2, nil
+						return refdValue2, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -605,14 +605,14 @@ var _ = Context("Interpolate", func() {
 				refdValue2 := "dummyRefdValue2"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef1:
-						return refdValue1, nil
+						return refdValue1, true, nil
 					case providedRef2:
-						return refdValue2, nil
+						return refdValue2, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -645,14 +645,14 @@ var _ = Context("Interpolate", func() {
 				refdValue2 := "dummyRefdValue2"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef1:
-						return refdValue1, nil
+						return refdValue1, true, nil
 					case providedRef2:
-						return refdValue2, nil
+						return refdValue2, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -685,14 +685,14 @@ var _ = Context("Interpolate", func() {
 				refdValue2 := "dummyRefdValue2"
 
 				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
+				fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
 					switch ref {
 					case providedRef1:
-						return refdValue1, nil
+						return refdValue1, true, nil
 					case providedRef2:
-						return refdValue2, nil
+						return refdValue2, true, nil
 					default:
-						return "", nil
+						return "", false, nil
 					}
 				}
 
@@ -715,161 +715,313 @@ var _ = Context("Interpolate", func() {
 		})
 	})
 	Context("nested ref", func() {
-		Context("stand alone", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedRef := "dummyRef"
-				providedExpression := fmt.Sprintf("$($(%v))", providedRef)
-				objectUnderTest := _Interpolater{}
+		Context("outer ref stand alone", func() {
+      Context("inner ref stand alone", func() {
+        It("should return expected result", func() {
+          /* arrange */
+          providedRef := "dummyRef"
+          providedExpression := fmt.Sprintf("$($(%v))", providedRef)
+          objectUnderTest := _Interpolater{}
 
-				innerRefdValue := "innerRefdValue"
-				outerRefdValue := "outerRefdValue"
+          innerRefdValue := "innerRefdValue"
+          outerRefdValue := "outerRefdValue"
 
-				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
-					switch ref {
-					case providedRef:
-						return innerRefdValue, nil
-					case innerRefdValue:
-						return outerRefdValue, nil
-					default:
-						return "", nil
-					}
-				}
+          fakeDeReferencer := new(FakeDeReferencer)
+          fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+            switch ref {
+            case providedRef:
+              return innerRefdValue, true, nil
+            case innerRefdValue:
+              return outerRefdValue, true, nil
+            default:
+              return "", false, nil
+            }
+          }
 
-				expectedValue := strings.Replace(
-					providedExpression,
-					fmt.Sprintf("$($(%v))", providedRef),
-					outerRefdValue,
-					-1,
-				)
+          expectedValue := strings.Replace(
+            providedExpression,
+            fmt.Sprintf("$($(%v))", providedRef),
+            outerRefdValue,
+            -1,
+          )
 
-				/* act */
-				actualResult, _ := objectUnderTest.Interpolate(
-					providedExpression,
-					fakeDeReferencer,
-				)
+          /* act */
+          actualResult, _ := objectUnderTest.Interpolate(
+            providedExpression,
+            fakeDeReferencer,
+          )
 
-				/* assert */
-				Expect(actualResult).To(Equal(expectedValue))
-			})
+          /* assert */
+          Expect(actualResult).To(Equal(expectedValue))
+        })
+        Context("outer ref isn't in scope", func() {
+          It("should return expected result", func() {
+            /* arrange */
+            providedRef := "dummyRef"
+            providedExpression := fmt.Sprintf("$($(%v))", providedRef)
+            objectUnderTest := _Interpolater{}
+
+            innerRefdValue := "innerRefdValue"
+
+            fakeDeReferencer := new(FakeDeReferencer)
+            fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+              switch ref {
+              case providedRef:
+                return innerRefdValue, true, nil
+              default:
+                return "", false, nil
+              }
+            }
+
+            expectedValue := strings.Replace(
+              providedExpression,
+              fmt.Sprintf("$(%v)", providedRef),
+              innerRefdValue,
+              -1,
+            )
+
+            /* act */
+            actualResult, _ := objectUnderTest.Interpolate(
+              providedExpression,
+              fakeDeReferencer,
+            )
+
+            /* assert */
+            Expect(actualResult).To(Equal(expectedValue))
+          })
+        })
+      })
 		})
-		Context("at start", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedRef := "dummyRef"
-				providedExpression := fmt.Sprintf("$($(%v))suffix", providedRef)
-				objectUnderTest := _Interpolater{}
+		Context("outer ref at start", func() {
+      Context("inner ref stand alone", func() {
+        It("should return expected result", func() {
+          /* arrange */
+          providedRef := "dummyRef"
+          providedExpression := fmt.Sprintf("$($(%v))suffix", providedRef)
+          objectUnderTest := _Interpolater{}
 
-				innerRefdValue := "innerRefdValue"
-				outerRefdValue := "outerRefdValue"
+          innerRefdValue := "innerRefdValue"
+          outerRefdValue := "outerRefdValue"
 
-				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
-					switch ref {
-					case providedRef:
-						return innerRefdValue, nil
-					case innerRefdValue:
-						return outerRefdValue, nil
-					default:
-						return "", nil
-					}
-				}
+          fakeDeReferencer := new(FakeDeReferencer)
+          fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+            switch ref {
+            case providedRef:
+              return innerRefdValue, true, nil
+            case innerRefdValue:
+              return outerRefdValue, true, nil
+            default:
+              return "", false, nil
+            }
+          }
 
-				expectedValue := strings.Replace(
-					providedExpression,
-					fmt.Sprintf("$($(%v))", providedRef),
-					outerRefdValue,
-					-1,
-				)
+          expectedValue := strings.Replace(
+            providedExpression,
+            fmt.Sprintf("$($(%v))", providedRef),
+            outerRefdValue,
+            -1,
+          )
 
-				/* act */
-				actualResult, _ := objectUnderTest.Interpolate(
-					providedExpression,
-					fakeDeReferencer,
-				)
+          /* act */
+          actualResult, _ := objectUnderTest.Interpolate(
+            providedExpression,
+            fakeDeReferencer,
+          )
 
-				/* assert */
-				Expect(actualResult).To(Equal(expectedValue))
-			})
+          /* assert */
+          Expect(actualResult).To(Equal(expectedValue))
+        })
+        Context("outer ref isn't in scope", func() {
+          It("should return expected result", func() {
+            /* arrange */
+            providedRef := "dummyRef"
+            providedExpression := fmt.Sprintf("$($(%v))suffix", providedRef)
+            objectUnderTest := _Interpolater{}
+
+            innerRefdValue := "innerRefdValue"
+
+            fakeDeReferencer := new(FakeDeReferencer)
+            fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+              switch ref {
+              case providedRef:
+                return innerRefdValue, true, nil
+              default:
+                return "", false, nil
+              }
+            }
+
+            expectedValue := strings.Replace(
+              providedExpression,
+              fmt.Sprintf("$(%v)", providedRef),
+              innerRefdValue,
+              -1,
+            )
+
+            /* act */
+            actualResult, _ := objectUnderTest.Interpolate(
+              providedExpression,
+              fakeDeReferencer,
+            )
+
+            /* assert */
+            Expect(actualResult).To(Equal(expectedValue))
+          })
+        })
+      })
 		})
-		Context("at end", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedRef := "dummyRef"
-				providedExpression := fmt.Sprintf("prefix$($(%v))", providedRef)
-				objectUnderTest := _Interpolater{}
+		Context("outer ref at end", func() {
+      Context("inner ref stand alone", func() {
+        It("should return expected result", func() {
+          /* arrange */
+          providedRef := "dummyRef"
+          providedExpression := fmt.Sprintf("prefix$($(%v))", providedRef)
+          objectUnderTest := _Interpolater{}
 
-				innerRefdValue := "innerRefdValue"
-				outerRefdValue := "outerRefdValue"
+          innerRefdValue := "innerRefdValue"
+          outerRefdValue := "outerRefdValue"
 
-				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
-					switch ref {
-					case providedRef:
-						return innerRefdValue, nil
-					case innerRefdValue:
-						return outerRefdValue, nil
-					default:
-						return "", nil
-					}
-				}
+          fakeDeReferencer := new(FakeDeReferencer)
+          fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+            switch ref {
+            case providedRef:
+              return innerRefdValue, true, nil
+            case innerRefdValue:
+              return outerRefdValue, true, nil
+            default:
+              return "", false, nil
+            }
+          }
 
-				expectedValue := strings.Replace(
-					providedExpression,
-					fmt.Sprintf("$($(%v))", providedRef),
-					outerRefdValue,
-					-1,
-				)
+          expectedValue := strings.Replace(
+            providedExpression,
+            fmt.Sprintf("$($(%v))", providedRef),
+            outerRefdValue,
+            -1,
+          )
 
-				/* act */
-				actualResult, _ := objectUnderTest.Interpolate(
-					providedExpression,
-					fakeDeReferencer,
-				)
+          /* act */
+          actualResult, _ := objectUnderTest.Interpolate(
+            providedExpression,
+            fakeDeReferencer,
+          )
 
-				/* assert */
-				Expect(actualResult).To(Equal(expectedValue))
-			})
+          /* assert */
+          Expect(actualResult).To(Equal(expectedValue))
+        })
+        Context("outer ref isn't in scope", func() {
+          It("should return expected result", func() {
+            /* arrange */
+            providedRef := "dummyRef"
+            providedExpression := fmt.Sprintf("prefix$($(%v))", providedRef)
+            objectUnderTest := _Interpolater{}
+
+            innerRefdValue := "innerRefdValue"
+
+            fakeDeReferencer := new(FakeDeReferencer)
+            fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+              switch ref {
+              case providedRef:
+                return innerRefdValue, true, nil
+              default:
+                return "", false, nil
+              }
+            }
+
+            expectedValue := strings.Replace(
+              providedExpression,
+              fmt.Sprintf("$(%v)", providedRef),
+              innerRefdValue,
+              -1,
+            )
+
+            /* act */
+            actualResult, _ := objectUnderTest.Interpolate(
+              providedExpression,
+              fakeDeReferencer,
+            )
+
+            /* assert */
+            Expect(actualResult).To(Equal(expectedValue))
+          })
+        })
+      })
 		})
-		Context("within", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedRef := "dummyRef"
-				providedExpression := fmt.Sprintf("prefix$($(%v))suffix", providedRef)
-				objectUnderTest := _Interpolater{}
+		Context("outer ref within", func() {
+      Context("inner ref stand alone", func(){
+        It("should return expected result", func() {
+          /* arrange */
+          providedRef := "dummyRef"
+          providedExpression := fmt.Sprintf("prefix$($(%v))suffix", providedRef)
+          objectUnderTest := _Interpolater{}
 
-				innerRefdValue := "innerRefdValue"
-				outerRefdValue := "outerRefdValue"
+          innerRefdValue := "innerRefdValue"
+          outerRefdValue := "outerRefdValue"
 
-				fakeDeReferencer := new(FakeDeReferencer)
-				fakeDeReferencer.DeReferenceStub = func(ref string) (string, error) {
-					switch ref {
-					case providedRef:
-						return innerRefdValue, nil
-					case innerRefdValue:
-						return outerRefdValue, nil
-					default:
-						return "", nil
-					}
-				}
+          fakeDeReferencer := new(FakeDeReferencer)
+          fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+            switch ref {
+            case providedRef:
+              return innerRefdValue, true, nil
+            case innerRefdValue:
+              return outerRefdValue, true, nil
+            default:
+              return "", false, nil
+            }
+          }
 
-				expectedValue := strings.Replace(
-					providedExpression,
-					fmt.Sprintf("$($(%v))", providedRef),
-					outerRefdValue,
-					-1,
-				)
+          expectedValue := strings.Replace(
+            providedExpression,
+            fmt.Sprintf("$($(%v))", providedRef),
+            outerRefdValue,
+            -1,
+          )
 
-				/* act */
-				actualResult, _ := objectUnderTest.Interpolate(
-					providedExpression,
-					fakeDeReferencer,
-				)
+          /* act */
+          actualResult, _ := objectUnderTest.Interpolate(
+            providedExpression,
+            fakeDeReferencer,
+          )
 
-				/* assert */
-				Expect(actualResult).To(Equal(expectedValue))
-			})
+          /* assert */
+          Expect(actualResult).To(Equal(expectedValue))
+        })
+        Context("outer ref isn't in scope", func() {
+          It("should return expected result", func() {
+            /* arrange */
+            providedRef := "dummyRef"
+            providedExpression := fmt.Sprintf("prefix$($(%v))suffix", providedRef)
+            objectUnderTest := _Interpolater{}
+
+            innerRefdValue := "innerRefdValue"
+
+            fakeDeReferencer := new(FakeDeReferencer)
+            fakeDeReferencer.DeReferenceStub = func(ref string) (string, bool, error) {
+              switch ref {
+              case providedRef:
+                return innerRefdValue, true, nil
+              default:
+                return "", false, nil
+              }
+            }
+
+            expectedValue := strings.Replace(
+              providedExpression,
+              fmt.Sprintf("$(%v)", providedRef),
+              innerRefdValue,
+              -1,
+            )
+
+            /* act */
+            actualResult, _ := objectUnderTest.Interpolate(
+              providedExpression,
+              fakeDeReferencer,
+            )
+
+            /* assert */
+            Expect(actualResult).To(Equal(expectedValue))
+          })
+        })
+      })
 		})
 	})
 })
