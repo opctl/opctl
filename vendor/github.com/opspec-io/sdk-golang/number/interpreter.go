@@ -31,6 +31,19 @@ func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression string,
 ) (float64, error) {
+	var possibleRefOpens, possibleRefCloses []int
+
+	// first find possible ref opens/closes
+	for i := 0; i < len(expression); i++ {
+		switch {
+		case i > 0 && '(' == expression[i] && '$' == expression[i-1]:
+			possibleRefOpens = append(possibleRefOpens, i)
+		case i > 2 && ')' == expression[i]:
+			// i > 2 because shortest possible ref is single char e.g. '$(a)' where indexOf(')') == 3
+			possibleRefCloses = append(possibleRefCloses, i)
+		}
+	}
+
 	var resultBuffer, possibleRefBuffer bytes.Buffer
 
 	// note: WriteByte/Number errs ignored as per their docs; they're always nil
@@ -38,8 +51,14 @@ func (itp _interpreter) Interpret(
 		switch {
 		case '$' == expression[i]:
 			possibleRefBuffer.WriteByte('$')
-		case possibleRefBuffer.Len() == 1 && '(' == expression[i]:
-			possibleRefBuffer.WriteByte('(')
+		case possibleRefBuffer.Len() == 1:
+			if '(' == expression[i] {
+				possibleRefBuffer.WriteByte('(')
+			} else {
+				possibleRefBuffer.Reset()
+				resultBuffer.WriteByte('$')
+				resultBuffer.WriteByte(expression[i])
+			}
 		case possibleRefBuffer.Len() > 0 && ')' == expression[i]:
 			// we've got a ref
 			ref := possibleRefBuffer.String()[2:]

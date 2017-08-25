@@ -21,7 +21,7 @@ run:
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }
     - op:
-        pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.0 }
+        pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.1 }
         inputs: { dotGitDir: $(srcDir)/.git }
         outputs: { gitCommit: commit }
     - op:
