@@ -22,5 +22,5 @@ run:
         go-bindata -pkg manifest -o pkg/manifest/bindata.go pkg/manifest/data/...
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: srcDir
-    image: { ref: 'golang:1.8' }
+    image: { ref: 'golang:1.9' }
     workDir: /go/src/github.com/opspec-io/sdk-golang

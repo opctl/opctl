@@ -68,26 +68,23 @@ func (itp _Interpolater) tryDeRef(
 	i := 0
 	for i < len(possibleRef) {
 		switch {
-		case refOpener == possibleRef[i]:
-      if i != 0 {
-        refBuffer = append(refBuffer, possibleRef[i])
-      }
 		case refCloser == possibleRef[i]:
-			ref := string(refBuffer)
-			result, ok, err := deReferencer.DeReference(ref)
-      if nil != err {
-        return "", 0, err
-      }
-			if ok {
-        return result, i + 1, err
+			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
+				result, ok, err := deReferencer.DeReference(string(refBuffer[1:]))
+				if nil != err {
+					return "", 0, err
+				}
+				if ok {
+					return result, i + 1, err
+				}
 			}
-      refBuffer = append(refBuffer, possibleRef[i])
+			refBuffer = append(refBuffer, possibleRef[i])
 		case operator == possibleRef[i]:
 			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], deReferencer)
 			if nil != err {
 				return "", 0, err
 			}
-      refBuffer = append(refBuffer, result...)
+			refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
 			refBuffer = append(refBuffer, possibleRef[i])
@@ -97,5 +94,5 @@ func (itp _Interpolater) tryDeRef(
 		i++
 	}
 
-	return "$(" + string(refBuffer), len(possibleRef), nil
+	return "$" + string(refBuffer), len(possibleRef), nil
 }
