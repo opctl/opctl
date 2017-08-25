@@ -23,5 +23,5 @@ run:
         ginkgo --v -cover -race -r
     dirs:
       /go/src/github.com/opctl/opctl: srcDir
-    image: { ref: 'golang:1.8' }
+    image: { ref: 'golang:1.9' }
     workDir: /go/src/github.com/opctl/opctl
