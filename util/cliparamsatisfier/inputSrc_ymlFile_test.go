@@ -1,7 +1,6 @@
 package cliparamsatisfier
 
 import (
-	"encoding/json"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
@@ -41,13 +40,13 @@ var _ = Describe("ymlFileInputSrc", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedInputName := "dummyInputName"
-				value := json.RawMessage("dummyValue")
+				value := "dummyValue"
 
 				fakeJSON := new(ijson.Fake)
 				fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 					reflect.ValueOf(v).Elem().SetMapIndex(
 						reflect.ValueOf(providedInputName),
-						reflect.ValueOf(&value),
+						reflect.ValueOf(value),
 					)
 					return nil
 				}
@@ -73,13 +72,13 @@ var _ = Describe("ymlFileInputSrc", func() {
 			It("should return value only once", func() {
 				/* arrange */
 				providedInputName := "dummyInputName"
-				value := json.RawMessage("dummyValue")
+				value := "dummyValue"
 
 				fakeJSON := new(ijson.Fake)
 				fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 					reflect.ValueOf(v).Elem().SetMapIndex(
 						reflect.ValueOf(providedInputName),
-						reflect.ValueOf(&value),
+						reflect.ValueOf(value),
 					)
 					return nil
 				}
