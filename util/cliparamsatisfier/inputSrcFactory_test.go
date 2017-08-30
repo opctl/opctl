@@ -1,7 +1,6 @@
 package cliparamsatisfier
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
@@ -177,9 +176,9 @@ var _ = Describe("inputSrcFactory", func() {
 						/* arrange */
 
 						input1Name := "input1Name"
-						input1Value := json.RawMessage("input1Value")
+						input1Value := "input1Value"
 
-						expectedMap := map[string]string{
+						expectedMap := map[string]interface{}{
 							input1Name: string(input1Value),
 						}
 
@@ -187,7 +186,7 @@ var _ = Describe("inputSrcFactory", func() {
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().SetMapIndex(
 								reflect.ValueOf(input1Name),
-								reflect.ValueOf(&input1Value),
+								reflect.ValueOf(input1Value),
 							)
 							return nil
 						}
