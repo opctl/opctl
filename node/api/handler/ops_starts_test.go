@@ -20,7 +20,7 @@ var _ = Context("POST /ops/starts", func() {
 
 			httpReq, err := http.NewRequest(http.MethodPost, api.URLOps_Starts, bytes.NewReader([]byte{}))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */

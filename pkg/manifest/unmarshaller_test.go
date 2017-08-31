@@ -99,7 +99,7 @@ var _ = Context("_manifestUnmarshaller", func() {
 				}
 				providedBytes, err := yaml.Marshal(expectedPkgManifest)
 				if nil != err {
-					Fail(err.Error())
+					panic(err.Error())
 				}
 
 				objectUnderTest := _Manifest{

@@ -30,7 +30,7 @@ var _ = Context("GET /events/stream", func() {
 
 			httpReq, err := http.NewRequest(http.MethodGet, api.URLEvents_Stream, bytes.NewReader([]byte{}))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -58,7 +58,7 @@ var _ = Context("GET /events/stream", func() {
 					bytes.NewReader([]byte{}),
 				)
 				if nil != err {
-					Fail(err.Error())
+					panic(err.Error())
 				}
 
 				/* act */
@@ -107,7 +107,7 @@ var _ = Context("GET /events/stream", func() {
 					bytes.NewReader([]byte{}),
 				)
 				if nil != err {
-					Fail(err.Error())
+					panic(err.Error())
 				}
 
 				/* act */

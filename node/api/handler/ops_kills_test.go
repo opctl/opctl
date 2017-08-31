@@ -20,7 +20,7 @@ var _ = Context("POST /ops/kills", func() {
 
 			httpReq, err := http.NewRequest(http.MethodPost, api.URLOps_Kills, bytes.NewReader([]byte{}))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */

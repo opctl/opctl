@@ -24,12 +24,12 @@ var _ = Context("Validator", func() {
 
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid__yml/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -49,12 +49,12 @@ var _ = Context("Validator", func() {
 
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_inputs_type/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -74,12 +74,12 @@ var _ = Context("Validator", func() {
 
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_outputs_type/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -100,12 +100,12 @@ var _ = Context("Validator", func() {
 
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/invalid_run_type/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -121,12 +121,12 @@ var _ = Context("Validator", func() {
 			/* arrange */
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid__all/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -142,12 +142,12 @@ var _ = Context("Validator", func() {
 			/* arrange */
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid_run.container_all/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */
@@ -163,12 +163,12 @@ var _ = Context("Validator", func() {
 			/* arrange */
 			manifestFile, err := os.Open(fmt.Sprintf("%v/testdata/validate/valid_run.op_all/op.yml", wd))
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			manifestBytes, err := ioutil.ReadAll(manifestFile)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			/* act */

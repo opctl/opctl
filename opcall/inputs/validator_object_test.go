@@ -352,7 +352,7 @@ var _ = Context("Validate", func() {
 
 						expectedError, err := json.Marshal(providedParam.Object.Constraints.Enum[0])
 						if nil != err {
-							Fail(err.Error())
+							panic(err.Error())
 						}
 
 						expectedErrors := []error{
@@ -799,7 +799,7 @@ var _ = Context("Validate", func() {
 
 						patterns, err := json.Marshal([]string{providedValueObjectProp1Name, providedValueObjectProp2Name})
 						if err != nil {
-							Fail(err.Error())
+							panic(err.Error())
 						}
 
 						expectedErrors := []error{
@@ -814,7 +814,7 @@ var _ = Context("Validate", func() {
 						// fix pattern order (maps in go not stable)
 						OutOfOrderPatterns, err := json.Marshal([]string{providedValueObjectProp2Name, providedValueObjectProp1Name})
 						if err != nil {
-							Fail(err.Error())
+							panic(err.Error())
 						}
 						for errIndex, err := range actualErrors {
 							actualErrors[errIndex] = errors.New(
@@ -854,7 +854,7 @@ var _ = Context("Validate", func() {
 
 						patterns, err := json.Marshal([]string{providedValueObjectProp1Name, providedValueObjectProp2Name})
 						if err != nil {
-							Fail(err.Error())
+							panic(err.Error())
 						}
 
 						expectedErrors := []error{
@@ -871,7 +871,7 @@ var _ = Context("Validate", func() {
 						// fix pattern order (maps in go not stable)
 						OutOfOrderPatterns, err := json.Marshal([]string{providedValueObjectProp2Name, providedValueObjectProp1Name})
 						if err != nil {
-							Fail(err.Error())
+							panic(err.Error())
 						}
 						for errIndex, err := range actualErrors {
 							actualErrors[errIndex] = errors.New(

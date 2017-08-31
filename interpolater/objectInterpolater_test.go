@@ -48,7 +48,7 @@ var _ = Context("Interpolate", func() {
 			providedVarValue := map[string]interface{}{"dummyProp1Name": "dummyProp1Value"}
 			providedVarValueBytes, err := json.Marshal(providedVarValue)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			providedInput := fmt.Sprintf(
@@ -79,7 +79,7 @@ var _ = Context("Interpolate", func() {
 
 				providedVarValueBytes, err := json.Marshal(providedVarValue)
 				if nil != err {
-					Fail(err.Error())
+					panic(err.Error())
 				}
 
 				providedInput := fmt.Sprintf(

@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -87,7 +88,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			providedPkgRef := "dummyPkgRef%2F"
 			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
 			if nil != err {
-				Fail(err.Error())
+				panic(err.Error())
 			}
 
 			fakeCore := new(core.Fake)
@@ -112,34 +113,129 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			Expect(actualPullCreds).To(BeNil())
 		})
 		Context("core.ResolvePkg errs", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				expectedBody := "dummyErrorMsg"
+			Context("err is model.ErrPkgPullAuthentication", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					pkgPullAuthenticationErr := model.ErrPkgPullAuthentication{}
 
-				fakeCore := new(core.Fake)
-				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, errors.New(expectedBody))
+					fakeCore := new(core.Fake)
+					// error to trigger immediate return
+					fakeCore.ResolvePkgReturns(nil, pkgPullAuthenticationErr)
 
-				objectUnderTest := New(fakeCore)
-				recorder := httptest.NewRecorder()
+					objectUnderTest := New(fakeCore)
+					recorder := httptest.NewRecorder()
 
-				httpReq, err := http.NewRequest(
-					http.MethodGet,
-					"/pkgs/dummyRef/contents/dummyPath",
-					nil,
-				)
-				if nil != err {
-					Fail(err.Error())
-				}
+					httpReq, err := http.NewRequest(
+						http.MethodGet,
+						"/pkgs/dummyRef/contents/dummyPath",
+						nil,
+					)
+					if nil != err {
+						panic(err.Error())
+					}
 
-				/* act */
-				objectUnderTest.ServeHTTP(recorder, httpReq)
+					/* act */
+					objectUnderTest.ServeHTTP(recorder, httpReq)
 
-				/* assert */
-				Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
-				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-				actualBody := strings.TrimSpace(recorder.Body.String())
-				Expect(actualBody).To(Equal(expectedBody))
+					/* assert */
+					Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
+					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+					actualBody := strings.TrimSpace(recorder.Body.String())
+					Expect(actualBody).To(Equal(pkgPullAuthenticationErr.Error()))
+				})
+			})
+			Context("err is model.ErrPkgPullAuthorization", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					pkgPullAuthorizationErr := model.ErrPkgPullAuthorization{}
+
+					fakeCore := new(core.Fake)
+					// error to trigger immediate return
+					fakeCore.ResolvePkgReturns(nil, pkgPullAuthorizationErr)
+
+					objectUnderTest := New(fakeCore)
+					recorder := httptest.NewRecorder()
+
+					httpReq, err := http.NewRequest(
+						http.MethodGet,
+						"/pkgs/dummyRef/contents/dummyPath",
+						nil,
+					)
+					if nil != err {
+						panic(err.Error())
+					}
+
+					/* act */
+					objectUnderTest.ServeHTTP(recorder, httpReq)
+
+					/* assert */
+					Expect(recorder.Code).To(Equal(http.StatusForbidden))
+					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+					actualBody := strings.TrimSpace(recorder.Body.String())
+					Expect(actualBody).To(Equal(pkgPullAuthorizationErr.Error()))
+				})
+			})
+			Context("err is model.ErrPkgNotFound", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					pkgNotFoundErr := model.ErrPkgNotFound{}
+
+					fakeCore := new(core.Fake)
+					// error to trigger immediate return
+					fakeCore.ResolvePkgReturns(nil, pkgNotFoundErr)
+
+					objectUnderTest := New(fakeCore)
+					recorder := httptest.NewRecorder()
+
+					httpReq, err := http.NewRequest(
+						http.MethodGet,
+						"/pkgs/dummyRef/contents/dummyPath",
+						nil,
+					)
+					if nil != err {
+						panic(err.Error())
+					}
+
+					/* act */
+					objectUnderTest.ServeHTTP(recorder, httpReq)
+
+					/* assert */
+					Expect(recorder.Code).To(Equal(http.StatusNotFound))
+					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+					actualBody := strings.TrimSpace(recorder.Body.String())
+					Expect(actualBody).To(Equal(pkgNotFoundErr.Error()))
+				})
+			})
+			Context("err isn't known type", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					expectedBody := "dummyErrorMsg"
+
+					fakeCore := new(core.Fake)
+					// error to trigger immediate return
+					fakeCore.ResolvePkgReturns(nil, errors.New(expectedBody))
+
+					objectUnderTest := New(fakeCore)
+					recorder := httptest.NewRecorder()
+
+					httpReq, err := http.NewRequest(
+						http.MethodGet,
+						"/pkgs/dummyRef/contents/dummyPath",
+						nil,
+					)
+					if nil != err {
+						panic(err.Error())
+					}
+
+					/* act */
+					objectUnderTest.ServeHTTP(recorder, httpReq)
+
+					/* assert */
+					Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
+					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+					actualBody := strings.TrimSpace(recorder.Body.String())
+					Expect(actualBody).To(Equal(expectedBody))
+				})
 			})
 		})
 		Context("core.GetPkgContent doesn't err", func() {
@@ -148,7 +244,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				providedContentPath := "dummyPkgRef%2F"
 				expectedContentPath, err := url.PathUnescape(providedContentPath)
 				if nil != err {
-					Fail(err.Error())
+					panic(err.Error())
 				}
 
 				fakePkgHandle := new(pkg.FakeHandle)
@@ -196,7 +292,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 						nil,
 					)
 					if nil != err {
-						Fail(err.Error())
+						panic(err.Error())
 					}
 
 					/* act */
@@ -242,7 +338,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 						nil,
 					)
 					if nil != err {
-						Fail(err.Error())
+						panic(err.Error())
 					}
 					providedRequest = providedRequest.WithContext(context.TODO())
 

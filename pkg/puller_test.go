@@ -165,7 +165,7 @@ var _ = Context("puller", func() {
 						)
 
 						fakeOS := new(ios.Fake)
-						expectedError := ErrAuthenticationFailed{}
+						expectedError := model.ErrPkgPullAuthentication{}
 
 						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthenticationRequired)
@@ -208,7 +208,7 @@ var _ = Context("puller", func() {
 						)
 
 						fakeOS := new(ios.Fake)
-						expectedError := ErrAuthenticationFailed{}
+						expectedError := model.ErrPkgPullAuthorization{}
 
 						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationFailed)

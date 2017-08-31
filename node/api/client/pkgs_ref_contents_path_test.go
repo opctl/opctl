@@ -1,8 +1,8 @@
 package client
 
 import (
-	"bytes"
 	"context"
+	"errors"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
@@ -38,10 +38,6 @@ var _ = Context("GetPkgContent", func() {
 			panic(err)
 		}
 
-		pkgContent := "dummyPkgContent"
-		httpResp := &http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(pkgContent)))}
-		expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)
-
 		expectedHttpReq, _ := http.NewRequest(
 			"GET",
 			expectedReqUrl.String(),
@@ -49,14 +45,20 @@ var _ = Context("GetPkgContent", func() {
 		)
 
 		fakeHttpClient := new(ihttp.FakeClient)
-		fakeHttpClient.DoReturns(httpResp, nil)
+		fakeHttpClient.DoReturns(
+			&http.Response{
+				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				StatusCode: http.StatusOK,
+			},
+			nil,
+		)
 
 		objectUnderTest := client{
 			httpClient: fakeHttpClient,
 		}
 
 		/* act */
-		actualReadSeekCloser, _ := objectUnderTest.GetPkgContent(providedCtx, providedReq)
+		objectUnderTest.GetPkgContent(providedCtx, providedReq)
 
 		/* assert */
 		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
@@ -66,7 +68,150 @@ var _ = Context("GetPkgContent", func() {
 		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
 		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
 
-		Expect(actualReadSeekCloser).To(Equal(expectedReadSeekCloser))
+	})
+	Context("StatusCode < 400", func() {
 
+		It("should return expected result", func() {
+
+			/* arrange */
+			httpResp := &http.Response{
+				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
+				StatusCode: http.StatusOK,
+			}
+
+			expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)
+
+			fakeHttpClient := new(ihttp.FakeClient)
+			fakeHttpClient.DoReturns(httpResp, nil)
+
+			objectUnderTest := client{
+				httpClient: fakeHttpClient,
+			}
+
+			/* act */
+			actualReadSeekCloser, actualErr := objectUnderTest.GetPkgContent(
+				context.TODO(),
+				model.GetPkgContentReq{},
+			)
+
+			/* assert */
+			Expect(actualReadSeekCloser).To(Equal(expectedReadSeekCloser))
+			Expect(actualErr).To(BeNil())
+
+		})
+	})
+	Context("StatusCode >= 400", func() {
+		Context("401", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				httpResp := &http.Response{
+					Body:       ioutil.NopCloser(nil),
+					StatusCode: http.StatusUnauthorized,
+				}
+
+				fakeHttpClient := new(ihttp.FakeClient)
+				fakeHttpClient.DoReturns(httpResp, nil)
+
+				objectUnderTest := client{
+					httpClient: fakeHttpClient,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.GetPkgContent(
+					context.TODO(),
+					model.GetPkgContentReq{},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(model.ErrPkgPullAuthentication{}))
+
+			})
+		})
+		Context("403", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				httpResp := &http.Response{
+					Body:       ioutil.NopCloser(nil),
+					StatusCode: http.StatusForbidden,
+				}
+
+				fakeHttpClient := new(ihttp.FakeClient)
+				fakeHttpClient.DoReturns(httpResp, nil)
+
+				objectUnderTest := client{
+					httpClient: fakeHttpClient,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.GetPkgContent(
+					context.TODO(),
+					model.GetPkgContentReq{},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(model.ErrPkgPullAuthorization{}))
+
+			})
+
+		})
+		Context("404", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				httpResp := &http.Response{
+					Body:       ioutil.NopCloser(nil),
+					StatusCode: http.StatusNotFound,
+				}
+
+				fakeHttpClient := new(ihttp.FakeClient)
+				fakeHttpClient.DoReturns(httpResp, nil)
+
+				objectUnderTest := client{
+					httpClient: fakeHttpClient,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.GetPkgContent(
+					context.TODO(),
+					model.GetPkgContentReq{},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(model.ErrPkgNotFound{}))
+
+			})
+
+		})
+		Context("500", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				expectedErr := errors.New("dummyMsg")
+				httpResp := &http.Response{
+					Body:       ioutil.NopCloser(strings.NewReader(expectedErr.Error())),
+					StatusCode: http.StatusInternalServerError,
+				}
+
+				fakeHttpClient := new(ihttp.FakeClient)
+				fakeHttpClient.DoReturns(httpResp, nil)
+
+				objectUnderTest := client{
+					httpClient: fakeHttpClient,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.GetPkgContent(
+					context.TODO(),
+					model.GetPkgContentReq{},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+
+			})
+
+		})
 	})
 })

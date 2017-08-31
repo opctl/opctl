@@ -4,8 +4,11 @@ import "github.com/opspec-io/sdk-golang/model"
 
 type Resolver interface {
 	// TryResolve attempts to resolve a package from providers in order
-	// returns ErrAuthenticationFailed on authentication failure
-	// returns ErrPkgNotFound on resolution failure
+  //
+  // expected errs:
+  //  - ErrPkgPullAuthentication on authentication failure
+  //  - ErrPkgPullAuthorization on authorization failure
+  //  - ErrPkgNotFound on resolution failure
 	Resolve(
 		pkgRef string,
 		providers ...Provider,
@@ -38,5 +41,5 @@ func (this _Resolver) Resolve(
 	}
 
 	// if we reached this point resolution failed, return err
-	return nil, ErrPkgNotFound{}
+	return nil, model.ErrPkgNotFound{}
 }
