@@ -2,9 +2,12 @@ package client
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/jfbus/httprs"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -36,6 +39,29 @@ func (c client) GetPkgContent(
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {
 		return nil, err
+	}
+
+	if httpResp.StatusCode >= 400 {
+		defer httpResp.Body.Close()
+
+		switch httpResp.StatusCode {
+		case http.StatusUnauthorized:
+			return nil, model.ErrPkgPullAuthentication{}
+		case http.StatusForbidden:
+			return nil, model.ErrPkgPullAuthorization{}
+		case http.StatusNotFound:
+			return nil, model.ErrPkgNotFound{}
+		default:
+			body, err := ioutil.ReadAll(httpResp.Body)
+			if nil != err {
+				return nil, fmt.Errorf(
+					"Error encountered parsing response w/ status code '%v'; error was %v",
+					httpResp.StatusCode,
+					err.Error(),
+				)
+			}
+			return nil, errors.New(string(body))
+		}
 	}
 
 	// @TODO: rework to be true read seek closer; httprs seems to do a call w/ no end range

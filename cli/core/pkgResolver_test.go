@@ -135,11 +135,11 @@ var _ = Context("pkgResolver", func() {
 				Expect(actualProviders).To(ConsistOf(fakeFSProvider, fakeNodeProvider))
 			})
 			Context("pkg.Resolve errs", func() {
-				Context("pkg.ErrAuthenticationFailed", func() {
+				Context("pkg.ErrPkgPullAuthorization", func() {
 					It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
 						fakePkg := new(pkg.Fake)
-						expectedError := pkg.ErrAuthenticationFailed{}
+						expectedError := model.ErrPkgPullAuthorization{}
 						fakePkg.ResolveReturnsOnCall(0, nil, expectedError)
 
 						username := "dummyUsername"
@@ -173,7 +173,7 @@ var _ = Context("pkgResolver", func() {
 						fakeNodeProvider := new(pkg.FakeProvider)
 						fakePkg.NewNodeProviderReturns(fakeNodeProvider)
 
-						expectedError := pkg.ErrAuthenticationFailed{}
+						expectedError := model.ErrPkgPullAuthentication{}
 						fakePkg.ResolveReturnsOnCall(0, nil, expectedError)
 
 						pullCreds := &model.PullCreds{
@@ -223,7 +223,7 @@ var _ = Context("pkgResolver", func() {
 						fakeNodeProvider := new(pkg.FakeProvider)
 						fakePkg.NewNodeProviderReturns(fakeNodeProvider)
 
-						expectedError := pkg.ErrAuthenticationFailed{}
+						expectedError := model.ErrPkgPullAuthentication{}
 						fakePkg.ResolveReturnsOnCall(0, nil, expectedError)
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)

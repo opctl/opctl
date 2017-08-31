@@ -30,9 +30,13 @@ type Core interface {
 		err error,
 	)
 
-	// Resolve attempts to resolve a package according to opspec package resolution rules
-	// nil opts will be ignored
-	// returns ErrAuthenticationFailed on authentication failure
+	// Resolve attempts to resolve a pkg via local filesystem or git
+	// nil pullCreds will be ignored
+  //
+  // expected errs:
+  //  - ErrPkgPullAuthentication on authentication failure
+  //  - ErrPkgPullAuthorization on authorization failure
+  //  - ErrPkgNotFound on resolution failure
 	ResolvePkg(
 		pkgRef string,
 		pullCreds *model.PullCreds,
