@@ -22,10 +22,10 @@ var pullerSingleFlightGroup singleflight.Group
 type puller interface {
 	// Pull pulls 'pkgRef' to 'path'
 	// nil pullCreds will be ignored
-  //
-  // expected errs:
-  //  - ErrPkgPullAuthentication on authentication failure
-  //  - ErrPkgPullAuthorization on authorization failure
+	//
+	// expected errs:
+	//  - ErrPkgPullAuthentication on authentication failure
+	//  - ErrPkgPullAuthorization on authorization failure
 	Pull(
 		path string,
 		pkgRef string,
