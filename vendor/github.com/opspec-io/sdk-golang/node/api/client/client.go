@@ -21,6 +21,12 @@ type Client interface {
 		err error,
 	)
 
+	// GetContent gets content from a package
+  //
+  // expected errs:
+  //  - ErrPkgPullAuthentication on authentication failure
+  //  - ErrPkgPullAuthorization on authorization failure
+  //  - ErrPkgNotFound on resolution failure
 	GetPkgContent(
 		ctx context.Context,
 		req model.GetPkgContentReq,
@@ -36,6 +42,12 @@ type Client interface {
 		err error,
 	)
 
+	// ListContents lists contents of a package
+  //
+  // expected errs:
+  //  - ErrPkgPullAuthentication on authentication failure
+  //  - ErrPkgPullAuthorization on authorization failure
+  //  - ErrPkgNotFound on resolution failure
 	ListPkgContents(
 		ctx context.Context,
 		req model.ListPkgContentsReq,
@@ -66,6 +78,7 @@ func New(
 ) Client {
 
 	httpClient := pester.New()
+  httpClient.Backoff = pester.ExponentialBackoff
 
 	if nil != opts {
 		// handle options

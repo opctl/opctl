@@ -22,7 +22,10 @@ var pullerSingleFlightGroup singleflight.Group
 type puller interface {
 	// Pull pulls 'pkgRef' to 'path'
 	// nil pullCreds will be ignored
-	// returns ErrAuthenticationFailed on authentication failure
+  //
+  // expected errs:
+  //  - ErrPkgPullAuthentication on authentication failure
+  //  - ErrPkgPullAuthorization on authorization failure
 	Pull(
 		path string,
 		pkgRef string,
@@ -80,11 +83,11 @@ func (this _puller) Pull(
 			case transport.ErrAuthenticationRequired.Error():
 				// clone failed; cleanup remnants
 				this.os.RemoveAll(pkgPath)
-				return nil, ErrAuthenticationFailed{}
+				return nil, model.ErrPkgPullAuthentication{}
 			case transport.ErrAuthorizationFailed.Error():
 				// clone failed; cleanup remnants
 				this.os.RemoveAll(pkgPath)
-				return nil, ErrAuthenticationFailed{}
+				return nil, model.ErrPkgPullAuthorization{}
 			case git.ErrRepositoryAlreadyExists.Error():
 				return nil, nil
 				// NoOp on repo already exists

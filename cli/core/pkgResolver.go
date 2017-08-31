@@ -65,7 +65,13 @@ func (this _pkgResolver) Resolve(
 			),
 		)
 
-		_, isAuthError := err.(pkg.ErrAuthenticationFailed)
+		var isAuthError bool
+		switch err.(type) {
+		case model.ErrPkgPullAuthorization:
+			isAuthError = true
+		case model.ErrPkgPullAuthentication:
+			isAuthError = true
+		}
 
 		switch {
 		case nil == err:

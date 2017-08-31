@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
 	"net/url"
 	"path"
@@ -31,7 +32,18 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		nil,
 	)
 	if nil != err {
-		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+		var status int
+		switch err.(type) {
+		case model.ErrPkgPullAuthentication:
+			status = http.StatusUnauthorized
+		case model.ErrPkgPullAuthorization:
+			status = http.StatusForbidden
+		case model.ErrPkgNotFound:
+			status = http.StatusNotFound
+		default:
+			status = http.StatusInternalServerError
+		}
+		http.Error(httpResp, err.Error(), status)
 		return
 	}
 
