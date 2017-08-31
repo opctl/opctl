@@ -83,34 +83,75 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 		})
 	})
 	Context("pkgRef & contentPath are valid URL encoded segments", func() {
-		It("should call core.ResolvePkg w/ expected args", func() {
-			/* arrange */
-			providedPkgRef := "dummyPkgRef%2F"
-			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
-			if nil != err {
-				panic(err.Error())
-			}
+		Context("has basic auth header", func() {
+			It("should call core.ResolvePkg w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef%2F"
+				expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+				if nil != err {
+					panic(err.Error())
+				}
 
-			fakeCore := new(core.Fake)
-			// error to trigger immediate return
-			fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
+				providedUsername := "dummyUsername"
+				providedPassword := "dummyPassword"
 
-			objectUnderTest := New(fakeCore)
-			recorder := httptest.NewRecorder()
+				fakeCore := new(core.Fake)
+				// error to trigger immediate return
+				fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
 
-			// manually construct request so path doesn't get parsed
-			httpReq := &http.Request{
-				Method: http.MethodGet,
-				URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef)},
-			}
+				objectUnderTest := New(fakeCore)
+				recorder := httptest.NewRecorder()
 
-			/* act */
-			objectUnderTest.ServeHTTP(recorder, httpReq)
+				// manually construct request so path doesn't get parsed
+				httpReq := &http.Request{
+					Method: http.MethodGet,
+					URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef)},
+					Header: map[string][]string{},
+				}
+				httpReq.SetBasicAuth(providedUsername, providedPassword)
 
-			/* assert */
-			actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
-			Expect(actualPullCreds).To(BeNil())
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, httpReq)
+
+				/* assert */
+				actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+				Expect(actualPkgRef).To(Equal(expectedPkgRef))
+				Expect(*actualPullCreds).To(Equal(model.PullCreds{
+					Username: providedUsername,
+					Password: providedPassword,
+				}))
+			})
+		})
+		Context("doesn't have basic auth header", func() {
+			It("should call core.ResolvePkg w/ expected args", func() {
+				/* arrange */
+				providedPkgRef := "dummyPkgRef%2F"
+				expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+				if nil != err {
+					panic(err.Error())
+				}
+
+				fakeCore := new(core.Fake)
+				// error to trigger immediate return
+				fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := New(fakeCore)
+				recorder := httptest.NewRecorder()
+
+				// manually construct request so path doesn't get parsed
+				httpReq := &http.Request{
+					Method: http.MethodGet,
+					URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef)},
+				}
+
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, httpReq)
+
+				/* assert */
+				actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+				Expect(actualPkgRef).To(Equal(expectedPkgRef))
+				Expect(actualPullCreds).To(BeNil())
+			})
 		})
 		Context("core.ResolvePkg errs", func() {
 			Context("err is model.ErrPkgPullAuthentication", func() {

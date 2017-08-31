@@ -35,6 +35,12 @@ func (c client) GetPkgContent(
 	}
 
 	httpReq = httpReq.WithContext(ctx)
+	if nil != req.PullCreds {
+		httpReq.SetBasicAuth(
+			req.PullCreds.Username,
+			req.PullCreds.Password,
+		)
+	}
 
 	httpResp, err := c.httpClient.Do(httpReq)
 	if nil != err {

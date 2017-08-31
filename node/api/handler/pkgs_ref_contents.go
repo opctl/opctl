@@ -19,9 +19,18 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
+	var pullCreds *model.PullCreds
+	pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
+	if hasBasicAuth {
+		pullCreds = &model.PullCreds{
+			Username: pullUsername,
+			Password: pullPassword,
+		}
+	}
+
 	pkgHandle, err := hdlr.core.ResolvePkg(
 		pkgRef,
-		nil,
+		pullCreds,
 	)
 	if nil != err {
 		var status int

@@ -10,11 +10,11 @@ import (
 // Provider is the interface for something that provides pkgs
 type Provider interface {
 	// TryResolve resolves a package from the source.
-  //
-  // expected errs:
-  //  - ErrPkgPullAuthentication on authentication failure
-  //  - ErrPkgPullAuthorization on authorization failure
-  //  - ErrPkgNotFound on resolution failure
+	//
+	// expected errs:
+	//  - ErrPkgPullAuthentication on authentication failure
+	//  - ErrPkgPullAuthorization on authorization failure
+	//  - ErrPkgNotFound on resolution failure
 	TryResolve(
 		pkgRef string,
 	) (model.PkgHandle, error)

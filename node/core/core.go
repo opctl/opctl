@@ -32,11 +32,11 @@ type Core interface {
 
 	// Resolve attempts to resolve a pkg via local filesystem or git
 	// nil pullCreds will be ignored
-  //
-  // expected errs:
-  //  - ErrPkgPullAuthentication on authentication failure
-  //  - ErrPkgPullAuthorization on authorization failure
-  //  - ErrPkgNotFound on resolution failure
+	//
+	// expected errs:
+	//  - ErrPkgPullAuthentication on authentication failure
+	//  - ErrPkgPullAuthorization on authorization failure
+	//  - ErrPkgNotFound on resolution failure
 	ResolvePkg(
 		pkgRef string,
 		pullCreds *model.PullCreds,

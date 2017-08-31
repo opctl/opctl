@@ -44,6 +44,11 @@ var _ = Context("GetPkgContent", func() {
 			nil,
 		)
 
+		expectedHttpReq.SetBasicAuth(
+			providedReq.PullCreds.Username,
+			providedReq.PullCreds.Password,
+		)
+
 		fakeHttpClient := new(ihttp.FakeClient)
 		fakeHttpClient.DoReturns(
 			&http.Response{

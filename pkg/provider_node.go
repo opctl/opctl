@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api/client"
 	"net/url"
@@ -28,6 +29,16 @@ func (np nodeProvider) TryResolve(
 	pkgRef string,
 ) (model.PkgHandle, error) {
 
-	// @TODO: handle not found rather than blindly returning handle
+	// ensure resolvable by listing contents w/out err
+	if _, err := np.nodeClient.ListPkgContents(
+		context.TODO(),
+		model.ListPkgContentsReq{
+			PkgRef:    pkgRef,
+			PullCreds: np.pullCreds,
+		},
+	); nil != err {
+		return nil, err
+	}
+
 	return newNodeHandle(np.nodeClient, pkgRef, np.pullCreds), nil
 }
