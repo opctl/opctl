@@ -17,7 +17,7 @@ import (
 var _ = Describe("Validate", func() {
 	Context("called w/ opspec test-suite scenarios", func() {
 		It("should return result fulfilling scenario.expect.validate", func() {
-			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkgs"
+			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
 
 			pendingScenarios := map[string]interface{}{
 				// these scenarios are currently pending;
@@ -33,35 +33,41 @@ var _ = Describe("Validate", func() {
 				func(path string, info os.FileInfo, err error) error {
 					_, isPending := pendingScenarios[path]
 					if !isPending && info.IsDir() {
-						scenarioDotYmlFilePath := filepath.Join(path, "scenario.yml")
-						if _, err := os.Stat(scenarioDotYmlFilePath); nil == err {
+						scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
+						if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
 							/* arrange */
-							scenarioDotYmlBytes, err := ioutil.ReadFile(scenarioDotYmlFilePath)
+							scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
 							if nil != err {
 								panic(err)
 							}
 
-							scenarioDotYml := struct {
-								Expect struct {
-									Call     string
-									Validate string
+							scenarioDotYml := []struct {
+								Call *struct {
+									Expect string
+								}
+								Validate *struct {
+									Expect string
 								}
 							}{}
-							yaml.Unmarshal(scenarioDotYmlBytes, &scenarioDotYml)
 
-							/* act */
-							objectUnderTest := New()
-							actualErrs := objectUnderTest.Validate(newFSHandle(path))
+							yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml)
 
-							/* assert */
-							description := fmt.Sprintf("scenario path: '%v'", path)
-							switch expect := scenarioDotYml.Expect.Validate; expect {
-							case "success":
-								Expect(actualErrs).To(BeEmpty(), description)
-							case "failure":
-								Expect(actualErrs).To(Not(BeEmpty()), description)
+							for _, scenario := range scenarioDotYml {
+								if nil != scenario.Validate {
+									/* act */
+									objectUnderTest := New()
+									actualErrs := objectUnderTest.Validate(newFSHandle(path))
+
+									/* assert */
+									description := fmt.Sprintf("scenario path: '%v'", path)
+									switch expect := scenario.Validate.Expect; expect {
+									case "success":
+										Expect(actualErrs).To(BeEmpty(), description)
+									case "failure":
+										Expect(actualErrs).To(Not(BeEmpty()), description)
+									}
+								}
 							}
-
 						}
 					}
 					return nil
