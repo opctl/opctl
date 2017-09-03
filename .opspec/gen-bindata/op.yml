@@ -18,8 +18,8 @@ run:
         echo "installing deps"
         go get -u github.com/jteeuwen/go-bindata/...
 
-        echo "generating bindata for pkg/manifest/data/..."
-        go-bindata -pkg manifest -o pkg/manifest/bindata.go pkg/manifest/data/...
+        echo "generating bindata for vendor/github.com/opspec-io/spec/spec/pkg-manifest.schema.json"
+        go-bindata -pkg manifest -o pkg/manifest/bindata.go vendor/github.com/opspec-io/spec/spec/pkg-manifest.schema.json
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: srcDir
     image: { ref: 'golang:1.9' }

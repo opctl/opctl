@@ -1,3 +1,6 @@
 [submodule "github.com/opspec-io/test-suite"]
-	path = github.com/opspec-io/test-suite
+	path = vendor/github.com/opspec-io/test-suite
 	url = https://github.com/opspec-io/test-suite
+[submodule "github.com/opspec-io/spec"]
+	path = vendor/github.com/opspec-io/spec
+	url = https://github.com/opspec-io/spec

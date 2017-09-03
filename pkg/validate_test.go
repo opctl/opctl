@@ -17,16 +17,18 @@ import (
 var _ = Describe("Validate", func() {
 	Context("called w/ opspec test-suite scenarios", func() {
 		It("should return result fulfilling scenario.expect.validate", func() {
-			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
+			rootPath := "../vendor/github.com/opspec-io/test-suite/scenarios/pkg"
 
 			pendingScenarios := map[string]interface{}{
 				// these scenarios are currently pending;
-				filepath.Join(rootPath, "inputs/dir/default/is-file"):                 nil,
-				filepath.Join(rootPath, "inputs/file/default/is-dir"):                 nil,
-				filepath.Join(rootPath, "run/op/inputs/file-to-number/isnt-number"):   nil,
-				filepath.Join(rootPath, "run/op/inputs/file-to-object/isnt-object"):   nil,
-				filepath.Join(rootPath, "run/op/inputs/string-to-number/isnt-number"): nil,
-				filepath.Join(rootPath, "run/op/inputs/string-to-object/isnt-object"): nil,
+				filepath.Join(rootPath, "inputs/dir/default/is-file"):                  nil,
+				filepath.Join(rootPath, "inputs/file/default/is-dir"):                  nil,
+				filepath.Join(rootPath, "run/op/inputs/file-to-number/isnt-number"):    nil,
+				filepath.Join(rootPath, "run/op/inputs/file-to-object/isnt-object"):    nil,
+				filepath.Join(rootPath, "run/op/inputs/string-to-number/isnt-number"):  nil,
+				filepath.Join(rootPath, "run/op/inputs/string-to-object/isnt-object"):  nil,
+				filepath.Join(rootPath, "inputs/object/constraints/patternproperties"): nil,
+				filepath.Join(rootPath, "inputs/object/constraints/properties"):        nil,
 			}
 
 			filepath.Walk(rootPath,

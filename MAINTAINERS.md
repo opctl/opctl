@@ -9,19 +9,22 @@ speak up!
 
 ## Maintainers
 
-| Name          | Github Username |
-|:--------------|:----------------|
-| Chris Dostert | chrisdostert    |
+| Name               | Github Username  |
+|:-------------------|:-----------------|
+| Chris Dostert      | chrisdostert     |
+| Peter Samaan       | psamaan          |
+| Habib Ahmed Bhutto | habibbhutto      |
+| Sudhindra Kovalam  | sudhindrakovalam |
 
 ### Maintainer responsibility
 
-* 1) Deliver prompt feedback and decisions on pull requests.
+1. Deliver prompt feedback and decisions on pull requests.
 
-* 2) Be available to anyone with questions, bug reports, criticism etc.
-  about the project. This includes GitHub issues and pull requests.
+2. Be available to anyone with questions, bug reports, criticism etc.
+   about the project. This includes GitHub issues and pull requests.
 
-* 3) Make sure pull requests respect the philosophy, design and roadmap
-  of the project.
+3. Make sure pull requests respect the philosophy, design and roadmap of
+   the project.
 
 ### Adding maintainers
 
@@ -36,16 +39,6 @@ two months.
 
 When a maintainer is unable to perform their required responsibilities
 they should be removed.
-
-### Chief Maintainer
-
-The Chief Maintainer for the project is responsible for overall
-architecture of the project to maintain conceptual integrity. Large
-decisions and architecture changes should be reviewed by the chief
-maintainer.
-
-The current chief maintainer for the project is Chris Dostert
-(@chrisdostert).
 
 ## Decision Making
 
@@ -63,8 +56,5 @@ small, follow the same steps:
 
 * Step 2: The pull request is discussed publicly.
 
-* Step 3: [Maintainers](#maintainers) `Approve` or `Reject` the pull
-  request by commenting as such on the pull request.
-
-* Step 4: If 66% of the current maintainers `Approve` the pull request
-  is merged (with chief maintainer holding veto power).
+* Step 3: Upon approval by one or more [Maintainers](#maintainers) the
+  pull request is merged.
