@@ -453,10 +453,10 @@
 			"revisionTime": "2015-08-08T06:50:54Z"
 		},
 		{
-			"checksumSHA1": "/7sdSWe8jKHAYvGGvF3oZ0UKcU0=",
+			"checksumSHA1": "qMrJBzqtWyBCSpWSJcNA3nBoYfk=",
 			"path": "github.com/xeipuuv/gojsonschema",
-			"revision": "a55c211c418162597a32c74c7230f81adb5ad616",
-			"revisionTime": "2017-04-30T10:03:38Z"
+			"revision": "0c8571ac0ce161a5feb57375a9cdf148c98c0f70",
+			"revisionTime": "2017-05-28T11:38:21Z"
 		},
 		{
 			"checksumSHA1": "C1KKOxFoW7/W/NFNpiXK+boguNo=",

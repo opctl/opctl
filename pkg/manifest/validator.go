@@ -17,10 +17,6 @@ type Validator interface {
 }
 
 func newValidator() Validator {
-
-	// register custom format checkers
-	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
-
 	manifestSchemaBytes, err := vendorGithubComOpspecIoSpecSpecPkgManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
