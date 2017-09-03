@@ -3,13 +3,71 @@ package pkg
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
-var _ = Context("Validate", func() {
+var _ = Describe("Validate", func() {
+	Context("called w/ opspec test-suite scenarios", func() {
+		It("should return result fulfilling scenario.expect.validate", func() {
+			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkgs"
+
+			pendingScenarios := map[string]interface{}{
+				// these scenarios are currently pending;
+				filepath.Join(rootPath, "inputs/dir/default/is-file"):                 nil,
+				filepath.Join(rootPath, "inputs/file/default/is-dir"):                 nil,
+				filepath.Join(rootPath, "run/op/inputs/file-to-number/isnt-number"):   nil,
+				filepath.Join(rootPath, "run/op/inputs/file-to-object/isnt-object"):   nil,
+				filepath.Join(rootPath, "run/op/inputs/string-to-number/isnt-number"): nil,
+				filepath.Join(rootPath, "run/op/inputs/string-to-object/isnt-object"): nil,
+			}
+
+			filepath.Walk(rootPath,
+				func(path string, info os.FileInfo, err error) error {
+					_, isPending := pendingScenarios[path]
+					if !isPending && info.IsDir() {
+						scenarioDotYmlFilePath := filepath.Join(path, "scenario.yml")
+						if _, err := os.Stat(scenarioDotYmlFilePath); nil == err {
+							/* arrange */
+							scenarioDotYmlBytes, err := ioutil.ReadFile(scenarioDotYmlFilePath)
+							if nil != err {
+								panic(err)
+							}
+
+							scenarioDotYml := struct {
+								Expect struct {
+									Call     string
+									Validate string
+								}
+							}{}
+							yaml.Unmarshal(scenarioDotYmlBytes, &scenarioDotYml)
+
+							/* act */
+							objectUnderTest := New()
+							actualErrs := objectUnderTest.Validate(newFSHandle(path))
+
+							/* assert */
+							description := fmt.Sprintf("scenario path: '%v'", path)
+							switch expect := scenarioDotYml.Expect.Validate; expect {
+							case "success":
+								Expect(actualErrs).To(BeEmpty(), description)
+							case "failure":
+								Expect(actualErrs).To(Not(BeEmpty()), description)
+							}
+
+						}
+					}
+					return nil
+				})
+		})
+	})
 	It("should call handle.GetContent w/ expected args", func() {
 		/* arrange */
 		providedFileHandle := new(FakeHandle)
