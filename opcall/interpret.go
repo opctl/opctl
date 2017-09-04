@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func (this _OpCall) Interpret(
+func (oc _OpCall) Interpret(
 	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
 	opId string,
@@ -15,22 +15,31 @@ func (this _OpCall) Interpret(
 	rootOpId string,
 ) (*model.DCGOpCall, error) {
 
-	var username, password string
+	var pkgPullCreds *model.PullCreds
 	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
-		username = this.interpolater.Interpolate(scgPullCreds.Username, scope)
-		password = this.interpolater.Interpolate(scgPullCreds.Password, scope)
+		pkgPullCreds = &model.PullCreds{}
+		var err error
+		pkgPullCreds.Username, err = oc.string.Interpret(scope, scgPullCreds.Username)
+		if nil != err {
+			return nil, err
+		}
+
+		pkgPullCreds.Password, err = oc.string.Interpret(scope, scgPullCreds.Password)
+		if nil != err {
+			return nil, err
+		}
 	}
 
-	pkgHandle, err := this.pkg.Resolve(
+	pkgHandle, err := oc.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
-		this.pkg.NewFSProvider(filepath.Dir(parentPkgHandle.Ref())),
-		this.pkg.NewGitProvider(this.pkgCachePath, &model.PullCreds{Username: username, Password: password}),
+		oc.pkg.NewFSProvider(filepath.Dir(parentPkgHandle.Ref())),
+		oc.pkg.NewGitProvider(oc.pkgCachePath, pkgPullCreds),
 	)
 	if nil != err {
 		return nil, err
 	}
 
-	opManifest, err := this.pkg.GetManifest(pkgHandle)
+	opManifest, err := oc.pkg.GetManifest(pkgHandle)
 	if nil != err {
 		return nil, err
 	}
@@ -41,12 +50,12 @@ func (this _OpCall) Interpret(
 			PkgHandle: pkgHandle,
 		},
 		OpId:         opId,
-		ChildCallId:  this.uuid.NewV4().String(),
+		ChildCallId:  oc.uuid.NewV4().String(),
 		ChildCallSCG: opManifest.Run,
 	}
 
 	var argErrors []error
-	dcgOpCall.Inputs, argErrors = this.inputs.Interpret(
+	dcgOpCall.Inputs, argErrors = oc.inputs.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
 		parentPkgHandle.Ref(),

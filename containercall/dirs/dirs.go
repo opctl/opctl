@@ -5,7 +5,6 @@ package dirs
 import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -22,16 +21,14 @@ func New(
 	rootFSPath string,
 ) Dirs {
 	return _Dirs{
-		dirCopier:    dircopier.New(),
-		interpolater: interpolater.New(),
-		os:           ios.New(),
-		rootFSPath:   rootFSPath,
+		dirCopier:  dircopier.New(),
+		os:         ios.New(),
+		rootFSPath: rootFSPath,
 	}
 }
 
 type _Dirs struct {
-	dirCopier    dircopier.DirCopier
-	interpolater interpolater.Interpolater
-	os           ios.IOS
-	rootFSPath   string
+	dirCopier  dircopier.DirCopier
+	os         ios.IOS
+	rootFSPath string
 }

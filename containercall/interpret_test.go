@@ -10,7 +10,6 @@ import (
 	"github.com/opspec-io/sdk-golang/containercall/files"
 	"github.com/opspec-io/sdk-golang/containercall/image"
 	"github.com/opspec-io/sdk-golang/containercall/sockets"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
@@ -81,14 +80,13 @@ var _ = Context("ContainerCall", func() {
 				fakeString := new(stringPkg.Fake)
 
 				objectUnderTest := _ContainerCall{
-					dirs:         new(dirs.Fake),
-					envVars:      new(envvars.Fake),
-					files:        new(files.Fake),
-					image:        new(image.Fake),
-					interpolater: new(interpolater.Fake),
-					string:       fakeString,
-					os:           new(ios.Fake),
-					sockets:      new(sockets.Fake),
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					string:  fakeString,
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
 				}
 
 				/* act */
@@ -126,14 +124,13 @@ var _ = Context("ContainerCall", func() {
 				fakeString.InterpretReturnsOnCall(1, expectedCmd[1], nil)
 
 				objectUnderTest := _ContainerCall{
-					dirs:         new(dirs.Fake),
-					envVars:      new(envvars.Fake),
-					files:        new(files.Fake),
-					image:        new(image.Fake),
-					interpolater: new(interpolater.Fake),
-					string:       fakeString,
-					os:           new(ios.Fake),
-					sockets:      new(sockets.Fake),
+					dirs:    new(dirs.Fake),
+					envVars: new(envvars.Fake),
+					files:   new(files.Fake),
+					image:   new(image.Fake),
+					string:  fakeString,
+					os:      new(ios.Fake),
+					sockets: new(sockets.Fake),
 				}
 
 				/* act */

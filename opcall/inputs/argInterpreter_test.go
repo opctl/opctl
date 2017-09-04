@@ -4,7 +4,6 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/number"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
@@ -161,32 +160,6 @@ var _ = Context("argInterpreter", func() {
 			})
 		})
 		Context("Interpolated arg", func() {
-			It("should call interpolater.Interpolate w/ expected args", func() {
-				/* arrange */
-				providedValue := "dummyValue"
-				providedParam := &model.Param{}
-				providedScope := map[string]*model.Value{"dummyScopeRef": {}}
-
-				fakeInterpolater := new(interpolater.Fake)
-
-				objectUnderTest := _argInterpreter{
-					interpolater: fakeInterpolater,
-				}
-
-				/* act */
-				objectUnderTest.Interpret(
-					"dummyName",
-					providedValue,
-					providedParam,
-					"dummyParentPkgRef",
-					providedScope,
-				)
-
-				/* assert */
-				actualTemplate, actualScope := fakeInterpolater.InterpolateArgsForCall(0)
-				Expect(actualTemplate).To(Equal(providedValue))
-				Expect(actualScope).To(Equal(providedScope))
-			})
 			Context("Input is string", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -199,8 +172,7 @@ var _ = Context("argInterpreter", func() {
 					expectedResult := &model.Value{String: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: new(interpolater.Fake),
-						string:       fakeString,
+						string: fakeString,
 					}
 
 					/* act */
@@ -227,17 +199,17 @@ var _ = Context("argInterpreter", func() {
 
 						providedParentPkgRef := "/dummyParentPkgRef"
 
-						fakeInterpolater := new(interpolater.Fake)
+						fakeString := new(stringPkg.Fake)
 
 						interpolatedValue := "dummyValue"
-						fakeInterpolater.InterpolateReturns(interpolatedValue)
+						fakeString.InterpretReturns(interpolatedValue, nil)
 
 						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
 
 						expectedResult := &model.Value{Dir: &expectedValue}
 
 						objectUnderTest := _argInterpreter{
-							interpolater: fakeInterpolater,
+							string: fakeString,
 						}
 
 						/* act */
@@ -258,14 +230,14 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{Dir: &model.DirParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
+					fakeString := new(stringPkg.Fake)
 					interpolatedValue := "dummyValue"
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString.InterpretReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{Dir: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						string: fakeString,
 					}
 
 					/* act */
@@ -285,16 +257,16 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{Dir: &model.DirParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
+					fakeString := new(stringPkg.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString.InterpretReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{Dir: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						string: fakeString,
 					}
 
 					/* act */
@@ -323,8 +295,7 @@ var _ = Context("argInterpreter", func() {
 					expectedResult := &model.Value{Number: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: new(interpolater.Fake),
-						number:       fakeNumber,
+						number: fakeNumber,
 					}
 
 					/* act */
@@ -351,17 +322,17 @@ var _ = Context("argInterpreter", func() {
 
 						providedParentPkgRef := "/dummyParentPkgRef"
 
-						fakeInterpolater := new(interpolater.Fake)
+						fakeString := new(stringPkg.Fake)
 
 						interpolatedValue := "dummyValue"
-						fakeInterpolater.InterpolateReturns(interpolatedValue)
+						fakeString.InterpretReturns(interpolatedValue, nil)
 
 						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
 
 						expectedResult := &model.Value{File: &expectedValue}
 
 						objectUnderTest := _argInterpreter{
-							interpolater: fakeInterpolater,
+							string: fakeString,
 						}
 
 						/* act */
@@ -382,15 +353,15 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{File: &model.FileParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
+					fakeString := new(stringPkg.Fake)
 
 					interpolatedValue := "dummyValue"
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString.InterpretReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{File: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						string: fakeString,
 					}
 
 					/* act */
@@ -410,16 +381,16 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{File: &model.FileParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
+					fakeString := new(stringPkg.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString.InterpretReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{File: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						string: fakeString,
 					}
 
 					/* act */
@@ -442,15 +413,15 @@ var _ = Context("argInterpreter", func() {
 					providedName := "dummyName"
 					providedParam := &model.Param{Socket: &model.SocketParam{}}
 
-					fakeInterpolater := new(interpolater.Fake)
+					fakeString := new(stringPkg.Fake)
 
 					interpolatedValue := "dummyValue"
-					fakeInterpolater.InterpolateReturns(interpolatedValue)
+					fakeString.InterpretReturns(interpolatedValue, nil)
 
 					expectedError := fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
 
 					objectUnderTest := _argInterpreter{
-						interpolater: fakeInterpolater,
+						string: fakeString,
 					}
 
 					/* act */

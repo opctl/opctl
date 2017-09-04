@@ -4,7 +4,6 @@ package inputs
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/number"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
@@ -26,16 +25,14 @@ type argInterpreter interface {
 
 func newArgInterpreter() argInterpreter {
 	return _argInterpreter{
-		interpolater: interpolater.New(),
-		number:       number.New(),
-		string:       stringPkg.New(),
+		number: number.New(),
+		string: stringPkg.New(),
 	}
 }
 
 type _argInterpreter struct {
-	interpolater interpolater.Interpolater
-	number       number.Number
-	string       stringPkg.String
+	number number.Number
+	string stringPkg.String
 }
 
 func (ai _argInterpreter) Interpret(
@@ -86,7 +83,6 @@ func (ai _argInterpreter) Interpret(
 			}
 			return dcgValue, nil
 		} else {
-			interpolatedVal := ai.interpolater.Interpolate(expression, scope)
 			switch {
 			// interpolated arg
 			case nil != param.String:
@@ -96,6 +92,10 @@ func (ai _argInterpreter) Interpret(
 				}
 				return &model.Value{String: &stringValue}, nil
 			case nil != param.Dir:
+				interpolatedVal, err := ai.string.Interpret(scope, expression)
+				if nil != err {
+					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+				}
 				if strings.HasPrefix(expression, "/") {
 					// bound to pkg dir
 					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
@@ -108,13 +108,17 @@ func (ai _argInterpreter) Interpret(
 				}
 				return &model.Value{Number: &numberValue}, nil
 			case nil != param.File:
+				interpolatedVal, err := ai.string.Interpret(scope, expression)
+				if nil != err {
+					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+				}
 				if strings.HasPrefix(expression, "/") {
 					// bound to pkg file
 					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
 				}
 				return &model.Value{File: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Socket:
-				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, interpolatedVal)
+				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, expression)
 			}
 		}
 	}
