@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// validateNumber validates an value against a string parameter
+// validateNumber validates an value against a number parameter
 func (this _validator) validateNumber(
 	value *float64,
 	constraints *model.NumberConstraints,

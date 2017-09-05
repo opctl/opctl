@@ -16,17 +16,13 @@ import (
 
 var _ = Describe("Validate", func() {
 	Context("called w/ opspec test-suite scenarios", func() {
-		It("should return result fulfilling scenario.expect.validate", func() {
+		It("should return result fulfilling scenario.validate.expect", func() {
 			rootPath := "../vendor/github.com/opspec-io/test-suite/scenarios/pkg"
 
 			pendingScenarios := map[string]interface{}{
 				// these scenarios are currently pending;
 				filepath.Join(rootPath, "inputs/dir/default/is-file"):                  nil,
 				filepath.Join(rootPath, "inputs/file/default/is-dir"):                  nil,
-				filepath.Join(rootPath, "run/op/inputs/file-to-number/isnt-number"):    nil,
-				filepath.Join(rootPath, "run/op/inputs/file-to-object/isnt-object"):    nil,
-				filepath.Join(rootPath, "run/op/inputs/string-to-number/isnt-number"):  nil,
-				filepath.Join(rootPath, "run/op/inputs/string-to-object/isnt-object"):  nil,
 				filepath.Join(rootPath, "inputs/object/constraints/patternproperties"): nil,
 				filepath.Join(rootPath, "inputs/object/constraints/properties"):        nil,
 			}
@@ -44,15 +40,15 @@ var _ = Describe("Validate", func() {
 							}
 
 							scenarioDotYml := []struct {
-								Call *struct {
-									Expect string
-								}
 								Validate *struct {
 									Expect string
 								}
 							}{}
 
-							yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml)
+							description := fmt.Sprintf("scenario '%v'", path)
+							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
+								panic(fmt.Errorf("Error unmarshalling %v; error was %v", description, err))
+							}
 
 							for _, scenario := range scenarioDotYml {
 								if nil != scenario.Validate {
@@ -61,7 +57,6 @@ var _ = Describe("Validate", func() {
 									actualErrs := objectUnderTest.Validate(newFSHandle(path))
 
 									/* assert */
-									description := fmt.Sprintf("scenario path: '%v'", path)
 									switch expect := scenario.Validate.Expect; expect {
 									case "success":
 										Expect(actualErrs).To(BeEmpty(), description)

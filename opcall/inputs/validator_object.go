@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// validateObject validates an value against a string parameter
+// validateObject validates an value against an object parameter
 func (this _validator) validateObject(
 	value map[string]interface{},
 	constraints *model.ObjectConstraints,

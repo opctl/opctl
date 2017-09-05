@@ -2,6 +2,7 @@ package opcall
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang-interfaces/satori-go.uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -9,11 +10,123 @@ import (
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
 var _ = Context("OpCall", func() {
 	Context("Interpret", func() {
+		Context("called w/ opspec test-suite scenarios", func() {
+			It("should return result fulfilling scenario.call.expect", func() {
+				tempDir, err := ioutil.TempDir("", "")
+				if nil != err {
+					panic(err)
+				}
+				rootPath := "../vendor/github.com/opspec-io/test-suite/scenarios/pkg"
+
+				pendingScenarios := map[string]interface{}{
+					// these scenarios are currently pending;
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/file-input/string-arg/is-fs-ref/isnt-resolvable"):                               nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/object-arg"):                                                       nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/is-resolvable/isnt-coercible"):                nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-file/isnt-coercible"):   nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-object"):                nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-string/isnt-coercible"): nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/isnt-ref/isnt-coercible"):                               nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-resolvable/isnt-coercible"):                nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-file/isnt-coercible"):   nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-number"):                nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-string/isnt-coercible"): nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/string-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/string-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
+					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/input-undefined"):                                                               nil,
+					filepath.Join(rootPath, "run/op/inputs/implicitly-bound/input-undefined"):                                                               nil,
+				}
+
+				filepath.Walk(rootPath,
+					func(path string, info os.FileInfo, err error) error {
+						_, isPending := pendingScenarios[path]
+						if !isPending && info.IsDir() {
+							scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
+							if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
+								/* arrange */
+
+								absPkgPath, err := filepath.Abs(path)
+								if nil != err {
+									panic(fmt.Errorf("Error getting absPkgPath %v; error was %v", path, err))
+								}
+
+								pkg := pkg.New()
+								pkgHandle, err := pkg.Resolve(
+									absPkgPath,
+									pkg.NewFSProvider(),
+								)
+								if nil != err {
+									panic(fmt.Errorf("Error resolving pkg for %v; error was %v", path, err))
+								}
+
+								scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
+								if nil != err {
+									panic(err)
+								}
+
+								scenarioDotYml := []struct {
+									Name      string
+									Interpret *struct {
+										Expect string
+										Scope  map[string]*model.Value
+									}
+								}{}
+								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
+									panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
+								}
+
+								for _, scenario := range scenarioDotYml {
+									if nil != scenario.Interpret {
+										scgOpCall := &model.SCGOpCall{
+											Pkg: &model.SCGOpCallPkg{
+												Ref: absPkgPath,
+											},
+											Inputs: map[string]interface{}{},
+										}
+
+										for name := range scenario.Interpret.Scope {
+											// map as passed
+											scgOpCall.Inputs[name] = ""
+										}
+
+										/* act */
+										objectUnderTest := New(tempDir)
+										_, actualErr := objectUnderTest.Interpret(
+											scenario.Interpret.Scope,
+											scgOpCall,
+											"",
+											pkgHandle,
+											"",
+										)
+
+										/* assert */
+										description := fmt.Sprintf("pkg: '%v'\nscenario: '%v'", path, scenario.Name)
+										switch expect := scenario.Interpret.Expect; expect {
+										case "success":
+											Expect(actualErr).To(BeNil(), description)
+										case "failure":
+											Expect(actualErr).To(Not(BeNil()), description)
+										}
+									}
+								}
+							}
+						}
+						return nil
+					})
+			})
+		})
 		It("should call pkg.NewFSProvider w/ expected args", func() {
 			/* arrange */
 			providedParentPkgHandle := new(pkg.FakeHandle)
