@@ -1,34 +1,41 @@
-package inputs
+package object
+
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/chrisdostert/gojsonschema"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/xeipuuv/gojsonschema"
-	"math"
 	"strings"
 )
 
-// validateNumber validates an value against a number parameter
-func (this _validator) validateNumber(
-	value *float64,
-	constraints *model.NumberConstraints,
+type Validator interface {
+	// Validate validates an object against constraints
+	Validate(
+		value map[string]interface{},
+		constraints *model.ObjectConstraints,
+	) []error
+}
+
+func newValidator() Validator {
+	return _validator{}
+}
+
+type _validator struct{}
+
+func (this _validator) Validate(
+	value map[string]interface{},
+	constraints *model.ObjectConstraints,
 ) []error {
 	if nil == value {
-		return []error{errors.New("number required")}
+		return []error{errors.New("object required")}
 	}
 
 	// guard no constraints
 	if nil != constraints {
 		errs := []error{}
-
-		// perform validations not supported by gojsonschema
-		if integerConstraint := constraints.Format; integerConstraint == "integer" {
-			if ceiledValue := math.Ceil(*value); ceiledValue != *value {
-				errs = append(errs, fmt.Errorf("Does not match format '%v'", integerConstraint))
-			}
-		}
 
 		// perform validations supported by gojsonschema
 		constraintsJsonBytes, err := json.Marshal(constraints)
@@ -45,7 +52,7 @@ func (this _validator) validateNumber(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating parameter. Details: %v", err.Error()),
+				fmt.Errorf("Error validating object. Details: %v", err.Error()),
 			)
 		}
 
@@ -57,7 +64,7 @@ func (this _validator) validateNumber(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating param. Details: %v", err.Error()),
+				fmt.Errorf("Error validating object. Details: %v", err.Error()),
 			)
 		}
 
@@ -69,5 +76,5 @@ func (this _validator) validateNumber(
 		return errs
 	}
 
-	return nil
+	return []error{}
 }

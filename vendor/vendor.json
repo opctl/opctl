@@ -45,6 +45,12 @@
 			"revisionTime": "2017-01-31T19:20:18Z"
 		},
 		{
+			"checksumSHA1": "G65VVy6M7H2f5GHj39/0FSmOzlw=",
+			"path": "github.com/chrisdostert/gojsonschema",
+			"revision": "c8bf4a98bb2754dac8360e721fe4bda3bb651ca2",
+			"revisionTime": "2016-11-11T13:08:13Z"
+		},
+		{
 			"checksumSHA1": "f1wARLDzsF/JoyN01yoxXEwFIp8=",
 			"path": "github.com/docker/distribution/digest",
 			"revision": "05b0ab0302ad33f61218e2ecf263cd102b368390",
@@ -451,12 +457,6 @@
 			"path": "github.com/xeipuuv/gojsonreference",
 			"revision": "e02fc20de94c78484cd5ffb007f8af96be030a45",
 			"revisionTime": "2015-08-08T06:50:54Z"
-		},
-		{
-			"checksumSHA1": "qMrJBzqtWyBCSpWSJcNA3nBoYfk=",
-			"path": "github.com/xeipuuv/gojsonschema",
-			"revision": "0c8571ac0ce161a5feb57375a9cdf148c98c0f70",
-			"revisionTime": "2017-05-28T11:38:21Z"
 		},
 		{
 			"checksumSHA1": "C1KKOxFoW7/W/NFNpiXK+boguNo=",

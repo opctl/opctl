@@ -5,8 +5,12 @@ package inputs
 import (
 	"errors"
 	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/dir"
+	"github.com/opspec-io/sdk-golang/file"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/opspec-io/sdk-golang/number"
+	"github.com/opspec-io/sdk-golang/object"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type validator interface {
@@ -17,18 +21,24 @@ type validator interface {
 }
 
 func newValidator() validator {
-	// register custom format checkers
-	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
-	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
-	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
 	return _validator{
-		os: ios.New(),
+		dir:    dir.New(),
+		file:   file.New(),
+		os:     ios.New(),
+		number: number.New(),
+		object: object.New(),
+		string: stringPkg.New(),
 	}
 }
 
 type _validator struct {
-	os ios.IOS
+	dir    dir.Dir
+	file   file.File
+	os     ios.IOS
+	number number.Number
+	object object.Object
+	string stringPkg.String
 }
 
 // Validate validates a value against a parameter
@@ -47,31 +57,31 @@ func (this _validator) Validate(
 		if nil != rawValue {
 			value = rawValue.Dir
 		}
-		errs = this.validateDir(value)
+		errs = this.dir.Validate(value)
 	case nil != param.File:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.File
 		}
-		errs = this.validateFile(value)
+		errs = this.file.Validate(value)
 	case nil != param.String:
 		var value *string
 		if nil != rawValue {
 			value = rawValue.String
 		}
-		errs = this.validateString(value, param.String.Constraints)
+		errs = this.string.Validate(value, param.String.Constraints)
 	case nil != param.Number:
 		var value *float64
 		if nil != rawValue {
 			value = rawValue.Number
 		}
-		errs = this.validateNumber(value, param.Number.Constraints)
+		errs = this.number.Validate(value, param.Number.Constraints)
 	case nil != param.Object:
 		var value map[string]interface{}
 		if nil != rawValue {
 			value = rawValue.Object
 		}
-		errs = this.validateObject(value, param.Object.Constraints)
+		errs = this.object.Validate(value, param.Object.Constraints)
 	case nil != param.Socket:
 		var value *string
 		if nil != rawValue {

@@ -1,28 +1,49 @@
-package inputs
+package string
+
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/chrisdostert/gojsonschema"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/xeipuuv/gojsonschema"
 	"strings"
 )
 
-// validateObject validates an value against an object parameter
-func (this _validator) validateObject(
-	value map[string]interface{},
-	constraints *model.ObjectConstraints,
+type Validator interface {
+	// Validate validates a string against constraints
+	Validate(
+		value *string,
+		constraints *model.StringConstraints,
+	) (errors []error)
+}
+
+func newValidator() Validator {
+	// register custom format checkers
+	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
+	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
+
+	return _validator{}
+}
+
+type _validator struct {
+	os ios.IOS
+}
+
+func (this _validator) Validate(
+	value *string,
+	constraints *model.StringConstraints,
 ) []error {
 	if nil == value {
-		return []error{errors.New("object required")}
+		return []error{errors.New("string required")}
 	}
 
 	// guard no constraints
 	if nil != constraints {
 		errs := []error{}
 
-		// perform validations supported by gojsonschema
 		constraintsJsonBytes, err := json.Marshal(constraints)
 		if err != nil {
 			// handle syntax errors specially
@@ -37,7 +58,7 @@ func (this _validator) validateObject(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating parameter. Details: %v", err.Error()),
+				fmt.Errorf("Error validating string. Details: %v", err.Error()),
 			)
 		}
 
@@ -49,7 +70,7 @@ func (this _validator) validateObject(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating param. Details: %v", err.Error()),
+				fmt.Errorf("Error validating string. Details: %v", err.Error()),
 			)
 		}
 

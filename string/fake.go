@@ -22,6 +22,18 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
+	ValidateStub        func(value *string, constraints *model.StringConstraints) (errors []error)
+	validateMutex       sync.RWMutex
+	validateArgsForCall []struct {
+		value       *string
+		constraints *model.StringConstraints
+	}
+	validateReturns struct {
+		result1 []error
+	}
+	validateReturnsOnCall map[int]struct {
+		result1 []error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -78,11 +90,62 @@ func (fake *Fake) InterpretReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
+func (fake *Fake) Validate(value *string, constraints *model.StringConstraints) (errors []error) {
+	fake.validateMutex.Lock()
+	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
+	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
+		value       *string
+		constraints *model.StringConstraints
+	}{value, constraints})
+	fake.recordInvocation("Validate", []interface{}{value, constraints})
+	fake.validateMutex.Unlock()
+	if fake.ValidateStub != nil {
+		return fake.ValidateStub(value, constraints)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.validateReturns.result1
+}
+
+func (fake *Fake) ValidateCallCount() int {
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
+	return len(fake.validateArgsForCall)
+}
+
+func (fake *Fake) ValidateArgsForCall(i int) (*string, *model.StringConstraints) {
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
+	return fake.validateArgsForCall[i].value, fake.validateArgsForCall[i].constraints
+}
+
+func (fake *Fake) ValidateReturns(result1 []error) {
+	fake.ValidateStub = nil
+	fake.validateReturns = struct {
+		result1 []error
+	}{result1}
+}
+
+func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
+	fake.ValidateStub = nil
+	if fake.validateReturnsOnCall == nil {
+		fake.validateReturnsOnCall = make(map[int]struct {
+			result1 []error
+		})
+	}
+	fake.validateReturnsOnCall[i] = struct {
+		result1 []error
+	}{result1}
+}
+
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

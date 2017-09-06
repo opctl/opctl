@@ -4,9 +4,9 @@ package manifest
 
 import (
 	"fmt"
+	"github.com/chrisdostert/gojsonschema"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 type Validator interface {

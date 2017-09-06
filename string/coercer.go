@@ -12,7 +12,7 @@ import (
 )
 
 type coercer interface {
-	// Coerce attempts to coerce Value to a String
+	// Coerce attempts to coerce value to a string
 	Coerce(
 		value *model.Value,
 	) (string, error)

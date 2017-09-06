@@ -12,7 +12,7 @@ import (
 )
 
 type coercer interface {
-	// Coerce attempts to coerce Value to a Number
+	// Coerce attempts to coerce value to a number
 	Coerce(
 		value *model.Value,
 	) (float64, error)
