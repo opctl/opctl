@@ -1,4 +1,4 @@
-package number
+package coerce
 
 import (
 	"errors"
@@ -10,15 +10,15 @@ import (
 	"strconv"
 )
 
-var _ = Context("coercer", func() {
-	Context("Coerce", func() {
+var _ = Context("toNumber", func() {
+	Context("ToNumber", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(nil)
+				actualNumber, actualErr := objectUnderTest.ToNumber(nil)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
@@ -33,14 +33,14 @@ var _ = Context("coercer", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(errors.New("Unable to coerce dir to number; incompatible types")))
+				Expect(actualErr).To(Equal(errors.New("Unable to coerce dir to string; incompatible types")))
 			})
 		})
 		Context("Value.File isn't nil", func() {
@@ -56,12 +56,12 @@ var _ = Context("coercer", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coercer{
+				fileUnderTest := _number{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.Coerce(providedValue)
+				fileUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -74,17 +74,17 @@ var _ = Context("coercer", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coercer{
+					fileUnderTest := _number{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					_, actualErr := fileUnderTest.Coerce(
+					_, actualErr := fileUnderTest.ToNumber(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to number; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to string; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("ioutil.ReadFile doesn't err", func() {
@@ -100,12 +100,12 @@ var _ = Context("coercer", func() {
 						panic(err)
 					}
 
-					fileUnderTest := _coercer{
+					fileUnderTest := _number{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualNumber, actualErr := fileUnderTest.Coerce(
+					actualNumber, actualErr := fileUnderTest.ToNumber(
 						&model.Value{File: new(string)},
 					)
 
@@ -123,10 +123,10 @@ var _ = Context("coercer", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(providedNumber))
@@ -140,14 +140,14 @@ var _ = Context("coercer", func() {
 					Object: map[string]interface{}{},
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(errors.New("Unable to coerce object to number; incompatible types")))
+				Expect(actualErr).To(Equal(errors.New("Unable to coerce object to string; incompatible types")))
 			})
 		})
 		Context("Value.Number isn't nil", func() {
@@ -158,10 +158,10 @@ var _ = Context("coercer", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(providedNumber))
@@ -173,14 +173,14 @@ var _ = Context("coercer", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _number{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.Coerce(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce '%v' to number", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce '%v' to string", providedValue)))
 			})
 		})
 	})

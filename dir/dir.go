@@ -4,15 +4,15 @@ package dir
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Dir
 
 type Dir interface {
-	Validator
+	validator
 }
 
 func New() Dir {
 	return _Dir{
-		Validator: newValidator(),
+		validator: newValidator(),
 	}
 }
 
 type _Dir struct {
-	Validator
+	validator
 }

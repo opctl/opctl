@@ -1,13 +1,13 @@
 package string
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ Interpreter
+//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ interpreter
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
-type Interpreter interface {
+type interpreter interface {
 	// interprets an expression to a string
 	Interpret(
 		scope map[string]*model.Value,
@@ -15,7 +15,7 @@ type Interpreter interface {
 	) (string, error)
 }
 
-func newInterpreter() Interpreter {
+func newInterpreter() interpreter {
 	return _interpreter{
 		deReferencerFactory: newDeReferencerFactory(),
 		interpolater:        interpolater.New(),

@@ -1,6 +1,6 @@
 package string
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type Validator interface {
+type validator interface {
 	// Validate validates a string against constraints
 	Validate(
 		value *string,
@@ -20,7 +20,7 @@ type Validator interface {
 	) (errors []error)
 }
 
-func newValidator() Validator {
+func newValidator() validator {
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
 	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})

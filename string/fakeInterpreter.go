@@ -102,4 +102,4 @@ func (fake *fakeInterpreter) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Interpreter = new(fakeInterpreter)
+var _ interpreter = new(fakeInterpreter)

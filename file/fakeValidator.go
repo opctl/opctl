@@ -93,4 +93,4 @@ func (fake *fakeValidator) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ Validator = new(fakeValidator)
+var _ validator = new(fakeValidator)

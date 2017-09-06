@@ -1,6 +1,6 @@
 package dir
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"errors"
@@ -8,14 +8,14 @@ import (
 	"github.com/golang-interfaces/ios"
 )
 
-type Validator interface {
+type validator interface {
 	// Validate validates a dir
 	Validate(
 		value *string,
 	) []error
 }
 
-func newValidator() Validator {
+func newValidator() validator {
 	return _validator{
 		os: ios.New(),
 	}

@@ -1,15 +1,16 @@
 package number
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ Interpreter
+//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ interpreter
 
 import (
 	"bytes"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/util/coerce"
 	"strconv"
 )
 
-type Interpreter interface {
+type interpreter interface {
 	// interprets an expression to a string
 	Interpret(
 		scope map[string]*model.Value,
@@ -17,14 +18,14 @@ type Interpreter interface {
 	) (float64, error)
 }
 
-func newInterpreter() Interpreter {
+func newInterpreter() interpreter {
 	return _interpreter{
-		coercer: newCoercer(),
+		coerce: coerce.New(),
 	}
 }
 
 type _interpreter struct {
-	coercer coercer
+	coerce coerce.Coerce
 }
 
 func (itp _interpreter) Interpret(
@@ -69,7 +70,7 @@ func (itp _interpreter) Interpret(
 				return 0, fmt.Errorf("Unable to interpret number; %v not in scope", ref)
 			}
 
-			numberValue, err := itp.coercer.Coerce(value)
+			numberValue, err := itp.coerce.ToNumber(value)
 			if nil != err {
 				return 0, fmt.Errorf("Unable to interpret number; error was: %v", err.Error())
 			}

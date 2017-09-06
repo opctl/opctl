@@ -1,6 +1,6 @@
 package number
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-type Validator interface {
+type validator interface {
 	// Validate validates a number against constraints
 	Validate(
 		value *float64,
@@ -19,7 +19,7 @@ type Validator interface {
 	) []error
 }
 
-func newValidator() Validator {
+func newValidator() validator {
 	// register custom format checkers
 	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
 

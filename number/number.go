@@ -4,18 +4,18 @@ package number
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Number
 
 type Number interface {
-	Interpreter
-	Validator
+	interpreter
+	validator
 }
 
 func New() Number {
 	return _Number{
-		Interpreter: newInterpreter(),
-		Validator:   newValidator(),
+		interpreter: newInterpreter(),
+		validator:   newValidator(),
 	}
 }
 
 type _Number struct {
-	Interpreter
-	Validator
+	interpreter
+	validator
 }

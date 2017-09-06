@@ -4,15 +4,15 @@ package object
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Object
 
 type Object interface {
-	Validator
+	validator
 }
 
 func New() Object {
 	return _Object{
-		Validator: newValidator(),
+		validator: newValidator(),
 	}
 }
 
 type _Object struct {
-	Validator
+	validator
 }

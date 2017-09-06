@@ -1,6 +1,4 @@
-package number
-
-//go:generate counterfeiter -o ./fakeCoercer.go --fake-name fakeCoercer ./ coercer
+package coerce
 
 import (
 	"errors"
@@ -11,26 +9,26 @@ import (
 	"strconv"
 )
 
-type coercer interface {
-	// Coerce attempts to coerce value to a number
-	Coerce(
+type toNumber interface {
+	// ToNumber attempts to coerce value to a number
+	ToNumber(
 		value *model.Value,
 	) (float64, error)
 }
 
-func newCoercer() coercer {
-	return _coercer{
+func newToNumber() toNumber {
+	return _number{
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coercer struct {
+type _number struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 }
 
-func (c _coercer) Coerce(
+func (c _number) ToNumber(
 	value *model.Value,
 ) (float64, error) {
 	switch {

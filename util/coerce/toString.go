@@ -1,6 +1,4 @@
-package string
-
-//go:generate counterfeiter -o ./fakeCoercer.go --fake-name fakeCoercer ./ coercer
+package coerce
 
 import (
 	"fmt"
@@ -11,28 +9,28 @@ import (
 	"strconv"
 )
 
-type coercer interface {
-	// Coerce attempts to coerce value to a string
-	Coerce(
+type toString interface {
+	// ToString attempts to coerce value to a string
+	ToString(
 		value *model.Value,
 	) (string, error)
 }
 
-func newCoercer() coercer {
-	return _coercer{
+func newToString() toString {
+	return _toString{
 		json:   ijson.New(),
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coercer struct {
+type _toString struct {
 	ioUtil iioutil.IIOUtil
 	json   ijson.IJSON
 	os     ios.IOS
 }
 
-func (c _coercer) Coerce(
+func (c _toString) ToString(
 	value *model.Value,
 ) (string, error) {
 	switch {

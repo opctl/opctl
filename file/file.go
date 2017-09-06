@@ -4,15 +4,15 @@ package file
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ File
 
 type File interface {
-	Validator
+	validator
 }
 
 func New() File {
 	return _File{
-		Validator: newValidator(),
+		validator: newValidator(),
 	}
 }
 
 type _File struct {
-	Validator
+	validator
 }

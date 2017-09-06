@@ -1,4 +1,4 @@
-package string
+package coerce
 
 import (
 	"errors"
@@ -11,15 +11,15 @@ import (
 	"strconv"
 )
 
-var _ = Context("coercer", func() {
+var _ = Context("toString", func() {
 	Context("Coerce", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coercer{}
+				objectUnderTest := _toString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.Coerce(nil)
+				actualString, actualErr := objectUnderTest.ToString(nil)
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
@@ -34,10 +34,10 @@ var _ = Context("coercer", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _toString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.Coerce(providedValue)
+				actualString, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
@@ -57,12 +57,12 @@ var _ = Context("coercer", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coercer{
+				fileUnderTest := _toString{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.Coerce(providedValue)
+				fileUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -75,12 +75,12 @@ var _ = Context("coercer", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coercer{
+					fileUnderTest := _toString{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					_, actualErr := fileUnderTest.Coerce(
+					_, actualErr := fileUnderTest.ToString(
 						&model.Value{File: new(string)},
 					)
 
@@ -96,12 +96,12 @@ var _ = Context("coercer", func() {
 					marshaledBytes := []byte{2, 3, 4}
 					fakeIOUtil.ReadFileReturns(marshaledBytes, nil)
 
-					fileUnderTest := _coercer{
+					fileUnderTest := _toString{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualString, actualErr := fileUnderTest.Coerce(
+					actualString, actualErr := fileUnderTest.ToString(
 						&model.Value{File: new(string)},
 					)
 
@@ -119,10 +119,10 @@ var _ = Context("coercer", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _toString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.Coerce(providedValue)
+				actualString, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualString).To(Equal(strconv.FormatFloat(providedNumber, 'f', -1, 64)))
@@ -144,12 +144,12 @@ var _ = Context("coercer", func() {
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coercer{
+				objectUnderTest := _toString{
 					json: fakeJSON,
 				}
 
 				/* act */
-				objectUnderTest.Coerce(providedValue)
+				objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedObject))
@@ -163,12 +163,12 @@ var _ = Context("coercer", func() {
 					marshalErr := errors.New("dummyError")
 					fakeJSON.MarshalReturns(nil, marshalErr)
 
-					objectUnderTest := _coercer{
+					objectUnderTest := _toString{
 						json: fakeJSON,
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.Coerce(
+					_, actualErr := objectUnderTest.ToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
@@ -184,12 +184,12 @@ var _ = Context("coercer", func() {
 					marshaledBytes := []byte{2, 3, 4}
 					fakeJSON.MarshalReturns(marshaledBytes, nil)
 
-					objectUnderTest := _coercer{
+					objectUnderTest := _toString{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualString, actualErr := objectUnderTest.Coerce(
+					actualString, actualErr := objectUnderTest.ToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
@@ -207,10 +207,10 @@ var _ = Context("coercer", func() {
 					String: &providedString,
 				}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _toString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.Coerce(providedValue)
+				actualString, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualString).To(Equal(providedString))
@@ -222,10 +222,10 @@ var _ = Context("coercer", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coercer{}
+				objectUnderTest := _toString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.Coerce(providedValue)
+				actualString, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualString).To(Equal(""))

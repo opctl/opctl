@@ -9,7 +9,7 @@ const (
 	refCloser = ')'
 )
 
-// ValueSourcer de references references
+// DeReferencer de references references
 type DeReferencer interface {
 	// DeReference returns the de referenced value (if any), whether de referencing occurred, and any err
 	DeReference(
@@ -59,7 +59,7 @@ func (itp _Interpolater) Interpolate(
 // tryDeRef tries to de reference from possibleRef.
 // It's assumed possibleRef doesn't contain the initial operator.
 //
-// returns the de referenced value (if any), number of bytes consumed, whether de referencing occurred, and any err
+// returns the de referenced value (if any), number of bytes consumed, and any err
 func (itp _Interpolater) tryDeRef(
 	possibleRef string,
 	deReferencer DeReferencer,

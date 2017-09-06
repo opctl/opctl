@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/util/coerce"
 )
 
 var _ = Context("deReferencerFactory", func() {
@@ -13,8 +14,8 @@ var _ = Context("deReferencerFactory", func() {
 			providedScope := map[string]*model.Value{"dummyName": {}}
 
 			expectedResult := _deReferencer{
-				coercer: newCoercer(),
-				scope:   providedScope,
+				coerce: coerce.New(),
+				scope:  providedScope,
 			}
 
 			objectUnderTest := _deReferencerFactory{}
