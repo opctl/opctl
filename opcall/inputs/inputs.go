@@ -3,6 +3,7 @@ package inputs
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Inputs
 
 import (
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -27,11 +28,11 @@ type Inputs interface {
 func New() Inputs {
 	return _Inputs{
 		argInterpreter: newArgInterpreter(),
-		validator:      newValidator(),
+		data:           data.New(),
 	}
 }
 
 type _Inputs struct {
 	argInterpreter argInterpreter
-	validator      validator
+	data           data.Data
 }

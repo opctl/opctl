@@ -3,6 +3,7 @@ package inputs
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
 )
@@ -23,7 +24,7 @@ var _ = Context("inputs", func() {
 						}
 
 						objectUnderTest := _Inputs{
-							validator: new(fakeValidator),
+							data: new(data.Fake),
 						}
 
 						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
@@ -43,7 +44,7 @@ var _ = Context("inputs", func() {
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
 					})
-					It("should call validator.Validate w/ expected args", func() {
+					It("should call data.Validate w/ expected args", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
@@ -58,10 +59,10 @@ var _ = Context("inputs", func() {
 						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInput := &model.Value{Dir: &expectedInputValue}
 
-						fakeValidator := new(fakeValidator)
+						fakeData := new(data.Fake)
 
 						objectUnderTest := _Inputs{
-							validator: fakeValidator,
+							data: fakeData,
 						}
 
 						/* act */
@@ -74,7 +75,7 @@ var _ = Context("inputs", func() {
 						)
 
 						/* assert */
-						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 						Expect(actualInput).To(Equal(expectedInput))
 						Expect(actualParam).To(Equal(expectedParam))
@@ -94,7 +95,7 @@ var _ = Context("inputs", func() {
 						}
 
 						objectUnderTest := _Inputs{
-							validator: new(fakeValidator),
+							data: new(data.Fake),
 						}
 
 						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
@@ -114,7 +115,7 @@ var _ = Context("inputs", func() {
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
 					})
-					It("should call validator.Validate w/ expected args", func() {
+					It("should call data.Validate w/ expected args", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
@@ -129,10 +130,10 @@ var _ = Context("inputs", func() {
 						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
 						expectedInput := &model.Value{File: &expectedInputValue}
 
-						fakeValidator := new(fakeValidator)
+						fakeData := new(data.Fake)
 
 						objectUnderTest := _Inputs{
-							validator: fakeValidator,
+							data: fakeData,
 						}
 
 						/* act */
@@ -145,7 +146,7 @@ var _ = Context("inputs", func() {
 						)
 
 						/* assert */
-						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 						Expect(actualInput).To(Equal(expectedInput))
 						Expect(actualParam).To(Equal(expectedParam))
@@ -164,7 +165,7 @@ var _ = Context("inputs", func() {
 						}
 
 						objectUnderTest := _Inputs{
-							validator: new(fakeValidator),
+							data: new(data.Fake),
 						}
 
 						expectedInputs := map[string]*model.Value{
@@ -183,7 +184,7 @@ var _ = Context("inputs", func() {
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
 					})
-					It("should call validator.Validate w/ expected args", func() {
+					It("should call data.Validate w/ expected args", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := 2.2
@@ -195,10 +196,10 @@ var _ = Context("inputs", func() {
 						expectedParam := providedInputParams[providedInputName]
 						expectedInput := &model.Value{Number: &providedInputDefault}
 
-						fakeValidator := new(fakeValidator)
+						fakeData := new(data.Fake)
 
 						objectUnderTest := _Inputs{
-							validator: fakeValidator,
+							data: fakeData,
 						}
 
 						/* act */
@@ -211,7 +212,7 @@ var _ = Context("inputs", func() {
 						)
 
 						/* assert */
-						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 						Expect(actualInput).To(Equal(expectedInput))
 						Expect(actualParam).To(Equal(expectedParam))
@@ -230,7 +231,7 @@ var _ = Context("inputs", func() {
 						}
 
 						objectUnderTest := _Inputs{
-							validator: new(fakeValidator),
+							data: new(data.Fake),
 						}
 
 						expectedInputs := map[string]*model.Value{
@@ -249,7 +250,7 @@ var _ = Context("inputs", func() {
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
 					})
-					It("should call validator.Validate w/ expected args", func() {
+					It("should call data.Validate w/ expected args", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := map[string]interface{}{}
@@ -261,10 +262,10 @@ var _ = Context("inputs", func() {
 						expectedParam := providedInputParams[providedInputName]
 						expectedInput := &model.Value{Object: providedInputDefault}
 
-						fakeValidator := new(fakeValidator)
+						fakeData := new(data.Fake)
 
 						objectUnderTest := _Inputs{
-							validator: fakeValidator,
+							data: fakeData,
 						}
 
 						/* act */
@@ -277,7 +278,7 @@ var _ = Context("inputs", func() {
 						)
 
 						/* assert */
-						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 						Expect(actualInput).To(Equal(expectedInput))
 						Expect(actualParam).To(Equal(expectedParam))
@@ -296,7 +297,7 @@ var _ = Context("inputs", func() {
 						}
 
 						objectUnderTest := _Inputs{
-							validator: new(fakeValidator),
+							data: new(data.Fake),
 						}
 
 						expectedInputs := map[string]*model.Value{
@@ -315,7 +316,7 @@ var _ = Context("inputs", func() {
 						/* assert */
 						Expect(actualInputs).To(Equal(expectedInputs))
 					})
-					It("should call validator.Validate w/ expected args", func() {
+					It("should call data.Validate w/ expected args", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "inputDefault"
@@ -327,10 +328,10 @@ var _ = Context("inputs", func() {
 						expectedParam := providedInputParams[providedInputName]
 						expectedInput := &model.Value{String: &providedInputDefault}
 
-						fakeValidator := new(fakeValidator)
+						fakeData := new(data.Fake)
 
 						objectUnderTest := _Inputs{
-							validator: fakeValidator,
+							data: fakeData,
 						}
 
 						/* act */
@@ -343,7 +344,7 @@ var _ = Context("inputs", func() {
 						)
 
 						/* assert */
-						actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 						Expect(actualInput).To(Equal(expectedInput))
 						Expect(actualParam).To(Equal(expectedParam))
@@ -377,7 +378,7 @@ var _ = Context("inputs", func() {
 
 				objectUnderTest := _Inputs{
 					argInterpreter: fakeArgInterpreter,
-					validator:      new(fakeValidator),
+					data:           new(data.Fake),
 				}
 
 				/* act */
@@ -403,7 +404,7 @@ var _ = Context("inputs", func() {
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("argInterpreter.Interpret doesn't error", func() {
-				It("should call validator.Validate w/ expected args", func() {
+				It("should call data.Validate w/ expected args", func() {
 					/* arrange */
 					providedArgName := "argName"
 
@@ -421,11 +422,11 @@ var _ = Context("inputs", func() {
 					fakeArgInterpreter := new(fakeArgInterpreter)
 					fakeArgInterpreter.InterpretReturns(expectedInput, nil)
 
-					fakeValidator := new(fakeValidator)
+					fakeData := new(data.Fake)
 
 					objectUnderTest := _Inputs{
 						argInterpreter: fakeArgInterpreter,
-						validator:      fakeValidator,
+						data:           fakeData,
 					}
 
 					/* act */
@@ -438,7 +439,7 @@ var _ = Context("inputs", func() {
 					)
 
 					/* assert */
-					actualInput, actualParam := fakeValidator.ValidateArgsForCall(0)
+					actualInput, actualParam := fakeData.ValidateArgsForCall(0)
 
 					Expect(actualInput).To(Equal(expectedInput))
 					Expect(actualParam).To(Equal(expectedParam))

@@ -5,17 +5,14 @@ package number
 
 type Number interface {
 	interpreter
-	validator
 }
 
 func New() Number {
 	return _Number{
 		interpreter: newInterpreter(),
-		validator:   newValidator(),
 	}
 }
 
 type _Number struct {
 	interpreter
-	validator
 }

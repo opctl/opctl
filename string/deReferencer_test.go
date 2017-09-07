@@ -4,8 +4,8 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/coerce"
 	"github.com/pkg/errors"
 )
 
@@ -31,7 +31,7 @@ var _ = Context("deReferencer", func() {
 		})
 	})
 	Context("ref is in scope", func() {
-		It("should call coerce.Coerce w/ expected args", func() {
+		It("should call data.Coerce w/ expected args", func() {
 			/* arrange */
 			providedRef := "dummyRef"
 
@@ -40,33 +40,33 @@ var _ = Context("deReferencer", func() {
 				providedRef: providedScopeValue,
 			}
 
-			fakeCoercer := new(coerce.Fake)
+			fakeData := new(data.Fake)
 			// err to trigger immediate return
-			fakeCoercer.ToStringReturns("", errors.New("dummyError"))
+			fakeData.CoerceToStringReturns("", errors.New("dummyError"))
 
 			objectUnderTest := _deReferencer{
-				coerce: fakeCoercer,
-				scope:  providedScope,
+				data:  fakeData,
+				scope: providedScope,
 			}
 
 			/* act */
 			objectUnderTest.DeReference(providedRef)
 
 			/* assert */
-			Expect(fakeCoercer.ToStringArgsForCall(0)).To(Equal(providedScopeValue))
+			Expect(fakeData.CoerceToStringArgsForCall(0)).To(Equal(providedScopeValue))
 		})
-		Context("coerce.Coerce errs", func() {
+		Context("data.Coerce errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				coerceError := errors.New("dummyError")
-				fakeCoercer.ToStringReturns("", coerceError)
+				fakeData.CoerceToStringReturns("", coerceError)
 
 				objectUnderTest := _deReferencer{
-					coerce: fakeCoercer,
+					data: fakeData,
 					scope: map[string]*model.Value{
 						providedRef: nil,
 					},
@@ -82,18 +82,18 @@ var _ = Context("deReferencer", func() {
 				Expect(actualErr).To(Equal(fmt.Errorf("Unable to deReference '%v' as string; error was: %v", providedRef, coerceError.Error())))
 			})
 		})
-		Context("coerce.Coerce doesn't err", func() {
+		Context("data.Coerce doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				coercedString := "dummyString"
-				fakeCoercer.ToStringReturns(coercedString, nil)
+				fakeData.CoerceToStringReturns(coercedString, nil)
 
 				objectUnderTest := _deReferencer{
-					coerce: fakeCoercer,
+					data: fakeData,
 					scope: map[string]*model.Value{
 						providedRef: nil,
 					},

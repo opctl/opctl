@@ -39,6 +39,7 @@ func (_inputs _Inputs) Interpret(
 	for argName, argValue := range inputArgs {
 		// override defaults w/ args
 		var err error
+    // @TODO: argInterpreter.Interpret should perform validation so we don't need to below
 		dcgOpCallInputs[argName], err = _inputs.argInterpreter.Interpret(
 			argName,
 			argValue,
@@ -56,8 +57,7 @@ func (_inputs _Inputs) Interpret(
 	}
 
 	for inputName, inputValue := range dcgOpCallInputs {
-		// validate inputs
-		errs = append(errs, _inputs.validator.Validate(inputValue, inputParams[inputName])...)
+		errs = append(errs, _inputs.data.Validate(inputValue, inputParams[inputName])...)
 	}
 
 	return dcgOpCallInputs, errs

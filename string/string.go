@@ -5,17 +5,14 @@ package string
 
 type String interface {
 	interpreter
-	validator
 }
 
 func New() String {
 	return _String{
 		interpreter: newInterpreter(),
-		validator:   newValidator(),
 	}
 }
 
 type _String struct {
 	interpreter
-	validator
 }

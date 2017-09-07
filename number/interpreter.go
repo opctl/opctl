@@ -5,8 +5,8 @@ package number
 import (
 	"bytes"
 	"fmt"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/coerce"
 	"strconv"
 )
 
@@ -20,12 +20,12 @@ type interpreter interface {
 
 func newInterpreter() interpreter {
 	return _interpreter{
-		coerce: coerce.New(),
+		data: data.New(),
 	}
 }
 
 type _interpreter struct {
-	coerce coerce.Coerce
+	data data.Data
 }
 
 func (itp _interpreter) Interpret(
@@ -70,7 +70,7 @@ func (itp _interpreter) Interpret(
 				return 0, fmt.Errorf("Unable to interpret number; %v not in scope", ref)
 			}
 
-			numberValue, err := itp.coerce.ToNumber(value)
+			numberValue, err := itp.data.CoerceToNumber(value)
 			if nil != err {
 				return 0, fmt.Errorf("Unable to interpret number; error was: %v", err.Error())
 			}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/coerce"
 	"github.com/pkg/errors"
 	"strconv"
 )
@@ -32,7 +32,7 @@ var _ = Context("Interpret", func() {
 			})
 		})
 		Context("ref is in scope", func() {
-			It("should call coerce.Coerce w/ expected args", func() {
+			It("should call data.Coerce w/ expected args", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 				providedExpression := fmt.Sprintf("$(%v)", providedRef)
@@ -42,33 +42,33 @@ var _ = Context("Interpret", func() {
 					providedRef: providedScopeValue,
 				}
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 				// err to trigger immediate return
-				fakeCoercer.ToNumberReturns(float64(0), errors.New("dummyError"))
+				fakeData.CoerceToNumberReturns(float64(0), errors.New("dummyError"))
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */
 				objectUnderTest.Interpret(providedScope, providedExpression)
 
 				/* assert */
-				Expect(fakeCoercer.ToNumberArgsForCall(0)).To(Equal(providedScopeValue))
+				Expect(fakeData.CoerceToNumberArgsForCall(0)).To(Equal(providedScopeValue))
 			})
-			Context("coerce.Coerce errs", func() {
+			Context("data.Coerce errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedRef := "dummyRef"
 					providedExpression := fmt.Sprintf("$(%v)", providedRef)
 
-					fakeCoercer := new(coerce.Fake)
+					fakeData := new(data.Fake)
 
 					coerceError := errors.New("dummyError")
-					fakeCoercer.ToNumberReturns(float64(1), coerceError)
+					fakeData.CoerceToNumberReturns(float64(1), coerceError)
 
 					objectUnderTest := _interpreter{
-						coerce: fakeCoercer,
+						data: fakeData,
 					}
 
 					/* act */
@@ -83,19 +83,19 @@ var _ = Context("Interpret", func() {
 					Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret number; error was: %v", coerceError.Error())))
 				})
 			})
-			Context("coerce.Coerce doesn't err", func() {
+			Context("data.Coerce doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedRef := "dummyRef"
 					providedExpression := fmt.Sprintf("$(%v)", providedRef)
 
-					fakeCoercer := new(coerce.Fake)
+					fakeData := new(data.Fake)
 
 					coercedNumber := float64(1)
-					fakeCoercer.ToNumberReturns(coercedNumber, nil)
+					fakeData.CoerceToNumberReturns(coercedNumber, nil)
 
 					objectUnderTest := _interpreter{
-						coerce: fakeCoercer,
+						data: fakeData,
 					}
 
 					/* act */
@@ -140,10 +140,10 @@ var _ = Context("Interpret", func() {
 				providedRef2 := "dummyRef2"
 				providedExpression := fmt.Sprintf("$(%v)$(%v)", providedRef1, providedRef2)
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */
@@ -160,7 +160,7 @@ var _ = Context("Interpret", func() {
 			})
 		})
 		Context("refs in scope", func() {
-			It("should call coerce.Coerce w/ expected args", func() {
+			It("should call data.Coerce w/ expected args", func() {
 				/* arrange */
 				providedRef1 := "dummyRef1"
 				providedRef2 := "dummyRef2"
@@ -173,32 +173,32 @@ var _ = Context("Interpret", func() {
 					providedRef2: providedScopeValue2,
 				}
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */
 				objectUnderTest.Interpret(providedScope, providedExpression)
 
 				/* assert */
-				Expect(fakeCoercer.ToNumberArgsForCall(0)).To(Equal(providedScopeValue1))
-				Expect(fakeCoercer.ToNumberArgsForCall(1)).To(Equal(providedScopeValue2))
+				Expect(fakeData.CoerceToNumberArgsForCall(0)).To(Equal(providedScopeValue1))
+				Expect(fakeData.CoerceToNumberArgsForCall(1)).To(Equal(providedScopeValue2))
 			})
-			Context("first coerce.Coerce errs", func() {
+			Context("first data.Coerce errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedRef1 := "dummyRef1"
 					providedExpression := fmt.Sprintf("$(%v)$(dummyRef2)", providedRef1)
 
-					fakeCoercer := new(coerce.Fake)
+					fakeData := new(data.Fake)
 
 					coerceError := errors.New("dummyError")
-					fakeCoercer.ToNumberReturns(float64(1), coerceError)
+					fakeData.CoerceToNumberReturns(float64(1), coerceError)
 
 					objectUnderTest := _interpreter{
-						coerce: fakeCoercer,
+						data: fakeData,
 					}
 
 					/* act */
@@ -213,20 +213,20 @@ var _ = Context("Interpret", func() {
 					Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret number; error was: %v", coerceError.Error())))
 				})
 			})
-			Context("second coerce.Coerce errs", func() {
+			Context("second data.Coerce errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedRef1 := "dummyRef1"
 					providedRef2 := "dummyRef2"
 					providedExpression := fmt.Sprintf("$(%v)$(%v)", providedRef1, providedRef2)
 
-					fakeCoercer := new(coerce.Fake)
+					fakeData := new(data.Fake)
 
 					coerceError := errors.New("dummyError")
-					fakeCoercer.ToNumberReturnsOnCall(1, float64(1), coerceError)
+					fakeData.CoerceToNumberReturnsOnCall(1, float64(1), coerceError)
 
 					objectUnderTest := _interpreter{
-						coerce: fakeCoercer,
+						data: fakeData,
 					}
 
 					/* act */
@@ -242,19 +242,19 @@ var _ = Context("Interpret", func() {
 					Expect(actualErr).To(Equal(fmt.Errorf("Unable to interpret number; error was: %v", coerceError.Error())))
 				})
 			})
-			Context("coerce.Coerce doesn't err", func() {
+			Context("data.Coerce doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedRef1 := "dummyRef1"
 					providedRef2 := "dummyRef2"
 					providedExpression := fmt.Sprintf("$(%v)$(%v)", providedRef1, providedRef2)
 
-					fakeCoercer := new(coerce.Fake)
+					fakeData := new(data.Fake)
 
 					coercedNumber1 := float64(1)
-					fakeCoercer.ToNumberReturnsOnCall(0, coercedNumber1, nil)
+					fakeData.CoerceToNumberReturnsOnCall(0, coercedNumber1, nil)
 					coercedNumber2 := float64(2)
-					fakeCoercer.ToNumberReturnsOnCall(1, coercedNumber2, nil)
+					fakeData.CoerceToNumberReturnsOnCall(1, coercedNumber2, nil)
 
 					expectedNumber, err := strconv.ParseFloat(
 						strconv.FormatFloat(coercedNumber1, 'f', -1, 64)+
@@ -266,7 +266,7 @@ var _ = Context("Interpret", func() {
 					}
 
 					objectUnderTest := _interpreter{
-						coerce: fakeCoercer,
+						data: fakeData,
 					}
 
 					/* act */
@@ -315,10 +315,10 @@ var _ = Context("Interpret", func() {
 				providedSuffix := float64(2)
 				providedExpression := fmt.Sprintf("$(%v)%v", providedRef, providedSuffix)
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				coercedNumber := float64(1)
-				fakeCoercer.ToNumberReturns(coercedNumber, nil)
+				fakeData.CoerceToNumberReturns(coercedNumber, nil)
 
 				expectedNumber, err := strconv.ParseFloat(
 					strconv.FormatFloat(coercedNumber, 'f', -1, 64)+
@@ -330,7 +330,7 @@ var _ = Context("Interpret", func() {
 				}
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */
@@ -354,10 +354,10 @@ var _ = Context("Interpret", func() {
 				providedSuffix := float64(3)
 				providedExpression := fmt.Sprintf("%v$(%v)%v", providedPrefix, providedRef, providedSuffix)
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				coercedNumber := float64(2)
-				fakeCoercer.ToNumberReturns(coercedNumber, nil)
+				fakeData.CoerceToNumberReturns(coercedNumber, nil)
 
 				expectedNumber, err := strconv.ParseFloat(
 					strconv.FormatFloat(providedPrefix, 'f', -1, 64)+
@@ -370,7 +370,7 @@ var _ = Context("Interpret", func() {
 				}
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */
@@ -393,10 +393,10 @@ var _ = Context("Interpret", func() {
 				providedPrefix := float64(1)
 				providedExpression := fmt.Sprintf("%v$(%v)", providedPrefix, providedRef)
 
-				fakeCoercer := new(coerce.Fake)
+				fakeData := new(data.Fake)
 
 				coercedNumber := float64(2)
-				fakeCoercer.ToNumberReturns(coercedNumber, nil)
+				fakeData.CoerceToNumberReturns(coercedNumber, nil)
 
 				expectedNumber, err := strconv.ParseFloat(
 					strconv.FormatFloat(providedPrefix, 'f', -1, 64)+
@@ -408,7 +408,7 @@ var _ = Context("Interpret", func() {
 				}
 
 				objectUnderTest := _interpreter{
-					coerce: fakeCoercer,
+					data: fakeData,
 				}
 
 				/* act */

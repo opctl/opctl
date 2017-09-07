@@ -1,6 +1,9 @@
 package inputs
 
-import "github.com/opspec-io/sdk-golang/model"
+import (
+	"errors"
+	"github.com/opspec-io/sdk-golang/model"
+)
 
 func (_inputs _Inputs) Validate(
 	inputs map[string]*model.Value,
@@ -8,10 +11,13 @@ func (_inputs _Inputs) Validate(
 ) map[string][]error {
 	errMap := map[string][]error{}
 	for paramName, paramValue := range params {
-		if errs := _inputs.validator.Validate(
-			inputs[paramName],
-			paramValue,
-		); len(errs) > 0 {
+
+		if nil == inputs[paramName] {
+			errMap[paramName] = []error{errors.New("param required")}
+			continue
+		}
+
+		if errs := _inputs.data.Validate(inputs[paramName], paramValue); len(errs) > 0 {
 			errMap[paramName] = errs
 		}
 	}
