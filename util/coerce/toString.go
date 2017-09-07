@@ -55,6 +55,6 @@ func (c _toString) ToString(
 	case nil != value.String:
 		return *value.String, nil
 	default:
-		return "", fmt.Errorf("Unable to coerce '%v' to string", value)
+		return "", fmt.Errorf("Unable to coerce '%#v' to string", value)
 	}
 }

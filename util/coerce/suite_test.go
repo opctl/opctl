@@ -1,4 +1,4 @@
-package docker
+package coerce
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "util/containerprovider/docker")
+	RunSpecs(t, "util/coerce")
 }

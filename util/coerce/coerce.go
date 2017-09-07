@@ -10,11 +10,13 @@ type Coerce interface {
 func New() Coerce {
 	return _Coerce{
 		toNumber: newToNumber(),
+		toObject: newToObject(),
 		toString: newToString(),
 	}
 }
 
 type _Coerce struct {
 	toNumber
+	toObject
 	toString
 }
