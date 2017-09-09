@@ -9,13 +9,14 @@ import (
 	"strings"
 )
 
-// validateString validates an value against a string parameter
+// validateString validates a value against a string parameter
 func (this _validator) validateString(
-	value *string,
+	value *model.Value,
 	constraints *model.StringConstraints,
 ) []error {
-	if nil == value {
-		return []error{errors.New("string required")}
+	valueAsString, err := this.coercer.CoerceToString(value)
+	if nil != err {
+		return []error{err}
 	}
 
 	// guard no constraints
@@ -32,7 +33,7 @@ func (this _validator) validateString(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(value)
+		valueJsonBytes, err := json.Marshal(valueAsString)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

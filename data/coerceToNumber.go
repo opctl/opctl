@@ -17,18 +17,18 @@ type coerceToNumber interface {
 }
 
 func newCoerceToNumber() coerceToNumber {
-	return _number{
+	return _coerceToNumber{
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _number struct {
+type _coerceToNumber struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 }
 
-func (c _number) CoerceToNumber(
+func (c _coerceToNumber) CoerceToNumber(
 	value *model.Value,
 ) (float64, error) {
 	switch {

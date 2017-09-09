@@ -11,11 +11,12 @@ import (
 
 // validateObject validates an value against an object parameter
 func (this _validator) validateObject(
-	value map[string]interface{},
+	value *model.Value,
 	constraints *model.ObjectConstraints,
 ) []error {
-	if nil == value {
-		return []error{errors.New("object required")}
+	valueAsObject, err := this.coercer.CoerceToObject(value)
+	if nil != err {
+		return []error{err}
 	}
 
 	// guard no constraints
@@ -32,7 +33,7 @@ func (this _validator) validateObject(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(value)
+		valueJsonBytes, err := json.Marshal(valueAsObject)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

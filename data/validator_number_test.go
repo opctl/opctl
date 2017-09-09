@@ -21,7 +21,7 @@ var _ = Context("Validate", func() {
 				}
 
 				expectedErrors := []error{
-					errors.New("number required"),
+					fmt.Errorf("Unable to coerce '%#v' to number", providedValue),
 				}
 
 				objectUnderTest := newValidator()

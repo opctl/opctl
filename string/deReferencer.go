@@ -30,10 +30,10 @@ func (dr _deReferencer) DeReference(
 		return ref, false, nil
 	}
 
-	stringValue, err := dr.data.CoerceToString(value)
+	valueAsString, err := dr.data.CoerceToString(value)
 	if nil != err {
 		return "", false, fmt.Errorf("Unable to deReference '%v' as string; error was: %v", ref, err.Error())
 	}
 
-	return stringValue, true, nil
+	return valueAsString, true, nil
 }

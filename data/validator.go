@@ -23,12 +23,14 @@ func newValidator() validator {
 	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
 	return _validator{
-		os: ios.New(),
+		os:      ios.New(),
+		coercer: newCoercer(),
 	}
 }
 
 type _validator struct {
-	os ios.IOS
+	coercer coercer
+	os      ios.IOS
 }
 
 // Validate validates a value against a parameter
@@ -55,23 +57,11 @@ func (this _validator) Validate(
 		}
 		errs = this.validateFile(value)
 	case nil != param.String:
-		var value *string
-		if nil != rawValue {
-			value = rawValue.String
-		}
-		errs = this.validateString(value, param.String.Constraints)
+		errs = this.validateString(rawValue, param.String.Constraints)
 	case nil != param.Number:
-		var value *float64
-		if nil != rawValue {
-			value = rawValue.Number
-		}
-		errs = this.validateNumber(value, param.Number.Constraints)
+		errs = this.validateNumber(rawValue, param.Number.Constraints)
 	case nil != param.Object:
-		var value map[string]interface{}
-		if nil != rawValue {
-			value = rawValue.Object
-		}
-		errs = this.validateObject(value, param.Object.Constraints)
+		errs = this.validateObject(rawValue, param.Object.Constraints)
 	case nil != param.Socket:
 		var value *string
 		if nil != rawValue {

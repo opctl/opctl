@@ -11,11 +11,12 @@ import (
 
 // validateNumber validates an value against a number parameter
 func (this _validator) validateNumber(
-	value *float64,
+	value *model.Value,
 	constraints *model.NumberConstraints,
 ) []error {
-	if nil == value {
-		return []error{errors.New("number required")}
+	valueAsNumber, err := this.coercer.CoerceToNumber(value)
+	if nil != err {
+		return []error{err}
 	}
 
 	// guard no constraints
@@ -31,7 +32,7 @@ func (this _validator) validateNumber(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(value)
+		valueJsonBytes, err := json.Marshal(valueAsNumber)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

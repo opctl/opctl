@@ -15,7 +15,7 @@ var _ = Context("coerceToNumber", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(nil)
@@ -33,7 +33,7 @@ var _ = Context("coerceToNumber", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
@@ -56,7 +56,7 @@ var _ = Context("coerceToNumber", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _number{
+				fileUnderTest := _coerceToNumber{
 					ioUtil: fakeIOUtil,
 				}
 
@@ -74,7 +74,7 @@ var _ = Context("coerceToNumber", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _number{
+					fileUnderTest := _coerceToNumber{
 						ioUtil: fakeIOUtil,
 					}
 
@@ -100,7 +100,7 @@ var _ = Context("coerceToNumber", func() {
 						panic(err)
 					}
 
-					fileUnderTest := _number{
+					fileUnderTest := _coerceToNumber{
 						ioUtil: fakeIOUtil,
 					}
 
@@ -123,7 +123,7 @@ var _ = Context("coerceToNumber", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
@@ -140,7 +140,7 @@ var _ = Context("coerceToNumber", func() {
 					Object: map[string]interface{}{},
 				}
 
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
@@ -158,7 +158,7 @@ var _ = Context("coerceToNumber", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
@@ -173,7 +173,7 @@ var _ = Context("coerceToNumber", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _number{}
+				objectUnderTest := _coerceToNumber{}
 
 				/* act */
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)

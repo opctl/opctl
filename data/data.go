@@ -4,24 +4,18 @@ package data
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Data
 
 type Data interface {
-	coerceToNumber
-	coerceToObject
-	coerceToString
+	coercer
 	validator
 }
 
 func New() Data {
 	return _Data{
-		coerceToNumber: newCoerceToNumber(),
-		coerceToObject: newCoerceToObject(),
-		coerceToString: newCoerceToString(),
-		validator:      newValidator(),
+		coercer:   newCoercer(),
+		validator: newValidator(),
 	}
 }
 
 type _Data struct {
-	coerceToNumber
-	coerceToObject
-	coerceToString
+	coercer
 	validator
 }
