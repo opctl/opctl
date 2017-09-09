@@ -17,14 +17,12 @@ type interpreter interface {
 
 func newInterpreter() interpreter {
 	return _interpreter{
-		deReferencerFactory: newDeReferencerFactory(),
-		interpolater:        interpolater.New(),
+		interpolater: interpolater.New(),
 	}
 }
 
 type _interpreter struct {
-	deReferencerFactory deReferencerFactory
-	interpolater        interpolater.Interpolater
+	interpolater interpolater.Interpolater
 }
 
 func (itp _interpreter) Interpret(
@@ -33,6 +31,6 @@ func (itp _interpreter) Interpret(
 ) (string, error) {
 	return itp.interpolater.Interpolate(
 		expression,
-		itp.deReferencerFactory.New(scope),
+		scope,
 	)
 }

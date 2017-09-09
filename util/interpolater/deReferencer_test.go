@@ -1,4 +1,4 @@
-package string
+package interpolater
 
 import (
 	"fmt"
@@ -15,13 +15,12 @@ var _ = Context("deReferencer", func() {
 			/* arrange */
 			providedRef := "dummyRef"
 
-			objectUnderTest := _deReferencer{
-				scope: map[string]*model.Value{},
-			}
+			objectUnderTest := _deReferencer{}
 
 			/* act */
 			actualString, actualOk, actualErr := objectUnderTest.DeReference(
 				providedRef,
+				map[string]*model.Value{},
 			)
 
 			/* assert */
@@ -36,21 +35,22 @@ var _ = Context("deReferencer", func() {
 			providedRef := "dummyRef"
 
 			providedScopeValue := &model.Value{}
-			providedScope := map[string]*model.Value{
-				providedRef: providedScopeValue,
-			}
 
 			fakeData := new(data.Fake)
 			// err to trigger immediate return
 			fakeData.CoerceToStringReturns("", errors.New("dummyError"))
 
 			objectUnderTest := _deReferencer{
-				data:  fakeData,
-				scope: providedScope,
+				data: fakeData,
 			}
 
 			/* act */
-			objectUnderTest.DeReference(providedRef)
+			objectUnderTest.DeReference(
+				providedRef,
+				map[string]*model.Value{
+					providedRef: providedScopeValue,
+				},
+			)
 
 			/* assert */
 			Expect(fakeData.CoerceToStringArgsForCall(0)).To(Equal(providedScopeValue))
@@ -67,14 +67,14 @@ var _ = Context("deReferencer", func() {
 
 				objectUnderTest := _deReferencer{
 					data: fakeData,
-					scope: map[string]*model.Value{
-						providedRef: nil,
-					},
 				}
 
 				/* act */
 				_, actualOk, actualErr := objectUnderTest.DeReference(
 					providedRef,
+					map[string]*model.Value{
+						providedRef: nil,
+					},
 				)
 
 				/* assert */
@@ -94,14 +94,14 @@ var _ = Context("deReferencer", func() {
 
 				objectUnderTest := _deReferencer{
 					data: fakeData,
-					scope: map[string]*model.Value{
-						providedRef: nil,
-					},
 				}
 
 				/* act */
 				actualString, actualOk, actualErr := objectUnderTest.DeReference(
 					providedRef,
+					map[string]*model.Value{
+						providedRef: nil,
+					},
 				)
 
 				/* assert */

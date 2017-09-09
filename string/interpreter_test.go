@@ -19,14 +19,8 @@ var _ = Context("Interpret", func() {
 		fakeInterpolater := new(interpolater.Fake)
 		fakeInterpolater.InterpolateReturns(expectedResult, expectedErr)
 
-		expectedDeReferencer := new(interpolater.FakeDeReferencer)
-
-		fakeDeReferencerFactory := new(fakeDeReferencerFactory)
-		fakeDeReferencerFactory.NewReturns(expectedDeReferencer)
-
 		objectUnderTest := _interpreter{
-			deReferencerFactory: fakeDeReferencerFactory,
-			interpolater:        fakeInterpolater,
+			interpolater: fakeInterpolater,
 		}
 
 		/* act */
@@ -40,10 +34,10 @@ var _ = Context("Interpret", func() {
 		Expect(actualErr).To(Equal(expectedErr))
 
 		actualExpression,
-			actualDeReferencer := fakeInterpolater.InterpolateArgsForCall(0)
+			actualScope := fakeInterpolater.InterpolateArgsForCall(0)
 
 		Expect(actualExpression).To(Equal(providedExpression))
-		Expect(actualDeReferencer).To(Equal(expectedDeReferencer))
+		Expect(actualScope).To(Equal(providedScope))
 
 	})
 })

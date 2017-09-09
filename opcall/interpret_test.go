@@ -40,7 +40,6 @@ var _ = Context("OpCall", func() {
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-resolvable/isnt-coercible"):                nil,
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-file/isnt-coercible"):   nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-number"):                nil,
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-string/isnt-coercible"): nil,
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
 					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/string-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,

@@ -1,7 +1,8 @@
 package interpolater
 
+import "github.com/opspec-io/sdk-golang/model"
+
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
-//go:generate counterfeiter -o ./fakeDeReferencer.go --fake-name FakeDeReferencer ./ DeReferencer
 
 const (
 	operator  = '$'
@@ -9,37 +10,33 @@ const (
 	refCloser = ')'
 )
 
-// DeReferencer de references references
-type DeReferencer interface {
-	// DeReference returns the de referenced value (if any), whether de referencing occurred, and any err
-	DeReference(
-		ref string,
-	) (string, bool, error)
-}
-
 type Interpolater interface {
 	Interpolate(
 		expression string,
-		deReferencer DeReferencer,
+		scope map[string]*model.Value,
 	) (string, error)
 }
 
 func New() Interpolater {
-	return _Interpolater{}
+	return _Interpolater{
+		deReferencer: newDeReferencer(),
+	}
 }
 
-type _Interpolater struct{}
+type _Interpolater struct {
+	deReferencer
+}
 
 func (itp _Interpolater) Interpolate(
 	expression string,
-	deReferencer DeReferencer,
+	scope map[string]*model.Value,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
 	for i < len(expression) {
 		switch {
 		case operator == expression[i]:
-			result, consumed, err := itp.tryDeRef(expression[i+1:], deReferencer)
+			result, consumed, err := itp.tryDeRef(expression[i+1:], scope)
 			if nil != err {
 				return "", err
 			}
@@ -62,7 +59,7 @@ func (itp _Interpolater) Interpolate(
 // returns the de referenced value (if any), number of bytes consumed, and any err
 func (itp _Interpolater) tryDeRef(
 	possibleRef string,
-	deReferencer DeReferencer,
+	scope map[string]*model.Value,
 ) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -70,7 +67,7 @@ func (itp _Interpolater) tryDeRef(
 		switch {
 		case refCloser == possibleRef[i]:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
-				result, ok, err := deReferencer.DeReference(string(refBuffer[1:]))
+				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope)
 				if nil != err {
 					return "", 0, err
 				}
@@ -80,7 +77,7 @@ func (itp _Interpolater) tryDeRef(
 			}
 			refBuffer = append(refBuffer, possibleRef[i])
 		case operator == possibleRef[i]:
-			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], deReferencer)
+			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope)
 			if nil != err {
 				return "", 0, err
 			}

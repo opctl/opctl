@@ -1,0 +1,43 @@
+- name: standalone
+  expression: $(string1)$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: value1value2
+
+- name: at start
+  expression: $(string1)$(string2)suffix
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: value1value2suffix
+
+- name: at end
+  expression: prefix$(string1)$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: prefixvalue1value2
+
+- name: within
+  expression: prefix$(string1)$(string2)suffix
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: prefixvalue1value2suffix

@@ -1,0 +1,15 @@
+- name: stand alone
+  expression: (
+  expected: (
+
+- name: at start
+  expression: (suffix
+  expected: (suffix
+
+- name: at end
+  expression: prefix(
+  expected: prefix(
+
+- name: within
+  expression: prefix(
+  expected: prefix(

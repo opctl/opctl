@@ -1,0 +1,27 @@
+- name: standalone
+  expression: $(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}'
+
+- name: at start
+  expression: $(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}suffix'
+
+- name: at end
+  expression: prefix$(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}'
+
+- name: within
+  expression: prefix$(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}suffix'

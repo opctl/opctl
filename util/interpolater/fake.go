@@ -3,14 +3,16 @@ package interpolater
 
 import (
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	InterpolateStub        func(expression string, deReferencer DeReferencer) (string, error)
+	InterpolateStub        func(expression string, scope map[string]*model.Value) (string, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
-		expression   string
-		deReferencer DeReferencer
+		expression string
+		scope      map[string]*model.Value
 	}
 	interpolateReturns struct {
 		result1 string
@@ -24,17 +26,17 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(expression string, deReferencer DeReferencer) (string, error) {
+func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value) (string, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
-		expression   string
-		deReferencer DeReferencer
-	}{expression, deReferencer})
-	fake.recordInvocation("Interpolate", []interface{}{expression, deReferencer})
+		expression string
+		scope      map[string]*model.Value
+	}{expression, scope})
+	fake.recordInvocation("Interpolate", []interface{}{expression, scope})
 	fake.interpolateMutex.Unlock()
 	if fake.InterpolateStub != nil {
-		return fake.InterpolateStub(expression, deReferencer)
+		return fake.InterpolateStub(expression, scope)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -48,10 +50,10 @@ func (fake *Fake) InterpolateCallCount() int {
 	return len(fake.interpolateArgsForCall)
 }
 
-func (fake *Fake) InterpolateArgsForCall(i int) (string, DeReferencer) {
+func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
-	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].deReferencer
+	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].scope
 }
 
 func (fake *Fake) InterpolateReturns(result1 string, result2 error) {

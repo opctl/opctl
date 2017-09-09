@@ -1,0 +1,43 @@
+- name: standalone
+  expression: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: value1
+
+- name: at start
+  expression: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: value1suffix
+
+- name: at end
+  expression: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: prefixvalue1
+
+- name: within
+  expression: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected: prefixvalue1suffix

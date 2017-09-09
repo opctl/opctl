@@ -1,0 +1,6 @@
+- expression: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+  expected: $(outerRef)

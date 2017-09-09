@@ -1,0 +1,43 @@
+- name: standalone
+  expression: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        1000000
+  expected: 1000000
+
+- name: at start
+  expression: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        99999999
+  expected: 99999999suffix
+
+- name: at end
+  expression: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        2.3
+  expected: prefix2.3
+
+- name: within
+  expression: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      number:
+        2.3
+  expected: prefix2.3suffix

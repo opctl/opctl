@@ -1,0 +1,39 @@
+- name: standalone
+  expression: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: '{"name":"value"}'
+
+- name: at start
+  expression: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: '{"name":"value"}suffix'
+
+- name: at end
+  expression: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}'
+
+- name: within
+  expression: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}suffix'
