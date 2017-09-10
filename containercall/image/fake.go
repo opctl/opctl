@@ -7,11 +7,12 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(scope map[string]*model.Value, scgContainerCallImage *model.SCGContainerCallImage) (*model.DCGContainerCallImage, error)
+	InterpretStub        func(scope map[string]*model.Value, scgContainerCallImage *model.SCGContainerCallImage, pkgHandle model.PkgHandle) (*model.DCGContainerCallImage, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		scope                 map[string]*model.Value
 		scgContainerCallImage *model.SCGContainerCallImage
+		pkgHandle             model.PkgHandle
 	}
 	interpretReturns struct {
 		result1 *model.DCGContainerCallImage
@@ -25,17 +26,18 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(scope map[string]*model.Value, scgContainerCallImage *model.SCGContainerCallImage) (*model.DCGContainerCallImage, error) {
+func (fake *Fake) Interpret(scope map[string]*model.Value, scgContainerCallImage *model.SCGContainerCallImage, pkgHandle model.PkgHandle) (*model.DCGContainerCallImage, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		scope                 map[string]*model.Value
 		scgContainerCallImage *model.SCGContainerCallImage
-	}{scope, scgContainerCallImage})
-	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCallImage})
+		pkgHandle             model.PkgHandle
+	}{scope, scgContainerCallImage, pkgHandle})
+	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCallImage, pkgHandle})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, scgContainerCallImage)
+		return fake.InterpretStub(scope, scgContainerCallImage, pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -49,10 +51,10 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGContainerCallImage) {
+func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGContainerCallImage, model.PkgHandle) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallImage
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallImage, fake.interpretArgsForCall[i].pkgHandle
 }
 
 func (fake *Fake) InterpretReturns(result1 *model.DCGContainerCallImage, result2 error) {

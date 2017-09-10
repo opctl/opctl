@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 )
 
@@ -36,7 +37,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
 						)
@@ -69,7 +70,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
 						)
@@ -107,7 +108,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
 						)
@@ -140,7 +141,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
 						)
@@ -176,7 +177,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -206,7 +207,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -242,7 +243,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -272,7 +273,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -308,7 +309,7 @@ var _ = Context("inputs", func() {
 						actualInputs, _ := objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -338,7 +339,7 @@ var _ = Context("inputs", func() {
 						objectUnderTest.Interpret(
 							map[string]interface{}{},
 							providedInputParams,
-							"dummyParentPkgRef",
+							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
 						)
@@ -368,7 +369,7 @@ var _ = Context("inputs", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedParentPkgRef := "parentPkgRef"
+				providedParentPkgHandle := new(pkg.FakeHandle)
 
 				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
@@ -385,7 +386,7 @@ var _ = Context("inputs", func() {
 				objectUnderTest.Interpret(
 					providedInputArgs,
 					providedInputParams,
-					providedParentPkgRef,
+					providedParentPkgHandle,
 					"dummyPkgRef",
 					providedScope,
 				)
@@ -394,13 +395,13 @@ var _ = Context("inputs", func() {
 				actualArgName,
 					actualArgValue,
 					actualParam,
-					actualParentPkgRef,
+					actualParentPkgHandle,
 					actualScope := fakeArgInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
-				Expect(actualParentPkgRef).To(Equal(providedParentPkgRef))
+				Expect(actualParentPkgHandle).To(Equal(providedParentPkgHandle))
 				Expect(actualScope).To(Equal(providedScope))
 			})
 			Context("argInterpreter.Interpret doesn't error", func() {
@@ -433,7 +434,7 @@ var _ = Context("inputs", func() {
 					objectUnderTest.Interpret(
 						providedInputArgs,
 						providedInputParams,
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						"dummyPkgRef",
 						map[string]*model.Value{},
 					)

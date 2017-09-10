@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/number"
+	"github.com/opspec-io/sdk-golang/pkg"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
 )
@@ -26,7 +27,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					"dummyValue",
 					nil,
-					"dummyParentPkgRef",
+					new(pkg.FakeHandle),
 					map[string]*model.Value{},
 				)
 
@@ -49,7 +50,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						"",
 						&model.Param{},
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -73,7 +74,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						providedScope,
 					)
 
@@ -98,7 +99,7 @@ var _ = Context("argInterpreter", func() {
 					"dummyName",
 					providedValue,
 					providedParam,
-					"dummyParentPkgRef",
+					new(pkg.FakeHandle),
 					providedScope,
 				)
 
@@ -116,7 +117,7 @@ var _ = Context("argInterpreter", func() {
 					providedValue := fmt.Sprintf("$(%v)", explicitRef)
 					providedParam := &model.Param{}
 
-					expectedError := fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref; '%v' not in scope", providedName, explicitRef, explicitRef)
+					expectedError := fmt.Errorf("Unable to bind '%v' to '%v'", providedName, providedValue)
 
 					objectUnderTest := _argInterpreter{}
 
@@ -125,7 +126,7 @@ var _ = Context("argInterpreter", func() {
 						providedName,
 						providedValue,
 						providedParam,
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -149,7 +150,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						providedValue,
 						providedParam,
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						providedScope,
 					)
 
@@ -180,7 +181,7 @@ var _ = Context("argInterpreter", func() {
 						"dummyName",
 						"dummyValue",
 						providedParam,
-						"dummyParentPkgRef",
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -193,20 +194,12 @@ var _ = Context("argInterpreter", func() {
 				Context("bound to pkg dir", func() {
 					It("should return expected results", func() {
 						/* arrange */
-						providedValue := "/somePkgDir"
-
-						providedParam := &model.Param{Dir: &model.DirParam{}}
-
-						providedParentPkgRef := "/dummyParentPkgRef"
-
 						fakeString := new(stringPkg.Fake)
 
 						interpolatedValue := "dummyValue"
 						fakeString.InterpretReturns(interpolatedValue, nil)
 
-						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
-
-						expectedResult := &model.Value{Dir: &expectedValue}
+						expectedResult := &model.Value{Dir: &interpolatedValue}
 
 						objectUnderTest := _argInterpreter{
 							string: fakeString,
@@ -215,9 +208,9 @@ var _ = Context("argInterpreter", func() {
 						/* act */
 						actualResult, actualError := objectUnderTest.Interpret(
 							"dummyName",
-							providedValue,
-							providedParam,
-							providedParentPkgRef,
+							"$(/somePkgDir)",
+							&model.Param{Dir: &model.DirParam{}},
+							new(pkg.FakeHandle),
 							map[string]*model.Value{},
 						)
 
@@ -228,8 +221,6 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should return expected result", func() {
 					/* arrange */
-					providedParam := &model.Param{Dir: &model.DirParam{}}
-
 					fakeString := new(stringPkg.Fake)
 					interpolatedValue := "dummyValue"
 					fakeString.InterpretReturns(interpolatedValue, nil)
@@ -244,8 +235,8 @@ var _ = Context("argInterpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{Dir: &model.DirParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -255,8 +246,6 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should root path", func() {
 					/* arrange */
-					providedParam := &model.Param{Dir: &model.DirParam{}}
-
 					fakeString := new(stringPkg.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
@@ -273,8 +262,8 @@ var _ = Context("argInterpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{Dir: &model.DirParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -286,8 +275,6 @@ var _ = Context("argInterpreter", func() {
 			Context("Input is Number", func() {
 				It("should call validate w/ expected args", func() {
 					/* arrange */
-					providedParam := &model.Param{Number: &model.NumberParam{}}
-
 					fakeNumber := new(number.Fake)
 					interpretedValue := float64(2.1)
 					fakeNumber.InterpretReturns(interpretedValue, nil)
@@ -302,8 +289,8 @@ var _ = Context("argInterpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{Number: &model.NumberParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -316,20 +303,12 @@ var _ = Context("argInterpreter", func() {
 				Context("bound to pkg file", func() {
 					It("should return expected results", func() {
 						/* arrange */
-						providedValue := "/somePkgFile"
-
-						providedParam := &model.Param{File: &model.FileParam{}}
-
-						providedParentPkgRef := "/dummyParentPkgRef"
-
 						fakeString := new(stringPkg.Fake)
 
 						interpolatedValue := "dummyValue"
 						fakeString.InterpretReturns(interpolatedValue, nil)
 
-						expectedValue := filepath.Join(providedParentPkgRef, interpolatedValue)
-
-						expectedResult := &model.Value{File: &expectedValue}
+						expectedResult := &model.Value{File: &interpolatedValue}
 
 						objectUnderTest := _argInterpreter{
 							string: fakeString,
@@ -338,9 +317,9 @@ var _ = Context("argInterpreter", func() {
 						/* act */
 						actualResult, actualError := objectUnderTest.Interpret(
 							"dummyName",
-							providedValue,
-							providedParam,
-							providedParentPkgRef,
+							"$(/somePkgFile)",
+							&model.Param{File: &model.FileParam{}},
+							new(pkg.FakeHandle),
 							map[string]*model.Value{},
 						)
 
@@ -350,9 +329,6 @@ var _ = Context("argInterpreter", func() {
 					})
 				})
 				It("should return expected results", func() {
-					/* arrange */
-					providedParam := &model.Param{File: &model.FileParam{}}
-
 					fakeString := new(stringPkg.Fake)
 
 					interpolatedValue := "dummyValue"
@@ -368,8 +344,8 @@ var _ = Context("argInterpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{File: &model.FileParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -379,8 +355,6 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should root path", func() {
 					/* arrange */
-					providedParam := &model.Param{File: &model.FileParam{}}
-
 					fakeString := new(stringPkg.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
@@ -397,8 +371,8 @@ var _ = Context("argInterpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{File: &model.FileParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 
@@ -411,8 +385,6 @@ var _ = Context("argInterpreter", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					providedName := "dummyName"
-					providedParam := &model.Param{Socket: &model.SocketParam{}}
-
 					fakeString := new(stringPkg.Fake)
 
 					interpolatedValue := "dummyValue"
@@ -428,8 +400,8 @@ var _ = Context("argInterpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						providedName,
 						"dummyValue",
-						providedParam,
-						"dummyParentPkgRef",
+						&model.Param{Socket: &model.SocketParam{}},
+						new(pkg.FakeHandle),
 						map[string]*model.Value{},
 					)
 

@@ -8,10 +8,11 @@ import (
 func (img _Image) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallImage *model.SCGContainerCallImage,
+	pkgHandle model.PkgHandle,
 ) (*model.DCGContainerCallImage, error) {
 	// construct image
 	if scgContainerCallImage := scgContainerCallImage; scgContainerCallImage != nil {
-		ref, err := img.string.Interpret(scope, scgContainerCallImage.Ref)
+		ref, err := img.string.Interpret(scope, scgContainerCallImage.Ref, pkgHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -21,12 +22,12 @@ func (img _Image) Interpret(
 		}
 
 		if nil != scgContainerCallImage.PullCreds {
-			username, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Username)
+			username, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Username, pkgHandle)
 			if nil != err {
 				return nil, err
 			}
 
-			password, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Password)
+			password, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Password, pkgHandle)
 			if nil != err {
 				return nil, err
 			}

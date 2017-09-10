@@ -11,6 +11,7 @@ type Image interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallImage *model.SCGContainerCallImage,
+		pkgHandle model.PkgHandle,
 	) (*model.DCGContainerCallImage, error)
 }
 

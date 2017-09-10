@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -15,6 +16,8 @@ var _ = Context("Interpolate", func() {
 	Describe("called for every scenario", func() {
 		It("should return result fulfilling scenario", func() {
 			rootPath := "testdata/interpolater/Interpolate"
+			pkg := pkg.New()
+			pkgFsProvider := pkg.NewFSProvider()
 
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
@@ -37,10 +40,32 @@ var _ = Context("Interpolate", func() {
 								panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
 							}
 
+							absPath, err := filepath.Abs(path)
+							if nil != err {
+								panic(fmt.Errorf("Error getting absPath for %v; error was %v", path, err))
+							}
+
+							pkgHandle, err := pkg.Resolve(absPath, pkgFsProvider)
+							if nil != err {
+								panic(fmt.Errorf("Error getting pkgHandle for %v; error was %v", path, err))
+							}
+
 							for _, scenario := range scenarioDotYml {
+								for name, value := range scenario.Scope {
+									if nil != value.File {
+										// make scope refs absolute
+										absFilePath := filepath.Join(absPath, *value.File)
+										scenario.Scope[name] = &model.Value{File: &absFilePath}
+									}
+								}
+
 								/* act */
 								objectUnderTest := New()
-								actualResult, actualErr := objectUnderTest.Interpolate(scenario.Expression, scenario.Scope)
+								actualResult, actualErr := objectUnderTest.Interpolate(
+									scenario.Expression,
+									scenario.Scope,
+									pkgHandle,
+								)
 
 								/* assert */
 								description := fmt.Sprintf("scenario:\n  path: '%v'\n  name: '%v'", path, scenario.Name)

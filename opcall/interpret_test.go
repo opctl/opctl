@@ -399,8 +399,8 @@ var _ = Context("OpCall", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
-					fakeParentPkgHandle := new(pkg.FakeHandle)
-					fakeParentPkgHandle.RefReturns("dummyParentPkgRef")
+					providedParentPkgHandle := new(pkg.FakeHandle)
+					providedParentPkgHandle.RefReturns("dummyParentPkgRef")
 
 					fakePkgHandle := new(pkg.FakeHandle)
 					fakePkgHandle.RefReturns("dummyPkgRef")
@@ -417,12 +417,12 @@ var _ = Context("OpCall", func() {
 					}
 					fakePkg.GetManifestReturns(returnedManifest, nil)
 
-					fakeArgs := new(inputs.Fake)
+					fakeInputs := new(inputs.Fake)
 
 					objectUnderTest := _OpCall{
 						pkg:    fakePkg,
 						uuid:   new(iuuid.Fake),
-						inputs: fakeArgs,
+						inputs: fakeInputs,
 					}
 
 					/* act */
@@ -430,19 +430,19 @@ var _ = Context("OpCall", func() {
 						providedScope,
 						providedSCGOpCall,
 						"dummyOpId",
-						fakeParentPkgHandle,
+						providedParentPkgHandle,
 						"dummyRootOpId",
 					)
 
 					/* assert */
 					actualSCGArgs,
 						actualSCGInputs,
-						actualParentPkgRef,
+						actualParentPkgHandle,
 						actualPkgRef,
-						actualScope := fakeArgs.InterpretArgsForCall(0)
+						actualScope := fakeInputs.InterpretArgsForCall(0)
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
-					Expect(actualParentPkgRef).To(Equal(fakeParentPkgHandle.Ref()))
+					Expect(actualParentPkgHandle).To(Equal(providedParentPkgHandle))
 					Expect(actualPkgRef).To(Equal(fakePkgHandle.Ref()))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 				})

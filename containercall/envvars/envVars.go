@@ -11,6 +11,7 @@ type EnvVars interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallEnvVars map[string]string,
+		pkgHandle model.PkgHandle,
 	) (map[string]string, error)
 }
 

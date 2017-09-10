@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
@@ -22,6 +23,7 @@ var _ = Context("Image", func() {
 				_, actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					nil,
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -35,6 +37,8 @@ var _ = Context("Image", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
+
+				providedPkgHandle := new(pkg.FakeHandle)
 
 				providedSCGContainerCallImage := &model.SCGContainerCallImage{
 					Ref: "dummyImageRef",
@@ -54,20 +58,30 @@ var _ = Context("Image", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCallImage,
+					providedPkgHandle,
 				)
 
 				/* assert */
-				actualImageRefScope, actualImageRef := fakeString.InterpretArgsForCall(0)
+				actualImageRefScope,
+					actualImageRef,
+					actualImageRefPkgHandle := fakeString.InterpretArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
+				Expect(actualImageRefPkgHandle).To(Equal(providedPkgHandle))
 
-				actualUsernameScope, actualUsername := fakeString.InterpretArgsForCall(1)
+				actualUsernameScope,
+					actualUsername,
+					actualUsernamePkgHandle := fakeString.InterpretArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
+				Expect(actualUsernamePkgHandle).To(Equal(providedPkgHandle))
 
-				actualPasswordScope, actualPassword := fakeString.InterpretArgsForCall(2)
+				actualPasswordScope,
+					actualPassword,
+					actualPasswordPkgHandle := fakeString.InterpretArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
+				Expect(actualPasswordPkgHandle).To(Equal(providedPkgHandle))
 			})
 			It("should return expected dcg.Image", func() {
 
@@ -104,6 +118,7 @@ var _ = Context("Image", func() {
 				actualDCGContainerCallImage, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCallImage,
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */

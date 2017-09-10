@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"github.com/pkg/errors"
 )
@@ -29,6 +30,7 @@ var _ = Context("EnvVars", func() {
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						providedSCGContainerCallEnvVars,
+						new(pkg.FakeHandle),
 					)
 
 					/* assert */
@@ -42,6 +44,7 @@ var _ = Context("EnvVars", func() {
 			providedScope := map[string]*model.Value{
 				envVarName: nil,
 			}
+			providedPkgHandle := new(pkg.FakeHandle)
 
 			fakeString := new(stringPkg.Fake)
 			objectUnderTest := _EnvVars{
@@ -55,12 +58,17 @@ var _ = Context("EnvVars", func() {
 					// implicitly bound to string
 					envVarName: "",
 				},
+				providedPkgHandle,
 			)
 
 			/* assert */
-			actualScope, actualExpression := fakeString.InterpretArgsForCall(0)
+			actualScope,
+				actualExpression,
+				actualPkgHandle := fakeString.InterpretArgsForCall(0)
+
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", envVarName)))
+			Expect(actualPkgHandle).To(Equal(actualPkgHandle))
 		})
 		Context("string.Interpret errs", func() {
 			It("should return expected result", func() {
@@ -91,6 +99,7 @@ var _ = Context("EnvVars", func() {
 						// implicitly bound to string
 						envVarName: "",
 					},
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */
@@ -124,6 +133,7 @@ var _ = Context("EnvVars", func() {
 						// implicitly bound to string
 						envVarName: "",
 					},
+					new(pkg.FakeHandle),
 				)
 
 				/* assert */

@@ -9,7 +9,7 @@ import (
 func (_inputs _Inputs) Interpret(
 	inputArgs map[string]interface{},
 	inputParams map[string]*model.Param,
-	parentPkgRef,
+	parentPkgHandle model.PkgHandle,
 	pkgRef string,
 	scope map[string]*model.Value,
 ) (map[string]*model.Value, []error) {
@@ -44,7 +44,7 @@ func (_inputs _Inputs) Interpret(
 			argName,
 			argValue,
 			inputParams[argName],
-			parentPkgRef,
+			parentPkgHandle,
 			scope,
 		)
 		if nil != err {

@@ -1,0 +1,31 @@
+- name: standalone
+  expression: $(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: value1
+
+- name: at start
+  expression: $(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: value1suffix
+
+- name: at end
+  expression: prefix$(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: prefixvalue1
+
+- name: within
+  expression: prefix$(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: prefixvalue1suffix

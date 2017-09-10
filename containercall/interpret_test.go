@@ -69,6 +69,7 @@ var _ = Context("ContainerCall", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
+				providedPkgHandle := new(pkg.FakeHandle)
 
 				providedSCGContainerCall := &model.SCGContainerCall{
 					Cmd: []string{
@@ -95,14 +96,17 @@ var _ = Context("ContainerCall", func() {
 					providedSCGContainerCall,
 					"dummyContainerId",
 					"dummyRootOpId",
-					new(pkg.FakeHandle),
+					providedPkgHandle,
 				)
 
 				/* assert */
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
-					actualScope, actualCmdEntry := fakeString.InterpretArgsForCall(expectedCmdIndex)
+					actualScope,
+						actualCmdEntry,
+						actualPkgHandle := fakeString.InterpretArgsForCall(expectedCmdIndex)
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
+					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 				}
 			})
 			It("should return expected dcg.Cmd", func() {
@@ -281,6 +285,8 @@ var _ = Context("ContainerCall", func() {
 				},
 			}
 
+			providedPkgHandle := new(pkg.FakeHandle)
+
 			fakeEnvVars := new(envvars.Fake)
 
 			objectUnderTest := _ContainerCall{
@@ -298,13 +304,18 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				"dummyContainerId",
 				"dummyRootOpId",
-				new(pkg.FakeHandle),
+				providedPkgHandle,
 			)
 
 			/* assert */
-			actualScope, actualScgContainerCallEnvVars := fakeEnvVars.InterpretArgsForCall(0)
+			actualScope,
+				actualScgContainerCallEnvVars,
+				actualPkgHandle := fakeEnvVars.InterpretArgsForCall(0)
+
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallEnvVars).To(Equal(providedSCGContainerCall.EnvVars))
+			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+
 		})
 		Context("envVars.Interpret errors", func() {
 			It("should return expected error", func() {
@@ -501,6 +512,8 @@ var _ = Context("ContainerCall", func() {
 				},
 			}
 
+			providedPkgHandle := new(pkg.FakeHandle)
+
 			fakeImage := new(image.Fake)
 
 			objectUnderTest := _ContainerCall{
@@ -518,13 +531,18 @@ var _ = Context("ContainerCall", func() {
 				providedSCGContainerCall,
 				"dummyContainerId",
 				"dummyRootOpId",
-				new(pkg.FakeHandle),
+				providedPkgHandle,
 			)
 
 			/* assert */
-			actualScope, actualScgContainerCallImage := fakeImage.InterpretArgsForCall(0)
+			actualScope,
+				actualScgContainerCallImage,
+				actualPkgHandle := fakeImage.InterpretArgsForCall(0)
+
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallImage).To(Equal(providedSCGContainerCall.Image))
+			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+
 		})
 		Context("image.Interpret errors", func() {
 			It("should return expected error", func() {

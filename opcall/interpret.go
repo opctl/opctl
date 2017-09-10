@@ -19,12 +19,12 @@ func (oc _OpCall) Interpret(
 	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		pkgPullCreds.Username, err = oc.string.Interpret(scope, scgPullCreds.Username)
+		pkgPullCreds.Username, err = oc.string.Interpret(scope, scgPullCreds.Username, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
 
-		pkgPullCreds.Password, err = oc.string.Interpret(scope, scgPullCreds.Password)
+		pkgPullCreds.Password, err = oc.string.Interpret(scope, scgPullCreds.Password, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -58,7 +58,7 @@ func (oc _OpCall) Interpret(
 	dcgOpCall.Inputs, argErrors = oc.inputs.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
-		parentPkgHandle.Ref(),
+		parentPkgHandle,
 		pkgHandle.Ref(),
 		scope,
 	)

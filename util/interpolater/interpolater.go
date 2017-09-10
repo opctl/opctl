@@ -14,6 +14,7 @@ type Interpolater interface {
 	Interpolate(
 		expression string,
 		scope map[string]*model.Value,
+		pkgHandle model.PkgHandle,
 	) (string, error)
 }
 
@@ -30,13 +31,14 @@ type _Interpolater struct {
 func (itp _Interpolater) Interpolate(
 	expression string,
 	scope map[string]*model.Value,
+	pkgHandle model.PkgHandle,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
 	for i < len(expression) {
 		switch {
 		case operator == expression[i]:
-			result, consumed, err := itp.tryDeRef(expression[i+1:], scope)
+			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", err
 			}
@@ -60,6 +62,7 @@ func (itp _Interpolater) Interpolate(
 func (itp _Interpolater) tryDeRef(
 	possibleRef string,
 	scope map[string]*model.Value,
+	pkgHandle model.PkgHandle,
 ) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -67,7 +70,7 @@ func (itp _Interpolater) tryDeRef(
 		switch {
 		case refCloser == possibleRef[i]:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
-				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope)
+				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope, pkgHandle)
 				if nil != err {
 					return "", 0, err
 				}
@@ -77,7 +80,7 @@ func (itp _Interpolater) tryDeRef(
 			}
 			refBuffer = append(refBuffer, possibleRef[i])
 		case operator == possibleRef[i]:
-			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope)
+			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", 0, err
 			}

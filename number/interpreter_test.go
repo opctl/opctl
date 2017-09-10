@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 	"github.com/pkg/errors"
 )
@@ -14,6 +15,7 @@ var _ = Context("Interpret", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
 		providedExpression := "dummyExpression"
+		providedPkgRef := new(pkg.FakeHandle)
 
 		fakeInterpolater := new(interpolater.Fake)
 		// err to trigger immediate return
@@ -27,14 +29,17 @@ var _ = Context("Interpret", func() {
 		objectUnderTest.Interpret(
 			providedScope,
 			providedExpression,
+			providedPkgRef,
 		)
 
 		/* assert */
 		actualExpression,
-			actualScope := fakeInterpolater.InterpolateArgsForCall(0)
+			actualScope,
+			actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
 
 		Expect(actualExpression).To(Equal(providedExpression))
 		Expect(actualScope).To(Equal(providedScope))
+		Expect(actualPkgRef).To(Equal(providedPkgRef))
 
 	})
 	Context("interpolater.Interpolate errs", func() {
@@ -52,6 +57,7 @@ var _ = Context("Interpret", func() {
 			_, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */
@@ -81,6 +87,7 @@ var _ = Context("Interpret", func() {
 			actualNumber, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				"dummyExpression",
+				new(pkg.FakeHandle),
 			)
 
 			/* assert */

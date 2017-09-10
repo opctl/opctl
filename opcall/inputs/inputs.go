@@ -19,7 +19,7 @@ type Inputs interface {
 	Interpret(
 		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
-		parentPkgRef,
+		parentPkgHandle model.PkgHandle,
 		pkgRef string,
 		scope map[string]*model.Value,
 	) (map[string]*model.Value, []error)

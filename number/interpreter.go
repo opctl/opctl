@@ -1,7 +1,5 @@
 package number
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ interpreter
-
 import (
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
@@ -13,6 +11,7 @@ type interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		expression string,
+		pkgHandle model.PkgHandle,
 	) (float64, error)
 }
 
@@ -31,10 +30,12 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression string,
+	pkgHandle model.PkgHandle,
 ) (float64, error) {
 	value, err := itp.interpolater.Interpolate(
 		expression,
 		scope,
+		pkgHandle,
 	)
 
 	if nil != err {
