@@ -1,0 +1,3 @@
+[submodule "vendor/github.com/opspec-io/test-suite"]
+	path = vendor/github.com/opspec-io/test-suite
+	url = https://github.com/opspec-io/test-suite.git

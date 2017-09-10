@@ -1,38 +1,37 @@
 package string
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name fakeInterpreter ./ Interpreter
-
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
-type Interpreter interface {
+type interpreter interface {
 	// interprets an expression to a string
 	Interpret(
 		scope map[string]*model.Value,
 		expression string,
+		pkgHandle model.PkgHandle,
 	) (string, error)
 }
 
-func newInterpreter() Interpreter {
+func newInterpreter() interpreter {
 	return _interpreter{
-		deReferencerFactory: newDeReferencerFactory(),
-		interpolater:        interpolater.New(),
+		interpolater: interpolater.New(),
 	}
 }
 
 type _interpreter struct {
-	deReferencerFactory deReferencerFactory
-	interpolater        interpolater.Interpolater
+	interpolater interpolater.Interpolater
 }
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression string,
+	pkgHandle model.PkgHandle,
 ) (string, error) {
 	return itp.interpolater.Interpolate(
 		expression,
-		itp.deReferencerFactory.New(scope),
+		scope,
+		pkgHandle,
 	)
 }

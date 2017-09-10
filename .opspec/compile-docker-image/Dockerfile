@@ -1,10 +1,10 @@
-FROM docker:1.13-dind
+FROM docker:17.07.0-dind
 
 ARG CHANNEL
 
 COPY entrypoint.sh /usr/local/bin/
 
-RUN curl -L https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz | tar -xzv -C /usr/local/bin
-RUN opctl self-update -c "$CHANNEL"
+ADD https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz /tmp
+RUN mv /tmp/opctl /usr/local/bin && opctl self-update -c "$CHANNEL"
 
 ENTRYPOINT ["entrypoint.sh"]

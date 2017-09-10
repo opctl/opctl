@@ -4,15 +4,15 @@ package number
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Number
 
 type Number interface {
-	Interpreter
+	interpreter
 }
 
 func New() Number {
 	return _Number{
-		Interpreter: newInterpreter(),
+		interpreter: newInterpreter(),
 	}
 }
 
 type _Number struct {
-	Interpreter
+	interpreter
 }

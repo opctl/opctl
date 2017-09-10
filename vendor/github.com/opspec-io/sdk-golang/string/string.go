@@ -4,15 +4,15 @@ package string
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ String
 
 type String interface {
-	Interpreter
+	interpreter
 }
 
 func New() String {
 	return _String{
-		Interpreter: newInterpreter(),
+		interpreter: newInterpreter(),
 	}
 }
 
 type _String struct {
-	Interpreter
+	interpreter
 }
