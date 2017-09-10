@@ -1,0 +1,17 @@
+description: runs the opspec test suite against opctl
+name: test/system/opspec
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+run:
+  container:
+    image: { ref: 'opctl/opctl:alpha' }
+    dirs:
+      /src: srcDir
+      /sharness:
+    files:
+      /cmd.sh:
+      /yaml:
+    cmd: [/cmd.sh]

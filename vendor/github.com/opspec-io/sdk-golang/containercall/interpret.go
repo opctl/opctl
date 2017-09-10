@@ -44,7 +44,7 @@ func (cc _ContainerCall) Interpret(
 	// construct cmd
 	for _, cmdEntryExpression := range scgContainerCall.Cmd {
 		// interpret each entry as string
-		cmdEntry, err := cc.string.Interpret(scope, cmdEntryExpression)
+		cmdEntry, err := cc.string.Interpret(scope, cmdEntryExpression, pkgHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -59,7 +59,7 @@ func (cc _ContainerCall) Interpret(
 	}
 
 	// interpret envVars
-	dcgContainerCall.EnvVars, err = cc.envVars.Interpret(scope, scgContainerCall.EnvVars)
+	dcgContainerCall.EnvVars, err = cc.envVars.Interpret(scope, scgContainerCall.EnvVars, pkgHandle)
 	if nil != err {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (cc _ContainerCall) Interpret(
 	}
 
 	// interpret image
-	dcgContainerCall.Image, err = cc.image.Interpret(scope, scgContainerCall.Image)
+	dcgContainerCall.Image, err = cc.image.Interpret(scope, scgContainerCall.Image, pkgHandle)
 	if nil != err {
 		return nil, err
 	}

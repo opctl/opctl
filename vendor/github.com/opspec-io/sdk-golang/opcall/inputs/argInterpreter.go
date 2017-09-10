@@ -4,7 +4,6 @@ package inputs
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/number"
 	stringPkg "github.com/opspec-io/sdk-golang/string"
@@ -19,30 +18,28 @@ type argInterpreter interface {
 		name string,
 		value interface{},
 		param *model.Param,
-		parentPkgRef string,
+		parentPkgHandle model.PkgHandle,
 		scope map[string]*model.Value,
 	) (*model.Value, error)
 }
 
 func newArgInterpreter() argInterpreter {
 	return _argInterpreter{
-		interpolater: interpolater.New(),
-		number:       number.New(),
-		string:       stringPkg.New(),
+		number: number.New(),
+		string: stringPkg.New(),
 	}
 }
 
 type _argInterpreter struct {
-	interpolater interpolater.Interpolater
-	number       number.Number
-	string       stringPkg.String
+	number number.Number
+	string stringPkg.String
 }
 
 func (ai _argInterpreter) Interpret(
 	name string,
 	value interface{},
 	param *model.Param,
-	parentPkgRef string,
+	parentPkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
 ) (*model.Value, error) {
 
@@ -74,47 +71,42 @@ func (ai _argInterpreter) Interpret(
 	}
 
 	if expression, ok := value.(string); ok {
-		if deprecatedExplicitRef, ok := scope[expression]; ok {
+
+		if dcgValue, ok := scope[expression]; ok {
 			// deprecated explicit arg
-			return deprecatedExplicitRef, nil
-		} else if explicitRef := strings.TrimSuffix(strings.TrimPrefix(expression, "$("), ")"); len(explicitRef) == (len(expression) - 3) {
-			// @FIXME this won't handle $(ref1)$(ref2) properly
+			return dcgValue, nil
+		} else if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(expression, "$("), ")")]; ok {
 			// explicit arg
-			dcgValue, ok := scope[explicitRef]
-			if !ok {
-				return nil, fmt.Errorf("Unable to bind '%v' to '%v' via explicit ref; '%v' not in scope", name, explicitRef, explicitRef)
-			}
 			return dcgValue, nil
 		} else {
-			interpolatedVal := ai.interpolater.Interpolate(expression, scope)
 			switch {
 			// interpolated arg
 			case nil != param.String:
-				stringValue, err := ai.string.Interpret(scope, expression)
+				stringValue, err := ai.string.Interpret(scope, expression, parentPkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
 				}
 				return &model.Value{String: &stringValue}, nil
 			case nil != param.Dir:
-				if strings.HasPrefix(expression, "/") {
-					// bound to pkg dir
-					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
+				interpolatedVal, err := ai.string.Interpret(scope, expression, parentPkgHandle)
+				if nil != err {
+					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
 				}
 				return &model.Value{Dir: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Number:
-				numberValue, err := ai.number.Interpret(scope, expression)
+				numberValue, err := ai.number.Interpret(scope, expression, parentPkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
 				}
 				return &model.Value{Number: &numberValue}, nil
 			case nil != param.File:
-				if strings.HasPrefix(expression, "/") {
-					// bound to pkg file
-					interpolatedVal = filepath.Join(parentPkgRef, interpolatedVal)
+				interpolatedVal, err := ai.string.Interpret(scope, expression, parentPkgHandle)
+				if nil != err {
+					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
 				}
 				return &model.Value{File: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Socket:
-				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, interpolatedVal)
+				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, expression)
 			}
 		}
 	}

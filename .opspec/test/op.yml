@@ -28,7 +28,7 @@ run:
           inputs: { srcDir }
           outputs: { srcDir }
       - op:
-          pkg: { ref: test-unit }
+          pkg: { ref: test/unit }
           inputs: { srcDir }
           outputs: { srcDir }
     - op:

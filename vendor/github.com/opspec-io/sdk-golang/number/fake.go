@@ -8,11 +8,12 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(scope map[string]*model.Value, expression string) (float64, error)
+	InterpretStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		scope      map[string]*model.Value
 		expression string
+		pkgHandle  model.PkgHandle
 	}
 	interpretReturns struct {
 		result1 float64
@@ -26,17 +27,18 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(scope map[string]*model.Value, expression string) (float64, error) {
+func (fake *Fake) Interpret(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		scope      map[string]*model.Value
 		expression string
-	}{scope, expression})
-	fake.recordInvocation("Interpret", []interface{}{scope, expression})
+		pkgHandle  model.PkgHandle
+	}{scope, expression, pkgHandle})
+	fake.recordInvocation("Interpret", []interface{}{scope, expression, pkgHandle})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, expression)
+		return fake.InterpretStub(scope, expression, pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -50,10 +52,10 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].expression
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].expression, fake.interpretArgsForCall[i].pkgHandle
 }
 
 func (fake *Fake) InterpretReturns(result1 float64, result2 error) {

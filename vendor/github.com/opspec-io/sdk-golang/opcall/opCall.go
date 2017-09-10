@@ -5,10 +5,10 @@ package opcall
 
 import (
 	"github.com/golang-interfaces/satori-go.uuid"
-	"github.com/opspec-io/sdk-golang/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
+	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
 )
 
@@ -28,7 +28,7 @@ func New(
 ) OpCall {
 	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
-		interpolater: interpolater.New(),
+		string:       stringPkg.New(),
 		pkg:          pkg.New(),
 		pkgCachePath: pkgCachePath,
 		uuid:         iuuid.New(),
@@ -37,7 +37,7 @@ func New(
 }
 
 type _OpCall struct {
-	interpolater interpolater.Interpolater
+	string       stringPkg.String
 	pkg          pkg.Pkg
 	pkgCachePath string
 	uuid         iuuid.IUUID

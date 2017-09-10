@@ -4,9 +4,9 @@ package manifest
 
 import (
 	"fmt"
+	"github.com/chrisdostert/gojsonschema"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 type Validator interface {
@@ -17,11 +17,7 @@ type Validator interface {
 }
 
 func newValidator() Validator {
-
-	// register custom format checkers
-	gojsonschema.FormatCheckers.Add("uri-reference", uriRefFormatChecker{})
-
-	manifestSchemaBytes, err := pkgManifestDataPkgManifestSchemaJsonBytes()
+	manifestSchemaBytes, err := vendorGithubComOpspecIoSpecSpecPkgManifestSchemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}

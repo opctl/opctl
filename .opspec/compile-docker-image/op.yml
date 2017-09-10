@@ -37,10 +37,10 @@ run:
         echo dockerImageRef=$dockerImageRef
 
         echo "compiling image"
-        docker build --build-arg CHANNEL="$channel" -t "$dockerImageRef" .
+        docker build --build-arg CHANNEL="$channel" --no-cache -t "$dockerImageRef" .
     dirs:
       /workDir: /
-    image: { ref: 'docker:1.13' }
+    image: { ref: 'docker:17.07.0-dind' }
     sockets:
       /var/run/docker.sock: dockerDSocket
     stdOut:

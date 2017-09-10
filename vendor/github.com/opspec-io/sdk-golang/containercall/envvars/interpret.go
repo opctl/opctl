@@ -8,6 +8,7 @@ import (
 func (ev _EnvVars) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallEnvVars map[string]string,
+	pkgHandle model.PkgHandle,
 ) (map[string]string, error) {
 	dcgContainerCallEnvVars := map[string]string{}
 	for envVarName, scgContainerEnvVar := range scgContainerCallEnvVars {
@@ -23,7 +24,7 @@ func (ev _EnvVars) Interpret(
 			scgContainerEnvVar = fmt.Sprintf("$(%v)", envVarName)
 		}
 
-		stringValue, err := ev.string.Interpret(scope, scgContainerEnvVar)
+		stringValue, err := ev.string.Interpret(scope, scgContainerEnvVar, pkgHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",
