@@ -3,6 +3,7 @@ package data
 //go:generate counterfeiter -o ./fakeCoercer.go --fake-name fakeCoercer ./ coercer
 
 type coercer interface {
+	coerceToFile
 	coerceToNumber
 	coerceToObject
 	coerceToString
@@ -10,6 +11,7 @@ type coercer interface {
 
 func newCoercer() coercer {
 	return _coercer{
+		coerceToFile:   newCoerceToFile(),
 		coerceToNumber: newCoerceToNumber(),
 		coerceToObject: newCoerceToObject(),
 		coerceToString: newCoerceToString(),
@@ -17,6 +19,7 @@ func newCoercer() coercer {
 }
 
 type _coercer struct {
+	coerceToFile
 	coerceToNumber
 	coerceToObject
 	coerceToString
