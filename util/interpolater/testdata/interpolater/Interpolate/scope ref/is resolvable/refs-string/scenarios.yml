@@ -4,7 +4,9 @@
     string1:
       string:
         value1
-  expected: value1
+  expected:
+    string:
+      value1
 
 - name: at start
   expression: $(string1)suffix
@@ -12,7 +14,9 @@
     string1:
       string:
         value1
-  expected: value1suffix
+  expected:
+    string:
+      value1suffix
 
 - name: at end
   expression: prefix$(string1)
@@ -20,7 +24,9 @@
     string1:
       string:
         value1
-  expected: prefixvalue1
+  expected:
+    string:
+      prefixvalue1
 
 - name: within
   expression: prefix$(string1)suffix
@@ -28,4 +34,6 @@
     string1:
       string:
         value1
-  expected: prefixvalue1suffix
+  expected:
+    string:
+      prefixvalue1suffix

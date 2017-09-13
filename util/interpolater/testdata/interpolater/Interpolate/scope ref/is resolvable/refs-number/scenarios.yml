@@ -4,7 +4,9 @@
     number1:
       number:
         1000000
-  expected: 1000000
+  expected:
+    number:
+      1000000
 
 - name: at start
   expression: $(number1)suffix
@@ -12,7 +14,9 @@
     number1:
       number:
         99999999
-  expected: 99999999suffix
+  expected:
+    string:
+      99999999suffix
 
 - name: at end
   expression: prefix$(number1)
@@ -20,7 +24,9 @@
     number1:
       number:
         2.3
-  expected: prefix2.3
+  expected:
+    string:
+      prefix2.3
 
 - name: within
   expression: prefix$(number1)suffix
@@ -28,4 +34,6 @@
     number1:
       number:
         2.3
-  expected: prefix2.3suffix
+  expected:
+    string:
+      prefix2.3suffix

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/pkg/errors"
-  "github.com/opspec-io/sdk-golang/expression"
 )
 
 var _ = Context("EnvVars", func() {

@@ -4,7 +4,9 @@
     file1:
       file:
         file1.txt
-  expected: value1
+  expected:
+    file:
+      file1.txt
 
 - name: at start
   expression: $(file1)suffix
@@ -12,7 +14,9 @@
     file1:
       file:
         file1.txt
-  expected: value1suffix
+  expected:
+    string:
+      value1suffix
 
 - name: at end
   expression: prefix$(file1)
@@ -20,7 +24,9 @@
     file1:
       file:
         file1.txt
-  expected: prefixvalue1
+  expected:
+    string:
+      prefixvalue1
 
 - name: within
   expression: prefix$(file1)suffix
@@ -28,4 +34,6 @@
     file1:
       file:
         file1.txt
-  expected: prefixvalue1suffix
+  expected:
+    string:
+      prefixvalue1suffix

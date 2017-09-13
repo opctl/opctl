@@ -7,7 +7,7 @@ import (
 )
 
 type evalToNumber interface {
-	// evalToNumbers an expression to a string
+	// EvalToNumber evaluates an expression to a number value
 	EvalToNumber(
 		scope map[string]*model.Value,
 		expression string,
@@ -42,5 +42,5 @@ func (itp _evalToNumber) EvalToNumber(
 		return 0, err
 	}
 
-	return itp.data.CoerceToNumber(&model.Value{String: &value})
+	return itp.data.CoerceToNumber(value)
 }

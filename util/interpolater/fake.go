@@ -8,7 +8,7 @@ import (
 )
 
 type Fake struct {
-	InterpolateStub        func(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (string, error)
+	InterpolateStub        func(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
 		expression string
@@ -16,18 +16,18 @@ type Fake struct {
 		pkgHandle  model.PkgHandle
 	}
 	interpolateReturns struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	interpolateReturnsOnCall map[int]struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (string, error) {
+func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
@@ -58,24 +58,24 @@ func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value
 	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) InterpolateReturns(result1 string, result2 error) {
+func (fake *Fake) InterpolateReturns(result1 *model.Value, result2 error) {
 	fake.InterpolateStub = nil
 	fake.interpolateReturns = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) InterpolateReturnsOnCall(i int, result1 string, result2 error) {
+func (fake *Fake) InterpolateReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.InterpolateStub = nil
 	if fake.interpolateReturnsOnCall == nil {
 		fake.interpolateReturnsOnCall = make(map[int]struct {
-			result1 string
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.interpolateReturnsOnCall[i] = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }

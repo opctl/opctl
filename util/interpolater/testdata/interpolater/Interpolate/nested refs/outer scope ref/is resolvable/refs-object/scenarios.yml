@@ -6,7 +6,9 @@
         outerRef
     outerRef:
       object: { name: value }
-  expected: '{"name":"value"}'
+  expected:
+    string:
+      '{"name":"value"}'
 
 - name: at start
   expression: $($(innerRef))suffix
@@ -16,7 +18,9 @@
         outerRef
     outerRef:
       object: { name: value }
-  expected: '{"name":"value"}suffix'
+  expected:
+    string:
+      '{"name":"value"}suffix'
 
 - name: at end
   expression: prefix$($(innerRef))
@@ -26,7 +30,9 @@
         outerRef
     outerRef:
       object: { name: value }
-  expected: 'prefix{"name":"value"}'
+  expected:
+    string:
+      'prefix{"name":"value"}'
 
 - name: within
   expression: prefix$($(innerRef))suffix
@@ -36,4 +42,6 @@
         outerRef
     outerRef:
       object: { name: value }
-  expected: 'prefix{"name":"value"}suffix'
+  expected:
+    string:
+      'prefix{"name":"value"}suffix'

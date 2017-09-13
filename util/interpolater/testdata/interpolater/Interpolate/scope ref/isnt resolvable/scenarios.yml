@@ -1,2 +1,4 @@
 - expression: $(name)
-  expected: $(name)
+  expected:
+    string:
+      $(name)

@@ -1,15 +1,23 @@
 - name: stand alone
   expression: $(
-  expected: $(
+  expected:
+    string:
+      $(
 
 - name: at start
   expression: $(suffix
-  expected: $(suffix
+  expected:
+    string:
+      $(suffix
 
 - name: at end
   expression: prefix$(
-  expected: prefix$(
+  expected:
+    string:
+      prefix$(
 
 - name: within
   expression: prefix$(
-  expected: prefix$(
+  expected:
+    string:
+      prefix$(

@@ -34,7 +34,7 @@ var _ = Context("Interpolate", func() {
 								Name       string
 								Expression string
 								Scope      map[string]*model.Value
-								Expected   string
+								Expected   *model.Value
 							}{}
 							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
 								panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
@@ -52,10 +52,14 @@ var _ = Context("Interpolate", func() {
 
 							for _, scenario := range scenarioDotYml {
 								for name, value := range scenario.Scope {
+									// make file refs absolute
 									if nil != value.File {
-										// make scope refs absolute
 										absFilePath := filepath.Join(absPath, *value.File)
 										scenario.Scope[name] = &model.Value{File: &absFilePath}
+									}
+									if nil != scenario.Expected.File {
+										absFilePath := filepath.Join(absPath, *scenario.Expected.File)
+										scenario.Expected.File = &absFilePath
 									}
 								}
 
@@ -69,7 +73,7 @@ var _ = Context("Interpolate", func() {
 
 								/* assert */
 								description := fmt.Sprintf("scenario:\n  path: '%v'\n  name: '%v'", path, scenario.Name)
-								Expect(actualResult).To(Equal(scenario.Expected), description)
+								Expect(*actualResult).To(Equal(*scenario.Expected), description)
 								Expect(actualErr).To(BeNil(), description)
 							}
 						}
