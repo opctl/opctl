@@ -41,7 +41,7 @@ var _ = Context("DeleteContainerIfExists", func() {
 			fakeDockerClient.ContainerRemoveReturns(errorReturnedFromContainerRemove)
 
 			expectedError := fmt.Errorf(
-				"Unable to delete container. Response from docker was:\n %v",
+				"unable to delete container. Response from docker was:\n %v",
 				errorReturnedFromContainerRemove.Error(),
 			)
 

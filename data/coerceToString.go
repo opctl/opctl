@@ -37,11 +37,11 @@ func (c _coerceToString) CoerceToString(
 	case nil == value:
 		return "", nil
 	case nil != value.Dir:
-		return "", fmt.Errorf("Unable to coerce dir '%v' to string; incompatible types", *value.Dir)
+		return "", fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
 	case nil != value.File:
 		fileBytes, err := c.ioUtil.ReadFile(*value.File)
 		if nil != err {
-			return "", fmt.Errorf("Unable to coerce file to string; error was %v", err.Error())
+			return "", fmt.Errorf("unable to coerce file to string; error was %v", err.Error())
 		}
 		return string(fileBytes), nil
 	case nil != value.Number:
@@ -49,12 +49,12 @@ func (c _coerceToString) CoerceToString(
 	case nil != value.Object:
 		valueBytes, err := c.json.Marshal(value.Object)
 		if nil != err {
-			return "", fmt.Errorf("Unable to coerce object to string; error was %v", err.Error())
+			return "", fmt.Errorf("unable to coerce object to string; error was %v", err.Error())
 		}
 		return string(valueBytes), nil
 	case nil != value.String:
 		return *value.String, nil
 	default:
-		return "", fmt.Errorf("Unable to coerce '%#v' to string", value)
+		return "", fmt.Errorf("unable to coerce '%#v' to string", value)
 	}
 }

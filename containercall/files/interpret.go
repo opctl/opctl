@@ -42,7 +42,7 @@ fileLoop:
 			defer pkgContentReadSeekCloser.Close()
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					err.Error(),
@@ -52,7 +52,7 @@ fileLoop:
 			pkgContentsList, err := pkgHandle.ListContents(context.TODO())
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					err.Error(),
@@ -72,7 +72,7 @@ fileLoop:
 			defer containerFileWriter.Close()
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					err.Error(),
@@ -82,7 +82,7 @@ fileLoop:
 			err = f.os.Chmod(dcgContainerCallFiles[scgContainerFilePath], contentMode)
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					err.Error(),
@@ -92,7 +92,7 @@ fileLoop:
 			_, err = f.io.Copy(containerFileWriter, pkgContentReadSeekCloser)
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					err.Error(),
@@ -107,7 +107,7 @@ fileLoop:
 			switch {
 			case nil == value:
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'; '%v' null",
+					"unable to bind file '%v' to '%v'; '%v' null",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					scgContainerFileBind,
@@ -122,7 +122,7 @@ fileLoop:
 					)
 					if nil != err {
 						return nil, fmt.Errorf(
-							"Unable to bind file '%v' to '%v'; error was: %v",
+							"unable to bind file '%v' to '%v'; error was: %v",
 							scgContainerFilePath,
 							scgContainerFileBind,
 							err.Error(),
@@ -142,7 +142,7 @@ fileLoop:
 				objectBytes, err := f.json.Marshal(value.Object)
 				if nil != err {
 					return nil, fmt.Errorf(
-						"Unable to bind file '%v' to %v; error was: %v",
+						"unable to bind file '%v' to %v; error was: %v",
 						scgContainerFilePath,
 						scgContainerFileBind,
 						err.Error(),
@@ -153,7 +153,7 @@ fileLoop:
 				contentSrc = strings.NewReader(*value.String)
 			default:
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
+					"unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
 					scgContainerFilePath,
 					scgContainerFileBind,
 					scgContainerFileBind,

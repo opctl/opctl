@@ -41,7 +41,7 @@ var _ = Context("coerceToString", func() {
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce dir '%v' to string; incompatible types", providedDir)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", providedDir)))
 			})
 		})
 		Context("Value.File isn't nil", func() {
@@ -85,7 +85,7 @@ var _ = Context("coerceToString", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to string; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to string; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("ioutil.ReadFile doesn't err", func() {
@@ -173,7 +173,7 @@ var _ = Context("coerceToString", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce object to string; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce object to string; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("json.Marshal doesn't err", func() {
@@ -229,7 +229,7 @@ var _ = Context("coerceToString", func() {
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce '%#v' to string", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to string", providedValue)))
 			})
 		})
 	})

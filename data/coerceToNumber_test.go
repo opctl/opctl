@@ -40,7 +40,7 @@ var _ = Context("coerceToNumber", func() {
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(errors.New("Unable to coerce dir to number; incompatible types")))
+				Expect(actualErr).To(Equal(errors.New("unable to coerce dir to number; incompatible types")))
 			})
 		})
 		Context("Value.File isn't nil", func() {
@@ -84,7 +84,7 @@ var _ = Context("coerceToNumber", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to number; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to number; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("ioutil.ReadFile doesn't err", func() {
@@ -147,7 +147,7 @@ var _ = Context("coerceToNumber", func() {
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(errors.New("Unable to coerce object to number; incompatible types")))
+				Expect(actualErr).To(Equal(errors.New("unable to coerce object to number; incompatible types")))
 			})
 		})
 		Context("Value.Number isn't nil", func() {
@@ -180,7 +180,7 @@ var _ = Context("coerceToNumber", func() {
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce '%#v' to number", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to number", providedValue)))
 			})
 		})
 	})

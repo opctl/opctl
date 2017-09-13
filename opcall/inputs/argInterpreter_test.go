@@ -17,7 +17,7 @@ var _ = Context("argInterpreter", func() {
 				/* arrange */
 				providedName := "dummyName"
 
-				expectedError := fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", providedName, providedName)
+				expectedError := fmt.Errorf("unable to bind to '%v'; '%v' not a defined input", providedName, providedName)
 
 				objectUnderTest := _argInterpreter{}
 
@@ -40,7 +40,7 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedName := "dummyName"
 
-					expectedError := fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
+					expectedError := fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
 
 					objectUnderTest := _argInterpreter{}
 
@@ -116,7 +116,7 @@ var _ = Context("argInterpreter", func() {
 					providedValue := fmt.Sprintf("$(%v)", explicitRef)
 					providedParam := &model.Param{}
 
-					expectedError := fmt.Errorf("Unable to bind '%v' to '%v'", providedName, providedValue)
+					expectedError := fmt.Errorf("unable to bind '%v' to '%v'", providedName, providedValue)
 
 					objectUnderTest := _argInterpreter{}
 
@@ -389,7 +389,7 @@ var _ = Context("argInterpreter", func() {
 					interpolatedValue := "dummyValue"
 					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-					expectedError := fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
+					expectedError := fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,

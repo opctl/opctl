@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("EvalToNumber", func() {
+var _ = Context("EvalToFile", func() {
 	It("should call interpolater.Interpolate w/ expected args", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
@@ -21,15 +21,16 @@ var _ = Context("EvalToNumber", func() {
 		// err to trigger immediate return
 		fakeInterpolater.InterpolateReturns(nil, errors.New("dummyError"))
 
-		objectUnderTest := _evalToNumber{
+		objectUnderTest := _evalToFile{
 			interpolater: fakeInterpolater,
 		}
 
 		/* act */
-		objectUnderTest.EvalToNumber(
+		objectUnderTest.EvalToFile(
 			providedScope,
 			providedExpression,
 			providedPkgRef,
+			"dummyScratchDir",
 		)
 
 		/* assert */
@@ -49,15 +50,16 @@ var _ = Context("EvalToNumber", func() {
 			interpolateErr := errors.New("dummyError")
 			fakeInterpolater.InterpolateReturns(nil, interpolateErr)
 
-			objectUnderTest := _evalToNumber{
+			objectUnderTest := _evalToFile{
 				interpolater: fakeInterpolater,
 			}
 
 			/* act */
-			_, actualErr := objectUnderTest.EvalToNumber(
+			_, actualErr := objectUnderTest.EvalToFile(
 				map[string]*model.Value{},
 				"dummyExpression",
 				new(pkg.FakeHandle),
+				"dummyScratchDir",
 			)
 
 			/* assert */
@@ -66,8 +68,10 @@ var _ = Context("EvalToNumber", func() {
 		})
 	})
 	Context("interpolater.Interpolate doesn't err", func() {
-		It("should call data.CoerceToNumber w/ expected args & return result", func() {
+		It("should call data.CoerceToFile w/ expected args & return result", func() {
 			/* arrange */
+			providedScratchDir := "dummyScratchDir"
+
 			fakeInterpolater := new(interpolater.Fake)
 
 			interpolatedValue := model.Value{String: new(string)}
@@ -75,25 +79,30 @@ var _ = Context("EvalToNumber", func() {
 
 			fakeData := new(data.Fake)
 
-			coercedValue := 2.2
-			fakeData.CoerceToNumberReturns(coercedValue, nil)
+			coercedValue := &model.Value{Number: new(float64)}
+			fakeData.CoerceToFileReturns(coercedValue, nil)
 
-			objectUnderTest := _evalToNumber{
+			objectUnderTest := _evalToFile{
 				data:         fakeData,
 				interpolater: fakeInterpolater,
 			}
 
 			/* act */
-			actualNumber, actualErr := objectUnderTest.EvalToNumber(
+			actualFile, actualErr := objectUnderTest.EvalToFile(
 				map[string]*model.Value{},
 				"dummyExpression",
 				new(pkg.FakeHandle),
+				providedScratchDir,
 			)
 
 			/* assert */
-			Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(interpolatedValue))
+			actualValue,
+				actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
 
-			Expect(actualNumber).To(Equal(coercedValue))
+			Expect(*actualValue).To(Equal(interpolatedValue))
+			Expect(actualScratchDir).To(Equal(actualScratchDir))
+
+			Expect(actualFile).To(Equal(coercedValue))
 			Expect(actualErr).To(BeNil())
 		})
 	})

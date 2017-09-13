@@ -16,7 +16,7 @@ func (ev _EnvVars) Interpret(
 			// implicitly bound
 			if _, ok := scope[envVarName]; !ok {
 				return nil, fmt.Errorf(
-					"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
 					envVarName,
 					envVarName,
 				)
@@ -27,7 +27,7 @@ func (ev _EnvVars) Interpret(
 		stringValue, err := ev.expression.EvalToString(scope, scgContainerEnvVar, pkgHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
-				"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+				"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
 				envVarName,
 				envVarName,
 			)

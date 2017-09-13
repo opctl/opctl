@@ -40,7 +40,7 @@ func (d _Dirs) Interpret(
 			// bound to scope
 			if nil == value || nil == value.Dir {
 				return nil, fmt.Errorf(
-					"Unable to bind dir '%v' to '%v'; '%v' not a dir",
+					"unable to bind dir '%v' to '%v'; '%v' not a dir",
 					scgContainerDirPath,
 					scgContainerDirBind,
 					scgContainerDirBind,

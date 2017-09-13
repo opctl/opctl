@@ -41,14 +41,14 @@ func (ai _argInterpreter) Interpret(
 ) (*model.Value, error) {
 
 	if nil == param {
-		return nil, fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", name, name)
+		return nil, fmt.Errorf("unable to bind to '%v'; '%v' not a defined input", name, name)
 	}
 
 	if nil == value || "" == value {
 		// implicitly bound
 		dcgValue, ok := scope[name]
 		if !ok {
-			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
+			return nil, fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
 		}
 		return dcgValue, nil
 	}
@@ -81,34 +81,34 @@ func (ai _argInterpreter) Interpret(
 			case nil != param.String:
 				stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{String: &stringValue}, nil
 			case nil != param.Dir:
 				interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{Dir: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Number:
 				numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{Number: &numberValue}, nil
 			case nil != param.File:
 				interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{File: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Socket:
-				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 			}
 		}
 	}
 
-	return nil, fmt.Errorf("Unable to bind '%v' to '%v'", name, value)
+	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, value)
 }
 
 // rootPath ensures paths are rooted (interpreted as having no parent) so parent paths of input files/dirs aren't

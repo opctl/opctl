@@ -110,7 +110,7 @@ var _ = Context("deReferencer", func() {
 
 					/* assert */
 					Expect(actualOk).To(Equal(false))
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to deReference '%v' as string; error was: %v", providedRef, coerceError.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to deReference '%v' as string; error was: %v", providedRef, coerceError.Error())))
 				})
 			})
 			Context("data.Coerce doesn't err", func() {

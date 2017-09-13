@@ -7,18 +7,18 @@ import (
 )
 
 type Fake struct {
-	CoerceToFileStub        func(value *model.Value, rootPath string) (string, error)
+	CoerceToFileStub        func(value *model.Value, scratchDir string) (*model.Value, error)
 	coerceToFileMutex       sync.RWMutex
 	coerceToFileArgsForCall []struct {
-		value    *model.Value
-		rootPath string
+		value      *model.Value
+		scratchDir string
 	}
 	coerceToFileReturns struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	coerceToFileReturnsOnCall map[int]struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	CoerceToNumberStub        func(value *model.Value) (float64, error)
@@ -76,17 +76,17 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) CoerceToFile(value *model.Value, rootPath string) (string, error) {
+func (fake *Fake) CoerceToFile(value *model.Value, scratchDir string) (*model.Value, error) {
 	fake.coerceToFileMutex.Lock()
 	ret, specificReturn := fake.coerceToFileReturnsOnCall[len(fake.coerceToFileArgsForCall)]
 	fake.coerceToFileArgsForCall = append(fake.coerceToFileArgsForCall, struct {
-		value    *model.Value
-		rootPath string
-	}{value, rootPath})
-	fake.recordInvocation("CoerceToFile", []interface{}{value, rootPath})
+		value      *model.Value
+		scratchDir string
+	}{value, scratchDir})
+	fake.recordInvocation("CoerceToFile", []interface{}{value, scratchDir})
 	fake.coerceToFileMutex.Unlock()
 	if fake.CoerceToFileStub != nil {
-		return fake.CoerceToFileStub(value, rootPath)
+		return fake.CoerceToFileStub(value, scratchDir)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -103,27 +103,27 @@ func (fake *Fake) CoerceToFileCallCount() int {
 func (fake *Fake) CoerceToFileArgsForCall(i int) (*model.Value, string) {
 	fake.coerceToFileMutex.RLock()
 	defer fake.coerceToFileMutex.RUnlock()
-	return fake.coerceToFileArgsForCall[i].value, fake.coerceToFileArgsForCall[i].rootPath
+	return fake.coerceToFileArgsForCall[i].value, fake.coerceToFileArgsForCall[i].scratchDir
 }
 
-func (fake *Fake) CoerceToFileReturns(result1 string, result2 error) {
+func (fake *Fake) CoerceToFileReturns(result1 *model.Value, result2 error) {
 	fake.CoerceToFileStub = nil
 	fake.coerceToFileReturns = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToFileReturnsOnCall(i int, result1 string, result2 error) {
+func (fake *Fake) CoerceToFileReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.CoerceToFileStub = nil
 	if fake.coerceToFileReturnsOnCall == nil {
 		fake.coerceToFileReturnsOnCall = make(map[int]struct {
-			result1 string
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.coerceToFileReturnsOnCall[i] = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }

@@ -72,7 +72,7 @@ var _ = Context("Files", func() {
 					providedParentPkgHandle.GetContentReturns(tempFile, getContentErr)
 
 					expectedErr := fmt.Errorf(
-						"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+						"unable to bind file '%v' to pkg content '%v'; error was: %v",
 						containerFilePath,
 						containerFilePath,
 						getContentErr,
@@ -144,7 +144,7 @@ var _ = Context("Files", func() {
 						providedParentPkgHandle.ListContentsReturns(nil, getContentErr)
 
 						expectedErr := fmt.Errorf(
-							"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+							"unable to bind file '%v' to pkg content '%v'; error was: %v",
 							containerFilePath,
 							containerFilePath,
 							getContentErr,
@@ -216,7 +216,7 @@ var _ = Context("Files", func() {
 							fakeOS.CreateReturns(tempFile, openErr)
 
 							expectedErr := fmt.Errorf(
-								"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+								"unable to bind file '%v' to pkg content '%v'; error was: %v",
 								containerFilePath,
 								containerFilePath,
 								openErr,
@@ -305,7 +305,7 @@ var _ = Context("Files", func() {
 								fakeOS.ChmodReturns(chmodErr)
 
 								expectedErr := fmt.Errorf(
-									"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+									"unable to bind file '%v' to pkg content '%v'; error was: %v",
 									containerFilePath,
 									containerFilePath,
 									chmodErr,
@@ -392,7 +392,7 @@ var _ = Context("Files", func() {
 									fakeIO.CopyReturns(0, copyErr)
 
 									expectedErr := fmt.Errorf(
-										"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+										"unable to bind file '%v' to pkg content '%v'; error was: %v",
 										containerFilePath,
 										containerFilePath,
 										copyErr,
@@ -442,7 +442,7 @@ var _ = Context("Files", func() {
 					}
 
 					expectedErr := fmt.Errorf(
-						"Unable to bind file '%v' to '%v'; '%v' null",
+						"unable to bind file '%v' to '%v'; '%v' null",
 						containerFilePath,
 						scopeName,
 						scopeName,
@@ -480,7 +480,7 @@ var _ = Context("Files", func() {
 					}
 
 					expectedErr := fmt.Errorf(
-						"Unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
+						"unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
 						containerFilePath,
 						scopeName,
 						scopeName,
@@ -565,7 +565,7 @@ var _ = Context("Files", func() {
 							fakeFileCopier.OSReturns(copyErr)
 
 							expectedErr := fmt.Errorf(
-								"Unable to bind file '%v' to '%v'; error was: %v",
+								"unable to bind file '%v' to '%v'; error was: %v",
 								containerFilePath,
 								scopeName,
 								copyErr,
@@ -1000,7 +1000,7 @@ var _ = Context("Files", func() {
 						fakeJSON.MarshalReturns(nil, marshalErr)
 
 						expectedErr := fmt.Errorf(
-							"Unable to bind file '%v' to %v; error was: %v",
+							"unable to bind file '%v' to %v; error was: %v",
 							containerFilePath,
 							scopeName,
 							marshalErr.Error(),
@@ -1321,7 +1321,7 @@ var _ = Context("Files", func() {
 					}
 
 					expectedErr := fmt.Errorf(
-						"Unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
+						"unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
 						containerFilePath,
 						scopeName,
 						scopeName,

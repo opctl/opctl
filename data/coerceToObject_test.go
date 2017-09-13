@@ -41,7 +41,7 @@ var _ = Context("coerceToObject", func() {
 
 				/* assert */
 				Expect(actualObject).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce dir '%v' to object; incompatible types", providedDir)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", providedDir)))
 			})
 		})
 		Context("Value.File isn't nil", func() {
@@ -85,7 +85,7 @@ var _ = Context("coerceToObject", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to object; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("ioutil.ReadFile doesn't err", func() {
@@ -135,7 +135,7 @@ var _ = Context("coerceToObject", func() {
 						)
 
 						/* assert */
-						Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce file to object; error was %v", unmarshalError.Error())))
+						Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", unmarshalError.Error())))
 					})
 				})
 				Context("json.Unmarshal doesn't err", func() {
@@ -189,7 +189,7 @@ var _ = Context("coerceToObject", func() {
 
 				/* assert */
 				Expect(actualObject).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce number '%v' to object; incompatible types", providedNumber)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to object; incompatible types", providedNumber)))
 			})
 		})
 		Context("Value.Object isn't nil", func() {
@@ -256,7 +256,7 @@ var _ = Context("coerceToObject", func() {
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce string to object; error was %v", unmarshalError.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to object; error was %v", unmarshalError.Error())))
 				})
 			})
 			Context("json.Unmarshal doesn't err", func() {
@@ -306,7 +306,7 @@ var _ = Context("coerceToObject", func() {
 
 				/* assert */
 				Expect(actualObject).To(Equal(expectedObject))
-				Expect(actualErr).To(Equal(fmt.Errorf("Unable to coerce '%#v' to object", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to object", providedValue)))
 			})
 		})
 	})

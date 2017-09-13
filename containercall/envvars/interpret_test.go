@@ -22,7 +22,7 @@ var _ = Context("EnvVars", func() {
 						envVarName: "",
 					}
 
-					expectedErr := fmt.Errorf("Unable to bind env var to '%v' via implicit ref; '%v' not in scope", envVarName, envVarName)
+					expectedErr := fmt.Errorf("unable to bind env var to '%v' via implicit ref; '%v' not in scope", envVarName, envVarName)
 
 					objectUnderTest := _EnvVars{}
 
@@ -81,7 +81,7 @@ var _ = Context("EnvVars", func() {
 				fakeExpression.EvalToStringReturns("", interpretErr)
 
 				expectedErr := fmt.Errorf(
-					"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
 					envVarName,
 					envVarName,
 				)

@@ -95,7 +95,7 @@ var _ = Context("EnsureNetworkExists", func() {
 					fakeDockerClient.NetworkCreateReturns(types.NetworkCreateResponse{}, errorReturnedFromNetworkCreate)
 
 					expectedError := fmt.Errorf(
-						"Unable to create network. Response from docker was:\n %v",
+						"unable to create network. Response from docker was:\n %v",
 						errorReturnedFromNetworkCreate.Error(),
 					)
 
@@ -143,7 +143,7 @@ var _ = Context("EnsureNetworkExists", func() {
 				fakeDockerClient.NetworkInspectReturns(types.NetworkResource{}, errorReturnedFromNetworkInspect)
 
 				expectedError := fmt.Errorf(
-					"Unable to inspect network. Response from docker was:\n %v",
+					"unable to inspect network. Response from docker was:\n %v",
 					errorReturnedFromNetworkInspect.Error(),
 				)
 

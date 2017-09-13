@@ -71,8 +71,8 @@ var _ = Context("EvalToString", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 
-				interpolatedData := model.Value{String: new(string)}
-				fakeInterpolater.InterpolateReturns(&interpolatedData, nil)
+				interpolatedValue := model.Value{String: new(string)}
+				fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
 
 				fakeData := new(data.Fake)
 
@@ -92,7 +92,7 @@ var _ = Context("EvalToString", func() {
 				)
 
 				/* assert */
-				Expect(*fakeData.CoerceToStringArgsForCall(0)).To(Equal(interpolatedData))
+				Expect(*fakeData.CoerceToStringArgsForCall(0)).To(Equal(interpolatedValue))
 
 				Expect(actualString).To(Equal(coercedValue))
 				Expect(actualErr).To(BeNil())

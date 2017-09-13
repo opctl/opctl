@@ -39,13 +39,13 @@ func (dr _deReferencer) DeReference(
 		// pkg content ref
 		contentReadSeekCloser, err := pkgHandle.GetContent(context.TODO(), ref)
 		if nil != err {
-			return "", false, fmt.Errorf("Unable to deReference '%v'; error was: %v", ref, err.Error())
+			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}
 		defer contentReadSeekCloser.Close()
 
 		contentBytes, err := ioutil.ReadAll(contentReadSeekCloser)
 		if nil != err {
-			return "", false, fmt.Errorf("Unable to deReference '%v'; error was: %v", ref, err.Error())
+			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}
 		return string(contentBytes), true, nil
 	}
@@ -59,7 +59,7 @@ func (dr _deReferencer) DeReference(
 
 	valueAsString, err := dr.data.CoerceToString(value)
 	if nil != err {
-		return "", false, fmt.Errorf("Unable to deReference '%v' as string; error was: %v", ref, err.Error())
+		return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
 	}
 
 	return valueAsString, true, nil

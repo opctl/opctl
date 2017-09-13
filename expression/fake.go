@@ -7,6 +7,22 @@ import (
 )
 
 type Fake struct {
+	EvalToFileStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error)
+	evalToFileMutex       sync.RWMutex
+	evalToFileArgsForCall []struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+		scratchDir string
+	}
+	evalToFileReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	evalToFileReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	EvalToNumberStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error)
 	evalToNumberMutex       sync.RWMutex
 	evalToNumberArgsForCall []struct {
@@ -39,6 +55,60 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error) {
+	fake.evalToFileMutex.Lock()
+	ret, specificReturn := fake.evalToFileReturnsOnCall[len(fake.evalToFileArgsForCall)]
+	fake.evalToFileArgsForCall = append(fake.evalToFileArgsForCall, struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+		scratchDir string
+	}{scope, expression, pkgHandle, scratchDir})
+	fake.recordInvocation("EvalToFile", []interface{}{scope, expression, pkgHandle, scratchDir})
+	fake.evalToFileMutex.Unlock()
+	if fake.EvalToFileStub != nil {
+		return fake.EvalToFileStub(scope, expression, pkgHandle, scratchDir)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.evalToFileReturns.result1, fake.evalToFileReturns.result2
+}
+
+func (fake *Fake) EvalToFileCallCount() int {
+	fake.evalToFileMutex.RLock()
+	defer fake.evalToFileMutex.RUnlock()
+	return len(fake.evalToFileArgsForCall)
+}
+
+func (fake *Fake) EvalToFileArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle, string) {
+	fake.evalToFileMutex.RLock()
+	defer fake.evalToFileMutex.RUnlock()
+	return fake.evalToFileArgsForCall[i].scope, fake.evalToFileArgsForCall[i].expression, fake.evalToFileArgsForCall[i].pkgHandle, fake.evalToFileArgsForCall[i].scratchDir
+}
+
+func (fake *Fake) EvalToFileReturns(result1 *model.Value, result2 error) {
+	fake.EvalToFileStub = nil
+	fake.evalToFileReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToFileReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.EvalToFileStub = nil
+	if fake.evalToFileReturnsOnCall == nil {
+		fake.evalToFileReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.evalToFileReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) EvalToNumber(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error) {
@@ -150,6 +220,8 @@ func (fake *Fake) EvalToStringReturnsOnCall(i int, result1 string, result2 error
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.evalToFileMutex.RLock()
+	defer fake.evalToFileMutex.RUnlock()
 	fake.evalToNumberMutex.RLock()
 	defer fake.evalToNumberMutex.RUnlock()
 	fake.evalToStringMutex.RLock()
