@@ -6,10 +6,10 @@ import (
 	"github.com/golang-interfaces/satori-go.uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -135,8 +135,8 @@ var _ = Context("OpCall", func() {
 			fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _OpCall{
-				string: new(stringPkg.Fake),
-				pkg:    fakePkg,
+				expression: new(expression.Fake),
+				pkg:        fakePkg,
 			}
 
 			/* act */
@@ -194,12 +194,12 @@ var _ = Context("OpCall", func() {
 			Context("string.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					fakeStringPkg := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 					interpretError := errors.New("dummyError")
-					fakeStringPkg.InterpretReturns("", interpretError)
+					fakeExpression.EvalToStringReturns("", interpretError)
 
 					objectUnderTest := _OpCall{
-						string: fakeStringPkg,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -224,17 +224,17 @@ var _ = Context("OpCall", func() {
 					/* arrange */
 					providedPkgCachePath := "dummyPkgCachePath"
 
-					fakeStringPkg := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
-					fakeStringPkg.InterpretReturnsOnCall(0, expectedPullCreds.Username, nil)
-					fakeStringPkg.InterpretReturnsOnCall(1, expectedPullCreds.Password, nil)
+					fakeExpression.EvalToStringReturnsOnCall(0, expectedPullCreds.Username, nil)
+					fakeExpression.EvalToStringReturnsOnCall(1, expectedPullCreds.Password, nil)
 
 					fakePkg := new(pkg.Fake)
 					// error to trigger immediate return
 					fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _OpCall{
-						string:       fakeStringPkg,
+						expression:   fakeExpression,
 						pkg:          fakePkg,
 						pkgCachePath: providedPkgCachePath,
 					}

@@ -10,9 +10,9 @@ import (
 	"github.com/opspec-io/sdk-golang/containercall/files"
 	"github.com/opspec-io/sdk-golang/containercall/image"
 	"github.com/opspec-io/sdk-golang/containercall/sockets"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"os"
 	"path/filepath"
 )
@@ -63,7 +63,7 @@ var _ = Context("ContainerCall", func() {
 		})
 
 		Context("container.Cmd not empty", func() {
-			It("should call string.Interpret w/ expected args for each container.Cmd entry", func() {
+			It("should call expression.EvalToString w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -78,16 +78,16 @@ var _ = Context("ContainerCall", func() {
 					},
 				}
 
-				fakeString := new(stringPkg.Fake)
+				fakeExpression := new(expression.Fake)
 
 				objectUnderTest := _ContainerCall{
-					dirs:    new(dirs.Fake),
-					envVars: new(envvars.Fake),
-					files:   new(files.Fake),
-					image:   new(image.Fake),
-					string:  fakeString,
-					os:      new(ios.Fake),
-					sockets: new(sockets.Fake),
+					dirs:       new(dirs.Fake),
+					envVars:    new(envvars.Fake),
+					files:      new(files.Fake),
+					image:      new(image.Fake),
+					expression: fakeExpression,
+					os:         new(ios.Fake),
+					sockets:    new(sockets.Fake),
 				}
 
 				/* act */
@@ -103,7 +103,7 @@ var _ = Context("ContainerCall", func() {
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
 					actualScope,
 						actualCmdEntry,
-						actualPkgHandle := fakeString.InterpretArgsForCall(expectedCmdIndex)
+						actualPkgHandle := fakeExpression.EvalToStringArgsForCall(expectedCmdIndex)
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
 					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
@@ -123,18 +123,18 @@ var _ = Context("ContainerCall", func() {
 					},
 				}
 
-				fakeString := new(stringPkg.Fake)
-				fakeString.InterpretReturnsOnCall(0, expectedCmd[0], nil)
-				fakeString.InterpretReturnsOnCall(1, expectedCmd[1], nil)
+				fakeExpression := new(expression.Fake)
+				fakeExpression.EvalToStringReturnsOnCall(0, expectedCmd[0], nil)
+				fakeExpression.EvalToStringReturnsOnCall(1, expectedCmd[1], nil)
 
 				objectUnderTest := _ContainerCall{
-					dirs:    new(dirs.Fake),
-					envVars: new(envvars.Fake),
-					files:   new(files.Fake),
-					image:   new(image.Fake),
-					string:  fakeString,
-					os:      new(ios.Fake),
-					sockets: new(sockets.Fake),
+					dirs:       new(dirs.Fake),
+					envVars:    new(envvars.Fake),
+					files:      new(files.Fake),
+					image:      new(image.Fake),
+					expression: fakeExpression,
+					os:         new(ios.Fake),
+					sockets:    new(sockets.Fake),
 				}
 
 				/* act */

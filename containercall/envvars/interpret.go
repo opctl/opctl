@@ -24,7 +24,7 @@ func (ev _EnvVars) Interpret(
 			scgContainerEnvVar = fmt.Sprintf("$(%v)", envVarName)
 		}
 
-		stringValue, err := ev.string.Interpret(scope, scgContainerEnvVar, pkgHandle)
+		stringValue, err := ev.expression.EvalToString(scope, scgContainerEnvVar, pkgHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"Unable to bind env var to '%v' via implicit ref; '%v' not in scope",

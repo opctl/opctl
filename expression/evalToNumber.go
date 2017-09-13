@@ -1,4 +1,4 @@
-package number
+package expression
 
 import (
 	"github.com/opspec-io/sdk-golang/data"
@@ -6,28 +6,28 @@ import (
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
-type interpreter interface {
-	// interprets an expression to a string
-	Interpret(
+type evalToNumber interface {
+	// evalToNumbers an expression to a string
+	EvalToNumber(
 		scope map[string]*model.Value,
 		expression string,
 		pkgHandle model.PkgHandle,
 	) (float64, error)
 }
 
-func newInterpreter() interpreter {
-	return _interpreter{
+func newEvalToNumber() evalToNumber {
+	return _evalToNumber{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _interpreter struct {
+type _evalToNumber struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (itp _interpreter) Interpret(
+func (itp _evalToNumber) EvalToNumber(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,

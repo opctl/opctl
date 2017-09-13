@@ -4,10 +4,9 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/number"
 	"github.com/opspec-io/sdk-golang/pkg"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
 )
 
@@ -166,14 +165,14 @@ var _ = Context("argInterpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{String: &model.StringParam{}}
 
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 					interpretedValue := "dummyValue"
-					fakeString.InterpretReturns(interpretedValue, nil)
+					fakeExpression.EvalToStringReturns(interpretedValue, nil)
 
 					expectedResult := &model.Value{String: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -194,15 +193,15 @@ var _ = Context("argInterpreter", func() {
 				Context("bound to pkg dir", func() {
 					It("should return expected results", func() {
 						/* arrange */
-						fakeString := new(stringPkg.Fake)
+						fakeExpression := new(expression.Fake)
 
 						interpolatedValue := "dummyValue"
-						fakeString.InterpretReturns(interpolatedValue, nil)
+						fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 						expectedResult := &model.Value{Dir: &interpolatedValue}
 
 						objectUnderTest := _argInterpreter{
-							string: fakeString,
+							expression: fakeExpression,
 						}
 
 						/* act */
@@ -221,14 +220,14 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should return expected result", func() {
 					/* arrange */
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 					interpolatedValue := "dummyValue"
-					fakeString.InterpretReturns(interpolatedValue, nil)
+					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{Dir: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -246,16 +245,16 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should root path", func() {
 					/* arrange */
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeString.InterpretReturns(interpolatedValue, nil)
+					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{Dir: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -275,14 +274,14 @@ var _ = Context("argInterpreter", func() {
 			Context("Input is Number", func() {
 				It("should call validate w/ expected args", func() {
 					/* arrange */
-					fakeNumber := new(number.Fake)
+					fakeExpression := new(expression.Fake)
 					interpretedValue := float64(2.1)
-					fakeNumber.InterpretReturns(interpretedValue, nil)
+					fakeExpression.EvalToNumberReturns(interpretedValue, nil)
 
 					expectedResult := &model.Value{Number: &interpretedValue}
 
 					objectUnderTest := _argInterpreter{
-						number: fakeNumber,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -303,15 +302,15 @@ var _ = Context("argInterpreter", func() {
 				Context("bound to pkg file", func() {
 					It("should return expected results", func() {
 						/* arrange */
-						fakeString := new(stringPkg.Fake)
+						fakeExpression := new(expression.Fake)
 
 						interpolatedValue := "dummyValue"
-						fakeString.InterpretReturns(interpolatedValue, nil)
+						fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 						expectedResult := &model.Value{File: &interpolatedValue}
 
 						objectUnderTest := _argInterpreter{
-							string: fakeString,
+							expression: fakeExpression,
 						}
 
 						/* act */
@@ -329,15 +328,15 @@ var _ = Context("argInterpreter", func() {
 					})
 				})
 				It("should return expected results", func() {
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 
 					interpolatedValue := "dummyValue"
-					fakeString.InterpretReturns(interpolatedValue, nil)
+					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{File: &interpolatedValue}
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -355,16 +354,16 @@ var _ = Context("argInterpreter", func() {
 				})
 				It("should root path", func() {
 					/* arrange */
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 
 					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
 					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeString.InterpretReturns(interpolatedValue, nil)
+					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 					expectedResult := &model.Value{File: &expectedValue}
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */
@@ -385,15 +384,15 @@ var _ = Context("argInterpreter", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					providedName := "dummyName"
-					fakeString := new(stringPkg.Fake)
+					fakeExpression := new(expression.Fake)
 
 					interpolatedValue := "dummyValue"
-					fakeString.InterpretReturns(interpolatedValue, nil)
+					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
 					expectedError := fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
 
 					objectUnderTest := _argInterpreter{
-						string: fakeString,
+						expression: fakeExpression,
 					}
 
 					/* act */

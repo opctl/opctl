@@ -1,4 +1,4 @@
-package string
+package expression
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "string")
+	RunSpecs(t, "expression")
 }

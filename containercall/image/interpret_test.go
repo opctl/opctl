@@ -4,9 +4,9 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 var _ = Context("Image", func() {
@@ -16,7 +16,7 @@ var _ = Context("Image", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				objectUnderTest := _Image{
-					string: new(stringPkg.Fake),
+					expression: new(expression.Fake),
 				}
 
 				/* act */
@@ -31,7 +31,7 @@ var _ = Context("Image", func() {
 			})
 		})
 		Context("scgContainerCallImage isn't nill", func() {
-			It("should call string.Interpret w/ expected args", func() {
+			It("should call expression.EvalToString w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -48,10 +48,10 @@ var _ = Context("Image", func() {
 					},
 				}
 
-				fakeString := new(stringPkg.Fake)
+				fakeExpression := new(expression.Fake)
 
 				objectUnderTest := _Image{
-					string: fakeString,
+					expression: fakeExpression,
 				}
 
 				/* act */
@@ -64,21 +64,21 @@ var _ = Context("Image", func() {
 				/* assert */
 				actualImageRefScope,
 					actualImageRef,
-					actualImageRefPkgHandle := fakeString.InterpretArgsForCall(0)
+					actualImageRefPkgHandle := fakeExpression.EvalToStringArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
 				Expect(actualImageRefPkgHandle).To(Equal(providedPkgHandle))
 
 				actualUsernameScope,
 					actualUsername,
-					actualUsernamePkgHandle := fakeString.InterpretArgsForCall(1)
+					actualUsernamePkgHandle := fakeExpression.EvalToStringArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
 				Expect(actualUsernamePkgHandle).To(Equal(providedPkgHandle))
 
 				actualPasswordScope,
 					actualPassword,
-					actualPasswordPkgHandle := fakeString.InterpretArgsForCall(2)
+					actualPasswordPkgHandle := fakeExpression.EvalToStringArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
 				Expect(actualPasswordPkgHandle).To(Equal(providedPkgHandle))
@@ -91,16 +91,16 @@ var _ = Context("Image", func() {
 					PullCreds: &model.SCGPullCreds{},
 				}
 
-				fakeString := new(stringPkg.Fake)
+				fakeExpression := new(expression.Fake)
 
 				expectedImageRef := "expectedImageRef"
-				fakeString.InterpretReturnsOnCall(0, expectedImageRef, nil)
+				fakeExpression.EvalToStringReturnsOnCall(0, expectedImageRef, nil)
 
 				expectedUsername := "expectedUsername"
-				fakeString.InterpretReturnsOnCall(1, expectedUsername, nil)
+				fakeExpression.EvalToStringReturnsOnCall(1, expectedUsername, nil)
 
 				expectedPassword := "expectedPassword"
-				fakeString.InterpretReturnsOnCall(2, expectedPassword, nil)
+				fakeExpression.EvalToStringReturnsOnCall(2, expectedPassword, nil)
 
 				expectedImage := &model.DCGContainerCallImage{
 					Ref: expectedImageRef,
@@ -111,7 +111,7 @@ var _ = Context("Image", func() {
 				}
 
 				objectUnderTest := _Image{
-					string: fakeString,
+					expression: fakeExpression,
 				}
 
 				/* act */

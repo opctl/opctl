@@ -1,4 +1,4 @@
-package string
+package expression
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("Interpret", func() {
+var _ = Context("EvalToString", func() {
 	It("should call interpolater.Interpolate w/ expected args & return result", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
@@ -21,12 +21,12 @@ var _ = Context("Interpret", func() {
 		fakeInterpolater := new(interpolater.Fake)
 		fakeInterpolater.InterpolateReturns(expectedResult, expectedErr)
 
-		objectUnderTest := _interpreter{
+		objectUnderTest := _evalToString{
 			interpolater: fakeInterpolater,
 		}
 
 		/* act */
-		actualResult, actualErr := objectUnderTest.Interpret(
+		actualResult, actualErr := objectUnderTest.EvalToString(
 			providedScope,
 			providedExpression,
 			providedPkgHandle,

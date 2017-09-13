@@ -1,30 +1,30 @@
-package string
+package expression
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
-type interpreter interface {
-	// interprets an expression to a string
-	Interpret(
+type evalToString interface {
+	// Eval evaluates an expression to a string value
+	EvalToString(
 		scope map[string]*model.Value,
 		expression string,
 		pkgHandle model.PkgHandle,
 	) (string, error)
 }
 
-func newInterpreter() interpreter {
-	return _interpreter{
+func newEvalToString() evalToString {
+	return _evalToString{
 		interpolater: interpolater.New(),
 	}
 }
 
-type _interpreter struct {
+type _evalToString struct {
 	interpolater interpolater.Interpolater
 }
 
-func (itp _interpreter) Interpret(
+func (itp _evalToString) EvalToString(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,

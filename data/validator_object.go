@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// validateObject validates an value against an object parameter
+// validateObject validates a value against an object parameter
 func (this _validator) validateObject(
 	value *model.Value,
 	constraints *model.ObjectConstraints,

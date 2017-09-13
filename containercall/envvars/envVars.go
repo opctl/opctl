@@ -3,8 +3,8 @@ package envvars
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ EnvVars
 
 import (
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type EnvVars interface {
@@ -17,10 +17,10 @@ type EnvVars interface {
 
 func New() EnvVars {
 	return _EnvVars{
-		string: stringPkg.New(),
+		expression: expression.New(),
 	}
 }
 
 type _EnvVars struct {
-	string stringPkg.String
+	expression expression.Expression
 }

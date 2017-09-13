@@ -1,4 +1,4 @@
-package number
+package expression
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("Interpret", func() {
+var _ = Context("EvalToNumber", func() {
 	It("should call interpolater.Interpolate w/ expected args", func() {
 		/* arrange */
 		providedScope := map[string]*model.Value{"dummyName": {}}
@@ -21,12 +21,12 @@ var _ = Context("Interpret", func() {
 		// err to trigger immediate return
 		fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-		objectUnderTest := _interpreter{
+		objectUnderTest := _evalToNumber{
 			interpolater: fakeInterpolater,
 		}
 
 		/* act */
-		objectUnderTest.Interpret(
+		objectUnderTest.EvalToNumber(
 			providedScope,
 			providedExpression,
 			providedPkgRef,
@@ -49,12 +49,12 @@ var _ = Context("Interpret", func() {
 			interpolateErr := errors.New("dummyError")
 			fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-			objectUnderTest := _interpreter{
+			objectUnderTest := _evalToNumber{
 				interpolater: fakeInterpolater,
 			}
 
 			/* act */
-			_, actualErr := objectUnderTest.Interpret(
+			_, actualErr := objectUnderTest.EvalToNumber(
 				map[string]*model.Value{},
 				"dummyExpression",
 				new(pkg.FakeHandle),
@@ -78,13 +78,13 @@ var _ = Context("Interpret", func() {
 			coercedValue := 2.2
 			fakeData.CoerceToNumberReturns(coercedValue, nil)
 
-			objectUnderTest := _interpreter{
+			objectUnderTest := _evalToNumber{
 				data:         fakeData,
 				interpolater: fakeInterpolater,
 			}
 
 			/* act */
-			actualNumber, actualErr := objectUnderTest.Interpret(
+			actualNumber, actualErr := objectUnderTest.EvalToNumber(
 				map[string]*model.Value{},
 				"dummyExpression",
 				new(pkg.FakeHandle),
