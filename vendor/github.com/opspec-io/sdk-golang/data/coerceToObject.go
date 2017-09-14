@@ -36,30 +36,30 @@ func (c _coerceToObject) CoerceToObject(
 	case nil == value:
 		return nil, nil
 	case nil != value.Dir:
-		return nil, fmt.Errorf("Unable to coerce dir '%v' to object; incompatible types", *value.Dir)
+		return nil, fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", *value.Dir)
 	case nil != value.File:
 		fileBytes, err := c.ioUtil.ReadFile(*value.File)
 		if nil != err {
-			return nil, fmt.Errorf("Unable to coerce file to object; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
 		valueMap := map[string]interface{}{}
 		err = c.json.Unmarshal([]byte(fileBytes), &valueMap)
 		if nil != err {
-			return nil, fmt.Errorf("Unable to coerce file to object; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
 		return valueMap, nil
 	case nil != value.Number:
-		return nil, fmt.Errorf("Unable to coerce number '%v' to object; incompatible types", *value.Number)
+		return nil, fmt.Errorf("unable to coerce number '%v' to object; incompatible types", *value.Number)
 	case nil != value.Object:
 		return value.Object, nil
 	case nil != value.String:
 		valueMap := map[string]interface{}{}
 		err := c.json.Unmarshal([]byte(*value.String), &valueMap)
 		if nil != err {
-			return nil, fmt.Errorf("Unable to coerce string to object; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce string to object; error was %v", err.Error())
 		}
 		return valueMap, nil
 	default:
-		return nil, fmt.Errorf("Unable to coerce '%#v' to object", value)
+		return nil, fmt.Errorf("unable to coerce '%#v' to object", value)
 	}
 }

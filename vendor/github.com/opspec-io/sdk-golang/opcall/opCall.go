@@ -5,10 +5,10 @@ package opcall
 
 import (
 	"github.com/golang-interfaces/satori-go.uuid"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"path/filepath"
 )
 
@@ -26,20 +26,21 @@ type OpCall interface {
 func New(
 	rootFSPath string,
 ) OpCall {
-	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
-		string:       stringPkg.New(),
-		pkg:          pkg.New(),
-		pkgCachePath: pkgCachePath,
-		uuid:         iuuid.New(),
-		inputs:       inputs.New(),
+		dcgScratchDir: filepath.Join(rootFSPath, "dcg"),
+		expression:    expression.New(),
+		pkg:           pkg.New(),
+		pkgCachePath:  filepath.Join(rootFSPath, "pkgs"),
+		uuid:          iuuid.New(),
+		inputs:        inputs.New(),
 	}
 }
 
 type _OpCall struct {
-	string       stringPkg.String
-	pkg          pkg.Pkg
-	pkgCachePath string
-	uuid         iuuid.IUUID
-	inputs       inputs.Inputs
+	dcgScratchDir string
+	expression    expression.Expression
+	pkg           pkg.Pkg
+	pkgCachePath  string
+	uuid          iuuid.IUUID
+	inputs        inputs.Inputs
 }

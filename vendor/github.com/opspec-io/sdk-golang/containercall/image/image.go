@@ -3,8 +3,8 @@ package image
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Image
 
 import (
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type Image interface {
@@ -17,10 +17,10 @@ type Image interface {
 
 func New() Image {
 	return _Image{
-		string: stringPkg.New(),
+		expression: expression.New(),
 	}
 }
 
 type _Image struct {
-	string stringPkg.String
+	expression expression.Expression
 }

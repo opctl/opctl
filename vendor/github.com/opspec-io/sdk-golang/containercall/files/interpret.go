@@ -1,7 +1,6 @@
 package files
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
@@ -9,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -21,143 +19,87 @@ func (f _Files) Interpret(
 ) (map[string]string, error) {
 	dcgContainerCallFiles := map[string]string{}
 fileLoop:
-	for scgContainerFilePath, scgContainerFileBind := range scgContainerCallFiles {
+	for scgContainerFilePath, fileExpression := range scgContainerCallFiles {
 
-		if "" == scgContainerFileBind {
+		if "" == fileExpression {
 			// bound implicitly
-			scgContainerFileBind = scgContainerFilePath
+			fileExpression = scgContainerFilePath
 		}
 
-		isBoundToPkgContent := strings.HasPrefix(scgContainerFileBind, "/")
-		value, isBoundToScope := scope[scgContainerFileBind]
+		isBoundToPkgContent := strings.HasPrefix(fileExpression, "/")
+		value, isBoundToScope := scope[fileExpression]
 
 		var contentSrc io.Reader
+		contentFileMode := os.FileMode(0666)
 		var err error
 		switch {
 		case isBoundToPkgContent:
 			// bound to pkg file
-			dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-
-			pkgContentReadSeekCloser, err := pkgHandle.GetContent(context.TODO(), scgContainerFileBind)
-			defer pkgContentReadSeekCloser.Close()
+			pkgContentReadSeekCloser, err := pkgHandle.GetContent(context.TODO(), fileExpression)
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
-					scgContainerFileBind,
+					fileExpression,
 					err.Error(),
 				)
 			}
+			defer pkgContentReadSeekCloser.Close()
+			contentSrc = pkgContentReadSeekCloser
 
 			pkgContentsList, err := pkgHandle.ListContents(context.TODO())
 			if nil != err {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
+					"unable to bind file '%v' to pkg content '%v'; error was: %v",
 					scgContainerFilePath,
-					scgContainerFileBind,
+					fileExpression,
 					err.Error(),
 				)
 			}
 
 			// @TODO: return mode from GetContent so this isn't needed
-			var contentMode os.FileMode
 			for _, pkgContent := range pkgContentsList {
-				if pkgContent.Path == scgContainerFileBind {
-					contentMode = pkgContent.Mode
+				if pkgContent.Path == fileExpression {
+					contentFileMode = pkgContent.Mode
 					break
 				}
 			}
-
-			containerFileWriter, err := f.os.Create(dcgContainerCallFiles[scgContainerFilePath])
-			defer containerFileWriter.Close()
-			if nil != err {
-				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
-					scgContainerFilePath,
-					scgContainerFileBind,
-					err.Error(),
-				)
-			}
-
-			err = f.os.Chmod(dcgContainerCallFiles[scgContainerFilePath], contentMode)
-			if nil != err {
-				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
-					scgContainerFilePath,
-					scgContainerFileBind,
-					err.Error(),
-				)
-			}
-
-			_, err = f.io.Copy(containerFileWriter, pkgContentReadSeekCloser)
-			if nil != err {
-				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to pkg content '%v'; error was: %v",
-					scgContainerFilePath,
-					scgContainerFileBind,
-					err.Error(),
-				)
-			}
-
-			containerFileWriter.Close()
-			pkgContentReadSeekCloser.Close()
-
-			continue fileLoop
 		case isBoundToScope:
-			switch {
-			case nil == value:
+			if nil == value {
 				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'; '%v' null",
+					"unable to bind file '%v' to '%v'; '%v' null",
 					scgContainerFilePath,
-					scgContainerFileBind,
-					scgContainerFileBind,
+					fileExpression,
+					fileExpression,
 				)
-			case nil != value.File:
-				if strings.HasPrefix(*value.File, f.rootFSPath) {
-					// bound to rootFS file
-					dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-					err = f.fileCopier.OS(
-						filepath.Join(*value.File),
-						dcgContainerCallFiles[scgContainerFilePath],
-					)
-					if nil != err {
-						return nil, fmt.Errorf(
-							"Unable to bind file '%v' to '%v'; error was: %v",
-							scgContainerFilePath,
-							scgContainerFileBind,
-							err.Error(),
-						)
-					}
-					if nil != err {
-						return nil, err
-					}
-				} else {
+			} else if nil != value.File {
+				if !strings.HasPrefix(*value.File, f.rootFSPath) {
 					// bound to non rootFS file
 					dcgContainerCallFiles[scgContainerFilePath] = *value.File
+					continue fileLoop
 				}
-				continue fileLoop
-			case nil != value.Number:
-				contentSrc = strings.NewReader(strconv.FormatFloat(*value.Number, 'f', -1, 64))
-			case nil != value.Object:
-				objectBytes, err := f.json.Marshal(value.Object)
+
+				// bound to rootFS file
+				contentSrc, err = f.os.Open(*value.File)
 				if nil != err {
 					return nil, fmt.Errorf(
-						"Unable to bind file '%v' to %v; error was: %v",
+						"unable to bind file '%v' to '%v'; error was: %v",
 						scgContainerFilePath,
-						scgContainerFileBind,
+						fileExpression,
 						err.Error(),
 					)
 				}
-				contentSrc = bytes.NewReader(objectBytes)
-			case nil != value.String:
-				contentSrc = strings.NewReader(*value.String)
-			default:
-				return nil, fmt.Errorf(
-					"Unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
-					scgContainerFilePath,
-					scgContainerFileBind,
-					scgContainerFileBind,
-				)
+			} else {
+				content, err := f.data.CoerceToString(value)
+				if nil != err {
+					return nil, fmt.Errorf(
+						"unable to bind file '%v' to '%v'; error was: %v",
+						scgContainerFilePath,
+						fileExpression,
+						err.Error(),
+					)
+				}
+				contentSrc = strings.NewReader(content)
 			}
 		default:
 			// unbound
@@ -168,11 +110,16 @@ fileLoop:
 		// create file
 		if err := f.os.MkdirAll(
 			path.Dir(dcgContainerCallFiles[scgContainerFilePath]),
-			0700,
+			0777,
 		); nil != err {
-			return nil, err
+			return nil, fmt.Errorf(
+				"unable to mkdir for bound file '%v'; error was: %v",
+				scgContainerFilePath,
+				err.Error(),
+			)
 		}
-		outputFile, err := f.os.Create(dcgContainerCallFiles[scgContainerFilePath])
+
+		outputFile, err := f.os.OpenFile(dcgContainerCallFiles[scgContainerFilePath], os.O_RDWR|os.O_CREATE, contentFileMode)
 		if nil != err {
 			return nil, err
 		}

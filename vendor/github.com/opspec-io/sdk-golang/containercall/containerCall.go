@@ -10,8 +10,8 @@ import (
 	"github.com/opspec-io/sdk-golang/containercall/files"
 	"github.com/opspec-io/sdk-golang/containercall/image"
 	"github.com/opspec-io/sdk-golang/containercall/sockets"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 )
 
 type ContainerCall interface {
@@ -35,7 +35,7 @@ func New(
 		image:      image.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
-		string:     stringPkg.New(),
+		expression: expression.New(),
 		sockets:    sockets.New(),
 	}
 }
@@ -47,6 +47,6 @@ type _ContainerCall struct {
 	image      image.Image
 	os         ios.IOS
 	rootFSPath string
-	string     stringPkg.String
+	expression expression.Expression
 	sockets    sockets.Sockets
 }

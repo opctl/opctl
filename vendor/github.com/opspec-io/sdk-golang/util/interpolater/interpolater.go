@@ -1,6 +1,9 @@
 package interpolater
 
-import "github.com/opspec-io/sdk-golang/model"
+import (
+	"github.com/opspec-io/sdk-golang/model"
+	"strings"
+)
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
 
@@ -15,7 +18,7 @@ type Interpolater interface {
 		expression string,
 		scope map[string]*model.Value,
 		pkgHandle model.PkgHandle,
-	) (string, error)
+	) (*model.Value, error)
 }
 
 func New() Interpolater {
@@ -32,7 +35,13 @@ func (itp _Interpolater) Interpolate(
 	expression string,
 	scope map[string]*model.Value,
 	pkgHandle model.PkgHandle,
-) (string, error) {
+) (*model.Value, error) {
+
+	if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(expression, "$("), ")")]; ok {
+		// explicit arg
+		return dcgValue, nil
+	}
+
 	refBuffer := []byte{}
 	i := 0
 	for i < len(expression) {
@@ -40,7 +49,7 @@ func (itp _Interpolater) Interpolate(
 		case operator == expression[i]:
 			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
 			if nil != err {
-				return "", err
+				return nil, err
 			}
 			refBuffer = append(refBuffer, result...)
 			i += consumed
@@ -52,7 +61,8 @@ func (itp _Interpolater) Interpolate(
 		i++
 	}
 
-	return string(refBuffer), nil
+	valueAsString := string(refBuffer)
+	return &model.Value{String: &valueAsString}, nil
 }
 
 // tryDeRef tries to de reference from possibleRef.

@@ -18,7 +18,7 @@ func (this _containerProvider) DeleteContainerIfExists(
 		},
 	)
 	if nil != err {
-		err = fmt.Errorf("Unable to delete container. Response from docker was:\n %v", err.Error())
+		err = fmt.Errorf("unable to delete container. Response from docker was:\n %v", err.Error())
 	}
 	return
 }

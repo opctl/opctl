@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/chrisdostert/gojsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"github.com/opspec-io/sdk-golang/model"
 	"strings"
 )

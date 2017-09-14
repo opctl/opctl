@@ -12,7 +12,7 @@ func (img _Image) Interpret(
 ) (*model.DCGContainerCallImage, error) {
 	// construct image
 	if scgContainerCallImage := scgContainerCallImage; scgContainerCallImage != nil {
-		ref, err := img.string.Interpret(scope, scgContainerCallImage.Ref, pkgHandle)
+		ref, err := img.expression.EvalToString(scope, scgContainerCallImage.Ref, pkgHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -22,12 +22,12 @@ func (img _Image) Interpret(
 		}
 
 		if nil != scgContainerCallImage.PullCreds {
-			username, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Username, pkgHandle)
+			username, err := img.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Username, pkgHandle)
 			if nil != err {
 				return nil, err
 			}
 
-			password, err := img.string.Interpret(scope, scgContainerCallImage.PullCreds.Password, pkgHandle)
+			password, err := img.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Password, pkgHandle)
 			if nil != err {
 				return nil, err
 			}

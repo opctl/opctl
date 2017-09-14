@@ -4,7 +4,7 @@ package manifest
 
 import (
 	"fmt"
-	"github.com/chrisdostert/gojsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 )
