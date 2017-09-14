@@ -4,7 +4,7 @@ package data
 
 import (
 	"errors"
-	"github.com/chrisdostert/gojsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 )

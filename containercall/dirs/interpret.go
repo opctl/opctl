@@ -14,24 +14,24 @@ func (d _Dirs) Interpret(
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallDirs := map[string]string{}
-	for scgContainerDirPath, scgContainerDirBind := range scgContainerCallDirs {
+	for scgContainerDirPath, dirExpression := range scgContainerCallDirs {
 
-		if "" == scgContainerDirBind {
+		if "" == dirExpression {
 			// bound implicitly
-			scgContainerDirBind = scgContainerDirPath
+			dirExpression = scgContainerDirPath
 		}
 
-		isBoundToPkg := strings.HasPrefix(scgContainerDirBind, "/")
-		value, isBoundToScope := scope[scgContainerDirBind]
+		isBoundToPkg := strings.HasPrefix(dirExpression, "/")
+		value, isBoundToScope := scope[dirExpression]
 
 		switch {
 		case isBoundToPkg:
 			// bound to pkg dir
-			dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirBind)
+			dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, dirExpression)
 
 			// pkg dirs must be passed by value
 			if err := d.dirCopier.OS(
-				filepath.Join(pkgHandle.Ref(), scgContainerDirBind),
+				filepath.Join(pkgHandle.Ref(), dirExpression),
 				dcgContainerCallDirs[scgContainerDirPath],
 			); nil != err {
 				return nil, err
@@ -42,8 +42,8 @@ func (d _Dirs) Interpret(
 				return nil, fmt.Errorf(
 					"unable to bind dir '%v' to '%v'; '%v' not a dir",
 					scgContainerDirPath,
-					scgContainerDirBind,
-					scgContainerDirBind,
+					dirExpression,
+					dirExpression,
 				)
 			}
 
