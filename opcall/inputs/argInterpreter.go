@@ -19,6 +19,7 @@ type argInterpreter interface {
 		param *model.Param,
 		parentPkgHandle model.PkgHandle,
 		scope map[string]*model.Value,
+		opScratchDir string,
 	) (*model.Value, error)
 }
 
@@ -38,6 +39,7 @@ func (ai _argInterpreter) Interpret(
 	param *model.Param,
 	parentPkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
+	opScratchDir string,
 ) (*model.Value, error) {
 
 	if nil == param {
@@ -97,11 +99,11 @@ func (ai _argInterpreter) Interpret(
 				}
 				return &model.Value{Number: &numberValue}, nil
 			case nil != param.File:
-				interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
+				fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
 				if nil != err {
 					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
-				return &model.Value{File: ai.rootPath(interpolatedVal)}, nil
+				return fileValue, nil
 			case nil != param.Socket:
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 			}

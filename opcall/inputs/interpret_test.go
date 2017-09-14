@@ -18,11 +18,11 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedPkgRef := "dummyPkgRef"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
 						}
+						providedPkgRef := "dummyPkgRef"
 
 						objectUnderTest := _Inputs{
 							data: new(data.Fake),
@@ -40,6 +40,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -73,6 +74,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -111,6 +113,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -144,6 +147,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							providedPkgRef,
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -180,6 +184,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -210,6 +215,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -246,6 +252,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -276,6 +283,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -312,6 +320,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -342,6 +351,7 @@ var _ = Context("inputs", func() {
 							new(pkg.FakeHandle),
 							"dummyPkgRef",
 							map[string]*model.Value{},
+							"dummyOpScratchDir",
 						)
 
 						/* assert */
@@ -375,6 +385,8 @@ var _ = Context("inputs", func() {
 					"scopeRef1Name": {},
 				}
 
+				providedOpScratchDir := "dummyOpScratchDir"
+
 				fakeArgInterpreter := new(fakeArgInterpreter)
 
 				objectUnderTest := _Inputs{
@@ -389,6 +401,7 @@ var _ = Context("inputs", func() {
 					providedParentPkgHandle,
 					"dummyPkgRef",
 					providedScope,
+					providedOpScratchDir,
 				)
 
 				/* assert */
@@ -396,13 +409,16 @@ var _ = Context("inputs", func() {
 					actualArgValue,
 					actualParam,
 					actualParentPkgHandle,
-					actualScope := fakeArgInterpreter.InterpretArgsForCall(0)
+					actualScope,
+					actualOpScratchDir := fakeArgInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
 				Expect(actualParentPkgHandle).To(Equal(providedParentPkgHandle))
 				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
+
 			})
 			Context("argInterpreter.Interpret doesn't error", func() {
 				It("should call data.Validate w/ expected args", func() {
@@ -437,6 +453,7 @@ var _ = Context("inputs", func() {
 						new(pkg.FakeHandle),
 						"dummyPkgRef",
 						map[string]*model.Value{},
+						"dummyOpScratchDir",
 					)
 
 					/* assert */

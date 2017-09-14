@@ -26,20 +26,21 @@ type OpCall interface {
 func New(
 	rootFSPath string,
 ) OpCall {
-	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
 	return _OpCall{
-		expression:   expression.New(),
-		pkg:          pkg.New(),
-		pkgCachePath: pkgCachePath,
-		uuid:         iuuid.New(),
-		inputs:       inputs.New(),
+		dcgScratchDir: filepath.Join(rootFSPath, "dcg"),
+		expression:    expression.New(),
+		pkg:           pkg.New(),
+		pkgCachePath:  filepath.Join(rootFSPath, "pkgs"),
+		uuid:          iuuid.New(),
+		inputs:        inputs.New(),
 	}
 }
 
 type _OpCall struct {
-	expression   expression.Expression
-	pkg          pkg.Pkg
-	pkgCachePath string
-	uuid         iuuid.IUUID
-	inputs       inputs.Inputs
+	dcgScratchDir string
+	expression    expression.Expression
+	pkg           pkg.Pkg
+	pkgCachePath  string
+	uuid          iuuid.IUUID
+	inputs        inputs.Inputs
 }

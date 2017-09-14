@@ -399,6 +399,8 @@ var _ = Context("OpCall", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
+					providedOpId := "dummyOpId"
+
 					providedParentPkgHandle := new(pkg.FakeHandle)
 					providedParentPkgHandle.RefReturns("dummyParentPkgRef")
 
@@ -419,17 +421,20 @@ var _ = Context("OpCall", func() {
 
 					fakeInputs := new(inputs.Fake)
 
+					dcgScratchDir := "dummyDCGScratchDir"
+
 					objectUnderTest := _OpCall{
-						pkg:    fakePkg,
-						uuid:   new(iuuid.Fake),
-						inputs: fakeInputs,
+						dcgScratchDir: dcgScratchDir,
+						pkg:           fakePkg,
+						uuid:          new(iuuid.Fake),
+						inputs:        fakeInputs,
 					}
 
 					/* act */
 					objectUnderTest.Interpret(
 						providedScope,
 						providedSCGOpCall,
-						"dummyOpId",
+						providedOpId,
 						providedParentPkgHandle,
 						"dummyRootOpId",
 					)
@@ -439,12 +444,16 @@ var _ = Context("OpCall", func() {
 						actualSCGInputs,
 						actualParentPkgHandle,
 						actualPkgRef,
-						actualScope := fakeInputs.InterpretArgsForCall(0)
+						actualScope,
+						actualOpScratchDir := fakeInputs.InterpretArgsForCall(0)
+
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
 					Expect(actualParentPkgHandle).To(Equal(providedParentPkgHandle))
 					Expect(actualPkgRef).To(Equal(fakePkgHandle.Ref()))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
+					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpId)))
+
 				})
 			})
 		})

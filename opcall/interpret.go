@@ -61,6 +61,7 @@ func (oc _OpCall) Interpret(
 		parentPkgHandle,
 		pkgHandle.Ref(),
 		scope,
+		filepath.Join(oc.dcgScratchDir, opId),
 	)
 	if len(argErrors) > 0 {
 		messageBuffer := bytes.NewBufferString("")

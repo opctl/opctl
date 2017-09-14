@@ -1,6 +1,7 @@
 package inputs
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -28,6 +29,7 @@ var _ = Context("argInterpreter", func() {
 					nil,
 					new(pkg.FakeHandle),
 					map[string]*model.Value{},
+					"dummyScratchDir",
 				)
 
 				/* assert */
@@ -51,6 +53,7 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -75,6 +78,7 @@ var _ = Context("argInterpreter", func() {
 						providedParam,
 						new(pkg.FakeHandle),
 						providedScope,
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -100,6 +104,7 @@ var _ = Context("argInterpreter", func() {
 					providedParam,
 					new(pkg.FakeHandle),
 					providedScope,
+					"dummyScratchDir",
 				)
 
 				/* assert */
@@ -127,6 +132,7 @@ var _ = Context("argInterpreter", func() {
 						providedParam,
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -151,6 +157,7 @@ var _ = Context("argInterpreter", func() {
 						providedParam,
 						new(pkg.FakeHandle),
 						providedScope,
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -182,6 +189,7 @@ var _ = Context("argInterpreter", func() {
 						providedParam,
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -211,6 +219,7 @@ var _ = Context("argInterpreter", func() {
 							&model.Param{Dir: &model.DirParam{}},
 							new(pkg.FakeHandle),
 							map[string]*model.Value{},
+							"dummyScratchDir",
 						)
 
 						/* assert */
@@ -237,6 +246,7 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{Dir: &model.DirParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -264,6 +274,7 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{Dir: &model.DirParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -291,6 +302,7 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{Number: &model.NumberParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
@@ -299,41 +311,48 @@ var _ = Context("argInterpreter", func() {
 				})
 			})
 			Context("Input is File", func() {
-				Context("bound to pkg file", func() {
-					It("should return expected results", func() {
-						/* arrange */
-						fakeExpression := new(expression.Fake)
+				It("should call expression.EvalToFile w/ expected args", func() {
+					/* arrange */
+					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
+					providedExpression := "$(/somePkgFile)"
+					providedPkgHandle := new(pkg.FakeHandle)
+					providedScratchDir := "dummyScratchDir"
 
-						interpolatedValue := "dummyValue"
-						fakeExpression.EvalToStringReturns(interpolatedValue, nil)
+					fakeExpression := new(expression.Fake)
 
-						expectedResult := &model.Value{File: &interpolatedValue}
+					fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
 
-						objectUnderTest := _argInterpreter{
-							expression: fakeExpression,
-						}
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
 
-						/* act */
-						actualResult, actualError := objectUnderTest.Interpret(
-							"dummyName",
-							"$(/somePkgFile)",
-							&model.Param{File: &model.FileParam{}},
-							new(pkg.FakeHandle),
-							map[string]*model.Value{},
-						)
+					/* act */
+					objectUnderTest.Interpret(
+						"dummyName",
+						providedExpression,
+						&model.Param{File: &model.FileParam{}},
+						providedPkgHandle,
+						providedScope,
+						providedScratchDir,
+					)
 
-						/* assert */
-						Expect(actualResult).To(Equal(expectedResult))
-						Expect(actualError).To(BeNil())
-					})
+					/* assert */
+					actualScope,
+						actualExpression,
+						actualPkgHandle,
+						actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
+
+					Expect(actualScope).To(Equal(providedScope))
+					Expect(actualExpression).To(Equal(providedExpression))
+					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+					Expect(actualScratchDir).To(Equal(providedScratchDir))
+
 				})
 				It("should return expected results", func() {
 					fakeExpression := new(expression.Fake)
 
-					interpolatedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
-
-					expectedResult := &model.Value{File: &interpolatedValue}
+					fileValue := new(model.Value)
+					fakeExpression.EvalToFileReturns(fileValue, nil)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
@@ -346,37 +365,11 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{File: &model.FileParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-				It("should root path", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
-
-					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
-					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
-
-					expectedResult := &model.Value{File: &expectedValue}
-
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{File: &model.FileParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-					)
-
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+					Expect(actualResult).To(Equal(fileValue))
 					Expect(actualError).To(BeNil())
 				})
 			})
@@ -402,6 +395,7 @@ var _ = Context("argInterpreter", func() {
 						&model.Param{Socket: &model.SocketParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
+						"dummyScratchDir",
 					)
 
 					/* assert */

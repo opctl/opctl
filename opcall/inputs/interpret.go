@@ -12,6 +12,7 @@ func (_inputs _Inputs) Interpret(
 	parentPkgHandle model.PkgHandle,
 	pkgRef string,
 	scope map[string]*model.Value,
+	opScratchDir string,
 ) (map[string]*model.Value, []error) {
 	dcgOpCallInputs := map[string]*model.Value{}
 
@@ -46,6 +47,7 @@ func (_inputs _Inputs) Interpret(
 			inputParams[argName],
 			parentPkgHandle,
 			scope,
+			opScratchDir,
 		)
 		if nil != err {
 			errs = append(errs, err)

@@ -15,13 +15,15 @@ type Inputs interface {
 		inputParams map[string]*model.Param,
 	) map[string][]error
 
-	// Interpret interprets inputs via the provided inputArgs, inputParams, and scope
+	// Interpret interprets inputs via the provided inputArgs, inputParams, and scope;
+	// opScratchDir will be used to store any run data such as scope coercions to files
 	Interpret(
 		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
 		parentPkgHandle model.PkgHandle,
 		pkgRef string,
 		scope map[string]*model.Value,
+		opScratchDir string,
 	) (map[string]*model.Value, []error)
 }
 
