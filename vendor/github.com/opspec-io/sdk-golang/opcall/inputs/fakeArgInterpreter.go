@@ -8,7 +8,7 @@ import (
 )
 
 type fakeArgInterpreter struct {
-	InterpretStub        func(name string, value interface{}, param *model.Param, parentPkgHandle model.PkgHandle, scope map[string]*model.Value) (*model.Value, error)
+	InterpretStub        func(name string, value interface{}, param *model.Param, parentPkgHandle model.PkgHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		name            string
@@ -16,6 +16,7 @@ type fakeArgInterpreter struct {
 		param           *model.Param
 		parentPkgHandle model.PkgHandle
 		scope           map[string]*model.Value
+		opScratchDir    string
 	}
 	interpretReturns struct {
 		result1 *model.Value
@@ -29,7 +30,7 @@ type fakeArgInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeArgInterpreter) Interpret(name string, value interface{}, param *model.Param, parentPkgHandle model.PkgHandle, scope map[string]*model.Value) (*model.Value, error) {
+func (fake *fakeArgInterpreter) Interpret(name string, value interface{}, param *model.Param, parentPkgHandle model.PkgHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
@@ -38,11 +39,12 @@ func (fake *fakeArgInterpreter) Interpret(name string, value interface{}, param 
 		param           *model.Param
 		parentPkgHandle model.PkgHandle
 		scope           map[string]*model.Value
-	}{name, value, param, parentPkgHandle, scope})
-	fake.recordInvocation("Interpret", []interface{}{name, value, param, parentPkgHandle, scope})
+		opScratchDir    string
+	}{name, value, param, parentPkgHandle, scope, opScratchDir})
+	fake.recordInvocation("Interpret", []interface{}{name, value, param, parentPkgHandle, scope, opScratchDir})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(name, value, param, parentPkgHandle, scope)
+		return fake.InterpretStub(name, value, param, parentPkgHandle, scope, opScratchDir)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -56,10 +58,10 @@ func (fake *fakeArgInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *fakeArgInterpreter) InterpretArgsForCall(i int) (string, interface{}, *model.Param, model.PkgHandle, map[string]*model.Value) {
+func (fake *fakeArgInterpreter) InterpretArgsForCall(i int) (string, interface{}, *model.Param, model.PkgHandle, map[string]*model.Value, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].parentPkgHandle, fake.interpretArgsForCall[i].scope
+	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].parentPkgHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].opScratchDir
 }
 
 func (fake *fakeArgInterpreter) InterpretReturns(result1 *model.Value, result2 error) {

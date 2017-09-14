@@ -3,10 +3,9 @@ package files
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Files
 
 import (
-	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
-	"github.com/golang-utils/filecopier"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -23,18 +22,16 @@ func New(
 	rootFSPath string,
 ) Files {
 	return _Files{
-		fileCopier: filecopier.New(),
+		data:       data.New(),
 		io:         iio.New(),
-		json:       ijson.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
 	}
 }
 
 type _Files struct {
-	fileCopier filecopier.FileCopier
+	data       data.Data
 	io         iio.IIO
-	json       ijson.IJSON
 	os         ios.IOS
 	rootFSPath string
 }

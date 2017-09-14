@@ -19,12 +19,12 @@ func (oc _OpCall) Interpret(
 	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		pkgPullCreds.Username, err = oc.string.Interpret(scope, scgPullCreds.Username, parentPkgHandle)
+		pkgPullCreds.Username, err = oc.expression.EvalToString(scope, scgPullCreds.Username, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
 
-		pkgPullCreds.Password, err = oc.string.Interpret(scope, scgPullCreds.Password, parentPkgHandle)
+		pkgPullCreds.Password, err = oc.expression.EvalToString(scope, scgPullCreds.Password, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -61,6 +61,7 @@ func (oc _OpCall) Interpret(
 		parentPkgHandle,
 		pkgHandle.Ref(),
 		scope,
+		filepath.Join(oc.dcgScratchDir, opId),
 	)
 	if len(argErrors) > 0 {
 		messageBuffer := bytes.NewBufferString("")

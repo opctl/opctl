@@ -4,9 +4,8 @@ package inputs
 
 import (
 	"fmt"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/number"
-	stringPkg "github.com/opspec-io/sdk-golang/string"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -20,19 +19,18 @@ type argInterpreter interface {
 		param *model.Param,
 		parentPkgHandle model.PkgHandle,
 		scope map[string]*model.Value,
+		opScratchDir string,
 	) (*model.Value, error)
 }
 
 func newArgInterpreter() argInterpreter {
 	return _argInterpreter{
-		number: number.New(),
-		string: stringPkg.New(),
+		expression: expression.New(),
 	}
 }
 
 type _argInterpreter struct {
-	number number.Number
-	string stringPkg.String
+	expression expression.Expression
 }
 
 func (ai _argInterpreter) Interpret(
@@ -41,17 +39,18 @@ func (ai _argInterpreter) Interpret(
 	param *model.Param,
 	parentPkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
+	opScratchDir string,
 ) (*model.Value, error) {
 
 	if nil == param {
-		return nil, fmt.Errorf("Unable to bind to '%v'; '%v' not a defined input", name, name)
+		return nil, fmt.Errorf("unable to bind to '%v'; '%v' not a defined input", name, name)
 	}
 
 	if nil == value || "" == value {
 		// implicitly bound
 		dcgValue, ok := scope[name]
 		if !ok {
-			return nil, fmt.Errorf("Unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
+			return nil, fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
 		}
 		return dcgValue, nil
 	}
@@ -70,48 +69,48 @@ func (ai _argInterpreter) Interpret(
 		return &model.Value{Object: objectValue}, nil
 	}
 
-	if expression, ok := value.(string); ok {
+	if stringValue, ok := value.(string); ok {
 
-		if dcgValue, ok := scope[expression]; ok {
+		if dcgValue, ok := scope[stringValue]; ok {
 			// deprecated explicit arg
 			return dcgValue, nil
-		} else if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(expression, "$("), ")")]; ok {
+		} else if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(stringValue, "$("), ")")]; ok {
 			// explicit arg
 			return dcgValue, nil
 		} else {
 			switch {
 			// interpolated arg
 			case nil != param.String:
-				stringValue, err := ai.string.Interpret(scope, expression, parentPkgHandle)
+				stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{String: &stringValue}, nil
 			case nil != param.Dir:
-				interpolatedVal, err := ai.string.Interpret(scope, expression, parentPkgHandle)
+				interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{Dir: ai.rootPath(interpolatedVal)}, nil
 			case nil != param.Number:
-				numberValue, err := ai.number.Interpret(scope, expression, parentPkgHandle)
+				numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
 				return &model.Value{Number: &numberValue}, nil
 			case nil != param.File:
-				interpolatedVal, err := ai.string.Interpret(scope, expression, parentPkgHandle)
+				fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
 				if nil != err {
-					return nil, fmt.Errorf("Unable to bind '%v' to '%v'; error was: '%v'", name, expression, err.Error())
+					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 				}
-				return &model.Value{File: ai.rootPath(interpolatedVal)}, nil
+				return fileValue, nil
 			case nil != param.Socket:
-				return nil, fmt.Errorf("Unable to bind '%v' to '%v'; sockets must be passed by reference", name, expression)
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 			}
 		}
 	}
 
-	return nil, fmt.Errorf("Unable to bind '%v' to '%v'", name, value)
+	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, value)
 }
 
 // rootPath ensures paths are rooted (interpreted as having no parent) so parent paths of input files/dirs aren't

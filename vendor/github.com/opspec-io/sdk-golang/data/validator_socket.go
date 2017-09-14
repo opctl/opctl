@@ -2,15 +2,16 @@ package data
 
 import (
 	"errors"
+	"github.com/opspec-io/sdk-golang/model"
 )
 
-// validateSocket validates an value against a socket parameter
+// validateSocket validates a value against a socket parameter
 func (this _validator) validateSocket(
-	rawValue *string,
+	value *model.Value,
 ) []error {
 
 	// handle no value passed
-	if nil == rawValue {
+	if nil == value || nil == value.Socket {
 		return []error{errors.New("socket required")}
 	}
 

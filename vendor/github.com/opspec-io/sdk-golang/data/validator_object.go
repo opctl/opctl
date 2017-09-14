@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/chrisdostert/gojsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"github.com/opspec-io/sdk-golang/model"
 	"strings"
 )
 
-// validateObject validates an value against an object parameter
+// validateObject validates a value against an object parameter
 func (this _validator) validateObject(
 	value *model.Value,
 	constraints *model.ObjectConstraints,

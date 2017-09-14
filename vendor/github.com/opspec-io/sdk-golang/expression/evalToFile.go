@@ -1,4 +1,4 @@
-package number
+package expression
 
 import (
 	"github.com/opspec-io/sdk-golang/data"
@@ -6,32 +6,35 @@ import (
 	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
-type interpreter interface {
-	// interprets an expression to a string
-	Interpret(
+type evalToFile interface {
+	// EvalToFile evaluates an expression to a file value
+	// scratchDir will be used as the containing dir if file creation necessary
+	EvalToFile(
 		scope map[string]*model.Value,
 		expression string,
 		pkgHandle model.PkgHandle,
-	) (float64, error)
+		scratchDir string,
+	) (*model.Value, error)
 }
 
-func newInterpreter() interpreter {
-	return _interpreter{
+func newEvalToFile() evalToFile {
+	return _evalToFile{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _interpreter struct {
+type _evalToFile struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (itp _interpreter) Interpret(
+func (itp _evalToFile) EvalToFile(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,
-) (float64, error) {
+	scratchDir string,
+) (*model.Value, error) {
 	value, err := itp.interpolater.Interpolate(
 		expression,
 		scope,
@@ -39,8 +42,8 @@ func (itp _interpreter) Interpret(
 	)
 
 	if nil != err {
-		return 0, err
+		return nil, err
 	}
 
-	return itp.data.CoerceToNumber(&model.Value{String: &value})
+	return itp.data.CoerceToFile(value, scratchDir)
 }

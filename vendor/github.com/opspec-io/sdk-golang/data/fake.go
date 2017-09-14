@@ -7,6 +7,20 @@ import (
 )
 
 type Fake struct {
+	CoerceToFileStub        func(value *model.Value, scratchDir string) (*model.Value, error)
+	coerceToFileMutex       sync.RWMutex
+	coerceToFileArgsForCall []struct {
+		value      *model.Value
+		scratchDir string
+	}
+	coerceToFileReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	coerceToFileReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	CoerceToNumberStub        func(value *model.Value) (float64, error)
 	coerceToNumberMutex       sync.RWMutex
 	coerceToNumberArgsForCall []struct {
@@ -60,6 +74,58 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) CoerceToFile(value *model.Value, scratchDir string) (*model.Value, error) {
+	fake.coerceToFileMutex.Lock()
+	ret, specificReturn := fake.coerceToFileReturnsOnCall[len(fake.coerceToFileArgsForCall)]
+	fake.coerceToFileArgsForCall = append(fake.coerceToFileArgsForCall, struct {
+		value      *model.Value
+		scratchDir string
+	}{value, scratchDir})
+	fake.recordInvocation("CoerceToFile", []interface{}{value, scratchDir})
+	fake.coerceToFileMutex.Unlock()
+	if fake.CoerceToFileStub != nil {
+		return fake.CoerceToFileStub(value, scratchDir)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.coerceToFileReturns.result1, fake.coerceToFileReturns.result2
+}
+
+func (fake *Fake) CoerceToFileCallCount() int {
+	fake.coerceToFileMutex.RLock()
+	defer fake.coerceToFileMutex.RUnlock()
+	return len(fake.coerceToFileArgsForCall)
+}
+
+func (fake *Fake) CoerceToFileArgsForCall(i int) (*model.Value, string) {
+	fake.coerceToFileMutex.RLock()
+	defer fake.coerceToFileMutex.RUnlock()
+	return fake.coerceToFileArgsForCall[i].value, fake.coerceToFileArgsForCall[i].scratchDir
+}
+
+func (fake *Fake) CoerceToFileReturns(result1 *model.Value, result2 error) {
+	fake.CoerceToFileStub = nil
+	fake.coerceToFileReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) CoerceToFileReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.CoerceToFileStub = nil
+	if fake.coerceToFileReturnsOnCall == nil {
+		fake.coerceToFileReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.coerceToFileReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) CoerceToNumber(value *model.Value) (float64, error) {
@@ -267,6 +333,8 @@ func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.coerceToFileMutex.RLock()
+	defer fake.coerceToFileMutex.RUnlock()
 	fake.coerceToNumberMutex.RLock()
 	defer fake.coerceToNumberMutex.RUnlock()
 	fake.coerceToObjectMutex.RLock()

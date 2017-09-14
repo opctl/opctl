@@ -4,7 +4,7 @@ package data
 
 import (
 	"errors"
-	"github.com/chrisdostert/gojsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -36,7 +36,7 @@ type _validator struct {
 // Validate validates a value against a parameter
 // note: param defaults aren't considered
 func (this _validator) Validate(
-	rawValue *model.Value,
+	value *model.Value,
 	param *model.Param,
 ) (errs []error) {
 	if nil == param {
@@ -45,28 +45,16 @@ func (this _validator) Validate(
 
 	switch {
 	case nil != param.Dir:
-		var value *string
-		if nil != rawValue {
-			value = rawValue.Dir
-		}
 		errs = this.validateDir(value)
 	case nil != param.File:
-		var value *string
-		if nil != rawValue {
-			value = rawValue.File
-		}
 		errs = this.validateFile(value)
 	case nil != param.String:
-		errs = this.validateString(rawValue, param.String.Constraints)
+		errs = this.validateString(value, param.String.Constraints)
 	case nil != param.Number:
-		errs = this.validateNumber(rawValue, param.Number.Constraints)
+		errs = this.validateNumber(value, param.Number.Constraints)
 	case nil != param.Object:
-		errs = this.validateObject(rawValue, param.Object.Constraints)
+		errs = this.validateObject(value, param.Object.Constraints)
 	case nil != param.Socket:
-		var value *string
-		if nil != rawValue {
-			value = rawValue.Socket
-		}
 		errs = this.validateSocket(value)
 	}
 	return

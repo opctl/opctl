@@ -44,7 +44,7 @@ func (cc _ContainerCall) Interpret(
 	// construct cmd
 	for _, cmdEntryExpression := range scgContainerCall.Cmd {
 		// interpret each entry as string
-		cmdEntry, err := cc.string.Interpret(scope, cmdEntryExpression, pkgHandle)
+		cmdEntry, err := cc.expression.EvalToString(scope, cmdEntryExpression, pkgHandle)
 		if nil != err {
 			return nil, err
 		}
