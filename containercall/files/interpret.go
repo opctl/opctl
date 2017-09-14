@@ -1,7 +1,6 @@
 package files
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
@@ -9,7 +8,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -113,51 +111,33 @@ fileLoop:
 					scgContainerFileBind,
 				)
 			case nil != value.File:
-				if strings.HasPrefix(*value.File, f.rootFSPath) {
-					// bound to rootFS file
-					dcgContainerCallFiles[scgContainerFilePath] = filepath.Join(scratchDirPath, scgContainerFilePath)
-					err = f.fileCopier.OS(
-						filepath.Join(*value.File),
-						dcgContainerCallFiles[scgContainerFilePath],
-					)
-					if nil != err {
-						return nil, fmt.Errorf(
-							"unable to bind file '%v' to '%v'; error was: %v",
-							scgContainerFilePath,
-							scgContainerFileBind,
-							err.Error(),
-						)
-					}
-					if nil != err {
-						return nil, err
-					}
-				} else {
+				if !strings.HasPrefix(*value.File, f.rootFSPath) {
 					// bound to non rootFS file
 					dcgContainerCallFiles[scgContainerFilePath] = *value.File
+					continue fileLoop
 				}
-				continue fileLoop
-			case nil != value.Number:
-				contentSrc = strings.NewReader(strconv.FormatFloat(*value.Number, 'f', -1, 64))
-			case nil != value.Object:
-				objectBytes, err := f.json.Marshal(value.Object)
+
+				// bound to rootFS file
+				contentSrc, err = f.os.Open(*value.File)
 				if nil != err {
 					return nil, fmt.Errorf(
-						"unable to bind file '%v' to %v; error was: %v",
+						"unable to bind file '%v' to '%v'; error was: %v",
 						scgContainerFilePath,
 						scgContainerFileBind,
 						err.Error(),
 					)
 				}
-				contentSrc = bytes.NewReader(objectBytes)
-			case nil != value.String:
-				contentSrc = strings.NewReader(*value.String)
 			default:
-				return nil, fmt.Errorf(
-					"unable to bind file '%v' to '%v'; '%v' not a file, number, object, or string",
-					scgContainerFilePath,
-					scgContainerFileBind,
-					scgContainerFileBind,
-				)
+				content, err := f.data.CoerceToString(value)
+				if nil != err {
+					return nil, fmt.Errorf(
+						"unable to bind file '%v' to '%v'; error was: %v",
+						scgContainerFilePath,
+						scgContainerFileBind,
+						err.Error(),
+					)
+				}
+				contentSrc = strings.NewReader(content)
 			}
 		default:
 			// unbound
