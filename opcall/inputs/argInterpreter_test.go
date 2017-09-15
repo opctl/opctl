@@ -36,372 +36,318 @@ var _ = Context("argInterpreter", func() {
 				Expect(actualError).To(Equal(expectedError))
 			})
 		})
-		Context("Implicit arg", func() {
-			Context("Ref not in scope", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					providedName := "dummyName"
+    Context("Implicit arg", func() {
+      Context("Ref not in scope", func() {
+        It("should return expected error", func() {
+          /* arrange */
+          providedName := "dummyName"
 
-					expectedError := fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
+          expectedError := fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", providedName, providedName)
 
-					objectUnderTest := _argInterpreter{}
+          objectUnderTest := _argInterpreter{}
 
-					/* act */
-					_, actualError := objectUnderTest.Interpret(
-						providedName,
-						"",
-						&model.Param{},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          /* act */
+          _, actualError := objectUnderTest.Interpret(
+            providedName,
+            "",
+            &model.Param{},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-			Context("Ref in scope", func() {
-				It("should call validate.Validate w/ expected args & return result", func() {
-					/* arrange */
-					providedName := "dummyName"
-					providedValue := ""
-					providedParam := &model.Param{}
-					expectedValue := &model.Value{String: new(string)}
-					providedScope := map[string]*model.Value{providedName: expectedValue}
+          /* assert */
+          Expect(actualError).To(Equal(expectedError))
+        })
+      })
+      Context("Ref in scope", func() {
+        It("should call validate.Validate w/ expected args & return result", func() {
+          /* arrange */
+          providedName := "dummyName"
+          providedValue := ""
+          providedParam := &model.Param{}
+          expectedValue := &model.Value{String: new(string)}
+          providedScope := map[string]*model.Value{providedName: expectedValue}
 
-					objectUnderTest := _argInterpreter{}
+          objectUnderTest := _argInterpreter{}
 
-					/* act */
-					actualValue, actualError := objectUnderTest.Interpret(
-						providedName,
-						providedValue,
-						providedParam,
-						new(pkg.FakeHandle),
-						providedScope,
-						"dummyScratchDir",
-					)
+          /* act */
+          actualValue, actualError := objectUnderTest.Interpret(
+            providedName,
+            providedValue,
+            providedParam,
+            new(pkg.FakeHandle),
+            providedScope,
+            "dummyScratchDir",
+          )
 
-					/* assert */
-					Expect(actualValue).To(Equal(expectedValue))
-					Expect(actualError).To(BeNil())
-				})
-			})
-		})
-		Context("Deprecated explicit arg", func() {
-			It("should call validate.Validate w/ expected args & return result", func() {
-				/* arrange */
-				providedValue := "dummyValue"
-				providedParam := &model.Param{}
-				expectedValue := &model.Value{String: new(string)}
-				providedScope := map[string]*model.Value{providedValue: expectedValue}
+          /* assert */
+          Expect(actualValue).To(Equal(expectedValue))
+          Expect(actualError).To(BeNil())
+        })
+      })
+    })
+		Context("Arg is string", func(){
+      Context("Deprecated explicit arg", func() {
+        It("should call validate.Validate w/ expected args & return result", func() {
+          /* arrange */
+          providedValue := "dummyValue"
+          providedParam := &model.Param{}
+          expectedValue := &model.Value{String: new(string)}
+          providedScope := map[string]*model.Value{providedValue: expectedValue}
 
-				objectUnderTest := _argInterpreter{}
+          objectUnderTest := _argInterpreter{}
 
-				/* act */
-				actualValue, actualError := objectUnderTest.Interpret(
-					"dummyName",
-					providedValue,
-					providedParam,
-					new(pkg.FakeHandle),
-					providedScope,
-					"dummyScratchDir",
-				)
+          /* act */
+          actualValue, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            providedValue,
+            providedParam,
+            new(pkg.FakeHandle),
+            providedScope,
+            "dummyScratchDir",
+          )
 
-				/* assert */
-				Expect(actualValue).To(Equal(expectedValue))
-				Expect(actualError).To(BeNil())
-			})
-		})
-		Context("Explicit arg", func() {
-			Context("Ref not in scope", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					providedName := "dummyName"
-					explicitRef := "dummyRef"
-					providedValue := fmt.Sprintf("$(%v)", explicitRef)
-					providedParam := &model.Param{}
+          /* assert */
+          Expect(actualValue).To(Equal(expectedValue))
+          Expect(actualError).To(BeNil())
+        })
+      })
+      Context("Input is string", func() {
+        It("should return expected result", func() {
+          /* arrange */
+          providedParam := &model.Param{String: &model.StringParam{}}
 
-					expectedError := fmt.Errorf("unable to bind '%v' to '%v'", providedName, providedValue)
+          fakeExpression := new(expression.Fake)
+          interpretedValue := "dummyValue"
+          fakeExpression.EvalToStringReturns(interpretedValue, nil)
 
-					objectUnderTest := _argInterpreter{}
+          expectedResult := &model.Value{String: &interpretedValue}
 
-					/* act */
-					_, actualError := objectUnderTest.Interpret(
-						providedName,
-						providedValue,
-						providedParam,
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-			Context("Ref in scope", func() {
-				It("should call validate.Validate w/ expected args & return result", func() {
-					/* arrange */
-					explicitRef := "dummyRef"
-					providedValue := fmt.Sprintf("$(%v)", explicitRef)
-					providedParam := &model.Param{}
-					expectedValue := &model.Value{String: new(string)}
-					providedScope := map[string]*model.Value{explicitRef: expectedValue}
+          /* act */
+          actualResult, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            "dummyValue",
+            providedParam,
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					objectUnderTest := _argInterpreter{}
+          /* assert */
+          Expect(actualResult).To(Equal(expectedResult))
+          Expect(actualError).To(BeNil())
+        })
+      })
+      Context("Input is Dir", func() {
+        Context("bound to pkg dir", func() {
+          It("should return expected results", func() {
+            /* arrange */
+            fakeExpression := new(expression.Fake)
 
-					/* act */
-					actualValue, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						providedValue,
-						providedParam,
-						new(pkg.FakeHandle),
-						providedScope,
-						"dummyScratchDir",
-					)
+            interpolatedValue := "dummyValue"
+            fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-					/* assert */
-					Expect(actualValue).To(Equal(expectedValue))
-					Expect(actualError).To(BeNil())
-				})
-			})
-		})
-		Context("Interpolated arg", func() {
-			Context("Input is string", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					providedParam := &model.Param{String: &model.StringParam{}}
+            expectedResult := &model.Value{Dir: &interpolatedValue}
 
-					fakeExpression := new(expression.Fake)
-					interpretedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpretedValue, nil)
+            objectUnderTest := _argInterpreter{
+              expression: fakeExpression,
+            }
 
-					expectedResult := &model.Value{String: &interpretedValue}
+            /* act */
+            actualResult, actualError := objectUnderTest.Interpret(
+              "dummyName",
+              "$(/somePkgDir)",
+              &model.Param{Dir: &model.DirParam{}},
+              new(pkg.FakeHandle),
+              map[string]*model.Value{},
+              "dummyScratchDir",
+            )
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
+            /* assert */
+            Expect(actualResult).To(Equal(expectedResult))
+            Expect(actualError).To(BeNil())
+          })
+        })
+        It("should return expected result", func() {
+          /* arrange */
+          fakeExpression := new(expression.Fake)
+          interpolatedValue := "dummyValue"
+          fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						providedParam,
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          expectedResult := &model.Value{Dir: &interpolatedValue}
 
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-			})
-			Context("Input is Dir", func() {
-				Context("bound to pkg dir", func() {
-					It("should return expected results", func() {
-						/* arrange */
-						fakeExpression := new(expression.Fake)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-						interpolatedValue := "dummyValue"
-						fakeExpression.EvalToStringReturns(interpolatedValue, nil)
+          /* act */
+          actualResult, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            "dummyValue",
+            &model.Param{Dir: &model.DirParam{}},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-						expectedResult := &model.Value{Dir: &interpolatedValue}
+          /* assert */
+          Expect(actualResult).To(Equal(expectedResult))
+          Expect(actualError).To(BeNil())
+        })
+        It("should root path", func() {
+          /* arrange */
+          fakeExpression := new(expression.Fake)
 
-						objectUnderTest := _argInterpreter{
-							expression: fakeExpression,
-						}
+          expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
+          interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
+          fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-						/* act */
-						actualResult, actualError := objectUnderTest.Interpret(
-							"dummyName",
-							"$(/somePkgDir)",
-							&model.Param{Dir: &model.DirParam{}},
-							new(pkg.FakeHandle),
-							map[string]*model.Value{},
-							"dummyScratchDir",
-						)
+          expectedResult := &model.Value{Dir: &expectedValue}
 
-						/* assert */
-						Expect(actualResult).To(Equal(expectedResult))
-						Expect(actualError).To(BeNil())
-					})
-				})
-				It("should return expected result", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
-					interpolatedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					expectedResult := &model.Value{Dir: &interpolatedValue}
+          /* act */
+          actualResult, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            "dummyValue",
+            &model.Param{Dir: &model.DirParam{}},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
+          /* assert */
+          Expect(actualResult).To(Equal(expectedResult))
+          Expect(actualError).To(BeNil())
+        })
+      })
+      Context("Input is Number", func() {
+        It("should call validate w/ expected args", func() {
+          /* arrange */
+          fakeExpression := new(expression.Fake)
+          interpretedValue := float64(2.1)
+          fakeExpression.EvalToNumberReturns(interpretedValue, nil)
 
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{Dir: &model.DirParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          expectedResult := &model.Value{Number: &interpretedValue}
 
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-				It("should root path", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
-					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
+          /* act */
+          actualResult, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            "dummyValue",
+            &model.Param{Number: &model.NumberParam{}},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					expectedResult := &model.Value{Dir: &expectedValue}
+          /* assert */
+          Expect(actualResult).To(Equal(expectedResult))
+          Expect(actualError).To(BeNil())
+        })
+      })
+      Context("Input is File", func() {
+        It("should call expression.EvalToFile w/ expected args", func() {
+          /* arrange */
+          providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
+          providedExpression := "$(/somePkgFile)"
+          providedPkgHandle := new(pkg.FakeHandle)
+          providedScratchDir := "dummyScratchDir"
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
+          fakeExpression := new(expression.Fake)
 
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{Dir: &model.DirParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
 
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-			})
-			Context("Input is Number", func() {
-				It("should call validate w/ expected args", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
-					interpretedValue := float64(2.1)
-					fakeExpression.EvalToNumberReturns(interpretedValue, nil)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					expectedResult := &model.Value{Number: &interpretedValue}
+          /* act */
+          objectUnderTest.Interpret(
+            "dummyName",
+            providedExpression,
+            &model.Param{File: &model.FileParam{}},
+            providedPkgHandle,
+            providedScope,
+            providedScratchDir,
+          )
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
+          /* assert */
+          actualScope,
+          actualExpression,
+          actualPkgHandle,
+          actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
 
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{Number: &model.NumberParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
+          Expect(actualScope).To(Equal(providedScope))
+          Expect(actualExpression).To(Equal(providedExpression))
+          Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+          Expect(actualScratchDir).To(Equal(providedScratchDir))
 
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-			})
-			Context("Input is File", func() {
-				It("should call expression.EvalToFile w/ expected args", func() {
-					/* arrange */
-					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
-					providedExpression := "$(/somePkgFile)"
-					providedPkgHandle := new(pkg.FakeHandle)
-					providedScratchDir := "dummyScratchDir"
+        })
+        It("should return expected results", func() {
+          fakeExpression := new(expression.Fake)
 
-					fakeExpression := new(expression.Fake)
+          fileValue := new(model.Value)
+          fakeExpression.EvalToFileReturns(fileValue, nil)
 
-					fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
+          /* act */
+          actualResult, actualError := objectUnderTest.Interpret(
+            "dummyName",
+            "dummyValue",
+            &model.Param{File: &model.FileParam{}},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					/* act */
-					objectUnderTest.Interpret(
-						"dummyName",
-						providedExpression,
-						&model.Param{File: &model.FileParam{}},
-						providedPkgHandle,
-						providedScope,
-						providedScratchDir,
-					)
+          /* assert */
+          Expect(actualResult).To(Equal(fileValue))
+          Expect(actualError).To(BeNil())
+        })
+      })
+      Context("Input is Socket", func() {
+        It("should return expected error", func() {
+          /* arrange */
+          providedName := "dummyName"
+          fakeExpression := new(expression.Fake)
 
-					/* assert */
-					actualScope,
-						actualExpression,
-						actualPkgHandle,
-						actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
+          interpolatedValue := "dummyValue"
+          fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-					Expect(actualScope).To(Equal(providedScope))
-					Expect(actualExpression).To(Equal(providedExpression))
-					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
-					Expect(actualScratchDir).To(Equal(providedScratchDir))
+          expectedError := fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
 
-				})
-				It("should return expected results", func() {
-					fakeExpression := new(expression.Fake)
+          objectUnderTest := _argInterpreter{
+            expression: fakeExpression,
+          }
 
-					fileValue := new(model.Value)
-					fakeExpression.EvalToFileReturns(fileValue, nil)
+          /* act */
+          _, actualError := objectUnderTest.Interpret(
+            providedName,
+            "dummyValue",
+            &model.Param{Socket: &model.SocketParam{}},
+            new(pkg.FakeHandle),
+            map[string]*model.Value{},
+            "dummyScratchDir",
+          )
 
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{File: &model.FileParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualResult).To(Equal(fileValue))
-					Expect(actualError).To(BeNil())
-				})
-			})
-			Context("Input is Socket", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					providedName := "dummyName"
-					fakeExpression := new(expression.Fake)
-
-					interpolatedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
-
-					expectedError := fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
-
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					_, actualError := objectUnderTest.Interpret(
-						providedName,
-						"dummyValue",
-						&model.Param{Socket: &model.SocketParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-		})
+          /* assert */
+          Expect(actualError).To(Equal(expectedError))
+        })
+      })
+    })
 	})
 })

@@ -4,9 +4,9 @@ package data
 
 import (
 	"errors"
-	"github.com/xeipuuv/gojsonschema"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 type validator interface {
