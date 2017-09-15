@@ -1,5 +1,5 @@
 - name: standalone
-  expression: $(string1)$(string2)
+  template: $(string1)$(string2)
   scope:
     string1:
       string:
@@ -12,7 +12,7 @@
       value1value2
 
 - name: at start
-  expression: $(string1)$(string2)suffix
+  template: $(string1)$(string2)suffix
   scope:
     string1:
       string:
@@ -25,7 +25,7 @@
       value1value2suffix
 
 - name: at end
-  expression: prefix$(string1)$(string2)
+  template: prefix$(string1)$(string2)
   scope:
     string1:
       string:
@@ -38,7 +38,7 @@
       prefixvalue1value2
 
 - name: within
-  expression: prefix$(string1)$(string2)suffix
+  template: prefix$(string1)$(string2)suffix
   scope:
     string1:
       string:

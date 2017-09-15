@@ -31,10 +31,10 @@ var _ = Context("Interpolate", func() {
 							}
 
 							scenarioDotYml := []struct {
-								Name       string
-								Expression string
-								Scope      map[string]*model.Value
-								Expected   *model.Value
+								Name     string
+								Template string
+								Scope    map[string]*model.Value
+								Expected *model.Value
 							}{}
 							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
 								panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
@@ -66,7 +66,7 @@ var _ = Context("Interpolate", func() {
 								/* act */
 								objectUnderTest := New()
 								actualResult, actualErr := objectUnderTest.Interpolate(
-									scenario.Expression,
+									scenario.Template,
 									scenario.Scope,
 									pkgHandle,
 								)

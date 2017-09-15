@@ -1,23 +1,23 @@
 - name: stand alone
-  expression: (((
+  template: (((
   expected:
     string:
       (((
 
 - name: at start
-  expression: (((suffix
+  template: (((suffix
   expected:
     string:
       (((suffix
 
 - name: at end
-  expression: prefix(((
+  template: prefix(((
   expected:
     string:
       prefix(((
 
 - name: within
-  expression: prefix(((
+  template: prefix(((
   expected:
     string:
       prefix(((

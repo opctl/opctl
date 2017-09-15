@@ -1,4 +1,4 @@
-- expression: $(name)
+- template: $(name)
   expected:
     string:
       $(name)

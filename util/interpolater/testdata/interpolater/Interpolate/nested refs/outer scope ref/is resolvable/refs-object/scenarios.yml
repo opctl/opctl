@@ -1,5 +1,5 @@
 - name: standalone
-  expression: $($(innerRef))
+  template: $($(innerRef))
   scope:
     innerRef:
       string:
@@ -11,7 +11,7 @@
       '{"name":"value"}'
 
 - name: at start
-  expression: $($(innerRef))suffix
+  template: $($(innerRef))suffix
   scope:
     innerRef:
       string:
@@ -23,7 +23,7 @@
       '{"name":"value"}suffix'
 
 - name: at end
-  expression: prefix$($(innerRef))
+  template: prefix$($(innerRef))
   scope:
     innerRef:
       string:
@@ -35,7 +35,7 @@
       'prefix{"name":"value"}'
 
 - name: within
-  expression: prefix$($(innerRef))suffix
+  template: prefix$($(innerRef))suffix
   scope:
     innerRef:
       string:

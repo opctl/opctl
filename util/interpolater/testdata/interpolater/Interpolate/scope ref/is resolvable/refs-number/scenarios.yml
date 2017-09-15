@@ -1,5 +1,5 @@
 - name: standalone
-  expression: $(number1)
+  template: $(number1)
   scope:
     number1:
       number:
@@ -9,7 +9,7 @@
       1000000
 
 - name: at start
-  expression: $(number1)suffix
+  template: $(number1)suffix
   scope:
     number1:
       number:
@@ -19,7 +19,7 @@
       99999999suffix
 
 - name: at end
-  expression: prefix$(number1)
+  template: prefix$(number1)
   scope:
     number1:
       number:
@@ -29,7 +29,7 @@
       prefix2.3
 
 - name: within
-  expression: prefix$(number1)suffix
+  template: prefix$(number1)suffix
   scope:
     number1:
       number:

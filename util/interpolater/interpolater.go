@@ -2,6 +2,7 @@ package interpolater
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,7 +16,7 @@ const (
 
 type Interpolater interface {
 	Interpolate(
-		expression string,
+		template string,
 		scope map[string]*model.Value,
 		pkgHandle model.PkgHandle,
 	) (*model.Value, error)
@@ -32,33 +33,52 @@ type _Interpolater struct {
 }
 
 func (itp _Interpolater) Interpolate(
-	expression string,
+	template string,
 	scope map[string]*model.Value,
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
+	possibleRefCloserIndex := strings.Index(template, ")")
+	var dir *model.Value
 
-	if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(expression, "$("), ")")]; ok {
-		// explicit arg
-		return dcgValue, nil
+	if strings.HasPrefix(template, "$(") && possibleRefCloserIndex > 0 {
+		possibleRef := template[2:possibleRefCloserIndex]
+		if dcgValue, ok := scope[possibleRef]; ok {
+			if len(template)-1 == possibleRefCloserIndex {
+				// this is an explicit ref; return value
+				return dcgValue, nil
+			}
+			if nil != dcgValue.Dir {
+				// this is a dir expansion
+				dir = dcgValue
+				// trim initial dir ref & interpolate remaining template
+				template = template[possibleRefCloserIndex+1:]
+			}
+		}
 	}
 
+	// interpolate remaining template
 	refBuffer := []byte{}
 	i := 0
-	for i < len(expression) {
+	for i < len(template) {
 		switch {
-		case operator == expression[i]:
-			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
+		case operator == template[i]:
+			result, consumed, err := itp.tryDeRef(template[i+1:], scope, pkgHandle)
 			if nil != err {
 				return nil, err
 			}
 			refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
-			refBuffer = append(refBuffer, expression[i])
+			refBuffer = append(refBuffer, template[i])
 		}
 
 		// always increment loop counter
 		i++
+	}
+
+	if nil != dir {
+		expandedDir := filepath.Join(*dir.Dir, string(refBuffer))
+		return &model.Value{Dir: &expandedDir}, nil
 	}
 
 	valueAsString := string(refBuffer)

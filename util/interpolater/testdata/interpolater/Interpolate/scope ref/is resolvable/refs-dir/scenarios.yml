@@ -1,0 +1,19 @@
+- name: standalone
+  template: $(dir1)
+  scope:
+    dir1:
+      dir:
+        dir1
+  expected:
+    dir:
+      dir1
+
+- name: at start
+  template: $(dir1)suffix
+  scope:
+    dir1:
+      dir:
+        dir1
+  expected:
+    dir:
+      dir1/suffix

@@ -1,5 +1,5 @@
 - name: standalone
-  expression: $(object1)
+  template: $(object1)
   scope:
     object1:
       object: { name: value }
@@ -7,7 +7,7 @@
     object: { name: value }
 
 - name: at start
-  expression: $(object1)suffix
+  template: $(object1)suffix
   scope:
     object1:
       object: { name: value }
@@ -16,7 +16,7 @@
       '{"name":"value"}suffix'
 
 - name: at end
-  expression: prefix$(object1)
+  template: prefix$(object1)
   scope:
     object1:
       object: { name: value }
@@ -25,7 +25,7 @@
       'prefix{"name":"value"}'
 
 - name: within
-  expression: prefix$(object1)suffix
+  template: prefix$(object1)suffix
   scope:
     object1:
       object: { name: value }

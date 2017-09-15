@@ -1,4 +1,4 @@
-- expression: $($(innerRef))
+- template: $($(innerRef))
   scope:
     innerRef:
       string:
