@@ -33,7 +33,8 @@ and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
 
 [App Container](https://github.com/appc),
 [Codeship](https://codeship.com/), [Docker](https://github.com/docker),
-[Inter Planetary Filesystem (IPFS)](https://github.com/ipfs),
+[Inter Planetary Filesystem (IPFS)](https://ipfs.io),
+[Inter Planetary Linked Data (IPLD)](https://ipld.io/),
 [JSON Schema](https://github.com/json-schema),
 [Kubernetes](https://github.com/kubernetes),
 [Open Container Initiative (OCI)](https://github.com/opencontainers),
