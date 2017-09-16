@@ -53,6 +53,21 @@ type Fake struct {
 		result1 float64
 		result2 error
 	}
+	EvalToObjectStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (map[string]interface{}, error)
+	evalToObjectMutex       sync.RWMutex
+	evalToObjectArgsForCall []struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+	}
+	evalToObjectReturns struct {
+		result1 map[string]interface{}
+		result2 error
+	}
+	evalToObjectReturnsOnCall map[int]struct {
+		result1 map[string]interface{}
+		result2 error
+	}
 	EvalToStringStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (string, error)
 	evalToStringMutex       sync.RWMutex
 	evalToStringArgsForCall []struct {
@@ -232,6 +247,59 @@ func (fake *Fake) EvalToNumberReturnsOnCall(i int, result1 float64, result2 erro
 	}{result1, result2}
 }
 
+func (fake *Fake) EvalToObject(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (map[string]interface{}, error) {
+	fake.evalToObjectMutex.Lock()
+	ret, specificReturn := fake.evalToObjectReturnsOnCall[len(fake.evalToObjectArgsForCall)]
+	fake.evalToObjectArgsForCall = append(fake.evalToObjectArgsForCall, struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+	}{scope, expression, pkgHandle})
+	fake.recordInvocation("EvalToObject", []interface{}{scope, expression, pkgHandle})
+	fake.evalToObjectMutex.Unlock()
+	if fake.EvalToObjectStub != nil {
+		return fake.EvalToObjectStub(scope, expression, pkgHandle)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.evalToObjectReturns.result1, fake.evalToObjectReturns.result2
+}
+
+func (fake *Fake) EvalToObjectCallCount() int {
+	fake.evalToObjectMutex.RLock()
+	defer fake.evalToObjectMutex.RUnlock()
+	return len(fake.evalToObjectArgsForCall)
+}
+
+func (fake *Fake) EvalToObjectArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+	fake.evalToObjectMutex.RLock()
+	defer fake.evalToObjectMutex.RUnlock()
+	return fake.evalToObjectArgsForCall[i].scope, fake.evalToObjectArgsForCall[i].expression, fake.evalToObjectArgsForCall[i].pkgHandle
+}
+
+func (fake *Fake) EvalToObjectReturns(result1 map[string]interface{}, result2 error) {
+	fake.EvalToObjectStub = nil
+	fake.evalToObjectReturns = struct {
+		result1 map[string]interface{}
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToObjectReturnsOnCall(i int, result1 map[string]interface{}, result2 error) {
+	fake.EvalToObjectStub = nil
+	if fake.evalToObjectReturnsOnCall == nil {
+		fake.evalToObjectReturnsOnCall = make(map[int]struct {
+			result1 map[string]interface{}
+			result2 error
+		})
+	}
+	fake.evalToObjectReturnsOnCall[i] = struct {
+		result1 map[string]interface{}
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *Fake) EvalToString(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (string, error) {
 	fake.evalToStringMutex.Lock()
 	ret, specificReturn := fake.evalToStringReturnsOnCall[len(fake.evalToStringArgsForCall)]
@@ -294,6 +362,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.evalToFileMutex.RUnlock()
 	fake.evalToNumberMutex.RLock()
 	defer fake.evalToNumberMutex.RUnlock()
+	fake.evalToObjectMutex.RLock()
+	defer fake.evalToObjectMutex.RUnlock()
 	fake.evalToStringMutex.RLock()
 	defer fake.evalToStringMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
