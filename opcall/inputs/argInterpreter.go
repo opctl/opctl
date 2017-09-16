@@ -52,6 +52,16 @@ func (ai _argInterpreter) Interpret(
 		return dcgValue, nil
 	}
 
+	// @TODO: move all others to this switch
+	switch {
+	case nil != param.File:
+		fileValue, err := ai.expression.EvalToFile(scope, value, parentPkgHandle, opScratchDir)
+		if nil != err {
+			return nil, fmt.Errorf("unable to bind '%v' to '%#v'; error was: '%v'", name, value, err.Error())
+		}
+		return fileValue, nil
+	}
+
 	if numberValue, ok := value.(float64); ok {
 		switch {
 		case nil != param.String:
@@ -80,12 +90,6 @@ func (ai _argInterpreter) Interpret(
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
 			return dirValue, nil
-		case nil != param.File:
-			fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
-			if nil != err {
-				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-			}
-			return fileValue, nil
 		case nil != param.Number:
 			numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
 			if nil != err {
