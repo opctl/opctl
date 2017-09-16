@@ -6,44 +6,35 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type evalToFile interface {
-	// EvalToFile evaluates an expression to a file value
-	// scratchDir will be used as the containing dir if file creation necessary
-	EvalToFile(
+type evalToDir interface {
+	// EvalToDir evaluates an expression to a number value
+	EvalToDir(
 		scope map[string]*model.Value,
 		expression string,
 		pkgHandle model.PkgHandle,
-		scratchDir string,
 	) (*model.Value, error)
 }
 
-func newEvalToFile() evalToFile {
-	return _evalToFile{
+func newEvalToDir() evalToDir {
+	return _evalToDir{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _evalToFile struct {
+type _evalToDir struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (itp _evalToFile) EvalToFile(
+func (itp _evalToDir) EvalToDir(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,
-	scratchDir string,
 ) (*model.Value, error) {
-	value, err := itp.interpolater.Interpolate(
+	return itp.interpolater.Interpolate(
 		expression,
 		scope,
 		pkgHandle,
 	)
-
-	if nil != err {
-		return nil, err
-	}
-
-	return itp.data.CoerceToFile(value, scratchDir)
 }

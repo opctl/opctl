@@ -7,6 +7,21 @@ import (
 )
 
 type Fake struct {
+	EvalToDirStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error)
+	evalToDirMutex       sync.RWMutex
+	evalToDirArgsForCall []struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+	}
+	evalToDirReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	evalToDirReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	EvalToFileStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error)
 	evalToFileMutex       sync.RWMutex
 	evalToFileArgsForCall []struct {
@@ -55,6 +70,59 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error) {
+	fake.evalToDirMutex.Lock()
+	ret, specificReturn := fake.evalToDirReturnsOnCall[len(fake.evalToDirArgsForCall)]
+	fake.evalToDirArgsForCall = append(fake.evalToDirArgsForCall, struct {
+		scope      map[string]*model.Value
+		expression string
+		pkgHandle  model.PkgHandle
+	}{scope, expression, pkgHandle})
+	fake.recordInvocation("EvalToDir", []interface{}{scope, expression, pkgHandle})
+	fake.evalToDirMutex.Unlock()
+	if fake.EvalToDirStub != nil {
+		return fake.EvalToDirStub(scope, expression, pkgHandle)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.evalToDirReturns.result1, fake.evalToDirReturns.result2
+}
+
+func (fake *Fake) EvalToDirCallCount() int {
+	fake.evalToDirMutex.RLock()
+	defer fake.evalToDirMutex.RUnlock()
+	return len(fake.evalToDirArgsForCall)
+}
+
+func (fake *Fake) EvalToDirArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+	fake.evalToDirMutex.RLock()
+	defer fake.evalToDirMutex.RUnlock()
+	return fake.evalToDirArgsForCall[i].scope, fake.evalToDirArgsForCall[i].expression, fake.evalToDirArgsForCall[i].pkgHandle
+}
+
+func (fake *Fake) EvalToDirReturns(result1 *model.Value, result2 error) {
+	fake.EvalToDirStub = nil
+	fake.evalToDirReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToDirReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.EvalToDirStub = nil
+	if fake.evalToDirReturnsOnCall == nil {
+		fake.evalToDirReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.evalToDirReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error) {
@@ -220,6 +288,8 @@ func (fake *Fake) EvalToStringReturnsOnCall(i int, result1 string, result2 error
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.evalToDirMutex.RLock()
+	defer fake.evalToDirMutex.RUnlock()
 	fake.evalToFileMutex.RLock()
 	defer fake.evalToFileMutex.RUnlock()
 	fake.evalToNumberMutex.RLock()

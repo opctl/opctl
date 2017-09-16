@@ -8,12 +8,12 @@ import (
 )
 
 type Fake struct {
-	InterpolateStub        func(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error)
+	InterpolateStub        func(template string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
-		expression string
-		scope      map[string]*model.Value
-		pkgHandle  model.PkgHandle
+		template  string
+		scope     map[string]*model.Value
+		pkgHandle model.PkgHandle
 	}
 	interpolateReturns struct {
 		result1 *model.Value
@@ -27,18 +27,18 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error) {
+func (fake *Fake) Interpolate(template string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
-		expression string
-		scope      map[string]*model.Value
-		pkgHandle  model.PkgHandle
-	}{expression, scope, pkgHandle})
-	fake.recordInvocation("Interpolate", []interface{}{expression, scope, pkgHandle})
+		template  string
+		scope     map[string]*model.Value
+		pkgHandle model.PkgHandle
+	}{template, scope, pkgHandle})
+	fake.recordInvocation("Interpolate", []interface{}{template, scope, pkgHandle})
 	fake.interpolateMutex.Unlock()
 	if fake.InterpolateStub != nil {
-		return fake.InterpolateStub(expression, scope, pkgHandle)
+		return fake.InterpolateStub(template, scope, pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,7 +55,7 @@ func (fake *Fake) InterpolateCallCount() int {
 func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value, model.PkgHandle) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
-	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].pkgHandle
+	return fake.interpolateArgsForCall[i].template, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].pkgHandle
 }
 
 func (fake *Fake) InterpolateReturns(result1 *model.Value, result2 error) {
