@@ -112,36 +112,6 @@ var _ = Context("argInterpreter", func() {
 					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("Input is string", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					providedParam := &model.Param{String: &model.StringParam{}}
-
-					fakeExpression := new(expression.Fake)
-					interpretedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpretedValue, nil)
-
-					expectedResult := &model.Value{String: &interpretedValue}
-
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						providedParam,
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-			})
 			Context("Input is Dir", func() {
 				It("should return expected results", func() {
 					/* arrange */
@@ -169,35 +139,7 @@ var _ = Context("argInterpreter", func() {
 					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("Input is Number", func() {
-				It("should call validate w/ expected args", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
-					interpretedValue := float64(2.1)
-					fakeExpression.EvalToNumberReturns(interpretedValue, nil)
-
-					expectedResult := &model.Value{Number: &interpretedValue}
-
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{Number: &model.NumberParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-			})
-			Context("Input is File", func() {
+			Context("Input is file", func() {
 				It("should call expression.EvalToFile w/ expected args", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
@@ -260,7 +202,95 @@ var _ = Context("argInterpreter", func() {
 					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("Input is Socket", func() {
+			Context("Input is number", func() {
+				It("should call validate w/ expected args", func() {
+					/* arrange */
+					fakeExpression := new(expression.Fake)
+					interpretedValue := float64(2.1)
+					fakeExpression.EvalToNumberReturns(interpretedValue, nil)
+
+					expectedResult := &model.Value{Number: &interpretedValue}
+
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
+
+					/* act */
+					actualResult, actualError := objectUnderTest.Interpret(
+						"dummyName",
+						"dummyValue",
+						&model.Param{Number: &model.NumberParam{}},
+						new(pkg.FakeHandle),
+						map[string]*model.Value{},
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualResult).To(Equal(expectedResult))
+					Expect(actualError).To(BeNil())
+				})
+			})
+			Context("Input is object", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedParam := &model.Param{Object: &model.ObjectParam{}}
+
+					fakeExpression := new(expression.Fake)
+					interpretedValue := map[string]interface{}{"dummyName": "dummyValue"}
+					fakeExpression.EvalToObjectReturns(interpretedValue, nil)
+
+					expectedResult := &model.Value{Object: interpretedValue}
+
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
+
+					/* act */
+					actualResult, actualError := objectUnderTest.Interpret(
+						"dummyName",
+						"dummyValue",
+						providedParam,
+						new(pkg.FakeHandle),
+						map[string]*model.Value{},
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualResult).To(Equal(expectedResult))
+					Expect(actualError).To(BeNil())
+				})
+			})
+			Context("Input is string", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedParam := &model.Param{String: &model.StringParam{}}
+
+					fakeExpression := new(expression.Fake)
+					interpretedValue := "dummyValue"
+					fakeExpression.EvalToStringReturns(interpretedValue, nil)
+
+					expectedResult := &model.Value{String: &interpretedValue}
+
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
+
+					/* act */
+					actualResult, actualError := objectUnderTest.Interpret(
+						"dummyName",
+						"dummyValue",
+						providedParam,
+						new(pkg.FakeHandle),
+						map[string]*model.Value{},
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualResult).To(Equal(expectedResult))
+					Expect(actualError).To(BeNil())
+				})
+			})
+			Context("Input is socket", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					providedName := "dummyName"
