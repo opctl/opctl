@@ -8,7 +8,6 @@ import (
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"path/filepath"
 )
 
 var _ = Context("argInterpreter", func() {
@@ -144,42 +143,12 @@ var _ = Context("argInterpreter", func() {
 				})
 			})
 			Context("Input is Dir", func() {
-				Context("bound to pkg dir", func() {
-					It("should return expected results", func() {
-						/* arrange */
-						fakeExpression := new(expression.Fake)
-
-						interpolatedValue := "dummyValue"
-						fakeExpression.EvalToStringReturns(interpolatedValue, nil)
-
-						expectedResult := &model.Value{Dir: &interpolatedValue}
-
-						objectUnderTest := _argInterpreter{
-							expression: fakeExpression,
-						}
-
-						/* act */
-						actualResult, actualError := objectUnderTest.Interpret(
-							"dummyName",
-							"$(/somePkgDir)",
-							&model.Param{Dir: &model.DirParam{}},
-							new(pkg.FakeHandle),
-							map[string]*model.Value{},
-							"dummyScratchDir",
-						)
-
-						/* assert */
-						Expect(actualResult).To(Equal(expectedResult))
-						Expect(actualError).To(BeNil())
-					})
-				})
-				It("should return expected result", func() {
+				It("should return expected results", func() {
 					/* arrange */
 					fakeExpression := new(expression.Fake)
-					interpolatedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
 
-					expectedResult := &model.Value{Dir: &interpolatedValue}
+					interpolatedValue := &model.Value{Dir: new(string)}
+					fakeExpression.EvalToDirReturns(interpolatedValue, nil)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
@@ -188,7 +157,7 @@ var _ = Context("argInterpreter", func() {
 					/* act */
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
-						"dummyValue",
+						"$(/somePkgDir)",
 						&model.Param{Dir: &model.DirParam{}},
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
@@ -196,35 +165,7 @@ var _ = Context("argInterpreter", func() {
 					)
 
 					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
-					Expect(actualError).To(BeNil())
-				})
-				It("should root path", func() {
-					/* arrange */
-					fakeExpression := new(expression.Fake)
-
-					expectedValue := fmt.Sprintf("%v%v", string(filepath.Separator), "dummyValue")
-					interpolatedValue := fmt.Sprintf("..\\../%v../..\\", expectedValue)
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
-
-					expectedResult := &model.Value{Dir: &expectedValue}
-
-					objectUnderTest := _argInterpreter{
-						expression: fakeExpression,
-					}
-
-					/* act */
-					actualResult, actualError := objectUnderTest.Interpret(
-						"dummyName",
-						"dummyValue",
-						&model.Param{Dir: &model.DirParam{}},
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+					Expect(actualResult).To(Equal(interpolatedValue))
 					Expect(actualError).To(BeNil())
 				})
 			})

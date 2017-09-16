@@ -6,10 +6,7 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 type argInterpreter interface {
@@ -84,11 +81,11 @@ func (ai _argInterpreter) Interpret(
 			}
 			return &model.Value{String: &stringValue}, nil
 		case nil != param.Dir:
-			interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
+			dirValue, err := ai.expression.EvalToDir(scope, stringValue, parentPkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
-			return &model.Value{Dir: ai.rootPath(interpolatedVal)}, nil
+			return dirValue, nil
 		case nil != param.Number:
 			numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
 			if nil != err {
@@ -107,15 +104,4 @@ func (ai _argInterpreter) Interpret(
 	}
 
 	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, value)
-}
-
-// rootPath ensures paths are rooted (interpreted as having no parent) so parent paths of input files/dirs aren't
-// accessible (which would break encapsulation)
-func (ai _argInterpreter) rootPath(
-	path string,
-) *string {
-	path = strings.Replace(path, "../", string(os.PathSeparator), -1)
-	path = strings.Replace(path, "..\\", string(os.PathSeparator), -1)
-	path = filepath.Clean(path)
-	return &path
 }

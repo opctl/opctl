@@ -39,6 +39,7 @@ func (itp _Interpolater) Interpolate(
 ) (*model.Value, error) {
 	possibleRefCloserIndex := strings.Index(template, ")")
 	var dir *model.Value
+	var file *model.Value
 
 	if strings.HasPrefix(template, "$(") && possibleRefCloserIndex > 0 {
 		possibleRef := template[2:possibleRefCloserIndex]
@@ -77,8 +78,12 @@ func (itp _Interpolater) Interpolate(
 	}
 
 	if nil != dir {
-		expandedDir := filepath.Join(*dir.Dir, string(refBuffer))
-		return &model.Value{Dir: &expandedDir}, nil
+		expandedPath := filepath.Join(*dir.Dir, string(refBuffer))
+		return &model.Value{Dir: &expandedPath}, nil
+	}
+	if nil != file {
+		expandedPath := filepath.Join(*dir.File, string(refBuffer))
+		return &model.Value{File: &expandedPath}, nil
 	}
 
 	valueAsString := string(refBuffer)

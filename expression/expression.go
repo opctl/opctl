@@ -4,6 +4,7 @@ package expression
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Expression
 
 type Expression interface {
+	evalToDir
 	evalToFile
 	evalToNumber
 	evalToString
@@ -11,6 +12,7 @@ type Expression interface {
 
 func New() Expression {
 	return _Expression{
+		evalToDir:    newEvalToDir(),
 		evalToFile:   newEvalToFile(),
 		evalToNumber: newEvalToNumber(),
 		evalToString: newEvalToString(),
@@ -18,6 +20,7 @@ func New() Expression {
 }
 
 type _Expression struct {
+	evalToDir
 	evalToFile
 	evalToNumber
 	evalToString
