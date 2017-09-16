@@ -7,6 +7,7 @@ type Expression interface {
 	evalToDir
 	evalToFile
 	evalToNumber
+	evalToObject
 	evalToString
 }
 
@@ -15,6 +16,7 @@ func New() Expression {
 		evalToDir:    newEvalToDir(),
 		evalToFile:   newEvalToFile(),
 		evalToNumber: newEvalToNumber(),
+		evalToObject: newEvalToObject(),
 		evalToString: newEvalToString(),
 	}
 }
@@ -23,5 +25,6 @@ type _Expression struct {
 	evalToDir
 	evalToFile
 	evalToNumber
+	evalToObject
 	evalToString
 }

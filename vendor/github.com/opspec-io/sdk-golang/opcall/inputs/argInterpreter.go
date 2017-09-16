@@ -74,30 +74,36 @@ func (ai _argInterpreter) Interpret(
 		}
 
 		switch {
-		case nil != param.String:
-			stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-			}
-			return &model.Value{String: &stringValue}, nil
 		case nil != param.Dir:
 			dirValue, err := ai.expression.EvalToDir(scope, stringValue, parentPkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
 			return dirValue, nil
-		case nil != param.Number:
-			numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-			}
-			return &model.Value{Number: &numberValue}, nil
 		case nil != param.File:
 			fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
 			if nil != err {
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
 			return fileValue, nil
+		case nil != param.Number:
+			numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return &model.Value{Number: &numberValue}, nil
+		case nil != param.Object:
+			objectValue, err := ai.expression.EvalToObject(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return &model.Value{Object: objectValue}, nil
+		case nil != param.String:
+			stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return &model.Value{String: &stringValue}, nil
 		case nil != param.Socket:
 			return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 		}
