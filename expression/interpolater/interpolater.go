@@ -1,6 +1,7 @@
 package interpolater
 
 import (
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
 	"strings"
@@ -25,11 +26,13 @@ type Interpolater interface {
 func New() Interpolater {
 	return _Interpolater{
 		deReferencer: newDeReferencer(),
+		os:           ios.New(),
 	}
 }
 
 type _Interpolater struct {
 	deReferencer
+	os ios.IOS
 }
 
 func (itp _Interpolater) Interpolate(
@@ -39,7 +42,6 @@ func (itp _Interpolater) Interpolate(
 ) (*model.Value, error) {
 	possibleRefCloserIndex := strings.Index(template, ")")
 	var dir *model.Value
-	var file *model.Value
 
 	if strings.HasPrefix(template, "$(") && possibleRefCloserIndex > 0 {
 		possibleRef := template[2:possibleRefCloserIndex]
@@ -79,11 +81,16 @@ func (itp _Interpolater) Interpolate(
 
 	if nil != dir {
 		expandedPath := filepath.Join(*dir.Dir, string(refBuffer))
+
+		fileInfo, err := itp.os.Stat(expandedPath)
+		if nil != err {
+			return nil, err
+		}
+
+		if !fileInfo.IsDir() {
+			return &model.Value{File: &expandedPath}, nil
+		}
 		return &model.Value{Dir: &expandedPath}, nil
-	}
-	if nil != file {
-		expandedPath := filepath.Join(*dir.File, string(refBuffer))
-		return &model.Value{File: &expandedPath}, nil
 	}
 
 	valueAsString := string(refBuffer)

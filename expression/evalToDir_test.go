@@ -3,9 +3,9 @@ package expression
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/interpolater"
 	"github.com/pkg/errors"
 )
 

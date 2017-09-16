@@ -61,6 +61,15 @@ var _ = Context("Interpolate", func() {
 										absFilePath := filepath.Join(absPath, *scenario.Expected.File)
 										scenario.Expected.File = &absFilePath
 									}
+									// make dir refs absolute
+									if nil != value.Dir {
+										absDirPath := filepath.Join(absPath, *value.Dir)
+										scenario.Scope[name] = &model.Value{Dir: &absDirPath}
+									}
+									if nil != scenario.Expected.Dir {
+										absDirPath := filepath.Join(absPath, *scenario.Expected.Dir)
+										scenario.Expected.Dir = &absDirPath
+									}
 								}
 
 								/* act */
@@ -73,8 +82,8 @@ var _ = Context("Interpolate", func() {
 
 								/* assert */
 								description := fmt.Sprintf("scenario:\n  path: '%v'\n  name: '%v'", path, scenario.Name)
-								Expect(*actualResult).To(Equal(*scenario.Expected), description)
 								Expect(actualErr).To(BeNil(), description)
+								Expect(*actualResult).To(Equal(*scenario.Expected), description)
 							}
 						}
 					}

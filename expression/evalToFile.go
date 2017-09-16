@@ -2,8 +2,8 @@ package expression
 
 import (
 	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/interpolater"
 )
 
 type evalToFile interface {
