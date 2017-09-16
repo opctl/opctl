@@ -58,6 +58,6 @@ func (c _coerceToNumber) CoerceToNumber(
 		}
 		return float64Value, nil
 	default:
-		return 0, fmt.Errorf("unable to coerce '%#v' to number", value)
+		return 0, fmt.Errorf("unable to coerce '%+v' to number", value)
 	}
 }
