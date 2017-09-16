@@ -22,11 +22,11 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToFileStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error)
+	EvalToFileStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error)
 	evalToFileMutex       sync.RWMutex
 	evalToFileArgsForCall []struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 		scratchDir string
 	}
@@ -140,12 +140,12 @@ func (fake *Fake) EvalToDirReturnsOnCall(i int, result1 *model.Value, result2 er
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error) {
+func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle, scratchDir string) (*model.Value, error) {
 	fake.evalToFileMutex.Lock()
 	ret, specificReturn := fake.evalToFileReturnsOnCall[len(fake.evalToFileArgsForCall)]
 	fake.evalToFileArgsForCall = append(fake.evalToFileArgsForCall, struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 		scratchDir string
 	}{scope, expression, pkgHandle, scratchDir})
@@ -166,7 +166,7 @@ func (fake *Fake) EvalToFileCallCount() int {
 	return len(fake.evalToFileArgsForCall)
 }
 
-func (fake *Fake) EvalToFileArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle, string) {
+func (fake *Fake) EvalToFileArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle, string) {
 	fake.evalToFileMutex.RLock()
 	defer fake.evalToFileMutex.RUnlock()
 	return fake.evalToFileArgsForCall[i].scope, fake.evalToFileArgsForCall[i].expression, fake.evalToFileArgsForCall[i].pkgHandle, fake.evalToFileArgsForCall[i].scratchDir
