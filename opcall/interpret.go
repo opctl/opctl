@@ -19,15 +19,17 @@ func (oc _OpCall) Interpret(
 	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		pkgPullCreds.Username, err = oc.expression.EvalToString(scope, scgPullCreds.Username, parentPkgHandle)
+		evaluatedUsername, err := oc.expression.EvalToString(scope, scgPullCreds.Username, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
+		pkgPullCreds.Username = *evaluatedUsername.String
 
-		pkgPullCreds.Password, err = oc.expression.EvalToString(scope, scgPullCreds.Password, parentPkgHandle)
+		evaluatedPassword, err := oc.expression.EvalToString(scope, scgPullCreds.Password, parentPkgHandle)
 		if nil != err {
 			return nil, err
 		}
+		pkgPullCreds.Password = *evaluatedPassword.String
 	}
 
 	pkgHandle, err := oc.pkg.Resolve(

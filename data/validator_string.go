@@ -10,11 +10,11 @@ import (
 )
 
 // validateString validates a value against a string parameter
-func (this _validator) validateString(
+func (vdt _validator) validateString(
 	value *model.Value,
 	constraints *model.StringConstraints,
 ) []error {
-	valueAsString, err := this.coercer.CoerceToString(value)
+	valueAsString, err := vdt.coercer.CoerceToString(value)
 	if nil != err {
 		return []error{err}
 	}
@@ -33,7 +33,7 @@ func (this _validator) validateString(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(valueAsString)
+		valueJsonBytes, err := json.Marshal(valueAsString.String)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

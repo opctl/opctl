@@ -537,7 +537,7 @@ var _ = Context("Files", func() {
 
 						fakeData := new(data.Fake)
 						// err to trigger immediate return
-						fakeData.CoerceToStringReturns("", errors.New("dummyError"))
+						fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
 
 						objectUnderTest := _Files{
 							data: fakeData,
@@ -575,7 +575,7 @@ var _ = Context("Files", func() {
 							fakeData := new(data.Fake)
 
 							coerceToStringErr := errors.New("dummyError")
-							fakeData.CoerceToStringReturns("", coerceToStringErr)
+							fakeData.CoerceToStringReturns(nil, coerceToStringErr)
 
 							expectedErrors := fmt.Errorf(
 								"unable to bind file '%v' to '%v'; error was: %v",
@@ -620,10 +620,13 @@ var _ = Context("Files", func() {
 
 							providedScratchDirPath := "dummyScratchDirPath"
 
+							fakeData := new(data.Fake)
+							fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 							fakeOS := new(ios.Fake)
 
 							objectUnderTest := _Files{
-								data: new(data.Fake),
+								data: fakeData,
 								io:   new(iio.Fake),
 								os:   fakeOS,
 							}
@@ -658,6 +661,9 @@ var _ = Context("Files", func() {
 									containerFilePath: scopeName,
 								}
 
+								fakeData := new(data.Fake)
+								fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 								fakeOS := new(ios.Fake)
 								mkdirAllErr := errors.New("dummyError")
 								fakeOS.MkdirAllReturns(mkdirAllErr)
@@ -669,7 +675,7 @@ var _ = Context("Files", func() {
 								)
 
 								objectUnderTest := _Files{
-									data: new(data.Fake),
+									data: fakeData,
 									os:   fakeOS,
 								}
 
@@ -702,10 +708,13 @@ var _ = Context("Files", func() {
 
 								providedScratchDirPath := "dummyScratchDirPath"
 
+								fakeData := new(data.Fake)
+								fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 								fakeOS := new(ios.Fake)
 
 								objectUnderTest := _Files{
-									data: new(data.Fake),
+									data: fakeData,
 									io:   new(iio.Fake),
 									os:   fakeOS,
 								}
@@ -740,13 +749,16 @@ var _ = Context("Files", func() {
 										"dummyContainerFilePath": scopeName,
 									}
 
+									fakeData := new(data.Fake)
+									fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 									expectedErr := errors.New("dummyError")
 
 									fakeOS := new(ios.Fake)
 									fakeOS.OpenFileReturns(nil, expectedErr)
 
 									objectUnderTest := _Files{
-										data: new(data.Fake),
+										data: fakeData,
 										os:   fakeOS,
 									}
 
@@ -777,6 +789,10 @@ var _ = Context("Files", func() {
 									}
 
 									providedScratchDirPath := "dummyScratchDirPath"
+
+									fakeData := new(data.Fake)
+									fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 									expectedCopyReader := strings.NewReader("")
 
 									fakeIO := new(iio.Fake)
@@ -786,7 +802,7 @@ var _ = Context("Files", func() {
 									fakeOS.OpenFileReturns(expectedCopyWriter, err)
 
 									objectUnderTest := _Files{
-										data: new(data.Fake),
+										data: fakeData,
 										io:   fakeIO,
 										os:   fakeOS,
 									}
@@ -819,13 +835,16 @@ var _ = Context("Files", func() {
 											"dummyContainerFilePath": scopeName,
 										}
 
+										fakeData := new(data.Fake)
+										fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 										expectedErr := errors.New("dummyError")
 
 										fakeIO := new(iio.Fake)
 										fakeIO.CopyReturns(0, expectedErr)
 
 										objectUnderTest := _Files{
-											data: new(data.Fake),
+											data: fakeData,
 											io:   fakeIO,
 											os:   new(ios.Fake),
 										}
@@ -864,10 +883,13 @@ var _ = Context("Files", func() {
 											containerFilePath: filepath.Join(providedScratchDirPath, containerFilePath),
 										}
 
+										fakeData := new(data.Fake)
+										fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+
 										fakeOS := new(ios.Fake)
 
 										objectUnderTest := _Files{
-											data: new(data.Fake),
+											data: fakeData,
 											io:   new(iio.Fake),
 											os:   fakeOS,
 										}

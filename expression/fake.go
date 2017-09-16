@@ -38,49 +38,49 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToNumberStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error)
+	EvalToNumberStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
 	evalToNumberMutex       sync.RWMutex
 	evalToNumberArgsForCall []struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}
 	evalToNumberReturns struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}
 	evalToNumberReturnsOnCall map[int]struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}
-	EvalToObjectStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (map[string]interface{}, error)
+	EvalToObjectStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
 	evalToObjectMutex       sync.RWMutex
 	evalToObjectArgsForCall []struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}
 	evalToObjectReturns struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}
 	evalToObjectReturnsOnCall map[int]struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}
-	EvalToStringStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (string, error)
+	EvalToStringStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
 	evalToStringMutex       sync.RWMutex
 	evalToStringArgsForCall []struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}
 	evalToStringReturns struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	evalToStringReturnsOnCall map[int]struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -194,12 +194,12 @@ func (fake *Fake) EvalToFileReturnsOnCall(i int, result1 *model.Value, result2 e
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToNumber(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (float64, error) {
+func (fake *Fake) EvalToNumber(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.evalToNumberMutex.Lock()
 	ret, specificReturn := fake.evalToNumberReturnsOnCall[len(fake.evalToNumberArgsForCall)]
 	fake.evalToNumberArgsForCall = append(fake.evalToNumberArgsForCall, struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}{scope, expression, pkgHandle})
 	fake.recordInvocation("EvalToNumber", []interface{}{scope, expression, pkgHandle})
@@ -219,40 +219,40 @@ func (fake *Fake) EvalToNumberCallCount() int {
 	return len(fake.evalToNumberArgsForCall)
 }
 
-func (fake *Fake) EvalToNumberArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+func (fake *Fake) EvalToNumberArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
 	fake.evalToNumberMutex.RLock()
 	defer fake.evalToNumberMutex.RUnlock()
 	return fake.evalToNumberArgsForCall[i].scope, fake.evalToNumberArgsForCall[i].expression, fake.evalToNumberArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) EvalToNumberReturns(result1 float64, result2 error) {
+func (fake *Fake) EvalToNumberReturns(result1 *model.Value, result2 error) {
 	fake.EvalToNumberStub = nil
 	fake.evalToNumberReturns = struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToNumberReturnsOnCall(i int, result1 float64, result2 error) {
+func (fake *Fake) EvalToNumberReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.EvalToNumberStub = nil
 	if fake.evalToNumberReturnsOnCall == nil {
 		fake.evalToNumberReturnsOnCall = make(map[int]struct {
-			result1 float64
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.evalToNumberReturnsOnCall[i] = struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToObject(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (map[string]interface{}, error) {
+func (fake *Fake) EvalToObject(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.evalToObjectMutex.Lock()
 	ret, specificReturn := fake.evalToObjectReturnsOnCall[len(fake.evalToObjectArgsForCall)]
 	fake.evalToObjectArgsForCall = append(fake.evalToObjectArgsForCall, struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}{scope, expression, pkgHandle})
 	fake.recordInvocation("EvalToObject", []interface{}{scope, expression, pkgHandle})
@@ -272,40 +272,40 @@ func (fake *Fake) EvalToObjectCallCount() int {
 	return len(fake.evalToObjectArgsForCall)
 }
 
-func (fake *Fake) EvalToObjectArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+func (fake *Fake) EvalToObjectArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
 	fake.evalToObjectMutex.RLock()
 	defer fake.evalToObjectMutex.RUnlock()
 	return fake.evalToObjectArgsForCall[i].scope, fake.evalToObjectArgsForCall[i].expression, fake.evalToObjectArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) EvalToObjectReturns(result1 map[string]interface{}, result2 error) {
+func (fake *Fake) EvalToObjectReturns(result1 *model.Value, result2 error) {
 	fake.EvalToObjectStub = nil
 	fake.evalToObjectReturns = struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToObjectReturnsOnCall(i int, result1 map[string]interface{}, result2 error) {
+func (fake *Fake) EvalToObjectReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.EvalToObjectStub = nil
 	if fake.evalToObjectReturnsOnCall == nil {
 		fake.evalToObjectReturnsOnCall = make(map[int]struct {
-			result1 map[string]interface{}
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.evalToObjectReturnsOnCall[i] = struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToString(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (string, error) {
+func (fake *Fake) EvalToString(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.evalToStringMutex.Lock()
 	ret, specificReturn := fake.evalToStringReturnsOnCall[len(fake.evalToStringArgsForCall)]
 	fake.evalToStringArgsForCall = append(fake.evalToStringArgsForCall, struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}{scope, expression, pkgHandle})
 	fake.recordInvocation("EvalToString", []interface{}{scope, expression, pkgHandle})
@@ -325,30 +325,30 @@ func (fake *Fake) EvalToStringCallCount() int {
 	return len(fake.evalToStringArgsForCall)
 }
 
-func (fake *Fake) EvalToStringArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+func (fake *Fake) EvalToStringArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
 	fake.evalToStringMutex.RLock()
 	defer fake.evalToStringMutex.RUnlock()
 	return fake.evalToStringArgsForCall[i].scope, fake.evalToStringArgsForCall[i].expression, fake.evalToStringArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) EvalToStringReturns(result1 string, result2 error) {
+func (fake *Fake) EvalToStringReturns(result1 *model.Value, result2 error) {
 	fake.EvalToStringStub = nil
 	fake.evalToStringReturns = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToStringReturnsOnCall(i int, result1 string, result2 error) {
+func (fake *Fake) EvalToStringReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.EvalToStringStub = nil
 	if fake.evalToStringReturnsOnCall == nil {
 		fake.evalToStringReturnsOnCall = make(map[int]struct {
-			result1 string
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.evalToStringReturnsOnCall[i] = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }

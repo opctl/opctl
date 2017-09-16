@@ -12,7 +12,7 @@ type coerceToObject interface {
 	// CoerceToObject attempts to coerce value to an object
 	CoerceToObject(
 		value *model.Value,
-	) (map[string]interface{}, error)
+	) (*model.Value, error)
 }
 
 func newCoerceToObject() coerceToObject {
@@ -31,7 +31,7 @@ type _coerceToObject struct {
 
 func (c _coerceToObject) CoerceToObject(
 	value *model.Value,
-) (map[string]interface{}, error) {
+) (*model.Value, error) {
 	switch {
 	case nil == value:
 		return nil, nil
@@ -47,18 +47,18 @@ func (c _coerceToObject) CoerceToObject(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
-		return valueMap, nil
+		return &model.Value{Object: valueMap}, nil
 	case nil != value.Number:
 		return nil, fmt.Errorf("unable to coerce number '%v' to object; incompatible types", *value.Number)
 	case nil != value.Object:
-		return value.Object, nil
+		return value, nil
 	case nil != value.String:
 		valueMap := map[string]interface{}{}
 		err := c.json.Unmarshal([]byte(*value.String), &valueMap)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to object; error was %v", err.Error())
 		}
-		return valueMap, nil
+		return &model.Value{Object: valueMap}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to object", value)
 	}

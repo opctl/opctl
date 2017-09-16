@@ -35,7 +35,7 @@ type _validator struct {
 
 // Validate validates a value against a parameter
 // note: param defaults aren't considered
-func (this _validator) Validate(
+func (vdt _validator) Validate(
 	value *model.Value,
 	param *model.Param,
 ) (errs []error) {
@@ -45,17 +45,17 @@ func (this _validator) Validate(
 
 	switch {
 	case nil != param.Dir:
-		errs = this.validateDir(value)
+		errs = vdt.validateDir(value)
 	case nil != param.File:
-		errs = this.validateFile(value)
+		errs = vdt.validateFile(value)
 	case nil != param.String:
-		errs = this.validateString(value, param.String.Constraints)
+		errs = vdt.validateString(value, param.String.Constraints)
 	case nil != param.Number:
-		errs = this.validateNumber(value, param.Number.Constraints)
+		errs = vdt.validateNumber(value, param.Number.Constraints)
 	case nil != param.Object:
-		errs = this.validateObject(value, param.Object.Constraints)
+		errs = vdt.validateObject(value, param.Object.Constraints)
 	case nil != param.Socket:
-		errs = this.validateSocket(value)
+		errs = vdt.validateSocket(value)
 	}
 	return
 }

@@ -10,9 +10,9 @@ type evalToString interface {
 	// EvalToString evaluates an expression to a string value
 	EvalToString(
 		scope map[string]*model.Value,
-		expression string,
+		expression interface{},
 		pkgHandle model.PkgHandle,
-	) (string, error)
+	) (*model.Value, error)
 }
 
 func newEvalToString() evalToString {
@@ -29,17 +29,21 @@ type _evalToString struct {
 
 func (itp _evalToString) EvalToString(
 	scope map[string]*model.Value,
-	expression string,
+	expression interface{},
 	pkgHandle model.PkgHandle,
-) (string, error) {
-	value, err := itp.interpolater.Interpolate(
-		expression,
-		scope,
-		pkgHandle,
-	)
+) (*model.Value, error) {
+	var value *model.Value
 
-	if nil != err {
-		return "", err
+	switch expression := expression.(type) {
+	case string:
+		var err error
+		if value, err = itp.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		); nil != err {
+			return nil, err
+		}
 	}
 
 	return itp.data.CoerceToString(value)

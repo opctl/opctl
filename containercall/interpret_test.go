@@ -79,6 +79,7 @@ var _ = Context("ContainerCall", func() {
 				}
 
 				fakeExpression := new(expression.Fake)
+				fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _ContainerCall{
 					dirs:       new(dirs.Fake),
@@ -124,8 +125,8 @@ var _ = Context("ContainerCall", func() {
 				}
 
 				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToStringReturnsOnCall(0, expectedCmd[0], nil)
-				fakeExpression.EvalToStringReturnsOnCall(1, expectedCmd[1], nil)
+				fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedCmd[0]}, nil)
+				fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedCmd[1]}, nil)
 
 				objectUnderTest := _ContainerCall{
 					dirs:       new(dirs.Fake),

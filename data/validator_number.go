@@ -10,11 +10,11 @@ import (
 )
 
 // validateNumber validates a value against a number parameter
-func (this _validator) validateNumber(
+func (vdt _validator) validateNumber(
 	value *model.Value,
 	constraints *model.NumberConstraints,
 ) []error {
-	valueAsNumber, err := this.coercer.CoerceToNumber(value)
+	valueAsNumber, err := vdt.coercer.CoerceToNumber(value)
 	if nil != err {
 		return []error{err}
 	}
@@ -32,7 +32,7 @@ func (this _validator) validateNumber(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(valueAsNumber)
+		valueJsonBytes, err := json.Marshal(valueAsNumber.Number)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

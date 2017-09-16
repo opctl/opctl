@@ -196,7 +196,7 @@ var _ = Context("OpCall", func() {
 					/* arrange */
 					fakeExpression := new(expression.Fake)
 					interpretError := errors.New("dummyError")
-					fakeExpression.EvalToStringReturns("", interpretError)
+					fakeExpression.EvalToStringReturns(nil, interpretError)
 
 					objectUnderTest := _OpCall{
 						expression: fakeExpression,
@@ -226,8 +226,8 @@ var _ = Context("OpCall", func() {
 
 					fakeExpression := new(expression.Fake)
 					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
-					fakeExpression.EvalToStringReturnsOnCall(0, expectedPullCreds.Username, nil)
-					fakeExpression.EvalToStringReturnsOnCall(1, expectedPullCreds.Password, nil)
+					fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
+					fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
 
 					fakePkg := new(pkg.Fake)
 					// error to trigger immediate return

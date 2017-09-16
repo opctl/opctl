@@ -10,7 +10,7 @@ import (
 	"io"
 )
 
-func (this _containerProvider) pullImage(
+func (ctp _containerProvider) pullImage(
 	dcgContainerImage *model.DCGContainerCallImage,
 	containerId string,
 	rootOpId string,
@@ -31,7 +31,7 @@ func (this _containerProvider) pullImage(
 		}
 	}
 
-	imagePullResp, err := this.dockerClient.ImagePull(
+	imagePullResp, err := ctp.dockerClient.ImagePull(
 		context.Background(),
 		dcgContainerImage.Ref,
 		imagePullOptions,

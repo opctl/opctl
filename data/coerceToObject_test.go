@@ -19,10 +19,10 @@ var _ = Context("coerceToObject", func() {
 				objectUnderTest := _coerceToObject{}
 
 				/* act */
-				actualObject, actualErr := objectUnderTest.CoerceToObject(nil)
+				actualValue, actualErr := objectUnderTest.CoerceToObject(nil)
 
 				/* assert */
-				Expect(actualObject).To(BeNil())
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -37,10 +37,10 @@ var _ = Context("coerceToObject", func() {
 				objectUnderTest := _coerceToObject{}
 
 				/* act */
-				actualObject, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
 
 				/* assert */
-				Expect(actualObject).To(BeNil())
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", providedDir)))
 			})
 		})
@@ -80,11 +80,12 @@ var _ = Context("coerceToObject", func() {
 					}
 
 					/* act */
-					_, actualErr := fileUnderTest.CoerceToObject(
+					actualValue, actualErr := fileUnderTest.CoerceToObject(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
+					Expect(actualValue).To(BeNil())
 					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", marshalErr.Error())))
 				})
 			})
@@ -130,11 +131,12 @@ var _ = Context("coerceToObject", func() {
 						}
 
 						/* act */
-						_, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := objectUnderTest.CoerceToObject(
 							&model.Value{File: new(string)},
 						)
 
 						/* assert */
+						Expect(actualValue).To(BeNil())
 						Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", unmarshalError.Error())))
 					})
 				})
@@ -145,9 +147,7 @@ var _ = Context("coerceToObject", func() {
 
 						mapKey := "dummyMapKey"
 						mapValue := "dummyMapValue"
-						expectedObject := map[string]interface{}{
-							mapKey: mapValue,
-						}
+						expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
 
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().SetMapIndex(
@@ -163,12 +163,12 @@ var _ = Context("coerceToObject", func() {
 						}
 
 						/* act */
-						actualObject, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := objectUnderTest.CoerceToObject(
 							&model.Value{File: new(string)},
 						)
 
 						/* assert */
-						Expect(actualObject).To(Equal(expectedObject))
+						Expect(*actualValue).To(Equal(expectedValue))
 						Expect(actualErr).To(BeNil())
 					})
 				})
@@ -185,30 +185,29 @@ var _ = Context("coerceToObject", func() {
 				objectUnderTest := _coerceToObject{}
 
 				/* act */
-				actualObject, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
 
 				/* assert */
-				Expect(actualObject).To(BeNil())
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to object; incompatible types", providedNumber)))
 			})
 		})
 		Context("Value.Object isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedObject := map[string]interface{}{
-					"dummyName": "dummyValue",
-				}
 				providedValue := &model.Value{
-					Object: providedObject,
+					Object: map[string]interface{}{
+						"dummyName": "dummyValue",
+					},
 				}
 
 				objectUnderTest := _coerceToObject{}
 
 				/* act */
-				actualObject, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
 
 				/* assert */
-				Expect(actualObject).To(Equal(providedObject))
+				Expect(actualValue).To(Equal(providedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -251,11 +250,12 @@ var _ = Context("coerceToObject", func() {
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := objectUnderTest.CoerceToObject(
 						&model.Value{String: new(string)},
 					)
 
 					/* assert */
+					Expect(actualValue).To(BeNil())
 					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to object; error was %v", unmarshalError.Error())))
 				})
 			})
@@ -266,9 +266,7 @@ var _ = Context("coerceToObject", func() {
 
 					mapKey := "dummyMapKey"
 					mapValue := "dummyMapValue"
-					expectedObject := map[string]interface{}{
-						mapKey: mapValue,
-					}
+					expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
 
 					fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 						reflect.ValueOf(v).Elem().SetMapIndex(
@@ -283,12 +281,12 @@ var _ = Context("coerceToObject", func() {
 					}
 
 					/* act */
-					actualObject, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := objectUnderTest.CoerceToObject(
 						&model.Value{String: new(string)},
 					)
 
 					/* assert */
-					Expect(actualObject).To(Equal(expectedObject))
+					Expect(*actualValue).To(Equal(expectedValue))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -297,15 +295,14 @@ var _ = Context("coerceToObject", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{}
-				var expectedObject map[string]interface{}
 
 				objectUnderTest := _coerceToObject{}
 
 				/* act */
-				actualObject, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
 
 				/* assert */
-				Expect(actualObject).To(Equal(expectedObject))
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to object", providedValue)))
 			})
 		})

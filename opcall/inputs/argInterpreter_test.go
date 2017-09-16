@@ -206,10 +206,8 @@ var _ = Context("argInterpreter", func() {
 				It("should call validate w/ expected args", func() {
 					/* arrange */
 					fakeExpression := new(expression.Fake)
-					interpretedValue := float64(2.1)
-					fakeExpression.EvalToNumberReturns(interpretedValue, nil)
-
-					expectedResult := &model.Value{Number: &interpretedValue}
+					interpretedValue := model.Value{Number: new(float64)}
+					fakeExpression.EvalToNumberReturns(&interpretedValue, nil)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
@@ -226,7 +224,7 @@ var _ = Context("argInterpreter", func() {
 					)
 
 					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+					Expect(*actualResult).To(Equal(interpretedValue))
 					Expect(actualError).To(BeNil())
 				})
 			})
@@ -236,10 +234,8 @@ var _ = Context("argInterpreter", func() {
 					providedParam := &model.Param{Object: &model.ObjectParam{}}
 
 					fakeExpression := new(expression.Fake)
-					interpretedValue := map[string]interface{}{"dummyName": "dummyValue"}
-					fakeExpression.EvalToObjectReturns(interpretedValue, nil)
-
-					expectedResult := &model.Value{Object: interpretedValue}
+					interpretedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
+					fakeExpression.EvalToObjectReturns(&interpretedValue, nil)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
@@ -256,7 +252,7 @@ var _ = Context("argInterpreter", func() {
 					)
 
 					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+					Expect(*actualResult).To(Equal(interpretedValue))
 					Expect(actualError).To(BeNil())
 				})
 			})
@@ -266,10 +262,8 @@ var _ = Context("argInterpreter", func() {
 					providedParam := &model.Param{String: &model.StringParam{}}
 
 					fakeExpression := new(expression.Fake)
-					interpretedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpretedValue, nil)
-
-					expectedResult := &model.Value{String: &interpretedValue}
+					interpretedValue := model.Value{String: new(string)}
+					fakeExpression.EvalToStringReturns(&interpretedValue, nil)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
@@ -286,7 +280,7 @@ var _ = Context("argInterpreter", func() {
 					)
 
 					/* assert */
-					Expect(actualResult).To(Equal(expectedResult))
+					Expect(*actualResult).To(Equal(interpretedValue))
 					Expect(actualError).To(BeNil())
 				})
 			})
@@ -297,7 +291,8 @@ var _ = Context("argInterpreter", func() {
 					fakeExpression := new(expression.Fake)
 
 					interpolatedValue := "dummyValue"
-					fakeExpression.EvalToStringReturns(interpolatedValue, nil)
+					interpretedValue := model.Value{String: &interpolatedValue}
+					fakeExpression.EvalToStringReturns(&interpretedValue, nil)
 
 					expectedError := fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
 

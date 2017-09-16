@@ -47,6 +47,8 @@ var _ = Context("EnvVars", func() {
 			providedPkgHandle := new(pkg.FakeHandle)
 
 			fakeExpression := new(expression.Fake)
+			fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
+
 			objectUnderTest := _EnvVars{
 				expression: fakeExpression,
 			}
@@ -78,7 +80,7 @@ var _ = Context("EnvVars", func() {
 				fakeExpression := new(expression.Fake)
 
 				interpretErr := errors.New("dummyError")
-				fakeExpression.EvalToStringReturns("", interpretErr)
+				fakeExpression.EvalToStringReturns(nil, interpretErr)
 
 				expectedErr := fmt.Errorf(
 					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
@@ -114,7 +116,7 @@ var _ = Context("EnvVars", func() {
 				fakeExpression := new(expression.Fake)
 
 				interpretedEnvVar := "dummyEnvVarValue"
-				fakeExpression.EvalToStringReturns(interpretedEnvVar, nil)
+				fakeExpression.EvalToStringReturns(&model.Value{String: &interpretedEnvVar}, nil)
 
 				expectedEnvVars := map[string]string{
 					envVarName: interpretedEnvVar,

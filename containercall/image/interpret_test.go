@@ -49,6 +49,7 @@ var _ = Context("Image", func() {
 				}
 
 				fakeExpression := new(expression.Fake)
+				fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _Image{
 					expression: fakeExpression,
@@ -94,13 +95,13 @@ var _ = Context("Image", func() {
 				fakeExpression := new(expression.Fake)
 
 				expectedImageRef := "expectedImageRef"
-				fakeExpression.EvalToStringReturnsOnCall(0, expectedImageRef, nil)
+				fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedImageRef}, nil)
 
 				expectedUsername := "expectedUsername"
-				fakeExpression.EvalToStringReturnsOnCall(1, expectedUsername, nil)
+				fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedUsername}, nil)
 
 				expectedPassword := "expectedPassword"
-				fakeExpression.EvalToStringReturnsOnCall(2, expectedPassword, nil)
+				fakeExpression.EvalToStringReturnsOnCall(2, &model.Value{String: &expectedPassword}, nil)
 
 				expectedImage := &model.DCGContainerCallImage{
 					Ref: expectedImageRef,

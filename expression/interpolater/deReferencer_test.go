@@ -67,7 +67,7 @@ var _ = Context("deReferencer", func() {
 
 				fakeData := new(data.Fake)
 				// err to trigger immediate return
-				fakeData.CoerceToStringReturns("", errors.New("dummyError"))
+				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _deReferencer{
 					data: fakeData,
@@ -93,7 +93,7 @@ var _ = Context("deReferencer", func() {
 					fakeData := new(data.Fake)
 
 					coerceError := errors.New("dummyError")
-					fakeData.CoerceToStringReturns("", coerceError)
+					fakeData.CoerceToStringReturns(nil, coerceError)
 
 					objectUnderTest := _deReferencer{
 						data: fakeData,
@@ -121,7 +121,7 @@ var _ = Context("deReferencer", func() {
 					fakeData := new(data.Fake)
 
 					coercedString := "dummyString"
-					fakeData.CoerceToStringReturns(coercedString, nil)
+					fakeData.CoerceToStringReturns(&model.Value{String: &coercedString}, nil)
 
 					objectUnderTest := _deReferencer{
 						data: fakeData,

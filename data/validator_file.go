@@ -7,14 +7,14 @@ import (
 )
 
 // validateFile validates a value against a file parameter
-func (this _validator) validateFile(
+func (vdt _validator) validateFile(
 	value *model.Value,
 ) []error {
 	if nil == value || nil == value.File {
 		return []error{errors.New("file required")}
 	}
 
-	fileInfo, err := this.os.Stat(*value.File)
+	fileInfo, err := vdt.os.Stat(*value.File)
 	if nil != err {
 		return []error{err}
 	} else if !fileInfo.Mode().IsRegular() {

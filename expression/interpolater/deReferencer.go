@@ -62,5 +62,5 @@ func (dr _deReferencer) DeReference(
 		return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
 	}
 
-	return valueAsString, true, nil
+	return *valueAsString.String, true, nil
 }

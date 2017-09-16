@@ -18,10 +18,10 @@ var _ = Context("coerceToNumber", func() {
 				objectUnderTest := _coerceToNumber{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(nil)
+				actualValue, actualErr := objectUnderTest.CoerceToNumber(nil)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(float64(0)))
+				Expect(*actualValue).To(Equal(model.Value{Number: new(float64)}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -36,10 +36,10 @@ var _ = Context("coerceToNumber", func() {
 				objectUnderTest := _coerceToNumber{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(float64(0)))
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(errors.New("unable to coerce dir to number; incompatible types")))
 			})
 		})
@@ -79,11 +79,12 @@ var _ = Context("coerceToNumber", func() {
 					}
 
 					/* act */
-					_, actualErr := fileUnderTest.CoerceToNumber(
+					actualValue, actualErr := fileUnderTest.CoerceToNumber(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
+					Expect(actualValue).To(BeNil())
 					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to number; error was %v", marshalErr.Error())))
 				})
 			})
@@ -95,7 +96,7 @@ var _ = Context("coerceToNumber", func() {
 					marshaledBytes := []byte("2")
 					fakeIOUtil.ReadFileReturns(marshaledBytes, nil)
 
-					expectedNumber, err := strconv.ParseFloat(string(marshaledBytes), 64)
+					parsedNumber, err := strconv.ParseFloat(string(marshaledBytes), 64)
 					if nil != err {
 						panic(err)
 					}
@@ -105,12 +106,12 @@ var _ = Context("coerceToNumber", func() {
 					}
 
 					/* act */
-					actualNumber, actualErr := fileUnderTest.CoerceToNumber(
+					actualValue, actualErr := fileUnderTest.CoerceToNumber(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
-					Expect(actualNumber).To(Equal(expectedNumber))
+					Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -126,10 +127,10 @@ var _ = Context("coerceToNumber", func() {
 				objectUnderTest := _coerceToNumber{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(providedNumber))
+				Expect(actualValue).To(Equal(providedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -143,10 +144,10 @@ var _ = Context("coerceToNumber", func() {
 				objectUnderTest := _coerceToNumber{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(float64(0)))
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(errors.New("unable to coerce object to number; incompatible types")))
 			})
 		})
@@ -161,10 +162,10 @@ var _ = Context("coerceToNumber", func() {
 				objectUnderTest := _coerceToNumber{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(providedNumber))
+				Expect(actualValue).To(Equal(providedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -179,7 +180,7 @@ var _ = Context("coerceToNumber", func() {
 				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualNumber).To(Equal(float64(0)))
+				Expect(actualNumber).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to number", providedValue)))
 			})
 		})

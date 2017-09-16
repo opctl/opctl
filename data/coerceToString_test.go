@@ -19,10 +19,10 @@ var _ = Context("coerceToString", func() {
 				objectUnderTest := _coerceToString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.CoerceToString(nil)
+				actualValue, actualErr := objectUnderTest.CoerceToString(nil)
 
 				/* assert */
-				Expect(actualString).To(Equal(""))
+				Expect(*actualValue).To(Equal(model.Value{String: new(string)}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -37,10 +37,10 @@ var _ = Context("coerceToString", func() {
 				objectUnderTest := _coerceToString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
 
 				/* assert */
-				Expect(actualString).To(Equal(""))
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", providedDir)))
 			})
 		})
@@ -80,11 +80,12 @@ var _ = Context("coerceToString", func() {
 					}
 
 					/* act */
-					_, actualErr := fileUnderTest.CoerceToString(
+					actualValue, actualErr := fileUnderTest.CoerceToString(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
+					Expect(actualValue).To(BeNil())
 					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to string; error was %v", marshalErr.Error())))
 				})
 			})
@@ -96,17 +97,21 @@ var _ = Context("coerceToString", func() {
 					marshaledBytes := []byte{2, 3, 4}
 					fakeIOUtil.ReadFileReturns(marshaledBytes, nil)
 
+					marshaledString := string(marshaledBytes)
+
+					expectedValue := model.Value{String: &marshaledString}
+
 					fileUnderTest := _coerceToString{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualString, actualErr := fileUnderTest.CoerceToString(
+					actualValue, actualErr := fileUnderTest.CoerceToString(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
-					Expect(actualString).To(Equal(string(marshaledBytes)))
+					Expect(*actualValue).To(Equal(expectedValue))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -119,13 +124,16 @@ var _ = Context("coerceToString", func() {
 					Number: &providedNumber,
 				}
 
+				numberString := strconv.FormatFloat(providedNumber, 'f', -1, 64)
+				expectedValue := model.Value{String: &numberString}
+
 				objectUnderTest := _coerceToString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
 
 				/* assert */
-				Expect(actualString).To(Equal(strconv.FormatFloat(providedNumber, 'f', -1, 64)))
+				Expect(*actualValue).To(Equal(expectedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -168,11 +176,12 @@ var _ = Context("coerceToString", func() {
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToString(
+					actualValue, actualErr := objectUnderTest.CoerceToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
 					/* assert */
+					Expect(actualValue).To(BeNil())
 					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce object to string; error was %v", marshalErr.Error())))
 				})
 			})
@@ -184,17 +193,20 @@ var _ = Context("coerceToString", func() {
 					marshaledBytes := []byte{2, 3, 4}
 					fakeJSON.MarshalReturns(marshaledBytes, nil)
 
+					marshaledString := string(marshaledBytes)
+					expectedValue := model.Value{String: &marshaledString}
+
 					objectUnderTest := _coerceToString{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualString, actualErr := objectUnderTest.CoerceToString(
+					actualValue, actualErr := objectUnderTest.CoerceToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
 					/* assert */
-					Expect(actualString).To(Equal(string(marshaledBytes)))
+					Expect(*actualValue).To(Equal(expectedValue))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -203,17 +215,17 @@ var _ = Context("coerceToString", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedString := "dummyValue"
-				providedValue := &model.Value{
+				providedValue := model.Value{
 					String: &providedString,
 				}
 
 				objectUnderTest := _coerceToString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToString(&providedValue)
 
 				/* assert */
-				Expect(actualString).To(Equal(providedString))
+				Expect(*actualValue).To(Equal(providedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -225,10 +237,10 @@ var _ = Context("coerceToString", func() {
 				objectUnderTest := _coerceToString{}
 
 				/* act */
-				actualString, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
 
 				/* assert */
-				Expect(actualString).To(Equal(""))
+				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to string", providedValue)))
 			})
 		})

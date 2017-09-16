@@ -6,10 +6,10 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (this _containerProvider) DeleteContainerIfExists(
+func (ctp _containerProvider) DeleteContainerIfExists(
 	containerId string,
 ) (err error) {
-	err = this.dockerClient.ContainerRemove(
+	err = ctp.dockerClient.ContainerRemove(
 		context.Background(),
 		containerId,
 		types.ContainerRemoveOptions{

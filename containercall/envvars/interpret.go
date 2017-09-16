@@ -33,7 +33,7 @@ func (ev _EnvVars) Interpret(
 			)
 		}
 
-		dcgContainerCallEnvVars[envVarName] = stringValue
+		dcgContainerCallEnvVars[envVarName] = *stringValue.String
 	}
 	return dcgContainerCallEnvVars, nil
 }

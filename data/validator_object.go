@@ -10,11 +10,11 @@ import (
 )
 
 // validateObject validates a value against an object parameter
-func (this _validator) validateObject(
+func (vdt _validator) validateObject(
 	value *model.Value,
 	constraints *model.ObjectConstraints,
 ) []error {
-	valueAsObject, err := this.coercer.CoerceToObject(value)
+	valueAsObject, err := vdt.coercer.CoerceToObject(value)
 	if nil != err {
 		return []error{err}
 	}
@@ -33,7 +33,7 @@ func (this _validator) validateObject(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(valueAsObject)
+		valueJsonBytes, err := json.Marshal(valueAsObject.Object)
 		if err != nil {
 			// handle syntax errors specially
 			return append(

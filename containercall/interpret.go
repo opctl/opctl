@@ -48,7 +48,7 @@ func (cc _ContainerCall) Interpret(
 		if nil != err {
 			return nil, err
 		}
-		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, cmdEntry)
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, *cmdEntry.String)
 	}
 
 	// interpret dirs

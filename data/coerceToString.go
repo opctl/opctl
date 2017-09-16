@@ -13,7 +13,7 @@ type coerceToString interface {
 	// CoerceToString attempts to coerce value to a string
 	CoerceToString(
 		value *model.Value,
-	) (string, error)
+	) (*model.Value, error)
 }
 
 func newCoerceToString() coerceToString {
@@ -32,29 +32,32 @@ type _coerceToString struct {
 
 func (c _coerceToString) CoerceToString(
 	value *model.Value,
-) (string, error) {
+) (*model.Value, error) {
 	switch {
 	case nil == value:
-		return "", nil
+		return &model.Value{String: new(string)}, nil
 	case nil != value.Dir:
-		return "", fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
+		return nil, fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
 	case nil != value.File:
 		fileBytes, err := c.ioUtil.ReadFile(*value.File)
 		if nil != err {
-			return "", fmt.Errorf("unable to coerce file to string; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce file to string; error was %v", err.Error())
 		}
-		return string(fileBytes), nil
+		fileString := string(fileBytes)
+		return &model.Value{String: &fileString}, nil
 	case nil != value.Number:
-		return strconv.FormatFloat(*value.Number, 'f', -1, 64), nil
+		numberString := strconv.FormatFloat(*value.Number, 'f', -1, 64)
+		return &model.Value{String: &numberString}, nil
 	case nil != value.Object:
-		valueBytes, err := c.json.Marshal(value.Object)
+		objectBytes, err := c.json.Marshal(value.Object)
 		if nil != err {
-			return "", fmt.Errorf("unable to coerce object to string; error was %v", err.Error())
+			return nil, fmt.Errorf("unable to coerce object to string; error was %v", err.Error())
 		}
-		return string(valueBytes), nil
+		objectString := string(objectBytes)
+		return &model.Value{String: &objectString}, nil
 	case nil != value.String:
-		return *value.String, nil
+		return value, nil
 	default:
-		return "", fmt.Errorf("unable to coerce '%+v' to string", value)
+		return nil, fmt.Errorf("unable to coerce '%+v' to string", value)
 	}
 }

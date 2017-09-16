@@ -8,11 +8,12 @@ import (
 
 type evalToNumber interface {
 	// EvalToNumber evaluates an expression to a number value
+	// expression must be a type supported by data.CoerceToNumber
 	EvalToNumber(
 		scope map[string]*model.Value,
-		expression string,
+		expression interface{},
 		pkgHandle model.PkgHandle,
-	) (float64, error)
+	) (*model.Value, error)
 }
 
 func newEvalToNumber() evalToNumber {
@@ -29,17 +30,21 @@ type _evalToNumber struct {
 
 func (itp _evalToNumber) EvalToNumber(
 	scope map[string]*model.Value,
-	expression string,
+	expression interface{},
 	pkgHandle model.PkgHandle,
-) (float64, error) {
-	value, err := itp.interpolater.Interpolate(
-		expression,
-		scope,
-		pkgHandle,
-	)
+) (*model.Value, error) {
+	var value *model.Value
 
-	if nil != err {
-		return 0, err
+	switch expression := expression.(type) {
+	case string:
+		var err error
+		if value, err = itp.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		); nil != err {
+			return nil, err
+		}
 	}
 
 	return itp.data.CoerceToNumber(value)

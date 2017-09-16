@@ -37,7 +37,6 @@ func (itp _evalToFile) EvalToFile(
 	pkgHandle model.PkgHandle,
 	scratchDir string,
 ) (*model.Value, error) {
-
 	var value *model.Value
 	var err error
 

@@ -8,11 +8,12 @@ import (
 
 type evalToObject interface {
 	// EvalToObject evaluates an expression to a object value
+	// expression must be a type supported by data.CoerceToObject
 	EvalToObject(
 		scope map[string]*model.Value,
-		expression string,
+		expression interface{},
 		pkgHandle model.PkgHandle,
-	) (map[string]interface{}, error)
+	) (*model.Value, error)
 }
 
 func newEvalToObject() evalToObject {
@@ -29,17 +30,21 @@ type _evalToObject struct {
 
 func (itp _evalToObject) EvalToObject(
 	scope map[string]*model.Value,
-	expression string,
+	expression interface{},
 	pkgHandle model.PkgHandle,
-) (map[string]interface{}, error) {
-	value, err := itp.interpolater.Interpolate(
-		expression,
-		scope,
-		pkgHandle,
-	)
+) (*model.Value, error) {
+	var value *model.Value
 
-	if nil != err {
-		return nil, err
+	switch expression := expression.(type) {
+	case string:
+		var err error
+		if value, err = itp.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		); nil != err {
+			return nil, err
+		}
 	}
 
 	return itp.data.CoerceToObject(value)
