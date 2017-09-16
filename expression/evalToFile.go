@@ -55,7 +55,7 @@ func (itp _evalToFile) EvalToFile(
 			return nil, err
 		}
 	default:
-		return nil, fmt.Errorf("unable to evaluate %#v to file; unsupported type", expression)
+		return nil, fmt.Errorf("unable to evaluate %+v to file; unsupported type", expression)
 	}
 
 	return itp.data.CoerceToFile(value, scratchDir)

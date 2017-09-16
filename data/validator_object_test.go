@@ -23,7 +23,7 @@ var _ = Context("Validate", func() {
 				}
 
 				expectedErrors := []error{
-					fmt.Errorf("unable to coerce '%#v' to object", providedValue),
+					fmt.Errorf("unable to coerce '%+v' to object", providedValue),
 				}
 
 				objectUnderTest := newValidator()

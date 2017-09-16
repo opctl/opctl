@@ -57,7 +57,7 @@ func (ai _argInterpreter) Interpret(
 	case nil != param.File:
 		fileValue, err := ai.expression.EvalToFile(scope, value, parentPkgHandle, opScratchDir)
 		if nil != err {
-			return nil, fmt.Errorf("unable to bind '%v' to '%#v'; error was: '%v'", name, value, err.Error())
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, value, err.Error())
 		}
 		return fileValue, nil
 	}

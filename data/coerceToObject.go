@@ -60,6 +60,6 @@ func (c _coerceToObject) CoerceToObject(
 		}
 		return valueMap, nil
 	default:
-		return nil, fmt.Errorf("unable to coerce '%#v' to object", value)
+		return nil, fmt.Errorf("unable to coerce '%+v' to object", value)
 	}
 }

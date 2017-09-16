@@ -227,7 +227,7 @@ var _ = Context("EvalToFile", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to evaluate %#v to file; unsupported type", providedExpression)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to evaluate %+v to file; unsupported type", providedExpression)))
 		})
 	})
 })

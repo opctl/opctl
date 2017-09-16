@@ -229,7 +229,7 @@ var _ = Context("coerceToString", func() {
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to string", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to string", providedValue)))
 			})
 		})
 	})

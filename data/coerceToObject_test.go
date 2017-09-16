@@ -306,7 +306,7 @@ var _ = Context("coerceToObject", func() {
 
 				/* assert */
 				Expect(actualObject).To(Equal(expectedObject))
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to object", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to object", providedValue)))
 			})
 		})
 	})

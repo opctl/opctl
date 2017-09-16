@@ -180,7 +180,7 @@ var _ = Context("coerceToNumber", func() {
 
 				/* assert */
 				Expect(actualNumber).To(Equal(float64(0)))
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to number", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to number", providedValue)))
 			})
 		})
 	})

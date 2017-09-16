@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
+	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -47,10 +48,18 @@ var _ = Context("coerceToFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					var providedValue *model.Value
+
 					fakeIOUtil := new(iioutil.Fake)
 
 					writeFileErr := errors.New("dummyError")
 					fakeIOUtil.WriteFileReturns(writeFileErr)
+
+					expectedErr := fmt.Errorf(
+						"unable to coerce '%+v' to file; error was %v",
+						providedValue,
+						writeFileErr.Error(),
+					)
 
 					objectUnderTest := _coerceToFile{
 						ioUtil:       fakeIOUtil,
@@ -59,12 +68,12 @@ var _ = Context("coerceToFile", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.CoerceToFile(
-						nil,
+						providedValue,
 						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce nil to file; error was %v", writeFileErr.Error())))
+					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
 			Context("ioutil.WriteFile doesn't err", func() {
@@ -173,10 +182,20 @@ var _ = Context("coerceToFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					providedValue := &model.Value{
+						Number: new(float64),
+					}
+
 					fakeIOUtil := new(iioutil.Fake)
 
 					writeFileErr := errors.New("dummyError")
 					fakeIOUtil.WriteFileReturns(writeFileErr)
+
+					expectedErr := fmt.Errorf(
+						"unable to coerce '%+v' to file; error was %v",
+						providedValue,
+						writeFileErr.Error(),
+					)
 
 					objectUnderTest := _coerceToFile{
 						ioUtil:       fakeIOUtil,
@@ -185,14 +204,12 @@ var _ = Context("coerceToFile", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.CoerceToFile(
-						&model.Value{
-							Number: new(float64),
-						},
+						providedValue,
 						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number to file; error was %v", writeFileErr.Error())))
+					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
 			Context("ioutil.WriteFile doesn't err", func() {
@@ -316,10 +333,18 @@ var _ = Context("coerceToFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
+						providedValue := &model.Value{Object: map[string]interface{}{"": ""}}
+
 						fakeIOUtil := new(iioutil.Fake)
 
 						writeFileErr := errors.New("dummyError")
 						fakeIOUtil.WriteFileReturns(writeFileErr)
+
+						expectedErr := fmt.Errorf(
+							"unable to coerce '%+v' to file; error was %v",
+							providedValue,
+							writeFileErr.Error(),
+						)
 
 						objectUnderTest := _coerceToFile{
 							json:         new(ijson.Fake),
@@ -329,12 +354,12 @@ var _ = Context("coerceToFile", func() {
 
 						/* act */
 						_, actualErr := objectUnderTest.CoerceToFile(
-							&model.Value{Object: map[string]interface{}{"": ""}},
+							providedValue,
 							"dummyScratchDir",
 						)
 
 						/* assert */
-						Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce object to file; error was %v", writeFileErr.Error())))
+						Expect(actualErr).To(Equal(expectedErr))
 					})
 				})
 				Context("ioutil.WriteFile doesn't err", func() {
@@ -407,10 +432,20 @@ var _ = Context("coerceToFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					providedValue := &model.Value{
+						String: new(string),
+					}
+
 					fakeIOUtil := new(iioutil.Fake)
 
 					writeFileErr := errors.New("dummyError")
 					fakeIOUtil.WriteFileReturns(writeFileErr)
+
+					expectedErr := fmt.Errorf(
+						"unable to coerce '%+v' to file; error was %v",
+						providedValue,
+						writeFileErr.Error(),
+					)
 
 					objectUnderTest := _coerceToFile{
 						ioUtil:       fakeIOUtil,
@@ -419,14 +454,12 @@ var _ = Context("coerceToFile", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.CoerceToFile(
-						&model.Value{
-							String: new(string),
-						},
+						providedValue,
 						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to file; error was %v", writeFileErr.Error())))
+					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
 			Context("ioutil.WriteFile doesn't err", func() {
@@ -474,7 +507,187 @@ var _ = Context("coerceToFile", func() {
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%#v' to file", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to file", providedValue)))
+			})
+		})
+		Context("scratchDir doesn't exist", func() {
+			It("should call os.MkdirAll w/ expected args", func() {
+				/* arrange */
+				providedValue := &model.Value{
+					String: new(string),
+				}
+				providedScratchDir := "dummyScratchDir"
+
+				fakeIOUtil := new(iioutil.Fake)
+				fakeIOUtil.WriteFileReturns(os.ErrNotExist)
+
+				fakeOS := new(ios.Fake)
+				fakeOS.MkdirAllReturns(errors.New("dummyError"))
+
+				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString.ConstructReturns("dummyUniqueString")
+
+				objectUnderTest := _coerceToFile{
+					ioUtil:       fakeIOUtil,
+					os:           fakeOS,
+					uniqueString: fakeUniqueString,
+				}
+
+				/* act */
+				objectUnderTest.CoerceToFile(
+					providedValue,
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				actualPath,
+					actualPerm := fakeOS.MkdirAllArgsForCall(0)
+
+				Expect(actualPath).To(Equal(filepath.Join(providedScratchDir)))
+				Expect(actualPerm).To(Equal(os.FileMode(0777)))
+			})
+			Context("os.MkdirAll errs", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedValue := &model.Value{
+						String: new(string),
+					}
+
+					fakeIOUtil := new(iioutil.Fake)
+					fakeIOUtil.WriteFileReturns(os.ErrNotExist)
+
+					fakeOS := new(ios.Fake)
+					mkdirAllError := errors.New("dummyError")
+					fakeOS.MkdirAllReturns(mkdirAllError)
+
+					expectedErr := fmt.Errorf(
+						"unable to coerce '%+v' to file; error was %v",
+						providedValue,
+						mkdirAllError.Error(),
+					)
+
+					objectUnderTest := _coerceToFile{
+						ioUtil:       fakeIOUtil,
+						os:           fakeOS,
+						uniqueString: new(uniquestring.Fake),
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.CoerceToFile(
+						providedValue,
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
+			Context("os.MkdirAll doesn't err", func() {
+				It("should call ioutil.WriteFile w/ expected args", func() {
+					/* arrange */
+					providedScratchDir := "dummyScratchDir"
+
+					providedString := "dummyString"
+					providedValue := &model.Value{
+						String: &providedString,
+					}
+
+					uniqueString := "dummyUniqueString"
+
+					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString.ConstructReturns(uniqueString)
+
+					fakeIOUtil := new(iioutil.Fake)
+					fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
+
+					objectUnderTest := _coerceToFile{
+						uniqueString: fakeUniqueString,
+						os:           new(ios.Fake),
+						ioUtil:       fakeIOUtil,
+					}
+
+					/* act */
+					objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+
+					/* assert */
+					actualPath,
+						actualData,
+						actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
+
+					Expect(fakeIOUtil.WriteFileCallCount()).To(Equal(2))
+					Expect(actualPath).To(Equal(filepath.Join(providedScratchDir, uniqueString)))
+					Expect(actualData).To(Equal([]byte(providedString)))
+					Expect(actualPerms).To(Equal(os.FileMode(0666)))
+				})
+				Context("ioutil.WriteFile errs", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						providedValue := &model.Value{
+							String: new(string),
+						}
+
+						fakeIOUtil := new(iioutil.Fake)
+
+						fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
+						writeFileErr := errors.New("dummyError")
+						fakeIOUtil.WriteFileReturnsOnCall(1, writeFileErr)
+
+						expectedErr := fmt.Errorf(
+							"unable to coerce '%+v' to file; error was %v",
+							providedValue,
+							writeFileErr.Error(),
+						)
+
+						objectUnderTest := _coerceToFile{
+							ioUtil:       fakeIOUtil,
+							os:           new(ios.Fake),
+							uniqueString: new(uniquestring.Fake),
+						}
+
+						/* act */
+						_, actualErr := objectUnderTest.CoerceToFile(
+							providedValue,
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(actualErr).To(Equal(expectedErr))
+					})
+				})
+				Context("ioutil.WriteFile doesn't err", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						providedScratchDir := "dummyScratchDir"
+						uniqueString := "dummyUniqueString"
+
+						fakeIOUtil := new(iioutil.Fake)
+						fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
+
+						fakeUniqueString := new(uniquestring.Fake)
+						fakeUniqueString.ConstructReturns(uniqueString)
+
+						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
+						expectedValue := model.Value{File: &expectedValuePath}
+
+						objectUnderTest := _coerceToFile{
+							uniqueString: fakeUniqueString,
+							os:           new(ios.Fake),
+							ioUtil:       fakeIOUtil,
+						}
+
+						/* act */
+						actualValue, actualErr := objectUnderTest.CoerceToFile(
+							&model.Value{
+								String: new(string),
+							},
+							providedScratchDir,
+						)
+
+						/* assert */
+						Expect(*actualValue).To(Equal(expectedValue))
+						Expect(actualErr).To(BeNil())
+					})
+				})
 			})
 		})
 	})
