@@ -6,10 +6,7 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
-	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 type argInterpreter interface {
@@ -72,54 +69,39 @@ func (ai _argInterpreter) Interpret(
 	if stringValue, ok := value.(string); ok {
 
 		if dcgValue, ok := scope[stringValue]; ok {
-			// deprecated explicit arg
+			// deprecated explicit ref
 			return dcgValue, nil
-		} else if dcgValue, ok := scope[strings.TrimSuffix(strings.TrimPrefix(stringValue, "$("), ")")]; ok {
-			// explicit arg
-			return dcgValue, nil
-		} else {
-			switch {
-			// interpolated arg
-			case nil != param.String:
-				stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-				}
-				return &model.Value{String: &stringValue}, nil
-			case nil != param.Dir:
-				interpolatedVal, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-				}
-				return &model.Value{Dir: ai.rootPath(interpolatedVal)}, nil
-			case nil != param.Number:
-				numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-				}
-				return &model.Value{Number: &numberValue}, nil
-			case nil != param.File:
-				fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
-				if nil != err {
-					return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-				}
-				return fileValue, nil
-			case nil != param.Socket:
-				return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
+		}
+
+		switch {
+		case nil != param.String:
+			stringValue, err := ai.expression.EvalToString(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
+			return &model.Value{String: &stringValue}, nil
+		case nil != param.Dir:
+			dirValue, err := ai.expression.EvalToDir(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return dirValue, nil
+		case nil != param.Number:
+			numberValue, err := ai.expression.EvalToNumber(scope, stringValue, parentPkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return &model.Value{Number: &numberValue}, nil
+		case nil != param.File:
+			fileValue, err := ai.expression.EvalToFile(scope, stringValue, parentPkgHandle, opScratchDir)
+			if nil != err {
+				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
+			}
+			return fileValue, nil
+		case nil != param.Socket:
+			return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 		}
 	}
 
 	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, value)
-}
-
-// rootPath ensures paths are rooted (interpreted as having no parent) so parent paths of input files/dirs aren't
-// accessible (which would break encapsulation)
-func (ai _argInterpreter) rootPath(
-	path string,
-) *string {
-	path = strings.Replace(path, "../", string(os.PathSeparator), -1)
-	path = strings.Replace(path, "..\\", string(os.PathSeparator), -1)
-	path = filepath.Clean(path)
-	return &path
 }
