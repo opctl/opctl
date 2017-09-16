@@ -11,6 +11,25 @@ import (
 )
 
 var _ = Context("EvalToNumber", func() {
+	Context("expression is float64", func() {
+		It("should return expected result", func() {
+			/* arrange */
+			providedExpression := 3.3
+
+			objectUnderTest := _evalToNumber{}
+
+			/* act */
+			actualNumber, actualErr := objectUnderTest.EvalToNumber(
+				map[string]*model.Value{},
+				providedExpression,
+				new(pkg.FakeHandle),
+			)
+
+			/* assert */
+			Expect(*actualNumber).To(Equal(model.Value{Number: &providedExpression}))
+			Expect(actualErr).To(BeNil())
+		})
+	})
 	Context("expression is string", func() {
 		It("should call interpolater.Interpolate w/ expected args", func() {
 			/* arrange */
@@ -66,35 +85,37 @@ var _ = Context("EvalToNumber", func() {
 
 			})
 		})
-	})
-	It("should call data.CoerceToNumber w/ expected args & return result", func() {
-		/* arrange */
-		fakeInterpolater := new(interpolater.Fake)
+		Context("interpolater.Interpolate doesn't err", func() {
+			It("should call data.CoerceToNumber w/ expected args & return result", func() {
+				/* arrange */
+				fakeInterpolater := new(interpolater.Fake)
 
-		interpolatedValue := model.Value{String: new(string)}
-		fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
+				interpolatedValue := model.Value{String: new(string)}
+				fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
 
-		fakeData := new(data.Fake)
+				fakeData := new(data.Fake)
 
-		coercedValue := model.Value{Number: new(float64)}
-		fakeData.CoerceToNumberReturns(&coercedValue, nil)
+				coercedValue := model.Value{Number: new(float64)}
+				fakeData.CoerceToNumberReturns(&coercedValue, nil)
 
-		objectUnderTest := _evalToNumber{
-			data:         fakeData,
-			interpolater: fakeInterpolater,
-		}
+				objectUnderTest := _evalToNumber{
+					data:         fakeData,
+					interpolater: fakeInterpolater,
+				}
 
-		/* act */
-		actualNumber, actualErr := objectUnderTest.EvalToNumber(
-			map[string]*model.Value{},
-			"dummyExpression",
-			new(pkg.FakeHandle),
-		)
+				/* act */
+				actualNumber, actualErr := objectUnderTest.EvalToNumber(
+					map[string]*model.Value{},
+					"dummyExpression",
+					new(pkg.FakeHandle),
+				)
 
-		/* assert */
-		Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(interpolatedValue))
+				/* assert */
+				Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(interpolatedValue))
 
-		Expect(*actualNumber).To(Equal(coercedValue))
-		Expect(actualErr).To(BeNil())
+				Expect(*actualNumber).To(Equal(coercedValue))
+				Expect(actualErr).To(BeNil())
+			})
+		})
 	})
 })

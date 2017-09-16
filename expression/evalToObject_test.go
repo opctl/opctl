@@ -12,6 +12,25 @@ import (
 
 var _ = Context("EvalToObject", func() {
 	var _ = Context("EvalToObject", func() {
+		Context("expression is map[string]interface{}", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedExpression := map[string]interface{}{"dummyName": "dummyValue"}
+
+				objectUnderTest := _evalToObject{}
+
+				/* act */
+				actualValue, actualErr := objectUnderTest.EvalToObject(
+					map[string]*model.Value{},
+					providedExpression,
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(model.Value{Object: providedExpression}))
+				Expect(actualErr).To(BeNil())
+			})
+		})
 		Context("expression is string", func() {
 			It("should call interpolater.Interpolate w/ expected args", func() {
 				/* arrange */
@@ -67,36 +86,38 @@ var _ = Context("EvalToObject", func() {
 
 				})
 			})
-		})
-		It("should call data.CoerceToObject w/ expected args & return result", func() {
-			/* arrange */
-			fakeInterpolater := new(interpolater.Fake)
+			Context("interpolater.Interpolate doesn't err", func() {
+				It("should call data.CoerceToObject w/ expected args & return result", func() {
+					/* arrange */
+					fakeInterpolater := new(interpolater.Fake)
 
-			interpolatedValue := model.Value{String: new(string)}
-			fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
+					interpolatedValue := model.Value{String: new(string)}
+					fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
 
-			fakeData := new(data.Fake)
+					fakeData := new(data.Fake)
 
-			coercedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
-			fakeData.CoerceToObjectReturns(&coercedValue, nil)
+					coercedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
+					fakeData.CoerceToObjectReturns(&coercedValue, nil)
 
-			objectUnderTest := _evalToObject{
-				data:         fakeData,
-				interpolater: fakeInterpolater,
-			}
+					objectUnderTest := _evalToObject{
+						data:         fakeData,
+						interpolater: fakeInterpolater,
+					}
 
-			/* act */
-			actualValue, actualErr := objectUnderTest.EvalToObject(
-				map[string]*model.Value{},
-				"dummyExpression",
-				new(pkg.FakeHandle),
-			)
+					/* act */
+					actualValue, actualErr := objectUnderTest.EvalToObject(
+						map[string]*model.Value{},
+						"dummyExpression",
+						new(pkg.FakeHandle),
+					)
 
-			/* assert */
-			Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(interpolatedValue))
+					/* assert */
+					Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(interpolatedValue))
 
-			Expect(*actualValue).To(Equal(coercedValue))
-			Expect(actualErr).To(BeNil())
+					Expect(*actualValue).To(Equal(coercedValue))
+					Expect(actualErr).To(BeNil())
+				})
+			})
 		})
 	})
 })

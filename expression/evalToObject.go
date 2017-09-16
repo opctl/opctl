@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
@@ -36,6 +37,10 @@ func (itp _evalToObject) EvalToObject(
 	var value *model.Value
 
 	switch expression := expression.(type) {
+	case float64:
+		value = &model.Value{Number: &expression}
+	case map[string]interface{}:
+		return &model.Value{Object: expression}, nil
 	case string:
 		var err error
 		if value, err = itp.interpolater.Interpolate(
@@ -45,6 +50,8 @@ func (itp _evalToObject) EvalToObject(
 		); nil != err {
 			return nil, err
 		}
+	default:
+		return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 	}
 
 	return itp.data.CoerceToObject(value)
