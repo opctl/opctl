@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
@@ -8,11 +9,12 @@ import (
 
 type evalToObject interface {
 	// EvalToObject evaluates an expression to a object value
+	// expression must be a type supported by data.CoerceToObject
 	EvalToObject(
 		scope map[string]*model.Value,
-		expression string,
+		expression interface{},
 		pkgHandle model.PkgHandle,
-	) (map[string]interface{}, error)
+	) (*model.Value, error)
 }
 
 func newEvalToObject() evalToObject {
@@ -29,17 +31,27 @@ type _evalToObject struct {
 
 func (itp _evalToObject) EvalToObject(
 	scope map[string]*model.Value,
-	expression string,
+	expression interface{},
 	pkgHandle model.PkgHandle,
-) (map[string]interface{}, error) {
-	value, err := itp.interpolater.Interpolate(
-		expression,
-		scope,
-		pkgHandle,
-	)
+) (*model.Value, error) {
+	var value *model.Value
 
-	if nil != err {
-		return nil, err
+	switch expression := expression.(type) {
+	case float64:
+		value = &model.Value{Number: &expression}
+	case map[string]interface{}:
+		return &model.Value{Object: expression}, nil
+	case string:
+		var err error
+		if value, err = itp.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		); nil != err {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 	}
 
 	return itp.data.CoerceToObject(value)

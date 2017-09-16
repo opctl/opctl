@@ -6,12 +6,12 @@ import (
 	"io"
 )
 
-func (this _containerProvider) streamContainerStdOut(
+func (ctp _containerProvider) streamContainerStdOut(
 	containerId string,
 	writeCloser io.WriteCloser,
 ) error {
 
-	readCloser, err := this.dockerClient.ContainerLogs(
+	readCloser, err := ctp.dockerClient.ContainerLogs(
 		context.TODO(),
 		containerId,
 		types.ContainerLogsOptions{

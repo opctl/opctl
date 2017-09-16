@@ -18,7 +18,7 @@ func (img _Image) Interpret(
 		}
 
 		dcgContainerCallImage := &model.DCGContainerCallImage{
-			Ref: ref,
+			Ref: *ref.String,
 		}
 
 		if nil != scgContainerCallImage.PullCreds {
@@ -33,8 +33,8 @@ func (img _Image) Interpret(
 			}
 
 			dcgContainerCallImage.PullCreds = &model.DCGPullCreds{
-				Username: username,
-				Password: password,
+				Username: *username.String,
+				Password: *password.String,
 			}
 		}
 		return dcgContainerCallImage, nil

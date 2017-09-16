@@ -1,4 +1,4 @@
-// Package expression implements usecases surrounding expressions
+// Package expression implements use cases surrounding expressions such as evaluation
 package expression
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Expression

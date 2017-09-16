@@ -6,7 +6,7 @@ import (
 )
 
 // validateSocket validates a value against a socket parameter
-func (this _validator) validateSocket(
+func (vdt _validator) validateSocket(
 	value *model.Value,
 ) []error {
 

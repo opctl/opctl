@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
@@ -10,9 +11,9 @@ type evalToString interface {
 	// EvalToString evaluates an expression to a string value
 	EvalToString(
 		scope map[string]*model.Value,
-		expression string,
+		expression interface{},
 		pkgHandle model.PkgHandle,
-	) (string, error)
+	) (*model.Value, error)
 }
 
 func newEvalToString() evalToString {
@@ -29,17 +30,27 @@ type _evalToString struct {
 
 func (itp _evalToString) EvalToString(
 	scope map[string]*model.Value,
-	expression string,
+	expression interface{},
 	pkgHandle model.PkgHandle,
-) (string, error) {
-	value, err := itp.interpolater.Interpolate(
-		expression,
-		scope,
-		pkgHandle,
-	)
+) (*model.Value, error) {
+	var value *model.Value
 
-	if nil != err {
-		return "", err
+	switch expression := expression.(type) {
+	case float64:
+		value = &model.Value{Number: &expression}
+	case map[string]interface{}:
+		value = &model.Value{Object: expression}
+	case string:
+		var err error
+		if value, err = itp.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		); nil != err {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
 	return itp.data.CoerceToString(value)

@@ -21,43 +21,43 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	CoerceToNumberStub        func(value *model.Value) (float64, error)
+	CoerceToNumberStub        func(value *model.Value) (*model.Value, error)
 	coerceToNumberMutex       sync.RWMutex
 	coerceToNumberArgsForCall []struct {
 		value *model.Value
 	}
 	coerceToNumberReturns struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}
 	coerceToNumberReturnsOnCall map[int]struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}
-	CoerceToObjectStub        func(value *model.Value) (map[string]interface{}, error)
+	CoerceToObjectStub        func(value *model.Value) (*model.Value, error)
 	coerceToObjectMutex       sync.RWMutex
 	coerceToObjectArgsForCall []struct {
 		value *model.Value
 	}
 	coerceToObjectReturns struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}
 	coerceToObjectReturnsOnCall map[int]struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}
-	CoerceToStringStub        func(value *model.Value) (string, error)
+	CoerceToStringStub        func(value *model.Value) (*model.Value, error)
 	coerceToStringMutex       sync.RWMutex
 	coerceToStringArgsForCall []struct {
 		value *model.Value
 	}
 	coerceToStringReturns struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	coerceToStringReturnsOnCall map[int]struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}
 	ValidateStub        func(value *model.Value, param *model.Param) (errors []error)
@@ -128,7 +128,7 @@ func (fake *Fake) CoerceToFileReturnsOnCall(i int, result1 *model.Value, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToNumber(value *model.Value) (float64, error) {
+func (fake *Fake) CoerceToNumber(value *model.Value) (*model.Value, error) {
 	fake.coerceToNumberMutex.Lock()
 	ret, specificReturn := fake.coerceToNumberReturnsOnCall[len(fake.coerceToNumberArgsForCall)]
 	fake.coerceToNumberArgsForCall = append(fake.coerceToNumberArgsForCall, struct {
@@ -157,29 +157,29 @@ func (fake *Fake) CoerceToNumberArgsForCall(i int) *model.Value {
 	return fake.coerceToNumberArgsForCall[i].value
 }
 
-func (fake *Fake) CoerceToNumberReturns(result1 float64, result2 error) {
+func (fake *Fake) CoerceToNumberReturns(result1 *model.Value, result2 error) {
 	fake.CoerceToNumberStub = nil
 	fake.coerceToNumberReturns = struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToNumberReturnsOnCall(i int, result1 float64, result2 error) {
+func (fake *Fake) CoerceToNumberReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.CoerceToNumberStub = nil
 	if fake.coerceToNumberReturnsOnCall == nil {
 		fake.coerceToNumberReturnsOnCall = make(map[int]struct {
-			result1 float64
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.coerceToNumberReturnsOnCall[i] = struct {
-		result1 float64
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToObject(value *model.Value) (map[string]interface{}, error) {
+func (fake *Fake) CoerceToObject(value *model.Value) (*model.Value, error) {
 	fake.coerceToObjectMutex.Lock()
 	ret, specificReturn := fake.coerceToObjectReturnsOnCall[len(fake.coerceToObjectArgsForCall)]
 	fake.coerceToObjectArgsForCall = append(fake.coerceToObjectArgsForCall, struct {
@@ -208,29 +208,29 @@ func (fake *Fake) CoerceToObjectArgsForCall(i int) *model.Value {
 	return fake.coerceToObjectArgsForCall[i].value
 }
 
-func (fake *Fake) CoerceToObjectReturns(result1 map[string]interface{}, result2 error) {
+func (fake *Fake) CoerceToObjectReturns(result1 *model.Value, result2 error) {
 	fake.CoerceToObjectStub = nil
 	fake.coerceToObjectReturns = struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToObjectReturnsOnCall(i int, result1 map[string]interface{}, result2 error) {
+func (fake *Fake) CoerceToObjectReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.CoerceToObjectStub = nil
 	if fake.coerceToObjectReturnsOnCall == nil {
 		fake.coerceToObjectReturnsOnCall = make(map[int]struct {
-			result1 map[string]interface{}
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.coerceToObjectReturnsOnCall[i] = struct {
-		result1 map[string]interface{}
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToString(value *model.Value) (string, error) {
+func (fake *Fake) CoerceToString(value *model.Value) (*model.Value, error) {
 	fake.coerceToStringMutex.Lock()
 	ret, specificReturn := fake.coerceToStringReturnsOnCall[len(fake.coerceToStringArgsForCall)]
 	fake.coerceToStringArgsForCall = append(fake.coerceToStringArgsForCall, struct {
@@ -259,24 +259,24 @@ func (fake *Fake) CoerceToStringArgsForCall(i int) *model.Value {
 	return fake.coerceToStringArgsForCall[i].value
 }
 
-func (fake *Fake) CoerceToStringReturns(result1 string, result2 error) {
+func (fake *Fake) CoerceToStringReturns(result1 *model.Value, result2 error) {
 	fake.CoerceToStringStub = nil
 	fake.coerceToStringReturns = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CoerceToStringReturnsOnCall(i int, result1 string, result2 error) {
+func (fake *Fake) CoerceToStringReturnsOnCall(i int, result1 *model.Value, result2 error) {
 	fake.CoerceToStringStub = nil
 	if fake.coerceToStringReturnsOnCall == nil {
 		fake.coerceToStringReturnsOnCall = make(map[int]struct {
-			result1 string
+			result1 *model.Value
 			result2 error
 		})
 	}
 	fake.coerceToStringReturnsOnCall[i] = struct {
-		result1 string
+		result1 *model.Value
 		result2 error
 	}{result1, result2}
 }

@@ -16,7 +16,7 @@ import (
 	"sync"
 )
 
-func (this _containerProvider) RunContainer(
+func (ctp _containerProvider) RunContainer(
 	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
@@ -62,23 +62,23 @@ func (this _containerProvider) RunContainer(
 	hostConfig := &container.HostConfig{
 		PortBindings: portBindings,
 		// support docker in docker
-		// @TODO: reconsider; can we avoid this?
+		// @TODO: reconsider; can we avoid ctp?
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
 		Privileged: true,
 	}
 	for containerFilePath, hostFilePath := range req.Files {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", this.enginePath(hostFilePath), containerFilePath))
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", ctp.enginePath(hostFilePath), containerFilePath))
 	}
 	for containerDirPath, hostDirPath := range req.Dirs {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", this.enginePath(hostDirPath), containerDirPath))
+		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", ctp.enginePath(hostDirPath), containerDirPath))
 	}
 	for containerSocketAddress, hostSocketAddress := range req.Sockets {
 		const unixSocketAddressDiscriminationChars = `/\`
-		// note: this mechanism for determining the type of socket is naive; higher level of sophistication may be required
+		// note: ctp mechanism for determining the type of socket is naive; higher level of sophistication may be required
 		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
 			hostConfig.Binds = append(
 				hostConfig.Binds,
-				fmt.Sprintf("%v:%v", this.enginePath(hostSocketAddress), containerSocketAddress),
+				fmt.Sprintf("%v:%v", ctp.enginePath(hostSocketAddress), containerSocketAddress),
 			)
 		}
 	}
@@ -97,7 +97,7 @@ func (this _containerProvider) RunContainer(
 	}
 
 	// create container
-	containerCreatedResponse, err := this.dockerClient.ContainerCreate(
+	containerCreatedResponse, err := ctp.dockerClient.ContainerCreate(
 		context.TODO(),
 		containerConfig,
 		hostConfig,
@@ -114,13 +114,13 @@ func (this _containerProvider) RunContainer(
 		err = nil
 		fmt.Printf("unable to find image '%s' locally\n", req.Image.Ref)
 
-		err = this.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
+		err = ctp.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
 		if nil != err {
 			return nil, err
 		}
 
 		// retry create
-		containerCreatedResponse, err = this.dockerClient.ContainerCreate(
+		containerCreatedResponse, err = ctp.dockerClient.ContainerCreate(
 			context.TODO(),
 			containerConfig,
 			hostConfig,
@@ -133,7 +133,7 @@ func (this _containerProvider) RunContainer(
 	}
 
 	// start container
-	if err := this.dockerClient.ContainerStart(
+	if err := ctp.dockerClient.ContainerStart(
 		context.TODO(),
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
@@ -146,7 +146,7 @@ func (this _containerProvider) RunContainer(
 	waitGroup.Add(2)
 
 	go func() {
-		if err := this.streamContainerStdErr(
+		if err := ctp.streamContainerStdErr(
 			req.ContainerId,
 			stderr,
 		); nil != err {
@@ -156,7 +156,7 @@ func (this _containerProvider) RunContainer(
 	}()
 
 	go func() {
-		if err := this.streamContainerStdOut(
+		if err := ctp.streamContainerStdOut(
 			req.ContainerId,
 			stdout,
 		); nil != err {
@@ -166,7 +166,7 @@ func (this _containerProvider) RunContainer(
 	}()
 
 	var exitCode int64
-	waitOkChan, waitErrChan := this.dockerClient.ContainerWait(
+	waitOkChan, waitErrChan := ctp.dockerClient.ContainerWait(
 		context.TODO(),
 		req.ContainerId,
 		container.WaitConditionNotRunning,

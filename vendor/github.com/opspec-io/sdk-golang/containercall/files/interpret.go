@@ -99,7 +99,7 @@ fileLoop:
 						err.Error(),
 					)
 				}
-				contentSrc = strings.NewReader(content)
+				contentSrc = strings.NewReader(*content.String)
 			}
 		default:
 			// unbound

@@ -7,11 +7,11 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (this _containerProvider) EnsureNetworkExists(
+func (ctp _containerProvider) EnsureNetworkExists(
 	networkId string,
 ) (err error) {
 
-	_, networkInspectErr := this.dockerClient.NetworkInspect(
+	_, networkInspectErr := ctp.dockerClient.NetworkInspect(
 		context.Background(),
 		networkId,
 		types.NetworkInspectOptions{},
@@ -26,7 +26,7 @@ func (this _containerProvider) EnsureNetworkExists(
 		return
 	}
 
-	_, err = this.dockerClient.NetworkCreate(
+	_, err = ctp.dockerClient.NetworkCreate(
 		context.Background(),
 		networkId,
 		types.NetworkCreate{
