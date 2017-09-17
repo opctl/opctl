@@ -17,7 +17,7 @@ func (this appDataPath) Global() (string, error) {
 func (this appDataPath) PerUser() (string, error) {
 	localAppDataEnvVar := this.os.Getenv("HOME")
 	if "" == localAppDataEnvVar {
-		return "", errors.New("Unable to determine per user app data path. Error was: HOME env var required")
+		return "", errors.New("unable to determine per user app data path. Error was: HOME env var required")
 	}
 	return fmt.Sprintf(perUserTemplate, localAppDataEnvVar), nil
 }

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
-	"strconv"
 )
 
 type argInterpreter interface {
@@ -52,7 +51,6 @@ func (ai _argInterpreter) Interpret(
 		return dcgValue, nil
 	}
 
-	// @TODO: move all others to this switch
 	switch {
 	case nil != param.File:
 		fileValue, err := ai.expression.EvalToFile(scope, valueExpression, parentPkgHandle, opScratchDir)
@@ -78,24 +76,11 @@ func (ai _argInterpreter) Interpret(
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return stringValue, nil
-	}
-
-	if numberValue, ok := valueExpression.(float64); ok {
-		switch {
-		case nil != param.String:
-			stringValue := strconv.FormatFloat(numberValue, 'f', -1, 64)
-			return &model.Value{String: &stringValue}, nil
-		case nil != param.Number:
-			return &model.Value{Number: &numberValue}, nil
-		}
-	}
-
-	if objectValue, ok := valueExpression.(map[string]interface{}); ok {
-		return &model.Value{Object: objectValue}, nil
+	case nil != param.Socket:
+		return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
 	}
 
 	if stringValue, ok := valueExpression.(string); ok {
-
 		if dcgValue, ok := scope[stringValue]; ok {
 			// deprecated explicit ref
 			return dcgValue, nil
@@ -108,8 +93,6 @@ func (ai _argInterpreter) Interpret(
 				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
 			}
 			return dirValue, nil
-		case nil != param.Socket:
-			return nil, fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", name, stringValue)
 		}
 	}
 

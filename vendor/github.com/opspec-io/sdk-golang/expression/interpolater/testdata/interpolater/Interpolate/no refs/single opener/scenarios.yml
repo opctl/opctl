@@ -1,0 +1,23 @@
+- name: stand alone
+  template: (
+  expected:
+    string:
+      (
+
+- name: at start
+  template: (suffix
+  expected:
+    string:
+      (suffix
+
+- name: at end
+  template: prefix(
+  expected:
+    string:
+      prefix(
+
+- name: within
+  template: prefix(
+  expected:
+    string:
+      prefix(

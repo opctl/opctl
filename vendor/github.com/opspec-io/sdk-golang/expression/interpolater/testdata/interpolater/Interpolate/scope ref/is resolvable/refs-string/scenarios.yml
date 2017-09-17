@@ -1,0 +1,39 @@
+- name: standalone
+  template: $(string1)
+  scope:
+    string1:
+      string:
+        value1
+  expected:
+    string:
+      value1
+
+- name: at start
+  template: $(string1)suffix
+  scope:
+    string1:
+      string:
+        value1
+  expected:
+    string:
+      value1suffix
+
+- name: at end
+  template: prefix$(string1)
+  scope:
+    string1:
+      string:
+        value1
+  expected:
+    string:
+      prefixvalue1
+
+- name: within
+  template: prefix$(string1)suffix
+  scope:
+    string1:
+      string:
+        value1
+  expected:
+    string:
+      prefixvalue1suffix

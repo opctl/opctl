@@ -1,0 +1,39 @@
+- name: standalone
+  template: $(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected:
+    file:
+      file1.txt
+
+- name: at start
+  template: $(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected:
+    string:
+      value1suffix
+
+- name: at end
+  template: prefix$(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected:
+    string:
+      prefixvalue1
+
+- name: within
+  template: prefix$(file1)suffix
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected:
+    string:
+      prefixvalue1suffix

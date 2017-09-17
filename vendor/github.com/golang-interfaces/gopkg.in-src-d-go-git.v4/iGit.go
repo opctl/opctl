@@ -1,8 +1,8 @@
 package igit
 
-//go:generate counterfeiter -o fake.go --fake-name Fake ./ IGit
-
 import "gopkg.in/src-d/go-git.v4"
+
+//go:generate counterfeiter -o fake.go --fake-name Fake ./ IGit
 
 type IGit interface {
 	// PlainClone a repository into the path with the given options, isBare defines

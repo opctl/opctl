@@ -1,0 +1,27 @@
+description: publishes code coverage
+name: publish-coverage
+inputs:
+  gitBranch:
+    string:
+      constraints: { minLength: 1 }
+      description: git branch the coverage should be associated with
+      default: master
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "publishing coverage"
+        curl -s https://codecov.io/bash | bash -s
+    dirs:
+      /workDir: srcDir
+    envVars:
+      CODECOV_TOKEN: 1acdc9c0-1785-42f3-9550-9431241e2d87
+      GIT_BRANCH: $(gitBranch)
+    image: { ref: 'golang:1.8' }
+    workDir: /workDir

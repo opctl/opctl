@@ -1,0 +1,23 @@
+- name: standalone
+  template: $(/file1.txt)
+  expected:
+    string:
+      value1
+
+- name: at start
+  template: $(/file1.txt)suffix
+  expected:
+    string:
+      value1suffix
+
+- name: at end
+  template: prefix$(/file1.txt)
+  expected:
+    string:
+      prefixvalue1
+
+- name: within
+  template: prefix$(/file1.txt)suffix
+  expected:
+    string:
+      prefixvalue1suffix

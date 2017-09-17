@@ -1,0 +1,51 @@
+- name: standalone
+  template: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected:
+    string:
+      value1
+
+- name: at start
+  template: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected:
+    string:
+      value1suffix
+
+- name: at end
+  template: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected:
+    string:
+      prefixvalue1
+
+- name: within
+  template: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      string:
+        value1
+  expected:
+    string:
+      prefixvalue1suffix

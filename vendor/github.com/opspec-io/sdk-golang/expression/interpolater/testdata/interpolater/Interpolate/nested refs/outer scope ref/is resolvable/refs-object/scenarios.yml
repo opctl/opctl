@@ -1,0 +1,47 @@
+- name: standalone
+  template: $($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected:
+    string:
+      '{"name":"value"}'
+
+- name: at start
+  template: $($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected:
+    string:
+      '{"name":"value"}suffix'
+
+- name: at end
+  template: prefix$($(innerRef))
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected:
+    string:
+      'prefix{"name":"value"}'
+
+- name: within
+  template: prefix$($(innerRef))suffix
+  scope:
+    innerRef:
+      string:
+        outerRef
+    outerRef:
+      object: { name: value }
+  expected:
+    string:
+      'prefix{"name":"value"}suffix'

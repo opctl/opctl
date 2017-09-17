@@ -1,0 +1,16 @@
+name: clean
+description: removes files & dirs ignored by git
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  op:
+    pkg: { ref: github.com/opspec-pkgs/git.clean#1.0.0 }
+    inputs: { srcDir, opts: -ffXd -e !.idea/ }
+    outputs: { srcDir }

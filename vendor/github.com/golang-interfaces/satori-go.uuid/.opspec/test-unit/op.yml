@@ -1,0 +1,27 @@
+description: runs unit tests
+name: test-unit
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        go get github.com/onsi/ginkgo/ginkgo
+        go get github.com/onsi/gomega
+
+        echo "unit testing code"
+        ginkgo --v -cover -race -r
+    dirs:
+      /go/src/github.com/golang-interfaces/satori-go.uuid: srcDir
+    image: { ref: 'golang:1.8' }
+    workDir: /go/src/github.com/golang-interfaces/satori-go.uuid

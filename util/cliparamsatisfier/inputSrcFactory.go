@@ -1,8 +1,8 @@
 package cliparamsatisfier
 
 import (
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 )

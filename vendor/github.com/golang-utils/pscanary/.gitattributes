@@ -1,0 +1,7 @@
+# force use of LF for line endings
+* text eol=lf
+
+# Force files w/ known binary extensions to be treated as such
+*.png binary
+*.jpg binary
+*.gif binary

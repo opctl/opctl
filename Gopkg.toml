@@ -1,0 +1,83 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/appdataspec/sdk-golang"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/equinox-io/equinox"
+
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.5.0"
+
+[[constraint]]
+  name = "github.com/ghodss/yaml"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/golang-interfaces/encoding-ijson"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/golang-interfaces/iioutil"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/golang-interfaces/ios"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/golang-utils/lockfile"
+
+[[constraint]]
+  name = "github.com/gorilla/handlers"
+  version = "1.2.1"
+
+[[constraint]]
+  name = "github.com/gorilla/mux"
+  version = "1.5.0"
+
+[[constraint]]
+  name = "github.com/jawher/mow.cli"
+  revision = "0de3d3b4ed00f261460d12ecde4efa90fbfcd8ed"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/opspec-io/sdk-golang"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/peterh/liner"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
+  name = "github.com/rakyll/statik"
+  version = "0.1.1"

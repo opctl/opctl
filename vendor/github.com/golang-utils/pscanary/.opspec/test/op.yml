@@ -1,0 +1,33 @@
+name: test
+description: runs all tests
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  serial:
+    - op:
+        pkg: { ref: clean }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: fmt-code }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - parallel:
+      - op:
+          pkg: { ref: test-lint }
+          inputs: { srcDir }
+          outputs: { srcDir }
+      - op:
+          pkg: { ref: test-unit }
+          inputs: { srcDir }
+          outputs: { srcDir }
+    - op:
+        pkg: { ref: test-coverage }
+        inputs: { srcDir }

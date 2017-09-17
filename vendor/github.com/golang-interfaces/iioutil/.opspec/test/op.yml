@@ -1,0 +1,40 @@
+name: test
+description: runs all tests
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+  coverprofile:
+    file:
+      description: aggregate coverprofile
+run:
+  serial:
+    - op:
+        pkg: { ref: clean }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/golang.fmt#1.0.0 }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - parallel:
+      - op:
+          pkg: { ref: github.com/opspec-pkgs/golang.vet#1.0.0 }
+          inputs: { srcDir }
+          outputs: { srcDir }
+      - op:
+          pkg: { ref: test-unit }
+          inputs: { srcDir }
+          outputs: { srcDir }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/golang.aggregate-coverprofiles#1.0.0 }
+        inputs: { src: $(srcDir) }
+        outputs: { coverprofile }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.0.0 }
+        inputs: { coverprofile, minCoverage: 100 }

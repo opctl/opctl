@@ -1,0 +1,64 @@
+description: tests code coverage
+name: test-coverage
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - bash
+      - -ce
+      - |
+        echo "generating aggregate coverage profile"
+        find . -name '*.coverprofile' | xargs cat > coverage.txt
+
+        echo "stripping fakes"
+        sed '/fake/d' -i coverage.txt
+
+        echo "determining aggregate coverage metrics"
+        declare -i total_statements total_hits line_statements line_hits
+        # lines in form: "location statement_count hit_count"
+        while read -r line; do
+          # ignore mode lines
+          if [[ $line != mode* ]] ;
+          then
+            IFS=' ' read -ra line_parts <<< "$line"
+            line_statements=${line_parts[1]}
+            line_hits=${line_parts[2]}
+
+            # increment statements
+            total_statements=$total_statements+$line_statements
+
+            if [[ $line_statements -gt $line_hits ]] ;
+            then
+              total_hits=$total_hits+$line_hits
+            else
+              total_hits=$total_hits+$line_statements
+            fi
+          fi
+        done < coverage.txt
+
+        echo "determining coverage %"
+        coverage=$(($total_hits*100 / $total_statements))
+        echo "Coverage info => Actual: $coverage%, Expected: >= $MINIMUM_COVERAGE%"
+
+        echo "enforcing MINIMUM_COVERAGE..."
+        if [[ $coverage -lt $MINIMUM_COVERAGE ]] ;
+        then
+          echo "Insufficient test coverage!" 1>&2
+          exit 1
+        else
+          echo "Coverage ok"
+        fi
+    dirs:
+      /go/src/github.com/golang-utils/lockfile: srcDir
+    envVars:
+      MINIMUM_COVERAGE: '92'
+    image: { ref: 'golang:1.8' }
+    workDir: /go/src/github.com/golang-utils/lockfile

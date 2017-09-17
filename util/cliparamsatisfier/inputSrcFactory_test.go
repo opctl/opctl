@@ -3,8 +3,8 @@ package cliparamsatisfier
 import (
 	"errors"
 	"github.com/ghodss/yaml"
+	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/golang-interfaces/ijson"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
