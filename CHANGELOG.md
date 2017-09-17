@@ -11,6 +11,10 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 - [Support binding strings &/or numbers to/from container files](https://github.com/opspec-io/spec/issues/131)
 - [Add support for object param type](https://github.com/opspec-io/spec/issues/65)
 
+### Deprecated
+
+- pkg file/dir ref via `/path` syntax. Use new `$(/path)` syntax
+
 ### Removed
 
 - `ref` attribute in
