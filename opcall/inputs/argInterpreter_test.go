@@ -294,7 +294,7 @@ var _ = Context("argInterpreter", func() {
 					interpretedValue := model.Value{String: &interpolatedValue}
 					fakeExpression.EvalToStringReturns(&interpretedValue, nil)
 
-					expectedError := fmt.Errorf("unable to bind '%v' to '%v'; sockets must be passed by reference", providedName, interpolatedValue)
+					expectedError := fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", providedName, interpolatedValue)
 
 					objectUnderTest := _argInterpreter{
 						expression: fakeExpression,
