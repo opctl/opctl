@@ -106,7 +106,7 @@ func (ctp _containerProvider) RunContainer(
 	)
 
 	if nil != err {
-		if !client.IsErrImageNotFound(err) {
+		if !client.IsErrNotFound(err) {
 			return nil, err
 		}
 
