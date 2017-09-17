@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+
 echo "starting docker daemon as background process"
 nohup dockerd > /nohup.out &
 
@@ -9,7 +10,7 @@ test_description="opspec test-suite scenarios"
 
 . sharness/sharness.sh --verbose
 
-for dir in $(find /src/vendor/github.com/opspec-io/test-suite/scenarios/pkg/**/ -type d)
+for dir in $(find /src/github.com/opspec-io/test-suite/scenarios/pkg/**/ -type d)
 do
   if [ -f "$dir/scenarios.yml" ]
   then
