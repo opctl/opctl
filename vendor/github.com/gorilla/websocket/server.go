@@ -48,7 +48,6 @@ type Upgrader struct {
 	// must match the host of the request.
 	CheckOrigin func(r *http.Request) bool
 
-  //go:generate counterfeiter -o fakeDialer.go --fake-name FakeDialer ./ Dialer
 	// EnableCompression specify if the server should attempt to negotiate per
 	// message compression (RFC 7692). Setting this value to true does not
 	// guarantee that compression will be supported. Currently only "no context

@@ -11,7 +11,6 @@ They can be consumed via tools like [opctl](https://opspec.io/opctl).
 ## [/vendor](vendor)
 
 root path for external deps of this repo. This includes vendored go pkgs
-& git sub modules.
 
 # Acceptance criteria
 

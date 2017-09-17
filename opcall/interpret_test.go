@@ -24,7 +24,7 @@ var _ = Context("OpCall", func() {
 				if nil != err {
 					panic(err)
 				}
-				rootPath := "../vendor/github.com/opspec-io/test-suite/scenarios/pkg"
+				rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
 
 				pendingScenarios := map[string]interface{}{
 					// these scenarios are currently pending;

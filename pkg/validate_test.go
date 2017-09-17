@@ -17,7 +17,7 @@ import (
 var _ = Describe("Validate", func() {
 	Context("called w/ opspec test-suite scenarios", func() {
 		It("should return result fulfilling scenario.validate.expect", func() {
-			rootPath := "../vendor/github.com/opspec-io/test-suite/scenarios/pkg"
+			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
 
 			pendingScenarios := map[string]interface{}{
 				// these scenarios are currently pending;

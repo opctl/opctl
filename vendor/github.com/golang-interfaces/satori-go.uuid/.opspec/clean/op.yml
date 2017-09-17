@@ -1,0 +1,23 @@
+name: clean
+description: removes files & dirs ignored by git
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "cleaning untracked files from workdir"
+        git clean -fXd -e !.idea/
+    dirs:
+      /go/src/github.com/golang-interfaces/satori-go.uuid: srcDir
+    image: { ref: 'golang:1.8' }
+    workDir: /go/src/github.com/golang-interfaces/satori-go.uuid
