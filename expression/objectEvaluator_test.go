@@ -17,7 +17,7 @@ var _ = Context("EvalToObject", func() {
 				/* arrange */
 				providedExpression := map[string]interface{}{"dummyName": "dummyValue"}
 
-				objectUnderTest := _evalToObject{}
+				objectUnderTest := _objectEvaluator{}
 
 				/* act */
 				actualValue, actualErr := objectUnderTest.EvalToObject(
@@ -42,7 +42,7 @@ var _ = Context("EvalToObject", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _evalToObject{
+				objectUnderTest := _objectEvaluator{
 					interpolater: fakeInterpolater,
 				}
 
@@ -70,7 +70,7 @@ var _ = Context("EvalToObject", func() {
 					interpolateErr := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-					objectUnderTest := _evalToObject{
+					objectUnderTest := _objectEvaluator{
 						interpolater: fakeInterpolater,
 					}
 
@@ -99,7 +99,7 @@ var _ = Context("EvalToObject", func() {
 					coercedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
 					fakeData.CoerceToObjectReturns(&coercedValue, nil)
 
-					objectUnderTest := _evalToObject{
+					objectUnderTest := _objectEvaluator{
 						data:         fakeData,
 						interpolater: fakeInterpolater,
 					}

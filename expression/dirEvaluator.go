@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type evalToDir interface {
+type dirEvaluator interface {
 	// EvalToDir evaluates an expression to a dir value
 	//
 	// Examples of valid dir expressions:
@@ -24,29 +24,43 @@ type evalToDir interface {
 	) (*model.Value, error)
 }
 
-func newEvalToDir() evalToDir {
-	return _evalToDir{
+func newDirEvaluator() dirEvaluator {
+	return _dirEvaluator{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _evalToDir struct {
+type _dirEvaluator struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (etd _evalToDir) EvalToDir(
+func (etd _dirEvaluator) EvalToDir(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
 	if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+    // scope ref w/out expansion
 		return ref, nil
+	} else if strings.HasPrefix(expression, "/") {
+		// deprecated pkg path ref
+		pkgFsRefPath, err := etd.interpolater.Interpolate(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, err
+		}
+
+		pkgFsRefPath = filepath.Join(pkgHandle.Ref(), pkgFsRefPath)
+		return &model.Value{Dir: &pkgFsRefPath}, err
 	}
 
 	possibleRefCloserIndex := strings.Index(expression, string(interpolater.RefCloser))
-	var dir *model.Value
+	var basePath string
 
 	if strings.HasPrefix(expression, string(interpolater.Operator+interpolater.RefOpener)) && possibleRefCloserIndex > 0 {
 		possibleRef := expression[2:possibleRefCloserIndex]
@@ -56,8 +70,8 @@ func (etd _evalToDir) EvalToDir(
 		}
 
 		if dcgValue, ok := scope[interpolatedPossibleRef]; ok && nil != dcgValue.Dir {
-			// scope ref w/ deprecated path expansion
-			dir = dcgValue
+			// scope ref w/out expansion or deprecated expansion
+			basePath = *dcgValue.Dir
 			// trim initial dir ref & interpolate remaining expression
 			expression = expression[possibleRefCloserIndex+1:]
 		}
@@ -68,7 +82,7 @@ func (etd _evalToDir) EvalToDir(
 		return nil, err
 	}
 
-	expandedPath := filepath.Join(*dir.Dir, result)
+	expandedPath := filepath.Join(basePath, result)
 
 	return &model.Value{Dir: &expandedPath}, nil
 

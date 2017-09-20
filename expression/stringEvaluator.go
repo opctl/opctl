@@ -7,29 +7,28 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type evalToNumber interface {
-	// EvalToNumber evaluates an expression to a number value
-	// expression must be a type supported by data.CoerceToNumber
-	EvalToNumber(
+type stringEvaluator interface {
+	// EvalToString evaluates an expression to a string value
+	EvalToString(
 		scope map[string]*model.Value,
 		expression interface{},
 		pkgHandle model.PkgHandle,
 	) (*model.Value, error)
 }
 
-func newEvalToNumber() evalToNumber {
-	return _evalToNumber{
+func newStringEvaluator() stringEvaluator {
+	return _stringEvaluator{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _evalToNumber struct {
+type _stringEvaluator struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (etn _evalToNumber) EvalToNumber(
+func (ets _stringEvaluator) EvalToString(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -38,14 +37,14 @@ func (etn _evalToNumber) EvalToNumber(
 
 	switch expression := expression.(type) {
 	case float64:
-		return &model.Value{Number: &expression}, nil
+		value = &model.Value{Number: &expression}
 	case map[string]interface{}:
 		value = &model.Value{Object: expression}
 	case string:
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
-			stringValue, err := etn.interpolater.Interpolate(
+			stringValue, err := ets.interpolater.Interpolate(
 				expression,
 				scope,
 				pkgHandle,
@@ -57,8 +56,8 @@ func (etn _evalToNumber) EvalToNumber(
 			value = &model.Value{String: &stringValue}
 		}
 	default:
-		return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)
+		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
-	return etn.data.CoerceToNumber(value)
+	return ets.data.CoerceToString(value)
 }

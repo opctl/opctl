@@ -24,7 +24,7 @@ var _ = Context("EvalToString", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _evalToString{
+				objectUnderTest := _stringEvaluator{
 					interpolater: fakeInterpolater,
 				}
 
@@ -52,7 +52,7 @@ var _ = Context("EvalToString", func() {
 					interpolateErr := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-					objectUnderTest := _evalToString{
+					objectUnderTest := _stringEvaluator{
 						interpolater: fakeInterpolater,
 					}
 
@@ -81,7 +81,7 @@ var _ = Context("EvalToString", func() {
 			coercedValue := model.Value{String: new(string)}
 			fakeData.CoerceToStringReturns(&coercedValue, nil)
 
-			objectUnderTest := _evalToString{
+			objectUnderTest := _stringEvaluator{
 				data:         fakeData,
 				interpolater: fakeInterpolater,
 			}
