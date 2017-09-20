@@ -29,7 +29,7 @@ type _evalToObject struct {
 	interpolater interpolater.Interpolater
 }
 
-func (itp _evalToObject) EvalToObject(
+func (eto _evalToObject) EvalToObject(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -42,17 +42,22 @@ func (itp _evalToObject) EvalToObject(
 	case map[string]interface{}:
 		return &model.Value{Object: expression}, nil
 	case string:
-		var err error
-		if value, err = itp.interpolater.Interpolate(
-			expression,
-			scope,
-			pkgHandle,
-		); nil != err {
-			return nil, err
+		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+			value = ref
+		} else {
+			stringValue, err := eto.interpolater.Interpolate(
+				expression,
+				scope,
+				pkgHandle,
+			)
+			if nil != err {
+				return nil, err
+			}
+			value = &model.Value{String: &stringValue}
 		}
 	default:
 		return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 	}
 
-	return itp.data.CoerceToObject(value)
+	return eto.data.CoerceToObject(value)
 }

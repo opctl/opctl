@@ -123,7 +123,7 @@ var _ = Context("EvalToFile", func() {
 
 			fakeInterpolater := new(interpolater.Fake)
 			// err to trigger immediate return
-			fakeInterpolater.InterpolateReturns(nil, errors.New("dummyError"))
+			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 			objectUnderTest := _evalToFile{
 				interpolater: fakeInterpolater,
@@ -152,7 +152,7 @@ var _ = Context("EvalToFile", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 				interpolateErr := errors.New("dummyError")
-				fakeInterpolater.InterpolateReturns(nil, interpolateErr)
+				fakeInterpolater.InterpolateReturns("", interpolateErr)
 
 				objectUnderTest := _evalToFile{
 					interpolater: fakeInterpolater,
@@ -178,8 +178,8 @@ var _ = Context("EvalToFile", func() {
 
 				fakeInterpolater := new(interpolater.Fake)
 
-				interpolatedValue := model.Value{String: new(string)}
-				fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
+				interpolatedValue := "dummyString"
+				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
 				fakeData := new(data.Fake)
 
@@ -203,7 +203,7 @@ var _ = Context("EvalToFile", func() {
 				actualValue,
 					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
 
-				Expect(*actualValue).To(Equal(interpolatedValue))
+				Expect(*actualValue).To(Equal(model.Value{String: &interpolatedValue}))
 				Expect(actualScratchDir).To(Equal(actualScratchDir))
 
 				Expect(actualFile).To(Equal(coercedValue))

@@ -1,104 +1,65 @@
 package interpolater
 
 import (
-	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
-	"path/filepath"
-	"strings"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
 
 const (
-	operator  = '$'
-	refOpener = '('
-	refCloser = ')'
+	Operator  = '$'
+	RefOpener = '('
+	RefCloser = ')'
 )
 
 type Interpolater interface {
+	// Interpolate interpolates the provided expression
 	Interpolate(
-		template string,
+		expression string,
 		scope map[string]*model.Value,
 		pkgHandle model.PkgHandle,
-	) (*model.Value, error)
+	) (string, error)
 }
 
 func New() Interpolater {
 	return _Interpolater{
 		deReferencer: newDeReferencer(),
-		os:           ios.New(),
 	}
 }
 
 type _Interpolater struct {
 	deReferencer
-	os ios.IOS
 }
 
 func (itp _Interpolater) Interpolate(
-	template string,
+	expression string,
 	scope map[string]*model.Value,
 	pkgHandle model.PkgHandle,
-) (*model.Value, error) {
-	possibleRefCloserIndex := strings.Index(template, ")")
-	var dir *model.Value
-
-	if strings.HasPrefix(template, "$(") && possibleRefCloserIndex > 0 {
-		possibleRef := template[2:possibleRefCloserIndex]
-		if dcgValue, ok := scope[possibleRef]; ok {
-			if len(template)-1 == possibleRefCloserIndex {
-				// this is an explicit ref; return value
-				return dcgValue, nil
-			}
-			if nil != dcgValue.Dir {
-				// this is a dir expansion
-				dir = dcgValue
-				// trim initial dir ref & interpolate remaining template
-				template = template[possibleRefCloserIndex+1:]
-			}
-		}
-	}
-
-	// interpolate remaining template
+) (string, error) {
 	refBuffer := []byte{}
 	i := 0
-	for i < len(template) {
+	for i < len(expression) {
 		switch {
-		case operator == template[i]:
-			result, consumed, err := itp.tryDeRef(template[i+1:], scope, pkgHandle)
+		case Operator == expression[i]:
+			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
 			if nil != err {
-				return nil, err
+				return "", err
 			}
 			refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
-			refBuffer = append(refBuffer, template[i])
+			refBuffer = append(refBuffer, expression[i])
 		}
 
 		// always increment loop counter
 		i++
 	}
 
-	if nil != dir {
-		expandedPath := filepath.Join(*dir.Dir, string(refBuffer))
-
-		fileInfo, err := itp.os.Stat(expandedPath)
-		if nil != err {
-			return nil, err
-		}
-
-		if !fileInfo.IsDir() {
-			return &model.Value{File: &expandedPath}, nil
-		}
-		return &model.Value{Dir: &expandedPath}, nil
-	}
-
-	valueAsString := string(refBuffer)
-	return &model.Value{String: &valueAsString}, nil
+	return string(refBuffer), nil
 }
 
 // tryDeRef tries to de reference from possibleRef.
-// It's assumed possibleRef doesn't contain the initial operator.
+// It's assumed possibleRef doesn't contain an initial Operator.
 //
 // returns the de referenced value (if any), number of bytes consumed, and any err
 func (itp _Interpolater) tryDeRef(
@@ -110,8 +71,8 @@ func (itp _Interpolater) tryDeRef(
 	i := 0
 	for i < len(possibleRef) {
 		switch {
-		case refCloser == possibleRef[i]:
-			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
+		case RefCloser == possibleRef[i]:
+			if len(refBuffer) > 0 && RefOpener == refBuffer[0] {
 				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope, pkgHandle)
 				if nil != err {
 					return "", 0, err
@@ -121,7 +82,7 @@ func (itp _Interpolater) tryDeRef(
 				}
 			}
 			refBuffer = append(refBuffer, possibleRef[i])
-		case operator == possibleRef[i]:
+		case Operator == possibleRef[i]:
 			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", 0, err

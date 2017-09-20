@@ -18,7 +18,7 @@ var _ = Context("EvalToDir", func() {
 
 		fakeInterpolater := new(interpolater.Fake)
 		// err to trigger immediate return
-		fakeInterpolater.InterpolateReturns(nil, errors.New("dummyError"))
+		fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 		objectUnderTest := _evalToDir{
 			interpolater: fakeInterpolater,
@@ -45,9 +45,8 @@ var _ = Context("EvalToDir", func() {
 		/* arrange */
 		fakeInterpolater := new(interpolater.Fake)
 
-		interpolateValue := &model.Value{Dir: new(string)}
 		interpolateErr := errors.New("dummyError")
-		fakeInterpolater.InterpolateReturns(interpolateValue, interpolateErr)
+		fakeInterpolater.InterpolateReturns("", interpolateErr)
 
 		objectUnderTest := _evalToDir{
 			interpolater: fakeInterpolater,
@@ -61,7 +60,7 @@ var _ = Context("EvalToDir", func() {
 		)
 
 		/* assert */
-		Expect(actualValue).To(Equal(interpolateValue))
+		Expect(actualValue).To(BeNil())
 		Expect(actualErr).To(Equal(interpolateErr))
 
 	})

@@ -4,9 +4,7 @@
     string1:
       string:
         value1
-  expected:
-    string:
-      value1
+  expected: value1
 
 - name: at start
   template: $(string1)suffix
@@ -14,9 +12,7 @@
     string1:
       string:
         value1
-  expected:
-    string:
-      value1suffix
+  expected: value1suffix
 
 - name: at end
   template: prefix$(string1)
@@ -24,9 +20,7 @@
     string1:
       string:
         value1
-  expected:
-    string:
-      prefixvalue1
+  expected: prefixvalue1
 
 - name: within
   template: prefix$(string1)suffix
@@ -34,6 +28,4 @@
     string1:
       string:
         value1
-  expected:
-    string:
-      prefixvalue1suffix
+  expected: prefixvalue1suffix

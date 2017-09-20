@@ -40,7 +40,7 @@ var _ = Context("EvalToObject", func() {
 
 				fakeInterpolater := new(interpolater.Fake)
 				// err to trigger immediate return
-				fakeInterpolater.InterpolateReturns(nil, errors.New("dummyError"))
+				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 				objectUnderTest := _evalToObject{
 					interpolater: fakeInterpolater,
@@ -68,7 +68,7 @@ var _ = Context("EvalToObject", func() {
 					/* arrange */
 					fakeInterpolater := new(interpolater.Fake)
 					interpolateErr := errors.New("dummyError")
-					fakeInterpolater.InterpolateReturns(nil, interpolateErr)
+					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
 					objectUnderTest := _evalToObject{
 						interpolater: fakeInterpolater,
@@ -91,8 +91,8 @@ var _ = Context("EvalToObject", func() {
 					/* arrange */
 					fakeInterpolater := new(interpolater.Fake)
 
-					interpolatedValue := model.Value{String: new(string)}
-					fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
+					interpolatedValue := "dummyString"
+					fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
 					fakeData := new(data.Fake)
 
@@ -112,7 +112,7 @@ var _ = Context("EvalToObject", func() {
 					)
 
 					/* assert */
-					Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(interpolatedValue))
+					Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 					Expect(*actualValue).To(Equal(coercedValue))
 					Expect(actualErr).To(BeNil())

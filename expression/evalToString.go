@@ -28,7 +28,7 @@ type _evalToString struct {
 	interpolater interpolater.Interpolater
 }
 
-func (itp _evalToString) EvalToString(
+func (ets _evalToString) EvalToString(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -41,17 +41,23 @@ func (itp _evalToString) EvalToString(
 	case map[string]interface{}:
 		value = &model.Value{Object: expression}
 	case string:
-		var err error
-		if value, err = itp.interpolater.Interpolate(
-			expression,
-			scope,
-			pkgHandle,
-		); nil != err {
-			return nil, err
+		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+			value = ref
+		} else {
+			stringValue, err := ets.interpolater.Interpolate(
+				expression,
+				scope,
+				pkgHandle,
+			)
+			if nil != err {
+				return nil, err
+			}
+
+			value = &model.Value{String: &stringValue}
 		}
 	default:
 		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
-	return itp.data.CoerceToString(value)
+	return ets.data.CoerceToString(value)
 }

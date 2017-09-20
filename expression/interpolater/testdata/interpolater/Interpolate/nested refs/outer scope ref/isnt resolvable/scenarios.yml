@@ -3,6 +3,4 @@
     innerRef:
       string:
         outerRef
-  expected:
-    string:
-      $(outerRef)
+  expected: $(outerRef)
