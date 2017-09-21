@@ -2,6 +2,7 @@
 package expression
 
 import (
+	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"strings"
 )
@@ -38,7 +39,7 @@ func tryResolveExplicitRef(
 	expression string,
 	scope map[string]*model.Value,
 ) (*model.Value, bool) {
-	if strings.HasPrefix(expression, "$(") && strings.HasSuffix(expression, ")") {
+	if strings.HasPrefix(expression, interpolater.RefStart) && strings.HasSuffix(expression, interpolater.RefEnd) {
 		dcgValue, ok := scope[expression[2:len(expression)-1]]
 		return dcgValue, ok
 	}

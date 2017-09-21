@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
@@ -13,10 +14,10 @@ type dirEvaluator interface {
 	//
 	// Examples of valid dir expressions:
 	// scope ref: $(scope-ref)
-	// scope ref w/ path expansion: $(scope-ref/sub-dir)
-	// scope ref w/ deprecated path expansion: $(scope-ref)/sub-dir
+	// scope ref w/ path: $(scope-ref/sub-dir)
+	// scope ref w/ deprecated path: $(scope-ref)/sub-dir
 	// pkg fs ref: $(/pkg-fs-ref)
-	// pkg fs ref w/ path expansion: $(/pkg-fs-ref/sub-dir)
+	// pkg fs ref w/ path: $(/pkg-fs-ref/sub-dir)
 	EvalToDir(
 		scope map[string]*model.Value,
 		expression string,
@@ -41,49 +42,71 @@ func (etd _dirEvaluator) EvalToDir(
 	expression string,
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
-	if ref, ok := tryResolveExplicitRef(expression, scope); ok {
-    // scope ref w/out expansion
-		return ref, nil
-	} else if strings.HasPrefix(expression, "/") {
-		// deprecated pkg path ref
+	possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
+
+	// the following is gross but it's due to all the deprecated syntax we need to handle
+	if strings.HasPrefix(expression, "/") {
+
+		// deprecated pkg fs ref
 		pkgFsRefPath, err := etd.interpolater.Interpolate(
 			expression,
 			scope,
 			pkgHandle,
 		)
 		if nil != err {
-			return nil, err
+			return nil, fmt.Errorf("unable to evaluate %v to dir; error was %v", expression, err.Error())
 		}
 
 		pkgFsRefPath = filepath.Join(pkgHandle.Ref(), pkgFsRefPath)
 		return &model.Value{Dir: &pkgFsRefPath}, err
-	}
 
-	possibleRefCloserIndex := strings.Index(expression, string(interpolater.RefCloser))
-	var basePath string
+	} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
-	if strings.HasPrefix(expression, string(interpolater.Operator+interpolater.RefOpener)) && possibleRefCloserIndex > 0 {
-		possibleRef := expression[2:possibleRefCloserIndex]
-		interpolatedPossibleRef, err := etd.interpolater.Interpolate(possibleRef, scope, pkgHandle)
-		if nil != err {
-			return nil, err
+		refExpression := expression[2:possibleRefCloserIndex]
+		refParts := strings.SplitN(refExpression, "/", 2)
+		var dirValue string
+
+		if strings.HasPrefix(refExpression, "/") {
+
+			// pkg fs ref
+			pkgFsRef, err := etd.interpolater.Interpolate(refExpression, scope, pkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
+			}
+			dirValue = filepath.Join(pkgHandle.Ref(), pkgFsRef)
+
+		} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
+
+			// scope ref
+			dirValue = *dcgValue.Dir
+
+		} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
+
+			// scope ref w/ path
+			pathExpression := refParts[1]
+			path, err := etd.interpolater.Interpolate(pathExpression, scope, pkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
+			}
+			dirValue = filepath.Join(*dcgValue.Dir, path)
+
 		}
 
-		if dcgValue, ok := scope[interpolatedPossibleRef]; ok && nil != dcgValue.Dir {
-			// scope ref w/out expansion or deprecated expansion
-			basePath = *dcgValue.Dir
-			// trim initial dir ref & interpolate remaining expression
-			expression = expression[possibleRefCloserIndex+1:]
+		if len(expression) > possibleRefCloserIndex+1 {
+			// evaluate deprecated path
+			deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
+			deprecatedPath, err := etd.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
+			if nil != err {
+				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
+			}
+
+			dirValue := filepath.Join(dirValue, deprecatedPath)
+			return &model.Value{Dir: &dirValue}, nil
 		}
+
+		return &model.Value{Dir: &dirValue}, nil
 	}
 
-	result, err := etd.interpolater.Interpolate(expression, scope, pkgHandle)
-	if nil != err {
-		return nil, err
-	}
-
-	expandedPath := filepath.Join(basePath, result)
-
-	return &model.Value{Dir: &expandedPath}, nil
+	return nil, fmt.Errorf("unable to evaluate %v to dir", expression)
 
 }

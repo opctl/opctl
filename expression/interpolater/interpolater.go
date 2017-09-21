@@ -7,9 +7,11 @@ import (
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
 
 const (
-	Operator  = '$'
-	RefOpener = '('
-	RefCloser = ')'
+	operator  = '$'
+	refOpener = '('
+	refCloser = ')'
+	RefStart  = string(operator) + string(refOpener)
+	RefEnd    = string(refCloser)
 )
 
 type Interpolater interface {
@@ -40,7 +42,7 @@ func (itp _Interpolater) Interpolate(
 	i := 0
 	for i < len(expression) {
 		switch {
-		case Operator == expression[i]:
+		case operator == expression[i]:
 			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", err
@@ -59,7 +61,7 @@ func (itp _Interpolater) Interpolate(
 }
 
 // tryDeRef tries to de reference from possibleRef.
-// It's assumed possibleRef doesn't contain an initial Operator.
+// It's assumed possibleRef doesn't contain an initial operator.
 //
 // returns the de referenced value (if any), number of bytes consumed, and any err
 func (itp _Interpolater) tryDeRef(
@@ -71,8 +73,8 @@ func (itp _Interpolater) tryDeRef(
 	i := 0
 	for i < len(possibleRef) {
 		switch {
-		case RefCloser == possibleRef[i]:
-			if len(refBuffer) > 0 && RefOpener == refBuffer[0] {
+		case refCloser == possibleRef[i]:
+			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
 				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope, pkgHandle)
 				if nil != err {
 					return "", 0, err
@@ -82,7 +84,7 @@ func (itp _Interpolater) tryDeRef(
 				}
 			}
 			refBuffer = append(refBuffer, possibleRef[i])
-		case Operator == possibleRef[i]:
+		case operator == possibleRef[i]:
 			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", 0, err

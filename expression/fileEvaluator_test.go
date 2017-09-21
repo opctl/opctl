@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -8,7 +9,6 @@ import (
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/pkg/errors"
 	"path/filepath"
 )
 
@@ -148,12 +148,51 @@ var _ = Context("EvalToFile", func() {
 			})
 		})
 		Context("expression is deprecated pkg fs ref", func() {
+			It("should call interpolater.Interpolate w/ expected args", func() {
+				/* arrange */
+				providedScope := map[string]*model.Value{}
+				providedExpression := "/dummy/deprecated/pkg-fs-ref"
+				providedPkgRef := new(pkg.FakeHandle)
+
+				fakeInterpolater := new(interpolater.Fake)
+				// err to trigger immediate return
+				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+
+				objectUnderTest := _fileEvaluator{
+					interpolater: fakeInterpolater,
+				}
+
+				/* act */
+				objectUnderTest.EvalToFile(
+					providedScope,
+					providedExpression,
+					providedPkgRef,
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
+
+				Expect(actualExpression).To(Equal(providedExpression))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+			})
 			Context("interpolater.Interpolate errors", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					providedExpression := "/deprecatedPkgFsRef"
+
 					fakeInterpolater := new(interpolater.Fake)
 					interpolateError := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateError)
+
+					expectedErr := fmt.Errorf(
+						"unable to evaluate %v to file; error was %v",
+						providedExpression,
+						interpolateError.Error(),
+					)
 
 					objectUnderTest := _fileEvaluator{
 						interpolater: fakeInterpolater,
@@ -162,14 +201,14 @@ var _ = Context("EvalToFile", func() {
 					/* act */
 					actualValue, actualErr := objectUnderTest.EvalToFile(
 						map[string]*model.Value{},
-						"/deprecatedPkgFsRef",
+						providedExpression,
 						new(pkg.FakeHandle),
 						"dummyScratchDir",
 					)
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
-					Expect(actualErr).To(Equal(interpolateError))
+					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
 			Context("interpolater.Interpolate doesn't error", func() {
@@ -204,99 +243,278 @@ var _ = Context("EvalToFile", func() {
 				})
 			})
 		})
-		It("should call interpolater.Interpolate w/ expected args", func() {
-			/* arrange */
-			providedScope := map[string]*model.Value{"dummyName": {}}
-			providedExpression := "dummyExpression"
-			providedPkgRef := new(pkg.FakeHandle)
-
-			fakeInterpolater := new(interpolater.Fake)
-			// err to trigger immediate return
-			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
-
-			objectUnderTest := _fileEvaluator{
-				interpolater: fakeInterpolater,
-			}
-
-			/* act */
-			objectUnderTest.EvalToFile(
-				providedScope,
-				providedExpression,
-				providedPkgRef,
-				"dummyScratchDir",
-			)
-
-			/* assert */
-			actualExpression,
-				actualScope,
-				actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
-
-			Expect(actualExpression).To(Equal(providedExpression))
-			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
-
-		})
-		Context("interpolater.Interpolate errs", func() {
-			It("should return expected err", func() {
+		Context("expression is scope ref w/ path", func() {
+			It("should call interpolater.Interpolate w/ expected args", func() {
 				/* arrange */
+				scopeName := "dummyScopeName"
+				providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
+
+				providedPath := "dummyPath"
+				providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
+				providedPkgRef := new(pkg.FakeHandle)
+
 				fakeInterpolater := new(interpolater.Fake)
-				interpolateErr := errors.New("dummyError")
-				fakeInterpolater.InterpolateReturns("", interpolateErr)
+				// err to trigger immediate return
+				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 				objectUnderTest := _fileEvaluator{
 					interpolater: fakeInterpolater,
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.EvalToFile(
-					map[string]*model.Value{},
-					"dummyExpression",
-					new(pkg.FakeHandle),
+				objectUnderTest.EvalToFile(
+					providedScope,
+					providedExpression,
+					providedPkgRef,
 					"dummyScratchDir",
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(interpolateErr))
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
 
+				Expect(actualExpression).To(Equal(providedPath))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+			})
+			Context("interpolater.Interpolate errs", func() {
+				It("should return expected result", func() {
+
+					/* arrange */
+					scopeName := "dummyScopeName"
+					providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
+
+					providedPath := "dummyPath"
+					providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
+
+					fakeInterpolater := new(interpolater.Fake)
+					interpolateErr := errors.New("dummyError")
+					fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+
+					expectedErr := fmt.Errorf(
+						"unable to evaluate path %v; error was %v",
+						providedPath,
+						interpolateErr.Error(),
+					)
+
+					objectUnderTest := _fileEvaluator{
+						interpolater: fakeInterpolater,
+					}
+
+					/* act */
+					actualValue, actualErr := objectUnderTest.EvalToFile(
+						providedScope,
+						providedExpression,
+						new(pkg.FakeHandle),
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualValue).To(BeNil())
+					Expect(actualErr).To(Equal(expectedErr))
+
+				})
+			})
+			Context("interpolater.Interpolate doesn't error", func() {
+				It("should call data.CoerceToFile w/ expected args", func() {
+					/* arrange */
+					scopeName := "dummyScopeName"
+					dirValue := "dummyDirValue"
+					providedScratchDir := "dummyScratchDir"
+
+					interpolatedPath := "dummyInterpolatedExpression"
+					fakeInterpolater := new(interpolater.Fake)
+					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
+
+					fakeData := new(data.Fake)
+
+					objectUnderTest := _fileEvaluator{
+						data:         fakeData,
+						interpolater: fakeInterpolater,
+					}
+
+					expectedFileValue := filepath.Join(dirValue, interpolatedPath)
+
+					/* act */
+					objectUnderTest.EvalToFile(
+						map[string]*model.Value{scopeName: {Dir: &dirValue}},
+						fmt.Sprintf("$(%v/path)", scopeName),
+						new(pkg.FakeHandle),
+						providedScratchDir,
+					)
+
+					/* assert */
+					actualValue, actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+					Expect(*actualValue).To(Equal(model.Value{File: &expectedFileValue}))
+					Expect(actualScratchDir).To(Equal(providedScratchDir))
+				})
+				Context("data.CoerceToFile doesn't err", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						scopeName := "dummyScopeName"
+						scopeValue := "dummyScopeValue"
+
+						fakeData := new(data.Fake)
+						coerceValue := model.Value{File: new(string)}
+						coerceErr := errors.New("dummyErr")
+						fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
+
+						objectUnderTest := _fileEvaluator{
+							data:         fakeData,
+							interpolater: new(interpolater.Fake),
+						}
+
+						/* act */
+						actualValue, actualErr := objectUnderTest.EvalToFile(
+							map[string]*model.Value{scopeName: {Dir: &scopeValue}},
+							fmt.Sprintf("$(%v/path)", scopeName),
+							new(pkg.FakeHandle),
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(*actualValue).To(Equal(coerceValue))
+						Expect(actualErr).To(Equal(coerceErr))
+					})
+				})
 			})
 		})
-		Context("interpolater.Interpolate doesn't err", func() {
-			It("should call data.CoerceToFile w/ expected args & return result", func() {
+		Context("expression is scope ref & deprecated path", func() {
+			It("should call interpolater.Interpolate w/ expected args", func() {
 				/* arrange */
-				providedScratchDir := "dummyScratchDir"
+				scopeName := "dummyScopeName"
+				providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
+
+				providedPath := "/dummyPath"
+				providedExpression := fmt.Sprintf("$(%v)%v", scopeName, providedPath)
+				providedPkgRef := new(pkg.FakeHandle)
 
 				fakeInterpolater := new(interpolater.Fake)
-
-				interpolatedValue := "dummyString"
-				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
-
-				fakeData := new(data.Fake)
-
-				coercedValue := &model.Value{String: new(string)}
-				fakeData.CoerceToFileReturns(coercedValue, nil)
+				// err to trigger immediate return
+				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 				objectUnderTest := _fileEvaluator{
-					data:         fakeData,
 					interpolater: fakeInterpolater,
 				}
 
 				/* act */
-				actualFile, actualErr := objectUnderTest.EvalToFile(
-					map[string]*model.Value{},
-					"dummyExpression",
-					new(pkg.FakeHandle),
-					providedScratchDir,
+				objectUnderTest.EvalToFile(
+					providedScope,
+					providedExpression,
+					providedPkgRef,
+					"dummyScratchDir",
 				)
 
 				/* assert */
-				actualValue,
-					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
 
-				Expect(*actualValue).To(Equal(model.Value{File: &interpolatedValue}))
-				Expect(actualScratchDir).To(Equal(actualScratchDir))
+				Expect(actualExpression).To(Equal(providedPath))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+			})
+			Context("interpolater.Interpolate errs", func() {
+				It("should return expected result", func() {
 
-				Expect(actualFile).To(Equal(coercedValue))
-				Expect(actualErr).To(BeNil())
+					/* arrange */
+					scopeName := "dummyScopeName"
+					providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
+
+					providedPath := "/dummyPath"
+					providedExpression := fmt.Sprintf("$(%v)%v", scopeName, providedPath)
+
+					fakeInterpolater := new(interpolater.Fake)
+					interpolateErr := errors.New("dummyError")
+					fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+
+					expectedErr := fmt.Errorf(
+						"unable to evaluate path %v; error was %v",
+						providedPath,
+						interpolateErr.Error(),
+					)
+
+					objectUnderTest := _fileEvaluator{
+						interpolater: fakeInterpolater,
+					}
+
+					/* act */
+					actualValue, actualErr := objectUnderTest.EvalToFile(
+						providedScope,
+						providedExpression,
+						new(pkg.FakeHandle),
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualValue).To(BeNil())
+					Expect(actualErr).To(Equal(expectedErr))
+
+				})
+			})
+			Context("interpolater.Interpolate doesn't error", func() {
+				It("should call data.CoerceToFile w/ expected args", func() {
+					/* arrange */
+					scopeName := "dummyScopeName"
+					dirValue := "dummyDirValue"
+					providedScratchDir := "dummyScratchDir"
+
+					interpolatedPath := "dummyInterpolatedPath"
+					fakeInterpolater := new(interpolater.Fake)
+					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
+
+					fakeData := new(data.Fake)
+
+					objectUnderTest := _fileEvaluator{
+						data:         fakeData,
+						interpolater: fakeInterpolater,
+					}
+
+					expectedFileValue := filepath.Join(dirValue, interpolatedPath)
+
+					/* act */
+					objectUnderTest.EvalToFile(
+						map[string]*model.Value{scopeName: {Dir: &dirValue}},
+						fmt.Sprintf("$(%v)/path", scopeName),
+						new(pkg.FakeHandle),
+						providedScratchDir,
+					)
+
+					/* assert */
+					actualValue, actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+					Expect(*actualValue).To(Equal(model.Value{File: &expectedFileValue}))
+					Expect(actualScratchDir).To(Equal(providedScratchDir))
+				})
+				Context("data.CoerceToFile doesn't err", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						scopeName := "dummyScopeName"
+						scopeValue := "dummyScopeValue"
+
+						fakeData := new(data.Fake)
+						coerceValue := model.Value{File: new(string)}
+						coerceErr := errors.New("dummyErr")
+						fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
+
+						objectUnderTest := _fileEvaluator{
+							data:         fakeData,
+							interpolater: new(interpolater.Fake),
+						}
+
+						/* act */
+						actualValue, actualErr := objectUnderTest.EvalToFile(
+							map[string]*model.Value{scopeName: {Dir: &scopeValue}},
+							fmt.Sprintf("$(%v)/path", scopeName),
+							new(pkg.FakeHandle),
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(*actualValue).To(Equal(coerceValue))
+						Expect(actualErr).To(Equal(coerceErr))
+					})
+				})
 			})
 		})
 	})
@@ -316,7 +534,7 @@ var _ = Context("EvalToFile", func() {
 
 			/* assert */
 			Expect(actualValue).To(BeNil())
-			Expect(actualErr).To(Equal(fmt.Errorf("unable to evaluate %+v to file; unsupported type", providedExpression)))
+			Expect(actualErr).To(Equal(fmt.Errorf("unable to evaluate %+v to file", providedExpression)))
 		})
 	})
 })

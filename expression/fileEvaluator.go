@@ -1,103 +1,123 @@
 package expression
 
 import (
-  "fmt"
-  "github.com/opspec-io/sdk-golang/data"
-  "github.com/opspec-io/sdk-golang/expression/interpolater"
-  "github.com/opspec-io/sdk-golang/model"
-  "path/filepath"
-  "strings"
+	"fmt"
+	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/expression/interpolater"
+	"github.com/opspec-io/sdk-golang/model"
+	"path/filepath"
+	"strings"
 )
 
 type fileEvaluator interface {
-  // EvalToFile evaluates an expression to a file value
-  // expression must be a type supported by data.CoerceToFile
-  // scratchDir will be used as the containing dir if file creation necessary
-  //
-  // Examples of valid file expressions:
-  // scope ref: $(scope-ref)
-  // scope ref w/ path expansion: $(scope-ref/file.txt)
-  // scope ref w/ deprecated path expansion: $(scope-ref)/file.txt
-  // pkg fs ref: $(/pkg-fs-ref)
-  // pkg fs ref w/ path expansion: $(/pkg-fs-ref/file.txt)
-  EvalToFile(
-    scope map[string]*model.Value,
-    expression interface{},
-    pkgHandle model.PkgHandle,
-    scratchDir string,
-  ) (*model.Value, error)
+	// EvalToFile evaluates an expression to a file value
+	// expression must be a type supported by data.CoerceToFile
+	// scratchDir will be used as the containing dir if file creation necessary
+	//
+	// Examples of valid file expressions:
+	// scope ref: $(scope-ref)
+	// scope ref w/ path: $(scope-ref/file.txt)
+	// scope ref w/ deprecated path: $(scope-ref)/file.txt
+	// pkg fs ref: $(/pkg-fs-ref)
+	// pkg fs ref w/ path: $(/pkg-fs-ref/file.txt)
+	EvalToFile(
+		scope map[string]*model.Value,
+		expression interface{},
+		pkgHandle model.PkgHandle,
+		scratchDir string,
+	) (*model.Value, error)
 }
 
 func newFileEvaluator() fileEvaluator {
-  return _fileEvaluator{
-    data:         data.New(),
-    interpolater: interpolater.New(),
-  }
+	return _fileEvaluator{
+		data:         data.New(),
+		interpolater: interpolater.New(),
+	}
 }
 
 type _fileEvaluator struct {
-  data         data.Data
-  interpolater interpolater.Interpolater
+	data         data.Data
+	interpolater interpolater.Interpolater
 }
 
 func (etf _fileEvaluator) EvalToFile(
-  scope map[string]*model.Value,
-  expression interface{},
-  pkgHandle model.PkgHandle,
-  scratchDir string,
+	scope map[string]*model.Value,
+	expression interface{},
+	pkgHandle model.PkgHandle,
+	scratchDir string,
 ) (*model.Value, error) {
-  switch expression := expression.(type) {
-  case float64:
-    return etf.data.CoerceToFile(&model.Value{Number: &expression}, scratchDir)
-  case map[string]interface{}:
-    return etf.data.CoerceToFile(&model.Value{Object: expression}, scratchDir)
-  case string:
-    if ref, ok := tryResolveExplicitRef(expression, scope); ok {
-      // scope ref w/out expansion
-      return etf.data.CoerceToFile(ref, scratchDir)
-    } else if strings.HasPrefix(expression, "/") {
-      // deprecated pkg path ref
-      pkgFsRefPath, err := etf.interpolater.Interpolate(
-        expression,
-        scope,
-        pkgHandle,
-      )
-      if nil != err {
-        return nil, err
-      }
+	switch expression := expression.(type) {
+	case float64:
+		return etf.data.CoerceToFile(&model.Value{Number: &expression}, scratchDir)
+	case map[string]interface{}:
+		return etf.data.CoerceToFile(&model.Value{Object: expression}, scratchDir)
+	case string:
 
-      pkgFsRefPath = filepath.Join(pkgHandle.Ref(), pkgFsRefPath)
-      return &model.Value{File: &pkgFsRefPath}, nil
-    }
+		// this block is gross but it's due to the deprecated syntax we need to handle
+		possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
+		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+			// scope ref w/out path
+			return etf.data.CoerceToFile(ref, scratchDir)
+		} else if strings.HasPrefix(expression, "/") {
+			// deprecated pkg fs ref
+			pkgFsRefPath, err := etf.interpolater.Interpolate(
+				expression,
+				scope,
+				pkgHandle,
+			)
+			if nil != err {
+				return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
+			}
 
-    possibleRefCloserIndex := strings.Index(expression, string(interpolater.RefCloser))
-    var basePath string
+			pkgFsRefPath = filepath.Join(pkgHandle.Ref(), pkgFsRefPath)
+			return &model.Value{File: &pkgFsRefPath}, nil
+		} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
-    if strings.HasPrefix(expression, string(interpolater.Operator+interpolater.RefOpener)) && possibleRefCloserIndex > 0 {
-      possibleRef := expression[2:possibleRefCloserIndex]
-      interpolatedPossibleRef, err := etf.interpolater.Interpolate(possibleRef, scope, pkgHandle)
-      if nil != err {
-        return nil, err
-      }
+			refExpression := expression[2:possibleRefCloserIndex]
+			refParts := strings.SplitN(refExpression, "/", 2)
+			var fileValue string
 
-      if dcgValue, ok := scope[interpolatedPossibleRef]; ok && nil != dcgValue.Dir {
-        // scope ref w/ deprecated path expansion
-        basePath = *dcgValue.Dir
-        // trim initial dir ref & interpolate remaining expression
-        expression = expression[possibleRefCloserIndex+1:]
-      }
-    }
+			if strings.HasPrefix(refExpression, "/") {
 
-    result, err := etf.interpolater.Interpolate(expression, scope, pkgHandle)
-    if nil != err {
-      return nil, err
-    }
+				// pkg fs ref
+				pkgFsRef, err := etf.interpolater.Interpolate(refExpression, scope, pkgHandle)
+				if nil != err {
+					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
+				}
+				fileValue = filepath.Join(pkgHandle.Ref(), pkgFsRef)
 
-    expandedPath := filepath.Join(basePath, result)
+			} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
 
-    return etf.data.CoerceToFile(&model.Value{File: &expandedPath}, scratchDir)
-  }
+				// scope ref
+				fileValue = *dcgValue.Dir
 
-  return nil, fmt.Errorf("unable to evaluate %+v to file; unsupported type", expression)
+			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
+
+				// scope ref w/ path
+				pathExpression := refParts[1]
+				path, err := etf.interpolater.Interpolate(pathExpression, scope, pkgHandle)
+				if nil != err {
+					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
+				}
+				fileValue = filepath.Join(*dcgValue.Dir, path)
+
+			}
+
+			if len(expression) > possibleRefCloserIndex+1 {
+				// evaluate deprecated path
+				deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
+				deprecatedPath, err := etf.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
+				if nil != err {
+					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
+				}
+
+				fileValue = filepath.Join(fileValue, deprecatedPath)
+			}
+
+			return etf.data.CoerceToFile(&model.Value{File: &fileValue}, scratchDir)
+		}
+	}
+
+	return nil, fmt.Errorf("unable to evaluate %+v to file", expression)
 
 }
