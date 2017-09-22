@@ -75,16 +75,16 @@ func (etf _fileEvaluator) EvalToFile(
 
 			refExpression := expression[2:possibleRefCloserIndex]
 			refParts := strings.SplitN(refExpression, "/", 2)
-			var fileValue string
 
-			if strings.HasPrefix(refExpression, "/") {
+			if strings.HasPrefix(refExpression, "/") && len(expression) == possibleRefCloserIndex+1 {
 
 				// pkg fs ref
 				pkgFsRef, err := etf.interpolater.Interpolate(refExpression, scope, pkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
-				fileValue = filepath.Join(pkgHandle.Ref(), pkgFsRef)
+				fileValue := filepath.Join(pkgHandle.Ref(), pkgFsRef)
+				return &model.Value{File: &fileValue}, nil
 
 			} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
 
@@ -112,27 +112,15 @@ func (etf _fileEvaluator) EvalToFile(
 				return &model.Value{File: &fileValue}, nil
 
 			}
+			// non-dir ref suffixed by ref(s) &/or non-refs
 
-			if len(expression) > possibleRefCloserIndex+1 {
-				// deprecated path
-				deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-				deprecatedPath, err := etf.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
-				}
-
-				fileValue = filepath.Join(fileValue, deprecatedPath)
-			}
-
-			return etf.data.CoerceToFile(&model.Value{File: &fileValue}, scratchDir)
-		} else {
-			// plain string
-			stringValue, err := etf.interpolater.Interpolate(expression, scope, pkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
-			}
-			return etf.data.CoerceToFile(&model.Value{String: &stringValue}, scratchDir)
 		}
+		// plain string
+		stringValue, err := etf.interpolater.Interpolate(expression, scope, pkgHandle)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
+		}
+		return etf.data.CoerceToFile(&model.Value{String: &stringValue}, scratchDir)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to file", expression)
