@@ -13,7 +13,7 @@
   ],
   "pluginsConfig": {
     "edit-link": {
-      "base": "https://github.com/opspec-io/spec/edit/master/spec",
+      "base": "https://github.com/opspec-io/spec/edit/master/docs",
       "label": "edit this page"
     },
     "ga": {
@@ -27,6 +27,9 @@
       ],
       "size": "small"
     }
+  },
+  "structure": {
+    "readme": "about.md"
   },
   "title": "opspec"
 }

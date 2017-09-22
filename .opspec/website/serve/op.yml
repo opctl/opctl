@@ -1,5 +1,5 @@
-name: serve-website
 description: serves the website locally
+name: website/serve
 inputs:
   srcDir:
     dir:

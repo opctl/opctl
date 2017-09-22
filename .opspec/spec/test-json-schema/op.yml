@@ -1,5 +1,5 @@
-description: tests the oai spec is valid
-name: test-oai-spec
+description: tests the json schema is valid
+name: spec/test-json-schema
 inputs:
   srcDir:
     dir:
@@ -12,10 +12,10 @@ run:
       - -ce
       - |
         echo "installing deps"
-        npm install swagger2openapi -g --quiet
+        npm install ajv-cli -g --quiet
 
-        echo "testing OpenAPI specs"
-        swagger2openapi -y node-api.spec.yml
+        echo "testing json schemas"
+        ajv compile -s "*.schema.json"
     dirs:
       /src: srcDir
     image: { ref: 'node:7.7' }
