@@ -7,38 +7,33 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type evalToFile interface {
-	// EvalToFile evaluates an expression to a file value
-	// expression must be a type supported by data.CoerceToFile
-	// scratchDir will be used as the containing dir if file creation necessary
-	EvalToFile(
+type stringEvaluator interface {
+	// EvalToString evaluates an expression to a string value
+	EvalToString(
 		scope map[string]*model.Value,
 		expression interface{},
 		pkgHandle model.PkgHandle,
-		scratchDir string,
 	) (*model.Value, error)
 }
 
-func newEvalToFile() evalToFile {
-	return _evalToFile{
+func newStringEvaluator() stringEvaluator {
+	return _stringEvaluator{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _evalToFile struct {
+type _stringEvaluator struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (itp _evalToFile) EvalToFile(
+func (ets _stringEvaluator) EvalToString(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
-	scratchDir string,
 ) (*model.Value, error) {
 	var value *model.Value
-	var err error
 
 	switch expression := expression.(type) {
 	case float64:
@@ -46,16 +41,23 @@ func (itp _evalToFile) EvalToFile(
 	case map[string]interface{}:
 		value = &model.Value{Object: expression}
 	case string:
-		if value, err = itp.interpolater.Interpolate(
-			expression,
-			scope,
-			pkgHandle,
-		); nil != err {
-			return nil, err
+		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+			value = ref
+		} else {
+			stringValue, err := ets.interpolater.Interpolate(
+				expression,
+				scope,
+				pkgHandle,
+			)
+			if nil != err {
+				return nil, err
+			}
+
+			value = &model.Value{String: &stringValue}
 		}
 	default:
-		return nil, fmt.Errorf("unable to evaluate %+v to file; unsupported type", expression)
+		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
-	return itp.data.CoerceToFile(value, scratchDir)
+	return ets.data.CoerceToString(value)
 }

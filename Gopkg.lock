@@ -47,7 +47,7 @@
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonlog","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "c5c0702a4d523071b3e41a13c233b6ec9e261b06"
+  revision = "777d4a1bf45c85db6931205d4adbe38a17c583d7"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -231,8 +231,8 @@
 [[projects]]
   name = "github.com/opencontainers/go-digest"
   packages = ["."]
-  revision = "aa2ec055abd10d26d539eb630a92241b781ce4bc"
-  version = "v1.0.0-rc0"
+  revision = "279bed98673dd5bef374d3b6e4b09e2af76183bf"
+  version = "v1.0.0-rc1"
 
 [[projects]]
   name = "github.com/opencontainers/image-spec"
@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "71433ca0edc36c9d3141600bf976bcff69b0190f"
+  revision = "76a0caa2f248f7be36c46958ab04c601628c7ca0"
 
 [[projects]]
   branch = "master"
@@ -280,7 +280,7 @@
   branch = "master"
   name = "github.com/sethgrid/pester"
   packages = ["."]
-  revision = "a86a2d88f4dc3c7dbf3a6a6bbbfb095690b834b6"
+  revision = "0af5bab1e1ea2860c5aef8e77427bab011d774d8"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -328,7 +328,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","proxy"]
-  revision = "8351a756f30f1297fe94bbf4b767ec589c6ea6d0"
+  revision = "b60f3a92103dfd93dfcb900ec77c6d0643510868"
 
 [[projects]]
   branch = "master"
@@ -340,7 +340,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "062cd7e4e68206d8bab9b18396626e855c992658"
+  revision = "2320a9c15898af1b1b24f99700d5c1e957f9d8cf"
 
 [[projects]]
   branch = "master"

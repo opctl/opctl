@@ -2,43 +2,42 @@
 package interpolater
 
 import (
-	"sync"
-
 	"github.com/opspec-io/sdk-golang/model"
+	"sync"
 )
 
 type Fake struct {
-	InterpolateStub        func(template string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error)
+	InterpolateStub        func(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (string, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
-		template  string
-		scope     map[string]*model.Value
-		pkgHandle model.PkgHandle
+		expression string
+		scope      map[string]*model.Value
+		pkgHandle  model.PkgHandle
 	}
 	interpolateReturns struct {
-		result1 *model.Value
+		result1 string
 		result2 error
 	}
 	interpolateReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 string
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(template string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (*model.Value, error) {
+func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value, pkgHandle model.PkgHandle) (string, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
-		template  string
-		scope     map[string]*model.Value
-		pkgHandle model.PkgHandle
-	}{template, scope, pkgHandle})
-	fake.recordInvocation("Interpolate", []interface{}{template, scope, pkgHandle})
+		expression string
+		scope      map[string]*model.Value
+		pkgHandle  model.PkgHandle
+	}{expression, scope, pkgHandle})
+	fake.recordInvocation("Interpolate", []interface{}{expression, scope, pkgHandle})
 	fake.interpolateMutex.Unlock()
 	if fake.InterpolateStub != nil {
-		return fake.InterpolateStub(template, scope, pkgHandle)
+		return fake.InterpolateStub(expression, scope, pkgHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,27 +54,27 @@ func (fake *Fake) InterpolateCallCount() int {
 func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value, model.PkgHandle) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
-	return fake.interpolateArgsForCall[i].template, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].pkgHandle
+	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].pkgHandle
 }
 
-func (fake *Fake) InterpolateReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) InterpolateReturns(result1 string, result2 error) {
 	fake.InterpolateStub = nil
 	fake.interpolateReturns = struct {
-		result1 *model.Value
+		result1 string
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) InterpolateReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) InterpolateReturnsOnCall(i int, result1 string, result2 error) {
 	fake.InterpolateStub = nil
 	if fake.interpolateReturnsOnCall == nil {
 		fake.interpolateReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 string
 			result2 error
 		})
 	}
 	fake.interpolateReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 string
 		result2 error
 	}{result1, result2}
 }

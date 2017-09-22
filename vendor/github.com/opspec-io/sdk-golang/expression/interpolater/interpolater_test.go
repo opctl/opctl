@@ -34,20 +34,20 @@ var _ = Context("Interpolate", func() {
 								Name     string
 								Template string
 								Scope    map[string]*model.Value
-								Expected *model.Value
+								Expected string
 							}{}
 							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
-								panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
+								panic(fmt.Errorf("error unmarshalling scenario.yml for %v; error was %v", path, err))
 							}
 
 							absPath, err := filepath.Abs(path)
 							if nil != err {
-								panic(fmt.Errorf("Error getting absPath for %v; error was %v", path, err))
+								panic(fmt.Errorf("error getting absPath for %v; error was %v", path, err))
 							}
 
 							pkgHandle, err := pkg.Resolve(absPath, pkgFsProvider)
 							if nil != err {
-								panic(fmt.Errorf("Error getting pkgHandle for %v; error was %v", path, err))
+								panic(fmt.Errorf("error getting pkgHandle for %v; error was %v", path, err))
 							}
 
 							for _, scenario := range scenarioDotYml {
@@ -57,21 +57,7 @@ var _ = Context("Interpolate", func() {
 										absFilePath := filepath.Join(absPath, *value.File)
 										scenario.Scope[name] = &model.Value{File: &absFilePath}
 									}
-									if nil != scenario.Expected.File {
-										absFilePath := filepath.Join(absPath, *scenario.Expected.File)
-										scenario.Expected.File = &absFilePath
-									}
-									// make dir refs absolute
-									if nil != value.Dir {
-										absDirPath := filepath.Join(absPath, *value.Dir)
-										scenario.Scope[name] = &model.Value{Dir: &absDirPath}
-									}
-									if nil != scenario.Expected.Dir {
-										absDirPath := filepath.Join(absPath, *scenario.Expected.Dir)
-										scenario.Expected.Dir = &absDirPath
-									}
 								}
-
 								/* act */
 								objectUnderTest := New()
 								actualResult, actualErr := objectUnderTest.Interpolate(
@@ -83,7 +69,7 @@ var _ = Context("Interpolate", func() {
 								/* assert */
 								description := fmt.Sprintf("scenario:\n  path: '%v'\n  name: '%v'", path, scenario.Name)
 								Expect(actualErr).To(BeNil(), description)
-								Expect(*actualResult).To(Equal(*scenario.Expected), description)
+								Expect(actualResult).To(Equal(scenario.Expected), description)
 							}
 						}
 					}

@@ -7,9 +7,7 @@
     string2:
       string:
         value2
-  expected:
-    string:
-      value1value2
+  expected: value1value2
 
 - name: at start
   template: $(string1)$(string2)suffix
@@ -20,9 +18,7 @@
     string2:
       string:
         value2
-  expected:
-    string:
-      value1value2suffix
+  expected: value1value2suffix
 
 - name: at end
   template: prefix$(string1)$(string2)
@@ -33,9 +29,7 @@
     string2:
       string:
         value2
-  expected:
-    string:
-      prefixvalue1value2
+  expected: prefixvalue1value2
 
 - name: within
   template: prefix$(string1)$(string2)suffix
@@ -46,6 +40,4 @@
     string2:
       string:
         value2
-  expected:
-    string:
-      prefixvalue1value2suffix
+  expected: prefixvalue1value2suffix

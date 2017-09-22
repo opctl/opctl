@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type evalToObject interface {
+type objectEvaluator interface {
 	// EvalToObject evaluates an expression to a object value
 	// expression must be a type supported by data.CoerceToObject
 	EvalToObject(
@@ -17,19 +17,19 @@ type evalToObject interface {
 	) (*model.Value, error)
 }
 
-func newEvalToObject() evalToObject {
-	return _evalToObject{
+func newObjectEvaluator() objectEvaluator {
+	return _objectEvaluator{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _evalToObject struct {
+type _objectEvaluator struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (itp _evalToObject) EvalToObject(
+func (eto _objectEvaluator) EvalToObject(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -42,17 +42,22 @@ func (itp _evalToObject) EvalToObject(
 	case map[string]interface{}:
 		return &model.Value{Object: expression}, nil
 	case string:
-		var err error
-		if value, err = itp.interpolater.Interpolate(
-			expression,
-			scope,
-			pkgHandle,
-		); nil != err {
-			return nil, err
+		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
+			value = ref
+		} else {
+			stringValue, err := eto.interpolater.Interpolate(
+				expression,
+				scope,
+				pkgHandle,
+			)
+			if nil != err {
+				return nil, err
+			}
+			value = &model.Value{String: &stringValue}
 		}
 	default:
 		return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 	}
 
-	return itp.data.CoerceToObject(value)
+	return eto.data.CoerceToObject(value)
 }
