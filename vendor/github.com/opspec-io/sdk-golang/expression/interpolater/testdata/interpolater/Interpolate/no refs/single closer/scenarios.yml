@@ -1,23 +1,15 @@
 - name: stand alone
   template: )
-  expected:
-    string:
-      )
+  expected: )
 
 - name: at start
   template: )suffix
-  expected:
-    string:
-      )suffix
+  expected: )suffix
 
 - name: at end
   template: prefix)
-  expected:
-    string:
-      prefix)
+  expected: prefix)
 
 - name: within
   template: prefix)
-  expected:
-    string:
-      prefix)
+  expected: prefix)

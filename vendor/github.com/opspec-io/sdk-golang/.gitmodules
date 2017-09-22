@@ -2,5 +2,5 @@
 	path = github.com/opspec-io/test-suite
 	url = https://github.com/opspec-io/test-suite
 [submodule "github.com/opspec-io/spec"]
-	path = github.com/opspec-io/spec/spec
+	path = github.com/opspec-io/spec
 	url = https://github.com/opspec-io/spec

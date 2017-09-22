@@ -4,9 +4,7 @@
     file1:
       file:
         file1.txt
-  expected:
-    file:
-      file1.txt
+  expected: value1
 
 - name: at start
   template: $(file1)suffix
@@ -14,9 +12,7 @@
     file1:
       file:
         file1.txt
-  expected:
-    string:
-      value1suffix
+  expected: value1suffix
 
 - name: at end
   template: prefix$(file1)
@@ -24,9 +20,7 @@
     file1:
       file:
         file1.txt
-  expected:
-    string:
-      prefixvalue1
+  expected: prefixvalue1
 
 - name: within
   template: prefix$(file1)suffix
@@ -34,6 +28,4 @@
     file1:
       file:
         file1.txt
-  expected:
-    string:
-      prefixvalue1suffix
+  expected: prefixvalue1suffix

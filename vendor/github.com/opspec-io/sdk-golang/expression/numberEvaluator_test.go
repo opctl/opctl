@@ -16,7 +16,7 @@ var _ = Context("EvalToNumber", func() {
 			/* arrange */
 			providedExpression := 3.3
 
-			objectUnderTest := _evalToNumber{}
+			objectUnderTest := _numberEvaluator{}
 
 			/* act */
 			actualNumber, actualErr := objectUnderTest.EvalToNumber(
@@ -39,9 +39,9 @@ var _ = Context("EvalToNumber", func() {
 
 			fakeInterpolater := new(interpolater.Fake)
 			// err to trigger immediate return
-			fakeInterpolater.InterpolateReturns(nil, errors.New("dummyError"))
+			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-			objectUnderTest := _evalToNumber{
+			objectUnderTest := _numberEvaluator{
 				interpolater: fakeInterpolater,
 			}
 
@@ -67,9 +67,9 @@ var _ = Context("EvalToNumber", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 				interpolateErr := errors.New("dummyError")
-				fakeInterpolater.InterpolateReturns(nil, interpolateErr)
+				fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-				objectUnderTest := _evalToNumber{
+				objectUnderTest := _numberEvaluator{
 					interpolater: fakeInterpolater,
 				}
 
@@ -90,15 +90,15 @@ var _ = Context("EvalToNumber", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 
-				interpolatedValue := model.Value{String: new(string)}
-				fakeInterpolater.InterpolateReturns(&interpolatedValue, nil)
+				interpolatedValue := "dummyString"
+				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
 				fakeData := new(data.Fake)
 
 				coercedValue := model.Value{Number: new(float64)}
 				fakeData.CoerceToNumberReturns(&coercedValue, nil)
 
-				objectUnderTest := _evalToNumber{
+				objectUnderTest := _numberEvaluator{
 					data:         fakeData,
 					interpolater: fakeInterpolater,
 				}
@@ -111,7 +111,7 @@ var _ = Context("EvalToNumber", func() {
 				)
 
 				/* assert */
-				Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(interpolatedValue))
+				Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 				Expect(*actualNumber).To(Equal(coercedValue))
 				Expect(actualErr).To(BeNil())
