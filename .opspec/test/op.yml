@@ -8,8 +8,8 @@ inputs:
 run:
   parallel:
     - op:
-        pkg: { ref: test-json-schema }
+        pkg: { ref: spec/test-json-schema }
         inputs: { srcDir }
     - op:
-        pkg: { ref: test-oai-spec }
+        pkg: { ref: spec/test-oai-spec }
         inputs: { srcDir }

@@ -1,0 +1,29 @@
+name: docs/compile
+description: compiles the docs
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: dir containing the doc source
+outputs:
+  srcDir:
+    dir:
+      description: dir containing the doc source
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing gitbook cli"
+        npm install svgexport gitbook-cli -g -q
+
+        echo "installing plugins"
+        gitbook install
+
+        echo "compiling website"
+        gitbook build . ../build/docs
+    dirs:
+      /src: srcDir
+    image: { ref: 'node:7.7' }
+    workDir: /src/docs

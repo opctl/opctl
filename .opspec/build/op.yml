@@ -16,10 +16,14 @@ run:
         inputs: { srcDir }
     - parallel:
       - op:
-          pkg: { ref: compile-spec }
+          pkg: { ref: docs/compile }
           inputs: { srcDir }
           outputs: { srcDir }
       - op:
-          pkg: { ref: compile-website }
+          pkg: { ref: spec/compile }
+          inputs: { srcDir }
+          outputs: { srcDir }
+      - op:
+          pkg: { ref: website/compile }
           inputs: { srcDir }
           outputs: { srcDir }

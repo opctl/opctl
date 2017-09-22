@@ -1,7 +1,7 @@
 # Change Log
 
-All notable changes to the spec will be documented in this file in
-accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
+All notable changes will be documented in this file in accordance with
+[![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
 ## \[Unreleased]
 
@@ -13,7 +13,7 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 
 ### Deprecated
 
-- pkg file/dir ref via `/path` syntax. Use new `$(/path)` syntax
+- pkg fs & scope references in/as op call args without `$(ref)` reference syntax
 
 ### Removed
 
@@ -26,7 +26,8 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 
 ### Changed
 
-- [node-api.spec.yml](spec/node-api.spec.yml) updated to OAS 3.0.0 syntax
+- [node-api.spec.yml](spec/node-api.spec.yml) updated to OAS 3.0.0
+  syntax
 
 
 ## \[0.1.4] - 2017-06-04

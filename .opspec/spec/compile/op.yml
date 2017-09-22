@@ -1,0 +1,36 @@
+name: spec/compile
+description: compiles the spec
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: dir containing the doc source
+outputs:
+  srcDir:
+    dir:
+      description: dir containing the doc source
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing gitbook pdf/ebook gen deps"
+        apt update
+        apt install -y calibre
+
+        echo "installing gitbook cli"
+        npm install svgexport gitbook-cli -g -q
+
+        echo "installing plugins"
+        gitbook install
+
+        echo "compiling website"
+        gitbook build . ../build/latest
+
+        echo "compiling pdf"
+        gitbook pdf . ../build/latest/opspec0.1.4.pdf
+    dirs:
+      /src: srcDir
+    image: { ref: 'node:7.7' }
+    workDir: /src/spec

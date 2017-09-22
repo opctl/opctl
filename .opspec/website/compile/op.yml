@@ -1,5 +1,5 @@
 description: Compiles the static website by running a metalsmith build
-name: compile-website
+name: website/compile
 inputs:
   srcDir:
     dir:
