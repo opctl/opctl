@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "76a0caa2f248f7be36c46958ab04c601628c7ca0"
+  revision = "22855e186920dddaaa683a9125ffd58e9eadd587"
 
 [[projects]]
   branch = "master"
@@ -328,7 +328,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","proxy"]
-  revision = "b60f3a92103dfd93dfcb900ec77c6d0643510868"
+  revision = "0744d001aa8470aaa53df28d32e5ceeb8af9bd70"
 
 [[projects]]
   branch = "master"
