@@ -14,16 +14,16 @@ for dir in $(find /src/github.com/opspec-io/test-suite/scenarios/pkg/**/ -type d
 do
   if [ -f "$dir/scenarios.yml" ]
   then
-    # 1) convert scenarios from yaml to json & filter to interpret scenarios
+    # 1) convert scenarios from yaml to json & filter to call scenarios
     # 2) run each scenario via sharness
-    scenarios=$(yaml < "$dir/scenarios.yml" | jq -c '.[] | select(.interpret)')
+    scenarios=$(yaml < "$dir/scenarios.yml" | jq -c '.[] | select(.call)')
     for scenario in "$scenarios"
       do
-      expect=$(echo "$scenario" | jq -r '.interpret.expect')
+      expect=$(echo "$scenario" | jq -r '.call.expect')
       name=$(echo "$scenario" | jq -r '.name? | select(. != null)')
 
       # generate args.yml from scenario scope
-      echo "$scenario" | jq 'select(.interpret.scope) | .interpret.scope[]' > /args.yml
+      echo "$scenario" | jq 'select(.call.scope) | .call.scope[]' > /args.yml
 
       scenario_description="
       pkg: $dir
