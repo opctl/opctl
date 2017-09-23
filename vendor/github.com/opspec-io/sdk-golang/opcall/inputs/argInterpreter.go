@@ -52,6 +52,12 @@ func (ai _argInterpreter) Interpret(
 	}
 
 	switch {
+	case nil != param.Array:
+		arrayValue, err := ai.expression.EvalToArray(scope, valueExpression, parentPkgHandle)
+		if nil != err {
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
+		}
+		return arrayValue, nil
 	case nil != param.File:
 		fileValue, err := ai.expression.EvalToFile(scope, valueExpression, parentPkgHandle, opScratchDir)
 		if nil != err {

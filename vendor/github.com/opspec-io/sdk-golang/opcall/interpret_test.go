@@ -26,39 +26,15 @@ var _ = Context("OpCall", func() {
 				}
 				rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
 
-				pendingScenarios := map[string]interface{}{
-					// these scenarios are currently pending;
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/file-input/string-arg/is-fs-ref/isnt-resolvable"):                               nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/object-arg"):                                                       nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/is-resolvable/isnt-coercible"):                nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-file/isnt-coercible"):   nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-object"):                nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/is-resolvable/refs-string/isnt-coercible"): nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/number-input/string-arg/isnt-ref/isnt-coercible"):                               nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-resolvable/isnt-coercible"):                nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-file/isnt-coercible"):   nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-resolvable/refs-string/isnt-coercible"): nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/string-input/string-arg/is-fs-ref/isnt-resolvable"):                             nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/string-input/string-arg/is-scope-ref/isnt-resolvable"):                          nil,
-					filepath.Join(rootPath, "run/op/inputs/explicitly-bound/input-undefined"):                                                               nil,
-					filepath.Join(rootPath, "run/op/inputs/implicitly-bound/input-undefined"):                                                               nil,
-				}
-
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {
-						_, isPending := pendingScenarios[path]
-						if !isPending && info.IsDir() {
+						if info.IsDir() {
 							scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
 							if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
 								/* arrange */
-
 								absPkgPath, err := filepath.Abs(path)
 								if nil != err {
-									panic(fmt.Errorf("Error getting absPkgPath %v; error was %v", path, err))
+									panic(fmt.Errorf("error getting absPkgPath %v; error was %v", path, err))
 								}
 
 								pkg := pkg.New()
@@ -67,7 +43,7 @@ var _ = Context("OpCall", func() {
 									pkg.NewFSProvider(),
 								)
 								if nil != err {
-									panic(fmt.Errorf("Error resolving pkg for %v; error was %v", path, err))
+									panic(fmt.Errorf("error resolving pkg for %v; error was %v", path, err))
 								}
 
 								scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
@@ -83,7 +59,7 @@ var _ = Context("OpCall", func() {
 									}
 								}{}
 								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
-									panic(fmt.Errorf("Error unmarshalling scenario.yml for %v; error was %v", path, err))
+									panic(fmt.Errorf("error unmarshalling scenario.yml for %v; error was %v", path, err))
 								}
 
 								for _, scenario := range scenarioDotYml {

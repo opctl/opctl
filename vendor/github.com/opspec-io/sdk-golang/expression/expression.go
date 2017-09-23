@@ -10,6 +10,7 @@ import (
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Expression
 
 type Expression interface {
+	arrayEvaluator
 	dirEvaluator
 	fileEvaluator
 	numberEvaluator
@@ -19,6 +20,7 @@ type Expression interface {
 
 func New() Expression {
 	return _Expression{
+		arrayEvaluator:  newArrayEvaluator(),
 		dirEvaluator:    newDirEvaluator(),
 		fileEvaluator:   newFileEvaluator(),
 		numberEvaluator: newNumberEvaluator(),
@@ -28,6 +30,7 @@ func New() Expression {
 }
 
 type _Expression struct {
+	arrayEvaluator
 	dirEvaluator
 	fileEvaluator
 	numberEvaluator

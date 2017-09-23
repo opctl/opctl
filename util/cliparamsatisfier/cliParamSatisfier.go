@@ -74,6 +74,21 @@ func (this _CLIParamSatisfier) Satisfy(
 			case nil == rawArg:
 				// handle nil (returned by inputSourcer.Source for static defaults)
 				break paramLoop
+			case nil != param.Array:
+				argValue := []interface{}{}
+				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
+				if nil != err {
+					// param not satisfied; notify & re-attempt!
+					this.notifyOfArgErrors([]error{err}, paramName)
+					continue
+				}
+				err = json.Unmarshal(argJsonBytes, &argValue)
+				if nil != err {
+					// param not satisfied; notify & re-attempt!
+					this.notifyOfArgErrors([]error{err}, paramName)
+					continue
+				}
+				arg = &model.Value{Array: argValue}
 			case nil != param.Dir:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {

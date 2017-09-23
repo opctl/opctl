@@ -47,7 +47,7 @@
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonlog","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "ba317637de9b9918cdc2139466dd51c6200bd158"
+  revision = "c982ee805d895a4fc2bf01f2d1d8afa06b408dd0"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -207,8 +207,8 @@
 [[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
-  version = "v0.0.2"
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
 
 [[projects]]
   branch = "master"
@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "0c78c9c876432d86fc292d8522cb665255e244e9"
+  revision = "7d5dc66a92f8421f2512b82eafd41b3e8683205e"
 
 [[projects]]
   branch = "master"
@@ -322,7 +322,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["curve25519","ed25519","ed25519/internal/edwards25519","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "7d9177d70076375b9a59c8fde23d52d9c4a7ecd5"
+  revision = "847319b7fc94cab682988f93da778204da164588"
 
 [[projects]]
   branch = "master"

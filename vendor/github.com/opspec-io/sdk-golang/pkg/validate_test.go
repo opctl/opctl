@@ -19,18 +19,9 @@ var _ = Describe("Validate", func() {
 		It("should return result fulfilling scenario.validate.expect", func() {
 			rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
 
-			pendingScenarios := map[string]interface{}{
-				// these scenarios are currently pending;
-				filepath.Join(rootPath, "inputs/dir/default/is-file"):                  nil,
-				filepath.Join(rootPath, "inputs/file/default/is-dir"):                  nil,
-				filepath.Join(rootPath, "inputs/object/constraints/patternproperties"): nil,
-				filepath.Join(rootPath, "inputs/object/constraints/properties"):        nil,
-			}
-
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
-					_, isPending := pendingScenarios[path]
-					if !isPending && info.IsDir() {
+					if info.IsDir() {
 						scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
 						if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
 							/* arrange */
@@ -47,7 +38,7 @@ var _ = Describe("Validate", func() {
 
 							description := fmt.Sprintf("scenario '%v'", path)
 							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
-								panic(fmt.Errorf("Error unmarshalling %v; error was %v", description, err))
+								panic(fmt.Errorf("error unmarshalling %v; error was %v", description, err))
 							}
 
 							for _, scenario := range scenarioDotYml {

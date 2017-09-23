@@ -2,11 +2,25 @@
 package data
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
+	CoerceToArrayStub        func(value *model.Value) (*model.Value, error)
+	coerceToArrayMutex       sync.RWMutex
+	coerceToArrayArgsForCall []struct {
+		value *model.Value
+	}
+	coerceToArrayReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	coerceToArrayReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	CoerceToFileStub        func(value *model.Value, scratchDir string) (*model.Value, error)
 	coerceToFileMutex       sync.RWMutex
 	coerceToFileArgsForCall []struct {
@@ -74,6 +88,57 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) CoerceToArray(value *model.Value) (*model.Value, error) {
+	fake.coerceToArrayMutex.Lock()
+	ret, specificReturn := fake.coerceToArrayReturnsOnCall[len(fake.coerceToArrayArgsForCall)]
+	fake.coerceToArrayArgsForCall = append(fake.coerceToArrayArgsForCall, struct {
+		value *model.Value
+	}{value})
+	fake.recordInvocation("CoerceToArray", []interface{}{value})
+	fake.coerceToArrayMutex.Unlock()
+	if fake.CoerceToArrayStub != nil {
+		return fake.CoerceToArrayStub(value)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.coerceToArrayReturns.result1, fake.coerceToArrayReturns.result2
+}
+
+func (fake *Fake) CoerceToArrayCallCount() int {
+	fake.coerceToArrayMutex.RLock()
+	defer fake.coerceToArrayMutex.RUnlock()
+	return len(fake.coerceToArrayArgsForCall)
+}
+
+func (fake *Fake) CoerceToArrayArgsForCall(i int) *model.Value {
+	fake.coerceToArrayMutex.RLock()
+	defer fake.coerceToArrayMutex.RUnlock()
+	return fake.coerceToArrayArgsForCall[i].value
+}
+
+func (fake *Fake) CoerceToArrayReturns(result1 *model.Value, result2 error) {
+	fake.CoerceToArrayStub = nil
+	fake.coerceToArrayReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) CoerceToArrayReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.CoerceToArrayStub = nil
+	if fake.coerceToArrayReturnsOnCall == nil {
+		fake.coerceToArrayReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.coerceToArrayReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) CoerceToFile(value *model.Value, scratchDir string) (*model.Value, error) {
@@ -333,6 +398,8 @@ func (fake *Fake) ValidateReturnsOnCall(i int, result1 []error) {
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.coerceToArrayMutex.RLock()
+	defer fake.coerceToArrayMutex.RUnlock()
 	fake.coerceToFileMutex.RLock()
 	defer fake.coerceToFileMutex.RUnlock()
 	fake.coerceToNumberMutex.RLock()

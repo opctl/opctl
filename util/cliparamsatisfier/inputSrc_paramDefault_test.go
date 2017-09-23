@@ -36,6 +36,28 @@ var _ = Describe("paramDefaultInputSrc", func() {
 				})
 			})
 			Context("input not yet read", func() {
+				Context("input is array", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						inputName := "dummyInputName"
+						paramDefault := []interface{}{}
+						param := &model.Param{
+							Array: &model.ArrayParam{Default: paramDefault},
+						}
+
+						inputSrcFactory := _InputSrcFactory{}
+						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
+							map[string]*model.Param{inputName: param},
+						)
+
+						/* act */
+						actualValue, actualOk := objectUnderTest.ReadString(inputName)
+
+						/* assert */
+						Expect(actualValue).To(BeNil())
+						Expect(actualOk).To(BeTrue())
+					})
+				})
 				Context("input is dir", func() {
 					Context("default is abs path", func() {
 						It("should return expected result", func() {

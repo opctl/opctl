@@ -112,7 +112,67 @@ var _ = Context("argInterpreter", func() {
 					Expect(actualError).To(BeNil())
 				})
 			})
-			Context("Input is Dir", func() {
+			Context("Input is array", func() {
+				It("should call expression.EvalToArray w/ expected args", func() {
+					/* arrange */
+					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
+					providedExpression := "[dummyItem]"
+					providedPkgHandle := new(pkg.FakeHandle)
+
+					fakeExpression := new(expression.Fake)
+
+					fakeExpression.EvalToArrayReturns(nil, errors.New("dummyError"))
+
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
+
+					/* act */
+					objectUnderTest.Interpret(
+						"dummyName",
+						providedExpression,
+						&model.Param{Array: &model.ArrayParam{}},
+						providedPkgHandle,
+						providedScope,
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					actualScope,
+						actualExpression,
+						actualPkgHandle := fakeExpression.EvalToArrayArgsForCall(0)
+
+					Expect(actualScope).To(Equal(providedScope))
+					Expect(actualExpression).To(Equal(providedExpression))
+					Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+
+				})
+				It("should return expected results", func() {
+					fakeExpression := new(expression.Fake)
+
+					arrayValue := new(model.Value)
+					fakeExpression.EvalToArrayReturns(arrayValue, nil)
+
+					objectUnderTest := _argInterpreter{
+						expression: fakeExpression,
+					}
+
+					/* act */
+					actualResult, actualError := objectUnderTest.Interpret(
+						"dummyName",
+						"dummyValue",
+						&model.Param{Array: &model.ArrayParam{}},
+						new(pkg.FakeHandle),
+						map[string]*model.Value{},
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualResult).To(Equal(arrayValue))
+					Expect(actualError).To(BeNil())
+				})
+			})
+			Context("Input is dir", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					fakeExpression := new(expression.Fake)
