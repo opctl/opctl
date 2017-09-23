@@ -57,40 +57,24 @@ type ObjectParam struct {
 // ObjectConstraints represents constraints of a ObjectParam
 type ObjectConstraints struct {
 	// json struct tags used for validating via gojsonschema
-	AdditionalProperties *JSONSchema              `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
-	AllOf                []*ObjectConstraints     `json:"allOf,omitempty" yaml:"allOf,omitempty"`
-	AnyOf                []*ObjectConstraints     `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
-	Enum                 []map[string]interface{} `json:"enum,omitempty" yaml:"enum,omitempty"`
-	MaxProperties        int                      `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
-	MinProperties        int                      `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
-	Not                  *ObjectConstraints       `json:"not,omitempty" yaml:"not,omitempty"`
-	OneOf                []*ObjectConstraints     `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
-	PatternProperties    map[string]*JSONSchema   `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
-	Properties           map[string]*JSONSchema   `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Required             []string                 `json:"required,omitempty" yaml:"required,omitempty"`
+	AdditionalProperties *TypeConstraints            `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
+	AllOf                []*ObjectConstraints        `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf                []*ObjectConstraints        `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
+	Enum                 []map[string]interface{}    `json:"enum,omitempty" yaml:"enum,omitempty"`
+	MaxProperties        int                         `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
+	MinProperties        int                         `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
+	Not                  *ObjectConstraints          `json:"not,omitempty" yaml:"not,omitempty"`
+	OneOf                []*ObjectConstraints        `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
+	PatternProperties    map[string]*TypeConstraints `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
+	Properties           map[string]*TypeConstraints `json:"properties,omitempty" yaml:"properties,omitempty"`
+	Required             []string                    `json:"required,omitempty" yaml:"required,omitempty"`
 }
 
-// JSONSchema represents a JSON Schema
-type JSONSchema struct {
-	// json struct tags used for validating via gojsonschema
-	AdditionalProperties *JSONSchema            `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
-	AllOf                []*JSONSchema          `json:"allOf,omitempty" yaml:"allOf,omitempty"`
-	AnyOf                []*JSONSchema          `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
-	Enum                 []interface{}          `json:"enum,omitempty" yaml:"enum,omitempty"`
-	Format               string                 `json:"format,omitempty" yaml:"format,omitempty"`
-	Maximum              float64                `json:"maximum,omitempty" yaml:"maximum,omitempty"`
-	MaxLength            int                    `json:"maxLength,omitempty" yaml:"maxLength,omitempty"`
-	MaxProperties        int                    `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
-	Minimum              float64                `json:"minimum,omitempty" yaml:"minimum,omitempty"`
-	MinLength            int                    `json:"minLength,omitempty" yaml:"minLength,omitempty"`
-	MinProperties        int                    `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
-	MultipleOf           float64                `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
-	Not                  *JSONSchema            `json:"not,omitempty" yaml:"not,omitempty"`
-	OneOf                []*JSONSchema          `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
-	Pattern              string                 `json:"pattern,omitempty" yaml:"pattern,omitempty"`
-	PatternProperties    map[string]*JSONSchema `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
-	Properties           map[string]*JSONSchema `json:"properties,omitempty" yaml:"properties,omitempty"`
-	Required             []string               `json:"required,omitempty" yaml:"required,omitempty"`
+// TypeConstraints represents data type constraints
+type TypeConstraints struct {
+	NumberConstraints
+	ObjectConstraints
+	StringConstraints
 }
 
 // SocketParam represents a parameter of type socket

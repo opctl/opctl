@@ -56,8 +56,10 @@ var _ = Context("Validate", func() {
 							providedParam := &model.Param{
 								Object: &model.ObjectParam{
 									Constraints: &model.ObjectConstraints{
-										AdditionalProperties: &model.JSONSchema{
-											MinLength: 2,
+										AdditionalProperties: &model.TypeConstraints{
+											StringConstraints: model.StringConstraints{
+												MinLength: 2,
+											},
 										},
 									},
 								},
@@ -90,8 +92,10 @@ var _ = Context("Validate", func() {
 							providedParam := &model.Param{
 								Object: &model.ObjectParam{
 									Constraints: &model.ObjectConstraints{
-										AdditionalProperties: &model.JSONSchema{
-											Pattern: providedValueObjectProp1Value,
+										AdditionalProperties: &model.TypeConstraints{
+											StringConstraints: model.StringConstraints{
+												Pattern: providedValueObjectProp1Value,
+											},
 										},
 									},
 								},
@@ -126,8 +130,10 @@ var _ = Context("Validate", func() {
 							providedParam := &model.Param{
 								Object: &model.ObjectParam{
 									Constraints: &model.ObjectConstraints{
-										AdditionalProperties: &model.JSONSchema{
-											Pattern: pattern,
+										AdditionalProperties: &model.TypeConstraints{
+											StringConstraints: model.StringConstraints{
+												Pattern: pattern,
+											},
 										},
 									},
 								},
@@ -753,8 +759,10 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									PatternProperties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: 2},
+									PatternProperties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: 2},
+										},
 									},
 								},
 							},
@@ -789,9 +797,13 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									PatternProperties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: 2},
-										providedValueObjectProp2Name: {MaxLength: maxLength},
+									PatternProperties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: 2},
+										},
+										providedValueObjectProp2Name: {
+											StringConstraints: model.StringConstraints{MaxLength: maxLength},
+										},
 									},
 								},
 							},
@@ -844,9 +856,13 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									PatternProperties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: minLength},
-										providedValueObjectProp2Name: {MaxLength: maxLength},
+									PatternProperties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: minLength},
+										},
+										providedValueObjectProp2Name: {
+											StringConstraints: model.StringConstraints{MaxLength: maxLength},
+										},
 									},
 								},
 							},
@@ -899,8 +915,10 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									Properties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: 2},
+									Properties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: 2},
+										},
 									},
 								},
 							},
@@ -935,9 +953,13 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									Properties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: 2},
-										providedValueObjectProp2Name: {MaxLength: maxLength},
+									Properties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: 2},
+										},
+										providedValueObjectProp2Name: {
+											StringConstraints: model.StringConstraints{MaxLength: maxLength},
+										},
 									},
 								},
 							},
@@ -974,9 +996,13 @@ var _ = Context("Validate", func() {
 						providedParam := &model.Param{
 							Object: &model.ObjectParam{
 								Constraints: &model.ObjectConstraints{
-									Properties: map[string]*model.JSONSchema{
-										providedValueObjectProp1Name: {MinLength: minLength},
-										providedValueObjectProp2Name: {MaxLength: maxLength},
+									Properties: map[string]*model.TypeConstraints{
+										providedValueObjectProp1Name: {
+											StringConstraints: model.StringConstraints{MinLength: minLength},
+										},
+										providedValueObjectProp2Name: {
+											StringConstraints: model.StringConstraints{MaxLength: maxLength},
+										},
 									},
 								},
 							},
