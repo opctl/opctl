@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/0.1.5/pkg-manifest.schema.json",
   "title": "packageManifest",
   "description": "Manifest for a package",
   "properties": {
@@ -219,47 +218,39 @@
           "description": "JSON Schema [properties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.16)",
           "type": "object",
           "additionalProperties": {
-            "$ref": "http://json-schema.org/draft-04/schema#"
+            "$ref": "#/definitions/typeConstraints"
           }
         },
         "patternProperties": {
           "description": "JSON Schema [patternProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.17)",
           "type": "object",
           "additionalProperties": {
-            "$ref": "http://json-schema.org/draft-04/schema#"
+            "$ref": "#/definitions/typeConstraints"
           }
         },
         "additionalProperties": {
           "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.18)",
-          "type": "object",
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "$ref": "http://json-schema.org/draft-04/schema#"
-              }
-            ]
-          }
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/typeConstraints"
+            }
+          ]
         },
         "dependencies": {
           "description": "JSON Schema [dependencies keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.19)",
-          "type": "object",
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "type": "object",
-                "$ref": "http://json-schema.org/draft-04/schema#"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+          "oneOf": [
+            {
+              "$ref": "#/definitions/typeConstraints"
+            },
+            {
+              "items": {
+                "type": "string"
               }
-            ]
-          }
+            }
+          ]
         },
         "enum": {
           "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
@@ -532,6 +523,21 @@
         }
       },
       "additionalProperties": false
+    },
+    "typeConstraints": {
+      "title": "typeConstraints",
+      "description": "Parameter constraints",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/numberConstraints"
+        },
+        {
+          "$ref": "#/definitions/objectConstraints"
+        },
+        {
+          "$ref": "#/definitions/stringConstraints"
+        }
+      ]
     },
     "scg": {
       "title": "scg",
