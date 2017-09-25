@@ -34,6 +34,8 @@ func (c _coerceToNumber) CoerceToNumber(
 	switch {
 	case nil == value:
 		return &model.Value{Number: new(float64)}, nil
+	case nil != value.Array:
+		return nil, errors.New("unable to coerce array to number; incompatible types")
 	case nil != value.Dir:
 		return nil, errors.New("unable to coerce dir to number; incompatible types")
 	case nil != value.File:

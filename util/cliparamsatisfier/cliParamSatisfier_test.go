@@ -43,6 +43,50 @@ var _ = Context("parameterSatisfier", func() {
 
 			Expect(actualInputNames).To(Equal(expectedInputNames))
 		})
+		Context("param.Array isn't nil", func() {
+			Context("value isn't nil", func() {
+
+				It("should call inputs.validate w/ expected args", func() {
+					/* arrange */
+					providedInputSourcer := new(FakeInputSourcer)
+
+					input1Name := "input1Name"
+					providedInputs := map[string]*model.Param{
+						input1Name: {Array: &model.ArrayParam{}},
+					}
+
+					expectedValues := map[string]*model.Value{
+						input1Name: {
+							Array: []interface{}{"dummyItem"},
+						},
+					}
+
+					valueBytes, err := json.Marshal(expectedValues[input1Name].Array)
+					if nil != err {
+						Fail(err.Error())
+					}
+
+					valueString := string(valueBytes)
+					providedInputSourcer.SourceReturns(&valueString, true)
+
+					fakeInputs := new(inputs.Fake)
+
+					objectUnderTest := _CLIParamSatisfier{
+						cliExiter: new(cliexiter.Fake),
+						cliOutput: new(clioutput.Fake),
+						inputs:    fakeInputs,
+					}
+
+					/* act */
+					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+					/* assert */
+					actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+					Expect(actualValues).To(Equal(expectedValues))
+					Expect(actualParams).To(Equal(providedInputs))
+				})
+			})
+		})
 		Context("param.Object isn't nil", func() {
 			Context("value isn't nil", func() {
 

@@ -33,6 +33,8 @@ func (this paramDefaultInputSrc) ReadString(
 		this.readHistory[inputName] = struct{}{}
 
 		switch {
+		case nil != inputValue.Array && nil != inputValue.Array.Default:
+			return nil, true
 		case nil != inputValue.Dir && nil != inputValue.Dir.Default:
 			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
 				// defaulted to pkg dir

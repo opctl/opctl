@@ -36,6 +36,13 @@ func (c _coerceToString) CoerceToString(
 	switch {
 	case nil == value:
 		return &model.Value{String: new(string)}, nil
+	case nil != value.Array:
+		arrayBytes, err := c.json.Marshal(value.Array)
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce array to string; error was %v", err.Error())
+		}
+		arrayString := string(arrayBytes)
+		return &model.Value{String: &arrayString}, nil
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
 	case nil != value.File:

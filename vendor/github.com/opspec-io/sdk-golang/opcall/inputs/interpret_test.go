@@ -12,6 +12,74 @@ import (
 var _ = Context("inputs", func() {
 	Context("Interpret", func() {
 		Context("input param w/out arg", func() {
+			Context("param is array", func() {
+				Context("default exists", func() {
+					It("should set input to default", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := []interface{}{}
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {Array: &model.ArrayParam{Default: providedInputDefault}},
+						}
+
+						objectUnderTest := _Inputs{
+							data: new(data.Fake),
+						}
+
+						expectedInputs := map[string]*model.Value{
+							providedInputName: {Array: providedInputDefault},
+						}
+
+						/* act */
+						actualInputs, _ := objectUnderTest.Interpret(
+							map[string]interface{}{},
+							providedInputParams,
+							new(pkg.FakeHandle),
+							"dummyPkgRef",
+							map[string]*model.Value{},
+							"dummyOpScratchDir",
+						)
+
+						/* assert */
+						Expect(actualInputs).To(Equal(expectedInputs))
+					})
+					It("should call data.Validate w/ expected args", func() {
+						/* arrange */
+						providedInputName := "inputName"
+						providedInputDefault := []interface{}{}
+
+						providedInputParams := map[string]*model.Param{
+							providedInputName: {Array: &model.ArrayParam{Default: providedInputDefault}},
+						}
+
+						expectedParam := providedInputParams[providedInputName]
+						expectedInput := &model.Value{Array: providedInputDefault}
+
+						fakeData := new(data.Fake)
+
+						objectUnderTest := _Inputs{
+							data: fakeData,
+						}
+
+						/* act */
+						objectUnderTest.Interpret(
+							map[string]interface{}{},
+							providedInputParams,
+							new(pkg.FakeHandle),
+							"dummyPkgRef",
+							map[string]*model.Value{},
+							"dummyOpScratchDir",
+						)
+
+						/* assert */
+						actualInput, actualParam := fakeData.ValidateArgsForCall(0)
+
+						Expect(actualInput).To(Equal(expectedInput))
+						Expect(actualParam).To(Equal(expectedParam))
+					})
+				})
+			})
 			Context("param is dir", func() {
 				Context("default exists", func() {
 					It("should set input to default", func() {
