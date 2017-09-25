@@ -10,6 +10,7 @@ All notable changes will be documented in this file in accordance with
 - [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
 - [Support binding strings &/or numbers to/from container files](https://github.com/opspec-io/spec/issues/131)
 - [Add support for object param type](https://github.com/opspec-io/spec/issues/65)
+- [Add support for array param type](https://github.com/opspec-io/spec/issues/160)
 
 ### Deprecated
 

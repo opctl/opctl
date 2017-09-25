@@ -30,6 +30,73 @@
   ],
   "additionalProperties": false,
   "definitions": {
+    "arrayParam": {
+      "title": "arrayParam",
+      "description": "Array parameter of an op",
+      "type": "array",
+      "properties": {
+        "array": {
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "default": {
+              "type": "array"
+            },
+            "isSecret": {
+              "description": "If the array is secret",
+              "type": "boolean"
+            },
+            "constraints": {
+              "$ref": "#/definitions/arrayConstraints"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "array"
+      ]
+    },
+    "arrayConstraints": {
+      "title": "arrayConstraints",
+      "type": "array",
+      "properties": {
+        "maxItems": {
+          "description": "JSON Schema [maxItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.10)",
+          "type": "integer",
+          "minimum": 0
+        },
+        "minItems": {
+          "description": "JSON Schema [minItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.11)",
+          "type": "integer",
+          "minimum": 0
+        },
+        "items": {
+          "description": "JSON Schema [items keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.9)",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/typeConstraints"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/typeConstraints"
+              }
+            }
+          ]
+        },
+        "additionalItems": {
+          "description": "JSON Schema [additionalItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.10)",
+          "$ref": "#/definitions/typeConstraints"
+        },
+        "uniqueItems": {
+          "description": "JSON Schema [uniqueItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.13)",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "dirParam": {
       "title": "dirParam",
       "description": "Directory parameter of an op",
@@ -502,6 +569,9 @@
         "[-_.a-zA-Z0-9]+": {
           "oneOf": [
             {
+              "$ref": "#/definitions/arrayParam"
+            },
+            {
               "$ref": "#/definitions/dirParam"
             },
             {
@@ -528,6 +598,9 @@
       "title": "typeConstraints",
       "description": "Parameter constraints",
       "oneOf": [
+        {
+          "$ref": "#/definitions/arrayConstraints"
+        },
         {
           "$ref": "#/definitions/numberConstraints"
         },
