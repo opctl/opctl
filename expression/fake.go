@@ -7,6 +7,21 @@ import (
 )
 
 type Fake struct {
+	EvalToArrayStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
+	evalToArrayMutex       sync.RWMutex
+	evalToArrayArgsForCall []struct {
+		scope      map[string]*model.Value
+		expression interface{}
+		pkgHandle  model.PkgHandle
+	}
+	evalToArrayReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	evalToArrayReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	EvalToDirStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error)
 	evalToDirMutex       sync.RWMutex
 	evalToDirArgsForCall []struct {
@@ -85,6 +100,59 @@ type Fake struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *Fake) EvalToArray(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
+	fake.evalToArrayMutex.Lock()
+	ret, specificReturn := fake.evalToArrayReturnsOnCall[len(fake.evalToArrayArgsForCall)]
+	fake.evalToArrayArgsForCall = append(fake.evalToArrayArgsForCall, struct {
+		scope      map[string]*model.Value
+		expression interface{}
+		pkgHandle  model.PkgHandle
+	}{scope, expression, pkgHandle})
+	fake.recordInvocation("EvalToArray", []interface{}{scope, expression, pkgHandle})
+	fake.evalToArrayMutex.Unlock()
+	if fake.EvalToArrayStub != nil {
+		return fake.EvalToArrayStub(scope, expression, pkgHandle)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.evalToArrayReturns.result1, fake.evalToArrayReturns.result2
+}
+
+func (fake *Fake) EvalToArrayCallCount() int {
+	fake.evalToArrayMutex.RLock()
+	defer fake.evalToArrayMutex.RUnlock()
+	return len(fake.evalToArrayArgsForCall)
+}
+
+func (fake *Fake) EvalToArrayArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
+	fake.evalToArrayMutex.RLock()
+	defer fake.evalToArrayMutex.RUnlock()
+	return fake.evalToArrayArgsForCall[i].scope, fake.evalToArrayArgsForCall[i].expression, fake.evalToArrayArgsForCall[i].pkgHandle
+}
+
+func (fake *Fake) EvalToArrayReturns(result1 *model.Value, result2 error) {
+	fake.EvalToArrayStub = nil
+	fake.evalToArrayReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToArrayReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.EvalToArrayStub = nil
+	if fake.evalToArrayReturnsOnCall == nil {
+		fake.evalToArrayReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.evalToArrayReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error) {
@@ -356,6 +424,8 @@ func (fake *Fake) EvalToStringReturnsOnCall(i int, result1 *model.Value, result2
 func (fake *Fake) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.evalToArrayMutex.RLock()
+	defer fake.evalToArrayMutex.RUnlock()
 	fake.evalToDirMutex.RLock()
 	defer fake.evalToDirMutex.RUnlock()
 	fake.evalToFileMutex.RLock()

@@ -26,6 +26,78 @@ var _ = Context("coerceToString", func() {
 				Expect(actualErr).To(BeNil())
 			})
 		})
+		Context("Value.Array isn't nil", func() {
+			It("should call json.Marshal w/ expected args", func() {
+				/* arrange */
+				providedArray := []interface{}{"dummyItem"}
+
+				providedValue := &model.Value{
+					Array: providedArray,
+				}
+
+				fakeJSON := new(ijson.Fake)
+				// err to trigger immediate return
+				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
+
+				arrayUnderTest := _coerceToString{
+					json: fakeJSON,
+				}
+
+				/* act */
+				arrayUnderTest.CoerceToString(providedValue)
+
+				/* assert */
+				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedArray))
+			})
+			Context("json.Marshal errs", func() {
+				It("should return expected result", func() {
+					/* arrange */
+
+					fakeJSON := new(ijson.Fake)
+
+					marshalErr := errors.New("dummyError")
+					fakeJSON.MarshalReturns(nil, marshalErr)
+
+					arrayUnderTest := _coerceToString{
+						json: fakeJSON,
+					}
+
+					/* act */
+					actualValue, actualErr := arrayUnderTest.CoerceToString(
+						&model.Value{Array: []interface{}{""}},
+					)
+
+					/* assert */
+					Expect(actualValue).To(BeNil())
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to string; error was %v", marshalErr.Error())))
+				})
+			})
+			Context("json.Marshal doesn't err", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					fakeJSON := new(ijson.Fake)
+
+					marshaledBytes := []byte{2, 3, 4}
+					fakeJSON.MarshalReturns(marshaledBytes, nil)
+
+					marshaledString := string(marshaledBytes)
+					expectedValue := model.Value{String: &marshaledString}
+
+					arrayUnderTest := _coerceToString{
+						json: fakeJSON,
+					}
+
+					/* act */
+					actualValue, actualErr := arrayUnderTest.CoerceToString(
+						&model.Value{Array: []interface{}{""}},
+					)
+
+					/* assert */
+					Expect(*actualValue).To(Equal(expectedValue))
+					Expect(actualErr).To(BeNil())
+				})
+			})
+		})
 		Context("Value.Dir isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */

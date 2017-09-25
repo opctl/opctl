@@ -25,6 +25,23 @@ var _ = Context("coerceToNumber", func() {
 				Expect(actualErr).To(BeNil())
 			})
 		})
+		Context("Value.Array isn't nil", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedValue := &model.Value{
+					Array: []interface{}{},
+				}
+
+				arrayUnderTest := _coerceToNumber{}
+
+				/* act */
+				actualValue, actualErr := arrayUnderTest.CoerceToNumber(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(errors.New("unable to coerce array to number; incompatible types")))
+			})
+		})
 		Context("Value.Dir isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
@@ -169,7 +186,7 @@ var _ = Context("coerceToNumber", func() {
 				Expect(actualErr).To(BeNil())
 			})
 		})
-		Context("Value.Dir,File,Number,Object,Number nil", func() {
+		Context("Value.Array,Value.Dir,File,Number,Object,Number nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{}

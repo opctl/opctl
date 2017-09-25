@@ -28,7 +28,7 @@ func (vdt _validator) validateNumber(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()),
+				fmt.Errorf("error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()),
 			)
 		}
 
@@ -37,7 +37,7 @@ func (vdt _validator) validateNumber(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating parameter. Details: %v", err.Error()),
+				fmt.Errorf("error validating parameter. Details: %v", err.Error()),
 			)
 		}
 
@@ -49,7 +49,7 @@ func (vdt _validator) validateNumber(
 			// handle syntax errors specially
 			return append(
 				errs,
-				fmt.Errorf("Error validating param. Details: %v", err.Error()),
+				fmt.Errorf("error validating param. Details: %v", err.Error()),
 			)
 		}
 

@@ -47,6 +47,12 @@ func (c _coerceToFile) CoerceToFile(
 	switch {
 	case nil == value:
 		data = []byte{}
+	case nil != value.Array:
+		var err error
+		data, err = c.json.Marshal(value.Array)
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce array to file; error was %v", err.Error())
+		}
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", *value.Dir)
 	case nil != value.File:

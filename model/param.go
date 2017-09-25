@@ -2,12 +2,45 @@ package model
 
 // Param represents a typed param of an op
 type Param struct {
+	Array  *ArrayParam  `yaml:"array,omitempty"`
 	Dir    *DirParam    `yaml:"dir,omitempty"`
 	File   *FileParam   `yaml:"file,omitempty"`
 	Number *NumberParam `yaml:"number,omitempty"`
 	Object *ObjectParam `yaml:"object,omitempty"`
 	Socket *SocketParam `yaml:"socket,omitempty"`
 	String *StringParam `yaml:"string,omitempty"`
+}
+
+// ArrayParam represents a parameter of type object
+type ArrayParam struct {
+	Constraints *ArrayConstraints `yaml:"constraints,omitempty"`
+	Default     interface{}       `yaml:"default,omitempty"`
+	Description string            `yaml:"description,omitempty"`
+	IsSecret    bool              `yaml:"isSecret,omitempty"`
+}
+
+// ArrayConstraints represents constraints of a ObjectParam
+type ArrayConstraints struct {
+	// json struct tags used for validating via gojsonschema
+	Items           interface{}      `json:"items,omitempty" yaml:"items,omitempty"`
+	AdditionalItems *TypeConstraints `json:"additionalItems,omitempty" yaml:"additionalItems,omitempty"`
+	MaxItems        int              `json:"maxItems,omitempty" yaml:"maxItems,omitempty"`
+	MinItems        int              `json:"minItems,omitempty" yaml:"minItems,omitempty"`
+	UniqueItems     bool             `json:"uniqueItems,omitempty" yaml:"uniqueItems,omitempty"`
+}
+
+// DirParam represents a parameter of type directory
+type DirParam struct {
+	Default     *string `yaml:"default,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	IsSecret    bool    `yaml:"isSecret,omitempty"`
+}
+
+// FileParam represents a parameter of type file
+type FileParam struct {
+	Default     *string `yaml:"default,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
 // NumberParam represents a parameter of type number
@@ -30,20 +63,6 @@ type NumberConstraints struct {
 	MultipleOf float64              `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
 	Not        *NumberConstraints   `json:"not,omitempty" yaml:"not,omitempty"`
 	OneOf      []*NumberConstraints `json:"oneOf,omitempty" yaml:"oneOf,omitempty"`
-}
-
-// DirParam represents a parameter of type directory
-type DirParam struct {
-	Default     *string `yaml:"default,omitempty"`
-	Description string  `yaml:"description,omitempty"`
-	IsSecret    bool    `yaml:"isSecret,omitempty"`
-}
-
-// FileParam represents a parameter of type file
-type FileParam struct {
-	Default     *string `yaml:"default,omitempty"`
-	Description string  `yaml:"description,omitempty"`
-	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
 // ObjectParam represents a parameter of type object
@@ -72,6 +91,13 @@ type ObjectConstraints struct {
 
 // TypeConstraints represents data type constraints
 type TypeConstraints struct {
+	// json struct tags used for validating via gojsonschema
+
+	// override Enum from typed constraints
+	Enum []interface{} `json:"enum,omitempty" yaml:"enum,omitempty"`
+
+	// include all typed constraints
+	ArrayConstraints
 	NumberConstraints
 	ObjectConstraints
 	StringConstraints

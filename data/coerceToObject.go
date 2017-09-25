@@ -35,6 +35,8 @@ func (c _coerceToObject) CoerceToObject(
 	switch {
 	case nil == value:
 		return nil, nil
+	case nil != value.Array:
+		return nil, fmt.Errorf("unable to coerce array to object; incompatible types")
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", *value.Dir)
 	case nil != value.File:

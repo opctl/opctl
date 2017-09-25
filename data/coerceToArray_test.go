@@ -11,36 +11,19 @@ import (
 	"reflect"
 )
 
-var _ = Context("coerceToObject", func() {
+var _ = Context("coerceToArray", func() {
 	Context("Coerce", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coerceToObject{}
+				arrayUnderTest := _coerceToArray{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(nil)
+				actualValue, actualErr := arrayUnderTest.CoerceToArray(nil)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
 				Expect(actualErr).To(BeNil())
-			})
-		})
-		Context("Value.Array isn't nil", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedValue := &model.Value{
-					Array: []interface{}{},
-				}
-
-				objectUnderTest := _coerceToObject{}
-
-				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
-
-				/* assert */
-				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to object; incompatible types")))
 			})
 		})
 		Context("Value.Dir isn't nil", func() {
@@ -51,14 +34,14 @@ var _ = Context("coerceToObject", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coerceToObject{}
+				arrayUnderTest := _coerceToArray{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to object; incompatible types", providedDir)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce dir '%v' to array; incompatible types", providedDir)))
 			})
 		})
 		Context("Value.File isn't nil", func() {
@@ -74,12 +57,12 @@ var _ = Context("coerceToObject", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coerceToObject{
+				fileUnderTest := _coerceToArray{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.CoerceToObject(providedValue)
+				fileUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -92,18 +75,18 @@ var _ = Context("coerceToObject", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coerceToObject{
+					fileUnderTest := _coerceToArray{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToObject(
+					actualValue, actualErr := fileUnderTest.CoerceToArray(
 						&model.Value{File: new(string)},
 					)
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", marshalErr.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to array; error was %v", marshalErr.Error())))
 				})
 			})
 			Context("ioutil.ReadFile doesn't err", func() {
@@ -118,13 +101,13 @@ var _ = Context("coerceToObject", func() {
 					// err to trigger immediate return
 					fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-					objectUnderTest := _coerceToObject{
+					arrayUnderTest := _coerceToArray{
 						ioUtil: fakeIOUtil,
 						json:   fakeJSON,
 					}
 
 					/* act */
-					objectUnderTest.CoerceToObject(
+					arrayUnderTest.CoerceToArray(
 						&model.Value{File: new(string)},
 					)
 
@@ -142,19 +125,19 @@ var _ = Context("coerceToObject", func() {
 						unmarshalError := errors.New("dummyError")
 						fakeJSON.UnmarshalReturns(unmarshalError)
 
-						objectUnderTest := _coerceToObject{
+						arrayUnderTest := _coerceToArray{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := arrayUnderTest.CoerceToArray(
 							&model.Value{File: new(string)},
 						)
 
 						/* assert */
 						Expect(actualValue).To(BeNil())
-						Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to object; error was %v", unmarshalError.Error())))
+						Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce file to array; error was %v", unmarshalError.Error())))
 					})
 				})
 				Context("json.Unmarshal doesn't err", func() {
@@ -162,25 +145,21 @@ var _ = Context("coerceToObject", func() {
 						/* arrange */
 						fakeJSON := new(ijson.Fake)
 
-						mapKey := "dummyMapKey"
-						mapValue := "dummyMapValue"
-						expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
+						arrayItem := "dummyMapValue"
+						expectedValue := model.Value{Array: []interface{}{arrayItem}}
 
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
-							reflect.ValueOf(v).Elem().SetMapIndex(
-								reflect.ValueOf(mapKey),
-								reflect.ValueOf(mapValue),
-							)
+							reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))
 							return nil
 						}
 
-						objectUnderTest := _coerceToObject{
+						arrayUnderTest := _coerceToArray{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := arrayUnderTest.CoerceToArray(
 							&model.Value{File: new(string)},
 						)
 
@@ -199,29 +178,27 @@ var _ = Context("coerceToObject", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coerceToObject{}
+				arrayUnderTest := _coerceToArray{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to object; incompatible types", providedNumber)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to array; incompatible types", providedNumber)))
 			})
 		})
-		Context("Value.Object isn't nil", func() {
+		Context("Value.Array isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{
-					Object: map[string]interface{}{
-						"dummyName": "dummyValue",
-					},
+					Array: []interface{}{"dummyItem"},
 				}
 
-				objectUnderTest := _coerceToObject{}
+				arrayUnderTest := _coerceToArray{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -241,12 +218,12 @@ var _ = Context("coerceToObject", func() {
 				// err to trigger immediate return
 				fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-				objectUnderTest := _coerceToObject{
+				arrayUnderTest := _coerceToArray{
 					json: fakeJSON,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToObject(providedValue)
+				arrayUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				actualBytes,
@@ -262,18 +239,18 @@ var _ = Context("coerceToObject", func() {
 					unmarshalError := errors.New("dummyError")
 					fakeJSON.UnmarshalReturns(unmarshalError)
 
-					objectUnderTest := _coerceToObject{
+					arrayUnderTest := _coerceToArray{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := arrayUnderTest.CoerceToArray(
 						&model.Value{String: new(string)},
 					)
 
 					/* assert */
 					Expect(actualValue).To(BeNil())
-					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to object; error was %v", unmarshalError.Error())))
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce string to array; error was %v", unmarshalError.Error())))
 				})
 			})
 			Context("json.Unmarshal doesn't err", func() {
@@ -281,24 +258,20 @@ var _ = Context("coerceToObject", func() {
 					/* arrange */
 					fakeJSON := new(ijson.Fake)
 
-					mapKey := "dummyMapKey"
-					mapValue := "dummyMapValue"
-					expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
+					arrayItem := "dummyMapValue"
+					expectedValue := model.Value{Array: []interface{}{arrayItem}}
 
 					fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
-						reflect.ValueOf(v).Elem().SetMapIndex(
-							reflect.ValueOf(mapKey),
-							reflect.ValueOf(mapValue),
-						)
+						reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))
 						return nil
 					}
 
-					objectUnderTest := _coerceToObject{
+					arrayUnderTest := _coerceToArray{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := arrayUnderTest.CoerceToArray(
 						&model.Value{String: new(string)},
 					)
 
@@ -308,19 +281,19 @@ var _ = Context("coerceToObject", func() {
 				})
 			})
 		})
-		Context("Value.Array,Value.Dir,File,Number,Object,String nil", func() {
+		Context("Value.Dir,File,Number,Array,String nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToObject{}
+				arrayUnderTest := _coerceToArray{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to object", providedValue)))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce '%+v' to array", providedValue)))
 			})
 		})
 	})

@@ -105,6 +105,156 @@ var _ = Context("coerceToFile", func() {
 				})
 			})
 		})
+		Context("Value.Array isn't nil", func() {
+			It("should call json.Marshal w/ expected args", func() {
+				/* arrange */
+				providedArray := []interface{}{"arrayItem"}
+
+				providedValue := &model.Value{
+					Array: providedArray,
+				}
+
+				fakeJSON := new(ijson.Fake)
+				// err to trigger immediate return
+				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
+
+				arrayUnderTest := _coerceToFile{
+					json:         fakeJSON,
+					uniqueString: new(uniquestring.Fake),
+				}
+
+				/* act */
+				arrayUnderTest.CoerceToFile(providedValue, "dummyScratchDir")
+
+				/* assert */
+				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedArray))
+			})
+			Context("json.Marshal errs", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					fakeJSON := new(ijson.Fake)
+
+					marshalErr := errors.New("dummyError")
+					fakeJSON.MarshalReturns(nil, marshalErr)
+
+					arrayUnderTest := _coerceToFile{
+						json:         fakeJSON,
+						uniqueString: new(uniquestring.Fake),
+					}
+
+					/* act */
+					_, actualErr := arrayUnderTest.CoerceToFile(
+						&model.Value{Array: []interface{}{""}},
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce array to file; error was %v", marshalErr.Error())))
+				})
+			})
+			Context("json.Marshal doesn't err", func() {
+				It("should call ioutil.WriteFile w/ expected args", func() {
+					/* arrange */
+					providedScratchDir := "dummyScratchDir"
+
+					fakeJSON := new(ijson.Fake)
+
+					marshaledBytes := []byte{2, 3, 4}
+					fakeJSON.MarshalReturns(marshaledBytes, nil)
+
+					uniqueString := "dummyUniqueString"
+
+					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString.ConstructReturns(uniqueString)
+
+					fakeIOUtil := new(iioutil.Fake)
+
+					arrayUnderTest := _coerceToFile{
+						json:         fakeJSON,
+						uniqueString: fakeUniqueString,
+						ioUtil:       fakeIOUtil,
+					}
+
+					/* act */
+					arrayUnderTest.CoerceToFile(
+						&model.Value{Array: []interface{}{""}},
+						providedScratchDir,
+					)
+
+					/* assert */
+					actualPath,
+						actualData,
+						actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
+
+					Expect(actualPath).To(Equal(filepath.Join(providedScratchDir, uniqueString)))
+					Expect(actualData).To(Equal(marshaledBytes))
+					Expect(actualPerms).To(Equal(os.FileMode(0666)))
+				})
+				Context("ioutil.WriteFile errs", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						providedValue := &model.Value{Array: []interface{}{""}}
+
+						fakeIOUtil := new(iioutil.Fake)
+
+						writeFileErr := errors.New("dummyError")
+						fakeIOUtil.WriteFileReturns(writeFileErr)
+
+						expectedErr := fmt.Errorf(
+							"unable to coerce '%+v' to file; error was %v",
+							providedValue,
+							writeFileErr.Error(),
+						)
+
+						arrayUnderTest := _coerceToFile{
+							json:         new(ijson.Fake),
+							ioUtil:       fakeIOUtil,
+							uniqueString: new(uniquestring.Fake),
+						}
+
+						/* act */
+						_, actualErr := arrayUnderTest.CoerceToFile(
+							providedValue,
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(actualErr).To(Equal(expectedErr))
+					})
+				})
+				Context("ioutil.WriteFile doesn't err", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						providedScratchDir := "dummyScratchDir"
+						uniqueString := "dummyUniqueString"
+
+						fakeUniqueString := new(uniquestring.Fake)
+						fakeUniqueString.ConstructReturns(uniqueString)
+
+						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
+						expectedValue := model.Value{File: &expectedValuePath}
+
+						arrayUnderTest := _coerceToFile{
+							json:         new(ijson.Fake),
+							uniqueString: fakeUniqueString,
+							ioUtil:       new(iioutil.Fake),
+						}
+
+						/* act */
+						actualValue, actualErr := arrayUnderTest.CoerceToFile(
+							&model.Value{
+								Array: []interface{}{""},
+							},
+							providedScratchDir,
+						)
+
+						/* assert */
+						Expect(*actualValue).To(Equal(expectedValue))
+						Expect(actualErr).To(BeNil())
+					})
+				})
+			})
+		})
 		Context("Value.Dir isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
