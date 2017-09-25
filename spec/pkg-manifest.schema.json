@@ -33,7 +33,7 @@
     "arrayParam": {
       "title": "arrayParam",
       "description": "Array parameter of an op",
-      "type": "array",
+      "type": "object",
       "properties": {
         "array": {
           "properties": {
@@ -61,7 +61,7 @@
     },
     "arrayConstraints": {
       "title": "arrayConstraints",
-      "type": "array",
+      "type": "object",
       "properties": {
         "maxItems": {
           "description": "JSON Schema [maxItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.10)",
