@@ -14,7 +14,7 @@ type Param struct {
 // ArrayParam represents a parameter of type object
 type ArrayParam struct {
 	Constraints *ArrayConstraints `yaml:"constraints,omitempty"`
-	Default     interface{}       `yaml:"default,omitempty"`
+	Default     []interface{}     `yaml:"default,omitempty"`
 	Description string            `yaml:"description,omitempty"`
 	IsSecret    bool              `yaml:"isSecret,omitempty"`
 }

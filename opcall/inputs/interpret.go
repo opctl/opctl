@@ -20,6 +20,8 @@ func (_inputs _Inputs) Interpret(
 		// apply defaults
 		if nil != paramValue {
 			switch {
+			case nil != paramValue.Array && nil != paramValue.Array.Default:
+				dcgOpCallInputs[paramName] = &model.Value{Array: paramValue.Array.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
 				dirValue := filepath.Join(pkgRef, *paramValue.Dir.Default)
 				dcgOpCallInputs[paramName] = &model.Value{Dir: &dirValue}
