@@ -197,20 +197,17 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  path:
-                    type: string
-                  size:
-                    type: integer
-                type: object
-            text/plain:
-              schema:
-                properties:
-                  path:
-                    type: string
-                  size:
-                    type: integer
-                type: object
+                items:
+                  properties:
+                    path:
+                      description: absolute path within pkg
+                      type: string
+                    size:
+                      type: integer
+                    mode:
+                      description: golang [FileMode](https://golang.org/pkg/os/#FileMode)
+                      type: integer
+                type: array
         '400':
           description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
           content:
