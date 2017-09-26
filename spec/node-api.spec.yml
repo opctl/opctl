@@ -220,6 +220,10 @@ paths:
             text/plain:
               schema:
                 type: string
+        '401':
+          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+        '403':
+          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
           content:
@@ -303,6 +307,10 @@ paths:
             application/json:
               schema:
                 type: string
+        '401':
+          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+        '403':
+          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
           content:
@@ -407,6 +415,10 @@ paths:
             application/json:
               schema:
                 type: string
+        '401':
+          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+        '403':
+          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
         '404':
           description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
           content:
@@ -458,6 +470,9 @@ components:
       description: a typed value
       oneOf:
         - properties:
+            array:
+              type: array
+        - properties:
             dir:
               description: path
               type: string
@@ -468,6 +483,9 @@ components:
         - properties:
             number:
               type: number
+        - properties:
+            object:
+              type: object
         - properties:
             socket:
               description: socket address
