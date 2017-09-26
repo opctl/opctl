@@ -13,54 +13,61 @@ import (
 )
 
 var _ = Context("pkg", func() {
-
 	Context("Install", func() {
-
-		It("should call os.MkdirAll w/ expected args", func() {
+		It("should call handle.ListContents w/ expected args", func() {
 			/* arrange */
-			providedPath := "dummyPath"
+			providedCtx := context.TODO()
 
-			fakeOS := new(ios.Fake)
-			// error to trigger immediate return
-			fakeOS.MkdirAllReturns(errors.New("dummyError"))
+			fakeHandle := new(FakeHandle)
 
 			objectUnderTest := _Pkg{
-				os: fakeOS,
+				os: new(ios.Fake),
 			}
 
 			/* act */
-			objectUnderTest.Install(nil, providedPath, nil)
+			objectUnderTest.Install(providedCtx, "", fakeHandle)
 
 			/* assert */
-			actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
-			Expect(actualPath).To(Equal(providedPath))
-			Expect(actualPerm).To(Equal(os.FileMode(0777)))
+			Expect(fakeHandle.ListContentsArgsForCall(0)).To(Equal(providedCtx))
 		})
-		Context("os.MkdirAll errs", func() {
+		Context("handle.ListContents errs", func() {
 			It("should return error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
 
-				fakeOS := new(ios.Fake)
-				fakeOS.MkdirAllReturns(expectedError)
+				fakeHandle := new(FakeHandle)
+				fakeHandle.ListContentsReturns(nil, expectedError)
 
 				objectUnderTest := _Pkg{
-					os: fakeOS,
+					os: new(ios.Fake),
 				}
 
 				/* act */
-				actualError := objectUnderTest.Install(nil, "", nil)
+				actualError := objectUnderTest.Install(nil, "", fakeHandle)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
 			})
 		})
-		Context("os.MkdirAll doesn't err", func() {
-			It("should call handle.ListContents w/ expected args", func() {
+		Context("handle.ListContents doesn't err", func() {
+			It("should call handle.GetContent w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.TODO()
 
 				fakeHandle := new(FakeHandle)
+				contentsList := []*model.PkgContent{
+					{
+						Path: "pkgContent1Path",
+					},
+				}
+
+				fakeHandle.ListContentsReturns(
+					contentsList,
+					nil,
+				)
+
+				// error to trigger immediate return
+				fakeHandle.GetContentReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _Pkg{
 					os: new(ios.Fake),
@@ -70,15 +77,21 @@ var _ = Context("pkg", func() {
 				objectUnderTest.Install(providedCtx, "", fakeHandle)
 
 				/* assert */
-				Expect(fakeHandle.ListContentsArgsForCall(0)).To(Equal(providedCtx))
+				actualContext,
+					actualPath := fakeHandle.GetContentArgsForCall(0)
+
+				Expect(actualContext).To(Equal(providedCtx))
+				Expect(actualPath).To(Equal(contentsList[0].Path))
 			})
-			Context("handle.ListContents errs", func() {
+			Context("handle.GetContent errs", func() {
 				It("should return error", func() {
 					/* arrange */
 					expectedError := errors.New("dummyError")
 
 					fakeHandle := new(FakeHandle)
-					fakeHandle.ListContentsReturns(nil, expectedError)
+					fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, expectedError)
+
+					fakeHandle.GetContentReturns(nil, expectedError)
 
 					objectUnderTest := _Pkg{
 						os: new(ios.Fake),
@@ -91,62 +104,72 @@ var _ = Context("pkg", func() {
 					Expect(actualError).To(Equal(expectedError))
 				})
 			})
-			Context("handle.ListContents doesn't err", func() {
-				It("should call handle.GetContent w/ expectet args", func() {
-					/* arrange */
-					providedCtx := context.TODO()
-
-					fakeHandle := new(FakeHandle)
-					contentsList := []*model.PkgContent{
-						{
-							Path: "pkgContent1Path",
-						},
-					}
-
-					fakeHandle.ListContentsReturns(
-						contentsList,
-						nil,
-					)
-
-					// error to trigger immediate return
-					fakeHandle.GetContentReturns(nil, errors.New("dummyError"))
-
-					objectUnderTest := _Pkg{
-						os: new(ios.Fake),
-					}
-
-					/* act */
-					objectUnderTest.Install(providedCtx, "", fakeHandle)
-
-					/* assert */
-					actualContext,
-						actualPath := fakeHandle.GetContentArgsForCall(0)
-
-					Expect(actualContext).To(Equal(providedCtx))
-					Expect(actualPath).To(Equal(contentsList[0].Path))
-				})
-				Context("handle.GetContent errs", func() {
-					It("should return error", func() {
+			Context("handle.GetContent doesn't err", func() {
+				Context("content.Mode.IsDir() == true", func() {
+					It("should call os.MkdirAll w/ expected args", func() {
 						/* arrange */
-						expectedError := errors.New("dummyError")
+						providedPath := "dummyPath"
 
 						fakeHandle := new(FakeHandle)
-						fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, expectedError)
+						pkgRef := "dummyPkgRef"
+						fakeHandle.RefReturns(pkgRef)
 
-						fakeHandle.GetContentReturns(nil, expectedError)
+						contentsList := []*model.PkgContent{
+							{
+								Path: "pkgContent1Path",
+								Mode: os.ModeDir,
+							},
+						}
+
+						fakeHandle.ListContentsReturns(
+							contentsList,
+							nil,
+						)
+
+						fakeOS := new(ios.Fake)
+						// error to trigger immediate return
+						fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
 						objectUnderTest := _Pkg{
-							os: new(ios.Fake),
+							os: fakeOS,
 						}
 
 						/* act */
-						actualError := objectUnderTest.Install(nil, "", fakeHandle)
+						objectUnderTest.Install(nil, providedPath, fakeHandle)
 
 						/* assert */
-						Expect(actualError).To(Equal(expectedError))
+						actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
+
+						Expect(actualPath).To(Equal(
+							filepath.Join(providedPath, pkgRef, contentsList[0].Path),
+						))
+
+						Expect(actualPerm).To(Equal(contentsList[0].Mode))
+					})
+					Context("os.MkdirAll errs", func() {
+						It("should return error", func() {
+							/* arrange */
+							expectedError := errors.New("dummyError")
+
+							fakeHandle := new(FakeHandle)
+							fakeHandle.ListContentsReturns([]*model.PkgContent{{Mode: os.ModeDir}}, nil)
+
+							fakeOS := new(ios.Fake)
+							fakeOS.MkdirAllReturns(expectedError)
+
+							objectUnderTest := _Pkg{
+								os: fakeOS,
+							}
+
+							/* act */
+							actualError := objectUnderTest.Install(nil, "", fakeHandle)
+
+							/* assert */
+							Expect(actualError).To(Equal(expectedError))
+						})
 					})
 				})
-				Context("handle.GetContent doesn't err", func() {
+				Context("content.Mode.IsDir() == false", func() {
 					It("should call os.MkdirAll w/ expected args", func() {
 						/* arrange */
 						providedPath := "dummyPath"
@@ -168,7 +191,7 @@ var _ = Context("pkg", func() {
 
 						fakeOS := new(ios.Fake)
 						// error to trigger immediate return
-						fakeOS.MkdirAllReturnsOnCall(1, errors.New("dummyError"))
+						fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
 						objectUnderTest := _Pkg{
 							os: fakeOS,
@@ -178,7 +201,7 @@ var _ = Context("pkg", func() {
 						objectUnderTest.Install(nil, providedPath, fakeHandle)
 
 						/* assert */
-						actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(1)
+						actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
 
 						Expect(actualPath).To(Equal(
 							filepath.Dir(
@@ -188,222 +211,221 @@ var _ = Context("pkg", func() {
 
 						Expect(actualPerm).To(Equal(os.FileMode(0777)))
 					})
-				})
-			})
-			Context("os.MkdirAll errs", func() {
-				It("should return error", func() {
-					/* arrange */
-					expectedError := errors.New("dummyError")
+					Context("os.MkdirAll errs", func() {
+						It("should return error", func() {
+							/* arrange */
+							expectedError := errors.New("dummyError")
 
-					fakeHandle := new(FakeHandle)
-					fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+							fakeHandle := new(FakeHandle)
+							fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
-					fakeOS := new(ios.Fake)
-					fakeOS.MkdirAllReturnsOnCall(1, expectedError)
+							fakeOS := new(ios.Fake)
+							fakeOS.MkdirAllReturns(expectedError)
 
-					objectUnderTest := _Pkg{
-						os: fakeOS,
-					}
+							objectUnderTest := _Pkg{
+								os: fakeOS,
+							}
 
-					/* act */
-					actualError := objectUnderTest.Install(nil, "", fakeHandle)
+							/* act */
+							actualError := objectUnderTest.Install(nil, "", fakeHandle)
 
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-			Context("os.MkdirAll doesn't err", func() {
-				It("should call os.Create w/ expected args", func() {
-					/* arrange */
-					providedPath := "dummyPath"
-
-					fakeHandle := new(FakeHandle)
-					contentsList := []*model.PkgContent{
-						{
-							Path: "pkgContent1Path",
-						},
-					}
-
-					fakeHandle.ListContentsReturns(
-						contentsList,
-						nil,
-					)
-
-					fakeOS := new(ios.Fake)
-					// error to trigger immediate return
-					fakeOS.CreateReturns(nil, errors.New("dummyError"))
-
-					objectUnderTest := _Pkg{
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Install(nil, providedPath, fakeHandle)
-
-					/* assert */
-					actualPath := fakeOS.CreateArgsForCall(0)
-
-					Expect(actualPath).To(Equal(filepath.Join(providedPath, contentsList[0].Path)))
-				})
-			})
-			Context("os.Create errs", func() {
-				It("should return error", func() {
-					/* arrange */
-					expectedError := errors.New("dummyError")
-
-					fakeHandle := new(FakeHandle)
-					fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
-
-					fakeOS := new(ios.Fake)
-					fakeOS.CreateReturns(nil, expectedError)
-
-					objectUnderTest := _Pkg{
-						os: fakeOS,
-					}
-
-					/* act */
-					actualError := objectUnderTest.Install(nil, "", fakeHandle)
-
-					/* assert */
-					Expect(actualError).To(Equal(expectedError))
-				})
-			})
-			Context("os.Create doesn't err", func() {
-				It("should call os.Chmod w/ expected args", func() {
-					/* arrange */
-					providedPath := "dummyPath"
-
-					fakeHandle := new(FakeHandle)
-					contentsList := []*model.PkgContent{
-						{
-							Mode: os.FileMode(0777),
-							Path: "pkgContent1Path",
-						},
-					}
-
-					fakeHandle.ListContentsReturns(
-						contentsList,
-						nil,
-					)
-
-					fakeOS := new(ios.Fake)
-					// error to trigger immediate return
-					fakeOS.ChmodReturns(errors.New("dummyError"))
-
-					objectUnderTest := _Pkg{
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Install(nil, providedPath, fakeHandle)
-
-					/* assert */
-					actualPath, actualMode := fakeOS.ChmodArgsForCall(0)
-
-					Expect(actualPath).To(Equal(filepath.Join(providedPath, contentsList[0].Path)))
-					Expect(actualMode).To(Equal(contentsList[0].Mode))
-
-				})
-				Context("os.Chmod errs", func() {
-
-					It("should return error", func() {
-						/* arrange */
-						expectedError := errors.New("dummyError")
-
-						fakeHandle := new(FakeHandle)
-						fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
-
-						fakeOS := new(ios.Fake)
-						fakeOS.ChmodReturns(expectedError)
-
-						objectUnderTest := _Pkg{
-							os: fakeOS,
-						}
-
-						/* act */
-						actualError := objectUnderTest.Install(nil, "", fakeHandle)
-
-						/* assert */
-						Expect(actualError).To(Equal(expectedError))
+							/* assert */
+							Expect(actualError).To(Equal(expectedError))
+						})
 					})
-				})
-				Context("os.Chmod doesn't err", func() {
-					It("should copy content", func() {
-						/* arrange */
-						fakeHandle := new(FakeHandle)
-						fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+					Context("os.MkdirAll doesn't err", func() {
+						It("should call os.Create w/ expected args", func() {
+							/* arrange */
+							providedPath := "dummyPath"
 
-						// create tmpfile to use as src
-						contentSrc, err := ioutil.TempFile("", "")
-						if nil != err {
-							panic(err)
-						}
-						defer contentSrc.Close()
+							fakeHandle := new(FakeHandle)
+							contentsList := []*model.PkgContent{
+								{
+									Path: "pkgContent1Path",
+								},
+							}
 
-						expectedContent := []byte("dummyString")
-						err = ioutil.WriteFile(contentSrc.Name(), expectedContent, os.FileMode(0666))
-						if nil != err {
-							panic(err)
-						}
+							fakeHandle.ListContentsReturns(
+								contentsList,
+								nil,
+							)
 
-						fakeHandle.GetContentReturns(contentSrc, nil)
+							fakeOS := new(ios.Fake)
+							// error to trigger immediate return
+							fakeOS.CreateReturns(nil, errors.New("dummyError"))
 
-						fakeOS := new(ios.Fake)
+							objectUnderTest := _Pkg{
+								os: fakeOS,
+							}
 
-						// create tmpfile to use as dst
-						contentDst, err := ioutil.TempFile("", "")
-						if nil != err {
-							panic(err)
-						}
-						defer contentDst.Close()
+							/* act */
+							objectUnderTest.Install(nil, providedPath, fakeHandle)
 
-						fakeOS.CreateReturns(contentDst, nil)
+							/* assert */
+							actualPath := fakeOS.CreateArgsForCall(0)
 
-						objectUnderTest := _Pkg{
-							os: fakeOS,
-						}
+							Expect(actualPath).To(Equal(filepath.Join(providedPath, contentsList[0].Path)))
+						})
+						Context("os.Create errs", func() {
+							It("should return error", func() {
+								/* arrange */
+								expectedError := errors.New("dummyError")
 
-						/* act */
-						objectUnderTest.Install(nil, "", fakeHandle)
+								fakeHandle := new(FakeHandle)
+								fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
-						/* assert */
-						actualContent, err := ioutil.ReadFile(contentDst.Name())
-						if nil != err {
-							panic(err)
-						}
+								fakeOS := new(ios.Fake)
+								fakeOS.CreateReturns(nil, expectedError)
 
-						Expect(actualContent).To(Equal(expectedContent))
-					})
+								objectUnderTest := _Pkg{
+									os: fakeOS,
+								}
 
-					It("shouldn't err", func() {
-						/* arrange */
-						fakeHandle := new(FakeHandle)
-						fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+								/* act */
+								actualError := objectUnderTest.Install(nil, "", fakeHandle)
 
-						// create tmpfile to use as src
-						file, err := ioutil.TempFile("", "")
-						if nil != err {
-							panic(err)
-						}
+								/* assert */
+								Expect(actualError).To(Equal(expectedError))
+							})
+						})
+						Context("os.Create doesn't err", func() {
+							It("should call os.Chmod w/ expected args", func() {
+								/* arrange */
+								providedPath := "dummyPath"
 
-						fakeHandle.GetContentReturns(file, nil)
+								fakeHandle := new(FakeHandle)
+								contentsList := []*model.PkgContent{
+									{
+										Mode: os.FileMode(0777),
+										Path: "pkgContent1Path",
+									},
+								}
 
-						fakeOS := new(ios.Fake)
-						fakeOS.CreateReturns(file, nil)
+								fakeHandle.ListContentsReturns(
+									contentsList,
+									nil,
+								)
 
-						objectUnderTest := _Pkg{
-							os: fakeOS,
-						}
+								fakeOS := new(ios.Fake)
+								// error to trigger immediate return
+								fakeOS.ChmodReturns(errors.New("dummyError"))
 
-						/* act */
-						actualErr := objectUnderTest.Install(nil, "", fakeHandle)
+								objectUnderTest := _Pkg{
+									os: fakeOS,
+								}
 
-						/* assert */
-						Expect(actualErr).To(BeNil())
+								/* act */
+								objectUnderTest.Install(nil, providedPath, fakeHandle)
+
+								/* assert */
+								actualPath, actualMode := fakeOS.ChmodArgsForCall(0)
+
+								Expect(actualPath).To(Equal(filepath.Join(providedPath, contentsList[0].Path)))
+								Expect(actualMode).To(Equal(contentsList[0].Mode))
+
+							})
+							Context("os.Chmod errs", func() {
+
+								It("should return error", func() {
+									/* arrange */
+									expectedError := errors.New("dummyError")
+
+									fakeHandle := new(FakeHandle)
+									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+
+									fakeOS := new(ios.Fake)
+									fakeOS.ChmodReturns(expectedError)
+
+									objectUnderTest := _Pkg{
+										os: fakeOS,
+									}
+
+									/* act */
+									actualError := objectUnderTest.Install(nil, "", fakeHandle)
+
+									/* assert */
+									Expect(actualError).To(Equal(expectedError))
+								})
+							})
+							Context("os.Chmod doesn't err", func() {
+								It("should copy content", func() {
+									/* arrange */
+									fakeHandle := new(FakeHandle)
+									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+
+									// create tmpfile to use as src
+									contentSrc, err := ioutil.TempFile("", "")
+									if nil != err {
+										panic(err)
+									}
+									defer contentSrc.Close()
+
+									expectedContent := []byte("dummyString")
+									err = ioutil.WriteFile(contentSrc.Name(), expectedContent, os.FileMode(0666))
+									if nil != err {
+										panic(err)
+									}
+
+									fakeHandle.GetContentReturns(contentSrc, nil)
+
+									fakeOS := new(ios.Fake)
+
+									// create tmpfile to use as dst
+									contentDst, err := ioutil.TempFile("", "")
+									if nil != err {
+										panic(err)
+									}
+									defer contentDst.Close()
+
+									fakeOS.CreateReturns(contentDst, nil)
+
+									objectUnderTest := _Pkg{
+										os: fakeOS,
+									}
+
+									/* act */
+									objectUnderTest.Install(nil, "", fakeHandle)
+
+									/* assert */
+									actualContent, err := ioutil.ReadFile(contentDst.Name())
+									if nil != err {
+										panic(err)
+									}
+
+									Expect(actualContent).To(Equal(expectedContent))
+								})
+
+								It("shouldn't err", func() {
+									/* arrange */
+									fakeHandle := new(FakeHandle)
+									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+
+									// create tmpfile to use as src
+									file, err := ioutil.TempFile("", "")
+									if nil != err {
+										panic(err)
+									}
+
+									fakeHandle.GetContentReturns(file, nil)
+
+									fakeOS := new(ios.Fake)
+									fakeOS.CreateReturns(file, nil)
+
+									objectUnderTest := _Pkg{
+										os: fakeOS,
+									}
+
+									/* act */
+									actualErr := objectUnderTest.Install(nil, "", fakeHandle)
+
+									/* assert */
+									Expect(actualErr).To(BeNil())
+								})
+							})
+						})
 					})
 				})
 			})
 		})
 	})
-
 })
