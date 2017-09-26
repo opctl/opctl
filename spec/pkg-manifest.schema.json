@@ -156,10 +156,12 @@
       "description": "Credentials used during authentication with the source of an image or package",
       "properties": {
         "username": {
-          "$ref": "#/definitions/interpolatedString"
+          "description": "expression coercible to string value",
+          "$ref": "#/definitions/expression"
         },
         "password": {
-          "$ref": "#/definitions/interpolatedString"
+          "description": "expression coercible to string value",
+          "$ref": "#/definitions/expression"
         }
       },
       "required": [
@@ -640,7 +642,8 @@
               "description": "Command run by a container; overrides any set at the image level",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/interpolatedString"
+                "description": "expression coercible to string value",
+                "$ref": "#/definitions/expression"
               }
             },
             "dirs": {
@@ -673,8 +676,8 @@
                       "type": "null"
                     },
                     {
-                      "description": "string/number ref or string value",
-                      "$ref": "#/definitions/interpolatedString"
+                      "description": "expression coercible to string value",
+                      "$ref": "#/definitions/expression"
                     }
                   ]
                 }
@@ -705,7 +708,7 @@
               "properties": {
                 "ref": {
                   "description": "Reference to an image",
-                  "$ref": "#/definitions/interpolatedString"
+                  "$ref": "#/definitions/expression"
                 },
                 "pullCreds": {
                   "$ref": "#/definitions/pullCreds"
@@ -812,13 +815,7 @@
                       "type": "null"
                     },
                     {
-                      "$ref": "#/definitions/interpolatedString"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "object"
+                      "$ref": "#/definitions/expression"
                     }
                   ]
                 }
@@ -895,10 +892,10 @@
       ],
       "additionalProperties": false
     },
-    "interpolatedString": {
-      "title": "interpolatedString",
-      "description": "String supporting $(NAME) substitution syntax where $(NAME) will be replaced by the value of NAME at runtime",
-      "type": "string"
+    "expression": {
+      "title": "expression",
+      "description": "An array, number, object, or string. Strings MUST be interpolated at runtime, replacing $(REF) by the value of REF. REF MUST be a scope $(name) or pkg fs $(/path) ref. Nesting up to one level MUST be supported, i.e. $(/$(name))",
+      "type": ["array", "number", "object", "string"]
     },
     "semVer": {
       "title": "semVer",
