@@ -5,6 +5,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
+	"strings"
+	"time"
 )
 
 func (hdlr _handler) events_streams(
@@ -19,15 +21,19 @@ func (hdlr _handler) events_streams(
 
 	defer conn.Close()
 
-	// inspired by https://docs.docker.com/engine/reference/api/docker_remote_handler_v1.24/#/monitor-dockers-events
 	req := &model.GetEventStreamReq{}
-	if filterJson := httpReq.URL.Query().Get("filter"); "" != filterJson {
-		req.Filter = &model.EventFilter{}
-		err = json.Unmarshal([]byte(filterJson), req.Filter)
+	if sinceString := httpReq.URL.Query().Get("since"); "" != sinceString {
+		sinceTime, err := time.Parse(time.RFC3339, sinceString)
 		if nil != err {
 			http.Error(httpResp, err.Error(), http.StatusBadRequest)
 			return
 		}
+		req.Filter.Since = &sinceTime
+	}
+
+	if rootsString := httpReq.URL.Query().Get("roots"); "" != rootsString {
+		rootsArray := strings.Split(rootsString, ",")
+		req.Filter.Roots = rootsArray
 	}
 
 	eventChannel := make(chan *model.Event)

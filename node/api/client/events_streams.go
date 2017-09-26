@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
+	"strings"
+	"time"
 )
 
 func (c client) GetEventStream(
@@ -15,15 +17,13 @@ func (c client) GetEventStream(
 	reqUrl.Path = api.URLEvents_Stream
 
 	if nil != req.Filter {
-		// add non-nil filter
-		var filterBytes []byte
-		filterBytes, err := json.Marshal(req.Filter)
-		if nil != err {
-			return nil, err
-		}
 		queryValues := reqUrl.Query()
-		queryValues.Add("filter", string(filterBytes))
-
+		if nil != req.Filter.Since {
+			queryValues.Add("since", req.Filter.Since.Format(time.RFC3339))
+		}
+		if nil != req.Filter.Roots {
+			queryValues.Add("roots", strings.Join(req.Filter.Roots, ","))
+		}
 		reqUrl.RawQuery = queryValues.Encode()
 	}
 

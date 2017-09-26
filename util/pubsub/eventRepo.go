@@ -39,14 +39,14 @@ func NewEventRepo(
 
 	return &eventRepo{
 		db:           db,
-		eventsByOgid: make(map[string][]*model.Event),
+		eventsByRootOpId: make(map[string][]*model.Event),
 		eventsMutex:  sync.RWMutex{},
 	}
 }
 
 type eventRepo struct {
 	db           *bolt.DB
-	eventsByOgid map[string][]*model.Event
+	eventsByRootOpId map[string][]*model.Event
 	eventsMutex  sync.RWMutex
 }
 
@@ -89,7 +89,7 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 				return err
 			}
 
-			if !isOgIdExcludedByFilter(getEventRootOpId(event), filter) {
+			if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
 				result = append(result, event)
 			}
 		}
