@@ -51,8 +51,8 @@ func (eto _objectEvaluator) EvalToObject(
 				return nil, err
 			}
 			value = &model.Value{String: &stringValue}
-			return eto.data.CoerceToObject(value)
 		}
+    return eto.data.CoerceToObject(value)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)

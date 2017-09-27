@@ -52,8 +52,8 @@ func (etn _numberEvaluator) EvalToNumber(
 			}
 
 			value = &model.Value{String: &stringValue}
-			return etn.data.CoerceToNumber(value)
 		}
+    return etn.data.CoerceToNumber(value)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)
