@@ -3,9 +3,9 @@
 Packages define orchestrations of containerized processes [ops].
 
 They contain:
-- an `op.yml` file which declares inputs, outputs, and a call graph of
-  container, op, serial, and parallel calls
-- any static assets the call graph depends on
+- an `op.yml` file declaring inputs, outputs, and a call graph
+  (consisting of container, op, parallel, and serial calls)
+- files/dirs the call graph depends on
 
 ## Distribution
 

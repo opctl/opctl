@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "packageManifest",
-  "description": "Manifest for a package",
+  "description": "Manifest for a pkg",
   "properties": {
     "name": {
       "description": "Name of the op",
@@ -153,7 +153,7 @@
     },
     "pullCreds": {
       "type": "object",
-      "description": "Credentials used during authentication with the source of an image or package",
+      "description": "Credentials used during authentication with the source of an image or pkg",
       "properties": {
         "username": {
           "description": "expression coercible to string value",
@@ -653,12 +653,12 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(will be bound to same path in package)",
+                      "description": "(will be bound to same path in pkg)",
                       "type": "null"
                     },
                     {
-                      "description": "dir ref or path in package",
-                      "type": "string"
+                      "description": "expression coercible to dir value &/or scope ref to set upon exit",
+                      "$ref": "#/definitions/expression"
                     }
                   ]
                 }
@@ -691,12 +691,12 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(will be bound to same path in package)",
+                      "description": "(will be bound to same path in pkg)",
                       "type": "null"
                     },
                     {
-                      "description": "file/string/number ref or path in package",
-                      "type": "string"
+                      "description": "expression coercible to file value &/or scope ref to set upon exit",
+                      "$ref": "#/definitions/expression"
                     }
                   ]
                 }

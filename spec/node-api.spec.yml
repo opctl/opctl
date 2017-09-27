@@ -19,7 +19,7 @@ paths:
           explode: false
         - name: roots
           in: query
-          description: Filters events to those w/ the provided root op id's
+          description: Filters events to those w/ the provided root op ids
           required: false
           schema:
             type: array

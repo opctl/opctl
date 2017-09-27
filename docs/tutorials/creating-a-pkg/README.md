@@ -4,12 +4,11 @@
 > [official opspec packages](https://github.com/opspec-pkgs) for
 > lots of examples
 
-## 1. create a pkg dir
+## step1
+create a dir named `hello-world`
 
-## 2. add an op.yml
-
-example op.yml:
-
+### step2
+add a file named `op.yml` to `hello-world` w/ contents:
 ```yaml
 name: hello-world
 run:
@@ -17,3 +16,4 @@ run:
     image: { ref: alpine }
     cmd: [echo, hello world!]
 ```
+
