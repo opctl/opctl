@@ -84,8 +84,8 @@ func (this _serialCaller) Call(
 		eventChannel := make(chan *model.Event, 150)
 		this.pubSub.Subscribe(
 			&model.EventFilter{
-				RootOpIds: []string{rootOpId},
-				Since:     &eventFilterSince,
+				Roots: []string{rootOpId},
+				Since: &eventFilterSince,
 			},
 			eventChannel,
 		)

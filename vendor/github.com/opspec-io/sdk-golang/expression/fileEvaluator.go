@@ -51,6 +51,8 @@ func (etf _fileEvaluator) EvalToFile(
 		return etf.data.CoerceToFile(&model.Value{Number: &expression}, scratchDir)
 	case map[string]interface{}:
 		return etf.data.CoerceToFile(&model.Value{Object: expression}, scratchDir)
+	case []interface{}:
+		return etf.data.CoerceToFile(&model.Value{Array: expression}, scratchDir)
 	case string:
 
 		// this block is gross but it's due to the deprecated syntax we support

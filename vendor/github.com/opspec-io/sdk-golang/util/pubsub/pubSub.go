@@ -59,8 +59,8 @@ func (this *pubSub) Subscribe(
 			this.deliverEvent(event, channel)
 		}
 		for event := range this.subscriptions[channel] {
-			ogid := getEventRootOpId(event)
-			if !isOgIdExcludedByFilter(ogid, filter) {
+			RootOpId := getEventRootOpId(event)
+			if !isRootOpIdExcludedByFilter(RootOpId, filter) {
 				this.deliverEvent(event, channel)
 			}
 		}

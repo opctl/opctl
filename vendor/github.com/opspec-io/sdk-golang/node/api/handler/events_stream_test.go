@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
@@ -41,20 +40,20 @@ var _ = Context("GET /events/stream", func() {
 
 		})
 	})
-	Context("nonempty filter", func() {
-		Context("json.Unmarshal errors", func() {
+	Context("nonempty since", func() {
+		Context("time.Parse errors", func() {
 			It("should return StatusCode of 400", func() {
 
 				/* arrange */
 				objectUnderTest := New(new(core.Fake))
 
-				invalidFilter := "notvalidjson"
+				invalidSince := "notValidTime"
 
 				recorder := httptest.NewRecorder()
 
 				httpReq, err := http.NewRequest(
 					http.MethodGet,
-					fmt.Sprintf("%v?filter=%v", api.URLEvents_Stream, invalidFilter),
+					fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, invalidSince),
 					bytes.NewReader([]byte{}),
 				)
 				if nil != err {
@@ -73,7 +72,7 @@ var _ = Context("GET /events/stream", func() {
 
 			})
 		})
-		Context("json.Unmarshal doesn't error", func() {
+		Context("time.Parse doesn't error", func() {
 			It("should call core.GetEventStream w/ expected args", func() {
 
 				/* arrange */
@@ -89,21 +88,13 @@ var _ = Context("GET /events/stream", func() {
 				expectedSince := time.Now().UTC()
 				expectedReq := &model.GetEventStreamReq{
 					Filter: &model.EventFilter{
-						RootOpIds: []string{
-							"dummyROID1",
-						},
 						Since: &expectedSince,
 					},
 				}
 
-				filterBytes, err := json.Marshal(expectedReq.Filter)
-				if nil != err {
-					panic(err)
-				}
-
 				httpReq, err := http.NewRequest(
 					http.MethodGet,
-					fmt.Sprintf("%v?filter=%v", api.URLEvents_Stream, string(filterBytes)),
+					fmt.Sprintf("%v?since=%v", api.URLEvents_Stream, expectedSince.Format(time.RFC3339)),
 					bytes.NewReader([]byte{}),
 				)
 				if nil != err {
@@ -122,6 +113,51 @@ var _ = Context("GET /events/stream", func() {
 				Expect(*actualReq).To(Equal(*expectedReq))
 
 			})
+		})
+	})
+	Context("nonempty roots", func() {
+		It("should call core.GetEventStream w/ expected args", func() {
+
+			/* arrange */
+			fakeCore := new(core.Fake)
+			fakeCore.GetEventStreamStub = func(req *model.GetEventStreamReq, eventChannel chan *model.Event) (err error) {
+				// close eventChannel to trigger immediate return
+				close(eventChannel)
+				return
+			}
+
+			objectUnderTest := New(fakeCore)
+
+			root1 := "dummyRoot1"
+			root2 := "dummyRoot2"
+
+			expectedRoots := []string{root1, root2}
+			expectedReq := &model.GetEventStreamReq{
+				Filter: &model.EventFilter{
+					Roots: expectedRoots,
+				},
+			}
+
+			httpReq, err := http.NewRequest(
+				http.MethodGet,
+				fmt.Sprintf("%v?roots=%v,%v", api.URLEvents_Stream, expectedRoots[0], expectedRoots[1]),
+				bytes.NewReader([]byte{}),
+			)
+			if nil != err {
+				panic(err.Error())
+			}
+
+			/* act */
+			defer func() {
+				// conn.Close() will panic so recover (no way to fake it)
+				recover()
+			}()
+			objectUnderTest.ServeHTTP(httptest.NewRecorder(), httpReq)
+
+			/* assert */
+			actualReq, _ := fakeCore.GetEventStreamArgsForCall(0)
+			Expect(*actualReq).To(Equal(*expectedReq))
+
 		})
 	})
 })

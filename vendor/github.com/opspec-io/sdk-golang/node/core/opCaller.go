@@ -174,8 +174,8 @@ func (oc _opCaller) interpretOutputs(
 	eventFilterSince := time.Now().UTC()
 	oc.pubSub.Subscribe(
 		&model.EventFilter{
-			RootOpIds: []string{dcgOpCall.RootOpId},
-			Since:     &eventFilterSince,
+			Roots: []string{dcgOpCall.RootOpId},
+			Since: &eventFilterSince,
 		},
 		eventChannel,
 	)
