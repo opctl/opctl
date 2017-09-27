@@ -34,14 +34,11 @@ func (eto _objectEvaluator) EvalToObject(
 	expression interface{},
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
-	var value *model.Value
-
 	switch expression := expression.(type) {
-	case float64:
-		value = &model.Value{Number: &expression}
 	case map[string]interface{}:
 		return &model.Value{Object: expression}, nil
 	case string:
+		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
@@ -54,10 +51,9 @@ func (eto _objectEvaluator) EvalToObject(
 				return nil, err
 			}
 			value = &model.Value{String: &stringValue}
+			return eto.data.CoerceToObject(value)
 		}
-	default:
-		return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 	}
 
-	return eto.data.CoerceToObject(value)
+	return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
 }

@@ -34,14 +34,11 @@ func (eto _arrayEvaluator) EvalToArray(
 	expression interface{},
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
-	var value *model.Value
-
 	switch expression := expression.(type) {
-	case float64:
-		value = &model.Value{Number: &expression}
 	case []interface{}:
 		return &model.Value{Array: expression}, nil
 	case string:
+		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
@@ -54,10 +51,8 @@ func (eto _arrayEvaluator) EvalToArray(
 				return nil, err
 			}
 			value = &model.Value{String: &stringValue}
+			return eto.data.CoerceToArray(value)
 		}
-	default:
-		return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
 	}
-
-	return eto.data.CoerceToArray(value)
+	return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
 }

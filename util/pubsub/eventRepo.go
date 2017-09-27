@@ -38,16 +38,16 @@ func NewEventRepo(
 	}
 
 	return &eventRepo{
-		db:           db,
+		db:               db,
 		eventsByRootOpId: make(map[string][]*model.Event),
-		eventsMutex:  sync.RWMutex{},
+		eventsMutex:      sync.RWMutex{},
 	}
 }
 
 type eventRepo struct {
-	db           *bolt.DB
+	db               *bolt.DB
 	eventsByRootOpId map[string][]*model.Event
-	eventsMutex  sync.RWMutex
+	eventsMutex      sync.RWMutex
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"

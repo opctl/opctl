@@ -34,14 +34,11 @@ func (etn _numberEvaluator) EvalToNumber(
 	expression interface{},
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
-	var value *model.Value
-
 	switch expression := expression.(type) {
 	case float64:
 		return &model.Value{Number: &expression}, nil
-	case map[string]interface{}:
-		value = &model.Value{Object: expression}
 	case string:
+		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
@@ -55,10 +52,9 @@ func (etn _numberEvaluator) EvalToNumber(
 			}
 
 			value = &model.Value{String: &stringValue}
+			return etn.data.CoerceToNumber(value)
 		}
-	default:
-		return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)
 	}
 
-	return etn.data.CoerceToNumber(value)
+	return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)
 }
