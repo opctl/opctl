@@ -52,7 +52,7 @@ func (eto _arrayEvaluator) EvalToArray(
 			}
 			value = &model.Value{String: &stringValue}
 		}
-    return eto.data.CoerceToArray(value)
+		return eto.data.CoerceToArray(value)
 	}
 	return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
 }

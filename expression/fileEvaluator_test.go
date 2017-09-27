@@ -115,6 +115,57 @@ var _ = Context("EvalToFile", func() {
 			Expect(actualErr).To(Equal(coerceToFileErr))
 		})
 	})
+	Context("expression is []interface{}", func() {
+		It("should call data.CoerceToFile w/ expected args", func() {
+			/* arrange */
+			providedExpression := []interface{}{"dummyName"}
+			providedScratchDir := "dummyScratchDir"
+
+			fakeData := new(data.Fake)
+
+			objectUnderTest := _fileEvaluator{
+				data: fakeData,
+			}
+
+			/* act */
+			objectUnderTest.EvalToFile(
+				map[string]*model.Value{},
+				providedExpression,
+				new(pkg.FakeHandle),
+				providedScratchDir,
+			)
+
+			/* assert */
+			actualValue,
+				actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+			Expect(*actualValue).To(Equal(model.Value{Array: providedExpression}))
+			Expect(actualScratchDir).To(Equal(providedScratchDir))
+		})
+		It("should return expected result", func() {
+			/* arrange */
+			fakeData := new(data.Fake)
+			coercedValue := model.Value{Array: []interface{}{}}
+			coerceToFileErr := errors.New("dummyError")
+
+			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+
+			objectUnderTest := _fileEvaluator{
+				data: fakeData,
+			}
+
+			/* act */
+			actualValue, actualErr := objectUnderTest.EvalToFile(
+				map[string]*model.Value{},
+				[]interface{}{},
+				new(pkg.FakeHandle),
+				"dummyScratchDir",
+			)
+
+			/* assert */
+			Expect(*actualValue).To(Equal(coercedValue))
+			Expect(actualErr).To(Equal(coerceToFileErr))
+		})
+	})
 	Context("expression is string", func() {
 		Context("expression is pkg fs ref", func() {
 			It("should call interpolater.Interpolate w/ expected args", func() {
