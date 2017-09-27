@@ -5,6 +5,11 @@ inputs:
     dir:
       default: .
       description: dir containing the doc source
+  version:
+    string:
+      description: version of spec being compiled
+      constraints: { format: semver }
+      default: 0.0.0
 outputs:
   srcDir:
     dir:
@@ -29,7 +34,7 @@ run:
         gitbook build . ../build/latest
 
         echo "compiling pdf"
-        gitbook pdf . ../build/latest/opspec0.1.4.pdf
+        gitbook pdf . ../build/latest/opspec$(version).pdf
     dirs:
       /src: srcDir
     image: { ref: 'node:7.7' }

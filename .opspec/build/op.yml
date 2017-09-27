@@ -5,6 +5,11 @@ inputs:
     dir:
       default: .
       description: directory containing the projects source code
+  version:
+    string:
+      description: version of spec being compiled
+      constraints: { format: semver }
+      default: 0.0.0
 run:
   serial:
     - op:
@@ -21,7 +26,7 @@ run:
           outputs: { srcDir }
       - op:
           pkg: { ref: spec/compile }
-          inputs: { srcDir }
+          inputs: { srcDir, version }
           outputs: { srcDir }
       - op:
           pkg: { ref: website/compile }
