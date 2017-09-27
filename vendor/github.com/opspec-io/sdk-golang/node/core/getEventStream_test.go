@@ -15,7 +15,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedReq := &model.GetEventStreamReq{
 				Filter: &model.EventFilter{
-					RootOpIds: []string{
+					Roots: []string{
 						"dummyRootOpId",
 					},
 				},

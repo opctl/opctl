@@ -250,8 +250,8 @@ var _ = Context("Run", func() {
 					startTime := time.Now().UTC()
 					expectedReq := &model.GetEventStreamReq{
 						Filter: &model.EventFilter{
-							RootOpIds: []string{rootOpIdReturnedFromStartOp},
-							Since:     &startTime,
+							Roots: []string{rootOpIdReturnedFromStartOp},
+							Since: &startTime,
 						},
 					}
 

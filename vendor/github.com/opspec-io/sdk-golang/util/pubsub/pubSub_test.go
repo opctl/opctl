@@ -52,7 +52,7 @@ var _ = Context("pubSub", func() {
 			Context("isn't subscribed", func() {
 				It("doesn't receive event", func() {
 					/* arrange */
-					subscriberEventFilter := &model.EventFilter{RootOpIds: []string{"notPublishedOgid"}}
+					subscriberEventFilter := &model.EventFilter{Roots: []string{"notPublishedRootOpId"}}
 					subscriberChannel := make(chan *model.Event, 1000)
 
 					publishedEvent := &model.Event{
@@ -119,7 +119,7 @@ var _ = Context("pubSub", func() {
 					}
 
 					providedFilter := &model.EventFilter{
-						RootOpIds: []string{
+						Roots: []string{
 							expectedEvent.OpStarted.RootOpId,
 						},
 					}

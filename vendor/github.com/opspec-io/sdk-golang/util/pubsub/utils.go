@@ -5,14 +5,14 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-func isOgIdExcludedByFilter(
-	ogid string,
+func isRootOpIdExcludedByFilter(
+	rootOpId string,
 	filter *model.EventFilter,
 ) bool {
-	if nil != filter && nil != filter.RootOpIds {
+	if nil != filter && nil != filter.Roots {
 		isMatchFound := false
-		for _, includedOgid := range filter.RootOpIds {
-			if includedOgid == ogid {
+		for _, includedRootOpId := range filter.Roots {
+			if includedRootOpId == rootOpId {
 				isMatchFound = true
 				break
 			}

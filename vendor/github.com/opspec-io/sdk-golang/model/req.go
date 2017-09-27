@@ -6,7 +6,7 @@ import (
 
 type EventFilter struct {
 	// filter to events from these root op id's
-	RootOpIds []string
+	Roots []string
 	// filter to events occurring after & including this time
 	Since *time.Time
 }

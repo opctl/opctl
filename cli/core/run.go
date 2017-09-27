@@ -87,8 +87,8 @@ func (this _core) Run(
 	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
 		&model.GetEventStreamReq{
 			Filter: &model.EventFilter{
-				RootOpIds: []string{rootOpId},
-				Since:     &startTime,
+				Roots: []string{rootOpId},
+				Since: &startTime,
 			},
 		},
 	)

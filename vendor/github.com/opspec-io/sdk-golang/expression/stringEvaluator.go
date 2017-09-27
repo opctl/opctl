@@ -40,6 +40,8 @@ func (ets _stringEvaluator) EvalToString(
 		value = &model.Value{Number: &expression}
 	case map[string]interface{}:
 		value = &model.Value{Object: expression}
+	case []interface{}:
+		value = &model.Value{Array: expression}
 	case string:
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
