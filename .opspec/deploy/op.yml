@@ -22,7 +22,7 @@ run:
   serial:
     - op:
         pkg: { ref: build }
-        inputs: { srcDir }
+        inputs: { srcDir, version }
         outputs: { srcDir }
     - container:
         cmd:
