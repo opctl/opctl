@@ -1,7 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "packageManifest",
-  "description": "Manifest for a pkg",
+  "id": "https://opspec.io/0.1.5/op.yml.schema.json",
+  "title": "op.yml",
+  "description": "Defines an op",
   "properties": {
     "name": {
       "description": "Name of the op",
