@@ -1,6 +1,6 @@
 ## Introduction
 
-opspec provides a set of vendor & runtime agnostic standards for
+opspec provides a set of vendor & platform agnostic standards for
 defining, distributing, and running, orchestrations of containerized
 processes.
 

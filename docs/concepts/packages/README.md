@@ -9,11 +9,8 @@ They contain:
 
 ## Distribution
 
-A package is just a directory containing an `op.yml` and optionally,
-files &/or directories.
-
-This means distribution is as simple as transferring the directory and
-it's contents from one place to another.
+Because a package is a directory, distribution is as simple as
+transferring the directory and it's contents from one place to another.
 
 It also means you can do things like zip, tar, & version control
 packages.
