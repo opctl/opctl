@@ -22,10 +22,10 @@ All notable changes will be documented in this file in accordance with
 ### Removed
 
 - `ref` attribute in
-  [pkg-manifest.schema.json#/definitions/opCall](spec/pkg-manifest.schema.json#/definitions/opCall).
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall).
   Use new `pkg` attribute.
 - `pullIdentity` & `pullSecret` attributes in
-  [pkg-manifest.schema.json#/definitions/containerCall](spec/pkg-manifest.schema.json#/definitions/containerCall).
+  [op.yml.schema.json#/definitions/containerCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use new `pullCreds` attribute.
 
 ### Changed
@@ -46,10 +46,10 @@ All notable changes will be documented in this file in accordance with
 ### Deprecated
 
 - `ref` attribute in
-  [pkg-manifest.schema.json#/definitions/opCall](spec/pkg-manifest.schema.json#/definitions/opCall).
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall).
   Use new `pkg` attribute.
 - `pullIdentity` & `pullSecret` attributes in
-  [pkg-manifest.schema.json#/definitions/containerCall](spec/pkg-manifest.schema.json#/definitions/containerCall).
+  [op.yml.schema.json#/definitions/containerCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use new `pullCreds` attribute.
 
 ## \[0.1.3] - 2017-03-06
