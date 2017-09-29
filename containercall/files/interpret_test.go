@@ -1,20 +1,18 @@
 package files
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 var _ = Context("Files", func() {
@@ -22,9 +20,14 @@ var _ = Context("Files", func() {
 	if nil != err {
 		panic(err)
 	}
+
+	tempFileInfo, err := os.Stat(tempFile.Name())
+	if nil != err {
+		panic(err)
+	}
 	Context("Interpret", func() {
 		Context("bound value is absolute path", func() {
-			It("should call pkgHandle.GetContent w/ expected args", func() {
+			It("should call expression.EvalToFile w/ expected args", func() {
 				/* arrange */
 
 				containerFilePath := "/dummyFile1Path.txt"
@@ -33,28 +36,37 @@ var _ = Context("Files", func() {
 					// implicitly bound
 					containerFilePath: "",
 				}
+				providedPkgHandle := new(pkg.FakeHandle)
+				providedScope := map[string]*model.Value{}
+				providedScratchDir := "dummyScratchDir"
 
-				providedParentPkgHandle := new(pkg.FakeHandle)
+				fakeExpression := new(expression.Fake)
 				// error to trigger immediate return
-				providedParentPkgHandle.GetContentReturns(tempFile, errors.New("dummyError"))
+				fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _Files{}
+				objectUnderTest := _Files{
+					expression: fakeExpression,
+				}
 
 				/* act */
 				objectUnderTest.Interpret(
-					providedParentPkgHandle,
-					map[string]*model.Value{},
+					providedPkgHandle,
+					providedScope,
 					providedSCGContainerCallFiles,
-					"dummyScratchDir",
+					providedScratchDir,
 				)
 
 				/* assert */
-				actualContext, actualContentPath := providedParentPkgHandle.GetContentArgsForCall(0)
-				Expect(actualContext).To(Equal(context.TODO()))
-				Expect(actualContentPath).To(Equal(containerFilePath))
+				actualScope,
+					actualExpression,
+					actualPkgHandle,
+					actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerFilePath)))
+				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+				Expect(actualScratchDir).To(Equal(providedScratchDir))
 			})
-			Context("pkgHandle.GetContent errs", func() {
-
+			Context("expression.EvalToFile errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
@@ -65,288 +77,24 @@ var _ = Context("Files", func() {
 
 					getContentErr := fmt.Errorf("dummyError")
 
-					providedParentPkgHandle := new(pkg.FakeHandle)
-					providedParentPkgHandle.GetContentReturns(tempFile, getContentErr)
+					fakeExpression := new(expression.Fake)
+					fakeExpression.EvalToFileReturns(nil, getContentErr)
 
 					expectedErr := fmt.Errorf(
-						"unable to bind file '%v' to pkg content '%v'; error was: %v",
+						"unable to bind %v to %v; error was %v",
 						containerFilePath,
-						containerFilePath,
+						fmt.Sprintf("$(%v)", containerFilePath),
 						getContentErr,
 					)
 
-					objectUnderTest := _Files{}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						providedParentPkgHandle,
-						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
-						"dummyScratchDirPath",
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			Context("pkgHandle.GetContent doesn't err", func() {
-				It("should call pkgHandle.ListContents w/ expected args", func() {
-					/* arrange */
-					containerFilePath := "/dummyFile1Path.txt"
-					providedSCGContainerCallFiles := map[string]string{
-						// implicitly bound
-						containerFilePath: "",
-					}
-
-					providedScratchDirPath := "dummyScratchDirPath"
-
-					providedParentPkgHandle := new(pkg.FakeHandle)
-					providedParentPkgHandle.GetContentReturns(tempFile, nil)
-					// err to trigger immediate return
-					providedParentPkgHandle.ListContentsReturns(nil, errors.New("dummyErr"))
-
-					fakeOS := new(ios.Fake)
-					// err to trigger immediate return
-					fakeOS.OpenFileReturns(nil, errors.New("dummyError"))
-
 					objectUnderTest := _Files{
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Interpret(
-						providedParentPkgHandle,
-						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
-						providedScratchDirPath,
-					)
-
-					/* assert */
-					Expect(providedParentPkgHandle.ListContentsArgsForCall(0)).To(Equal(context.TODO()))
-				})
-				Context("pkgHandle.ListContents errs", func() {
-
-					It("should return expected error", func() {
-						/* arrange */
-						containerFilePath := "/dummyFile1Path.txt"
-						providedSCGContainerCallFiles := map[string]string{
-							// implicitly bound
-							containerFilePath: "",
-						}
-
-						providedParentPkgHandle := new(pkg.FakeHandle)
-						providedParentPkgHandle.GetContentReturns(tempFile, nil)
-
-						getContentErr := fmt.Errorf("dummyError")
-						providedParentPkgHandle.ListContentsReturns(nil, getContentErr)
-
-						expectedErr := fmt.Errorf(
-							"unable to bind file '%v' to pkg content '%v'; error was: %v",
-							containerFilePath,
-							containerFilePath,
-							getContentErr,
-						)
-
-						objectUnderTest := _Files{}
-
-						/* act */
-						_, actualErr := objectUnderTest.Interpret(
-							providedParentPkgHandle,
-							map[string]*model.Value{},
-							providedSCGContainerCallFiles,
-							"dummyScratchDirPath",
-						)
-
-						/* assert */
-						Expect(actualErr).To(Equal(expectedErr))
-					})
-				})
-				Context("pkgHandle.ListContents doesn't err", func() {
-					It("should call os.OpenFile w/ expected args", func() {
-						/* arrange */
-						containerFilePath := "/dummyFile1Path.txt"
-						providedSCGContainerCallFiles := map[string]string{
-							// implicitly bound
-							containerFilePath: "",
-						}
-
-						providedScratchDirPath := "dummyScratchDirPath"
-
-						providedParentPkgHandle := new(pkg.FakeHandle)
-						providedParentPkgHandle.GetContentReturns(tempFile, nil)
-
-						fakeOS := new(ios.Fake)
-						// err to trigger immediate return
-						fakeOS.OpenFileReturns(nil, errors.New("dummyError"))
-
-						objectUnderTest := _Files{
-							os: fakeOS,
-						}
-
-						/* act */
-						objectUnderTest.Interpret(
-							providedParentPkgHandle,
-							map[string]*model.Value{},
-							providedSCGContainerCallFiles,
-							providedScratchDirPath,
-						)
-
-						/* assert */
-						actualPath, actualFlags, actualPerm := fakeOS.OpenFileArgsForCall(0)
-						Expect(actualPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
-						Expect(actualFlags).To(Equal(os.O_RDWR | os.O_CREATE))
-						Expect(actualPerm).To(Equal(os.FileMode(0666)))
-
-					})
-					Context("os.OpenFile errs", func() {
-						It("should return expected err", func() {
-							/* arrange */
-							containerFilePath := "/dummyFile1Path.txt"
-							providedSCGContainerCallFiles := map[string]string{
-								// implicitly bound
-								containerFilePath: "",
-							}
-
-							providedParentPkgHandle := new(pkg.FakeHandle)
-							providedParentPkgHandle.GetContentReturns(tempFile, nil)
-
-							openErr := fmt.Errorf("dummyError")
-
-							fakeOS := new(ios.Fake)
-							fakeOS.OpenFileReturns(tempFile, openErr)
-
-							objectUnderTest := _Files{
-								os: fakeOS,
-							}
-
-							/* act */
-							_, actualErr := objectUnderTest.Interpret(
-								providedParentPkgHandle,
-								map[string]*model.Value{},
-								providedSCGContainerCallFiles,
-								"dummyScratchDirPath",
-							)
-
-							/* assert */
-							Expect(actualErr).To(Equal(openErr))
-						})
-					})
-					Context("os.OpenFile doesn't err", func() {
-						It("should call io.Copy w/ expected args", func() {
-							/* arrange */
-							containerFilePath := "/dummyFile1Path.txt"
-							providedSCGContainerCallFiles := map[string]string{
-								// implicitly bound
-								containerFilePath: "",
-							}
-
-							readSeekCloser, err := ioutil.TempFile("", "")
-							if nil != err {
-								panic(err)
-							}
-
-							providedParentPkgHandle := new(pkg.FakeHandle)
-							providedParentPkgHandle.GetContentReturns(readSeekCloser, nil)
-
-							fakeOS := new(ios.Fake)
-							fakeOS.OpenFileReturns(tempFile, nil)
-
-							copyErr := fmt.Errorf("dummyError")
-
-							fakeIO := new(iio.Fake)
-							// err to trigger immediate return
-							fakeIO.CopyReturns(0, copyErr)
-
-							objectUnderTest := _Files{
-								os: fakeOS,
-								io: fakeIO,
-							}
-
-							/* act */
-							objectUnderTest.Interpret(
-								providedParentPkgHandle,
-								map[string]*model.Value{},
-								providedSCGContainerCallFiles,
-								"dummyScratchDirPath",
-							)
-
-							/* assert */
-							actualWriter, actualReader := fakeIO.CopyArgsForCall(0)
-							Expect(actualWriter).To(Equal(tempFile))
-							Expect(actualReader).To(Equal(readSeekCloser))
-						})
-						Context("io.Copy errs", func() {
-							It("should return expected err", func() {
-								/* arrange */
-								containerFilePath := "/dummyFile1Path.txt"
-								providedSCGContainerCallFiles := map[string]string{
-									// implicitly bound
-									containerFilePath: "",
-								}
-
-								providedParentPkgHandle := new(pkg.FakeHandle)
-								providedParentPkgHandle.GetContentReturns(tempFile, nil)
-
-								fakeOS := new(ios.Fake)
-								fakeOS.OpenFileReturns(tempFile, nil)
-
-								copyErr := fmt.Errorf("dummyError")
-
-								fakeIO := new(iio.Fake)
-								fakeIO.CopyReturns(0, copyErr)
-
-								objectUnderTest := _Files{
-									os: fakeOS,
-									io: fakeIO,
-								}
-
-								/* act */
-								_, actualErr := objectUnderTest.Interpret(
-									providedParentPkgHandle,
-									map[string]*model.Value{},
-									providedSCGContainerCallFiles,
-									"dummyScratchDirPath",
-								)
-
-								/* assert */
-								Expect(actualErr).To(Equal(copyErr))
-							})
-						})
-					})
-				})
-			})
-		})
-		Context("bound value matches scope name", func() {
-			Context("value is nil", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					scopeName := "dummyScopeName"
-
-					providedScope := map[string]*model.Value{
-						scopeName: nil,
-					}
-
-					containerFilePath := "dummyContainerFilePath"
-					providedSCGContainerCallFiles := map[string]string{
-						// explicitly bound
-						containerFilePath: scopeName,
-					}
-
-					expectedErr := fmt.Errorf(
-						"unable to bind file '%v' to '%v'; '%v' null",
-						containerFilePath,
-						scopeName,
-						scopeName,
-					)
-
-					objectUnderTest := _Files{
-						os: new(ios.Fake),
+						expression: fakeExpression,
 					}
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						new(pkg.FakeHandle),
-						providedScope,
+						map[string]*model.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
 					)
@@ -355,335 +103,194 @@ var _ = Context("Files", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("value isn't nil", func() {
-				Context("value.File isn't nil", func() {
-					Context("value.File not prefixed by rootFSPath", func() {
-						It("should return expected results", func() {
-
-							/* arrange */
-							scopeName := "dummyScopeName"
-							scopeValue := "dummyScopeValue"
-							providedScope := map[string]*model.Value{
-								scopeName: {File: &scopeValue},
-							}
-
-							containerFilePath := "dummyContainerFilePath"
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								containerFilePath: scopeName,
-							}
-
-							expectedDCGContainerCallFiles := map[string]string{
-								containerFilePath: scopeValue,
-							}
-
-							fakeOS := new(ios.Fake)
-
-							objectUnderTest := _Files{
-								io:         new(iio.Fake),
-								os:         fakeOS,
-								rootFSPath: "dummyRootFSPath",
-							}
-
-							/* act */
-							actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-								new(pkg.FakeHandle),
-								providedScope,
-								providedSCGContainerCallFiles,
-								"dummyScratchDirPath",
-							)
-
-							/* assert */
-							Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
-							Expect(actualErr).To(BeNil())
-						})
-					})
-					Context("value.File prefixed by rootFSPath", func() {
-						It("should call os.OpenFile w/ expected args", func() {
-							/* arrange */
-							providedRootFSPath := "dummyRootFSPath"
-
-							scopeName := "dummyScopeName"
-							scopeValue := providedRootFSPath
-
-							providedScope := map[string]*model.Value{
-								scopeName: {File: &scopeValue},
-							}
-
-							containerFilePath := "dummyContainerFilePath"
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								containerFilePath: scopeName,
-							}
-
-							providedScratchDirPath := "dummyScratchDirPath"
-
-							fakeOS := new(ios.Fake)
-							// err to trigger immediate return
-							fakeOS.OpenFileReturns(nil, errors.New("dummyError"))
-
-							objectUnderTest := _Files{
-								os:         fakeOS,
-								rootFSPath: providedRootFSPath,
-							}
-
-							/* act */
-							objectUnderTest.Interpret(
-								new(pkg.FakeHandle),
-								providedScope,
-								providedSCGContainerCallFiles,
-								providedScratchDirPath,
-							)
-
-							/* assert */
-							actualSrcPath, actualFlags, actualPerm := fakeOS.OpenFileArgsForCall(0)
-							Expect(actualSrcPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
-							Expect(actualFlags).To(Equal(os.O_RDWR | os.O_CREATE))
-							Expect(actualPerm).To(Equal(os.FileMode(0666)))
-
-						})
-						Context("os.OpenFile errs", func() {
-							It("should return expected error", func() {
-								/* arrange */
-								scopeName := "dummyScopeName"
-
-								providedScope := map[string]*model.Value{
-									scopeName: {File: new(string)},
-								}
-
-								containerFilePath := "dummyContainerFilePath"
-								providedSCGContainerCallFiles := map[string]string{
-									// explicitly bound
-									containerFilePath: scopeName,
-								}
-
-								fakeOS := new(ios.Fake)
-								openErr := errors.New("dummyError")
-								fakeOS.OpenFileReturns(nil, openErr)
-
-								objectUnderTest := _Files{
-									os: fakeOS,
-								}
-
-								/* act */
-								_, actualErr := objectUnderTest.Interpret(
-									new(pkg.FakeHandle),
-									providedScope,
-									providedSCGContainerCallFiles,
-									"dummyScratchDirPath",
-								)
-
-								/* assert */
-								Expect(actualErr).To(Equal(openErr))
-							})
-						})
-						Context("os.OpenFile doesn't err", func() {
-							It("should call os.MkdirAll w/ expected args", func() {
-
-								/* arrange */
-								providedRootFSPath := "dummyRootFSPath"
-
-								scopeName := "dummyScopeName"
-								scopeValue := providedRootFSPath
-
-								providedScope := map[string]*model.Value{
-									scopeName: {File: &scopeValue},
-								}
-
-								containerFilePath := "dummyContainerFilePath"
-								providedSCGContainerCallFiles := map[string]string{
-									// explicitly bound
-									containerFilePath: scopeName,
-								}
-
-								providedScratchDirPath := "dummyScratchDirPath"
-
-								fakeOS := new(ios.Fake)
-								// err to trigger immediate return
-								fakeOS.MkdirAllReturns(errors.New("dummyError"))
-
-								objectUnderTest := _Files{
-									os:         fakeOS,
-									rootFSPath: providedRootFSPath,
-								}
-
-								/* act */
-								objectUnderTest.Interpret(
-									new(pkg.FakeHandle),
-									providedScope,
-									providedSCGContainerCallFiles,
-									providedScratchDirPath,
-								)
-
-								/* assert */
-								actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
-								Expect(actualPath).To(Equal(filepath.Dir(filepath.Join(providedScratchDirPath, containerFilePath))))
-								Expect(actualPerm).To(Equal(os.FileMode(0777)))
-
-							})
-						})
-					})
-				})
-				Context("value.File is nil", func() {
-					It("should call data.CoerceToString w/ expected args", func() {
-
+			Context("expression.EvalToFile doesn't err", func() {
+				Context("value.File not prefixed by rootFSPath", func() {
+					It("should return expected results", func() {
 						/* arrange */
-						scopeName := "dummyScopeName"
-						containerFilePath := "dummyContainerFilePath"
-						providedSCGContainerCallFiles := map[string]string{
-							// explicitly bound
-							containerFilePath: scopeName,
-						}
+						containerFilePath := "/dummyFile1Path.txt"
 
-						fakeData := new(data.Fake)
-						// err to trigger immediate return
-						fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+						fakeExpression := new(expression.Fake)
+						filePath := tempFile.Name()
+						fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+
+						expectedDCGContainerCallFiles := map[string]string{
+							containerFilePath: filePath,
+						}
 
 						objectUnderTest := _Files{
-							data: fakeData,
+							expression: fakeExpression,
+							rootFSPath: "dummyRootFSPath",
 						}
 
-						expectedValue := &model.Value{String: new(string)}
+						/* act */
+						actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
+							new(pkg.FakeHandle),
+							map[string]*model.Value{},
+							map[string]string{
+								// implicitly bound
+								containerFilePath: "",
+							},
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
+						Expect(actualErr).To(BeNil())
+
+					})
+				})
+				Context("value.File prefixed by rootFSPath", func() {
+					It("should call os.MkdirAll w/ expected args", func() {
+						/* arrange */
+						containerFilePath := "/parent/child/dummyFilePath.txt"
+						providedScratchDirPath := "dummyScratchDirPath"
+
+						fakeExpression := new(expression.Fake)
+						filePath := tempFile.Name()
+						fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+
+						fakeOS := new(ios.Fake)
+
+						// err to trigger immediate return
+						fakeOS.MkdirAllReturns(errors.New("dummyError"))
+
+						expectedPath := filepath.Join(providedScratchDirPath, filepath.Dir(containerFilePath))
+
+						objectUnderTest := _Files{
+							expression: fakeExpression,
+							os:         fakeOS,
+						}
 
 						/* act */
 						objectUnderTest.Interpret(
 							new(pkg.FakeHandle),
-							map[string]*model.Value{
-								scopeName: expectedValue,
+							map[string]*model.Value{},
+							map[string]string{
+								// implicitly bound
+								containerFilePath: "",
 							},
-							providedSCGContainerCallFiles,
-							"dummyScratchDirPath",
+							providedScratchDirPath,
 						)
 
 						/* assert */
-						actualValue := fakeData.CoerceToStringArgsForCall(0)
-						Expect(actualValue).To(Equal(expectedValue))
+						actualPath,
+							actualFileMode := fakeOS.MkdirAllArgsForCall(0)
+
+						Expect(actualPath).To(Equal(expectedPath))
+						Expect(actualFileMode).To(Equal(os.FileMode(0777)))
 
 					})
-					Context("data.CoerceToString errs", func() {
-						It("should return expected result", func() {
-
+					Context("os.MkdirAll errs", func() {
+						It("should return expected error", func() {
 							/* arrange */
-							scopeName := "dummyScopeName"
+							containerFilePath := "/dummyFile1Path.txt"
 
-							containerFilePath := "dummyContainerFilePath"
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								containerFilePath: scopeName,
-							}
+							fakeExpression := new(expression.Fake)
+							filePath := tempFile.Name()
+							fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
-							fakeData := new(data.Fake)
+							fakeOS := new(ios.Fake)
 
-							coerceToStringErr := errors.New("dummyError")
-							fakeData.CoerceToStringReturns(nil, coerceToStringErr)
+							mkdirAllErr := fmt.Errorf("dummyMkdirAllError")
+							fakeOS.MkdirAllReturns(mkdirAllErr)
 
-							expectedErrors := fmt.Errorf(
-								"unable to bind file '%v' to '%v'; error was: %v",
+							expectedErr := fmt.Errorf(
+								"unable to bind %v to %v; error was %v",
 								containerFilePath,
-								scopeName,
-								coerceToStringErr.Error(),
+								fmt.Sprintf("$(%v)", containerFilePath),
+								mkdirAllErr,
 							)
 
 							objectUnderTest := _Files{
-								data: fakeData,
+								expression: fakeExpression,
+								os:         fakeOS,
 							}
 
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
 								new(pkg.FakeHandle),
-								map[string]*model.Value{
-									scopeName: {},
+								map[string]*model.Value{},
+								map[string]string{
+									// implicitly bound
+									containerFilePath: "",
 								},
-								providedSCGContainerCallFiles,
 								"dummyScratchDirPath",
 							)
 
 							/* assert */
-							Expect(actualErr).To(Equal(expectedErrors))
-
+							Expect(actualErr).To(Equal(expectedErr))
 						})
 					})
-					Context("data.CoerceToString doesn't err", func() {
-						It("should call os.MkdirAll w/ expected args", func() {
+					Context("os.MkdirAll doesn't err", func() {
+						It("should call os.Open w/ expected args", func() {
 							/* arrange */
-							scopeName := "dummyScopeName"
+							containerFilePath := "/dummyFile1Path.txt"
 
-							providedScope := map[string]*model.Value{
-								scopeName: {},
-							}
-
-							containerFilePath := "dummyContainerFilePath"
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								containerFilePath: scopeName,
-							}
-
-							providedScratchDirPath := "dummyScratchDirPath"
-
-							fakeData := new(data.Fake)
-							fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+							fakeExpression := new(expression.Fake)
+							filePath := tempFile.Name()
+							fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
 							fakeOS := new(ios.Fake)
 
+							// err to trigger immediate return
+							fakeOS.OpenReturns(nil, errors.New("dummyError"))
+
 							objectUnderTest := _Files{
-								data: fakeData,
-								io:   new(iio.Fake),
-								os:   fakeOS,
+								expression: fakeExpression,
+								os:         fakeOS,
 							}
 
 							/* act */
 							objectUnderTest.Interpret(
 								new(pkg.FakeHandle),
-								providedScope,
-								providedSCGContainerCallFiles,
-								providedScratchDirPath,
+								map[string]*model.Value{},
+								map[string]string{
+									// implicitly bound
+									containerFilePath: "",
+								},
+								"dummyScratchDir",
 							)
 
 							/* assert */
-							actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
-							Expect(actualPath).To(Equal(filepath.Dir(filepath.Join(providedScratchDirPath, containerFilePath))))
-							Expect(actualPerm).To(Equal(os.FileMode(0777)))
+							actualPath := fakeOS.OpenArgsForCall(0)
+
+							Expect(actualPath).To(Equal(filePath))
 
 						})
-						Context("os.MkdirAll errs", func() {
-							It("should return error", func() {
-
+						Context("os.Open errs", func() {
+							It("should return expected error", func() {
 								/* arrange */
-								scopeName := "dummyScopeName"
+								containerFilePath := "/dummyFile1Path.txt"
 
-								providedScope := map[string]*model.Value{
-									scopeName: {},
-								}
-
-								containerFilePath := "dummyContainerFilePath"
-								providedSCGContainerCallFiles := map[string]string{
-									// explicitly bound
-									containerFilePath: scopeName,
-								}
-
-								fakeData := new(data.Fake)
-								fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+								fakeExpression := new(expression.Fake)
+								filePath := tempFile.Name()
+								fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
 								fakeOS := new(ios.Fake)
-								mkdirAllErr := errors.New("dummyError")
-								fakeOS.MkdirAllReturns(mkdirAllErr)
+
+								openError := fmt.Errorf("dummyOpenError")
+								fakeOS.OpenReturns(nil, openError)
 
 								expectedErr := fmt.Errorf(
-									"unable to mkdir for bound file '%v'; error was: %v",
+									"unable to bind %v to %v; error was %v",
 									containerFilePath,
-									mkdirAllErr.Error(),
+									fmt.Sprintf("$(%v)", containerFilePath),
+									openError,
 								)
 
 								objectUnderTest := _Files{
-									data: fakeData,
-									os:   fakeOS,
+									expression: fakeExpression,
+									os:         fakeOS,
 								}
 
 								/* act */
 								_, actualErr := objectUnderTest.Interpret(
 									new(pkg.FakeHandle),
-									providedScope,
-									providedSCGContainerCallFiles,
+									map[string]*model.Value{},
+									map[string]string{
+										// implicitly bound
+										containerFilePath: "",
+									},
 									"dummyScratchDirPath",
 								)
 
@@ -691,82 +298,78 @@ var _ = Context("Files", func() {
 								Expect(actualErr).To(Equal(expectedErr))
 							})
 						})
-						Context("os.MkdirAll doesn't err", func() {
-							It("should call os.OpenFile w/ expected args", func() {
+						Context("os.Open doesn't err", func() {
+							It("should call os.Stat w/ expected args", func() {
 								/* arrange */
-								scopeName := "dummyScopeName"
+								containerFilePath := "/dummyFile1Path.txt"
 
-								providedScope := map[string]*model.Value{
-									scopeName: {},
-								}
-
-								containerFilePath := "dummyContainerFilePath"
-								providedSCGContainerCallFiles := map[string]string{
-									// explicitly bound
-									containerFilePath: scopeName,
-								}
-
-								providedScratchDirPath := "dummyScratchDirPath"
-
-								fakeData := new(data.Fake)
-								fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+								fakeExpression := new(expression.Fake)
+								filePath := tempFile.Name()
+								fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
 								fakeOS := new(ios.Fake)
+								fakeOS.OpenReturns(tempFile, nil)
+
+								// err to trigger immediate return
+								fakeOS.StatReturns(nil, errors.New("dummyError"))
 
 								objectUnderTest := _Files{
-									data: fakeData,
-									io:   new(iio.Fake),
-									os:   fakeOS,
+									expression: fakeExpression,
+									os:         fakeOS,
 								}
 
 								/* act */
 								objectUnderTest.Interpret(
 									new(pkg.FakeHandle),
-									providedScope,
-									providedSCGContainerCallFiles,
-									providedScratchDirPath,
+									map[string]*model.Value{},
+									map[string]string{
+										// implicitly bound
+										containerFilePath: "",
+									},
+									"dummyScratchDir",
 								)
 
 								/* assert */
-								actualPath, actualFlags, actualPerm := fakeOS.OpenFileArgsForCall(0)
-								Expect(actualPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
-								Expect(actualFlags).To(Equal(os.O_RDWR | os.O_CREATE))
-								Expect(actualPerm).To(Equal(os.FileMode(0666)))
+								actualPath := fakeOS.StatArgsForCall(0)
+
+								Expect(actualPath).To(Equal(filePath))
 
 							})
-							Context("os.OpenFile errs", func() {
-								It("should return error", func() {
-
+							Context("os.Stat errs", func() {
+								It("should return expected error", func() {
 									/* arrange */
-									scopeName := "dummyScopeName"
+									containerFilePath := "/dummyFile1Path.txt"
 
-									providedScope := map[string]*model.Value{
-										scopeName: {},
-									}
-
-									providedSCGContainerCallFiles := map[string]string{
-										// explicitly bound
-										"dummyContainerFilePath": scopeName,
-									}
-
-									fakeData := new(data.Fake)
-									fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
-
-									expectedErr := errors.New("dummyError")
+									fakeExpression := new(expression.Fake)
+									filePath := tempFile.Name()
+									fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
 									fakeOS := new(ios.Fake)
-									fakeOS.OpenFileReturns(nil, expectedErr)
+									fakeOS.OpenReturns(tempFile, nil)
+
+									statErr := fmt.Errorf("dummyStatError")
+									fakeOS.StatReturns(nil, statErr)
+
+									expectedErr := fmt.Errorf(
+										"unable to bind %v to %v; error was %v",
+										containerFilePath,
+										fmt.Sprintf("$(%v)", containerFilePath),
+										statErr,
+									)
 
 									objectUnderTest := _Files{
-										data: fakeData,
-										os:   fakeOS,
+										expression: fakeExpression,
+										os:         fakeOS,
 									}
 
 									/* act */
 									_, actualErr := objectUnderTest.Interpret(
 										new(pkg.FakeHandle),
-										providedScope,
-										providedSCGContainerCallFiles,
+										map[string]*model.Value{},
+										map[string]string{
+											// implicitly bound
+											containerFilePath: "",
+										},
 										"dummyScratchDirPath",
 									)
 
@@ -774,85 +377,86 @@ var _ = Context("Files", func() {
 									Expect(actualErr).To(Equal(expectedErr))
 								})
 							})
-							Context("os.OpenFile doesn't err", func() {
-								It("should call io.Copy w/ expected args", func() {
+							Context("os.Stat doesn't err", func() {
+								It("should call os.OpenFile w/ expected args", func() {
 									/* arrange */
-									scopeName := "dummyScopeName"
+									containerFilePath := "/dummyFile1Path.txt"
+									dummyScratchDir := "dummyScratchDir"
 
-									providedScope := map[string]*model.Value{
-										scopeName: {},
-									}
-
-									providedSCGContainerCallFiles := map[string]string{
-										// explicitly bound
-										"dummyContainerFilePath": scopeName,
-									}
-
-									providedScratchDirPath := "dummyScratchDirPath"
-
-									fakeData := new(data.Fake)
-									fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
-
-									expectedCopyReader := strings.NewReader("")
-
-									fakeIO := new(iio.Fake)
+									fakeExpression := new(expression.Fake)
+									fakeExpression.EvalToFileReturns(&model.Value{File: new(string)}, nil)
 
 									fakeOS := new(ios.Fake)
-									expectedCopyWriter, err := ioutil.TempFile("", "")
-									fakeOS.OpenFileReturns(expectedCopyWriter, err)
+									fakeOS.OpenReturns(tempFile, nil)
+									fakeOS.StatReturns(tempFileInfo, nil)
+
+									// err to trigger immediate return
+									fakeOS.OpenFileReturns(tempFile, errors.New("dummyError"))
+
+									expectedPath := filepath.Join(dummyScratchDir, containerFilePath)
 
 									objectUnderTest := _Files{
-										data: fakeData,
-										io:   fakeIO,
-										os:   fakeOS,
+										expression: fakeExpression,
+										os:         fakeOS,
 									}
 
 									/* act */
 									objectUnderTest.Interpret(
 										new(pkg.FakeHandle),
-										providedScope,
-										providedSCGContainerCallFiles,
-										providedScratchDirPath,
+										map[string]*model.Value{},
+										map[string]string{
+											// implicitly bound
+											containerFilePath: "",
+										},
+										"dummyScratchDir",
 									)
 
 									/* assert */
-									actualCopyWriter, actualCopyReader := fakeIO.CopyArgsForCall(0)
-									Expect(actualCopyReader).To(Equal(expectedCopyReader))
-									Expect(actualCopyWriter).To(Equal(expectedCopyWriter))
+									actualPath,
+										actualFlags,
+										actualPerm := fakeOS.OpenFileArgsForCall(0)
+
+									Expect(actualPath).To(Equal(expectedPath))
+									Expect(actualFlags).To(Equal(os.O_RDWR | os.O_CREATE))
+									Expect(actualPerm).To(Equal(tempFileInfo.Mode()))
+
 								})
-								Context("io.Copy errs", func() {
-									It("should return error", func() {
-
+								Context("os.OpenFile errs", func() {
+									It("should return expected err", func() {
 										/* arrange */
-										scopeName := "dummyScopeName"
-
-										providedScope := map[string]*model.Value{
-											scopeName: {},
-										}
-
+										containerFilePath := "/dummyFile1Path.txt"
 										providedSCGContainerCallFiles := map[string]string{
-											// explicitly bound
-											"dummyContainerFilePath": scopeName,
+											// implicitly bound
+											containerFilePath: "",
 										}
 
-										fakeData := new(data.Fake)
-										fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+										fakeExpression := new(expression.Fake)
+										filePath := "dummyFilePath"
+										fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
-										expectedErr := errors.New("dummyError")
+										openFileErr := fmt.Errorf("dummyError")
 
-										fakeIO := new(iio.Fake)
-										fakeIO.CopyReturns(0, expectedErr)
+										fakeOS := new(ios.Fake)
+										fakeOS.OpenReturns(tempFile, nil)
+										fakeOS.StatReturns(tempFileInfo, nil)
+										fakeOS.OpenFileReturns(tempFile, openFileErr)
+
+										expectedErr := fmt.Errorf(
+											"unable to bind %v to %v; error was %v",
+											containerFilePath,
+											fmt.Sprintf("$(%v)", containerFilePath),
+											openFileErr,
+										)
 
 										objectUnderTest := _Files{
-											data: fakeData,
-											io:   fakeIO,
-											os:   new(ios.Fake),
+											expression: fakeExpression,
+											os:         fakeOS,
 										}
 
 										/* act */
 										_, actualErr := objectUnderTest.Interpret(
 											new(pkg.FakeHandle),
-											providedScope,
+											map[string]*model.Value{},
 											providedSCGContainerCallFiles,
 											"dummyScratchDirPath",
 										)
@@ -861,289 +465,97 @@ var _ = Context("Files", func() {
 										Expect(actualErr).To(Equal(expectedErr))
 									})
 								})
-								Context("io.Copy doesn't err", func() {
-									It("should return expected results", func() {
-
+								Context("os.OpenFile doesn't err", func() {
+									It("should call io.Copy w/ expected args", func() {
 										/* arrange */
-										scopeName := "dummyScopeName"
-
-										providedScope := map[string]*model.Value{
-											scopeName: {},
-										}
-
-										containerFilePath := "dummyContainerFilePath"
+										containerFilePath := "/dummyFile1Path.txt"
 										providedSCGContainerCallFiles := map[string]string{
-											// explicitly bound
-											containerFilePath: scopeName,
+											// implicitly bound
+											containerFilePath: "",
 										}
 
-										providedScratchDirPath := "dummyScratchDirPath"
-
-										expectedDCGContainerCallFiles := map[string]string{
-											containerFilePath: filepath.Join(providedScratchDirPath, containerFilePath),
-										}
-
-										fakeData := new(data.Fake)
-										fakeData.CoerceToStringReturns(&model.Value{String: new(string)}, nil)
+										fakeExpression := new(expression.Fake)
+										filePath := "dummyFilePath"
+										fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
 
 										fakeOS := new(ios.Fake)
+										fakeOS.OpenReturns(tempFile, nil)
+										fakeOS.StatReturns(tempFileInfo, nil)
+										fakeOS.OpenFileReturns(tempFile, nil)
+
+										fakeIO := new(iio.Fake)
+										// err to trigger immediate return
+										fakeIO.CopyReturns(0, errors.New("dummyErr"))
 
 										objectUnderTest := _Files{
-											data: fakeData,
-											io:   new(iio.Fake),
-											os:   fakeOS,
+											expression: fakeExpression,
+											os:         fakeOS,
+											io:         fakeIO,
 										}
 
 										/* act */
-										actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
+										objectUnderTest.Interpret(
 											new(pkg.FakeHandle),
-											providedScope,
+											map[string]*model.Value{},
 											providedSCGContainerCallFiles,
-											providedScratchDirPath,
+											"dummyScratchDirPath",
 										)
 
 										/* assert */
-										Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
-										Expect(actualErr).To(BeNil())
+										actualWriter, actualReader := fakeIO.CopyArgsForCall(0)
+										Expect(actualWriter).To(Equal(tempFile))
+										Expect(actualReader).To(Equal(tempFile))
+									})
+									Context("io.Copy errs", func() {
+										It("should return expected err", func() {
+											/* arrange */
+											containerFilePath := "/dummyFile1Path.txt"
+											providedSCGContainerCallFiles := map[string]string{
+												// implicitly bound
+												containerFilePath: "",
+											}
+
+											fakeExpression := new(expression.Fake)
+											filePath := "dummyFilePath"
+											fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+
+											fakeOS := new(ios.Fake)
+											fakeOS.OpenReturns(tempFile, nil)
+											fakeOS.StatReturns(tempFileInfo, nil)
+											fakeOS.OpenFileReturns(tempFile, nil)
+
+											copyErr := fmt.Errorf("dummyError")
+
+											fakeIO := new(iio.Fake)
+											fakeIO.CopyReturns(0, copyErr)
+
+											expectedErr := fmt.Errorf(
+												"unable to bind %v to %v; error was %v",
+												containerFilePath,
+												fmt.Sprintf("$(%v)", containerFilePath),
+												copyErr,
+											)
+
+											objectUnderTest := _Files{
+												expression: fakeExpression,
+												os:         fakeOS,
+												io:         fakeIO,
+											}
+
+											/* act */
+											_, actualErr := objectUnderTest.Interpret(
+												new(pkg.FakeHandle),
+												map[string]*model.Value{},
+												providedSCGContainerCallFiles,
+												"dummyScratchDirPath",
+											)
+
+											/* assert */
+											Expect(actualErr).To(Equal(expectedErr))
+										})
 									})
 								})
 							})
-						})
-					})
-				})
-			})
-		})
-		Context("bound value doesn't match scope name", func() {
-			It("should call os.MkdirAll w/ expected args", func() {
-				/* arrange */
-				containerFilePath := "dummyContainerFilePath"
-				providedSCGContainerCallFiles := map[string]string{
-					// explicitly bound
-					containerFilePath: "dummyScopeName",
-				}
-
-				providedScratchDirPath := "dummyScratchDirPath"
-
-				fakeOS := new(ios.Fake)
-
-				objectUnderTest := _Files{
-					io: new(iio.Fake),
-					os: fakeOS,
-				}
-
-				/* act */
-				objectUnderTest.Interpret(
-					new(pkg.FakeHandle),
-					map[string]*model.Value{},
-					providedSCGContainerCallFiles,
-					providedScratchDirPath,
-				)
-
-				/* assert */
-				actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
-				Expect(actualPath).To(Equal(filepath.Dir(filepath.Join(providedScratchDirPath, containerFilePath))))
-				Expect(actualPerm).To(Equal(os.FileMode(0777)))
-
-			})
-			Context("os.MkdirAll errs", func() {
-				It("should return error", func() {
-
-					/* arrange */
-					containerFilePath := "dummyContainerFilePath"
-					providedSCGContainerCallFiles := map[string]string{
-						// explicitly bound
-						containerFilePath: "dummyScopeName",
-					}
-
-					fakeOS := new(ios.Fake)
-					mkdirAllErr := errors.New("dummyError")
-					fakeOS.MkdirAllReturns(mkdirAllErr)
-
-					expectedErr := fmt.Errorf(
-						"unable to mkdir for bound file '%v'; error was: %v",
-						containerFilePath,
-						mkdirAllErr.Error(),
-					)
-
-					objectUnderTest := _Files{
-						os: fakeOS,
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
-						"dummyScratchDirPath",
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-			Context("os.MkdirAll doesn't err", func() {
-				It("should call os.OpenFile w/ expected args", func() {
-					/* arrange */
-					containerFilePath := "dummyContainerFilePath"
-					providedSCGContainerCallFiles := map[string]string{
-						// explicitly bound
-						containerFilePath: "dummyScopeName",
-					}
-
-					providedScratchDirPath := "dummyScratchDirPath"
-
-					fakeOS := new(ios.Fake)
-
-					objectUnderTest := _Files{
-						io: new(iio.Fake),
-						os: fakeOS,
-					}
-
-					/* act */
-					objectUnderTest.Interpret(
-						new(pkg.FakeHandle),
-						map[string]*model.Value{},
-						providedSCGContainerCallFiles,
-						providedScratchDirPath,
-					)
-
-					/* assert */
-					actualPath, actualFlags, actualPerm := fakeOS.OpenFileArgsForCall(0)
-					Expect(actualPath).To(Equal(filepath.Join(providedScratchDirPath, containerFilePath)))
-					Expect(actualFlags).To(Equal(os.O_RDWR | os.O_CREATE))
-					Expect(actualPerm).To(Equal(os.FileMode(0666)))
-
-				})
-				Context("os.OpenFile errs", func() {
-					It("should return error", func() {
-
-						/* arrange */
-						providedSCGContainerCallFiles := map[string]string{
-							// explicitly bound
-							"dummyContainerFilePath": "dummyScopeName",
-						}
-
-						expectedErr := errors.New("dummyError")
-
-						fakeOS := new(ios.Fake)
-						fakeOS.OpenFileReturns(nil, expectedErr)
-
-						objectUnderTest := _Files{
-							os: fakeOS,
-						}
-
-						/* act */
-						_, actualErr := objectUnderTest.Interpret(
-							new(pkg.FakeHandle),
-							map[string]*model.Value{},
-							providedSCGContainerCallFiles,
-							"dummyScratchDirPath",
-						)
-
-						/* assert */
-						Expect(actualErr).To(Equal(expectedErr))
-					})
-				})
-				Context("os.OpenFile doesn't err", func() {
-					It("should call io.Copy w/ expected args", func() {
-						/* arrange */
-						providedSCGContainerCallFiles := map[string]string{
-							// explicitly bound
-							"dummyContainerFilePath": "dummyScopeName",
-						}
-
-						providedScratchDirPath := "dummyScratchDirPath"
-						expectedCopyReader := strings.NewReader("")
-
-						fakeIO := new(iio.Fake)
-
-						fakeOS := new(ios.Fake)
-						expectedCopyWriter, err := ioutil.TempFile("", "")
-						fakeOS.OpenFileReturns(expectedCopyWriter, err)
-
-						objectUnderTest := _Files{
-							io: fakeIO,
-							os: fakeOS,
-						}
-
-						/* act */
-						objectUnderTest.Interpret(
-							new(pkg.FakeHandle),
-							map[string]*model.Value{},
-							providedSCGContainerCallFiles,
-							providedScratchDirPath,
-						)
-
-						/* assert */
-						actualCopyWriter, actualCopyReader := fakeIO.CopyArgsForCall(0)
-						Expect(actualCopyReader).To(Equal(expectedCopyReader))
-						Expect(actualCopyWriter).To(Equal(expectedCopyWriter))
-					})
-					Context("io.Copy errs", func() {
-						It("should return error", func() {
-
-							/* arrange */
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								"dummyContainerFilePath": "dummyScopeName",
-							}
-
-							expectedErr := errors.New("dummyError")
-
-							fakeIO := new(iio.Fake)
-							fakeIO.CopyReturns(0, expectedErr)
-
-							objectUnderTest := _Files{
-								io: fakeIO,
-								os: new(ios.Fake),
-							}
-
-							/* act */
-							_, actualErr := objectUnderTest.Interpret(
-								new(pkg.FakeHandle),
-								map[string]*model.Value{},
-								providedSCGContainerCallFiles,
-								"dummyScratchDirPath",
-							)
-
-							/* assert */
-							Expect(actualErr).To(Equal(expectedErr))
-						})
-					})
-					Context("io.Copy doesn't err", func() {
-						It("should return expected results", func() {
-
-							/* arrange */
-							containerFilePath := "dummyContainerFilePath"
-							providedSCGContainerCallFiles := map[string]string{
-								// explicitly bound
-								containerFilePath: "dummyScopeName",
-							}
-
-							providedScratchDirPath := "dummyScratchDirPath"
-
-							expectedDCGContainerCallFiles := map[string]string{
-								containerFilePath: filepath.Join(providedScratchDirPath, containerFilePath),
-							}
-
-							fakeOS := new(ios.Fake)
-
-							objectUnderTest := _Files{
-								io: new(iio.Fake),
-								os: fakeOS,
-							}
-
-							/* act */
-							actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
-								new(pkg.FakeHandle),
-								map[string]*model.Value{},
-								providedSCGContainerCallFiles,
-								providedScratchDirPath,
-							)
-
-							/* assert */
-							Expect(actualDCGContainerCallFiles).To(Equal(expectedDCGContainerCallFiles))
-							Expect(actualErr).To(BeNil())
 						})
 					})
 				})

@@ -92,6 +92,10 @@ func (gh gitHandle) rListContents(
 	return contents, err
 }
 
+func (gh gitHandle) Path() *string {
+	return &gh.path
+}
+
 func (gh gitHandle) Ref() string {
 	return gh.pkgRef
 }

@@ -1,5 +1,7 @@
 package model
 
+//go:generate counterfeiter -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ PkgHandle
+
 import (
 	"context"
 	"io"
@@ -29,6 +31,10 @@ type PkgHandle interface {
 		ReadSeekCloser,
 		error,
 	)
+
+	// Path the local path of the pkg
+	// returns nil if pkg doesn't exist locally
+	Path() *string
 
 	// Ref returns the pkgRef of the pkg
 	Ref() string

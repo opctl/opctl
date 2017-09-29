@@ -12,8 +12,6 @@ import (
 )
 
 type Pkg interface {
-	ProviderFactory
-
 	// Create creates a package
 	Create(
 		path,
@@ -41,7 +39,9 @@ type Pkg interface {
 		dirPath string,
 	) ([]*model.PkgManifest, error)
 
-	Resolver
+	providerFactory
+
+	resolver
 
 	// Validate validates a package
 	Validate(
@@ -54,10 +54,10 @@ func New() Pkg {
 		ioUtil:          iioutil.New(),
 		manifest:        manifest.New(),
 		os:              ios.New(),
+		providerFactory: newProviderFactory(),
 		puller:          newPuller(),
 		refParser:       newRefParser(),
-		Resolver:        newResolver(),
-		ProviderFactory: newProviderFactory(),
+		resolver:        newResolver(),
 	}
 }
 
@@ -65,8 +65,8 @@ type _Pkg struct {
 	ioUtil   iioutil.IIOUtil
 	manifest manifest.Manifest
 	os       ios.IOS
+	providerFactory
 	puller
 	refParser
-	Resolver
-	ProviderFactory
+	resolver
 }

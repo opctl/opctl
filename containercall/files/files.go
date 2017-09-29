@@ -5,7 +5,7 @@ package files
 import (
 	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -22,7 +22,7 @@ func New(
 	rootFSPath string,
 ) Files {
 	return _Files{
-		data:       data.New(),
+		expression: expression.New(),
 		io:         iio.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
@@ -30,7 +30,7 @@ func New(
 }
 
 type _Files struct {
-	data       data.Data
+	expression expression.Expression
 	io         iio.IIO
 	os         ios.IOS
 	rootFSPath string

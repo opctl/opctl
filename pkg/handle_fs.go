@@ -89,6 +89,10 @@ func (lh fsHandle) rListContents(
 	return contents, err
 }
 
+func (lh fsHandle) Path() *string {
+	return &lh.path
+}
+
 func (lh fsHandle) Ref() string {
 	return lh.path
 }

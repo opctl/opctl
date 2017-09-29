@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"io"
+	"strings"
 	"time"
 )
 
@@ -270,17 +271,17 @@ func (this _containerCaller) interpretOutputs(
 			if scgContainerFilePath == dcgContainerFilePath {
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
-				outputs[name] = &model.Value{File: &value}
+				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{File: &value}
 			}
 		}
 	}
-	for containerPath, binding := range scgContainerCall.Dirs {
+	for scgContainerDirPath, name := range scgContainerCall.Dirs {
 		// add dir outputs
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
-			if containerPath == dcgContainerDirPath {
+			if scgContainerDirPath == strings.TrimSuffix(strings.TrimPrefix(dcgContainerDirPath, "$("), ")") {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath
-				outputs[binding] = &model.Value{Dir: &value}
+				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}
 			}
 		}
 	}
