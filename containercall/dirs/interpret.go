@@ -22,8 +22,8 @@ dirLoop:
 			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
-		if _, ok := scope[dirExpression]; ok {
-			// handle deprecated explicit scope ref
+		if !strings.HasPrefix(dirExpression, "$(") && !strings.HasSuffix(dirExpression, ")") {
+			// handle deprecated ref
 			dirExpression = fmt.Sprintf("$(%v)", dirExpression)
 		}
 
