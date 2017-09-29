@@ -3,7 +3,6 @@ package files
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -58,46 +57,10 @@ fileLoop:
 			)
 		}
 
-		file, err := f.os.Open(*fileValue.File)
-		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
-				fileExpression,
-				err,
-			)
-		}
-		defer file.Close()
-
-		fileInfo, err := f.os.Stat(*fileValue.File)
-		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
-				fileExpression,
-				err,
-			)
-		}
-
-		outputFile, err := f.os.OpenFile(
+		err = f.fileCopier.OS(
+			*fileValue.File,
 			dcgContainerCallFiles[scgContainerFilePath],
-			os.O_RDWR|os.O_CREATE,
-			fileInfo.Mode(),
 		)
-		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
-				fileExpression,
-				err,
-			)
-		}
-		defer outputFile.Close()
-
-		// copy content to file
-		_, err = f.io.Copy(outputFile, file)
-		file.Close()
-		outputFile.Close()
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",

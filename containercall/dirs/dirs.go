@@ -3,8 +3,8 @@ package dirs
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Dirs
 
 import (
-	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -22,13 +22,13 @@ func New(
 ) Dirs {
 	return _Dirs{
 		dirCopier:  dircopier.New(),
-		os:         ios.New(),
+		expression: expression.New(),
 		rootFSPath: rootFSPath,
 	}
 }
 
 type _Dirs struct {
 	dirCopier  dircopier.DirCopier
-	os         ios.IOS
+	expression expression.Expression
 	rootFSPath string
 }

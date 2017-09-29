@@ -3,8 +3,8 @@ package files
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Files
 
 import (
-	"github.com/golang-interfaces/iio"
 	"github.com/golang-interfaces/ios"
+	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -23,7 +23,7 @@ func New(
 ) Files {
 	return _Files{
 		expression: expression.New(),
-		io:         iio.New(),
+		fileCopier: filecopier.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
 	}
@@ -31,7 +31,7 @@ func New(
 
 type _Files struct {
 	expression expression.Expression
-	io         iio.IIO
+	fileCopier filecopier.FileCopier
 	os         ios.IOS
 	rootFSPath string
 }

@@ -278,7 +278,7 @@ func (this _containerCaller) interpretOutputs(
 	for scgContainerDirPath, name := range scgContainerCall.Dirs {
 		// add dir outputs
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
-			if scgContainerDirPath == strings.TrimSuffix(strings.TrimPrefix(dcgContainerDirPath, "$("), ")") {
+			if scgContainerDirPath == dcgContainerDirPath {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath
 				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}
