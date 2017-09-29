@@ -22,6 +22,11 @@ dirLoop:
 			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
+		if _, ok := scope[dirExpression]; ok {
+			// handle deprecated explicit scope ref
+			dirExpression = fmt.Sprintf("$(%v)", dirExpression)
+		}
+
 		dirValue, err := d.expression.EvalToDir(
 			scope,
 			dirExpression,
@@ -36,23 +41,36 @@ dirLoop:
 			)
 		}
 
-		if !strings.HasPrefix(*dirValue.Dir, d.rootFSPath) {
+		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, d.rootFSPath) {
 			// bound to non rootFS dir
 			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
 			continue dirLoop
 		}
 		dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
 
-		if err := d.dirCopier.OS(
-			*dirValue.Dir,
-			dcgContainerCallDirs[scgContainerDirPath],
-		); nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
-				scgContainerDirPath,
-				dirExpression,
-				err,
-			)
+		if "" == *dirValue.Dir {
+
+			if err := d.os.MkdirAll(
+				dcgContainerCallDirs[scgContainerDirPath],
+				0700,
+			); nil != err {
+				return nil, err
+			}
+
+		} else {
+
+			if err := d.dirCopier.OS(
+				*dirValue.Dir,
+				dcgContainerCallDirs[scgContainerDirPath],
+			); nil != err {
+				return nil, fmt.Errorf(
+					"unable to bind %v to %v; error was %v",
+					scgContainerDirPath,
+					dirExpression,
+					err,
+				)
+			}
+
 		}
 	}
 	return dcgContainerCallDirs, nil
