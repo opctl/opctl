@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func (pf _ProviderFactory) NewFSProvider(
+func (pf _providerFactory) NewFSProvider(
 	basePaths ...string,
 ) Provider {
 	return fsProvider{

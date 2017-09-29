@@ -17,7 +17,7 @@ var _ = Context("EnvVars", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					envVarName := "dummyEnvVarName"
-					providedSCGContainerCallEnvVars := map[string]string{
+					providedSCGContainerCallEnvVars := map[string]interface{}{
 						// implicitly bound
 						envVarName: "",
 					}
@@ -56,7 +56,7 @@ var _ = Context("EnvVars", func() {
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				map[string]string{
+				map[string]interface{}{
 					// implicitly bound to string
 					envVarName: "",
 				},
@@ -97,7 +97,7 @@ var _ = Context("EnvVars", func() {
 					map[string]*model.Value{
 						envVarName: nil,
 					},
-					map[string]string{
+					map[string]interface{}{
 						// implicitly bound to string
 						envVarName: "",
 					},
@@ -131,7 +131,7 @@ var _ = Context("EnvVars", func() {
 					map[string]*model.Value{
 						envVarName: nil,
 					},
-					map[string]string{
+					map[string]interface{}{
 						// implicitly bound to string
 						envVarName: "",
 					},

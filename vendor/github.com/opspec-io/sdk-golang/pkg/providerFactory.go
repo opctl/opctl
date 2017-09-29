@@ -20,7 +20,7 @@ type Provider interface {
 	) (model.PkgHandle, error)
 }
 
-type ProviderFactory interface {
+type providerFactory interface {
 	// NewFSProvider returns a pkg provider which sources pkgs from the filesystem
 	NewFSProvider(
 		basePaths ...string,
@@ -39,8 +39,8 @@ type ProviderFactory interface {
 	) Provider
 }
 
-func newProviderFactory() ProviderFactory {
-	return _ProviderFactory{}
+func newProviderFactory() providerFactory {
+	return _providerFactory{}
 }
 
-type _ProviderFactory struct{}
+type _providerFactory struct{}

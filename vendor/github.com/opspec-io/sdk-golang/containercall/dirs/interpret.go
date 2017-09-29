@@ -14,63 +14,63 @@ func (d _Dirs) Interpret(
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallDirs := map[string]string{}
+dirLoop:
 	for scgContainerDirPath, dirExpression := range scgContainerCallDirs {
 
 		if "" == dirExpression {
 			// bound implicitly
-			dirExpression = scgContainerDirPath
+			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
-		isBoundToPkg := strings.HasPrefix(dirExpression, "/")
-		value, isBoundToScope := scope[dirExpression]
+		if !strings.HasPrefix(dirExpression, "$(") && !strings.HasSuffix(dirExpression, ")") {
+			// handle deprecated ref
+			dirExpression = fmt.Sprintf("$(%v)", dirExpression)
+		}
 
-		switch {
-		case isBoundToPkg:
-			// bound to pkg dir
-			dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, dirExpression)
+		dirValue, err := d.expression.EvalToDir(
+			scope,
+			dirExpression,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf(
+				"unable to bind %v to %v; error was %v",
+				scgContainerDirPath,
+				dirExpression,
+				err,
+			)
+		}
 
-			// pkg dirs must be passed by value
-			if err := d.dirCopier.OS(
-				filepath.Join(pkgHandle.Ref(), dirExpression),
-				dcgContainerCallDirs[scgContainerDirPath],
-			); nil != err {
-				return nil, err
-			}
-		case isBoundToScope:
-			// bound to scope
-			if nil == value || nil == value.Dir {
-				return nil, fmt.Errorf(
-					"unable to bind dir '%v' to '%v'; '%v' not a dir",
-					scgContainerDirPath,
-					dirExpression,
-					dirExpression,
-				)
-			}
+		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, d.rootFSPath) {
+			// bound to non rootFS dir
+			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
+			continue dirLoop
+		}
+		dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
 
-			if strings.HasPrefix(*value.Dir, d.rootFSPath) {
-				// bound to rootFS dir
-				dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
+		if "" == *dirValue.Dir {
 
-				// rootFS dirs must be passed by value
-				if err := d.dirCopier.OS(
-					*value.Dir,
-					dcgContainerCallDirs[scgContainerDirPath],
-				); nil != err {
-					return nil, err
-				}
-			} else {
-				// bound to non rootFS dir
-				dcgContainerCallDirs[scgContainerDirPath] = *value.Dir
-			}
-		default:
-			// unbound; create tree
-			dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
 			if err := d.os.MkdirAll(
 				dcgContainerCallDirs[scgContainerDirPath],
 				0700,
 			); nil != err {
 				return nil, err
 			}
+
+		} else {
+
+			if err := d.dirCopier.OS(
+				*dirValue.Dir,
+				dcgContainerCallDirs[scgContainerDirPath],
+			); nil != err {
+				return nil, fmt.Errorf(
+					"unable to bind %v to %v; error was %v",
+					scgContainerDirPath,
+					dirExpression,
+					err,
+				)
+			}
+
 		}
 	}
 	return dcgContainerCallDirs, nil

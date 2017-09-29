@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Azure/go-ansiterm"
   packages = [".","winterm"]
-  revision = "19f72df4d05d31cbe1c56bfc8045c96babff6c7e"
+  revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
 
 [[projects]]
   name = "github.com/Microsoft/go-winio"
@@ -41,13 +41,13 @@
   branch = "master"
   name = "github.com/docker/distribution"
   packages = ["digestset","reference"]
-  revision = "5db89f0ca68677abc5eefce8f2a0a772c98ba52d"
+  revision = "bb49a1685d2773cb43dacc16e100419f310ba347"
 
 [[projects]]
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "afe31900915782daf67b40d405d8e7b8e01ab2dd"
+  revision = "ab2b03a0e139537376bbf66c1e1e9e897a403f06"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "084e58d5b9990f0f0628c0145d0e312cd2ef8d3b"
+  revision = "2821df2ff8a2ccc6d80e21a11aceacbeb08d9004"
 
 [[projects]]
   branch = "master"
@@ -322,7 +322,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["curve25519","ed25519","ed25519/internal/edwards25519","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "847319b7fc94cab682988f93da778204da164588"
+  revision = "76eec36fa14229c4b25bb894c2d0e591527af429"
 
 [[projects]]
   branch = "master"

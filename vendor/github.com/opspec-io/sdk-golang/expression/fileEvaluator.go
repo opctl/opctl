@@ -2,9 +2,12 @@ package expression
 
 import (
 	"fmt"
+	"github.com/golang-interfaces/iio"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"path/filepath"
 	"strings"
 )
@@ -32,12 +35,18 @@ func newFileEvaluator() fileEvaluator {
 	return _fileEvaluator{
 		data:         data.New(),
 		interpolater: interpolater.New(),
+		io:           iio.New(),
+		os:           ios.New(),
+		pkg:          pkg.New(),
 	}
 }
 
 type _fileEvaluator struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
+	io           iio.IIO
+	os           ios.IOS
+	pkg          pkg.Pkg
 }
 
 func (etf _fileEvaluator) EvalToFile(
@@ -71,8 +80,10 @@ func (etf _fileEvaluator) EvalToFile(
 				return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
 			}
 
-			deprecatedPkgFsRefPath = filepath.Join(pkgHandle.Ref(), deprecatedPkgFsRefPath)
-			return &model.Value{File: &deprecatedPkgFsRefPath}, nil
+			fileValue := filepath.Join(*pkgHandle.Path(), deprecatedPkgFsRefPath)
+
+			return &model.Value{File: &fileValue}, nil
+
 		} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
 			refExpression := expression[2:possibleRefCloserIndex]
@@ -85,7 +96,9 @@ func (etf _fileEvaluator) EvalToFile(
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
-				fileValue := filepath.Join(pkgHandle.Ref(), pkgFsRef)
+
+				fileValue := filepath.Join(*pkgHandle.Path(), pkgFsRef)
+
 				return &model.Value{File: &fileValue}, nil
 
 			} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {

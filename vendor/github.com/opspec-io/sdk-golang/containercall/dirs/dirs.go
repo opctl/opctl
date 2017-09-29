@@ -5,6 +5,7 @@ package dirs
 import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
+	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -22,6 +23,7 @@ func New(
 ) Dirs {
 	return _Dirs{
 		dirCopier:  dircopier.New(),
+		expression: expression.New(),
 		os:         ios.New(),
 		rootFSPath: rootFSPath,
 	}
@@ -29,6 +31,7 @@ func New(
 
 type _Dirs struct {
 	dirCopier  dircopier.DirCopier
+	expression expression.Expression
 	os         ios.IOS
 	rootFSPath string
 }
