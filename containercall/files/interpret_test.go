@@ -26,7 +26,7 @@ var _ = Context("Files", func() {
 
 			containerFilePath := "/dummyFile1Path.txt"
 
-			providedSCGContainerCallFiles := map[string]string{
+			providedSCGContainerCallFiles := map[string]interface{}{
 				// implicitly bound
 				containerFilePath: "",
 			}
@@ -64,7 +64,7 @@ var _ = Context("Files", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				containerFilePath := "/dummyFile1Path.txt"
-				providedSCGContainerCallFiles := map[string]string{
+				providedSCGContainerCallFiles := map[string]interface{}{
 					// implicitly bound
 					containerFilePath: "",
 				}
@@ -120,7 +120,7 @@ var _ = Context("Files", func() {
 					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
-						map[string]string{
+						map[string]interface{}{
 							// implicitly bound
 							containerFilePath: "",
 						},
@@ -159,7 +159,7 @@ var _ = Context("Files", func() {
 					objectUnderTest.Interpret(
 						new(pkg.FakeHandle),
 						map[string]*model.Value{},
-						map[string]string{
+						map[string]interface{}{
 							// implicitly bound
 							containerFilePath: "",
 						},
@@ -204,7 +204,7 @@ var _ = Context("Files", func() {
 						_, actualErr := objectUnderTest.Interpret(
 							new(pkg.FakeHandle),
 							map[string]*model.Value{},
-							map[string]string{
+							map[string]interface{}{
 								// implicitly bound
 								containerFilePath: "",
 							},
@@ -242,7 +242,7 @@ var _ = Context("Files", func() {
 						objectUnderTest.Interpret(
 							new(pkg.FakeHandle),
 							map[string]*model.Value{},
-							map[string]string{
+							map[string]interface{}{
 								// implicitly bound
 								containerFilePath: "",
 							},
@@ -290,7 +290,7 @@ var _ = Context("Files", func() {
 							_, actualErr := objectUnderTest.Interpret(
 								new(pkg.FakeHandle),
 								map[string]*model.Value{},
-								map[string]string{
+								map[string]interface{}{
 									// implicitly bound
 									containerFilePath: "",
 								},

@@ -10,7 +10,7 @@ import (
 func (f _Files) Interpret(
 	pkgHandle model.PkgHandle,
 	scope map[string]*model.Value,
-	scgContainerCallFiles map[string]string,
+	scgContainerCallFiles map[string]interface{},
 	scratchDirPath string,
 ) (map[string]string, error) {
 	dcgContainerCallFiles := map[string]string{}

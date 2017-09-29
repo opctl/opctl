@@ -387,7 +387,7 @@ var _ = Context("ContainerCall", func() {
 
 			fileName := "dummyFileName"
 			providedSCGContainerCall := &model.SCGContainerCall{
-				Files: map[string]string{
+				Files: map[string]interface{}{
 					// implicitly bound
 					fileName: "",
 				},

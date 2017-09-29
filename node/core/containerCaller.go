@@ -271,7 +271,9 @@ func (this _containerCaller) interpretOutputs(
 			if scgContainerFilePath == dcgContainerFilePath {
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
-				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{File: &value}
+				if nameAsString, ok := name.(string); ok {
+					outputs[strings.TrimSuffix(strings.TrimPrefix(nameAsString, "$("), ")")] = &model.Value{File: &value}
+				}
 			}
 		}
 	}

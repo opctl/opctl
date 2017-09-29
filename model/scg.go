@@ -22,7 +22,7 @@ type SCGContainerCall struct {
 
 	// each env var value will be interpolated
 	EnvVars map[string]string      `yaml:"envVars,omitempty"`
-	Files   map[string]string      `yaml:"files,omitempty"`
+	Files   map[string]interface{} `yaml:"files,omitempty"`
 	Image   *SCGContainerCallImage `yaml:"image"`
 	Sockets map[string]string      `yaml:"sockets,omitempty"`
 	StdErr  map[string]string      `yaml:"stdErr,omitempty"`

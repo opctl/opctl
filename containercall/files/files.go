@@ -13,7 +13,7 @@ type Files interface {
 	Interpret(
 		pkgHandle model.PkgHandle,
 		scope map[string]*model.Value,
-		scgContainerCallFiles map[string]string,
+		scgContainerCallFiles map[string]interface{},
 		scratchDirPath string,
 	) (map[string]string, error)
 }
