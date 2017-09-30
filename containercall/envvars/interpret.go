@@ -12,7 +12,7 @@ func (ev _EnvVars) Interpret(
 ) (map[string]string, error) {
 	dcgContainerCallEnvVars := map[string]string{}
 	for envVarName, envVarExpression := range scgContainerCallEnvVars {
-		if "" == envVarExpression {
+		if nil == envVarExpression {
 			// implicitly bound
 			if _, ok := scope[envVarName]; !ok {
 				return nil, fmt.Errorf(

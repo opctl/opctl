@@ -19,7 +19,7 @@ var _ = Context("EnvVars", func() {
 					envVarName := "dummyEnvVarName"
 					providedSCGContainerCallEnvVars := map[string]interface{}{
 						// implicitly bound
-						envVarName: "",
+						envVarName: nil,
 					}
 
 					expectedErr := fmt.Errorf("unable to bind env var to '%v' via implicit ref; '%v' not in scope", envVarName, envVarName)
@@ -58,7 +58,7 @@ var _ = Context("EnvVars", func() {
 				providedScope,
 				map[string]interface{}{
 					// implicitly bound to string
-					envVarName: "",
+					envVarName: nil,
 				},
 				providedPkgHandle,
 			)

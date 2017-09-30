@@ -17,7 +17,7 @@ func (f _Files) Interpret(
 fileLoop:
 	for scgContainerFilePath, fileExpression := range scgContainerCallFiles {
 
-		if "" == fileExpression {
+		if nil == fileExpression {
 			// bound implicitly
 			fileExpression = fmt.Sprintf("$(%v)", scgContainerFilePath)
 		}
