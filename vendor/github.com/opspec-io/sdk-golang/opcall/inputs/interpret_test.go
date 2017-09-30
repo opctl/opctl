@@ -36,7 +36,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -67,7 +67,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -90,13 +90,13 @@ var _ = Context("inputs", func() {
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
 						}
-						providedPkgRef := "dummyPkgRef"
+						providedPkgPath := "dummyPkgPath"
 
 						objectUnderTest := _Inputs{
 							data: new(data.Fake),
 						}
 
-						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {Dir: &expectedInputValue},
 						}
@@ -106,7 +106,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							providedPkgRef,
+							providedPkgPath,
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -118,7 +118,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgDirDefault"
-						providedPkgRef := "dummyPkgRef"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {Dir: &model.DirParam{Default: &providedInputDefault}},
@@ -126,7 +126,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInput := &model.Value{Dir: &expectedInputValue}
 
 						fakeData := new(data.Fake)
@@ -140,7 +140,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							providedPkgRef,
+							providedPkgPath,
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -159,7 +159,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedPkgRef := "dummyPkgRef"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -169,7 +169,7 @@ var _ = Context("inputs", func() {
 							data: new(data.Fake),
 						}
 
-						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInputs := map[string]*model.Value{
 							providedInputName: {File: &expectedInputValue},
 						}
@@ -179,7 +179,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							providedPkgRef,
+							providedPkgPath,
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -191,7 +191,7 @@ var _ = Context("inputs", func() {
 						/* arrange */
 						providedInputName := "inputName"
 						providedInputDefault := "/pkgFileDefault"
-						providedPkgRef := "dummyPkgRef"
+						providedPkgPath := "dummyPkgPath"
 
 						providedInputParams := map[string]*model.Param{
 							providedInputName: {File: &model.FileParam{Default: &providedInputDefault}},
@@ -199,7 +199,7 @@ var _ = Context("inputs", func() {
 
 						expectedParam := providedInputParams[providedInputName]
 
-						expectedInputValue := filepath.Join(providedPkgRef, providedInputDefault)
+						expectedInputValue := filepath.Join(providedPkgPath, providedInputDefault)
 						expectedInput := &model.Value{File: &expectedInputValue}
 
 						fakeData := new(data.Fake)
@@ -213,7 +213,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							providedPkgRef,
+							providedPkgPath,
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -250,7 +250,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -281,7 +281,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -318,7 +318,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -349,7 +349,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -386,7 +386,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -417,7 +417,7 @@ var _ = Context("inputs", func() {
 							map[string]interface{}{},
 							providedInputParams,
 							new(pkg.FakeHandle),
-							"dummyPkgRef",
+							"dummyPkgPath",
 							map[string]*model.Value{},
 							"dummyOpScratchDir",
 						)
@@ -467,7 +467,7 @@ var _ = Context("inputs", func() {
 					providedInputArgs,
 					providedInputParams,
 					providedParentPkgHandle,
-					"dummyPkgRef",
+					"dummyPkgPath",
 					providedScope,
 					providedOpScratchDir,
 				)
@@ -519,7 +519,7 @@ var _ = Context("inputs", func() {
 						providedInputArgs,
 						providedInputParams,
 						new(pkg.FakeHandle),
-						"dummyPkgRef",
+						"dummyPkgPath",
 						map[string]*model.Value{},
 						"dummyOpScratchDir",
 					)

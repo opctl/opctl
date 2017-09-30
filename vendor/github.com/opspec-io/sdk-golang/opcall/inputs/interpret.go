@@ -10,7 +10,7 @@ func (_inputs _Inputs) Interpret(
 	inputArgs map[string]interface{},
 	inputParams map[string]*model.Param,
 	parentPkgHandle model.PkgHandle,
-	pkgRef string,
+	pkgPath string,
 	scope map[string]*model.Value,
 	opScratchDir string,
 ) (map[string]*model.Value, []error) {
@@ -23,10 +23,10 @@ func (_inputs _Inputs) Interpret(
 			case nil != paramValue.Array && nil != paramValue.Array.Default:
 				dcgOpCallInputs[paramName] = &model.Value{Array: paramValue.Array.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
-				dirValue := filepath.Join(pkgRef, *paramValue.Dir.Default)
+				dirValue := filepath.Join(pkgPath, *paramValue.Dir.Default)
 				dcgOpCallInputs[paramName] = &model.Value{Dir: &dirValue}
 			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
-				fileValue := filepath.Join(pkgRef, *paramValue.File.Default)
+				fileValue := filepath.Join(pkgPath, *paramValue.File.Default)
 				dcgOpCallInputs[paramName] = &model.Value{File: &fileValue}
 			case nil != paramValue.Number && nil != paramValue.Number.Default:
 				dcgOpCallInputs[paramName] = &model.Value{Number: paramValue.Number.Default}

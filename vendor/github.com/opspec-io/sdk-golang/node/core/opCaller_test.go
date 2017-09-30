@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall"
+	"github.com/opspec-io/sdk-golang/opcall/outputs"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
@@ -212,11 +213,15 @@ var _ = Context("opCaller", func() {
 					close(eventChannel)
 				}
 
+				fakeCaller := new(fakeCaller)
+				// err to trigger immediate return
+				fakeCaller.CallReturns(errors.New("dummyError"))
+
 				objectUnderTest := _opCaller{
 					opCall:      fakeOpCall,
 					pubSub:      fakePubSub,
 					dcgNodeRepo: new(fakeDCGNodeRepo),
-					caller:      new(fakeCaller),
+					caller:      fakeCaller,
 				}
 
 				/* act */
@@ -272,6 +277,8 @@ var _ = Context("opCaller", func() {
 				}
 
 				fakeCaller := new(fakeCaller)
+				// err to trigger immediate return
+				fakeCaller.CallReturns(errors.New("dummyErr"))
 
 				objectUnderTest := _opCaller{
 					opCall:      fakeOpCall,
@@ -306,13 +313,21 @@ var _ = Context("opCaller", func() {
 				/* arrange */
 				providedRootOpId := "dummyRootOpId"
 
+				fakePkgHandle := new(pkg.FakeHandle)
+				fakePkgHandle.PathReturns(new(string))
+
 				fakeOpCall := new(opcall.Fake)
 				fakeOpCall.InterpretReturns(
 					&model.DCGOpCall{
-						DCGBaseCall: &model.DCGBaseCall{},
+						DCGBaseCall: &model.DCGBaseCall{
+							PkgHandle: fakePkgHandle,
+						},
 					},
 					nil,
 				)
+
+				fakePkg := new(pkg.Fake)
+				fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
@@ -323,8 +338,10 @@ var _ = Context("opCaller", func() {
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 				objectUnderTest := _opCaller{
+					pkg:         fakePkg,
 					pubSub:      fakePubSub,
 					opCall:      fakeOpCall,
+					outputs:     new(outputs.Fake),
 					dcgNodeRepo: fakeDCGNodeRepo,
 					caller:      new(fakeCaller),
 				}
@@ -362,13 +379,21 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
+					fakePkgHandle := new(pkg.FakeHandle)
+					fakePkgHandle.PathReturns(new(string))
+
 					fakeOpCall := new(opcall.Fake)
 					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
-							DCGBaseCall: &model.DCGBaseCall{},
+							DCGBaseCall: &model.DCGBaseCall{
+								PkgHandle: fakePkgHandle,
+							},
 						},
 						nil,
 					)
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
@@ -377,8 +402,10 @@ var _ = Context("opCaller", func() {
 					}
 
 					objectUnderTest := _opCaller{
+						pkg:         fakePkg,
 						pubSub:      fakePubSub,
 						opCall:      fakeOpCall,
+						outputs:     new(outputs.Fake),
 						dcgNodeRepo: new(fakeDCGNodeRepo),
 						caller:      new(fakeCaller),
 					}
@@ -408,13 +435,21 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedOpId := "dummyOpId"
 
+					fakePkgHandle := new(pkg.FakeHandle)
+					fakePkgHandle.PathReturns(new(string))
+
 					fakeOpCall := new(opcall.Fake)
 					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
-							DCGBaseCall: &model.DCGBaseCall{},
+							DCGBaseCall: &model.DCGBaseCall{
+								PkgHandle: fakePkgHandle,
+							},
 						},
 						nil,
 					)
+
+					fakePkg := new(pkg.Fake)
+					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -426,8 +461,10 @@ var _ = Context("opCaller", func() {
 					}
 
 					objectUnderTest := _opCaller{
+						pkg:         fakePkg,
 						pubSub:      fakePubSub,
 						opCall:      fakeOpCall,
+						outputs:     new(outputs.Fake),
 						dcgNodeRepo: fakeDCGNodeRepo,
 						caller:      new(fakeCaller),
 					}
@@ -525,6 +562,10 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
+						fakeOutputs := new(outputs.Fake)
+						interpretedOutputs := map[string]*model.Value{"dummyOutputName": new(model.Value)}
+						fakeOutputs.InterpretReturns(interpretedOutputs, nil)
+
 						expectedEvent := &model.Event{
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
@@ -532,17 +573,25 @@ var _ = Context("opCaller", func() {
 								PkgRef:   providedSCGOpCall.Pkg.Ref,
 								Outcome:  model.OpOutcomeSucceeded,
 								RootOpId: providedRootOpId,
-								Outputs:  map[string]*model.Value{},
+								Outputs:  interpretedOutputs,
 							},
 						}
+
+						fakePkgHandle := new(pkg.FakeHandle)
+						fakePkgHandle.PathReturns(new(string))
 
 						fakeOpCall := new(opcall.Fake)
 						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
-								DCGBaseCall: &model.DCGBaseCall{},
+								DCGBaseCall: &model.DCGBaseCall{
+									PkgHandle: fakePkgHandle,
+								},
 							},
 							nil,
 						)
+
+						fakePkg := new(pkg.Fake)
+						fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -554,8 +603,10 @@ var _ = Context("opCaller", func() {
 						}
 
 						objectUnderTest := _opCaller{
+							pkg:         fakePkg,
 							pubSub:      fakePubSub,
 							opCall:      fakeOpCall,
+							outputs:     fakeOutputs,
 							dcgNodeRepo: fakeDCGNodeRepo,
 							caller:      new(fakeCaller),
 						}
