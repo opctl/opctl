@@ -280,7 +280,7 @@ var _ = Context("ContainerCall", func() {
 
 			envVarName := "dummyEnvVarName"
 			providedSCGContainerCall := &model.SCGContainerCall{
-				EnvVars: map[string]string{
+				EnvVars: map[string]interface{}{
 					// implicitly bound
 					envVarName: "",
 				},
