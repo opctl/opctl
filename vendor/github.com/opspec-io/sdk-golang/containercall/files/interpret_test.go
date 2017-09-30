@@ -28,7 +28,7 @@ var _ = Context("Files", func() {
 
 			providedSCGContainerCallFiles := map[string]interface{}{
 				// implicitly bound
-				containerFilePath: "",
+				containerFilePath: nil,
 			}
 			providedPkgHandle := new(pkg.FakeHandle)
 			providedScope := map[string]*model.Value{}
@@ -66,7 +66,7 @@ var _ = Context("Files", func() {
 				containerFilePath := "/dummyFile1Path.txt"
 				providedSCGContainerCallFiles := map[string]interface{}{
 					// implicitly bound
-					containerFilePath: "",
+					containerFilePath: nil,
 				}
 
 				getContentErr := fmt.Errorf("dummyError")
@@ -206,7 +206,7 @@ var _ = Context("Files", func() {
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
-								containerFilePath: "",
+								containerFilePath: nil,
 							},
 							"dummyScratchDirPath",
 						)
@@ -244,7 +244,7 @@ var _ = Context("Files", func() {
 							map[string]*model.Value{},
 							map[string]interface{}{
 								// implicitly bound
-								containerFilePath: "",
+								containerFilePath: nil,
 							},
 							providedScratchDir,
 						)
@@ -292,7 +292,7 @@ var _ = Context("Files", func() {
 								map[string]*model.Value{},
 								map[string]interface{}{
 									// implicitly bound
-									containerFilePath: "",
+									containerFilePath: nil,
 								},
 								"dummyScratchDirPath",
 							)
