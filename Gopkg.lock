@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "8ea762c482107918350ca2da5dda2afdf2e6877d"
+  revision = "86dce73c3d2c61005ba33ac5cdd16aa578a55a6c"
 
 [[projects]]
   branch = "master"
