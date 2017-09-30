@@ -16,15 +16,16 @@ type SCGPullCreds struct {
 }
 
 type SCGContainerCall struct {
-	// Cmd will be evaluated to strings
-	Cmd []string `yaml:"cmd,omitempty"`
-	// Dirs will be evaluated to files
+	// Cmd entries will be evaluated to strings
+	Cmd []interface{} `yaml:"cmd,omitempty"`
+
+	// Dirs entries will be evaluated to files
 	Dirs map[string]string `yaml:"dirs,omitempty"`
 
-	// EnvVars will be evaluated to strings
+	// EnvVars entries will be evaluated to strings
 	EnvVars map[string]interface{} `yaml:"envVars,omitempty"`
 
-	// Files will be evaluated to files
+	// Files entries will be evaluated to files
 	Files   map[string]interface{} `yaml:"files,omitempty"`
 	Image   *SCGContainerCallImage `yaml:"image"`
 	Sockets map[string]string      `yaml:"sockets,omitempty"`

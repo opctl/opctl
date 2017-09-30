@@ -72,7 +72,7 @@ var _ = Context("ContainerCall", func() {
 				providedPkgHandle := new(pkg.FakeHandle)
 
 				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []string{
+					Cmd: []interface{}{
 						"dummy1",
 						"dummy2",
 					},
@@ -118,7 +118,7 @@ var _ = Context("ContainerCall", func() {
 				}
 
 				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []string{
+					Cmd: []interface{}{
 						"dummy1",
 						"dummy2",
 					},
