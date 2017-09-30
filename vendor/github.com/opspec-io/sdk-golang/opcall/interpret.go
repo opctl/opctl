@@ -32,9 +32,10 @@ func (oc _OpCall) Interpret(
 		pkgPullCreds.Password = *evaluatedPassword.String
 	}
 
+	parentPkgPath := parentPkgHandle.Path()
 	pkgHandle, err := oc.pkg.Resolve(
 		scgOpCall.Pkg.Ref,
-		oc.pkg.NewFSProvider(filepath.Dir(parentPkgHandle.Ref())),
+		oc.pkg.NewFSProvider(filepath.Dir(*parentPkgPath)),
 		oc.pkg.NewGitProvider(oc.pkgCachePath, pkgPullCreds),
 	)
 	if nil != err {
@@ -61,7 +62,7 @@ func (oc _OpCall) Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
 		parentPkgHandle,
-		pkgHandle.Ref(),
+		*pkgHandle.Path(),
 		scope,
 		filepath.Join(oc.dcgScratchDir, opId),
 	)

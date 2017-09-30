@@ -105,6 +105,7 @@ var _ = Context("OpCall", func() {
 		It("should call pkg.NewFSProvider w/ expected args", func() {
 			/* arrange */
 			providedParentPkgHandle := new(pkg.FakeHandle)
+			providedParentPkgHandle.PathReturns(new(string))
 
 			fakePkg := new(pkg.Fake)
 			// error to trigger immediate return
@@ -134,6 +135,9 @@ var _ = Context("OpCall", func() {
 		Context("scgOpCall.Pkg.PullCreds is nil", func() {
 			It("should call pkg.NewGitProvider w/ expected args", func() {
 				/* arrange */
+				providedParentPkgHandle := new(pkg.FakeHandle)
+				providedParentPkgHandle.PathReturns(new(string))
+
 				providedPkgCachePath := "dummyPkgCachePath"
 
 				fakePkg := new(pkg.Fake)
@@ -154,7 +158,7 @@ var _ = Context("OpCall", func() {
 						},
 					},
 					"dummyOpId",
-					new(pkg.FakeHandle),
+					providedParentPkgHandle,
 					"dummyRootOpId",
 				)
 
@@ -198,6 +202,9 @@ var _ = Context("OpCall", func() {
 			Context("string.Interpret doesn't err", func() {
 				It("should call pkg.NewGitProvider w/ expected args", func() {
 					/* arrange */
+					providedParentPkgHandle := new(pkg.FakeHandle)
+					providedParentPkgHandle.PathReturns(new(string))
+
 					providedPkgCachePath := "dummyPkgCachePath"
 
 					fakeExpression := new(expression.Fake)
@@ -225,7 +232,7 @@ var _ = Context("OpCall", func() {
 							},
 						},
 						"dummyOpId",
-						new(pkg.FakeHandle),
+						providedParentPkgHandle,
 						"dummyRootOpId",
 					)
 
@@ -240,6 +247,9 @@ var _ = Context("OpCall", func() {
 		})
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
+			providedParentPkgHandle := new(pkg.FakeHandle)
+			providedParentPkgHandle.PathReturns(new(string))
+
 			providedRootFSPath := "dummyRootFSPath"
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
@@ -271,7 +281,7 @@ var _ = Context("OpCall", func() {
 				map[string]*model.Value{},
 				providedSCGOpCall,
 				"dummyOpId",
-				new(pkg.FakeHandle),
+				providedParentPkgHandle,
 				"dummyRootOpId",
 			)
 
@@ -283,6 +293,9 @@ var _ = Context("OpCall", func() {
 		Context("pkg.Resolve errs", func() {
 			It("should return err", func() {
 				/* arrange */
+				providedParentPkgHandle := new(pkg.FakeHandle)
+				providedParentPkgHandle.PathReturns(new(string))
+
 				expectedErr := errors.New("dummyError")
 				fakePkg := new(pkg.Fake)
 				fakePkg.ResolveReturns(nil, expectedErr)
@@ -297,7 +310,7 @@ var _ = Context("OpCall", func() {
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					"dummyOpId",
-					new(pkg.FakeHandle),
+					providedParentPkgHandle,
 					"dummyRootOpId",
 				)
 
@@ -308,6 +321,9 @@ var _ = Context("OpCall", func() {
 		Context("pkg.Resolve doesn't err", func() {
 			It("should call pkg.GetManifest w/ expected args", func() {
 				/* arrange */
+				providedParentPkgHandle := new(pkg.FakeHandle)
+				providedParentPkgHandle.PathReturns(new(string))
+
 				fakePkgHandle := new(pkg.FakeHandle)
 
 				fakePkg := new(pkg.Fake)
@@ -327,7 +343,7 @@ var _ = Context("OpCall", func() {
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					"dummyOpId",
-					new(pkg.FakeHandle),
+					providedParentPkgHandle,
 					"dummyRootOpId",
 				)
 
@@ -338,6 +354,9 @@ var _ = Context("OpCall", func() {
 			Context("pkg.GetManifest errs", func() {
 				It("should return err", func() {
 					/* arrange */
+					providedParentPkgHandle := new(pkg.FakeHandle)
+					providedParentPkgHandle.PathReturns(new(string))
+
 					expectedErr := errors.New("dummyError")
 					fakePkg := new(pkg.Fake)
 					fakePkg.GetManifestReturns(nil, expectedErr)
@@ -352,7 +371,7 @@ var _ = Context("OpCall", func() {
 						map[string]*model.Value{},
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 						"dummyOpId",
-						new(pkg.FakeHandle),
+						providedParentPkgHandle,
 						"dummyRootOpId",
 					)
 
@@ -378,10 +397,12 @@ var _ = Context("OpCall", func() {
 					providedOpId := "dummyOpId"
 
 					providedParentPkgHandle := new(pkg.FakeHandle)
-					providedParentPkgHandle.RefReturns("dummyParentPkgRef")
+					parentPkgPath := "dummyParentPkgPath"
+					providedParentPkgHandle.PathReturns(&parentPkgPath)
 
 					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.RefReturns("dummyPkgRef")
+					pkgPath := "dummyPkgPath"
+					fakePkgHandle.PathReturns(&pkgPath)
 
 					fakePkg := new(pkg.Fake)
 					fakePkg.ResolveReturns(fakePkgHandle, nil)
@@ -426,7 +447,7 @@ var _ = Context("OpCall", func() {
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
 					Expect(actualParentPkgHandle).To(Equal(providedParentPkgHandle))
-					Expect(actualPkgRef).To(Equal(fakePkgHandle.Ref()))
+					Expect(actualPkgRef).To(Equal(pkgPath))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpId)))
 

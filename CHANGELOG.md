@@ -9,12 +9,14 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 
 - Add opspec 0.1.5 support
 - [Add web app](https://github.com/opctl/opctl/issues/268)
+- [Validation of outputs](https://github.com/opctl/opctl/issues/186)
 
 ### Fixed
 
 - [Color flags not working](https://github.com/opctl/opctl/issues/278)
 - [Race condition for non-cached pkgs](https://github.com/opctl/opctl/issues/253)
 - [Binding pkg file/dir to sub op input doesn't work](https://github.com/opctl/opctl/issues/249)
+- [Outputs not defaulted](https://github.com/opctl/opctl/issues/314)
 
 ## 0.1.20 - 2017-06-23
 

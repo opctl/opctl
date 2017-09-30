@@ -5,6 +5,8 @@ package core
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall"
+	outputsPkg "github.com/opspec-io/sdk-golang/opcall/outputs"
+	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -27,7 +29,9 @@ func newOpCaller(
 	rootFSPath string,
 ) opCaller {
 	return _opCaller{
+		outputs:     outputsPkg.New(),
 		opCall:      opcall.New(rootFSPath),
+		pkg:         pkg.New(),
 		pubSub:      pubSub,
 		dcgNodeRepo: dcgNodeRepo,
 		caller:      caller,
@@ -35,7 +39,9 @@ func newOpCaller(
 }
 
 type _opCaller struct {
+	outputs     outputsPkg.Outputs
 	opCall      opcall.OpCall
+	pkg         pkg.Pkg
 	pubSub      pubsub.PubSub
 	dcgNodeRepo dcgNodeRepo
 	caller      caller
@@ -161,7 +167,15 @@ func (oc _opCaller) Call(
 	// wait on outputs
 	outputs = <-outputsChan
 
-	return nil
+	childPkg, err := oc.pkg.GetManifest(dcgOpCall.PkgHandle)
+	if nil != err {
+		return err
+	}
+
+	childPkgPath := dcgOpCall.PkgHandle.Path()
+	outputs, err = oc.outputs.Interpret(outputs, childPkg.Outputs, *childPkgPath)
+
+	return err
 }
 
 func (oc _opCaller) interpretOutputs(
