@@ -37,7 +37,7 @@ func newCli(
 	})
 
 	cli.Command(
-		"ls", "List packages (only v0.1.4 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
+		"ls", "List packages (only v0.1.5 opspec packages will be listed)", func(lsCmd *mow.Cmd) {
 			path := lsCmd.StringOpt("path", pkg.DotOpspecDirName, "Path to list packages from")
 			lsCmd.Action = func() {
 				core.PkgLs(*path)
