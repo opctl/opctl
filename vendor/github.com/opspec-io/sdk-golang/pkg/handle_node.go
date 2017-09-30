@@ -57,6 +57,10 @@ func (nh nodeHandle) ListContents(
 	)
 }
 
+func (hn nodeHandle) Path() *string {
+	return nil
+}
+
 func (nh nodeHandle) Ref() string {
 	return nh.pkgRef
 }

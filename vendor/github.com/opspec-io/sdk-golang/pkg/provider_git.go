@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func (pf _ProviderFactory) NewGitProvider(
+func (pf _providerFactory) NewGitProvider(
 	basePath string,
 	pullCreds *model.PullCreds,
 ) Provider {

@@ -72,7 +72,7 @@ var _ = Context("ContainerCall", func() {
 				providedPkgHandle := new(pkg.FakeHandle)
 
 				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []string{
+					Cmd: []interface{}{
 						"dummy1",
 						"dummy2",
 					},
@@ -118,7 +118,7 @@ var _ = Context("ContainerCall", func() {
 				}
 
 				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []string{
+					Cmd: []interface{}{
 						"dummy1",
 						"dummy2",
 					},
@@ -280,7 +280,7 @@ var _ = Context("ContainerCall", func() {
 
 			envVarName := "dummyEnvVarName"
 			providedSCGContainerCall := &model.SCGContainerCall{
-				EnvVars: map[string]string{
+				EnvVars: map[string]interface{}{
 					// implicitly bound
 					envVarName: "",
 				},
@@ -387,7 +387,7 @@ var _ = Context("ContainerCall", func() {
 
 			fileName := "dummyFileName"
 			providedSCGContainerCall := &model.SCGContainerCall{
-				Files: map[string]string{
+				Files: map[string]interface{}{
 					// implicitly bound
 					fileName: "",
 				},

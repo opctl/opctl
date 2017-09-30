@@ -14,7 +14,7 @@ var _ = Context("providerFactory", func() {
 			/* arrange */
 			providedBasePaths := []string{"dummyBasePath"}
 
-			objectUnderTest := _ProviderFactory{}
+			objectUnderTest := _providerFactory{}
 
 			/* act */
 			actualProvider := objectUnderTest.NewFSProvider(providedBasePaths...)
@@ -32,7 +32,7 @@ var _ = Context("providerFactory", func() {
 			providedBasePath := "dummyBasePath"
 			providedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
-			objectUnderTest := _ProviderFactory{}
+			objectUnderTest := _providerFactory{}
 
 			/* act */
 			actualProvider := objectUnderTest.NewGitProvider(
@@ -60,7 +60,7 @@ var _ = Context("providerFactory", func() {
 				panic(err)
 			}
 
-			objectUnderTest := _ProviderFactory{}
+			objectUnderTest := _providerFactory{}
 
 			/* act */
 			actualProvider := objectUnderTest.NewNodeProvider(

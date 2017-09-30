@@ -239,30 +239,32 @@ var _ = Context("EvalToFile", func() {
 			Context("interpolater.Interpolate doesn't error", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					providedPkgHandle := new(pkg.FakeHandle)
+
+					pkgPath := "dummyPkgPath"
+					providedPkgHandle.PathReturns(&pkgPath)
+
 					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					pkgHandleRef := "dummyPkgHandleRef"
-					fakePkgHandle.RefReturns(pkgHandleRef)
-
 					objectUnderTest := _fileEvaluator{
 						interpolater: fakeInterpolater,
+						pkg:          new(pkg.Fake),
 					}
 
-					expectedValue := filepath.Join(pkgHandleRef, interpolatedPath)
+					expectedFileValue := filepath.Join(pkgPath, interpolatedPath)
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.EvalToFile(
 						map[string]*model.Value{},
 						"$(/dummyPkgFSRef)",
-						fakePkgHandle,
+						providedPkgHandle,
 						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{File: &expectedValue}))
+					Expect(*actualValue).To(Equal(model.Value{File: &expectedFileValue}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -365,26 +367,28 @@ var _ = Context("EvalToFile", func() {
 			Context("interpolater.Interpolate doesn't error", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					interpolatedExpression := "dummyExpression"
+
+					fakePkgHandle := new(pkg.FakeHandle)
+					pkgPath := "dummyPkgPath"
+					fakePkgHandle.PathReturns(&pkgPath)
+
+					interpolatedPath := "dummyExpression"
 
 					fakeInterpolater := new(interpolater.Fake)
-					fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
+					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
 					objectUnderTest := _fileEvaluator{
 						interpolater: fakeInterpolater,
+						pkg:          new(pkg.Fake),
 					}
 
-					fakeHandle := new(pkg.FakeHandle)
-					pkgRef := "dummyPkgRef"
-					fakeHandle.RefReturns(pkgRef)
-
-					expectedFileValue := filepath.Join(pkgRef, interpolatedExpression)
+					expectedFileValue := filepath.Join(pkgPath, interpolatedPath)
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.EvalToFile(
 						map[string]*model.Value{},
 						"/deprecatedPkgFsRef",
-						fakeHandle,
+						fakePkgHandle,
 						"dummyScratchDir",
 					)
 
@@ -674,9 +678,9 @@ var _ = Context("EvalToFile", func() {
 					providedExpression := "$(dummyRef)suffix"
 					providedScratchDir := "dummyScratchDir"
 
-					interpolatedExpression := "dummyInterpolatedExpression"
+					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater := new(interpolater.Fake)
-					fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
+					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
 					fakeData := new(data.Fake)
 					coerceValue := model.Value{File: new(string)}
@@ -698,7 +702,7 @@ var _ = Context("EvalToFile", func() {
 
 					/* assert */
 					actualCoerceValueArg, actualCoerceScratchDirArg := fakeData.CoerceToFileArgsForCall(0)
-					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedExpression}))
+					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedPath}))
 					Expect(actualCoerceScratchDirArg).To(Equal(providedScratchDir))
 
 					Expect(*actualValue).To(Equal(coerceValue))
@@ -779,9 +783,9 @@ var _ = Context("EvalToFile", func() {
 					providedExpression := "dummyExpression"
 					providedScratchDir := "dummyScratchDir"
 
-					interpolatedExpression := "dummyInterpolatedExpression"
+					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater := new(interpolater.Fake)
-					fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
+					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
 					fakeData := new(data.Fake)
 					coerceValue := model.Value{File: new(string)}
@@ -803,7 +807,7 @@ var _ = Context("EvalToFile", func() {
 
 					/* assert */
 					actualCoerceValueArg, actualCoerceScratchDirArg := fakeData.CoerceToFileArgsForCall(0)
-					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedExpression}))
+					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedPath}))
 					Expect(actualCoerceScratchDirArg).To(Equal(providedScratchDir))
 
 					Expect(*actualValue).To(Equal(coerceValue))

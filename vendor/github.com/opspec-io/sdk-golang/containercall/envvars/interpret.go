@@ -7,7 +7,7 @@ import (
 
 func (ev _EnvVars) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallEnvVars map[string]string,
+	scgContainerCallEnvVars map[string]interface{},
 	pkgHandle model.PkgHandle,
 ) (map[string]string, error) {
 	dcgContainerCallEnvVars := map[string]string{}

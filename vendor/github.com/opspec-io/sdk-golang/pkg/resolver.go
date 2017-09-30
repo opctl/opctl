@@ -2,7 +2,7 @@ package pkg
 
 import "github.com/opspec-io/sdk-golang/model"
 
-type Resolver interface {
+type resolver interface {
 	// TryResolve attempts to resolve a package from providers in order
 	//
 	// expected errs:
@@ -18,13 +18,13 @@ type Resolver interface {
 	)
 }
 
-func newResolver() Resolver {
-	return _Resolver{}
+func newResolver() resolver {
+	return _resolver{}
 }
 
-type _Resolver struct{}
+type _resolver struct{}
 
-func (this _Resolver) Resolve(
+func (this _resolver) Resolve(
 	pkgRef string,
 	providers ...Provider,
 ) (

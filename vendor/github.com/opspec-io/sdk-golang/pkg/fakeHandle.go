@@ -36,6 +36,15 @@ type FakeHandle struct {
 		result1 model.ReadSeekCloser
 		result2 error
 	}
+	PathStub        func() *string
+	pathMutex       sync.RWMutex
+	pathArgsForCall []struct{}
+	pathReturns     struct {
+		result1 *string
+	}
+	pathReturnsOnCall map[int]struct {
+		result1 *string
+	}
 	RefStub        func() string
 	refMutex       sync.RWMutex
 	refArgsForCall []struct{}
@@ -152,6 +161,46 @@ func (fake *FakeHandle) GetContentReturnsOnCall(i int, result1 model.ReadSeekClo
 	}{result1, result2}
 }
 
+func (fake *FakeHandle) Path() *string {
+	fake.pathMutex.Lock()
+	ret, specificReturn := fake.pathReturnsOnCall[len(fake.pathArgsForCall)]
+	fake.pathArgsForCall = append(fake.pathArgsForCall, struct{}{})
+	fake.recordInvocation("Path", []interface{}{})
+	fake.pathMutex.Unlock()
+	if fake.PathStub != nil {
+		return fake.PathStub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fake.pathReturns.result1
+}
+
+func (fake *FakeHandle) PathCallCount() int {
+	fake.pathMutex.RLock()
+	defer fake.pathMutex.RUnlock()
+	return len(fake.pathArgsForCall)
+}
+
+func (fake *FakeHandle) PathReturns(result1 *string) {
+	fake.PathStub = nil
+	fake.pathReturns = struct {
+		result1 *string
+	}{result1}
+}
+
+func (fake *FakeHandle) PathReturnsOnCall(i int, result1 *string) {
+	fake.PathStub = nil
+	if fake.pathReturnsOnCall == nil {
+		fake.pathReturnsOnCall = make(map[int]struct {
+			result1 *string
+		})
+	}
+	fake.pathReturnsOnCall[i] = struct {
+		result1 *string
+	}{result1}
+}
+
 func (fake *FakeHandle) Ref() string {
 	fake.refMutex.Lock()
 	ret, specificReturn := fake.refReturnsOnCall[len(fake.refArgsForCall)]
@@ -199,6 +248,8 @@ func (fake *FakeHandle) Invocations() map[string][][]interface{} {
 	defer fake.listContentsMutex.RUnlock()
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
+	fake.pathMutex.RLock()
+	defer fake.pathMutex.RUnlock()
 	fake.refMutex.RLock()
 	defer fake.refMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

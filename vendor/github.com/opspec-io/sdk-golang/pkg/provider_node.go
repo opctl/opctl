@@ -8,7 +8,7 @@ import (
 )
 
 // NewNodeProvider returns a pkg provider which sources pkgs from a node
-func (pf _ProviderFactory) NewNodeProvider(
+func (pf _providerFactory) NewNodeProvider(
 	apiBaseURL url.URL,
 	pullCreds *model.PullCreds,
 ) Provider {

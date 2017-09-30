@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("Resolver", func() {
+var _ = Context("resolver", func() {
 	Context("Resolve", func() {
 		It("should call providers[0].TryResolve w/ expected args", func() {
 			/* arrange */
@@ -14,7 +14,7 @@ var _ = Context("Resolver", func() {
 			fakeProvider0 := new(FakeProvider)
 			providedProviders := []Provider{fakeProvider0}
 
-			objectUnderTest := _Resolver{}
+			objectUnderTest := _resolver{}
 
 			/* act */
 			objectUnderTest.Resolve(providedPkgRef, providedProviders...)
@@ -31,7 +31,7 @@ var _ = Context("Resolver", func() {
 
 				providedProviders := []Provider{fakeProvider0}
 
-				objectUnderTest := _Resolver{}
+				objectUnderTest := _resolver{}
 
 				/* act */
 				_, actualErr := objectUnderTest.Resolve("dummyPkgRef", providedProviders...)
@@ -49,7 +49,7 @@ var _ = Context("Resolver", func() {
 
 				providedProviders := []Provider{fakeProvider0}
 
-				objectUnderTest := _Resolver{}
+				objectUnderTest := _resolver{}
 
 				/* act */
 				actualHandle, actualErr := objectUnderTest.Resolve("dumyPkgRef", providedProviders...)

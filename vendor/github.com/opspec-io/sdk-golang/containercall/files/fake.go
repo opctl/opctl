@@ -8,12 +8,12 @@ import (
 )
 
 type Fake struct {
-	InterpretStub        func(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error)
+	InterpretStub        func(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		pkgHandle             model.PkgHandle
 		scope                 map[string]*model.Value
-		scgContainerCallFiles map[string]string
+		scgContainerCallFiles map[string]interface{}
 		scratchDirPath        string
 	}
 	interpretReturns struct {
@@ -28,13 +28,13 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpret(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error) {
+func (fake *Fake) Interpret(pkgHandle model.PkgHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		pkgHandle             model.PkgHandle
 		scope                 map[string]*model.Value
-		scgContainerCallFiles map[string]string
+		scgContainerCallFiles map[string]interface{}
 		scratchDirPath        string
 	}{pkgHandle, scope, scgContainerCallFiles, scratchDirPath})
 	fake.recordInvocation("Interpret", []interface{}{pkgHandle, scope, scgContainerCallFiles, scratchDirPath})
@@ -54,7 +54,7 @@ func (fake *Fake) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *Fake) InterpretArgsForCall(i int) (model.PkgHandle, map[string]*model.Value, map[string]string, string) {
+func (fake *Fake) InterpretArgsForCall(i int) (model.PkgHandle, map[string]*model.Value, map[string]interface{}, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].pkgHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath
