@@ -89,33 +89,35 @@ func New(
 	)
 
 	return &_core{
-		opspecNodeAPIClient: opspecNodeAPIClient,
-		pkg:                 pkg.New(),
-		pkgResolver:         newPkgResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
-		cliColorer:          cliColorer,
-		cliExiter:           cliExiter,
-		cliOutput:           cliOutput,
-		cliParamSatisfier:   cliParamSatisfier,
-		nodeProvider:        local.New(),
-		updater:             updater.New(),
-		os:                  _os,
-		writer:              os.Stdout,
-		ioutil:              iioutil.New(),
+		opspecNodeAPIClient:     opspecNodeAPIClient,
+		pkg:                     pkg.New(),
+		pkgResolver:             newPkgResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
+		cliColorer:              cliColorer,
+		cliExiter:               cliExiter,
+		cliOutput:               cliOutput,
+		cliParamSatisfier:       cliParamSatisfier,
+		nodeProvider:            local.New(),
+		nodeReachabilityEnsurer: newNodeReachabilityEnsurer(cliExiter),
+		updater:                 updater.New(),
+		os:                      _os,
+		writer:                  os.Stdout,
+		ioutil:                  iioutil.New(),
 	}
 
 }
 
 type _core struct {
-	opspecNodeAPIClient client.Client
-	pkg                 pkg.Pkg
-	pkgResolver         pkgResolver
-	cliColorer          clicolorer.CliColorer
-	cliExiter           cliexiter.CliExiter
-	cliOutput           clioutput.CliOutput
-	cliParamSatisfier   cliparamsatisfier.CLIParamSatisfier
-	nodeProvider        nodeprovider.NodeProvider
-	updater             updater.Updater
-	os                  ios.IOS
-	writer              io.Writer
-	ioutil              iioutil.IIOUtil
+	opspecNodeAPIClient     client.Client
+	pkg                     pkg.Pkg
+	pkgResolver             pkgResolver
+	cliColorer              clicolorer.CliColorer
+	cliExiter               cliexiter.CliExiter
+	cliOutput               clioutput.CliOutput
+	cliParamSatisfier       cliparamsatisfier.CLIParamSatisfier
+	nodeProvider            nodeprovider.NodeProvider
+	nodeReachabilityEnsurer nodeReachabilityEnsurer
+	updater                 updater.Updater
+	os                      ios.IOS
+	writer                  io.Writer
+	ioutil                  iioutil.IIOUtil
 }

@@ -26,26 +26,31 @@ func newPkgResolver(
 	nodeURL url.URL,
 ) pkgResolver {
 	return _pkgResolver{
-		cliExiter:         cliExiter,
-		cliParamSatisfier: cliParamSatisfier,
-		nodeURL:           nodeURL,
-		pkg:               pkg.New(),
-		os:                ios.New(),
+		cliExiter:               cliExiter,
+		cliParamSatisfier:       cliParamSatisfier,
+		nodeReachabilityEnsurer: newNodeReachabilityEnsurer(cliExiter),
+		nodeURL:                 nodeURL,
+		pkg:                     pkg.New(),
+		os:                      ios.New(),
 	}
 }
 
 type _pkgResolver struct {
-	cliExiter         cliexiter.CliExiter
-	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
-	nodeURL           url.URL
-	os                ios.IOS
-	pkg               pkg.Pkg
+	cliExiter               cliexiter.CliExiter
+	cliParamSatisfier       cliparamsatisfier.CLIParamSatisfier
+	nodeURL                 url.URL
+	nodeReachabilityEnsurer nodeReachabilityEnsurer
+	os                      ios.IOS
+	pkg                     pkg.Pkg
 }
 
 func (this _pkgResolver) Resolve(
 	pkgRef string,
 	pullCreds *model.PullCreds,
 ) model.PkgHandle {
+
+	// ensure node reachable
+	this.nodeReachabilityEnsurer.EnsureNodeReachable()
 
 	cwd, err := this.os.Getwd()
 	if nil != err {

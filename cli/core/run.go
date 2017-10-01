@@ -17,16 +17,6 @@ func (this _core) Run(
 	pkgRef string,
 	opts *RunOpts,
 ) {
-
-	// ensure node running
-	nodes, err := this.nodeProvider.ListNodes()
-	if nil != err {
-		panic(err.Error())
-	}
-	if len(nodes) < 1 {
-		this.nodeProvider.CreateNode()
-	}
-
 	startTime := time.Now().UTC()
 
 	pkgHandle := this.pkgResolver.Resolve(
@@ -42,7 +32,7 @@ func (this _core) Run(
 
 	ymlFileInputSrc, err := this.cliParamSatisfier.NewYMLFileInputSrc(opts.ArgFile)
 	if nil != err {
-		err = fmt.Errorf("Unable to load arg file at '%v'; error was: %v", opts.ArgFile, err.Error())
+		err = fmt.Errorf("unable to load arg file at '%v'; error was: %v", opts.ArgFile, err.Error())
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
 	}

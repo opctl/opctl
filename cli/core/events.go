@@ -3,22 +3,12 @@ package core
 import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opspec-io/sdk-golang/model"
-	"time"
 )
 
 func (this _core) Events() {
 
-	// ensure node running
-	nodes, err := this.nodeProvider.ListNodes()
-	if nil != err {
-		panic(err.Error())
-	}
-	if len(nodes) < 1 {
-		this.nodeProvider.CreateNode()
-		// sleep to let the opctl node start
-		// @TODO: add exp backoff to SDK websocket client so we don't need this
-		<-time.After(time.Second * 3)
-	}
+	// ensure node reachable
+	this.nodeReachabilityEnsurer.EnsureNodeReachable()
 
 	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
 		&model.GetEventStreamReq{},
