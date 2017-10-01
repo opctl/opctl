@@ -20,7 +20,7 @@ func (this _Pkg) Install(
 
 	for _, content := range contentsList {
 
-		dstPath := filepath.Join(path, handle.Ref(), content.Path)
+		dstPath := filepath.Join(path, content.Path)
 
 		if content.Mode.IsDir() {
 			// ensure content path exists

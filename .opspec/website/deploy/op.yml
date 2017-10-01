@@ -17,7 +17,7 @@ inputs:
 run:
   serial:
     - op:
-        pkg: { ref: compile-website }
+        pkg: { ref: compile }
         inputs: { srcDir }
         outputs: { srcDir }
     - container:
