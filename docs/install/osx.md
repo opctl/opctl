@@ -1,15 +1,12 @@
 # prerequisites
 
-opctl relies on API access to a docker daemon.
+Opctl relies on API access to a docker daemon.
 
-docker has two offerings supporting osx, docker-machine and docker4mac.
-
-opctl doesn't care which you use, it communicates w/ the docker daemon
-via API.
+Docker has two offerings supporting osx, docker-machine and docker4mac.
 
 Docker behaves quite differently depending on which offering you choose:
 
-docker-machine
+### docker-machine
 
 | pros                                                                                                                          | cons                             |
 |:------------------------------------------------------------------------------------------------------------------------------|:---------------------------------|
@@ -17,7 +14,7 @@ docker-machine
 | -                                                                                                                             | manual export of docker env vars |
 | -                                                                                                                             | manual start of docker VM        |
 
-docker4Mac
+### docker4Mac
 
 | pros                           | cons                                                             |
 |:-------------------------------|:-----------------------------------------------------------------|
@@ -37,6 +34,6 @@ and [docker-machine-nfs](https://github.com/adlogix/docker-machine-nfs)
 curl pipe the opctl binary
 
 ```bash
-curl -L https://github.com/opctl/opctl/releases/download/0.1.20/opctl0.1.20.darwin.tgz | tar -xzv -C /usr/local/bin
+curl -L https://github.com/opctl/opctl/releases/download/0.1.21/opctl0.1.21.darwin.tgz | tar -xzv -C /usr/local/bin
 ```
 

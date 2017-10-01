@@ -1,16 +1,17 @@
 # prerequisites
 
-opctl relies on API access to a docker daemon.
+Opctl relies on API access to a docker daemon.
 
-docker has two offerings supporting windows, docker-machine and
+Docker has two offerings supporting windows, docker-machine and
 docker4win.
-
-opctl doesn't care which you use, it communicates w/ the docker daemon
-via API.
 
 Docker behaves quite differently depending on which offering you choose:
 
-docker-machine
+### docker-machine
+> note: if you use docker-machine w/ a virtualbox driver & plan on running ops
+> requiring symlinking (such as `npm install`), make sure to run as
+> admin. virtualbox requires admin permissions to enable symlinks on
+> windows
 
 | pros                      | cons                             |
 |:--------------------------|:---------------------------------|
@@ -18,7 +19,7 @@ docker-machine
 | -                         | manual export of docker env vars |
 | -                         | manual start of docker VM        |
 
-docker4Win
+### docker4Win
 
 | pros                           | cons                      |
 |:-------------------------------|:--------------------------|
@@ -32,13 +33,8 @@ isn't as mature as docker-machine & can be finicky.
 We therefore recommend using docker4Win over docker-machine unless you
 run into issues.
 
-> if you use docker-machine w/ a virtualbox driver & plan on running ops
-> requiring symlinking (such as `npm install`), make sure to run as
-> admin. virtualbox requires admin permissions to enable symlinks on
-> windows
-
 # installation
 
 download and run the
-[windows installer](https://github.com/opctl/opctl/releases/download/0.1.20/opctl0.1.20.windows.msi)
+[windows installer](https://github.com/opctl/opctl/releases/download/0.1.21/opctl0.1.21.windows.msi)
 
