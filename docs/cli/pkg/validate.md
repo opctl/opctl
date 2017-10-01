@@ -23,5 +23,5 @@ opctl pkg validate myop
 
 If auth w/ the pkg source fails the cli will (re)prompt for username & password.
 
-> in non-interactive terminals, the cli will note that it can't prompt due to being in a
-> non-interactive terminal and exit with a non zero exit code.
+> in non-interactive terminals, the cli will note that it can't prompt
+> and exit with a non zero exit code.

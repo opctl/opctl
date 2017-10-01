@@ -47,7 +47,7 @@
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "19015df2b06769a0908ba9eeae72d9b785684ed3"
+  revision = "9c9f4d6f70a14e00902cae19dd586a6faa6476f6"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -244,7 +244,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","opcall/outputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "6617ec5d3fd1aefc0bf15eaac19f3357cf8c9266"
+  revision = "c253aab0c3dd8a6f3a6bf7ad6b4b91f8dc6b3227"
 
 [[projects]]
   branch = "master"
@@ -322,7 +322,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["curve25519","ed25519","ed25519/internal/edwards25519","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "76eec36fa14229c4b25bb894c2d0e591527af429"
+  revision = "9419663f5a44be8b34ca85f08abc5fe1be11f8a3"
 
 [[projects]]
   branch = "master"

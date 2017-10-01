@@ -111,8 +111,6 @@ var _ = Context("pkg", func() {
 						providedPath := "dummyPath"
 
 						fakeHandle := new(FakeHandle)
-						pkgRef := "dummyPkgRef"
-						fakeHandle.RefReturns(pkgRef)
 
 						contentsList := []*model.PkgContent{
 							{
@@ -141,7 +139,7 @@ var _ = Context("pkg", func() {
 						actualPath, actualPerm := fakeOS.MkdirAllArgsForCall(0)
 
 						Expect(actualPath).To(Equal(
-							filepath.Join(providedPath, pkgRef, contentsList[0].Path),
+							filepath.Join(providedPath, contentsList[0].Path),
 						))
 
 						Expect(actualPerm).To(Equal(contentsList[0].Mode))
@@ -175,8 +173,6 @@ var _ = Context("pkg", func() {
 						providedPath := "dummyPath"
 
 						fakeHandle := new(FakeHandle)
-						pkgRef := "dummyPkgRef"
-						fakeHandle.RefReturns(pkgRef)
 
 						contentsList := []*model.PkgContent{
 							{
@@ -205,7 +201,7 @@ var _ = Context("pkg", func() {
 
 						Expect(actualPath).To(Equal(
 							filepath.Dir(
-								filepath.Join(providedPath, pkgRef, contentsList[0].Path),
+								filepath.Join(providedPath, contentsList[0].Path),
 							),
 						))
 

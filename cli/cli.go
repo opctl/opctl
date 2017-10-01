@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	mow "github.com/jawher/mow.cli"
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
@@ -88,12 +89,16 @@ func newCli(
 		pkgCmd.Command(
 			"install", "Installs a package",
 			func(installCmd *mow.Cmd) {
-				path := installCmd.StringOpt("path", pkg.DotOpspecDirName, "Path the package will be installed at")
+				defaultPath := fmt.Sprintf("%v/PKG_REF", pkg.DotOpspecDirName)
+				path := installCmd.StringOpt("path", defaultPath, "Path the package will be installed at")
 				pkgRef := installCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
 				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
 				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
 
 				installCmd.Action = func() {
+					if *path == defaultPath {
+						*path = filepath.Join(pkg.DotOpspecDirName, *pkgRef)
+					}
 					core.PkgInstall(*path, *pkgRef, *username, *password)
 				}
 			})
