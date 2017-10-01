@@ -15,6 +15,26 @@ import (
 
 var _ = Context("pkgResolver", func() {
 	Context("Resolve", func() {
+		It("should call nodeReachabilityEnsurer.EnsureNodeReachable", func() {
+			/* arrange */
+			fakeNodeReachabilityEnsurer := new(fakeNodeReachabilityEnsurer)
+
+			fakeIOS := new(ios.Fake)
+			// err to trigger immediate return
+			fakeIOS.GetwdReturns("", errors.New("dummyError"))
+
+			objectUnderTest := _pkgResolver{
+				cliExiter:               new(cliexiter.Fake),
+				nodeReachabilityEnsurer: fakeNodeReachabilityEnsurer,
+				os: fakeIOS,
+			}
+
+			/* act */
+			objectUnderTest.Resolve("dummyPkgRef", &model.PullCreds{})
+
+			/* assert */
+			Expect(fakeNodeReachabilityEnsurer.EnsureNodeReachableCallCount()).To(Equal(1))
+		})
 		Context("os.Getwd errs", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
@@ -27,6 +47,7 @@ var _ = Context("pkgResolver", func() {
 				objectUnderTest := _pkgResolver{
 					cliExiter: fakeCliExiter,
 					os:        fakeIOS,
+					nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
 				}
 
 				/* act */
@@ -55,9 +76,10 @@ var _ = Context("pkgResolver", func() {
 				fakeIOS.GetwdReturns(workDir, nil)
 
 				objectUnderTest := _pkgResolver{
-					pkg:       fakePkg,
-					cliExiter: new(cliexiter.Fake),
-					os:        fakeIOS,
+					pkg:                     fakePkg,
+					cliExiter:               new(cliexiter.Fake),
+					nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+					os: fakeIOS,
 				}
 
 				/* act */
@@ -83,10 +105,11 @@ var _ = Context("pkgResolver", func() {
 				nodeURL := url.URL{Path: "dummyNodeURL"}
 
 				objectUnderTest := _pkgResolver{
-					pkg:       fakePkg,
-					cliExiter: new(cliexiter.Fake),
-					nodeURL:   nodeURL,
-					os:        new(ios.Fake),
+					pkg:                     fakePkg,
+					cliExiter:               new(cliexiter.Fake),
+					nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+					nodeURL:                 nodeURL,
+					os:                      new(ios.Fake),
 				}
 
 				/* act */
@@ -117,9 +140,10 @@ var _ = Context("pkgResolver", func() {
 				fakePkg.ResolveReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _pkgResolver{
-					pkg:       fakePkg,
-					cliExiter: new(cliexiter.Fake),
-					os:        new(ios.Fake),
+					pkg:                     fakePkg,
+					cliExiter:               new(cliexiter.Fake),
+					nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+					os: new(ios.Fake),
 				}
 
 				/* act */
@@ -154,10 +178,11 @@ var _ = Context("pkgResolver", func() {
 						)
 
 						objectUnderTest := _pkgResolver{
-							pkg:               fakePkg,
-							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
-							os:                new(ios.Fake),
+							pkg:                     fakePkg,
+							cliParamSatisfier:       fakeCliParamSatisfier,
+							cliExiter:               new(cliexiter.Fake),
+							nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+							os: new(ios.Fake),
 						}
 
 						/* act */
@@ -192,11 +217,12 @@ var _ = Context("pkgResolver", func() {
 						nodeURL := url.URL{Path: "dummyPath"}
 
 						objectUnderTest := _pkgResolver{
-							pkg:               fakePkg,
-							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
-							nodeURL:           nodeURL,
-							os:                new(ios.Fake),
+							pkg:                     fakePkg,
+							cliParamSatisfier:       fakeCliParamSatisfier,
+							cliExiter:               new(cliexiter.Fake),
+							nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+							nodeURL:                 nodeURL,
+							os:                      new(ios.Fake),
 						}
 
 						/* act */
@@ -235,10 +261,11 @@ var _ = Context("pkgResolver", func() {
 						)
 
 						objectUnderTest := _pkgResolver{
-							pkg:               fakePkg,
-							cliParamSatisfier: fakeCliParamSatisfier,
-							cliExiter:         new(cliexiter.Fake),
-							os:                new(ios.Fake),
+							pkg:                     fakePkg,
+							cliParamSatisfier:       fakeCliParamSatisfier,
+							cliExiter:               new(cliexiter.Fake),
+							nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+							os: new(ios.Fake),
 						}
 
 						/* act */
@@ -272,9 +299,10 @@ var _ = Context("pkgResolver", func() {
 						fakeCliExiter := new(cliexiter.Fake)
 
 						objectUnderTest := _pkgResolver{
-							pkg:       fakePkg,
-							cliExiter: fakeCliExiter,
-							os:        new(ios.Fake),
+							pkg:                     fakePkg,
+							cliExiter:               fakeCliExiter,
+							nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+							os: new(ios.Fake),
 						}
 
 						/* act */
@@ -298,7 +326,8 @@ var _ = Context("pkgResolver", func() {
 
 					objectUnderTest := _pkgResolver{
 						pkg: fakePkg,
-						os:  new(ios.Fake),
+						nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
+						os: new(ios.Fake),
 					}
 
 					/* act */

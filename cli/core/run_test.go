@@ -7,7 +7,6 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/nodeprovider"
 	"github.com/opctl/opctl/util/clicolorer"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
@@ -37,7 +36,6 @@ var _ = Context("Run", func() {
 				pkgResolver:       fakePkgResolver,
 				cliExiter:         new(cliexiter.Fake),
 				cliParamSatisfier: new(cliparamsatisfier.Fake),
-				nodeProvider:      new(nodeprovider.Fake),
 			}
 
 			/* act */
@@ -64,7 +62,6 @@ var _ = Context("Run", func() {
 				opspecNodeAPIClient: new(client.Fake),
 				cliExiter:           new(cliexiter.Fake),
 				cliParamSatisfier:   new(cliparamsatisfier.Fake),
-				nodeProvider:        new(nodeprovider.Fake),
 				os:                  new(ios.Fake),
 				ioutil:              new(iioutil.Fake),
 			}
@@ -94,7 +91,6 @@ var _ = Context("Run", func() {
 					pkgResolver:       fakePkgResolver,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
-					nodeProvider:      new(nodeprovider.Fake),
 					os:                new(ios.Fake),
 				}
 
@@ -141,7 +137,6 @@ var _ = Context("Run", func() {
 					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 					cliExiter:           new(cliexiter.Fake),
 					cliParamSatisfier:   fakeCliParamSatisfier,
-					nodeProvider:        new(nodeprovider.Fake),
 					os:                  new(ios.Fake),
 					ioutil:              new(iioutil.Fake),
 				}
@@ -195,7 +190,6 @@ var _ = Context("Run", func() {
 					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 					cliExiter:           new(cliexiter.Fake),
 					cliParamSatisfier:   fakeCliParamSatisfier,
-					nodeProvider:        new(nodeprovider.Fake),
 					os:                  new(ios.Fake),
 					ioutil:              new(iioutil.Fake),
 				}
@@ -230,7 +224,6 @@ var _ = Context("Run", func() {
 						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 						cliExiter:           fakeCliExiter,
 						cliParamSatisfier:   new(cliparamsatisfier.Fake),
-						nodeProvider:        new(nodeprovider.Fake),
 						os:                  new(ios.Fake),
 						ioutil:              new(iioutil.Fake),
 					}
@@ -274,7 +267,6 @@ var _ = Context("Run", func() {
 						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 						cliExiter:           new(cliexiter.Fake),
 						cliParamSatisfier:   new(cliparamsatisfier.Fake),
-						nodeProvider:        new(nodeprovider.Fake),
 						os:                  new(ios.Fake),
 						ioutil:              new(iioutil.Fake),
 					}
@@ -314,7 +306,6 @@ var _ = Context("Run", func() {
 							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 							cliExiter:           fakeCliExiter,
 							cliParamSatisfier:   new(cliparamsatisfier.Fake),
-							nodeProvider:        new(nodeprovider.Fake),
 							os:                  new(ios.Fake),
 							ioutil:              new(iioutil.Fake),
 						}
@@ -351,7 +342,6 @@ var _ = Context("Run", func() {
 								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 								cliExiter:           fakeCliExiter,
 								cliParamSatisfier:   new(cliparamsatisfier.Fake),
-								nodeProvider:        new(nodeprovider.Fake),
 								os:                  new(ios.Fake),
 								ioutil:              new(iioutil.Fake),
 							}
@@ -405,7 +395,6 @@ var _ = Context("Run", func() {
 											cliExiter:           fakeCliExiter,
 											cliOutput:           new(clioutput.Fake),
 											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											nodeProvider:        new(nodeprovider.Fake),
 											os:                  new(ios.Fake),
 											ioutil:              new(iioutil.Fake),
 										}
@@ -453,7 +442,6 @@ var _ = Context("Run", func() {
 											cliExiter:           fakeCliExiter,
 											cliOutput:           new(clioutput.Fake),
 											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											nodeProvider:        new(nodeprovider.Fake),
 											os:                  new(ios.Fake),
 											ioutil:              new(iioutil.Fake),
 										}
@@ -502,7 +490,6 @@ var _ = Context("Run", func() {
 											cliExiter:           fakeCliExiter,
 											cliOutput:           new(clioutput.Fake),
 											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											nodeProvider:        new(nodeprovider.Fake),
 											os:                  new(ios.Fake),
 											ioutil:              new(iioutil.Fake),
 										}
@@ -550,7 +537,6 @@ var _ = Context("Run", func() {
 											cliExiter:           fakeCliExiter,
 											cliOutput:           new(clioutput.Fake),
 											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											nodeProvider:        new(nodeprovider.Fake),
 											os:                  new(ios.Fake),
 											ioutil:              new(iioutil.Fake),
 										}

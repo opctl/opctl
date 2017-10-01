@@ -5,11 +5,14 @@ accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachang
 
 ## \[Unreleased]
 
+## 0.1.21 - 2017-10-01
+
 ### Added
 
 - Add opspec 0.1.5 support
-- [Add web app](https://github.com/opctl/opctl/issues/268)
 - [Validation of outputs](https://github.com/opctl/opctl/issues/186)
+- Remote pkg run
+- Remote pkg validate
 
 ### Fixed
 
