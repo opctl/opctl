@@ -39,6 +39,36 @@ var _ = Context("deReferencer", func() {
 		})
 	})
 	Context("scope object ref w/ path", func() {
+		Context("nothing at path", func() {
+			It("should return expected result", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, "doesNotExist"}, ".")
+
+				objectUnderTest := _deReferencer{}
+
+				/* act */
+				actualString, actualOk, actualErr := objectUnderTest.DeReference(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				Expect(actualString).To(Equal(""))
+				Expect(actualOk).To(Equal(false))
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to deReference '%v'; path doesn't exist", providedRef)))
+			})
+		})
 		Context("float64 at path", func() {
 			It("should call data.Coerce w/ expected args", func() {
 				/* arrange */
