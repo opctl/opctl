@@ -61,9 +61,13 @@ func (dr _deReferencer) DeReference(
 				return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 			}
 
+			objectPath := ref[possibleObjectPathRefIndex+1:]
+			if !json.ExistsP(objectPath) {
+				return "", false, fmt.Errorf("unable to deReference '%v'; path doesn't exist", ref)
+			}
+
 			var value *model.Value
-			valueAtPath := json.Path(ref[possibleObjectPathRefIndex+1:]).Data()
-			switch valueAtPath := valueAtPath.(type) {
+			switch valueAtPath := json.Path(objectPath).Data().(type) {
 			case float64:
 				value = &model.Value{Number: &valueAtPath}
 			case map[string]interface{}:
