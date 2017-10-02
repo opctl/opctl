@@ -19,10 +19,10 @@ run:
       - -ce
       - |
         echo "installing deps"
-        go get github.com/kardianos/govendor github.com/maxbrunsfeld/counterfeiter
+        go get github.com/maxbrunsfeld/counterfeiter
 
         echo "generating fakes"
-        govendor generate "$(path)"
+        go generate "$(path)"
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: srcDir
     image: { ref: 'golang:1.9' }

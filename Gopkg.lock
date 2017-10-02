@@ -8,6 +8,12 @@
   revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
 
 [[projects]]
+  name = "github.com/Jeffail/gabs"
+  packages = ["."]
+  revision = "2a3aa15961d5fee6047b8151b67ac2f08ba2c48c"
+  version = "1.0"
+
+[[projects]]
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
   revision = "78439966b38d69bf38227fbf57ac8a6fee70f69a"
@@ -47,7 +53,7 @@
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "9c9f4d6f70a14e00902cae19dd586a6faa6476f6"
+  revision = "1e94a4862ee2d92976c26ff741585d090169ed42"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -244,7 +250,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","opcall/outputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "c253aab0c3dd8a6f3a6bf7ad6b4b91f8dc6b3227"
+  revision = "64bbe1389ee11def264950f215eb68d4187ae340"
 
 [[projects]]
   branch = "master"
