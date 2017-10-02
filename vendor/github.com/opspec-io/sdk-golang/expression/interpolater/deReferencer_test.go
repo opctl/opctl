@@ -9,6 +9,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 var _ = Context("deReferencer", func() {
@@ -35,6 +36,155 @@ var _ = Context("deReferencer", func() {
 
 			Expect(actualContext).To(Equal(context.TODO()))
 			Expect(actualContentPath).To(Equal(providedRef))
+		})
+	})
+	Context("scope object ref w/ path", func() {
+		Context("float64 at path", func() {
+			It("should call data.Coerce w/ expected args", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := 2.2
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				fakeData := new(data.Fake)
+				// err to trigger immediate return
+				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _deReferencer{
+					data: fakeData,
+				}
+
+				/* act */
+				objectUnderTest.DeReference(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Number: &pathSegment2Value}))
+			})
+		})
+		Context("map[string]interface{} at path", func() {
+			It("should call data.Coerce w/ expected args", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := map[string]interface{}{"dummyKey": "dummyValue"}
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				fakeData := new(data.Fake)
+				// err to trigger immediate return
+				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _deReferencer{
+					data: fakeData,
+				}
+
+				/* act */
+				objectUnderTest.DeReference(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Object: pathSegment2Value}))
+			})
+		})
+		Context("string at path", func() {
+			It("should return expected result", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := "dummyString"
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				objectUnderTest := _deReferencer{}
+
+				/* act */
+				actualString, actualOk, actualErr := objectUnderTest.DeReference(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				Expect(actualString).To(Equal(pathSegment2Value))
+				Expect(actualOk).To(Equal(true))
+				Expect(actualErr).To(BeNil())
+			})
+		})
+		Context("[]interface{} at path", func() {
+			It("should call data.Coerce w/ expected args", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := []interface{}{"string", 2.2}
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				fakeData := new(data.Fake)
+				// err to trigger immediate return
+				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _deReferencer{
+					data: fakeData,
+				}
+
+				/* act */
+				objectUnderTest.DeReference(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Array: pathSegment2Value}))
+			})
 		})
 	})
 	Context("scope ref", func() {
