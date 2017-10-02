@@ -3,6 +3,7 @@ package interpolater
 import (
 	"context"
 	"fmt"
+	"github.com/Jeffail/gabs"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"io/ioutil"
@@ -48,6 +49,38 @@ func (dr _deReferencer) DeReference(
 			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}
 		return string(contentBytes), true, nil
+	}
+
+	possibleObjectPathRefIndex := strings.Index(ref, ".")
+	if possibleObjectPathRefIndex > 0 {
+		objectRef, isObjectPathRef := scope[ref[:possibleObjectPathRefIndex]]
+		if isObjectPathRef {
+			// scope object ref w/ path
+			json, err := gabs.Consume(objectRef.Object)
+			if nil != err {
+				return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
+			}
+
+			var value *model.Value
+			valueAtPath := json.Path(ref[possibleObjectPathRefIndex+1:]).Data()
+			switch valueAtPath := valueAtPath.(type) {
+			case float64:
+				value = &model.Value{Number: &valueAtPath}
+			case map[string]interface{}:
+				value = &model.Value{Object: valueAtPath}
+			case string:
+				return valueAtPath, true, nil
+			case []interface{}:
+				value = &model.Value{Array: valueAtPath}
+			}
+
+			valueAsString, err := dr.data.CoerceToString(value)
+			if nil != err {
+				return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
+			}
+
+			return *valueAsString.String, true, nil
+		}
 	}
 
 	// scope ref

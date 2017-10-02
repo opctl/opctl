@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	"github.com/docker/docker/integration-cli/requirement"
 )
 
@@ -18,12 +21,12 @@ func ArchitectureIsNot(arch string) bool {
 }
 
 func DaemonIsWindows() bool {
-	return testEnv.DaemonInfo.OSType == "windows"
+	return testEnv.OSType == "windows"
 }
 
 func DaemonIsWindowsAtLeastBuild(buildNumber int) func() bool {
 	return func() bool {
-		if testEnv.DaemonInfo.OSType != "windows" {
+		if testEnv.OSType != "windows" {
 			return false
 		}
 		version := testEnv.DaemonInfo.KernelVersion
@@ -33,16 +36,24 @@ func DaemonIsWindowsAtLeastBuild(buildNumber int) func() bool {
 }
 
 func DaemonIsLinux() bool {
-	return testEnv.DaemonInfo.OSType == "linux"
+	return testEnv.OSType == "linux"
+}
+
+func OnlyDefaultNetworks() bool {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return false
+	}
+	networks, err := cli.NetworkList(context.TODO(), types.NetworkListOptions{})
+	if err != nil || len(networks) > 0 {
+		return false
+	}
+	return true
 }
 
 // Deprecated: use skip.IfCondition(t, !testEnv.DaemonInfo.ExperimentalBuild)
 func ExperimentalDaemon() bool {
 	return testEnv.DaemonInfo.ExperimentalBuild
-}
-
-func NotExperimentalDaemon() bool {
-	return !testEnv.DaemonInfo.ExperimentalBuild
 }
 
 func IsAmd64() bool {
@@ -163,21 +174,21 @@ func UserNamespaceInKernel() bool {
 }
 
 func IsPausable() bool {
-	if testEnv.DaemonInfo.OSType == "windows" {
+	if testEnv.OSType == "windows" {
 		return testEnv.DaemonInfo.Isolation == "hyperv"
 	}
 	return true
 }
 
 func NotPausable() bool {
-	if testEnv.DaemonInfo.OSType == "windows" {
+	if testEnv.OSType == "windows" {
 		return testEnv.DaemonInfo.Isolation == "process"
 	}
 	return false
 }
 
 func IsolationIs(expectedIsolation string) bool {
-	return testEnv.DaemonInfo.OSType == "windows" && string(testEnv.DaemonInfo.Isolation) == expectedIsolation
+	return testEnv.OSType == "windows" && string(testEnv.DaemonInfo.Isolation) == expectedIsolation
 }
 
 func IsolationIsHyperv() bool {

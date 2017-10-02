@@ -29,12 +29,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// For Windows only
-var pathBlacklist = map[string]bool{
-	"c:\\":        true,
-	"c:\\windows": true,
-}
-
 // Archiver defines an interface for copying files from one destination to
 // another using Tar/Untar.
 type Archiver interface {
@@ -124,7 +118,6 @@ func (b *Builder) commitContainer(dispatchState *dispatchState, id string, conta
 	}
 
 	dispatchState.imageID = imageID
-	b.buildStages.update(imageID)
 	return nil
 }
 
@@ -164,7 +157,6 @@ func (b *Builder) exportImage(state *dispatchState, imageMount *imageMount, runC
 
 	state.imageID = exportedImage.ImageID()
 	b.imageSources.Add(newImageMount(exportedImage, newLayer))
-	b.buildStages.update(state.imageID)
 	return nil
 }
 
@@ -460,7 +452,6 @@ func (b *Builder) probeCache(dispatchState *dispatchState, runConfig *container.
 	fmt.Fprint(b.Stdout, " ---> Using cache\n")
 
 	dispatchState.imageID = cachedID
-	b.buildStages.update(dispatchState.imageID)
 	return true, nil
 }
 
