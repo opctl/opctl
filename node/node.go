@@ -60,7 +60,7 @@ func New() {
 	router := mux.NewRouter()
 	router.UseEncodedPath()
 
-	router.PathPrefix("/app/").Handler(http.StripPrefix("/app/", http.FileServer(statikFS)))
+	router.PathPrefix("/app").Handler(http.StripPrefix("/app", http.FileServer(statikFS)))
 
 	router.PathPrefix("/").Handler(handler.New(
 		core.New(
