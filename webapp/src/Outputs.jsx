@@ -5,8 +5,8 @@ export default function Outputs(props) {
 
     const outputs = [];
     if (props.value) {
-        Object.entries(props.value).forEach(([name, type]) => {
-            outputs.push(<Param name={name} type={type} key={name}/>)
+        Object.entries(props.value).forEach(([name, param]) => {
+            outputs.push(<Param name={name} param={param} key={name}/>)
         });
     }
 

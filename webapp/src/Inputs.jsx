@@ -5,8 +5,8 @@ export default function Inputs(props) {
 
     const inputs = [];
     if (props.value) {
-        Object.entries(props.value).forEach(([name, type]) => {
-            inputs.push(<Param name={name} type={type} key={name}/>)
+        Object.entries(props.value).forEach(([name, param]) => {
+            inputs.push(<Param name={name} param={param} key={name}/>)
         });
     }
 
