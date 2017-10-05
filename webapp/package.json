@@ -7,10 +7,11 @@
     "ansi-to-react": "^2.0.0",
     "bootstrap": "^3.3.7",
     "js-yaml": "^3.8.4",
-    "react": "^15.6.1",
+    "react": "^16.0.0",
     "react-bootstrap": "^0.31.0",
-    "react-dom": "^15.6.1",
+    "react-dom": "^16.0.0",
     "react-list": "^0.8.8",
+    "react-rendered-size": "^1.1.0",
     "react-router-dom": "^4.1.2"
   },
   "devDependencies": {

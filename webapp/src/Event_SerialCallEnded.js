@@ -1,11 +1,10 @@
 import React from 'react';
 
-export default function EventOpStarted(props) {
+export default function EventSerialCallEnded(props) {
   return (
     <div style={{color: 'rgb(96, 253, 255)'}}>
-      OpStarted
-      Id='{props.opStarted.opId}'
-      PkgRef='{props.opStarted.pkgRef}'
+      SerialCallEnded
+      Id='{props.serialCallEnded.callId}'
       Timestamp='{props.timestamp}'
     </div>
   );
