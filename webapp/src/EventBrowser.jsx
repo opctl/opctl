@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import ReactList from 'react-list'
+import ReactList from 'react-list';
+import {getRenderedHeight} from 'react-rendered-size';
 import Event from './Event';
 
 class EventBrowser extends Component {
@@ -12,12 +13,25 @@ class EventBrowser extends Component {
   }
 
   componentDidMount() {
+    // @TODO: don't assume local node
     this.ws = new WebSocket('ws://localhost:42224/events/stream');
     this.ws.onmessage = msg => {
+      const event = JSON.parse(msg.data);
+      // cache rendered height
+      event.height = getRenderedHeight(<Event event={event}/>);
+
       this.setState(prevState => ({
-        events: [...prevState.events, JSON.parse(msg.data)]
+        events: [...prevState.events, event]
       }));
     };
+
+    this.ws.onerror = err => {
+      console.log(`websocket erred; err was ${err}`);
+    };
+
+    this.ws.onclose = ({code, reason}) => {
+      console.log(`websocket closed unexpectedly. code, reason were:  ${code}, ${reason}`)
+    }
   }
 
   componentWillUnmount() {
@@ -25,23 +39,33 @@ class EventBrowser extends Component {
   }
 
   renderItem(index, key) {
-    const event = this.state.events[index];
-    return <Event key={key} event={event}/>;
+    return (<Event key={key} event={this.state.events[index]}/>);
   }
 
   render() {
     return (
-      <div>
-        <h2>Events</h2>
-        <div style={{overflow: 'auto', maxHeight: 900}}>
+      <div className='events'>
+        <div style={{overflow: 'auto', height: '100vh'}} ref={(div) => {this.messageList = div}}>
           <ReactList
+            itemSizeGetter={(index) => this.state.events[index].height}
             itemRenderer={(index, key) => this.renderItem(index, key)}
             length={this.state.events.length}
-            type='uniform'
+            type='variable'
           />
         </div>
       </div>
     );
+  }
+
+  componentWillUpdate(){
+    this.isAtBottom = (this.messageList.scrollHeight - (this.messageList.scrollTop + this.messageList.offsetHeight)) < 100;
+  }
+
+  componentDidUpdate() {
+    if (this.isAtBottom) {
+      // only scroll if at bottom; otherwise we'd be overriding the users custom scroll
+      this.messageList.scrollTop = this.messageList.scrollHeight
+    }
   }
 
 }

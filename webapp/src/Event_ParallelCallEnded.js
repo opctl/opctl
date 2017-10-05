@@ -1,11 +1,10 @@
 import React from 'react';
 
-export default function EventOpStarted(props) {
+export default function EventParallelCallEnded(props) {
   return (
     <div style={{color: 'rgb(96, 253, 255)'}}>
-      OpStarted
-      Id='{props.opStarted.opId}'
-      PkgRef='{props.opStarted.pkgRef}'
+      ParallelCallEnded
+      Id='{props.parallelCallEnded.callId}'
       Timestamp='{props.timestamp}'
     </div>
   );

@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function EventContainerExited(props) {
   return (
-    <div>
+    <div style={{color: 'rgb(96, 253, 255)'}}>
       ContainerExited
       Id='{props.containerExited.containerId}'
       PkgRef='{props.containerExited.pkgRef}'
