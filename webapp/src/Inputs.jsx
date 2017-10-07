@@ -1,8 +1,10 @@
 import React from 'react';
-import Form from "react-jsonschema-form";
+import Form from 'react-jsonschema-form';
+import opSpecNodeApiClient from './opspecNodeApiClient'
 
 export default function Inputs({
                                  value,
+                                 pkgRef,
                                }) {
 
   const schema = {
@@ -28,14 +30,14 @@ export default function Inputs({
         };
       } else if (param.dir) {
         schema.properties[name] = {
-          format: 'data-url',
+          default: param.dir.default,
           type: 'string',
         };
 
         uiSchema[name] = {'ui:description': param.dir.description};
       } else if (param.file) {
         schema.properties[name] = {
-          format: 'data-url',
+          default: param.file.default,
           type: 'string',
         };
 
@@ -89,6 +91,53 @@ export default function Inputs({
     });
   }
 
+  const onSubmit = (data) => {
+    const req = {
+      args: {},
+      pkg: {
+        ref: pkgRef,
+      }
+    };
+
+    if (value) {
+      Object.entries(value).forEach(([name, param]) => {
+        if (param.array) {
+          req.args[name] = {
+            array: data.formData[name],
+          };
+        } else if (param.dir) {
+          req.args[name] = {
+            dir: data.formData[name],
+          };
+        } else if (param.file) {
+          req.args[name] = {
+            file: data.formData[name],
+          };
+        } else if (param.number) {
+          req.args[name] = {
+            number: data.formData[name],
+          };
+        } else if (param.object) {
+          req.args[name] = {
+            object: data.formData[name],
+          };
+        } else if (param.socket) {
+          req.args[name] = {
+            socket: data.formData[name],
+          };
+        } else if (param.string) {
+          req.args[name] = {
+            string: data.formData[name],
+          };
+        }
+      });
+    }
+
+    console.log(req);
+
+    opSpecNodeApiClient.startOp(req);
+  };
+
   return (
     <div>
       <h2>Inputs:</h2>
@@ -96,8 +145,10 @@ export default function Inputs({
             uiSchema={uiSchema}
             liveValidate={true}
             onChange={() => console.log('changed')}
-            onSubmit={() => console.log('submitted')}
-            onError={() => console.log('erred')}/>
+            onSubmit={onSubmit}
+            onError={() => console.log('erred')}>
+        <input className='btn btn-default btn-lg' type='submit' value='start' />
+        </Form>
     </div>
   );
 }
