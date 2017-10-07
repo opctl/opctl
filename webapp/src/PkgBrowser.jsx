@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import {Button, Form, FormControl, FormGroup, Grid, InputGroup} from 'react-bootstrap';
 import pkgFetcher from './pkgFetcher'
+import Pkg from './Pkg';
 
-import Pkg from './Pkg'
-
-class PkgBrowser extends Component {
+export default class PkgBrowser extends Component {
   constructor(props) {
     super(props);
 
@@ -60,12 +59,10 @@ class PkgBrowser extends Component {
       <Grid>
         <div>
           {form}
-          <Pkg value={this.state.pkg}/>
+          <Pkg value={this.state.pkg} pkgRef={this.state.pkgRef}/>
         </div>
       </Grid>
     );
   }
 
 }
-
-export default PkgBrowser;
