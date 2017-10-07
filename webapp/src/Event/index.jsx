@@ -1,15 +1,15 @@
 import React from 'react';
-import EventContainerExited from './Event_ContainerExited';
-import EventContainerStarted from './Event_ContainerStarted';
-import EventContainerStdErrWrittenTo from './Event_ContainerStdErrWrittenTo';
-import EventContainerStdOutWrittenTo from './Event_ContainerStdOutWrittenTo';
-import EventOpEnded from './Event_OpEnded';
-import EventOpErred from './Event_OpErred';
-import EventOpStarted from './Event_OpStarted';
-import EventSerialCallEnded from "./Event_SerialCallEnded";
-import EventParallelCallEnded from "./Event_ParallelCallEnded";
+import EventContainerExited from './ContainerExited';
+import EventContainerStarted from './ContainerStarted';
+import EventContainerStdErrWrittenTo from './ContainerStdErrWrittenTo';
+import EventContainerStdOutWrittenTo from './ContainerStdOutWrittenTo';
+import EventOpEnded from './OpEnded';
+import EventOpErred from './OpErred';
+import EventOpStarted from './OpStarted';
+import EventSerialCallEnded from "./SerialCallEnded";
+import EventParallelCallEnded from "./ParallelCallEnded";
 
-export default function Event(props) {
+export default (props) => {
   // delegate to component for event
   if (props.event.containerExited) {
     return (<EventContainerExited containerExited={props.event.containerExited} timestamp={props.event.timestamp}/>);

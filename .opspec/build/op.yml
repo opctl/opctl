@@ -15,7 +15,12 @@ outputs:
     dir:
       description: directory containing the projects source code
 run:
-  op:
-    pkg: { ref: node/build }
-    inputs: { srcDir }
-    outputs: { srcDir }
+  serial:
+    - op:
+        pkg: { ref: node/build }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: webapp/build }
+        inputs: { srcDir }
+        outputs: { srcDir }
