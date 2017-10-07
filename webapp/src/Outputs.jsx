@@ -1,19 +1,21 @@
 import React from 'react';
-import Param from './Param';
+import Output from './Output';
 
-export default function Outputs(props) {
+export default function Outputs({
+                                  value,
+                                }) {
 
-    const outputs = [];
-    if (props.value) {
-        Object.entries(props.value).forEach(([name, param]) => {
-            outputs.push(<Param name={name} param={param} key={name}/>)
-        });
-    }
+  const outputs = [];
+  if (value) {
+    Object.entries(value).forEach(([name, output]) => {
+      outputs.push(<Output name={name} output={output} key={name}/>)
+    });
+  }
 
-    return (
-        <div>
-            <h2>Outputs:</h2>
-            {outputs}
-        </div>
-    );
+  return (
+    <div>
+      <h2>Outputs:</h2>
+      {outputs}
+    </div>
+  );
 }

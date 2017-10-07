@@ -34,7 +34,7 @@ class PkgBrowser extends Component {
 
   render() {
     const form = (
-      <Form onSubmit={this.handleSubmit} style={{'padding-top': '25px'}}>
+      <Form onSubmit={this.handleSubmit} style={{paddingTop: '25px'}}>
         <FormGroup controlId="pkgRef">
           <InputGroup bsSize="lg" >
             <FormControl type="text" value={this.state.pkgRef} onChange={this.handleChange}
