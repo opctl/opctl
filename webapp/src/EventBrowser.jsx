@@ -3,6 +3,8 @@ import ReactList from 'react-list';
 import {getRenderedHeight} from 'react-rendered-size';
 import Event from './Event';
 
+const throttleDuration = 1000;
+
 class EventBrowser extends Component {
   constructor(props) {
     super(props);
@@ -10,6 +12,8 @@ class EventBrowser extends Component {
     this.state = {
       events: [],
     };
+
+    this.lastComponentUpdate = new Date().getTime();
   }
 
   componentDidMount() {
@@ -26,16 +30,36 @@ class EventBrowser extends Component {
     };
 
     this.ws.onerror = err => {
-      console.log(`websocket erred; err was ${err}`);
+      console.log(`websocket erred; err was: ${err}`);
     };
 
     this.ws.onclose = ({code, reason}) => {
-      console.log(`websocket closed unexpectedly. code, reason were:  ${code}, ${reason}`)
+      console.log(`websocket closed unexpectedly; details were code: ${code}, reason: ${reason}`)
+    };
+
+    // maintain an update interval so throttled renders get re-processed every throttleDuration
+    this.interval = setInterval(() => {
+      this.setState(prevState => ({
+        throttleInterval: new Date().getTime()
+      }));
+    }, throttleDuration);
+  }
+
+  componentDidUpdate() {
+    if (this.isAtBottom) {
+      // only scroll if at bottom; otherwise we'd be overriding the users custom scroll
+      this.messageList.scrollTop = this.messageList.scrollHeight
     }
+    this.lastComponentUpdate = new Date().getTime();
   }
 
   componentWillUnmount() {
-    this.ws.close()
+    this.ws.close();
+    clearInterval(this.interval);
+  }
+
+  componentWillUpdate() {
+    this.isAtBottom = (this.messageList.scrollHeight - (this.messageList.scrollTop + this.messageList.offsetHeight)) < 100;
   }
 
   renderItem(index, key) {
@@ -45,7 +69,9 @@ class EventBrowser extends Component {
   render() {
     return (
       <div className='events'>
-        <div style={{overflow: 'auto', height: '100vh'}} ref={(div) => {this.messageList = div}}>
+        <div style={{overflow: 'auto', height: '100vh'}} ref={(div) => {
+          this.messageList = div
+        }}>
           <ReactList
             itemSizeGetter={(index) => this.state.events[index].height}
             itemRenderer={(index, key) => this.renderItem(index, key)}
@@ -57,15 +83,18 @@ class EventBrowser extends Component {
     );
   }
 
-  componentWillUpdate(){
-    this.isAtBottom = (this.messageList.scrollHeight - (this.messageList.scrollTop + this.messageList.offsetHeight)) < 100;
-  }
+  shouldComponentUpdate(nextProps, nextState) {
+    // there are typically so many events received it floods react & results in a completely unresponsive UI
+    // we throttle renders to avoid this
+    const wasThrottled = this.isThrottled;
+    const isNewEvents = this.state.events.length < nextState.events.length;
+    this.isThrottled = new Date().getTime() - this.lastComponentUpdate > throttleDuration;
 
-  componentDidUpdate() {
-    if (this.isAtBottom) {
-      // only scroll if at bottom; otherwise we'd be overriding the users custom scroll
-      this.messageList.scrollTop = this.messageList.scrollHeight
+    if (isNewEvents || wasThrottled) {
+      return this.isThrottled;
     }
+
+    return false;
   }
 
 }
