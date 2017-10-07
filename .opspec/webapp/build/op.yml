@@ -1,0 +1,39 @@
+description: builds the webapp
+name: webapp/build
+inputs:
+  srcDir:
+    dir:
+      default: .
+run:
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            npm install -q
+        image: { ref: 'node:7.10.1-alpine' }
+        dirs:
+          /srcDir: $(srcDir/webapp)
+        workDir: /srcDir
+    - container:
+        cmd: [ npm, run, build ]
+        image: { ref: 'node:7.10.1-alpine' }
+        dirs:
+          /srcDir: $(srcDir/webapp)
+        workDir: /srcDir
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            go get github.com/rakyll/statik
+
+            echo "embedding webapp in node"
+            statik -src webapp/build -dest node -f
+        dirs:
+          /go/src/github.com/opspec-io/sdk-golang: $(srcDir)
+        image: { ref: 'golang:1.9' }
+        workDir: /go/src/github.com/opspec-io/sdk-golang

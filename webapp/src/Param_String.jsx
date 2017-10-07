@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Param(props) {
+export default (props) => {
     return (
         <div>
             <h4>{props.name}: string {props.string.default ? <span>(default = {props.string.default})</span> : null }</h4>
