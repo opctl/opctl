@@ -1,154 +1,49 @@
 import React from 'react';
-import Form from 'react-jsonschema-form';
+import Input from './Input';
 import opSpecNodeApiClient from './opspecNodeApiClient'
+import {toast} from 'react-toastify';
 
-export default function Inputs({
-                                 value,
-                                 pkgRef,
-                               }) {
+export default ({
+                  value,
+                  pkgRef,
+                }) => {
 
-  const schema = {
-    type: 'object',
-    properties: {}
-  };
-
-  const uiSchema = {};
+  const args = {};
+  const inputs = [];
   if (value) {
-    Object.entries(value).forEach(([name, param]) => {
-      // type specific mapping
-      if (param.array) {
-        schema.properties[name] = Object.assign(
-          {
-            default: param.array.default,
-            type: 'array',
-          },
-          param.array.constraints
-        );
-
-        uiSchema[name] = {
-          'ui:description': param.array.description,
-        };
-      } else if (param.dir) {
-        schema.properties[name] = {
-          default: param.dir.default,
-          type: 'string',
-        };
-
-        uiSchema[name] = {'ui:description': param.dir.description};
-      } else if (param.file) {
-        schema.properties[name] = {
-          default: param.file.default,
-          type: 'string',
-        };
-
-        uiSchema[name] = {'ui:description': param.file.description};
-      } else if (param.number) {
-        schema.properties[name] = Object.assign(
-          {
-            default: param.number.default,
-            type: 'number',
-          },
-          param.number.constraints,
-        );
-
-        uiSchema[name] = {
-          'ui:description': param.number.description,
-          "ui:widget": param.number.isSecret ? 'password' : 'text',
-        };
-      } else if (param.object) {
-        schema.properties[name] = Object.assign(
-          {
-            default: param.object.default,
-            type: 'object',
-          },
-          param.object.constraints,
-        );
-
-        uiSchema[name] = {
-          'ui:description': param.object.description,
-        };
-      } else if (param.socket) {
-        schema.properties[name] = {
-          type: 'string',
-          format: 'socket',
-        };
-
-        uiSchema[name] = {'ui:description': param.socket.description};
-      } else if (param.string) {
-        schema.properties[name] = Object.assign(
-          {
-            default: param.string.default,
-            type: 'string',
-          },
-          param.string.constraints,
-        );
-
-        uiSchema[name] = {
-          'ui:description': param.string.description,
-          "ui:widget": param.string.isSecret ? 'password' : 'text',
-        };
-      }
+    Object.entries(value).forEach(([name, input]) => {
+      inputs.push(<Input
+        onChange={value => args[name] = value}
+        name={name}
+        input={input}
+        key={name}
+      />);
     });
   }
 
-  const onSubmit = (data) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
     const req = {
-      args: {},
+      args,
       pkg: {
         ref: pkgRef,
       }
     };
 
-    if (value) {
-      Object.entries(value).forEach(([name, param]) => {
-        if (param.array) {
-          req.args[name] = {
-            array: data.formData[name],
-          };
-        } else if (param.dir) {
-          req.args[name] = {
-            dir: data.formData[name],
-          };
-        } else if (param.file) {
-          req.args[name] = {
-            file: data.formData[name],
-          };
-        } else if (param.number) {
-          req.args[name] = {
-            number: data.formData[name],
-          };
-        } else if (param.object) {
-          req.args[name] = {
-            object: data.formData[name],
-          };
-        } else if (param.socket) {
-          req.args[name] = {
-            socket: data.formData[name],
-          };
-        } else if (param.string) {
-          req.args[name] = {
-            string: data.formData[name],
-          };
-        }
+    opSpecNodeApiClient.startOp(req)
+      .catch(error => {
+        toast.error(error.message);
       });
-    }
-
-    console.log(req);
-
-    opSpecNodeApiClient.startOp(req);
   };
 
   return (
     <div>
       <h2>Inputs:</h2>
-      <Form schema={schema}
-            uiSchema={uiSchema}
-            liveValidate={true}
-            onChange={() => console.log('changed')}
-            onSubmit={onSubmit}
-            onError={() => console.log('erred')}>
-        <input className='btn btn-default btn-lg' type='submit' value='start' />
-        </Form>
+      <form onSubmit={handleSubmit}>
+        {inputs}
+        <input className='btn btn-primary btn-lg' id='startOp_Submit' type='submit' value='start'/>
+      </form>
     </div>
   );
 }

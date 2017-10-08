@@ -1,7 +1,8 @@
 import React from 'react';
-import PkgRef from './PkgRef'
-import Inputs from './Inputs'
-import Outputs from './Outputs'
+import PkgRef from './PkgRef';
+import Inputs from './Inputs';
+import Outputs from './Outputs';
+import EventBrowser from './EventBrowser';
 
 export default ({value, pkgRef}) => {
   return (
@@ -10,6 +11,8 @@ export default ({value, pkgRef}) => {
       <p className="lead">{value.description}</p>
       <Inputs value={value.inputs} pkgRef={pkgRef}/>
       <Outputs value={value.outputs}/>
+      <h2>Events Stream:</h2>
+      <EventBrowser/>
     </div>
   );
 }

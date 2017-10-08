@@ -5,10 +5,15 @@ export default ({
                   name,
                 }) => {
   return (
-    <div>
-      <h4>{name}: socket {socket.default ?
-        <span>(default = {socket.default})</span> : null}</h4>
-      <h5>{socket.description}</h5>
+    <div className='form-group'>
+      <label className='form-control-label' htmlFor={name}>{name}</label>
+      <p className='custom-control-description'>{socket.description}</p>
+      <input
+        className='form-control'
+        id={name}
+        readOnly={true}
+        type='text'
+      />
     </div>
   );
 }

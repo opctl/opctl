@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ReactList from 'react-list';
 import {getRenderedHeight} from 'react-rendered-size';
 import Event from './Event';
+import {toast} from 'react-toastify';
 
 const throttleDuration = 1000;
 
@@ -29,13 +30,9 @@ class EventBrowser extends Component {
       }));
     };
 
-    this.ws.onerror = err => {
-      console.log(`websocket erred; err was: ${err}`);
-    };
+    this.ws.onerror = error => toast.error(`encountered error streaming events; error was ${error.message}`);
 
-    this.ws.onclose = ({code, reason}) => {
-      console.log(`websocket closed unexpectedly; details were code: ${code}, reason: ${reason}`)
-    };
+    this.ws.onclose = ({code, reason}) => toast.error(`event stream disconnected; code: ${code}, reason: ${reason}`);
 
     // maintain an update interval so throttled renders get re-processed every throttleDuration
     this.interval = setInterval(() => {

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {Button, Form, FormControl, FormGroup, Grid, InputGroup} from 'react-bootstrap';
 import pkgFetcher from './pkgFetcher'
 import Pkg from './Pkg';
+import {toast} from 'react-toastify';
 
 export default class PkgBrowser extends Component {
   constructor(props) {
@@ -22,7 +22,11 @@ export default class PkgBrowser extends Component {
   }
 
   openPkg(pkgRef) {
-    pkgFetcher.fetch(pkgRef).then(pkg => this.setState({pkgRef, pkg}));
+    pkgFetcher.fetch(pkgRef)
+      .then(pkg => this.setState({pkgRef, pkg}))
+      .catch(error => {
+        toast.error(error.message);
+      });
   }
 
   handleSubmit(e) {
@@ -32,37 +36,28 @@ export default class PkgBrowser extends Component {
   }
 
   render() {
-    const form = (
-      <Form onSubmit={this.handleSubmit} style={{paddingTop: '25px'}}>
-        <FormGroup controlId="pkgRef">
-          <InputGroup bsSize="lg" >
-            <FormControl type="text" value={this.state.pkgRef} onChange={this.handleChange}
-                         placeholder="/absolute/path or host/path/git-repo#tag"/>
-            <InputGroup.Button>
-              <Button type="submit">open</Button>
-            </InputGroup.Button>
-          </InputGroup>
-        </FormGroup>
-      </Form>
-    );
-
-    if (!this.state.pkg) {
-      return (
-        <Grid>
-          <div>
-            {form}
-          </div>
-        </Grid>
-      )
-    }
     return (
-      <Grid>
+      <div className='container'>
         <div>
-          {form}
-          <Pkg value={this.state.pkg} pkgRef={this.state.pkgRef}/>
+          <form onSubmit={this.handleSubmit} style={{paddingTop: '25px'}}>
+            <div className='form-group'>
+          <span className='input-group input-group-lg'>
+            <input className='form-control'
+                   id='pkgRef'
+                   type='text'
+                   value={this.state.pkgRef}
+                   onChange={this.handleChange}
+                   placeholder="/absolute/path or host/path/git-repo#tag"/>
+            <span className='input-group-btn'>
+              <button className='btn btn-primary' id='pkgRef_Submit' type='submit'>open</button>
+            </span>
+          </span>
+            </div>
+          </form>
+          {this.state.pkg ? <Pkg value={this.state.pkg} pkgRef={this.state.pkgRef}/> : null}
         </div>
-      </Grid>
-    );
+      </div>
+    )
   }
 
 }

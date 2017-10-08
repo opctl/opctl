@@ -5,10 +5,16 @@ export default ({
                   name,
                 }) => {
   return (
-    <div>
-      <h4>{name}: dir {dir.default ?
-        <span>(default = {dir.default})</span> : null}</h4>
-      <h5>{dir.description}</h5>
+    <div className='form-group'>
+      <label className='form-control-label' htmlFor={name}>{name}</label>
+      <p className='custom-control-description'>{dir.description}</p>
+      <input
+        className='form-control'
+        defaultValue={dir.default}
+        id={name}
+        readOnly={true}
+        type='text'
+      />
     </div>
   );
 }
