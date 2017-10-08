@@ -10,12 +10,12 @@ export default class ArrayInput extends Component {
       value: props.array.default,
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleArgChange = this.handleArgChange.bind(this);
   }
 
-  handleChange(e) {
+  handleArgChange(e) {
     const value = jsYaml.safeLoad(e.target.value);
-    this.props.onChange({array: value});
+    this.props.onArgChange({array: value});
     this.setState({value});
   };
 
@@ -28,7 +28,7 @@ export default class ArrayInput extends Component {
           className='form-control'
           id={this.props.name}
           value={jsYaml.safeDump(this.state.value)}
-          onChange={this.handleChange}
+          onChange={this.handleArgChange}
         />
       </div>
     );

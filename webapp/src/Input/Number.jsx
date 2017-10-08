@@ -8,11 +8,13 @@ export default class NumberInput extends Component {
       value: props.number.default,
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleArgChange = this.handleArgChange.bind(this);
   }
 
-  handleChange(e) {
-    this.setState({value: e.target.value});
+  handleArgChange(e) {
+    const value = Number(e.target.value);
+    this.props.onArgChange({number: value});
+    this.setState({value});
   };
 
   render() {
@@ -25,7 +27,7 @@ export default class NumberInput extends Component {
           id={this.props.name}
           type={this.props.number.isSecret? 'password': 'number'}
           value={this.state.value}
-          onChange={this.handleChange}
+          onChange={this.handleArgChange}
         />
       </div>
     );

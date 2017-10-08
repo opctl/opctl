@@ -8,11 +8,13 @@ export default class StringInput extends Component {
       value: props.string.default,
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleArgChange = this.handleArgChange.bind(this);
   }
 
-  handleChange(e) {
-    this.setState({value: e.target.value});
+  handleArgChange(e) {
+    const value = e.target.value;
+    this.props.onArgChange({string: value});
+    this.setState({value});
   };
 
   render() {
@@ -23,9 +25,9 @@ export default class StringInput extends Component {
         <input
           className='form-control'
           id={this.props.name}
-          type={this.props.string.isSecret? 'password': 'text'}
+          type={this.props.string.isSecret ? 'password' : 'text'}
           value={this.state.value}
-          onChange={this.handleChange}
+          onChange={this.handleArgChange}
         />
       </div>
     );
