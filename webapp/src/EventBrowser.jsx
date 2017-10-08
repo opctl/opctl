@@ -18,8 +18,14 @@ class EventBrowser extends Component {
   }
 
   componentDidMount() {
+    let queryParts = [];
+    if (this.props.filter && this.props.filter.root) {
+      queryParts.push(`roots=${encodeURIComponent(this.props.filter.root)}`);
+    }
+
+    // @TODO: move to opspecNodeApiClient
     // @TODO: don't assume local node
-    this.ws = new WebSocket('ws://localhost:42224/events/stream');
+    this.ws = new WebSocket(`ws://localhost:42224/events/stream?${queryParts.join('&')}`);
     this.ws.onmessage = msg => {
       const event = JSON.parse(msg.data);
       // cache rendered height
@@ -30,9 +36,9 @@ class EventBrowser extends Component {
       }));
     };
 
-    this.ws.onerror = error => toast.error(`encountered error streaming events; error was ${error.message}`);
-
-    this.ws.onclose = ({code, reason}) => toast.error(`event stream disconnected; code: ${code}, reason: ${reason}`);
+    this.ws.onerror = error => toast.error(
+      `encountered error streaming events; error was ${error.message}`
+    );
 
     // maintain an update interval so throttled renders get re-processed every throttleDuration
     this.interval = setInterval(() => {
@@ -66,9 +72,12 @@ class EventBrowser extends Component {
   render() {
     return (
       <div className='events'>
-        <div style={{overflow: 'auto', height: '100vh'}} ref={(div) => {
-          this.messageList = div
-        }}>
+        <div
+          style={{overflow: 'auto', height: '100vh'}}
+          ref={(div) => {
+            this.messageList = div
+          }}
+        >
           <ReactList
             itemSizeGetter={(index) => this.state.events[index].height}
             itemRenderer={(index, key) => this.renderItem(index, key)}
