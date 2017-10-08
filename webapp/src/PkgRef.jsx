@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default function PkgRef(props){
+export default ({name, version}) => {
     return (
-        <span>{props.name}#{props.version}</span>
+        <span>{name}#{version}</span>
     )
 }

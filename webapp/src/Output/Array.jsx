@@ -1,14 +1,21 @@
 import React from 'react';
+import jsYaml from 'js-yaml';
+import Textarea from 'react-textarea-autosize';
 
 export default ({
                   array,
                   name,
                 }) => {
   return (
-    <div>
-      <h4>{name}: array {array.default ?
-        <span>(default = {JSON.stringify(array.default, null, '\t')})</span> : null}</h4>
-      <h5>{array.description}</h5>
+    <div className='form-group'>
+      <label className='form-control-label' htmlFor={name}>{name}</label>
+      <p className='custom-control-description'>{array.description}</p>
+      <Textarea
+        className='form-control'
+        defaultValue={jsYaml.safeDump(array.default)}
+        id={name}
+        readOnly={true}
+      />
     </div>
   );
 }

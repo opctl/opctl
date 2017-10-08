@@ -5,10 +5,16 @@ export default ({
                   name,
                 }) => {
   return (
-    <div>
-      <h4>{name}: number {number.default ?
-        <span>(default = {number.default})</span> : null}</h4>
-      <h5>{number.description}</h5>
+    <div className='form-group'>
+      <label className='form-control-label' htmlFor={name}>{name}</label>
+      <p className='custom-control-description'>{number.description}</p>
+      <input
+        className='form-control'
+        defaultValue={number.default}
+        id={name}
+        readOnly={true}
+        type='number'
+      />
     </div>
   );
 }
