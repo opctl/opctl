@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/opspec-io/sdk-js.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-js)[![Go Report Card](https://goreportcard.com/badge/github.com/opspec-io/sdk-js)](https://goreportcard.com/report/github.com/opspec-io/sdk-js)[![Coverage](https://codecov.io/gh/opspec-io/sdk-js/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-js)
+[![Build Status](https://travis-ci.org/opspec-io/sdk-js.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-js)[![Coverage](https://codecov.io/gh/opspec-io/sdk-js/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-js)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
