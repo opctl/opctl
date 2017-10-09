@@ -31,6 +31,9 @@ run:
           pkg: { ref: test/unit }
           inputs: { srcDir }
           outputs: { srcDir }
+      - op:
+          pkg: { ref: webapp/test }
+          inputs: { srcDir: $(srcDir/webapp) }
     - op:
         pkg: { ref: github.com/opspec-pkgs/golang.aggregate-coverprofiles#2.0.0 }
         inputs: { srcDir }

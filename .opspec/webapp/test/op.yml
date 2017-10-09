@@ -1,5 +1,5 @@
-description: serves the webapp locally on port 80
-name: webapp/serve
+description: runs all webapp tests
+name: webapp/test
 inputs:
   srcDir:
     dir:
@@ -18,7 +18,7 @@ run:
           /src: $(srcDir)
         workDir: /src
     - container:
-        cmd: [ npm, start ]
+        cmd: [ npm, test ]
         image: { ref: 'node:7.10.1-alpine' }
         dirs:
           /src: $(srcDir)
