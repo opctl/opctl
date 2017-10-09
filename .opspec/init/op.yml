@@ -1,0 +1,18 @@
+name: init
+description: inits the working copy for development
+inputs:
+  srcDir:
+    dir:
+      description: dir containing the projects source code
+      default: .
+outputs:
+  srcDir:
+    dir:
+      description: dir containing the projects source code
+run:
+  container:
+    image: { ref: 'node:8.6.0-alpine'}
+    cmd: [npm, install]
+    dirs:
+      /src: $(srcDir)
+    workDir: /src

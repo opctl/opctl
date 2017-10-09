@@ -1,0 +1,26 @@
+{
+  "name": "@opspec/sdk",
+  "version": "0.0.0",
+  "description": "Javascript SDK for opspec",
+  "main": "/lib/index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opspec-io/sdk-js.git"
+  },
+  "keywords": [
+    "opspec"
+  ],
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/opspec-io/sdk-js/issues"
+  },
+  "dependencies": {
+    "ajv": "^5.2.3",
+    "axios": "^0.16.2",
+    "jest": "^21.2.1",
+    "universal-websocket-client": "^1.0.1"
+  }
+}

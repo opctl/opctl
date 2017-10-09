@@ -1,9 +1,11 @@
 ### JetBrains
 .idea/
 
-### codecov.io
-coverage.txt
-*.coverprofile
+### NPM
+node_modules
 
-### OSX
-.DS_Store
+### codecov.io
+coverage/
+
+### jest
+jest*/
