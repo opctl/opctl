@@ -15,14 +15,14 @@ run:
             npm install -q
         image: { ref: 'node:7.10.1-alpine' }
         dirs:
-          /srcDir: $(srcDir/webapp)
-        workDir: /srcDir
+          /src: $(srcDir/webapp)
+        workDir: /src
     - container:
         cmd: [ npm, run, build ]
         image: { ref: 'node:7.10.1-alpine' }
         dirs:
-          /srcDir: $(srcDir/webapp)
-        workDir: /srcDir
+          /src: $(srcDir/webapp)
+        workDir: /src
     - container:
         cmd:
           - sh

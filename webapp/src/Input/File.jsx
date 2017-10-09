@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 
-export default class StringInput extends Component {
+export default class FileInput extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      value: props.string.default,
+      value: props.file.default,
     };
 
     this.handleArgChange = this.handleArgChange.bind(this);
@@ -21,7 +21,7 @@ export default class StringInput extends Component {
     return (
       <div className='form-group'>
         <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
-        <p className='custom-control-description'>{this.props.string.description}</p>
+        <p className='custom-control-description'>{this.props.file.description}</p>
         <input
           className='form-control'
           id={this.props.name}
