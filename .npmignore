@@ -1,0 +1,6 @@
+.opspec/
+.editorconfig
+.travis.yml
+CODEOWNERS
+CONTRIBUTING.md
+jest.config.js
