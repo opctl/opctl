@@ -1,11 +1,10 @@
 {
   "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.0",
+  "version": "0.0.0-alpha.2",
   "description": "Javascript SDK for opspec",
   "scripts": {
     "test": "jest --coverage"
   },
-  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/opspec-io/sdk-js.git"
@@ -19,7 +18,7 @@
   },
   "dependencies": {
     "ajv": "^5.2.3",
-    "axios": "^0.16.2"
+    "node-fetch": "^1.7.3"
   },
   "devDependencies": {
     "jest": "^21.2.1",
