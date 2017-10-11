@@ -1,4 +1,6 @@
 .opspec/
+coverage/
+jest*/
 .editorconfig
 .travis.yml
 CODEOWNERS

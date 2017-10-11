@@ -20,6 +20,12 @@ run:
         pkg: { ref: test }
         inputs: { srcDir }
         outputs: { srcDir, coverageReport }
+    - container:
+        image: { ref: 'node:8.6.0-alpine'}
+        cmd: [npm, run-script, build]
+        dirs:
+          /src: $(srcDir)
+        workDir: /src
     - op:
         pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.0 }
         inputs: { dotGitDir: $(srcDir)/.git }

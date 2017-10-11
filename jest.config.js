@@ -7,4 +7,5 @@ module.exports = {
       statements: 100,
     },
   },
+  roots: ["src"]
 };

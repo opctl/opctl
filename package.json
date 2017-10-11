@@ -1,8 +1,9 @@
 {
   "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.3",
+  "version": "0.0.0-alpha.5",
   "description": "Javascript SDK for opspec",
   "scripts": {
+    "build": "babel src --out-dir=lib",
     "test": "jest --coverage"
   },
   "repository": {
@@ -21,6 +22,8 @@
     "node-fetch": "^1.7.3"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "jest": "^21.2.1",
     "nock": "^9.0.22"
   }
