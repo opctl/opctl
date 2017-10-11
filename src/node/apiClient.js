@@ -12,7 +12,7 @@ class ApiClient {
    * @param opStartReq
    * @return {Promise.<String>} id of the started op
    */
-  async op_start(opStartReq) {
+  op_start(opStartReq) {
     return fetch(`${this.baseUrl}/ops/starts`, {
       method: 'POST',
       body: JSON.stringify(opStartReq),
@@ -27,7 +27,7 @@ class ApiClient {
    * @param opKillReq
    * @return {Promise.<null>}
    */
-  async op_kill(opKillReq) {
+  op_kill(opKillReq) {
     return fetch(`${this.baseUrl}/ops/kills`, {
       method: 'POST',
       body: JSON.stringify(opKillReq),
@@ -43,7 +43,7 @@ class ApiClient {
    * @param contentPath
    * @return {Promise.<fetch.Response>}
    */
-  async pkg_content_get({pkgRef, contentPath}) {
+  pkg_content_get({pkgRef, contentPath}) {
     return fetch(
       `${this.baseUrl}/pkgs/${encodeURIComponent(pkgRef)}/contents/${encodeURIComponent(contentPath)}`
     );
@@ -56,7 +56,7 @@ class ApiClient {
    * @param pkgRef
    * @return {Promise.<Object[]>}}
    */
-  async pkg_content_list({pkgRef}) {
+  pkg_content_list({pkgRef}) {
     return fetch(
       `${this.baseUrl}/pkgs/${encodeURIComponent(pkgRef)}/contents`
     )
