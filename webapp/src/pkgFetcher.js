@@ -1,12 +1,14 @@
 import jsYaml from 'js-yaml';
-import opspecNodeApiClient from './opspecNodeApiClient';
+import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
+const opspecNodeApiClient = new OpspecNodeApiClient('localhost://42224');
 
 class PkgFetcher {
   async fetch(pkgRef) {
-    return opspecNodeApiClient.getPkgContent({
+    return opspecNodeApiClient.pkg_content_get({
       pkgRef,
       contentPath: '/op.yml',
     })
+      .then(data => data.text())
       .then(PkgFetcher._parse)
   }
 

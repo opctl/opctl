@@ -1,5 +1,5 @@
-description: runs a build
 name: build
+description: runs ops necessary to go from src to vetted artifact(s)
 inputs:
   gitBranch:
     string:

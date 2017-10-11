@@ -7,11 +7,9 @@ export default class SocketInput extends Component {
     this.state = {
       value: null,
     };
-
-    this.handleArgChange = this.handleArgChange.bind(this);
   }
 
-  handleArgChange(e) {
+  handleChange(e) {
     const value = e.target.value;
     this.props.onArgChange({socket: value});
     this.setState({value});
@@ -25,7 +23,7 @@ export default class SocketInput extends Component {
         <input
           className='form-control'
           id={this.props.name}
-          onChange={this.handleArgChange}
+          onChange={e => this.handleChange(e)}
           placeholder='/absolute/path/of/socket'
           type='text'
           value={this.state.value}

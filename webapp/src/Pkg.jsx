@@ -3,8 +3,10 @@ import PkgRef from './PkgRef';
 import Inputs from './Inputs';
 import Outputs from './Outputs';
 import EventBrowser from './EventBrowser';
-import opSpecNodeApiClient from './opspecNodeApiClient'
+import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
 import {toast} from 'react-toastify';
+
+const opspecNodeApiClient = new OpspecNodeApiClient('localhost://42224');
 
 export default class Pkg extends Component {
   constructor(props) {
@@ -29,7 +31,7 @@ export default class Pkg extends Component {
       }
     };
 
-    opSpecNodeApiClient.startOp(req)
+    opspecNodeApiClient.op_start(req)
       .then(opId => (this.setState({opId})))
       .catch(error => {
         toast.error(error.message);
@@ -44,7 +46,7 @@ export default class Pkg extends Component {
           <p className="lead">{this.props.value.description}</p>
           <Inputs value={this.props.value.inputs} onArgChange={this.handleArgChange}/>
           <Outputs value={this.props.value.outputs}/>
-          <input className='btn btn-primary btn-lg' id='startOp_Submit' type='submit' value='start'/>
+          <input className='btn btn-primary btn-lg' id='startOp_Submit' type='submit' value='run'/>
         </form>
         <br/>
         {

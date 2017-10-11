@@ -1,35 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
+import Input from './Input';
+import opspecDataValidator from '@opspec/sdk/lib/data/number/validator';
 
-export default class NumberInput extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: props.number.default,
-    };
-
-    this.handleArgChange = this.handleArgChange.bind(this);
-  }
-
-  handleArgChange(e) {
-    const value = Number(e.target.value);
-    this.props.onArgChange({number: value});
-    this.setState({value});
-  };
-
-  render() {
-    return (
-      <div className='form-group'>
-        <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
-        <p className='custom-control-description'>{this.props.number.description}</p>
-        <input
-          className='form-control'
-          id={this.props.name}
-          type={this.props.number.isSecret? 'password': 'number'}
-          value={this.state.value}
-          onChange={this.handleArgChange}
-        />
-      </div>
-    );
-  }
-}
+export default ({name, onArgChange, number}) => (
+  <Input
+    description={number.description}
+    name={name}
+    type={number.isSecret ? 'password' : 'text'}
+    value={number.default}
+    validate={value => opspecDataValidator.validate(value, Object.assign({type: 'number'}, number.constraints))}
+    onChange={value => onArgChange({number: value})}
+  />
+);
