@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@opspec/sdk": "0.0.0-alpha.7",
     "ansi-to-react": "2.0.0",
     "bootstrap": "4.0.0-beta",
     "js-yaml": "3.8.4",
@@ -16,11 +17,13 @@
     "react-toastify": "2.1.0"
   },
   "devDependencies": {
-    "react-scripts": "1.0.7"
+    "node-sass-chokidar": "0.0.3",
+    "react-scripts": "1.0.14"
   },
   "scripts": {
     "start": "export PORT=80; react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build-css && react-scripts build",
+    "build-css": "node-sass-chokidar src/ -o src/",
     "test": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

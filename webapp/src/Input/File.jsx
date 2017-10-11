@@ -25,7 +25,7 @@ export default class FileInput extends Component {
         <input
           className='form-control'
           id={this.props.name}
-          onChange={this.handleArgChange}
+          onChange={e => this.handleArgChange(e)}
           placeholder='/absolute/path/of/dir'
           type='text'
           value={this.state.value}
