@@ -13,7 +13,11 @@ export default class Pkg extends Component {
     super(props);
 
     this.state = {};
-    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentWillReceiveProps() {
+    this.args = {};
+    this.setState(() => ({opId: undefined}));
   }
 
   handleArgChange = (name, value) => {
@@ -41,7 +45,7 @@ export default class Pkg extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={e => this.handleSubmit(e)}>
           <h1><PkgRef name={this.props.value.name} version={this.props.value.version}/></h1>
           <p className="lead">{this.props.value.description}</p>
           <Inputs value={this.props.value.inputs} onArgChange={this.handleArgChange}/>
