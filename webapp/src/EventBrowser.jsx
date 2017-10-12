@@ -4,7 +4,7 @@ import {getRenderedHeight} from 'react-rendered-size';
 import Event from './Event';
 import {toast} from 'react-toastify';
 
-const throttleDuration = 1000;
+const throttleDuration = 200;
 
 class EventBrowser extends Component {
   constructor(props) {
