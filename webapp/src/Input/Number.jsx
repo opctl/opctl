@@ -3,22 +3,25 @@ import Input from './Input';
 import Select from './Select';
 import opspecDataValidator from '@opspec/sdk/lib/data/number/validator';
 
-export default ({name, onArgChange, number}) => {
+export default ({name, onInvalid, onValid, number}) => {
   if (number.constraints && !number.isSecret && number.constraints.enum) {
     return <Select
       description={number.description}
       name={name}
-      value={number.default}
+      onInvalid={onInvalid}
+      onValid={value => onValid({number: value})}
       options={number.constraints.enum.map(item => ({name: item, value: item}))}
-      onChange={value => onArgChange({number: value})}
+      validate={value => opspecDataValidator.validate(value, Object.assign({type: 'number'}, number.constraints))}
+      value={number.default}
     />
   }
   return <Input
     description={number.description}
     name={name}
+    onInvalid={onInvalid}
+    onValid={value => onValid({number: value})}
     type={number.isSecret ? 'password' : 'text'}
-    value={number.default}
     validate={value => opspecDataValidator.validate(value, Object.assign({type: 'number'}, number.constraints))}
-    onChange={value => onArgChange({number: value})}
+    value={number.default}
   />
 };

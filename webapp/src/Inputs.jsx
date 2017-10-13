@@ -1,10 +1,11 @@
 import React from 'react';
 import Input from './Input';
 
-export default ({value, onArgChange}) => {
+export default ({value, onInvalid, onValid}) => {
   const inputs = Object.entries(value || {}).map(([name, input]) => (
     <Input
-      onArgChange={value => (onArgChange(name, value))}
+      onInvalid={() => (onInvalid(name))}
+      onValid={value => (onValid(name, value))}
       name={name}
       input={input}
       key={name}

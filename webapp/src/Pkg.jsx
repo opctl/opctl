@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PkgRef from './PkgRef';
 import Inputs from './Inputs';
 import Outputs from './Outputs';
 import EventBrowser from './EventBrowser';
@@ -20,22 +19,36 @@ export default class Pkg extends Component {
     this.setState(() => ({opId: undefined}));
   }
 
-  handleArgChange = (name, value) => {
+  handleInvalid = (name) => {
     this.args = this.args || {};
-    this.args[name] = value;
+    delete this.args[name];
+    this.setState({isStartable: true});
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
+  handleValid = (name, value) => {
+    this.args = this.args || {};
+    this.args[name] = value;
+    this.setState({isStartable: Object.keys(this.props.value.inputs).length === Object.keys(this.args).length});
+  };
 
-    const req = {
+
+  kill = () => {
+    opspecNodeApiClient.op_kill({
+      opId: this.state.opId
+    })
+      .then(opId => (this.setState({opId: undefined})))
+      .catch(error => {
+        toast.error(error.message);
+      });
+  };
+
+  start = () => {
+    opspecNodeApiClient.op_start({
       args: this.args || {},
       pkg: {
         ref: this.props.pkgRef,
       }
-    };
-
-    opspecNodeApiClient.op_start(req)
+    })
       .then(opId => (this.setState({opId})))
       .catch(error => {
         toast.error(error.message);
@@ -45,12 +58,28 @@ export default class Pkg extends Component {
   render() {
     return (
       <div>
-        <form onSubmit={e => this.handleSubmit(e)}>
-          <h1><PkgRef name={this.props.value.name} version={this.props.value.version}/></h1>
+        <form onSubmit={e => {
+          e.preventDefault()
+        }}>
           <p className="lead">{this.props.value.description}</p>
-          <Inputs value={this.props.value.inputs} onArgChange={this.handleArgChange}/>
+          <Inputs value={this.props.value.inputs} onInvalid={this.handleInvalid} onValid={this.handleValid}/>
+          <div className='form-group'>
+            {
+              this.state.opId ?
+                <button
+                  className='col-12 btn btn-primary btn-lg'
+                  id='opKill'
+                  onClick={this.kill}
+                >kill</button>
+                : <button
+                  className='col-12 btn btn-primary btn-lg'
+                  id='opStart'
+                  onClick={this.start}
+                  disabled={!this.state.isStartable}
+                >start</button>
+            }
+          </div>
           <Outputs value={this.props.value.outputs}/>
-          <input className='btn btn-primary btn-lg' id='startOp_Submit' type='submit' value='run'/>
         </form>
         <br/>
         {
