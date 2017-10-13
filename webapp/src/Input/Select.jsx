@@ -9,10 +9,20 @@ export default class Select extends Component {
     };
   }
 
-  handleChange(e) {
-    const value = e.target.value;
-    this.props.onChange(value);
-    this.setState({value});
+  componentWillMount() {
+    this.processValue(this.state.value);
+  }
+
+  processValue(value) {
+    const validationErrs = this.props.validate(value) || [];
+    this.setState(prevState => ({validationErrs, value}));
+
+    if (validationErrs.length === 0) {
+      this.props.onValid(value);
+    } else {
+      this.props.onInvalid();
+    }
+
   }
 
   render() {
@@ -23,7 +33,7 @@ export default class Select extends Component {
         className={`form-control`}
         id={this.props.name}
         value={this.state.value}
-        onChange={e => this.handleChange(e)}
+        onChange={e => this.processValue(e.target.value)}
       >
         {this.props.options.map((option, index) => (
           <option key={`${this.props.name}_${index}`} value={option.value}>{option.name}</option>))}

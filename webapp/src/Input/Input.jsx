@@ -10,14 +10,20 @@ export default class Input extends Component {
     };
   }
 
-  handleChange(e) {
-    const value = e.target.value;
-    this.props.onChange(value);
-    this.setState({value});
-  };
+  componentWillMount() {
+    this.processValue(this.state.value);
+  }
 
-  handleBlur() {
-    this.setState(prevState => ({validationErrs: this.props.validate(prevState.value) || []}));
+  processValue(value) {
+    const validationErrs = this.props.validate(value) || [];
+    this.setState(prevState => ({validationErrs, value}));
+
+    if (validationErrs.length === 0) {
+      this.props.onValid(value);
+    } else {
+      this.props.onInvalid();
+    }
+
   }
 
   render() {
@@ -45,8 +51,7 @@ export default class Input extends Component {
           id={this.props.name}
           type={this.props.type}
           value={this.state.value}
-          onChange={e => this.handleChange(e)}
-          onBlur={() => this.handleBlur()}
+          onChange={e => this.processValue(e.target.value)}
         />
         <span className='invalid-feedback'>{invalidFeedback}</span>
       </div>

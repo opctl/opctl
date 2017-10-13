@@ -1,36 +1,13 @@
-import React, {Component} from 'react';
+import React from 'react';
+import Input from './Input';
 
-export default class DirInput extends Component {
-  constructor(props) {
-    super(props);
+export default ({name, onValid, dir}) => (<Input
+  description={dir.description}
+  name={name}
+  type='text'
+  value={dir.default}
+  // @TODO validate
+  validate={value => ([])}
+  onValid={value => onValid({dir: value})}
+/>);
 
-    this.state = {
-      value: props.dir.default,
-    };
-
-    this.handleArgChange = this.handleArgChange.bind(this);
-  }
-
-  handleArgChange(e) {
-    const value = e.target.value;
-    this.props.onArgChange({dir: value});
-    this.setState({value});
-  };
-
-  render() {
-    return (
-      <div className='form-group'>
-        <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
-        <p className='custom-control-description'>{this.props.dir.description}</p>
-        <input
-          className='form-control'
-          id={this.props.name}
-          onChange={e => this.handleArgChange(e)}
-          placeholder='/absolute/path/of/dir'
-          type='text'
-          value={this.state.value}
-        />
-      </div>
-    );
-  }
-}
