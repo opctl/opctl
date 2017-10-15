@@ -3,6 +3,7 @@ node_modules/
 
 ### build
 build/
+*.json.gz
 
 ### jest
 jest*/

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import pkgFetcher from './pkgFetcher'
+import pkgFetcher from './utils/pkgFetcher'
 import Pkg from './Pkg';
 import {toast} from 'react-toastify';
 
