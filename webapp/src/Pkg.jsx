@@ -2,10 +2,8 @@ import React, {Component} from 'react';
 import Inputs from './Inputs';
 import Outputs from './Outputs';
 import EventBrowser from './EventBrowser';
-import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
+import opspecNodeApiClient from './utils/clients/opspecNodeApi';
 import {toast} from 'react-toastify';
-
-const opspecNodeApiClient = new OpspecNodeApiClient('localhost://42224');
 
 export default class Pkg extends Component {
   constructor(props) {
