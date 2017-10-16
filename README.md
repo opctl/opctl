@@ -10,7 +10,7 @@ Javascript SDK for [opspec](https://opspec.io)
 # Installation
 
 ```shell
-npm install --save @opctl/sdk
+npm install --save @opspec/sdk
 ```
 
 # Usage
