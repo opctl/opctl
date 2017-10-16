@@ -10,6 +10,63 @@ afterEach(() => {
   nock.cleanAll();
 });
 
+
+describe('liveness_get', () => {
+  test('makes expected http request', async () => {
+    /* arrange */
+    const scope = nock(providedBaseUrl)
+      .log(console.log)
+      .get(
+        `/liveness`)
+      .reply('200');
+
+    /* act */
+    await objectUnderTest.liveness_get();
+
+    /* assert */
+    scope.isDone();
+  });
+  describe('response is 300', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      const expectedErrMsg = 'dummyErrorMsg';
+
+      nock(providedBaseUrl)
+        .log(console.log)
+        .get(
+          `/liveness`)
+        .reply('300', expectedErrMsg);
+
+      /* act */
+      let actualErr;
+      try {
+        await objectUnderTest.liveness_get();
+      } catch (err) {
+        actualErr = err;
+      }
+
+      /* assert */
+      expect(actualErr.message).toEqual(expectedErrMsg);
+    });
+  });
+  describe('response is 200', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      nock(providedBaseUrl)
+        .log(console.log)
+        .get(
+          `/liveness`)
+        .reply('200');
+
+      /* act */
+      const actualResponse = await objectUnderTest.liveness_get();
+
+      /* assert */
+      expect(actualResponse).toEqual('')
+    });
+  })
+});
+
 describe('op_kill', () => {
   test('makes expected http request', async () => {
     /* arrange */
@@ -27,6 +84,29 @@ describe('op_kill', () => {
 
     /* assert */
     scope.isDone();
+  });
+  describe('response is 300', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      const expectedErrMsg = 'dummyErrorMsg';
+
+      nock(providedBaseUrl)
+        .log(console.log)
+        .post(
+          `/ops/kills`)
+        .reply('300', expectedErrMsg);
+
+      /* act */
+      let actualErr;
+      try {
+        await objectUnderTest.op_kill({});
+      } catch (err) {
+        actualErr = err;
+      }
+
+      /* assert */
+      expect(actualErr.message).toEqual(expectedErrMsg);
+    });
   });
   describe('response is 202', () => {
     test('returns expected result', async () => {
@@ -66,6 +146,29 @@ describe('op_start', () => {
 
     /* assert */
     scope.isDone();
+  });
+  describe('response is 300', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      const expectedErrMsg = 'dummyErrorMsg';
+
+      nock(providedBaseUrl)
+        .log(console.log)
+        .post(
+          `/ops/starts`)
+        .reply('300', expectedErrMsg);
+
+      /* act */
+      let actualErr;
+      try {
+        await objectUnderTest.op_start({})
+      } catch (err) {
+        actualErr = err;
+      }
+
+      /* assert */
+      expect(actualErr.message).toEqual(expectedErrMsg);
+    });
   });
   describe('response is 201', () => {
     test('returns expected result', async () => {
@@ -111,6 +214,34 @@ describe('pkg_content_get', () => {
     /* assert */
     scope.isDone();
   });
+  describe('response is 300', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      const providedPkgRef = '//dummyPkgRef';
+      const providedContentPath = '/dummyContentPath';
+      const expectedErrMsg = 'dummyErrorMsg';
+
+      nock(providedBaseUrl)
+        .log(console.log)
+        .get(
+          `/pkgs/${encodeURIComponent(providedPkgRef)}/contents/${encodeURIComponent(providedContentPath)}`)
+        .reply('300', expectedErrMsg);
+
+      /* act */
+      let actualErr;
+      try {
+        await objectUnderTest.pkg_content_get({
+          pkgRef: providedPkgRef,
+          contentPath: providedContentPath
+        });
+      } catch (err) {
+        actualErr = err;
+      }
+
+      /* assert */
+      expect(actualErr.message).toEqual(expectedErrMsg);
+    });
+  });
   describe('response is 200', async () => {
     test('returns expected result', async () => {
       /* arrange */
@@ -151,13 +282,39 @@ describe('pkg_content_list', () => {
       .log(console.log)
       .get(
         `/pkgs/${encodeURIComponent(providedPkgRef)}/contents`)
-      .reply('200',[]);
+      .reply('200', []);
 
     /* act */
     await objectUnderTest.pkg_content_list({pkgRef: providedPkgRef});
 
     /* assert */
     scope.isDone();
+  });
+  describe('response is 300', async () => {
+    test('returns expected result', async () => {
+      /* arrange */
+      const providedPkgRef = '//dummyPkgRef';
+      const expectedErrMsg = 'dummyErrorMsg';
+
+      nock(providedBaseUrl)
+        .log(console.log)
+        .get(
+          `/pkgs/${encodeURIComponent(providedPkgRef)}/contents`)
+        .reply('300', expectedErrMsg);
+
+      /* act */
+      let actualErr;
+      try {
+        await objectUnderTest.pkg_content_list({
+          pkgRef: providedPkgRef,
+        });
+      } catch (err) {
+        actualErr = err;
+      }
+
+      /* assert */
+      expect(actualErr.message).toEqual(expectedErrMsg);
+    });
   });
   describe('response is 200', async () => {
     test('returns expected result', async () => {

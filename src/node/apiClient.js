@@ -6,6 +6,38 @@ class ApiClient {
   }
 
   /**
+   * Asserts response.status is in the range of successful status codes
+   * @param response
+   * @return {*}
+   * @private
+   */
+  _assertStatusSuccessful(response) {
+    if (response.status >= 200 && response.status < 300) {
+      return response
+    } else {
+      return response.text().then(errorMsg => {
+        const error = new Error(errorMsg);
+        error.response = response;
+        throw error;
+      });
+    }
+  }
+
+  /**
+   * Gets liveness of node
+   *
+   * implements https://github.com/opspec-io/spec/blob/0.1.5/spec/node-api.spec.yml#L60
+   * @return {Promise.<fetch.Response>}
+   */
+  liveness_get() {
+    return fetch(
+      `${this.baseUrl}/liveness`
+    )
+      .then(this._assertStatusSuccessful)
+      .then(response => (response.text()));
+  }
+
+  /**
    * Starts an op
    *
    * implements https://github.com/opspec-io/spec/blob/0.1.5/spec/node-api.spec.yml#L70
@@ -17,6 +49,7 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(opStartReq),
     })
+      .then(this._assertStatusSuccessful)
       .then(response => (response.text()))
   }
 
@@ -32,6 +65,7 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(opKillReq),
     })
+      .then(this._assertStatusSuccessful)
       .then(() => null);
   }
 
@@ -46,7 +80,8 @@ class ApiClient {
   pkg_content_get({pkgRef, contentPath}) {
     return fetch(
       `${this.baseUrl}/pkgs/${encodeURIComponent(pkgRef)}/contents/${encodeURIComponent(contentPath)}`
-    );
+    )
+      .then(this._assertStatusSuccessful);
   }
 
   /**
@@ -60,6 +95,7 @@ class ApiClient {
     return fetch(
       `${this.baseUrl}/pkgs/${encodeURIComponent(pkgRef)}/contents`
     )
+      .then(this._assertStatusSuccessful)
       .then(response => (response.json()));
   }
 }
