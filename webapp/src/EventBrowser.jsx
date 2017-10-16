@@ -23,9 +23,18 @@ class EventBrowser extends Component {
       queryParts.push(`roots=${encodeURIComponent(this.props.filter.root)}`);
     }
 
+    let baseUrl;
+    if (process.env.NODE_ENV === 'production') {
+      // in production build, we assume the node API we talk to is available via current protocol & host.
+      // this differs from development build where we talk to local node API
+      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
+    } else {
+      baseUrl = 'ws://localhost:42224'
+    }
+
     // @TODO: move to opspecNodeApiClient
     // @TODO: don't assume local node
-    this.ws = new WebSocket(`ws://localhost:42224/events/stream?${queryParts.join('&')}`);
+    this.ws = new WebSocket(`${baseUrl}/events/stream?${queryParts.join('&')}`);
     this.ws.onmessage = msg => {
       const event = JSON.parse(msg.data);
       // cache rendered height
