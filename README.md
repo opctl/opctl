@@ -7,6 +7,25 @@
 
 Javascript SDK for [opspec](https://opspec.io)
 
+# Installation
+
+```shell
+npm install --save @opctl/sdk
+```
+
+# Usage
+
+```javascript
+// nodejs version:
+const OpspecNodeApiClient = require('@opspec/sdk/src/node/apiClient');
+// browser version: 
+// import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
+
+const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: 'https://demo.opctl.io' });
+
+opspecNodeApiClient.liveness_get();
+```
+
 # Support
 
 join us on

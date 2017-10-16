@@ -1,6 +1,6 @@
 {
   "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.7",
+  "version": "0.0.0-alpha.8",
   "description": "Javascript SDK for opspec",
   "scripts": {
     "build": "babel src --out-dir=lib",
