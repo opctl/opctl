@@ -1,13 +1,13 @@
 const Ajv = require('ajv');
 const ajv = new Ajv();
-const dockerReference = require('@codefresh-io/docker-reference');
+const dockerImageRefParser = require('../../vendored/@codefresh-io/docker-reference/parsers');
 
 class Validator {
   constructor() {
     // add formats not included in JSON schema standard
     ajv.addFormat("docker-image-ref", instance => {
       try {
-        dockerReference.parseQualifiedName(instance)
+        dockerImageRefParser.parseQualifiedName(instance)
       } catch (err) {
         return false;
       }

@@ -7,5 +7,6 @@ module.exports = {
       statements: 100,
     },
   },
-  roots: ["src"]
+  roots: ["src"],
+  coveragePathIgnorePatterns: ["vendored/"]
 };
