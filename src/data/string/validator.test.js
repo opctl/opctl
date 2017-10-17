@@ -23,7 +23,7 @@ describe('validate', () => {
             });
 
             /* assert */
-            expect(actualErrors).toBeNull();
+            expect(actualErrors).toEqual([]);
           });
         });
         describe('value isnt docker-image-ref', () => {
@@ -57,7 +57,7 @@ describe('validate', () => {
           );
 
           /* assert */
-          expect(actualErrors).toBeNull()
+          expect(actualErrors).toEqual([])
         })
       });
       describe('value < minLength', () => {

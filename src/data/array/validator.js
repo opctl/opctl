@@ -10,12 +10,10 @@ class Validator {
    */
   validate(value,
            constraints) {
-    if(!constraints){
-      return [];
-    }
+    constraints = Object.assign({type: 'array'}, constraints);
 
     ajv.validate(constraints, value);
-    return ajv.errors;
+    return ajv.errors || [];
   }
 }
 

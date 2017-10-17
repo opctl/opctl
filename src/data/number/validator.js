@@ -4,7 +4,12 @@ const ajv = new Ajv();
 class Validator {
   constructor() {
     // add formats not included in JSON schema standard
-    ajv.addFormat("integer", '^[0-9]+$')
+    ajv.addFormat(
+      "integer",
+      {
+        type: 'number',
+        validate: value => /^[0-9]+$/.test(value),
+      });
   }
 
   /**
@@ -15,12 +20,10 @@ class Validator {
    */
   validate(value,
            constraints) {
-    if(!constraints){
-      return [];
-    }
+    constraints = Object.assign({type: 'number'}, constraints);
 
     ajv.validate(constraints, value);
-    return ajv.errors;
+    return ajv.errors || [];
   }
 }
 

@@ -18,18 +18,18 @@ describe('validate', () => {
         describe('value is integer', () => {
           test('returns expected result', () => {
             /* arrange/act */
-            const actualErrors = objectUnderTest.validate('1', {
-              format: 'integer'
+            const actualErrors = objectUnderTest.validate(1, {
+              format: 'integer',
             });
 
             /* assert */
-            expect(actualErrors).toBeNull();
+            expect(actualErrors).toEqual([]);
           });
         });
         describe('value isnt integer', () => {
           test('returns expected result', () => {
             /* arrange/act */
-            const actualErrors = objectUnderTest.validate('1.1', {
+            const actualErrors = objectUnderTest.validate(1.1, {
               format: 'integer'
             });
 
@@ -57,7 +57,7 @@ describe('validate', () => {
           );
 
           /* assert */
-          expect(actualErrors).toBeNull()
+          expect(actualErrors).toEqual([])
         })
       });
       describe('value < minimum', () => {

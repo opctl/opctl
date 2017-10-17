@@ -25,7 +25,7 @@ describe('validate', () => {
           );
 
           /* assert */
-          expect(actualErrors).toBeNull()
+          expect(actualErrors).toEqual([])
         })
       });
       describe('value.length < minItems', () => {
