@@ -4,7 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@opspec/sdk": "0.0.0-alpha.8",
+    "@opspec/sdk": "0.0.0-alpha.11",
     "ansi-to-react": "2.0.0",
     "bootstrap": "4.0.0-beta",
     "js-yaml": "3.8.4",

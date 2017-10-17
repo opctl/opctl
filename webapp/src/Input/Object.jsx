@@ -8,7 +8,7 @@ export default ({name, onValid, object}) => (
     description={object.description}
     name={name}
     value={jsYaml.safeDump(object.default ? object.default : '')}
-    validate={value => opspecDataValidator.validate(jsYaml.safeLoad(value), Object.assign({type: 'object'}, object.constraints))}
+    validate={value => opspecDataValidator.validate(jsYaml.safeLoad(value), object.constraints)}
     onChange={value => onValid({object: jsYaml.safeLoad(value)})}
   />
 );
