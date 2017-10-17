@@ -11,7 +11,7 @@ export default ({name, onInvalid, onValid, string}) => {
       options={string.constraints.enum.map(item => ({name: item, value: item}))}
       onInvalid={onInvalid}
       onValid={value => onValid({string: value})}
-      validate={value => opspecDataValidator.validate(value, Object.assign({type: 'string'}, string.constraints))}
+      validate={value => opspecDataValidator.validate(value, string.constraints)}
       value={string.default}
     />
   }
@@ -21,7 +21,7 @@ export default ({name, onInvalid, onValid, string}) => {
     onInvalid={onInvalid}
     onValid={value => onValid({string: value})}
     type={string.isSecret ? 'password' : 'text'}
-    validate={value => opspecDataValidator.validate(value, Object.assign({type: 'string'}, string.constraints))}
+    validate={value => opspecDataValidator.validate(value, string.constraints)}
     value={string.default}
   />
 };
