@@ -13,6 +13,38 @@ describe('validate', () => {
     })
   });
   describe('constraints defined', () => {
+    describe('format constraint', () => {
+      describe('constraint.format is docker-image-ref', () => {
+        describe('value is docker-image-ref', () => {
+          test('returns expected result', () => {
+            /* arrange/act */
+            const actualErrors = objectUnderTest.validate('owner/registry:tag', {
+              format: 'docker-image-ref'
+            });
+
+            /* assert */
+            expect(actualErrors).toBeNull();
+          });
+        });
+        describe('value isnt docker-image-ref', () => {
+          test('returns expected result', () => {
+            /* arrange/act */
+            const actualErrors = objectUnderTest.validate('#', {
+              format: 'docker-image-ref'
+            });
+
+            /* assert */
+            expect(actualErrors).toEqual([{
+              "dataPath": "",
+              "keyword": "format",
+              "message": 'should match format "docker-image-ref"',
+              "params": {"format": "docker-image-ref"},
+              "schemaPath": "#/format"
+            }]);
+          });
+        });
+      })
+    });
     describe('minLength constraint', () => {
       describe('value > minLength', () => {
         test('returns expected result', () => {
