@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
+	"path"
 	"strings"
 	"time"
 )
@@ -14,7 +15,7 @@ func (c client) GetEventStream(
 
 	reqUrl := c.baseUrl
 	reqUrl.Scheme = "ws"
-	reqUrl.Path = api.URLEvents_Stream
+	reqUrl.Path = path.Join(reqUrl.Path, api.URLEvents_Stream)
 
 	if nil != req.Filter {
 		queryValues := reqUrl.Query()

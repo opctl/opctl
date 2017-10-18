@@ -8,6 +8,7 @@ import (
 	"github.com/opspec-io/sdk-golang/node/api"
 	"io/ioutil"
 	"net/http"
+	"path"
 )
 
 // StartOp starts an op & returns its root op id (ROId)
@@ -22,7 +23,7 @@ func (c client) StartOp(
 	}
 
 	reqUrl := c.baseUrl
-	reqUrl.Path = api.URLOps_Starts
+	reqUrl.Path = path.Join(reqUrl.Path, api.URLOps_Starts)
 
 	httpReq, err := http.NewRequest(
 		"POST",

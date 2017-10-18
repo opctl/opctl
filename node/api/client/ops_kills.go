@@ -7,6 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"net/http"
+	"path"
 )
 
 func (c client) KillOp(
@@ -20,7 +21,7 @@ func (c client) KillOp(
 	}
 
 	reqUrl := c.baseUrl
-	reqUrl.Path = api.URLOps_Kills
+	reqUrl.Path = path.Join(reqUrl.Path, api.URLOps_Kills)
 
 	httpReq, err := http.NewRequest(
 		"POST",
