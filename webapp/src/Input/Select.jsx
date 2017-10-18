@@ -5,7 +5,8 @@ export default class Select extends Component {
     super(props);
 
     this.state = {
-      value: props.value
+      value: props.value,
+      validationErrs: [],
     };
   }
 
@@ -26,11 +27,26 @@ export default class Select extends Component {
   }
 
   render() {
+    let invalidFeedback;
+    switch (this.state.validationErrs.length) {
+      case 0:
+        invalidFeedback = null;
+        break;
+      case 1:
+        invalidFeedback = this.state.validationErrs[0].message;
+        break;
+      default:
+        invalidFeedback =
+          (<ul>
+            {this.state.validationErrs.map(err => <li>{err.message}</li>)}
+          </ul>);
+    }
+
     return <div className='form-group'>
       <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
       <p className='custom-control-description'>{this.props.description}</p>
       <select
-        className={`form-control`}
+        className={`form-control ${this.state.validationErrs.length > 0 ? 'is-invalid' : ''}`}
         id={this.props.name}
         value={this.state.value}
         onChange={e => this.processValue(e.target.value)}
@@ -38,6 +54,7 @@ export default class Select extends Component {
         {this.props.options.map((option, index) => (
           <option key={`${this.props.name}_${index}`} value={option.value}>{option.name}</option>))}
       </select>
+      <span className='invalid-feedback'>{invalidFeedback}</span>
     </div>;
   }
 }

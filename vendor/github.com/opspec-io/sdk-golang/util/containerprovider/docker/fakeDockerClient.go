@@ -7,8 +7,6 @@ import (
 	"sync"
 	"time"
 
-	// containerPkg, swarmPkg, contextPkg must be manually aliased due to counterfeiter bug
-
 	"github.com/docker/docker/api/types"
 	containerPkg "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/events"
@@ -154,12 +152,12 @@ type fakeDockerClient struct {
 		result1 []containerPkg.ContainerChangeResponseItem
 		result2 error
 	}
-	ContainerExecAttachStub        func(ctx contextPkg.Context, execID string, config types.ExecConfig) (types.HijackedResponse, error)
+	ContainerExecAttachStub        func(ctx contextPkg.Context, execID string, config types.ExecStartCheck) (types.HijackedResponse, error)
 	containerExecAttachMutex       sync.RWMutex
 	containerExecAttachArgsForCall []struct {
 		ctx    contextPkg.Context
 		execID string
-		config types.ExecConfig
+		config types.ExecStartCheck
 	}
 	containerExecAttachReturns struct {
 		result1 types.HijackedResponse
@@ -2059,13 +2057,13 @@ func (fake *fakeDockerClient) ContainerDiffReturnsOnCall(i int, result1 []contai
 	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) ContainerExecAttach(ctx contextPkg.Context, execID string, config types.ExecConfig) (types.HijackedResponse, error) {
+func (fake *fakeDockerClient) ContainerExecAttach(ctx contextPkg.Context, execID string, config types.ExecStartCheck) (types.HijackedResponse, error) {
 	fake.containerExecAttachMutex.Lock()
 	ret, specificReturn := fake.containerExecAttachReturnsOnCall[len(fake.containerExecAttachArgsForCall)]
 	fake.containerExecAttachArgsForCall = append(fake.containerExecAttachArgsForCall, struct {
 		ctx    contextPkg.Context
 		execID string
-		config types.ExecConfig
+		config types.ExecStartCheck
 	}{ctx, execID, config})
 	fake.recordInvocation("ContainerExecAttach", []interface{}{ctx, execID, config})
 	fake.containerExecAttachMutex.Unlock()
@@ -2084,7 +2082,7 @@ func (fake *fakeDockerClient) ContainerExecAttachCallCount() int {
 	return len(fake.containerExecAttachArgsForCall)
 }
 
-func (fake *fakeDockerClient) ContainerExecAttachArgsForCall(i int) (contextPkg.Context, string, types.ExecConfig) {
+func (fake *fakeDockerClient) ContainerExecAttachArgsForCall(i int) (contextPkg.Context, string, types.ExecStartCheck) {
 	fake.containerExecAttachMutex.RLock()
 	defer fake.containerExecAttachMutex.RUnlock()
 	return fake.containerExecAttachArgsForCall[i].ctx, fake.containerExecAttachArgsForCall[i].execID, fake.containerExecAttachArgsForCall[i].config

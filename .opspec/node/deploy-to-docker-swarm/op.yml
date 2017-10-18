@@ -1,0 +1,34 @@
+name: node/deploy-to-docker-swarm
+description: runs all ops necessary to perform node deployment to docker swarm
+inputs:
+  dockerUsername:
+    string:
+      description: docker username
+  dockerPassword:
+    string:
+      description: docker password
+run:
+  serial:
+    - container:
+        image: { ref: dockercloud/client }
+        cmd:
+          - sh
+          - -ce
+          # copy binary so we can use it elsewhere
+          - |
+            cat /client > /dockerCloudClient && chmod +x /dockerCloudClient
+            cat /ca.pem > /dockerCloudCerts
+        files:
+          /dockerCloudClient: $(dockerCloudClient)
+          /dockerCloudCerts: $(dockerCloudCerts)
+    - container:
+        image: { ref: 'docker:17.09.0-ce-dind' }
+        files:
+          /dockerCloudClient: $(dockerCloudClient)
+          /ca.pem: $(dockerCloudCerts)
+          /cmd.sh:
+          /docker-stack.yml:
+        cmd: [ /cmd.sh ]
+        envVars:
+          dockerUsername: $(dockerUsername)
+          dockerPassword: $(dockerPassword)

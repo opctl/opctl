@@ -74,7 +74,7 @@ func New(
 	cliExiter := cliexiter.New(cliOutput, _os)
 	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
 
-	opspecNodeURL, err := url.Parse("http://localhost:42224")
+	opspecNodeURL, err := url.Parse("http://localhost:42224/api")
 	if nil != err {
 		panic(err)
 	}

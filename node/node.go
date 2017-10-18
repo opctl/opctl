@@ -16,7 +16,15 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
+
+func StripPrefix(prefix string, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.RequestURI = strings.Replace(r.RequestURI, prefix, "", 1)
+		h.ServeHTTP(w, r)
+	})
+}
 
 func New() {
 	rootFSPath, err := rootFSPath()
@@ -52,23 +60,26 @@ func New() {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
 	}
 
+	router := mux.NewRouter()
+	router.UseEncodedPath()
+
+	router.PathPrefix("/api/").Handler(
+		StripPrefix("/api",
+			handler.New(
+				core.New(
+					pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
+					containerProvider,
+					rootFSPath,
+				),
+			),
+		),
+	)
+
 	statikFS, err := fs.New()
 	if nil != err {
 		panic(err)
 	}
-
-	router := mux.NewRouter()
-	router.UseEncodedPath()
-
-	router.PathPrefix("/app").Handler(http.StripPrefix("/app", http.FileServer(statikFS)))
-
-	router.PathPrefix("/").Handler(handler.New(
-		core.New(
-			pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
-			containerProvider,
-			rootFSPath,
-		),
-	))
+	router.PathPrefix("/").Handler(http.FileServer(statikFS))
 
 	err = http.ListenAndServe(":42224", handlers.CORS()(router))
 	if nil != err {

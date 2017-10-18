@@ -12,13 +12,6 @@ export default class PkgBrowser extends Component {
     };
 
     this.openPkg(this.state.pkgRef);
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(e) {
-    this.setState({pkgRef: e.target.value});
   }
 
   openPkg(pkgRef) {
@@ -39,14 +32,14 @@ export default class PkgBrowser extends Component {
     return (
       <div className='container'>
         <div>
-          <form onSubmit={this.handleSubmit} style={{paddingTop: '25px'}}>
+          <form onSubmit={e => this.handleSubmit(e)} style={{paddingTop: '25px'}}>
             <div className='form-group'>
           <span className='input-group input-group-lg'>
             <input className='form-control'
                    id='pkgRef'
                    type='text'
                    value={this.state.pkgRef}
-                   onChange={this.handleChange}
+                   onChange={e => this.setState({pkgRef: e.target.value})}
                    placeholder="/absolute/path or host/path/git-repo#tag"/>
             <span className='input-group-btn'>
               <button className='btn btn-primary' id='pkgRef_Submit' type='submit'>open</button>
