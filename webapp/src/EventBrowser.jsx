@@ -36,7 +36,12 @@ class EventBrowser extends Component {
     // @TODO: don't assume local node
     this.ws = new WebSocket(`${baseUrl}/events/stream?${queryParts.join('&')}`);
     this.ws.onmessage = msg => {
-      const event = JSON.parse(msg.data);
+      let event;
+      try {
+        event = JSON.parse(msg.data);
+      } catch (error) {
+        console.log(error);
+      }
       // cache rendered height
       event.height = getRenderedHeight(<Event event={event}/>);
 

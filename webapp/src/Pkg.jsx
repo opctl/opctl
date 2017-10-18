@@ -20,7 +20,7 @@ export default class Pkg extends Component {
   handleInvalid = (name) => {
     this.args = this.args || {};
     delete this.args[name];
-    this.setState({isStartable: true});
+    this.setState({isStartable: false});
   };
 
   handleValid = (name, value) => {

@@ -21,7 +21,7 @@ func (ctp _containerProvider) EnsureNetworkExists(
 		return
 	}
 
-	if !client.IsErrNetworkNotFound(networkInspectErr) {
+	if !client.IsErrNotFound(networkInspectErr) {
 		err = fmt.Errorf("unable to inspect network. Response from docker was:\n %v", networkInspectErr.Error())
 		return
 	}
