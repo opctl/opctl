@@ -9,7 +9,9 @@ export default class Pkg extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      isStartable: (props.value.inputs || []).length === 0,
+    };
   }
 
   componentWillReceiveProps() {
