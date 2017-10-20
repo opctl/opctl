@@ -19,6 +19,8 @@ import (
 	"strings"
 )
 
+// gorilla.mux uses RequestURI when router.UseEncodedPath() is called;
+// therefore http.StripPrefix won't work
 func StripPrefix(prefix string, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.RequestURI = strings.Replace(r.RequestURI, prefix, "", 1)

@@ -27,13 +27,12 @@ class EventBrowser extends Component {
     if (process.env.NODE_ENV === 'production') {
       // in production build, we assume the node API we talk to is available via current protocol & host.
       // this differs from development build where we talk to local node API
-      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
+      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/api`;
     } else {
-      baseUrl = 'ws://localhost:42224'
+      baseUrl = 'ws://localhost:42224/api'
     }
 
     // @TODO: move to opspecNodeApiClient
-    // @TODO: don't assume local node
     this.ws = new WebSocket(`${baseUrl}/events/stream?${queryParts.join('&')}`);
     this.ws.onmessage = msg => {
       let event;
