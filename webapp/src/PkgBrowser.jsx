@@ -8,7 +8,7 @@ export default class PkgBrowser extends Component {
     super(props);
 
     this.state = {
-      pkgRef: 'github.com/opspec-pkgs/git.clean#1.0.0',
+      pkgRef: new URLSearchParams(props.location.search).get('pkg') || 'github.com/opspec-pkgs/uuid.v4.generate#1.0.0',
     };
 
     this.openPkg(this.state.pkgRef);

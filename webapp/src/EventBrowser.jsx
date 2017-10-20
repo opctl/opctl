@@ -29,7 +29,7 @@ class EventBrowser extends Component {
       // this differs from development build where we talk to local node API
       baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/api`;
     } else {
-      baseUrl = 'ws://localhost:42224/api'
+      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://localhost:42224/api`;
     }
 
     // @TODO: move to opspecNodeApiClient
