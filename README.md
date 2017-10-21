@@ -7,6 +7,11 @@
 
 Javascript SDK for [opspec](https://opspec.io)
 
+# Supported runtimes
+
+This library is isomorphic & should be consumable from either nodejs or
+web browsers.
+
 # Installation
 
 ```shell
@@ -15,15 +20,51 @@ npm install --save @opspec/sdk
 
 # Usage
 
+## Node api client
+
 ```javascript
-// nodejs version:
-const OpspecNodeApiClient = require('@opspec/sdk/src/node/apiClient');
-// browser version: 
-// import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
+const OpspecNodeApiClient = require('@opspec/sdk/lib/node/apiClient');
 
-const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: 'https://demo.opctl.io' });
+const demoOpctlNodeBaseUrl = 'https://alpha.opctl.io/api';
+// for local opctl node use
+// const localOpctlNodeBaseUrl = 'localhost:42224/api';
 
-opspecNodeApiClient.liveness_get();
+const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: demoOpctlNodeBaseUrl });
+
+opspecNodeApiClient.liveness_get()
+  .then(() => console.log('node alive!'))
+  .catch(err => console.log(`error checking node; error was: ${err.message}`));
+
+// start an op
+const rootOpIdPromise = opspecNodeApiClient.op_start({
+  args: {
+    rawValue: {
+      string: 'hello base64 url encoded world!',
+    },
+  },
+  pkg: {
+    ref: 'github.com/opspec-pkgs/base64url.encode#1.0.0',
+  },
+});
+
+// wait for op to start then...
+rootOpIdPromise.then(rootOpId => {
+  
+  // kill the op
+  opspecNodeApiClient.op_kill({ opId: rootOpId })
+  .then(() => console.log('successfully killed op!'))
+  .catch(err => console.log(`error killing op; error was: ${err.message}`));
+  
+  // replay events via stream
+  opspecNodeApiClient.event_stream_get({
+    filter: {
+      roots: [rootOpId],
+    },
+    onEvent: event => console.log(`received op event: ${JSON.stringify(event)}`),
+    onError: err => console.log(`error streaming op events; error was: ${JSON.stringify(err)}`),
+  });
+  
+});
 ```
 
 # Support

@@ -1,6 +1,6 @@
 {
   "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.11",
+  "version": "0.0.0-alpha.14",
   "description": "Javascript SDK for opspec",
   "scripts": {
     "build": "babel src --out-dir=lib",
@@ -17,9 +17,11 @@
   "bugs": {
     "url": "https://github.com/opspec-io/sdk-js/issues"
   },
+  "main": "lib",
   "dependencies": {
     "ajv": "^5.2.3",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "universal-websocket-client": "^1.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
