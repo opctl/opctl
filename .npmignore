@@ -2,6 +2,8 @@
 .opspec/
 coverage/
 jest*/
+src/
+.babelrc
 .editorconfig
 .travis.yml
 CODEOWNERS
