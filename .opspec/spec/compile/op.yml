@@ -36,6 +36,6 @@ run:
         echo "compiling pdf"
         gitbook pdf . ../build/latest/opspec$(version).pdf
     dirs:
-      /src: srcDir
+      /src: $(srcDir)
     image: { ref: 'node:7.7' }
     workDir: /src/spec

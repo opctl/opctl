@@ -38,7 +38,7 @@ run:
             echo "deploying to /$(version)"
             aws s3 sync latest s3://opspec.io/$(version) --delete
         dirs:
-          /src: srcDir
+          /src: $(srcDir)
         envVars:
           AWS_ACCESS_KEY_ID:
           AWS_SECRET_ACCESS_KEY:

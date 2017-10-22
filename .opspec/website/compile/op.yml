@@ -21,7 +21,7 @@ run:
         echo "compiling"
         node_modules/.bin/metalsmith
     dirs:
-      /src: srcDir
+      /src: $(srcDir)
     envVars:
       DEBUG: 'metalsmith:*'
     image: { ref: 'node:7.7' }

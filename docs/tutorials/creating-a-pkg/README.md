@@ -1,19 +1,19 @@
-# Creating a package
+## Intro
 
-> Tip: checkout
-> [official opspec packages](https://github.com/opspec-pkgs) for
-> lots of examples
+In this tutorial series we learn how to create packages
 
-## step1
-create a dir named `hello-world`
+It's not required to start at the beginning or to go in order but it's
+recommended if you're new to packages.
 
-### step2
-add a file named `op.yml` to `hello-world` w/ contents:
-```yaml
-name: hello-world
-run:
-  container:
-    image: { ref: alpine }
-    cmd: [echo, hello world!]
-```
+### Try as we go
+
+Throughout the series you will likely want to try out the packages we
+create
+
+The recommended way of doing this is to use [opctl](https://opctl.io)'s
+[run](https://opctl.io/docs/cli/run.html) command
+
+## Tutorials
+
+1. [hello world](1-hello-world/README.md)
 

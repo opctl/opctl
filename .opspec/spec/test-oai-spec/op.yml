@@ -17,6 +17,6 @@ run:
         echo "testing OpenAPI specs"
         swagger2openapi -y node-api.spec.yml
     dirs:
-      /src: srcDir
+      /src: $(srcDir)
     image: { ref: 'node:7.7' }
     workDir: /src/spec

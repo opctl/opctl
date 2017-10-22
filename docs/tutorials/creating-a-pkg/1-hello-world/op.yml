@@ -1,0 +1,6 @@
+name: hello-world
+description: calls a container which echo's "hello world!"
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo, hello world!]
