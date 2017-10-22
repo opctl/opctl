@@ -1,9 +1,6 @@
 [![In Progress](https://img.shields.io/waffle/label/opspec-io/spec/in%20progress.svg)](https://waffle.io/opspec-io/spec)
 [![Build Status](https://travis-ci.org/opspec-io/spec.svg?branch=master)](https://travis-ci.org/opspec-io/spec)
 
-A specification for defining, distributing, and running, orchestrations
-of containerized processes \[ops].
-
 > *Be advised: the op spec is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should
@@ -12,6 +9,8 @@ of containerized processes \[ops].
 > While Major version remains zero, a backwards compatibility guarantee
 > of 2 weeks will be strictly followed to allow implementers lead time
 > to implement breaking changes.
+
+A set of vendor & platform agnostic standards for defining, distributing, and controlling operations.
 
 # Documentation
 
