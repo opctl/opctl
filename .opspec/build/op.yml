@@ -1,4 +1,3 @@
-opspecVersion: 0.1.5
 name: build
 description: runs ops necessary to go from src to vetted artifact(s)
 inputs:
