@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ReactList from 'react-list';
 import {getRenderedHeight} from 'react-rendered-size';
 import Event from './Event';
+import opspecNodeApiClient from './utils/clients/opspecNodeApi';
 import {toast} from 'react-toastify';
 
 const throttleDuration = 200;
@@ -14,44 +15,32 @@ class EventBrowser extends Component {
       events: [],
     };
 
+    this.eventStreamCloser = () => {};
     this.lastComponentUpdate = new Date().getTime();
   }
 
   componentDidMount() {
-    let queryParts = [];
-    if (this.props.filter && this.props.filter.root) {
-      queryParts.push(`roots=${encodeURIComponent(this.props.filter.root)}`);
-    }
+    this.eventStreamCloser = opspecNodeApiClient.event_stream_get({
+      filter: this.props.filter,
+      onEvent: rawEvent => {
+        const event = Object.assign(
+          {
+            // cache rendered height
+            height: getRenderedHeight(<Event event={rawEvent}/>),
+          },
+          rawEvent
+        );
 
-    let baseUrl;
-    if (process.env.NODE_ENV === 'production') {
-      // in production build, we assume the node API we talk to is available via current protocol & host.
-      // this differs from development build where we talk to local node API
-      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/api`;
-    } else {
-      baseUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://localhost:42224/api`;
-    }
-
-    // @TODO: move to opspecNodeApiClient
-    this.ws = new WebSocket(`${baseUrl}/events/stream?${queryParts.join('&')}`);
-    this.ws.onmessage = msg => {
-      let event;
-      try {
-        event = JSON.parse(msg.data);
-      } catch (error) {
-        console.log(error);
-      }
-      // cache rendered height
-      event.height = getRenderedHeight(<Event event={event}/>);
-
-      this.setState(prevState => ({
-        events: [...prevState.events, event]
-      }));
-    };
-
-    this.ws.onerror = error => toast.error(
-      `encountered error streaming events; error was ${error.message}`
-    );
+        this.setState(prevState => ({
+          events: [...prevState.events, event]
+        }));
+      },
+      onError: err => {
+        toast.error(
+          `encountered error streaming events; error was ${JSON.stringify(err)}`
+        )
+      },
+    });
 
     // maintain an update interval so throttled renders get re-processed every throttleDuration
     this.interval = setInterval(() => {
@@ -70,7 +59,7 @@ class EventBrowser extends Component {
   }
 
   componentWillUnmount() {
-    this.ws.close();
+    this.eventStreamCloser();
     clearInterval(this.interval);
   }
 

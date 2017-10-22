@@ -5552,3 +5552,8 @@ a.text-dark:focus, a.text-dark:hover {
 
 .invisible {
   visibility: hidden !important; }
+
+/* custom overrides */
+label.form-control-label {
+  font-size: 1.2rem;
+  font-weight: 500; }
