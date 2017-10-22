@@ -24,6 +24,6 @@ run:
         echo "compiling website"
         gitbook build . ../build/docs
     dirs:
-      /src: srcDir
+      /src: $(srcDir)
     image: { ref: 'node:7.7' }
     workDir: /src/docs

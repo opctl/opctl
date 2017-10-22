@@ -1,15 +1,18 @@
 # Introduction
 
-opspec is a specification for defining, distributing, and running,
-orchestrations of containerized processes \[ops].
+opspec is a specification for defining, distributing, and controlling operations.
 
-## Purpose
+### Characteristics
 
-Primary concerns of opspec are to make ops:
+- distributed (peer to peer)
+- fault-tolerant
+- scalable
 
-- composable
-- portable
-- self-describing
+### Scope
+
+- operation definition
+- operation distribution
+- operation control
 
 ## Language
 

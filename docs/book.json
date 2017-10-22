@@ -3,6 +3,7 @@
     "copy-code-button",
     "anchors",
     "include-codeblock",
+    "ace",
     "edit-link",
     "-fontsettings",
     "ga",
@@ -12,6 +13,9 @@
     "wide-page"
   ],
   "pluginsConfig": {
+    "include-codeblock": {
+      "template": "ace"
+    },
     "edit-link": {
       "base": "https://github.com/opspec-io/spec/edit/master/docs",
       "label": "edit this page"
