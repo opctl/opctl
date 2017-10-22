@@ -2,6 +2,7 @@
 .opspec/
 coverage/
 jest*/
+*.test.js
 src/
 .babelrc
 .editorconfig
