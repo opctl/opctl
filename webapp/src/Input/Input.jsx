@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Description from './Description';
 
 export default class Input extends Component {
   constructor(props) {
@@ -45,7 +46,7 @@ export default class Input extends Component {
     return (
       <div className='form-group'>
         <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
-        <p className='custom-control-description'>{this.props.description}</p>
+        <Description value={this.props.description}/>
         <input
           className={`form-control ${this.state.validationErrs.length > 0 ? 'is-invalid' : ''}`}
           id={this.props.name}

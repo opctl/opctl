@@ -86,7 +86,7 @@ export default class Pkg extends Component {
           this.state.opId ?
             <div>
               <h2>Events Stream:</h2>
-              <EventBrowser key={this.state.opId} filter={{root: this.state.opId}}/>
+              <EventBrowser key={this.state.opId} filter={{roots: [this.state.opId]}}/>
             </div>
             : null
         }
