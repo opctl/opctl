@@ -1,6 +1,6 @@
 # Introduction
 
-opspec is a specification for defining, distributing, and controlling operations.
+opspec is a set of vendor & platform agnostic standards for defining, distributing, and controlling operations.
 
 ### Characteristics
 
