@@ -8,5 +8,5 @@ module.exports = {
     },
   },
   roots: ["src"],
-  coveragePathIgnorePatterns: ["vendored/"]
+  coveragePathIgnorePatterns: ["vnd/"]
 };

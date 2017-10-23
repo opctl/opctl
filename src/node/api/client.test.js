@@ -1,4 +1,4 @@
-const ObjectUnderTest = require('./apiClient');
+const ObjectUnderTest = require('./client');
 const Duplex = require('stream').Duplex;
 
 const providedBaseUrl = 'http://dummyBaseUrl';
