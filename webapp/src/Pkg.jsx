@@ -12,6 +12,7 @@ export default class Pkg extends Component {
     this.state = {
       isStartable: (props.value.inputs || []).length === 0,
       isKillable: false,
+      outputs: {},
     };
   }
 
@@ -59,7 +60,10 @@ export default class Pkg extends Component {
           },
           onEvent: event => {
             if (event.opEnded) {
-              this.setState({isKillable: false});
+              this.setState({
+                isKillable: false,
+                outputs: event.opEnded.outputs,
+              });
             }
           },
         })
@@ -93,7 +97,7 @@ export default class Pkg extends Component {
                 >start</button>
             }
           </div>
-          <Outputs value={this.props.value.outputs}/>
+          <Outputs params={this.props.value.outputs} values={this.state.outputs}/>
         </form>
         <br/>
         {

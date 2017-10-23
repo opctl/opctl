@@ -1,19 +1,20 @@
 import React from 'react';
 
 export default ({
-                  string,
                   name,
+                  param,
+                  value,
                 }) => {
   return (
     <div className='form-group'>
       <label className='form-control-label' htmlFor={name}>{name}</label>
-      <p className='custom-control-description'>{string.description}</p>
+      <p className='custom-control-description'>{param.description}</p>
       <input
         className='form-control'
-        defaultValue={string.default}
         id={name}
         readOnly={true}
-        type='text'
+        type={param.isSecret ? 'password' : 'text'}
+        value={value || param.default || ""}
       />
     </div>
   );
