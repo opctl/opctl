@@ -1,20 +1,20 @@
 import React from 'react';
 import Output from './Output';
 
-export default function Outputs({value}) {
-
-  const outputs = Object.entries(value || {}).map(([name, output]) => (
-    <Output
-      name={name}
-      output={output}
-      key={name}
-    />
-  ));
-
+export default function Outputs({params = {}, values = {}}) {
   return (
     <div>
       <h2>Outputs:</h2>
-      {outputs}
+      {
+        Object.entries(params).map(([name, param]) =>
+          <Output
+            key={name}
+            name={name}
+            param={param}
+            value={values[name] || {}}
+          />
+        )
+      }
     </div>
   );
 }

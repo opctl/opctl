@@ -7,5 +7,5 @@ it('renders without crashing', () => {
     const div = document.createElement('div');
 
     /* act/assert */
-    ReactDOM.render(<Outputs value={{}}/>, div);
+    ReactDOM.render(<Outputs params={{}}/>, div);
 });

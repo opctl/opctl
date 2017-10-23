@@ -9,20 +9,48 @@ import OutputString from './String';
 
 export default (props) => {
   // delegate to component for output
-  if (props.output.array) {
-    return (<OutputArray name={props.name} array={props.output.array}/>);
-  } else if (props.output.dir) {
-    return (<OutputDir name={props.name} dir={props.output.dir}/>);
-  } else if (props.output.file) {
-    return (<OutputFile name={props.name} file={props.output.file}/>);
-  } else if (props.output.number) {
-    return (<OutputNumber name={props.name} number={props.output.number}/>);
-  } else if (props.output.object) {
-    return (<OutputObject name={props.name} object={props.output.object}/>);
-  } else if (props.output.socket) {
-    return (<OutputSocket name={props.name} socket={props.output.socket}/>);
-  } else if (props.output.string) {
-    return (<OutputString name={props.name} string={props.output.string}/>);
+  if (props.param.array) {
+    return <OutputArray
+      name={props.name}
+      param={props.param.array}
+      value={props.value.array || props.value.string || props.value.file}
+    />
+  } else if (props.param.dir) {
+    return <OutputDir
+      name={props.name}
+      param={props.param.dir}
+      value={props.value.dir}
+    />
+  } else if (props.param.file) {
+    return <OutputFile
+      name={props.name}
+      param={props.param.file}
+      value={props.value.file || props.value.string || props.value.number || props.value.array || props.value.object}
+    />
+  } else if (props.param.number) {
+    return <OutputNumber
+      name={props.name}
+      param={props.param.number}
+      value={props.value.number || props.value.file}
+    />
+  } else if (props.param.object) {
+    return <OutputObject
+      name={props.name}
+      param={props.param.object}
+      value={props.value.object || props.value.string || props.value.file}
+    />
+  } else if (props.param.socket) {
+    return <OutputSocket
+      name={props.name}
+      param={props.param.socket}
+      value={props.value.socket}
+    />
+  } else if (props.param.string) {
+    return <OutputString
+      name={props.name}
+      param={props.param.string}
+      value={props.value.string || props.value.number || props.value.array || props.value.object || props.value.file}
+    />
   }
   return null
 }
