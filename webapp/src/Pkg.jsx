@@ -11,6 +11,7 @@ export default class Pkg extends Component {
 
     this.state = {
       isStartable: (props.value.inputs || []).length === 0,
+      isKillable: false,
     };
   }
 
@@ -36,7 +37,7 @@ export default class Pkg extends Component {
     opspecNodeApiClient.op_kill({
       opId: this.state.opId
     })
-      .then(opId => (this.setState({opId: undefined})))
+      .then(opId => this.setState({isKillable: false}))
       .catch(error => {
         toast.error(error.message);
       });
@@ -49,7 +50,20 @@ export default class Pkg extends Component {
         ref: this.props.pkgRef,
       }
     })
-      .then(opId => (this.setState({opId})))
+      .then(opId => {
+        this.setState({opId, isKillable: true});
+
+        opspecNodeApiClient.event_stream_get({
+          filter: {
+            roots: [opId],
+          },
+          onEvent: event => {
+            if (event.opEnded) {
+              this.setState({isKillable: false});
+            }
+          },
+        })
+      })
       .catch(error => {
         toast.error(error.message);
       });
@@ -65,7 +79,7 @@ export default class Pkg extends Component {
           <Inputs value={this.props.value.inputs} onInvalid={this.handleInvalid} onValid={this.handleValid}/>
           <div className='form-group'>
             {
-              this.state.opId ?
+              this.state.isKillable ?
                 <button
                   className='col-12 btn btn-primary btn-lg'
                   id='opKill'
