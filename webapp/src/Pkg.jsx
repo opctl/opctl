@@ -97,7 +97,7 @@ export default class Pkg extends Component {
                 >start</button>
             }
           </div>
-          <Outputs params={this.props.value.outputs} values={this.state.outputs}/>
+          <Outputs params={this.props.value.outputs} values={this.state.outputs || {}}/>
         </form>
         <br/>
         {
