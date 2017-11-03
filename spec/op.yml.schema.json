@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/0.1.5/op.yml.schema.json",
+  "id": "https://opspec.io/0.1.6/op.yml.schema.json",
   "title": "op.yml",
   "description": "Defines an op",
   "properties": {
@@ -10,7 +10,7 @@
     },
     "description": {
       "description": "Description of the op",
-      "type": "string"
+      "$ref": "#/definitions/markdown"
     },
     "inputs": {
       "$ref": "#/definitions/param"
@@ -39,7 +39,7 @@
         "array": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "type": "array"
@@ -106,7 +106,7 @@
         "dir": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
@@ -133,7 +133,7 @@
         "file": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
@@ -242,7 +242,7 @@
         "number": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "type": "number"
@@ -368,7 +368,7 @@
         "object": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "type": "object"
@@ -397,7 +397,7 @@
         "socket": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "isSecret": {
               "description": "If the socket is secret",
@@ -544,7 +544,7 @@
         "string": {
           "properties": {
             "description": {
-              "type": "string"
+              "$ref": "#/definitions/markdown"
             },
             "default": {
               "type": "string"
@@ -617,7 +617,7 @@
     },
     "scg": {
       "title": "scg",
-      "description": "Static call graph of an op; see https://en.wikipedia.org/wiki/Call_graph",
+      "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) of an op",
       "oneOf": [
         {
           "$ref": "#/definitions/containerCall"
@@ -900,9 +900,14 @@
     },
     "semVer": {
       "title": "semVer",
-      "description": "v2.0.0 semantic version (see http://semver.org/spec/v2.0.0.html)",
+      "description": "[v2.0.0 semantic version](http://semver.org/spec/v2.0.0.html)",
       "type": "string",
       "pattern": "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:(\\-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\-\\.]+)?$"
+    },
+    "markdown": {
+      "title": "markdown",
+      "description": "Markdown in [v0.28 CommonMark syntax](http://spec.commonmark.org/0.28/) including GFM table extension",
+      "type": "string"
     }
   }
 }

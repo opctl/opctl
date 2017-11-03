@@ -1,14 +1,14 @@
-name: docs/compile
-description: compiles the docs
+name: docs/build
+description: builds the docs
 inputs:
   srcDir:
     dir:
       default: .
-      description: dir containing the doc source
+      description: directory containing the projects source code
 outputs:
   srcDir:
     dir:
-      description: dir containing the doc source
+      description: directory containing the projects source code
 run:
   container:
     cmd:

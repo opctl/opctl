@@ -16,7 +16,7 @@ see [ops](ops.md)
 
 ## Package
 
-see [packages](packages.md)
+see [packages](pkgs.md)
 
 ## RECOMMENDED
 
