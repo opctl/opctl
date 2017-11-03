@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers: []
 info:
-  version: 0.1.5
+  version: 0.1.6
   title: Node API
 paths:
   /events/stream:
@@ -69,10 +69,6 @@ paths:
         '201':
           description: HTTP/1.1 ["Created" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.2)
           content:
-            application/json:
-              schema:
-                description: 'The id of the [started] op'
-                type: string
             text/plain:
               schema:
                 description: 'The id of the [started] op'

@@ -1,13 +1,13 @@
 name: spec/compile
-description: compiles the spec
+description: builds the spec
 inputs:
   srcDir:
     dir:
       default: .
-      description: dir containing the doc source
+      description: directory containing the projects source code
   version:
     string:
-      description: version of spec being compiled
+      description: version of spec being built
       constraints: { format: semver }
       default: 0.0.0
 outputs:

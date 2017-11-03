@@ -24,6 +24,6 @@ Constraints:
 
 #### op.yml JSON schema
 
-> [open in schema visualizer](https://schema-visualizer.opspec.io/?schema=https://opspec.io/0.1.5/op.yml.schema.json)
+> [open in schema visualizer](https://schema-visualizer.opspec.io/?schema=https://opspec.io/0.1.6/op.yml.schema.json)
 
 [include](op.yml.schema.json)

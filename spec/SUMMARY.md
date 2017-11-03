@@ -1,4 +1,4 @@
 * [introduction](README.md)
-* [packages](packages.md)
+* [pkgs](pkgs.md)
 * [ops](ops.md)
 * [nodes](nodes.md)

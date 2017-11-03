@@ -4,7 +4,7 @@ inputs:
   srcDir:
     dir:
       default: .
-      description: dir containing the doc source
+      description: directory containing the projects source code
   AWS_ACCESS_KEY_ID:
     string:
       constraints: { minLength: 20 }
@@ -19,29 +19,17 @@ inputs:
       constraints: { format: semver }
       description: version of the spec being deployed
 run:
-  serial:
+  parallel:
     - op:
-        pkg: { ref: build }
-        inputs: { srcDir, version }
-        outputs: { srcDir }
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "installing deps"
-            pip install awscli
-
-            echo "deploying to /"
-            aws s3 sync . s3://opspec.io --delete
-
-            echo "deploying to /$(version)"
-            aws s3 sync latest s3://opspec.io/$(version) --delete
-        dirs:
-          /src: $(srcDir)
-        envVars:
+        pkg: { ref: spec/deploy }
+        inputs:
+          srcDir:
           AWS_ACCESS_KEY_ID:
           AWS_SECRET_ACCESS_KEY:
-          AWS_DEFAULT_REGION: us-west-2
-        image: { ref: 'python:2.7' }
-        workDir: /src/build
+          version:
+    - op:
+        pkg: { ref: website/deploy }
+        inputs:
+          srcDir:
+          AWS_ACCESS_KEY_ID:
+          AWS_SECRET_ACCESS_KEY:

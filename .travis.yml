@@ -5,4 +5,4 @@ before_script:
 services:
 - docker
 script:
-- opctl run build
+- opctl run -a version=0.0.0 build
