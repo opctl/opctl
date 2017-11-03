@@ -1,8 +1,8 @@
 const fetch = require('node-fetch');
 const WebSocket = require('universal-websocket-client');
 
-class ApiClient {
-  constructor({baseUrl = 'http://localhost:42224'}) {
+class Client {
+  constructor({baseUrl}) {
     this.baseHttpUrl = baseUrl;
     this.baseWebsocketUrl = this.baseHttpUrl.replace(/^http/, 'ws');
   }
@@ -27,25 +27,25 @@ class ApiClient {
 
   /**
    * Invoked when event stream closes
-   * @callback ApiClient~event_stream_get_onClose
+   * @callback Client~event_stream_get_onClose
    * @param {string} error
    */
 
   /**
    * Invoked when an error is received
-   * @callback ApiClient~event_stream_get_onError
+   * @callback Client~event_stream_get_onError
    * @param {string} error
    */
 
   /**
    * Invoked for each event received
-   * @callback ApiClient~event_stream_get_onEvent
+   * @callback Client~event_stream_get_onEvent
    * @param {Object} event https://github.com/opspec-io/spec/blob/0.1.5/spec/node-api.spec.yml#L494
    */
 
   /**
    * Invoked when event stream opens
-   * @callback ApiClient~event_stream_get_onOpen
+   * @callback Client~event_stream_get_onOpen
    */
 
   /**
@@ -55,10 +55,10 @@ class ApiClient {
    *
    * @param {Object} [filter]
    * @param {Array<String>} [filter.roots]
-   * @param {ApiClient~event_stream_get_onClose} onClose
-   * @param {ApiClient~event_stream_get_onError} onError
-   * @param {ApiClient~event_stream_get_onEvent} onEvent
-   * @param {ApiClient~event_stream_get_onOpen} onOpen
+   * @param {Client~event_stream_get_onClose} onClose
+   * @param {Client~event_stream_get_onError} onError
+   * @param {Client~event_stream_get_onEvent} onEvent
+   * @param {Client~event_stream_get_onOpen} onOpen
    *
    * @return {Function} stream closer
    */
@@ -168,4 +168,4 @@ class ApiClient {
   }
 }
 
-module.exports = ApiClient;
+module.exports = Client;

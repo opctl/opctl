@@ -1,6 +1,6 @@
 const Ajv = require('ajv');
 const ajv = new Ajv();
-const dockerImageRefParser = require('../../vendored/@codefresh-io/docker-reference/parsers');
+const dockerImageRefParser = require('../../vnd/@codefresh-io/docker-reference/parsers');
 
 class Validator {
   constructor() {

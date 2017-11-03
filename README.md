@@ -23,7 +23,7 @@ npm install --save @opspec/sdk
 ## Node api client
 
 ```javascript
-const OpspecNodeApiClient = require('@opspec/sdk/lib/node/apiClient');
+const OpspecNodeApiClient = require('@opspec/sdk/lib/node/api/client');
 
 const demoOpctlNodeBaseUrl = 'https://alpha.opctl.io/api';
 // for local opctl node use
