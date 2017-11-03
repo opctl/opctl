@@ -1,4 +1,4 @@
-import OpspecNodeApiClient from '@opspec/sdk/lib/node/apiClient';
+import OpspecNodeApiClient from '@opspec/sdk/lib/node/api/client';
 
 const config = {};
 if (process.env.NODE_ENV === 'production') {
