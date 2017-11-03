@@ -4,7 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@opspec/sdk": "0.0.0-alpha.16",
+    "@opspec/sdk": "0.0.0-alpha.17",
     "ansi-to-react": "2.0.0",
     "bootstrap": "4.0.0-beta",
     "brace": "^0.10.0",
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "node-sass-chokidar": "0.0.3",
-    "react-scripts": "1.0.14"
+    "react-scripts": "^1.0.16"
   },
   "scripts": {
     "start": "export PORT=80; react-scripts start",
