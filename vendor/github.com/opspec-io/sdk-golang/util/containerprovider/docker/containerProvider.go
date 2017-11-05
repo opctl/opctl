@@ -6,7 +6,6 @@ import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
-	"github.com/opspec-io/sdk-golang/util/iruntime"
 	"golang.org/x/net/context"
 )
 
@@ -24,9 +23,9 @@ func New() (
 	dockerClient.NegotiateAPIVersion(context.TODO())
 
 	objectUnderConstruction := _containerProvider{
+		runContainer: newRunContainer(dockerClient),
 		dockerClient: dockerClient,
 		os:           ios.New(),
-		runtime:      iruntime.New(),
 	}
 	containerProvider = objectUnderConstruction
 
@@ -38,9 +37,9 @@ func New() (
 }
 
 type _containerProvider struct {
+	runContainer
 	dockerClient dockerClientPkg.CommonAPIClient
 	os           ios.IOS
-	runtime      iruntime.IRuntime
 }
 
 const dockerNetworkName = "opctl"

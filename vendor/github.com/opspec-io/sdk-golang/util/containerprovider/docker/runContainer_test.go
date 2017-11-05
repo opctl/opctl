@@ -1,18 +1,14 @@
 package docker
 
 import (
-	"bytes"
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/iruntime"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"golang.org/x/net/context"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 )
@@ -21,97 +17,30 @@ var _ = Context("RunContainer", func() {
 	closedContainerWaitOkBodyChan := make(chan container.ContainerWaitOKBody)
 	close(closedContainerWaitOkBodyChan)
 
-	It("should call dockerClient.ContainerCreate w/ expected args", func() {
+	It("should call portBindingsFactory.Construct w expected args", func() {
 		/* arrange */
 		providedReq := &model.DCGContainerCall{
-			DCGBaseCall: &model.DCGBaseCall{
-				RootOpId:  "dummyRootOpId",
-				PkgHandle: new(pkg.FakeHandle),
-			},
-			ContainerId: "dummyContainerId",
-			Dirs: map[string]string{
-				"dir1ContainerPath": "dir1HostPath",
-				"dir2ContainerPath": "dir2HostPath",
-			},
-			EnvVars: map[string]string{
-				"envVar1Name": "envVar1Value",
-				"envVar2Name": "envVar2Value",
-				"envVar3Name": "envVar3Value",
-			},
-			Files: map[string]string{
-				"file1ContainerPath": "file1HostPath",
-				"file2ContainerPath": "file2HostPath",
-			},
-			Image: &model.DCGContainerCallImage{Ref: "dummyImage"},
-			Sockets: map[string]string{
-				"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
-				"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
-			},
-			WorkDir: "dummyWorkDir",
-			Name:    "dummyName",
+			DCGBaseCall: &model.DCGBaseCall{},
+			Image:       &model.DCGContainerCallImage{},
 			Ports: map[string]string{
 				"6060/udp":  "6060",
 				"8080-8081": "9090-9091",
 			},
 		}
 
-		expectedConfig := &container.Config{
-			Env: []string{
-				"envVar1Name=envVar1Value",
-				"envVar2Name=envVar2Value",
-				"envVar3Name=envVar3Value",
-			},
-			ExposedPorts: nat.PortSet{
-				"6060/udp": struct{}{},
-				"8080/tcp": struct{}{},
-				"8081/tcp": struct{}{},
-			},
-			Image:      providedReq.Image.Ref,
-			WorkingDir: providedReq.WorkDir,
-			Tty:        true,
-		}
-		expectedHostConfig := &container.HostConfig{
-			Binds: []string{
-				"/unixSocket1HostAddress:/unixSocket1ContainerAddress",
-				"/unixSocket2HostAddress:/unixSocket2ContainerAddress",
-				"dir1HostPath:dir1ContainerPath",
-				"dir2HostPath:dir2ContainerPath",
-				"file1HostPath:file1ContainerPath",
-				"file2HostPath:file2ContainerPath",
-			},
-			PortBindings: nat.PortMap{
-				"6060/udp": []nat.PortBinding{{HostPort: "6060"}},
-				"8080/tcp": []nat.PortBinding{{HostPort: "9090"}},
-				"8081/tcp": []nat.PortBinding{{HostPort: "9091"}},
-			},
+		fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
 
-			Privileged: true,
-		}
-		expectedNetworkingConfig := &network.NetworkingConfig{
-			EndpointsConfig: map[string]*network.EndpointSettings{
-				"opctl": {
-					Aliases: []string{
-						providedReq.Name,
-					},
-				},
-			},
-		}
+		fakePortBindingsFactory := new(fakePortBindingsFactory)
 
-		_fakeDockerClient := new(fakeDockerClient)
-
-		_fakeDockerClient.ContainerLogsStub = func(
-			ctx context.Context,
-			container string,
-			options types.ContainerLogsOptions,
-		) (io.ReadCloser, error) {
-			return ioutil.NopCloser(bytes.NewBufferString("")), nil
-		}
-
-		_fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
-
-		objectUnderTest := _containerProvider{
-			dockerClient: _fakeDockerClient,
-			runtime:      new(iruntime.Fake),
+		objectUnderTest := _runContainer{
+			containerConfigFactory:  new(fakeContainerConfigFactory),
+			containerStdErrStreamer: new(fakeContainerLogStreamer),
+			containerStdOutStreamer: new(fakeContainerLogStreamer),
+			dockerClient:            fakeDockerClient,
+			hostConfigFactory:       new(fakeHostConfigFactory),
+			imagePuller:             new(fakeImagePuller),
+			portBindingsFactory:     fakePortBindingsFactory,
 		}
 
 		/* act */
@@ -123,15 +52,260 @@ var _ = Context("RunContainer", func() {
 		)
 
 		/* assert */
-		_,
-			actualConfig,
-			actualHostConfig,
-			actualNetworkingConfig,
-			actualContainerName := _fakeDockerClient.ContainerCreateArgsForCall(0)
-		Expect(actualConfig).To(Equal(expectedConfig))
-		Expect(actualHostConfig).To(Equal(expectedHostConfig))
-		Expect(actualNetworkingConfig).To(Equal(expectedNetworkingConfig))
-		Expect(actualContainerName).To(Equal(providedReq.ContainerId))
+		actualPorts := fakePortBindingsFactory.ConstructArgsForCall(0)
+		Expect(actualPorts).To(Equal(providedReq.Ports))
+	})
+	Context("portBindingsFactory.Construct errs", func() {
+		It("should return expected result", func() {
+			/* arrange */
+			fakePortBindingsFactory := new(fakePortBindingsFactory)
+			expectedErr := errors.New("dummyErr")
+			fakePortBindingsFactory.ConstructReturnsOnCall(0, nil, expectedErr)
+
+			objectUnderTest := _runContainer{
+				containerConfigFactory:  new(fakeContainerConfigFactory),
+				containerStdErrStreamer: new(fakeContainerLogStreamer),
+				containerStdOutStreamer: new(fakeContainerLogStreamer),
+				dockerClient:            new(fakeDockerClient),
+				hostConfigFactory:       new(fakeHostConfigFactory),
+				imagePuller:             new(fakeImagePuller),
+				portBindingsFactory:     fakePortBindingsFactory,
+			}
+
+			/* act */
+			_, actualErr := objectUnderTest.RunContainer(
+				&model.DCGContainerCall{},
+				new(pubsub.FakeEventPublisher),
+				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			Expect(actualErr).To(Equal(expectedErr))
+		})
+	})
+	Context("portBindingsFactory.Construct doesn't err", func() {
+		It("should call containerConfigFactory.Construct w expected args", func() {
+			/* arrange */
+			providedReq := &model.DCGContainerCall{
+				DCGBaseCall: &model.DCGBaseCall{},
+				Cmd:         []string{"dummyCmd"},
+				EnvVars: map[string]string{
+					"envVar1Name": "envVar1Value",
+					"envVar2Name": "envVar2Value",
+					"envVar3Name": "envVar3Value",
+				},
+				Image:   &model.DCGContainerCallImage{Ref: "dummyImage"},
+				WorkDir: "dummyWorkDir",
+			}
+
+			fakeContainerConfigFactory := new(fakeContainerConfigFactory)
+
+			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+
+			portBindings := nat.PortMap{"80/tcp": []nat.PortBinding{}}
+			fakePortBindingsFactory := new(fakePortBindingsFactory)
+			fakePortBindingsFactory.ConstructReturns(portBindings, nil)
+
+			objectUnderTest := _runContainer{
+				containerConfigFactory:  fakeContainerConfigFactory,
+				containerStdErrStreamer: new(fakeContainerLogStreamer),
+				containerStdOutStreamer: new(fakeContainerLogStreamer),
+				dockerClient:            fakeDockerClient,
+				hostConfigFactory:       new(fakeHostConfigFactory),
+				imagePuller:             new(fakeImagePuller),
+				portBindingsFactory:     fakePortBindingsFactory,
+			}
+
+			/* act */
+			objectUnderTest.RunContainer(
+				providedReq,
+				new(pubsub.FakeEventPublisher),
+				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			actualCmd,
+				actualEnvVars,
+				actualImage,
+				actualPortBindings,
+				actualWorkDir := fakeContainerConfigFactory.ConstructArgsForCall(0)
+
+			Expect(actualCmd).To(Equal(providedReq.Cmd))
+			Expect(actualEnvVars).To(Equal(providedReq.EnvVars))
+			Expect(actualImage).To(Equal(providedReq.Image.Ref))
+			Expect(actualPortBindings).To(Equal(portBindings))
+			Expect(actualWorkDir).To(Equal(providedReq.WorkDir))
+		})
+
+		It("should call hostConfigFactory.Construct w expected args", func() {
+			/* arrange */
+			providedReq := &model.DCGContainerCall{
+				DCGBaseCall: &model.DCGBaseCall{},
+				Dirs: map[string]string{
+					"dir1ContainerPath": "dir1HostPath",
+					"dir2ContainerPath": "dir2HostPath",
+				},
+				Files: map[string]string{
+					"file1ContainerPath": "file1HostPath",
+					"file2ContainerPath": "file2HostPath",
+				},
+				Image: &model.DCGContainerCallImage{},
+				Sockets: map[string]string{
+					"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
+					"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
+				},
+			}
+
+			portBindings := nat.PortMap{"80/tcp": []nat.PortBinding{}}
+			fakePortBindingsFactory := new(fakePortBindingsFactory)
+			fakePortBindingsFactory.ConstructReturns(portBindings, nil)
+
+			fakeHostConfigFactory := new(fakeHostConfigFactory)
+
+			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+
+			objectUnderTest := _runContainer{
+				containerConfigFactory:  new(fakeContainerConfigFactory),
+				containerStdErrStreamer: new(fakeContainerLogStreamer),
+				containerStdOutStreamer: new(fakeContainerLogStreamer),
+				dockerClient:            fakeDockerClient,
+				hostConfigFactory:       fakeHostConfigFactory,
+				imagePuller:             new(fakeImagePuller),
+				portBindingsFactory:     fakePortBindingsFactory,
+			}
+
+			/* act */
+			objectUnderTest.RunContainer(
+				providedReq,
+				new(pubsub.FakeEventPublisher),
+				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			actualDirs,
+				actualFiles,
+				actualSockets,
+				actualPortBindings := fakeHostConfigFactory.ConstructArgsForCall(0)
+			Expect(actualDirs).To(Equal(providedReq.Dirs))
+			Expect(actualFiles).To(Equal(providedReq.Files))
+			Expect(actualSockets).To(Equal(providedReq.Sockets))
+			Expect(actualPortBindings).To(Equal(portBindings))
+		})
+
+		It("should call imagePuller.Pull w/ expected args", func() {
+
+			/* arrange */
+			providedReq := &model.DCGContainerCall{
+				DCGBaseCall: &model.DCGBaseCall{
+					RootOpId: "dummyRootOpId",
+				},
+				ContainerId: "dummyContainerId",
+				Image:       &model.DCGContainerCallImage{Ref: "dummyImage"},
+			}
+
+			providedEventPublisher := new(pubsub.FakeEventPublisher)
+
+			fakeImagePuller := new(fakeImagePuller)
+
+			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+
+			objectUnderTest := _runContainer{
+				containerConfigFactory:  new(fakeContainerConfigFactory),
+				containerStdErrStreamer: new(fakeContainerLogStreamer),
+				containerStdOutStreamer: new(fakeContainerLogStreamer),
+				dockerClient:            fakeDockerClient,
+				hostConfigFactory:       new(fakeHostConfigFactory),
+				imagePuller:             fakeImagePuller,
+				portBindingsFactory:     new(fakePortBindingsFactory),
+			}
+
+			/* act */
+			objectUnderTest.RunContainer(
+				providedReq,
+				providedEventPublisher,
+				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			actualImage,
+				actualContainerId,
+				actualRootOpId,
+				actualEventPublisher := fakeImagePuller.PullArgsForCall(0)
+
+			Expect(actualImage).To(Equal(providedReq.Image))
+			Expect(actualContainerId).To(Equal(providedReq.ContainerId))
+			Expect(actualRootOpId).To(Equal(providedReq.RootOpId))
+			Expect(actualEventPublisher).To(Equal(providedEventPublisher))
+		})
+
+		It("should call dockerClient.ContainerCreate w/ expected args", func() {
+			/* arrange */
+			providedReq := &model.DCGContainerCall{
+				DCGBaseCall: &model.DCGBaseCall{
+					RootOpId: "dummyRootOpId",
+				},
+				ContainerId: "dummyContainerId",
+				Image:       &model.DCGContainerCallImage{},
+				Name:        "dummyName",
+			}
+
+			fakeContainerConfigFactory := new(fakeContainerConfigFactory)
+			expectedContainerConfig := &container.Config{}
+			fakeContainerConfigFactory.ConstructReturns(expectedContainerConfig)
+
+			fakeHostConfigFactory := new(fakeHostConfigFactory)
+			expectedHostConfig := &container.HostConfig{}
+			fakeHostConfigFactory.ConstructReturns(expectedHostConfig)
+
+			expectedNetworkingConfig := &network.NetworkingConfig{
+				EndpointsConfig: map[string]*network.EndpointSettings{
+					dockerNetworkName: {
+						Aliases: []string{
+							providedReq.Name,
+						},
+					},
+				},
+			}
+
+			fakeDockerClient := new(fakeDockerClient)
+			fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+
+			objectUnderTest := _runContainer{
+				containerConfigFactory:  fakeContainerConfigFactory,
+				containerStdErrStreamer: new(fakeContainerLogStreamer),
+				containerStdOutStreamer: new(fakeContainerLogStreamer),
+				dockerClient:            fakeDockerClient,
+				hostConfigFactory:       fakeHostConfigFactory,
+				imagePuller:             new(fakeImagePuller),
+				portBindingsFactory:     new(fakePortBindingsFactory),
+			}
+
+			/* act */
+			objectUnderTest.RunContainer(
+				providedReq,
+				new(pubsub.FakeEventPublisher),
+				nopWriteCloser{ioutil.Discard},
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			_,
+				actualContainerConfig,
+				actualHostConfig,
+				actualNetworkingConfig,
+				actualContainerName := fakeDockerClient.ContainerCreateArgsForCall(0)
+			Expect(actualContainerConfig).To(Equal(expectedContainerConfig))
+			Expect(actualHostConfig).To(Equal(expectedHostConfig))
+			Expect(actualNetworkingConfig).To(Equal(expectedNetworkingConfig))
+			Expect(actualContainerName).To(Equal(providedReq.ContainerId))
+		})
 	})
 })
 
