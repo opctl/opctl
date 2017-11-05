@@ -78,9 +78,17 @@ type Logger interface {
 	Close() error
 }
 
+// SizedLogger is the interface for logging drivers that can control
+// the size of buffer used for their messages.
+type SizedLogger interface {
+	Logger
+	BufSize() int
+}
+
 // ReadConfig is the configuration passed into ReadLogs.
 type ReadConfig struct {
 	Since  time.Time
+	Until  time.Time
 	Tail   int
 	Follow bool
 }
@@ -132,3 +140,6 @@ type Capability struct {
 	// Determines if a log driver can read back logs
 	ReadLogs bool
 }
+
+// MarshalFunc is a func that marshals a message into an arbitrary format
+type MarshalFunc func(*Message) ([]byte, error)

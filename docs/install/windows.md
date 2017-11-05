@@ -36,5 +36,5 @@ run into issues.
 # installation
 
 download and run the
-[windows installer](https://github.com/opctl/opctl/releases/download/0.1.21/opctl0.1.21.windows.msi)
+[windows installer](https://github.com/opctl/opctl/releases/download/0.1.22/opctl0.1.22.windows.msi)
 

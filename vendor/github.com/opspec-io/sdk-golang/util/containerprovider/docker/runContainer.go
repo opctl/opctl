@@ -5,18 +5,50 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/client"
-	"github.com/docker/go-connections/nat"
+	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"io"
-	"sort"
 	"strings"
 	"sync"
 )
 
-func (ctp _containerProvider) RunContainer(
+type runContainer interface {
+	RunContainer(
+		req *model.DCGContainerCall,
+		eventPublisher pubsub.EventPublisher,
+		stdout io.WriteCloser,
+		stderr io.WriteCloser,
+	) (*int64, error)
+}
+
+func newRunContainer(
+	dockerClient dockerClientPkg.CommonAPIClient,
+) runContainer {
+	return _runContainer{
+		containerConfigFactory:  newContainerConfigFactory(),
+		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
+		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
+		dockerClient:            dockerClient,
+		hostConfigFactory:       newHostConfigFactory(),
+		imagePuller:             newImagePuller(dockerClient),
+		portBindingsFactory:     newPortBindingsFactory(),
+	}
+}
+
+type _runContainer struct {
+	containerConfigFactory  containerConfigFactory
+	containerStdErrStreamer containerLogStreamer
+	containerStdOutStreamer containerLogStreamer
+	dockerClient            dockerClientPkg.CommonAPIClient
+	hostConfigFactory       hostConfigFactory
+	imagePuller             imagePuller
+	portBindingsFactory     portBindingsFactory
+}
+
+func (cr _runContainer) RunContainer(
 	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
@@ -25,65 +57,27 @@ func (ctp _containerProvider) RunContainer(
 	defer stdout.Close()
 	defer stderr.Close()
 
-	// construct port bindings
-	portBindings := nat.PortMap{}
-	for containerPort, hostPort := range req.Ports {
-		portMappings, err := nat.ParsePortSpec(fmt.Sprintf("%v:%v", hostPort, containerPort))
-		if nil != err {
-			return nil, err
-		}
-		for _, portMapping := range portMappings {
-			if _, ok := portBindings[portMapping.Port]; ok {
-				portBindings[portMapping.Port] = append(portBindings[portMapping.Port], portMapping.Binding)
-			} else {
-				portBindings[portMapping.Port] = []nat.PortBinding{portMapping.Binding}
-			}
-		}
+	portBindings, err := cr.portBindingsFactory.Construct(
+		req.Ports,
+	)
+	if nil != err {
+		return nil, err
 	}
 
-	// construct container config
-	containerConfig := &container.Config{
-		Entrypoint:   req.Cmd,
-		Image:        req.Image.Ref,
-		WorkingDir:   req.WorkDir,
-		Tty:          true,
-		ExposedPorts: nat.PortSet{},
-	}
-	for port := range portBindings {
-		containerConfig.ExposedPorts[port] = struct{}{}
-	}
-	for envVarName, envVarValue := range req.EnvVars {
-		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
-	}
-	// sort binds to make order deterministic; useful for testing
-	sort.Strings(containerConfig.Env)
+	containerConfig := cr.containerConfigFactory.Construct(
+		req.Cmd,
+		req.EnvVars,
+		req.Image.Ref,
+		portBindings,
+		req.WorkDir,
+	)
 
-	// construct host config
-	hostConfig := &container.HostConfig{
-		PortBindings: portBindings,
-		// support docker in docker
-		// @TODO: reconsider; can we avoid ctp?
-		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
-		Privileged: true,
-	}
-	for containerFilePath, hostFilePath := range req.Files {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", ctp.enginePath(hostFilePath), containerFilePath))
-	}
-	for containerDirPath, hostDirPath := range req.Dirs {
-		hostConfig.Binds = append(hostConfig.Binds, fmt.Sprintf("%v:%v", ctp.enginePath(hostDirPath), containerDirPath))
-	}
-	for containerSocketAddress, hostSocketAddress := range req.Sockets {
-		const unixSocketAddressDiscriminationChars = `/\`
-		// note: ctp mechanism for determining the type of socket is naive; higher level of sophistication may be required
-		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
-			hostConfig.Binds = append(
-				hostConfig.Binds,
-				fmt.Sprintf("%v:%v", ctp.enginePath(hostSocketAddress), containerSocketAddress),
-			)
-		}
-	}
-	// sort binds to make order deterministic; useful for testing
-	sort.Strings(hostConfig.Binds)
+	hostConfig := cr.hostConfigFactory.Construct(
+		req.Dirs,
+		req.Files,
+		req.Sockets,
+		portBindings,
+	)
 
 	// construct networking config
 	networkingConfig := &network.NetworkingConfig{
@@ -96,44 +90,34 @@ func (ctp _containerProvider) RunContainer(
 		},
 	}
 
+	// always pull latest version of image
+	// note: this trades local reproducibility for distributed reproducibility
+	pullErr := cr.imagePuller.Pull(
+		req.Image,
+		req.ContainerId,
+		req.RootOpId,
+		eventPublisher,
+	)
+	// don't err yet; image might be cached
+
 	// create container
-	containerCreatedResponse, err := ctp.dockerClient.ContainerCreate(
+	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(
 		context.TODO(),
 		containerConfig,
 		hostConfig,
 		networkingConfig,
 		req.ContainerId,
 	)
-
-	if nil != err {
-		if !client.IsErrNotFound(err) {
-			return nil, err
+	if nil != createErr {
+		if nil == pullErr {
+			return nil, createErr
 		}
-
-		// pull image
-		err = nil
-		fmt.Printf("unable to find image '%s' locally\n", req.Image.Ref)
-
-		err = ctp.pullImage(req.Image, req.ContainerId, req.RootOpId, eventPublisher)
-		if nil != err {
-			return nil, err
-		}
-
-		// retry create
-		containerCreatedResponse, err = ctp.dockerClient.ContainerCreate(
-			context.TODO(),
-			containerConfig,
-			hostConfig,
-			networkingConfig,
-			req.ContainerId,
-		)
-		if nil != err {
-			return nil, err
-		}
+		// if pullErr occurred prior; combine errors
+		return nil, errors.New(strings.Join([]string{pullErr.Error(), createErr.Error()}, ", "))
 	}
 
 	// start container
-	if err := ctp.dockerClient.ContainerStart(
+	if err := cr.dockerClient.ContainerStart(
 		context.TODO(),
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
@@ -146,7 +130,7 @@ func (ctp _containerProvider) RunContainer(
 	waitGroup.Add(2)
 
 	go func() {
-		if err := ctp.streamContainerStdErr(
+		if err := cr.containerStdErrStreamer.Stream(
 			req.ContainerId,
 			stderr,
 		); nil != err {
@@ -156,7 +140,7 @@ func (ctp _containerProvider) RunContainer(
 	}()
 
 	go func() {
-		if err := ctp.streamContainerStdOut(
+		if err := cr.containerStdOutStreamer.Stream(
 			req.ContainerId,
 			stdout,
 		); nil != err {
@@ -166,7 +150,7 @@ func (ctp _containerProvider) RunContainer(
 	}()
 
 	var exitCode int64
-	waitOkChan, waitErrChan := ctp.dockerClient.ContainerWait(
+	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
 		context.TODO(),
 		req.ContainerId,
 		container.WaitConditionNotRunning,

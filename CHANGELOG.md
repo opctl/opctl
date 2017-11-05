@@ -1,9 +1,20 @@
 # Change Log
 
 All notable changes to this project will be documented in this file in
-accordance with [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
+accordance with
+[![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
 ## \[Unreleased]
+
+## 0.1.22 - 2017-11-05
+
+### Added
+
+- [Always pull container images when running ops](https://github.com/opctl/opctl/issues/362)
+
+### Fixed
+
+- [Auto node creation requires opctl bin within path](https://github.com/opctl/opctl/issues/363)
 
 ## 0.1.21 - 2017-10-01
 

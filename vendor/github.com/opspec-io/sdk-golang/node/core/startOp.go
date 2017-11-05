@@ -29,35 +29,29 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	// construct scgOpCallInputs
-	scgOpCallInputs := map[string]interface{}{}
+	opId := this.uniqueStringFactory.Construct()
+
+	// construct scgOpCall
+	scgOpCall := &model.SCGOpCall{
+		Pkg: &model.SCGOpCallPkg{
+			Ref: pkgHandle.Ref(),
+		},
+		Inputs:  map[string]interface{}{},
+		Outputs: map[string]string{},
+	}
 	for name := range req.Args {
-		// map as passed
-    scgOpCallInputs[name] = ""
+		// implicitly bind
+		scgOpCall.Inputs[name] = ""
 	}
 
-	// construct scgOpCallOutputs
-	scgOpCallOutputs := map[string]string{}
 	pkgManifest, err := this.pkg.GetManifest(pkgHandle)
 	if nil != err {
-	  return "", err
-  }
-
-  for name := range pkgManifest.Outputs {
-    // bind all defined outputs
-    scgOpCallOutputs[name] = name
-  }
-
-  // construct scgOpCall
-  scgOpCall := &model.SCGOpCall{
-    Pkg: &model.SCGOpCallPkg{
-      Ref: pkgHandle.Ref(),
-    },
-    Inputs: scgOpCallInputs,
-    Outputs: scgOpCallOutputs,
-  }
-
-  opId := this.uniqueStringFactory.Construct()
+		return "", err
+	}
+	for name := range pkgManifest.Outputs {
+		// implicitly bind
+		scgOpCall.Outputs[name] = ""
+	}
 
 	go func() {
 		this.opCaller.Call(

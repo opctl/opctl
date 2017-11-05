@@ -86,7 +86,7 @@ RUN apt-get update && apt-get install -y \
 #            will need updating, to avoid errors. Ping #docker-maintainers on IRC
 #            with a heads-up.
 # IMPORTANT: When updating this please note that stdlib archive/tar pkg is vendored
-ENV GO_VERSION 1.8.4
+ENV GO_VERSION 1.8.5
 RUN curl -fsSL "https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
 	| tar -xzC /usr/local
 
@@ -133,7 +133,7 @@ RUN set -x \
 	&& rm -rf "$GOPATH"
 
 # Get the "docker-py" source so we can run their integration tests
-ENV DOCKER_PY_COMMIT a962578e515185cf06506050b2200c0b81aa84ef
+ENV DOCKER_PY_COMMIT ca7a6132a418c32df6bb11ba9b2a8b9b2727227a
 # To run integration tests docker-pycreds is required.
 RUN git clone https://github.com/docker/docker-py.git /docker-py \
 	&& cd /docker-py \
