@@ -1,5 +1,5 @@
 description: runs unit tests
-name: test-unit
+name: test/unit
 inputs:
   srcDir:
     dir:

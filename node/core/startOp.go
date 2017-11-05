@@ -36,11 +36,21 @@ func (this _core) StartOp(
 		Pkg: &model.SCGOpCallPkg{
 			Ref: pkgHandle.Ref(),
 		},
-		Inputs: map[string]interface{}{},
+		Inputs:  map[string]interface{}{},
+		Outputs: map[string]string{},
 	}
 	for name := range req.Args {
-		// map as passed
+		// implicitly bind
 		scgOpCall.Inputs[name] = ""
+	}
+
+	pkgManifest, err := this.pkg.GetManifest(pkgHandle)
+	if nil != err {
+		return "", err
+	}
+	for name := range pkgManifest.Outputs {
+		// implicitly bind
+		scgOpCall.Outputs[name] = ""
 	}
 
 	go func() {
