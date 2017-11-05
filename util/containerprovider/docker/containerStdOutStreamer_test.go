@@ -1,0 +1,102 @@
+package docker
+
+import (
+	"bytes"
+	"errors"
+	"github.com/docker/docker/api/types"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	"golang.org/x/net/context"
+	"io"
+	"io/ioutil"
+)
+
+var _ = Context("containerStdOutStreamer", func() {
+	Context("Stream", func() {
+		It("should call dockerClient.ContainerLogs w/ expected args", func() {
+			/* arrange */
+			providedContainerId := "dummyContainerId"
+
+			fakeDockerClient := new(fakeDockerClient)
+			// err to trigger immediate return
+			fakeDockerClient.ContainerLogsReturns(nil, errors.New("dummyErr"))
+
+			objectUnderTest := _containerStdOutStreamer{
+				dockerClient: fakeDockerClient,
+			}
+
+			expectedOptions := types.ContainerLogsOptions{
+				Follow:     true,
+				ShowStdout: true,
+			}
+
+			/* act */
+			objectUnderTest.Stream(
+				providedContainerId,
+				nopWriteCloser{ioutil.Discard},
+			)
+
+			/* assert */
+			actualContext,
+				actualContainerId,
+				actualOptions := fakeDockerClient.ContainerLogsArgsForCall(0)
+
+			Expect(actualContext).To(Equal(context.TODO()))
+			Expect(actualContainerId).To(Equal(providedContainerId))
+			Expect(actualOptions).To(Equal(expectedOptions))
+		})
+		Context("dockerClient.ContainerLogs errs", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				fakeDockerClient := new(fakeDockerClient)
+				expectedErr := errors.New("dummyErr")
+				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
+
+				objectUnderTest := _containerStdErrStreamer{
+					dockerClient: fakeDockerClient,
+				}
+
+				/* act */
+				actualErr := objectUnderTest.Stream(
+					"dummyContainerId",
+					nopWriteCloser{ioutil.Discard},
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("dockerClient.ContainerLogs doesn't err", func() {
+			It("should write expected logs to writeCloser", func() {
+				/* arrange */
+				providedWriter := bytes.NewBufferString("")
+
+				fakeDockerClient := new(fakeDockerClient)
+				expectedErr := errors.New("dummyErr")
+				fakeDockerClient.ContainerLogsReturns(nil, expectedErr)
+
+				expectedLogs := "dummyLogs"
+				fakeDockerClient.ContainerLogsStub = func(
+					ctx context.Context,
+					container string,
+					options types.ContainerLogsOptions,
+				) (io.ReadCloser, error) {
+					return ioutil.NopCloser(bytes.NewBufferString(expectedLogs)), nil
+				}
+
+				objectUnderTest := _containerStdErrStreamer{
+					dockerClient: fakeDockerClient,
+				}
+
+				/* act */
+				objectUnderTest.Stream(
+					"dummyContainerId",
+					providedWriter,
+				)
+
+				/* assert */
+				Expect(providedWriter.String()).To(Equal(expectedLogs))
+			})
+		})
+	})
+})
