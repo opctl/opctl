@@ -77,7 +77,7 @@ type OpEndedEvent struct {
 
 // OpKilledEvent represents an op has been killed
 type OpKilledEvent struct {
-	RootOpId string
+	RootOpId string `json:"rootOpId"`
 }
 
 // OpStartedEvent represents the start of an op

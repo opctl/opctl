@@ -33,7 +33,10 @@ type _opKiller struct {
 func (ok _opKiller) Kill(
 	rootOpId string,
 ) {
-	for _, containerId := range ok.listContainerIds(rootOpId) {
+  containerIdChan := make(chan string, 1)
+  ok.listContainerIds(rootOpId, containerIdChan)
+
+	for containerId := range containerIdChan {
 		err := ok.containerProvider.DeleteContainerIfExists(containerId)
 		fmt.Printf(
 			"Error encountered killing container w/ id %v, rootOpId %v; error was %v",
@@ -46,7 +49,8 @@ func (ok _opKiller) Kill(
 
 func (ok _opKiller) listContainerIds(
 	rootOpId string,
-) []string {
+	containerIdChannel chan string,
+) {
 	eventChannel := make(chan *model.Event, 1)
 	ok.eventSubscriber.Subscribe(
 		&model.EventFilter{
@@ -57,15 +61,13 @@ func (ok _opKiller) listContainerIds(
 		eventChannel,
 	)
 
-	containerIds := []string{}
-eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.OpEnded && event.OpEnded.OpId == rootOpId:
-			break eventLoop
 		case nil != event.ContainerStarted:
-			containerIds = append(containerIds, event.ContainerStarted.ContainerId)
+      containerIdChannel <- event.ContainerStarted.ContainerId
+		case nil != event.OpKilled && rootOpId == event.OpKilled.RootOpId:
+      close(containerIdChannel)
+      return
 		}
 	}
-	return containerIds
 }

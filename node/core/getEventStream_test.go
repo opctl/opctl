@@ -29,7 +29,6 @@ var _ = Context("core", func() {
 				containerProvider:   new(containerprovider.Fake),
 				pubSub:              fakePubSub,
 				opCaller:            new(fakeOpCaller),
-				dcgNodeRepo:         new(fakeDCGNodeRepo),
 				uniqueStringFactory: new(uniquestring.Fake),
 			}
 
