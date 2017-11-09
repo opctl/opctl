@@ -27,14 +27,16 @@ type _eventListener struct {
 }
 
 func (el _eventListener) Listen() {
-	eventChannel := make(chan *model.Event, 1)
-	el.eventSubscriber.Subscribe(
-		nil,
-		eventChannel,
-	)
-	for event := range eventChannel {
-		if nil != event.OpKilled {
-			el.opKiller.Kill(event.OpKilled.RootOpId)
+	go func() {
+		eventChannel := make(chan *model.Event, 1)
+		el.eventSubscriber.Subscribe(
+			nil,
+			eventChannel,
+		)
+		for event := range eventChannel {
+			if nil != event.OpKilled {
+				el.opKiller.Kill(event.OpKilled.RootOpId)
+			}
 		}
-	}
+	}()
 }
