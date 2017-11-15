@@ -8,5 +8,10 @@ it('renders without crashing', () => {
   const dummyYamlObject = JSON.stringify({});
 
   /* act/assert */
-  ReactDOM.render(<Object param={{}} value={dummyYamlObject}/>, div);
+  ReactDOM.render(
+    <Object
+      param={{description: ''}}
+      value={dummyYamlObject}
+    />,
+    div);
 });

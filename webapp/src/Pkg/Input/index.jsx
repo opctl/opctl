@@ -7,56 +7,69 @@ import InputObject from './Object';
 import InputSocket from './Socket';
 import InputString from './String';
 
-export default (props) => {
+export default ({
+                  input,
+                  name,
+                  onInvalid,
+                  onValid,
+                  pkgRef,
+                }) => {
   // delegate to component for input
-  if (props.input.array) {
+  if (input.array) {
     return <InputArray
-      array={props.input.array}
-      name={props.name}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
+      array={input.array}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.dir) {
+  } else if (input.dir) {
     return <InputDir
-      dir={props.input.dir}
-      name={props.name}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
+      dir={input.dir}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.file) {
+  } else if (input.file) {
     return <InputFile
-      file={props.input.file}
-      name={props.name}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
+      file={input.file}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.number) {
+  } else if (input.number) {
     return <InputNumber
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
-      name={props.name}
-      number={props.input.number}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      name={name}
+      number={input.number}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.object) {
+  } else if (input.object) {
     return <InputObject
-      name={props.name}
-      object={props.input.object}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
+      name={name}
+      object={input.object}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.socket) {
+  } else if (input.socket) {
     return <InputSocket
-      name={props.name}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
-      socket={props.input.socket}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      socket={input.socket}
+      pkgRef={pkgRef}
     />
-  } else if (props.input.string) {
+  } else if (input.string) {
     return <InputString
-      name={props.name}
-      onInvalid={props.onInvalid}
-      onValid={props.onValid}
-      string={props.input.string}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      string={input.string}
+      pkgRef={pkgRef}
     />
   }
   return null

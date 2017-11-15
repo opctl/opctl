@@ -3,7 +3,7 @@ import Input from './Input';
 import Select from './Select';
 import opspecDataValidator from '@opspec/sdk/lib/data/string/validator';
 
-export default ({name, onInvalid, onValid, string}) => {
+export default ({name, onInvalid, onValid, pkgRef, string}) => {
   if (string.constraints && !string.isSecret && string.constraints.enum) {
     return <Select
       description={string.description}
@@ -11,6 +11,7 @@ export default ({name, onInvalid, onValid, string}) => {
       options={string.constraints.enum.map(item => ({name: item, value: item}))}
       onInvalid={onInvalid}
       onValid={value => onValid({string: value})}
+      pkgRef={pkgRef}
       validate={value => opspecDataValidator.validate(value, string.constraints)}
       value={string.default}
     />
@@ -20,6 +21,7 @@ export default ({name, onInvalid, onValid, string}) => {
     name={name}
     onInvalid={onInvalid}
     onValid={value => onValid({string: value})}
+    pkgRef={pkgRef}
     type={string.isSecret ? 'password' : 'text'}
     validate={value => opspecDataValidator.validate(value, string.constraints)}
     value={string.default}

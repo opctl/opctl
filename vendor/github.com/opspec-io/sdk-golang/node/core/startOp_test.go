@@ -132,7 +132,6 @@ var _ = Context("core", func() {
 						pubSub:              new(pubsub.Fake),
 						pkg:                 fakePkg,
 						opCaller:            fakeOpCaller,
-						dcgNodeRepo:         new(fakeDCGNodeRepo),
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 

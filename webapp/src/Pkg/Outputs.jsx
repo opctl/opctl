@@ -1,7 +1,7 @@
 import React from 'react';
 import Output from './Output/index';
 
-export default function Outputs({params = {}, values = {}}) {
+export default function Outputs({params = {}, pkgRef, values = {}}) {
   return (
     <div>
       <h2>Outputs:</h2>
@@ -11,6 +11,7 @@ export default function Outputs({params = {}, values = {}}) {
             key={name}
             name={name}
             param={param}
+            pkgRef={pkgRef}
             value={values[name] || {}}
           />
         )

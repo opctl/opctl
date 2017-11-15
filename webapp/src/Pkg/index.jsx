@@ -80,8 +80,16 @@ export default class Pkg extends Component {
         <form onSubmit={e => {
           e.preventDefault()
         }}>
-          <Description value={this.props.value.description}/>
-          <Inputs value={this.props.value.inputs} onInvalid={this.handleInvalid} onValid={this.handleValid}/>
+          <Description
+            value={this.props.value.description}
+            pkgRef={this.props.pkgRef}
+          />
+          <Inputs
+            value={this.props.value.inputs}
+            onInvalid={this.handleInvalid}
+            onValid={this.handleValid}
+            pkgRef={this.props.pkgRef}
+          />
           <div className='form-group'>
             {
               this.state.isKillable ?
@@ -98,7 +106,11 @@ export default class Pkg extends Component {
                 >start</button>
             }
           </div>
-          <Outputs params={this.props.value.outputs} values={this.state.outputs || {}}/>
+          <Outputs
+            params={this.props.value.outputs}
+            pkgRef={this.props.pkgRef}
+            values={this.state.outputs || {}}
+          />
         </form>
         <br/>
         {

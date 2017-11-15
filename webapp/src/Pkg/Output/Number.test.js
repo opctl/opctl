@@ -7,5 +7,9 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
 
   /* act/assert */
-  ReactDOM.render(<Number param={{}}/>, div);
+  ReactDOM.render(
+    <Number
+      param={{description: ''}}
+    />,
+    div);
 });
