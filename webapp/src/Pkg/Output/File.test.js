@@ -7,5 +7,9 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
 
   /* act/assert */
-  ReactDOM.render(<File param={{}}/>, div);
+  ReactDOM.render(
+    <File
+      param={{description: ''}}
+    />,
+    div);
 });

@@ -46,7 +46,7 @@ export default class Input extends Component {
     return (
       <div className='form-group'>
         <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
-        <Description value={this.props.description}/>
+        <Description value={this.props.description} pkgRef={this.props.pkgRef}/>
         <input
           className={`form-control ${this.state.validationErrs.length > 0 ? 'is-invalid' : ''}`}
           id={this.props.name}

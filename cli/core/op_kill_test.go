@@ -20,7 +20,7 @@ var _ = Context("opKill", func() {
 
 			expectedCtx := providedCtx
 			expectedReq := model.KillOpReq{
-				OpId: "dummyOpId",
+				RootOpId: "dummyOpId",
 			}
 
 			objectUnderTest := _core{
@@ -28,7 +28,7 @@ var _ = Context("opKill", func() {
 			}
 
 			/* act */
-			objectUnderTest.OpKill(expectedCtx, expectedReq.OpId)
+			objectUnderTest.OpKill(expectedCtx, expectedReq.RootOpId)
 
 			/* assert */
 			actualCtx, actualReq := fakeOpspecNodeAPIClient.KillOpArgsForCall(0)

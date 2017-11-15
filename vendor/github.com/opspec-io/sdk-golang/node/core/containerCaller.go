@@ -29,14 +29,12 @@ func newContainerCaller(
 	containerProvider containerprovider.ContainerProvider,
 	containerCall containercall.ContainerCall,
 	pubSub pubsub.PubSub,
-	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
 		containerProvider: containerProvider,
 		containerCall:     containerCall,
 		pubSub:            pubSub,
-		dcgNodeRepo:       dcgNodeRepo,
 		io:                iio.New(),
 	}
 
@@ -46,7 +44,6 @@ type _containerCaller struct {
 	containerProvider containerprovider.ContainerProvider
 	containerCall     containercall.ContainerCall
 	pubSub            pubsub.PubSub
-	dcgNodeRepo       dcgNodeRepo
 	io                iio.IIO
 }
 
@@ -60,20 +57,9 @@ func (cc _containerCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
-		cc.dcgNodeRepo.DeleteIfExists(containerId)
-
 		cc.containerProvider.DeleteContainerIfExists(containerId)
 
 	}()
-
-	cc.dcgNodeRepo.Add(
-		&dcgNodeDescriptor{
-			Id:        containerId,
-			PkgRef:    pkgHandle.Ref(),
-			RootOpId:  rootOpId,
-			Container: &dcgContainerDescriptor{},
-		},
-	)
 
 	dcgContainerCall, err := cc.containerCall.Interpret(
 		inboundScope,

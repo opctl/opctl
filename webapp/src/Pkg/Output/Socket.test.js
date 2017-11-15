@@ -7,5 +7,9 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
 
   /* act/assert */
-  ReactDOM.render(<Socket param={{}}/>, div);
+  ReactDOM.render(
+    <Socket
+      param={{description: ''}}
+    />,
+    div);
 });

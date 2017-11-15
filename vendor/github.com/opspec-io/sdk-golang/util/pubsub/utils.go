@@ -40,6 +40,8 @@ func getEventRootOpId(
 		return event.OpErred.RootOpId
 	case nil != event.OpEnded:
 		return event.OpEnded.RootOpId
+	case nil != event.OpKilled:
+		return event.OpKilled.RootOpId
 	case nil != event.OpStarted:
 		return event.OpStarted.RootOpId
 	case nil != event.ParallelCallEnded:

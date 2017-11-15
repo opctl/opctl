@@ -7,49 +7,61 @@ import OutputObject from './Object';
 import OutputSocket from './Socket';
 import OutputString from './String';
 
-export default (props) => {
+export default ({
+                  name,
+                  param,
+                  pkgRef,
+                  value,
+                }) => {
   // delegate to component for output
-  if (props.param.array) {
+  if (param.array) {
     return <OutputArray
-      name={props.name}
-      param={props.param.array}
-      value={props.value.array || props.value.string || props.value.file}
+      name={name}
+      param={param.array}
+      pkgRef={pkgRef}
+      value={value.array || value.string || value.file}
     />
-  } else if (props.param.dir) {
+  } else if (param.dir) {
     return <OutputDir
-      name={props.name}
-      param={props.param.dir}
-      value={props.value.dir}
+      name={name}
+      param={param.dir}
+      pkgRef={pkgRef}
+      value={value.dir}
     />
-  } else if (props.param.file) {
+  } else if (param.file) {
     return <OutputFile
-      name={props.name}
-      param={props.param.file}
-      value={props.value.file || props.value.string || props.value.number || props.value.array || props.value.object}
+      name={name}
+      param={param.file}
+      pkgRef={pkgRef}
+      value={value.file || value.string || value.number || value.array || value.object}
     />
-  } else if (props.param.number) {
+  } else if (param.number) {
     return <OutputNumber
-      name={props.name}
-      param={props.param.number}
-      value={props.value.number || props.value.file}
+      name={name}
+      param={param.number}
+      pkgRef={pkgRef}
+      value={value.number || value.file}
     />
-  } else if (props.param.object) {
+  } else if (param.object) {
     return <OutputObject
-      name={props.name}
-      param={props.param.object}
-      value={props.value.object || props.value.string || props.value.file}
+      name={name}
+      param={param.object}
+      pkgRef={pkgRef}
+      value={value.object || value.string || value.file}
     />
-  } else if (props.param.socket) {
+  } else if (param.socket) {
     return <OutputSocket
-      name={props.name}
-      param={props.param.socket}
-      value={props.value.socket}
+      name={name}
+      param={param.socket}
+      pkgRef={pkgRef}
+      value={value.socket}
     />
-  } else if (props.param.string) {
+  } else if (param.string) {
     return <OutputString
-      name={props.name}
-      param={props.param.string}
-      value={props.value.string || props.value.number || props.value.array || props.value.object || props.value.file}
+      name={name}
+      param={param.string}
+      pkgRef={pkgRef}
+      value={value.string || value.number || value.array || value.object || value.file}
     />
   }
   return null

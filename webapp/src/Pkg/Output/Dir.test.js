@@ -7,5 +7,9 @@ it('renders without crashing', () => {
   const div = document.createElement('div');
 
   /* act/assert */
-  ReactDOM.render(<Dir param={{}}/>, div);
+  ReactDOM.render(
+    <Dir
+      param={{description: ''}}
+    />,
+    div);
 });

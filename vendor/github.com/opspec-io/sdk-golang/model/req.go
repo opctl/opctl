@@ -27,7 +27,7 @@ type ListPkgContentsReq struct {
 }
 
 type KillOpReq struct {
-	OpId string
+	RootOpId string
 }
 
 type StartOpReq struct {

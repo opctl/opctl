@@ -3,12 +3,13 @@ import jsYaml from 'js-yaml';
 import TextArea from './AceEditor';
 import opspecDataValidator from '@opspec/sdk/lib/data/object/validator';
 
-export default ({name, object, onInvalid, onValid}) => (
+export default ({name, object, onInvalid, onValid, pkgRef}) => (
   <TextArea
     description={object.description}
     name={name}
     onInvalid={onInvalid}
     onValid={value => onValid({object: jsYaml.safeLoad(value)})}
+    pkgRef={pkgRef}
     value={jsYaml.safeDump(object.default ? object.default : '')}
     validate={value => {
       try {

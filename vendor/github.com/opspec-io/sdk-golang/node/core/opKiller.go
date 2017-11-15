@@ -3,51 +3,74 @@ package core
 //go:generate counterfeiter -o ./fakeOpKiller.go --fake-name fakeOpKiller ./ opKiller
 
 import (
+	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
-	"sync"
+	"github.com/opspec-io/sdk-golang/util/pubsub"
 )
 
 type opKiller interface {
-	Kill(req model.KillOpReq)
+	Kill(
+		rootOpId string,
+	)
 }
 
 func newOpKiller(
-	dcgNodeRepo dcgNodeRepo,
 	containerProvider containerprovider.ContainerProvider,
+	eventSubscriber pubsub.EventSubscriber,
 ) opKiller {
 	return _opKiller{
-		dcgNodeRepo:       dcgNodeRepo,
 		containerProvider: containerProvider,
+		eventSubscriber:   eventSubscriber,
 	}
 }
 
 type _opKiller struct {
-	dcgNodeRepo       dcgNodeRepo
 	containerProvider containerprovider.ContainerProvider
+	eventSubscriber   pubsub.EventSubscriber
 }
 
-func (this _opKiller) Kill(
-	req model.KillOpReq,
+func (ok _opKiller) Kill(
+	rootOpId string,
 ) {
-	this.dcgNodeRepo.DeleteIfExists(req.OpId)
+	containerIdChan := make(chan string, 1)
+	ok.listContainerIds(rootOpId, containerIdChan)
 
-	var waitGroup sync.WaitGroup
-
-	for _, childNode := range this.dcgNodeRepo.ListWithRootOpId(req.OpId) {
-		waitGroup.Add(1)
-		go func(childNode *dcgNodeDescriptor) {
-			this.dcgNodeRepo.DeleteIfExists(childNode.Id)
-
-			if nil != childNode.Container {
-				this.containerProvider.DeleteContainerIfExists(
-					childNode.Id,
+	for containerId := range containerIdChan {
+		go func(containerId string) {
+			if err := ok.containerProvider.DeleteContainerIfExists(containerId); nil != err {
+				fmt.Printf(
+					"Error encountered killing container w/ id %v, rootOpId %v; error was %v",
+					containerId,
+					rootOpId,
+					err.Error(),
 				)
 			}
-			defer waitGroup.Done()
-		}(childNode)
+		}(containerId)
 	}
+}
 
-	waitGroup.Wait()
+func (ok _opKiller) listContainerIds(
+	rootOpId string,
+	containerIdChannel chan string,
+) {
+	eventChannel := make(chan *model.Event, 1)
+	ok.eventSubscriber.Subscribe(
+		&model.EventFilter{
+			Roots: []string{
+				rootOpId,
+			},
+		},
+		eventChannel,
+	)
 
+	for event := range eventChannel {
+		switch {
+		case nil != event.ContainerStarted:
+			containerIdChannel <- event.ContainerStarted.ContainerId
+		case nil != event.OpKilled && rootOpId == event.OpKilled.RootOpId:
+			close(containerIdChannel)
+			return
+		}
+	}
 }
