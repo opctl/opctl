@@ -2,15 +2,18 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://opspec.io/0.1.6/op.yml.schema.json",
   "title": "op.yml",
-  "description": "Defines an op",
+  "description": "Defines a pkg",
   "properties": {
     "name": {
-      "description": "Name of the op",
+      "description": "Name of the pkg",
       "type": "string"
     },
     "description": {
-      "description": "Description of the op",
+      "description": "Description of the pkg",
       "$ref": "#/definitions/markdown"
+    },
+    "icon": {
+      "description": "Icon of the pkg. MUST be an absolute path from root of pkg or URL referencing an [SVG 1.1](https://www.w3.org/TR/SVG11/) image"
     },
     "inputs": {
       "$ref": "#/definitions/param"
