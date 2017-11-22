@@ -13,7 +13,8 @@
       "$ref": "#/definitions/markdown"
     },
     "icon": {
-      "description": "Icon of the pkg. MUST be an absolute path from root of pkg or URL referencing an [SVG 1.1](https://www.w3.org/TR/SVG11/) image"
+      "description": "Icon of the pkg. MUST be an absolute path from root of pkg or URL referencing an [SVG 1.1](https://www.w3.org/TR/SVG11/) image",
+      "type": "string"
     },
     "inputs": {
       "$ref": "#/definitions/param"
