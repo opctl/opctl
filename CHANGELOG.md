@@ -5,6 +5,11 @@ All notable changes will be documented in this file in accordance with
 
 ## \[Unreleased]
 
+### Added
+
+- [Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
+- [Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+
 ## \[0.1.5] - 2017-09-27
 
 ### Added
@@ -74,7 +79,7 @@ All notable changes will be documented in this file in accordance with
 paramName:
       string:
         description: ...
-        # and so on... 
+        # and so on...
 ```
 
 ### Removed
@@ -85,7 +90,7 @@ paramName:
 
 ## \[0.1.2] - 2016-09-10
 
-### Added 
+### Added
 
 - `serial`, `op`, and `parallel` calls
 - nested calls (applicable to `serial` & `parallel` calls)
