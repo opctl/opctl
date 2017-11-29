@@ -6,6 +6,10 @@ accordance with
 
 ## \[Unreleased]
 
+### Added
+
+- [opspec 0.1.6) Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
+
 ## 0.1.22 - 2017-11-05
 
 ### Added

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import Description from './Description';
+import Markdown from './Markdown';
+import Icon from './Icon';
 import Inputs from './Inputs';
 import Outputs from './Outputs';
 import EventBrowser from '../EventBrowser';
@@ -80,7 +81,11 @@ export default class Pkg extends Component {
         <form onSubmit={e => {
           e.preventDefault()
         }}>
-          <Description
+          <Icon
+            value={this.props.value.icon}
+            pkgRef={this.props.pkgRef}
+          />
+          <Markdown
             value={this.props.value.description}
             pkgRef={this.props.pkgRef}
           />
