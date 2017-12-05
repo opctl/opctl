@@ -24,24 +24,27 @@ type opCaller interface {
 
 func newOpCaller(
 	pubSub pubsub.PubSub,
+	dcgNodeRepo dcgNodeRepo,
 	caller caller,
 	rootFSPath string,
 ) opCaller {
 	return _opCaller{
-		outputs: outputsPkg.New(),
-		opCall:  opcall.New(rootFSPath),
-		pkg:     pkg.New(),
-		pubSub:  pubSub,
-		caller:  caller,
+		outputs:     outputsPkg.New(),
+		opCall:      opcall.New(rootFSPath),
+		pkg:         pkg.New(),
+		pubSub:      pubSub,
+		dcgNodeRepo: dcgNodeRepo,
+		caller:      caller,
 	}
 }
 
 type _opCaller struct {
-	outputs outputsPkg.Outputs
-	opCall  opcall.OpCall
-	pkg     pkg.Pkg
-	pubSub  pubsub.PubSub
-	caller  caller
+	outputs     outputsPkg.Outputs
+	opCall      opcall.OpCall
+	pkg         pkg.Pkg
+	pubSub      pubsub.PubSub
+	dcgNodeRepo dcgNodeRepo
+	caller      caller
 }
 
 func (oc _opCaller) Call(
@@ -71,6 +74,8 @@ func (oc _opCaller) Call(
 			)
 			return
 		}
+
+		oc.dcgNodeRepo.DeleteIfExists(opId)
 
 		var opOutcome string
 		if nil != err {
@@ -104,6 +109,15 @@ func (oc _opCaller) Call(
 		)
 
 	}()
+
+	oc.dcgNodeRepo.Add(
+		&dcgNodeDescriptor{
+			Id:       opId,
+			PkgRef:   scgOpCall.Pkg.Ref,
+			RootOpId: rootOpId,
+			Op:       &dcgOpDescriptor{},
+		},
+	)
 
 	dcgOpCall, err := oc.opCall.Interpret(
 		inboundScope,
@@ -144,7 +158,7 @@ func (oc _opCaller) Call(
 		rootOpId,
 	)
 
-	isKilled = false
+	isKilled = nil == oc.dcgNodeRepo.GetIfExists(rootOpId)
 
 	if nil != err {
 		return err

@@ -53,6 +53,8 @@ func New(
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
+	dcgNodeRepo := newDCGNodeRepo()
+
 	opKiller := newOpKiller(containerProvider, pubSub)
 
 	eventListener := newEventListener(opKiller, pubSub)
@@ -63,6 +65,7 @@ func New(
 			containerProvider,
 			containercall.New(rootFSPath),
 			pubSub,
+			dcgNodeRepo,
 		),
 	)
 
@@ -85,6 +88,7 @@ func New(
 
 	opCaller := newOpCaller(
 		pubSub,
+		dcgNodeRepo,
 		caller,
 		rootFSPath,
 	)
@@ -95,6 +99,7 @@ func New(
 
 	core = _core{
 		containerProvider:   containerProvider,
+		dcgNodeRepo:         dcgNodeRepo,
 		opCaller:            opCaller,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
@@ -108,6 +113,7 @@ func New(
 
 type _core struct {
 	containerProvider   containerprovider.ContainerProvider
+	dcgNodeRepo         dcgNodeRepo
 	opCaller            opCaller
 	opKiller            opKiller
 	pubSub              pubsub.PubSub
