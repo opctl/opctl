@@ -34,7 +34,7 @@ func (ok _opKiller) Kill(
 	rootOpId string,
 ) {
 	containerIdChan := make(chan string, 1)
-	go ok.listContainerIds(rootOpId, containerIdChan)
+	ok.listContainerIds(rootOpId, containerIdChan)
 
 	for containerId := range containerIdChan {
 		go func(containerId string) {
