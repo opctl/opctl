@@ -55,10 +55,7 @@ func New(
 
 	dcgNodeRepo := newDCGNodeRepo()
 
-	opKiller := newOpKiller(containerProvider, pubSub)
-
-	eventListener := newEventListener(opKiller, pubSub)
-	eventListener.Listen()
+	opKiller := newOpKiller(dcgNodeRepo, containerProvider)
 
 	caller := newCaller(
 		newContainerCaller(
