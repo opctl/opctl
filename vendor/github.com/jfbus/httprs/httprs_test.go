@@ -5,7 +5,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -78,6 +80,46 @@ func newRS() *HttpReadSeeker {
 		ContentLength: SZ * 4,
 	}
 	return NewHttpReadSeeker(res, &http.Client{Transport: &fakeRoundTripper{tmp}})
+}
+
+func TestHttpWebServer(t *testing.T) {
+	Convey("Scenario: testing WebServer", t, func() {
+		dir, err := ioutil.TempDir("", "webserver")
+		So(err, ShouldBeNil)
+		defer os.RemoveAll(dir)
+
+		err = ioutil.WriteFile(filepath.Join(dir, "file"), make([]byte, 10000), 0755)
+		So(err, ShouldBeNil)
+
+		server := httptest.NewServer(http.FileServer(http.Dir(dir)))
+		So(server, ShouldNotBeNil)
+
+		Convey("When requesting /file", func() {
+			res, err := http.Get(server.URL + "/file")
+			So(err, ShouldBeNil)
+
+			stream := NewHttpReadSeeker(res)
+			So(stream, ShouldNotBeNil)
+
+			Convey("Can read 100 bytes from start of file", func() {
+				n, err := stream.Read(make([]byte, 100))
+				So(err, ShouldBeNil)
+				So(n, ShouldEqual, 100)
+
+				Convey("When seeking 4KiB forward", func() {
+					pos, err := stream.Seek(4096, io.SeekCurrent)
+					So(err, ShouldBeNil)
+					So(pos, ShouldEqual, 4096+100)
+
+					Convey("Can read 100 bytes", func() {
+						n, err := stream.Read(make([]byte, 100))
+						So(err, ShouldBeNil)
+						So(n, ShouldEqual, 100)
+					})
+				})
+			})
+		})
+	})
 }
 
 func TestHttpReaderSeeker(t *testing.T) {

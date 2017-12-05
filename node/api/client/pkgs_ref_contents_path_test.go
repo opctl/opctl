@@ -54,6 +54,7 @@ var _ = Context("GetPkgContent", func() {
 			&http.Response{
 				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
+				Request:    expectedHttpReq,
 			},
 			nil,
 		)
@@ -82,6 +83,7 @@ var _ = Context("GetPkgContent", func() {
 			httpResp := &http.Response{
 				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
+				Request:    &http.Request{},
 			}
 
 			expectedReadSeekCloser := httprs.NewHttpReadSeeker(httpResp)

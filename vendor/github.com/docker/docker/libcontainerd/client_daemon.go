@@ -17,18 +17,22 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/containerd/containerd"
+	"github.com/containerd/containerd/api/events"
 	eventsapi "github.com/containerd/containerd/api/services/events/v1"
 	"github.com/containerd/containerd/api/types"
 	"github.com/containerd/containerd/archive"
+	"github.com/containerd/containerd/cio"
 	"github.com/containerd/containerd/content"
 	"github.com/containerd/containerd/images"
-	"github.com/containerd/containerd/linux/runcopts"
+	"github.com/containerd/containerd/linux/runctypes"
 	"github.com/containerd/typeurl"
 	"github.com/docker/docker/pkg/ioutils"
 	"github.com/opencontainers/image-spec/specs-go/v1"
-	"github.com/opencontainers/runtime-spec/specs-go"
+	specs "github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -68,7 +72,7 @@ func (c *client) Restore(ctx context.Context, id string, attachStdio StdioCallba
 	c.Lock()
 	defer c.Unlock()
 
-	var cio containerd.IO
+	var rio cio.IO
 	defer func() {
 		err = wrapError(err)
 	}()
@@ -79,20 +83,20 @@ func (c *client) Restore(ctx context.Context, id string, attachStdio StdioCallba
 	}
 
 	defer func() {
-		if err != nil && cio != nil {
-			cio.Cancel()
-			cio.Close()
+		if err != nil && rio != nil {
+			rio.Cancel()
+			rio.Close()
 		}
 	}()
 
-	t, err := ctr.Task(ctx, func(fifos *containerd.FIFOSet) (containerd.IO, error) {
+	t, err := ctr.Task(ctx, func(fifos *cio.FIFOSet) (cio.IO, error) {
 		io, err := newIOPipe(fifos)
 		if err != nil {
 			return nil, err
 		}
 
-		cio, err = attachStdio(io)
-		return cio, err
+		rio, err = attachStdio(io)
+		return rio, err
 	})
 	if err != nil && !strings.Contains(err.Error(), "no running task found") {
 		return false, -1, err
@@ -166,7 +170,7 @@ func (c *client) Start(ctx context.Context, id, checkpointDir string, withStdin 
 	var (
 		cp             *types.Descriptor
 		t              containerd.Task
-		cio            containerd.IO
+		rio            cio.IO
 		err            error
 		stdinCloseSync = make(chan struct{})
 	)
@@ -201,13 +205,14 @@ func (c *client) Start(ctx context.Context, id, checkpointDir string, withStdin 
 	}
 	uid, gid := getSpecUser(spec)
 	t, err = ctr.ctr.NewTask(ctx,
-		func(id string) (containerd.IO, error) {
-			cio, err = c.createIO(ctr.bundleDir, id, InitProcessName, stdinCloseSync, withStdin, spec.Process.Terminal, attachStdio)
-			return cio, err
+		func(id string) (cio.IO, error) {
+			fifos := newFIFOSet(ctr.bundleDir, id, InitProcessName, withStdin, spec.Process.Terminal)
+			rio, err = c.createIO(fifos, id, InitProcessName, stdinCloseSync, attachStdio)
+			return rio, err
 		},
 		func(_ context.Context, _ *containerd.Client, info *containerd.TaskInfo) error {
 			info.Checkpoint = cp
-			info.Options = &runcopts.CreateOptions{
+			info.Options = &runctypes.CreateOptions{
 				IoUid: uint32(uid),
 				IoGid: uint32(gid),
 			}
@@ -215,9 +220,9 @@ func (c *client) Start(ctx context.Context, id, checkpointDir string, withStdin 
 		})
 	if err != nil {
 		close(stdinCloseSync)
-		if cio != nil {
-			cio.Cancel()
-			cio.Close()
+		if rio != nil {
+			rio.Cancel()
+			rio.Close()
 		}
 		return -1, err
 	}
@@ -256,28 +261,32 @@ func (c *client) Exec(ctx context.Context, containerID, processID string, spec *
 
 	var (
 		p              containerd.Process
-		cio            containerd.IO
+		rio            cio.IO
 		err            error
 		stdinCloseSync = make(chan struct{})
 	)
+
+	fifos := newFIFOSet(ctr.bundleDir, containerID, processID, withStdin, spec.Terminal)
+
 	defer func() {
 		if err != nil {
-			if cio != nil {
-				cio.Cancel()
-				cio.Close()
+			if rio != nil {
+				rio.Cancel()
+				rio.Close()
 			}
+			rmFIFOSet(fifos)
 		}
 	}()
 
-	p, err = ctr.task.Exec(ctx, processID, spec, func(id string) (containerd.IO, error) {
-		cio, err = c.createIO(ctr.bundleDir, containerID, processID, stdinCloseSync, withStdin, spec.Terminal, attachStdio)
-		return cio, err
+	p, err = ctr.task.Exec(ctx, processID, spec, func(id string) (cio.IO, error) {
+		rio, err = c.createIO(fifos, containerID, processID, stdinCloseSync, attachStdio)
+		return rio, err
 	})
 	if err != nil {
 		close(stdinCloseSync)
-		if cio != nil {
-			cio.Cancel()
-			cio.Close()
+		if rio != nil {
+			rio.Cancel()
+			rio.Close()
 		}
 		return -1, err
 	}
@@ -441,7 +450,7 @@ func (c *client) Delete(ctx context.Context, containerID string) error {
 		return err
 	}
 
-	if os.Getenv("LIBCONTAINERD_NOCLEAN") == "1" {
+	if os.Getenv("LIBCONTAINERD_NOCLEAN") != "1" {
 		if err := os.RemoveAll(ctr.bundleDir); err != nil {
 			c.logger.WithError(err).WithFields(logrus.Fields{
 				"container": containerID,
@@ -562,8 +571,7 @@ func (c *client) getProcess(containerID, processID string) (containerd.Process, 
 
 // createIO creates the io to be used by a process
 // This needs to get a pointer to interface as upon closure the process may not have yet been registered
-func (c *client) createIO(bundleDir, containerID, processID string, stdinCloseSync chan struct{}, withStdin, withTerminal bool, attachStdio StdioCallback) (containerd.IO, error) {
-	fifos := newFIFOSet(bundleDir, containerID, processID, withStdin, withTerminal)
+func (c *client) createIO(fifos *cio.FIFOSet, containerID, processID string, stdinCloseSync chan struct{}, attachStdio StdioCallback) (cio.IO, error) {
 	io, err := newIOPipe(fifos)
 	if err != nil {
 		return nil, err
@@ -595,12 +603,12 @@ func (c *client) createIO(bundleDir, containerID, processID string, stdinCloseSy
 		})
 	}
 
-	cio, err := attachStdio(io)
+	rio, err := attachStdio(io)
 	if err != nil {
 		io.Cancel()
 		io.Close()
 	}
-	return cio, err
+	return rio, err
 }
 
 func (c *client) processEvent(ctr *container, et EventType, ei EventInfo) {
@@ -639,6 +647,14 @@ func (c *client) processEvent(ctr *container, et EventType, ei EventInfo) {
 			c.Lock()
 			delete(ctr.execs, ei.ProcessID)
 			c.Unlock()
+			ctr := c.getContainer(ei.ContainerID)
+			if ctr == nil {
+				c.logger.WithFields(logrus.Fields{
+					"container": ei.ContainerID,
+				}).Error("failed to find container")
+			} else {
+				rmFIFOSet(newFIFOSet(ctr.bundleDir, ei.ContainerID, ei.ProcessID, true, false))
+			}
 		}
 	})
 }
@@ -675,7 +691,10 @@ func (c *client) processEventStream(ctx context.Context) {
 	for {
 		ev, err = eventStream.Recv()
 		if err != nil {
-			c.logger.WithError(err).Error("failed to get event")
+			errStatus, ok := status.FromError(err)
+			if !ok || errStatus.Code() != codes.Canceled {
+				c.logger.WithError(err).Error("failed to get event")
+			}
 			return
 		}
 
@@ -693,21 +712,21 @@ func (c *client) processEventStream(ctx context.Context) {
 		c.logger.WithField("topic", ev.Topic).Debug("event")
 
 		switch t := v.(type) {
-		case *eventsapi.TaskCreate:
+		case *events.TaskCreate:
 			et = EventCreate
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 				ProcessID:   t.ContainerID,
 				Pid:         t.Pid,
 			}
-		case *eventsapi.TaskStart:
+		case *events.TaskStart:
 			et = EventStart
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 				ProcessID:   t.ContainerID,
 				Pid:         t.Pid,
 			}
-		case *eventsapi.TaskExit:
+		case *events.TaskExit:
 			et = EventExit
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
@@ -716,32 +735,32 @@ func (c *client) processEventStream(ctx context.Context) {
 				ExitCode:    t.ExitStatus,
 				ExitedAt:    t.ExitedAt,
 			}
-		case *eventsapi.TaskOOM:
+		case *events.TaskOOM:
 			et = EventOOM
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 				OOMKilled:   true,
 			}
 			oomKilled = true
-		case *eventsapi.TaskExecAdded:
+		case *events.TaskExecAdded:
 			et = EventExecAdded
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 				ProcessID:   t.ExecID,
 			}
-		case *eventsapi.TaskExecStarted:
+		case *events.TaskExecStarted:
 			et = EventExecStarted
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 				ProcessID:   t.ExecID,
 				Pid:         t.Pid,
 			}
-		case *eventsapi.TaskPaused:
+		case *events.TaskPaused:
 			et = EventPaused
 			ei = EventInfo{
 				ContainerID: t.ContainerID,
 			}
-		case *eventsapi.TaskResumed:
+		case *events.TaskResumed:
 			et = EventResumed
 			ei = EventInfo{
 				ContainerID: t.ContainerID,

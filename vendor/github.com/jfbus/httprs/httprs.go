@@ -16,6 +16,7 @@ If you want use a specific http.Client for additional range requests :
 package httprs
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -33,6 +34,7 @@ type HttpReadSeeker struct {
 	c       *http.Client
 	req     *http.Request
 	res     *http.Response
+	ctx     context.Context
 	r       io.ReadCloser
 	pos     int64
 	canSeek bool
@@ -63,6 +65,7 @@ var (
 func NewHttpReadSeeker(res *http.Response, client ...*http.Client) *HttpReadSeeker {
 	r := &HttpReadSeeker{
 		req:     res.Request,
+		ctx:     res.Request.Context(),
 		res:     res,
 		r:       res.Body,
 		canSeek: (res.Header.Get("Accept-Ranges") == "bytes"),
@@ -159,7 +162,27 @@ func (r *HttpReadSeeker) Seek(offset int64, whence int) (int64, error) {
 	return r.pos, err
 }
 
+func cloneHeader(h http.Header) http.Header {
+	h2 := make(http.Header, len(h))
+	for k, vv := range h {
+		vv2 := make([]string, len(vv))
+		copy(vv2, vv)
+		h2[k] = vv2
+	}
+	return h2
+}
+
+func (r *HttpReadSeeker) newRequest() *http.Request {
+	newreq := r.req.WithContext(r.ctx) // includes shallow copies of maps, but okay
+	if r.req.ContentLength == 0 {
+		newreq.Body = nil // Issue 16036: nil Body for http.Transport retries
+	}
+	newreq.Header = cloneHeader(r.req.Header)
+	return newreq
+}
+
 func (r *HttpReadSeeker) rangeRequest() error {
+	r.req = r.newRequest()
 	r.req.Header.Set("Range", fmt.Sprintf("bytes=%d-", r.pos))
 	etag, last := r.res.Header.Get("ETag"), r.res.Header.Get("Last-Modified")
 	switch {
