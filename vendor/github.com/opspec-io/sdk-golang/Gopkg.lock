@@ -41,13 +41,13 @@
   branch = "master"
   name = "github.com/docker/distribution"
   packages = ["digestset","reference"]
-  revision = "3800056b8832cf6075e78b282ac010131d8687bc"
+  revision = "bc3c7b0525e59d3ecfab3e1568350895fd4a462f"
 
 [[projects]]
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "b00b1b1c40750dd0239fb30e421686b63b4183bd"
+  revision = "4047cede65862aa0ea5616297d7c0f3b12526ad4"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -142,8 +142,8 @@
 [[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "24fca303ac6da784b9e8269f724ddeb0b2eea5e7"
-  version = "v1.5.0"
+  revision = "7f08801859139f86dfafd1c296e2cba9a80d292e"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -161,7 +161,7 @@
   branch = "master"
   name = "github.com/jfbus/httprs"
   packages = ["."]
-  revision = "e879ae6bf984ca6c009eb44696e9f400ec3ed2d9"
+  revision = "32cf48c14a79f94eb3d8100efc00e773c5c8b160"
 
 [[projects]]
   branch = "master"
@@ -190,8 +190,8 @@
 [[projects]]
   name = "github.com/opencontainers/image-spec"
   packages = ["specs-go","specs-go/v1"]
-  revision = "ab7389ef9f50030c9b245bc16b981c7ddf192882"
-  version = "v1.0.0"
+  revision = "d60099175f88c47cd379c4738d158884749ed235"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -209,13 +209,13 @@
   branch = "master"
   name = "github.com/sergi/go-diff"
   packages = ["diffmatchpatch"]
-  revision = "2fc9cd33b5f86077aa3e0f442fa0476a9fa9a1dc"
+  revision = "1744e2970ca51c86172c8190fadad617561ed6e7"
 
 [[projects]]
   branch = "master"
   name = "github.com/sethgrid/pester"
   packages = ["."]
-  revision = "0af5bab1e1ea2860c5aef8e77427bab011d774d8"
+  revision = "760f8913c0483b776294e1bee43f1d687527127b"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -257,13 +257,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["curve25519","ed25519","ed25519/internal/edwards25519","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "bd6f299fb381e4c3393d1c4b1f0b94f5e77650c8"
+  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","proxy"]
-  revision = "01c190206fbdffa42f334f4b2bf2220f50e64920"
+  revision = "a8b9294777976932365dabb6640cf1468d95c70f"
 
 [[projects]]
   branch = "master"
@@ -275,13 +275,13 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "8eb05f94d449fdf134ec24630ce69ada5b469c1c"
+  revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
+  revision = "57961680700a5336d15015c8c50686ca5ba362a4"
 
 [[projects]]
   name = "gopkg.in/src-d/go-billy.v3"
@@ -298,14 +298,14 @@
 [[projects]]
   name = "gopkg.in/warnings.v0"
   packages = ["."]
-  revision = "8a331561fe74dadba6edfc59f3be66c22c3b065d"
-  version = "v0.1.1"
+  revision = "ec4a0fea49c7b46c2aeb0b51aac55779c607e52b"
+  version = "v0.1.2"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
 
 [solve-meta]
   analyzer-name = "dep"

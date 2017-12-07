@@ -106,7 +106,7 @@ func (this _parallelCaller) Call(
 			select {
 			case <-cancellationChannel:
 				// ensure resources immediately reclaimed
-				this.opKiller.Kill(rootOpId)
+				this.opKiller.Kill(model.KillOpReq{OpId: rootOpId})
 			case <-childDoneChannel:
 			}
 		}(childCall)

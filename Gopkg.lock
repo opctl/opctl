@@ -47,13 +47,13 @@
   branch = "master"
   name = "github.com/docker/distribution"
   packages = ["digestset","reference"]
-  revision = "e5b5e44386f7964a1f010a2b8b7687d073215bbb"
+  revision = "bc3c7b0525e59d3ecfab3e1568350895fd4a462f"
 
 [[projects]]
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "ce452fb72ffcdb7605ce98bde9302238f47c63c5"
+  revision = "4047cede65862aa0ea5616297d7c0f3b12526ad4"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -250,7 +250,7 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = ["containercall","containercall/dirs","containercall/envvars","containercall/files","containercall/image","containercall/sockets","data","expression","expression/interpolater","model","node/api","node/api/client","node/api/handler","node/core","opcall","opcall/inputs","opcall/outputs","pkg","pkg/manifest","util/containerprovider","util/containerprovider/docker","util/iruntime","util/pubsub","util/uniquestring"]
-  revision = "1e1720828090285a60a6a6f75514d3e701735383"
+  revision = "82033cf3d4f0543c05064f04e64575a65a61d51a"
 
 [[projects]]
   branch = "master"
@@ -286,7 +286,7 @@
   branch = "master"
   name = "github.com/sethgrid/pester"
   packages = ["."]
-  revision = "0af5bab1e1ea2860c5aef8e77427bab011d774d8"
+  revision = "760f8913c0483b776294e1bee43f1d687527127b"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -328,13 +328,13 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["curve25519","ed25519","ed25519/internal/edwards25519","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "9f005a07e0d31d45e6656d241bb5c0f2efd4bc94"
+  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context","context/ctxhttp","proxy"]
-  revision = "9dfe39835686865bff950a07b394c12a98ddc811"
+  revision = "a8b9294777976932365dabb6640cf1468d95c70f"
 
 [[projects]]
   branch = "master"
@@ -346,13 +346,13 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "82aafbf43bf885069dc71b7e7c2f9d7a614d47da"
+  revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
+  revision = "57961680700a5336d15015c8c50686ca5ba362a4"
 
 [[projects]]
   name = "gopkg.in/src-d/go-billy.v3"

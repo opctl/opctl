@@ -9,7 +9,6 @@ type Event struct {
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
 	ContainerStdOutWrittenTo *ContainerStdOutWrittenToEvent `json:"containerStdOutWrittenTo,omitempty"`
 	OpEnded                  *OpEndedEvent                  `json:"opEnded,omitempty"`
-	OpKilled                 *OpKilledEvent                 `json:"opKilled,omitempty"`
 	OpStarted                *OpStartedEvent                `json:"opStarted,omitempty"`
 	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
@@ -75,12 +74,6 @@ type OpEndedEvent struct {
 	Outputs  map[string]*Value `json:"outputs"`
 }
 
-// OpKilledEvent represents an op has been killed
-type OpKilledEvent struct {
-	RootOpId string `json:"rootOpId"`
-}
-
-// OpStartedEvent represents the start of an op
 type OpStartedEvent struct {
 	RootOpId string `json:"rootOpId"`
 	OpId     string `json:"opId"`
