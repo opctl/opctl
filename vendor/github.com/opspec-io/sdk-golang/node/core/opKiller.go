@@ -3,74 +3,51 @@ package core
 //go:generate counterfeiter -o ./fakeOpKiller.go --fake-name fakeOpKiller ./ opKiller
 
 import (
-	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"sync"
 )
 
 type opKiller interface {
-	Kill(
-		rootOpId string,
-	)
+	Kill(req model.KillOpReq)
 }
 
 func newOpKiller(
+	dcgNodeRepo dcgNodeRepo,
 	containerProvider containerprovider.ContainerProvider,
-	eventSubscriber pubsub.EventSubscriber,
 ) opKiller {
 	return _opKiller{
+		dcgNodeRepo:       dcgNodeRepo,
 		containerProvider: containerProvider,
-		eventSubscriber:   eventSubscriber,
 	}
 }
 
 type _opKiller struct {
+	dcgNodeRepo       dcgNodeRepo
 	containerProvider containerprovider.ContainerProvider
-	eventSubscriber   pubsub.EventSubscriber
 }
 
-func (ok _opKiller) Kill(
-	rootOpId string,
+func (this _opKiller) Kill(
+	req model.KillOpReq,
 ) {
-	containerIdChan := make(chan string, 1)
-	go ok.listContainerIds(rootOpId, containerIdChan)
+	this.dcgNodeRepo.DeleteIfExists(req.OpId)
 
-	for containerId := range containerIdChan {
-		go func(containerId string) {
-			if err := ok.containerProvider.DeleteContainerIfExists(containerId); nil != err {
-				fmt.Printf(
-					"Error encountered killing container w/ id %v, rootOpId %v; error was %v",
-					containerId,
-					rootOpId,
-					err.Error(),
+	var waitGroup sync.WaitGroup
+
+	for _, childNode := range this.dcgNodeRepo.ListWithRootOpId(req.OpId) {
+		waitGroup.Add(1)
+		go func(childNode *dcgNodeDescriptor) {
+			this.dcgNodeRepo.DeleteIfExists(childNode.Id)
+
+			if nil != childNode.Container {
+				this.containerProvider.DeleteContainerIfExists(
+					childNode.Id,
 				)
 			}
-		}(containerId)
+			defer waitGroup.Done()
+		}(childNode)
 	}
-}
 
-func (ok _opKiller) listContainerIds(
-	rootOpId string,
-	containerIdChannel chan string,
-) {
-	eventChannel := make(chan *model.Event, 1)
-	ok.eventSubscriber.Subscribe(
-		&model.EventFilter{
-			Roots: []string{
-				rootOpId,
-			},
-		},
-		eventChannel,
-	)
+	waitGroup.Wait()
 
-	for event := range eventChannel {
-		switch {
-		case nil != event.ContainerStarted:
-			containerIdChannel <- event.ContainerStarted.ContainerId
-		case nil != event.OpKilled && rootOpId == event.OpKilled.RootOpId:
-			close(containerIdChannel)
-			return
-		}
-	}
 }

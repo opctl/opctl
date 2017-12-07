@@ -22,12 +22,17 @@ import (
 )
 
 var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
-	Context("pkgRef isn't valid URL encoded segment", func() {
-		It("should return expected error", func() {
+	Context("has basic auth header", func() {
+		It("should call core.ResolvePkg w/ expected args", func() {
 			/* arrange */
-			invalidURLEncoding := "%%"
-			providedPath := fmt.Sprintf("/pkgs/dummyRef%v/contents/dummyPath", invalidURLEncoding)
-			expectedBody := fmt.Sprintf("invalid URL escape \"%v\"", invalidURLEncoding)
+			providedPkgRef := "dummyPkgRef%2F"
+			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			if nil != err {
+				panic(err.Error())
+			}
+
+			providedUsername := "dummyUsername"
+			providedPassword := "dummyPassword"
 
 			fakeCore := new(core.Fake)
 			// error to trigger immediate return
@@ -36,28 +41,32 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			// manually construct request so path doesn't get parsed
-			httpReq := &http.Request{
-				Method: http.MethodGet,
-				URL:    &url.URL{Path: providedPath},
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef), nil)
+			if nil != err {
+				panic(err.Error())
 			}
+			httpReq.SetBasicAuth(providedUsername, providedPassword)
 
 			/* act */
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
-			Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-			actualBody := strings.TrimSpace(recorder.Body.String())
-			Expect(actualBody).To(Equal(expectedBody))
+			actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(*actualPullCreds).To(Equal(model.PullCreds{
+				Username: providedUsername,
+				Password: providedPassword,
+			}))
 		})
 	})
-	Context("contentPath isn't valid URL encoded segment", func() {
-		It("should return expected error", func() {
+	Context("doesn't have basic auth header", func() {
+		It("should call core.ResolvePkg w/ expected args", func() {
 			/* arrange */
-			invalidURLEncoding := "%%"
-			providedPath := fmt.Sprintf("/pkgs/dummyRef/contents/dummyPath%v", invalidURLEncoding)
-			expectedBody := fmt.Sprintf("invalid URL escape \"%v\"", invalidURLEncoding)
+			providedPkgRef := "dummyPkgRef%2F"
+			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			if nil != err {
+				panic(err.Error())
+			}
 
 			fakeCore := new(core.Fake)
 			// error to trigger immediate return
@@ -66,231 +75,186 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			// manually construct request so path doesn't get parsed
-			httpReq := &http.Request{
-				Method: http.MethodGet,
-				URL:    &url.URL{Path: providedPath},
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef), nil)
+			if nil != err {
+				panic(err.Error())
 			}
 
 			/* act */
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
-			Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-			actualBody := strings.TrimSpace(recorder.Body.String())
-			Expect(actualBody).To(Equal(expectedBody))
+			actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPullCreds).To(BeNil())
 		})
 	})
-	Context("pkgRef & contentPath are valid URL encoded segments", func() {
-		Context("has basic auth header", func() {
-			It("should call core.ResolvePkg w/ expected args", func() {
+	Context("core.ResolvePkg errs", func() {
+		Context("err is model.ErrPkgPullAuthentication", func() {
+			It("should return expected result", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef%2F"
-				expectedPkgRef, err := url.PathUnescape(providedPkgRef)
-				if nil != err {
-					panic(err.Error())
-				}
-
-				providedUsername := "dummyUsername"
-				providedPassword := "dummyPassword"
+				pkgPullAuthenticationErr := model.ErrPkgPullAuthentication{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
+				fakeCore.ResolvePkgReturns(nil, pkgPullAuthenticationErr)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
 
-				// manually construct request so path doesn't get parsed
-				httpReq := &http.Request{
-					Method: http.MethodGet,
-					URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef)},
-					Header: map[string][]string{},
-				}
-				httpReq.SetBasicAuth(providedUsername, providedPassword)
-
-				/* act */
-				objectUnderTest.ServeHTTP(recorder, httpReq)
-
-				/* assert */
-				actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
-				Expect(actualPkgRef).To(Equal(expectedPkgRef))
-				Expect(*actualPullCreds).To(Equal(model.PullCreds{
-					Username: providedUsername,
-					Password: providedPassword,
-				}))
-			})
-		})
-		Context("doesn't have basic auth header", func() {
-			It("should call core.ResolvePkg w/ expected args", func() {
-				/* arrange */
-				providedPkgRef := "dummyPkgRef%2F"
-				expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+				httpReq, err := http.NewRequest(
+					http.MethodGet,
+					"/pkgs/dummyRef/contents/dummyPath",
+					nil,
+				)
 				if nil != err {
 					panic(err.Error())
-				}
-
-				fakeCore := new(core.Fake)
-				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
-
-				objectUnderTest := New(fakeCore)
-				recorder := httptest.NewRecorder()
-
-				// manually construct request so path doesn't get parsed
-				httpReq := &http.Request{
-					Method: http.MethodGet,
-					URL:    &url.URL{Path: fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef)},
 				}
 
 				/* act */
 				objectUnderTest.ServeHTTP(recorder, httpReq)
 
 				/* assert */
-				actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
-				Expect(actualPkgRef).To(Equal(expectedPkgRef))
-				Expect(actualPullCreds).To(BeNil())
+				Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
+				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+				actualBody := strings.TrimSpace(recorder.Body.String())
+				Expect(actualBody).To(Equal(pkgPullAuthenticationErr.Error()))
 			})
 		})
-		Context("core.ResolvePkg errs", func() {
-			Context("err is model.ErrPkgPullAuthentication", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					pkgPullAuthenticationErr := model.ErrPkgPullAuthentication{}
-
-					fakeCore := new(core.Fake)
-					// error to trigger immediate return
-					fakeCore.ResolvePkgReturns(nil, pkgPullAuthenticationErr)
-
-					objectUnderTest := New(fakeCore)
-					recorder := httptest.NewRecorder()
-
-					httpReq, err := http.NewRequest(
-						http.MethodGet,
-						"/pkgs/dummyRef/contents/dummyPath",
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
-
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, httpReq)
-
-					/* assert */
-					Expect(recorder.Code).To(Equal(http.StatusUnauthorized))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(pkgPullAuthenticationErr.Error()))
-				})
-			})
-			Context("err is model.ErrPkgPullAuthorization", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					pkgPullAuthorizationErr := model.ErrPkgPullAuthorization{}
-
-					fakeCore := new(core.Fake)
-					// error to trigger immediate return
-					fakeCore.ResolvePkgReturns(nil, pkgPullAuthorizationErr)
-
-					objectUnderTest := New(fakeCore)
-					recorder := httptest.NewRecorder()
-
-					httpReq, err := http.NewRequest(
-						http.MethodGet,
-						"/pkgs/dummyRef/contents/dummyPath",
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
-
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, httpReq)
-
-					/* assert */
-					Expect(recorder.Code).To(Equal(http.StatusForbidden))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(pkgPullAuthorizationErr.Error()))
-				})
-			})
-			Context("err is model.ErrPkgNotFound", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					pkgNotFoundErr := model.ErrPkgNotFound{}
-
-					fakeCore := new(core.Fake)
-					// error to trigger immediate return
-					fakeCore.ResolvePkgReturns(nil, pkgNotFoundErr)
-
-					objectUnderTest := New(fakeCore)
-					recorder := httptest.NewRecorder()
-
-					httpReq, err := http.NewRequest(
-						http.MethodGet,
-						"/pkgs/dummyRef/contents/dummyPath",
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
-
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, httpReq)
-
-					/* assert */
-					Expect(recorder.Code).To(Equal(http.StatusNotFound))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(pkgNotFoundErr.Error()))
-				})
-			})
-			Context("err isn't known type", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					expectedBody := "dummyErrorMsg"
-
-					fakeCore := new(core.Fake)
-					// error to trigger immediate return
-					fakeCore.ResolvePkgReturns(nil, errors.New(expectedBody))
-
-					objectUnderTest := New(fakeCore)
-					recorder := httptest.NewRecorder()
-
-					httpReq, err := http.NewRequest(
-						http.MethodGet,
-						"/pkgs/dummyRef/contents/dummyPath",
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
-
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, httpReq)
-
-					/* assert */
-					Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(expectedBody))
-				})
-			})
-		})
-		Context("core.GetPkgContent doesn't err", func() {
-			It("should call handle.GetContent w/ expected args", func() {
+		Context("err is model.ErrPkgPullAuthorization", func() {
+			It("should return expected result", func() {
 				/* arrange */
-				providedContentPath := "dummyPkgRef%2F"
-				expectedContentPath, err := url.PathUnescape(providedContentPath)
+				pkgPullAuthorizationErr := model.ErrPkgPullAuthorization{}
+
+				fakeCore := new(core.Fake)
+				// error to trigger immediate return
+				fakeCore.ResolvePkgReturns(nil, pkgPullAuthorizationErr)
+
+				objectUnderTest := New(fakeCore)
+				recorder := httptest.NewRecorder()
+
+				httpReq, err := http.NewRequest(
+					http.MethodGet,
+					"/pkgs/dummyRef/contents/dummyPath",
+					nil,
+				)
 				if nil != err {
 					panic(err.Error())
 				}
+
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, httpReq)
+
+				/* assert */
+				Expect(recorder.Code).To(Equal(http.StatusForbidden))
+				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+				actualBody := strings.TrimSpace(recorder.Body.String())
+				Expect(actualBody).To(Equal(pkgPullAuthorizationErr.Error()))
+			})
+		})
+		Context("err is model.ErrPkgNotFound", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				pkgNotFoundErr := model.ErrPkgNotFound{}
+
+				fakeCore := new(core.Fake)
+				// error to trigger immediate return
+				fakeCore.ResolvePkgReturns(nil, pkgNotFoundErr)
+
+				objectUnderTest := New(fakeCore)
+				recorder := httptest.NewRecorder()
+
+				httpReq, err := http.NewRequest(
+					http.MethodGet,
+					"/pkgs/dummyRef/contents/dummyPath",
+					nil,
+				)
+				if nil != err {
+					panic(err.Error())
+				}
+
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, httpReq)
+
+				/* assert */
+				Expect(recorder.Code).To(Equal(http.StatusNotFound))
+				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+				actualBody := strings.TrimSpace(recorder.Body.String())
+				Expect(actualBody).To(Equal(pkgNotFoundErr.Error()))
+			})
+		})
+		Context("err isn't known type", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				expectedBody := "dummyErrorMsg"
+
+				fakeCore := new(core.Fake)
+				// error to trigger immediate return
+				fakeCore.ResolvePkgReturns(nil, errors.New(expectedBody))
+
+				objectUnderTest := New(fakeCore)
+				recorder := httptest.NewRecorder()
+
+				httpReq, err := http.NewRequest(
+					http.MethodGet,
+					"/pkgs/dummyRef/contents/dummyPath",
+					nil,
+				)
+				if nil != err {
+					panic(err.Error())
+				}
+
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, httpReq)
+
+				/* assert */
+				Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
+				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+				actualBody := strings.TrimSpace(recorder.Body.String())
+				Expect(actualBody).To(Equal(expectedBody))
+			})
+		})
+	})
+	Context("core.GetPkgContent doesn't err", func() {
+		It("should call handle.GetContent w/ expected args", func() {
+			/* arrange */
+			providedContentPath := "dummyPkgRef%2F"
+			expectedContentPath, err := url.PathUnescape(providedContentPath)
+			if nil != err {
+				panic(err.Error())
+			}
+
+			fakePkgHandle := new(pkg.FakeHandle)
+			// error to trigger immediate return
+			fakePkgHandle.GetContentReturns(nil, errors.New("dummyError"))
+
+			fakeCore := new(core.Fake)
+			fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+
+			objectUnderTest := New(fakeCore)
+			recorder := httptest.NewRecorder()
+
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/dummyPkgRef/contents/%v", providedContentPath), nil)
+			if nil != err {
+				panic(err.Error())
+			}
+
+			/* act */
+			objectUnderTest.ServeHTTP(recorder, httpReq)
+
+			/* assert */
+			_,
+				actualPkgRef := fakePkgHandle.GetContentArgsForCall(0)
+
+			Expect(actualPkgRef).To(Equal(expectedContentPath))
+		})
+		Context("handle.GetContent errors", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				expectedBody := "dummyErrorMsg"
 
 				fakePkgHandle := new(pkg.FakeHandle)
-				// error to trigger immediate return
-				fakePkgHandle.GetContentReturns(nil, errors.New("dummyError"))
+				fakePkgHandle.GetContentReturns(nil, errors.New(expectedBody))
 
 				fakeCore := new(core.Fake)
 				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
@@ -298,110 +262,80 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
 
-				// manually construct request so path doesn't get parsed
-				httpReq := &http.Request{
-					Method: http.MethodGet,
-					URL:    &url.URL{Path: fmt.Sprintf("/pkgs/dummyPkgRef/contents/%v", providedContentPath)},
+				httpReq, err := http.NewRequest(
+					http.MethodGet,
+					"/pkgs/dummyRef/contents/dummyPath",
+					nil,
+				)
+				if nil != err {
+					panic(err.Error())
 				}
 
 				/* act */
 				objectUnderTest.ServeHTTP(recorder, httpReq)
 
 				/* assert */
-				_,
-					actualPkgRef := fakePkgHandle.GetContentArgsForCall(0)
-
-				Expect(actualPkgRef).To(Equal(expectedContentPath))
+				Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
+				Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
+				actualBody := strings.TrimSpace(recorder.Body.String())
+				Expect(actualBody).To(Equal(expectedBody))
 			})
-			Context("handle.GetContent errors", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					expectedBody := "dummyErrorMsg"
+		})
+		Context("handle.GetContent doesn't error", func() {
+			It("should call http.ServeContent w/ expected args", func() {
+				/* arrange */
+				providedPath := "dummyPath"
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.GetContentReturns(nil, errors.New(expectedBody))
+				expectedReadSeeker, err := ioutil.TempFile("", "")
+				defer expectedReadSeeker.Close()
 
-					fakeCore := new(core.Fake)
-					fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+				fakePkgHandle := new(pkg.FakeHandle)
+				fakePkgHandle.GetContentReturns(expectedReadSeeker, nil)
 
-					objectUnderTest := New(fakeCore)
-					recorder := httptest.NewRecorder()
+				fakeCore := new(core.Fake)
+				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
 
-					httpReq, err := http.NewRequest(
-						http.MethodGet,
-						"/pkgs/dummyRef/contents/dummyPath",
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
+				fakeHTTP := new(ihttp.Fake)
 
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, httpReq)
+				// construct objectUnderTest
+				router := mux.NewRouter()
+				objectUnderTest := _handler{
+					core:   fakeCore,
+					http:   fakeHTTP,
+					Router: router,
+				}
+				router.HandleFunc(api.URLPkgs_Ref_Contents_Path, objectUnderTest.pkgs_ref_contents_path).Methods(http.MethodGet)
 
-					/* assert */
-					Expect(recorder.Code).To(Equal(http.StatusInternalServerError))
-					Expect(recorder.HeaderMap.Get("Content-Type")).To(Equal("text/plain; charset=utf-8"))
-					actualBody := strings.TrimSpace(recorder.Body.String())
-					Expect(actualBody).To(Equal(expectedBody))
-				})
-			})
-			Context("handle.GetContent doesn't error", func() {
-				It("should call http.ServeContent w/ expected args", func() {
-					/* arrange */
-					providedPath := "dummyPath"
+				recorder := httptest.NewRecorder()
 
-					expectedReadSeeker, err := ioutil.TempFile("", "")
-					defer expectedReadSeeker.Close()
+				providedRequest, err := http.NewRequest(
+					http.MethodGet,
+					fmt.Sprintf("/pkgs/dummyRef/contents/%v", providedPath),
+					nil,
+				)
+				if nil != err {
+					panic(err.Error())
+				}
+				providedRequest = providedRequest.WithContext(context.TODO())
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.GetContentReturns(expectedReadSeeker, nil)
+				/* act */
+				objectUnderTest.ServeHTTP(recorder, providedRequest)
 
-					fakeCore := new(core.Fake)
-					fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+				/* assert */
+				actualResponseWriter,
+					actualRequest,
+					actualName,
+					actualTime,
+					actualReadSeeker := fakeHTTP.ServeContentArgsForCall(0)
 
-					fakeHTTP := new(ihttp.Fake)
+				// ignore context
+				actualRequest = actualRequest.WithContext(providedRequest.Context())
 
-					// construct objectUnderTest
-					router := mux.NewRouter()
-					objectUnderTest := _handler{
-						core:   fakeCore,
-						http:   fakeHTTP,
-						Router: router,
-					}
-					router.HandleFunc(api.URLPkgs_Ref_Contents_Path, objectUnderTest.pkgs_ref_contents_path).Methods(http.MethodGet)
-
-					recorder := httptest.NewRecorder()
-
-					providedRequest, err := http.NewRequest(
-						http.MethodGet,
-						fmt.Sprintf("/pkgs/dummyRef/contents/%v", providedPath),
-						nil,
-					)
-					if nil != err {
-						panic(err.Error())
-					}
-					providedRequest = providedRequest.WithContext(context.TODO())
-
-					/* act */
-					objectUnderTest.ServeHTTP(recorder, providedRequest)
-
-					/* assert */
-					actualResponseWriter,
-						actualRequest,
-						actualName,
-						actualTime,
-						actualReadSeeker := fakeHTTP.ServeContentArgsForCall(0)
-
-					// ignore context
-					actualRequest = actualRequest.WithContext(providedRequest.Context())
-
-					Expect(actualResponseWriter).To(Equal(recorder))
-					Expect(*actualRequest).To(Equal(*providedRequest))
-					Expect(actualName).To(Equal(path.Base(providedPath)))
-					Expect(actualTime).To(Equal(time.Time{}))
-					Expect(actualReadSeeker).To(Equal(expectedReadSeeker))
-				})
+				Expect(actualResponseWriter).To(Equal(recorder))
+				Expect(*actualRequest).To(Equal(*providedRequest))
+				Expect(actualName).To(Equal(path.Base(providedPath)))
+				Expect(actualTime).To(Equal(time.Time{}))
+				Expect(actualReadSeeker).To(Equal(expectedReadSeeker))
 			})
 		})
 	})

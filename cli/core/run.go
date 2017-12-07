@@ -99,7 +99,7 @@ func (this _core) Run(
 				this.opspecNodeAPIClient.KillOp(
 					ctx,
 					model.KillOpReq{
-						RootOpId: rootOpId,
+						OpId: rootOpId,
 					},
 				)
 			} else {
