@@ -1,6 +1,7 @@
 # prerequisites
 
-Opctl relies on API access to a docker daemon.
+The current implementation of opctl relies on API access to a docker
+daemon to run containers.
 
 Docker has two offerings supporting windows, docker-machine and
 docker4win.

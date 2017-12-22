@@ -1,0 +1,66 @@
+name: release/to-docker
+description: runs all ops necessary to cut a release to docker
+inputs:
+  dockerDSocket:
+    socket:
+      description: socket for docker daemon
+  dockerPassword:
+    string:
+      constraints: { minLength: 1 }
+      description: password for docker registry
+      isSecret: true
+  dockerUsername:
+    string:
+      constraints: { minLength: 1 }
+      description: username for docker registry
+  version:
+    string:
+      constraints: { format: semver }
+      description: version of opctl being released
+run:
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "determining channel"
+            case "$(version)" in
+              *beta*)
+                channel=beta
+                ;;
+              *alpha*)
+                channel=alpha
+                ;;
+              *)
+                channel=stable
+                ;;
+            esac
+
+            dockerImageRef=opctl/opctl:"$channel"
+
+            echo dockerImageRef=$dockerImageRef
+
+            echo "compiling image"
+            docker build --build-arg CHANNEL="$channel" --no-cache -t "$dockerImageRef" .
+        dirs:
+          /workDir: /
+        image: { ref: 'docker:17.07.0-dind' }
+        sockets:
+          /var/run/docker.sock: dockerDSocket
+        stdOut:
+          dockerImageRef=: dockerImageRef
+        workDir: /workDir
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "authenticating"
+            docker login -u "$(dockerUsername)" -p "$(dockerPassword)"
+
+            echo "pushing image"
+            docker push "$(dockerImageRef)"
+        image: { ref: 'docker:1.11' }
+        sockets:
+          /var/run/docker.sock: dockerDSocket

@@ -1,0 +1,40 @@
+name: deploy-to-docker-swarm
+description: deploys opctl to a docker cloud swarm
+inputs:
+  dockerUsername:
+    string:
+      description: docker username
+  dockerPassword:
+    string:
+      description: docker password
+  releaseChannel:
+    string:
+      description: release channel to deploy from
+      constraints: { enum: [stable, alpha, beta] }
+run:
+  serial:
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/dockercloud.swarm.network.create#1.0.0 }
+        inputs:
+          dockerUsername:
+          dockerPassword:
+          swarm: opctl/alpha
+          networkName: frontend
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/envsubst#1.0.2 }
+        inputs:
+          variables: |
+            {
+              "releaseChannel": "$(releaseChannel)"
+            }
+          template: $(/docker-compose.yml)
+        outputs:
+          dockerComposeYml: result
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/dockercloud.swarm.stack.deploy#1.0.0}
+        inputs:
+          dockerUsername:
+          dockerPassword:
+          swarm: opctl/alpha
+          stackName: alpha
+          stackFile: $(dockerComposeYml)
