@@ -1,6 +1,3 @@
-$opctl-purk: #791562;
-// purk == purple + pink
-
 /* bootstrap override */
 // until https://github.com/twbs/bootstrap/pull/23260
 $gray-100: #f8f9fa;
@@ -13,7 +10,7 @@ $green: #006600;
 $cyan: #17a2b8;
 
 $theme-colors: (
-  primary: $opctl-purk,
+  primary: $gray-600,
   secondary: $gray-600,
   success: $green,
   info: $cyan,
