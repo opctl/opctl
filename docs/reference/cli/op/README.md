@@ -4,4 +4,4 @@ Manage ops
 
 ## Sub commands
 
-* [op kill](kill.md)
+* [kill](kill.md)
