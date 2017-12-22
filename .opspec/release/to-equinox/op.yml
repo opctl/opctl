@@ -1,5 +1,5 @@
 description: runs all ops necessary to cut a release to equinox.io
-name: node/release-to-equinox
+name: release/to-equinox
 inputs:
   equinoxSigningKey:
     string:

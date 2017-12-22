@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   alpha-opctl:
-    image: opctl/opctl:stable
+    image: opctl/opctl:$releaseChannel
     networks: [frontend]
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"

@@ -1,4 +1,4 @@
-name: node/release-to-docker
+name: release/to-docker
 description: runs all ops necessary to cut a release to docker
 inputs:
   dockerDSocket:

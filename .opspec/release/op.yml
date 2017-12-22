@@ -45,8 +45,8 @@ run:
         pkg: { ref: build }
         inputs: { srcDir, gitBranch }
     - op:
-        pkg: { ref: node/release-to-equinox }
+        pkg: { ref: release/to-equinox }
         inputs: { equinoxSigningKey, equinoxToken, srcDir, version }
     - op:
-        pkg: { ref: node/release-to-docker }
+        pkg: { ref: release/to-docker }
         inputs: { dockerDSocket, dockerPassword, dockerUsername, version }
