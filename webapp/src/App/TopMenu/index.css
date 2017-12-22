@@ -1,0 +1,18 @@
+.top-menu {
+  align-items: center;
+  flex-direction: row;
+  border-bottom: solid thin #ececec;
+  display: flex;
+  height: 56px;
+  justify-content: flex-start;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  top: 0;
+}
+
+.top-menu .menu-item {
+  margin-left: 15px;
+  margin-right: 10px;
+}
