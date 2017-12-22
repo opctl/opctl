@@ -40,7 +40,7 @@ export default class Pkg extends Component {
     opspecNodeApiClient.op_kill({
       opId: this.state.opId
     })
-      .then(opId => this.setState({isKillable: false}))
+      .then(() => this.setState({isKillable: false}))
       .catch(error => {
         toast.error(error.message);
       });
