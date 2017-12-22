@@ -12,14 +12,14 @@ run:
           - -ce
           - |
             echo "installing deps"
-            npm install -q
-        image: { ref: 'node:7.10.1-alpine' }
+            yarn install -q
+        image: { ref: 'node:9.3.0-alpine' }
         dirs:
           /src: $(srcDir/webapp)
         workDir: /src
     - container:
-        cmd: [ npm, run, build ]
-        image: { ref: 'node:7.10.1-alpine' }
+        cmd: [ yarn, run, build ]
+        image: { ref: 'node:9.3.0-alpine' }
         dirs:
           /src: $(srcDir/webapp)
         workDir: /src
