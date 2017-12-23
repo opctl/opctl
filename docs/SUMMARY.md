@@ -12,6 +12,7 @@
 
 ### reference
 
+* [api](reference/api/README.md)
 * [cli](reference/cli/README.md)
   * [events](reference/cli/events.md)
   * [ls](reference/cli/ls.md)
