@@ -1,9 +1,8 @@
-import React, {Component} from 'react';
-import ReactList from 'react-list';
-import {getRenderedHeight} from 'react-rendered-size';
+import React, { Component } from 'react';
 import Event from './Event';
 import opspecNodeApiClient from '../../utils/clients/opspecNodeApi';
-import {toast} from 'react-toastify';
+import { AutoSizer, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized';
+import { toast } from 'react-toastify';
 import './index.css';
 
 const throttleDuration = 200;
@@ -16,22 +15,19 @@ class EventBrowser extends Component {
       events: [],
     };
 
-    this.eventStreamCloser = () => {};
+    this.mostRecentWidth = 0;
+    this.isScrolledToEnd = true;
+    this.eventStreamCloser = () => { };
     this.lastComponentUpdate = new Date().getTime();
+    this.cache = new CellMeasurerCache({
+      fixedWidth: true
+    });
   }
 
   componentDidMount() {
     this.eventStreamCloser = opspecNodeApiClient.event_stream_get({
       filter: this.props.filter,
-      onEvent: rawEvent => {
-        const event = Object.assign(
-          {
-            // cache rendered height
-            height: getRenderedHeight(<Event event={rawEvent}/>),
-          },
-          rawEvent
-        );
-
+      onEvent: event => {
         this.setState(prevState => ({
           events: [...prevState.events, event]
         }));
@@ -52,10 +48,6 @@ class EventBrowser extends Component {
   }
 
   componentDidUpdate() {
-    if (this.isAtBottom) {
-      // only scroll if at bottom; otherwise we'd be overriding the users custom scroll
-      this.messageList.scrollTop = this.messageList.scrollHeight
-    }
     this.lastComponentUpdate = new Date().getTime();
   }
 
@@ -64,32 +56,61 @@ class EventBrowser extends Component {
     clearInterval(this.interval);
   }
 
-  componentWillUpdate() {
-    this.isAtBottom = (this.messageList.scrollHeight - (this.messageList.scrollTop + this.messageList.offsetHeight)) < 100;
+  rowRenderer({ index, isScrolling, key, parent, style }) {
+    return (
+      <CellMeasurer
+        cache={this.cache}
+        columnIndex={0}
+        key={key}
+        parent={parent}
+        rowIndex={index}
+        width={this.mostRecentWidth}
+      >
+        <div style={style}>
+          <Event event={this.state.events[index]} />
+        </div>
+      </CellMeasurer>
+    );
   }
 
-  renderItem(index, key) {
-    return (<Event key={key} event={this.state.events[index]}/>);
+  handleResize({ width }) {
+    if (this.mostRecentWidth !== width) {
+      this.mostRecentWidth = width;
+      this.cache.clearAll();
+      this.list.recomputeRowHeights();
+    }
+  }
+
+  handleRowsRendered({stopIndex}) {
+    this.isScrolledToEnd = this.state.events.length - stopIndex <= 1;
   }
 
   render() {
     return (
-      <div className='events'>
-        <div
-          className='event-browser'
-          style={{overflow: 'auto'}}
-          ref={(div) => {
-            this.messageList = div
-          }}
-        >
-          <ReactList
-            itemSizeGetter={(index) => this.state.events[index].height}
-            itemRenderer={(index, key) => this.renderItem(index, key)}
-            length={this.state.events.length}
-            type='variable'
-          />
-        </div>
-      </div>
+      <AutoSizer onResize={resized => this.handleResize(resized)}>
+        {({ height, width }) => {
+          const optionalProps = {};
+          if (this.isScrolledToEnd) {
+            optionalProps.scrollToIndex = this.state.events.length;
+          }
+          return (
+            <List
+              className='events'
+              height={height}
+              width={width}
+              ref={ref => {
+                this.list = ref;
+              }}
+              onRowsRendered={rowsRendered => this.handleRowsRendered(rowsRendered)}
+              deferredMeasurementCache={this.cache}
+              rowHeight={this.cache.rowHeight}
+              rowRenderer={(renderOpts) => this.rowRenderer(renderOpts)}
+              rowCount={this.state.events.length}
+              {...optionalProps}
+            />
+          );
+        }}
+      </AutoSizer>
     );
   }
 
