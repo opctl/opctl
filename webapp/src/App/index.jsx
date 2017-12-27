@@ -1,13 +1,18 @@
 import React, {Component} from 'react';
-import PkgBrowser from "./PkgBrowser";
-import EventBrowser from "./EventBrowser";
+import Spaces from './views/Spaces';
+import Events from "./views/Events";
 import {HashRouter} from 'react-router-dom'
 import TopMenu from './TopMenu';
 import SideMenu from './SideMenu';
 import {Route} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify';
+
+// shared vendor css
 import './bootstrap.css';
 import 'react-toastify/dist/ReactToastify.min.css'
+import 'react-virtualized/styles.css'
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 export default class Page extends Component {
   constructor(props) {
@@ -27,7 +32,7 @@ export default class Page extends Component {
   render() {
     return (
       <HashRouter>
-        <div>
+        <div style={{height: '100vh'}}>
           <TopMenu onCollapseToggled={() => this.handleSideMenuToggled()}/>
           <SideMenu isCollapsed={this.state.isSideMenuCollapsed}/>
           <ToastContainer
@@ -36,11 +41,11 @@ export default class Page extends Component {
           />
           <div
             style={{
+              height: 'calc(100vh - 58px)',
               marginLeft: this.state.isSideMenuCollapsed ? '0' : '269px',
-              marginTop: '57px'
             }}>
-            <Route exact path="/" component={PkgBrowser}/>
-            <Route path="/events" component={EventBrowser}/>
+            <Route exact path="/" component={Spaces}/>
+            <Route path="/events" component={Events}/>
           </div>
         </div>
       </HashRouter>

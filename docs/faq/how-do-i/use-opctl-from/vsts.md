@@ -27,4 +27,5 @@ Task: "Shell Script"
 Type: "Inline"
 
 > passes an arg `someArg` to the op from a VSTS "Variable" `someArg`
+
 Script: "opctl run -a someArg=$(someArg) test"

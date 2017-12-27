@@ -1,7 +1,6 @@
 import React from 'react';
 import Ansi from 'ansi-to-react';
 
-
 export default ({
                   containerStdOutWrittenTo
                 }) => {
