@@ -72,7 +72,7 @@ export default class Spaces extends Component {
             pkg,
             i: "n" + this.state.newCounter,
             x: (this.state.ops.length * 2) % (12),
-            y: Infinity, // puts it at the bottom
+            y: 10000000000000, // puts it at the bottom
             w: 2,
             h: 2
         }
