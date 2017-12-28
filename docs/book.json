@@ -20,12 +20,22 @@
       "token": "UA-94109316-1"
     },
     "github-buttons": {
-      "repo": "opctl/opctl",
-      "types": [
-        "star",
-        "watch"
-      ],
-      "size": "small"
+      "buttons": [
+        {
+          "type": "star",
+          "user": "opctl",
+          "repo": "opctl",
+          "size": "small",
+          "count": true
+        },
+        {
+          "type": "watch",
+          "user": "opctl",
+          "repo": "opctl",
+          "size": "small",
+          "count": true
+        }
+      ]
     }
   },
   "structure": {
