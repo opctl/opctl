@@ -1,7 +1,7 @@
 import React from 'react';
 import Input from './Input';
 
-export default ({name, onValid, pkgRef, socket}) =>
+export default ({name, onValid, pkgRef, socket, value}) =>
   <Input
     description={socket.description}
     name={name}
@@ -10,5 +10,6 @@ export default ({name, onValid, pkgRef, socket}) =>
     type='text'
     // @TODO validate
     validate={value => ([])}
+    value={value}
   />;
 

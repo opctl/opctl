@@ -30,7 +30,6 @@ export default class Pkg extends Component {
     this.setState({ isStartable: Object.keys(this.props.value.inputs).length === Object.keys(this.args).length });
   };
 
-
   kill = () => {
     opspecNodeApiClient.op_kill({
       opId: this.state.opId
@@ -56,7 +55,7 @@ export default class Pkg extends Component {
             roots: [opId],
           },
           onEvent: event => {
-            if (event.opEnded) {
+            if (event.opEnded && event.opEnded.opId === opId) {
               this.setState({
                 isKillable: false,
                 outputs: event.opEnded.outputs,
