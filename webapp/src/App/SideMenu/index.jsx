@@ -12,7 +12,7 @@ export default ({ isCollapsed }) => {
       </li>
       <li className='menu-item'>
         <NavLink to='/' exact={true}>
-          spaces
+          operations
         </NavLink>
       </li>
     </ul>

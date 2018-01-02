@@ -13,6 +13,7 @@ export default ({
                   onInvalid,
                   onValid,
                   pkgRef,
+                  value,
                 }) => {
   // delegate to component for input
   if (input.array) {
@@ -22,6 +23,7 @@ export default ({
       onInvalid={onInvalid}
       onValid={onValid}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.dir) {
     return <InputDir
@@ -30,6 +32,7 @@ export default ({
       onInvalid={onInvalid}
       onValid={onValid}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.file) {
     return <InputFile
@@ -38,6 +41,7 @@ export default ({
       onInvalid={onInvalid}
       onValid={onValid}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.number) {
     return <InputNumber
@@ -46,6 +50,7 @@ export default ({
       name={name}
       number={input.number}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.object) {
     return <InputObject
@@ -54,6 +59,7 @@ export default ({
       onInvalid={onInvalid}
       onValid={onValid}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.socket) {
     return <InputSocket
@@ -62,6 +68,7 @@ export default ({
       onValid={onValid}
       socket={input.socket}
       pkgRef={pkgRef}
+      value={value}
     />
   } else if (input.string) {
     return <InputString
@@ -70,6 +77,7 @@ export default ({
       onValid={onValid}
       string={input.string}
       pkgRef={pkgRef}
+      value={value}
     />
   }
   return null

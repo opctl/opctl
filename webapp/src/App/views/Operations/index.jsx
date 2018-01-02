@@ -1,0 +1,126 @@
+import React, { Component } from 'react';
+import { Responsive as ResponsiveReactGridLayout } from "react-grid-layout";
+import PkgSelector from '../../PkgSelector';
+import { AutoSizer } from 'react-virtualized';
+import Item from './Item';
+
+const dragHandleClassName = 'dragHandle';
+
+function getStateFromLS(key) {
+    if (global.localStorage) {
+        return JSON.parse(global.localStorage.getItem("state")) || null;
+    }
+    return null;
+}
+
+function saveStateToLS(state) {
+    if (global.localStorage) {
+        global.localStorage.setItem(
+            "state",
+            JSON.stringify(state)
+        );
+    }
+}
+
+export default class Spaces extends Component {
+    static defaultProps = {
+        className: "layout",
+        cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+        rowHeight: 100
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state =
+            getStateFromLS()
+            ||
+            {
+                layouts: {},
+                items: [],
+                newCounter: 0
+            };
+    }
+
+    addItem = ({ pkg, pkgRef }) => {
+        const item = {
+            pkgRef,
+            pkg,
+            args: {},
+            values: {},
+            i: "n" + this.state.newCounter,
+            x: (this.state.items.length * 2) % (12),
+            y: 10000000000000, // puts it at the bottom
+            w: 2,
+            h: 2
+        }
+
+        this.setState(
+            prevState => ({
+                items: [...prevState.items, item],
+                newCounter: prevState.newCounter + 1
+            })
+        );
+    }
+
+    componentDidUpdate() {
+        saveStateToLS(this.state);
+    }
+
+    handleLayoutChange = (layout, layouts) => {
+        this.setState({ layouts });
+    }
+
+    deleteItem = (itemId) => {
+        this.setState(
+            prevState => ({ items: prevState.items.filter(item => item.i !== itemId) })
+        );
+    }
+
+    updateItemConfiguration = (itemId, configuration) => {
+        this.setState(
+            prevState => {
+                const itemIndex = prevState.items.findIndex(item => item.i === itemId);
+                const items = [...prevState.items];
+                const item = prevState.items[itemIndex];
+                items[itemIndex] = Object.assign({}, item, configuration);
+                return {items};
+            }
+        );
+    }
+
+    render() {
+        return (
+            <div>
+                <PkgSelector
+                    onSelect={this.addItem}
+                />
+                <AutoSizer>
+                    {({ width }) =>
+                        <ResponsiveReactGridLayout
+                            width={width}
+                            layouts={this.state.layouts}
+                            onLayoutChange={this.handleLayoutChange}
+                            draggableHandle={`.${dragHandleClassName}`}
+                        >
+                            {this.state.items.map(item =>
+                                <div
+                                    data-grid={item}
+                                    key={item.i}>
+                                    <Item
+                                        pkgRef={item.pkgRef}
+                                        pkg={item.pkg}
+                                        onDelete={this.deleteItem.bind(this, item.i)}
+                                        args={item.args}
+                                        values={item.values}
+                                        onConfigured={this.updateItemConfiguration.bind(this, item.i)}
+                                    />
+                                </div>
+                            )}
+                        </ResponsiveReactGridLayout>
+                    }
+                </AutoSizer>
+            </div>
+        )
+    }
+}

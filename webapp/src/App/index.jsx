@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Spaces from './views/Spaces';
+import Operations from './views/Operations';
 import Events from "./views/Events";
 import {HashRouter} from 'react-router-dom'
 import TopMenu from './TopMenu';
@@ -44,7 +44,7 @@ export default class Page extends Component {
               height: 'calc(100vh - 58px)',
               marginLeft: this.state.isSideMenuCollapsed ? '0' : '269px',
             }}>
-            <Route exact path="/" component={Spaces}/>
+            <Route exact path="/" component={Operations}/>
             <Route path="/events" component={Events}/>
           </div>
         </div>

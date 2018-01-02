@@ -1,15 +1,15 @@
 import React from 'react';
 import Input from './Input';
 
-export default ({file, name, onValid, pkgRef}) =>
+export default ({file, name, onValid, pkgRef, value}) =>
   <Input
     description={file.description}
     name={name}
     onValid={value => onValid({file: value})}
     pkgRef={pkgRef}
     type='text'
-    value={file.default}
     // @TODO validate
     validate={() => ([])}
+    value={value || file.default}
   />;
 
