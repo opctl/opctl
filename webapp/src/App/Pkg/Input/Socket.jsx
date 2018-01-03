@@ -5,7 +5,7 @@ export default ({name, onValid, pkgRef, socket, value}) =>
   <Input
     description={socket.description}
     name={name}
-    onValid={value => onValid({socket: value})}
+    onValid={value => onValid({socket: value, value})}
     pkgRef={pkgRef}
     type='text'
     // @TODO validate

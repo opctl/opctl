@@ -5,7 +5,7 @@ export default ({dir, name, onValid, pkgRef, value}) =>
   <Input
     description={dir.description}
     name={name}
-    onValid={value => onValid({dir: value})}
+    onValid={value => onValid({dir: value, value})}
     pkgRef={pkgRef}
     type='text'
     // @TODO validate

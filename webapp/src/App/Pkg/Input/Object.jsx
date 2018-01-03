@@ -8,7 +8,7 @@ export default ({name, object, onInvalid, onValid, pkgRef, value}) => (
     description={object.description}
     name={name}
     onInvalid={onInvalid}
-    onValid={value => onValid({object: jsYaml.safeLoad(value)})}
+    onValid={value => onValid({object: jsYaml.safeLoad(value), value: jsYaml.safeLoad(value)})}
     pkgRef={pkgRef}
     validate={value => {
       try {
