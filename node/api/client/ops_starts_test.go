@@ -21,7 +21,7 @@ var _ = Context("StartOp", func() {
 		/* arrange */
 		providedCtx := context.TODO()
 		providedReq := model.StartOpReq{
-			Args: map[string]*model.Value{},
+			Args: map[string]interface{}{},
 			Pkg: &model.DCGOpCallPkg{
 				Ref: "dummyPkgRef",
 				PullCreds: &model.DCGPullCreds{
