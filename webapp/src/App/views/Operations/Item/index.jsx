@@ -12,7 +12,8 @@ export default class Item extends Component {
     args = {};
     state = {
         isConfigurationVisible: false,
-        isKillable: false
+        isKillable: false,
+        opId: this.props.opId
     }
 
     toggleConfigurationModal = () => {
@@ -43,13 +44,34 @@ export default class Item extends Component {
 
     kill = () => {
         opspecNodeApiClient.op_kill({
-            opId: this.state.opId
+            opId: this.props.opId
         })
-            .then(() => this.setState({ isKillable: false }))
+            .then(() => {
+                this.props.onConfigured({ opId: null });
+                this.setState({ isKillable: false })
+            })
             .catch(error => {
                 toast.error(error.message);
             });
     };
+
+    processEventStream = ({ opId }) => {
+        this.setState({ isKillable: true });
+
+        opspecNodeApiClient.event_stream_get({
+            filter: {
+                roots: [opId],
+            },
+            onEvent: event => {
+                if (event.opEnded && event.opEnded.opId === opId) {
+                    this.setState({
+                        isKillable: false,
+                        outputs: event.opEnded.outputs,
+                    });
+                }
+            },
+        })
+    }
 
     start = () => {
         opspecNodeApiClient.op_start({
@@ -59,26 +81,17 @@ export default class Item extends Component {
             }
         })
             .then(opId => {
-                this.setState({ opId, isKillable: true });
-
-                opspecNodeApiClient.event_stream_get({
-                    filter: {
-                        roots: [opId],
-                    },
-                    onEvent: event => {
-                        if (event.opEnded && event.opEnded.opId === opId) {
-                            this.setState({
-                                isKillable: false,
-                                outputs: event.opEnded.outputs,
-                            });
-                        }
-                    },
-                })
+                this.props.onConfigured({ opId });
+                this.processEventStream({ opId: this.props.opId });
             })
             .catch(error => {
                 toast.error(error.message);
             });
     };
+
+    componentWillMount() {
+        this.processEventStream({ opId: this.props.opId });
+    }
 
     render() {
         return (
@@ -110,9 +123,9 @@ export default class Item extends Component {
                         </Modal>
                         <div style={{ marginTop: '37px', height: 'calc(100% - 37px)', overflowY: 'auto' }}>
                             {
-                                this.state.opId
+                                this.props.opId
                                     ?
-                                    <EventBrowser key={this.state.opId} filter={{ roots: [this.state.opId] }} />
+                                    <EventBrowser key={this.props.opId} filter={{ roots: [this.props.opId] }} />
                                     :
                                     null
                             }

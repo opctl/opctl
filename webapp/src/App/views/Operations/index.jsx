@@ -108,6 +108,7 @@ export default class Spaces extends Component {
                                     data-grid={item}
                                     key={item.i}>
                                     <Item
+                                        opId={item.opId}
                                         pkgRef={item.pkgRef}
                                         pkg={item.pkg}
                                         onDelete={this.deleteItem.bind(this, item.i)}
