@@ -56,13 +56,14 @@ export default class Item extends Component {
     };
 
     processEventStream = ({ opId }) => {
-        this.setState({ isKillable: true });
-
         opspecNodeApiClient.event_stream_get({
             filter: {
                 roots: [opId],
             },
             onEvent: event => {
+                if (event.opStarted) {
+                    this.setState({ isKillable: true });
+                }
                 if (event.opEnded && event.opEnded.opId === opId) {
                     this.setState({
                         isKillable: false,

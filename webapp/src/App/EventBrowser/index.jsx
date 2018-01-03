@@ -81,36 +81,38 @@ class EventBrowser extends Component {
     }
   }
 
-  handleRowsRendered({stopIndex}) {
+  handleRowsRendered({ stopIndex }) {
     this.isScrolledToEnd = this.state.events.length - stopIndex <= 1;
   }
 
   render() {
     return (
-      <AutoSizer onResize={resized => this.handleResize(resized)}>
-        {({ height, width }) => {
-          const optionalProps = {};
-          if (this.isScrolledToEnd) {
-            optionalProps.scrollToIndex = this.state.events.length;
-          }
-          return (
-            <List
-              className='events'
-              height={height}
-              width={width}
-              ref={ref => {
-                this.list = ref;
-              }}
-              onRowsRendered={rowsRendered => this.handleRowsRendered(rowsRendered)}
-              deferredMeasurementCache={this.cache}
-              rowHeight={this.cache.rowHeight}
-              rowRenderer={(renderOpts) => this.rowRenderer(renderOpts)}
-              rowCount={this.state.events.length}
-              {...optionalProps}
-            />
-          );
-        }}
-      </AutoSizer>
+      this.state.events.length !== 0
+        ? <AutoSizer onResize={resized => this.handleResize(resized)}>
+          {({ height, width }) => {
+            const optionalProps = {};
+            if (this.isScrolledToEnd) {
+              optionalProps.scrollToIndex = this.state.events.length;
+            }
+            return (
+              <List
+                className='events'
+                height={height}
+                width={width}
+                ref={ref => {
+                  this.list = ref;
+                }}
+                onRowsRendered={rowsRendered => this.handleRowsRendered(rowsRendered)}
+                deferredMeasurementCache={this.cache}
+                rowHeight={this.cache.rowHeight}
+                rowRenderer={(renderOpts) => this.rowRenderer(renderOpts)}
+                rowCount={this.state.events.length}
+                {...optionalProps}
+              />
+            );
+          }}
+        </AutoSizer>
+        : null
     );
   }
 
