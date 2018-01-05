@@ -88,6 +88,7 @@ export default class Pkg extends Component {
             onInvalid={this.handleInvalid}
             onValid={this.handleValid}
             pkgRef={this.props.pkgRef}
+            values={{}}
           />
           <div className='form-group'>
             {

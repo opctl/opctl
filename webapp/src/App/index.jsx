@@ -6,12 +6,12 @@ import TopMenu from './TopMenu';
 import SideMenu from './SideMenu';
 import {Route} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify';
+import PkgBrowser from './PkgBrowser';
 
 // shared vendor css
 import './bootstrap.css';
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'react-virtualized/styles.css'
-import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 export default class Page extends Component {
@@ -46,6 +46,7 @@ export default class Page extends Component {
             }}>
             <Route exact path="/" component={Operations}/>
             <Route path="/events" component={Events}/>
+            <Route path="/pkg" component={PkgBrowser}/>
           </div>
         </div>
       </HashRouter>

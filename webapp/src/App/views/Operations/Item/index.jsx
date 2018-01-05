@@ -8,8 +8,7 @@ import opspecNodeApiClient from '../../../../utils/clients/opspecNodeApi';
 import { toast } from 'react-toastify';
 
 export default class Item extends Component {
-    values = {};
-    args = {};
+    args = this.props.args;
     state = {
         isConfigurationVisible: false,
         isKillable: false,
@@ -21,25 +20,17 @@ export default class Item extends Component {
     }
 
     handleInvalid = (name) => {
-        const args = Object.assign({}, this.props.args);
-        delete args[name];
+        delete this.args[name];
 
-        const values = Object.assign({}, this.props.values);
-        delete values[name];
-
-        this.props.onConfigured({ values, args });
+        this.props.onConfigured({ args: this.args });
     };
 
-    isStartable = () => Object.keys(this.props.pkg.inputs || []).length === Object.keys(this.props.args).length
+    isStartable = () => Object.keys(this.props.pkg.inputs || []).length === Object.keys(this.args).length
 
     handleValid = (name, value) => {
-        const args = Object.assign({}, this.props.args);
-        args[name] = value;
+        this.args[name] = value;
 
-        const values = Object.assign({}, this.props.values);
-        values[name] = value.value;
-
-        this.props.onConfigured({ values, args });
+        this.props.onConfigured({ args: this.args });
     };
 
     kill = () => {
@@ -75,8 +66,21 @@ export default class Item extends Component {
     }
 
     start = () => {
+        const args = Object.entries(this.props.pkg.inputs)
+            .reduce((args, [name, param]) => {
+                if (param.array) args[name] = { array: this.args[name] };
+                if (param.dir) args[name] = { dir: this.args[name] };
+                if (param.file) args[name] = { file: this.args[name] };
+                if (param.number) args[name] = { number: this.args[name] };
+                if (param.object) args[name] = { object: this.args[name] };
+                if (param.socket) args[name] = { socket: this.args[name] };
+                if (param.string) args[name] = { string: this.args[name] };
+                return args;
+            }, {});
+
+        console.log(args);
         opspecNodeApiClient.op_start({
-            args: this.props.args,
+            args,
             pkg: {
                 ref: this.props.pkgRef,
             }
@@ -118,7 +122,7 @@ export default class Item extends Component {
                                     onInvalid={this.handleInvalid}
                                     onValid={this.handleValid}
                                     pkgRef={this.props.pkgRef}
-                                    values={this.props.values}
+                                    values={this.args}
                                 />
                             </ModalBody>
                         </Modal>

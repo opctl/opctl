@@ -9,7 +9,7 @@ export default ({name, number, onInvalid, onValid, pkgRef, value}) => {
       description={number.description}
       name={name}
       onInvalid={onInvalid}
-      onValid={value => onValid({number: value, value})}
+      onValid={value => onValid(value)}
       options={number.constraints.enum.map(item => ({name: item, value: item}))}
       pkgRef={pkgRef}
       validate={value => opspecDataValidator.validate(Number(value), number.constraints)}
@@ -20,7 +20,7 @@ export default ({name, number, onInvalid, onValid, pkgRef, value}) => {
     description={number.description}
     name={name}
     onInvalid={onInvalid}
-    onValid={value => onValid({number: value, value})}
+    onValid={value => onValid(value)}
     pkgRef={pkgRef}
     type={number.isSecret ? 'password' : 'number'}
     validate={value => opspecDataValidator.validate(Number(value), number.constraints)}
