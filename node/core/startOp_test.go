@@ -77,36 +77,16 @@ var _ = Context("core", func() {
 			Context("pkg.GetManifest doesn't err", func() {
 				It("should call opCaller.Call w/ expected args", func() {
 					/* arrange */
-					arrayInputName := "dummyArrayInputName"
-					arrayValue := []interface{}{}
-
-					dirInputName := "dummyDirInputName"
-					dirValue := "dummyDirValue"
-
-					fileInputName := "dummyFileInputName"
-					fileValue := "dummyFileValue"
-
-					numberInputName := "dummyNumberInputName"
-					numberValue := 2.0
-
-					objectInputName := "dummyObjectInputName"
-					objectValue := map[string]interface{}{}
-
-					socketInputName := "dummySocketInputName"
-					socketValue := "dummySocketValue"
-
-					stringInputName := "dummyStringInputName"
-					stringValue := "dummyStringValue"
-
+					providedArg1String := "dummyArg1Value"
+					providedArg2Dir := "dummyArg2Value"
+					providedArg3Dir := "dummyArg3Value"
+					providedArg4Dir := "dummyArg4Value"
 					providedReq := model.StartOpReq{
-						Args: map[string]interface{}{
-							arrayInputName:  arrayValue,
-							dirInputName:    dirValue,
-							fileInputName:   fileValue,
-							numberInputName: numberValue,
-							objectInputName: objectValue,
-							socketInputName: socketValue,
-							stringInputName: stringValue,
+						Args: map[string]*model.Value{
+							"dummyArg1Name": {String: &providedArg1String},
+							"dummyArg2Name": {Dir: &providedArg2Dir},
+							"dummyArg3Name": {Dir: &providedArg3Dir},
+							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
 						Pkg: &model.DCGOpCallPkg{
 							Ref: "dummyPkgRef",
@@ -119,15 +99,6 @@ var _ = Context("core", func() {
 					fakePkg.ResolveReturns(fakePkgHandle, nil)
 
 					pkgManifest := &model.PkgManifest{
-						Inputs: map[string]*model.Param{
-							arrayInputName:  &model.Param{Array: &model.ArrayParam{}},
-							dirInputName:    &model.Param{Dir: &model.DirParam{}},
-							fileInputName:   &model.Param{File: &model.FileParam{}},
-							numberInputName: &model.Param{Number: &model.NumberParam{}},
-							objectInputName: &model.Param{Object: &model.ObjectParam{}},
-							socketInputName: &model.Param{Socket: &model.SocketParam{}},
-							stringInputName: &model.Param{String: &model.StringParam{}},
-						},
 						Outputs: map[string]*model.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
@@ -147,16 +118,6 @@ var _ = Context("core", func() {
 					}
 					for name := range pkgManifest.Outputs {
 						expectedSCGOpCall.Outputs[name] = ""
-					}
-
-					expectedInboundScope := map[string]*model.Value{
-						arrayInputName:  &model.Value{Array: arrayValue},
-						dirInputName:    &model.Value{Dir: &dirValue},
-						fileInputName:   &model.Value{File: &fileValue},
-						numberInputName: &model.Value{Number: &numberValue},
-						objectInputName: &model.Value{Object: objectValue},
-						socketInputName: &model.Value{Socket: &socketValue},
-						stringInputName: &model.Value{String: &stringValue},
 					}
 
 					expectedOpId := "dummyOpId"
@@ -187,7 +148,7 @@ var _ = Context("core", func() {
 						actualRootOpId,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
-					Expect(actualInboundScope).To(Equal(expectedInboundScope))
+					Expect(actualInboundScope).To(Equal(providedReq.Args))
 					Expect(actualOpId).To(Equal(expectedOpId))
 					Expect(actualPkgHandle).To(Equal(fakePkgHandle))
 					Expect(actualRootOpId).To(Equal(actualOpId))
