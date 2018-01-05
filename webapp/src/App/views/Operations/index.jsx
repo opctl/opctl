@@ -3,6 +3,7 @@ import { Responsive as ResponsiveReactGridLayout } from "react-grid-layout";
 import PkgSelector from '../../PkgSelector';
 import { AutoSizer } from 'react-virtualized';
 import Item from './Item';
+import 'react-grid-layout/css/styles.css';
 
 const dragHandleClassName = 'dragHandle';
 
@@ -47,7 +48,6 @@ export default class Spaces extends Component {
             pkgRef,
             pkg,
             args: {},
-            values: {},
             i: "n" + this.state.newCounter,
             x: (this.state.items.length * 2) % (12),
             y: 10000000000000, // puts it at the bottom
@@ -99,6 +99,8 @@ export default class Spaces extends Component {
                     {({ width }) =>
                         <ResponsiveReactGridLayout
                             width={width}
+                            // avoids creation of stacking context per item which causes dropdown from one item to render behind other items
+                            useCSSTransforms={false}
                             layouts={this.state.layouts}
                             onLayoutChange={this.handleLayoutChange}
                             draggableHandle={`.${dragHandleClassName}`}
@@ -113,7 +115,6 @@ export default class Spaces extends Component {
                                         pkg={item.pkg}
                                         onDelete={this.deleteItem.bind(this, item.i)}
                                         args={item.args}
-                                        values={item.values}
                                         onConfigured={this.updateItemConfiguration.bind(this, item.i)}
                                     />
                                 </div>
