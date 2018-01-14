@@ -1,10 +1,11 @@
 package interpolater
 
+//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
+
 import (
+	"github.com/opspec-io/sdk-golang/expression/interpolater/dereferencer"
 	"github.com/opspec-io/sdk-golang/model"
 )
-
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Interpolater
 
 const (
 	operator  = '$'
@@ -25,12 +26,12 @@ type Interpolater interface {
 
 func New() Interpolater {
 	return _Interpolater{
-		deReferencer: newDeReferencer(),
+		deReferencer: dereferencer.New(),
 	}
 }
 
 type _Interpolater struct {
-	deReferencer
+	deReferencer dereferencer.DeReferencer
 }
 
 func (itp _Interpolater) Interpolate(
