@@ -35,9 +35,7 @@ export default class Pkg extends Component {
       opId: this.state.opId
     })
       .then(() => this.setState({ isKillable: false }))
-      .catch(error => {
-        toast.error(error.message);
-      });
+      .catch(error => toast.error(error.message));
   };
 
   start = () => {
@@ -64,9 +62,7 @@ export default class Pkg extends Component {
           },
         })
       })
-      .catch(error => {
-        toast.error(error.message);
-      });
+      .catch(error => toast.error(error.message));
   };
 
   render() {
