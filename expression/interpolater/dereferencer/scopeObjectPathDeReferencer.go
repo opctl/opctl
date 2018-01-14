@@ -1,6 +1,6 @@
 package dereferencer
 
-//go:generate counterfeiter -o ./fakeScopePropertyDeReferencer.go --fake-name fakeScopePropertyDeReferencer ./ scopePropertyDeReferencer
+//go:generate counterfeiter -o ./fakeScopeObjectPathDeReferencer.go --fake-name fakeScopeObjectPathDeReferencer ./ scopeObjectPathDeReferencer
 
 import (
 	"fmt"
@@ -10,25 +10,25 @@ import (
 	"strings"
 )
 
-// scopePropertyDeReferencer de references scope property refs, i.e. refs of the form: $(name.sub.prop)
-type scopePropertyDeReferencer interface {
-	DeReferenceScopeProperty(
+// scopeObjectPathDeReferencer de references scope object path refs, i.e. refs of the form: $(name.sub.prop)
+type scopeObjectPathDeReferencer interface {
+	DeReferenceScopeObjectPath(
 		ref string,
 		scope map[string]*model.Value,
 	) (string, bool, error)
 }
 
-func newScopePropertyDeReferencer() scopePropertyDeReferencer {
-	return _scopePropertyDeReferencer{
+func newScopeObjectPathDeReferencer() scopeObjectPathDeReferencer {
+	return _scopeObjectPathDeReferencer{
 		data: data.New(),
 	}
 }
 
-type _scopePropertyDeReferencer struct {
+type _scopeObjectPathDeReferencer struct {
 	data data.Data
 }
 
-func (spd _scopePropertyDeReferencer) DeReferenceScopeProperty(
+func (sod _scopeObjectPathDeReferencer) DeReferenceScopeObjectPath(
 	ref string,
 	scope map[string]*model.Value,
 ) (string, bool, error) {
@@ -36,7 +36,7 @@ func (spd _scopePropertyDeReferencer) DeReferenceScopeProperty(
 	if possiblePathIndex > 0 {
 		if scopeValue, isPropertyRef := scope[ref[:possiblePathIndex]]; isPropertyRef {
 			// scope object ref w/ path
-			objectValue, err := spd.data.CoerceToObject(scopeValue)
+			objectValue, err := sod.data.CoerceToObject(scopeValue)
 			if nil != err {
 				return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 			}
@@ -63,7 +63,7 @@ func (spd _scopePropertyDeReferencer) DeReferenceScopeProperty(
 				value = &model.Value{Array: valueAtPath}
 			}
 
-			valueAsString, err := spd.data.CoerceToString(value)
+			valueAsString, err := sod.data.CoerceToString(value)
 			if nil != err {
 				return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
 			}

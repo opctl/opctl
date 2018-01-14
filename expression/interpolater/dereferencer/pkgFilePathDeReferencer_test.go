@@ -9,8 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("pkgFileDeReferencer", func() {
-	Context("ref is pkg file ref", func() {
+var _ = Context("pkgFilePathDeReferencer", func() {
+	Context("ref is pkg file path ref", func() {
 		It("should call pkgHandle.GetContent w/ expected args", func() {
 			/* arrange */
 			providedRef := "/dummyRef"
@@ -18,10 +18,10 @@ var _ = Context("pkgFileDeReferencer", func() {
 			// err to trigger immediate return
 			fakePkgHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := _pkgFileDeReferencer{}
+			objectUnderTest := _pkgFilePathDeReferencer{}
 
 			/* act */
-			objectUnderTest.DeReferencePkgFile(
+			objectUnderTest.DeReferencePkgFilePath(
 				providedRef,
 				map[string]*model.Value{},
 				fakePkgHandle,

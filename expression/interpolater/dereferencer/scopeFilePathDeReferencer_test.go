@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("scopeFileDeReferencer", func() {
-	Context("ref is scope file ref", func() {
+var _ = Context("scopeFilePathDeReferencer", func() {
+	Context("ref is scope file path ref", func() {
 		It("should call ioutil.ReadFile w/ expected args", func() {
 			/* arrange */
 			scopeRef := "dummyScopeRef"
@@ -26,13 +26,13 @@ var _ = Context("scopeFileDeReferencer", func() {
 			// err to trigger immediate return
 			fakeIoUtil.ReadFileReturns([]byte{}, errors.New("dummyError"))
 
-			objectUnderTest := _scopeFileDeReferencer{
+			objectUnderTest := _scopeFilePathDeReferencer{
 				ioutil: fakeIoUtil,
 			}
 
 			/* act */
 
-			objectUnderTest.DeReferenceScopeFile(
+			objectUnderTest.DeReferenceScopeFilePath(
 				providedRef,
 				map[string]*model.Value{
 					scopeRef: {Dir: &scopeValue},

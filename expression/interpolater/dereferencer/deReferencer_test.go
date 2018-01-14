@@ -9,18 +9,18 @@ import (
 )
 
 var _ = Context("deReferencer", func() {
-	It("should call pkgFileDeReferencer.DeReferencePkgFile w/ expected args", func() {
+	It("should call pkgFilePathDeReferencer.DeReferencePkgFilePath w/ expected args", func() {
 		/* arrange */
 		providedRef := "dummyRef"
 		providedScope := map[string]*model.Value{"dummyName": {}}
 		providedPkgHandle := new(pkg.FakeHandle)
 
-		fakePkgFileDeReferencer := new(fakePkgFileDeReferencer)
+		fakePkgFilePathDeReferencer := new(fakePkgFilePathDeReferencer)
 		// err to trigger immediate return
-		fakePkgFileDeReferencer.DeReferencePkgFileReturns("", true, errors.New("dummyError"))
+		fakePkgFilePathDeReferencer.DeReferencePkgFilePathReturns("", true, errors.New("dummyError"))
 
 		objectUnderTest := _deReferencer{
-			pkgFileDeReferencer: fakePkgFileDeReferencer,
+			pkgFilePathDeReferencer: fakePkgFilePathDeReferencer,
 		}
 
 		/* act */
@@ -33,22 +33,22 @@ var _ = Context("deReferencer", func() {
 		/* assert */
 		actualRef,
 			actualScope,
-			actualPkgHandle := fakePkgFileDeReferencer.DeReferencePkgFileArgsForCall(0)
+			actualPkgHandle := fakePkgFilePathDeReferencer.DeReferencePkgFilePathArgsForCall(0)
 
 		Expect(actualRef).To(Equal(providedRef))
 		Expect(actualScope).To(Equal(providedScope))
 		Expect(actualPkgHandle).To(Equal(providedPkgHandle))
 	})
-	Context("ref is pkgFileRef", func() {
+	Context("ref is pkgFilePathRef", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			fakePkgFileDeReferencer := new(fakePkgFileDeReferencer)
+			fakePkgFilePathDeReferencer := new(fakePkgFilePathDeReferencer)
 			deReferencedValue := "dummyRef"
 			err := errors.New("dummyError")
-			fakePkgFileDeReferencer.DeReferencePkgFileReturns(deReferencedValue, true, err)
+			fakePkgFilePathDeReferencer.DeReferencePkgFilePathReturns(deReferencedValue, true, err)
 
 			objectUnderTest := _deReferencer{
-				pkgFileDeReferencer: fakePkgFileDeReferencer,
+				pkgFilePathDeReferencer: fakePkgFilePathDeReferencer,
 			}
 
 			/* act */
@@ -66,7 +66,7 @@ var _ = Context("deReferencer", func() {
 			Expect(actualErr).To(Equal(err))
 		})
 	})
-	Context("ref isn't pkgFileRef", func() {
+	Context("ref isn't pkgFilePathRef", func() {
 		It("should call scopeDeReferencer.DeReferenceScope w/ expected args", func() {
 			/* arrange */
 			providedRef := "dummyRef"
@@ -77,8 +77,8 @@ var _ = Context("deReferencer", func() {
 			fakeScopeDeReferencer.DeReferenceScopeReturns("", true, errors.New("dummyError"))
 
 			objectUnderTest := _deReferencer{
-				pkgFileDeReferencer: new(fakePkgFileDeReferencer),
-				scopeDeReferencer:   fakeScopeDeReferencer,
+				pkgFilePathDeReferencer: new(fakePkgFilePathDeReferencer),
+				scopeDeReferencer:       fakeScopeDeReferencer,
 			}
 
 			/* act */
@@ -104,8 +104,8 @@ var _ = Context("deReferencer", func() {
 				fakeScopeDeReferencer.DeReferenceScopeReturns(deReferencedValue, true, err)
 
 				objectUnderTest := _deReferencer{
-					pkgFileDeReferencer: new(fakePkgFileDeReferencer),
-					scopeDeReferencer:   fakeScopeDeReferencer,
+					pkgFilePathDeReferencer: new(fakePkgFilePathDeReferencer),
+					scopeDeReferencer:       fakeScopeDeReferencer,
 				}
 
 				/* act */
@@ -124,19 +124,19 @@ var _ = Context("deReferencer", func() {
 			})
 		})
 		Context("ref isn't scopeRef", func() {
-			It("should call scopeFileDeReferencer.DeReferenceScopeFile w/ expected args", func() {
+			It("should call scopeFilePathDeReferencer.DeReferenceScopeFilePath w/ expected args", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 				providedScope := map[string]*model.Value{"dummyName": {}}
 
-				fakeScopeFileDeReferencer := new(fakeScopeFileDeReferencer)
+				fakeScopeFilePathDeReferencer := new(fakeScopeFilePathDeReferencer)
 				// err to trigger immediate return
-				fakeScopeFileDeReferencer.DeReferenceScopeFileReturns("", true, errors.New("dummyError"))
+				fakeScopeFilePathDeReferencer.DeReferenceScopeFilePathReturns("", true, errors.New("dummyError"))
 
 				objectUnderTest := _deReferencer{
-					pkgFileDeReferencer:   new(fakePkgFileDeReferencer),
-					scopeDeReferencer:     new(fakeScopeDeReferencer),
-					scopeFileDeReferencer: fakeScopeFileDeReferencer,
+					pkgFilePathDeReferencer:   new(fakePkgFilePathDeReferencer),
+					scopeDeReferencer:         new(fakeScopeDeReferencer),
+					scopeFilePathDeReferencer: fakeScopeFilePathDeReferencer,
 				}
 
 				/* act */
@@ -148,24 +148,24 @@ var _ = Context("deReferencer", func() {
 
 				/* assert */
 				actualRef,
-					actualScope := fakeScopeFileDeReferencer.DeReferenceScopeFileArgsForCall(0)
+					actualScope := fakeScopeFilePathDeReferencer.DeReferenceScopeFilePathArgsForCall(0)
 
 				Expect(actualRef).To(Equal(providedRef))
 				Expect(actualScope).To(Equal(providedScope))
 			})
-			Context("ref is scopeFileRef", func() {
+			Context("ref is scopeFilePathRef", func() {
 
 				It("should return expected result", func() {
 					/* arrange */
-					fakeScopeFileDeReferencer := new(fakeScopeFileDeReferencer)
+					fakeScopeFilePathDeReferencer := new(fakeScopeFilePathDeReferencer)
 					deReferencedValue := "dummyRef"
 					err := errors.New("dummyError")
-					fakeScopeFileDeReferencer.DeReferenceScopeFileReturns(deReferencedValue, true, err)
+					fakeScopeFilePathDeReferencer.DeReferenceScopeFilePathReturns(deReferencedValue, true, err)
 
 					objectUnderTest := _deReferencer{
-						pkgFileDeReferencer:   new(fakePkgFileDeReferencer),
-						scopeDeReferencer:     new(fakeScopeDeReferencer),
-						scopeFileDeReferencer: fakeScopeFileDeReferencer,
+						pkgFilePathDeReferencer:   new(fakePkgFilePathDeReferencer),
+						scopeDeReferencer:         new(fakeScopeDeReferencer),
+						scopeFilePathDeReferencer: fakeScopeFilePathDeReferencer,
 					}
 
 					/* act */
@@ -183,21 +183,21 @@ var _ = Context("deReferencer", func() {
 					Expect(actualErr).To(Equal(err))
 				})
 			})
-			Context("ref isn't scopeFileRef", func() {
-				It("should call scopePropertyDeReferencer.DeReferenceScopeProperty w/ expected args", func() {
+			Context("ref isn't scopeFilePathRef", func() {
+				It("should call scopeObjectPathDeReferencer.DeReferenceScopeObjectPath w/ expected args", func() {
 					/* arrange */
 					providedRef := "dummyRef"
 					providedScope := map[string]*model.Value{"dummyName": {}}
 
-					fakeScopePropertyDeReferencer := new(fakeScopePropertyDeReferencer)
+					fakeScopeObjectPathDeReferencer := new(fakeScopeObjectPathDeReferencer)
 					// err to trigger immediate return
-					fakeScopePropertyDeReferencer.DeReferenceScopePropertyReturns("", true, errors.New("dummyError"))
+					fakeScopeObjectPathDeReferencer.DeReferenceScopeObjectPathReturns("", true, errors.New("dummyError"))
 
 					objectUnderTest := _deReferencer{
-						pkgFileDeReferencer:       new(fakePkgFileDeReferencer),
-						scopeDeReferencer:         new(fakeScopeDeReferencer),
-						scopeFileDeReferencer:     new(fakeScopeFileDeReferencer),
-						scopePropertyDeReferencer: fakeScopePropertyDeReferencer,
+						pkgFilePathDeReferencer:     new(fakePkgFilePathDeReferencer),
+						scopeDeReferencer:           new(fakeScopeDeReferencer),
+						scopeFilePathDeReferencer:   new(fakeScopeFilePathDeReferencer),
+						scopeObjectPathDeReferencer: fakeScopeObjectPathDeReferencer,
 					}
 
 					/* act */
@@ -209,24 +209,24 @@ var _ = Context("deReferencer", func() {
 
 					/* assert */
 					actualRef,
-						actualScope := fakeScopePropertyDeReferencer.DeReferenceScopePropertyArgsForCall(0)
+						actualScope := fakeScopeObjectPathDeReferencer.DeReferenceScopeObjectPathArgsForCall(0)
 
 					Expect(actualRef).To(Equal(providedRef))
 					Expect(actualScope).To(Equal(providedScope))
 				})
-				Context("ref is scopePropertyRef", func() {
+				Context("ref is scopeObjectPathRef", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						fakeScopePropertyDeReferencer := new(fakeScopePropertyDeReferencer)
+						fakeScopeObjectPathDeReferencer := new(fakeScopeObjectPathDeReferencer)
 						deReferencedValue := "dummyRef"
 						err := errors.New("dummyError")
-						fakeScopePropertyDeReferencer.DeReferenceScopePropertyReturns(deReferencedValue, true, err)
+						fakeScopeObjectPathDeReferencer.DeReferenceScopeObjectPathReturns(deReferencedValue, true, err)
 
 						objectUnderTest := _deReferencer{
-							pkgFileDeReferencer:       new(fakePkgFileDeReferencer),
-							scopeDeReferencer:         new(fakeScopeDeReferencer),
-							scopeFileDeReferencer:     new(fakeScopeFileDeReferencer),
-							scopePropertyDeReferencer: fakeScopePropertyDeReferencer,
+							pkgFilePathDeReferencer:     new(fakePkgFilePathDeReferencer),
+							scopeDeReferencer:           new(fakeScopeDeReferencer),
+							scopeFilePathDeReferencer:   new(fakeScopeFilePathDeReferencer),
+							scopeObjectPathDeReferencer: fakeScopeObjectPathDeReferencer,
 						}
 
 						/* act */

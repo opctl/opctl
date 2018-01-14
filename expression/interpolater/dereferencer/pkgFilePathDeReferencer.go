@@ -1,6 +1,6 @@
 package dereferencer
 
-//go:generate counterfeiter -o ./fakePkgFileDeReferencer.go --fake-name fakePkgFileDeReferencer ./ pkgFileDeReferencer
+//go:generate counterfeiter -o ./fakePkgFilePathDeReferencer.go --fake-name fakePkgFilePathDeReferencer ./ pkgFilePathDeReferencer
 
 import (
 	"context"
@@ -10,22 +10,22 @@ import (
 	"strings"
 )
 
-// pkgFileDeReferencer de references pkg file refs, i.e. refs of the form: $(/name/sub/file.ext)
-type pkgFileDeReferencer interface {
-	DeReferencePkgFile(
+// pkgFilePathDeReferencer de references pkg file path refs, i.e. refs of the form: $(/name/sub/file.ext)
+type pkgFilePathDeReferencer interface {
+	DeReferencePkgFilePath(
 		ref string,
 		scope map[string]*model.Value,
 		pkgHandle model.PkgHandle,
 	) (string, bool, error)
 }
 
-func newPkgFileDeReferencer() pkgFileDeReferencer {
-	return _pkgFileDeReferencer{}
+func newPkgFilePathDeReferencer() pkgFilePathDeReferencer {
+	return _pkgFilePathDeReferencer{}
 }
 
-type _pkgFileDeReferencer struct{}
+type _pkgFilePathDeReferencer struct{}
 
-func (pfd _pkgFileDeReferencer) DeReferencePkgFile(
+func (pfd _pkgFilePathDeReferencer) DeReferencePkgFilePath(
 	ref string,
 	scope map[string]*model.Value,
 	pkgHandle model.PkgHandle,

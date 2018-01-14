@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-var _ = Context("scopePropertyDeReferencer", func() {
-	Context("ref is scope property ref", func() {
+var _ = Context("scopeObjectPathDeReferencer", func() {
+	Context("ref is scope object path ref", func() {
 		Context("property doesn't exist", func() {
 			It("should return expected result", func() {
 				/* arrange */
@@ -28,12 +28,12 @@ var _ = Context("scopePropertyDeReferencer", func() {
 				fakeData := new(data.Fake)
 				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
 
-				objectUnderTest := _scopePropertyDeReferencer{
+				objectUnderTest := _scopeObjectPathDeReferencer{
 					data: fakeData,
 				}
 
 				/* act */
-				actualString, actualOk, actualErr := objectUnderTest.DeReferenceScopeProperty(
+				actualString, actualOk, actualErr := objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},
@@ -67,12 +67,12 @@ var _ = Context("scopePropertyDeReferencer", func() {
 				// err to trigger immediate return
 				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _scopePropertyDeReferencer{
+				objectUnderTest := _scopeObjectPathDeReferencer{
 					data: fakeData,
 				}
 
 				/* act */
-				objectUnderTest.DeReferenceScopeProperty(
+				objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},
@@ -105,12 +105,12 @@ var _ = Context("scopePropertyDeReferencer", func() {
 				// err to trigger immediate return
 				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _scopePropertyDeReferencer{
+				objectUnderTest := _scopeObjectPathDeReferencer{
 					data: fakeData,
 				}
 
 				/* act */
-				objectUnderTest.DeReferenceScopeProperty(
+				objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},
@@ -141,12 +141,12 @@ var _ = Context("scopePropertyDeReferencer", func() {
 				fakeData := new(data.Fake)
 				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
 
-				objectUnderTest := _scopePropertyDeReferencer{
+				objectUnderTest := _scopeObjectPathDeReferencer{
 					data: fakeData,
 				}
 
 				/* act */
-				actualString, actualOk, actualErr := objectUnderTest.DeReferenceScopeProperty(
+				actualString, actualOk, actualErr := objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},
@@ -180,12 +180,12 @@ var _ = Context("scopePropertyDeReferencer", func() {
 				// err to trigger immediate return
 				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _scopePropertyDeReferencer{
+				objectUnderTest := _scopeObjectPathDeReferencer{
 					data: fakeData,
 				}
 
 				/* act */
-				objectUnderTest.DeReferenceScopeProperty(
+				objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},

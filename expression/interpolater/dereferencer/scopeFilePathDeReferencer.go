@@ -1,6 +1,6 @@
 package dereferencer
 
-//go:generate counterfeiter -o ./fakeScopeFileDeReferencer.go --fake-name fakeScopeFileDeReferencer ./ scopeFileDeReferencer
+//go:generate counterfeiter -o ./fakeScopeFilePathDeReferencer.go --fake-name fakeScopeFilePathDeReferencer ./ scopeFilePathDeReferencer
 
 import (
 	"fmt"
@@ -10,25 +10,25 @@ import (
 	"strings"
 )
 
-// scopeFileDeReferencer de references scope file refs, i.e. refs of the form: $(name/sub/file.ext)
-type scopeFileDeReferencer interface {
-	DeReferenceScopeFile(
+// scopeFilePathDeReferencer de references scope file path refs, i.e. refs of the form: $(name/sub/file.ext)
+type scopeFilePathDeReferencer interface {
+	DeReferenceScopeFilePath(
 		ref string,
 		scope map[string]*model.Value,
 	) (string, bool, error)
 }
 
-func newScopeFileDeReferencer() scopeFileDeReferencer {
-	return _scopeFileDeReferencer{
+func newScopeFilePathDeReferencer() scopeFilePathDeReferencer {
+	return _scopeFilePathDeReferencer{
 		ioutil: iioutil.New(),
 	}
 }
 
-type _scopeFileDeReferencer struct {
+type _scopeFilePathDeReferencer struct {
 	ioutil iioutil.IIOUtil
 }
 
-func (sfd _scopeFileDeReferencer) DeReferenceScopeFile(
+func (sfd _scopeFilePathDeReferencer) DeReferenceScopeFilePath(
 	ref string,
 	scope map[string]*model.Value,
 ) (string, bool, error) {
