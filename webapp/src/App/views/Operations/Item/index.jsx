@@ -13,11 +13,11 @@ export default class Item extends Component {
         isConfigurationVisible: false,
         isKillable: false,
         opId: this.props.opId
-    }
+    };
 
     toggleConfigurationModal = () => {
         this.setState(prevState => ({ isConfigurationVisible: !prevState.isConfigurationVisible }));
-    }
+    };
 
     handleInvalid = (name) => {
         delete this.args[name];
@@ -63,10 +63,10 @@ export default class Item extends Component {
                 }
             },
         })
-    }
+    };
 
     start = () => {
-        const args = Object.entries(this.props.pkg.inputs)
+        const args = Object.entries(this.props.pkg.inputs || [])
             .reduce((args, [name, param]) => {
                 if (param.array) args[name] = { array: this.args[name] };
                 if (param.dir) args[name] = { dir: this.args[name] };
@@ -78,7 +78,6 @@ export default class Item extends Component {
                 return args;
             }, {});
 
-        console.log(args);
         opspecNodeApiClient.op_start({
             args,
             pkg: {

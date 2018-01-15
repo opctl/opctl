@@ -17,7 +17,7 @@ run:
           - -ce
           - |
             echo "installing deps"
-            npm install -q
+            yarn install -q
 
             echo "running metalsmith"
             node_modules/.bin/metalsmith
@@ -25,7 +25,7 @@ run:
           /src: srcDir
         envVars:
           DEBUG: 'metalsmith:*'
-        image: { ref: 'node:7.7' }
+        image: { ref: 'node:9.3.0-alpine' }
         workDir: /src/website
     - container:
         cmd:
@@ -33,7 +33,7 @@ run:
           - -ce
           - |
             echo "installing gitbook cli"
-            npm install gitbook-cli -g -q
+            yarn global add gitbook-cli
 
             echo "installing plugins"
             gitbook install
@@ -42,5 +42,5 @@ run:
             gitbook build . ../build/docs
         dirs:
           /src: srcDir
-        image: { ref: 'node:7.7' }
+        image: { ref: 'node:9.3.0-alpine' }
         workDir: /src/docs

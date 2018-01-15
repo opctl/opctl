@@ -1,5 +1,5 @@
 {
-  "name": "opspec-website",
+  "name": "opctl-website",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
