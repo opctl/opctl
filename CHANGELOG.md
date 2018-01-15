@@ -6,9 +6,17 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.1.23 - 2018-01-15
+
 ### Added
 
 - [opspec 0.1.6) Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
+- [opspec 0.1.6) Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+
+### Fixed
+
+- coercion doesn't occur when de referencing scope object paths
+- scope file path refs don't de reference
 
 ## 0.1.22 - 2017-11-05
 

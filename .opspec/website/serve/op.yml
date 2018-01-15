@@ -17,7 +17,7 @@ run:
           - -ce
           - |
             echo "installing deps"
-            npm install http-server -gq
+            yarn global add http-server
 
             echo "starting server"
             http-server
@@ -25,5 +25,5 @@ run:
           /src: srcDir
         ports:
           '8080': '8080'
-        image: { ref: 'node:7.7' }
+        image: { ref: 'node:9.3.0-alpine' }
         workDir: /src/build
