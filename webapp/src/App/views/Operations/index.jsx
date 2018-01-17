@@ -53,7 +53,7 @@ export default class Spaces extends Component {
             y: 10000000000000, // puts it at the bottom
             w: 2,
             h: 2
-        }
+        };
 
         this.setState(
             prevState => ({
@@ -61,7 +61,7 @@ export default class Spaces extends Component {
                 newCounter: prevState.newCounter + 1
             })
         );
-    }
+    };
 
     componentDidUpdate() {
         saveStateToLS(this.state);
@@ -69,13 +69,13 @@ export default class Spaces extends Component {
 
     handleLayoutChange = (layout, layouts) => {
         this.setState({ layouts });
-    }
+    };
 
     deleteItem = (itemId) => {
         this.setState(
             prevState => ({ items: prevState.items.filter(item => item.i !== itemId) })
         );
-    }
+    };
 
     updateItemConfiguration = (itemId, configuration) => {
         this.setState(
@@ -87,7 +87,7 @@ export default class Spaces extends Component {
                 return {items};
             }
         );
-    }
+    };
 
     render() {
         return (
@@ -96,7 +96,7 @@ export default class Spaces extends Component {
                     onSelect={this.addItem}
                 />
                 <AutoSizer>
-                    {({ width }) =>
+                    {({ height, width }) =>
                         <ResponsiveReactGridLayout
                             width={width}
                             // avoids creation of stacking context per item which causes dropdown from one item to render behind other items
