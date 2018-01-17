@@ -118,11 +118,13 @@ export default class Item extends Component {
               style={{height, width, border: 'dashed 3px #ececec'}}
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
-              ref={ el => this.el = el }
+              ref={el => this.el = el}
             >
               <Header
+                isFullScreen={this.props.isFullScreen}
                 isKillable={this.state.isKillable}
                 isStartable={this.isStartable()}
+                onToggleFullScreen={this.props.onToggleFullScreen}
                 onConfigure={this.toggleConfigurationModal}
                 onStart={this.start}
                 onKill={this.kill}
@@ -145,8 +147,9 @@ export default class Item extends Component {
                 </ModalBody>
               </Modal>
               {
-                !this.state.isActive
-                  ? <div style={{
+                this.props.isFullScreen || this.state.isActive
+                  ? null
+                  : <div style={{
                     opacity: 0.1,
                     backgroundColor: '#000',
                     position: 'absolute',
@@ -156,7 +159,6 @@ export default class Item extends Component {
                     cursor: 'pointer',
                   }}>
                   </div>
-                  : null
               }
               <div style={{marginTop: '37px', height: 'calc(100% - 37px)', overflowY: 'auto'}}>
                 {

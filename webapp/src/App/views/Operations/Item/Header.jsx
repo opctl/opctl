@@ -15,13 +15,14 @@ export default class Header extends Component {
     return (
       <div
         className={dragHandleClassName}
+        onDoubleClick={this.props.onToggleFullScreen}
         style={{
           position: 'absolute',
           width: '100%',
           height: '37px',
           top: '0',
           borderBottom: 'solid thin #ececec',
-          cursor: '-webkit-grab',
+          cursor: this.props.isFullScreen? 'pointer': '-webkit-grab',
           wordBreak: 'break-all',
           verticalAlign: 'middle',
           textAlign: 'center',
