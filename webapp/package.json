@@ -12,6 +12,7 @@
     "js-yaml": "3.8.4",
     "react": "16.0.0",
     "react-ace": "^5.4.0",
+    "react-click-outside": "^3.0.0",
     "react-dom": "16.0.0",
     "react-grid-layout": "^0.16.2",
     "react-hotkeys": "^0.10.0",

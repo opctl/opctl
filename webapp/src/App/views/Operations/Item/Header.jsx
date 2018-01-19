@@ -20,9 +20,10 @@ export default class Header extends Component {
           position: 'absolute',
           width: '100%',
           height: '37px',
+          left: '0',
           top: '0',
           borderBottom: 'solid thin #ececec',
-          cursor: this.props.isFullScreen? 'pointer': '-webkit-grab',
+          cursor: this.props.isFullScreen ? 'pointer' : '-webkit-grab',
           wordBreak: 'break-all',
           verticalAlign: 'middle',
           textAlign: 'center',
@@ -30,10 +31,10 @@ export default class Header extends Component {
           whiteSpace: 'nowrap'
         }}
       >
-        <div style={{overflow: 'hidden', width: 'calc(100% - 36px)', height: '37px'}}>
-          {this.props.pkgRef}
+        <div style={{overflow: 'hidden', marginLeft: '4px', width: 'calc(100% - 36px)', height: '37px'}}>
+          {this.props.name}
         </div>
-        <div style={{right: 0, top: 0, position: 'absolute'}}>
+        <div style={{right: 0, top: 0, position: 'absolute', cursor: 'pointer'}}>
           <Dropdown
             isOpen={this.state.dropdownOpen}
             toggle={this.toggleDropdown}
@@ -41,8 +42,7 @@ export default class Header extends Component {
             <DropdownToggle tag="div">
               <MdMoreVert
                 style={{
-                  transform: 'rotate(-90deg) translateY(-50%)',
-                  cursor: 'pointer'
+                  transform: 'rotate(-90deg) translateY(-50%)'
                 }}
               />
             </DropdownToggle>
@@ -51,11 +51,11 @@ export default class Header extends Component {
                 this.props.isKillable
                   ?
                   <DropdownItem onClick={this.props.onKill}>
-                    Kill
+                    Kill (ctrl+c)
                   </DropdownItem>
                   :
                   <DropdownItem onClick={this.props.onStart} disabled={!this.props.isStartable}>
-                    Start
+                    Start (enter)
                   </DropdownItem>
               }
               <DropdownItem
@@ -66,7 +66,7 @@ export default class Header extends Component {
               <DropdownItem
                 onClick={this.props.onDelete}
               >
-                Delete
+                Delete (del)
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

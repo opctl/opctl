@@ -1,0 +1,11 @@
+.events {
+  background-color: #222222;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  height: 100%;
+  overflow: auto;
+}
+.events code {
+  color: #f1f1f1;
+  background-color: #222222;
+}

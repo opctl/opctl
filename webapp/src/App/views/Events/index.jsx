@@ -1,4 +1,4 @@
 import React from 'react';
-import EventBrowser from '../../EventBrowser';
+import EventStream from '../../EventStream';
 
-export default () => <EventBrowser />
+export default () => <EventStream />
