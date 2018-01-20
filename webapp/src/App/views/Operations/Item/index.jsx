@@ -16,6 +16,10 @@ class Item extends Component {
     name: this.props.name || this.props.pkgRef,
   };
 
+  ensureEventStreamClosed = () => {
+    if (this.eventStreamCloser) this.eventStreamCloser();
+  };
+
   toggleConfigurationModal = () => {
     this.setState(prevState => ({isConfigurationVisible: !prevState.isConfigurationVisible}));
   };
@@ -47,7 +51,7 @@ class Item extends Component {
   };
 
   processEventStream = ({opId}) => {
-    opspecNodeApiClient.event_stream_get({
+    this.eventStreamCloser = opspecNodeApiClient.event_stream_get({
       filter: {
         roots: [opId],
       },
@@ -66,11 +70,20 @@ class Item extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    this.processEventStream({opId: nextProps.opId});
+    if (nextProps.opId !== this.props.opId) {
+      this.ensureEventStreamClosed();
+      this.processEventStream({opId: nextProps.opId});
+    }
   }
 
   componentWillMount() {
-    this.processEventStream({opId: this.props.opId});
+    if (this.props.opId) {
+      this.processEventStream({opId: this.props.opId});
+    }
+  }
+
+  componentWillUnmount() {
+    this.ensureEventStreamClosed();
   }
 
   render() {
