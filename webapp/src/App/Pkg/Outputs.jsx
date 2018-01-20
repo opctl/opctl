@@ -1,7 +1,9 @@
 import React from 'react';
 import Output from './Output/index';
 
-export default function Outputs({params = {}, pkgRef, values = {}}) {
+export default ({params = {}, pkgRef, values = {}}) => {
+  if (!params || Object.entries(params).length === 0) return (null);
+
   return (
     <div>
       <h2>Outputs:</h2>
