@@ -152,6 +152,7 @@ export default class Operations extends Component {
   };
 
   startAllItems = () => {
+    if (!this.state.isAllItemsSelected) return;
     this.state.items.forEach(item => this.startItem(item.i));
   };
 
@@ -169,6 +170,7 @@ export default class Operations extends Component {
   };
 
   killAllItems = () => {
+    if (!this.state.isAllItemsSelected) return;
     this.state.items.forEach(item => this.killItem(item.i));
   };
 
