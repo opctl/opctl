@@ -2,11 +2,11 @@ package pubsub
 
 import (
 	"encoding/json"
-	"github.com/boltdb/bolt"
+	"github.com/dgraph-io/badger"
 	"github.com/opspec-io/sdk-golang/model"
+	"log"
 	"os"
 	"path"
-	"sync"
 	"time"
 )
 
@@ -19,35 +19,29 @@ type EventRepo interface {
 func NewEventRepo(
 	eventDbFilePath string,
 ) EventRepo {
-	err := os.MkdirAll(path.Dir(eventDbFilePath), 0700)
+	eventDbDirPath := path.Dir(eventDbFilePath)
+	err := os.MkdirAll(eventDbDirPath, 0700)
 	if nil != err {
 		panic(err)
 	}
 
-	db, err := bolt.Open(eventDbFilePath, 0644, nil)
-	if nil != err {
-		panic(err)
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("events"))
-		return err
-	})
-	if nil != err {
-		panic(err)
+	opts := badger.DefaultOptions
+	opts.Dir = eventDbDirPath
+	opts.ValueDir = eventDbDirPath
+	db, err := badger.Open(opts)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return &eventRepo{
 		db:               db,
 		eventsByRootOpId: make(map[string][]*model.Event),
-		eventsMutex:      sync.RWMutex{},
 	}
 }
 
 type eventRepo struct {
-	db               *bolt.DB
+	db               *badger.DB
 	eventsByRootOpId map[string][]*model.Event
-	eventsMutex      sync.RWMutex
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
@@ -56,36 +50,39 @@ const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 func (this *eventRepo) Add(event *model.Event) {
 
 	// @TODO: handle errors
-	this.db.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("events"))
+	this.db.Update(func(txn *badger.Txn) error {
 
 		encodedEvent, err := json.Marshal(event)
 		if nil != err {
 			return err
 		}
 
-		return bucket.Put([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
+		return txn.Set([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
 	})
 }
 
 // O(n) (n being number of subscriptions that exist); threadsafe
 func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
-	result := []*model.Event{}
+	var result []*model.Event
 
 	// @TODO: handle errors
-	this.db.View(func(tx *bolt.Tx) error {
-		cursor := tx.Bucket([]byte("events")).Cursor()
+	this.db.View(func(txn *badger.Txn) error {
 
 		sinceTime := new(time.Time)
 		if nil != filter && nil != filter.Since {
 			sinceTime = filter.Since
 		}
 
+		it := txn.NewIterator(badger.DefaultIteratorOptions)
 		sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
-		for k, v := cursor.Seek(sinceBytes); k != nil; k, v = cursor.Next() {
-			event := &model.Event{}
-			err := json.Unmarshal(v, event)
+		for it.Seek(sinceBytes); it.Valid(); it.Next() {
+			value, err := it.Item().Value()
 			if nil != err {
+				return err
+			}
+
+			event := &model.Event{}
+			if err := json.Unmarshal(value, event); nil != err {
 				return err
 			}
 
@@ -96,9 +93,6 @@ func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
 
 		return nil
 	})
-
-	this.eventsMutex.RLock()
-	defer this.eventsMutex.RUnlock()
 
 	// @TODO: sort
 	return result

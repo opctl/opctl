@@ -3,6 +3,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/AndreasBriese/bbloom"
+  packages = ["."]
+  revision = "28f7e881ca57bc00e028f9ede9f0d9104cfeef5e"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Azure/go-ansiterm"
   packages = [".","winterm"]
   revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
@@ -16,8 +22,8 @@
 [[projects]]
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
-  revision = "b7c3cf0d1286c7b62b140ed960a00b154c1b6fcc"
-  version = "v0.4.6"
+  revision = "7da180ee92d8bd8bb8c37fc560e673e6557c392f"
+  version = "v0.4.7"
 
 [[projects]]
   branch = "master"
@@ -32,22 +38,28 @@
   version = "v3.5.1"
 
 [[projects]]
-  name = "github.com/boltdb/bolt"
+  name = "github.com/dgraph-io/badger"
+  packages = [".","options","protos","skl","table","y"]
+  revision = "69611218c7078be6de16f4ea13fb256e701b6b73"
+  version = "v1.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dgryski/go-farm"
   packages = ["."]
-  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
-  version = "v1.3.1"
+  revision = "2de33835d10275975374b37b2dcfd22c9020a1f5"
 
 [[projects]]
   branch = "master"
   name = "github.com/docker/distribution"
   packages = ["digestset","reference"]
-  revision = "277ed486c948042cab91ad367c379524f3b25e18"
+  revision = "5cb406d511b7b9163bff9b6439072e4892e5ae3b"
 
 [[projects]]
   branch = "master"
   name = "github.com/docker/docker"
   packages = ["api","api/types","api/types/blkiodev","api/types/container","api/types/events","api/types/filters","api/types/image","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/swarm/runtime","api/types/time","api/types/versions","api/types/volume","client","pkg/jsonmessage","pkg/term","pkg/term/windows"]
-  revision = "6415f1dcf5c79da853c604733c56b43ae3d18ced"
+  revision = "db5c006bc8654ab1e4c24a1a9f460bbe4039686e"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -134,6 +146,12 @@
   revision = "16f96e9dcff4e9aaca9fab2566530a8c51776c13"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
+
+[[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
   revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
@@ -142,8 +160,8 @@
 [[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "7f08801859139f86dfafd1c296e2cba9a80d292e"
-  version = "v1.6.0"
+  revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
+  version = "v1.6.1"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -256,13 +274,13 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["cast5","curve25519","ed25519","ed25519/internal/edwards25519","openpgp","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
-  revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
+  packages = ["cast5","curve25519","ed25519","ed25519/internal/edwards25519","internal/chacha20","openpgp","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","poly1305","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
+  revision = "a6600008915114d9c087fad9f03d75087b1a74df"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","context/ctxhttp","proxy"]
+  packages = ["context","context/ctxhttp","internal/timeseries","proxy","trace"]
   revision = "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec"
 
 [[projects]]
@@ -275,7 +293,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "810d7000345868fc619eb81f46307107118f4ae1"
+  revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
   branch = "master"
@@ -310,6 +328,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "66b97ec1aba11467686c792547c2b751b4034f101552676cabb59376a297bdab"
+  inputs-digest = "0331100ed15bf3c87faed8a75b3f12285b23292a9b78004e3fbc7334a934b192"
   solver-name = "gps-cdcl"
   solver-version = 1

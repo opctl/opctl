@@ -814,22 +814,14 @@ func overlaySupportsSelinux() (bool, error) {
 }
 
 // configureKernelSecuritySupport configures and validates security support for the kernel
-func configureKernelSecuritySupport(config *config.Config, driverNames []string) error {
+func configureKernelSecuritySupport(config *config.Config, driverName string) error {
 	if config.EnableSelinuxSupport {
 		if !selinuxEnabled() {
 			logrus.Warn("Docker could not enable SELinux on the host system")
 			return nil
 		}
 
-		overlayFound := false
-		for _, d := range driverNames {
-			if d == "overlay" || d == "overlay2" {
-				overlayFound = true
-				break
-			}
-		}
-
-		if overlayFound {
+		if driverName == "overlay" || driverName == "overlay2" {
 			// If driver is overlay or overlay2, make sure kernel
 			// supports selinux with overlay.
 			supported, err := overlaySupportsSelinux()
@@ -838,7 +830,7 @@ func configureKernelSecuritySupport(config *config.Config, driverNames []string)
 			}
 
 			if !supported {
-				logrus.Warnf("SELinux is not supported with the %v graph driver on this kernel", driverNames)
+				logrus.Warnf("SELinux is not supported with the %v graph driver on this kernel", driverName)
 			}
 		}
 	} else {
@@ -1501,10 +1493,7 @@ func (daemon *Daemon) initCgroupsPath(path string) error {
 	if err := maybeCreateCPURealTimeFile(sysinfo.CPURealtimePeriod, daemon.configStore.CPURealtimePeriod, "cpu.rt_period_us", path); err != nil {
 		return err
 	}
-	if err := maybeCreateCPURealTimeFile(sysinfo.CPURealtimeRuntime, daemon.configStore.CPURealtimeRuntime, "cpu.rt_runtime_us", path); err != nil {
-		return err
-	}
-	return nil
+	return maybeCreateCPURealTimeFile(sysinfo.CPURealtimeRuntime, daemon.configStore.CPURealtimeRuntime, "cpu.rt_runtime_us", path)
 }
 
 func maybeCreateCPURealTimeFile(sysinfoPresent bool, configValue int64, file string, path string) error {
