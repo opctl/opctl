@@ -58,7 +58,7 @@ func (this _parallelCaller) Call(
 		// defer must be defined before conditional return statements so it always runs
 
 		this.pubSub.Publish(
-			&model.Event{
+			model.Event{
 				Timestamp: time.Now().UTC(),
 				ParallelCallEnded: &model.ParallelCallEndedEvent{
 					CallId:   callId,

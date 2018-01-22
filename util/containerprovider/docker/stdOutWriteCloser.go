@@ -25,7 +25,7 @@ func NewStdOutWriteCloser(
 			if b, err = reader.ReadBytes('\n'); len(b) > 0 {
 				// always publish if len(bytes) read to ensure full stream sent; even under error conditions
 				eventPublisher.Publish(
-					&model.Event{
+					model.Event{
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        b,

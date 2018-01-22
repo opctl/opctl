@@ -1,6 +1,7 @@
 package pubsub
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/dgraph-io/badger"
 	"github.com/opspec-io/sdk-golang/model"
@@ -12,8 +13,14 @@ import (
 
 // interface for event storage
 type EventRepo interface {
-	Add(event *model.Event)
-	List(filter *model.EventFilter) []*model.Event
+	Add(event model.Event)
+	List(
+		ctx context.Context,
+		filter model.EventFilter,
+	) (
+		<-chan model.Event,
+		<-chan error,
+	)
 }
 
 func NewEventRepo(
@@ -34,23 +41,23 @@ func NewEventRepo(
 	}
 
 	return &eventRepo{
-		db:               db,
-		eventsByRootOpId: make(map[string][]*model.Event),
+		db,
 	}
 }
 
 type eventRepo struct {
-	db               *badger.DB
-	eventsByRootOpId map[string][]*model.Event
+	db *badger.DB
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 
 // O(1); threadsafe
-func (this *eventRepo) Add(event *model.Event) {
+func (er *eventRepo) Add(
+	event model.Event,
+) {
 
 	// @TODO: handle errors
-	this.db.Update(func(txn *badger.Txn) error {
+	er.db.Update(func(txn *badger.Txn) error {
 
 		encodedEvent, err := json.Marshal(event)
 		if nil != err {
@@ -61,39 +68,51 @@ func (this *eventRepo) Add(event *model.Event) {
 	})
 }
 
-// O(n) (n being number of subscriptions that exist); threadsafe
-func (this *eventRepo) List(filter *model.EventFilter) []*model.Event {
-	var result []*model.Event
+// O(n) (n being number of events that exist); threadsafe
+func (er eventRepo) List(
+	ctx context.Context,
+	filter model.EventFilter,
+) (<-chan model.Event, <-chan error) {
+	eventChannel := make(chan model.Event, 100000)
+	errChannel := make(chan error, 1)
 
-	// @TODO: handle errors
-	this.db.View(func(txn *badger.Txn) error {
+	go func() {
+		defer close(eventChannel)
+		defer close(errChannel)
 
-		sinceTime := new(time.Time)
-		if nil != filter && nil != filter.Since {
-			sinceTime = filter.Since
+		if err := er.db.View(func(txn *badger.Txn) error {
+			sinceTime := new(time.Time)
+			if nil != filter.Since {
+				sinceTime = filter.Since
+			}
+
+			it := txn.NewIterator(badger.DefaultIteratorOptions)
+			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
+			for it.Seek(sinceBytes); it.Valid(); it.Next() {
+				value, err := it.Item().Value()
+				if nil != err {
+					return err
+				}
+
+				event := model.Event{}
+				if err := json.Unmarshal(value, &event); nil != err {
+					return err
+				}
+
+				if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
+					select {
+					case <-ctx.Done():
+						return ctx.Err()
+					case eventChannel <- event:
+					}
+				}
+			}
+
+			return nil
+		}); nil != err {
+			errChannel <- err
 		}
+	}()
 
-		it := txn.NewIterator(badger.DefaultIteratorOptions)
-		sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
-		for it.Seek(sinceBytes); it.Valid(); it.Next() {
-			value, err := it.Item().Value()
-			if nil != err {
-				return err
-			}
-
-			event := &model.Event{}
-			if err := json.Unmarshal(value, event); nil != err {
-				return err
-			}
-
-			if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
-				result = append(result, event)
-			}
-		}
-
-		return nil
-	})
-
-	// @TODO: sort
-	return result
+	return eventChannel, errChannel
 }

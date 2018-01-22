@@ -21,7 +21,7 @@ func (hdlr _handler) events_streams(
 
 	defer conn.Close()
 
-	req := &model.GetEventStreamReq{Filter: &model.EventFilter{}}
+	req := &model.GetEventStreamReq{Filter: model.EventFilter{}}
 	if sinceString := httpReq.URL.Query().Get("since"); "" != sinceString {
 		sinceTime, err := time.Parse(time.RFC3339, sinceString)
 		if nil != err {
@@ -36,11 +36,9 @@ func (hdlr _handler) events_streams(
 		req.Filter.Roots = rootsArray
 	}
 
-	eventChannel := make(chan *model.Event)
-
-	err = hdlr.core.GetEventStream(
+	eventChannel, _ := hdlr.core.GetEventStream(
+		httpReq.Context(),
 		req,
-		eventChannel,
 	)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusBadRequest)

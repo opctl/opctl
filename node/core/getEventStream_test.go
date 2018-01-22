@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -11,17 +12,16 @@ import (
 
 var _ = Context("core", func() {
 	Context("GetEventStream", func() {
-		It("should call pubSub.RegisterSubscriber w/ expected args", func() {
+		It("should call pubSub.Subscribe w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.TODO()
 			providedReq := &model.GetEventStreamReq{
-				Filter: &model.EventFilter{
+				Filter: model.EventFilter{
 					Roots: []string{
 						"dummyRootOpId",
 					},
 				},
 			}
-
-			providedEventStream := make(chan *model.Event, 150)
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -34,15 +34,18 @@ var _ = Context("core", func() {
 			}
 
 			/* act */
-			objectUnderTest.GetEventStream(providedReq, providedEventStream)
+			objectUnderTest.GetEventStream(
+				providedCtx,
+				providedReq,
+			)
 
 			/* assert */
 
-			actualFilter,
-				actualEventChannel := fakePubSub.SubscribeArgsForCall(0)
+			actualCtx,
+				actualFilter := fakePubSub.SubscribeArgsForCall(0)
 
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualFilter).To(Equal(providedReq.Filter))
-			Expect(actualEventChannel).To(Equal(providedEventStream))
 		})
 	})
 })

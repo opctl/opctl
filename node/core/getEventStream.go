@@ -1,13 +1,17 @@
 package core
 
-import "github.com/opspec-io/sdk-golang/model"
+import (
+	"context"
+	"github.com/opspec-io/sdk-golang/model"
+)
 
 func (this _core) GetEventStream(
+	ctx context.Context,
 	req *model.GetEventStreamReq,
-	subscriberEventChannel chan *model.Event,
-) (err error) {
+) (
+	<-chan model.Event,
+	<-chan error,
+) {
 
-	this.pubSub.Subscribe(req.Filter, subscriberEventChannel)
-
-	return
+	return this.pubSub.Subscribe(ctx, req.Filter)
 }
