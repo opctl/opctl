@@ -188,7 +188,7 @@ func (oc _opCaller) interpretOutputs(
 
 	// subscribe to events
 	eventFilterSince := time.Now().UTC()
-	evtC, _ := oc.pubSub.Subscribe(
+	eventChannel, _ := oc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
 			Roots: []string{dcgOpCall.RootOpId},
@@ -198,7 +198,7 @@ func (oc _opCaller) interpretOutputs(
 
 	childOutputs := map[string]*model.Value{}
 eventLoop:
-	for event := range evtC {
+	for event := range eventChannel {
 		switch {
 		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.OpId:
 			// parent ended prematurely

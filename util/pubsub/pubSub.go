@@ -9,6 +9,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"sync"
+	"time"
 )
 
 func New(
@@ -65,85 +66,67 @@ func (ps *pubSub) Subscribe(
 	subscription := subscription{
 		Filter:          filter,
 		NewEventChannel: make(chan model.Event, 1000000),
-		DoneChannel:     make(chan struct{}),
+		// DoneChannel is closed when the subscription is garbage collected
+		DoneChannel: make(chan struct{}),
 	}
 
 	ps.subscriptionsMutex.Lock()
 	ps.subscriptions[subscriptionId] = subscription
 	ps.subscriptionsMutex.Unlock()
 
-	dstEvtC := make(chan model.Event, 100000)
+	dstEventChannel := make(chan model.Event, 100000)
 	dstErrChannel := make(chan error, 1)
 
 	go func() {
-		defer close(dstEvtC)
-		defer close(dstEvtC)
-		// pipeline stage 1
-		errChannel := ps.sendOldEvents(ctx, filter, dstEvtC)
-		if err, ok := <-errChannel; !ok {
-			close(subscription.DoneChannel)
-			dstErrChannel <- err
-			return
+		defer close(dstEventChannel)
+		defer close(dstErrChannel)
+
+		// old events
+		srcEventChannel, srcErrChannel := ps.eventRepo.List(ctx, filter)
+		for event := range srcEventChannel {
+			select {
+			case <-ctx.Done():
+				ps.gcSubscription(subscriptionId)
+				return
+			case err, ok := <-srcErrChannel:
+				if ok {
+					dstErrChannel <- err
+					ps.gcSubscription(subscriptionId)
+					return
+				}
+			case dstEventChannel <- event:
+			case <-time.After(time.Second * 20):
+				ps.gcSubscription(subscriptionId)
+				return
+			}
 		}
 
-		// pipeline stage 2
-		errChannel = ps.sendNewEvents(ctx, subscription.NewEventChannel, dstEvtC)
-		if err, ok := <-errChannel; !ok {
-			close(subscription.DoneChannel)
-			dstErrChannel <- err
-			return
+		// new events
+		for event := range subscription.NewEventChannel {
+			select {
+			case <-ctx.Done():
+				ps.gcSubscription(subscriptionId)
+				return
+			case dstEventChannel <- event:
+			case <-time.After(time.Second * 20):
+				ps.gcSubscription(subscriptionId)
+				return
+			}
 		}
+
 	}()
 
-	return dstEvtC, dstErrChannel
+	return dstEventChannel, dstErrChannel
 }
 
+// gcSubscription garbage collects subscription w/ subscriptionId
 func (ps *pubSub) gcSubscription(
 	subscriptionId string,
 ) {
+  close(ps.subscriptions[subscriptionId].DoneChannel)
 	ps.subscriptionsMutex.Lock()
 	delete(ps.subscriptions, subscriptionId)
 	ps.subscriptionsMutex.Unlock()
-}
-
-func (ps *pubSub) sendOldEvents(
-	ctx context.Context,
-	eventFilter model.EventFilter,
-	dstEventChannel chan<- model.Event,
-) <-chan error {
-	srcEventChannel, srcErrChannel := ps.eventRepo.List(ctx, eventFilter)
-	errChannel := make(chan error, 1)
-	go func() {
-		for event := range srcEventChannel {
-			select {
-			case <-ctx.Done():
-				return
-			case err := <-srcErrChannel:
-				errChannel <- err
-			case dstEventChannel <- event:
-			}
-		}
-	}()
-	return errChannel
-}
-
-func (ps *pubSub) sendNewEvents(
-	ctx context.Context,
-	srcEventChannel <-chan model.Event,
-	dstEventChannel chan<- model.Event,
-) <-chan error {
-	errChannel := make(chan error, 1)
-	go func() {
-		defer close(errChannel)
-		for event := range srcEventChannel {
-			select {
-			case <-ctx.Done():
-				return
-			case dstEventChannel <- event:
-			}
-		}
-	}()
-	return errChannel
 }
 
 // O(n) complexity (n being number of existing subscriptions); thread safe
@@ -152,15 +135,17 @@ func (ps *pubSub) Publish(
 ) {
 	ps.eventRepo.Add(event)
 
-	ps.subscriptionsMutex.RLock()
-	for _, subscription := range ps.subscriptions {
-		RootOpId := getEventRootOpId(event)
-		if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
-			select {
-			case <-subscription.DoneChannel:
-			case subscription.NewEventChannel <- event:
+	go func() {
+		ps.subscriptionsMutex.RLock()
+		for _, subscription := range ps.subscriptions {
+			RootOpId := getEventRootOpId(event)
+			if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
+				select {
+				case <-subscription.DoneChannel:
+				case subscription.NewEventChannel <- event:
+				}
 			}
 		}
-	}
-	ps.subscriptionsMutex.RUnlock()
+		ps.subscriptionsMutex.RUnlock()
+	}()
 }
