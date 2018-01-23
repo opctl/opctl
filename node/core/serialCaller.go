@@ -67,6 +67,8 @@ func (this _serialCaller) Call(
 		)
 	}()
 
+	ctx := context.TODO()
+
 	for _, scgCall := range scgSerialCall {
 		eventFilterSince := time.Now().UTC()
 		childCallId := this.uniqueStringFactory.Construct()
@@ -82,8 +84,11 @@ func (this _serialCaller) Call(
 		}
 
 		// subscribe to events
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		// @TODO: handle err channel
 		eventChannel, _ := this.pubSub.Subscribe(
-			context.TODO(),
+			ctx,
 			model.EventFilter{
 				Roots: []string{rootOpId},
 				Since: &eventFilterSince,
@@ -113,6 +118,7 @@ func (this _serialCaller) Call(
 				break eventLoop
 			}
 		}
+		cancel()
 
 	}
 

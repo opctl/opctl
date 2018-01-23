@@ -9,7 +9,6 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"sync"
-	"time"
 )
 
 func New(
@@ -31,6 +30,7 @@ type EventPublisher interface {
 
 type EventSubscriber interface {
 	// Subscribe returns a filtered event stream
+	// It is up to the caller to cancel the context or the subscription will continue receiving events.
 	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
 		ctx context.Context,
@@ -53,7 +53,6 @@ type pubSub struct {
 	subscriptionsMutex  sync.RWMutex
 }
 
-// thread safe
 func (ps *pubSub) Subscribe(
 	ctx context.Context,
 	filter model.EventFilter,
@@ -95,9 +94,6 @@ func (ps *pubSub) Subscribe(
 					return
 				}
 			case dstEventChannel <- event:
-			case <-time.After(time.Second * 20):
-				ps.gcSubscription(subscriptionId)
-				return
 			}
 		}
 
@@ -108,12 +104,8 @@ func (ps *pubSub) Subscribe(
 				ps.gcSubscription(subscriptionId)
 				return
 			case dstEventChannel <- event:
-			case <-time.After(time.Second * 20):
-				ps.gcSubscription(subscriptionId)
-				return
 			}
 		}
-
 	}()
 
 	return dstEventChannel, dstErrChannel
@@ -123,7 +115,7 @@ func (ps *pubSub) Subscribe(
 func (ps *pubSub) gcSubscription(
 	subscriptionId string,
 ) {
-  close(ps.subscriptions[subscriptionId].DoneChannel)
+	close(ps.subscriptions[subscriptionId].DoneChannel)
 	ps.subscriptionsMutex.Lock()
 	delete(ps.subscriptions, subscriptionId)
 	ps.subscriptionsMutex.Unlock()

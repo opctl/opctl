@@ -3,12 +3,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/AndreasBriese/bbloom"
-  packages = ["."]
-  revision = "28f7e881ca57bc00e028f9ede9f0d9104cfeef5e"
-
-[[projects]]
-  branch = "master"
   name = "github.com/Azure/go-ansiterm"
   packages = [".","winterm"]
   revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
@@ -38,16 +32,10 @@
   version = "v3.5.1"
 
 [[projects]]
-  name = "github.com/dgraph-io/badger"
-  packages = [".","options","protos","skl","table","y"]
-  revision = "69611218c7078be6de16f4ea13fb256e701b6b73"
-  version = "v1.3.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/dgryski/go-farm"
+  name = "github.com/boltdb/bolt"
   packages = ["."]
-  revision = "2de33835d10275975374b37b2dcfd22c9020a1f5"
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
 
 [[projects]]
   branch = "master"
@@ -144,12 +132,6 @@
   name = "github.com/golang-utils/filecopier"
   packages = ["."]
   revision = "16f96e9dcff4e9aaca9fab2566530a8c51776c13"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 
 [[projects]]
   name = "github.com/gorilla/context"
@@ -274,13 +256,13 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["cast5","curve25519","ed25519","ed25519/internal/edwards25519","internal/chacha20","openpgp","openpgp/armor","openpgp/elgamal","openpgp/errors","openpgp/packet","openpgp/s2k","poly1305","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
+  packages = ["curve25519","ed25519","ed25519/internal/edwards25519","internal/chacha20","poly1305","ssh","ssh/agent","ssh/knownhosts","ssh/terminal"]
   revision = "a6600008915114d9c087fad9f03d75087b1a74df"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","context/ctxhttp","internal/timeseries","proxy","trace"]
+  packages = ["context","context/ctxhttp","proxy"]
   revision = "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec"
 
 [[projects]]
@@ -328,6 +310,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0331100ed15bf3c87faed8a75b3f12285b23292a9b78004e3fbc7334a934b192"
+  inputs-digest = "66b97ec1aba11467686c792547c2b751b4034f101552676cabb59376a297bdab"
   solver-name = "gps-cdcl"
   solver-version = 1

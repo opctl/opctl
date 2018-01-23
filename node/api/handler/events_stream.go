@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
@@ -36,14 +37,14 @@ func (hdlr _handler) events_streams(
 		req.Filter.Roots = rootsArray
 	}
 
+	ctx, cancel := context.WithCancel(httpReq.Context())
+	defer cancel()
+
+	// @TODO: handle err channel
 	eventChannel, _ := hdlr.core.GetEventStream(
-		httpReq.Context(),
+		ctx,
 		req,
 	)
-	if nil != err {
-		http.Error(httpResp, err.Error(), http.StatusBadRequest)
-		return
-	}
 
 	for {
 		event, isEventChannelOpen := <-eventChannel
