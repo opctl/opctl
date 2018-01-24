@@ -3,11 +3,11 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
-	"github.com/boltdb/bolt"
+	"github.com/dgraph-io/badger"
 	"github.com/opspec-io/sdk-golang/model"
+	"log"
 	"os"
 	"path"
-	"sync"
 	"time"
 )
 
@@ -26,55 +26,51 @@ type EventRepo interface {
 func NewEventRepo(
 	eventDbFilePath string,
 ) EventRepo {
-	err := os.MkdirAll(path.Dir(eventDbFilePath), 0700)
+	eventDbDirPath := path.Dir(eventDbFilePath)
+	err := os.MkdirAll(eventDbDirPath, 0700)
 	if nil != err {
 		panic(err)
 	}
 
-	db, err := bolt.Open(eventDbFilePath, 0644, nil)
-	if nil != err {
-		panic(err)
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("events"))
-		return err
-	})
-	if nil != err {
-		panic(err)
+	opts := badger.DefaultOptions
+	opts.Dir = eventDbDirPath
+	opts.ValueDir = eventDbDirPath
+	db, err := badger.Open(opts)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return &eventRepo{
-		db: db,
+		db,
 	}
 }
 
 type eventRepo struct {
-	db               *bolt.DB
-	eventsByRootOpId map[string][]*model.Event
-	eventsMutex      sync.RWMutex
+	db *badger.DB
 }
 
 const sortableRFC3339Nano = "2006-01-02T15:04:05.000000000Z07:00"
 
 // O(1); threadsafe
-func (this *eventRepo) Add(event model.Event) error {
+func (er *eventRepo) Add(
+	event model.Event,
+) error {
 
 	// @TODO: handle errors
-	return this.db.Update(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("events"))
+	return er.db.Update(func(txn *badger.Txn) error {
 
 		encodedEvent, err := json.Marshal(event)
 		if nil != err {
 			return err
 		}
 
-		return bucket.Put([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
+		return txn.Set([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
 	})
 }
 
-// O(n) (n being number of subscriptions that exist); threadsafe
-func (this *eventRepo) List(ctx context.Context,
+// O(n) (n being number of events that exist); threadsafe
+func (er eventRepo) List(
+	ctx context.Context,
 	filter model.EventFilter,
 ) (<-chan model.Event, <-chan error) {
 	eventChannel := make(chan model.Event, 100000)
@@ -84,24 +80,31 @@ func (this *eventRepo) List(ctx context.Context,
 		defer close(eventChannel)
 		defer close(errChannel)
 
-		if err := this.db.View(func(tx *bolt.Tx) error {
-			cursor := tx.Bucket([]byte("events")).Cursor()
-
+		if err := er.db.View(func(txn *badger.Txn) error {
 			sinceTime := new(time.Time)
 			if nil != filter.Since {
 				sinceTime = filter.Since
 			}
 
+			it := txn.NewIterator(badger.DefaultIteratorOptions)
 			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
-			for k, v := cursor.Seek(sinceBytes); k != nil; k, v = cursor.Next() {
-				event := model.Event{}
-				err := json.Unmarshal(v, &event)
+			for it.Seek(sinceBytes); it.Valid(); it.Next() {
+				value, err := it.Item().Value()
 				if nil != err {
 					return err
 				}
 
+				event := model.Event{}
+				if err := json.Unmarshal(value, &event); nil != err {
+					return err
+				}
+
 				if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
-					eventChannel <- event
+					select {
+					case <-ctx.Done():
+						return ctx.Err()
+					case eventChannel <- event:
+					}
 				}
 			}
 

@@ -79,29 +79,27 @@ func (ps *pubSub) Subscribe(
 	go func() {
 		defer close(dstEventChannel)
 		defer close(dstErrChannel)
+		defer ps.gcSubscription(subscriptionId)
 
 		// old events
 		srcEventChannel, srcErrChannel := ps.eventRepo.List(ctx, filter)
 		for event := range srcEventChannel {
 			select {
 			case <-ctx.Done():
-				ps.gcSubscription(subscriptionId)
 				return
-			case err, ok := <-srcErrChannel:
-				if ok {
-					dstErrChannel <- err
-					ps.gcSubscription(subscriptionId)
-					return
-				}
 			case dstEventChannel <- event:
 			}
+		}
+
+		if err := <-srcErrChannel; nil != err {
+			dstErrChannel <- err
+			return
 		}
 
 		// new events
 		for event := range subscription.NewEventChannel {
 			select {
 			case <-ctx.Done():
-				ps.gcSubscription(subscriptionId)
 				return
 			case dstEventChannel <- event:
 			}
@@ -129,15 +127,16 @@ func (ps *pubSub) Publish(
 
 	go func() {
 		ps.subscriptionsMutex.RLock()
+		defer ps.subscriptionsMutex.RUnlock()
 		for _, subscription := range ps.subscriptions {
 			RootOpId := getEventRootOpId(event)
 			if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
 				select {
 				case <-subscription.DoneChannel:
+					close(subscription.NewEventChannel)
 				case subscription.NewEventChannel <- event:
 				}
 			}
 		}
-		ps.subscriptionsMutex.RUnlock()
 	}()
 }

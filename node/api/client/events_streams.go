@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"path"
@@ -42,15 +41,9 @@ func (c client) GetEventStream(
 		// ensure channel closed on exit
 		defer close(eventStream)
 
+		var event model.Event
 		for {
-
-			_, bytes, err := wsConn.ReadMessage()
-			if nil != err {
-				return
-			}
-
-			var event model.Event
-			err = json.Unmarshal(bytes, &event)
+			err := wsConn.ReadJSON(&event)
 			if nil != err {
 				return
 			}

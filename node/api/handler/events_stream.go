@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
 	"strings"
@@ -53,13 +51,7 @@ func (hdlr _handler) events_streams(
 			return
 		}
 
-		eventBytes, err := json.Marshal(event)
-		if nil != err {
-			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = conn.WriteMessage(websocket.TextMessage, eventBytes)
+		err := conn.WriteJSON(event)
 		if nil != err {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
