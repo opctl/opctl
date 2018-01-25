@@ -13,7 +13,7 @@ var _ = Context("pubSub", func() {
 	if nil != err {
 		panic(err)
 	}
-	tempEventRepo := NewEventRepo(tempFilePath.Name())
+	tempEventRepo := NewBuntDBEventRepo(tempFilePath.Name())
 
 	Context("New", func() {
 		It("should return PubSub", func() {

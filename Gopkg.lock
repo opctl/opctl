@@ -41,6 +41,12 @@
   version = "v3.5.1"
 
 [[projects]]
+  name = "github.com/boltdb/bolt"
+  packages = ["."]
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
+
+[[projects]]
   name = "github.com/dgraph-io/badger"
   packages = [
     ".",
@@ -93,7 +99,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "e11bf870a3170a1d2b1e177a0d7ccc66200bd643"
+  revision = "2b2265acbb7b1457cd6657a5e4e5503472b306d1"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -295,6 +301,51 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/tidwall/btree"
+  packages = ["."]
+  revision = "9876f1454cf0993a53d74c27196993e345f50dd1"
+
+[[projects]]
+  name = "github.com/tidwall/buntdb"
+  packages = ["."]
+  revision = "2da7c106683f522198cdf55ed8db42b374de50d7"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/tidwall/gjson"
+  packages = ["."]
+  revision = "87033efcaec6215741137e8ca61952c53ef2685d"
+  version = "v1.0.6"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tidwall/grect"
+  packages = ["."]
+  revision = "ba9a043346eba55344e40d66a5e74cfda3a9d293"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tidwall/match"
+  packages = ["."]
+  revision = "1731857f09b1f38450e2c12409748407822dc6be"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tidwall/rtree"
+  packages = [
+    ".",
+    "base"
+  ]
+  revision = "6cd427091e0e662cb4f8e2c9eb1a41e1c46ff0d3"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tidwall/tinyqueue"
+  packages = ["."]
+  revision = "1feaf062ef04a231c9126f99a68eaa579fd0e390"
+
+[[projects]]
+  branch = "master"
   name = "github.com/xanzy/ssh-agent"
   packages = ["."]
   revision = "ba9c9e33906f58169366275e3450db66139a31a9"
@@ -358,7 +409,7 @@
     "unix",
     "windows"
   ]
-  revision = "af50095a40f9041b3b38960738837185c26e9419"
+  revision = "af9a21289d0040306ecc55fa668c95246f1f8425"
 
 [[projects]]
   branch = "master"
@@ -447,6 +498,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0331100ed15bf3c87faed8a75b3f12285b23292a9b78004e3fbc7334a934b192"
+  inputs-digest = "28e8346cc68454e5a2b00cc788b6638f5b9ff9678de61652c4c8ac0ead0c4496"
   solver-name = "gps-cdcl"
   solver-version = 1
