@@ -13,7 +13,7 @@ import (
 
 /**
 NewBadgerDBEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
- */
+*/
 func NewBadgerDBEventStore(
 	eventDbFilePath string,
 ) EventStore {

@@ -1,6 +1,7 @@
 package uniquestring
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 )
 
@@ -15,7 +16,10 @@ var _ = Context("uniqueStringFactory", func() {
 			/* act/assert */
 			for i := 0; i < 100000; i++ {
 
-				uniqueString := objectUnderTest.Construct()
+				uniqueString, err := objectUnderTest.Construct()
+				if nil != err {
+					Fail(fmt.Sprintf("err returned: %v", err))
+				}
 
 				if _, ok := stringsReturnedFromConstruct[uniqueString]; ok {
 					Fail("same string returned twice")

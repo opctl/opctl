@@ -24,7 +24,7 @@ var _ = Context("coerceToFile", func() {
 				uniqueString := "dummyUniqueString"
 
 				fakeUniqueString := new(uniquestring.Fake)
-				fakeUniqueString.ConstructReturns(uniqueString)
+				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
 
@@ -86,7 +86,7 @@ var _ = Context("coerceToFile", func() {
 					expectedValue := model.Value{File: &expectedValuePath}
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					objectUnderTest := _coerceToFile{
 						uniqueString: fakeUniqueString,
@@ -165,7 +165,7 @@ var _ = Context("coerceToFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
 
@@ -229,7 +229,7 @@ var _ = Context("coerceToFile", func() {
 						uniqueString := "dummyUniqueString"
 
 						fakeUniqueString := new(uniquestring.Fake)
-						fakeUniqueString.ConstructReturns(uniqueString)
+						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}
@@ -308,7 +308,7 @@ var _ = Context("coerceToFile", func() {
 				uniqueString := "dummyUniqueString"
 
 				fakeUniqueString := new(uniquestring.Fake)
-				fakeUniqueString.ConstructReturns(uniqueString)
+				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
 
@@ -369,7 +369,7 @@ var _ = Context("coerceToFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 					expectedValue := model.Value{File: &expectedValuePath}
@@ -455,7 +455,7 @@ var _ = Context("coerceToFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
 
@@ -519,7 +519,7 @@ var _ = Context("coerceToFile", func() {
 						uniqueString := "dummyUniqueString"
 
 						fakeUniqueString := new(uniquestring.Fake)
-						fakeUniqueString.ConstructReturns(uniqueString)
+						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}
@@ -558,7 +558,7 @@ var _ = Context("coerceToFile", func() {
 				uniqueString := "dummyUniqueString"
 
 				fakeUniqueString := new(uniquestring.Fake)
-				fakeUniqueString.ConstructReturns(uniqueString)
+				fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
 
@@ -619,7 +619,7 @@ var _ = Context("coerceToFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 					expectedValue := model.Value{File: &expectedValuePath}
@@ -675,7 +675,7 @@ var _ = Context("coerceToFile", func() {
 				fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
 				fakeUniqueString := new(uniquestring.Fake)
-				fakeUniqueString.ConstructReturns("dummyUniqueString")
+				fakeUniqueString.ConstructReturns("dummyUniqueString", nil)
 
 				objectUnderTest := _coerceToFile{
 					ioUtil:       fakeIOUtil,
@@ -745,7 +745,7 @@ var _ = Context("coerceToFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					fakeUniqueString := new(uniquestring.Fake)
-					fakeUniqueString.ConstructReturns(uniqueString)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
@@ -814,7 +814,7 @@ var _ = Context("coerceToFile", func() {
 						fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
 
 						fakeUniqueString := new(uniquestring.Fake)
-						fakeUniqueString.ConstructReturns(uniqueString)
+						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}

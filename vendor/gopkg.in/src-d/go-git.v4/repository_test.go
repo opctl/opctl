@@ -10,18 +10,21 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
-	"github.com/src-d/go-git-fixtures"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
+	"gopkg.in/src-d/go-git.v4/storage"
 	"gopkg.in/src-d/go-git.v4/storage/filesystem"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 
 	. "gopkg.in/check.v1"
-	"gopkg.in/src-d/go-billy.v3/memfs"
-	"gopkg.in/src-d/go-billy.v3/osfs"
-	"gopkg.in/src-d/go-billy.v3/util"
+	"gopkg.in/src-d/go-billy.v4/memfs"
+	"gopkg.in/src-d/go-billy.v4/osfs"
+	"gopkg.in/src-d/go-billy.v4/util"
+	"gopkg.in/src-d/go-git-fixtures.v3"
 )
 
 type RepositorySuite struct {
@@ -82,6 +85,7 @@ func (s *RepositorySuite) TestInitStandardDotGit(c *C) {
 	c.Assert(r, NotNil)
 
 	l, err := fs.ReadDir(".git")
+	c.Assert(err, IsNil)
 	c.Assert(len(l) > 0, Equals, true)
 
 	cfg, err := r.Config()
@@ -439,6 +443,7 @@ func (s *RepositorySuite) TestPlainCloneWithRecurseSubmodules(c *C) {
 	c.Assert(err, IsNil)
 
 	cfg, err := r.Config()
+	c.Assert(err, IsNil)
 	c.Assert(cfg.Remotes, HasLen, 1)
 	c.Assert(cfg.Submodules, HasLen, 2)
 }
@@ -1260,24 +1265,32 @@ func (s *RepositorySuite) TestWorktreeBare(c *C) {
 }
 
 func (s *RepositorySuite) TestResolveRevision(c *C) {
-	url := s.GetLocalRepositoryURL(
-		fixtures.ByURL("https://github.com/git-fixtures/basic.git").One(),
-	)
-
-	r, _ := Init(memory.NewStorage(), nil)
-	err := r.clone(context.Background(), &CloneOptions{URL: url})
+	f := fixtures.ByURL("https://github.com/git-fixtures/basic.git").One()
+	sto, err := filesystem.NewStorage(f.DotGit())
+	c.Assert(err, IsNil)
+	r, err := Open(sto, f.DotGit())
 	c.Assert(err, IsNil)
 
 	datas := map[string]string{
-		"HEAD": "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
-		"refs/heads/master~2^^~":      "b029517f6300c2da0f4b651b8642506cd6aaf45d",
-		"HEAD~2^^~":                   "b029517f6300c2da0f4b651b8642506cd6aaf45d",
-		"HEAD~3^2":                    "a5b8b09e2f8fcb0bb99d3ccb0958157b40890d69",
-		"HEAD~3^2^0":                  "a5b8b09e2f8fcb0bb99d3ccb0958157b40890d69",
-		"HEAD~2^{/binary file}":       "35e85108805c84807bc66a02d91535e1e24b38b9",
-		"HEAD~^{!-some}":              "1669dce138d9b841a518c64b10914d88f5e488ea",
-		"HEAD@{2015-03-31T11:56:18Z}": "918c48b83bd081e863dbe1b80f8998f058cd8294",
-		"HEAD@{2015-03-31T11:49:00Z}": "1669dce138d9b841a518c64b10914d88f5e488ea",
+		"HEAD":                       "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"heads/master":               "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"heads/master~1":             "918c48b83bd081e863dbe1b80f8998f058cd8294",
+		"refs/heads/master":          "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"refs/heads/master~2^^~":     "b029517f6300c2da0f4b651b8642506cd6aaf45d",
+		"refs/tags/v1.0.0":           "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"refs/remotes/origin/master": "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"refs/remotes/origin/HEAD":   "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"HEAD~2^^~":                  "b029517f6300c2da0f4b651b8642506cd6aaf45d",
+		"HEAD~3^2":                   "a5b8b09e2f8fcb0bb99d3ccb0958157b40890d69",
+		"HEAD~3^2^0":                 "a5b8b09e2f8fcb0bb99d3ccb0958157b40890d69",
+		"HEAD~2^{/binary file}":      "35e85108805c84807bc66a02d91535e1e24b38b9",
+		"HEAD~^{/!-some}":            "1669dce138d9b841a518c64b10914d88f5e488ea",
+		"master":                     "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"branch":                     "e8d3ffab552895c19b9fcf7aa264d277cde33881",
+		"v1.0.0":                     "6ecf0ef2c2dffb796033e5a02219af86ec6584e5",
+		"branch~1":                   "918c48b83bd081e863dbe1b80f8998f058cd8294",
+		"v1.0.0~1":                   "918c48b83bd081e863dbe1b80f8998f058cd8294",
+		"master~1":                   "918c48b83bd081e863dbe1b80f8998f058cd8294",
 	}
 
 	for rev, hash := range datas {
@@ -1298,10 +1311,9 @@ func (s *RepositorySuite) TestResolveRevisionWithErrors(c *C) {
 	c.Assert(err, IsNil)
 
 	datas := map[string]string{
-		"efs/heads/master~":           "reference not found",
-		"HEAD^3":                      `Revision invalid : "3" found must be 0, 1 or 2 after "^"`,
-		"HEAD^{/whatever}":            `No commit message match regexp : "whatever"`,
-		"HEAD@{2015-03-31T09:49:00Z}": `No commit exists prior to date "2015-03-31 09:49:00 +0000 UTC"`,
+		"efs/heads/master~": "reference not found",
+		"HEAD^3":            `Revision invalid : "3" found must be 0, 1 or 2 after "^"`,
+		"HEAD^{/whatever}":  `No commit message match regexp : "whatever"`,
 	}
 
 	for rev, rerr := range datas {
@@ -1309,6 +1321,64 @@ func (s *RepositorySuite) TestResolveRevisionWithErrors(c *C) {
 
 		c.Assert(err.Error(), Equals, rerr)
 	}
+}
+
+func (s *RepositorySuite) testRepackObjects(
+	c *C, deleteTime time.Time, expectedPacks int) {
+	srcFs := fixtures.ByTag("unpacked").One().DotGit()
+	var sto storage.Storer
+	var err error
+	sto, err = filesystem.NewStorage(srcFs)
+	c.Assert(err, IsNil)
+
+	los := sto.(storer.LooseObjectStorer)
+	c.Assert(los, NotNil)
+
+	numLooseStart := 0
+	err = los.ForEachObjectHash(func(_ plumbing.Hash) error {
+		numLooseStart++
+		return nil
+	})
+	c.Assert(err, IsNil)
+	c.Assert(numLooseStart > 0, Equals, true)
+
+	pos := sto.(storer.PackedObjectStorer)
+	c.Assert(los, NotNil)
+
+	packs, err := pos.ObjectPacks()
+	c.Assert(err, IsNil)
+	numPacksStart := len(packs)
+	c.Assert(numPacksStart > 1, Equals, true)
+
+	r, err := Open(sto, srcFs)
+	c.Assert(err, IsNil)
+	c.Assert(r, NotNil)
+
+	err = r.RepackObjects(&RepackConfig{
+		OnlyDeletePacksOlderThan: deleteTime,
+	})
+	c.Assert(err, IsNil)
+
+	numLooseEnd := 0
+	err = los.ForEachObjectHash(func(_ plumbing.Hash) error {
+		numLooseEnd++
+		return nil
+	})
+	c.Assert(err, IsNil)
+	c.Assert(numLooseEnd, Equals, 0)
+
+	packs, err = pos.ObjectPacks()
+	c.Assert(err, IsNil)
+	numPacksEnd := len(packs)
+	c.Assert(numPacksEnd, Equals, expectedPacks)
+}
+
+func (s *RepositorySuite) TestRepackObjects(c *C) {
+	s.testRepackObjects(c, time.Time{}, 1)
+}
+
+func (s *RepositorySuite) TestRepackObjectsWithNoDelete(c *C) {
+	s.testRepackObjects(c, time.Unix(0, 1), 3)
 }
 
 func ExecuteOnPath(c *C, path string, cmds ...string) error {

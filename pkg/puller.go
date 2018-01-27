@@ -71,7 +71,10 @@ func (this _puller) Pull(
 		}
 
 		if nil != authOpts {
-			cloneOptions.Auth = http.NewBasicAuth(authOpts.Username, authOpts.Password)
+			cloneOptions.Auth = &http.BasicAuth{
+				Username: authOpts.Username,
+				Password: authOpts.Password,
+			}
 		}
 
 		if _, err := this.git.PlainClone(

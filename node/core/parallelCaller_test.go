@@ -49,7 +49,7 @@ var _ = Context("parallelCaller", func() {
 
 			returnedUniqueString := "dummyUniqueString"
 			fakeUniqueStringFactory := new(uniquestring.Fake)
-			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
+			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
 			objectUnderTest := newParallelCaller(
 				fakeCaller,
@@ -121,7 +121,7 @@ var _ = Context("parallelCaller", func() {
 
 				returnedUniqueString := "dummyUniqueString"
 				fakeUniqueStringFactory := new(uniquestring.Fake)
-				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
+				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
 				objectUnderTest := newParallelCaller(
 					fakeCaller,
@@ -169,7 +169,7 @@ var _ = Context("parallelCaller", func() {
 
 				returnedUniqueString := "dummyUniqueString"
 				fakeUniqueStringFactory := new(uniquestring.Fake)
-				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString)
+				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
 				objectUnderTest := newParallelCaller(
 					fakeCaller,
