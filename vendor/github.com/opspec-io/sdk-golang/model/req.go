@@ -12,7 +12,7 @@ type EventFilter struct {
 }
 
 type GetEventStreamReq struct {
-	Filter *EventFilter
+	Filter EventFilter
 }
 
 type GetPkgContentReq struct {

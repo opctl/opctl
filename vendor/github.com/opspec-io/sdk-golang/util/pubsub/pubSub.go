@@ -5,31 +5,39 @@ package pubsub
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"sync"
-	"time"
 )
 
 func New(
-	eventRepo EventRepo,
+	eventStore EventStore,
 ) PubSub {
 	return &pubSub{
-		eventRepo:          eventRepo,
-		subscriptions:      map[chan *model.Event]chan *model.Event{},
-		subscriptionsMutex: sync.RWMutex{},
+		eventStore:          eventStore,
+		subscriptions:       map[string]subscription{},
+		subscriptionsMutex:  sync.RWMutex{},
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type EventPublisher interface {
 	Publish(
-		event *model.Event,
+		event model.Event,
 	)
 }
 
 type EventSubscriber interface {
+	// Subscribe returns a filtered event stream
+	// It is up to the caller to cancel the context or the subscription will continue receiving events.
+	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
-		filter *model.EventFilter,
-		eventChannel chan *model.Event,
+		ctx context.Context,
+		filter model.EventFilter,
+	) (
+		<-chan model.Event,
+		<-chan error,
 	)
 }
 
@@ -39,57 +47,96 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventRepo EventRepo
-	// format: output : input
-	subscriptions      map[chan *model.Event]chan *model.Event
-	subscriptionsMutex sync.RWMutex
+	eventStore          EventStore
+	uniqueStringFactory uniquestring.UniqueStringFactory
+	subscriptions       map[string]subscription
+	subscriptionsMutex  sync.RWMutex
 }
 
-// O(n) complexity (n being topics subscribed to); thread safe
-func (this *pubSub) Subscribe(
-	filter *model.EventFilter,
-	channel chan *model.Event,
+func (ps *pubSub) Subscribe(
+	ctx context.Context,
+	filter model.EventFilter,
+) (
+	<-chan model.Event,
+	<-chan error,
 ) {
-	this.subscriptionsMutex.Lock()
-	defer this.subscriptionsMutex.Unlock()
-	this.subscriptions[channel] = make(chan *model.Event, 10000)
+
+	subscriptionId := ps.uniqueStringFactory.Construct()
+	subscription := subscription{
+		Filter:          filter,
+		NewEventChannel: make(chan model.Event, 1000000),
+		// DoneChannel is closed when the subscription is garbage collected
+		DoneChannel: make(chan struct{}),
+	}
+
+	ps.subscriptionsMutex.Lock()
+	ps.subscriptions[subscriptionId] = subscription
+	ps.subscriptionsMutex.Unlock()
+
+	dstEventChannel := make(chan model.Event, 100000)
+	dstErrChannel := make(chan error, 1)
 
 	go func() {
-		for _, event := range this.eventRepo.List(filter) {
-			this.deliverEvent(event, channel)
+		defer close(dstEventChannel)
+		defer close(dstErrChannel)
+		defer ps.gcSubscription(subscriptionId)
+
+		// old events
+		srcEventChannel, srcErrChannel := ps.eventStore.List(ctx, filter)
+		for event := range srcEventChannel {
+			select {
+			case <-ctx.Done():
+				return
+			case dstEventChannel <- event:
+			}
 		}
-		for event := range this.subscriptions[channel] {
-			RootOpId := getEventRootOpId(event)
-			if !isRootOpIdExcludedByFilter(RootOpId, filter) {
-				this.deliverEvent(event, channel)
+
+		if err := <-srcErrChannel; nil != err {
+			dstErrChannel <- err
+			return
+		}
+
+		// new events
+		for event := range subscription.NewEventChannel {
+			select {
+			case <-ctx.Done():
+				return
+			case dstEventChannel <- event:
 			}
 		}
 	}()
+
+	return dstEventChannel, dstErrChannel
 }
 
-func (this *pubSub) deliverEvent(
-	event *model.Event,
-	channel chan *model.Event,
+// gcSubscription garbage collects subscription w/ subscriptionId
+func (ps *pubSub) gcSubscription(
+	subscriptionId string,
 ) {
-	select {
-	case channel <- event:
-	case <-time.After(time.Second * 5):
-		this.subscriptionsMutex.Lock()
-		delete(this.subscriptions, channel)
-		this.subscriptionsMutex.Unlock()
-		return
-	}
+	close(ps.subscriptions[subscriptionId].DoneChannel)
+	ps.subscriptionsMutex.Lock()
+	delete(ps.subscriptions, subscriptionId)
+	ps.subscriptionsMutex.Unlock()
 }
 
-// O(1) complexity; thread safe
-func (this *pubSub) Publish(
-	event *model.Event,
+// O(n) complexity (n being number of existing subscriptions); thread safe
+func (ps *pubSub) Publish(
+	event model.Event,
 ) {
-	this.eventRepo.Add(event)
+	ps.eventStore.Add(event)
 
-	this.subscriptionsMutex.RLock()
-	defer this.subscriptionsMutex.RUnlock()
-	for _, subscriptionInput := range this.subscriptions {
-		subscriptionInput <- event
-	}
+	go func() {
+		ps.subscriptionsMutex.RLock()
+		defer ps.subscriptionsMutex.RUnlock()
+		for _, subscription := range ps.subscriptions {
+			RootOpId := getEventRootOpId(event)
+			if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
+				select {
+				case <-subscription.DoneChannel:
+					close(subscription.NewEventChannel)
+				case subscription.NewEventChannel <- event:
+				}
+			}
+		}
+	}()
 }

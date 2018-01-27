@@ -2,31 +2,40 @@
 package pubsub
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	PublishStub        func(event *model.Event)
+	PublishStub        func(event model.Event)
 	publishMutex       sync.RWMutex
 	publishArgsForCall []struct {
-		event *model.Event
+		event model.Event
 	}
-	SubscribeStub        func(filter *model.EventFilter, eventChannel chan *model.Event)
+	SubscribeStub        func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error)
 	subscribeMutex       sync.RWMutex
 	subscribeArgsForCall []struct {
-		filter       *model.EventFilter
-		eventChannel chan *model.Event
+		ctx    context.Context
+		filter model.EventFilter
+	}
+	subscribeReturns struct {
+		result1 <-chan model.Event
+		result2 <-chan error
+	}
+	subscribeReturnsOnCall map[int]struct {
+		result1 <-chan model.Event
+		result2 <-chan error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Publish(event *model.Event) {
+func (fake *Fake) Publish(event model.Event) {
 	fake.publishMutex.Lock()
 	fake.publishArgsForCall = append(fake.publishArgsForCall, struct {
-		event *model.Event
+		event model.Event
 	}{event})
 	fake.recordInvocation("Publish", []interface{}{event})
 	fake.publishMutex.Unlock()
@@ -41,23 +50,28 @@ func (fake *Fake) PublishCallCount() int {
 	return len(fake.publishArgsForCall)
 }
 
-func (fake *Fake) PublishArgsForCall(i int) *model.Event {
+func (fake *Fake) PublishArgsForCall(i int) model.Event {
 	fake.publishMutex.RLock()
 	defer fake.publishMutex.RUnlock()
 	return fake.publishArgsForCall[i].event
 }
 
-func (fake *Fake) Subscribe(filter *model.EventFilter, eventChannel chan *model.Event) {
+func (fake *Fake) Subscribe(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 	fake.subscribeMutex.Lock()
+	ret, specificReturn := fake.subscribeReturnsOnCall[len(fake.subscribeArgsForCall)]
 	fake.subscribeArgsForCall = append(fake.subscribeArgsForCall, struct {
-		filter       *model.EventFilter
-		eventChannel chan *model.Event
-	}{filter, eventChannel})
-	fake.recordInvocation("Subscribe", []interface{}{filter, eventChannel})
+		ctx    context.Context
+		filter model.EventFilter
+	}{ctx, filter})
+	fake.recordInvocation("Subscribe", []interface{}{ctx, filter})
 	fake.subscribeMutex.Unlock()
 	if fake.SubscribeStub != nil {
-		fake.SubscribeStub(filter, eventChannel)
+		return fake.SubscribeStub(ctx, filter)
 	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.subscribeReturns.result1, fake.subscribeReturns.result2
 }
 
 func (fake *Fake) SubscribeCallCount() int {
@@ -66,10 +80,32 @@ func (fake *Fake) SubscribeCallCount() int {
 	return len(fake.subscribeArgsForCall)
 }
 
-func (fake *Fake) SubscribeArgsForCall(i int) (*model.EventFilter, chan *model.Event) {
+func (fake *Fake) SubscribeArgsForCall(i int) (context.Context, model.EventFilter) {
 	fake.subscribeMutex.RLock()
 	defer fake.subscribeMutex.RUnlock()
-	return fake.subscribeArgsForCall[i].filter, fake.subscribeArgsForCall[i].eventChannel
+	return fake.subscribeArgsForCall[i].ctx, fake.subscribeArgsForCall[i].filter
+}
+
+func (fake *Fake) SubscribeReturns(result1 <-chan model.Event, result2 <-chan error) {
+	fake.SubscribeStub = nil
+	fake.subscribeReturns = struct {
+		result1 <-chan model.Event
+		result2 <-chan error
+	}{result1, result2}
+}
+
+func (fake *Fake) SubscribeReturnsOnCall(i int, result1 <-chan model.Event, result2 <-chan error) {
+	fake.SubscribeStub = nil
+	if fake.subscribeReturnsOnCall == nil {
+		fake.subscribeReturnsOnCall = make(map[int]struct {
+			result1 <-chan model.Event
+			result2 <-chan error
+		})
+	}
+	fake.subscribeReturnsOnCall[i] = struct {
+		result1 <-chan model.Event
+		result2 <-chan error
+	}{result1, result2}
 }
 
 func (fake *Fake) Invocations() map[string][][]interface{} {

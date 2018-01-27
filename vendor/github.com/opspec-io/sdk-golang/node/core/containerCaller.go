@@ -87,7 +87,7 @@ func (cc _containerCaller) Call(
 	}
 
 	cc.pubSub.Publish(
-		&model.Event{
+		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerId: containerId,
@@ -174,7 +174,7 @@ func (cc _containerCaller) Call(
 	}
 
 	cc.pubSub.Publish(
-		&model.Event{
+		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: containerId,
@@ -201,7 +201,7 @@ func (this _containerCaller) interpretLogs(
 			stdOutReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(
-					&model.Event{
+					model.Event{
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        chunk,
@@ -222,7 +222,7 @@ func (this _containerCaller) interpretLogs(
 			stdErrReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(
-					&model.Event{
+					model.Event{
 						Timestamp: time.Now().UTC(),
 						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
 							Data:        chunk,

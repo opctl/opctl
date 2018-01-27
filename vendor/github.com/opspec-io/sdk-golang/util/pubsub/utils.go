@@ -7,9 +7,9 @@ import (
 
 func isRootOpIdExcludedByFilter(
 	rootOpId string,
-	filter *model.EventFilter,
+	filter model.EventFilter,
 ) bool {
-	if nil != filter && nil != filter.Roots {
+	if nil != filter.Roots {
 		isMatchFound := false
 		for _, includedRootOpId := range filter.Roots {
 			if includedRootOpId == rootOpId {
@@ -25,7 +25,7 @@ func isRootOpIdExcludedByFilter(
 }
 
 func getEventRootOpId(
-	event *model.Event,
+	event model.Event,
 ) string {
 	switch {
 	case nil != event.ContainerExited:
