@@ -80,7 +80,7 @@ func New() {
 		StripPrefix("/api",
 			handler.New(
 				core.New(
-					pubsub.New(pubsub.NewEventRepo(eventDbPath(dcgDataDirPath))),
+					pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
 					containerProvider,
 					rootFSPath,
 				),

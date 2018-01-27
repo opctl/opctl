@@ -77,17 +77,16 @@ var _ = Context("GET /events/stream", func() {
 
 				/* arrange */
 				fakeCore := new(core.Fake)
-				fakeCore.GetEventStreamStub = func(req *model.GetEventStreamReq, eventChannel chan *model.Event) (err error) {
-					// close eventChannel to trigger immediate return
-					close(eventChannel)
-					return
-				}
+				eventChannel := make(chan model.Event)
+				// close eventChannel to trigger immediate return
+				close(eventChannel)
+				fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 				objectUnderTest := New(fakeCore)
 
 				expectedSince := time.Now().UTC()
 				expectedReq := &model.GetEventStreamReq{
-					Filter: &model.EventFilter{
+					Filter: model.EventFilter{
 						Since: &expectedSince,
 					},
 				}
@@ -109,7 +108,7 @@ var _ = Context("GET /events/stream", func() {
 				objectUnderTest.ServeHTTP(httptest.NewRecorder(), httpReq)
 
 				/* assert */
-				actualReq, _ := fakeCore.GetEventStreamArgsForCall(0)
+				_, actualReq := fakeCore.GetEventStreamArgsForCall(0)
 				Expect(*actualReq).To(Equal(*expectedReq))
 
 			})
@@ -120,11 +119,10 @@ var _ = Context("GET /events/stream", func() {
 
 			/* arrange */
 			fakeCore := new(core.Fake)
-			fakeCore.GetEventStreamStub = func(req *model.GetEventStreamReq, eventChannel chan *model.Event) (err error) {
-				// close eventChannel to trigger immediate return
-				close(eventChannel)
-				return
-			}
+			eventChannel := make(chan model.Event)
+			// close eventChannel to trigger immediate return
+			close(eventChannel)
+			fakeCore.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := New(fakeCore)
 
@@ -133,7 +131,7 @@ var _ = Context("GET /events/stream", func() {
 
 			expectedRoots := []string{root1, root2}
 			expectedReq := &model.GetEventStreamReq{
-				Filter: &model.EventFilter{
+				Filter: model.EventFilter{
 					Roots: expectedRoots,
 				},
 			}
@@ -155,7 +153,7 @@ var _ = Context("GET /events/stream", func() {
 			objectUnderTest.ServeHTTP(httptest.NewRecorder(), httpReq)
 
 			/* assert */
-			actualReq, _ := fakeCore.GetEventStreamArgsForCall(0)
+			_, actualReq := fakeCore.GetEventStreamArgsForCall(0)
 			Expect(*actualReq).To(Equal(*expectedReq))
 
 		})

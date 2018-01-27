@@ -27,11 +27,14 @@ func (daemon *Daemon) Reload(conf *config.Config) (err error) {
 	attributes := map[string]string{}
 
 	defer func() {
+		jsonString, _ := json.Marshal(daemon.configStore)
+
 		// we're unlocking here, because
 		// LogDaemonEventWithAttributes() -> SystemInfo() -> GetAllRuntimes()
 		// holds that lock too.
 		daemon.configStore.Unlock()
 		if err == nil {
+			logrus.Infof("Reloaded configuration: %s", jsonString)
 			daemon.LogDaemonEventWithAttributes("reload", attributes)
 		}
 	}()
@@ -61,10 +64,7 @@ func (daemon *Daemon) Reload(conf *config.Config) (err error) {
 	if err := daemon.reloadLiveRestore(conf, attributes); err != nil {
 		return err
 	}
-	if err := daemon.reloadNetworkDiagnosticPort(conf, attributes); err != nil {
-		return err
-	}
-	return nil
+	return daemon.reloadNetworkDiagnosticPort(conf, attributes)
 }
 
 // reloadDebug updates configuration with Debug option

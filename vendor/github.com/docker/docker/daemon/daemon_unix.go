@@ -4,7 +4,6 @@ package daemon
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -29,6 +28,7 @@ import (
 	"github.com/docker/docker/pkg/containerfs"
 	"github.com/docker/docker/pkg/idtools"
 	"github.com/docker/docker/pkg/ioutils"
+	"github.com/docker/docker/pkg/mount"
 	"github.com/docker/docker/pkg/parsers"
 	"github.com/docker/docker/pkg/parsers/kernel"
 	"github.com/docker/docker/pkg/sysinfo"
@@ -680,51 +680,6 @@ func (daemon *Daemon) initRuntimes(runtimes map[string]types.Runtime) (err error
 	return nil
 }
 
-// reloadPlatform updates configuration with platform specific options
-// and updates the passed attributes
-func (daemon *Daemon) reloadPlatform(conf *config.Config, attributes map[string]string) error {
-	if err := conf.ValidatePlatformConfig(); err != nil {
-		return err
-	}
-
-	if conf.IsValueSet("runtimes") {
-		// Always set the default one
-		conf.Runtimes[config.StockRuntimeName] = types.Runtime{Path: DefaultRuntimeBinary}
-		if err := daemon.initRuntimes(conf.Runtimes); err != nil {
-			return err
-		}
-		daemon.configStore.Runtimes = conf.Runtimes
-	}
-
-	if conf.DefaultRuntime != "" {
-		daemon.configStore.DefaultRuntime = conf.DefaultRuntime
-	}
-
-	if conf.IsValueSet("default-shm-size") {
-		daemon.configStore.ShmSize = conf.ShmSize
-	}
-
-	if conf.IpcMode != "" {
-		daemon.configStore.IpcMode = conf.IpcMode
-	}
-
-	// Update attributes
-	var runtimeList bytes.Buffer
-	for name, rt := range daemon.configStore.Runtimes {
-		if runtimeList.Len() > 0 {
-			runtimeList.WriteRune(' ')
-		}
-		runtimeList.WriteString(fmt.Sprintf("%s:%s", name, rt))
-	}
-
-	attributes["runtimes"] = runtimeList.String()
-	attributes["default-runtime"] = daemon.configStore.DefaultRuntime
-	attributes["default-shm-size"] = fmt.Sprintf("%d", daemon.configStore.ShmSize)
-	attributes["default-ipc-mode"] = daemon.configStore.IpcMode
-
-	return nil
-}
-
 // verifyDaemonSettings performs validation of daemon config struct
 func verifyDaemonSettings(conf *config.Config) error {
 	// Check for mutually incompatible config options
@@ -814,22 +769,14 @@ func overlaySupportsSelinux() (bool, error) {
 }
 
 // configureKernelSecuritySupport configures and validates security support for the kernel
-func configureKernelSecuritySupport(config *config.Config, driverNames []string) error {
+func configureKernelSecuritySupport(config *config.Config, driverName string) error {
 	if config.EnableSelinuxSupport {
 		if !selinuxEnabled() {
 			logrus.Warn("Docker could not enable SELinux on the host system")
 			return nil
 		}
 
-		overlayFound := false
-		for _, d := range driverNames {
-			if d == "overlay" || d == "overlay2" {
-				overlayFound = true
-				break
-			}
-		}
-
-		if overlayFound {
+		if driverName == "overlay" || driverName == "overlay2" {
 			// If driver is overlay or overlay2, make sure kernel
 			// supports selinux with overlay.
 			supported, err := overlaySupportsSelinux()
@@ -838,7 +785,7 @@ func configureKernelSecuritySupport(config *config.Config, driverNames []string)
 			}
 
 			if !supported {
-				logrus.Warnf("SELinux is not supported with the %v graph driver on this kernel", driverNames)
+				logrus.Warnf("SELinux is not supported with the %v graph driver on this kernel", driverName)
 			}
 		}
 	} else {
@@ -1223,6 +1170,12 @@ func setupDaemonRoot(config *config.Config, rootDir string, rootIDs idtools.IDPa
 			}
 		}
 	}
+
+	if err := ensureSharedOrSlave(config.Root); err != nil {
+		if err := mount.MakeShared(config.Root); err != nil {
+			logrus.WithError(err).WithField("dir", config.Root).Warn("Could not set daemon root propagation to shared, this is not generally critical but may cause some functionality to not work or fallback to less desirable behavior")
+		}
+	}
 	return nil
 }
 
@@ -1501,10 +1454,7 @@ func (daemon *Daemon) initCgroupsPath(path string) error {
 	if err := maybeCreateCPURealTimeFile(sysinfo.CPURealtimePeriod, daemon.configStore.CPURealtimePeriod, "cpu.rt_period_us", path); err != nil {
 		return err
 	}
-	if err := maybeCreateCPURealTimeFile(sysinfo.CPURealtimeRuntime, daemon.configStore.CPURealtimeRuntime, "cpu.rt_runtime_us", path); err != nil {
-		return err
-	}
-	return nil
+	return maybeCreateCPURealTimeFile(sysinfo.CPURealtimeRuntime, daemon.configStore.CPURealtimeRuntime, "cpu.rt_runtime_us", path)
 }
 
 func maybeCreateCPURealTimeFile(sysinfoPresent bool, configValue int64, file string, path string) error {

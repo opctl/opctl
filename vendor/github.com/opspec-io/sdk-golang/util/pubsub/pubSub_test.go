@@ -1,10 +1,12 @@
 package pubsub
 
 import (
+	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"io/ioutil"
+	"time"
 )
 
 var _ = Context("pubSub", func() {
@@ -12,13 +14,13 @@ var _ = Context("pubSub", func() {
 	if nil != err {
 		panic(err)
 	}
-	tempEventRepo := NewEventRepo(tempFilePath.Name())
+	tempEventStore := NewBuntDBEventStore(tempFilePath.Name())
 
 	Context("New", func() {
 		It("should return PubSub", func() {
 			/* arrange/act/assert */
 
-			Expect(New(tempEventRepo)).To(Not(BeNil()))
+			Expect(New(tempEventStore)).To(Not(BeNil()))
 		})
 	})
 	Context("Publish", func() {
@@ -26,9 +28,7 @@ var _ = Context("pubSub", func() {
 			Context("is subscribed", func() {
 				It("receives event", func() {
 					/* arrange */
-					subscriberChannel := make(chan *model.Event, 1000)
-
-					expectedEvent := &model.Event{
+					expectedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
@@ -36,26 +36,25 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New(tempEventRepo)
+					objectUnderTest := New(tempEventStore)
 
-					objectUnderTest.Subscribe(nil, subscriberChannel)
+					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
 
 					/* act */
 					objectUnderTest.Publish(expectedEvent)
 
 					/* assert */
-					var actualEvent *model.Event
-					Eventually(subscriberChannel).Should(Receive(&actualEvent))
+					var actualEvent model.Event
+					Eventually(eventChannel).Should(Receive(&actualEvent))
 					Expect(actualEvent).To(Equal(expectedEvent))
 				})
 			})
 			Context("isn't subscribed", func() {
 				It("doesn't receive event", func() {
 					/* arrange */
-					subscriberEventFilter := &model.EventFilter{Roots: []string{"notPublishedRootOpId"}}
-					subscriberChannel := make(chan *model.Event, 1000)
+					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootOpId"}}
 
-					publishedEvent := &model.Event{
+					publishedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
@@ -63,54 +62,50 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					objectUnderTest := New(tempEventRepo)
+					objectUnderTest := New(tempEventStore)
 
-					objectUnderTest.Subscribe(subscriberEventFilter, subscriberChannel)
+					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), subscriberEventFilter)
 
 					/* act */
 					objectUnderTest.Publish(publishedEvent)
 
 					/* assert */
-					Consistently(subscriberChannel).ShouldNot(Receive())
+					Consistently(eventChannel).ShouldNot(Receive())
 				})
 			})
 		})
 	})
 	Context("Subscribe", func() {
-		Context("previous publish exists", func() {
+		Context("one publish has occurred", func() {
 			Context("no filter", func() {
-				It("should receive previous event", func() {
+				It("should receive published event", func() {
 					/* arrange */
-					subscriberChannel := make(chan *model.Event, 1000)
-
-					expectedEvent := &model.Event{
-						OpStarted: &model.OpStartedEvent{
-							RootOpId: "dummyRootOpId",
-							OpId:     "dummyOpId",
-							PkgRef:   "dummyPkgRef",
+					expectedEvent := model.Event{
+						ContainerStarted: &model.ContainerStartedEvent{
+							RootOpId:    "dummyRootOpId",
+							ContainerId: "dummyContainerId",
+							PkgRef:      "dummyPkgRef",
 						},
 					}
 
-					objectUnderTest := New(tempEventRepo)
+					objectUnderTest := New(tempEventStore)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */
-					objectUnderTest.Subscribe(nil, subscriberChannel)
+					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
 
 					/* assert */
-					var actualEvent *model.Event
-					Eventually(subscriberChannel).Should(Receive(&actualEvent))
+					var actualEvent model.Event
+					Eventually(eventChannel).Should(Receive(&actualEvent))
 					// ignore timestamp
 					actualEvent.Timestamp = expectedEvent.Timestamp
 					Expect(actualEvent).To(Equal(expectedEvent))
 				})
 			})
 			Context("filter allows previous publish", func() {
-				It("should receive previous event", func() {
+				It("should receive published event", func() {
 					/* arrange */
-					subscriberChannel := make(chan *model.Event, 1000)
-
-					expectedEvent := &model.Event{
+					expectedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
 							RootOpId: "dummyRootOpId",
 							OpId:     "dummyOpId",
@@ -118,24 +113,74 @@ var _ = Context("pubSub", func() {
 						},
 					}
 
-					providedFilter := &model.EventFilter{
+					providedFilter := model.EventFilter{
 						Roots: []string{
 							expectedEvent.OpStarted.RootOpId,
 						},
 					}
 
-					objectUnderTest := New(tempEventRepo)
+					objectUnderTest := New(tempEventStore)
 					objectUnderTest.Publish(expectedEvent)
 
 					/* act */
-					objectUnderTest.Subscribe(providedFilter, subscriberChannel)
+					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), providedFilter)
 
 					/* assert */
-					var actualEvent *model.Event
-					Eventually(subscriberChannel).Should(Receive(&actualEvent))
+					var actualEvent model.Event
+					Eventually(eventChannel).Should(Receive(&actualEvent))
 					// ignore timestamp
 					actualEvent.Timestamp = expectedEvent.Timestamp
 					Expect(actualEvent).To(Equal(expectedEvent))
+				})
+			})
+		})
+		Context("two publishes have occurred", func() {
+			Context("no filter", func() {
+				It("should receive published events", func() {
+					/* arrange */
+					expectedEvent1 := model.Event{
+						ContainerStarted: &model.ContainerStartedEvent{
+							RootOpId:    "dummyRootOpId",
+							ContainerId: "dummyContainerId",
+							PkgRef:      "dummyPkgRef",
+						},
+						Timestamp: time.Now(),
+					}
+
+					expectedEvent2 := model.Event{
+						OpStarted: &model.OpStartedEvent{
+							RootOpId: "dummyRootOpId",
+							OpId:     "dummyOpId",
+							PkgRef:   "dummyPkgRef",
+						},
+						Timestamp: time.Now(),
+					}
+
+					tempFilePath, err := ioutil.TempFile("", "")
+					if nil != err {
+						panic(err)
+					}
+					tempEventStore := NewBuntDBEventStore(tempFilePath.Name())
+
+					objectUnderTest := New(tempEventStore)
+					objectUnderTest.Publish(expectedEvent1)
+					objectUnderTest.Publish(expectedEvent2)
+
+					/* act */
+					eventChannel, _ := objectUnderTest.Subscribe(context.TODO(), model.EventFilter{})
+
+					/* assert */
+					var actualEvent1 model.Event
+					Eventually(eventChannel).Should(Receive(&actualEvent1))
+					// ignore timestamp
+					actualEvent1.Timestamp = expectedEvent1.Timestamp
+					Expect(actualEvent1).To(Equal(expectedEvent1))
+
+					var actualEvent2 model.Event
+					Eventually(eventChannel).Should(Receive(&actualEvent2))
+					// ignore timestamp
+					actualEvent2.Timestamp = expectedEvent2.Timestamp
+					Expect(actualEvent2).To(Equal(expectedEvent2))
 				})
 			})
 		})

@@ -131,7 +131,7 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				expectedEvent := &model.Event{
+				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
 						Msg:      "dummyError",
@@ -190,7 +190,7 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				expectedEvent := &model.Event{
+				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
 					OpStarted: &model.OpStartedEvent{
 						OpId:     providedOpId,
@@ -208,10 +208,10 @@ var _ = Context("opCaller", func() {
 				)
 
 				fakePubSub := new(pubsub.Fake)
-				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-					// close eventChannel to trigger immediate return
-					close(eventChannel)
-				}
+				eventChannel := make(chan model.Event)
+				// close eventChannel to trigger immediate return
+				close(eventChannel)
+				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				fakeCaller := new(fakeCaller)
 				// err to trigger immediate return
@@ -271,10 +271,10 @@ var _ = Context("opCaller", func() {
 				)
 
 				fakePubSub := new(pubsub.Fake)
-				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-					// close eventChannel to trigger immediate return
-					close(eventChannel)
-				}
+				eventChannel := make(chan model.Event)
+				// close eventChannel to trigger immediate return
+				close(eventChannel)
+				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				fakeCaller := new(fakeCaller)
 				// err to trigger immediate return
@@ -330,10 +330,10 @@ var _ = Context("opCaller", func() {
 				fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
-				fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-					// close eventChannel to trigger immediate return
-					close(eventChannel)
-				}
+				eventChannel := make(chan model.Event)
+				// close eventChannel to trigger immediate return
+				close(eventChannel)
+				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -369,7 +369,7 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					expectedEvent := &model.Event{
+					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEnded: &model.OpEndedEvent{
 							OpId:     providedOpId,
@@ -396,10 +396,10 @@ var _ = Context("opCaller", func() {
 					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
-					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-						// close eventChannel to trigger immediate return
-						close(eventChannel)
-					}
+					eventChannel := make(chan model.Event)
+					// close eventChannel to trigger immediate return
+					close(eventChannel)
+					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
 						pkg:         fakePkg,
@@ -455,10 +455,10 @@ var _ = Context("opCaller", func() {
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 					fakePubSub := new(pubsub.Fake)
-					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-						// close eventChannel to trigger immediate return
-						close(eventChannel)
-					}
+					eventChannel := make(chan model.Event)
+					// close eventChannel to trigger immediate return
+					close(eventChannel)
+					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
 						pkg:         fakePkg,
@@ -492,7 +492,7 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						expectedEvent := &model.Event{
+						expectedEvent := model.Event{
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
 								OpId:     providedOpId,
@@ -514,10 +514,10 @@ var _ = Context("opCaller", func() {
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						fakePubSub := new(pubsub.Fake)
-						fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-							// close eventChannel to trigger immediate return
-							close(eventChannel)
-						}
+						eventChannel := make(chan model.Event)
+						// close eventChannel to trigger immediate return
+						close(eventChannel)
+						fakePubSub.SubscribeReturns(eventChannel, nil)
 
 						fakeCaller := new(fakeCaller)
 						fakeCaller.CallReturns(
@@ -566,7 +566,7 @@ var _ = Context("opCaller", func() {
 						interpretedOutputs := map[string]*model.Value{"dummyOutputName": new(model.Value)}
 						fakeOutputs.InterpretReturns(interpretedOutputs, nil)
 
-						expectedEvent := &model.Event{
+						expectedEvent := model.Event{
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
 								OpId:     providedOpId,
@@ -597,10 +597,10 @@ var _ = Context("opCaller", func() {
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
 
 						fakePubSub := new(pubsub.Fake)
-						fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
-							// close eventChannel to trigger immediate return
-							close(eventChannel)
-						}
+						eventChannel := make(chan model.Event)
+						// close eventChannel to trigger immediate return
+						close(eventChannel)
+						fakePubSub.SubscribeReturns(eventChannel, nil)
 
 						objectUnderTest := _opCaller{
 							pkg:         fakePkg,

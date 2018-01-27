@@ -9,9 +9,9 @@ import (
 
 // DeReferencer de references:
 // - scope refs: $(name)
-// - scope property refs: $(name.sub.prop)
-// - scope file refs: $(name/sub/file.ext)
-// - pkg file refs: $(/name/sub/file.ext)
+// - scope object path refs: $(name.sub.prop)
+// - scope file path refs: $(name/sub/file.ext)
+// - pkg file path refs: $(/name/sub/file.ext)
 type DeReferencer interface {
 	// DeReference returns the de referenced value (if any), whether de referencing occurred, and any err
 	DeReference(
@@ -24,20 +24,20 @@ type DeReferencer interface {
 // New returns a DeReferencer
 func New() DeReferencer {
 	return _deReferencer{
-		data:                      data.New(),
-		pkgFileDeReferencer:       newPkgFileDeReferencer(),
-		scopeDeReferencer:         newScopeDeReferencer(),
-		scopeFileDeReferencer:     newScopeFileDeReferencer(),
-		scopePropertyDeReferencer: newScopePropertyDeReferencer(),
+		data: data.New(),
+		pkgFilePathDeReferencer:     newPkgFilePathDeReferencer(),
+		scopeDeReferencer:           newScopeDeReferencer(),
+		scopeFilePathDeReferencer:   newScopeFilePathDeReferencer(),
+		scopeObjectPathDeReferencer: newScopeObjectPathDeReferencer(),
 	}
 }
 
 type _deReferencer struct {
 	data data.Data
-	pkgFileDeReferencer
+	pkgFilePathDeReferencer
 	scopeDeReferencer
-	scopeFileDeReferencer
-	scopePropertyDeReferencer
+	scopeFilePathDeReferencer
+	scopeObjectPathDeReferencer
 }
 
 func (dr _deReferencer) DeReference(
@@ -51,9 +51,9 @@ func (dr _deReferencer) DeReference(
 		err   error
 	)
 
-	var isPkgFileRef bool
-	if value, isPkgFileRef, err = dr.pkgFileDeReferencer.DeReferencePkgFile(ref, scope, pkgHandle); isPkgFileRef {
-		return value, isPkgFileRef, err
+	var isPkgFilePathRef bool
+	if value, isPkgFilePathRef, err = dr.pkgFilePathDeReferencer.DeReferencePkgFilePath(ref, scope, pkgHandle); isPkgFilePathRef {
+		return value, isPkgFilePathRef, err
 	}
 
 	var isScopeRef bool
@@ -61,14 +61,14 @@ func (dr _deReferencer) DeReference(
 		return value, isScopeRef, err
 	}
 
-	var isScopeFileRef bool
-	if value, isScopeFileRef, err = dr.scopeFileDeReferencer.DeReferenceScopeFile(ref, scope); isScopeFileRef {
-		return value, isScopeFileRef, err
+	var isScopeFilePathRef bool
+	if value, isScopeFilePathRef, err = dr.scopeFilePathDeReferencer.DeReferenceScopeFilePath(ref, scope); isScopeFilePathRef {
+		return value, isScopeFilePathRef, err
 	}
 
-	var isScopePropertyRef bool
-	if value, isScopePropertyRef, err = dr.scopePropertyDeReferencer.DeReferenceScopeProperty(ref, scope); isScopePropertyRef {
-		return value, isScopePropertyRef, err
+	var isScopeObjectPathRef bool
+	if value, isScopeObjectPathRef, err = dr.scopeObjectPathDeReferencer.DeReferenceScopeObjectPath(ref, scope); isScopeObjectPathRef {
+		return value, isScopeObjectPathRef, err
 	}
 
 	// @TODO: replace w/ error once spec supports escapes; for now treat as literal text

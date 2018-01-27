@@ -19,7 +19,7 @@ var _ = Context("GetEventStream", func() {
 		/* arrange */
 		providedSince := time.Now().UTC()
 		providedReq := &model.GetEventStreamReq{
-			Filter: &model.EventFilter{
+			Filter: model.EventFilter{
 				Since: &providedSince,
 				Roots: []string{
 					"dummyRoot",

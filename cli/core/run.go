@@ -76,7 +76,7 @@ func (this _core) Run(
 	// start event loop
 	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
 		&model.GetEventStreamReq{
-			Filter: &model.EventFilter{
+			Filter: model.EventFilter{
 				Roots: []string{rootOpId},
 				Since: &startTime,
 			},

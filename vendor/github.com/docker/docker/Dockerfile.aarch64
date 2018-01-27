@@ -52,6 +52,7 @@ RUN apt-get update && apt-get install -y \
 	libudev-dev \
 	mercurial \
 	net-tools \
+	pigz \
 	pkg-config \
 	protobuf-compiler \
 	protobuf-c-compiler \
@@ -73,7 +74,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install Go
 # IMPORTANT: When updating this please note that stdlib archive/tar pkg is vendored
-ENV GO_VERSION 1.9.2
+ENV GO_VERSION 1.9.3
 RUN curl -fsSL "https://golang.org/dl/go${GO_VERSION}.linux-arm64.tar.gz" \
 	| tar -xzC /usr/local
 
@@ -159,7 +160,7 @@ ENV PATH=/usr/local/cli:$PATH
 ENTRYPOINT ["hack/dind"]
 
 # Options for hack/validate/gometalinter
-ENV GOMETALINTER_OPTS="--deadline 4m -j2"
+ENV GOMETALINTER_OPTS="--deadline=4m -j2"
 
 # Upload docker source
 COPY . /go/src/github.com/docker/docker
