@@ -41,14 +41,13 @@ func (c client) GetEventStream(
 		// ensure channel closed on exit
 		defer close(eventStream)
 
-		var event model.Event
 		for {
+			var event model.Event
 			err := wsConn.ReadJSON(&event)
 			if nil != err {
 				return
 			}
 			eventStream <- event
-
 		}
 	}()
 

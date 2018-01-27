@@ -12,10 +12,10 @@ import (
 )
 
 func New(
-	eventRepo EventRepo,
+	eventStore EventStore,
 ) PubSub {
 	return &pubSub{
-		eventRepo:           eventRepo,
+		eventStore:          eventStore,
 		subscriptions:       map[string]subscription{},
 		subscriptionsMutex:  sync.RWMutex{},
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -47,7 +47,7 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventRepo           EventRepo
+	eventStore          EventStore
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	subscriptions       map[string]subscription
 	subscriptionsMutex  sync.RWMutex
@@ -82,7 +82,7 @@ func (ps *pubSub) Subscribe(
 		defer ps.gcSubscription(subscriptionId)
 
 		// old events
-		srcEventChannel, srcErrChannel := ps.eventRepo.List(ctx, filter)
+		srcEventChannel, srcErrChannel := ps.eventStore.List(ctx, filter)
 		for event := range srcEventChannel {
 			select {
 			case <-ctx.Done():
@@ -123,7 +123,7 @@ func (ps *pubSub) gcSubscription(
 func (ps *pubSub) Publish(
 	event model.Event,
 ) {
-	ps.eventRepo.Add(event)
+	ps.eventStore.Add(event)
 
 	go func() {
 		ps.subscriptionsMutex.RLock()

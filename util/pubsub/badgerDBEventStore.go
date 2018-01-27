@@ -11,9 +11,12 @@ import (
 	"time"
 )
 
-func NewBadgerDBEventRepo(
+/**
+NewBadgerDBEventStore returns an EventStore implementation leveraging [Badger DB](https://github.com/dgraph-io/badger)
+ */
+func NewBadgerDBEventStore(
 	eventDbFilePath string,
-) EventRepo {
+) EventStore {
 	eventDbDirPath := path.Dir(eventDbFilePath)
 	err := os.MkdirAll(eventDbDirPath, 0700)
 	if nil != err {
@@ -28,17 +31,17 @@ func NewBadgerDBEventRepo(
 		log.Fatal(err)
 	}
 
-	return &badgerDBEventRepo{
+	return &badgerDBEventStore{
 		db,
 	}
 }
 
-type badgerDBEventRepo struct {
+type badgerDBEventStore struct {
 	db *badger.DB
 }
 
 // O(1); threadsafe
-func (er *badgerDBEventRepo) Add(
+func (er *badgerDBEventStore) Add(
 	event model.Event,
 ) error {
 
@@ -54,7 +57,7 @@ func (er *badgerDBEventRepo) Add(
 }
 
 // O(n) (n being number of events that exist); threadsafe
-func (er badgerDBEventRepo) List(
+func (er badgerDBEventStore) List(
 	ctx context.Context,
 	filter model.EventFilter,
 ) (<-chan model.Event, <-chan error) {

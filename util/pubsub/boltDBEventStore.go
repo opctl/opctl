@@ -3,55 +3,66 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
+	"github.com/boltdb/bolt"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/tidwall/buntdb"
 	"os"
 	"path"
 	"sync"
 	"time"
 )
 
-func NewBuntDBEventRepo(
+/**
+NewBoltDBEventStore returns an EventStore implementation leveraging [Bolt DB](https://github.com/boltdb/bolt)
+ */
+func NewBoltDBEventStore(
 	eventDbFilePath string,
-) EventRepo {
+) EventStore {
 	err := os.MkdirAll(path.Dir(eventDbFilePath), 0700)
 	if nil != err {
 		panic(err)
 	}
 
-	db, err := buntdb.Open(eventDbFilePath)
+	db, err := bolt.Open(eventDbFilePath, 0644, nil)
 	if nil != err {
 		panic(err)
 	}
 
-	return &buntDBEventRepo{
+	err = db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("events"))
+		return err
+	})
+	if nil != err {
+		panic(err)
+	}
+
+	return &boltDBEventStore{
 		db: db,
 	}
 }
 
-type buntDBEventRepo struct {
-	db               *buntdb.DB
+type boltDBEventStore struct {
+	db               *bolt.DB
 	eventsByRootOpId map[string][]*model.Event
 	eventsMutex      sync.RWMutex
 }
 
 // O(1); threadsafe
-func (this *buntDBEventRepo) Add(event model.Event) error {
+func (this *boltDBEventStore) Add(event model.Event) error {
 
-	return this.db.Update(func(tx *buntdb.Tx) error {
+	return this.db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("events"))
 
 		encodedEvent, err := json.Marshal(event)
 		if nil != err {
 			return err
 		}
 
-		_, _, err = tx.Set(event.Timestamp.Format(sortableRFC3339Nano), string(encodedEvent), nil)
-		return err
+		return bucket.Put([]byte(event.Timestamp.Format(sortableRFC3339Nano)), encodedEvent)
 	})
 }
 
 // O(n) (n being number of subscriptions that exist); threadsafe
-func (this *buntDBEventRepo) List(ctx context.Context,
+func (this *boltDBEventStore) List(ctx context.Context,
 	filter model.EventFilter,
 ) (<-chan model.Event, <-chan error) {
 	eventChannel := make(chan model.Event, 100000)
@@ -61,25 +72,28 @@ func (this *buntDBEventRepo) List(ctx context.Context,
 		defer close(eventChannel)
 		defer close(errChannel)
 
-		if err := this.db.View(func(tx *buntdb.Tx) error {
+		if err := this.db.View(func(tx *bolt.Tx) error {
+			cursor := tx.Bucket([]byte("events")).Cursor()
 
 			sinceTime := new(time.Time)
 			if nil != filter.Since {
 				sinceTime = filter.Since
 			}
 
-			return tx.AscendGreaterOrEqual("", sinceTime.Format(sortableRFC3339Nano), func(key, value string) bool {
+			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
+			for k, v := cursor.Seek(sinceBytes); k != nil; k, v = cursor.Next() {
 				event := model.Event{}
-				err := json.Unmarshal([]byte(value), &event)
+				err := json.Unmarshal(v, &event)
 				if nil != err {
-					return false
+					return err
 				}
 
 				if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
 					eventChannel <- event
 				}
-				return true
-			})
+			}
+
+			return nil
 		}); nil != err {
 			errChannel <- err
 		}

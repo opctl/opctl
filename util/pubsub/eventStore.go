@@ -5,7 +5,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type EventRepo interface {
+type EventStore interface {
 	Add(event model.Event) error
 	List(
 		ctx context.Context,
