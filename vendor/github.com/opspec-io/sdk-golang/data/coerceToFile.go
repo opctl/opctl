@@ -71,8 +71,14 @@ func (c _coerceToFile) CoerceToFile(
 		return nil, fmt.Errorf("unable to coerce '%+v' to file", value)
 	}
 
-	path := filepath.Join(scratchDir, c.uniqueString.Construct())
-	err := c.ioUtil.WriteFile(
+	uniqueString, err := c.uniqueString.Construct()
+	if nil != err {
+		return nil, fmt.Errorf("unable to coerce '%+v' to file; error was %v", value, err.Error())
+	}
+
+	path := filepath.Join(scratchDir, uniqueString)
+
+	err = c.ioUtil.WriteFile(
 		path,
 		data,
 		0666,

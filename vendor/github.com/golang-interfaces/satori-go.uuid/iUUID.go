@@ -6,7 +6,7 @@ import "github.com/satori/go.uuid"
 
 type IUUID interface {
 	// NewV4 returns random generated UUID.
-	NewV4() uuid.UUID
+	NewV4() (uuid.UUID, error)
 }
 
 func New() IUUID {
@@ -15,6 +15,6 @@ func New() IUUID {
 
 type _IUUID struct{}
 
-func (_iuuid _IUUID) NewV4() uuid.UUID {
+func (_iuuid _IUUID) NewV4() (uuid.UUID, error) {
 	return uuid.NewV4()
 }

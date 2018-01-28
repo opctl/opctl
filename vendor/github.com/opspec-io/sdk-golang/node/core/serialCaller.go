@@ -71,7 +71,13 @@ func (this _serialCaller) Call(
 
 	for _, scgCall := range scgSerialCall {
 		eventFilterSince := time.Now().UTC()
-		childCallId := this.uniqueStringFactory.Construct()
+
+		childCallId, err := this.uniqueStringFactory.Construct()
+		if nil != err {
+			// end run immediately on any error
+			return err
+		}
+
 		if err := this.caller.Call(
 			childCallId,
 			outputs,

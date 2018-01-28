@@ -1,43 +1,17 @@
 package node
 
 import (
+	"context"
 	"fmt"
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	_ "github.com/opctl/opctl/node/statik"
-	"github.com/opspec-io/sdk-golang/node/api/handler"
 	"github.com/opspec-io/sdk-golang/node/core"
 	"github.com/opspec-io/sdk-golang/util/containerprovider/docker"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"github.com/rakyll/statik/fs"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 )
-
-// StripPrefix returns a handler that serves HTTP requests
-// by removing the given prefix from the request URL's Path
-// and invoking the handler h. StripPrefix handles a
-// request for a path that doesn't begin with prefix by
-// replying with an HTTP 404 not found error.
-func StripPrefix(prefix string, h http.Handler) http.Handler {
-	if prefix == "" {
-		return h
-	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if p := strings.TrimPrefix(r.URL.Path, prefix); len(p) < len(r.URL.Path) {
-			r.URL.Path = strings.TrimPrefix(r.URL.Path, prefix)
-			r.URL.RawPath = strings.TrimPrefix(r.URL.RawPath, prefix)
-			h.ServeHTTP(w, r)
-		} else {
-			http.NotFound(w, r)
-		}
-	})
-}
 
 func New() {
 	rootFSPath, err := rootFSPath()
@@ -73,30 +47,27 @@ func New() {
 		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
 	}
 
-	router := mux.NewRouter()
-	router.UseEncodedPath()
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-	router.PathPrefix("/api/").Handler(
-		StripPrefix("/api",
-			handler.New(
-				core.New(
-					pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
-					containerProvider,
-					rootFSPath,
-				),
-			),
-		),
-	)
+	httpErrChannel :=
+		newHttpDriver(core.New(
+			pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
+			containerProvider,
+			rootFSPath,
+		)).
+			Drive(ctx)
 
-	statikFS, err := fs.New()
-	if nil != err {
-		panic(err)
-	}
-	router.PathPrefix("/").Handler(http.FileServer(statikFS))
+	libP2PErrChannel :=
+		newLibP2PDriver().
+			Drive(ctx)
 
-	err = http.ListenAndServe(":42224", handlers.CORS()(router))
-	if nil != err {
-		panic(err)
+	select {
+	case httpErr := <-httpErrChannel:
+		panic(httpErr)
+	case libP2PErr := <-libP2PErrChannel:
+		panic(libP2PErr)
 	}
 
 }

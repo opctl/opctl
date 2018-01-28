@@ -8,8 +8,8 @@ import (
 	stdioutil "io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"gopkg.in/src-d/go-billy.v3/util"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/filemode"
@@ -19,13 +19,14 @@ import (
 	"gopkg.in/src-d/go-git.v4/utils/ioutil"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
 
-	"gopkg.in/src-d/go-billy.v3"
+	"gopkg.in/src-d/go-billy.v4"
+	"gopkg.in/src-d/go-billy.v4/util"
 )
 
 var (
 	ErrWorktreeNotClean  = errors.New("worktree is not clean")
 	ErrSubmoduleNotFound = errors.New("submodule not found")
-	ErrUnstaggedChanges  = errors.New("worktree contains unstagged changes")
+	ErrUnstagedChanges   = errors.New("worktree contains unstaged changes")
 )
 
 // Worktree represents a git worktree.
@@ -69,6 +70,7 @@ func (w *Worktree) PullContext(ctx context.Context, o *PullOptions) error {
 		Depth:      o.Depth,
 		Auth:       o.Auth,
 		Progress:   o.Progress,
+		Force:      o.Force,
 	})
 
 	updated := true
@@ -152,7 +154,7 @@ func (w *Worktree) Checkout(opts *CheckoutOptions) error {
 		}
 
 		if unstaged {
-			return ErrUnstaggedChanges
+			return ErrUnstagedChanges
 		}
 	}
 
@@ -269,7 +271,7 @@ func (w *Worktree) Reset(opts *ResetOptions) error {
 		}
 
 		if unstaged {
-			return ErrUnstaggedChanges
+			return ErrUnstagedChanges
 		}
 	}
 
@@ -681,6 +683,170 @@ func (w *Worktree) readGitmodulesFile() (*config.Modules, error) {
 
 	m := config.NewModules()
 	return m, m.Unmarshal(input)
+}
+
+// Clean the worktree by removing untracked files.
+func (w *Worktree) Clean(opts *CleanOptions) error {
+	s, err := w.Status()
+	if err != nil {
+		return err
+	}
+
+	// Check Worktree status to be Untracked, obtain absolute path and delete.
+	for relativePath, status := range s {
+		// Check if the path contains a directory and if Dir options is false,
+		// skip the path.
+		if relativePath != filepath.Base(relativePath) && !opts.Dir {
+			continue
+		}
+
+		// Remove the file only if it's an untracked file.
+		if status.Worktree == Untracked {
+			absPath := filepath.Join(w.Filesystem.Root(), relativePath)
+			if err := os.Remove(absPath); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// GrepResult is structure of a grep result.
+type GrepResult struct {
+	// FileName is the name of file which contains match.
+	FileName string
+	// LineNumber is the line number of a file at which a match was found.
+	LineNumber int
+	// Content is the content of the file at the matching line.
+	Content string
+	// TreeName is the name of the tree (reference name/commit hash) at
+	// which the match was performed.
+	TreeName string
+}
+
+func (gr GrepResult) String() string {
+	return fmt.Sprintf("%s:%s:%d:%s", gr.TreeName, gr.FileName, gr.LineNumber, gr.Content)
+}
+
+// Grep performs grep on a worktree.
+func (w *Worktree) Grep(opts *GrepOptions) ([]GrepResult, error) {
+	if err := opts.Validate(w); err != nil {
+		return nil, err
+	}
+
+	// Obtain commit hash from options (CommitHash or ReferenceName).
+	var commitHash plumbing.Hash
+	// treeName contains the value of TreeName in GrepResult.
+	var treeName string
+
+	if opts.ReferenceName != "" {
+		ref, err := w.r.Reference(opts.ReferenceName, true)
+		if err != nil {
+			return nil, err
+		}
+		commitHash = ref.Hash()
+		treeName = opts.ReferenceName.String()
+	} else if !opts.CommitHash.IsZero() {
+		commitHash = opts.CommitHash
+		treeName = opts.CommitHash.String()
+	}
+
+	// Obtain a tree from the commit hash and get a tracked files iterator from
+	// the tree.
+	tree, err := w.getTreeFromCommitHash(commitHash)
+	if err != nil {
+		return nil, err
+	}
+	fileiter := tree.Files()
+
+	return findMatchInFiles(fileiter, treeName, opts)
+}
+
+// findMatchInFiles takes a FileIter, worktree name and GrepOptions, and
+// returns a slice of GrepResult containing the result of regex pattern matching
+// in content of all the files.
+func findMatchInFiles(fileiter *object.FileIter, treeName string, opts *GrepOptions) ([]GrepResult, error) {
+	var results []GrepResult
+
+	err := fileiter.ForEach(func(file *object.File) error {
+		var fileInPathSpec bool
+
+		// When no pathspecs are provided, search all the files.
+		if len(opts.PathSpecs) == 0 {
+			fileInPathSpec = true
+		}
+
+		// Check if the file name matches with the pathspec. Break out of the
+		// loop once a match is found.
+		for _, pathSpec := range opts.PathSpecs {
+			if pathSpec != nil && pathSpec.MatchString(file.Name) {
+				fileInPathSpec = true
+				break
+			}
+		}
+
+		// If the file does not match with any of the pathspec, skip it.
+		if !fileInPathSpec {
+			return nil
+		}
+
+		grepResults, err := findMatchInFile(file, treeName, opts)
+		if err != nil {
+			return err
+		}
+		results = append(results, grepResults...)
+
+		return nil
+	})
+
+	return results, err
+}
+
+// findMatchInFile takes a single File, worktree name and GrepOptions,
+// and returns a slice of GrepResult containing the result of regex pattern
+// matching in the given file.
+func findMatchInFile(file *object.File, treeName string, opts *GrepOptions) ([]GrepResult, error) {
+	var grepResults []GrepResult
+
+	content, err := file.Contents()
+	if err != nil {
+		return grepResults, err
+	}
+
+	// Split the file content and parse line-by-line.
+	contentByLine := strings.Split(content, "\n")
+	for lineNum, cnt := range contentByLine {
+		addToResult := false
+
+		// Match the patterns and content. Break out of the loop once a
+		// match is found.
+		for _, pattern := range opts.Patterns {
+			if pattern != nil && pattern.MatchString(cnt) {
+				// Add to result only if invert match is not enabled.
+				if !opts.InvertMatch {
+					addToResult = true
+					break
+				}
+			} else if opts.InvertMatch {
+				// If matching fails, and invert match is enabled, add to
+				// results.
+				addToResult = true
+				break
+			}
+		}
+
+		if addToResult {
+			grepResults = append(grepResults, GrepResult{
+				FileName:   file.Name,
+				LineNumber: lineNum + 1,
+				Content:    cnt,
+				TreeName:   treeName,
+			})
+		}
+	}
+
+	return grepResults, nil
 }
 
 func rmFileAndDirIfEmpty(fs billy.Filesystem, name string) error {
