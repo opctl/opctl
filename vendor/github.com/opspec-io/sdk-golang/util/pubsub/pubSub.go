@@ -47,8 +47,8 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventStore          EventStore
 	uniqueStringFactory uniquestring.UniqueStringFactory
+	eventStore          EventStore
 	subscriptions       map[string]subscription
 	subscriptionsMutex  sync.RWMutex
 }
@@ -60,8 +60,9 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	<-chan error,
 ) {
+	dstEventChannel := make(chan model.Event, 100000)
+	dstErrChannel := make(chan error, 1)
 
-	subscriptionId := ps.uniqueStringFactory.Construct()
 	subscription := subscription{
 		Filter:          filter,
 		NewEventChannel: make(chan model.Event, 1000000),
@@ -69,16 +70,19 @@ func (ps *pubSub) Subscribe(
 		DoneChannel: make(chan struct{}),
 	}
 
-	ps.subscriptionsMutex.Lock()
-	ps.subscriptions[subscriptionId] = subscription
-	ps.subscriptionsMutex.Unlock()
-
-	dstEventChannel := make(chan model.Event, 100000)
-	dstErrChannel := make(chan error, 1)
-
 	go func() {
 		defer close(dstEventChannel)
 		defer close(dstErrChannel)
+
+		subscriptionId, err := ps.uniqueStringFactory.Construct()
+		if nil != err {
+			dstErrChannel <- err
+			return
+		}
+
+		ps.subscriptionsMutex.Lock()
+		ps.subscriptions[subscriptionId] = subscription
+		ps.subscriptionsMutex.Unlock()
 		defer ps.gcSubscription(subscriptionId)
 
 		// old events

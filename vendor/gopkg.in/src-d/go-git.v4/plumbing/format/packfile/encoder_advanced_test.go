@@ -10,8 +10,8 @@ import (
 	"gopkg.in/src-d/go-git.v4/storage/filesystem"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 
-	"github.com/src-d/go-git-fixtures"
 	. "gopkg.in/check.v1"
+	"gopkg.in/src-d/go-git-fixtures.v3"
 )
 
 type EncoderAdvancedSuite struct {
@@ -27,12 +27,23 @@ func (s *EncoderAdvancedSuite) TestEncodeDecode(c *C) {
 	fixs.Test(c, func(f *fixtures.Fixture) {
 		storage, err := filesystem.NewStorage(f.DotGit())
 		c.Assert(err, IsNil)
-		s.testEncodeDecode(c, storage)
+		s.testEncodeDecode(c, storage, 10)
 	})
 
 }
 
-func (s *EncoderAdvancedSuite) testEncodeDecode(c *C, storage storer.Storer) {
+func (s *EncoderAdvancedSuite) TestEncodeDecodeNoDeltaCompression(c *C) {
+	fixs := fixtures.Basic().ByTag("packfile").ByTag(".git")
+	fixs = append(fixs, fixtures.ByURL("https://github.com/src-d/go-git.git").
+		ByTag("packfile").ByTag(".git").One())
+	fixs.Test(c, func(f *fixtures.Fixture) {
+		storage, err := filesystem.NewStorage(f.DotGit())
+		c.Assert(err, IsNil)
+		s.testEncodeDecode(c, storage, 0)
+	})
+}
+
+func (s *EncoderAdvancedSuite) testEncodeDecode(c *C, storage storer.Storer, packWindow uint) {
 
 	objIter, err := storage.IterEncodedObjects(plumbing.AnyObject)
 	c.Assert(err, IsNil)
@@ -57,15 +68,17 @@ func (s *EncoderAdvancedSuite) testEncodeDecode(c *C, storage storer.Storer) {
 
 	buf := bytes.NewBuffer(nil)
 	enc := NewEncoder(buf, storage, false)
-	_, err = enc.Encode(hashes)
+	encodeHash, err := enc.Encode(hashes, packWindow)
 	c.Assert(err, IsNil)
 
 	scanner := NewScanner(buf)
 	storage = memory.NewStorage()
 	d, err := NewDecoder(scanner, storage)
 	c.Assert(err, IsNil)
-	_, err = d.Decode()
+	decodeHash, err := d.Decode()
 	c.Assert(err, IsNil)
+
+	c.Assert(encodeHash, Equals, decodeHash)
 
 	objIter, err = storage.IterEncodedObjects(plumbing.AnyObject)
 	c.Assert(err, IsNil)

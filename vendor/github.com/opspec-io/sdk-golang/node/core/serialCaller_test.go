@@ -60,11 +60,11 @@ var _ = Context("serialCaller", func() {
 
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			uniqueStringCallIndex := 0
-			fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 				defer func() {
 					uniqueStringCallIndex++
 				}()
-				return fmt.Sprintf("%v", uniqueStringCallIndex)
+				return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 			}
 
 			objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
@@ -163,11 +163,11 @@ var _ = Context("serialCaller", func() {
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
 					uniqueStringCallIndex := 0
-					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {
 							uniqueStringCallIndex++
 						}()
-						return fmt.Sprintf("%v", uniqueStringCallIndex)
+						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
 					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
@@ -244,11 +244,11 @@ var _ = Context("serialCaller", func() {
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
 					uniqueStringCallIndex := 0
-					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {
 							uniqueStringCallIndex++
 						}()
-						return fmt.Sprintf("%v", uniqueStringCallIndex)
+						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
 					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)

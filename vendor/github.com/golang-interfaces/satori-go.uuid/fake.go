@@ -2,26 +2,27 @@
 package iuuid
 
 import (
+	"github.com/satori/go.uuid"
 	"sync"
-
-	uuid "github.com/satori/go.uuid"
 )
 
 type Fake struct {
-	NewV4Stub        func() uuid.UUID
+	NewV4Stub        func() (uuid.UUID, error)
 	newV4Mutex       sync.RWMutex
 	newV4ArgsForCall []struct{}
 	newV4Returns     struct {
 		result1 uuid.UUID
+		result2 error
 	}
 	newV4ReturnsOnCall map[int]struct {
 		result1 uuid.UUID
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) NewV4() uuid.UUID {
+func (fake *Fake) NewV4() (uuid.UUID, error) {
 	fake.newV4Mutex.Lock()
 	ret, specificReturn := fake.newV4ReturnsOnCall[len(fake.newV4ArgsForCall)]
 	fake.newV4ArgsForCall = append(fake.newV4ArgsForCall, struct{}{})
@@ -31,9 +32,9 @@ func (fake *Fake) NewV4() uuid.UUID {
 		return fake.NewV4Stub()
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fake.newV4Returns.result1
+	return fake.newV4Returns.result1, fake.newV4Returns.result2
 }
 
 func (fake *Fake) NewV4CallCount() int {
@@ -42,23 +43,26 @@ func (fake *Fake) NewV4CallCount() int {
 	return len(fake.newV4ArgsForCall)
 }
 
-func (fake *Fake) NewV4Returns(result1 uuid.UUID) {
+func (fake *Fake) NewV4Returns(result1 uuid.UUID, result2 error) {
 	fake.NewV4Stub = nil
 	fake.newV4Returns = struct {
 		result1 uuid.UUID
-	}{result1}
+		result2 error
+	}{result1, result2}
 }
 
-func (fake *Fake) NewV4ReturnsOnCall(i int, result1 uuid.UUID) {
+func (fake *Fake) NewV4ReturnsOnCall(i int, result1 uuid.UUID, result2 error) {
 	fake.NewV4Stub = nil
 	if fake.newV4ReturnsOnCall == nil {
 		fake.newV4ReturnsOnCall = make(map[int]struct {
 			result1 uuid.UUID
+			result2 error
 		})
 	}
 	fake.newV4ReturnsOnCall[i] = struct {
 		result1 uuid.UUID
-	}{result1}
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *Fake) Invocations() map[string][][]interface{} {

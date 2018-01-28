@@ -10,8 +10,8 @@ lib for pub-sub style messaging
 
 ## event stores
 
-Three event stores have been implemented while searching for performance gains.
-As the performance of each may change over time, they're kept here for easy swapping.
+Three event stores have been implemented in search of performance gains.
+As the performance of each may change over time, they're kept here for easy re-evaluation.
 
 The results of reading/writing 1M events (conducted on the same machine) were as follows:
 

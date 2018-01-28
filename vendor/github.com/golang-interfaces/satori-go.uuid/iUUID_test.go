@@ -20,7 +20,10 @@ var _ = Context("_IUUID", func() {
 			objectUnderTest := _IUUID{}
 
 			/* act */
-			returnedUUID := objectUnderTest.NewV4()
+			returnedUUID, returnedErr := objectUnderTest.NewV4()
+			if nil != returnedErr {
+				panic(returnedErr)
+			}
 			_, parseErr := uuid.FromString(returnedUUID.String())
 
 			/* assert */

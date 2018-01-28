@@ -8,7 +8,7 @@ import (
 )
 
 type UniqueStringFactory interface {
-	Construct() (uniqueString string)
+	Construct() (string, error)
 }
 
 func NewUniqueStringFactory() UniqueStringFactory {
@@ -21,13 +21,16 @@ type uniqueStringFactory struct {
 	uuid iuuid.IUUID
 }
 
-func (this uniqueStringFactory) Construct() (uniqueString string) {
-	uniqueString = strings.Replace(
-		this.uuid.NewV4().String(),
+func (this uniqueStringFactory) Construct() (string, error) {
+	uuid, err := this.uuid.NewV4()
+	if nil != err {
+		return "", err
+	}
+
+	return strings.Replace(
+		uuid.String(),
 		"-",
 		"",
 		-1,
-	)
-
-	return
+	), nil
 }

@@ -52,7 +52,7 @@ var (
 // is destroyed. The Offsets and CRCs are calculated whether an
 // ObjectStorer was provided or not.
 type Decoder struct {
-	DeltaBaseCache cache.Object
+	deltaBaseCache cache.Object
 
 	s  *Scanner
 	o  storer.EncodedObjectStorer
@@ -80,15 +80,27 @@ type Decoder struct {
 // If the ObjectStorer implements storer.Transactioner, a transaction is created
 // during the Decode execution. If anything fails, Rollback is called
 func NewDecoder(s *Scanner, o storer.EncodedObjectStorer) (*Decoder, error) {
-	return NewDecoderForType(s, o, plumbing.AnyObject)
+	return NewDecoderForType(s, o, plumbing.AnyObject,
+		cache.NewObjectLRUDefault())
+}
+
+// NewDecoderWithCache is a version of NewDecoder where cache can be specified.
+func NewDecoderWithCache(s *Scanner, o storer.EncodedObjectStorer,
+	cacheObject cache.Object) (*Decoder, error) {
+
+	return NewDecoderForType(s, o, plumbing.AnyObject, cacheObject)
 }
 
 // NewDecoderForType returns a new Decoder but in this case for a specific object type.
 // When an object is read using this Decoder instance and it is not of the same type of
 // the specified one, nil will be returned. This is intended to avoid the content
-// deserialization of all the objects
+// deserialization of all the objects.
+//
+// cacheObject is a cache.Object implementation that is used to speed up the
+// process. If cache is not needed you can pass nil. To create an LRU cache
+// object with the default size you can use the helper cache.ObjectLRUDefault().
 func NewDecoderForType(s *Scanner, o storer.EncodedObjectStorer,
-	t plumbing.ObjectType) (*Decoder, error) {
+	t plumbing.ObjectType, cacheObject cache.Object) (*Decoder, error) {
 
 	if t == plumbing.OFSDeltaObject ||
 		t == plumbing.REFDeltaObject ||
@@ -101,11 +113,12 @@ func NewDecoderForType(s *Scanner, o storer.EncodedObjectStorer,
 	}
 
 	return &Decoder{
-		s: s,
-		o: o,
+		s:              s,
+		o:              o,
+		deltaBaseCache: cacheObject,
 
 		idx:          NewIndex(0),
-		offsetToType: make(map[int64]plumbing.ObjectType, 0),
+		offsetToType: make(map[int64]plumbing.ObjectType),
 		decoderType:  t,
 	}, nil
 }
@@ -207,12 +220,16 @@ func (d *Decoder) decodeObjectsWithObjectStorerTx(count int) error {
 // constructor, if the object decoded is not equals to the specified one, nil will
 // be returned
 func (d *Decoder) DecodeObject() (plumbing.EncodedObject, error) {
+	return d.doDecodeObject(d.decoderType)
+}
+
+func (d *Decoder) doDecodeObject(t plumbing.ObjectType) (plumbing.EncodedObject, error) {
 	h, err := d.s.NextObjectHeader()
 	if err != nil {
 		return nil, err
 	}
 
-	if d.decoderType == plumbing.AnyObject {
+	if t == plumbing.AnyObject {
 		return d.decodeByHeader(h)
 	}
 
@@ -279,6 +296,7 @@ func (d *Decoder) decodeByHeader(h *ObjectHeader) (plumbing.EncodedObject, error
 	obj := d.newObject()
 	obj.SetSize(h.Length)
 	obj.SetType(h.Type)
+
 	var crc uint32
 	var err error
 	switch h.Type {
@@ -315,7 +333,8 @@ func (d *Decoder) newObject() plumbing.EncodedObject {
 // returned is added into a internal index. This is intended to be able to regenerate
 // objects from deltas (offset deltas or reference deltas) without an package index
 // (.idx file). If Decode wasn't called previously objects offset should provided
-// using the SetOffsets method.
+// using the SetOffsets method. It decodes the object regardless of the Decoder
+// type.
 func (d *Decoder) DecodeObjectAt(offset int64) (plumbing.EncodedObject, error) {
 	if !d.s.IsSeekable {
 		return nil, ErrNonSeekable
@@ -333,7 +352,7 @@ func (d *Decoder) DecodeObjectAt(offset int64) (plumbing.EncodedObject, error) {
 		}
 	}()
 
-	return d.DecodeObject()
+	return d.doDecodeObject(plumbing.AnyObject)
 }
 
 func (d *Decoder) fillRegularObjectContent(obj plumbing.EncodedObject) (uint32, error) {
@@ -388,6 +407,8 @@ func (d *Decoder) fillOFSDeltaObjectContent(obj plumbing.EncodedObject, offset i
 		if err != nil {
 			return 0, err
 		}
+
+		d.cachePut(base)
 	}
 
 	obj.SetType(base.Type())
@@ -398,19 +419,19 @@ func (d *Decoder) fillOFSDeltaObjectContent(obj plumbing.EncodedObject, offset i
 }
 
 func (d *Decoder) cacheGet(h plumbing.Hash) (plumbing.EncodedObject, bool) {
-	if d.DeltaBaseCache == nil {
+	if d.deltaBaseCache == nil {
 		return nil, false
 	}
 
-	return d.DeltaBaseCache.Get(h)
+	return d.deltaBaseCache.Get(h)
 }
 
 func (d *Decoder) cachePut(obj plumbing.EncodedObject) {
-	if d.DeltaBaseCache == nil {
+	if d.deltaBaseCache == nil {
 		return
 	}
 
-	d.DeltaBaseCache.Put(obj)
+	d.deltaBaseCache.Put(obj)
 }
 
 func (d *Decoder) recallByOffset(o int64) (plumbing.EncodedObject, error) {

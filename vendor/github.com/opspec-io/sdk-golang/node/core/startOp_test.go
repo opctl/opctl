@@ -125,7 +125,7 @@ var _ = Context("core", func() {
 					fakeOpCaller := new(fakeOpCaller)
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
-					fakeUniqueStringFactory.ConstructReturns(expectedOpId)
+					fakeUniqueStringFactory.ConstructReturns(expectedOpId, nil)
 
 					objectUnderTest := _core{
 						containerProvider:   new(containerprovider.Fake),

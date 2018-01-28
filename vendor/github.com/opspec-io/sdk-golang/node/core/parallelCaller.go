@@ -87,11 +87,18 @@ func (this _parallelCaller) Call(
 		go func(childCall *model.SCG) {
 			defer wg.Done()
 
+			childCallId, err := this.uniqueStringFactory.Construct()
+			if nil != err {
+				childErrChannel <- err
+				// trigger cancellation
+				cancellationReqChannel <- struct{}{}
+			}
+
 			childDoneChannel := make(chan struct{})
 			go func() {
 				defer close(childDoneChannel)
 				if childErr := this.caller.Call(
-					this.uniqueStringFactory.Construct(),
+					childCallId,
 					inboundScope,
 					childCall,
 					pkgHandle,

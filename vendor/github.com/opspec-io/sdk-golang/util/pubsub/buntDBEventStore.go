@@ -13,7 +13,7 @@ import (
 
 /**
 NewBuntDBEventStore returns an EventStore implementation leveraging [Bunt DB](https://github.com/tidwall/buntdb)
- */
+*/
 func NewBuntDBEventStore(
 	eventDbFilePath string,
 ) EventStore {

@@ -13,7 +13,7 @@ import (
 
 /**
 NewBoltDBEventStore returns an EventStore implementation leveraging [Bolt DB](https://github.com/boltdb/bolt)
- */
+*/
 func NewBoltDBEventStore(
 	eventDbFilePath string,
 ) EventStore {

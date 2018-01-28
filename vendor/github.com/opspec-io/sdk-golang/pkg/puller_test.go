@@ -84,7 +84,10 @@ var _ = Context("puller", func() {
 				fakeRefParser.ParseReturns(ref, nil)
 
 				expectedCloneOptions := &git.CloneOptions{
-					Auth:          http.NewBasicAuth(providedPullCreds.Username, providedPullCreds.Password),
+					Auth: &http.BasicAuth{
+						Username: providedPullCreds.Username,
+						Password: providedPullCreds.Password,
+					},
 					URL:           fmt.Sprintf("https://%v", ref.Name),
 					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", ref.Version)),
 					Progress:      os.Stdout,
