@@ -7,6 +7,7 @@ package pubsub
 import (
 	"context"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"sync"
 )
 
@@ -14,9 +15,10 @@ func New(
 	eventStore EventStore,
 ) PubSub {
 	return &pubSub{
-		eventStore:         eventStore,
-		subscriptions:      map[*subscription]struct{}{},
-		subscriptionsMutex: sync.RWMutex{},
+		eventStore:          eventStore,
+		subscriptions:       map[string]subscription{},
+		subscriptionsMutex:  sync.RWMutex{},
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
@@ -45,9 +47,10 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventStore         EventStore
-	subscriptions      map[*subscription]struct{}
-	subscriptionsMutex sync.RWMutex
+	uniqueStringFactory uniquestring.UniqueStringFactory
+	eventStore          EventStore
+	subscriptions       map[string]subscription
+	subscriptionsMutex  sync.RWMutex
 }
 
 func (ps *pubSub) Subscribe(
@@ -57,6 +60,9 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	<-chan error,
 ) {
+	dstEventChannel := make(chan model.Event, 100000)
+	dstErrChannel := make(chan error, 1)
+
 	subscription := subscription{
 		Filter:          filter,
 		NewEventChannel: make(chan model.Event, 1000000),
@@ -64,17 +70,20 @@ func (ps *pubSub) Subscribe(
 		DoneChannel: make(chan struct{}),
 	}
 
-	ps.subscriptionsMutex.Lock()
-	ps.subscriptions[&subscription] = struct{}{}
-	ps.subscriptionsMutex.Unlock()
-
-	dstEventChannel := make(chan model.Event, 100000)
-	dstErrChannel := make(chan error, 1)
-
 	go func() {
 		defer close(dstEventChannel)
 		defer close(dstErrChannel)
-		defer ps.gcSubscription(subscription)
+
+		subscriptionId, err := ps.uniqueStringFactory.Construct()
+		if nil != err {
+			dstErrChannel <- err
+			return
+		}
+
+		ps.subscriptionsMutex.Lock()
+		ps.subscriptions[subscriptionId] = subscription
+		ps.subscriptionsMutex.Unlock()
+		defer ps.gcSubscription(subscriptionId)
 
 		// old events
 		srcEventChannel, srcErrChannel := ps.eventStore.List(ctx, filter)
@@ -106,11 +115,11 @@ func (ps *pubSub) Subscribe(
 
 // gcSubscription garbage collects subscription w/ subscriptionId
 func (ps *pubSub) gcSubscription(
-	subscription subscription,
+	subscriptionId string,
 ) {
-	close(subscription.DoneChannel)
+	close(ps.subscriptions[subscriptionId].DoneChannel)
 	ps.subscriptionsMutex.Lock()
-	delete(ps.subscriptions, &subscription)
+	delete(ps.subscriptions, subscriptionId)
 	ps.subscriptionsMutex.Unlock()
 }
 
@@ -123,7 +132,7 @@ func (ps *pubSub) Publish(
 	go func() {
 		ps.subscriptionsMutex.RLock()
 		defer ps.subscriptionsMutex.RUnlock()
-		for subscription := range ps.subscriptions {
+		for _, subscription := range ps.subscriptions {
 			RootOpId := getEventRootOpId(event)
 			if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
 				select {
