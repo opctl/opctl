@@ -1,9 +1,8 @@
 {
   "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.17",
+  "version": "0.0.0-alpha.18",
   "description": "Javascript SDK for opspec",
   "scripts": {
-    "build": "babel src --out-dir=lib",
     "test": "jest --coverage"
   },
   "repository": {
@@ -19,6 +18,7 @@
   },
   "main": "lib",
   "dependencies": {
+    "@codefresh-io/docker-reference": "^0.0.5",
     "ajv": "^5.2.3",
     "node-fetch": "^1.7.3",
     "universal-websocket-client": "^1.0.1"
