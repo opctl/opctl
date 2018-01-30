@@ -3,7 +3,6 @@
 coverage/
 jest*/
 *.test.js
-src/
 .babelrc
 .editorconfig
 .travis.yml
