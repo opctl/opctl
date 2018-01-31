@@ -13,26 +13,28 @@ import (
 )
 
 /**
-newLibP2PDriver returns a driver which exposes opctl over libP2P
+newLibP2PListener returns a listener which exposes opctl over libP2P
 */
-func newLibP2PDriver() driver {
-	return _libP2PDriver{
+func newLibP2PListener() listener {
+	return _libP2PListener{
 		cliColorer: clicolorer.New(),
+		listenAddr: "/ip4/0.0.0.0/tcp/42225/ws",
 	}
 }
 
-type _libP2PDriver struct {
+type _libP2PListener struct {
 	cliColorer clicolorer.CliColorer
+	listenAddr string
 }
 
-func (hf _libP2PDriver) Drive(
+func (hf _libP2PListener) Listen(
 	ctx context.Context,
 ) <-chan error {
 	errChan := make(chan error, 1)
 
 	h, err := libp2p.New(
 		ctx,
-		libp2p.ListenAddrStrings("/ip4/0.0.0.0/tcp/42225"),
+		libp2p.ListenAddrStrings(hf.listenAddr),
 	)
 	if nil != err {
 		errChan <- err
@@ -83,6 +85,12 @@ func (hf _libP2PDriver) Drive(
 
 	})
 
-	fmt.Println(hf.cliColorer.Info("p2p driver bound to /ip4/0.0.0.0/tcp/42225 w/ peer id %s", h.ID().Pretty()))
+	fmt.Println(
+		hf.cliColorer.Info(
+			"libP2PListener bound to %v w/ peer id %s",
+			hf.listenAddr,
+			h.ID().Pretty(),
+		),
+	)
 	return errChan
 }

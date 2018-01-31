@@ -65,7 +65,7 @@ func (this *boltDBEventStore) Add(event model.Event) error {
 func (this *boltDBEventStore) List(ctx context.Context,
 	filter model.EventFilter,
 ) (<-chan model.Event, <-chan error) {
-	eventChannel := make(chan model.Event, 100000)
+	eventChannel := make(chan model.Event, 1000)
 	errChannel := make(chan error, 1)
 
 	go func() {

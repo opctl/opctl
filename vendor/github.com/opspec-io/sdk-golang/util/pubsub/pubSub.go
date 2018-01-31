@@ -7,18 +7,16 @@ package pubsub
 import (
 	"context"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"sync"
+	"time"
 )
 
 func New(
 	eventStore EventStore,
 ) PubSub {
 	return &pubSub{
-		eventStore:          eventStore,
-		subscriptions:       map[string]subscription{},
-		subscriptionsMutex:  sync.RWMutex{},
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
+		eventStore:    eventStore,
+		subscriptions: map[chan model.Event]subscriptionInfo{},
 	}
 }
 
@@ -30,7 +28,9 @@ type EventPublisher interface {
 
 type EventSubscriber interface {
 	// Subscribe returns a filtered event stream
-	// It is up to the caller to cancel the context or the subscription will continue receiving events.
+	// events will be sent to the subscription until either:
+	//  - ctx is canceled
+	//  - returned channel is blocked for 10 seconds
 	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
 		ctx context.Context,
@@ -47,10 +47,10 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	uniqueStringFactory uniquestring.UniqueStringFactory
-	eventStore          EventStore
-	subscriptions       map[string]subscription
-	subscriptionsMutex  sync.RWMutex
+	eventStore EventStore
+	// subscriptions is a map where key is a channel for the subscription & value is info about the subscription
+	subscriptions      map[chan model.Event]subscriptionInfo
+	subscriptionsMutex sync.RWMutex
 }
 
 func (ps *pubSub) Subscribe(
@@ -60,52 +60,53 @@ func (ps *pubSub) Subscribe(
 	<-chan model.Event,
 	<-chan error,
 ) {
-	dstEventChannel := make(chan model.Event, 100000)
+	dstEventChannel := make(chan model.Event, 1000)
 	dstErrChannel := make(chan error, 1)
-
-	subscription := subscription{
-		Filter:          filter,
-		NewEventChannel: make(chan model.Event, 1000000),
-		// DoneChannel is closed when the subscription is garbage collected
-		DoneChannel: make(chan struct{}),
-	}
 
 	go func() {
 		defer close(dstEventChannel)
 		defer close(dstErrChannel)
 
-		subscriptionId, err := ps.uniqueStringFactory.Construct()
-		if nil != err {
-			dstErrChannel <- err
-			return
+		publishEventChannel := make(chan model.Event, 1000)
+		defer ps.gcSubscription(publishEventChannel)
+
+		subscriptionInfo := subscriptionInfo{
+			Filter: filter,
+			// Done is closed when the subscription is garbage collected
+			Done: make(chan struct{}, 1),
 		}
 
 		ps.subscriptionsMutex.Lock()
-		ps.subscriptions[subscriptionId] = subscription
+		ps.subscriptions[publishEventChannel] = subscriptionInfo
 		ps.subscriptionsMutex.Unlock()
-		defer ps.gcSubscription(subscriptionId)
 
 		// old events
-		srcEventChannel, srcErrChannel := ps.eventStore.List(ctx, filter)
-		for event := range srcEventChannel {
+		eventStoreEventChannel, eventStoreErrChannel := ps.eventStore.List(ctx, filter)
+		for event := range eventStoreEventChannel {
 			select {
+			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
-			case dstEventChannel <- event:
+			case <-time.After(time.Second * 10):
+				// evict the subscriber (they didn't accept the event within 10 seconds)
+				return
 			}
 		}
 
-		if err := <-srcErrChannel; nil != err {
+		if err := <-eventStoreErrChannel; nil != err {
 			dstErrChannel <- err
 			return
 		}
 
 		// new events
-		for event := range subscription.NewEventChannel {
+		for event := range publishEventChannel {
 			select {
+			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
-			case dstEventChannel <- event:
+			case <-time.After(time.Second * 10):
+				// evict the subscriber (they didn't accept the event within 10 seconds)
+				return
 			}
 		}
 	}()
@@ -113,13 +114,15 @@ func (ps *pubSub) Subscribe(
 	return dstEventChannel, dstErrChannel
 }
 
-// gcSubscription garbage collects subscription w/ subscriptionId
 func (ps *pubSub) gcSubscription(
-	subscriptionId string,
+	channel chan model.Event,
 ) {
-	close(ps.subscriptions[subscriptionId].DoneChannel)
+	ps.subscriptionsMutex.RLock()
+	close(ps.subscriptions[channel].Done)
+	ps.subscriptionsMutex.RUnlock()
+
 	ps.subscriptionsMutex.Lock()
-	delete(ps.subscriptions, subscriptionId)
+	delete(ps.subscriptions, channel)
 	ps.subscriptionsMutex.Unlock()
 }
 
@@ -129,18 +132,36 @@ func (ps *pubSub) Publish(
 ) {
 	ps.eventStore.Add(event)
 
-	go func() {
-		ps.subscriptionsMutex.RLock()
-		defer ps.subscriptionsMutex.RUnlock()
-		for _, subscription := range ps.subscriptions {
-			RootOpId := getEventRootOpId(event)
-			if !isRootOpIdExcludedByFilter(RootOpId, subscription.Filter) {
-				select {
-				case <-subscription.DoneChannel:
-					close(subscription.NewEventChannel)
-				case subscription.NewEventChannel <- event:
-				}
-			}
+	ps.subscriptionsMutex.RLock()
+	defer ps.subscriptionsMutex.RUnlock()
+
+	for publishEventChannel, subscriptionInfo := range ps.subscriptions {
+
+		RootOpId := getEventRootOpId(event)
+		if !isRootOpIdExcludedByFilter(RootOpId, subscriptionInfo.Filter) {
+
+			// use go routine because this publishEventChannel could be blocked
+			// for valid reasons such as replaying events from event store.
+			//
+			// In such a case, we don't want to hold up delivery to any
+			// other subscriptions
+			go ps.publishToSubscription(publishEventChannel, subscriptionInfo, event)
+
 		}
-	}()
+
+	}
+}
+
+/**
+publishToSubscription publishes event to subscription
+*/
+func (ps *pubSub) publishToSubscription(
+	subscriptionChannel chan model.Event,
+	subscriptionInfo subscriptionInfo,
+	event model.Event,
+) {
+	select {
+	case <-subscriptionInfo.Done:
+	case subscriptionChannel <- event:
+	}
 }

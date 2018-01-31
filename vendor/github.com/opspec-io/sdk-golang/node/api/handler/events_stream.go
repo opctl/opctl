@@ -35,6 +35,9 @@ func (hdlr _handler) events_streams(
 		req.Filter.Roots = rootsArray
 	}
 
+	// ack is opt in; enables client to apply back pressure to server so it doesn't get flooded
+	_, isAckRequested := httpReq.URL.Query()["ack"]
+
 	ctx, cancel := context.WithCancel(httpReq.Context())
 	defer cancel()
 
@@ -55,6 +58,14 @@ func (hdlr _handler) events_streams(
 		if nil != err {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		if isAckRequested {
+			_, _, err := conn.ReadMessage()
+			if nil != err {
+				http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 

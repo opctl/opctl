@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PkgSelector from '../PkgSelector';
-import Pkg from '../Pkg';
+import PkgSelector from '../../PkgSelector';
+import Pkg from '../../Pkg/index';
 
 
-export default class PkgBrowser extends Component {
+export default class PkgView extends Component {
   constructor(props) {
     super(props);
 

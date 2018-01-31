@@ -52,16 +52,16 @@ func New() {
 	defer cancel()
 
 	httpErrChannel :=
-		newHttpDriver(core.New(
-			pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
+		newHttpListener(core.New(
+			pubsub.New(pubsub.NewBoltDBEventStore(eventDbPath(dcgDataDirPath))),
 			containerProvider,
 			rootFSPath,
 		)).
-			Drive(ctx)
+			Listen(ctx)
 
 	libP2PErrChannel :=
-		newLibP2PDriver().
-			Drive(ctx)
+		newLibP2PListener().
+			Listen(ctx)
 
 	select {
 	case httpErr := <-httpErrChannel:

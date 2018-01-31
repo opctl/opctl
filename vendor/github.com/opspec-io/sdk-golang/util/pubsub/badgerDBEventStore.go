@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"runtime"
 	"time"
 )
 
@@ -22,6 +23,9 @@ func NewBadgerDBEventStore(
 	if nil != err {
 		panic(err)
 	}
+
+	// per badger README.MD#FAQ "maximizes throughput"
+	runtime.GOMAXPROCS(128)
 
 	opts := badger.DefaultOptions
 	opts.Dir = eventDbDirPath
@@ -61,7 +65,7 @@ func (er badgerDBEventStore) List(
 	ctx context.Context,
 	filter model.EventFilter,
 ) (<-chan model.Event, <-chan error) {
-	eventChannel := make(chan model.Event, 100000)
+	eventChannel := make(chan model.Event, 1000)
 	errChannel := make(chan error, 1)
 
 	go func() {
@@ -74,7 +78,11 @@ func (er badgerDBEventStore) List(
 				sinceTime = filter.Since
 			}
 
-			it := txn.NewIterator(badger.DefaultIteratorOptions)
+			itOpts := badger.DefaultIteratorOptions
+			// per badger README.MD#FAQ "avoids deadlocks"
+			itOpts.PrefetchValues = true
+
+			it := txn.NewIterator(itOpts)
 			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
 			for it.Seek(sinceBytes); it.Valid(); it.Next() {
 				value, err := it.Item().Value()

@@ -180,13 +180,19 @@ func newWithCfg(ctx context.Context, cfg *Config) (host.Host, error) {
 		ps = pstore.NewPeerstore()
 	}
 
+	// Set default muxer if none was passed in
+	muxer := cfg.Muxer
+	if muxer == nil {
+		muxer = DefaultMuxer()
+	}
+
 	// If secio is disabled, don't add our private key to the peerstore
 	if !cfg.DisableSecio {
 		ps.AddPrivKey(pid, cfg.PeerKey)
 		ps.AddPubKey(pid, cfg.PeerKey.GetPublic())
 	}
 
-	swrm, err := swarm.NewSwarmWithProtector(ctx, cfg.ListenAddrs, pid, ps, cfg.Protector, cfg.Muxer, cfg.Reporter)
+	swrm, err := swarm.NewSwarmWithProtector(ctx, cfg.ListenAddrs, pid, ps, cfg.Protector, muxer, cfg.Reporter)
 	if err != nil {
 		return nil, err
 	}

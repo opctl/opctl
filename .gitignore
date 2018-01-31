@@ -7,6 +7,3 @@ coverage.txt
 
 ### build
 /build/
-
-### npm
-node_modules/

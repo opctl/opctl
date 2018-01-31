@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import pkgFetcher from '../utils/pkgFetcher';
+import pkgFetcher from '../core/pkgFetcher';
 import { toast } from 'react-toastify';
 
 export default class PkgSelector extends Component {

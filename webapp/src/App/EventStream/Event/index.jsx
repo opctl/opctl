@@ -8,27 +8,35 @@ import EventOpErred from './OpErred';
 import EventOpStarted from './OpStarted';
 import EventSerialCallEnded from "./SerialCallEnded";
 import EventParallelCallEnded from "./ParallelCallEnded";
+import withNoReRenders from '../../hocs/withNoReRenders';
 
-export default (props) => {
-  // delegate to component for event
-  if (props.event.containerExited) {
-    return (<EventContainerExited containerExited={props.event.containerExited} timestamp={props.event.timestamp}/>);
-  } else if (props.event.containerStarted) {
-    return (<EventContainerStarted containerStarted={props.event.containerStarted} timestamp={props.event.timestamp}/>);
-  } else if (props.event.containerStdErrWrittenTo) {
-    return (<EventContainerStdErrWrittenTo containerStdErrWrittenTo={props.event.containerStdErrWrittenTo}/>);
-  } else if (props.event.containerStdOutWrittenTo) {
-    return (<EventContainerStdOutWrittenTo containerStdOutWrittenTo={props.event.containerStdOutWrittenTo}/>);
-  } else if (props.event.opEnded) {
-    return (<EventOpEnded opEnded={props.event.opEnded} timestamp={props.event.timestamp}/>);
-  } else if (props.event.opErred) {
-    return (<EventOpErred opErred={props.event.opErred} timestamp={props.event.timestamp}/>);
-  } else if (props.event.opStarted) {
-    return (<EventOpStarted opStarted={props.event.opStarted} timestamp={props.event.timestamp}/>);
-  } else if (props.event.parallelCallEnded) {
-    return (<EventParallelCallEnded parallelCallEnded={props.event.parallelCallEnded} timestamp={props.event.timestamp}/>);
-  } else if (props.event.serialCallEnded) {
-    return (<EventSerialCallEnded serialCallEnded={props.event.serialCallEnded} timestamp={props.event.timestamp}/>);
+const Event = ({event, style}) => {
+  // delegate to typed event component
+  let component;
+  if (event.containerExited) {
+    component = <EventContainerExited containerExited={event.containerExited} timestamp={event.timestamp}/>;
+  } else if (event.containerStarted) {
+    component = <EventContainerStarted containerStarted={event.containerStarted} timestamp={event.timestamp}/>;
+  } else if (event.containerStdErrWrittenTo) {
+    component = <EventContainerStdErrWrittenTo containerStdErrWrittenTo={event.containerStdErrWrittenTo}/>;
+  } else if (event.containerStdOutWrittenTo) {
+    component = <EventContainerStdOutWrittenTo containerStdOutWrittenTo={event.containerStdOutWrittenTo}/>;
+  } else if (event.opEnded) {
+    component = <EventOpEnded opEnded={event.opEnded} timestamp={event.timestamp}/>;
+  } else if (event.opErred) {
+    component = <EventOpErred opErred={event.opErred} timestamp={event.timestamp}/>;
+  } else if (event.opStarted) {
+    component = <EventOpStarted opStarted={event.opStarted} timestamp={event.timestamp}/>;
+  } else if (event.parallelCallEnded) {
+    component = <EventParallelCallEnded parallelCallEnded={event.parallelCallEnded} timestamp={event.timestamp}/>;
+  } else if (event.serialCallEnded) {
+    component = <EventSerialCallEnded serialCallEnded={event.serialCallEnded} timestamp={event.timestamp}/>;
+  } else {
+    component = null;
   }
-  return null
-}
+  return <div style={style}>
+    {component}
+  </div>
+};
+
+export default withNoReRenders(Event);
