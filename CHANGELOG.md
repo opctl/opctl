@@ -6,8 +6,15 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.0.0-alpha.19
+
+### Added
+
+- reconnect on websocket close
+
 ## 0.0.0-alpha.18
 
 ### Added
+
 - ack to event_stream_get call to enable websocket back pressure
 
