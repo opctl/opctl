@@ -25,12 +25,12 @@ type gitProvider struct {
 	pullCreds       *model.PullCreds
 }
 
-func (grp gitProvider) TryResolve(
+func (gp gitProvider) TryResolve(
 	pkgRef string,
 ) (model.PkgHandle, error) {
 
 	// attempt to resolve from cache
-	handle, err := grp.localFSProvider.TryResolve(pkgRef)
+	handle, err := gp.localFSProvider.TryResolve(pkgRef)
 	if nil != err {
 		return nil, err
 	} else if nil != handle {
@@ -38,9 +38,9 @@ func (grp gitProvider) TryResolve(
 	}
 
 	// attempt pull if cache miss
-	err = grp.puller.Pull(grp.basePath, pkgRef, grp.pullCreds)
+	err = gp.puller.Pull(gp.basePath, pkgRef, gp.pullCreds)
 	if nil != err {
 		return nil, err
 	}
-	return newGitHandle(filepath.Join(grp.basePath, pkgRef), pkgRef), nil
+	return newGitHandle(filepath.Join(gp.basePath, pkgRef), pkgRef), nil
 }

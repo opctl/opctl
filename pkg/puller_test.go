@@ -90,6 +90,7 @@ var _ = Context("puller", func() {
 					},
 					URL:           fmt.Sprintf("https://%v", ref.Name),
 					ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", ref.Version)),
+					Depth:         1,
 					Progress:      os.Stdout,
 				}
 

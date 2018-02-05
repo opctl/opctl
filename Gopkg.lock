@@ -72,7 +72,7 @@
     "digestset",
     "reference"
   ]
-  revision = "5cb406d511b7b9163bff9b6439072e4892e5ae3b"
+  revision = "fea8bd51143307d3454703eadecbeeb778aa75e8"
 
 [[projects]]
   branch = "master"
@@ -99,7 +99,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "924fb0e843930ca444e0f3a6632d7cb67a3da479"
+  revision = "6e5c2d639f67ae70f54d9f2285f3261440b074aa"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -126,8 +126,8 @@
 [[projects]]
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
-  revision = "342cbe0a04158f6dcb03ca0079991a51a4248c02"
-  version = "v0.5"
+  revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -190,10 +190,10 @@
   revision = "16f96e9dcff4e9aaca9fab2566530a8c51776c13"
 
 [[projects]]
-  branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/gorilla/context"
@@ -292,7 +292,7 @@
   branch = "master"
   name = "github.com/sethgrid/pester"
   packages = ["."]
-  revision = "760f8913c0483b776294e1bee43f1d687527127b"
+  revision = "1808e6f72af9682aaae9189a91c6bb9b416297ca"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -413,7 +413,7 @@
     "proxy",
     "trace"
   ]
-  revision = "0ed95abb35c445290478a5348a7b38bb154135fd"
+  revision = "2fb46b16b8dda405028c50f7c7f0f9dd1fa6bfb1"
 
 [[projects]]
   branch = "master"
@@ -428,7 +428,7 @@
     "unix",
     "windows"
   ]
-  revision = "ff2a66f350cefa5c93a634eadb5d25bb60c85a9c"
+  revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
 
 [[projects]]
   branch = "master"
@@ -452,8 +452,8 @@
     "osfs",
     "util"
   ]
-  revision = "e940f8b62a8e61adc71f69802c1cc8305b64ec96"
-  version = "v4.0.2"
+  revision = "027dceab1aa836eb310d92c2eb2266e4dc9f4b81"
+  version = "v4.1.0"
 
 [[projects]]
   name = "gopkg.in/src-d/go-git.v4"

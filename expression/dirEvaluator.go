@@ -76,7 +76,8 @@ func (etd _dirEvaluator) EvalToDir(
 			if nil != err {
 				return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 			}
-			dirValue = filepath.Join(pkgHandle.Ref(), pkgFsRef)
+			pkgPath := pkgHandle.Path()
+			dirValue = filepath.Join(*pkgPath, pkgFsRef)
 
 		} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
 
