@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {Responsive as ResponsiveReactGridLayout} from "react-grid-layout";
 import {HotKeys} from 'react-hotkeys';
 import PkgSelector from '../../PkgSelector';
 import {AutoSizer} from 'react-virtualized';
 import Item from './Item';
 import 'react-grid-layout/css/styles.css';
-import opspecNodeApiClient from "../../../utils/clients/opspecNodeApi";
+import opspecNodeApiClient from "../../../core/clients/opspecNodeApi";
 import {toast} from "react-toastify";
 
 const dragHandleClassName = 'dragHandle';
 
-function getStateFromLS(key) {
+function getStateFromLS() {
   if (global.localStorage) {
     return JSON.parse(global.localStorage.getItem("state")) || null;
   }
@@ -26,7 +26,7 @@ function saveStateToLS(state) {
   }
 }
 
-export default class Operations extends Component {
+export default class OperationsView extends PureComponent {
   static defaultProps = {
     className: "layout",
     cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
@@ -205,7 +205,6 @@ export default class Operations extends Component {
           'killAllItems': this.killAllItems,
           'startAllItems': this.startAllItems,
         }}
-        style={{height: '100%'}}
         onClick={this.unSelectAllItems}
       >
         <PkgSelector
@@ -220,6 +219,8 @@ export default class Operations extends Component {
               layouts={this.state.layouts}
               onLayoutChange={this.handleLayoutChange}
               draggableHandle={`.${dragHandleClassName}`}
+              // ensures grid is "selectable" so hotkeys will work within it
+              style={{width}}
             >
               {this.state.items.map(item =>
                 <div

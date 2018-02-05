@@ -14,7 +14,7 @@ var _ = Context("pubSub", func() {
 	if nil != err {
 		panic(err)
 	}
-	tempEventStore := NewBuntDBEventStore(tempFilePath.Name())
+	tempEventStore := NewBadgerDBEventStore(tempFilePath.Name())
 
 	Context("New", func() {
 		It("should return PubSub", func() {

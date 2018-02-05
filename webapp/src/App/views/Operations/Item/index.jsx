@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import {AutoSizer} from 'react-virtualized';
 import {HotKeys} from 'react-hotkeys';
 import Header from './Header'
@@ -6,11 +6,11 @@ import Inputs from '../../../Pkg/Inputs'
 import EventStream from '../../../EventStream'
 import {Modal, ModalBody} from 'reactstrap';
 import Input from '../../../Input';
-import opspecNodeApiClient from '../../../../utils/clients/opspecNodeApi';
+import eventStore from '../../../../core/eventStore';
 import reactClickOutside from 'react-click-outside';
 import './index.css';
 
-class Item extends Component {
+class Item extends PureComponent {
   args = this.props.args;
   state = {
     name: this.props.name || this.props.pkgRef,
@@ -51,7 +51,7 @@ class Item extends Component {
   };
 
   processEventStream = ({opId}) => {
-    this.eventStreamCloser = opspecNodeApiClient.event_stream_get({
+    this.eventStreamCloser = eventStore.getStream({
       filter: {
         roots: [opId],
       },

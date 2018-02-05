@@ -33,27 +33,27 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmQm7WmgYCa4RSz76tKEYpRjApjnRw8ZTUVQC15b8JM4a2",
+      "hash": "QmXfkENeeBvh3zYA51MaSdGUdBjhQ99cP5WQe8zgr6wchG",
       "name": "go-libp2p-net",
-      "version": "2.0.4"
+      "version": "2.0.5"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmeZVQzUrXqaszo24DAoHfGzcmCptN9JyngLkGAiEfk2x7",
+      "hash": "QmXauCuJzmzapetmC6W4TuDJLL1yFFrVzSHoWv8YdbmnxH",
       "name": "go-libp2p-peerstore",
-      "version": "1.4.14"
+      "version": "1.4.15"
     },
     {
       "author": "whyrusleeping",
-      "hash": "Qma7H6RW8wRrfZpNSXwxYGcd1E149s42FpWNpDNieSVrnU",
+      "hash": "QmZoWKhxUmZ2seW4BzX6fJkNR8hh9PsGModr7q171yq2SS",
       "name": "go-libp2p-peer",
-      "version": "2.2.2"
+      "version": "2.2.3"
     },
     {
       "author": "why",
-      "hash": "QmZdqgq4h6AdodSmPwb5FZzhwnmhchu1hhJgv8tnFdod1o",
+      "hash": "Qmax8X1Kfahf5WfSB68EWDG3d3qyS3Sqs1v412fjPTfRwx",
       "name": "go-libp2p-interface-connmgr",
-      "version": "0.0.5"
+      "version": "0.0.6"
     }
   ],
   "gxVersion": "0.9.1",
@@ -61,6 +61,6 @@
   "license": "",
   "name": "go-libp2p-host",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "2.1.4"
+  "version": "2.1.5"
 }
 

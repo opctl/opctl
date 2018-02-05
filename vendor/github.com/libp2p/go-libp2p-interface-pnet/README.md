@@ -24,7 +24,7 @@ go-libp2p-swarm `NewSwarmWithProtector` and `NewNetworkWithProtector`.
 
 ## Implementations:
 
- - [go-libp2p-pnet](//gitub.com/libp2p/go-libp2p-pnet) - simple PSK based Protector, using XSalsa20
+ - [go-libp2p-pnet](//github.com/libp2p/go-libp2p-pnet) - simple PSK based Protector, using XSalsa20
 
 ## Contribute
 

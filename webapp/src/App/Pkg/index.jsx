@@ -4,7 +4,7 @@ import Icon from './Icon';
 import Inputs from './Inputs';
 import Outputs from './Outputs';
 import EventStream from '../EventStream';
-import opspecNodeApiClient from '../../utils/clients/opspecNodeApi';
+import opspecNodeApiClient from '../../core/clients/opspecNodeApi';
 import { toast } from 'react-toastify';
 
 export default class Pkg extends Component {
@@ -39,8 +39,20 @@ export default class Pkg extends Component {
   };
 
   start = () => {
+    const args = Object.entries(this.props.value.inputs || [])
+      .reduce((args, [name, param]) => {
+        if (param.array) args[name] = {array: this.args[name]};
+        if (param.dir) args[name] = {dir: this.args[name]};
+        if (param.file) args[name] = {file: this.args[name]};
+        if (param.number) args[name] = {number: this.args[name]};
+        if (param.object) args[name] = {object: this.args[name]};
+        if (param.socket) args[name] = {socket: this.args[name]};
+        if (param.string) args[name] = {string: this.args[name]};
+        return args;
+      }, {});
+
     opspecNodeApiClient.op_start({
-      args: this.args || {},
+      args,
       pkg: {
         ref: this.props.pkgRef,
       }

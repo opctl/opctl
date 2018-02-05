@@ -842,12 +842,11 @@ definitions:
       Volumes:
         description: "An object mapping mount point paths inside the container to empty objects."
         type: "object"
-        properties:
-          additionalProperties:
-            type: "object"
-            enum:
-              - {}
-            default: {}
+        additionalProperties:
+          type: "object"
+          enum:
+            - {}
+          default: {}
       WorkingDir:
         description: "The working directory for commands to run in."
         type: "string"
@@ -2805,6 +2804,8 @@ definitions:
       - "shutdown"
       - "failed"
       - "rejected"
+      - "remove"
+      - "orphaned"
 
   Task:
     type: "object"
@@ -5355,6 +5356,13 @@ paths:
           examples:
             application/json:
               message: "No such container: c2ada9df5af8"
+        409:
+          description: "container is not running"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+          examples:
+            application/json:
+              message: "Container d37cde0fe4ad63c3a7252023b2f9800282894247d145cb5933ddf6e52cc03a28 is not running"
         500:
           description: "server error"
           schema:

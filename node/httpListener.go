@@ -15,23 +15,23 @@ import (
 )
 
 /**
-newHttpDriver returns a driver which exposes opctl over http (& websockets via connection upgrades)
+newHttpListener returns a listener which exposes opctl over http (& websockets via connection upgrades)
 */
-func newHttpDriver(
+func newHttpListener(
 	opspecNodeCore core.Core,
-) driver {
-	return _httpDriver{
+) listener {
+	return _httpListener{
 		opspecNodeCore: opspecNodeCore,
 		cliColorer:     clicolorer.New(),
 	}
 }
 
-type _httpDriver struct {
+type _httpListener struct {
 	opspecNodeCore core.Core
 	cliColorer     clicolorer.CliColorer
 }
 
-func (hd _httpDriver) Drive(
+func (hd _httpListener) Listen(
 	ctx context.Context,
 ) <-chan error {
 	router := mux.NewRouter()
@@ -73,7 +73,7 @@ func (hd _httpDriver) Drive(
 		httpServer.Shutdown(ctx)
 	}()
 
-	fmt.Println(hd.cliColorer.Info("http driver bound to 0.0.0.0:42224"))
+	fmt.Println(hd.cliColorer.Info("http listener bound to 0.0.0.0:42224"))
 	return errChan
 }
 
@@ -82,7 +82,7 @@ func (hd _httpDriver) Drive(
 // and invoking the handler h. StripPrefix handles a
 // request for a path that doesn't begin with prefix by
 // replying with an HTTP 404 not found error.
-func (hd _httpDriver) StripPrefix(prefix string, h http.Handler) http.Handler {
+func (hd _httpListener) StripPrefix(prefix string, h http.Handler) http.Handler {
 	if prefix == "" {
 		return h
 	}

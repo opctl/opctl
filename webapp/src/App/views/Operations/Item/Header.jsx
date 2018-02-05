@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import MdMoreVert from 'react-icons/lib/md/more-vert';
 import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
 
 const dragHandleClassName = 'dragHandle';
 
-export default class Header extends Component {
+export default class Header extends PureComponent {
   state = {dropdownOpen: false};
 
   toggleDropdown = () => {

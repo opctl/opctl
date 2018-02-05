@@ -35,7 +35,7 @@ func subtestIDService(t *testing.T) {
 	forgetMe, _ := ma.NewMultiaddr("/ip4/1.2.3.4/tcp/1234")
 
 	h2.Peerstore().AddAddr(h1p, forgetMe, pstore.RecentlyConnectedAddrTTL)
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	h2pi := h2.Peerstore().PeerInfo(h2p)
 	if err := h1.Connect(ctx, h2pi); err != nil {
@@ -83,12 +83,12 @@ func subtestIDService(t *testing.T) {
 	testKnowsAddrs(t, h2, h1p, addrs)
 	testKnowsAddrs(t, h1, h2p, h2.Peerstore().Addrs(h2p))
 
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	// Forget the first one.
 	testKnowsAddrs(t, h2, h1p, addrs[:len(addrs)-1])
 
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 
 	// Forget the rest.
 	testKnowsAddrs(t, h1, h2p, []ma.Multiaddr{})
@@ -152,12 +152,12 @@ func testHasPublicKey(t *testing.T, h host.Host, p peer.ID, shouldBe ic.PubKey) 
 	}
 }
 
-// TestIDServiceWait gives the ID service 100ms to finish after dialing
+// TestIDServiceWait gives the ID service 1s to finish after dialing
 // this is becasue it used to be concurrent. Now, Dial wait till the
 // id service is done.
 func TestIDService(t *testing.T) {
 	oldTTL := pstore.RecentlyConnectedAddrTTL
-	pstore.RecentlyConnectedAddrTTL = 100 * time.Millisecond
+	pstore.RecentlyConnectedAddrTTL = time.Second
 	defer func() {
 		pstore.RecentlyConnectedAddrTTL = oldTTL
 	}()

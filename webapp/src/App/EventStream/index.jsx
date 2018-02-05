@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
+import React, {PureComponent} from 'react';
 import Event from './Event';
-import opspecNodeApiClient from '../../utils/clients/opspecNodeApi';
-import { AutoSizer, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized';
-import { toast } from 'react-toastify';
+import eventStore from '../../core/eventStore'
+import {toast} from 'react-toastify';
 import './index.css';
 
-const throttleDuration = 200;
-
-class EventStream extends Component {
+class EventStream extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -15,17 +12,13 @@ class EventStream extends Component {
       events: [],
     };
 
-    this.mostRecentWidth = 0;
     this.isScrolledToEnd = true;
-    this.eventStreamCloser = () => { };
-    this.lastComponentUpdate = new Date().getTime();
-    this.cache = new CellMeasurerCache({
-      fixedWidth: true
-    });
+    this.eventStreamCloser = () => {
+    };
   }
 
   componentDidMount() {
-    this.eventStreamCloser = opspecNodeApiClient.event_stream_get({
+    this.eventStreamCloser = eventStore.getStream({
       filter: this.props.filter,
       onEvent: event => {
         this.setState(prevState => ({
@@ -37,97 +30,36 @@ class EventStream extends Component {
           `encountered error streaming events; error was ${JSON.stringify(err)}`
         )
       },
+      onClose: closeEvent => {
+        toast.error(
+          `event stream closed unexpectedly; msg was ${JSON.stringify(closeEvent)}`
+        )
+      }
     });
-
-    // maintain an update interval so throttled renders get re-processed every throttleDuration
-    this.interval = setInterval(() => {
-      this.setState(() => ({
-        throttleInterval: new Date().getTime()
-      }));
-    }, throttleDuration);
-  }
-
-  componentDidUpdate() {
-    this.lastComponentUpdate = new Date().getTime();
   }
 
   componentWillUnmount() {
     this.eventStreamCloser();
-    clearInterval(this.interval);
   }
 
-  rowRenderer({ index, isScrolling, key, parent, style }) {
-    return (
-      <CellMeasurer
-        cache={this.cache}
-        columnIndex={0}
-        key={key}
-        parent={parent}
-        rowIndex={index}
-        width={this.mostRecentWidth}
-      >
-        <div style={style}>
-          <Event event={this.state.events[index]} />
-        </div>
-      </CellMeasurer>
-    );
-  }
-
-  handleResize({ width }) {
-    if (this.mostRecentWidth !== width) {
-      this.mostRecentWidth = width;
-      this.cache.clearAll();
-      this.list.recomputeRowHeights();
+  componentDidUpdate() {
+    if (this.isAtBottom) {
+      // only scroll if at bottom; otherwise we'd be overriding the users custom scroll
+      this.ref.scrollTop = this.ref.scrollHeight
     }
   }
 
-  handleRowsRendered({ stopIndex }) {
-    this.isScrolledToEnd = this.state.events.length - stopIndex <= 1;
+  componentWillUpdate() {
+    this.isAtBottom = (this.ref.scrollHeight - (this.ref.scrollTop + this.ref.offsetHeight)) < 100;
   }
+
+  setRef = ref => this.ref = ref;
 
   render() {
-    return (
-      this.state.events.length !== 0
-        ? <AutoSizer onResize={resized => this.handleResize(resized)}>
-          {({ height, width }) => {
-            const optionalProps = {};
-            if (this.isScrolledToEnd) {
-              optionalProps.scrollToIndex = this.state.events.length;
-            }
-            return (
-              <List
-                className='events'
-                height={height}
-                width={width}
-                ref={ref => {
-                  this.list = ref;
-                }}
-                onRowsRendered={rowsRendered => this.handleRowsRendered(rowsRendered)}
-                deferredMeasurementCache={this.cache}
-                rowHeight={this.cache.rowHeight}
-                rowRenderer={(renderOpts) => this.rowRenderer(renderOpts)}
-                rowCount={this.state.events.length}
-                {...optionalProps}
-              />
-            );
-          }}
-        </AutoSizer>
-        : null
-    );
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // there are typically so many events received it floods react & results in a completely unresponsive UI
-    // we throttle renders to avoid this
-    const wasThrottled = this.isThrottled;
-    const isNewEvents = this.state.events.length < nextState.events.length;
-    this.isThrottled = new Date().getTime() - this.lastComponentUpdate > throttleDuration;
-
-    if (isNewEvents || wasThrottled) {
-      return this.isThrottled;
-    }
-
-    return false;
+    // @TODO: shore up performance when many events exist
+    return <div className='events' ref={this.setRef}>
+      {this.state.events.map((event, index) => <Event key={index} event={event}/>)}
+    </div>
   }
 
 }
