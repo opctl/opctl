@@ -53,7 +53,7 @@ func New() {
 
 	httpErrChannel :=
 		newHttpListener(core.New(
-			pubsub.New(pubsub.NewBoltDBEventStore(eventDbPath(dcgDataDirPath))),
+			pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
 			containerProvider,
 			rootFSPath,
 		)).
