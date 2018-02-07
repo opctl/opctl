@@ -27,6 +27,7 @@ class eventStore {
    * subscribes to events
    * @param onEvent
    * @param {{roots,since}} filter
+   * @param {Function} onEvent
    * @returns {function()} cancel; cancels any further calls to onEvent
    */
   getStream({
