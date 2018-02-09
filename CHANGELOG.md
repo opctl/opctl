@@ -3,12 +3,20 @@
 All notable changes will be documented in this file in accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## \[Unreleased]
+## \[0.1.6]
 
 ### Added
 
+- Support client back pressure in `GET event-stream` endpoint via `ack`
+  query param
 - [Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
 - [Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+
+### Deprecated
+
+- `stdOut` & `stdErr` attributes from
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
+  Use files.
 
 ## \[0.1.5] - 2017-09-27
 
@@ -22,7 +30,8 @@ All notable changes will be documented in this file in accordance with
 
 ### Deprecated
 
-- pkg fs & scope references in/as op call args without `$(ref)` reference syntax
+- pkg fs & scope references in/as op call args without `$(ref)`
+  reference syntax
 
 ### Removed
 

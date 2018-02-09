@@ -1,0 +1,16 @@
+# use a super creative name
+name: hello-world
+
+# describe what your pkg does
+description: echo's hello world.. because we gotta start somewhere.
+
+run:
+
+  # run a container
+  container:
+
+    # use image resolvable via reference alpine:3.6
+    image: { ref: 'alpine:3.6' }
+
+    # invoke echo w/ arg "hello world"
+    cmd: [ echo, hello world ]

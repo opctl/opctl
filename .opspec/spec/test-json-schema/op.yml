@@ -12,11 +12,11 @@ run:
       - -ce
       - |
         echo "installing deps"
-        npm install ajv-cli -g --quiet
+        yarn global add ajv-cli
 
         echo "testing json schemas"
         ajv compile -s "*.schema.json"
     dirs:
       /src: $(srcDir)
-    image: { ref: 'node:7.7' }
+    image: { ref: 'node:9.3.0' }
     workDir: /src/spec

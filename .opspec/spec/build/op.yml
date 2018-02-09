@@ -25,7 +25,7 @@ run:
         apt install -y calibre
 
         echo "installing gitbook cli"
-        npm install svgexport gitbook-cli -g -q
+        yarn global add svgexport gitbook-cli
 
         echo "installing plugins"
         gitbook install
@@ -37,5 +37,5 @@ run:
         gitbook pdf . ../build/latest/opspec$(version).pdf
     dirs:
       /src: $(srcDir)
-    image: { ref: 'node:7.7' }
+    image: { ref: 'node:9.3.0' }
     workDir: /src/spec

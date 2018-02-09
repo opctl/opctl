@@ -16,7 +16,7 @@ run:
       - -ce
       - |
         echo "installing gitbook cli"
-        npm install svgexport gitbook-cli -g -q
+        yarn global add svgexport gitbook-cli
 
         echo "installing plugins"
         gitbook install
@@ -25,5 +25,5 @@ run:
         gitbook build . ../build/docs
     dirs:
       /src: $(srcDir)
-    image: { ref: 'node:7.7' }
+    image: { ref: 'node:9.3.0' }
     workDir: /src/docs
