@@ -6,25 +6,12 @@ import {AutoSizer} from 'react-virtualized';
 import Item from './Item';
 import 'react-grid-layout/css/styles.css';
 import opspecNodeApiClient from "../../../core/clients/opspecNodeApi";
+import contentStore from "../../../core/contentStore";
+import uuidV4 from 'uuid/v4';
 import {toast} from "react-toastify";
 
 const dragHandleClassName = 'dragHandle';
-
-function getStateFromLS() {
-  if (global.localStorage) {
-    return JSON.parse(global.localStorage.getItem("state")) || null;
-  }
-  return null;
-}
-
-function saveStateToLS(state) {
-  if (global.localStorage) {
-    global.localStorage.setItem(
-      "state",
-      JSON.stringify(state)
-    );
-  }
-}
+const CONTENT_STORE_KEY = 'operations';
 
 export default class OperationsView extends PureComponent {
   static defaultProps = {
@@ -36,13 +23,11 @@ export default class OperationsView extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state =
-      getStateFromLS()
+    this.state = contentStore.get({key: CONTENT_STORE_KEY})
       ||
       {
         layouts: {},
         items: [],
-        newCounter: 0
       };
   }
 
@@ -54,7 +39,7 @@ export default class OperationsView extends PureComponent {
       pkgRef,
       pkg,
       args: {},
-      i: "n" + this.state.newCounter,
+      i: uuidV4(),
       x: (this.state.items.length * 2) % (12),
       y: 10000000000000, // puts it at the bottom
       w: 2,
@@ -65,13 +50,12 @@ export default class OperationsView extends PureComponent {
     this.setState(
       prevState => ({
         items: [...prevState.items, item],
-        newCounter: prevState.newCounter + 1
       })
     );
   };
 
   componentDidUpdate() {
-    saveStateToLS(this.state);
+    contentStore.set({key: CONTENT_STORE_KEY, value: this.state});
   }
 
   handleLayoutChange = (layout, layouts) => {

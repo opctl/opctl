@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import Event from './Event';
 import eventStore from '../../core/eventStore';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, List } from 'react-virtualized';
@@ -6,7 +6,7 @@ import './index.css';
 
 const throttleDuration = 200;
 
-class EventStream extends PureComponent {
+class EventStream extends Component {
   constructor(props) {
     super(props);
 

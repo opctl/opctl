@@ -7,14 +7,24 @@ export default class Entry extends Component {
 
   handleValidName = (name) => {
     this.setState(prevState => {
-      const value = Object.assign(prevState, {name});
-      this.props.onValid(value);
-      return value;
+      this.props.onValid({
+        name,
+        value: prevState.value,
+        id: prevState.id,
+      });
+      return {name};
     });
   };
 
   handleValidValue = (value) => {
-    this.setState({value});
+    this.setState(prevState => {
+      this.props.onValid({
+        name: prevState.name,
+        value,
+        id: prevState.id,
+      });
+      return {value}
+    });
   };
 
   render() {
