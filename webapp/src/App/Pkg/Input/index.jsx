@@ -6,6 +6,7 @@ import InputNumber from './Number';
 import InputObject from './Object';
 import InputSocket from './Socket';
 import InputString from './String';
+import contentStore from '../../../core/contentStore';
 
 export default ({
                   input,
@@ -15,6 +16,9 @@ export default ({
                   pkgRef,
                   value,
                 }) => {
+  const variable = contentStore.get({key: 'environment'}).find(variable => variable.name === name) || {};
+  value = value || variable.value;
+
   // delegate to component for input
   if (input.array) {
     return <InputArray

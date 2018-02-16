@@ -1,34 +1,46 @@
 import React, {Component} from 'react';
 import Entry from './Variable';
+import contentStore from '../../core/contentStore';
+import uuidV4 from 'uuid/v4';
+const key = 'environment';
 
 export default class Variables extends Component {
-  state = {
-    idCounter: 1,
-    variables: []
-  };
+  state =
+    {
+      variables: contentStore.get({key}) || [],
+    };
 
   handleInvalid = () => {
     this.setState({isVariableAddDisabled: true});
   };
 
-  handleValid = (value) => {
+  handleValid = value => {
     this.setState(prevState => {
+      const nextVariables = [...prevState.variables];
       const entryIndex = prevState.variables.findIndex(entry => entry.id === value.id);
-      prevState.variables[entryIndex] = Object.assign(prevState.variables[entryIndex], value);
-      return prevState;
+      nextVariables[entryIndex] = value;
+      contentStore.set({key, value: nextVariables});
+      return {
+        variables: nextVariables,
+        isVariableAddDisabled: false
+      };
     });
-    this.setState({isVariableAddDisabled: false});
   };
 
   addVariable = () => {
     this.setState(prevState => {
-      prevState.idCounter++;
-      prevState.variables.push({
-        id: prevState.idCounter,
-        name: "",
-        value: "",
-      });
-      return prevState;
+      const nextVariables = [
+        ...prevState.variables,
+        {
+          id: uuidV4(),
+          name: "",
+          value: "",
+        },
+      ];
+
+      return {
+        variables: nextVariables
+      };
     })
   };
 
