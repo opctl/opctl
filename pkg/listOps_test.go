@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-var _ = Context("List", func() {
+var _ = Context("ListOps", func() {
 	wd, err := os.Getwd()
 	if nil != err {
 		panic(err)
@@ -31,7 +31,7 @@ var _ = Context("List", func() {
 		}
 
 		/* act */
-		objectUnderTest.List(providedDirPath)
+		objectUnderTest.ListOps(providedDirPath)
 
 		/* assert */
 		Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedDirPath))
@@ -51,7 +51,7 @@ var _ = Context("List", func() {
 			}
 
 			/* act */
-			_, actualError := objectUnderTest.List("")
+			_, actualError := objectUnderTest.ListOps("")
 
 			/* assert */
 			Expect(actualError).To(Equal(expectedError))
@@ -72,7 +72,7 @@ var _ = Context("List", func() {
 			}
 
 			/* act */
-			_, err := objectUnderTest.List(rootPkgPath)
+			_, err := objectUnderTest.ListOps(rootPkgPath)
 			if nil != err {
 				panic(err)
 			}

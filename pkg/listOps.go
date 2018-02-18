@@ -1,14 +1,12 @@
 package pkg
 
-//go:generate counterfeiter -o ./fakeList.go --fake-name fakeList ./ list
-
 import (
 	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
 )
 
-// List recursively lists packages in dirPath
-func (this _Pkg) List(
+// ListOps recursively lists ops in dirPath
+func (this _Pkg) ListOps(
 	dirPath string,
 ) ([]*model.PkgManifest, error) {
 
@@ -24,7 +22,7 @@ func (this _Pkg) List(
 
 		if childFileInfo.IsDir() {
 			// recurse into child dirs
-			childPkgs, err := this.List(childPath)
+			childPkgs, err := this.ListOps(childPath)
 			if nil != err {
 				return nil, err
 			}
