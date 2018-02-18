@@ -337,6 +337,7 @@ components:
         - properties:
             array:
               type: array
+              items: {}
         - properties:
             dir:
               description: path
