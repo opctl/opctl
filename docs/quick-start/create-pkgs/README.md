@@ -1,6 +1,6 @@
 ## Intro
 
-In this tutorial series we learn how to create packages
+In this quick start we create packages.
 
 It's not required to start at the beginning or to go in order but it's
 recommended if you're new to packages.
@@ -13,7 +13,6 @@ create
 The recommended way of doing this is to use [opctl](https://opctl.io)'s
 [run](https://opctl.io/docs/cli/run.html) command
 
-## Tutorials
+## Chapters
 
-1. [hello world](1-hello-world/README.md)
-
+1. [hello-world](hello-world/README.md)

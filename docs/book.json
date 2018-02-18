@@ -24,12 +24,22 @@
       "token": "UA-79889286-1"
     },
     "github-buttons": {
-      "repo": "opspec-io/spec",
-      "types": [
-        "star",
-        "watch"
-      ],
-      "size": "small"
+      "buttons": [
+        {
+          "type": "star",
+          "user": "opspec-io",
+          "repo": "spec",
+          "size": "small",
+          "count": true
+        },
+        {
+          "type": "watch",
+          "user": "opspec-io",
+          "repo": "spec",
+          "size": "small",
+          "count": true
+        }
+      ]
     }
   },
   "structure": {

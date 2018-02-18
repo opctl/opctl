@@ -1,4 +1,4 @@
-description: Runs all ops necessary to build & deploy the website
+description: Runs all ops necessary to deploy the website
 name: website/deploy
 inputs:
   srcDir:

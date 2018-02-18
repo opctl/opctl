@@ -9,6 +9,14 @@ paths:
       summary: Get an event stream
       description: The connection will be upgraded to use the websocket protocol.
       parameters:
+        - name: ack
+          in: query
+          required: false
+          description: When specified, client MUST ack (empty reply) each message before server will send another.
+            This enables the client to apply back pressure to the stream
+          schema:
+            type: boolean
+          allowEmptyValue: true
         - name: since
           in: query
           description: Filters events to those occurring on/after the provided instant

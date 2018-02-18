@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://opspec.io/0.1.6/op.yml.schema.json",
+  "$id": "https://opspec.io/0.1.6/op.yml.schema.json",
   "title": "op.yml",
   "description": "Defines a pkg",
   "properties": {
@@ -303,7 +303,7 @@
           }
         },
         "additionalProperties": {
-          "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.18)",
+          "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-6.5.6)",
           "oneOf": [
             {
               "type": "boolean"
@@ -511,7 +511,7 @@
           ]
         },
         "maxLength": {
-          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.6)",
+          "description": "JSON Schema [maxLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.6)",
           "type": "integer",
           "minimum": 1
         },
@@ -758,6 +758,7 @@
                   "type": "string"
                 }
               },
+              "deprecated": true,
               "additionalProperties": false
             },
             "stdOut": {
@@ -768,6 +769,7 @@
                   "type": "string"
                 }
               },
+              "deprecated": true,
               "additionalProperties": false
             },
             "workDir": {
@@ -845,17 +847,8 @@
               "additionalProperties": false
             }
           },
-          "oneOf": [
-            {
-              "required": [
-                "pkg"
-              ]
-            },
-            {
-              "required": [
-                "ref"
-              ]
-            }
+          "required": [
+            "pkg"
           ],
           "additionalProperties": false
         }
