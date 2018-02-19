@@ -34,8 +34,8 @@ type Pkg interface {
 		pkgHandle model.PkgHandle,
 	) error
 
-	// List recursively lists packages in dirPath
-	List(
+	// List recursively lists ops in dirPath
+	ListOps(
 		dirPath string,
 	) ([]*model.PkgManifest, error)
 

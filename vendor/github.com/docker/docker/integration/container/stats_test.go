@@ -1,4 +1,4 @@
-package container
+package container // import "github.com/docker/docker/integration/container"
 
 import (
 	"context"
@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/integration/util/request"
+	"github.com/docker/docker/integration/internal/container"
+	"github.com/docker/docker/integration/internal/request"
 	"github.com/gotestyourself/gotestyourself/poll"
 	"github.com/gotestyourself/gotestyourself/skip"
 	"github.com/stretchr/testify/assert"
@@ -27,23 +26,11 @@ func TestStats(t *testing.T) {
 	info, err := client.Info(ctx)
 	require.NoError(t, err)
 
-	c, err := client.ContainerCreate(ctx,
-		&container.Config{
-			Cmd:   []string{"top"},
-			Image: "busybox",
-		},
-		&container.HostConfig{},
-		&network.NetworkingConfig{},
-		"",
-	)
-	require.NoError(t, err)
+	cID := container.Run(t, ctx, client)
 
-	err = client.ContainerStart(ctx, c.ID, types.ContainerStartOptions{})
-	require.NoError(t, err)
+	poll.WaitOn(t, containerIsInState(ctx, client, cID, "running"), poll.WithDelay(100*time.Millisecond))
 
-	poll.WaitOn(t, containerIsInState(ctx, client, c.ID, "running"), poll.WithDelay(100*time.Millisecond))
-
-	resp, err := client.ContainerStats(context.Background(), c.ID, false)
+	resp, err := client.ContainerStats(ctx, cID, false)
 	require.NoError(t, err)
 	defer resp.Body.Close()
 

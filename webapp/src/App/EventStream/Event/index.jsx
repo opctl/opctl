@@ -8,7 +8,6 @@ import EventOpErred from './OpErred';
 import EventOpStarted from './OpStarted';
 import EventSerialCallEnded from "./SerialCallEnded";
 import EventParallelCallEnded from "./ParallelCallEnded";
-import withNoReRenders from '../../hocs/withNoReRenders';
 
 const Event = ({event, style}) => {
   // delegate to typed event component
@@ -39,4 +38,4 @@ const Event = ({event, style}) => {
   </div>
 };
 
-export default withNoReRenders(Event);
+export default Event;

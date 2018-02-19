@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net"
+	"sync"
 	"time"
 
 	logging "github.com/ipfs/go-log"
@@ -30,7 +31,9 @@ type singleConn struct {
 	local  peer.ID
 	remote peer.ID
 	maconn tpt.Conn
-	event  io.Closer
+
+	eventMu sync.Mutex
+	event   io.Closer
 }
 
 // newConn constructs a new connection
@@ -50,12 +53,13 @@ func newSingleConn(ctx context.Context, local, remote peer.ID, maconn tpt.Conn) 
 
 // close is the internal close function, called by ContextCloser.Close
 func (c *singleConn) Close() error {
-	defer func() {
-		if c.event != nil {
-			c.event.Close()
-			c.event = nil
-		}
-	}()
+	c.eventMu.Lock()
+	if c.event != nil {
+		evt := c.event
+		c.event = nil
+		defer evt.Close()
+	}
+	c.eventMu.Unlock()
 
 	// close underlying connection
 	return c.maconn.Close()

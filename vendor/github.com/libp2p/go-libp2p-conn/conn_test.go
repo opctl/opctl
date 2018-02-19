@@ -60,7 +60,9 @@ func TestClose(t *testing.T) {
 	testOneSendRecv(t, c1, c2)
 	testOneSendRecv(t, c2, c1)
 
+	go c1.Close()
 	c1.Close()
+
 	testNotOneSendRecv(t, c1, c2)
 
 	c2.Close()
