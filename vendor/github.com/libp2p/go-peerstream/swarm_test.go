@@ -78,6 +78,31 @@ func TestNotificationOrdering(t *testing.T) {
 	}
 }
 
+func TestNewStreamNoMuxer(t *testing.T) {
+	s := NewSwarm(nil)
+	c, err := s.AddConn(new(fakeconn), "foo", "bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !c.InGroup("foo") || !c.InGroup("bar") || c.InGroup("baz") {
+		t.Fatal("conn should be in groups bar and baz")
+	}
+	conns := s.Conns()
+	connsInGroup := s.ConnsWithGroup("bar")
+	if len(conns) != 1 || len(connsInGroup) != 1 {
+		t.Fatal("expected one conn")
+	}
+	if conns[0] != c || connsInGroup[0] != c {
+		t.Fatal("expected our conn")
+	}
+
+	_, err = c.NewStream()
+	if err == nil {
+		t.Fatal("new stream should have failed")
+	}
+}
+
 func TestBasicSwarm(t *testing.T) {
 	s := NewSwarm(fakeTransport{func(c net.Conn, isServer bool) (smux.Conn, error) {
 		return newFakeSmuxConn(), nil

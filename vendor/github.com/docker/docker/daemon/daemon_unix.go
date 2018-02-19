@@ -1,6 +1,6 @@
 // +build linux freebsd
 
-package daemon
+package daemon // import "github.com/docker/docker/daemon"
 
 import (
 	"bufio"
@@ -23,7 +23,7 @@ import (
 	containertypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/container"
 	"github.com/docker/docker/daemon/config"
-	"github.com/docker/docker/image"
+	"github.com/docker/docker/daemon/initlayer"
 	"github.com/docker/docker/opts"
 	"github.com/docker/docker/pkg/containerfs"
 	"github.com/docker/docker/pkg/idtools"
@@ -101,6 +101,10 @@ func getMemoryResources(config containertypes.Resources) *specs.LinuxMemory {
 	if config.MemorySwappiness != nil {
 		swappiness := uint64(*config.MemorySwappiness)
 		memory.Swappiness = &swappiness
+	}
+
+	if config.OomKillDisable != nil {
+		memory.DisableOOMKiller = config.OomKillDisable
 	}
 
 	if config.KernelMemory != 0 {
@@ -996,8 +1000,10 @@ func removeDefaultBridgeInterface() {
 	}
 }
 
-func (daemon *Daemon) getLayerInit() func(containerfs.ContainerFS) error {
-	return daemon.setupInitLayer
+func setupInitLayer(idMappings *idtools.IDMappings) func(containerfs.ContainerFS) error {
+	return func(initPath containerfs.ContainerFS) error {
+		return initlayer.Setup(initPath, idMappings.RootPair())
+	}
 }
 
 // Parse the remapped root (user namespace) option, which can be one of:
@@ -1351,17 +1357,6 @@ func (daemon *Daemon) stats(c *container.Container) (*types.StatsJSON, error) {
 // daemon to run in. This is only applicable on Windows
 func (daemon *Daemon) setDefaultIsolation() error {
 	return nil
-}
-
-func rootFSToAPIType(rootfs *image.RootFS) types.RootFS {
-	var layers []string
-	for _, l := range rootfs.DiffIDs {
-		layers = append(layers, l.String())
-	}
-	return types.RootFS{
-		Type:   rootfs.Type,
-		Layers: layers,
-	}
 }
 
 // setupDaemonProcess sets various settings for the daemon's process

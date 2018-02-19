@@ -325,6 +325,10 @@ func (s *Swarm) NewStreamWithConn(conn *Conn) (*Stream, error) {
 		return nil, errors.New("connection not associated with swarm")
 	}
 
+	if conn.smuxConn == nil {
+		return nil, errors.New("connection does not support multiplexing streams")
+	}
+
 	if conn.smuxConn.IsClosed() {
 		go conn.Close()
 		return nil, errors.New("conn is closed")

@@ -49,16 +49,16 @@ type Fake struct {
 	installReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ListStub        func(dirPath string) ([]*model.PkgManifest, error)
-	listMutex       sync.RWMutex
-	listArgsForCall []struct {
+	ListOpsStub        func(dirPath string) ([]*model.PkgManifest, error)
+	listOpsMutex       sync.RWMutex
+	listOpsArgsForCall []struct {
 		dirPath string
 	}
-	listReturns struct {
+	listOpsReturns struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}
-	listReturnsOnCall map[int]struct {
+	listOpsReturnsOnCall map[int]struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}
@@ -277,52 +277,52 @@ func (fake *Fake) InstallReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) List(dirPath string) ([]*model.PkgManifest, error) {
-	fake.listMutex.Lock()
-	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
-	fake.listArgsForCall = append(fake.listArgsForCall, struct {
+func (fake *Fake) ListOps(dirPath string) ([]*model.PkgManifest, error) {
+	fake.listOpsMutex.Lock()
+	ret, specificReturn := fake.listOpsReturnsOnCall[len(fake.listOpsArgsForCall)]
+	fake.listOpsArgsForCall = append(fake.listOpsArgsForCall, struct {
 		dirPath string
 	}{dirPath})
-	fake.recordInvocation("List", []interface{}{dirPath})
-	fake.listMutex.Unlock()
-	if fake.ListStub != nil {
-		return fake.ListStub(dirPath)
+	fake.recordInvocation("ListOps", []interface{}{dirPath})
+	fake.listOpsMutex.Unlock()
+	if fake.ListOpsStub != nil {
+		return fake.ListOpsStub(dirPath)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.listReturns.result1, fake.listReturns.result2
+	return fake.listOpsReturns.result1, fake.listOpsReturns.result2
 }
 
-func (fake *Fake) ListCallCount() int {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return len(fake.listArgsForCall)
+func (fake *Fake) ListOpsCallCount() int {
+	fake.listOpsMutex.RLock()
+	defer fake.listOpsMutex.RUnlock()
+	return len(fake.listOpsArgsForCall)
 }
 
-func (fake *Fake) ListArgsForCall(i int) string {
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
-	return fake.listArgsForCall[i].dirPath
+func (fake *Fake) ListOpsArgsForCall(i int) string {
+	fake.listOpsMutex.RLock()
+	defer fake.listOpsMutex.RUnlock()
+	return fake.listOpsArgsForCall[i].dirPath
 }
 
-func (fake *Fake) ListReturns(result1 []*model.PkgManifest, result2 error) {
-	fake.ListStub = nil
-	fake.listReturns = struct {
+func (fake *Fake) ListOpsReturns(result1 []*model.PkgManifest, result2 error) {
+	fake.ListOpsStub = nil
+	fake.listOpsReturns = struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ListReturnsOnCall(i int, result1 []*model.PkgManifest, result2 error) {
-	fake.ListStub = nil
-	if fake.listReturnsOnCall == nil {
-		fake.listReturnsOnCall = make(map[int]struct {
+func (fake *Fake) ListOpsReturnsOnCall(i int, result1 []*model.PkgManifest, result2 error) {
+	fake.ListOpsStub = nil
+	if fake.listOpsReturnsOnCall == nil {
+		fake.listOpsReturnsOnCall = make(map[int]struct {
 			result1 []*model.PkgManifest
 			result2 error
 		})
 	}
-	fake.listReturnsOnCall[i] = struct {
+	fake.listOpsReturnsOnCall[i] = struct {
 		result1 []*model.PkgManifest
 		result2 error
 	}{result1, result2}
@@ -583,8 +583,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.getManifestMutex.RUnlock()
 	fake.installMutex.RLock()
 	defer fake.installMutex.RUnlock()
-	fake.listMutex.RLock()
-	defer fake.listMutex.RUnlock()
+	fake.listOpsMutex.RLock()
+	defer fake.listOpsMutex.RUnlock()
 	fake.newFSProviderMutex.RLock()
 	defer fake.newFSProviderMutex.RUnlock()
 	fake.newGitProviderMutex.RLock()

@@ -1,20 +1,22 @@
 os:
   - linux
-  - osx
 
 language: go
 
 go:
-    - 1.7.1
+  - 1.9.x
 
-install: true
+install:
+  - make deps
 
 script:
-  - make deps
-  - gx-go rewrite
-  - go get github.com/mattn/goveralls
-  - goveralls -service=travis-ci
+  - bash <(curl -s https://raw.githubusercontent.com/ipfs/ci-helpers/master/travis-ci/run-standard-tests.sh)
 
 cache:
     directories:
         - $GOPATH/src/gx
+
+notifications:
+  email: false
+
+#env: GOTFLAGS="-race"

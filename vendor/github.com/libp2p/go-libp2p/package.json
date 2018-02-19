@@ -39,9 +39,9 @@
       "version": "0.3.6"
     },
     {
-      "hash": "QmQHGMVmrsgmqUG8ih3puNXUJneSpi13dkcZpzLKkskUkH",
+      "hash": "Qmf7HqcW7LtCi1W8y2bdx2eJpze74jkbKqpByxgXikdbLF",
       "name": "go-detect-race",
-      "version": "0.0.0"
+      "version": "1.0.1"
     },
     {
       "hash": "QmSF8fPo3jgVBAy8fpdjjYqgG87dkJgUprRBHRd2tmfgpP",
@@ -288,6 +288,6 @@
   "license": "MIT",
   "name": "go-libp2p",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "5.0.14"
+  "version": "5.0.15"
 }
 

@@ -16,7 +16,8 @@ export default ({
                   pkgRef,
                   value,
                 }) => {
-  const variable = contentStore.get({key: 'environment'}).find(variable => variable.name === name) || {};
+  const environment = contentStore.get({key: 'environment'}) || [];
+  const variable = environment.find(variable => variable.name === name) || {};
   value = value || variable.value;
 
   // delegate to component for input

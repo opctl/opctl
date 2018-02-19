@@ -53,7 +53,7 @@ var _ = Context("refParser", func() {
 				/* arrange */
 				providedFullyQualifiedPkgName := "somehost.com/path/pkgName"
 				providedPkgVersion := "0.0.0"
-				providedPkgRef := fmt.Sprintf("%v#%v", providedFullyQualifiedPkgName, providedPkgVersion)
+				providedOpRef := fmt.Sprintf("%v#%v/some/op/path", providedFullyQualifiedPkgName, providedPkgVersion)
 				expectedPkgRef := &Ref{
 					Name:    providedFullyQualifiedPkgName,
 					Version: providedPkgVersion,
@@ -63,7 +63,7 @@ var _ = Context("refParser", func() {
 				}
 
 				/* act */
-				actualPkgRef, actualErr := objectUnderTest.Parse(providedPkgRef)
+				actualPkgRef, actualErr := objectUnderTest.Parse(providedOpRef)
 
 				/* assert */
 				Expect(actualPkgRef).To(Equal(expectedPkgRef))
