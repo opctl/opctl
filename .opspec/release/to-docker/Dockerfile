@@ -1,4 +1,4 @@
-FROM docker:17.07.0-dind
+FROM docker:18.02.0-dind
 
 ARG CHANNEL
 

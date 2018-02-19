@@ -38,8 +38,8 @@ func newCli(
 	})
 
 	cli.Command(
-		"ls", "List packages (only opspec 0.1.5 compatible packages will be listed)", func(lsCmd *mow.Cmd) {
-			path := lsCmd.StringOpt("path", pkg.DotOpspecDirName, "Path to list packages from")
+		"ls", "List package operations (only opspec 0.1.5 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
+			path := lsCmd.StringOpt("path", pkg.DotOpspecDirName, "Path to list operations from")
 			lsCmd.Action = func() {
 				core.PkgLs(*path)
 			}
@@ -106,7 +106,7 @@ func newCli(
 		pkgCmd.Command(
 			"validate", "Validates a package",
 			func(validateCmd *mow.Cmd) {
-				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))")
+				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 				validateCmd.Action = func() {
 					core.PkgValidate(*pkgRef)
@@ -117,7 +117,7 @@ func newCli(
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
 		argFile := runCmd.StringOpt("arg-file", filepath.Join(pkg.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
-		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))")
+		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 		runCmd.Action = func() {
 			core.Run(context.TODO(), *pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
