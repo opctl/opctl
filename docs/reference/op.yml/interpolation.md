@@ -1,10 +1,13 @@
+Interpolation is supported where noted.
+
 # String interpolation
 
 Used for string templating.
 
 Replaces value expressions contained in strings w/ their value.
 
-> values will be [type coerced](type-coercion.md) to string if applicable.
+> values will be [type coerced](type-coercion.md) to string if
+> applicable.
 
 # Number interpolation
 
@@ -41,3 +44,4 @@ run:
     - echo
     - $(greeting) $(aNumber), look at this JSON $(anObject)
 ```
+

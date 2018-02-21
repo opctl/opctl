@@ -10,9 +10,7 @@
 
 ### reference
 * [op.yml](reference/op.yml/README.md)
-  * [expressions](reference/op.yml/expressions/README.md)
-    * [assignment](reference/op.yml/expressions/assignment.md)
-    * [value](reference/op.yml/expressions/value.md)
+  * [expressions](reference/op.yml/expressions.md)
   * [interpolation](reference/op.yml/interpolation.md)
   * [markdown](reference/op.yml/markdown.md)
   * [schema](reference/op.yml/schema/README.md)
