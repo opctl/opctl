@@ -49,7 +49,7 @@ run:
           --token="$(equinoxToken)" \
           -- -a github.com/opctl/opctl/cli
     dirs:
-      /go/src/github.com/opctl/opctl: srcDir
+      /go/src/github.com/opctl/opctl: $(srcDir)
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: '0'

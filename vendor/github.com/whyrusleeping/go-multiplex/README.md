@@ -1,6 +1,6 @@
 # go-multiplex
 
-A super simple stream muxing library compatible with [multiplex](http://github.com/maxogden/multiplex)
+A super simple stream muxing library implementing [mplex](https://github.com/libp2p/mplex/).
 
 ## Usage
 

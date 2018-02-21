@@ -87,7 +87,7 @@ func (hf _libP2PListener) Listen(
 
 	fmt.Println(
 		hf.cliColorer.Info(
-			"libP2PListener bound to %v w/ peer id %s",
+			"P2P listener bound to %v w/ peer id %s",
 			hf.listenAddr,
 			h.ID().Pretty(),
 		),
