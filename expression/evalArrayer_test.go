@@ -10,24 +10,24 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ = Context("EvalToObject", func() {
-	var _ = Context("EvalToObject", func() {
-		Context("expression is map[string]interface{}", func() {
+var _ = Context("EvalToArray", func() {
+	var _ = Context("EvalToArray", func() {
+		Context("expression is []interface{}", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedExpression := map[string]interface{}{"dummyName": "dummyValue"}
+				providedExpression := []interface{}{"arrayItem"}
 
-				objectUnderTest := _objectEvaluator{}
+				arrayUnderTest := _evalArrayer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.EvalToObject(
+				actualValue, actualErr := arrayUnderTest.EvalToArray(
 					map[string]*model.Value{},
 					providedExpression,
 					new(pkg.FakeHandle),
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Object: providedExpression}))
+				Expect(*actualValue).To(Equal(model.Value{Array: providedExpression}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -42,12 +42,12 @@ var _ = Context("EvalToObject", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _objectEvaluator{
+				arrayUnderTest := _evalArrayer{
 					interpolater: fakeInterpolater,
 				}
 
 				/* act */
-				objectUnderTest.EvalToObject(
+				arrayUnderTest.EvalToArray(
 					providedScope,
 					providedExpression,
 					providedPkgRef,
@@ -70,12 +70,12 @@ var _ = Context("EvalToObject", func() {
 					interpolateErr := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-					objectUnderTest := _objectEvaluator{
+					arrayUnderTest := _evalArrayer{
 						interpolater: fakeInterpolater,
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.EvalToObject(
+					_, actualErr := arrayUnderTest.EvalToArray(
 						map[string]*model.Value{},
 						"dummyExpression",
 						new(pkg.FakeHandle),
@@ -87,7 +87,7 @@ var _ = Context("EvalToObject", func() {
 				})
 			})
 			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call data.CoerceToObject w/ expected args & return result", func() {
+				It("should call data.CoerceToArray w/ expected args & return result", func() {
 					/* arrange */
 					fakeInterpolater := new(interpolater.Fake)
 
@@ -96,23 +96,23 @@ var _ = Context("EvalToObject", func() {
 
 					fakeData := new(data.Fake)
 
-					coercedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
-					fakeData.CoerceToObjectReturns(&coercedValue, nil)
+					coercedValue := model.Value{Array: []interface{}{"arrayItem"}}
+					fakeData.CoerceToArrayReturns(&coercedValue, nil)
 
-					objectUnderTest := _objectEvaluator{
+					arrayUnderTest := _evalArrayer{
 						data:         fakeData,
 						interpolater: fakeInterpolater,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.EvalToObject(
+					actualValue, actualErr := arrayUnderTest.EvalToArray(
 						map[string]*model.Value{},
 						"dummyExpression",
 						new(pkg.FakeHandle),
 					)
 
 					/* assert */
-					Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+					Expect(*fakeData.CoerceToArrayArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 					Expect(*actualValue).To(Equal(coercedValue))
 					Expect(actualErr).To(BeNil())

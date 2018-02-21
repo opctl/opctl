@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
@@ -19,7 +20,7 @@ var _ = Context("EvalToString", func() {
 
 				fakeData := new(data.Fake)
 
-				objectUnderTest := _stringEvaluator{
+				objectUnderTest := _evalStringer{
 					data: fakeData,
 				}
 
@@ -42,7 +43,7 @@ var _ = Context("EvalToString", func() {
 
 				fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
 
-				objectUnderTest := _stringEvaluator{
+				objectUnderTest := _evalStringer{
 					data: fakeData,
 				}
 
@@ -59,49 +60,121 @@ var _ = Context("EvalToString", func() {
 			})
 		})
 		Context("expression is map[string]interface{}", func() {
-			It("should call data.CoerceToString w/ expected args", func() {
+			It("should call evalObjectInitializerer.Eval w/ expected args", func() {
+
 				/* arrange */
-				providedExpression := map[string]interface{}{"dummyName": 2.2}
+				providedScope := map[string]*model.Value{"dummyName": {}}
+				providedExpression := map[string]interface{}{
+					"prop1Name": "prop1Value",
+				}
+				providedPkgRef := new(pkg.FakeHandle)
 
-				fakeData := new(data.Fake)
+				fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+				// err to trigger immediate return
+				evalErr := errors.New("evalErr")
+				fakeEvalObjectInitializerer.EvalReturns(map[string]interface{}{}, evalErr)
 
-				objectUnderTest := _stringEvaluator{
-					data: fakeData,
+				objectUnderTest := _evalStringer{
+					evalObjectInitializerer: fakeEvalObjectInitializerer,
 				}
 
 				/* act */
 				objectUnderTest.EvalToString(
-					map[string]*model.Value{},
+					providedScope,
 					providedExpression,
-					new(pkg.FakeHandle),
+					providedPkgRef,
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
-				Expect(*actualValue).To(Equal(model.Value{Object: providedExpression}))
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeEvalObjectInitializerer.EvalArgsForCall(0)
+
+				Expect(actualExpression).To(Equal(providedExpression))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+
 			})
-			It("should return expected result", func() {
-				/* arrange */
-				fakeData := new(data.Fake)
-				coercedValue := model.Value{Object: map[string]interface{}{}}
-				coerceToStringErr := errors.New("dummyError")
+			Context("evalObjectInitializerer.Eval errs", func() {
+				It("should return expected result", func() {
 
-				fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+					/* arrange */
+					providedExpression := map[string]interface{}{
+						"prop1Name": "prop1Value",
+					}
 
-				objectUnderTest := _stringEvaluator{
-					data: fakeData,
-				}
+					fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+					// err to trigger immediate return
+					evalErr := errors.New("evalErr")
+					fakeEvalObjectInitializerer.EvalReturns(map[string]interface{}{}, evalErr)
 
-				/* act */
-				actualValue, actualErr := objectUnderTest.EvalToString(
-					map[string]*model.Value{},
-					map[string]interface{}{},
-					new(pkg.FakeHandle),
-				)
+					expectedErr := fmt.Errorf("unable to evaluate %+v to string; error was %v", providedExpression, evalErr)
 
-				/* assert */
-				Expect(*actualValue).To(Equal(coercedValue))
-				Expect(actualErr).To(Equal(coerceToStringErr))
+					objectUnderTest := _evalStringer{
+						evalObjectInitializerer: fakeEvalObjectInitializerer,
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.EvalToString(
+						map[string]*model.Value{},
+						providedExpression,
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
+			Context("evalObjectInitializerer.Eval doesn't err", func() {
+				It("should call data.CoerceToString w/ expected args", func() {
+					/* arrange */
+					expectedObjectValue := map[string]interface{}{"dummyName": 2.2}
+
+					fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+					fakeEvalObjectInitializerer.EvalReturns(expectedObjectValue, nil)
+
+					fakeData := new(data.Fake)
+
+					objectUnderTest := _evalStringer{
+						data: fakeData,
+						evalObjectInitializerer: fakeEvalObjectInitializerer,
+					}
+
+					/* act */
+					objectUnderTest.EvalToString(
+						map[string]*model.Value{},
+						map[string]interface{}{},
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					actualValue := fakeData.CoerceToStringArgsForCall(0)
+					Expect(*actualValue).To(Equal(model.Value{Object: expectedObjectValue}))
+				})
+				It("should return expected result", func() {
+					/* arrange */
+					fakeData := new(data.Fake)
+					coercedValue := model.Value{Object: map[string]interface{}{}}
+					coerceToStringErr := errors.New("dummyError")
+
+					fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+
+					objectUnderTest := _evalStringer{
+						evalObjectInitializerer: new(fakeEvalObjectInitializerer),
+						data: fakeData,
+					}
+
+					/* act */
+					actualValue, actualErr := objectUnderTest.EvalToString(
+						map[string]*model.Value{},
+						map[string]interface{}{},
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(*actualValue).To(Equal(coercedValue))
+					Expect(actualErr).To(Equal(coerceToStringErr))
+				})
 			})
 		})
 		Context("expression is []interface{}", func() {
@@ -111,7 +184,7 @@ var _ = Context("EvalToString", func() {
 
 				fakeData := new(data.Fake)
 
-				objectUnderTest := _stringEvaluator{
+				objectUnderTest := _evalStringer{
 					data: fakeData,
 				}
 
@@ -134,7 +207,7 @@ var _ = Context("EvalToString", func() {
 
 				fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
 
-				objectUnderTest := _stringEvaluator{
+				objectUnderTest := _evalStringer{
 					data: fakeData,
 				}
 
@@ -161,7 +234,7 @@ var _ = Context("EvalToString", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _stringEvaluator{
+				objectUnderTest := _evalStringer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -189,7 +262,7 @@ var _ = Context("EvalToString", func() {
 					interpolateErr := errors.New("dummyError")
 					fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-					objectUnderTest := _stringEvaluator{
+					objectUnderTest := _evalStringer{
 						interpolater: fakeInterpolater,
 					}
 
@@ -218,7 +291,7 @@ var _ = Context("EvalToString", func() {
 			coercedValue := model.Value{String: new(string)}
 			fakeData.CoerceToStringReturns(&coercedValue, nil)
 
-			objectUnderTest := _stringEvaluator{
+			objectUnderTest := _evalStringer{
 				data:         fakeData,
 				interpolater: fakeInterpolater,
 			}

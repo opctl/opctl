@@ -7,7 +7,7 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type stringEvaluator interface {
+type evalStringer interface {
 	// EvalToString evaluates an expression to a string value
 	EvalToString(
 		scope map[string]*model.Value,
@@ -16,19 +16,21 @@ type stringEvaluator interface {
 	) (*model.Value, error)
 }
 
-func newStringEvaluator() stringEvaluator {
-	return _stringEvaluator{
+func newEvalStringer() evalStringer {
+	return _evalStringer{
+		evalObjectInitializerer: newEvalObjectInitializerer(),
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _stringEvaluator struct {
+type _evalStringer struct {
+	evalObjectInitializerer
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (ets _stringEvaluator) EvalToString(
+func (es _evalStringer) EvalToString(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -39,14 +41,23 @@ func (ets _stringEvaluator) EvalToString(
 	case float64:
 		value = &model.Value{Number: &expression}
 	case map[string]interface{}:
-		value = &model.Value{Object: expression}
+		objectValue, err := es.evalObjectInitializerer.Eval(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
+		}
+
+		value = &model.Value{Object: objectValue}
 	case []interface{}:
 		value = &model.Value{Array: expression}
 	case string:
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
-			stringValue, err := ets.interpolater.Interpolate(
+			stringValue, err := es.interpolater.Interpolate(
 				expression,
 				scope,
 				pkgHandle,
@@ -61,5 +72,5 @@ func (ets _stringEvaluator) EvalToString(
 		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
-	return ets.data.CoerceToString(value)
+	return es.data.CoerceToString(value)
 }

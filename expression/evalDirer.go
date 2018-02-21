@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type dirEvaluator interface {
+type evalDirer interface {
 	// EvalToDir evaluates an expression to a dir value
 	//
 	// Examples of valid dir expressions:
@@ -25,19 +25,19 @@ type dirEvaluator interface {
 	) (*model.Value, error)
 }
 
-func newDirEvaluator() dirEvaluator {
-	return _dirEvaluator{
+func newEvalDirer() evalDirer {
+	return _evalDirer{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _dirEvaluator struct {
+type _evalDirer struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (etd _dirEvaluator) EvalToDir(
+func (ed _evalDirer) EvalToDir(
 	scope map[string]*model.Value,
 	expression string,
 	pkgHandle model.PkgHandle,
@@ -51,7 +51,7 @@ func (etd _dirEvaluator) EvalToDir(
 	} else if strings.HasPrefix(expression, "/") {
 
 		// deprecated pkg fs ref
-		deprecatedPkgFsRefPath, err := etd.interpolater.Interpolate(
+		deprecatedPkgFsRefPath, err := ed.interpolater.Interpolate(
 			expression,
 			scope,
 			pkgHandle,
@@ -72,7 +72,7 @@ func (etd _dirEvaluator) EvalToDir(
 		if strings.HasPrefix(refExpression, "/") {
 
 			// pkg fs ref
-			pkgFsRef, err := etd.interpolater.Interpolate(refExpression, scope, pkgHandle)
+			pkgFsRef, err := ed.interpolater.Interpolate(refExpression, scope, pkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 			}
@@ -83,7 +83,7 @@ func (etd _dirEvaluator) EvalToDir(
 
 			// dir scope ref w/ deprecated path
 			deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-			deprecatedPath, err := etd.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
+			deprecatedPath, err := ed.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
 			}
@@ -95,7 +95,7 @@ func (etd _dirEvaluator) EvalToDir(
 
 			// scope ref w/ path
 			pathExpression := refParts[1]
-			path, err := etd.interpolater.Interpolate(pathExpression, scope, pkgHandle)
+			path, err := ed.interpolater.Interpolate(pathExpression, scope, pkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 			}
@@ -109,7 +109,7 @@ func (etd _dirEvaluator) EvalToDir(
 		if len(expression) > possibleRefCloserIndex+1 {
 			// deprecated path
 			deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-			deprecatedPath, err := etd.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
+			deprecatedPath, err := ed.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
 			if nil != err {
 				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
 			}

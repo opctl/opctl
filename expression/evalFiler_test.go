@@ -21,7 +21,7 @@ var _ = Context("EvalToFile", func() {
 
 			fakeData := new(data.Fake)
 
-			objectUnderTest := _fileEvaluator{
+			objectUnderTest := _evalFiler{
 				data: fakeData,
 			}
 
@@ -47,7 +47,7 @@ var _ = Context("EvalToFile", func() {
 
 			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
 
-			objectUnderTest := _fileEvaluator{
+			objectUnderTest := _evalFiler{
 				data: fakeData,
 			}
 
@@ -65,54 +65,128 @@ var _ = Context("EvalToFile", func() {
 		})
 	})
 	Context("expression is map[string]interface{}", func() {
-		It("should call data.CoerceToFile w/ expected args", func() {
+		It("should call evalObjectInitializerer.Eval w/ expected args", func() {
+
 			/* arrange */
-			providedExpression := map[string]interface{}{"dummyName": 2.2}
-			providedScratchDir := "dummyScratchDir"
+			providedScope := map[string]*model.Value{"dummyName": {}}
+			providedExpression := map[string]interface{}{
+				"prop1Name": "prop1Value",
+			}
+			providedPkgRef := new(pkg.FakeHandle)
 
-			fakeData := new(data.Fake)
+			fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+			// err to trigger immediate return
+			evalErr := errors.New("evalErr")
+			fakeEvalObjectInitializerer.EvalReturns(map[string]interface{}{}, evalErr)
 
-			objectUnderTest := _fileEvaluator{
-				data: fakeData,
+			objectUnderTest := _evalFiler{
+				evalObjectInitializerer: fakeEvalObjectInitializerer,
 			}
 
 			/* act */
 			objectUnderTest.EvalToFile(
-				map[string]*model.Value{},
+				providedScope,
 				providedExpression,
-				new(pkg.FakeHandle),
-				providedScratchDir,
-			)
-
-			/* assert */
-			actualValue,
-				actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
-			Expect(*actualValue).To(Equal(model.Value{Object: providedExpression}))
-			Expect(actualScratchDir).To(Equal(providedScratchDir))
-		})
-		It("should return expected result", func() {
-			/* arrange */
-			fakeData := new(data.Fake)
-			coercedValue := model.Value{Object: map[string]interface{}{}}
-			coerceToFileErr := errors.New("dummyError")
-
-			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
-
-			objectUnderTest := _fileEvaluator{
-				data: fakeData,
-			}
-
-			/* act */
-			actualValue, actualErr := objectUnderTest.EvalToFile(
-				map[string]*model.Value{},
-				map[string]interface{}{},
-				new(pkg.FakeHandle),
+				providedPkgRef,
 				"dummyScratchDir",
 			)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(coercedValue))
-			Expect(actualErr).To(Equal(coerceToFileErr))
+			actualExpression,
+				actualScope,
+				actualPkgRef := fakeEvalObjectInitializerer.EvalArgsForCall(0)
+
+			Expect(actualExpression).To(Equal(providedExpression))
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualPkgRef).To(Equal(providedPkgRef))
+
+		})
+		Context("evalObjectInitializerer.Eval errs", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				providedExpression := map[string]interface{}{
+					"prop1Name": "prop1Value",
+				}
+
+				fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+				// err to trigger immediate return
+				evalErr := errors.New("evalErr")
+				fakeEvalObjectInitializerer.EvalReturns(map[string]interface{}{}, evalErr)
+
+				expectedErr := fmt.Errorf("unable to evaluate %+v to string; error was %v", providedExpression, evalErr)
+
+				objectUnderTest := _evalFiler{
+					evalObjectInitializerer: fakeEvalObjectInitializerer,
+				}
+
+				/* act */
+				_, actualErr := objectUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					providedExpression,
+					new(pkg.FakeHandle),
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("evalObjectInitializerer.Eval doesn't err", func() {
+			It("should call data.CoerceToFile w/ expected args", func() {
+				/* arrange */
+				providedScratchDir := "dummyScratchDir"
+
+				fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
+				expectedObjectValue := map[string]interface{}{"dummyName": 2.2}
+				fakeEvalObjectInitializerer.EvalReturns(expectedObjectValue, nil)
+
+				fakeData := new(data.Fake)
+
+				objectUnderTest := _evalFiler{
+					evalObjectInitializerer: fakeEvalObjectInitializerer,
+					data: fakeData,
+				}
+
+				/* act */
+				objectUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					map[string]interface{}{},
+					new(pkg.FakeHandle),
+					providedScratchDir,
+				)
+
+				/* assert */
+				actualValue,
+					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Object: expectedObjectValue}))
+				Expect(actualScratchDir).To(Equal(providedScratchDir))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				fakeData := new(data.Fake)
+				coercedValue := model.Value{Object: map[string]interface{}{}}
+				coerceToFileErr := errors.New("dummyError")
+
+				fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+
+				objectUnderTest := _evalFiler{
+					evalObjectInitializerer: new(fakeEvalObjectInitializerer),
+					data: fakeData,
+				}
+
+				/* act */
+				actualValue, actualErr := objectUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					map[string]interface{}{},
+					new(pkg.FakeHandle),
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(coercedValue))
+				Expect(actualErr).To(Equal(coerceToFileErr))
+			})
 		})
 	})
 	Context("expression is []interface{}", func() {
@@ -123,7 +197,7 @@ var _ = Context("EvalToFile", func() {
 
 			fakeData := new(data.Fake)
 
-			objectUnderTest := _fileEvaluator{
+			objectUnderTest := _evalFiler{
 				data: fakeData,
 			}
 
@@ -149,7 +223,7 @@ var _ = Context("EvalToFile", func() {
 
 			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
 
-			objectUnderTest := _fileEvaluator{
+			objectUnderTest := _evalFiler{
 				data: fakeData,
 			}
 
@@ -180,7 +254,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -218,7 +292,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateErr.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -248,7 +322,7 @@ var _ = Context("EvalToFile", func() {
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 						pkg:          new(pkg.Fake),
 					}
@@ -282,7 +356,7 @@ var _ = Context("EvalToFile", func() {
 
 				fakeData := new(data.Fake)
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					data: fakeData,
 				}
 
@@ -311,7 +385,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -347,7 +421,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateError.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -377,7 +451,7 @@ var _ = Context("EvalToFile", func() {
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 						pkg:          new(pkg.Fake),
 					}
@@ -412,7 +486,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -453,7 +527,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateErr.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -481,7 +555,7 @@ var _ = Context("EvalToFile", func() {
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -515,7 +589,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -556,7 +630,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateErr.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -585,7 +659,7 @@ var _ = Context("EvalToFile", func() {
 					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -617,7 +691,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns(interpolatedPath, errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -654,7 +728,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateErr.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -687,7 +761,7 @@ var _ = Context("EvalToFile", func() {
 					coerceErr := errors.New("dummyErr")
 					fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						data:         fakeData,
 						interpolater: fakeInterpolater,
 					}
@@ -722,7 +796,7 @@ var _ = Context("EvalToFile", func() {
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns(interpolatedPath, errors.New("dummyError"))
 
-				objectUnderTest := _fileEvaluator{
+				objectUnderTest := _evalFiler{
 					interpolater: fakeInterpolater,
 				}
 
@@ -759,7 +833,7 @@ var _ = Context("EvalToFile", func() {
 						interpolateErr.Error(),
 					)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						interpolater: fakeInterpolater,
 					}
 
@@ -792,7 +866,7 @@ var _ = Context("EvalToFile", func() {
 					coerceErr := errors.New("dummyErr")
 					fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
 
-					objectUnderTest := _fileEvaluator{
+					objectUnderTest := _evalFiler{
 						data:         fakeData,
 						interpolater: fakeInterpolater,
 					}
@@ -820,7 +894,7 @@ var _ = Context("EvalToFile", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			providedExpression := struct{}{}
-			objectUnderTest := _fileEvaluator{}
+			objectUnderTest := _evalFiler{}
 
 			/* act */
 			actualValue, actualErr := objectUnderTest.EvalToFile(

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type fileEvaluator interface {
+type evalFiler interface {
 	// EvalToFile evaluates an expression to a file value
 	// expression must be a type supported by data.CoerceToFile
 	// scratchDir will be used as the containing dir if file creation necessary
@@ -31,8 +31,9 @@ type fileEvaluator interface {
 	) (*model.Value, error)
 }
 
-func newFileEvaluator() fileEvaluator {
-	return _fileEvaluator{
+func newEvalFiler() evalFiler {
+	return _evalFiler{
+		evalObjectInitializerer: newEvalObjectInitializerer(),
 		data:         data.New(),
 		interpolater: interpolater.New(),
 		io:           iio.New(),
@@ -41,7 +42,8 @@ func newFileEvaluator() fileEvaluator {
 	}
 }
 
-type _fileEvaluator struct {
+type _evalFiler struct {
+	evalObjectInitializerer
 	data         data.Data
 	interpolater interpolater.Interpolater
 	io           iio.IIO
@@ -49,7 +51,7 @@ type _fileEvaluator struct {
 	pkg          pkg.Pkg
 }
 
-func (etf _fileEvaluator) EvalToFile(
+func (ef _evalFiler) EvalToFile(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
@@ -57,21 +59,30 @@ func (etf _fileEvaluator) EvalToFile(
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case float64:
-		return etf.data.CoerceToFile(&model.Value{Number: &expression}, scratchDir)
+		return ef.data.CoerceToFile(&model.Value{Number: &expression}, scratchDir)
 	case map[string]interface{}:
-		return etf.data.CoerceToFile(&model.Value{Object: expression}, scratchDir)
+		objectValue, err := ef.evalObjectInitializerer.Eval(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
+		}
+
+		return ef.data.CoerceToFile(&model.Value{Object: objectValue}, scratchDir)
 	case []interface{}:
-		return etf.data.CoerceToFile(&model.Value{Array: expression}, scratchDir)
+		return ef.data.CoerceToFile(&model.Value{Array: expression}, scratchDir)
 	case string:
 
 		// this block is gross but it's due to the deprecated syntax we support
 		possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			// scope ref w/out path
-			return etf.data.CoerceToFile(ref, scratchDir)
+			return ef.data.CoerceToFile(ref, scratchDir)
 		} else if strings.HasPrefix(expression, "/") {
 			// deprecated pkg fs ref
-			deprecatedPkgFsRefPath, err := etf.interpolater.Interpolate(
+			deprecatedPkgFsRefPath, err := ef.interpolater.Interpolate(
 				expression,
 				scope,
 				pkgHandle,
@@ -92,7 +103,7 @@ func (etf _fileEvaluator) EvalToFile(
 			if strings.HasPrefix(refExpression, "/") && len(expression) == possibleRefCloserIndex+1 {
 
 				// pkg fs ref
-				pkgFsRef, err := etf.interpolater.Interpolate(refExpression, scope, pkgHandle)
+				pkgFsRef, err := ef.interpolater.Interpolate(refExpression, scope, pkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
@@ -105,7 +116,7 @@ func (etf _fileEvaluator) EvalToFile(
 
 				// dir scope ref w/ deprecated path
 				deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-				deprecatedPath, err := etf.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
+				deprecatedPath, err := ef.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
 				}
@@ -117,7 +128,7 @@ func (etf _fileEvaluator) EvalToFile(
 
 				// dir scope ref w/ path
 				pathExpression := refParts[1]
-				path, err := etf.interpolater.Interpolate(pathExpression, scope, pkgHandle)
+				path, err := ef.interpolater.Interpolate(pathExpression, scope, pkgHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 				}
@@ -131,11 +142,11 @@ func (etf _fileEvaluator) EvalToFile(
 
 		}
 		// plain string
-		stringValue, err := etf.interpolater.Interpolate(expression, scope, pkgHandle)
+		stringValue, err := ef.interpolater.Interpolate(expression, scope, pkgHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
 		}
-		return etf.data.CoerceToFile(&model.Value{String: &stringValue}, scratchDir)
+		return ef.data.CoerceToFile(&model.Value{String: &stringValue}, scratchDir)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to file", expression)

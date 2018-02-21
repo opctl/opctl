@@ -7,42 +7,42 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type objectEvaluator interface {
-	// EvalToObject evaluates an expression to a object value
-	// expression must be a type supported by data.CoerceToObject
-	EvalToObject(
+type evalArrayer interface {
+	// EvalToArray evaluates an expression to a array value
+	// expression must be a type supported by data.CoerceToArray
+	EvalToArray(
 		scope map[string]*model.Value,
 		expression interface{},
 		pkgHandle model.PkgHandle,
 	) (*model.Value, error)
 }
 
-func newObjectEvaluator() objectEvaluator {
-	return _objectEvaluator{
+func newEvalArrayer() evalArrayer {
+	return _evalArrayer{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _objectEvaluator struct {
+type _evalArrayer struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (eto _objectEvaluator) EvalToObject(
+func (ea _evalArrayer) EvalToArray(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
-	case map[string]interface{}:
-		return &model.Value{Object: expression}, nil
+	case []interface{}:
+		return &model.Value{Array: expression}, nil
 	case string:
 		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
-			stringValue, err := eto.interpolater.Interpolate(
+			stringValue, err := ea.interpolater.Interpolate(
 				expression,
 				scope,
 				pkgHandle,
@@ -52,8 +52,7 @@ func (eto _objectEvaluator) EvalToObject(
 			}
 			value = &model.Value{String: &stringValue}
 		}
-		return eto.data.CoerceToObject(value)
+		return ea.data.CoerceToArray(value)
 	}
-
-	return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)
+	return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
 }

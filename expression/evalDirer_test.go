@@ -22,7 +22,7 @@ var _ = Context("EvalToDir", func() {
 				scopeName: &scopeValue,
 			}
 
-			objectUnderTest := _dirEvaluator{}
+			objectUnderTest := _evalDirer{}
 
 			/* act */
 			actualValue, actualErr := objectUnderTest.EvalToDir(
@@ -47,7 +47,7 @@ var _ = Context("EvalToDir", func() {
 			// err to trigger immediate return
 			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-			objectUnderTest := _dirEvaluator{
+			objectUnderTest := _evalDirer{
 				interpolater: fakeInterpolater,
 			}
 
@@ -82,7 +82,7 @@ var _ = Context("EvalToDir", func() {
 					interpolateError.Error(),
 				)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -106,7 +106,7 @@ var _ = Context("EvalToDir", func() {
 				fakeInterpolater := new(interpolater.Fake)
 				fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -143,7 +143,7 @@ var _ = Context("EvalToDir", func() {
 			// err to trigger immediate return
 			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-			objectUnderTest := _dirEvaluator{
+			objectUnderTest := _evalDirer{
 				interpolater: fakeInterpolater,
 			}
 
@@ -183,7 +183,7 @@ var _ = Context("EvalToDir", func() {
 					interpolateErr.Error(),
 				)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -210,7 +210,7 @@ var _ = Context("EvalToDir", func() {
 				fakeInterpolater := new(interpolater.Fake)
 				fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -243,7 +243,7 @@ var _ = Context("EvalToDir", func() {
 			// err to trigger immediate return
 			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-			objectUnderTest := _dirEvaluator{
+			objectUnderTest := _evalDirer{
 				interpolater: fakeInterpolater,
 			}
 
@@ -283,7 +283,7 @@ var _ = Context("EvalToDir", func() {
 					interpolateErr.Error(),
 				)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -310,7 +310,7 @@ var _ = Context("EvalToDir", func() {
 				fakeInterpolater := new(interpolater.Fake)
 				fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
 
-				objectUnderTest := _dirEvaluator{
+				objectUnderTest := _evalDirer{
 					interpolater: fakeInterpolater,
 				}
 

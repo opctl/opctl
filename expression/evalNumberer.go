@@ -7,42 +7,42 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type arrayEvaluator interface {
-	// EvalToArray evaluates an expression to a array value
-	// expression must be a type supported by data.CoerceToArray
-	EvalToArray(
+type evalNumberer interface {
+	// EvalToNumber evaluates an expression to a number value
+	// expression must be a type supported by data.CoerceToNumber
+	EvalToNumber(
 		scope map[string]*model.Value,
 		expression interface{},
 		pkgHandle model.PkgHandle,
 	) (*model.Value, error)
 }
 
-func newArrayEvaluator() arrayEvaluator {
-	return _arrayEvaluator{
+func newEvalNumberer() evalNumberer {
+	return _evalNumberer{
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
-type _arrayEvaluator struct {
+type _evalNumberer struct {
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
 
-func (eto _arrayEvaluator) EvalToArray(
+func (en _evalNumberer) EvalToNumber(
 	scope map[string]*model.Value,
 	expression interface{},
 	pkgHandle model.PkgHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
-	case []interface{}:
-		return &model.Value{Array: expression}, nil
+	case float64:
+		return &model.Value{Number: &expression}, nil
 	case string:
 		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref
 		} else {
-			stringValue, err := eto.interpolater.Interpolate(
+			stringValue, err := en.interpolater.Interpolate(
 				expression,
 				scope,
 				pkgHandle,
@@ -50,9 +50,11 @@ func (eto _arrayEvaluator) EvalToArray(
 			if nil != err {
 				return nil, err
 			}
+
 			value = &model.Value{String: &stringValue}
 		}
-		return eto.data.CoerceToArray(value)
+		return en.data.CoerceToNumber(value)
 	}
-	return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
+
+	return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)
 }

@@ -16,7 +16,7 @@ var _ = Context("EvalToNumber", func() {
 			/* arrange */
 			providedExpression := 3.3
 
-			objectUnderTest := _numberEvaluator{}
+			objectUnderTest := _evalNumberer{}
 
 			/* act */
 			actualNumber, actualErr := objectUnderTest.EvalToNumber(
@@ -41,7 +41,7 @@ var _ = Context("EvalToNumber", func() {
 			// err to trigger immediate return
 			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
-			objectUnderTest := _numberEvaluator{
+			objectUnderTest := _evalNumberer{
 				interpolater: fakeInterpolater,
 			}
 
@@ -69,7 +69,7 @@ var _ = Context("EvalToNumber", func() {
 				interpolateErr := errors.New("dummyError")
 				fakeInterpolater.InterpolateReturns("", interpolateErr)
 
-				objectUnderTest := _numberEvaluator{
+				objectUnderTest := _evalNumberer{
 					interpolater: fakeInterpolater,
 				}
 
@@ -98,7 +98,7 @@ var _ = Context("EvalToNumber", func() {
 				coercedValue := model.Value{Number: new(float64)}
 				fakeData.CoerceToNumberReturns(&coercedValue, nil)
 
-				objectUnderTest := _numberEvaluator{
+				objectUnderTest := _evalNumberer{
 					data:         fakeData,
 					interpolater: fakeInterpolater,
 				}
