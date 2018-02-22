@@ -22,7 +22,7 @@ run:
             echo "starting server"
             http-server
         dirs:
-          /src: srcDir
+          /src: $(srcDir)
         ports:
           '8080': '8080'
         image: { ref: 'node:9.3.0-alpine' }

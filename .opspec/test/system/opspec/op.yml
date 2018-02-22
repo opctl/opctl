@@ -9,7 +9,7 @@ run:
   container:
     image: { ref: 'opctl/opctl:alpha' }
     dirs:
-      /src: srcDir
+      /src: $(srcDir)
       /sharness:
     files:
       /cmd.sh:

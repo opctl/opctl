@@ -41,6 +41,6 @@ run:
             echo "running gitbook build"
             gitbook build . ../build/docs
         dirs:
-          /src: srcDir
+          /src: $(srcDir)
         image: { ref: 'node:9.3.0-alpine' }
         workDir: /src/docs

@@ -66,7 +66,7 @@
   branch = "master"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
-  revision = "1cd648d7842a04376ce45765c0d5e4415be41b9b"
+  revision = "2be2f12b358dc57d70b8f501b00be450192efbc3"
 
 [[projects]]
   name = "github.com/coreos/go-semver"
@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "c5e7537d2305c1855f95422f08ca844d05a17aa2"
+  revision = "0076343b29f508a5deb06861c0d85748659f8881"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -721,7 +721,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "6e1fd8caa297c639d67478ece5eeca63b324a0d6"
+  revision = "5ef020bbdb2104c0070bf5860000fd829cf4836b"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -843,7 +843,7 @@
   branch = "master"
   name = "github.com/whyrusleeping/go-multiplex"
   packages = ["."]
-  revision = "6f42821828c4a9e7af62df120a91a0b678d51984"
+  revision = "70f38504e7e46774d757f2c50b9b74ba010b802c"
 
 [[projects]]
   branch = "master"
@@ -942,7 +942,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "650f4a345ab4e5b245a3034b110ebc7299e68186"
+  revision = "432090b8f568c018896cd8a0fb0345872bbac6ce"
 
 [[projects]]
   branch = "master"
@@ -999,7 +999,7 @@
     "unicode/cldr",
     "unicode/norm"
   ]
-  revision = "4e4a3210bb54bb31f6ab2cdca2edcc0b50c420c1"
+  revision = "9e2b64d659da1afe07ce1c9c1dfefc09d188f21e"
 
 [[projects]]
   name = "gopkg.in/src-d/go-billy.v4"

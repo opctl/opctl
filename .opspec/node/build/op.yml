@@ -22,8 +22,12 @@ run:
         outputs: { srcDir, coverprofile }
     - op:
         pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.1 }
-        inputs: { dotGitDir: $(srcDir)/.git }
+        inputs: { dotGitDir: $(srcDir/.git) }
         outputs: { gitCommit: commit }
     - op:
         pkg: { ref: github.com/opspec-pkgs/codecov.upload#1.1.0 }
-        inputs: { gitBranch, gitCommit, token: b432a3b8-8220-4c1d-bcee-db76e68d0128, report: $(coverprofile) }
+        inputs:
+          gitBranch:
+          gitCommit:
+          token: b432a3b8-8220-4c1d-bcee-db76e68d0128
+          report: $(coverprofile)
