@@ -33,6 +33,7 @@ type evalFiler interface {
 
 func newEvalFiler() evalFiler {
 	return _evalFiler{
+		evalArrayInitializerer:  newEvalArrayInitializerer(),
 		evalObjectInitializerer: newEvalObjectInitializerer(),
 		data:         data.New(),
 		interpolater: interpolater.New(),
@@ -43,6 +44,7 @@ func newEvalFiler() evalFiler {
 }
 
 type _evalFiler struct {
+	evalArrayInitializerer
 	evalObjectInitializerer
 	data         data.Data
 	interpolater interpolater.Interpolater
@@ -67,12 +69,21 @@ func (ef _evalFiler) EvalToFile(
 			pkgHandle,
 		)
 		if nil != err {
-			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
+			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
 		}
 
 		return ef.data.CoerceToFile(&model.Value{Object: objectValue}, scratchDir)
 	case []interface{}:
-		return ef.data.CoerceToFile(&model.Value{Array: expression}, scratchDir)
+		arrayValue, err := ef.evalArrayInitializerer.Eval(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
+		}
+
+		return ef.data.CoerceToFile(&model.Value{Array: arrayValue}, scratchDir)
 	case string:
 
 		// this block is gross but it's due to the deprecated syntax we support

@@ -80,4 +80,8 @@ ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
 
 [[override]]
   branch = "master"
+  name = "github.com/multiformats/go-multihash"
+
+[[override]]
+  branch = "master"
   name = "github.com/satori/go.uuid"

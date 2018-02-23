@@ -114,7 +114,7 @@ var _ = Context("EvalToFile", func() {
 				evalErr := errors.New("evalErr")
 				fakeEvalObjectInitializerer.EvalReturns(map[string]interface{}{}, evalErr)
 
-				expectedErr := fmt.Errorf("unable to evaluate %+v to string; error was %v", providedExpression, evalErr)
+				expectedErr := fmt.Errorf("unable to evaluate %+v to file; error was %v", providedExpression, evalErr)
 
 				objectUnderTest := _evalFiler{
 					evalObjectInitializerer: fakeEvalObjectInitializerer,
@@ -190,54 +190,128 @@ var _ = Context("EvalToFile", func() {
 		})
 	})
 	Context("expression is []interface{}", func() {
-		It("should call data.CoerceToFile w/ expected args", func() {
+		It("should call evalArrayInitializerer.Eval w/ expected args", func() {
+
 			/* arrange */
-			providedExpression := []interface{}{"dummyName"}
-			providedScratchDir := "dummyScratchDir"
+			providedScope := map[string]*model.Value{"dummyName": {}}
+			providedExpression := []interface{}{
+				"item1",
+			}
+			providedPkgRef := new(pkg.FakeHandle)
 
-			fakeData := new(data.Fake)
+			fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+			// err to trigger immediate return
+			evalErr := errors.New("evalErr")
+			fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
 
-			objectUnderTest := _evalFiler{
-				data: fakeData,
+			arrayUnderTest := _evalFiler{
+				evalArrayInitializerer: fakeEvalArrayInitializerer,
 			}
 
 			/* act */
-			objectUnderTest.EvalToFile(
-				map[string]*model.Value{},
+			arrayUnderTest.EvalToFile(
+				providedScope,
 				providedExpression,
-				new(pkg.FakeHandle),
-				providedScratchDir,
-			)
-
-			/* assert */
-			actualValue,
-				actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
-			Expect(*actualValue).To(Equal(model.Value{Array: providedExpression}))
-			Expect(actualScratchDir).To(Equal(providedScratchDir))
-		})
-		It("should return expected result", func() {
-			/* arrange */
-			fakeData := new(data.Fake)
-			coercedValue := model.Value{Array: []interface{}{}}
-			coerceToFileErr := errors.New("dummyError")
-
-			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
-
-			objectUnderTest := _evalFiler{
-				data: fakeData,
-			}
-
-			/* act */
-			actualValue, actualErr := objectUnderTest.EvalToFile(
-				map[string]*model.Value{},
-				[]interface{}{},
-				new(pkg.FakeHandle),
+				providedPkgRef,
 				"dummyScratchDir",
 			)
 
 			/* assert */
-			Expect(*actualValue).To(Equal(coercedValue))
-			Expect(actualErr).To(Equal(coerceToFileErr))
+			actualExpression,
+				actualScope,
+				actualPkgRef := fakeEvalArrayInitializerer.EvalArgsForCall(0)
+
+			Expect(actualExpression).To(Equal(providedExpression))
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualPkgRef).To(Equal(providedPkgRef))
+
+		})
+		Context("evalArrayInitializerer.Eval errs", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				providedExpression := []interface{}{
+					"item1",
+				}
+
+				fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+				// err to trigger immediate return
+				evalErr := errors.New("evalErr")
+				fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
+
+				expectedErr := fmt.Errorf("unable to evaluate %+v to file; error was %v", providedExpression, evalErr)
+
+				arrayUnderTest := _evalFiler{
+					evalArrayInitializerer: fakeEvalArrayInitializerer,
+				}
+
+				/* act */
+				_, actualErr := arrayUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					providedExpression,
+					new(pkg.FakeHandle),
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("evalArrayInitializerer.Eval doesn't err", func() {
+			It("should call data.CoerceToFile w/ expected args", func() {
+				/* arrange */
+				providedScratchDir := "dummyScratchDir"
+
+				fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+				expectedArrayValue := []interface{}{"item1"}
+				fakeEvalArrayInitializerer.EvalReturns(expectedArrayValue, nil)
+
+				fakeData := new(data.Fake)
+
+				arrayUnderTest := _evalFiler{
+					evalArrayInitializerer: fakeEvalArrayInitializerer,
+					data: fakeData,
+				}
+
+				/* act */
+				arrayUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					[]interface{}{},
+					new(pkg.FakeHandle),
+					providedScratchDir,
+				)
+
+				/* assert */
+				actualValue,
+					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Array: expectedArrayValue}))
+				Expect(actualScratchDir).To(Equal(providedScratchDir))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				fakeData := new(data.Fake)
+				coercedValue := model.Value{Array: []interface{}{}}
+				coerceToFileErr := errors.New("dummyError")
+
+				fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+
+				arrayUnderTest := _evalFiler{
+					evalArrayInitializerer: new(fakeEvalArrayInitializerer),
+					data: fakeData,
+				}
+
+				/* act */
+				actualValue, actualErr := arrayUnderTest.EvalToFile(
+					map[string]*model.Value{},
+					[]interface{}{},
+					new(pkg.FakeHandle),
+					"dummyScratchDir",
+				)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(coercedValue))
+				Expect(actualErr).To(Equal(coerceToFileErr))
+			})
 		})
 	})
 	Context("expression is string", func() {

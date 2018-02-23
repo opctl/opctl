@@ -8,7 +8,7 @@ import (
 )
 
 type evalArrayer interface {
-	// EvalToArray evaluates an expression to a array value
+	// EvalToArray evaluates an expression to an array value
 	// expression must be a type supported by data.CoerceToArray
 	EvalToArray(
 		scope map[string]*model.Value,
@@ -19,12 +19,14 @@ type evalArrayer interface {
 
 func newEvalArrayer() evalArrayer {
 	return _evalArrayer{
+		evalArrayInitializerer: newEvalArrayInitializerer(),
 		data:         data.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
 type _evalArrayer struct {
+	evalArrayInitializerer
 	data         data.Data
 	interpolater interpolater.Interpolater
 }
@@ -36,7 +38,16 @@ func (ea _evalArrayer) EvalToArray(
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case []interface{}:
-		return &model.Value{Array: expression}, nil
+		arrayValue, err := ea.evalArrayInitializerer.Eval(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %+v to array; error was %v", expression, err)
+		}
+
+		return &model.Value{Array: arrayValue}, nil
 	case string:
 		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {

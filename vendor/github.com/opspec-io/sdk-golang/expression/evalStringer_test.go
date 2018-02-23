@@ -178,49 +178,121 @@ var _ = Context("EvalToString", func() {
 			})
 		})
 		Context("expression is []interface{}", func() {
-			It("should call data.CoerceToString w/ expected args", func() {
+			It("should call evalArrayInitializerer.Eval w/ expected args", func() {
+
 				/* arrange */
-				providedExpression := []interface{}{"dummyName"}
+				providedScope := map[string]*model.Value{"dummyName": {}}
+				providedExpression := []interface{}{
+					"item1",
+				}
+				providedPkgRef := new(pkg.FakeHandle)
 
-				fakeData := new(data.Fake)
+				fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+				// err to trigger immediate return
+				evalErr := errors.New("evalErr")
+				fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
 
-				objectUnderTest := _evalStringer{
-					data: fakeData,
+				arrayUnderTest := _evalStringer{
+					evalArrayInitializerer: fakeEvalArrayInitializerer,
 				}
 
 				/* act */
-				objectUnderTest.EvalToString(
-					map[string]*model.Value{},
+				arrayUnderTest.EvalToString(
+					providedScope,
 					providedExpression,
-					new(pkg.FakeHandle),
+					providedPkgRef,
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
-				Expect(*actualValue).To(Equal(model.Value{Array: providedExpression}))
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeEvalArrayInitializerer.EvalArgsForCall(0)
+
+				Expect(actualExpression).To(Equal(providedExpression))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+
 			})
-			It("should return expected result", func() {
-				/* arrange */
-				fakeData := new(data.Fake)
-				coercedValue := model.Value{Array: []interface{}{}}
-				coerceToStringErr := errors.New("dummyError")
+			Context("evalArrayInitializerer.Eval errs", func() {
+				It("should return expected result", func() {
 
-				fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+					/* arrange */
+					providedExpression := []interface{}{
+						"item1",
+					}
 
-				objectUnderTest := _evalStringer{
-					data: fakeData,
-				}
+					fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+					// err to trigger immediate return
+					evalErr := errors.New("evalErr")
+					fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
 
-				/* act */
-				actualValue, actualErr := objectUnderTest.EvalToString(
-					map[string]*model.Value{},
-					[]interface{}{},
-					new(pkg.FakeHandle),
-				)
+					expectedErr := fmt.Errorf("unable to evaluate %+v to string; error was %v", providedExpression, evalErr)
 
-				/* assert */
-				Expect(*actualValue).To(Equal(coercedValue))
-				Expect(actualErr).To(Equal(coerceToStringErr))
+					arrayUnderTest := _evalStringer{
+						evalArrayInitializerer: fakeEvalArrayInitializerer,
+					}
+
+					/* act */
+					_, actualErr := arrayUnderTest.EvalToString(
+						map[string]*model.Value{},
+						providedExpression,
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
+			Context("evalArrayInitializerer.Eval doesn't err", func() {
+				It("should call data.CoerceToString w/ expected args", func() {
+					/* arrange */
+					expectedArrayValue := []interface{}{"item1"}
+
+					fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+					fakeEvalArrayInitializerer.EvalReturns(expectedArrayValue, nil)
+
+					fakeData := new(data.Fake)
+
+					arrayUnderTest := _evalStringer{
+						data: fakeData,
+						evalArrayInitializerer: fakeEvalArrayInitializerer,
+					}
+
+					/* act */
+					arrayUnderTest.EvalToString(
+						map[string]*model.Value{},
+						[]interface{}{},
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					actualValue := fakeData.CoerceToStringArgsForCall(0)
+					Expect(*actualValue).To(Equal(model.Value{Array: expectedArrayValue}))
+				})
+				It("should return expected result", func() {
+					/* arrange */
+					fakeData := new(data.Fake)
+					coercedValue := model.Value{Array: []interface{}{}}
+					coerceToStringErr := errors.New("dummyError")
+
+					fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+
+					arrayUnderTest := _evalStringer{
+						evalArrayInitializerer: new(fakeEvalArrayInitializerer),
+						data: fakeData,
+					}
+
+					/* act */
+					actualValue, actualErr := arrayUnderTest.EvalToString(
+						map[string]*model.Value{},
+						[]interface{}{},
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(*actualValue).To(Equal(coercedValue))
+					Expect(actualErr).To(Equal(coerceToStringErr))
+				})
 			})
 		})
 		Context("expression is string", func() {
