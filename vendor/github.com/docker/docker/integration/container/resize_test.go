@@ -1,4 +1,4 @@
-package container
+package container // import "github.com/docker/docker/integration/container"
 
 import (
 	"context"
@@ -7,10 +7,9 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/network"
 	req "github.com/docker/docker/integration-cli/request"
-	"github.com/docker/docker/integration/util/request"
+	"github.com/docker/docker/integration/internal/container"
+	"github.com/docker/docker/integration/internal/request"
 	"github.com/docker/docker/internal/testutil"
 	"github.com/gotestyourself/gotestyourself/poll"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +21,7 @@ func TestResize(t *testing.T) {
 	client := request.NewAPIClient(t)
 	ctx := context.Background()
 
-	cID := runSimpleContainer(ctx, t, client, "")
+	cID := container.Run(t, ctx, client)
 
 	poll.WaitOn(t, containerIsInState(ctx, client, cID, "running"), poll.WithDelay(100*time.Millisecond))
 
@@ -38,7 +37,7 @@ func TestResizeWithInvalidSize(t *testing.T) {
 	client := request.NewAPIClient(t)
 	ctx := context.Background()
 
-	cID := runSimpleContainer(ctx, t, client, "")
+	cID := container.Run(t, ctx, client)
 
 	poll.WaitOn(t, containerIsInState(ctx, client, cID, "running"), poll.WithDelay(100*time.Millisecond))
 
@@ -53,9 +52,7 @@ func TestResizeWhenContainerNotStarted(t *testing.T) {
 	client := request.NewAPIClient(t)
 	ctx := context.Background()
 
-	cID := runSimpleContainer(ctx, t, client, "", func(config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig) {
-		config.Cmd = []string{"echo"}
-	})
+	cID := container.Run(t, ctx, client, container.WithCmd("echo"))
 
 	poll.WaitOn(t, containerIsInState(ctx, client, cID, "exited"), poll.WithDelay(100*time.Millisecond))
 

@@ -14,7 +14,7 @@ func New() (
 	err error,
 ) {
 
-	dockerClient, err := dockerClientPkg.NewEnvClient()
+	dockerClient, err := dockerClientPkg.NewClientWithOpts(dockerClientPkg.FromEnv)
 	if nil != err {
 		return
 	}
