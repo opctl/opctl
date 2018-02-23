@@ -1,6 +1,7 @@
 package expression
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
@@ -13,22 +14,96 @@ import (
 var _ = Context("EvalToArray", func() {
 	var _ = Context("EvalToArray", func() {
 		Context("expression is []interface{}", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				providedExpression := []interface{}{"arrayItem"}
 
-				arrayUnderTest := _evalArrayer{}
+			It("should call evalArrayInitializer.Eval w/ expected args", func() {
+
+				/* arrange */
+				providedScope := map[string]*model.Value{"dummyName": {}}
+				providedExpression := []interface{}{
+					"item1",
+				}
+				providedPkgRef := new(pkg.FakeHandle)
+
+				fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+				// err to trigger immediate return
+				evalErr := errors.New("evalErr")
+				fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
+
+				arrayUnderTest := _evalArrayer{
+					evalArrayInitializerer: fakeEvalArrayInitializerer,
+				}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.EvalToArray(
-					map[string]*model.Value{},
+				arrayUnderTest.EvalToArray(
+					providedScope,
 					providedExpression,
-					new(pkg.FakeHandle),
+					providedPkgRef,
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Array: providedExpression}))
-				Expect(actualErr).To(BeNil())
+				actualExpression,
+					actualScope,
+					actualPkgRef := fakeEvalArrayInitializerer.EvalArgsForCall(0)
+
+				Expect(actualExpression).To(Equal(providedExpression))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
+
+			})
+			Context("evalArrayInitializer.Eval errs", func() {
+				It("should return expected result", func() {
+
+					/* arrange */
+					providedExpression := []interface{}{
+						"item1",
+					}
+
+					fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+					// err to trigger immediate return
+					evalErr := errors.New("evalErr")
+					fakeEvalArrayInitializerer.EvalReturns([]interface{}{}, evalErr)
+
+					expectedErr := fmt.Errorf("unable to evaluate %+v to array; error was %v", providedExpression, evalErr)
+
+					arrayUnderTest := _evalArrayer{
+						evalArrayInitializerer: fakeEvalArrayInitializerer,
+					}
+
+					/* act */
+					_, actualErr := arrayUnderTest.EvalToArray(
+						map[string]*model.Value{},
+						providedExpression,
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+
+				})
+
+			})
+			Context("evalArrayInitializer.Eval doesn't err", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
+					expectedResult := []interface{}{"arrayItem"}
+					fakeEvalArrayInitializerer.EvalReturns(expectedResult, nil)
+
+					arrayUnderTest := _evalArrayer{
+						evalArrayInitializerer: fakeEvalArrayInitializerer,
+					}
+
+					/* act */
+					actualValue, actualErr := arrayUnderTest.EvalToArray(
+						map[string]*model.Value{},
+						[]interface{}{},
+						new(pkg.FakeHandle),
+					)
+
+					/* assert */
+					Expect(*actualValue).To(Equal(model.Value{Array: expectedResult}))
+					Expect(actualErr).To(BeNil())
+				})
 			})
 		})
 		Context("expression is string", func() {
