@@ -14,6 +14,43 @@ import (
 
 var _ = Context("evalObjectInitializerer", func() {
 	Context("Eval", func() {
+		Context("expression contains shorthand property", func() {
+			It("should call json.Marshal w/ expected args", func() {
+				/* arrange */
+				shortHandPropName := "prop1Name"
+				providedExpression := map[string]interface{}{
+					shortHandPropName: nil,
+				}
+
+				expectedExpression := map[string]interface{}{
+					shortHandPropName: fmt.Sprintf(
+						"%v%v%v",
+						interpolater.RefStart,
+						shortHandPropName,
+						interpolater.RefEnd),
+				}
+
+				fakeJSON := new(ijson.Fake)
+				// err to trigger immediate return
+				fakeJSON.MarshalReturns([]byte{}, errors.New("dummyError"))
+
+				objectUnderTest := _evalObjectInitializerer{
+					json: fakeJSON,
+				}
+
+				/* act */
+				objectUnderTest.Eval(
+					providedExpression,
+					map[string]*model.Value{},
+					new(pkg.FakeHandle),
+				)
+
+				/* assert */
+				actualExpression := fakeJSON.MarshalArgsForCall(0)
+
+				Expect(actualExpression).To(Equal(expectedExpression))
+			})
+		})
 		It("should call json.Marshal w/ expected args", func() {
 			/* arrange */
 			providedExpression := map[string]interface{}{

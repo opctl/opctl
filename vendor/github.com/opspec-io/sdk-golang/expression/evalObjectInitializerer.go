@@ -39,12 +39,23 @@ func (eoi _evalObjectInitializerer) Eval(
 	scope map[string]*model.Value,
 	pkgHandle model.PkgHandle,
 ) (map[string]interface{}, error) {
-	objectBytes, err := eoi.json.Marshal(expression)
+
+	// expand shorthand properties w/out mutating original (maps passed by reference in go)
+	expressionWithExpandedShorthandProps := map[string]interface{}{}
+	for propName, propValue := range expression {
+		if nil == propValue {
+			expressionWithExpandedShorthandProps[propName] = fmt.Sprintf("%v%v%v", interpolater.RefStart, propName, interpolater.RefEnd)
+		} else {
+			expressionWithExpandedShorthandProps[propName] = propValue
+		}
+	}
+
+	objectBytes, err := eoi.json.Marshal(expressionWithExpandedShorthandProps)
 	if nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as objectInitializer; error was %v", expression, err)
 	}
 
-	objectJson, err := eoi.interpolater.Interpolate(
+	objectJSON, err := eoi.interpolater.Interpolate(
 		string(objectBytes),
 		scope,
 		pkgHandle,
@@ -54,7 +65,7 @@ func (eoi _evalObjectInitializerer) Eval(
 	}
 
 	object := map[string]interface{}{}
-	if err := eoi.json.Unmarshal([]byte(objectJson), &object); nil != err {
+	if err := eoi.json.Unmarshal([]byte(objectJSON), &object); nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as objectInitializer; error was %v", expression, err)
 	}
 
