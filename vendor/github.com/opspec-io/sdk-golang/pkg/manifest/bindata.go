@@ -83,7 +83,7 @@ func githubComOpspecIoSpecSpecOpYmlSchemaJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "github.com/opspec-io/spec/spec/op.yml.schema.json", size: 29339, mode: os.FileMode(420), modTime: time.Unix(1511328885, 0)}
+	info := bindataFileInfo{name: "github.com/opspec-io/spec/spec/op.yml.schema.json", size: 29339, mode: os.FileMode(420), modTime: time.Unix(1517802393, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -47,13 +47,18 @@ func (oc _OpCall) Interpret(
 		return nil, err
 	}
 
+	childCallId, err := oc.uniqueStringFactory.Construct()
+	if nil != err {
+		return nil, err
+	}
+
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: &model.DCGBaseCall{
 			RootOpId:  rootOpId,
 			PkgHandle: pkgHandle,
 		},
 		OpId:         opId,
-		ChildCallId:  oc.uuid.NewV4().String(),
+		ChildCallId:  childCallId,
 		ChildCallSCG: opManifest.Run,
 	}
 

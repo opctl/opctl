@@ -3,6 +3,7 @@ package core
 
 import "github.com/opspec-io/sdk-golang/model"
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/containerprovider"
@@ -15,9 +16,12 @@ import (
 
 type Core interface {
 	GetEventStream(
+		ctx context.Context,
 		req *model.GetEventStreamReq,
-		eventChannel chan *model.Event,
-	) error
+	) (
+		<-chan model.Event,
+		<-chan error,
+	)
 
 	KillOp(
 		req model.KillOpReq,

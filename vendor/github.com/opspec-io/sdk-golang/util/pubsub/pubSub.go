@@ -5,31 +5,39 @@ package pubsub
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"sync"
 	"time"
 )
 
 func New(
-	eventRepo EventRepo,
+	eventStore EventStore,
 ) PubSub {
 	return &pubSub{
-		eventRepo:          eventRepo,
-		subscriptions:      map[chan *model.Event]chan *model.Event{},
-		subscriptionsMutex: sync.RWMutex{},
+		eventStore:    eventStore,
+		subscriptions: map[chan model.Event]subscriptionInfo{},
 	}
 }
 
 type EventPublisher interface {
 	Publish(
-		event *model.Event,
+		event model.Event,
 	)
 }
 
 type EventSubscriber interface {
+	// Subscribe returns a filtered event stream
+	// events will be sent to the subscription until either:
+	//  - ctx is canceled
+	//  - returned channel is blocked for 10 seconds
+	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
-		filter *model.EventFilter,
-		eventChannel chan *model.Event,
+		ctx context.Context,
+		filter model.EventFilter,
+	) (
+		<-chan model.Event,
+		<-chan error,
 	)
 }
 
@@ -39,57 +47,121 @@ type PubSub interface {
 }
 
 type pubSub struct {
-	eventRepo EventRepo
-	// format: output : input
-	subscriptions      map[chan *model.Event]chan *model.Event
+	eventStore EventStore
+	// subscriptions is a map where key is a channel for the subscription & value is info about the subscription
+	subscriptions      map[chan model.Event]subscriptionInfo
 	subscriptionsMutex sync.RWMutex
 }
 
-// O(n) complexity (n being topics subscribed to); thread safe
-func (this *pubSub) Subscribe(
-	filter *model.EventFilter,
-	channel chan *model.Event,
+func (ps *pubSub) Subscribe(
+	ctx context.Context,
+	filter model.EventFilter,
+) (
+	<-chan model.Event,
+	<-chan error,
 ) {
-	this.subscriptionsMutex.Lock()
-	defer this.subscriptionsMutex.Unlock()
-	this.subscriptions[channel] = make(chan *model.Event, 10000)
+	dstEventChannel := make(chan model.Event, 1000)
+	dstErrChannel := make(chan error, 1)
 
 	go func() {
-		for _, event := range this.eventRepo.List(filter) {
-			this.deliverEvent(event, channel)
+		defer close(dstEventChannel)
+		defer close(dstErrChannel)
+
+		publishEventChannel := make(chan model.Event, 1000)
+		defer ps.gcSubscription(publishEventChannel)
+
+		subscriptionInfo := subscriptionInfo{
+			Filter: filter,
+			// Done is closed when the subscription is garbage collected
+			Done: make(chan struct{}, 1),
 		}
-		for event := range this.subscriptions[channel] {
-			RootOpId := getEventRootOpId(event)
-			if !isRootOpIdExcludedByFilter(RootOpId, filter) {
-				this.deliverEvent(event, channel)
+
+		ps.subscriptionsMutex.Lock()
+		ps.subscriptions[publishEventChannel] = subscriptionInfo
+		ps.subscriptionsMutex.Unlock()
+
+		// old events
+		eventStoreEventChannel, eventStoreErrChannel := ps.eventStore.List(ctx, filter)
+		for event := range eventStoreEventChannel {
+			select {
+			case dstEventChannel <- event:
+			case <-ctx.Done():
+				return
+			case <-time.After(time.Second * 10):
+				// evict the subscriber (they didn't accept the event within 10 seconds)
+				return
+			}
+		}
+
+		if err := <-eventStoreErrChannel; nil != err {
+			dstErrChannel <- err
+			return
+		}
+
+		// new events
+		for event := range publishEventChannel {
+			select {
+			case dstEventChannel <- event:
+			case <-ctx.Done():
+				return
+			case <-time.After(time.Second * 10):
+				// evict the subscriber (they didn't accept the event within 10 seconds)
+				return
 			}
 		}
 	}()
+
+	return dstEventChannel, dstErrChannel
 }
 
-func (this *pubSub) deliverEvent(
-	event *model.Event,
-	channel chan *model.Event,
+func (ps *pubSub) gcSubscription(
+	channel chan model.Event,
 ) {
-	select {
-	case channel <- event:
-	case <-time.After(time.Second * 5):
-		this.subscriptionsMutex.Lock()
-		delete(this.subscriptions, channel)
-		this.subscriptionsMutex.Unlock()
-		return
+	ps.subscriptionsMutex.RLock()
+	close(ps.subscriptions[channel].Done)
+	ps.subscriptionsMutex.RUnlock()
+
+	ps.subscriptionsMutex.Lock()
+	delete(ps.subscriptions, channel)
+	ps.subscriptionsMutex.Unlock()
+}
+
+// O(n) complexity (n being number of existing subscriptions); thread safe
+func (ps *pubSub) Publish(
+	event model.Event,
+) {
+	ps.eventStore.Add(event)
+
+	ps.subscriptionsMutex.RLock()
+	defer ps.subscriptionsMutex.RUnlock()
+
+	for publishEventChannel, subscriptionInfo := range ps.subscriptions {
+
+		RootOpId := getEventRootOpId(event)
+		if !isRootOpIdExcludedByFilter(RootOpId, subscriptionInfo.Filter) {
+
+			// use go routine because this publishEventChannel could be blocked
+			// for valid reasons such as replaying events from event store.
+			//
+			// In such a case, we don't want to hold up delivery to any
+			// other subscriptions
+			go ps.publishToSubscription(publishEventChannel, subscriptionInfo, event)
+
+		}
+
 	}
 }
 
-// O(1) complexity; thread safe
-func (this *pubSub) Publish(
-	event *model.Event,
+/**
+publishToSubscription publishes event to subscription
+*/
+func (ps *pubSub) publishToSubscription(
+	subscriptionChannel chan model.Event,
+	subscriptionInfo subscriptionInfo,
+	event model.Event,
 ) {
-	this.eventRepo.Add(event)
-
-	this.subscriptionsMutex.RLock()
-	defer this.subscriptionsMutex.RUnlock()
-	for _, subscriptionInput := range this.subscriptions {
-		subscriptionInput <- event
+	select {
+	case <-subscriptionInfo.Done:
+	case subscriptionChannel <- event:
 	}
 }

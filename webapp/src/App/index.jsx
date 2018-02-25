@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import Operations from './views/Operations';
-import Events from "./views/Events";
+import Events from './views/Events';
+import Environment from './views/Environment';
 import {HashRouter} from 'react-router-dom'
 import TopMenu from './TopMenu';
 import SideMenu from './SideMenu';
 import {Route} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify';
-import PkgBrowser from './PkgBrowser';
+import PkgView from './views/Pkg';
 
 // shared vendor css
 import './bootstrap.css';
@@ -46,7 +47,8 @@ export default class Page extends Component {
             }}>
             <Route exact path="/" component={Operations}/>
             <Route path="/events" component={Events}/>
-            <Route path="/pkg" component={PkgBrowser}/>
+            <Route path="/pkg" component={PkgView}/>
+            <Route path="/environment" component={Environment}/>
           </div>
         </div>
       </HashRouter>

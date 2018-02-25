@@ -1,8 +1,7 @@
 package handler
 
 import (
-	"encoding/json"
-	"github.com/gorilla/websocket"
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/http"
 	"strings"
@@ -21,7 +20,7 @@ func (hdlr _handler) events_streams(
 
 	defer conn.Close()
 
-	req := &model.GetEventStreamReq{Filter: &model.EventFilter{}}
+	req := &model.GetEventStreamReq{Filter: model.EventFilter{}}
 	if sinceString := httpReq.URL.Query().Get("since"); "" != sinceString {
 		sinceTime, err := time.Parse(time.RFC3339, sinceString)
 		if nil != err {
@@ -36,16 +35,17 @@ func (hdlr _handler) events_streams(
 		req.Filter.Roots = rootsArray
 	}
 
-	eventChannel := make(chan *model.Event)
+	// ack is opt in; enables client to apply back pressure to server so it doesn't get flooded
+	_, isAckRequested := httpReq.URL.Query()["ack"]
 
-	err = hdlr.core.GetEventStream(
+	ctx, cancel := context.WithCancel(httpReq.Context())
+	defer cancel()
+
+	// @TODO: handle err channel
+	eventChannel, _ := hdlr.core.GetEventStream(
+		ctx,
 		req,
-		eventChannel,
 	)
-	if nil != err {
-		http.Error(httpResp, err.Error(), http.StatusBadRequest)
-		return
-	}
 
 	for {
 		event, isEventChannelOpen := <-eventChannel
@@ -54,16 +54,18 @@ func (hdlr _handler) events_streams(
 			return
 		}
 
-		eventBytes, err := json.Marshal(event)
+		err := conn.WriteJSON(event)
 		if nil != err {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = conn.WriteMessage(websocket.TextMessage, eventBytes)
-		if nil != err {
-			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
-			return
+		if isAckRequested {
+			_, _, err := conn.ReadMessage()
+			if nil != err {
+				http.Error(httpResp, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 	}
 

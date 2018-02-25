@@ -15,6 +15,11 @@ export default ({ isCollapsed }) => {
           operations
         </NavLink>
       </li>
+      <li className='menu-item'>
+        <NavLink to='/environment' exact={true}>
+          environment
+        </NavLink>
+      </li>
     </ul>
   );
 }

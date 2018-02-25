@@ -40,4 +40,6 @@ run:
         outputs: { coverprofile }
     - op:
         pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.0.0 }
-        inputs: { coverprofile, minCoverage: 57 }
+        inputs:
+          coverprofile:
+          minCoverage: 51

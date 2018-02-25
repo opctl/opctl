@@ -29,7 +29,11 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	opId := this.uniqueStringFactory.Construct()
+	opId, err := this.uniqueStringFactory.Construct()
+	if nil != err {
+		// end run immediately on any error
+		return "", err
+	}
 
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{

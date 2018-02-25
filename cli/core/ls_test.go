@@ -39,7 +39,7 @@ var _ = Context("pkgLs", func() {
 			})
 		})
 		Context("ios.Getwd doesn't error", func() {
-			It("should call pkg.List w/ expected args", func() {
+			It("should call pkg.ListOps w/ expected args", func() {
 				/* arrange */
 				fakePkg := new(pkg.Fake)
 
@@ -61,14 +61,14 @@ var _ = Context("pkgLs", func() {
 
 				/* assert */
 
-				Expect(fakePkg.ListArgsForCall(0)).To(Equal(expectedPath))
+				Expect(fakePkg.ListOpsArgsForCall(0)).To(Equal(expectedPath))
 			})
-			Context("pkg.List errors", func() {
+			Context("pkg.ListOps errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
 					fakePkg := new(pkg.Fake)
 					expectedError := errors.New("dummyError")
-					fakePkg.ListReturns([]*model.PkgManifest{}, expectedError)
+					fakePkg.ListOpsReturns([]*model.PkgManifest{}, expectedError)
 
 					fakeCliExiter := new(cliexiter.Fake)
 

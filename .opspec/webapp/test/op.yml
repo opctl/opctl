@@ -13,7 +13,7 @@ run:
           - |
             echo "installing deps"
             yarn install -q
-        image: { ref: 'node:9.3.0-alpine' }
+        image: { ref: 'node:9.3.0' }
         dirs:
           /src: $(srcDir)
         workDir: /src

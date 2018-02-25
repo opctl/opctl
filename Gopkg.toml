@@ -31,20 +31,12 @@ ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
   name = "github.com/equinox-io/equinox"
 
 [[constraint]]
-  name = "github.com/fatih/color"
-  version = "1.5.0"
-
-[[constraint]]
+  branch = "master"
   name = "github.com/ghodss/yaml"
-  version = "1.0.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/golang-interfaces/encoding-ijson"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/golang-interfaces/iioutil"
 
 [[constraint]]
   branch = "master"
@@ -81,3 +73,15 @@ ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
 [[constraint]]
   name = "github.com/rakyll/statik"
   version = "0.1.1"
+
+[[override]]
+  branch = "master"
+  name = "github.com/multiformats/go-multiaddr"
+
+[[override]]
+  branch = "master"
+  name = "github.com/multiformats/go-multihash"
+
+[[override]]
+  branch = "master"
+  name = "github.com/satori/go.uuid"

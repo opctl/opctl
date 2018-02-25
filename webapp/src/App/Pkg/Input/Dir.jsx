@@ -1,5 +1,5 @@
 import React from 'react';
-import Input from './Input';
+import Input from '../../Input';
 
 export default ({dir, name, onValid, pkgRef, value}) =>
   <Input

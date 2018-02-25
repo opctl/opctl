@@ -2,23 +2,26 @@
 package core
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
-	GetEventStreamStub        func(req *model.GetEventStreamReq, eventChannel chan *model.Event) error
+	GetEventStreamStub        func(ctx context.Context, req *model.GetEventStreamReq) (<-chan model.Event, <-chan error)
 	getEventStreamMutex       sync.RWMutex
 	getEventStreamArgsForCall []struct {
-		req          *model.GetEventStreamReq
-		eventChannel chan *model.Event
+		ctx context.Context
+		req *model.GetEventStreamReq
 	}
 	getEventStreamReturns struct {
-		result1 error
+		result1 <-chan model.Event
+		result2 <-chan error
 	}
 	getEventStreamReturnsOnCall map[int]struct {
-		result1 error
+		result1 <-chan model.Event
+		result2 <-chan error
 	}
 	KillOpStub        func(req model.KillOpReq)
 	killOpMutex       sync.RWMutex
@@ -56,22 +59,22 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) GetEventStream(req *model.GetEventStreamReq, eventChannel chan *model.Event) error {
+func (fake *Fake) GetEventStream(ctx context.Context, req *model.GetEventStreamReq) (<-chan model.Event, <-chan error) {
 	fake.getEventStreamMutex.Lock()
 	ret, specificReturn := fake.getEventStreamReturnsOnCall[len(fake.getEventStreamArgsForCall)]
 	fake.getEventStreamArgsForCall = append(fake.getEventStreamArgsForCall, struct {
-		req          *model.GetEventStreamReq
-		eventChannel chan *model.Event
-	}{req, eventChannel})
-	fake.recordInvocation("GetEventStream", []interface{}{req, eventChannel})
+		ctx context.Context
+		req *model.GetEventStreamReq
+	}{ctx, req})
+	fake.recordInvocation("GetEventStream", []interface{}{ctx, req})
 	fake.getEventStreamMutex.Unlock()
 	if fake.GetEventStreamStub != nil {
-		return fake.GetEventStreamStub(req, eventChannel)
+		return fake.GetEventStreamStub(ctx, req)
 	}
 	if specificReturn {
-		return ret.result1
+		return ret.result1, ret.result2
 	}
-	return fake.getEventStreamReturns.result1
+	return fake.getEventStreamReturns.result1, fake.getEventStreamReturns.result2
 }
 
 func (fake *Fake) GetEventStreamCallCount() int {
@@ -80,29 +83,32 @@ func (fake *Fake) GetEventStreamCallCount() int {
 	return len(fake.getEventStreamArgsForCall)
 }
 
-func (fake *Fake) GetEventStreamArgsForCall(i int) (*model.GetEventStreamReq, chan *model.Event) {
+func (fake *Fake) GetEventStreamArgsForCall(i int) (context.Context, *model.GetEventStreamReq) {
 	fake.getEventStreamMutex.RLock()
 	defer fake.getEventStreamMutex.RUnlock()
-	return fake.getEventStreamArgsForCall[i].req, fake.getEventStreamArgsForCall[i].eventChannel
+	return fake.getEventStreamArgsForCall[i].ctx, fake.getEventStreamArgsForCall[i].req
 }
 
-func (fake *Fake) GetEventStreamReturns(result1 error) {
+func (fake *Fake) GetEventStreamReturns(result1 <-chan model.Event, result2 <-chan error) {
 	fake.GetEventStreamStub = nil
 	fake.getEventStreamReturns = struct {
-		result1 error
-	}{result1}
+		result1 <-chan model.Event
+		result2 <-chan error
+	}{result1, result2}
 }
 
-func (fake *Fake) GetEventStreamReturnsOnCall(i int, result1 error) {
+func (fake *Fake) GetEventStreamReturnsOnCall(i int, result1 <-chan model.Event, result2 <-chan error) {
 	fake.GetEventStreamStub = nil
 	if fake.getEventStreamReturnsOnCall == nil {
 		fake.getEventStreamReturnsOnCall = make(map[int]struct {
-			result1 error
+			result1 <-chan model.Event
+			result2 <-chan error
 		})
 	}
 	fake.getEventStreamReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
+		result1 <-chan model.Event
+		result2 <-chan error
+	}{result1, result2}
 }
 
 func (fake *Fake) KillOp(req model.KillOpReq) {

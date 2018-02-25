@@ -21,7 +21,7 @@ type Inputs interface {
 		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
 		parentPkgHandle model.PkgHandle,
-		pkgRef string,
+		pkgPath string,
 		scope map[string]*model.Value,
 		opScratchDir string,
 	) (map[string]*model.Value, []error)

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
@@ -46,22 +47,24 @@ var _ = Context("serialCaller", func() {
 
 			fakePubSub := new(pubsub.Fake)
 			subscribeCallIndex := 0
-			fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 				defer func() {
 					subscribeCallIndex++
 				}()
-				eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+				eventChannel := make(chan model.Event, 100)
+				eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+				return eventChannel, make(chan error)
 			}
 
 			fakeCaller := new(fakeCaller)
 
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			uniqueStringCallIndex := 0
-			fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+			fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 				defer func() {
 					uniqueStringCallIndex++
 				}()
-				return fmt.Sprintf("%v", uniqueStringCallIndex)
+				return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 			}
 
 			objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
@@ -147,22 +150,24 @@ var _ = Context("serialCaller", func() {
 
 					fakePubSub := new(pubsub.Fake)
 					subscribeCallIndex := 0
-					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						defer func() {
 							subscribeCallIndex++
 						}()
-						eventChannel <- &model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+						eventChannel := make(chan model.Event, 100)
+						eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+						return eventChannel, make(chan error)
 					}
 
 					fakeCaller := new(fakeCaller)
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
 					uniqueStringCallIndex := 0
-					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {
 							uniqueStringCallIndex++
 						}()
-						return fmt.Sprintf("%v", uniqueStringCallIndex)
+						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
 					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
@@ -220,28 +225,30 @@ var _ = Context("serialCaller", func() {
 
 					fakePubSub := new(pubsub.Fake)
 					subscribeCallIndex := 0
-					fakePubSub.SubscribeStub = func(filter *model.EventFilter, eventChannel chan *model.Event) {
+					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
 						defer func() {
 							subscribeCallIndex++
 						}()
-						eventChannel <- &model.Event{
+						eventChannel := make(chan model.Event, 100)
+						eventChannel <- model.Event{
 							ContainerExited: &model.ContainerExitedEvent{
 								RootOpId:    providedRootOpId,
 								ContainerId: fmt.Sprintf("%v", subscribeCallIndex),
 								Outputs:     firstChildOutputs,
 							},
 						}
+						return eventChannel, make(chan error)
 					}
 
 					fakeCaller := new(fakeCaller)
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
 					uniqueStringCallIndex := 0
-					fakeUniqueStringFactory.ConstructStub = func() (uniqueString string) {
+					fakeUniqueStringFactory.ConstructStub = func() (string, error) {
 						defer func() {
 							uniqueStringCallIndex++
 						}()
-						return fmt.Sprintf("%v", uniqueStringCallIndex)
+						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
 					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)

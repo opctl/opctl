@@ -1,142 +1,177 @@
-import React, { Component } from 'react';
-import { AutoSizer } from 'react-virtualized';
+import React, {PureComponent} from 'react';
+import {AutoSizer} from 'react-virtualized';
+import {HotKeys} from 'react-hotkeys';
 import Header from './Header'
 import Inputs from '../../../Pkg/Inputs'
-import EventBrowser from '../../../EventBrowser'
-import { Modal, ModalBody } from 'reactstrap';
-import opspecNodeApiClient from '../../../../utils/clients/opspecNodeApi';
-import { toast } from 'react-toastify';
+import EventStream from '../../../EventStream'
+import {Modal, ModalBody} from 'reactstrap';
+import Input from '../../../Input';
+import eventStore from '../../../../core/eventStore';
+import reactClickOutside from 'react-click-outside';
+import './index.css';
 
-export default class Item extends Component {
-    args = this.props.args;
-    state = {
-        isConfigurationVisible: false,
-        isKillable: false,
-        opId: this.props.opId
-    };
+class Item extends PureComponent {
+  args = this.props.args;
+  state = {
+    name: this.props.name || this.props.pkgRef,
+  };
 
-    toggleConfigurationModal = () => {
-        this.setState(prevState => ({ isConfigurationVisible: !prevState.isConfigurationVisible }));
-    };
+  ensureEventStreamClosed = () => {
+    if (this.eventStreamCloser) this.eventStreamCloser();
+  };
 
-    handleInvalid = (name) => {
-        delete this.args[name];
+  toggleConfigurationModal = () => {
+    this.setState(prevState => ({isConfigurationVisible: !prevState.isConfigurationVisible}));
+  };
 
-        this.props.onConfigured({ args: this.args });
-    };
+  // this method is required by react-click-outside
+  handleClickOutside() {
+    this.setState({isSelected: false});
+  }
 
-    isStartable = () => Object.keys(this.props.pkg.inputs || []).length === Object.keys(this.args).length
+  handleSelected = () => {
+    this.setState({isSelected: true});
+  };
 
-    handleValid = (name, value) => {
-        this.args[name] = value;
+  handleInvalidArg = (name) => {
+    delete this.args[name];
 
-        this.props.onConfigured({ args: this.args });
-    };
+    this.props.onConfigured({args: this.args});
+  };
 
-    kill = () => {
-        opspecNodeApiClient.op_kill({
-            opId: this.props.opId
-        })
-            .then(() => {
-                this.props.onConfigured({ opId: null });
-                this.setState({ isKillable: false })
-            })
-            .catch(error => {
-                toast.error(error.message);
-            });
-    };
+  handleValidArg = (name, value) => {
+    this.args[name] = value;
 
-    processEventStream = ({ opId }) => {
-        opspecNodeApiClient.event_stream_get({
-            filter: {
-                roots: [opId],
-            },
-            onEvent: event => {
-                if (event.opStarted) {
-                    this.setState({ isKillable: true });
-                }
-                if (event.opEnded && event.opEnded.opId === opId) {
-                    this.setState({
-                        isKillable: false,
-                        outputs: event.opEnded.outputs,
-                    });
-                }
-            },
-        })
-    };
+    this.props.onConfigured({args: this.args});
+  };
 
-    start = () => {
-        const args = Object.entries(this.props.pkg.inputs || [])
-            .reduce((args, [name, param]) => {
-                if (param.array) args[name] = { array: this.args[name] };
-                if (param.dir) args[name] = { dir: this.args[name] };
-                if (param.file) args[name] = { file: this.args[name] };
-                if (param.number) args[name] = { number: this.args[name] };
-                if (param.object) args[name] = { object: this.args[name] };
-                if (param.socket) args[name] = { socket: this.args[name] };
-                if (param.string) args[name] = { string: this.args[name] };
-                return args;
-            }, {});
+  handleNameChanged = (name) => {
+    this.setState({name});
+    this.props.onConfigured({name});
+  };
 
-        opspecNodeApiClient.op_start({
-            args,
-            pkg: {
-                ref: this.props.pkgRef,
-            }
-        })
-            .then(opId => {
-                this.props.onConfigured({ opId });
-                this.processEventStream({ opId: this.props.opId });
-            })
-            .catch(error => {
-                toast.error(error.message);
-            });
-    };
+  processEventStream = ({opId}) => {
+    this.eventStreamCloser = eventStore.getStream({
+      filter: {
+        roots: [opId],
+      },
+      onEvent: event => {
+        if (event.opStarted) {
+          this.setState({isKillable: true});
+        }
+        if (event.opEnded && event.opEnded.opId === opId) {
+          this.setState({
+            isKillable: false,
+            outputs: event.opEnded.outputs,
+          });
+        }
+      },
+    })
+  };
 
-    componentWillMount() {
-        this.processEventStream({ opId: this.props.opId });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.opId !== this.props.opId) {
+      this.ensureEventStreamClosed();
+      this.processEventStream({opId: nextProps.opId});
     }
+  }
 
-    render() {
-        return (
-            <AutoSizer>
-                {({ height, width }) => (
-                    <div style={{ height, width, border: 'dashed 3px #ececec' }}>
-                        <Header
-                            isKillable={this.state.isKillable}
-                            isStartable={this.isStartable()}
-                            onConfigure={this.toggleConfigurationModal}
-                            onStart={this.start}
-                            onKill={this.kill}
-                            onDelete={this.props.onDelete}
-                            pkgRef={this.props.pkgRef}
-                        />
-                        <Modal
-                            isOpen={this.state.isConfigurationVisible}
-                            toggle={this.toggleConfigurationModal}
-                        >
-                            <ModalBody>
-                                <Inputs
-                                    value={this.props.pkg.inputs}
-                                    onInvalid={this.handleInvalid}
-                                    onValid={this.handleValid}
-                                    pkgRef={this.props.pkgRef}
-                                    values={this.args}
-                                />
-                            </ModalBody>
-                        </Modal>
-                        <div style={{ marginTop: '37px', height: 'calc(100% - 37px)', overflowY: 'auto' }}>
-                            {
-                                this.props.opId
-                                    ?
-                                    <EventBrowser key={this.props.opId} filter={{ roots: [this.props.opId] }} />
-                                    :
-                                    null
-                            }
-                        </div>
-                    </div>
-                )}
-            </AutoSizer>
-        );
+  componentWillMount() {
+    if (this.props.opId) {
+      this.processEventStream({opId: this.props.opId});
     }
+  }
+
+  componentWillUnmount() {
+    this.ensureEventStreamClosed();
+  }
+
+  render() {
+    return (
+      <AutoSizer>
+        {({height, width}) => (
+          <HotKeys
+            keyMap={{
+              del: 'del',
+              kill: 'ctrl+c',
+              start: 'enter',
+            }}
+            handlers={{
+              del: this.props.onDelete,
+              kill: this.props.onKill,
+              start: this.props.onStart,
+            }}
+          >
+            <div
+              tabIndex='-1'
+              style={{height, width, border: 'dashed 3px #ececec'}}
+              onClick={this.handleSelected}
+            >
+              <Header
+                isFullScreen={this.props.isFullScreen}
+                isKillable={this.state.isKillable}
+                isStartable={this.props.isStartable}
+                onToggleFullScreen={this.props.onToggleFullScreen}
+                onConfigure={this.toggleConfigurationModal}
+                onStart={this.props.onStart}
+                onKill={this.props.onKill}
+                onDelete={this.props.onDelete}
+                name={this.state.name}
+              />
+              <Modal
+                size='lg'
+                isOpen={this.state.isConfigurationVisible}
+                toggle={this.toggleConfigurationModal}
+              >
+                <ModalBody>
+                  <h2>Display</h2>
+                  <Input
+                    name='name'
+                    value={this.state.name}
+                    validate={() => []}
+                    onInvalid={() => {
+                    }}
+                    onValid={this.handleNameChanged}
+                  />
+                  <Inputs
+                    value={this.props.pkg.inputs}
+                    onInvalid={this.handleInvalidArg}
+                    onValid={this.handleValidArg}
+                    pkgRef={this.props.pkgRef}
+                    values={this.args}
+                  />
+                </ModalBody>
+              </Modal>
+              {
+                this.props.isFullScreen || this.state.isSelected || this.props.isAllItemsSelected
+                  ? null
+                  : <div style={{
+                    opacity: 0.2,
+                    backgroundColor: '#000',
+                    position: 'absolute',
+                    width: `${width - 6}px`,
+                    top: '37px',
+                    height: `${height - 40}px`,
+                    zIndex: 1,
+                    cursor: 'pointer',
+                  }}>
+                  </div>
+              }
+              <div style={{marginTop: '37px', height: 'calc(100% - 37px)'}}>
+                {
+                  this.props.opId
+                    ?
+                    <EventStream key={this.props.opId} filter={{roots: [this.props.opId]}}/>
+                    :
+                    null
+                }
+              </div>
+            </div>
+          </HotKeys>
+        )}
+      </AutoSizer>
+    );
+  }
 }
+
+export default reactClickOutside(Item);

@@ -84,7 +84,7 @@ var _ = Context("containerCaller", func() {
 			providedPkgHandle := new(pkg.FakeHandle)
 			providedRootOpId := "dummyRootOpId"
 
-			expectedEvent := &model.Event{
+			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerId: providedContainerId,
@@ -235,7 +235,7 @@ var _ = Context("containerCaller", func() {
 		providedPkgHandle := new(pkg.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
-		expectedEvent := &model.Event{
+		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
@@ -284,7 +284,7 @@ var _ = Context("containerCaller", func() {
 		providedPkgHandle := new(pkg.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
-		expectedEvent := &model.Event{
+		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,

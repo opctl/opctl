@@ -4,11 +4,11 @@ package opcall
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ OpCall
 
 import (
-	"github.com/golang-interfaces/satori-go.uuid"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"path/filepath"
 )
 
@@ -27,20 +27,20 @@ func New(
 	rootFSPath string,
 ) OpCall {
 	return _OpCall{
-		dcgScratchDir: filepath.Join(rootFSPath, "dcg"),
-		expression:    expression.New(),
-		pkg:           pkg.New(),
-		pkgCachePath:  filepath.Join(rootFSPath, "pkgs"),
-		uuid:          iuuid.New(),
-		inputs:        inputs.New(),
+		dcgScratchDir:       filepath.Join(rootFSPath, "dcg"),
+		expression:          expression.New(),
+		pkg:                 pkg.New(),
+		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
+		inputs:              inputs.New(),
 	}
 }
 
 type _OpCall struct {
-	dcgScratchDir string
-	expression    expression.Expression
-	pkg           pkg.Pkg
-	pkgCachePath  string
-	uuid          iuuid.IUUID
-	inputs        inputs.Inputs
+	dcgScratchDir       string
+	expression          expression.Expression
+	pkg                 pkg.Pkg
+	pkgCachePath        string
+	uniqueStringFactory uniquestring.UniqueStringFactory
+	inputs              inputs.Inputs
 }

@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall"
 	outputsPkg "github.com/opspec-io/sdk-golang/opcall/outputs"
@@ -62,7 +63,7 @@ func (oc _opCaller) Call(
 		if isKilled {
 			// guard: op killed (we got preempted)
 			oc.pubSub.Publish(
-				&model.Event{
+				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
 						OpId:     opId,
@@ -80,7 +81,7 @@ func (oc _opCaller) Call(
 		var opOutcome string
 		if nil != err {
 			oc.pubSub.Publish(
-				&model.Event{
+				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
@@ -96,7 +97,7 @@ func (oc _opCaller) Call(
 		}
 
 		oc.pubSub.Publish(
-			&model.Event{
+			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpId:     opId,
@@ -131,7 +132,7 @@ func (oc _opCaller) Call(
 	}
 
 	oc.pubSub.Publish(
-		&model.Event{
+		model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
 				OpId:     opId,
@@ -145,6 +146,7 @@ func (oc _opCaller) Call(
 	outputsChan := make(chan map[string]*model.Value, 1)
 	go func() {
 		outputsChan <- oc.interpretOutputs(
+			context.TODO(),
 			scgOpCall,
 			dcgOpCall,
 		)
@@ -179,19 +181,22 @@ func (oc _opCaller) Call(
 }
 
 func (oc _opCaller) interpretOutputs(
+	ctx context.Context,
 	scgOpCall *model.SCGOpCall,
 	dcgOpCall *model.DCGOpCall,
 ) map[string]*model.Value {
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	// subscribe to events
-	eventChannel := make(chan *model.Event, 150)
 	eventFilterSince := time.Now().UTC()
-	oc.pubSub.Subscribe(
-		&model.EventFilter{
+	eventChannel, _ := oc.pubSub.Subscribe(
+		ctx,
+		model.EventFilter{
 			Roots: []string{dcgOpCall.RootOpId},
 			Since: &eventFilterSince,
 		},
-		eventChannel,
 	)
 
 	childOutputs := map[string]*model.Value{}

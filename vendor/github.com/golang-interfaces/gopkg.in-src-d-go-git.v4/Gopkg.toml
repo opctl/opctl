@@ -20,6 +20,4 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-[[constraint]]
-  name = "gopkg.in/src-d/go-git.v4"
-  version = "=v4.0.0-rc15"
+ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]

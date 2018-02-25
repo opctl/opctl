@@ -1,4 +1,4 @@
-package container
+package container // import "github.com/docker/docker/daemon/cluster/executor/container"
 
 import (
 	"encoding/base64"
@@ -262,11 +262,7 @@ func (c *containerAdapter) create(ctx context.Context) error {
 		return err
 	}
 
-	if err := c.backend.UpdateContainerServiceConfig(cr.ID, c.container.serviceConfig()); err != nil {
-		return err
-	}
-
-	return nil
+	return c.backend.UpdateContainerServiceConfig(cr.ID, c.container.serviceConfig())
 }
 
 // checkMounts ensures that the provided mounts won't have any host-specific

@@ -65,13 +65,15 @@ func (this _puller) Pull(
 		cloneOptions := &git.CloneOptions{
 			URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
 			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
-			// @TODO re-enable once https://github.com/src-d/go-git/issues/529 released
-			// Depth:         1,
-			Progress: os.Stdout,
+			Depth:         1,
+			Progress:      os.Stdout,
 		}
 
 		if nil != authOpts {
-			cloneOptions.Auth = http.NewBasicAuth(authOpts.Username, authOpts.Password)
+			cloneOptions.Auth = &http.BasicAuth{
+				Username: authOpts.Username,
+				Password: authOpts.Password,
+			}
 		}
 
 		if _, err := this.git.PlainClone(

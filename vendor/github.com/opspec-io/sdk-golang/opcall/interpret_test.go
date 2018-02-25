@@ -3,13 +3,13 @@ package opcall
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/satori-go.uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/expression"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -51,13 +51,13 @@ var _ = Context("OpCall", func() {
 									panic(err)
 								}
 
-								scenarioDotYml := []struct {
+								var scenarioDotYml []struct {
 									Name      string
 									Interpret *struct {
 										Expect string
 										Scope  map[string]*model.Value
 									}
-								}{}
+								}
 								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
 									panic(fmt.Errorf("error unmarshalling scenario.yml for %v; error was %v", path, err))
 								}
@@ -301,8 +301,8 @@ var _ = Context("OpCall", func() {
 				fakePkg.ResolveReturns(nil, expectedErr)
 
 				objectUnderTest := _OpCall{
-					pkg:  fakePkg,
-					uuid: new(iuuid.Fake),
+					pkg:                 fakePkg,
+					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
 				/* act */
@@ -334,8 +334,8 @@ var _ = Context("OpCall", func() {
 				fakePkg.GetManifestReturns(nil, expectedErr)
 
 				objectUnderTest := _OpCall{
-					pkg:  fakePkg,
-					uuid: new(iuuid.Fake),
+					pkg:                 fakePkg,
+					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
 				/* act */
@@ -362,8 +362,8 @@ var _ = Context("OpCall", func() {
 					fakePkg.GetManifestReturns(nil, expectedErr)
 
 					objectUnderTest := _OpCall{
-						pkg:  fakePkg,
-						uuid: new(iuuid.Fake),
+						pkg:                 fakePkg,
+						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
 					/* act */
@@ -421,10 +421,10 @@ var _ = Context("OpCall", func() {
 					dcgScratchDir := "dummyDCGScratchDir"
 
 					objectUnderTest := _OpCall{
-						dcgScratchDir: dcgScratchDir,
-						pkg:           fakePkg,
-						uuid:          new(iuuid.Fake),
-						inputs:        fakeInputs,
+						dcgScratchDir:       dcgScratchDir,
+						pkg:                 fakePkg,
+						uniqueStringFactory: new(uniquestring.Fake),
+						inputs:              fakeInputs,
 					}
 
 					/* act */

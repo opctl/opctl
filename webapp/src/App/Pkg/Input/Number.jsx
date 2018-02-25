@@ -1,5 +1,5 @@
 import React from 'react';
-import Input from './Input';
+import Input from '../../Input';
 import Select from './Select';
 import opspecDataValidator from '@opspec/sdk/lib/data/number/validator';
 

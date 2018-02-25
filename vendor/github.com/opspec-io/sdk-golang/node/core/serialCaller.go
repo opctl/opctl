@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
@@ -55,7 +56,7 @@ func (this _serialCaller) Call(
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		this.pubSub.Publish(
-			&model.Event{
+			model.Event{
 				Timestamp: time.Now().UTC(),
 				SerialCallEnded: &model.SerialCallEndedEvent{
 					CallId:   callId,
@@ -66,9 +67,17 @@ func (this _serialCaller) Call(
 		)
 	}()
 
+	ctx := context.TODO()
+
 	for _, scgCall := range scgSerialCall {
 		eventFilterSince := time.Now().UTC()
-		childCallId := this.uniqueStringFactory.Construct()
+
+		childCallId, err := this.uniqueStringFactory.Construct()
+		if nil != err {
+			// end run immediately on any error
+			return err
+		}
+
 		if err := this.caller.Call(
 			childCallId,
 			outputs,
@@ -81,13 +90,15 @@ func (this _serialCaller) Call(
 		}
 
 		// subscribe to events
-		eventChannel := make(chan *model.Event, 150)
-		this.pubSub.Subscribe(
-			&model.EventFilter{
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		// @TODO: handle err channel
+		eventChannel, _ := this.pubSub.Subscribe(
+			ctx,
+			model.EventFilter{
 				Roots: []string{rootOpId},
 				Since: &eventFilterSince,
 			},
-			eventChannel,
 		)
 
 	eventLoop:
@@ -113,6 +124,7 @@ func (this _serialCaller) Call(
 				break eventLoop
 			}
 		}
+		cancel()
 
 	}
 

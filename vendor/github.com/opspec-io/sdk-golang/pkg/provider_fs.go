@@ -21,23 +21,23 @@ type fsProvider struct {
 	basePaths []string
 }
 
-func (lfsp fsProvider) TryResolve(
+func (fp fsProvider) TryResolve(
 	pkgRef string,
 ) (model.PkgHandle, error) {
 
 	if filepath.IsAbs(pkgRef) {
-		if _, err := lfsp.os.Stat(pkgRef); nil != err && !os.IsNotExist(err) {
+		if _, err := fp.os.Stat(pkgRef); nil != err && !os.IsNotExist(err) {
 			// return actual errors
 			return nil, err
 		}
 		return newFSHandle(pkgRef), nil
 	}
 
-	for _, basePath := range lfsp.basePaths {
+	for _, basePath := range fp.basePaths {
 
 		// attempt to resolve from basePath/.opspec dir
 		testPath := filepath.Join(basePath, DotOpspecDirName, pkgRef)
-		_, err := lfsp.os.Stat(testPath)
+		_, err := fp.os.Stat(testPath)
 		if err == nil {
 			return newFSHandle(testPath), nil
 		}
@@ -48,7 +48,7 @@ func (lfsp fsProvider) TryResolve(
 
 		// attempt to resolve from basePath
 		testPath = filepath.Join(basePath, pkgRef)
-		_, err = lfsp.os.Stat(testPath)
+		_, err = fp.os.Stat(testPath)
 		if err == nil {
 			return newFSHandle(testPath), nil
 		}

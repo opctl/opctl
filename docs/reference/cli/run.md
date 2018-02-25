@@ -8,8 +8,9 @@ Start and wait on an op
 
 ### `PKG_REF`
 
-Package reference (either `relative/path`, `/absolute/path`, or
-`host/path/repo#tag` (since v0.1.19))
+Package reference (either `relative/path`, `/absolute/path`,
+`host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path`
+(since v0.1.24))
 
 ## Options
 

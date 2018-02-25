@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"path"
@@ -17,16 +16,14 @@ func (c client) GetEventStream(
 	reqUrl.Scheme = "ws"
 	reqUrl.Path = path.Join(reqUrl.Path, api.URLEvents_Stream)
 
-	if nil != req.Filter {
-		queryValues := reqUrl.Query()
-		if nil != req.Filter.Since {
-			queryValues.Add("since", req.Filter.Since.Format(time.RFC3339))
-		}
-		if nil != req.Filter.Roots {
-			queryValues.Add("roots", strings.Join(req.Filter.Roots, ","))
-		}
-		reqUrl.RawQuery = queryValues.Encode()
+	queryValues := reqUrl.Query()
+	if nil != req.Filter.Since {
+		queryValues.Add("since", req.Filter.Since.Format(time.RFC3339))
 	}
+	if nil != req.Filter.Roots {
+		queryValues.Add("roots", strings.Join(req.Filter.Roots, ","))
+	}
+	reqUrl.RawQuery = queryValues.Encode()
 
 	wsConn, _, err := c.wsDialer.Dial(
 		reqUrl.String(),
@@ -45,19 +42,12 @@ func (c client) GetEventStream(
 		defer close(eventStream)
 
 		for {
-
-			_, bytes, err := wsConn.ReadMessage()
-			if nil != err {
-				return
-			}
-
 			var event model.Event
-			err = json.Unmarshal(bytes, &event)
+			err := wsConn.ReadJSON(&event)
 			if nil != err {
 				return
 			}
 			eventStream <- event
-
 		}
 	}()
 

@@ -1,8 +1,7 @@
-package network
+package network // import "github.com/docker/docker/api/server/router/network"
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/versions"
+	"github.com/docker/docker/errdefs"
 	"github.com/docker/libnetwork"
 	netconst "github.com/docker/libnetwork/datastore"
 	"github.com/docker/libnetwork/networkdb"
@@ -101,22 +101,8 @@ func (e ambigousResultsError) Error() string {
 
 func (ambigousResultsError) InvalidParameter() {}
 
-type conflictError struct {
-	cause error
-}
-
-func (e conflictError) Error() string {
-	return e.cause.Error()
-}
-
-func (e conflictError) Cause() error {
-	return e.cause
-}
-
-func (e conflictError) Conflict() {}
-
 func nameConflict(name string) error {
-	return conflictError{libnetwork.NetworkNameError(name)}
+	return errdefs.Conflict(libnetwork.NetworkNameError(name))
 }
 
 func (n *networkRouter) getNetwork(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
@@ -178,6 +164,13 @@ func (n *networkRouter) getNetwork(ctx context.Context, w http.ResponseWriter, r
 		// return the network. Skipped using isMatchingScope because it is true if the scope
 		// is not set which would be case if the client API v1.30
 		if strings.HasPrefix(nwk.ID, term) || (netconst.SwarmScope == scope) {
+			// If we have a previous match "backend", return it, we need verbose when enabled
+			// ex: overlay/partial_ID or name/swarm_scope
+			if nwv, ok := listByPartialID[nwk.ID]; ok {
+				nwk = nwv
+			} else if nwv, ok := listByFullName[nwk.ID]; ok {
+				nwk = nwv
+			}
 			return httputils.WriteJSON(w, http.StatusOK, nwk)
 		}
 	}
@@ -289,12 +282,11 @@ func (n *networkRouter) postNetworkConnect(ctx context.Context, w http.ResponseW
 		return err
 	}
 
-	// Always make sure there is no ambiguity with respect to the network ID/name
-	nw, err := n.backend.FindUniqueNetwork(vars["id"])
-	if err != nil {
-		return err
-	}
-	return n.backend.ConnectContainerToNetwork(connect.Container, nw.ID(), connect.EndpointConfig)
+	// Unlike other operations, we does not check ambiguity of the name/ID here.
+	// The reason is that, In case of attachable network in swarm scope, the actual local network
+	// may not be available at the time. At the same time, inside daemon `ConnectContainerToNetwork`
+	// does the ambiguity check anyway. Therefore, passing the name to daemon would be enough.
+	return n.backend.ConnectContainerToNetwork(connect.Container, vars["id"], connect.EndpointConfig)
 }
 
 func (n *networkRouter) postNetworkDisconnect(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
@@ -530,7 +522,7 @@ func (n *networkRouter) postNetworksPrune(ctx context.Context, w http.ResponseWr
 }
 
 // findUniqueNetwork will search network across different scopes (both local and swarm).
-// NOTE: This findUniqueNetwork is different from FindUniqueNetwork in the daemon.
+// NOTE: This findUniqueNetwork is different from FindNetwork in the daemon.
 // In case multiple networks have duplicate names, return error.
 // First find based on full ID, return immediately once one is found.
 // If a network appears both in swarm and local, assume it is in local first
@@ -589,7 +581,7 @@ func (n *networkRouter) findUniqueNetwork(term string) (types.NetworkResource, e
 		}
 	}
 	if len(listByFullName) > 1 {
-		return types.NetworkResource{}, fmt.Errorf("network %s is ambiguous (%d matches found based on name)", term, len(listByFullName))
+		return types.NetworkResource{}, errdefs.InvalidParameter(errors.Errorf("network %s is ambiguous (%d matches found based on name)", term, len(listByFullName)))
 	}
 
 	// Find based on partial ID, returns true only if no duplicates
@@ -599,8 +591,8 @@ func (n *networkRouter) findUniqueNetwork(term string) (types.NetworkResource, e
 		}
 	}
 	if len(listByPartialID) > 1 {
-		return types.NetworkResource{}, fmt.Errorf("network %s is ambiguous (%d matches found based on ID prefix)", term, len(listByPartialID))
+		return types.NetworkResource{}, errdefs.InvalidParameter(errors.Errorf("network %s is ambiguous (%d matches found based on ID prefix)", term, len(listByPartialID)))
 	}
 
-	return types.NetworkResource{}, libnetwork.ErrNoSuchNetwork(term)
+	return types.NetworkResource{}, errdefs.NotFound(libnetwork.ErrNoSuchNetwork(term))
 }

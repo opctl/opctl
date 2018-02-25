@@ -10,32 +10,32 @@ import (
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Expression
 
 type Expression interface {
-	arrayEvaluator
-	dirEvaluator
-	fileEvaluator
-	numberEvaluator
-	objectEvaluator
-	stringEvaluator
+	evalArrayer
+	evalDirer
+	evalFiler
+	evalNumberer
+	evalObjecter
+	evalStringer
 }
 
 func New() Expression {
 	return _Expression{
-		arrayEvaluator:  newArrayEvaluator(),
-		dirEvaluator:    newDirEvaluator(),
-		fileEvaluator:   newFileEvaluator(),
-		numberEvaluator: newNumberEvaluator(),
-		objectEvaluator: newObjectEvaluator(),
-		stringEvaluator: newStringEvaluator(),
+		evalArrayer:  newEvalArrayer(),
+		evalDirer:    newEvalDirer(),
+		evalFiler:    newEvalFiler(),
+		evalNumberer: newEvalNumberer(),
+		evalObjecter: newEvalObjecter(),
+		evalStringer: newEvalStringer(),
 	}
 }
 
 type _Expression struct {
-	arrayEvaluator
-	dirEvaluator
-	fileEvaluator
-	numberEvaluator
-	objectEvaluator
-	stringEvaluator
+	evalArrayer
+	evalDirer
+	evalFiler
+	evalNumberer
+	evalObjecter
+	evalStringer
 }
 
 func tryResolveExplicitRef(

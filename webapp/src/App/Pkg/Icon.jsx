@@ -12,5 +12,5 @@ export default ({value, pkgRef}) => {
     value = "opspec-icon.svg"
   }
 
-  return (<img src={value} alt={'icon'} style={{maxHeight: '10vw'}} />);
+  return (<img src={value} alt={'icon'} style={{height: '10vw'}} />);
 }

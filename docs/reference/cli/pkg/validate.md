@@ -9,7 +9,10 @@ Validates a package according to:
 ## Arguments
 
 ### `PKG_REF`
-Package reference (either `relative/path`, `/absolute/path`, or `host/path/repo#tag` (since v0.1.19))
+
+Package reference (either `relative/path`, `/absolute/path`,
+`host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path`
+(since v0.1.24))
 
 ## Examples
 
@@ -21,7 +24,9 @@ opctl pkg validate myop
 
 ### pkg source username/password prompt
 
-If auth w/ the pkg source fails the cli will (re)prompt for username & password.
+If auth w/ the pkg source fails the cli will (re)prompt for username &
+password.
 
 > in non-interactive terminals, the cli will note that it can't prompt
 > and exit with a non zero exit code.
+
