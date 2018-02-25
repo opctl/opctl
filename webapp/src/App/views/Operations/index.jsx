@@ -95,6 +95,7 @@ export default class OperationsView extends PureComponent {
 
   selectAllItems = () => {
     this.setState({isAllItemsSelected: true});
+    return false;
   };
 
   unSelectAllItems = () => {
