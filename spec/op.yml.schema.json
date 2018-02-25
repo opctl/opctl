@@ -28,10 +28,15 @@
     "version": {
       "description": "Version of the op",
       "$ref": "#/definitions/semVer"
+    },
+    "opspec": {
+      "description": "Version of [opspec](https://opspec.io) used by the pkg",
+      "$ref": "#/definitions/semVer"
     }
   },
   "required": [
-    "name"
+    "name",
+    "opspec"
   ],
   "additionalProperties": false,
   "definitions": {

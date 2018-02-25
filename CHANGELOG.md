@@ -7,6 +7,7 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
+- [Add `opspec` property to op schema](https://github.com/opspec-io/spec/issues/20)
 - Support client back pressure in `GET event-stream` endpoint via `ack`
   query param
 - [Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)

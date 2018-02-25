@@ -1,21 +1,11 @@
 Human friendly description of the pkg.
 
-Markdown can be used; see [markdown](../markdown.md) for details.
-
-## Examples
-
-### Four liner
-Four line description leveraging
-[yaml multiline strings](http://yaml-multiline.info/)
+Markdown can be used; see [markdown](../markdown.md) for details. (since v0.1.6)
 
 ```yaml
-name: descriptionIsFourLines
+description: this package is the bees knees
 description: |
- line 1
- line 2
- 
- line 3
-run:
-  container:
-    image: { ref: alpine }
+  this description leverages:
+  - [commonmark](http://commonmark.org/)
+  - [yaml multiline strings](http://yaml-multiline.info/)
 ```
