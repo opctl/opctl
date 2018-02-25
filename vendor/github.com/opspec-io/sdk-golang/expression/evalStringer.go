@@ -18,6 +18,7 @@ type evalStringer interface {
 
 func newEvalStringer() evalStringer {
 	return _evalStringer{
+		evalArrayInitializerer:  newEvalArrayInitializerer(),
 		evalObjectInitializerer: newEvalObjectInitializerer(),
 		data:         data.New(),
 		interpolater: interpolater.New(),
@@ -25,6 +26,7 @@ func newEvalStringer() evalStringer {
 }
 
 type _evalStringer struct {
+	evalArrayInitializerer
 	evalObjectInitializerer
 	data         data.Data
 	interpolater interpolater.Interpolater
@@ -52,7 +54,16 @@ func (es _evalStringer) EvalToString(
 
 		value = &model.Value{Object: objectValue}
 	case []interface{}:
-		value = &model.Value{Array: expression}
+		arrayValue, err := es.evalArrayInitializerer.Eval(
+			expression,
+			scope,
+			pkgHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
+		}
+
+		value = &model.Value{Array: arrayValue}
 	case string:
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			value = ref

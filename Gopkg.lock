@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "0076343b29f508a5deb06861c0d85748659f8881"
+  revision = "66e6beeb249948634e2815ef5cac97984d5c0d56"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -310,6 +310,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/gxed/hashland"
+  packages = ["keccakpg"]
+  revision = "d9f6b97f8db22dd1e090fd0bbbe98f09cc7dd0a8"
+
+[[projects]]
+  branch = "master"
   name = "github.com/huin/goupnp"
   packages = [
     ".",
@@ -350,12 +356,6 @@
   name = "github.com/jawher/mow.cli"
   packages = ["."]
   revision = "0de3d3b4ed00f261460d12ecde4efa90fbfcd8ed"
-
-[[projects]]
-  name = "github.com/jbenet/go-base58"
-  packages = ["."]
-  revision = "6237cf65f3a6f7111cd8a42be3590df99a66bc7d"
-  version = "1.0.0"
 
 [[projects]]
   branch = "master"
@@ -413,7 +413,7 @@
     "p2p/protocol/identify",
     "p2p/protocol/identify/pb"
   ]
-  revision = "784f1b4a715e16ee9eb659a63ec709b9bb15844a"
+  revision = "bd3e85cb9df0a18967c62f27026fca06e4d86ff3"
 
 [[projects]]
   branch = "master"
@@ -489,7 +489,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-net"
   packages = ["."]
-  revision = "92fe0475b7d0b9f7ec75563185eb33861f86ea18"
+  revision = "96c5c02be70386a9f74f46df559995877e4ffae2"
 
 [[projects]]
   branch = "master"
@@ -602,6 +602,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/minio/blake2b-simd"
+  packages = ["."]
+  revision = "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4"
+
+[[projects]]
+  branch = "master"
   name = "github.com/minio/sha256-simd"
   packages = ["."]
   revision = "ad98a36ba0da87206e3378c556abbfeaeaa98668"
@@ -655,10 +661,10 @@
   revision = "9004b413b478e5a878e4a879358cce02e5df4995"
 
 [[projects]]
+  branch = "master"
   name = "github.com/multiformats/go-multihash"
   packages = ["."]
-  revision = "f85ddc806c2042548789544758350d503ad36b6d"
-  version = "v1.0.6"
+  revision = "468a1b73e980e5aff011d308623e43e28c582b16"
 
 [[projects]]
   branch = "master"
@@ -721,7 +727,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "5ef020bbdb2104c0070bf5860000fd829cf4836b"
+  revision = "dfd04516f71b8a13252eb68a7a27f58dcb609fd0"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -921,7 +927,6 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
-    "blake2b",
     "blake2s",
     "blowfish",
     "cast5",
@@ -942,7 +947,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "432090b8f568c018896cd8a0fb0345872bbac6ce"
+  revision = "49796115aa4b964c318aad4f3084fdb41e9aa067"
 
 [[projects]]
   branch = "master"
@@ -972,10 +977,9 @@
     "unix",
     "windows"
   ]
-  revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
+  revision = "c1138c84af3a9927aee1a1b8b7ce06c9b7ea52bc"
 
 [[projects]]
-  branch = "master"
   name = "golang.org/x/text"
   packages = [
     "encoding",
@@ -999,7 +1003,8 @@
     "unicode/cldr",
     "unicode/norm"
   ]
-  revision = "9e2b64d659da1afe07ce1c9c1dfefc09d188f21e"
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   name = "gopkg.in/src-d/go-billy.v4"
@@ -1072,15 +1077,9 @@
   packages = ["."]
   revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
 
-[[projects]]
-  branch = "master"
-  name = "leb.io/hashland"
-  packages = ["keccakpg"]
-  revision = "07375b562deaa8d6891f9618a04e94a0b98e2ee7"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7c44b13527665642e0e3aa121daff235f3c327d9519f0d1ad5764dcbf9927441"
+  inputs-digest = "e6d708913a426baf6c86cad4759e6a11a4b89267cfd58b01331b2dfd7aa65232"
   solver-name = "gps-cdcl"
   solver-version = 1
