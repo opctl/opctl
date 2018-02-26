@@ -11,17 +11,7 @@ run:
         pkg: { ref: github.com/opspec-pkgs/openapispec.v3.validate-spec#1.0.0 }
         inputs:
           spec: $(srcDir/spec/node-api.spec.yml)
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "installing deps"
-            yarn global add ajv-cli
-
-            echo "testing json schemas"
-            ajv compile -s "*.schema.json"
-        dirs:
-          /src: $(srcDir)
-        image: { ref: 'node:9.3.0' }
-        workDir: /src/spec
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/jsonschema.draft7.validate-schema#1.0.0 }
+        inputs:
+          schema: $(srcDir/spec/op.yml.schema.json)

@@ -43,7 +43,7 @@ String typed values are coercible to:
 ## Object to string
 
 ```yaml
-name: numAsFile
+name: objAsString
 inputs:
   obj:
     object:
