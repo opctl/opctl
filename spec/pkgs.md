@@ -8,13 +8,22 @@ Packages are:
 - stateless
 - self-describing
 
+In addition to those mentioned below, packages MAY contain arbitrary files/dirs the operation depends on.
+
+### icon.svg
+
+Packages MAY contain an `icon.svg` file declaring the icon of the operation. 
+
+Constraints:
+
+- MUST be valid [SVG 1.1](https://www.w3.org/TR/SVG11/)
+- MUST have a 1:1 aspect ratio (equal height & width)
+
+### op.yml
+
 Packages MUST contain an `op.yml` file declaring the inputs, outputs,
 and call graph (consisting of container, op, parallel, and serial calls)
 of the operation.
-
-Packages MAY contain files/dirs the operation depends on
-
-### op.yml
 
 Constraints:
 
