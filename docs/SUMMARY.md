@@ -10,6 +10,7 @@
 
 ### reference
 * [pkg](reference/pkg/README.md)
+  * [icon.svg](reference/pkg/icon.svg/README.md)
   * [op.yml](reference/pkg/op.yml/README.md)
     * [expressions](reference/pkg/op.yml/expressions/README.md)
       * [array initializer](reference/pkg/op.yml/expressions/array-initializer.md)
