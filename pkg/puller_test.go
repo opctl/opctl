@@ -8,14 +8,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 var _ = Context("puller", func() {
@@ -332,78 +330,6 @@ var _ = Context("puller", func() {
 					/* assert */
 					Expect(fakeOS.RemoveAllArgsForCall(0)).To(Equal(expectedPath))
 					Expect(actualError).To(Equal(expectedError))
-				})
-				Context("puller.Pull called in parallel w/ same args", func() {
-					It("should not call git.PlainClone & return same result", func() {
-						/* arrange */
-
-						fakeGit := new(igit.Fake)
-						fakeGit.PlainCloneStub = func(path string, isBare bool, o *git.CloneOptions) (*git.Repository, error) {
-							// ensure go routing has time to overlap
-							<-time.After(100 * time.Millisecond)
-							return nil, nil
-						}
-
-						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        new(ios.Fake),
-							refParser: _refParser{},
-						}
-
-						pkgRef := "dummyPkgName0#1.0.0"
-
-						go objectUnderTest.Pull(
-							"dummyPath",
-							pkgRef,
-							nil,
-						)
-
-						/* act */
-						actualErr := objectUnderTest.Pull(
-							"dummyPath",
-							pkgRef,
-							nil,
-						)
-
-						/* assert */
-						Expect(fakeGit.PlainCloneCallCount()).To(Equal(1))
-						Expect(actualErr).To(BeNil())
-					})
-				})
-				Context("puller.Pull called in parallel w/ different args", func() {
-					It("should call git.PlainClone", func() {
-						/* arrange */
-						expectedView := &model.PkgManifest{Name: "dummyName"}
-						expectedErr := errors.New("dummyError")
-
-						fakeGit := new(igit.Fake)
-
-						fakeManifest := new(manifest.Fake)
-						fakeManifest.UnmarshalReturns(expectedView, expectedErr)
-
-						objectUnderTest := _puller{
-							git:       fakeGit,
-							os:        new(ios.Fake),
-							refParser: _refParser{},
-						}
-
-						objectUnderTest.Pull(
-							"dummyPath",
-							"dummyPkgName0#1.0.0",
-							nil,
-						)
-
-						/* act */
-						actualErr := objectUnderTest.Pull(
-							"dummyPath",
-							"dummyPkgName1#1.0.0",
-							nil,
-						)
-
-						/* assert */
-						Expect(fakeGit.PlainCloneCallCount()).To(Equal(2))
-						Expect(actualErr).To(BeNil())
-					})
 				})
 			})
 		})
