@@ -125,7 +125,7 @@ func (msm *MultistreamMuxer) AddHandlerWithFunc(protocol string, match func(stri
 	msm.handlerlock.Lock()
 	msm.removeHandler(protocol)
 	msm.handlers = append(msm.handlers, Handler{
-		MatchFunc: fulltextMatch(protocol),
+		MatchFunc: match,
 		Handle:    handler,
 		AddName:   protocol,
 	})
@@ -186,20 +186,15 @@ func (msm *MultistreamMuxer) NegotiateLazy(rwc io.ReadWriteCloser) (Multistream,
 	writeErr := make(chan error, 1)
 	defer close(pval)
 
-	lzc := &lazyConn{
-		con:        rwc,
-		rhandshake: true,
-		rhsync:     true,
+	lzc := &lazyServerConn{
+		con: rwc,
 	}
 
-	// take lock here to prevent a race condition where the reads below from
-	// finishing and taking the write lock before this goroutine can
-	lzc.whlock.Lock()
+	started := make(chan struct{})
+	go lzc.waitForHandshake.Do(func() {
+		close(started)
 
-	go func() {
 		defer close(writeErr)
-		defer lzc.whlock.Unlock()
-		lzc.whsync = true
 
 		if err := delimWriteBuffered(rwc, []byte(ProtocolID)); err != nil {
 			lzc.werr = err
@@ -214,8 +209,8 @@ func (msm *MultistreamMuxer) NegotiateLazy(rwc io.ReadWriteCloser) (Multistream,
 				return
 			}
 		}
-		lzc.whandshake = true
-	}()
+	})
+	<-started
 
 	line, err := ReadNextToken(rwc)
 	if err != nil {
@@ -232,6 +227,7 @@ loop:
 		// Now read and respond to commands until they send a valid protocol id
 		tok, err := ReadNextToken(rwc)
 		if err != nil {
+			rwc.Close()
 			return nil, "", nil, err
 		}
 
@@ -240,6 +236,7 @@ loop:
 			select {
 			case pval <- "ls":
 			case err := <-writeErr:
+				rwc.Close()
 				return nil, "", nil, err
 			}
 		default:
@@ -248,6 +245,7 @@ loop:
 				select {
 				case pval <- "na":
 				case err := <-writeErr:
+					rwc.Close()
 					return nil, "", nil, err
 				}
 				continue loop

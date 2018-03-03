@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/json-iterator/go/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 type floatValue float64

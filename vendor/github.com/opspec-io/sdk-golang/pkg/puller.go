@@ -4,20 +4,17 @@ package pkg
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
-	"golang.org/x/sync/singleflight"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
-	"os"
-	"path/filepath"
 )
-
-// pullerSingleFlightGroup is used to ensures pulls don't race across puller intances
-var pullerSingleFlightGroup singleflight.Group
 
 type puller interface {
 	// Pull pulls 'pkgRef' to 'path'
@@ -47,63 +44,58 @@ type _puller struct {
 	refParser refParser
 }
 
-func (this _puller) Pull(
+func (plr _puller) Pull(
 	path string,
 	pkgRef string,
 	authOpts *model.PullCreds,
 ) error {
 
-	parsedPkgRef, err := this.refParser.Parse(pkgRef)
+	parsedPkgRef, err := plr.refParser.Parse(pkgRef)
 	if nil != err {
 		return err
 	}
 
 	pkgPath := parsedPkgRef.ToPath(path)
 
-	// ensure only a single pull done at once
-	_, err, _ = pullerSingleFlightGroup.Do(pkgPath, func() (interface{}, error) {
-		cloneOptions := &git.CloneOptions{
-			URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
-			ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
-			Depth:         1,
-			Progress:      os.Stdout,
+	cloneOptions := &git.CloneOptions{
+		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%v", parsedPkgRef.Version)),
+		Depth:         1,
+		Progress:      os.Stdout,
+	}
+
+	if nil != authOpts {
+		cloneOptions.Auth = &http.BasicAuth{
+			Username: authOpts.Username,
+			Password: authOpts.Password,
 		}
+	}
 
-		if nil != authOpts {
-			cloneOptions.Auth = &http.BasicAuth{
-				Username: authOpts.Username,
-				Password: authOpts.Password,
-			}
+	if _, err := plr.git.PlainClone(
+		pkgPath,
+		false,
+		cloneOptions,
+	); nil != err {
+		switch err.Error() {
+		case transport.ErrAuthenticationRequired.Error():
+			// clone failed; cleanup remnants
+			plr.os.RemoveAll(pkgPath)
+			return model.ErrPkgPullAuthentication{}
+		case transport.ErrAuthorizationFailed.Error():
+			// clone failed; cleanup remnants
+			plr.os.RemoveAll(pkgPath)
+			return model.ErrPkgPullAuthorization{}
+		case git.ErrRepositoryAlreadyExists.Error():
+			return nil
+			// NoOp on repo already exists
+		default:
+			// clone failed; cleanup remnants
+			plr.os.RemoveAll(pkgPath)
+			return err
 		}
+	}
 
-		if _, err := this.git.PlainClone(
-			pkgPath,
-			false,
-			cloneOptions,
-		); nil != err {
-			switch err.Error() {
-			case transport.ErrAuthenticationRequired.Error():
-				// clone failed; cleanup remnants
-				this.os.RemoveAll(pkgPath)
-				return nil, model.ErrPkgPullAuthentication{}
-			case transport.ErrAuthorizationFailed.Error():
-				// clone failed; cleanup remnants
-				this.os.RemoveAll(pkgPath)
-				return nil, model.ErrPkgPullAuthorization{}
-			case git.ErrRepositoryAlreadyExists.Error():
-				return nil, nil
-				// NoOp on repo already exists
-			default:
-				// clone failed; cleanup remnants
-				this.os.RemoveAll(pkgPath)
-				return nil, err
-			}
-		}
-
-		// remove pkg '.git' sub dir
-		return nil, this.os.RemoveAll(filepath.Join(pkgPath, ".git"))
-	})
-
-	return err
+	// remove pkg '.git' sub dir
+	return plr.os.RemoveAll(filepath.Join(pkgPath, ".git"))
 
 }

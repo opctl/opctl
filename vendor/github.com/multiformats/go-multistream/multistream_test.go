@@ -172,6 +172,7 @@ func TestNegLazyStressWrite(t *testing.T) {
 				t.Error(err)
 				return
 			}
+
 		}
 	}()
 
