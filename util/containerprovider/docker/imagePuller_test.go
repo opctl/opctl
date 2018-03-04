@@ -2,6 +2,7 @@ package docker
 
 import (
 	"bytes"
+	"context"
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,6 +18,7 @@ var _ = Context("imagePuller", func() {
 			/* arrange */
 			providedImage := &model.DCGContainerCallImage{Ref: "dummy-ref"}
 			expectedImagePullOptions := types.ImagePullOptions{}
+			providedCtx := context.Background()
 
 			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
 
@@ -29,6 +31,7 @@ var _ = Context("imagePuller", func() {
 
 			/* act */
 			err := objectUnderTest.Pull(
+				providedCtx,
 				providedImage,
 				"",
 				"",
@@ -39,7 +42,8 @@ var _ = Context("imagePuller", func() {
 			}
 
 			/* assert */
-			_, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
+			actualCtx, actualImageRef, actualImagePullOptions := _fakeDockerClient.ImagePullArgsForCall(0)
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualImageRef).To(Equal(providedImage.Ref))
 			Expect(actualImagePullOptions).To(Equal(expectedImagePullOptions))
 		})
@@ -59,6 +63,7 @@ var _ = Context("imagePuller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Pull(
+					context.Background(),
 					&model.DCGContainerCallImage{Ref: "dummy-ref"},
 					"",
 					"",

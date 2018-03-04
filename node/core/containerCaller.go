@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
+	"context"
 	"fmt"
 	"github.com/golang-interfaces/iio"
 	"github.com/opspec-io/sdk-golang/containercall"
@@ -145,6 +146,7 @@ func (cc _containerCaller) Call(
 	}()
 
 	rawExitCode, err := cc.containerProvider.RunContainer(
+		context.TODO(),
 		dcgContainerCall,
 		cc.pubSub,
 		stdOutWriter,

@@ -160,7 +160,7 @@ var _ = Context("containerCaller", func() {
 			)
 
 			/* assert */
-			actualDCGContainerCall, actualEventPublisher, _, _ := fakeContainerProvider.RunContainerArgsForCall(0)
+			_, actualDCGContainerCall, actualEventPublisher, _, _ := fakeContainerProvider.RunContainerArgsForCall(0)
 			Expect(actualDCGContainerCall).To(Equal(expectedDCGContainerCall))
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
