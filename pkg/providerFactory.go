@@ -3,6 +3,7 @@ package pkg
 //go:generate counterfeiter -o ./fakeProvider.go --fake-name FakeProvider ./ Provider
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"net/url"
 )
@@ -16,6 +17,7 @@ type Provider interface {
 	//  - ErrPkgPullAuthorization on authorization failure
 	//  - ErrPkgNotFound on resolution failure
 	TryResolve(
+		ctx context.Context,
 		pkgRef string,
 	) (model.PkgHandle, error)
 }

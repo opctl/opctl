@@ -1,6 +1,7 @@
 package interpolater
 
 import (
+	"context"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -45,7 +46,7 @@ var _ = Context("Interpolate", func() {
 								panic(fmt.Errorf("error getting absPath for %v; error was %v", path, err))
 							}
 
-							pkgHandle, err := pkg.Resolve(absPath, pkgFsProvider)
+							pkgHandle, err := pkg.Resolve(context.Background(), absPath, pkgFsProvider)
 							if nil != err {
 								panic(fmt.Errorf("error getting pkgHandle for %v; error was %v", path, err))
 							}

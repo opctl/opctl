@@ -2,14 +2,17 @@
 package pkg
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
+	"context"
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type FakeProvider struct {
-	TryResolveStub        func(pkgRef string) (model.PkgHandle, error)
+	TryResolveStub        func(ctx context.Context, pkgRef string) (model.PkgHandle, error)
 	tryResolveMutex       sync.RWMutex
 	tryResolveArgsForCall []struct {
+		ctx    context.Context
 		pkgRef string
 	}
 	tryResolveReturns struct {
@@ -24,16 +27,17 @@ type FakeProvider struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProvider) TryResolve(pkgRef string) (model.PkgHandle, error) {
+func (fake *FakeProvider) TryResolve(ctx context.Context, pkgRef string) (model.PkgHandle, error) {
 	fake.tryResolveMutex.Lock()
 	ret, specificReturn := fake.tryResolveReturnsOnCall[len(fake.tryResolveArgsForCall)]
 	fake.tryResolveArgsForCall = append(fake.tryResolveArgsForCall, struct {
+		ctx    context.Context
 		pkgRef string
-	}{pkgRef})
-	fake.recordInvocation("TryResolve", []interface{}{pkgRef})
+	}{ctx, pkgRef})
+	fake.recordInvocation("TryResolve", []interface{}{ctx, pkgRef})
 	fake.tryResolveMutex.Unlock()
 	if fake.TryResolveStub != nil {
-		return fake.TryResolveStub(pkgRef)
+		return fake.TryResolveStub(ctx, pkgRef)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -47,10 +51,10 @@ func (fake *FakeProvider) TryResolveCallCount() int {
 	return len(fake.tryResolveArgsForCall)
 }
 
-func (fake *FakeProvider) TryResolveArgsForCall(i int) string {
+func (fake *FakeProvider) TryResolveArgsForCall(i int) (context.Context, string) {
 	fake.tryResolveMutex.RLock()
 	defer fake.tryResolveMutex.RUnlock()
-	return fake.tryResolveArgsForCall[i].pkgRef
+	return fake.tryResolveArgsForCall[i].ctx, fake.tryResolveArgsForCall[i].pkgRef
 }
 
 func (fake *FakeProvider) TryResolveReturns(result1 model.PkgHandle, result2 error) {

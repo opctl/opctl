@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"golang.org/x/sync/singleflight"
 	"path/filepath"
@@ -30,6 +31,7 @@ type gitProvider struct {
 }
 
 func (gp gitProvider) TryResolve(
+	ctx context.Context,
 	pkgRef string,
 ) (model.PkgHandle, error) {
 
@@ -38,7 +40,7 @@ func (gp gitProvider) TryResolve(
 		pkgRef,
 		func() (interface{}, error) {
 			// attempt to resolve from cache
-			handle, err := gp.localFSProvider.TryResolve(pkgRef)
+			handle, err := gp.localFSProvider.TryResolve(ctx, pkgRef)
 			if nil != err {
 				return nil, err
 			} else if nil != handle {
@@ -46,7 +48,7 @@ func (gp gitProvider) TryResolve(
 			}
 
 			// attempt pull if cache miss
-			err = gp.puller.Pull(gp.basePath, pkgRef, gp.pullCreds)
+			err = gp.puller.Pull(ctx, gp.basePath, pkgRef, gp.pullCreds)
 			if nil != err {
 				return nil, err
 			}

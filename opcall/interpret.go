@@ -2,6 +2,7 @@ package opcall
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
@@ -34,6 +35,7 @@ func (oc _OpCall) Interpret(
 
 	parentPkgPath := parentPkgHandle.Path()
 	pkgHandle, err := oc.pkg.Resolve(
+		context.TODO(),
 		scgOpCall.Pkg.Ref,
 		oc.pkg.NewFSProvider(filepath.Dir(*parentPkgPath)),
 		oc.pkg.NewGitProvider(oc.pkgCachePath, pkgPullCreds),
@@ -53,7 +55,7 @@ func (oc _OpCall) Interpret(
 	}
 
 	dcgOpCall := &model.DCGOpCall{
-		DCGBaseCall: &model.DCGBaseCall{
+		DCGBaseCall: model.DCGBaseCall{
 			RootOpId:  rootOpId,
 			PkgHandle: pkgHandle,
 		},

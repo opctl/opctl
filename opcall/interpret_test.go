@@ -1,6 +1,7 @@
 package opcall
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
@@ -39,6 +40,7 @@ var _ = Context("OpCall", func() {
 
 								pkg := pkg.New()
 								pkgHandle, err := pkg.Resolve(
+									context.Background(),
 									absPkgPath,
 									pkg.NewFSProvider(),
 								)
@@ -286,7 +288,10 @@ var _ = Context("OpCall", func() {
 			)
 
 			/* assert */
-			actualPkgRef, actualPkgProviders := fakePkg.ResolveArgsForCall(0)
+			actualCtx,
+				actualPkgRef,
+				actualPkgProviders := fakePkg.ResolveArgsForCall(0)
+			Expect(actualCtx).To(Equal(context.TODO()))
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
 		})

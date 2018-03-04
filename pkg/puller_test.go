@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
@@ -32,6 +33,7 @@ var _ = Context("puller", func() {
 
 			/* act */
 			objectUnderTest.Pull(
+				context.Background(),
 				"dummyPath",
 				providedPkgRef,
 				nil,
@@ -54,6 +56,7 @@ var _ = Context("puller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Pull(
+					context.Background(),
 					"dummyPath",
 					"dummyPkgRef",
 					nil,
@@ -67,6 +70,7 @@ var _ = Context("puller", func() {
 			It("should call git.PlainClone w/ expected args", func() {
 
 				/* arrange */
+				providedCtx := context.Background()
 				providedPath := "dummyPath"
 				providedPullCreds := &model.PullCreds{
 					Username: "dummyUsername",
@@ -102,6 +106,7 @@ var _ = Context("puller", func() {
 
 				/* act */
 				objectUnderTest.Pull(
+					providedCtx,
 					providedPath,
 					"dummyPkgRef",
 					providedPullCreds,
@@ -137,6 +142,7 @@ var _ = Context("puller", func() {
 
 						/* act */
 						actualError := objectUnderTest.Pull(
+							context.Background(),
 							"dummyPath",
 							"dummyPkgRef",
 							nil,
@@ -180,6 +186,7 @@ var _ = Context("puller", func() {
 
 						/* act */
 						actualError := objectUnderTest.Pull(
+							context.Background(),
 							providedPath,
 							"dummyPkgRef",
 							nil,
@@ -223,6 +230,7 @@ var _ = Context("puller", func() {
 
 						/* act */
 						actualError := objectUnderTest.Pull(
+							context.Background(),
 							providedPath,
 							"dummyPkgRef",
 							nil,
@@ -261,6 +269,7 @@ var _ = Context("puller", func() {
 
 						/* act */
 						actualError := objectUnderTest.Pull(
+							context.Background(),
 							providedPath,
 							"dummyPkgRef",
 							nil,
@@ -286,6 +295,7 @@ var _ = Context("puller", func() {
 
 					/* act */
 					actualErr := objectUnderTest.Pull(
+						context.Background(),
 						"dummyPath",
 						"dummyPkgRef",
 						nil,
@@ -322,6 +332,7 @@ var _ = Context("puller", func() {
 
 					/* act */
 					actualError := objectUnderTest.Pull(
+						context.Background(),
 						providedPath,
 						"dummyPkgRef",
 						nil,

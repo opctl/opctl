@@ -1,11 +1,13 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 func (this _core) StartOp(
+	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
 	if nil == req.Pkg {
@@ -21,6 +23,7 @@ func (this _core) StartOp(
 	}
 
 	pkgHandle, err := this.pkg.Resolve(
+		ctx,
 		req.Pkg.Ref,
 		this.pkg.NewFSProvider(),
 		this.pkg.NewGitProvider(this.pkgCachePath, pullCreds),
