@@ -97,9 +97,10 @@ type Fake struct {
 	newNodeProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
-	ResolveStub        func(pkgRef string, providers ...Provider) (model.PkgHandle, error)
+	ResolveStub        func(ctx context.Context, pkgRef string, providers ...Provider) (model.PkgHandle, error)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
+		ctx       context.Context
 		pkgRef    string
 		providers []Provider
 	}
@@ -474,17 +475,18 @@ func (fake *Fake) NewNodeProviderReturnsOnCall(i int, result1 Provider) {
 	}{result1}
 }
 
-func (fake *Fake) Resolve(pkgRef string, providers ...Provider) (model.PkgHandle, error) {
+func (fake *Fake) Resolve(ctx context.Context, pkgRef string, providers ...Provider) (model.PkgHandle, error) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
+		ctx       context.Context
 		pkgRef    string
 		providers []Provider
-	}{pkgRef, providers})
-	fake.recordInvocation("Resolve", []interface{}{pkgRef, providers})
+	}{ctx, pkgRef, providers})
+	fake.recordInvocation("Resolve", []interface{}{ctx, pkgRef, providers})
 	fake.resolveMutex.Unlock()
 	if fake.ResolveStub != nil {
-		return fake.ResolveStub(pkgRef, providers...)
+		return fake.ResolveStub(ctx, pkgRef, providers...)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -498,10 +500,10 @@ func (fake *Fake) ResolveCallCount() int {
 	return len(fake.resolveArgsForCall)
 }
 
-func (fake *Fake) ResolveArgsForCall(i int) (string, []Provider) {
+func (fake *Fake) ResolveArgsForCall(i int) (context.Context, string, []Provider) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
-	return fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].providers
+	return fake.resolveArgsForCall[i].ctx, fake.resolveArgsForCall[i].pkgRef, fake.resolveArgsForCall[i].providers
 }
 
 func (fake *Fake) ResolveReturns(result1 model.PkgHandle, result2 error) {

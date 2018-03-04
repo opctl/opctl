@@ -26,12 +26,13 @@ type nodeProvider struct {
 }
 
 func (np nodeProvider) TryResolve(
+	ctx context.Context,
 	pkgRef string,
 ) (model.PkgHandle, error) {
 
 	// ensure resolvable by listing contents w/out err
 	if _, err := np.nodeClient.ListPkgContents(
-		context.TODO(),
+		ctx,
 		model.ListPkgContentsReq{
 			PkgRef:    pkgRef,
 			PullCreds: np.pullCreds,

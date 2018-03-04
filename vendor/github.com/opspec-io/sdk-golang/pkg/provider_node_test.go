@@ -28,7 +28,10 @@ var _ = Context("fsProvider", func() {
 			}
 
 			/* act */
-			objectUnderTest.TryResolve(providedPkgRef)
+			objectUnderTest.TryResolve(
+				context.Background(),
+				providedPkgRef,
+			)
 
 			/* assert */
 			actualContext,
@@ -53,7 +56,10 @@ var _ = Context("fsProvider", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.TryResolve("dummyPkgRef")
+				_, actualErr := objectUnderTest.TryResolve(
+					context.Background(),
+					"dummyPkgRef",
+				)
 
 				/* assert */
 				Expect(actualErr).To(Equal(listPkgContentsErr))
@@ -80,7 +86,10 @@ var _ = Context("fsProvider", func() {
 				}
 
 				/* act */
-				actualHandle, actualErr := objectUnderTest.TryResolve(providedPkgRef)
+				actualHandle, actualErr := objectUnderTest.TryResolve(
+					context.Background(),
+					providedPkgRef,
+				)
 
 				/* assert */
 				Expect(actualHandle).To(Equal(newNodeHandle(fakeNodeClient, providedPkgRef, providedPullCreds)))

@@ -19,7 +19,7 @@ type DCGPullCreds struct {
 type DCGContainer struct{}
 
 type DCGContainerCall struct {
-	*DCGBaseCall
+	DCGBaseCall
 	ContainerId string   `json:"containerId"`
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
@@ -44,7 +44,7 @@ type DCGContainerCallImage struct {
 type DCGOp struct{}
 
 type DCGOpCall struct {
-	*DCGBaseCall
+	DCGBaseCall
 	OpId         string            `json:"opId"`
 	Inputs       map[string]*Value `json:"inputs"`
 	ChildCallSCG *SCG              `json:"childCallSCG"`

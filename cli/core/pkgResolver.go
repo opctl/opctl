@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakePkgResolver.go --fake-name fakePkgResolver ./ pkgResolver
 
 import (
+	"context"
 	"fmt"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/util/cliexiter"
@@ -62,6 +63,7 @@ func (this _pkgResolver) Resolve(
 
 	for {
 		pkgHandle, err := this.pkg.Resolve(
+			context.TODO(),
 			pkgRef,
 			fsProvider,
 			this.pkg.NewNodeProvider(

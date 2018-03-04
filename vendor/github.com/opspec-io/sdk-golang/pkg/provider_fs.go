@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"os"
@@ -22,6 +23,7 @@ type fsProvider struct {
 }
 
 func (fp fsProvider) TryResolve(
+	ctx context.Context,
 	pkgRef string,
 ) (model.PkgHandle, error) {
 

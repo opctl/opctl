@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"errors"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
@@ -26,7 +27,10 @@ var _ = Context("fsProvider", func() {
 				}
 
 				/* act */
-				objectUnderTest.TryResolve(providedPkgRef)
+				objectUnderTest.TryResolve(
+					context.Background(),
+					providedPkgRef,
+				)
 
 				/* assert */
 				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef))
@@ -45,6 +49,7 @@ var _ = Context("fsProvider", func() {
 
 					/* act */
 					_, actualError := objectUnderTest.TryResolve(
+						context.Background(),
 						"/dummyPkgRef",
 					)
 
@@ -70,7 +75,10 @@ var _ = Context("fsProvider", func() {
 					}
 
 					/* act */
-					actualHandle, actualError := objectUnderTest.TryResolve(file.Name())
+					actualHandle, actualError := objectUnderTest.TryResolve(
+						context.Background(),
+						file.Name(),
+					)
 
 					/* assert */
 					Expect(actualHandle).To(Equal(expectedHandle))
@@ -101,7 +109,10 @@ var _ = Context("fsProvider", func() {
 						}
 
 						/* act */
-						objectUnderTest.TryResolve(providedPkgRef)
+						objectUnderTest.TryResolve(
+							context.Background(),
+							providedPkgRef,
+						)
 
 						/* assert */
 						Expect(fakeOS.StatArgsForCall(0)).To(Equal(expectedPath))
@@ -120,7 +131,10 @@ var _ = Context("fsProvider", func() {
 							}
 
 							/* act */
-							_, actualError := objectUnderTest.TryResolve("dummyPkgRef")
+							_, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								"dummyPkgRef",
+							)
 
 							/* assert */
 							Expect(actualError).To(Equal(expectedErr))
@@ -147,7 +161,10 @@ var _ = Context("fsProvider", func() {
 							}
 
 							/* act */
-							actualHandle, actualError := objectUnderTest.TryResolve(providedPkgRef)
+							actualHandle, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								providedPkgRef,
+							)
 
 							/* assert */
 							Expect(actualHandle).To(Equal(expectedHandle))
@@ -175,7 +192,10 @@ var _ = Context("fsProvider", func() {
 						}
 
 						/* act */
-						objectUnderTest.TryResolve(providedPkgRef)
+						objectUnderTest.TryResolve(
+							context.Background(),
+							providedPkgRef,
+						)
 
 						/* assert */
 						Expect(fakeOS.StatArgsForCall(1)).To(Equal(expectedPath))
@@ -195,7 +215,10 @@ var _ = Context("fsProvider", func() {
 							}
 
 							/* act */
-							_, actualError := objectUnderTest.TryResolve("dummyPkgRef")
+							_, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								"dummyPkgRef",
+							)
 
 							/* assert */
 							Expect(actualError).To(Equal(expectedErr))
@@ -221,7 +244,10 @@ var _ = Context("fsProvider", func() {
 							}
 
 							/* act */
-							actualHandle, actualError := objectUnderTest.TryResolve(providedPkgRef)
+							actualHandle, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								providedPkgRef,
+							)
 
 							/* assert */
 							Expect(actualHandle).To(Equal(expectedHandle))

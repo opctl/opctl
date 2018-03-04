@@ -153,7 +153,9 @@ var _ = Context("pkgResolver", func() {
 				)
 
 				/* assert */
-				actualPkgRef, actualProviders := fakePkg.ResolveArgsForCall(0)
+				_,
+					actualPkgRef,
+					actualProviders := fakePkg.ResolveArgsForCall(0)
 
 				Expect(actualPkgRef).To(Equal(providedPkgRef))
 				Expect(actualProviders).To(ConsistOf(fakeFSProvider, fakeNodeProvider))
@@ -275,7 +277,9 @@ var _ = Context("pkgResolver", func() {
 						)
 
 						/* assert */
-						actualPkgRef, actualProviders := fakePkg.ResolveArgsForCall(1)
+						_,
+							actualPkgRef,
+							actualProviders := fakePkg.ResolveArgsForCall(1)
 
 						Expect(actualPkgRef).To(Equal(providedPkgRef))
 						Expect(actualProviders).To(ConsistOf(fakeFSProvider, fakeNodeProvider))
