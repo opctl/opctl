@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -9,7 +10,6 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"io"
 	"strings"
 	"sync"
@@ -17,6 +17,7 @@ import (
 
 type runContainer interface {
 	RunContainer(
+		ctx context.Context,
 		req *model.DCGContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
@@ -49,11 +50,14 @@ type _runContainer struct {
 }
 
 func (cr _runContainer) RunContainer(
+	ctx context.Context,
 	req *model.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	defer stdout.Close()
 	defer stderr.Close()
 
@@ -93,6 +97,7 @@ func (cr _runContainer) RunContainer(
 	// always pull latest version of image
 	// note: this trades local reproducibility for distributed reproducibility
 	pullErr := cr.imagePuller.Pull(
+		ctx,
 		req.Image,
 		req.ContainerId,
 		req.RootOpId,
@@ -102,7 +107,7 @@ func (cr _runContainer) RunContainer(
 
 	// create container
 	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(
-		context.TODO(),
+		ctx,
 		containerConfig,
 		hostConfig,
 		networkingConfig,
@@ -118,7 +123,7 @@ func (cr _runContainer) RunContainer(
 
 	// start container
 	if err := cr.dockerClient.ContainerStart(
-		context.TODO(),
+		ctx,
 		containerCreatedResponse.ID,
 		types.ContainerStartOptions{},
 	); nil != err {
@@ -151,7 +156,7 @@ func (cr _runContainer) RunContainer(
 
 	var exitCode int64
 	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
-		context.TODO(),
+		ctx,
 		req.ContainerId,
 		container.WaitConditionNotRunning,
 	)

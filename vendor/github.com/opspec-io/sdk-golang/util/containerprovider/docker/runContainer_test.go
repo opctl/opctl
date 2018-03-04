@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
@@ -45,6 +46,7 @@ var _ = Context("RunContainer", func() {
 
 		/* act */
 		objectUnderTest.RunContainer(
+			context.Background(),
 			providedReq,
 			new(pubsub.FakeEventPublisher),
 			nopWriteCloser{ioutil.Discard},
@@ -74,6 +76,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			_, actualErr := objectUnderTest.RunContainer(
+				context.Background(),
 				&model.DCGContainerCall{},
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
@@ -120,6 +123,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
+				context.Background(),
 				providedReq,
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
@@ -180,6 +184,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
+				context.Background(),
 				providedReq,
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
@@ -227,6 +232,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
+				context.Background(),
 				providedReq,
 				providedEventPublisher,
 				nopWriteCloser{ioutil.Discard},
@@ -234,11 +240,13 @@ var _ = Context("RunContainer", func() {
 			)
 
 			/* assert */
-			actualImage,
+			actualCtx,
+				actualImage,
 				actualContainerId,
 				actualRootOpId,
 				actualEventPublisher := fakeImagePuller.PullArgsForCall(0)
 
+			Expect(actualCtx).ToNot(BeNil())
 			Expect(actualImage).To(Equal(providedReq.Image))
 			Expect(actualContainerId).To(Equal(providedReq.ContainerId))
 			Expect(actualRootOpId).To(Equal(providedReq.RootOpId))
@@ -289,6 +297,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
+				context.Background(),
 				providedReq,
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},

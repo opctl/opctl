@@ -3,18 +3,19 @@ package docker
 //go:generate counterfeiter -o ./fakeImagePuller.go --fake-name fakeImagePuller ./ imagePuller
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"golang.org/x/net/context"
 	"io"
 )
 
 type imagePuller interface {
 	Pull(
+		ctx context.Context,
 		dcgContainerImage *model.DCGContainerCallImage,
 		containerId string,
 		rootOpId string,
@@ -35,6 +36,7 @@ type _imagePuller struct {
 }
 
 func (ip _imagePuller) Pull(
+	ctx context.Context,
 	dcgContainerImage *model.DCGContainerCallImage,
 	containerId string,
 	rootOpId string,
@@ -56,7 +58,7 @@ func (ip _imagePuller) Pull(
 	}
 
 	imagePullResp, err := ip.dockerClient.ImagePull(
-		context.Background(),
+		ctx,
 		dcgContainerImage.Ref,
 		imagePullOptions,
 	)
