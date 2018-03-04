@@ -2,6 +2,7 @@
 package containerprovider
 
 import (
+	"context"
 	"io"
 	"sync"
 
@@ -21,9 +22,10 @@ type Fake struct {
 	deleteContainerIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RunContainerStub        func(req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error)
+	RunContainerStub        func(ctx context.Context, req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
+		ctx            context.Context
 		req            *model.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 		stdout         io.WriteCloser
@@ -89,19 +91,20 @@ func (fake *Fake) DeleteContainerIfExistsReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) RunContainer(req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error) {
+func (fake *Fake) RunContainer(ctx context.Context, req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
+		ctx            context.Context
 		req            *model.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 		stdout         io.WriteCloser
 		stderr         io.WriteCloser
-	}{req, eventPublisher, stdout, stderr})
-	fake.recordInvocation("RunContainer", []interface{}{req, eventPublisher, stdout, stderr})
+	}{ctx, req, eventPublisher, stdout, stderr})
+	fake.recordInvocation("RunContainer", []interface{}{ctx, req, eventPublisher, stdout, stderr})
 	fake.runContainerMutex.Unlock()
 	if fake.RunContainerStub != nil {
-		return fake.RunContainerStub(req, eventPublisher, stdout, stderr)
+		return fake.RunContainerStub(ctx, req, eventPublisher, stdout, stderr)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -115,10 +118,10 @@ func (fake *Fake) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *Fake) RunContainerArgsForCall(i int) (*model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
+func (fake *Fake) RunContainerArgsForCall(i int) (context.Context, *model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
-	return fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher, fake.runContainerArgsForCall[i].stdout, fake.runContainerArgsForCall[i].stderr
+	return fake.runContainerArgsForCall[i].ctx, fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher, fake.runContainerArgsForCall[i].stdout, fake.runContainerArgsForCall[i].stderr
 }
 
 func (fake *Fake) RunContainerReturns(result1 *int64, result2 error) {

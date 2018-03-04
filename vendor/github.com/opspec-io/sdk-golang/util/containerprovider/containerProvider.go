@@ -3,6 +3,7 @@ package containerprovider
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ContainerProvider
 
 import (
+	"context"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"io"
@@ -15,6 +16,7 @@ type ContainerProvider interface {
 
 	// RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
 	RunContainer(
+		ctx context.Context,
 		req *model.DCGContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,

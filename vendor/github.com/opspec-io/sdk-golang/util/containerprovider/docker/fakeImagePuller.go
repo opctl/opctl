@@ -2,6 +2,7 @@
 package docker
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
@@ -9,9 +10,10 @@ import (
 )
 
 type fakeImagePuller struct {
-	PullStub        func(dcgContainerImage *model.DCGContainerCallImage, containerId string, rootOpId string, eventPublisher pubsub.EventPublisher) error
+	PullStub        func(ctx context.Context, dcgContainerImage *model.DCGContainerCallImage, containerId string, rootOpId string, eventPublisher pubsub.EventPublisher) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
+		ctx               context.Context
 		dcgContainerImage *model.DCGContainerCallImage
 		containerId       string
 		rootOpId          string
@@ -27,19 +29,20 @@ type fakeImagePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeImagePuller) Pull(dcgContainerImage *model.DCGContainerCallImage, containerId string, rootOpId string, eventPublisher pubsub.EventPublisher) error {
+func (fake *fakeImagePuller) Pull(ctx context.Context, dcgContainerImage *model.DCGContainerCallImage, containerId string, rootOpId string, eventPublisher pubsub.EventPublisher) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
+		ctx               context.Context
 		dcgContainerImage *model.DCGContainerCallImage
 		containerId       string
 		rootOpId          string
 		eventPublisher    pubsub.EventPublisher
-	}{dcgContainerImage, containerId, rootOpId, eventPublisher})
-	fake.recordInvocation("Pull", []interface{}{dcgContainerImage, containerId, rootOpId, eventPublisher})
+	}{ctx, dcgContainerImage, containerId, rootOpId, eventPublisher})
+	fake.recordInvocation("Pull", []interface{}{ctx, dcgContainerImage, containerId, rootOpId, eventPublisher})
 	fake.pullMutex.Unlock()
 	if fake.PullStub != nil {
-		return fake.PullStub(dcgContainerImage, containerId, rootOpId, eventPublisher)
+		return fake.PullStub(ctx, dcgContainerImage, containerId, rootOpId, eventPublisher)
 	}
 	if specificReturn {
 		return ret.result1
@@ -53,10 +56,10 @@ func (fake *fakeImagePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *fakeImagePuller) PullArgsForCall(i int) (*model.DCGContainerCallImage, string, string, pubsub.EventPublisher) {
+func (fake *fakeImagePuller) PullArgsForCall(i int) (context.Context, *model.DCGContainerCallImage, string, string, pubsub.EventPublisher) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
-	return fake.pullArgsForCall[i].dcgContainerImage, fake.pullArgsForCall[i].containerId, fake.pullArgsForCall[i].rootOpId, fake.pullArgsForCall[i].eventPublisher
+	return fake.pullArgsForCall[i].ctx, fake.pullArgsForCall[i].dcgContainerImage, fake.pullArgsForCall[i].containerId, fake.pullArgsForCall[i].rootOpId, fake.pullArgsForCall[i].eventPublisher
 }
 
 func (fake *fakeImagePuller) PullReturns(result1 error) {

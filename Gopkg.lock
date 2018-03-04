@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "6fe8384939b867409a5021d97afe5d2a606d0f0c"
+  revision = "954e55b3745fe764df54e8fc19039b49bcd2f1a3"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -413,7 +413,7 @@
     "p2p/protocol/identify",
     "p2p/protocol/identify/pb"
   ]
-  revision = "91fec896549430b7d93a82368b3bcd1ab71320a3"
+  revision = "5180df872e5ef34074bc6977b78f6b6e98553788"
 
 [[projects]]
   branch = "master"
@@ -727,7 +727,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "3a6f7390d2e529099b3e54b3540e7919db31c243"
+  revision = "da3e8b33c63635e50e617f24635ef622685f4b24"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
