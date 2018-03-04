@@ -31,8 +31,7 @@
     }
   },
   "required": [
-    "name",
-    "opspec"
+    "name"
   ],
   "additionalProperties": false,
   "definitions": {

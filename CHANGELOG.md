@@ -31,6 +31,7 @@ All notable changes will be documented in this file in accordance with
 
 ### Deprecated
 
+- op.yml without `opspec` property
 - pkg fs & scope references in/as op call args without `$(ref)`
   reference syntax
 
