@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -11,6 +12,7 @@ var _ = Context("core", func() {
 	Context("ResolvePkg", func() {
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedPkgRef := "dummyPkgRef"
 			providedPullCreds := &model.PullCreds{
 				Username: "dummyUsername",
@@ -32,12 +34,17 @@ var _ = Context("core", func() {
 
 			/* act */
 			objectUnderTest.ResolvePkg(
+				providedCtx,
 				providedPkgRef,
 				providedPullCreds,
 			)
 
 			/* assert */
-			actualPkgRef, actualPkgProviders := fakePkg.ResolveArgsForCall(0)
+			actualCtx,
+				actualPkgRef,
+				actualPkgProviders := fakePkg.ResolveArgsForCall(0)
+
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualPkgProviders).To(ConsistOf(expectedPkgProviders))
 		})

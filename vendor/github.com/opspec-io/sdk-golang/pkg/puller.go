@@ -3,6 +3,7 @@ package pkg
 //go:generate counterfeiter -o ./fakePuller.go --fake-name fakePuller ./ puller
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,6 +25,7 @@ type puller interface {
 	//  - ErrPkgPullAuthentication on authentication failure
 	//  - ErrPkgPullAuthorization on authorization failure
 	Pull(
+		ctx context.Context,
 		path string,
 		pkgRef string,
 		pullCreds *model.PullCreds,
@@ -39,12 +41,13 @@ func newPuller() puller {
 }
 
 type _puller struct {
-	git       igit.IGit
-	os        ios.IOS
-	refParser refParser
+	git               igit.IGit
+	os                ios.IOS
+	refParser         refParser
 }
 
 func (plr _puller) Pull(
+	ctx context.Context,
 	path string,
 	pkgRef string,
 	authOpts *model.PullCreds,

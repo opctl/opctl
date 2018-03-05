@@ -2,15 +2,17 @@
 package pkg
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type fakePuller struct {
-	PullStub        func(path string, pkgRef string, pullCreds *model.PullCreds) error
+	PullStub        func(ctx context.Context, path string, pkgRef string, pullCreds *model.PullCreds) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
+		ctx       context.Context
 		path      string
 		pkgRef    string
 		pullCreds *model.PullCreds
@@ -25,18 +27,19 @@ type fakePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakePuller) Pull(path string, pkgRef string, pullCreds *model.PullCreds) error {
+func (fake *fakePuller) Pull(ctx context.Context, path string, pkgRef string, pullCreds *model.PullCreds) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
+		ctx       context.Context
 		path      string
 		pkgRef    string
 		pullCreds *model.PullCreds
-	}{path, pkgRef, pullCreds})
-	fake.recordInvocation("Pull", []interface{}{path, pkgRef, pullCreds})
+	}{ctx, path, pkgRef, pullCreds})
+	fake.recordInvocation("Pull", []interface{}{ctx, path, pkgRef, pullCreds})
 	fake.pullMutex.Unlock()
 	if fake.PullStub != nil {
-		return fake.PullStub(path, pkgRef, pullCreds)
+		return fake.PullStub(ctx, path, pkgRef, pullCreds)
 	}
 	if specificReturn {
 		return ret.result1
@@ -50,10 +53,10 @@ func (fake *fakePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *fakePuller) PullArgsForCall(i int) (string, string, *model.PullCreds) {
+func (fake *fakePuller) PullArgsForCall(i int) (context.Context, string, string, *model.PullCreds) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
-	return fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].pkgRef, fake.pullArgsForCall[i].pullCreds
+	return fake.pullArgsForCall[i].ctx, fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].pkgRef, fake.pullArgsForCall[i].pullCreds
 }
 
 func (fake *fakePuller) PullReturns(result1 error) {

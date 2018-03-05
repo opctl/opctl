@@ -29,6 +29,7 @@ func (hdlr _handler) pkgs_ref_contents(
 	}
 
 	pkgHandle, err := hdlr.core.ResolvePkg(
+		httpReq.Context(),
 		pkgRef,
 		pullCreds,
 	)

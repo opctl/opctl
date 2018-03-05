@@ -19,7 +19,10 @@ func (hdlr _handler) ops_starts(
 		return
 	}
 
-	callId, err := hdlr.core.StartOp(startOpReq)
+	callID, err := hdlr.core.StartOp(
+		httpReq.Context(),
+		startOpReq,
+	)
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
@@ -28,7 +31,7 @@ func (hdlr _handler) ops_starts(
 	httpResp.WriteHeader(http.StatusCreated)
 	httpResp.Header().Set("Content-Type", "text/plain; charset=UTF-8")
 
-	httpResp.Write([]byte(callId))
+	httpResp.Write([]byte(callID))
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return

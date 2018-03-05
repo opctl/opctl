@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -22,7 +23,10 @@ var _ = Context("core", func() {
 				objectUnderTest := _core{}
 
 				/* act */
-				_, actualErr := objectUnderTest.StartOp(model.StartOpReq{})
+				_, actualErr := objectUnderTest.StartOp(
+					context.Background(),
+					model.StartOpReq{},
+				)
 
 				/* assert */
 				Expect(actualErr).To(Equal(expectedErr))
@@ -45,7 +49,10 @@ var _ = Context("core", func() {
 				}
 
 				/* act */
-				objectUnderTest.StartOp(model.StartOpReq{Pkg: &model.DCGOpCallPkg{}})
+				objectUnderTest.StartOp(
+					context.Background(),
+					model.StartOpReq{Pkg: &model.DCGOpCallPkg{}},
+				)
 
 				/* assert */
 
@@ -68,7 +75,10 @@ var _ = Context("core", func() {
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.StartOp(model.StartOpReq{Pkg: &model.DCGOpCallPkg{}})
+					_, actualErr := objectUnderTest.StartOp(
+						context.Background(),
+						model.StartOpReq{Pkg: &model.DCGOpCallPkg{}},
+					)
 
 					/* assert */
 					Expect(actualErr).To(Equal(expectedErr))
@@ -137,7 +147,10 @@ var _ = Context("core", func() {
 					}
 
 					/* act */
-					objectUnderTest.StartOp(providedReq)
+					objectUnderTest.StartOp(
+						context.Background(),
+						providedReq,
+					)
 
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur

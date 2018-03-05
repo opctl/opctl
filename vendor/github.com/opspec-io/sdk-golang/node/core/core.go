@@ -28,6 +28,7 @@ type Core interface {
 	)
 
 	StartOp(
+		ctx context.Context,
 		req model.StartOpReq,
 	) (
 		callId string,
@@ -42,6 +43,7 @@ type Core interface {
 	//  - ErrPkgPullAuthorization on authorization failure
 	//  - ErrPkgNotFound on resolution failure
 	ResolvePkg(
+		ctx context.Context,
 		pkgRef string,
 		pullCreds *model.PullCreds,
 	) (

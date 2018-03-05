@@ -727,7 +727,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "da3e8b33c63635e50e617f24635ef622685f4b24"
+  revision = "40d5ff2762edb9d7c04842d1cf6d82a37921fc73"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"

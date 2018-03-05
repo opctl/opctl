@@ -14,7 +14,7 @@ func (cc _ContainerCall) Interpret(
 ) (*model.DCGContainerCall, error) {
 
 	dcgContainerCall := &model.DCGContainerCall{
-		DCGBaseCall: &model.DCGBaseCall{
+		DCGBaseCall: model.DCGBaseCall{
 			RootOpId:  rootOpId,
 			PkgHandle: pkgHandle,
 		},

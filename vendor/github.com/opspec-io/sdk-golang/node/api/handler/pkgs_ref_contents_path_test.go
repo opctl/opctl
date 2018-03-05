@@ -51,7 +51,10 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+			_,
+				actualPkgRef,
+				actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
 				Username: providedUsername,
@@ -84,7 +87,10 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			actualPkgRef, actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+			_,
+				actualPkgRef,
+				actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(actualPullCreds).To(BeNil())
 		})

@@ -28,9 +28,10 @@ type Fake struct {
 	killOpArgsForCall []struct {
 		req model.KillOpReq
 	}
-	StartOpStub        func(req model.StartOpReq) (callId string, err error)
+	StartOpStub        func(ctx context.Context, req model.StartOpReq) (callId string, err error)
 	startOpMutex       sync.RWMutex
 	startOpArgsForCall []struct {
+		ctx context.Context
 		req model.StartOpReq
 	}
 	startOpReturns struct {
@@ -41,9 +42,10 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolvePkgStub        func(pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error)
+	ResolvePkgStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error)
 	resolvePkgMutex       sync.RWMutex
 	resolvePkgArgsForCall []struct {
+		ctx       context.Context
 		pkgRef    string
 		pullCreds *model.PullCreds
 	}
@@ -135,16 +137,17 @@ func (fake *Fake) KillOpArgsForCall(i int) model.KillOpReq {
 	return fake.killOpArgsForCall[i].req
 }
 
-func (fake *Fake) StartOp(req model.StartOpReq) (callId string, err error) {
+func (fake *Fake) StartOp(ctx context.Context, req model.StartOpReq) (callId string, err error) {
 	fake.startOpMutex.Lock()
 	ret, specificReturn := fake.startOpReturnsOnCall[len(fake.startOpArgsForCall)]
 	fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {
+		ctx context.Context
 		req model.StartOpReq
-	}{req})
-	fake.recordInvocation("StartOp", []interface{}{req})
+	}{ctx, req})
+	fake.recordInvocation("StartOp", []interface{}{ctx, req})
 	fake.startOpMutex.Unlock()
 	if fake.StartOpStub != nil {
-		return fake.StartOpStub(req)
+		return fake.StartOpStub(ctx, req)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -158,10 +161,10 @@ func (fake *Fake) StartOpCallCount() int {
 	return len(fake.startOpArgsForCall)
 }
 
-func (fake *Fake) StartOpArgsForCall(i int) model.StartOpReq {
+func (fake *Fake) StartOpArgsForCall(i int) (context.Context, model.StartOpReq) {
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
-	return fake.startOpArgsForCall[i].req
+	return fake.startOpArgsForCall[i].ctx, fake.startOpArgsForCall[i].req
 }
 
 func (fake *Fake) StartOpReturns(result1 string, result2 error) {
@@ -186,17 +189,18 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkg(pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error) {
+func (fake *Fake) ResolvePkg(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error) {
 	fake.resolvePkgMutex.Lock()
 	ret, specificReturn := fake.resolvePkgReturnsOnCall[len(fake.resolvePkgArgsForCall)]
 	fake.resolvePkgArgsForCall = append(fake.resolvePkgArgsForCall, struct {
+		ctx       context.Context
 		pkgRef    string
 		pullCreds *model.PullCreds
-	}{pkgRef, pullCreds})
-	fake.recordInvocation("ResolvePkg", []interface{}{pkgRef, pullCreds})
+	}{ctx, pkgRef, pullCreds})
+	fake.recordInvocation("ResolvePkg", []interface{}{ctx, pkgRef, pullCreds})
 	fake.resolvePkgMutex.Unlock()
 	if fake.ResolvePkgStub != nil {
-		return fake.ResolvePkgStub(pkgRef, pullCreds)
+		return fake.ResolvePkgStub(ctx, pkgRef, pullCreds)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -210,10 +214,10 @@ func (fake *Fake) ResolvePkgCallCount() int {
 	return len(fake.resolvePkgArgsForCall)
 }
 
-func (fake *Fake) ResolvePkgArgsForCall(i int) (string, *model.PullCreds) {
+func (fake *Fake) ResolvePkgArgsForCall(i int) (context.Context, string, *model.PullCreds) {
 	fake.resolvePkgMutex.RLock()
 	defer fake.resolvePkgMutex.RUnlock()
-	return fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
+	return fake.resolvePkgArgsForCall[i].ctx, fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
 }
 
 func (fake *Fake) ResolvePkgReturns(result1 model.PkgHandle, result2 error) {

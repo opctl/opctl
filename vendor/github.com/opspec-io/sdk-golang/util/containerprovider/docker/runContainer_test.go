@@ -21,7 +21,7 @@ var _ = Context("RunContainer", func() {
 	It("should call portBindingsFactory.Construct w expected args", func() {
 		/* arrange */
 		providedReq := &model.DCGContainerCall{
-			DCGBaseCall: &model.DCGBaseCall{},
+			DCGBaseCall: model.DCGBaseCall{},
 			Image:       &model.DCGContainerCallImage{},
 			Ports: map[string]string{
 				"6060/udp":  "6060",
@@ -91,7 +91,7 @@ var _ = Context("RunContainer", func() {
 		It("should call containerConfigFactory.Construct w expected args", func() {
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: &model.DCGBaseCall{},
+				DCGBaseCall: model.DCGBaseCall{},
 				Cmd:         []string{"dummyCmd"},
 				EnvVars: map[string]string{
 					"envVar1Name": "envVar1Value",
@@ -147,7 +147,7 @@ var _ = Context("RunContainer", func() {
 		It("should call hostConfigFactory.Construct w expected args", func() {
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: &model.DCGBaseCall{},
+				DCGBaseCall: model.DCGBaseCall{},
 				Dirs: map[string]string{
 					"dir1ContainerPath": "dir1HostPath",
 					"dir2ContainerPath": "dir2HostPath",
@@ -206,7 +206,7 @@ var _ = Context("RunContainer", func() {
 
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: &model.DCGBaseCall{
+				DCGBaseCall: model.DCGBaseCall{
 					RootOpId: "dummyRootOpId",
 				},
 				ContainerId: "dummyContainerId",
@@ -256,7 +256,7 @@ var _ = Context("RunContainer", func() {
 		It("should call dockerClient.ContainerCreate w/ expected args", func() {
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: &model.DCGBaseCall{
+				DCGBaseCall: model.DCGBaseCall{
 					RootOpId: "dummyRootOpId",
 				},
 				ContainerId: "dummyContainerId",

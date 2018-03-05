@@ -84,7 +84,7 @@ var _ = Context("opCaller", func() {
 			expectedErr := errors.New("dummyError")
 			fakeOpCall.InterpretReturns(
 				&model.DCGOpCall{
-					DCGBaseCall: &model.DCGBaseCall{},
+					DCGBaseCall: model.DCGBaseCall{},
 				},
 				expectedErr,
 			)
@@ -202,7 +202,7 @@ var _ = Context("opCaller", func() {
 				fakeOpCall := new(opcall.Fake)
 				fakeOpCall.InterpretReturns(
 					&model.DCGOpCall{
-						DCGBaseCall: &model.DCGBaseCall{},
+						DCGBaseCall: model.DCGBaseCall{},
 					},
 					nil,
 				)
@@ -249,7 +249,7 @@ var _ = Context("opCaller", func() {
 
 				dummyString := "dummyString"
 				dcgOpCall := model.DCGOpCall{
-					DCGBaseCall: &model.DCGBaseCall{
+					DCGBaseCall: model.DCGBaseCall{
 						PkgHandle: new(pkg.FakeHandle),
 					},
 					ChildCallId: "dummyChildCallId",
@@ -319,7 +319,7 @@ var _ = Context("opCaller", func() {
 				fakeOpCall := new(opcall.Fake)
 				fakeOpCall.InterpretReturns(
 					&model.DCGOpCall{
-						DCGBaseCall: &model.DCGBaseCall{
+						DCGBaseCall: model.DCGBaseCall{
 							PkgHandle: fakePkgHandle,
 						},
 					},
@@ -385,7 +385,7 @@ var _ = Context("opCaller", func() {
 					fakeOpCall := new(opcall.Fake)
 					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
-							DCGBaseCall: &model.DCGBaseCall{
+							DCGBaseCall: model.DCGBaseCall{
 								PkgHandle: fakePkgHandle,
 							},
 						},
@@ -441,7 +441,7 @@ var _ = Context("opCaller", func() {
 					fakeOpCall := new(opcall.Fake)
 					fakeOpCall.InterpretReturns(
 						&model.DCGOpCall{
-							DCGBaseCall: &model.DCGBaseCall{
+							DCGBaseCall: model.DCGBaseCall{
 								PkgHandle: fakePkgHandle,
 							},
 						},
@@ -505,7 +505,7 @@ var _ = Context("opCaller", func() {
 						fakeOpCall := new(opcall.Fake)
 						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
-								DCGBaseCall: &model.DCGBaseCall{},
+								DCGBaseCall: model.DCGBaseCall{},
 							},
 							nil,
 						)
@@ -583,7 +583,7 @@ var _ = Context("opCaller", func() {
 						fakeOpCall := new(opcall.Fake)
 						fakeOpCall.InterpretReturns(
 							&model.DCGOpCall{
-								DCGBaseCall: &model.DCGBaseCall{
+								DCGBaseCall: model.DCGBaseCall{
 									PkgHandle: fakePkgHandle,
 								},
 							},

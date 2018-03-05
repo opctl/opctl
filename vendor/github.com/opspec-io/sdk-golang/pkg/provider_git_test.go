@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"context"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -15,6 +16,7 @@ var _ = Context("gitProvider", func() {
 
 			It("should call localFSProvider.TryResolve w/ expected args", func() {
 				/* arrange */
+				providedCtx := context.Background()
 				providedPkgRef := "dummyPkgRef"
 
 				fakeLocalFSProvider := new(FakeProvider)
@@ -26,10 +28,17 @@ var _ = Context("gitProvider", func() {
 				}
 
 				/* act */
-				objectUnderTest.TryResolve(providedPkgRef)
+				objectUnderTest.TryResolve(
+					providedCtx,
+					providedPkgRef,
+				)
 
 				/* assert */
-				Expect(fakeLocalFSProvider.TryResolveArgsForCall(0)).To(Equal(providedPkgRef))
+				actualCtx,
+					actualPkgRef := fakeLocalFSProvider.TryResolveArgsForCall(0)
+
+				Expect(actualCtx).To(Equal(providedCtx))
+				Expect(actualPkgRef).To(Equal(providedPkgRef))
 			})
 			Context("localFSProvider.TryResolve errors", func() {
 				It("should return err", func() {
@@ -45,7 +54,10 @@ var _ = Context("gitProvider", func() {
 					}
 
 					/* act */
-					_, actualError := objectUnderTest.TryResolve("dummyPkgRef")
+					_, actualError := objectUnderTest.TryResolve(
+						context.Background(),
+						"dummyPkgRef",
+					)
 
 					/* assert */
 					Expect(actualError).To(Equal(expectedErr))
@@ -66,7 +78,10 @@ var _ = Context("gitProvider", func() {
 						}
 
 						/* act */
-						actualHandle, actualError := objectUnderTest.TryResolve("dummyPkgRef")
+						actualHandle, actualError := objectUnderTest.TryResolve(
+							context.Background(),
+							"dummyPkgRef",
+						)
 
 						/* assert */
 						Expect(actualHandle).To(Equal(expectedHandle))
@@ -76,6 +91,7 @@ var _ = Context("gitProvider", func() {
 				Context("FSProvider.TryResolve doesn't return a handle", func() {
 					It("should call puller.Pull w/ expected args", func() {
 						/* arrange */
+						providedCtx := context.Background()
 						providedPkgRef := "dummyPkgRef"
 						basePath := "dummyBasePath"
 						pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
@@ -92,12 +108,17 @@ var _ = Context("gitProvider", func() {
 						}
 
 						/* act */
-						objectUnderTest.TryResolve(providedPkgRef)
+						objectUnderTest.TryResolve(
+							providedCtx,
+							providedPkgRef,
+						)
 
 						/* assert */
-						actualBasePath,
+						actualCtx,
+							actualBasePath,
 							actualPkgRef,
 							actualPullCreds := fakePuller.PullArgsForCall(0)
+						Expect(actualCtx).To(Equal(providedCtx))
 						Expect(actualBasePath).To(Equal(basePath))
 						Expect(actualPkgRef).To(Equal(providedPkgRef))
 						Expect(actualPullCreds).To(Equal(pullCreds))
@@ -117,7 +138,10 @@ var _ = Context("gitProvider", func() {
 							}
 
 							/* act */
-							_, actualError := objectUnderTest.TryResolve("dummyPkgRef")
+							_, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								"dummyPkgRef",
+							)
 
 							/* assert */
 							Expect(actualError).To(Equal(expectedErr))
@@ -136,7 +160,10 @@ var _ = Context("gitProvider", func() {
 							}
 
 							/* act */
-							actualHandle, actualError := objectUnderTest.TryResolve(providedPkgRef)
+							actualHandle, actualError := objectUnderTest.TryResolve(
+								context.Background(),
+								providedPkgRef,
+							)
 
 							/* assert */
 							Expect(actualHandle).To(Equal(newGitHandle(filepath.Join(basePath, providedPkgRef), providedPkgRef)))
@@ -154,7 +181,7 @@ var _ = Context("gitProvider", func() {
 
 				fakeLocalFSProvider := new(FakeProvider)
 				// err to trigger immediate return
-				fakeLocalFSProvider.TryResolveStub = func(pkgRef string) (model.PkgHandle, error) {
+				fakeLocalFSProvider.TryResolveStub = func(ctx context.Context, pkgRef string) (model.PkgHandle, error) {
 					// ensure go routine has time to overlap
 					<-time.After(100 * time.Millisecond)
 
@@ -167,7 +194,10 @@ var _ = Context("gitProvider", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.TryResolve(providedPkgRef)
+				_, actualErr := objectUnderTest.TryResolve(
+					context.Background(),
+					providedPkgRef,
+				)
 
 				/* assert */
 				Expect(fakeLocalFSProvider.TryResolveCallCount()).To(Equal(1))
@@ -177,7 +207,10 @@ var _ = Context("gitProvider", func() {
 		Context("called in parallel w/ different pkg ref", func() {
 			It("should call localFSProvider.TryResolve w/ expected args", func() {
 				/* arrange */
+				providedCtx0 := context.Background()
 				providedPkgRef0 := "dummyPkgRef0"
+
+				providedCtx1 := context.Background()
 				providedPkgRef1 := "dummyPkgRef1"
 
 				fakeLocalFSProvider := new(FakeProvider)
@@ -189,12 +222,26 @@ var _ = Context("gitProvider", func() {
 				}
 
 				/* act */
-				objectUnderTest.TryResolve(providedPkgRef0)
-				objectUnderTest.TryResolve(providedPkgRef1)
+				objectUnderTest.TryResolve(
+					providedCtx0,
+					providedPkgRef0,
+				)
+
+				objectUnderTest.TryResolve(
+					providedCtx1,
+					providedPkgRef1,
+				)
 
 				/* assert */
-				Expect(fakeLocalFSProvider.TryResolveArgsForCall(0)).To(Equal(providedPkgRef0))
-				Expect(fakeLocalFSProvider.TryResolveArgsForCall(1)).To(Equal(providedPkgRef1))
+				actualCtx0,
+					actualPkgRef0 := fakeLocalFSProvider.TryResolveArgsForCall(0)
+				Expect(actualCtx0).To(Equal(providedCtx0))
+				Expect(actualPkgRef0).To(Equal(providedPkgRef0))
+
+				actualCtx1,
+					actualPkgRef1 := fakeLocalFSProvider.TryResolveArgsForCall(1)
+				Expect(actualCtx1).To(Equal(providedCtx1))
+				Expect(actualPkgRef1).To(Equal(providedPkgRef1))
 			})
 		})
 	})
