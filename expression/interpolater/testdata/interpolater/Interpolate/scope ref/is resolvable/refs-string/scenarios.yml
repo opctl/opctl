@@ -6,6 +6,14 @@
         value1
   expected: value1
 
+- name: escaped
+  template: \$(string1)
+  scope:
+    string1:
+      string:
+        value1
+  expected: $(string1)
+
 - name: at start
   template: $(string1)suffix
   scope:

@@ -6,6 +6,14 @@
         1000000
   expected: 1000000
 
+- name: escaped
+  template: \$(number1)
+  scope:
+    number1:
+      number:
+        1000000
+  expected: $(number1)
+
 - name: at start
   template: $(number1)suffix
   scope:

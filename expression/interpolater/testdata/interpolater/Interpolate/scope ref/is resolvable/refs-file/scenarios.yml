@@ -6,6 +6,14 @@
         file1.txt
   expected: value1
 
+- name: escaped
+  template: \$(file1)
+  scope:
+    file1:
+      file:
+        file1.txt
+  expected: $(file1)
+
 - name: at start
   template: $(file1)suffix
   scope:

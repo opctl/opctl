@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	escaper   = '\\'
 	operator  = '$'
 	refOpener = '('
 	refCloser = ')'
@@ -34,6 +35,7 @@ type _Interpolater struct {
 	deReferencer dereferencer.DeReferencer
 }
 
+// similar: https://github.com/kubernetes/kubernetes/blob/5066a67caaf8638c7473d4bd228037d0c270c546/third_party/forked/golang/expansion/expand.go#L1
 func (itp _Interpolater) Interpolate(
 	expression string,
 	scope map[string]*model.Value,
@@ -41,9 +43,25 @@ func (itp _Interpolater) Interpolate(
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
+	escapesCount := 0
+
 	for i < len(expression) {
-		switch {
-		case operator == expression[i]:
+		switch expression[i] {
+		case escaper:
+			escapesCount++
+		case operator:
+			isEscaped := 0 != escapesCount%2
+			for escapesCount > 0 {
+				if 0 == escapesCount%2 {
+					refBuffer = append(refBuffer, escaper)
+				}
+				escapesCount--
+			}
+			if isEscaped {
+				refBuffer = append(refBuffer, expression[i])
+				break
+			}
+
 			result, consumed, err := itp.tryDeRef(expression[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", err
@@ -51,11 +69,21 @@ func (itp _Interpolater) Interpolate(
 			refBuffer = append(refBuffer, result...)
 			i += consumed
 		default:
+			for escapesCount > 0 {
+				refBuffer = append(refBuffer, escaper)
+				escapesCount--
+			}
+
 			refBuffer = append(refBuffer, expression[i])
 		}
 
 		// always increment loop counter
 		i++
+	}
+
+	for escapesCount > 0 {
+		refBuffer = append(refBuffer, escaper)
+		escapesCount--
 	}
 
 	return string(refBuffer), nil
@@ -72,9 +100,10 @@ func (itp _Interpolater) tryDeRef(
 ) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0
+
 	for i < len(possibleRef) {
-		switch {
-		case refCloser == possibleRef[i]:
+		switch possibleRef[i] {
+		case refCloser:
 			if len(refBuffer) > 0 && refOpener == refBuffer[0] {
 				result, ok, err := itp.deReferencer.DeReference(string(refBuffer[1:]), scope, pkgHandle)
 				if nil != err {
@@ -85,7 +114,7 @@ func (itp _Interpolater) tryDeRef(
 				}
 			}
 			refBuffer = append(refBuffer, possibleRef[i])
-		case operator == possibleRef[i]:
+		case operator:
 			result, consumed, err := itp.tryDeRef(possibleRef[i+1:], scope, pkgHandle)
 			if nil != err {
 				return "", 0, err
