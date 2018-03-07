@@ -23,7 +23,15 @@ var MaxMessageSize = 1 << 20
 // we don't have that in this protocol.
 var ReceiveTimeout = 5 * time.Second
 
+// ErrShutdown is returned when operating on a shutdown session
 var ErrShutdown = errors.New("session shut down")
+
+// ErrTwoInitiators is returned when both sides think they're the initiator
+var ErrTwoInitiators = errors.New("two initiators")
+
+// ErrInvalidState is returned when the other side does something it shouldn't.
+// In this case, we close the connection to be safe.
+var ErrInvalidState = errors.New("received an unexpected message from the peer")
 
 // +1 for initiator
 const (
@@ -253,9 +261,15 @@ func (mp *Multiplex) handleIncoming() {
 		// initiator (why should we?) it's the spec...
 		switch tag {
 		case NewStream:
+			if mp.initiator == ((ch & 0x1) == 1) {
+				mp.shutdownErr = ErrTwoInitiators
+				return
+			}
+
 			if ok {
 				log.Debugf("received NewStream message for existing stream: %d", ch)
-				continue
+				mp.shutdownErr = ErrInvalidState
+				return
 			}
 
 			name := string(b)
@@ -271,11 +285,13 @@ func (mp *Multiplex) handleIncoming() {
 
 		case Reset, Reset + 1:
 			if !ok {
+				// This is *ok*. We forget the stream on reset.
 				continue
 			}
 			msch.clLock.Lock()
 
 			// Honestly, this check should never be true... It means we've leaked.
+			// However, this is an error on *our* side so we shouldn't just bail.
 			if msch.closedLocal && msch.closedRemote {
 				msch.clLock.Unlock()
 				log.Errorf("leaked a completely closed stream")
@@ -301,6 +317,8 @@ func (mp *Multiplex) handleIncoming() {
 
 			if msch.closedRemote {
 				msch.clLock.Unlock()
+				// Technically a bug on the other side. We
+				// should consider killing the connection.
 				continue
 			}
 
@@ -318,6 +336,8 @@ func (mp *Multiplex) handleIncoming() {
 			}
 		case Message, Message + 1:
 			if !ok {
+				// This is a perfectly valid case when we reset
+				// and forget about the stream.
 				log.Debugf("message for non-existant stream, dropping data: %d", ch)
 				// Guess initiator status based on the tag.
 				var initiator uint64
