@@ -22,6 +22,6 @@ run:
         echo "unit testing code"
         ginkgo --v -cover -race -r
     dirs:
-      /go/src/github.com/opspec-io/sdk-golang: srcDir
+      /go/src/github.com/opspec-io/sdk-golang: $(srcDir)
     image: { ref: 'golang:1.10.0' }
     workDir: /go/src/github.com/opspec-io/sdk-golang

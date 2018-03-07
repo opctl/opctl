@@ -22,11 +22,6 @@ dirLoop:
 			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
-		if !strings.HasPrefix(dirExpression, "$(") && !strings.HasSuffix(dirExpression, ")") {
-			// handle deprecated ref
-			dirExpression = fmt.Sprintf("$(%v)", dirExpression)
-		}
-
 		dirValue, err := d.expression.EvalToDir(
 			scope,
 			dirExpression,
