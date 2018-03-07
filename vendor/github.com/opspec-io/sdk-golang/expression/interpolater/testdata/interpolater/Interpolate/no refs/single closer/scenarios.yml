@@ -11,5 +11,5 @@
   expected: prefix)
 
 - name: within
-  template: prefix)
-  expected: prefix)
+  template: prefix)suffix
+  expected: prefix)suffix

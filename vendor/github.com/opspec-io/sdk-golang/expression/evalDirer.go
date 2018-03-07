@@ -44,25 +44,9 @@ func (ed _evalDirer) EvalToDir(
 ) (*model.Value, error) {
 	possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
 
-	// the following is gross but it's due to all the deprecated syntax we support
 	if ref, ok := tryResolveExplicitRef(expression, scope); ok && nil != ref.Dir {
 		// scope ref w/out path
 		return ref, nil
-	} else if strings.HasPrefix(expression, "/") {
-
-		// deprecated pkg fs ref
-		deprecatedPkgFsRefPath, err := ed.interpolater.Interpolate(
-			expression,
-			scope,
-			pkgHandle,
-		)
-		if nil != err {
-			return nil, fmt.Errorf("unable to evaluate %v to dir; error was %v", expression, err.Error())
-		}
-
-		deprecatedPkgFsRefPath = filepath.Join(pkgHandle.Ref(), deprecatedPkgFsRefPath)
-		return &model.Value{Dir: &deprecatedPkgFsRefPath}, err
-
 	} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
 		refExpression := expression[2:possibleRefCloserIndex]
@@ -79,18 +63,6 @@ func (ed _evalDirer) EvalToDir(
 			pkgPath := pkgHandle.Path()
 			dirValue = filepath.Join(*pkgPath, pkgFsRef)
 
-		} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
-
-			// dir scope ref w/ deprecated path
-			deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-			deprecatedPath, err := ed.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
-			}
-
-			dirValue := filepath.Join(*dcgValue.Dir, deprecatedPath)
-			return &model.Value{Dir: &dirValue}, nil
-
 		} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
 
 			// scope ref w/ path
@@ -100,22 +72,9 @@ func (ed _evalDirer) EvalToDir(
 				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 			}
 
-			// no possibility of deprecated path due to presence of path
 			dirValue := filepath.Join(*dcgValue.Dir, path)
 			return &model.Value{Dir: &dirValue}, nil
 
-		}
-
-		if len(expression) > possibleRefCloserIndex+1 {
-			// deprecated path
-			deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-			deprecatedPath, err := ed.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
-			}
-
-			dirValue := filepath.Join(dirValue, deprecatedPath)
-			return &model.Value{Dir: &dirValue}, nil
 		}
 
 		return &model.Value{Dir: &dirValue}, nil

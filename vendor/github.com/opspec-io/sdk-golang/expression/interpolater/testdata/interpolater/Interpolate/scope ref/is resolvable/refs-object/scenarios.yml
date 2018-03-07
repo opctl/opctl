@@ -4,6 +4,13 @@
     object1:
       object: { name: value }
   expected: '{"name":"value"}'
+  
+- name: escaped
+  template: \$(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: $(object1)
 
 - name: at start
   template: $(object1)suffix

@@ -72,7 +72,7 @@
     "digestset",
     "reference"
   ]
-  revision = "6664ec703991875e14419ff4960921cce7678bab"
+  revision = "6fca8d6e6713acbdf3f9ca40cf6370fc5ee5ee53"
 
 [[projects]]
   branch = "master"
@@ -99,7 +99,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "8b8a0e2c523eb886094fad7e5342d93407a19c8e"
+  revision = "954e55b3745fe764df54e8fc19039b49bcd2f1a3"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -292,7 +292,7 @@
   branch = "master"
   name = "github.com/sethgrid/pester"
   packages = ["."]
-  revision = "b18953f5db2922a73aaf89652abf7b5ee95cb516"
+  revision = "ed9870dad3170c0b25ab9b11830cc57c3a7798fb"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -326,8 +326,8 @@
 [[projects]]
   name = "github.com/tidwall/gjson"
   packages = ["."]
-  revision = "87033efcaec6215741137e8ca61952c53ef2685d"
-  version = "v1.0.6"
+  revision = "01f00f129617a6fe98941fb920d6c760241b54d2"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -354,7 +354,7 @@
   branch = "master"
   name = "github.com/tidwall/tinyqueue"
   packages = ["."]
-  revision = "1feaf062ef04a231c9126f99a68eaa579fd0e390"
+  revision = "1e39f55115634cad2c504631c8bfcc292f2c9c55"
 
 [[projects]]
   branch = "master"
@@ -401,7 +401,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "49796115aa4b964c318aad4f3084fdb41e9aa067"
+  revision = "91a49db82a88618983a78a06c1cbd4e00ab749ab"
 
 [[projects]]
   branch = "master"
@@ -413,7 +413,7 @@
     "proxy",
     "trace"
   ]
-  revision = "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
+  revision = "22ae77b79946ea320088417e4d50825671d82d57"
 
 [[projects]]
   branch = "master"
@@ -428,7 +428,7 @@
     "unix",
     "windows"
   ]
-  revision = "c1138c84af3a9927aee1a1b8b7ce06c9b7ea52bc"
+  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -509,10 +509,10 @@
   version = "v0.1.2"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+  version = "v2.1.1"
 
 [solve-meta]
   analyzer-name = "dep"

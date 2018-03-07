@@ -41,9 +41,9 @@ func newPuller() puller {
 }
 
 type _puller struct {
-	git               igit.IGit
-	os                ios.IOS
-	refParser         refParser
+	git       igit.IGit
+	os        ios.IOS
+	refParser refParser
 }
 
 func (plr _puller) Pull(

@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "954e55b3745fe764df54e8fc19039b49bcd2f1a3"
+  revision = "f3a3778808dae0da82f2acf300875b5da931c000"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -326,7 +326,7 @@
     "soap",
     "ssdp"
   ]
-  revision = "dceda08e705b2acee36aab47d765ed801f64cfc7"
+  revision = "e25a5cc217cad359cb2c52d1529d5ad7489752c2"
 
 [[projects]]
   branch = "master"
@@ -727,7 +727,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "40d5ff2762edb9d7c04842d1cf6d82a37921fc73"
+  revision = "567ae9f2ec90890c7e94631dda527495e36afac2"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -849,7 +849,7 @@
   branch = "master"
   name = "github.com/whyrusleeping/go-multiplex"
   packages = ["."]
-  revision = "70f38504e7e46774d757f2c50b9b74ba010b802c"
+  revision = "3ac9031715040479fc59cbf43a09f6a08b3ef9ae"
 
 [[projects]]
   branch = "master"
@@ -947,7 +947,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "91a49db82a88618983a78a06c1cbd4e00ab749ab"
+  revision = "85f98707c97e11569271e4d9b3d397e079c4f4d0"
 
 [[projects]]
   branch = "master"
@@ -962,7 +962,7 @@
     "proxy",
     "trace"
   ]
-  revision = "22ae77b79946ea320088417e4d50825671d82d57"
+  revision = "d25186b37f34ebdbbea8f488ef055638dfab272d"
 
 [[projects]]
   branch = "master"
