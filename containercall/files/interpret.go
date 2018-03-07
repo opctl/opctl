@@ -22,13 +22,6 @@ fileLoop:
 			fileExpression = fmt.Sprintf("$(%v)", scgContainerFilePath)
 		}
 
-		if fileExpressionAsString, ok := fileExpression.(string); ok &&
-			!strings.HasPrefix(fileExpressionAsString, "$(") &&
-			!strings.HasSuffix(fileExpressionAsString, ")") {
-			// handle deprecated ref
-			fileExpression = fmt.Sprintf("$(%v)", fileExpression)
-		}
-
 		fileValue, err := f.expression.EvalToFile(
 			scope,
 			fileExpression,
