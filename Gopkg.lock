@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "f3a3778808dae0da82f2acf300875b5da931c000"
+  revision = "8cf8fe9cf80a07d4e68829f619ea2c71fbb5af0c"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -727,7 +727,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "567ae9f2ec90890c7e94631dda527495e36afac2"
+  revision = "179c33d36050fe453b72e2c79857c077172decad"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
