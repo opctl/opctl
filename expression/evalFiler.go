@@ -86,26 +86,10 @@ func (ef _evalFiler) EvalToFile(
 		return ef.data.CoerceToFile(&model.Value{Array: arrayValue}, scratchDir)
 	case string:
 
-		// this block is gross but it's due to the deprecated syntax we support
 		possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
 			// scope ref w/out path
 			return ef.data.CoerceToFile(ref, scratchDir)
-		} else if strings.HasPrefix(expression, "/") {
-			// deprecated pkg fs ref
-			deprecatedPkgFsRefPath, err := ef.interpolater.Interpolate(
-				expression,
-				scope,
-				pkgHandle,
-			)
-			if nil != err {
-				return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
-			}
-
-			fileValue := filepath.Join(*pkgHandle.Path(), deprecatedPkgFsRefPath)
-
-			return &model.Value{File: &fileValue}, nil
-
 		} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
 			refExpression := expression[2:possibleRefCloserIndex]
@@ -123,18 +107,6 @@ func (ef _evalFiler) EvalToFile(
 
 				return &model.Value{File: &fileValue}, nil
 
-			} else if dcgValue, ok := scope[refExpression]; ok && nil != dcgValue.Dir {
-
-				// dir scope ref w/ deprecated path
-				deprecatedPathExpression := expression[possibleRefCloserIndex+1:]
-				deprecatedPath, err := ef.interpolater.Interpolate(deprecatedPathExpression, scope, pkgHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", deprecatedPathExpression, err.Error())
-				}
-
-				fileValue := filepath.Join(*dcgValue.Dir, deprecatedPath)
-				return &model.Value{File: &fileValue}, nil
-
 			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
 
 				// dir scope ref w/ path
@@ -144,7 +116,6 @@ func (ef _evalFiler) EvalToFile(
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 				}
 
-				// no possibility of deprecated path due to presence of path
 				fileValue := filepath.Join(*dcgValue.Dir, path)
 				return &model.Value{File: &fileValue}, nil
 
