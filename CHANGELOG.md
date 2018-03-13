@@ -12,12 +12,19 @@ All notable changes will be documented in this file in accordance with
   query param
 - [Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
 - [Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+- [Support boolean type](https://github.com/opspec-io/spec/issues/195)
+- [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
+- [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
 
 ### Deprecated
 
 - `stdOut` & `stdErr` attributes from
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use files.
+
+## Removed
+
+- [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opspec-io/spec/issues/184)
 
 ## \[0.1.5] - 2017-09-27
 
@@ -32,8 +39,7 @@ All notable changes will be documented in this file in accordance with
 ### Deprecated
 
 - op.yml without `opspec` property
-- pkg fs & scope references in/as op call args without `$(ref)`
-  reference syntax
+- References in/as expressions w/out explicit opener `$(` and closer `)`
 
 ### Removed
 
