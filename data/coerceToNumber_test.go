@@ -73,12 +73,12 @@ var _ = Context("coerceToNumber", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coerceToNumber{
+				objectUnderTest := _coerceToNumber{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.CoerceToNumber(providedValue)
+				objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -91,12 +91,12 @@ var _ = Context("coerceToNumber", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coerceToNumber{
+					objectUnderTest := _coerceToNumber{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToNumber(
+					actualValue, actualErr := objectUnderTest.CoerceToNumber(
 						&model.Value{File: new(string)},
 					)
 
@@ -118,12 +118,12 @@ var _ = Context("coerceToNumber", func() {
 						panic(err)
 					}
 
-					fileUnderTest := _coerceToNumber{
+					objectUnderTest := _coerceToNumber{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToNumber(
+					actualValue, actualErr := objectUnderTest.CoerceToNumber(
 						&model.Value{File: new(string)},
 					)
 
@@ -168,12 +168,17 @@ var _ = Context("coerceToNumber", func() {
 				Expect(actualErr).To(Equal(errors.New("unable to coerce object to number; incompatible types")))
 			})
 		})
-		Context("Value.Number isn't nil", func() {
+		Context("Value.String isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedNumber := 2.2
+				providedString := "2.2"
 				providedValue := &model.Value{
-					Number: &providedNumber,
+					String: &providedString,
+				}
+
+				parsedNumber, err := strconv.ParseFloat(providedString, 64)
+				if nil != err {
+					panic(err.Error)
 				}
 
 				objectUnderTest := _coerceToNumber{}
@@ -182,7 +187,7 @@ var _ = Context("coerceToNumber", func() {
 				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
 
 				/* assert */
-				Expect(actualValue).To(Equal(providedValue))
+				Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
 				Expect(actualErr).To(BeNil())
 			})
 		})

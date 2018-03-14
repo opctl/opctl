@@ -21,6 +21,19 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
+	CoerceToBooleanStub        func(value *model.Value) (*model.Value, error)
+	coerceToBooleanMutex       sync.RWMutex
+	coerceToBooleanArgsForCall []struct {
+		value *model.Value
+	}
+	coerceToBooleanReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	coerceToBooleanReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
 	CoerceToFileStub        func(value *model.Value, scratchDir string) (*model.Value, error)
 	coerceToFileMutex       sync.RWMutex
 	coerceToFileArgsForCall []struct {
@@ -136,6 +149,57 @@ func (fake *Fake) CoerceToArrayReturnsOnCall(i int, result1 *model.Value, result
 		})
 	}
 	fake.coerceToArrayReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) CoerceToBoolean(value *model.Value) (*model.Value, error) {
+	fake.coerceToBooleanMutex.Lock()
+	ret, specificReturn := fake.coerceToBooleanReturnsOnCall[len(fake.coerceToBooleanArgsForCall)]
+	fake.coerceToBooleanArgsForCall = append(fake.coerceToBooleanArgsForCall, struct {
+		value *model.Value
+	}{value})
+	fake.recordInvocation("CoerceToBoolean", []interface{}{value})
+	fake.coerceToBooleanMutex.Unlock()
+	if fake.CoerceToBooleanStub != nil {
+		return fake.CoerceToBooleanStub(value)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.coerceToBooleanReturns.result1, fake.coerceToBooleanReturns.result2
+}
+
+func (fake *Fake) CoerceToBooleanCallCount() int {
+	fake.coerceToBooleanMutex.RLock()
+	defer fake.coerceToBooleanMutex.RUnlock()
+	return len(fake.coerceToBooleanArgsForCall)
+}
+
+func (fake *Fake) CoerceToBooleanArgsForCall(i int) *model.Value {
+	fake.coerceToBooleanMutex.RLock()
+	defer fake.coerceToBooleanMutex.RUnlock()
+	return fake.coerceToBooleanArgsForCall[i].value
+}
+
+func (fake *Fake) CoerceToBooleanReturns(result1 *model.Value, result2 error) {
+	fake.CoerceToBooleanStub = nil
+	fake.coerceToBooleanReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) CoerceToBooleanReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.CoerceToBooleanStub = nil
+	if fake.coerceToBooleanReturnsOnCall == nil {
+		fake.coerceToBooleanReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.coerceToBooleanReturnsOnCall[i] = struct {
 		result1 *model.Value
 		result2 error
 	}{result1, result2}
@@ -400,6 +464,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.coerceToArrayMutex.RLock()
 	defer fake.coerceToArrayMutex.RUnlock()
+	fake.coerceToBooleanMutex.RLock()
+	defer fake.coerceToBooleanMutex.RUnlock()
 	fake.coerceToFileMutex.RLock()
 	defer fake.coerceToFileMutex.RUnlock()
 	fake.coerceToNumberMutex.RLock()

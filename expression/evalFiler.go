@@ -120,7 +120,6 @@ func (ef _evalFiler) EvalToFile(
 				return &model.Value{File: &fileValue}, nil
 
 			}
-			// non-dir ref suffixed by ref(s) &/or non-refs
 
 		}
 		// plain string

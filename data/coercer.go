@@ -4,6 +4,7 @@ package data
 
 type coercer interface {
 	coerceToArray
+	coerceToBoolean
 	coerceToFile
 	coerceToNumber
 	coerceToObject
@@ -11,19 +12,19 @@ type coercer interface {
 }
 
 func newCoercer() coercer {
-	return _coercer{
-		coerceToArray:  newCoerceToArray(),
-		coerceToFile:   newCoerceToFile(),
-		coerceToNumber: newCoerceToNumber(),
-		coerceToObject: newCoerceToObject(),
-		coerceToString: newCoerceToString(),
+	return struct {
+		coerceToArray
+		coerceToBoolean
+		coerceToFile
+		coerceToNumber
+		coerceToObject
+		coerceToString
+	}{
+		newCoerceToArray(),
+		newCoerceToBoolean(),
+		newCoerceToFile(),
+		newCoerceToNumber(),
+		newCoerceToObject(),
+		newCoerceToString(),
 	}
-}
-
-type _coercer struct {
-	coerceToArray
-	coerceToFile
-	coerceToNumber
-	coerceToObject
-	coerceToString
 }
