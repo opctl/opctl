@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -10,15 +10,15 @@ import (
 	"strconv"
 )
 
-var _ = Context("coerceToNumber", func() {
-	Context("CoerceToNumber", func() {
+var _ = Context("toNumberer", func() {
+	Context("ToNumber", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToNumber(nil)
+				actualValue, actualErr := objectUnderTest.ToNumber(nil)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(model.Value{Number: new(float64)}))
@@ -32,10 +32,10 @@ var _ = Context("coerceToNumber", func() {
 					Array: []interface{}{},
 				}
 
-				arrayUnderTest := _coerceToNumber{}
+				arrayUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := arrayUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -50,10 +50,10 @@ var _ = Context("coerceToNumber", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -73,12 +73,12 @@ var _ = Context("coerceToNumber", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coerceToNumber{
+				objectUnderTest := _toNumberer{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToNumber(providedValue)
+				objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -91,12 +91,12 @@ var _ = Context("coerceToNumber", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					objectUnderTest := _coerceToNumber{
+					objectUnderTest := _toNumberer{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToNumber(
+					actualValue, actualErr := objectUnderTest.ToNumber(
 						&model.Value{File: new(string)},
 					)
 
@@ -118,12 +118,12 @@ var _ = Context("coerceToNumber", func() {
 						panic(err)
 					}
 
-					objectUnderTest := _coerceToNumber{
+					objectUnderTest := _toNumberer{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToNumber(
+					actualValue, actualErr := objectUnderTest.ToNumber(
 						&model.Value{File: new(string)},
 					)
 
@@ -141,10 +141,10 @@ var _ = Context("coerceToNumber", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -158,10 +158,10 @@ var _ = Context("coerceToNumber", func() {
 					Object: map[string]interface{}{},
 				}
 
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -181,10 +181,10 @@ var _ = Context("coerceToNumber", func() {
 					panic(err.Error)
 				}
 
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualValue, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
@@ -196,10 +196,10 @@ var _ = Context("coerceToNumber", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToNumber{}
+				objectUnderTest := _toNumberer{}
 
 				/* act */
-				actualNumber, actualErr := objectUnderTest.CoerceToNumber(providedValue)
+				actualNumber, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
 				Expect(actualNumber).To(BeNil())

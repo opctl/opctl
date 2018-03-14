@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -11,15 +11,15 @@ import (
 	"strconv"
 )
 
-var _ = Context("coerceToString", func() {
-	Context("Coerce", func() {
+var _ = Context("toStringer", func() {
+	Context("ToString", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coerceToString{}
+				objectUnderTest := _toStringer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToString(nil)
+				actualValue, actualErr := objectUnderTest.ToString(nil)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(model.Value{String: new(string)}))
@@ -39,12 +39,12 @@ var _ = Context("coerceToString", func() {
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
 
-				arrayUnderTest := _coerceToString{
+				arrayUnderTest := _toStringer{
 					json: fakeJSON,
 				}
 
 				/* act */
-				arrayUnderTest.CoerceToString(providedValue)
+				arrayUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedArray))
@@ -58,12 +58,12 @@ var _ = Context("coerceToString", func() {
 					marshalErr := errors.New("dummyError")
 					fakeJSON.MarshalReturns(nil, marshalErr)
 
-					arrayUnderTest := _coerceToString{
+					arrayUnderTest := _toStringer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := arrayUnderTest.CoerceToString(
+					actualValue, actualErr := arrayUnderTest.ToString(
 						&model.Value{Array: []interface{}{""}},
 					)
 
@@ -83,12 +83,12 @@ var _ = Context("coerceToString", func() {
 					marshaledString := string(marshaledBytes)
 					expectedValue := model.Value{String: &marshaledString}
 
-					arrayUnderTest := _coerceToString{
+					arrayUnderTest := _toStringer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := arrayUnderTest.CoerceToString(
+					actualValue, actualErr := arrayUnderTest.ToString(
 						&model.Value{Array: []interface{}{""}},
 					)
 
@@ -96,6 +96,27 @@ var _ = Context("coerceToString", func() {
 					Expect(*actualValue).To(Equal(expectedValue))
 					Expect(actualErr).To(BeNil())
 				})
+			})
+		})
+		Context("Value.Boolean isn't nil", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedBoolean := true
+				providedValue := &model.Value{
+					Boolean: &providedBoolean,
+				}
+
+				booleanString := strconv.FormatBool(providedBoolean)
+				expectedValue := model.Value{String: &booleanString}
+
+				objectUnderTest := _toStringer{}
+
+				/* act */
+				actualValue, actualErr := objectUnderTest.ToString(providedValue)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(expectedValue))
+				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("Value.Dir isn't nil", func() {
@@ -106,10 +127,10 @@ var _ = Context("coerceToString", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coerceToString{}
+				objectUnderTest := _toStringer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -129,12 +150,12 @@ var _ = Context("coerceToString", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coerceToString{
+				fileUnderTest := _toStringer{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.CoerceToString(providedValue)
+				fileUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -147,12 +168,12 @@ var _ = Context("coerceToString", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coerceToString{
+					fileUnderTest := _toStringer{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToString(
+					actualValue, actualErr := fileUnderTest.ToString(
 						&model.Value{File: new(string)},
 					)
 
@@ -173,12 +194,12 @@ var _ = Context("coerceToString", func() {
 
 					expectedValue := model.Value{String: &marshaledString}
 
-					fileUnderTest := _coerceToString{
+					fileUnderTest := _toStringer{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToString(
+					actualValue, actualErr := fileUnderTest.ToString(
 						&model.Value{File: new(string)},
 					)
 
@@ -199,10 +220,10 @@ var _ = Context("coerceToString", func() {
 				numberString := strconv.FormatFloat(providedNumber, 'f', -1, 64)
 				expectedValue := model.Value{String: &numberString}
 
-				objectUnderTest := _coerceToString{}
+				objectUnderTest := _toStringer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(expectedValue))
@@ -224,12 +245,12 @@ var _ = Context("coerceToString", func() {
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coerceToString{
+				objectUnderTest := _toStringer{
 					json: fakeJSON,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToString(providedValue)
+				objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedObject))
@@ -243,12 +264,12 @@ var _ = Context("coerceToString", func() {
 					marshalErr := errors.New("dummyError")
 					fakeJSON.MarshalReturns(nil, marshalErr)
 
-					objectUnderTest := _coerceToString{
+					objectUnderTest := _toStringer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToString(
+					actualValue, actualErr := objectUnderTest.ToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
@@ -268,12 +289,12 @@ var _ = Context("coerceToString", func() {
 					marshaledString := string(marshaledBytes)
 					expectedValue := model.Value{String: &marshaledString}
 
-					objectUnderTest := _coerceToString{
+					objectUnderTest := _toStringer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToString(
+					actualValue, actualErr := objectUnderTest.ToString(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 					)
 
@@ -291,10 +312,10 @@ var _ = Context("coerceToString", func() {
 					String: &providedString,
 				}
 
-				objectUnderTest := _coerceToString{}
+				objectUnderTest := _toStringer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToString(&providedValue)
+				actualValue, actualErr := objectUnderTest.ToString(&providedValue)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(providedValue))
@@ -306,10 +327,10 @@ var _ = Context("coerceToString", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToString{}
+				objectUnderTest := _toStringer{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToString(providedValue)
+				actualValue, actualErr := objectUnderTest.ToString(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())

@@ -3,7 +3,7 @@ package expression
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -86,20 +86,20 @@ var _ = Context("EvalToBoolean", func() {
 			})
 		})
 		Context("interpolater.Interpolate doesn't err", func() {
-			It("should call data.CoerceToBoolean w/ expected args & return result", func() {
+			It("should call coerce.ToBoolean w/ expected args & return result", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 
 				interpolatedValue := "dummyString"
 				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				coercedValue := model.Value{Boolean: new(bool)}
-				fakeData.CoerceToBooleanReturns(&coercedValue, nil)
+				fakeCoerce.ToBooleanReturns(&coercedValue, nil)
 
 				objectUnderTest := _evalBooleaner{
-					data:         fakeData,
+					coerce:       fakeCoerce,
 					interpolater: fakeInterpolater,
 				}
 
@@ -111,7 +111,7 @@ var _ = Context("EvalToBoolean", func() {
 				)
 
 				/* assert */
-				Expect(*fakeData.CoerceToBooleanArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+				Expect(*fakeCoerce.ToBooleanArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 				Expect(*actualBoolean).To(Equal(coercedValue))
 				Expect(actualErr).To(BeNil())

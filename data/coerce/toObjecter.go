@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"fmt"
@@ -8,28 +8,28 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type coerceToObject interface {
-	// CoerceToObject attempts to coerce value to an object
-	CoerceToObject(
+type toObjecter interface {
+	// ToObject attempts to coerce value to an object
+	ToObject(
 		value *model.Value,
 	) (*model.Value, error)
 }
 
-func newCoerceToObject() coerceToObject {
-	return _coerceToObject{
+func newToObjecter() toObjecter {
+	return _toObjecter{
 		json:   ijson.New(),
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coerceToObject struct {
+type _toObjecter struct {
 	ioUtil iioutil.IIOUtil
 	json   ijson.IJSON
 	os     ios.IOS
 }
 
-func (c _coerceToObject) CoerceToObject(
+func (c _toObjecter) ToObject(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {

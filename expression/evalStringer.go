@@ -2,7 +2,7 @@ package expression
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -20,15 +20,15 @@ func newEvalStringer() evalStringer {
 	return _evalStringer{
 		evalArrayInitializerer:  newEvalArrayInitializerer(),
 		evalObjectInitializerer: newEvalObjectInitializerer(),
-		data:         data.New(),
-		interpolater: interpolater.New(),
+		coerce:                  coerce.New(),
+		interpolater:            interpolater.New(),
 	}
 }
 
 type _evalStringer struct {
 	evalArrayInitializerer
 	evalObjectInitializerer
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 
@@ -83,5 +83,5 @@ func (es _evalStringer) EvalToString(
 		return nil, fmt.Errorf("unable to evaluate %+v to string; unsupported type", expression)
 	}
 
-	return es.data.CoerceToString(value)
+	return es.coerce.ToString(value)
 }

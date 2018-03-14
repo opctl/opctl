@@ -3,7 +3,7 @@ package expression
 import (
 	"fmt"
 	"github.com/golang-interfaces/encoding-ijson"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -22,14 +22,14 @@ type evalArrayInitializerer interface {
 // newEvalArrayInitializerer returns a new evalArrayInitializerer instance
 func newEvalArrayInitializerer() evalArrayInitializerer {
 	return _evalArrayInitializerer{
-		data:         data.New(),
+		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
 		json:         ijson.New(),
 	}
 }
 
 type _evalArrayInitializerer struct {
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 	json         ijson.IJSON
 }
@@ -44,7 +44,7 @@ func (eoi _evalArrayInitializerer) Eval(
 		return nil, fmt.Errorf("unable to eval %+v as arrayInitializer; error was %v", expression, err)
 	}
 
-	arrayJson, err := eoi.interpolater.Interpolate(
+	arrayJSON, err := eoi.interpolater.Interpolate(
 		string(arrayBytes),
 		scope,
 		pkgHandle,
@@ -54,7 +54,7 @@ func (eoi _evalArrayInitializerer) Eval(
 	}
 
 	array := []interface{}{}
-	if err := eoi.json.Unmarshal([]byte(arrayJson), &array); nil != err {
+	if err := eoi.json.Unmarshal([]byte(arrayJSON), &array); nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as arrayInitializer; error was %v", expression, err)
 	}
 

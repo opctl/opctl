@@ -2,14 +2,14 @@ package expression
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type evalBooleaner interface {
 	// EvalToBoolean evaluates an expression to an boolean value
-	// expression must be a type supported by data.CoerceToBoolean
+	// expression must be a type supported by coerce.ToBoolean
 	EvalToBoolean(
 		scope map[string]*model.Value,
 		expression interface{},
@@ -19,13 +19,13 @@ type evalBooleaner interface {
 
 func newEvalBooleaner() evalBooleaner {
 	return _evalBooleaner{
-		data:         data.New(),
+		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
 type _evalBooleaner struct {
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 
@@ -52,7 +52,7 @@ func (ea _evalBooleaner) EvalToBoolean(
 			}
 			value = &model.Value{String: &stringValue}
 		}
-		return ea.data.CoerceToBoolean(value)
+		return ea.coerce.ToBoolean(value)
 	}
 	return nil, fmt.Errorf("unable to evaluate %+v to boolean; unsupported type", expression)
 }

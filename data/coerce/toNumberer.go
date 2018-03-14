@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -9,26 +9,26 @@ import (
 	"strconv"
 )
 
-type coerceToNumber interface {
-	// CoerceToNumber attempts to coerce value to a number
-	CoerceToNumber(
+type toNumberer interface {
+	// ToNumber attempts to coerce value to a number
+	ToNumber(
 		value *model.Value,
 	) (*model.Value, error)
 }
 
-func newCoerceToNumber() coerceToNumber {
-	return _coerceToNumber{
+func newToNumberer() toNumberer {
+	return _toNumberer{
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coerceToNumber struct {
+type _toNumberer struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 }
 
-func (c _coerceToNumber) CoerceToNumber(
+func (c _toNumberer) ToNumber(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {

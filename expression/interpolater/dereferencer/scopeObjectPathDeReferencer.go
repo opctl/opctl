@@ -5,7 +5,7 @@ package dereferencer
 import (
 	"fmt"
 	"github.com/Jeffail/gabs"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"strings"
 )
@@ -20,12 +20,12 @@ type scopeObjectPathDeReferencer interface {
 
 func newScopeObjectPathDeReferencer() scopeObjectPathDeReferencer {
 	return _scopeObjectPathDeReferencer{
-		data: data.New(),
+		coerce: coerce.New(),
 	}
 }
 
 type _scopeObjectPathDeReferencer struct {
-	data data.Data
+	coerce coerce.Coerce
 }
 
 func (sod _scopeObjectPathDeReferencer) DeReferenceScopeObjectPath(
@@ -36,7 +36,7 @@ func (sod _scopeObjectPathDeReferencer) DeReferenceScopeObjectPath(
 	if possiblePathIndex > 0 {
 		if scopeValue, isPropertyRef := scope[ref[:possiblePathIndex]]; isPropertyRef {
 			// scope object ref w/ path
-			objectValue, err := sod.data.CoerceToObject(scopeValue)
+			objectValue, err := sod.coerce.ToObject(scopeValue)
 			if nil != err {
 				return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 			}
@@ -63,7 +63,7 @@ func (sod _scopeObjectPathDeReferencer) DeReferenceScopeObjectPath(
 				value = &model.Value{Array: valueAtPath}
 			}
 
-			valueAsString, err := sod.data.CoerceToString(value)
+			valueAsString, err := sod.coerce.ToString(value)
 			if nil != err {
 				return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
 			}

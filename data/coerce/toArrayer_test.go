@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -11,15 +11,15 @@ import (
 	"reflect"
 )
 
-var _ = Context("coerceToArray", func() {
-	Context("Coerce", func() {
+var _ = Context("toArrayer", func() {
+	Context("ToArray", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				arrayUnderTest := _coerceToArray{}
+				arrayUnderTest := _toArrayer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToArray(nil)
+				actualValue, actualErr := arrayUnderTest.ToArray(nil)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -34,10 +34,10 @@ var _ = Context("coerceToArray", func() {
 					Dir: &providedDir,
 				}
 
-				arrayUnderTest := _coerceToArray{}
+				arrayUnderTest := _toArrayer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -57,12 +57,12 @@ var _ = Context("coerceToArray", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coerceToArray{
+				fileUnderTest := _toArrayer{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.CoerceToArray(providedValue)
+				fileUnderTest.ToArray(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -75,12 +75,12 @@ var _ = Context("coerceToArray", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coerceToArray{
+					fileUnderTest := _toArrayer{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToArray(
+					actualValue, actualErr := fileUnderTest.ToArray(
 						&model.Value{File: new(string)},
 					)
 
@@ -101,13 +101,13 @@ var _ = Context("coerceToArray", func() {
 					// err to trigger immediate return
 					fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-					arrayUnderTest := _coerceToArray{
+					arrayUnderTest := _toArrayer{
 						ioUtil: fakeIOUtil,
 						json:   fakeJSON,
 					}
 
 					/* act */
-					arrayUnderTest.CoerceToArray(
+					arrayUnderTest.ToArray(
 						&model.Value{File: new(string)},
 					)
 
@@ -125,13 +125,13 @@ var _ = Context("coerceToArray", func() {
 						unmarshalError := errors.New("dummyError")
 						fakeJSON.UnmarshalReturns(unmarshalError)
 
-						arrayUnderTest := _coerceToArray{
+						arrayUnderTest := _toArrayer{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := arrayUnderTest.CoerceToArray(
+						actualValue, actualErr := arrayUnderTest.ToArray(
 							&model.Value{File: new(string)},
 						)
 
@@ -153,13 +153,13 @@ var _ = Context("coerceToArray", func() {
 							return nil
 						}
 
-						arrayUnderTest := _coerceToArray{
+						arrayUnderTest := _toArrayer{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := arrayUnderTest.CoerceToArray(
+						actualValue, actualErr := arrayUnderTest.ToArray(
 							&model.Value{File: new(string)},
 						)
 
@@ -178,10 +178,10 @@ var _ = Context("coerceToArray", func() {
 					Number: &providedNumber,
 				}
 
-				arrayUnderTest := _coerceToArray{}
+				arrayUnderTest := _toArrayer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -195,10 +195,10 @@ var _ = Context("coerceToArray", func() {
 					Array: []interface{}{"dummyItem"},
 				}
 
-				arrayUnderTest := _coerceToArray{}
+				arrayUnderTest := _toArrayer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -218,12 +218,12 @@ var _ = Context("coerceToArray", func() {
 				// err to trigger immediate return
 				fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-				arrayUnderTest := _coerceToArray{
+				arrayUnderTest := _toArrayer{
 					json: fakeJSON,
 				}
 
 				/* act */
-				arrayUnderTest.CoerceToArray(providedValue)
+				arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
 				actualBytes,
@@ -239,12 +239,12 @@ var _ = Context("coerceToArray", func() {
 					unmarshalError := errors.New("dummyError")
 					fakeJSON.UnmarshalReturns(unmarshalError)
 
-					arrayUnderTest := _coerceToArray{
+					arrayUnderTest := _toArrayer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := arrayUnderTest.CoerceToArray(
+					actualValue, actualErr := arrayUnderTest.ToArray(
 						&model.Value{String: new(string)},
 					)
 
@@ -266,12 +266,12 @@ var _ = Context("coerceToArray", func() {
 						return nil
 					}
 
-					arrayUnderTest := _coerceToArray{
+					arrayUnderTest := _toArrayer{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := arrayUnderTest.CoerceToArray(
+					actualValue, actualErr := arrayUnderTest.ToArray(
 						&model.Value{String: new(string)},
 					)
 
@@ -286,10 +286,10 @@ var _ = Context("coerceToArray", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				arrayUnderTest := _coerceToArray{}
+				arrayUnderTest := _toArrayer{}
 
 				/* act */
-				actualValue, actualErr := arrayUnderTest.CoerceToArray(providedValue)
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())

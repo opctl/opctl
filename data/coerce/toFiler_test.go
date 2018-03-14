@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -15,8 +15,8 @@ import (
 	"strconv"
 )
 
-var _ = Context("coerceToFile", func() {
-	Context("Coerce", func() {
+var _ = Context("toFile", func() {
+	Context("ToFile", func() {
 		Context("Value is nil", func() {
 			It("should call ioutil.WriteFile w/ expected args", func() {
 				/* arrange */
@@ -28,13 +28,13 @@ var _ = Context("coerceToFile", func() {
 
 				fakeIOUtil := new(iioutil.Fake)
 
-				objectUnderTest := _coerceToFile{
+				objectUnderTest := _toFiler{
 					uniqueString: fakeUniqueString,
 					ioUtil:       fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToFile(nil, providedScratchDir)
+				objectUnderTest.ToFile(nil, providedScratchDir)
 
 				/* assert */
 				actualPath,
@@ -61,13 +61,13 @@ var _ = Context("coerceToFile", func() {
 						writeFileErr.Error(),
 					)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToFile(
+					_, actualErr := objectUnderTest.ToFile(
 						providedValue,
 						"dummyScratchDir",
 					)
@@ -88,13 +88,13 @@ var _ = Context("coerceToFile", func() {
 					fakeUniqueString := new(uniquestring.Fake)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
 						ioUtil:       new(iioutil.Fake),
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToFile(
+					actualValue, actualErr := objectUnderTest.ToFile(
 						nil,
 						providedScratchDir,
 					)
@@ -118,13 +118,13 @@ var _ = Context("coerceToFile", func() {
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
 
-				arrayUnderTest := _coerceToFile{
+				arrayUnderTest := _toFiler{
 					json:         fakeJSON,
 					uniqueString: new(uniquestring.Fake),
 				}
 
 				/* act */
-				arrayUnderTest.CoerceToFile(providedValue, "dummyScratchDir")
+				arrayUnderTest.ToFile(providedValue, "dummyScratchDir")
 
 				/* assert */
 				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedArray))
@@ -137,13 +137,13 @@ var _ = Context("coerceToFile", func() {
 					marshalErr := errors.New("dummyError")
 					fakeJSON.MarshalReturns(nil, marshalErr)
 
-					arrayUnderTest := _coerceToFile{
+					arrayUnderTest := _toFiler{
 						json:         fakeJSON,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := arrayUnderTest.CoerceToFile(
+					_, actualErr := arrayUnderTest.ToFile(
 						&model.Value{Array: []interface{}{""}},
 						"dummyScratchDir",
 					)
@@ -169,14 +169,14 @@ var _ = Context("coerceToFile", func() {
 
 					fakeIOUtil := new(iioutil.Fake)
 
-					arrayUnderTest := _coerceToFile{
+					arrayUnderTest := _toFiler{
 						json:         fakeJSON,
 						uniqueString: fakeUniqueString,
 						ioUtil:       fakeIOUtil,
 					}
 
 					/* act */
-					arrayUnderTest.CoerceToFile(
+					arrayUnderTest.ToFile(
 						&model.Value{Array: []interface{}{""}},
 						providedScratchDir,
 					)
@@ -206,14 +206,14 @@ var _ = Context("coerceToFile", func() {
 							writeFileErr.Error(),
 						)
 
-						arrayUnderTest := _coerceToFile{
+						arrayUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							ioUtil:       fakeIOUtil,
 							uniqueString: new(uniquestring.Fake),
 						}
 
 						/* act */
-						_, actualErr := arrayUnderTest.CoerceToFile(
+						_, actualErr := arrayUnderTest.ToFile(
 							providedValue,
 							"dummyScratchDir",
 						)
@@ -234,14 +234,14 @@ var _ = Context("coerceToFile", func() {
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}
 
-						arrayUnderTest := _coerceToFile{
+						arrayUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							uniqueString: fakeUniqueString,
 							ioUtil:       new(iioutil.Fake),
 						}
 
 						/* act */
-						actualValue, actualErr := arrayUnderTest.CoerceToFile(
+						actualValue, actualErr := arrayUnderTest.ToFile(
 							&model.Value{
 								Array: []interface{}{""},
 							},
@@ -255,6 +255,104 @@ var _ = Context("coerceToFile", func() {
 				})
 			})
 		})
+		Context("Value.Boolean isn't nil", func() {
+			It("should call ioutil.WriteFile w/ expected args", func() {
+				/* arrange */
+				providedScratchDir := "dummyScratchDir"
+
+				providedBoolean := true
+				providedValue := &model.Value{
+					Boolean: &providedBoolean,
+				}
+
+				uniqueString := "dummyUniqueString"
+
+				fakeUniqueString := new(uniquestring.Fake)
+				fakeUniqueString.ConstructReturns(uniqueString, nil)
+
+				fakeIOUtil := new(iioutil.Fake)
+
+				objectUnderTest := _toFiler{
+					uniqueString: fakeUniqueString,
+					ioUtil:       fakeIOUtil,
+				}
+
+				/* act */
+				objectUnderTest.ToFile(providedValue, providedScratchDir)
+
+				/* assert */
+				actualPath,
+					actualData,
+					actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
+
+				Expect(actualPath).To(Equal(filepath.Join(providedScratchDir, uniqueString)))
+				Expect(actualData).To(Equal([]byte(strconv.FormatBool(providedBoolean))))
+				Expect(actualPerms).To(Equal(os.FileMode(0666)))
+			})
+			Context("ioutil.WriteFile errs", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedValue := &model.Value{
+						Boolean: new(bool),
+					}
+
+					fakeIOUtil := new(iioutil.Fake)
+
+					writeFileErr := errors.New("dummyError")
+					fakeIOUtil.WriteFileReturns(writeFileErr)
+
+					expectedErr := fmt.Errorf(
+						"unable to coerce '%+v' to file; error was %v",
+						providedValue,
+						writeFileErr.Error(),
+					)
+
+					objectUnderTest := _toFiler{
+						ioUtil:       fakeIOUtil,
+						uniqueString: new(uniquestring.Fake),
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.ToFile(
+						providedValue,
+						"dummyScratchDir",
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
+			Context("ioutil.WriteFile doesn't err", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedScratchDir := "dummyScratchDir"
+					uniqueString := "dummyUniqueString"
+
+					fakeUniqueString := new(uniquestring.Fake)
+					fakeUniqueString.ConstructReturns(uniqueString, nil)
+
+					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
+					expectedValue := model.Value{File: &expectedValuePath}
+
+					objectUnderTest := _toFiler{
+						uniqueString: fakeUniqueString,
+						ioUtil:       new(iioutil.Fake),
+					}
+
+					/* act */
+					actualValue, actualErr := objectUnderTest.ToFile(
+						&model.Value{
+							Boolean: new(bool),
+						},
+						providedScratchDir,
+					)
+
+					/* assert */
+					Expect(*actualValue).To(Equal(expectedValue))
+					Expect(actualErr).To(BeNil())
+				})
+			})
+		})
 		Context("Value.Dir isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
@@ -265,10 +363,10 @@ var _ = Context("coerceToFile", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coerceToFile{}
+				objectUnderTest := _toFiler{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+				actualValue, actualErr := objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -285,10 +383,10 @@ var _ = Context("coerceToFile", func() {
 					File: &providedFile,
 				}
 
-				objectUnderTest := _coerceToFile{}
+				objectUnderTest := _toFiler{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+				actualValue, actualErr := objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -312,13 +410,13 @@ var _ = Context("coerceToFile", func() {
 
 				fakeIOUtil := new(iioutil.Fake)
 
-				objectUnderTest := _coerceToFile{
+				objectUnderTest := _toFiler{
 					uniqueString: fakeUniqueString,
 					ioUtil:       fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+				objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 				/* assert */
 				actualPath,
@@ -347,13 +445,13 @@ var _ = Context("coerceToFile", func() {
 						writeFileErr.Error(),
 					)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToFile(
+					_, actualErr := objectUnderTest.ToFile(
 						providedValue,
 						"dummyScratchDir",
 					)
@@ -374,13 +472,13 @@ var _ = Context("coerceToFile", func() {
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 					expectedValue := model.Value{File: &expectedValuePath}
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
 						ioUtil:       new(iioutil.Fake),
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToFile(
+					actualValue, actualErr := objectUnderTest.ToFile(
 						&model.Value{
 							Number: new(float64),
 						},
@@ -408,13 +506,13 @@ var _ = Context("coerceToFile", func() {
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coerceToFile{
+				objectUnderTest := _toFiler{
 					json:         fakeJSON,
 					uniqueString: new(uniquestring.Fake),
 				}
 
 				/* act */
-				objectUnderTest.CoerceToFile(providedValue, "dummyScratchDir")
+				objectUnderTest.ToFile(providedValue, "dummyScratchDir")
 
 				/* assert */
 				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedObject))
@@ -427,13 +525,13 @@ var _ = Context("coerceToFile", func() {
 					marshalErr := errors.New("dummyError")
 					fakeJSON.MarshalReturns(nil, marshalErr)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						json:         fakeJSON,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToFile(
+					_, actualErr := objectUnderTest.ToFile(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 						"dummyScratchDir",
 					)
@@ -459,14 +557,14 @@ var _ = Context("coerceToFile", func() {
 
 					fakeIOUtil := new(iioutil.Fake)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						json:         fakeJSON,
 						uniqueString: fakeUniqueString,
 						ioUtil:       fakeIOUtil,
 					}
 
 					/* act */
-					objectUnderTest.CoerceToFile(
+					objectUnderTest.ToFile(
 						&model.Value{Object: map[string]interface{}{"": ""}},
 						providedScratchDir,
 					)
@@ -496,14 +594,14 @@ var _ = Context("coerceToFile", func() {
 							writeFileErr.Error(),
 						)
 
-						objectUnderTest := _coerceToFile{
+						objectUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							ioUtil:       fakeIOUtil,
 							uniqueString: new(uniquestring.Fake),
 						}
 
 						/* act */
-						_, actualErr := objectUnderTest.CoerceToFile(
+						_, actualErr := objectUnderTest.ToFile(
 							providedValue,
 							"dummyScratchDir",
 						)
@@ -524,14 +622,14 @@ var _ = Context("coerceToFile", func() {
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}
 
-						objectUnderTest := _coerceToFile{
+						objectUnderTest := _toFiler{
 							json:         new(ijson.Fake),
 							uniqueString: fakeUniqueString,
 							ioUtil:       new(iioutil.Fake),
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToFile(
+						actualValue, actualErr := objectUnderTest.ToFile(
 							&model.Value{
 								Object: map[string]interface{}{"": ""},
 							},
@@ -562,13 +660,13 @@ var _ = Context("coerceToFile", func() {
 
 				fakeIOUtil := new(iioutil.Fake)
 
-				objectUnderTest := _coerceToFile{
+				objectUnderTest := _toFiler{
 					uniqueString: fakeUniqueString,
 					ioUtil:       fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+				objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 				/* assert */
 				actualPath,
@@ -597,13 +695,13 @@ var _ = Context("coerceToFile", func() {
 						writeFileErr.Error(),
 					)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToFile(
+					_, actualErr := objectUnderTest.ToFile(
 						providedValue,
 						"dummyScratchDir",
 					)
@@ -624,13 +722,13 @@ var _ = Context("coerceToFile", func() {
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 					expectedValue := model.Value{File: &expectedValuePath}
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
 						ioUtil:       new(iioutil.Fake),
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToFile(
+					actualValue, actualErr := objectUnderTest.ToFile(
 						&model.Value{
 							String: new(string),
 						},
@@ -650,10 +748,10 @@ var _ = Context("coerceToFile", func() {
 
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToFile{}
+				objectUnderTest := _toFiler{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+				actualValue, actualErr := objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -677,14 +775,14 @@ var _ = Context("coerceToFile", func() {
 				fakeUniqueString := new(uniquestring.Fake)
 				fakeUniqueString.ConstructReturns("dummyUniqueString", nil)
 
-				objectUnderTest := _coerceToFile{
+				objectUnderTest := _toFiler{
 					ioUtil:       fakeIOUtil,
 					os:           fakeOS,
 					uniqueString: fakeUniqueString,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToFile(
+				objectUnderTest.ToFile(
 					providedValue,
 					"dummyScratchDir",
 				)
@@ -716,14 +814,14 @@ var _ = Context("coerceToFile", func() {
 						mkdirAllError.Error(),
 					)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						ioUtil:       fakeIOUtil,
 						os:           fakeOS,
 						uniqueString: new(uniquestring.Fake),
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.CoerceToFile(
+					_, actualErr := objectUnderTest.ToFile(
 						providedValue,
 						"dummyScratchDir",
 					)
@@ -750,14 +848,14 @@ var _ = Context("coerceToFile", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.WriteFileReturnsOnCall(0, os.ErrNotExist)
 
-					objectUnderTest := _coerceToFile{
+					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
 						os:           new(ios.Fake),
 						ioUtil:       fakeIOUtil,
 					}
 
 					/* act */
-					objectUnderTest.CoerceToFile(providedValue, providedScratchDir)
+					objectUnderTest.ToFile(providedValue, providedScratchDir)
 
 					/* assert */
 					actualPath,
@@ -788,14 +886,14 @@ var _ = Context("coerceToFile", func() {
 							writeFileErr.Error(),
 						)
 
-						objectUnderTest := _coerceToFile{
+						objectUnderTest := _toFiler{
 							ioUtil:       fakeIOUtil,
 							os:           new(ios.Fake),
 							uniqueString: new(uniquestring.Fake),
 						}
 
 						/* act */
-						_, actualErr := objectUnderTest.CoerceToFile(
+						_, actualErr := objectUnderTest.ToFile(
 							providedValue,
 							"dummyScratchDir",
 						)
@@ -819,14 +917,14 @@ var _ = Context("coerceToFile", func() {
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
 						expectedValue := model.Value{File: &expectedValuePath}
 
-						objectUnderTest := _coerceToFile{
+						objectUnderTest := _toFiler{
 							uniqueString: fakeUniqueString,
 							os:           new(ios.Fake),
 							ioUtil:       fakeIOUtil,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToFile(
+						actualValue, actualErr := objectUnderTest.ToFile(
 							&model.Value{
 								String: new(string),
 							},

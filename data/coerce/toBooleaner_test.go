@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -12,15 +12,15 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Context("coerceToBoolean", func() {
-	Context("CoerceToBoolean", func() {
+var _ = Context("toBooleaner", func() {
+	Context("ToBoolean", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coerceToBoolean{}
+				objectUnderTest := _toBooleaner{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToBoolean(nil)
+				actualValue, actualErr := objectUnderTest.ToBoolean(nil)
 
 				/* assert */
 				Expect(*actualValue).To(Equal(model.Value{Boolean: new(bool)}))
@@ -31,12 +31,12 @@ var _ = Context("coerceToBoolean", func() {
 			Context("Array empty", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					expectedBoolean := false
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
 							Array: []interface{}{},
 						},
@@ -50,12 +50,12 @@ var _ = Context("coerceToBoolean", func() {
 			Context("Array not empty", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					expectedBoolean := true
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
 							Array: []interface{}{
 								// include item so len != 0
@@ -78,10 +78,10 @@ var _ = Context("coerceToBoolean", func() {
 					Boolean: &providedBoolean,
 				}
 
-				objectUnderTest := _coerceToBoolean{}
+				objectUnderTest := _toBooleaner{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToBoolean(providedValue)
+				actualValue, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -101,12 +101,12 @@ var _ = Context("coerceToBoolean", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadDirReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coerceToBoolean{
+				objectUnderTest := _toBooleaner{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToBoolean(providedValue)
+				objectUnderTest.ToBoolean(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedDir))
@@ -119,12 +119,12 @@ var _ = Context("coerceToBoolean", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadDirReturns(nil, marshalErr)
 
-					objectUnderTest := _coerceToBoolean{
+					objectUnderTest := _toBooleaner{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{Dir: new(string)},
 					)
 
@@ -144,12 +144,12 @@ var _ = Context("coerceToBoolean", func() {
 
 						expectedBoolean := false
 
-						objectUnderTest := _coerceToBoolean{
+						objectUnderTest := _toBooleaner{
 							ioUtil: fakeIOUtil,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+						actualValue, actualErr := objectUnderTest.ToBoolean(
 							&model.Value{Dir: new(string)},
 						)
 
@@ -176,12 +176,12 @@ var _ = Context("coerceToBoolean", func() {
 
 						expectedBoolean := true
 
-						objectUnderTest := _coerceToBoolean{
+						objectUnderTest := _toBooleaner{
 							ioUtil: fakeIOUtil,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+						actualValue, actualErr := objectUnderTest.ToBoolean(
 							&model.Value{Dir: new(string)},
 						)
 
@@ -205,12 +205,12 @@ var _ = Context("coerceToBoolean", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _coerceToBoolean{
+				objectUnderTest := _toBooleaner{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToBoolean(providedValue)
+				objectUnderTest.ToBoolean(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -223,12 +223,12 @@ var _ = Context("coerceToBoolean", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					objectUnderTest := _coerceToBoolean{
+					objectUnderTest := _toBooleaner{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{File: new(string)},
 					)
 
@@ -248,12 +248,12 @@ var _ = Context("coerceToBoolean", func() {
 
 						expectedBoolean := true
 
-						objectUnderTest := _coerceToBoolean{
+						objectUnderTest := _toBooleaner{
 							ioUtil: fakeIOUtil,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+						actualValue, actualErr := objectUnderTest.ToBoolean(
 							&model.Value{File: new(string)},
 						)
 
@@ -272,12 +272,12 @@ var _ = Context("coerceToBoolean", func() {
 
 						expectedBoolean := false
 
-						objectUnderTest := _coerceToBoolean{
+						objectUnderTest := _toBooleaner{
 							ioUtil: fakeIOUtil,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+						actualValue, actualErr := objectUnderTest.ToBoolean(
 							&model.Value{File: new(string)},
 						)
 
@@ -299,10 +299,10 @@ var _ = Context("coerceToBoolean", func() {
 
 					expectedBoolean := false
 
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(providedValue)
+					actualValue, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 					/* assert */
 					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
@@ -319,10 +319,10 @@ var _ = Context("coerceToBoolean", func() {
 
 					expectedBoolean := true
 
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(providedValue)
+					actualValue, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 					/* assert */
 					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
@@ -334,12 +334,12 @@ var _ = Context("coerceToBoolean", func() {
 			Context("Object has no properties", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					expectedBoolean := false
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
 							Object: map[string]interface{}{},
 						},
@@ -353,12 +353,12 @@ var _ = Context("coerceToBoolean", func() {
 			Context("Object has properties", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					objectUnderTest := _coerceToBoolean{}
+					objectUnderTest := _toBooleaner{}
 
 					expectedBoolean := true
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToBoolean(
+					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
 							Object: map[string]interface{}{
 								// include item so len != 0
@@ -378,10 +378,10 @@ var _ = Context("coerceToBoolean", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToBoolean{}
+				objectUnderTest := _toBooleaner{}
 
 				/* act */
-				actualBoolean, actualErr := objectUnderTest.CoerceToBoolean(providedValue)
+				actualBoolean, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 				/* assert */
 				Expect(actualBoolean).To(BeNil())

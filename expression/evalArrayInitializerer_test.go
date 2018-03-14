@@ -157,7 +157,7 @@ var _ = Context("evalArrayInitializerer", func() {
 					fakeJSON := new(ijson.Fake)
 
 					fakeInterpolater := new(interpolater.Fake)
-					expectedString := "dummyData"
+					expectedString := "dummyCoerce"
 					// err to trigger immediate return
 					fakeInterpolater.InterpolateReturns(expectedString, nil)
 

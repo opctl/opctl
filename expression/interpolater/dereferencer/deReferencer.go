@@ -3,7 +3,7 @@ package dereferencer
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ DeReferencer
 
 import (
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -24,7 +24,7 @@ type DeReferencer interface {
 // New returns a DeReferencer
 func New() DeReferencer {
 	return _deReferencer{
-		data: data.New(),
+		coerce:                      coerce.New(),
 		pkgFilePathDeReferencer:     newPkgFilePathDeReferencer(),
 		scopeDeReferencer:           newScopeDeReferencer(),
 		scopeFilePathDeReferencer:   newScopeFilePathDeReferencer(),
@@ -33,7 +33,7 @@ func New() DeReferencer {
 }
 
 type _deReferencer struct {
-	data data.Data
+	coerce coerce.Coerce
 	pkgFilePathDeReferencer
 	scopeDeReferencer
 	scopeFilePathDeReferencer

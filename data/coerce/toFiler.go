@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"fmt"
@@ -12,18 +12,18 @@ import (
 	"strconv"
 )
 
-type coerceToFile interface {
-	// CoerceToFile attempts to coerce value to a file.
+type toFiler interface {
+	// ToFile attempts to coerce value to a file.
 	// scratchDir/{UUID} will be used as file path if file creation necessary;
 	// if scratchDir doesn't exist it will be created
-	CoerceToFile(
+	ToFile(
 		value *model.Value,
 		scratchDir string,
 	) (*model.Value, error)
 }
 
-func newCoerceToFile() coerceToFile {
-	return _coerceToFile{
+func newToFiler() toFiler {
+	return _toFiler{
 		json:         ijson.New(),
 		ioUtil:       iioutil.New(),
 		os:           ios.New(),
@@ -31,14 +31,14 @@ func newCoerceToFile() coerceToFile {
 	}
 }
 
-type _coerceToFile struct {
+type _toFiler struct {
 	json         ijson.IJSON
 	ioUtil       iioutil.IIOUtil
 	os           ios.IOS
 	uniqueString uniquestring.UniqueStringFactory
 }
 
-func (c _coerceToFile) CoerceToFile(
+func (c _toFiler) ToFile(
 	value *model.Value,
 	scratchDir string,
 ) (*model.Value, error) {
@@ -53,6 +53,8 @@ func (c _coerceToFile) CoerceToFile(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce array to file; error was %v", err.Error())
 		}
+	case nil != value.Boolean:
+		data = []byte(strconv.FormatBool(*value.Boolean))
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to file; incompatible types", *value.Dir)
 	case nil != value.File:

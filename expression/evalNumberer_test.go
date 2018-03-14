@@ -3,7 +3,7 @@ package expression
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -86,20 +86,20 @@ var _ = Context("EvalToNumber", func() {
 			})
 		})
 		Context("interpolater.Interpolate doesn't err", func() {
-			It("should call data.CoerceToNumber w/ expected args & return result", func() {
+			It("should call coerce.ToNumber w/ expected args & return result", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 
 				interpolatedValue := "dummyString"
 				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				coercedValue := model.Value{Number: new(float64)}
-				fakeData.CoerceToNumberReturns(&coercedValue, nil)
+				fakeCoerce.ToNumberReturns(&coercedValue, nil)
 
 				objectUnderTest := _evalNumberer{
-					data:         fakeData,
+					coerce:       fakeCoerce,
 					interpolater: fakeInterpolater,
 				}
 
@@ -111,7 +111,7 @@ var _ = Context("EvalToNumber", func() {
 				)
 
 				/* assert */
-				Expect(*fakeData.CoerceToNumberArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+				Expect(*fakeCoerce.ToNumberArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 				Expect(*actualNumber).To(Equal(coercedValue))
 				Expect(actualErr).To(BeNil())

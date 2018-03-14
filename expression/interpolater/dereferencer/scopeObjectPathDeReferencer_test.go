@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/pkg/errors"
 	"strings"
@@ -25,11 +25,11 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				providedRef := strings.Join([]string{objectRef, pathSegment1, "doesNotExist"}, ".")
 
-				fakeData := new(data.Fake)
-				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -47,7 +47,7 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 			})
 		})
 		Context("property is float64", func() {
-			It("should call data.Coerce w/ expected args", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
 				/* arrange */
 
 				// build up object
@@ -62,13 +62,13 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
 
-				fakeData := new(data.Fake)
-				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 				// err to trigger immediate return
-				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -80,12 +80,12 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Number: &pathSegment2Value}))
 			})
 		})
 		Context("property is map[string]interface{}", func() {
-			It("should call data.Coerce w/ expected args", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
 				/* arrange */
 
 				// build up object
@@ -100,13 +100,13 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
 
-				fakeData := new(data.Fake)
-				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 				// err to trigger immediate return
-				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -118,7 +118,7 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Object: pathSegment2Value}))
 			})
 		})
@@ -138,11 +138,11 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
 
-				fakeData := new(data.Fake)
-				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -160,7 +160,7 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 			})
 		})
 		Context("property is []interface{}", func() {
-			It("should call data.Coerce w/ expected args", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
 				/* arrange */
 
 				// build up object
@@ -175,13 +175,13 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
 
-				fakeData := new(data.Fake)
-				fakeData.CoerceToObjectReturns(&model.Value{Object: objectValue}, nil)
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 				// err to trigger immediate return
-				fakeData.CoerceToStringReturns(nil, errors.New("dummyError"))
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -193,7 +193,7 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Array: pathSegment2Value}))
 			})
 		})

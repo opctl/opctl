@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -28,13 +28,13 @@ type evalDirer interface {
 
 func newEvalDirer() evalDirer {
 	return _evalDirer{
-		data:         data.New(),
+		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
 type _evalDirer struct {
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 

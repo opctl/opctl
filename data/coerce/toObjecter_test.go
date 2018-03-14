@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"errors"
@@ -11,15 +11,15 @@ import (
 	"reflect"
 )
 
-var _ = Context("coerceToObject", func() {
-	Context("Coerce", func() {
+var _ = Context("toObjecter", func() {
+	Context("ToObject", func() {
 		Context("Value is nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(nil)
+				actualValue, actualErr := objectUnderTest.ToObject(nil)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -33,10 +33,10 @@ var _ = Context("coerceToObject", func() {
 					Array: []interface{}{},
 				}
 
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -51,10 +51,10 @@ var _ = Context("coerceToObject", func() {
 					Dir: &providedDir,
 				}
 
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -74,12 +74,12 @@ var _ = Context("coerceToObject", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadFileReturns(nil, errors.New("dummyError"))
 
-				fileUnderTest := _coerceToObject{
+				fileUnderTest := _toObjecter{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				fileUnderTest.CoerceToObject(providedValue)
+				fileUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(fakeIOUtil.ReadFileArgsForCall(0)).To(Equal(providedFile))
@@ -92,12 +92,12 @@ var _ = Context("coerceToObject", func() {
 					marshalErr := errors.New("dummyError")
 					fakeIOUtil.ReadFileReturns(nil, marshalErr)
 
-					fileUnderTest := _coerceToObject{
+					fileUnderTest := _toObjecter{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					actualValue, actualErr := fileUnderTest.CoerceToObject(
+					actualValue, actualErr := fileUnderTest.ToObject(
 						&model.Value{File: new(string)},
 					)
 
@@ -118,13 +118,13 @@ var _ = Context("coerceToObject", func() {
 					// err to trigger immediate return
 					fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-					objectUnderTest := _coerceToObject{
+					objectUnderTest := _toObjecter{
 						ioUtil: fakeIOUtil,
 						json:   fakeJSON,
 					}
 
 					/* act */
-					objectUnderTest.CoerceToObject(
+					objectUnderTest.ToObject(
 						&model.Value{File: new(string)},
 					)
 
@@ -142,13 +142,13 @@ var _ = Context("coerceToObject", func() {
 						unmarshalError := errors.New("dummyError")
 						fakeJSON.UnmarshalReturns(unmarshalError)
 
-						objectUnderTest := _coerceToObject{
+						objectUnderTest := _toObjecter{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := objectUnderTest.ToObject(
 							&model.Value{File: new(string)},
 						)
 
@@ -174,13 +174,13 @@ var _ = Context("coerceToObject", func() {
 							return nil
 						}
 
-						objectUnderTest := _coerceToObject{
+						objectUnderTest := _toObjecter{
 							ioUtil: new(iioutil.Fake),
 							json:   fakeJSON,
 						}
 
 						/* act */
-						actualValue, actualErr := objectUnderTest.CoerceToObject(
+						actualValue, actualErr := objectUnderTest.ToObject(
 							&model.Value{File: new(string)},
 						)
 
@@ -199,10 +199,10 @@ var _ = Context("coerceToObject", func() {
 					Number: &providedNumber,
 				}
 
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())
@@ -218,10 +218,10 @@ var _ = Context("coerceToObject", func() {
 					},
 				}
 
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(Equal(providedValue))
@@ -241,12 +241,12 @@ var _ = Context("coerceToObject", func() {
 				// err to trigger immediate return
 				fakeJSON.UnmarshalReturns(errors.New("dummyError"))
 
-				objectUnderTest := _coerceToObject{
+				objectUnderTest := _toObjecter{
 					json: fakeJSON,
 				}
 
 				/* act */
-				objectUnderTest.CoerceToObject(providedValue)
+				objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				actualBytes,
@@ -262,12 +262,12 @@ var _ = Context("coerceToObject", func() {
 					unmarshalError := errors.New("dummyError")
 					fakeJSON.UnmarshalReturns(unmarshalError)
 
-					objectUnderTest := _coerceToObject{
+					objectUnderTest := _toObjecter{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := objectUnderTest.ToObject(
 						&model.Value{String: new(string)},
 					)
 
@@ -293,12 +293,12 @@ var _ = Context("coerceToObject", func() {
 						return nil
 					}
 
-					objectUnderTest := _coerceToObject{
+					objectUnderTest := _toObjecter{
 						json: fakeJSON,
 					}
 
 					/* act */
-					actualValue, actualErr := objectUnderTest.CoerceToObject(
+					actualValue, actualErr := objectUnderTest.ToObject(
 						&model.Value{String: new(string)},
 					)
 
@@ -313,10 +313,10 @@ var _ = Context("coerceToObject", func() {
 				/* arrange */
 				providedValue := &model.Value{}
 
-				objectUnderTest := _coerceToObject{}
+				objectUnderTest := _toObjecter{}
 
 				/* act */
-				actualValue, actualErr := objectUnderTest.CoerceToObject(providedValue)
+				actualValue, actualErr := objectUnderTest.ToObject(providedValue)
 
 				/* assert */
 				Expect(actualValue).To(BeNil())

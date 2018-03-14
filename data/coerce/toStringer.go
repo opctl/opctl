@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"fmt"
@@ -9,28 +9,28 @@ import (
 	"strconv"
 )
 
-type coerceToString interface {
-	// CoerceToString attempts to coerce value to a string
-	CoerceToString(
+type toStringer interface {
+	// ToString attempts to coerce value to a string
+	ToString(
 		value *model.Value,
 	) (*model.Value, error)
 }
 
-func newCoerceToString() coerceToString {
-	return _coerceToString{
+func newToStringer() toStringer {
+	return _toStringer{
 		json:   ijson.New(),
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coerceToString struct {
+type _toStringer struct {
 	ioUtil iioutil.IIOUtil
 	json   ijson.IJSON
 	os     ios.IOS
 }
 
-func (c _coerceToString) CoerceToString(
+func (c _toStringer) ToString(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {
@@ -43,6 +43,9 @@ func (c _coerceToString) CoerceToString(
 		}
 		arrayString := string(arrayBytes)
 		return &model.Value{String: &arrayString}, nil
+	case nil != value.Boolean:
+		booleanString := strconv.FormatBool(*value.Boolean)
+		return &model.Value{String: &booleanString}, nil
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to string; incompatible types", *value.Dir)
 	case nil != value.File:

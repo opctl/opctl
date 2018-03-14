@@ -1,4 +1,4 @@
-package data
+package coerce
 
 import (
 	"fmt"
@@ -9,21 +9,21 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-type coerceToBoolean interface {
-	// CoerceToBoolean attempts to coerce value to a boolean
-	CoerceToBoolean(
+type toBooleaner interface {
+	// ToBoolean attempts to coerce value to a boolean
+	ToBoolean(
 		value *model.Value,
 	) (*model.Value, error)
 }
 
-func newCoerceToBoolean() coerceToBoolean {
-	return _coerceToBoolean{
+func newToBooleaner() toBooleaner {
+	return _toBooleaner{
 		os:     ios.New(),
 		ioUtil: iioutil.New(),
 	}
 }
 
-type _coerceToBoolean struct {
+type _toBooleaner struct {
 	ioUtil iioutil.IIOUtil
 	os     ios.IOS
 }
@@ -33,7 +33,7 @@ type _coerceToBoolean struct {
 // - ""
 // - "FALSE" (case insensitive)
 // - "F" (case insensitive)
-func (c _coerceToBoolean) isStringTruthy(value string) bool {
+func (c _toBooleaner) isStringTruthy(value string) bool {
 	stringValueWithoutZeros := strings.Replace(value, "0", "", -1)
 	upperCaseStringValue := strings.ToUpper(value)
 
@@ -42,7 +42,7 @@ func (c _coerceToBoolean) isStringTruthy(value string) bool {
 		upperCaseStringValue != "F"
 }
 
-func (c _coerceToBoolean) CoerceToBoolean(
+func (c _toBooleaner) ToBoolean(
 	value *model.Value,
 ) (*model.Value, error) {
 	switch {

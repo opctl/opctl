@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -162,20 +162,20 @@ var _ = Context("EvalToArray", func() {
 				})
 			})
 			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call data.CoerceToArray w/ expected args & return result", func() {
+				It("should call coerce.ToArray w/ expected args & return result", func() {
 					/* arrange */
 					fakeInterpolater := new(interpolater.Fake)
 
 					interpolatedValue := "dummyString"
 					fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 
 					coercedValue := model.Value{Array: []interface{}{"arrayItem"}}
-					fakeData.CoerceToArrayReturns(&coercedValue, nil)
+					fakeCoerce.ToArrayReturns(&coercedValue, nil)
 
 					arrayUnderTest := _evalArrayer{
-						data:         fakeData,
+						coerce:       fakeCoerce,
 						interpolater: fakeInterpolater,
 					}
 
@@ -187,7 +187,7 @@ var _ = Context("EvalToArray", func() {
 					)
 
 					/* assert */
-					Expect(*fakeData.CoerceToArrayArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+					Expect(*fakeCoerce.ToArrayArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 					Expect(*actualValue).To(Equal(coercedValue))
 					Expect(actualErr).To(BeNil())
