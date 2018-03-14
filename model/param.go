@@ -90,7 +90,7 @@ type ObjectConstraints struct {
 	AdditionalProperties *TypeConstraints            `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
 	AllOf                []*ObjectConstraints        `json:"allOf,omitempty" yaml:"allOf,omitempty"`
 	AnyOf                []*ObjectConstraints        `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
-	Description          bool                        `json:"description,omitempty" yaml:"description,omitempty"`
+	Description          string                      `json:"description,omitempty" yaml:"description,omitempty"`
 	Enum                 []map[string]interface{}    `json:"enum,omitempty" yaml:"enum,omitempty"`
 	MaxProperties        int                         `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
 	MinProperties        int                         `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
@@ -99,8 +99,8 @@ type ObjectConstraints struct {
 	PatternProperties    map[string]*TypeConstraints `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
 	Properties           map[string]*TypeConstraints `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Required             []string                    `json:"required,omitempty" yaml:"required,omitempty"`
-	Title                bool                        `json:"title,omitempty" yaml:"title,omitempty"`
-	// Type must be interface{} because can be either string or []string
+	Title                string                      `json:"title,omitempty" yaml:"title,omitempty"`
+	// Type must be interface{} because JSON schema allows either string or []string
 	Type      interface{} `json:"type,omitempty" yaml:"type,omitempty"`
 	WriteOnly bool        `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
 }
