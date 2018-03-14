@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 )
@@ -84,6 +85,154 @@ var _ = Context("parameterSatisfier", func() {
 					actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
 					Expect(actualValues).To(Equal(expectedValues))
 					Expect(actualParams).To(Equal(providedInputs))
+				})
+			})
+		})
+		Context("param.Boolean isn't nil", func() {
+			Context("value isn't nil", func() {
+				It("should call data.CoerceToBoolean w/ expected args", func() {
+					/* arrange */
+					providedInputSourcer := new(FakeInputSourcer)
+
+					providedInputs := map[string]*model.Param{
+						"dummyInputName": {Boolean: &model.BooleanParam{}},
+					}
+
+					valueString := "dummyString"
+					providedInputSourcer.SourceReturns(&valueString, true)
+
+					expectedValue := model.Value{String: &valueString}
+
+					fakeCoerce := new(coerce.Fake)
+
+					objectUnderTest := _CLIParamSatisfier{
+						cliExiter: new(cliexiter.Fake),
+						cliOutput: new(clioutput.Fake),
+						coerce:    fakeCoerce,
+						inputs:    new(inputs.Fake),
+					}
+
+					/* act */
+					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+					/* assert */
+					actualValue := fakeCoerce.ToBooleanArgsForCall(0)
+					Expect(*actualValue).To(Equal(expectedValue))
+				})
+				Context("data.CoerceToBoolean doesn't err", func() {
+					It("should call inputs.validate w/ expected args", func() {
+						/* arrange */
+						providedInputSourcer := new(FakeInputSourcer)
+
+						input1Name := "input1Name"
+						providedInputs := map[string]*model.Param{
+							input1Name: {Boolean: &model.BooleanParam{}},
+						}
+
+						providedInputSourcer.SourceReturns(new(string), true)
+
+						fakeCoerce := new(coerce.Fake)
+
+						expectedBoolean := true
+						expectedValues := map[string]*model.Value{
+							input1Name: {
+								Boolean: &expectedBoolean,
+							},
+						}
+
+						fakeCoerce.ToBooleanReturns(expectedValues[input1Name], nil)
+
+						fakeInputs := new(inputs.Fake)
+
+						objectUnderTest := _CLIParamSatisfier{
+							cliExiter: new(cliexiter.Fake),
+							cliOutput: new(clioutput.Fake),
+							coerce:    fakeCoerce,
+							inputs:    fakeInputs,
+						}
+
+						/* act */
+						objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+						/* assert */
+						actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+						Expect(actualValues).To(Equal(expectedValues))
+						Expect(actualParams).To(Equal(providedInputs))
+					})
+				})
+			})
+		})
+		Context("param.Number isn't nil", func() {
+			Context("value isn't nil", func() {
+				It("should call data.CoerceToNumber w/ expected args", func() {
+					/* arrange */
+					providedInputSourcer := new(FakeInputSourcer)
+
+					providedInputs := map[string]*model.Param{
+						"dummyInputName": {Number: &model.NumberParam{}},
+					}
+
+					valueString := "dummyString"
+					providedInputSourcer.SourceReturns(&valueString, true)
+
+					expectedValue := model.Value{String: &valueString}
+
+					fakeCoerce := new(coerce.Fake)
+
+					objectUnderTest := _CLIParamSatisfier{
+						cliExiter: new(cliexiter.Fake),
+						cliOutput: new(clioutput.Fake),
+						coerce:    fakeCoerce,
+						inputs:    new(inputs.Fake),
+					}
+
+					/* act */
+					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+					/* assert */
+					actualValue := fakeCoerce.ToNumberArgsForCall(0)
+					Expect(*actualValue).To(Equal(expectedValue))
+				})
+				Context("data.CoerceToNumber doesn't err", func() {
+					It("should call inputs.validate w/ expected args", func() {
+						/* arrange */
+						providedInputSourcer := new(FakeInputSourcer)
+
+						input1Name := "input1Name"
+						providedInputs := map[string]*model.Param{
+							input1Name: {Number: &model.NumberParam{}},
+						}
+
+						providedInputSourcer.SourceReturns(new(string), true)
+
+						fakeCoerce := new(coerce.Fake)
+
+						expectedNumber := 2.2
+						expectedValues := map[string]*model.Value{
+							input1Name: {
+								Number: &expectedNumber,
+							},
+						}
+
+						fakeCoerce.ToNumberReturns(expectedValues[input1Name], nil)
+
+						fakeInputs := new(inputs.Fake)
+
+						objectUnderTest := _CLIParamSatisfier{
+							cliExiter: new(cliexiter.Fake),
+							cliOutput: new(clioutput.Fake),
+							coerce:    fakeCoerce,
+							inputs:    fakeInputs,
+						}
+
+						/* act */
+						objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
+
+						/* assert */
+						actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+						Expect(actualValues).To(Equal(expectedValues))
+						Expect(actualParams).To(Equal(providedInputs))
+					})
 				})
 			})
 		})

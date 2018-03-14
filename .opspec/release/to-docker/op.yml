@@ -43,7 +43,7 @@ run:
             echo "compiling image"
             docker build --build-arg CHANNEL="$channel" --no-cache -t "$dockerImageRef" .
         dirs:
-          /workDir: /
+          /workDir: $(/)
         files:
           /dockerImageRef: $(dockerImageRef)
         image: { ref: 'docker:17.07.0-dind' }

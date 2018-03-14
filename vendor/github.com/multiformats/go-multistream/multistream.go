@@ -388,10 +388,8 @@ func ReadNextTokenBytes(rw io.ReadWriter) ([]byte, error) {
 }
 
 func lpReadBuf(r io.Reader) ([]byte, error) {
-	var br byteReaderIface
-	if mbr, ok := r.(byteReaderIface); ok {
-		br = mbr
-	} else {
+	br, ok := r.(io.ByteReader)
+	if !ok {
 		br = &byteReader{r}
 	}
 
@@ -405,7 +403,7 @@ func lpReadBuf(r io.Reader) ([]byte, error) {
 	}
 
 	buf := make([]byte, length)
-	_, err = io.ReadFull(br, buf)
+	_, err = io.ReadFull(r, buf)
 	if err != nil {
 		return nil, err
 	}
@@ -421,11 +419,6 @@ func lpReadBuf(r io.Reader) ([]byte, error) {
 
 }
 
-type byteReaderIface interface {
-	Read([]byte) (int, error)
-	ReadByte() (byte, error)
-}
-
 // byteReader implements the ByteReader interface that ReadUVarint requires
 type byteReader struct {
 	io.Reader
@@ -433,10 +426,15 @@ type byteReader struct {
 
 func (br *byteReader) ReadByte() (byte, error) {
 	var b [1]byte
-	_, err := br.Read(b[:])
-
-	if err != nil {
-		return 0, err
+	n, err := br.Read(b[:])
+	if n == 1 {
+		return b[0], nil
 	}
-	return b[0], nil
+	if err == nil {
+		if n != 0 {
+			panic("read more bytes than buffer size")
+		}
+		err = io.ErrNoProgress
+	}
+	return 0, err
 }

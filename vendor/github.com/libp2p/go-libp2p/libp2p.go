@@ -31,6 +31,7 @@ type Config struct {
 	Protector    pnet.Protector
 	Reporter     metrics.Reporter
 	DisableSecio bool
+	EnableNAT    bool
 }
 
 type Option func(cfg *Config) error
@@ -90,6 +91,13 @@ func TransportEncryption(tenc ...transportEncOpt) Option {
 
 func NoEncryption() Option {
 	return TransportEncryption(EncPlaintext)
+}
+
+func NATPortMap() Option {
+	return func(cfg *Config) error {
+		cfg.EnableNAT = true
+		return nil
+	}
 }
 
 func Muxer(m mux.Transport) Option {
@@ -199,7 +207,13 @@ func newWithCfg(ctx context.Context, cfg *Config) (host.Host, error) {
 
 	netw := (*swarm.Network)(swrm)
 
-	return bhost.New(netw), nil
+	hostOpts := &bhost.HostOpts{}
+
+	if cfg.EnableNAT {
+		hostOpts.NATManager = bhost.NewNATManager(netw)
+	}
+
+	return bhost.NewHost(ctx, netw, hostOpts)
 }
 
 func DefaultMuxer() mux.Transport {

@@ -58,12 +58,24 @@ func (ai _argInterpreter) Interpret(
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return arrayValue, nil
+	case nil != param.Boolean:
+		booleanValue, err := ai.expression.EvalToBoolean(scope, valueExpression, parentPkgHandle)
+		if nil != err {
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
+		}
+		return booleanValue, nil
 	case nil != param.File:
 		fileValue, err := ai.expression.EvalToFile(scope, valueExpression, parentPkgHandle, opScratchDir)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return fileValue, nil
+	case nil != param.Dir:
+		dirValue, err := ai.expression.EvalToDir(scope, valueExpression, parentPkgHandle)
+		if nil != err {
+			return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, valueExpression, err.Error())
+		}
+		return dirValue, nil
 	case nil != param.Number:
 		numberValue, err := ai.expression.EvalToNumber(scope, valueExpression, parentPkgHandle)
 		if nil != err {
@@ -84,22 +96,6 @@ func (ai _argInterpreter) Interpret(
 		return stringValue, nil
 	case nil != param.Socket:
 		return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
-	}
-
-	if stringValue, ok := valueExpression.(string); ok {
-		if dcgValue, ok := scope[stringValue]; ok {
-			// deprecated explicit ref
-			return dcgValue, nil
-		}
-
-		switch {
-		case nil != param.Dir:
-			dirValue, err := ai.expression.EvalToDir(scope, stringValue, parentPkgHandle)
-			if nil != err {
-				return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, stringValue, err.Error())
-			}
-			return dirValue, nil
-		}
 	}
 
 	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, valueExpression)

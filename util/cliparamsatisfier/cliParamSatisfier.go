@@ -9,14 +9,14 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/opcall/inputs"
 	"path/filepath"
 	"sort"
-	"strconv"
 )
 
-// attempts to satisfy the provided inputs via the provided inputSourcer
+// CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer
 //
 // if all fails an error is logged and we exit with a nonzero code.
 type CLIParamSatisfier interface {
@@ -36,6 +36,7 @@ func New(
 	return &_CLIParamSatisfier{
 		cliExiter:       cliExiter,
 		cliOutput:       cliOutput,
+		coerce:          coerce.New(),
 		inputs:          inputs.New(),
 		InputSrcFactory: newInputSrcFactory(),
 	}
@@ -44,17 +45,18 @@ func New(
 type _CLIParamSatisfier struct {
 	cliExiter cliexiter.CliExiter
 	cliOutput clioutput.CliOutput
+	coerce    coerce.Coerce
 	inputs    inputs.Inputs
 	InputSrcFactory
 }
 
-func (this _CLIParamSatisfier) Satisfy(
+func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
 	inputs map[string]*model.Param,
 ) map[string]*model.Value {
 
 	argMap := map[string]*model.Value{}
-	for _, paramName := range this.getSortedParamNames(inputs) {
+	for _, paramName := range cps.getSortedParamNames(inputs) {
 		param := inputs[paramName]
 
 	paramLoop:
@@ -67,7 +69,7 @@ func (this _CLIParamSatisfier) Satisfy(
 -
   Prompt for "%v" failed; running in non-interactive terminal
 -`, paramName)
-				this.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
+				cps.cliExiter.Exit(cliexiter.ExitReq{Message: msg, Code: 1})
 			}
 
 			switch {
@@ -79,21 +81,28 @@ func (this _CLIParamSatisfier) Satisfy(
 				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				err = json.Unmarshal(argJsonBytes, &argValue)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Array: argValue}
+			case nil != param.Boolean:
+				var err error
+				if arg, err = cps.coerce.ToBoolean(&model.Value{String: rawArg}); nil != err {
+					// param not satisfied; notify & re-attempt!
+					cps.notifyOfArgErrors([]error{err}, paramName)
+					continue
+				}
 			case nil != param.Dir:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Dir: &absPath}
@@ -101,30 +110,29 @@ func (this _CLIParamSatisfier) Satisfy(
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{File: &absPath}
 			case nil != param.Number:
-				argValue, err := strconv.ParseFloat(*rawArg, 64)
-				if nil != err {
+				var err error
+				if arg, err = cps.coerce.ToNumber(&model.Value{String: rawArg}); nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Number: &argValue}
 			case nil != param.Object:
 				argValue := map[string]interface{}{}
 				argJsonBytes, err := yaml.YAMLToJSON([]byte(*rawArg))
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				err = json.Unmarshal(argJsonBytes, &argValue)
 				if nil != err {
 					// param not satisfied; notify & re-attempt!
-					this.notifyOfArgErrors([]error{err}, paramName)
+					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
 				arg = &model.Value{Object: argValue}
@@ -134,12 +142,12 @@ func (this _CLIParamSatisfier) Satisfy(
 				arg = &model.Value{String: rawArg}
 			}
 
-			argErrors := this.inputs.Validate(
+			argErrors := cps.inputs.Validate(
 				map[string]*model.Value{paramName: arg},
 				map[string]*model.Param{paramName: param},
 			)
 			if len(argErrors) > 0 {
-				this.notifyOfArgErrors(argErrors[paramName], paramName)
+				cps.notifyOfArgErrors(argErrors[paramName], paramName)
 
 				// param not satisfied; re-attempt it!
 				continue

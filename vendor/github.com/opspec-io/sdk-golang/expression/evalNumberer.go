@@ -2,14 +2,14 @@ package expression
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type evalNumberer interface {
 	// EvalToNumber evaluates an expression to a number value
-	// expression must be a type supported by data.CoerceToNumber
+	// expression must be a type supported by coerce.ToNumber
 	EvalToNumber(
 		scope map[string]*model.Value,
 		expression interface{},
@@ -19,13 +19,13 @@ type evalNumberer interface {
 
 func newEvalNumberer() evalNumberer {
 	return _evalNumberer{
-		data:         data.New(),
+		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
 	}
 }
 
 type _evalNumberer struct {
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 
@@ -53,7 +53,7 @@ func (en _evalNumberer) EvalToNumber(
 
 			value = &model.Value{String: &stringValue}
 		}
-		return en.data.CoerceToNumber(value)
+		return en.coerce.ToNumber(value)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to number; unsupported type", expression)

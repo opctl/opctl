@@ -293,19 +293,29 @@ func (r *Relay) handleHopStream(s inet.Stream, msg *pb.CircuitRelay) {
 	// error, not an EOF.
 	go func() {
 		count, err := io.Copy(s, bs)
-		if err != io.EOF && err != nil {
+		if err != nil {
 			log.Debugf("relay copy error: %s", err)
+			// Reset both.
+			s.Reset()
+			bs.Reset()
+		} else {
+			// propagate the close
+			s.Close()
 		}
-		s.Close()
 		log.Debugf("relayed %d bytes from %s to %s", count, dst.ID.Pretty(), src.ID.Pretty())
 	}()
 
 	go func() {
 		count, err := io.Copy(bs, s)
-		if err != io.EOF && err != nil {
+		if err != nil {
 			log.Debugf("relay copy error: %s", err)
+			// Reset both.
+			bs.Reset()
+			s.Reset()
+		} else {
+			// propagate the close
+			bs.Close()
 		}
-		bs.Close()
 		log.Debugf("relayed %d bytes from %s to %s", count, src.ID.Pretty(), dst.ID.Pretty())
 	}()
 }

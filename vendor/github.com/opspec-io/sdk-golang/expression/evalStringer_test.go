@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -14,14 +14,14 @@ import (
 var _ = Context("EvalToString", func() {
 	var _ = Context("EvalToString", func() {
 		Context("expression is float64", func() {
-			It("should call data.CoerceToString w/ expected args", func() {
+			It("should call coerce.ToString w/ expected args", func() {
 				/* arrange */
 				providedExpression := 2.2
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				objectUnderTest := _evalStringer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -32,19 +32,19 @@ var _ = Context("EvalToString", func() {
 				)
 
 				/* assert */
-				actualValue := fakeData.CoerceToStringArgsForCall(0)
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Number: &providedExpression}))
 			})
 			It("should return expected result", func() {
 				/* arrange */
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 				coercedValue := model.Value{Number: new(float64)}
-				coerceToStringErr := errors.New("dummyError")
+				toStringErr := errors.New("dummyError")
 
-				fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+				fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
 
 				objectUnderTest := _evalStringer{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -56,7 +56,7 @@ var _ = Context("EvalToString", func() {
 
 				/* assert */
 				Expect(*actualValue).To(Equal(coercedValue))
-				Expect(actualErr).To(Equal(coerceToStringErr))
+				Expect(actualErr).To(Equal(toStringErr))
 			})
 		})
 		Context("expression is map[string]interface{}", func() {
@@ -126,17 +126,17 @@ var _ = Context("EvalToString", func() {
 				})
 			})
 			Context("evalObjectInitializerer.Eval doesn't err", func() {
-				It("should call data.CoerceToString w/ expected args", func() {
+				It("should call coerce.ToString w/ expected args", func() {
 					/* arrange */
 					expectedObjectValue := map[string]interface{}{"dummyName": 2.2}
 
 					fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
 					fakeEvalObjectInitializerer.EvalReturns(expectedObjectValue, nil)
 
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 
 					objectUnderTest := _evalStringer{
-						data: fakeData,
+						coerce:                  fakeCoerce,
 						evalObjectInitializerer: fakeEvalObjectInitializerer,
 					}
 
@@ -148,20 +148,20 @@ var _ = Context("EvalToString", func() {
 					)
 
 					/* assert */
-					actualValue := fakeData.CoerceToStringArgsForCall(0)
+					actualValue := fakeCoerce.ToStringArgsForCall(0)
 					Expect(*actualValue).To(Equal(model.Value{Object: expectedObjectValue}))
 				})
 				It("should return expected result", func() {
 					/* arrange */
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 					coercedValue := model.Value{Object: map[string]interface{}{}}
-					coerceToStringErr := errors.New("dummyError")
+					toStringErr := errors.New("dummyError")
 
-					fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+					fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
 
 					objectUnderTest := _evalStringer{
 						evalObjectInitializerer: new(fakeEvalObjectInitializerer),
-						data: fakeData,
+						coerce:                  fakeCoerce,
 					}
 
 					/* act */
@@ -173,7 +173,7 @@ var _ = Context("EvalToString", func() {
 
 					/* assert */
 					Expect(*actualValue).To(Equal(coercedValue))
-					Expect(actualErr).To(Equal(coerceToStringErr))
+					Expect(actualErr).To(Equal(toStringErr))
 				})
 			})
 		})
@@ -244,17 +244,17 @@ var _ = Context("EvalToString", func() {
 				})
 			})
 			Context("evalArrayInitializerer.Eval doesn't err", func() {
-				It("should call data.CoerceToString w/ expected args", func() {
+				It("should call coerce.ToString w/ expected args", func() {
 					/* arrange */
 					expectedArrayValue := []interface{}{"item1"}
 
 					fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
 					fakeEvalArrayInitializerer.EvalReturns(expectedArrayValue, nil)
 
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 
 					arrayUnderTest := _evalStringer{
-						data: fakeData,
+						coerce:                 fakeCoerce,
 						evalArrayInitializerer: fakeEvalArrayInitializerer,
 					}
 
@@ -266,20 +266,20 @@ var _ = Context("EvalToString", func() {
 					)
 
 					/* assert */
-					actualValue := fakeData.CoerceToStringArgsForCall(0)
+					actualValue := fakeCoerce.ToStringArgsForCall(0)
 					Expect(*actualValue).To(Equal(model.Value{Array: expectedArrayValue}))
 				})
 				It("should return expected result", func() {
 					/* arrange */
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 					coercedValue := model.Value{Array: []interface{}{}}
-					coerceToStringErr := errors.New("dummyError")
+					toStringErr := errors.New("dummyError")
 
-					fakeData.CoerceToStringReturns(&coercedValue, coerceToStringErr)
+					fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
 
 					arrayUnderTest := _evalStringer{
 						evalArrayInitializerer: new(fakeEvalArrayInitializerer),
-						data: fakeData,
+						coerce:                 fakeCoerce,
 					}
 
 					/* act */
@@ -291,7 +291,7 @@ var _ = Context("EvalToString", func() {
 
 					/* assert */
 					Expect(*actualValue).To(Equal(coercedValue))
-					Expect(actualErr).To(Equal(coerceToStringErr))
+					Expect(actualErr).To(Equal(toStringErr))
 				})
 			})
 		})
@@ -351,20 +351,20 @@ var _ = Context("EvalToString", func() {
 				})
 			})
 		})
-		It("should call data.CoerceToString w/ expected args & return result", func() {
+		It("should call coerce.ToString w/ expected args & return result", func() {
 			/* arrange */
 			fakeInterpolater := new(interpolater.Fake)
 
 			interpolatedValue := "dummyString"
 			fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
-			fakeData := new(data.Fake)
+			fakeCoerce := new(coerce.Fake)
 
 			coercedValue := model.Value{String: new(string)}
-			fakeData.CoerceToStringReturns(&coercedValue, nil)
+			fakeCoerce.ToStringReturns(&coercedValue, nil)
 
 			objectUnderTest := _evalStringer{
-				data:         fakeData,
+				coerce:       fakeCoerce,
 				interpolater: fakeInterpolater,
 			}
 
@@ -376,7 +376,7 @@ var _ = Context("EvalToString", func() {
 			)
 
 			/* assert */
-			Expect(*fakeData.CoerceToStringArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+			Expect(*fakeCoerce.ToStringArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 			Expect(*actualValue).To(Equal(coercedValue))
 			Expect(actualErr).To(BeNil())

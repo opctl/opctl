@@ -5,9 +5,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/opcall/params"
 )
 
-var _ = Context("inputs", func() {
+var _ = Context("outputs.interpreter", func() {
 	Context("Interpret", func() {
 
 		It("should call defaulter.Default w/ expected args", func() {
@@ -16,10 +17,10 @@ var _ = Context("inputs", func() {
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedPkgPath := "dummyPkgPath"
 
-			fakeDefaulter := new(fakeDefaulter)
+			fakeParams := new(params.Fake)
 
 			objectUnderTest := _interpreter{
-				defaulter: fakeDefaulter,
+				params:    fakeParams,
 				validator: new(fakeValidator),
 			}
 
@@ -33,7 +34,7 @@ var _ = Context("inputs", func() {
 			/* assert */
 			actualOutputArgs,
 				actualOutputParams,
-				actualPkgPath := fakeDefaulter.DefaultArgsForCall(0)
+				actualPkgPath := fakeParams.DefaultArgsForCall(0)
 
 			Expect(actualOutputArgs).To(Equal(providedOutputArgs))
 			Expect(actualOutputParams).To(Equal(providedOutputParams))
@@ -45,17 +46,17 @@ var _ = Context("inputs", func() {
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedPkgPath := "dummyPkgPath"
 
-			fakeDefaulter := new(fakeDefaulter)
+			fakeParams := new(params.Fake)
 			defaultedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
 
-			fakeDefaulter.DefaultReturns(defaultedOutputArgs)
+			fakeParams.DefaultReturns(defaultedOutputArgs)
 
 			fakeValidator := new(fakeValidator)
 			validateErr := errors.New("dummyErr")
 			fakeValidator.ValidateReturns(validateErr)
 
 			objectUnderTest := _interpreter{
-				defaulter: fakeDefaulter,
+				params:    fakeParams,
 				validator: fakeValidator,
 			}
 

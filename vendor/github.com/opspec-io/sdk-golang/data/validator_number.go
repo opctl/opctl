@@ -14,7 +14,7 @@ func (vdt _validator) validateNumber(
 	value *model.Value,
 	constraints *model.NumberConstraints,
 ) []error {
-	valueAsNumber, err := vdt.coercer.CoerceToNumber(value)
+	valueAsNumber, err := vdt.coerce.ToNumber(value)
 	if nil != err {
 		return []error{err}
 	}

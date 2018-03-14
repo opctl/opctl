@@ -33,6 +33,11 @@ func (this cliPromptInputSrc) ReadString(
 		)
 
 		switch {
+		case nil != param.Array:
+			isSecret = param.Array.IsSecret
+			description = param.Array.Description
+		case nil != param.Boolean:
+			description = param.Boolean.Description
 		case nil != param.Dir:
 			description = param.Dir.Description
 		case nil != param.File:

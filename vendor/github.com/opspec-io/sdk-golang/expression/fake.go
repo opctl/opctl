@@ -2,8 +2,9 @@
 package expression
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
 	"sync"
+
+	"github.com/opspec-io/sdk-golang/model"
 )
 
 type Fake struct {
@@ -22,11 +23,26 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToDirStub        func(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error)
+	EvalToBooleanStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
+	evalToBooleanMutex       sync.RWMutex
+	evalToBooleanArgsForCall []struct {
+		scope      map[string]*model.Value
+		expression interface{}
+		pkgHandle  model.PkgHandle
+	}
+	evalToBooleanReturns struct {
+		result1 *model.Value
+		result2 error
+	}
+	evalToBooleanReturnsOnCall map[int]struct {
+		result1 *model.Value
+		result2 error
+	}
+	EvalToDirStub        func(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error)
 	evalToDirMutex       sync.RWMutex
 	evalToDirArgsForCall []struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}
 	evalToDirReturns struct {
@@ -155,12 +171,65 @@ func (fake *Fake) EvalToArrayReturnsOnCall(i int, result1 *model.Value, result2 
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression string, pkgHandle model.PkgHandle) (*model.Value, error) {
+func (fake *Fake) EvalToBoolean(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
+	fake.evalToBooleanMutex.Lock()
+	ret, specificReturn := fake.evalToBooleanReturnsOnCall[len(fake.evalToBooleanArgsForCall)]
+	fake.evalToBooleanArgsForCall = append(fake.evalToBooleanArgsForCall, struct {
+		scope      map[string]*model.Value
+		expression interface{}
+		pkgHandle  model.PkgHandle
+	}{scope, expression, pkgHandle})
+	fake.recordInvocation("EvalToBoolean", []interface{}{scope, expression, pkgHandle})
+	fake.evalToBooleanMutex.Unlock()
+	if fake.EvalToBooleanStub != nil {
+		return fake.EvalToBooleanStub(scope, expression, pkgHandle)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.evalToBooleanReturns.result1, fake.evalToBooleanReturns.result2
+}
+
+func (fake *Fake) EvalToBooleanCallCount() int {
+	fake.evalToBooleanMutex.RLock()
+	defer fake.evalToBooleanMutex.RUnlock()
+	return len(fake.evalToBooleanArgsForCall)
+}
+
+func (fake *Fake) EvalToBooleanArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
+	fake.evalToBooleanMutex.RLock()
+	defer fake.evalToBooleanMutex.RUnlock()
+	return fake.evalToBooleanArgsForCall[i].scope, fake.evalToBooleanArgsForCall[i].expression, fake.evalToBooleanArgsForCall[i].pkgHandle
+}
+
+func (fake *Fake) EvalToBooleanReturns(result1 *model.Value, result2 error) {
+	fake.EvalToBooleanStub = nil
+	fake.evalToBooleanReturns = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToBooleanReturnsOnCall(i int, result1 *model.Value, result2 error) {
+	fake.EvalToBooleanStub = nil
+	if fake.evalToBooleanReturnsOnCall == nil {
+		fake.evalToBooleanReturnsOnCall = make(map[int]struct {
+			result1 *model.Value
+			result2 error
+		})
+	}
+	fake.evalToBooleanReturnsOnCall[i] = struct {
+		result1 *model.Value
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression interface{}, pkgHandle model.PkgHandle) (*model.Value, error) {
 	fake.evalToDirMutex.Lock()
 	ret, specificReturn := fake.evalToDirReturnsOnCall[len(fake.evalToDirArgsForCall)]
 	fake.evalToDirArgsForCall = append(fake.evalToDirArgsForCall, struct {
 		scope      map[string]*model.Value
-		expression string
+		expression interface{}
 		pkgHandle  model.PkgHandle
 	}{scope, expression, pkgHandle})
 	fake.recordInvocation("EvalToDir", []interface{}{scope, expression, pkgHandle})
@@ -180,7 +249,7 @@ func (fake *Fake) EvalToDirCallCount() int {
 	return len(fake.evalToDirArgsForCall)
 }
 
-func (fake *Fake) EvalToDirArgsForCall(i int) (map[string]*model.Value, string, model.PkgHandle) {
+func (fake *Fake) EvalToDirArgsForCall(i int) (map[string]*model.Value, interface{}, model.PkgHandle) {
 	fake.evalToDirMutex.RLock()
 	defer fake.evalToDirMutex.RUnlock()
 	return fake.evalToDirArgsForCall[i].scope, fake.evalToDirArgsForCall[i].expression, fake.evalToDirArgsForCall[i].pkgHandle
@@ -426,6 +495,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.evalToArrayMutex.RLock()
 	defer fake.evalToArrayMutex.RUnlock()
+	fake.evalToBooleanMutex.RLock()
+	defer fake.evalToBooleanMutex.RUnlock()
 	fake.evalToDirMutex.RLock()
 	defer fake.evalToDirMutex.RUnlock()
 	fake.evalToFileMutex.RLock()
