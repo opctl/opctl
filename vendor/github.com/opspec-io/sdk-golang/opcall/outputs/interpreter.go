@@ -2,6 +2,7 @@ package outputs
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/opcall/params"
 )
 
 type interpreter interface {
@@ -18,13 +19,13 @@ type interpreter interface {
 
 func newInterpreter() interpreter {
 	return _interpreter{
-		defaulter: newDefaulter(),
+		params:    params.New(),
 		validator: newValidator(),
 	}
 }
 
 type _interpreter struct {
-	defaulter
+	params params.Params
 	validator
 }
 
@@ -37,8 +38,8 @@ func (itp _interpreter) Interpret(
 	error,
 ) {
 
-	outputArgsWithDefaults := itp.defaulter.Default(outputArgs, outputParams, pkgPath)
+	argsWithDefaults := itp.params.Default(outputArgs, outputParams, pkgPath)
 
-	return outputArgsWithDefaults, itp.validator.Validate(outputArgsWithDefaults, outputParams)
+	return argsWithDefaults, itp.validator.Validate(argsWithDefaults, outputParams)
 
 }

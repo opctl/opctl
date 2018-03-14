@@ -5,7 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -163,20 +163,20 @@ var _ = Context("EvalToObject", func() {
 			})
 		})
 		Context("interpolater.Interpolate doesn't err", func() {
-			It("should call data.CoerceToObject w/ expected args & return result", func() {
+			It("should call coerce.ToObject w/ expected args & return result", func() {
 				/* arrange */
 				fakeInterpolater := new(interpolater.Fake)
 
 				interpolatedValue := "dummyString"
 				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				coercedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
-				fakeData.CoerceToObjectReturns(&coercedValue, nil)
+				fakeCoerce.ToObjectReturns(&coercedValue, nil)
 
 				objectUnderTest := _evalObjecter{
-					data:         fakeData,
+					coerce:       fakeCoerce,
 					interpolater: fakeInterpolater,
 				}
 
@@ -188,7 +188,7 @@ var _ = Context("EvalToObject", func() {
 				)
 
 				/* assert */
-				Expect(*fakeData.CoerceToObjectArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
+				Expect(*fakeCoerce.ToObjectArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
 
 				Expect(*actualValue).To(Equal(coercedValue))
 				Expect(actualErr).To(BeNil())

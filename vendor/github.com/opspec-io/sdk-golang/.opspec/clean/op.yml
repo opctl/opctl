@@ -11,6 +11,6 @@ outputs:
       description: directory containing the projects source code
 run:
   op:
-    pkg: { ref: github.com/opspec-pkgs/git.clean#1.0.1 }
+    pkg: { ref: github.com/opspec-pkgs/git.repo.clean#1.1.0 }
     inputs: { srcDir, opts: -ffXd -e !.idea/ }
     outputs: { srcDir }

@@ -14,7 +14,7 @@ func (vdt _validator) validateString(
 	value *model.Value,
 	constraints *model.StringConstraints,
 ) []error {
-	valueAsString, err := vdt.coercer.CoerceToString(value)
+	valueAsString, err := vdt.coerce.ToString(value)
 	if nil != err {
 		return []error{err}
 	}

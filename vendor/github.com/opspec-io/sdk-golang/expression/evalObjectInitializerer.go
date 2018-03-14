@@ -3,7 +3,7 @@ package expression
 import (
 	"fmt"
 	"github.com/golang-interfaces/encoding-ijson"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
@@ -22,14 +22,14 @@ type evalObjectInitializerer interface {
 // newEvalObjectInitializerer returns a new evalObjectInitializerer instance
 func newEvalObjectInitializerer() evalObjectInitializerer {
 	return _evalObjectInitializerer{
-		data:         data.New(),
+		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
 		json:         ijson.New(),
 	}
 }
 
 type _evalObjectInitializerer struct {
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 	json         ijson.IJSON
 }

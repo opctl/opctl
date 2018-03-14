@@ -2,14 +2,14 @@ package expression
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type evalObjecter interface {
 	// EvalToObject evaluates an expression to a object value
-	// expression must be a type supported by data.CoerceToObject
+	// expression must be a type supported by coerce.ToObject
 	EvalToObject(
 		scope map[string]*model.Value,
 		expression interface{},
@@ -20,14 +20,14 @@ type evalObjecter interface {
 func newEvalObjecter() evalObjecter {
 	return _evalObjecter{
 		evalObjectInitializerer: newEvalObjectInitializerer(),
-		data:         data.New(),
-		interpolater: interpolater.New(),
+		coerce:                  coerce.New(),
+		interpolater:            interpolater.New(),
 	}
 }
 
 type _evalObjecter struct {
 	evalObjectInitializerer
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 
@@ -63,7 +63,7 @@ func (eo _evalObjecter) EvalToObject(
 			}
 			value = &model.Value{String: &stringValue}
 		}
-		return eo.data.CoerceToObject(value)
+		return eo.coerce.ToObject(value)
 	}
 
 	return nil, fmt.Errorf("unable to evaluate %+v to object; unsupported type", expression)

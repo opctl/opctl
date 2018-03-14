@@ -100,7 +100,7 @@
     "digestset",
     "reference"
   ]
-  revision = "6fca8d6e6713acbdf3f9ca40cf6370fc5ee5ee53"
+  revision = "607ae5d128a82f280e8c7f453d5fb30c535bda17"
 
 [[projects]]
   branch = "master"
@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "8cf8fe9cf80a07d4e68829f619ea2c71fbb5af0c"
+  revision = "bc0b0f11f3a75a4a8f058d9ceb3d098cf39a091e"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -153,6 +153,19 @@
     "spdy"
   ]
   revision = "bc6354cbbc295e925e4c611ffe90c1f287ee54db"
+
+[[projects]]
+  name = "github.com/emirpasic/gods"
+  packages = [
+    "containers",
+    "lists",
+    "lists/arraylist",
+    "trees",
+    "trees/binaryheap",
+    "utils"
+  ]
+  revision = "f6c17b524822278a87e3b3bd809fec33b51f5b46"
+  version = "v1.9.0"
 
 [[projects]]
   branch = "master"
@@ -413,7 +426,7 @@
     "p2p/protocol/identify",
     "p2p/protocol/identify/pb"
   ]
-  revision = "5180df872e5ef34074bc6977b78f6b6e98553788"
+  revision = "6877a20c8a91eb0d53244d4c358ed8b6aa085eba"
 
 [[projects]]
   branch = "master"
@@ -422,7 +435,7 @@
     ".",
     "pb"
   ]
-  revision = "e85b2ba300206b73ffce804a1af20862ff1e12de"
+  revision = "77e780c2043662c798da30750e5af7e07b086703"
 
 [[projects]]
   branch = "master"
@@ -461,7 +474,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-interface-pnet"
   packages = ["."]
-  revision = "adc9472a14d21a9da75b21a8fba6b97f18ec545e"
+  revision = "6ea0626616ac1d34c6375a20fd1f48fc9a607a4d"
 
 [[projects]]
   branch = "master"
@@ -525,7 +538,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-swarm"
   packages = ["."]
-  revision = "881b974a81faf652c196bda4331300683f18b539"
+  revision = "c0bf6756a81190a94b5946f952cd4fc7d342b0d3"
 
 [[projects]]
   branch = "master"
@@ -562,7 +575,7 @@
     "poll",
     "singlepoll"
   ]
-  revision = "5f99154da15f232dd930262ecfaa44baa20bd2f8"
+  revision = "99b8511da09c3f00966861e1ed210e808c568112"
 
 [[projects]]
   branch = "master"
@@ -652,7 +665,7 @@
   branch = "master"
   name = "github.com/multiformats/go-multiaddr-net"
   packages = ["."]
-  revision = "6040dff26de27e20b248b08041fdb65e6ba45b58"
+  revision = "97d80565f68c5df715e6ba59c2f6a03d1fc33aaf"
 
 [[projects]]
   branch = "master"
@@ -664,13 +677,13 @@
   branch = "master"
   name = "github.com/multiformats/go-multihash"
   packages = ["."]
-  revision = "468a1b73e980e5aff011d308623e43e28c582b16"
+  revision = "265e72146e710ff649c6982e3699d01d4e9a18bb"
 
 [[projects]]
   branch = "master"
   name = "github.com/multiformats/go-multistream"
   packages = ["."]
-  revision = "1bc5dd803d20cf91d8ec905ac3580e3ea3c8c995"
+  revision = "612ce31c03aebe1d5adbd3c850ee89e05a82b16d"
 
 [[projects]]
   name = "github.com/opencontainers/go-digest"
@@ -708,6 +721,7 @@
     "containercall/image",
     "containercall/sockets",
     "data",
+    "data/coerce",
     "expression",
     "expression/interpolater",
     "expression/interpolater/dereferencer",
@@ -719,6 +733,7 @@
     "opcall",
     "opcall/inputs",
     "opcall/outputs",
+    "opcall/params",
     "pkg",
     "pkg/manifest",
     "util/containerprovider",
@@ -727,7 +742,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "179c33d36050fe453b72e2c79857c077172decad"
+  revision = "48127f95e5213e1c51b6e4fce872154b3e978fb1"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -774,8 +789,8 @@
 [[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
-  version = "v1.0.4"
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
 
 [[projects]]
   name = "github.com/spaolacci/murmur3"
@@ -947,7 +962,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "85f98707c97e11569271e4d9b3d397e079c4f4d0"
+  revision = "21652f85b0fdddb6c2b6b77a5beca5c5a908174a"
 
 [[projects]]
   branch = "master"
@@ -962,13 +977,13 @@
     "proxy",
     "trace"
   ]
-  revision = "d25186b37f34ebdbbea8f488ef055638dfab272d"
+  revision = "e0c57d8f86c17f0724497efcb3bc617e82834821"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sync"
   packages = ["singleflight"]
-  revision = "fd80eb99c8f653c847d294a001bdf2a3a6f768f5"
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
 
 [[projects]]
   branch = "master"
@@ -977,7 +992,7 @@
     "unix",
     "windows"
   ]
-  revision = "dd2ff4accc098aceecb86b36eaa7829b2a17b1c9"
+  revision = "89ac7f292d17a339edab4de8efcba5d8672ff661"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -1062,8 +1077,8 @@
     "utils/merkletrie/internal/frame",
     "utils/merkletrie/noder"
   ]
-  revision = "886dc83f3ed518a78772055497bcc7d7621b468e"
-  version = "v4.1.1"
+  revision = "1d28459504251497e0ce6132a0fadd5eb44ffd22"
+  version = "v4.2.0"
 
 [[projects]]
   name = "gopkg.in/warnings.v0"
@@ -1080,6 +1095,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e6d708913a426baf6c86cad4759e6a11a4b89267cfd58b01331b2dfd7aa65232"
+  inputs-digest = "5d4a60830f576d366dc722b45f3838c405b212da5e803e137318d09166d101c5"
   solver-name = "gps-cdcl"
   solver-version = 1

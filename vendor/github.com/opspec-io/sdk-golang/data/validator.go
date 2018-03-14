@@ -5,6 +5,7 @@ package data
 import (
 	"errors"
 	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -23,14 +24,14 @@ func newValidator() validator {
 	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
 
 	return _validator{
-		os:      ios.New(),
-		coercer: newCoercer(),
+		os:     ios.New(),
+		coerce: coerce.New(),
 	}
 }
 
 type _validator struct {
-	coercer coercer
-	os      ios.IOS
+	coerce coerce.Coerce
+	os     ios.IOS
 }
 
 // Validate validates a value against a parameter

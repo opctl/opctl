@@ -5,7 +5,7 @@ package dereferencer
 import (
 	"fmt"
 
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -19,12 +19,12 @@ type scopeDeReferencer interface {
 
 func newScopeDeReferencer() scopeDeReferencer {
 	return _scopeDeReferencer{
-		data: data.New(),
+		coerce: coerce.New(),
 	}
 }
 
 type _scopeDeReferencer struct {
-	data data.Data
+	coerce coerce.Coerce
 }
 
 func (sd _scopeDeReferencer) DeReferenceScope(
@@ -32,7 +32,7 @@ func (sd _scopeDeReferencer) DeReferenceScope(
 	scope map[string]*model.Value,
 ) (string, bool, error) {
 	if value, isScopeRef := scope[ref]; isScopeRef {
-		valueAsString, err := sd.data.CoerceToString(value)
+		valueAsString, err := sd.coerce.ToString(value)
 		if nil != err {
 			return "", false, fmt.Errorf("unable to deReference '%v' as string; error was: %v", ref, err.Error())
 		}

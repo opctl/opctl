@@ -111,6 +111,73 @@ func TestBasicRelay(t *testing.T) {
 	}
 }
 
+func TestRelayReset(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	hosts := getNetHosts(t, ctx, 3)
+
+	connect(t, hosts[0], hosts[1])
+	connect(t, hosts[1], hosts[2])
+
+	time.Sleep(10 * time.Millisecond)
+
+	r1, err := NewRelay(ctx, hosts[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = NewRelay(ctx, hosts[1], OptHop)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r3, err := NewRelay(ctx, hosts[2])
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ready := make(chan struct{})
+
+	msg := []byte("relay works!")
+	go func() {
+		list := r3.Listener()
+
+		con, err := list.Accept()
+		if err != nil {
+			t.Error(err)
+			return
+		}
+
+		_, err = con.Write(msg)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		<-ready
+
+		hosts[2].Close()
+	}()
+
+	rinfo := hosts[1].Peerstore().PeerInfo(hosts[1].ID())
+	dinfo := hosts[2].Peerstore().PeerInfo(hosts[2].ID())
+
+	rctx, rcancel := context.WithTimeout(ctx, time.Second)
+	defer rcancel()
+
+	con, err := r1.DialPeer(rctx, rinfo, dinfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	close(ready)
+
+	_, err = ioutil.ReadAll(con)
+	if err == nil {
+		t.Fatal("expected error for reset relayed connection")
+	}
+}
+
 func TestBasicRelayDial(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -19,7 +19,7 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-ignored = ["github.com/Sirupsen/logrus", "github.com/onsi/gomega", "github.com/onsi/ginkgo"]
+ignored = ["github.com/Sirupsen/logrus"]
 
 [[constraint]]
   name = "github.com/docker/docker"

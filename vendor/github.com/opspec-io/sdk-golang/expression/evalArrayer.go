@@ -2,14 +2,14 @@ package expression
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
 type evalArrayer interface {
 	// EvalToArray evaluates an expression to an array value
-	// expression must be a type supported by data.CoerceToArray
+	// expression must be a type supported by coerce.ToArray
 	EvalToArray(
 		scope map[string]*model.Value,
 		expression interface{},
@@ -20,14 +20,14 @@ type evalArrayer interface {
 func newEvalArrayer() evalArrayer {
 	return _evalArrayer{
 		evalArrayInitializerer: newEvalArrayInitializerer(),
-		data:         data.New(),
-		interpolater: interpolater.New(),
+		coerce:                 coerce.New(),
+		interpolater:           interpolater.New(),
 	}
 }
 
 type _evalArrayer struct {
 	evalArrayInitializerer
-	data         data.Data
+	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
 }
 
@@ -63,7 +63,7 @@ func (ea _evalArrayer) EvalToArray(
 			}
 			value = &model.Value{String: &stringValue}
 		}
-		return ea.data.CoerceToArray(value)
+		return ea.coerce.ToArray(value)
 	}
 	return nil, fmt.Errorf("unable to evaluate %+v to array; unsupported type", expression)
 }

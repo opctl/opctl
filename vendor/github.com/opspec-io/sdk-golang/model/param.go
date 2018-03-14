@@ -2,13 +2,14 @@ package model
 
 // Param represents a typed param of an op
 type Param struct {
-	Array  *ArrayParam  `yaml:"array,omitempty"`
-	Dir    *DirParam    `yaml:"dir,omitempty"`
-	File   *FileParam   `yaml:"file,omitempty"`
-	Number *NumberParam `yaml:"number,omitempty"`
-	Object *ObjectParam `yaml:"object,omitempty"`
-	Socket *SocketParam `yaml:"socket,omitempty"`
-	String *StringParam `yaml:"string,omitempty"`
+	Array   *ArrayParam   `yaml:"array,omitempty"`
+	Boolean *BooleanParam `yaml:"boolean,omitempty"`
+	Dir     *DirParam     `yaml:"dir,omitempty"`
+	File    *FileParam    `yaml:"file,omitempty"`
+	Number  *NumberParam  `yaml:"number,omitempty"`
+	Object  *ObjectParam  `yaml:"object,omitempty"`
+	Socket  *SocketParam  `yaml:"socket,omitempty"`
+	String  *StringParam  `yaml:"string,omitempty"`
 }
 
 // ArrayParam represents a parameter of type object
@@ -19,7 +20,14 @@ type ArrayParam struct {
 	IsSecret    bool              `yaml:"isSecret,omitempty"`
 }
 
-// ArrayConstraints represents constraints of a ObjectParam
+// BooleanParam represents a parameter of type boolean
+type BooleanParam struct {
+	// Default is *bool instead of bool so we know if default was explicitly provided
+	Default     *bool  `yaml:"default,omitempty"`
+	Description string `yaml:"description,omitempty"`
+}
+
+// ArrayConstraints represents constraints of an ObjectParam
 type ArrayConstraints struct {
 	// json struct tags used for validating via gojsonschema
 	Items           interface{}      `json:"items,omitempty" yaml:"items,omitempty"`
@@ -31,6 +39,7 @@ type ArrayConstraints struct {
 
 // DirParam represents a parameter of type directory
 type DirParam struct {
+	// Default is *string instead of string so we know if default was explicitly provided
 	Default     *string `yaml:"default,omitempty"`
 	Description string  `yaml:"description,omitempty"`
 	IsSecret    bool    `yaml:"isSecret,omitempty"`
@@ -38,6 +47,7 @@ type DirParam struct {
 
 // FileParam represents a parameter of type file
 type FileParam struct {
+	// Default is *string instead of string so we know if default was explicitly provided
 	Default     *string `yaml:"default,omitempty"`
 	Description string  `yaml:"description,omitempty"`
 	IsSecret    bool    `yaml:"isSecret,omitempty"`
@@ -46,9 +56,10 @@ type FileParam struct {
 // NumberParam represents a parameter of type number
 type NumberParam struct {
 	Constraints *NumberConstraints `yaml:"constraints,omitempty"`
-	Default     *float64           `yaml:"default,omitempty"`
-	Description string             `yaml:"description,omitempty"`
-	IsSecret    bool               `yaml:"isSecret,omitempty"`
+	// Default is *float64 instead of float64 so we know if default was explicitly provided
+	Default     *float64 `yaml:"default,omitempty"`
+	Description string   `yaml:"description,omitempty"`
+	IsSecret    bool     `yaml:"isSecret,omitempty"`
 }
 
 // NumberConstraints represents constraints of a NumberParam
@@ -79,6 +90,7 @@ type ObjectConstraints struct {
 	AdditionalProperties *TypeConstraints            `json:"additionalProperties,omitempty" yaml:"additionalProperties,omitempty"`
 	AllOf                []*ObjectConstraints        `json:"allOf,omitempty" yaml:"allOf,omitempty"`
 	AnyOf                []*ObjectConstraints        `json:"anyOf,omitempty" yaml:"anyOf,omitempty"`
+	Description          string                      `json:"description,omitempty" yaml:"description,omitempty"`
 	Enum                 []map[string]interface{}    `json:"enum,omitempty" yaml:"enum,omitempty"`
 	MaxProperties        int                         `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
 	MinProperties        int                         `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
@@ -87,6 +99,10 @@ type ObjectConstraints struct {
 	PatternProperties    map[string]*TypeConstraints `json:"patternProperties,omitempty" yaml:"patternProperties,omitempty"`
 	Properties           map[string]*TypeConstraints `json:"properties,omitempty" yaml:"properties,omitempty"`
 	Required             []string                    `json:"required,omitempty" yaml:"required,omitempty"`
+	Title                string                      `json:"title,omitempty" yaml:"title,omitempty"`
+	// Type must be interface{} because JSON schema allows either string or []string
+	Type      interface{} `json:"type,omitempty" yaml:"type,omitempty"`
+	WriteOnly bool        `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
 }
 
 // TypeConstraints represents data type constraints
@@ -112,9 +128,10 @@ type SocketParam struct {
 // StringParam represents a parameter of type string
 type StringParam struct {
 	Constraints *StringConstraints `yaml:"constraints,omitempty"`
-	Default     *string            `yaml:"default,omitempty"`
-	Description string             `yaml:"description,omitempty"`
-	IsSecret    bool               `yaml:"isSecret,omitempty"`
+	// Default is *string instead of string so we know if default was explicitly provided
+	Default     *string `yaml:"default,omitempty"`
+	Description string  `yaml:"description,omitempty"`
+	IsSecret    bool    `yaml:"isSecret,omitempty"`
 }
 
 // StringConstraints represents constraints of a StringParam

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/expression/interpolater"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg"
@@ -14,15 +14,15 @@ import (
 
 var _ = Context("EvalToFile", func() {
 	Context("expression is float64", func() {
-		It("should call data.CoerceToFile w/ expected args", func() {
+		It("should call coerce.ToFile w/ expected args", func() {
 			/* arrange */
 			providedExpression := 2.2
 			providedScratchDir := "dummyScratchDir"
 
-			fakeData := new(data.Fake)
+			fakeCoerce := new(coerce.Fake)
 
 			objectUnderTest := _evalFiler{
-				data: fakeData,
+				coerce: fakeCoerce,
 			}
 
 			/* act */
@@ -35,20 +35,20 @@ var _ = Context("EvalToFile", func() {
 
 			/* assert */
 			actualValue,
-				actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+				actualScratchDir := fakeCoerce.ToFileArgsForCall(0)
 			Expect(*actualValue).To(Equal(model.Value{Number: &providedExpression}))
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
 		})
 		It("should return expected result", func() {
 			/* arrange */
-			fakeData := new(data.Fake)
+			fakeCoerce := new(coerce.Fake)
 			coercedValue := model.Value{Number: new(float64)}
-			coerceToFileErr := errors.New("dummyError")
+			toFileErr := errors.New("dummyError")
 
-			fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+			fakeCoerce.ToFileReturns(&coercedValue, toFileErr)
 
 			objectUnderTest := _evalFiler{
-				data: fakeData,
+				coerce: fakeCoerce,
 			}
 
 			/* act */
@@ -61,7 +61,7 @@ var _ = Context("EvalToFile", func() {
 
 			/* assert */
 			Expect(*actualValue).To(Equal(coercedValue))
-			Expect(actualErr).To(Equal(coerceToFileErr))
+			Expect(actualErr).To(Equal(toFileErr))
 		})
 	})
 	Context("expression is map[string]interface{}", func() {
@@ -133,7 +133,7 @@ var _ = Context("EvalToFile", func() {
 			})
 		})
 		Context("evalObjectInitializerer.Eval doesn't err", func() {
-			It("should call data.CoerceToFile w/ expected args", func() {
+			It("should call coerce.ToFile w/ expected args", func() {
 				/* arrange */
 				providedScratchDir := "dummyScratchDir"
 
@@ -141,11 +141,11 @@ var _ = Context("EvalToFile", func() {
 				expectedObjectValue := map[string]interface{}{"dummyName": 2.2}
 				fakeEvalObjectInitializerer.EvalReturns(expectedObjectValue, nil)
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				objectUnderTest := _evalFiler{
 					evalObjectInitializerer: fakeEvalObjectInitializerer,
-					data: fakeData,
+					coerce:                  fakeCoerce,
 				}
 
 				/* act */
@@ -158,21 +158,21 @@ var _ = Context("EvalToFile", func() {
 
 				/* assert */
 				actualValue,
-					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+					actualScratchDir := fakeCoerce.ToFileArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Object: expectedObjectValue}))
 				Expect(actualScratchDir).To(Equal(providedScratchDir))
 			})
 			It("should return expected result", func() {
 				/* arrange */
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 				coercedValue := model.Value{Object: map[string]interface{}{}}
-				coerceToFileErr := errors.New("dummyError")
+				toFileErr := errors.New("dummyError")
 
-				fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+				fakeCoerce.ToFileReturns(&coercedValue, toFileErr)
 
 				objectUnderTest := _evalFiler{
 					evalObjectInitializerer: new(fakeEvalObjectInitializerer),
-					data: fakeData,
+					coerce:                  fakeCoerce,
 				}
 
 				/* act */
@@ -185,7 +185,7 @@ var _ = Context("EvalToFile", func() {
 
 				/* assert */
 				Expect(*actualValue).To(Equal(coercedValue))
-				Expect(actualErr).To(Equal(coerceToFileErr))
+				Expect(actualErr).To(Equal(toFileErr))
 			})
 		})
 	})
@@ -258,7 +258,7 @@ var _ = Context("EvalToFile", func() {
 			})
 		})
 		Context("evalArrayInitializerer.Eval doesn't err", func() {
-			It("should call data.CoerceToFile w/ expected args", func() {
+			It("should call coerce.ToFile w/ expected args", func() {
 				/* arrange */
 				providedScratchDir := "dummyScratchDir"
 
@@ -266,11 +266,11 @@ var _ = Context("EvalToFile", func() {
 				expectedArrayValue := []interface{}{"item1"}
 				fakeEvalArrayInitializerer.EvalReturns(expectedArrayValue, nil)
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				arrayUnderTest := _evalFiler{
 					evalArrayInitializerer: fakeEvalArrayInitializerer,
-					data: fakeData,
+					coerce:                 fakeCoerce,
 				}
 
 				/* act */
@@ -283,21 +283,21 @@ var _ = Context("EvalToFile", func() {
 
 				/* assert */
 				actualValue,
-					actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+					actualScratchDir := fakeCoerce.ToFileArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Array: expectedArrayValue}))
 				Expect(actualScratchDir).To(Equal(providedScratchDir))
 			})
 			It("should return expected result", func() {
 				/* arrange */
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 				coercedValue := model.Value{Array: []interface{}{}}
-				coerceToFileErr := errors.New("dummyError")
+				toFileErr := errors.New("dummyError")
 
-				fakeData.CoerceToFileReturns(&coercedValue, coerceToFileErr)
+				fakeCoerce.ToFileReturns(&coercedValue, toFileErr)
 
 				arrayUnderTest := _evalFiler{
 					evalArrayInitializerer: new(fakeEvalArrayInitializerer),
-					data: fakeData,
+					coerce:                 fakeCoerce,
 				}
 
 				/* act */
@@ -310,7 +310,7 @@ var _ = Context("EvalToFile", func() {
 
 				/* assert */
 				Expect(*actualValue).To(Equal(coercedValue))
-				Expect(actualErr).To(Equal(coerceToFileErr))
+				Expect(actualErr).To(Equal(toFileErr))
 			})
 		})
 	})
@@ -418,7 +418,7 @@ var _ = Context("EvalToFile", func() {
 			})
 		})
 		Context("expression is scope ref", func() {
-			It("should call data.CoerceToFile w/ expected args", func() {
+			It("should call coerce.ToFile w/ expected args", func() {
 				/* arrange */
 				scopeName := "dummyScopeName"
 				providedExpression := fmt.Sprintf("$(%v)", scopeName)
@@ -428,10 +428,10 @@ var _ = Context("EvalToFile", func() {
 				}
 				providedScratchDir := "dummyScratchDir"
 
-				fakeData := new(data.Fake)
+				fakeCoerce := new(coerce.Fake)
 
 				objectUnderTest := _evalFiler{
-					data: fakeData,
+					coerce: fakeCoerce,
 				}
 
 				/* act */
@@ -443,7 +443,7 @@ var _ = Context("EvalToFile", func() {
 				)
 
 				/* assert */
-				actualValue, actualScratchDir := fakeData.CoerceToFileArgsForCall(0)
+				actualValue, actualScratchDir := fakeCoerce.ToFileArgsForCall(0)
 				Expect(*actualValue).To(Equal(scopeValue))
 				Expect(actualScratchDir).To(Equal(providedScratchDir))
 			})
@@ -619,7 +619,7 @@ var _ = Context("EvalToFile", func() {
 				})
 			})
 			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call data.CoerceToFile w/ expected args & return result", func() {
+				It("should call coerce.ToFile w/ expected args & return result", func() {
 					/* arrange */
 					providedExpression := "$(dummyRef)suffix"
 					providedScratchDir := "dummyScratchDir"
@@ -628,13 +628,13 @@ var _ = Context("EvalToFile", func() {
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 					coerceValue := model.Value{File: new(string)}
 					coerceErr := errors.New("dummyErr")
-					fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
+					fakeCoerce.ToFileReturns(&coerceValue, coerceErr)
 
 					objectUnderTest := _evalFiler{
-						data:         fakeData,
+						coerce:       fakeCoerce,
 						interpolater: fakeInterpolater,
 					}
 
@@ -647,7 +647,7 @@ var _ = Context("EvalToFile", func() {
 					)
 
 					/* assert */
-					actualCoerceValueArg, actualCoerceScratchDirArg := fakeData.CoerceToFileArgsForCall(0)
+					actualCoerceValueArg, actualCoerceScratchDirArg := fakeCoerce.ToFileArgsForCall(0)
 					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedPath}))
 					Expect(actualCoerceScratchDirArg).To(Equal(providedScratchDir))
 
@@ -724,7 +724,7 @@ var _ = Context("EvalToFile", func() {
 				})
 			})
 			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call data.CoerceToFile w/ expected args & return result", func() {
+				It("should call coerce.ToFile w/ expected args & return result", func() {
 					/* arrange */
 					providedExpression := "dummyExpression"
 					providedScratchDir := "dummyScratchDir"
@@ -733,13 +733,13 @@ var _ = Context("EvalToFile", func() {
 					fakeInterpolater := new(interpolater.Fake)
 					fakeInterpolater.InterpolateReturns(interpolatedPath, nil)
 
-					fakeData := new(data.Fake)
+					fakeCoerce := new(coerce.Fake)
 					coerceValue := model.Value{File: new(string)}
 					coerceErr := errors.New("dummyErr")
-					fakeData.CoerceToFileReturns(&coerceValue, coerceErr)
+					fakeCoerce.ToFileReturns(&coerceValue, coerceErr)
 
 					objectUnderTest := _evalFiler{
-						data:         fakeData,
+						coerce:       fakeCoerce,
 						interpolater: fakeInterpolater,
 					}
 
@@ -752,7 +752,7 @@ var _ = Context("EvalToFile", func() {
 					)
 
 					/* assert */
-					actualCoerceValueArg, actualCoerceScratchDirArg := fakeData.CoerceToFileArgsForCall(0)
+					actualCoerceValueArg, actualCoerceScratchDirArg := fakeCoerce.ToFileArgsForCall(0)
 					Expect(*actualCoerceValueArg).To(Equal(model.Value{String: &interpolatedPath}))
 					Expect(actualCoerceScratchDirArg).To(Equal(providedScratchDir))
 

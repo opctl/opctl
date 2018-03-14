@@ -14,7 +14,7 @@ func (vdt _validator) validateArray(
 	value *model.Value,
 	constraints *model.ArrayConstraints,
 ) []error {
-	valueAsArray, err := vdt.coercer.CoerceToArray(value)
+	valueAsArray, err := vdt.coerce.ToArray(value)
 	if nil != err {
 		return []error{err}
 	}

@@ -22,7 +22,7 @@ run:
             echo "running metalsmith"
             node_modules/.bin/metalsmith
         dirs:
-          /src: srcDir
+          /src: $(srcDir)
         envVars:
           DEBUG: 'metalsmith:*'
         image: { ref: 'node:9.3.0-alpine' }

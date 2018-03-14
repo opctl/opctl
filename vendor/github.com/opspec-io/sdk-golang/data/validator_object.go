@@ -14,7 +14,7 @@ func (vdt _validator) validateObject(
 	value *model.Value,
 	constraints *model.ObjectConstraints,
 ) []error {
-	valueAsObject, err := vdt.coercer.CoerceToObject(value)
+	valueAsObject, err := vdt.coerce.ToObject(value)
 	if nil != err {
 		return []error{err}
 	}
@@ -24,7 +24,7 @@ func (vdt _validator) validateObject(
 		errs := []error{}
 
 		// perform validations supported by gojsonschema
-		constraintsJsonBytes, err := json.Marshal(constraints)
+		constraintsJSONBytes, err := json.Marshal(constraints)
 		if err != nil {
 			// handle syntax errors specially
 			return append(
@@ -33,7 +33,7 @@ func (vdt _validator) validateObject(
 			)
 		}
 
-		valueJsonBytes, err := json.Marshal(valueAsObject.Object)
+		valueJSONBytes, err := json.Marshal(valueAsObject.Object)
 		if err != nil {
 			// handle syntax errors specially
 			return append(
@@ -43,8 +43,8 @@ func (vdt _validator) validateObject(
 		}
 
 		result, err := gojsonschema.Validate(
-			gojsonschema.NewBytesLoader(constraintsJsonBytes),
-			gojsonschema.NewBytesLoader(valueJsonBytes),
+			gojsonschema.NewBytesLoader(constraintsJSONBytes),
+			gojsonschema.NewBytesLoader(valueJSONBytes),
 		)
 		if err != nil {
 			// handle syntax errors specially
