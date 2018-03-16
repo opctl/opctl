@@ -943,6 +943,7 @@
       "description": "Expression which evaluates to an array",
       "oneOf": [
         {
+          "type": "array",
           "items": {
             "$ref": "#/definitions/expression"
           }
@@ -993,6 +994,7 @@
       "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
       "oneOf": [
         {
+          "type": "object",
           "patternProperties": {
             "^.+$": {
               "oneOf": [
