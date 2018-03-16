@@ -149,14 +149,15 @@ func TestRelayReset(t *testing.T) {
 			return
 		}
 
+		<-ready
+
 		_, err = con.Write(msg)
 		if err != nil {
 			t.Error(err)
 			return
 		}
-		<-ready
 
-		hosts[2].Close()
+		hosts[2].Network().ClosePeer(hosts[1].ID())
 	}()
 
 	rinfo := hosts[1].Peerstore().PeerInfo(hosts[1].ID())
