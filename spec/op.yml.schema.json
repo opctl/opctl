@@ -643,7 +643,10 @@
             },
             "type": {
               "description": "JSON Schema [type](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21)",
-              "type": ["array", "string"]
+              "type": [
+                "array",
+                "string"
+              ]
             },
             "writeOnly": {
               "description": "JSON Schema [writeOnly](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-10.3)",
@@ -936,10 +939,121 @@
       ],
       "additionalProperties": false
     },
+    "arrayExpression": {
+      "description": "Expression which evaluates to an array",
+      "oneOf": [
+        {
+          "items": {
+            "$ref": "#/definitions/expression"
+          }
+        },
+        {
+          "description": "Reference which dereferences to an array coercible value",
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "description": "Expression which evaluates to an array coercible string",
+          "$ref": "#/definitions/stringExpression"
+        }
+      ]
+    },
+    "booleanExpression": {
+      "description": "Expression which evaluates to a boolean",
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "description": "Reference which dereferences to a boolean coercible value",
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "description": "Expression which evaluates to a boolean coercible string",
+          "$ref": "#/definitions/stringExpression"
+        }
+      ]
+    },
+    "numberExpression": {
+      "description": "Expression which evaluates to a number",
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "description": "Reference which dereferences to a number coercible value",
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "description": "Expression which evaluates to a number coercible string",
+          "$ref": "#/definitions/stringExpression"
+        }
+      ]
+    },
+    "objectExpression": {
+      "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
+      "oneOf": [
+        {
+          "patternProperties": {
+            "^.+$": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/expression"
+                },
+                {
+                  "description": "Equivalent to \"PROPERTY\": \"$(PROPERTY)\"",
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Reference which dereferences to an object coercible value",
+          "$ref": "#/definitions/reference"
+        },
+        {
+          "description": "Expression which evaluates to an object coercible string",
+          "$ref": "#/definitions/stringExpression"
+        }
+      ]
+    },
+    "reference": {
+      "description": "`$(IDENTIFIER)`, `$(IDENTIFIER.SUB.PROPERTY)`, `$(IDENTIFIER/PATH)`, or `$(/PATH)` (where root of `/` represents dir containing `op.yml`). Nesting up to one level is supported, i.e. `$(/$(REF))`",
+      "pattern": "^\\$\\(.+\\)$",
+      "type": "string"
+    },
+    "stringExpression": {
+      "description": "Expression which evaluates to a string",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "description": "Reference which dereferences to a string coercible value",
+          "$ref": "#/definitions/reference"
+        }
+      ]
+    },
     "expression": {
-      "title": "expression",
-      "description": "An array, number, object, or string. Strings MUST be interpolated at runtime, replacing $(EXPR) by the result of evaluating of EXPR. EXPR MUST be a reference `$(NAME)`, a reference property accessor `$(NAME.PROPERTY)`, reference path accessor $(NAME/PATH), or a root path accessor $(/PATH) (where leading `/` MUST be evaluated as root of op bundle). Nesting up to one level MUST be supported, i.e. $(/$(name))",
-      "type": ["array", "number", "object", "string"]
+      "description": "Expression which evaluates to a value",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/arrayExpression"
+        },
+        {
+          "$ref": "#/definitions/booleanExpression"
+        },
+        {
+          "$ref": "#/definitions/numberExpression"
+        },
+        {
+          "$ref": "#/definitions/objectExpression"
+        },
+        {
+          "$ref": "#/definitions/stringExpression"
+        }
+      ]
     },
     "semVer": {
       "title": "semVer",
