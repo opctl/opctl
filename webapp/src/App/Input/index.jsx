@@ -56,7 +56,9 @@ export default class Input extends Component {
           id={this.props.id || this.props.name}
           type={this.props.type}
           value={this.state.value}
-          onChange={e => this.processValue(e.target.value)}
+          // if checkbox, process target.checked; otherwise target.value
+          onChange={e => this.processValue(e.target[this.props.type === 'checkbox' ? 'checked': 'value'])}
+          checked={this.state.value}
         />
         <span className='invalid-feedback'>{invalidFeedback}</span>
       </div>

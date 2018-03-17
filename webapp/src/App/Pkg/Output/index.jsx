@@ -1,5 +1,6 @@
 import React from 'react';
 import OutputArray from './Array';
+import OutputBoolean from './Boolean';
 import OutputDir from './Dir';
 import OutputFile from './File';
 import OutputNumber from './Number';
@@ -20,6 +21,13 @@ export default ({
       param={param.array}
       pkgRef={pkgRef}
       value={value.array || value.string || value.file}
+    />
+  } else if (param.boolean) {
+    return <OutputBoolean
+      name={name}
+      param={param.boolean}
+      pkgRef={pkgRef}
+      value={value.boolean}
     />
   } else if (param.dir) {
     return <OutputDir

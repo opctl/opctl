@@ -113,6 +113,7 @@ export default class OperationsView extends PureComponent {
     const args = Object.entries(item.pkg.inputs || [])
       .reduce((args, [name, param]) => {
         if (param.array) args[name] = {array: item.args[name]};
+        if (param.boolean) args[name] = {boolean: item.args[name]};
         if (param.dir) args[name] = {dir: item.args[name]};
         if (param.file) args[name] = {file: item.args[name]};
         if (param.number) args[name] = {number: item.args[name]};

@@ -1,5 +1,6 @@
 import React from 'react';
 import InputArray from './Array';
+import InputBoolean from './Boolean';
 import InputDir from './Dir';
 import InputFile from './File';
 import InputNumber from './Number';
@@ -24,6 +25,15 @@ export default ({
   if (input.array) {
     return <InputArray
       array={input.array}
+      name={name}
+      onInvalid={onInvalid}
+      onValid={onValid}
+      pkgRef={pkgRef}
+      value={value}
+    />
+  } else if (input.boolean) {
+    return <InputBoolean
+      boolean={input.boolean}
       name={name}
       onInvalid={onInvalid}
       onValid={onValid}
