@@ -42,6 +42,7 @@ export default class Pkg extends Component {
     const args = Object.entries(this.props.value.inputs || [])
       .reduce((args, [name, param]) => {
         if (param.array) args[name] = {array: this.args[name]};
+        if (param.boolean) args[name] = {boolean: this.args[name]};
         if (param.dir) args[name] = {dir: this.args[name]};
         if (param.file) args[name] = {file: this.args[name]};
         if (param.number) args[name] = {number: this.args[name]};
