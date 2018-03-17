@@ -55,9 +55,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/event'
+        '500':
+          $ref: '#/components/responses/internalServerError'
         '400':
-          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+          $ref: '#/components/responses/badRequest'
   /liveness:
     get:
       summary: Get liveness of node
@@ -67,7 +69,7 @@ paths:
         '200':
           description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
         '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          $ref: '#/components/responses/internalServerError'
   /ops/starts:
     post:
       summary: Starts an op
@@ -82,9 +84,9 @@ paths:
                 description: 'The id of the [started] op'
                 type: string
         '400':
-          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+          $ref: '#/components/responses/badRequest'
         '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          $ref: '#/components/responses/internalServerError'
       requestBody:
         content:
           application/json:
@@ -96,7 +98,7 @@ paths:
                   type: object
                   description: arguments passed to the op to satisfy inputs
                   additionalProperties:
-                    $ref: '#/components/schemas/Value'
+                    $ref: '#/components/schemas/value'
                 pkg:
                   required:
                     - ref
@@ -124,13 +126,6 @@ paths:
       summary: Kills an op
       tags:
         - ops
-      responses:
-        '204':
-          description: HTTP/1.1 ["No Content" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.5)
-        '400':
-          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
-        '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
       requestBody:
         content:
           application/json:
@@ -142,8 +137,174 @@ paths:
                   type: string
               type: object
         required: true
+      responses:
+        '204':
+          description: HTTP/1.1 ["No Content" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.5)
+        '400':
+          $ref: '#/components/responses/badRequest'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+  '/data/{ref}':
+    get:
+      summary: Gets data
+      tags:
+        - data
+      parameters:
+        - name: ref
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: Range
+          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
+          headers:
+            Accept-Ranges:
+              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
+              schema:
+                type: string
+                enum:
+                  - bytes
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              schema:
+                type: integer
+          content:
+            application/octet-stream: {}
+            multipart/byteranges: {}
+            text/plain: {}
+            application/json: {}
+            application/vnd.opspec.0.1.6.dir+json:
+              schema:
+                items:
+                  properties:
+                    path:
+                      description: absolute path within pkg
+                      type: string
+                    size:
+                      type: integer
+                    mode:
+                      description: golang [FileMode](https://golang.org/pkg/os/#FileMode)
+                      type: integer
+                type: array
+        '206':
+          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
+          headers:
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              schema:
+                type: integer
+            Content-Range:
+              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '416':
+          $ref: '#/components/responses/rangeNotSatisfiable'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+    head:
+      summary: Same as GET operation but only returns headers
+      tags:
+        - data
+      parameters:
+        - name: ref
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: Range
+          description: HTTP/1.1 ["Range" header field](https://tools.ietf.org/html/rfc7233#section-3.1)
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: HTTP/1.1 ["OK" response status code](https://tools.ietf.org/html/rfc7231#section-6.3.1)
+          headers:
+            Accept-Ranges:
+              description: HTTP/1.1 ["Accept-Ranges" header field](https://tools.ietf.org/html/rfc7233#section-2.3)
+              schema:
+                type: string
+                enum:
+                  - bytes
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              schema:
+                type: integer
+        '206':
+          description: HTTP/1.1 ["Partial Content" response status code](https://tools.ietf.org/html/rfc7233#section-4.1)
+          headers:
+            Content-Length:
+              description: HTTP/1.1 ["Content-Length" header field](https://tools.ietf.org/html/rfc7230#section-3.3.2)
+              schema:
+                type: integer
+            Content-Range:
+              description: HTTP/1.1 ["Content-Range" header field](https://tools.ietf.org/html/rfc7233#section-4.2)
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+            multipart/byteranges:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: '#/components/responses/notFound'
+        '416':
+          $ref: '#/components/responses/rangeNotSatisfiable'
+        '500':
+          $ref: '#/components/responses/internalServerError'
+  
   '/pkgs/{ref}/contents':
     get:
+      deprecated: true
       summary: Lists package contents
       tags:
         - pkgs
@@ -176,17 +337,18 @@ paths:
                       type: integer
                 type: array
         '400':
-          description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+          $ref: '#/components/responses/badRequest'
         '401':
-          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+          $ref: '#/components/responses/unauthorized'
         '403':
-          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
+          $ref: '#/components/responses/forbidden'
         '404':
-          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          $ref: '#/components/responses/notFound'
         '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          $ref: '#/components/responses/internalServerError'
   '/pkgs/{ref}/contents/{path}':
     get:
+      deprecated: true
       summary: Gets pkg content at path
       tags:
         - pkgs
@@ -251,16 +413,17 @@ paths:
               schema:
                 type: string
         '401':
-          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+          $ref: '#/components/responses/unauthorized'
         '403':
-          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
+          $ref: '#/components/responses/forbidden'
         '404':
-          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          $ref: '#/components/responses/notFound'
         '416':
-          description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
+          $ref: '#/components/responses/rangeNotSatisfiable'
         '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          $ref: '#/components/responses/internalServerError'
     head:
+      deprecated: true
       summary: Gets pkg content at path
       tags:
         - pkgs
@@ -320,18 +483,36 @@ paths:
               schema:
                 type: string
         '401':
-          description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+          $ref: '#/components/responses/unauthorized'
         '403':
-          description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
+          $ref: '#/components/responses/forbidden'
         '404':
-          description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+          $ref: '#/components/responses/notFound'
         '416':
-          description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
+          $ref: '#/components/responses/rangeNotSatisfiable'
         '500':
-          description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+          $ref: '#/components/responses/internalServerError'
 components:
+  responses:
+    unauthorized:
+      description: HTTP/1.1 ["Unauthorized" response status code](https://tools.ietf.org/html/rfc7235#section-3.1)
+      headers:
+        WWW-Authenticate:
+          description: HTTP/1.1 ["WWW-Authenticate" header](https://tools.ietf.org/html/rfc7235#section-4.1)
+          schema:
+            type: string
+    forbidden:
+      description: HTTP/1.1 ["Forbidden" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.3)
+    internalServerError:
+      description: HTTP/1.1 ["Internal Server Error" response status code](https://tools.ietf.org/html/rfc7231#section-6.6.1)
+    badRequest:
+      description: HTTP/1.1 ["Bad Request" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.1)
+    notFound:
+      description: HTTP/1.1 ["Not Found" response status code](https://tools.ietf.org/html/rfc7231#section-6.5.4)
+    rangeNotSatisfiable:
+      description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
   schemas:
-    Value:
+    value:
       description: a typed value
       oneOf:
         - properties:
@@ -360,7 +541,7 @@ components:
             string:
               type: string
       type: object
-    Event:
+    event:
       properties:
         timestamp:
           type: string
@@ -368,33 +549,33 @@ components:
       oneOf:
         - properties:
             containerExited:
-              $ref: '#/components/schemas/ContainerExitedEvent'
+              $ref: '#/components/schemas/containerExitedEvent'
         - properties:
             containerStarted:
-              $ref: '#/components/schemas/ContainerStartedEvent'
+              $ref: '#/components/schemas/containerStartedEvent'
         - properties:
             containerStdErrWrittenTo:
-              $ref: '#/components/schemas/ContainerStdErrWrittenToEvent'
+              $ref: '#/components/schemas/containerStdErrWrittenToEvent'
         - properties:
             containerStdOutWrittenTo:
-              $ref: '#/components/schemas/ContainerStdOutWrittenToEvent'
+              $ref: '#/components/schemas/containerStdOutWrittenToEvent'
         - properties:
             opEnded:
-              $ref: '#/components/schemas/OpEndedEvent'
+              $ref: '#/components/schemas/opEndedEvent'
         - properties:
             opStarted:
-              $ref: '#/components/schemas/OpStartedEvent'
+              $ref: '#/components/schemas/opStartedEvent'
         - properties:
             opErred:
-              $ref: '#/components/schemas/OpErredEvent'
+              $ref: '#/components/schemas/opErredEvent'
         - properties:
             parallelCallEnded:
-              $ref: '#/components/schemas/ParallelCallEndedEvent'
+              $ref: '#/components/schemas/parallelCallEndedEvent'
         - properties:
             serialCallEnded:
-              $ref: '#/components/schemas/SerialCallEndedEvent'
+              $ref: '#/components/schemas/serialCallEndedEvent'
       type: object
-    ContainerExitedEvent:
+    containerExitedEvent:
       properties:
         imageRef:
           type: string
@@ -409,9 +590,9 @@ components:
         outputs:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Value'
+            $ref: '#/components/schemas/value'
       type: object
-    ContainerStartedEvent:
+    containerStartedEvent:
       properties:
         imageRef:
           type: string
@@ -422,21 +603,7 @@ components:
         pkgRef:
           type: string
       type: object
-    ContainerStdErrWrittenToEvent:
-      properties:
-        imageRef:
-          type: string
-        data:
-          type: string
-          format: binary
-        rootOpId:
-          type: string
-        containerId:
-          type: string
-        pkgRef:
-          type: string
-      type: object
-    ContainerStdOutWrittenToEvent:
+    containerStdErrWrittenToEvent:
       properties:
         imageRef:
           type: string
@@ -450,7 +617,21 @@ components:
         pkgRef:
           type: string
       type: object
-    OpErredEvent:
+    containerStdOutWrittenToEvent:
+      properties:
+        imageRef:
+          type: string
+        data:
+          type: string
+          format: binary
+        rootOpId:
+          type: string
+        containerId:
+          type: string
+        pkgRef:
+          type: string
+      type: object
+    opErredEvent:
       properties:
         rootOpId:
           type: string
@@ -461,7 +642,7 @@ components:
         pkgRef:
           type: string
       type: object
-    OpEndedEvent:
+    opEndedEvent:
       properties:
         rootOpId:
           type: string
@@ -478,9 +659,9 @@ components:
         outputs:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Value'
+            $ref: '#/components/schemas/value'
       type: object
-    OpStartedEvent:
+    opStartedEvent:
       properties:
         rootOpId:
           type: string
@@ -489,14 +670,14 @@ components:
         pkgRef:
           type: string
       type: object
-    ParallelCallEndedEvent:
+    parallelCallEndedEvent:
       properties:
         rootOpId:
           type: string
         callId:
           type: string
       type: object
-    SerialCallEndedEvent:
+    serialCallEndedEvent:
       properties:
         rootOpId:
           type: string
@@ -505,5 +686,5 @@ components:
         outputs:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/Value'
+            $ref: '#/components/schemas/value'
       type: object

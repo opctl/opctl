@@ -15,9 +15,11 @@ All notable changes will be documented in this file in accordance with
 - [Support boolean type](https://github.com/opspec-io/spec/issues/195)
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
+- [Unified data API](https://github.com/opspec-io/spec/issues/204)
 
 ### Deprecated
 
+- [Deprecate pkgs API](https://github.com/opspec-io/spec/issues/205)
 - `stdOut` & `stdErr` attributes from
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use files.
