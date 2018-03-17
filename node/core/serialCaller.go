@@ -16,7 +16,7 @@ type serialCaller interface {
 		callId string,
 		inboundScope map[string]*model.Value,
 		rootOpId string,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 		scgSerialCall []*model.SCG,
 	) error
 }
@@ -45,7 +45,7 @@ func (this _serialCaller) Call(
 	callId string,
 	inboundScope map[string]*model.Value,
 	rootOpId string,
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
 ) error {
 	outputs := map[string]*model.Value{}
@@ -82,7 +82,7 @@ func (this _serialCaller) Call(
 			childCallId,
 			outputs,
 			scgCall,
-			pkgHandle,
+			opDirHandle,
 			rootOpId,
 		); nil != err {
 			// end run immediately on any error

@@ -1,18 +1,20 @@
-// Package data implements common use cases involving typed data such as validation & coercion
+// Package data implements use cases specific to data
 package data
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Data
 
 type Data interface {
-	validator
+	providerFactory
+
+	resolver
 }
 
 func New() Data {
-	return _Data{
-		validator: newValidator(),
+	return struct {
+		providerFactory
+		resolver
+	}{
+		providerFactory: newProviderFactory(),
+		resolver:        newResolver(),
 	}
-}
-
-type _Data struct {
-	validator
 }

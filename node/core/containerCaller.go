@@ -6,9 +6,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/golang-interfaces/iio"
-	"github.com/opspec-io/sdk-golang/containercall"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"io"
 	"strings"
@@ -21,41 +21,41 @@ type containerCaller interface {
 		inboundScope map[string]*model.Value,
 		containerId string,
 		scgContainerCall *model.SCGContainerCall,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 		rootOpId string,
 	) error
 }
 
 func newContainerCaller(
-	containerProvider containerprovider.ContainerProvider,
-	containerCall containercall.ContainerCall,
+	containerRuntime containerruntime.ContainerRuntime,
+	containerCallInterpreter containercall.Interpreter,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
-		containerProvider: containerProvider,
-		containerCall:     containerCall,
-		pubSub:            pubSub,
-		dcgNodeRepo:       dcgNodeRepo,
-		io:                iio.New(),
+		containerRuntime: containerRuntime,
+		containerCall:    containerCallInterpreter,
+		pubSub:           pubSub,
+		dcgNodeRepo:      dcgNodeRepo,
+		io:               iio.New(),
 	}
 
 }
 
 type _containerCaller struct {
-	containerProvider containerprovider.ContainerProvider
-	containerCall     containercall.ContainerCall
-	pubSub            pubsub.PubSub
-	dcgNodeRepo       dcgNodeRepo
-	io                iio.IIO
+	containerRuntime containerruntime.ContainerRuntime
+	containerCall    containercall.Interpreter
+	pubSub           pubsub.PubSub
+	dcgNodeRepo      dcgNodeRepo
+	io               iio.IIO
 }
 
 func (cc _containerCaller) Call(
 	inboundScope map[string]*model.Value,
 	containerId string,
 	scgContainerCall *model.SCGContainerCall,
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 	rootOpId string,
 ) error {
 	defer func() {
@@ -63,14 +63,14 @@ func (cc _containerCaller) Call(
 
 		cc.dcgNodeRepo.DeleteIfExists(containerId)
 
-		cc.containerProvider.DeleteContainerIfExists(containerId)
+		cc.containerRuntime.DeleteContainerIfExists(containerId)
 
 	}()
 
 	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerId,
-			PkgRef:    pkgHandle.Ref(),
+			PkgRef:    opDirHandle.Ref(),
 			RootOpId:  rootOpId,
 			Container: &dcgContainerDescriptor{},
 		},
@@ -81,7 +81,7 @@ func (cc _containerCaller) Call(
 		scgContainerCall,
 		containerId,
 		rootOpId,
-		pkgHandle,
+		opDirHandle,
 	)
 	if nil != err {
 		return err
@@ -92,7 +92,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerId: containerId,
-				PkgRef:      pkgHandle.Ref(),
+				PkgRef:      opDirHandle.Ref(),
 				RootOpId:    rootOpId,
 			},
 		},
@@ -145,7 +145,7 @@ func (cc _containerCaller) Call(
 		}
 	}()
 
-	rawExitCode, err := cc.containerProvider.RunContainer(
+	rawExitCode, err := cc.containerRuntime.RunContainer(
 		context.TODO(),
 		dcgContainerCall,
 		cc.pubSub,
@@ -180,7 +180,7 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: containerId,
-				PkgRef:      pkgHandle.Ref(),
+				PkgRef:      opDirHandle.Ref(),
 				RootOpId:    rootOpId,
 				ExitCode:    exitCode,
 				Outputs:     interpretOutputsResult.outputs,
@@ -209,7 +209,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerId: dcgContainerCall.ContainerId,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.PkgHandle.Ref(),
+							PkgRef:      dcgContainerCall.DataHandle.Ref(),
 							RootOpId:    dcgContainerCall.RootOpId,
 						},
 					},
@@ -230,7 +230,7 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerId: dcgContainerCall.ContainerId,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.PkgHandle.Ref(),
+							PkgRef:      dcgContainerCall.DataHandle.Ref(),
 							RootOpId:    dcgContainerCall.RootOpId,
 						},
 					},

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSdk(t *testing.T) {
+func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "pkg/manifest")
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"io/ioutil"
 	"os"
@@ -18,7 +19,7 @@ var _ = Context("pkg", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
-			fakeHandle := new(FakeHandle)
+			fakeHandle := new(data.FakeHandle)
 
 			objectUnderTest := _Pkg{
 				os: new(ios.Fake),
@@ -35,7 +36,7 @@ var _ = Context("pkg", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
 
-				fakeHandle := new(FakeHandle)
+				fakeHandle := new(data.FakeHandle)
 				fakeHandle.ListContentsReturns(nil, expectedError)
 
 				objectUnderTest := _Pkg{
@@ -54,7 +55,7 @@ var _ = Context("pkg", func() {
 				/* arrange */
 				providedCtx := context.TODO()
 
-				fakeHandle := new(FakeHandle)
+				fakeHandle := new(data.FakeHandle)
 				contentsList := []*model.PkgContent{
 					{
 						Path: "pkgContent1Path",
@@ -88,7 +89,7 @@ var _ = Context("pkg", func() {
 					/* arrange */
 					expectedError := errors.New("dummyError")
 
-					fakeHandle := new(FakeHandle)
+					fakeHandle := new(data.FakeHandle)
 					fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, expectedError)
 
 					fakeHandle.GetContentReturns(nil, expectedError)
@@ -110,7 +111,7 @@ var _ = Context("pkg", func() {
 						/* arrange */
 						providedPath := "dummyPath"
 
-						fakeHandle := new(FakeHandle)
+						fakeHandle := new(data.FakeHandle)
 
 						contentsList := []*model.PkgContent{
 							{
@@ -149,7 +150,7 @@ var _ = Context("pkg", func() {
 							/* arrange */
 							expectedError := errors.New("dummyError")
 
-							fakeHandle := new(FakeHandle)
+							fakeHandle := new(data.FakeHandle)
 							fakeHandle.ListContentsReturns([]*model.PkgContent{{Mode: os.ModeDir}}, nil)
 
 							fakeOS := new(ios.Fake)
@@ -172,7 +173,7 @@ var _ = Context("pkg", func() {
 						/* arrange */
 						providedPath := "dummyPath"
 
-						fakeHandle := new(FakeHandle)
+						fakeHandle := new(data.FakeHandle)
 
 						contentsList := []*model.PkgContent{
 							{
@@ -212,7 +213,7 @@ var _ = Context("pkg", func() {
 							/* arrange */
 							expectedError := errors.New("dummyError")
 
-							fakeHandle := new(FakeHandle)
+							fakeHandle := new(data.FakeHandle)
 							fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
 							fakeOS := new(ios.Fake)
@@ -234,7 +235,7 @@ var _ = Context("pkg", func() {
 							/* arrange */
 							providedPath := "dummyPath"
 
-							fakeHandle := new(FakeHandle)
+							fakeHandle := new(data.FakeHandle)
 							contentsList := []*model.PkgContent{
 								{
 									Path: "pkgContent1Path",
@@ -267,7 +268,7 @@ var _ = Context("pkg", func() {
 								/* arrange */
 								expectedError := errors.New("dummyError")
 
-								fakeHandle := new(FakeHandle)
+								fakeHandle := new(data.FakeHandle)
 								fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
 								fakeOS := new(ios.Fake)
@@ -289,7 +290,7 @@ var _ = Context("pkg", func() {
 								/* arrange */
 								providedPath := "dummyPath"
 
-								fakeHandle := new(FakeHandle)
+								fakeHandle := new(data.FakeHandle)
 								contentsList := []*model.PkgContent{
 									{
 										Mode: os.FileMode(0777),
@@ -326,7 +327,7 @@ var _ = Context("pkg", func() {
 									/* arrange */
 									expectedError := errors.New("dummyError")
 
-									fakeHandle := new(FakeHandle)
+									fakeHandle := new(data.FakeHandle)
 									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
 									fakeOS := new(ios.Fake)
@@ -346,7 +347,7 @@ var _ = Context("pkg", func() {
 							Context("os.Chmod doesn't err", func() {
 								It("should copy content", func() {
 									/* arrange */
-									fakeHandle := new(FakeHandle)
+									fakeHandle := new(data.FakeHandle)
 									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
 									// create tmpfile to use as src
@@ -393,7 +394,7 @@ var _ = Context("pkg", func() {
 
 								It("shouldn't err", func() {
 									/* arrange */
-									fakeHandle := new(FakeHandle)
+									fakeHandle := new(data.FakeHandle)
 									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
 
 									// create tmpfile to use as src

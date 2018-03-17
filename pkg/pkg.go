@@ -1,4 +1,4 @@
-// Package pkg implements use cases specific to opspec packages
+// Package pkg implements use cases specific to ops
 package pkg
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Pkg
@@ -12,26 +12,26 @@ import (
 )
 
 type Pkg interface {
-	// Create creates a package
+	// Create creates an operation
 	Create(
 		path,
 		pkgName,
 		pkgDescription string,
 	) error
 
-	// GetManifest gets the manifest of a package
+	// GetManifest gets the manifest of an operation
 	GetManifest(
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 	) (
 		*model.PkgManifest,
 		error,
 	)
 
-	// Install installs a pkg; path will be created if it doesn't exist
+	// Install installs an op; path will be created if it doesn't exist
 	Install(
 		ctx context.Context,
 		path string,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 	) error
 
 	// List recursively lists ops in dirPath
@@ -39,25 +39,17 @@ type Pkg interface {
 		dirPath string,
 	) ([]*model.PkgManifest, error)
 
-	providerFactory
-
-	resolver
-
-	// Validate validates a package
+	// Validate validates an op
 	Validate(
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 	) []error
 }
 
 func New() Pkg {
 	return _Pkg{
-		ioUtil:          iioutil.New(),
-		manifest:        manifest.New(),
-		os:              ios.New(),
-		providerFactory: newProviderFactory(),
-		puller:          newPuller(),
-		refParser:       newRefParser(),
-		resolver:        newResolver(),
+		ioUtil:   iioutil.New(),
+		manifest: manifest.New(),
+		os:       ios.New(),
 	}
 }
 
@@ -65,8 +57,4 @@ type _Pkg struct {
 	ioUtil   iioutil.IIOUtil
 	manifest manifest.Manifest
 	os       ios.IOS
-	providerFactory
-	puller
-	refParser
-	resolver
 }

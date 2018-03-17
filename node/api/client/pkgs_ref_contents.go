@@ -51,11 +51,11 @@ func (c client) ListPkgContents(
 	if httpResp.StatusCode >= 400 {
 		switch httpResp.StatusCode {
 		case http.StatusUnauthorized:
-			return nil, model.ErrPkgPullAuthentication{}
+			return nil, model.ErrDataProviderAuthentication{}
 		case http.StatusForbidden:
-			return nil, model.ErrPkgPullAuthorization{}
+			return nil, model.ErrDataProviderAuthorization{}
 		case http.StatusNotFound:
-			return nil, model.ErrPkgNotFound{}
+			return nil, model.ErrDataRefResolution{}
 		default:
 			body, err := ioutil.ReadAll(httpResp.Body)
 			if nil != err {

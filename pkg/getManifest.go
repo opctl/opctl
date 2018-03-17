@@ -6,12 +6,12 @@ import (
 )
 
 func (this _Pkg) GetManifest(
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 ) (
 	*model.PkgManifest,
 	error,
 ) {
-	manifestReader, err := pkgHandle.GetContent(context.TODO(), OpDotYmlFileName)
+	manifestReader, err := opDirHandle.GetContent(context.TODO(), OpDotYmlFileName)
 	if nil != err {
 		return nil, err
 	}

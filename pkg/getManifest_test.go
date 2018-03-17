@@ -5,6 +5,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"github.com/pkg/errors"
@@ -15,43 +16,43 @@ var _ = Context("pkg", func() {
 
 	Context("GetManifest", func() {
 
-		It("should call pkgHandle.GetContent w/ expected args", func() {
+		It("should call opDirHandle.GetContent w/ expected args", func() {
 			/* arrange */
-			providedPkgHandle := new(FakeHandle)
+			providedOpDirHandle := new(data.FakeHandle)
 			// err to trigger immediate return
-			providedPkgHandle.GetContentReturns(nil, errors.New("dummyError"))
+			providedOpDirHandle.GetContentReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _Pkg{}
 
 			/* act */
-			objectUnderTest.GetManifest(providedPkgHandle)
+			objectUnderTest.GetManifest(providedOpDirHandle)
 
 			/* assert */
 			actualCtx,
-				actualPath := providedPkgHandle.GetContentArgsForCall(0)
+				actualPath := providedOpDirHandle.GetContentArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(context.TODO()))
 			Expect(actualPath).To(Equal(OpDotYmlFileName))
 		})
-		Context("pkgHandle.GetContent errs", func() {
+		Context("opDirHandle.GetContent errs", func() {
 			It("should return error", func() {
 				/* arrange */
 				getContentErr := errors.New("dummyError")
 
-				providedPkgHandle := new(FakeHandle)
+				providedOpDirHandle := new(data.FakeHandle)
 				// err to trigger immediate return
-				providedPkgHandle.GetContentReturns(nil, getContentErr)
+				providedOpDirHandle.GetContentReturns(nil, getContentErr)
 
 				objectUnderTest := _Pkg{}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetManifest(providedPkgHandle)
+				_, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
 
 				/* assert */
 				Expect(actualErr).To(Equal(getContentErr))
 			})
 		})
-		Context("pkgHandle.GetContent doesn't err", func() {
+		Context("opDirHandle.GetContent doesn't err", func() {
 			It("should call ioUtil.ReadAll w/ expected args", func() {
 				/* arrange */
 				file, err := ioutil.TempFile("", "")
@@ -59,8 +60,8 @@ var _ = Context("pkg", func() {
 					panic(err)
 				}
 
-				providedPkgHandle := new(FakeHandle)
-				providedPkgHandle.GetContentReturns(file, nil)
+				providedOpDirHandle := new(data.FakeHandle)
+				providedOpDirHandle.GetContentReturns(file, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
 				// err to trigger immediate return
@@ -71,7 +72,7 @@ var _ = Context("pkg", func() {
 				}
 
 				/* act */
-				objectUnderTest.GetManifest(providedPkgHandle)
+				objectUnderTest.GetManifest(providedOpDirHandle)
 
 				/* assert */
 				actualReader := fakeIOUtil.ReadAllArgsForCall(0)
@@ -86,8 +87,8 @@ var _ = Context("pkg", func() {
 						panic(err)
 					}
 
-					providedPkgHandle := new(FakeHandle)
-					providedPkgHandle.GetContentReturns(file, nil)
+					providedOpDirHandle := new(data.FakeHandle)
+					providedOpDirHandle.GetContentReturns(file, nil)
 
 					readAllErr := errors.New("dummyError")
 					fakeIOUtil := new(iioutil.Fake)
@@ -98,7 +99,7 @@ var _ = Context("pkg", func() {
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.GetManifest(providedPkgHandle)
+					_, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
 
 					/* assert */
 					Expect(actualErr).To(Equal(readAllErr))
@@ -112,8 +113,8 @@ var _ = Context("pkg", func() {
 						panic(err)
 					}
 
-					providedPkgHandle := new(FakeHandle)
-					providedPkgHandle.GetContentReturns(file, nil)
+					providedOpDirHandle := new(data.FakeHandle)
+					providedOpDirHandle.GetContentReturns(file, nil)
 
 					bytesFromReadAll := []byte{2, 3}
 					fakeIOUtil := new(iioutil.Fake)
@@ -133,7 +134,7 @@ var _ = Context("pkg", func() {
 					}
 
 					/* act */
-					actualPkgManifest, actualErr := objectUnderTest.GetManifest(providedPkgHandle)
+					actualPkgManifest, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
 
 					/* assert */
 					Expect(fakeManifest.UnmarshalArgsForCall(0)).To(Equal(bytesFromReadAll))

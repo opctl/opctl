@@ -11,7 +11,7 @@ import (
 func (this _Pkg) Install(
 	ctx context.Context,
 	path string,
-	handle model.PkgHandle,
+	handle model.DataHandle,
 ) error {
 	contentsList, err := handle.ListContents(ctx)
 	if nil != err {

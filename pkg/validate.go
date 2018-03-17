@@ -6,9 +6,9 @@ import (
 )
 
 func (this _Pkg) Validate(
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 ) []error {
-	manifestReader, err := pkgHandle.GetContent(
+	manifestReader, err := opDirHandle.GetContent(
 		context.TODO(),
 		OpDotYmlFileName,
 	)

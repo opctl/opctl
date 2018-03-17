@@ -1,6 +1,6 @@
 package model
 
-//go:generate counterfeiter -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ PkgHandle
+//go:generate counterfeiter -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ DataHandle
 
 import (
 	"context"
@@ -13,8 +13,8 @@ type ReadSeekCloser interface {
 	io.Seeker
 }
 
-// PkgHandle is a provider agnostic interface for interacting w/ pkg content
-type PkgHandle interface {
+// DataHandle is a provider agnostic interface for interacting w/ pkg content
+type DataHandle interface {
 	// ListContents lists contents of a package
 	ListContents(
 		ctx context.Context,

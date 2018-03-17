@@ -36,7 +36,7 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		}
 	}
 
-	pkgHandle, err := hdlr.core.ResolvePkg(
+	opDirHandle, err := hdlr.core.ResolvePkg(
 		httpReq.Context(),
 		pkgRef,
 		pullCreds,
@@ -44,11 +44,11 @@ func (hdlr _handler) pkgs_ref_contents_path(
 	if nil != err {
 		var status int
 		switch err.(type) {
-		case model.ErrPkgPullAuthentication:
+		case model.ErrDataProviderAuthentication:
 			status = http.StatusUnauthorized
-		case model.ErrPkgPullAuthorization:
+		case model.ErrDataProviderAuthorization:
 			status = http.StatusForbidden
-		case model.ErrPkgNotFound:
+		case model.ErrDataRefResolution:
 			status = http.StatusNotFound
 		default:
 			status = http.StatusInternalServerError
@@ -57,7 +57,7 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		return
 	}
 
-	pkgContentReader, err := pkgHandle.GetContent(
+	pkgContentReader, err := opDirHandle.GetContent(
 		httpReq.Context(),
 		contentPath,
 	)

@@ -5,9 +5,10 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
 	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"time"
@@ -33,17 +34,18 @@ var _ = Context("core", func() {
 			})
 		})
 		Context("req.Pkg not nil", func() {
-			It("should call pkg.GetManifest w/ expected args", func() {
+			It("should call data.GetManifest w/ expected args", func() {
 				/* arrange */
+				fakeData := new(data.Fake)
+				fakeDataHandle := new(data.FakeHandle)
+				fakeData.ResolveReturns(fakeDataHandle, nil)
+
 				fakePkg := new(pkg.Fake)
-
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkg.ResolveReturns(fakePkgHandle, nil)
-
 				// err to trigger immediate return
 				fakePkg.GetManifestReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
+					data:                fakeData,
 					pkg:                 fakePkg,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
@@ -55,21 +57,21 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
-
-				Expect(fakePkg.GetManifestArgsForCall(0)).To(Equal(fakePkgHandle))
+				Expect(fakePkg.GetManifestArgsForCall(0)).To(Equal(fakeDataHandle))
 			})
-			Context("pkg.GetManifest errs", func() {
+			Context("data.GetManifest errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
+					fakeData := new(data.Fake)
+					fakeDataHandle := new(data.FakeHandle)
+					fakeData.ResolveReturns(fakeDataHandle, nil)
+
 					fakePkg := new(pkg.Fake)
-
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkg.ResolveReturns(fakePkgHandle, nil)
-
 					expectedErr := errors.New("dummyError")
 					fakePkg.GetManifestReturns(&model.PkgManifest{}, expectedErr)
 
 					objectUnderTest := _core{
+						data:                fakeData,
 						pkg:                 fakePkg,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
@@ -84,7 +86,7 @@ var _ = Context("core", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("pkg.GetManifest doesn't err", func() {
+			Context("data.GetManifest doesn't err", func() {
 				It("should call opCaller.Call w/ expected args", func() {
 					/* arrange */
 					providedArg1String := "dummyArg1Value"
@@ -103,10 +105,9 @@ var _ = Context("core", func() {
 						},
 					}
 
-					fakePkg := new(pkg.Fake)
-
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkg.ResolveReturns(fakePkgHandle, nil)
+					fakeData := new(data.Fake)
+					fakeDataHandle := new(data.FakeHandle)
+					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					pkgManifest := &model.PkgManifest{
 						Outputs: map[string]*model.Param{
@@ -114,11 +115,13 @@ var _ = Context("core", func() {
 							"dummyOutput2": nil,
 						},
 					}
+
+					fakePkg := new(pkg.Fake)
 					fakePkg.GetManifestReturns(pkgManifest, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
-							Ref: fakePkgHandle.Ref(),
+							Ref: fakeDataHandle.Ref(),
 						},
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
@@ -138,8 +141,9 @@ var _ = Context("core", func() {
 					fakeUniqueStringFactory.ConstructReturns(expectedOpId, nil)
 
 					objectUnderTest := _core{
-						containerProvider:   new(containerprovider.Fake),
+						containerRuntime:    new(containerruntime.Fake),
 						pubSub:              new(pubsub.Fake),
+						data:                fakeData,
 						pkg:                 fakePkg,
 						opCaller:            fakeOpCaller,
 						dcgNodeRepo:         new(fakeDCGNodeRepo),
@@ -157,13 +161,13 @@ var _ = Context("core", func() {
 					time.Sleep(time.Millisecond * 500)
 					actualInboundScope,
 						actualOpId,
-						actualPkgHandle,
+						actualOpDirHandle,
 						actualRootOpId,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 					Expect(actualInboundScope).To(Equal(providedReq.Args))
 					Expect(actualOpId).To(Equal(expectedOpId))
-					Expect(actualPkgHandle).To(Equal(fakePkgHandle))
+					Expect(actualOpDirHandle).To(Equal(fakeDataHandle))
 					Expect(actualRootOpId).To(Equal(actualOpId))
 					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 				})

@@ -7,6 +7,8 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/pkg/manifest"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -44,8 +46,13 @@ var _ = Describe("Validate", func() {
 							for _, scenario := range scenarioDotYml {
 								if nil != scenario.Validate {
 									/* act */
+									fakeHandle := new(data.FakeHandle)
+									fakeHandle.GetContentStub = func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
+										return os.Open(filepath.Join(path, contentPath))
+									}
+
 									objectUnderTest := New()
-									actualErrs := objectUnderTest.Validate(newFSHandle(path))
+									actualErrs := objectUnderTest.Validate(fakeHandle)
 
 									/* assert */
 									switch expect := scenario.Validate.Expect; expect {
@@ -64,7 +71,7 @@ var _ = Describe("Validate", func() {
 	})
 	It("should call handle.GetContent w/ expected args", func() {
 		/* arrange */
-		providedFileHandle := new(FakeHandle)
+		providedFileHandle := new(data.FakeHandle)
 		// error to trigger immediate return
 		providedFileHandle.GetContentReturns(nil, errors.New("dummyError"))
 
@@ -84,7 +91,7 @@ var _ = Describe("Validate", func() {
 		It("should return err", func() {
 			/* arrange */
 			expectedErrors := []error{errors.New("dummyError")}
-			providedFileHandle := new(FakeHandle)
+			providedFileHandle := new(data.FakeHandle)
 			// error to trigger immediate return
 			providedFileHandle.GetContentReturns(nil, expectedErrors[0])
 
@@ -101,7 +108,7 @@ var _ = Describe("Validate", func() {
 		It("should call manifestValidator.Validate w/ expected args & return result", func() {
 			/* arrange */
 
-			providedFileHandle := new(FakeHandle)
+			providedFileHandle := new(data.FakeHandle)
 
 			expectedManifestBytes := []byte{2, 5, 61}
 			fakeIOUtil := new(iioutil.Fake)
