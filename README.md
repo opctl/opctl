@@ -29,12 +29,11 @@ and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
 
 # Influences
 
-[App Container](https://github.com/appc),
-[Codeship](https://codeship.com/), [Docker](https://github.com/docker),
-[Inter Planetary Filesystem (IPFS)](https://ipfs.io),
-[Inter Planetary Linked Data (IPLD)](https://ipld.io/),
-[JSON Schema](https://github.com/json-schema),
-[Kubernetes](https://github.com/kubernetes),
-[Open Container Initiative (OCI)](https://github.com/opencontainers),
-[Openstack Heat Orchestration Template (HOT) spec](http://docs.openstack.org/developer/heat/template_guide/hot_spec.html#hot-spec),
-[Wercker](https://github.com/wercker)
+- [Docker](https://docker.io)
+- [Golang](https://golang.org)
+- [IPFS](https://ipfs.io)
+- [IPLD](https://ipld.io)
+- [JSON Schema](https://github.com/json-schema)
+- [Kubernetes](https://github.com/kubernetes)
+- [Open API Spec](https://github.com/OAI/OpenAPI-Specification)
+- [Open Container Initiative (OCI)](https://github.com/opencontainers)
