@@ -1,4 +1,6 @@
-description: runs the [opspec test suite](https://github.com/opspec-io/spec) against opctl
+description: |
+  runs the [opspec test suite](https://github.com/opspec-io/spec) against opctl alpha channel. Ideally it would run against the
+  current build artifact but this isn't possible due to use of equinox.io
 name: test/system/opspec
 inputs:
   srcDir:

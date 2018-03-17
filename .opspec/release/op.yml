@@ -50,3 +50,8 @@ run:
     - op:
         pkg: { ref: release/to-docker }
         inputs: { dockerDSocket, dockerPassword, dockerUsername, version }
+    
+    # run last to give equinox.io time to finish releasing
+    - op:
+        pkg: { ref: test/system/opspec }
+        inputs: { srcDir }
