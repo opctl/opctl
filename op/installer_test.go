@@ -1,4 +1,4 @@
-package pkg
+package op
 
 import (
 	"context"
@@ -13,7 +13,13 @@ import (
 	"path/filepath"
 )
 
-var _ = Context("pkg", func() {
+var _ = Context("Installer", func() {
+	Context("NewInstaller", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(NewInstaller()).Should(Not(BeNil()))
+		})
+	})
 	Context("Install", func() {
 		It("should call handle.ListContents w/ expected args", func() {
 			/* arrange */
@@ -21,7 +27,7 @@ var _ = Context("pkg", func() {
 
 			fakeHandle := new(data.FakeHandle)
 
-			objectUnderTest := _Pkg{
+			objectUnderTest := _installer{
 				os: new(ios.Fake),
 			}
 
@@ -39,7 +45,7 @@ var _ = Context("pkg", func() {
 				fakeHandle := new(data.FakeHandle)
 				fakeHandle.ListContentsReturns(nil, expectedError)
 
-				objectUnderTest := _Pkg{
+				objectUnderTest := _installer{
 					os: new(ios.Fake),
 				}
 
@@ -70,7 +76,7 @@ var _ = Context("pkg", func() {
 				// error to trigger immediate return
 				fakeHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _Pkg{
+				objectUnderTest := _installer{
 					os: new(ios.Fake),
 				}
 
@@ -94,7 +100,7 @@ var _ = Context("pkg", func() {
 
 					fakeHandle.GetContentReturns(nil, expectedError)
 
-					objectUnderTest := _Pkg{
+					objectUnderTest := _installer{
 						os: new(ios.Fake),
 					}
 
@@ -129,7 +135,7 @@ var _ = Context("pkg", func() {
 						// error to trigger immediate return
 						fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
-						objectUnderTest := _Pkg{
+						objectUnderTest := _installer{
 							os: fakeOS,
 						}
 
@@ -156,7 +162,7 @@ var _ = Context("pkg", func() {
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
 
-							objectUnderTest := _Pkg{
+							objectUnderTest := _installer{
 								os: fakeOS,
 							}
 
@@ -190,7 +196,7 @@ var _ = Context("pkg", func() {
 						// error to trigger immediate return
 						fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
-						objectUnderTest := _Pkg{
+						objectUnderTest := _installer{
 							os: fakeOS,
 						}
 
@@ -219,7 +225,7 @@ var _ = Context("pkg", func() {
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
 
-							objectUnderTest := _Pkg{
+							objectUnderTest := _installer{
 								os: fakeOS,
 							}
 
@@ -251,7 +257,7 @@ var _ = Context("pkg", func() {
 							// error to trigger immediate return
 							fakeOS.CreateReturns(nil, errors.New("dummyError"))
 
-							objectUnderTest := _Pkg{
+							objectUnderTest := _installer{
 								os: fakeOS,
 							}
 
@@ -274,7 +280,7 @@ var _ = Context("pkg", func() {
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(nil, expectedError)
 
-								objectUnderTest := _Pkg{
+								objectUnderTest := _installer{
 									os: fakeOS,
 								}
 
@@ -307,7 +313,7 @@ var _ = Context("pkg", func() {
 								// error to trigger immediate return
 								fakeOS.ChmodReturns(errors.New("dummyError"))
 
-								objectUnderTest := _Pkg{
+								objectUnderTest := _installer{
 									os: fakeOS,
 								}
 
@@ -333,7 +339,7 @@ var _ = Context("pkg", func() {
 									fakeOS := new(ios.Fake)
 									fakeOS.ChmodReturns(expectedError)
 
-									objectUnderTest := _Pkg{
+									objectUnderTest := _installer{
 										os: fakeOS,
 									}
 
@@ -376,7 +382,7 @@ var _ = Context("pkg", func() {
 
 									fakeOS.CreateReturns(contentDst, nil)
 
-									objectUnderTest := _Pkg{
+									objectUnderTest := _installer{
 										os: fakeOS,
 									}
 
@@ -408,7 +414,7 @@ var _ = Context("pkg", func() {
 									fakeOS := new(ios.Fake)
 									fakeOS.CreateReturns(file, nil)
 
-									objectUnderTest := _Pkg{
+									objectUnderTest := _installer{
 										os: fakeOS,
 									}
 

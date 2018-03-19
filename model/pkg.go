@@ -36,7 +36,7 @@ type DataHandle interface {
 	// returns nil if pkg doesn't exist locally
 	Path() *string
 
-	// Ref returns the pkgRef of the pkg
+	// Ref returns a ref to the data
 	Ref() string
 }
 

@@ -1,6 +1,5 @@
-package pkg
+package op
 
 const (
-	OpDotYmlFileName = "op.yml"
 	DotOpspecDirName = ".opspec"
 )

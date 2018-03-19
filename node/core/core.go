@@ -6,8 +6,8 @@ import (
 	"context"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"path/filepath"
@@ -36,7 +36,7 @@ type Core interface {
 		err error,
 	)
 
-	// Resolve attempts to resolve a pkg via local filesystem or git
+	// Resolve attempts to resolve an op via local filesystem or git
 	// nil pullCreds will be ignored
 	//
 	// expected errs:
@@ -109,7 +109,7 @@ func New(
 		pubSub:              pubSub,
 		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
-		pkg:                 pkg.New(),
+		dotYmlGetter:        dotyml.NewGetter(),
 		data:                data.New(),
 	}
 
@@ -122,7 +122,7 @@ type _core struct {
 	opCaller            opCaller
 	opKiller            opKiller
 	pubSub              pubsub.PubSub
-	pkg                 pkg.Pkg
+	dotYmlGetter        dotyml.Getter
 	data                data.Data
 	pkgCachePath        string
 	uniqueStringFactory uniquestring.UniqueStringFactory

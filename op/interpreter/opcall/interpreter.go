@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"path/filepath"
 )
@@ -33,7 +33,7 @@ func NewInterpreter(
 		dcgScratchDir:       filepath.Join(rootFSPath, "dcg"),
 		expression:          expression.New(),
 		data:                data.New(),
-		pkg:                 pkg.New(),
+		dotYmlGetter:        dotyml.NewGetter(),
 		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 		inputsInterpreter:   inputs.NewInterpreter(),
@@ -44,7 +44,7 @@ type _interpreter struct {
 	dcgScratchDir       string
 	expression          expression.Expression
 	data                data.Data
-	pkg                 pkg.Pkg
+	dotYmlGetter        dotyml.Getter
 	pkgCachePath        string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	inputsInterpreter   inputs.Interpreter
@@ -86,7 +86,10 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	opManifest, err := itp.pkg.GetManifest(opDirHandle)
+	opManifest, err := itp.dotYmlGetter.Get(
+		context.TODO(),
+		opDirHandle,
+	)
 	if nil != err {
 		return nil, err
 	}

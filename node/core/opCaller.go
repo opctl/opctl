@@ -5,9 +5,9 @@ package core
 import (
 	"context"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -32,7 +32,7 @@ func newOpCaller(
 	return _opCaller{
 		outputsInterpreter: outputs.NewInterpreter(),
 		opCallInterpreter:  opcall.NewInterpreter(rootFSPath),
-		pkg:                pkg.New(),
+		dotYmlGetter:       dotyml.NewGetter(),
 		pubSub:             pubSub,
 		dcgNodeRepo:        dcgNodeRepo,
 		caller:             caller,
@@ -42,7 +42,7 @@ func newOpCaller(
 type _opCaller struct {
 	outputsInterpreter outputs.Interpreter
 	opCallInterpreter  opcall.Interpreter
-	pkg                pkg.Pkg
+	dotYmlGetter       dotyml.Getter
 	pubSub             pubsub.PubSub
 	dcgNodeRepo        dcgNodeRepo
 	caller             caller
@@ -169,13 +169,16 @@ func (oc _opCaller) Call(
 	// wait on outputs
 	outputs = <-outputsChan
 
-	childPkg, err := oc.pkg.GetManifest(dcgOpCall.DataHandle)
+	childOpDotYml, err := oc.dotYmlGetter.Get(
+		context.TODO(),
+		dcgOpCall.DataHandle,
+	)
 	if nil != err {
 		return err
 	}
 
 	childPkgPath := dcgOpCall.DataHandle.Path()
-	outputs, err = oc.outputsInterpreter.Interpret(outputs, childPkg.Outputs, *childPkgPath)
+	outputs, err = oc.outputsInterpreter.Interpret(outputs, childOpDotYml.Outputs, *childPkgPath)
 
 	return err
 }

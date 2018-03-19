@@ -1,14 +1,13 @@
-package pkg
+package dotyml
 
 import (
 	"context"
+	"errors"
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg/manifest"
-	"github.com/pkg/errors"
 	"io/ioutil"
 )
 
@@ -18,21 +17,25 @@ var _ = Context("pkg", func() {
 
 		It("should call opDirHandle.GetContent w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedOpDirHandle := new(data.FakeHandle)
 			// err to trigger immediate return
 			providedOpDirHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := _Pkg{}
+			objectUnderTest := _getter{}
 
 			/* act */
-			objectUnderTest.GetManifest(providedOpDirHandle)
+			objectUnderTest.Get(
+				providedCtx,
+				providedOpDirHandle,
+			)
 
 			/* assert */
 			actualCtx,
 				actualPath := providedOpDirHandle.GetContentArgsForCall(0)
 
-			Expect(actualCtx).To(Equal(context.TODO()))
-			Expect(actualPath).To(Equal(OpDotYmlFileName))
+			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(actualPath).To(Equal(FileName))
 		})
 		Context("opDirHandle.GetContent errs", func() {
 			It("should return error", func() {
@@ -43,10 +46,13 @@ var _ = Context("pkg", func() {
 				// err to trigger immediate return
 				providedOpDirHandle.GetContentReturns(nil, getContentErr)
 
-				objectUnderTest := _Pkg{}
+				objectUnderTest := _getter{}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
+				_, actualErr := objectUnderTest.Get(
+					context.Background(),
+					providedOpDirHandle,
+				)
 
 				/* assert */
 				Expect(actualErr).To(Equal(getContentErr))
@@ -67,12 +73,15 @@ var _ = Context("pkg", func() {
 				// err to trigger immediate return
 				fakeIOUtil.ReadAllReturns(nil, errors.New("dummyError"))
 
-				objectUnderTest := _Pkg{
+				objectUnderTest := _getter{
 					ioUtil: fakeIOUtil,
 				}
 
 				/* act */
-				objectUnderTest.GetManifest(providedOpDirHandle)
+				objectUnderTest.Get(
+					context.Background(),
+					providedOpDirHandle,
+				)
 
 				/* assert */
 				actualReader := fakeIOUtil.ReadAllArgsForCall(0)
@@ -94,12 +103,15 @@ var _ = Context("pkg", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadAllReturns(nil, readAllErr)
 
-					objectUnderTest := _Pkg{
+					objectUnderTest := _getter{
 						ioUtil: fakeIOUtil,
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
+					_, actualErr := objectUnderTest.Get(
+						context.Background(),
+						providedOpDirHandle,
+					)
 
 					/* assert */
 					Expect(actualErr).To(Equal(readAllErr))
@@ -124,20 +136,23 @@ var _ = Context("pkg", func() {
 						Name: "dummyName",
 					}
 					expectedErr := errors.New("dummyError")
-					fakeManifest := new(manifest.Fake)
+					FakeUnmarshaller := new(FakeUnmarshaller)
 
-					fakeManifest.UnmarshalReturns(expectedPkgManifest, expectedErr)
+					FakeUnmarshaller.UnmarshalReturns(expectedPkgManifest, expectedErr)
 
-					objectUnderTest := _Pkg{
-						ioUtil:   fakeIOUtil,
-						manifest: fakeManifest,
+					objectUnderTest := _getter{
+						ioUtil:       fakeIOUtil,
+						unmarshaller: FakeUnmarshaller,
 					}
 
 					/* act */
-					actualPkgManifest, actualErr := objectUnderTest.GetManifest(providedOpDirHandle)
+					actualPkgManifest, actualErr := objectUnderTest.Get(
+						context.Background(),
+						providedOpDirHandle,
+					)
 
 					/* assert */
-					Expect(fakeManifest.UnmarshalArgsForCall(0)).To(Equal(bytesFromReadAll))
+					Expect(FakeUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(bytesFromReadAll))
 					Expect(actualPkgManifest).To(Equal(expectedPkgManifest))
 					Expect(actualErr).To(Equal(expectedErr))
 				})

@@ -1,22 +1,21 @@
-package manifest
+package dotyml
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ Validator
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/golang-interfaces/iioutil"
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type Validator interface {
-	// Validate validates the pkg manifest
+type validator interface {
+	// Validate validates an "op.yml"
 	Validate(
 		manifestBytes []byte,
 	) []error
 }
 
-func newValidator() Validator {
+func newValidator() validator {
 	manifestSchemaBytes, err := githubComOpspecIoSpecSpecOpYmlSchemaJsonBytes()
 	if nil != err {
 		panic(err)
@@ -30,17 +29,15 @@ func newValidator() Validator {
 	}
 
 	return _validator{
-		ioUtil:         iioutil.New(),
 		manifestSchema: manifestSchema,
 	}
 }
 
 type _validator struct {
-	ioUtil         iioutil.IIOUtil
 	manifestSchema *gojsonschema.Schema
 }
 
-func (this _validator) Validate(
+func (vdr _validator) Validate(
 	manifestBytes []byte,
 ) []error {
 
@@ -51,7 +48,7 @@ func (this _validator) Validate(
 	}
 
 	var errs []error
-	result, err := this.manifestSchema.Validate(
+	result, err := vdr.manifestSchema.Validate(
 		gojsonschema.NewBytesLoader(manifestJSONBytes),
 	)
 	if nil != err {

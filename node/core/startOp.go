@@ -51,11 +51,14 @@ func (this _core) StartOp(
 		scgOpCall.Inputs[name] = ""
 	}
 
-	pkgManifest, err := this.pkg.GetManifest(opDirHandle)
+	opDotYml, err := this.dotYmlGetter.Get(
+		context.TODO(),
+		opDirHandle,
+	)
 	if nil != err {
 		return "", err
 	}
-	for name := range pkgManifest.Outputs {
+	for name := range opDotYml.Outputs {
 		// implicitly bind
 		scgOpCall.Outputs[name] = ""
 	}

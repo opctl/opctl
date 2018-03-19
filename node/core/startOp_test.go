@@ -8,7 +8,7 @@ import (
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
-	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"time"
@@ -34,19 +34,19 @@ var _ = Context("core", func() {
 			})
 		})
 		Context("req.Pkg not nil", func() {
-			It("should call data.GetManifest w/ expected args", func() {
+			It("should call data.Get w/ expected args", func() {
 				/* arrange */
 				fakeData := new(data.Fake)
 				fakeDataHandle := new(data.FakeHandle)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakePkg := new(pkg.Fake)
+				fakeDotYmlGetter := new(dotyml.FakeGetter)
 				// err to trigger immediate return
-				fakePkg.GetManifestReturns(nil, errors.New("dummyError"))
+				fakeDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
 					data:                fakeData,
-					pkg:                 fakePkg,
+					dotYmlGetter:        fakeDotYmlGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -57,22 +57,26 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
-				Expect(fakePkg.GetManifestArgsForCall(0)).To(Equal(fakeDataHandle))
+				actualCtx,
+					actualDataHandle := fakeDotYmlGetter.GetArgsForCall(0)
+
+				Expect(actualCtx).To(Equal(actualCtx))
+				Expect(actualDataHandle).To(Equal(fakeDataHandle))
 			})
-			Context("data.GetManifest errs", func() {
+			Context("data.Get errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					fakeData := new(data.Fake)
 					fakeDataHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					fakePkg := new(pkg.Fake)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, expectedErr)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
-						pkg:                 fakePkg,
+						dotYmlGetter:        fakeDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -86,7 +90,7 @@ var _ = Context("core", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("data.GetManifest doesn't err", func() {
+			Context("data.Get doesn't err", func() {
 				It("should call opCaller.Call w/ expected args", func() {
 					/* arrange */
 					providedArg1String := "dummyArg1Value"
@@ -116,8 +120,8 @@ var _ = Context("core", func() {
 						},
 					}
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(pkgManifest, nil)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(pkgManifest, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
@@ -144,7 +148,7 @@ var _ = Context("core", func() {
 						containerRuntime:    new(containerruntime.Fake),
 						pubSub:              new(pubsub.Fake),
 						data:                fakeData,
-						pkg:                 fakePkg,
+						dotYmlGetter:        fakeDotYmlGetter,
 						opCaller:            fakeOpCaller,
 						dcgNodeRepo:         new(fakeDCGNodeRepo),
 						uniqueStringFactory: fakeUniqueStringFactory,

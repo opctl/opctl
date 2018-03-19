@@ -1,4 +1,4 @@
-package manifest
+package dotyml
 
 import (
 	. "github.com/onsi/ginkgo"

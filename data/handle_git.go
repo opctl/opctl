@@ -21,7 +21,7 @@ func newGitHandle(
 	}
 }
 
-// gitHandle allows interacting w/ data sourced from the filesystem
+// gitHandle allows interacting w/ data sourced from git
 type gitHandle struct {
 	ioUtil  iioutil.IIOUtil
 	os      ios.IOS

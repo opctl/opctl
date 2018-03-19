@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -327,8 +327,8 @@ var _ = Context("opCaller", func() {
 					nil,
 				)
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+				fakeDotYmlGetter := new(dotyml.FakeGetter)
+				fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -339,7 +339,7 @@ var _ = Context("opCaller", func() {
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 				objectUnderTest := _opCaller{
-					pkg:                fakePkg,
+					dotYmlGetter:       fakeDotYmlGetter,
 					pubSub:             fakePubSub,
 					opCallInterpreter:  fakeOpCallInterpreter,
 					outputsInterpreter: new(outputs.FakeInterpreter),
@@ -393,8 +393,8 @@ var _ = Context("opCaller", func() {
 						nil,
 					)
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 					eventChannel := make(chan model.Event)
@@ -403,7 +403,7 @@ var _ = Context("opCaller", func() {
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
-						pkg:                fakePkg,
+						dotYmlGetter:       fakeDotYmlGetter,
 						pubSub:             fakePubSub,
 						opCallInterpreter:  fakeOpCallInterpreter,
 						outputsInterpreter: new(outputs.FakeInterpreter),
@@ -449,8 +449,8 @@ var _ = Context("opCaller", func() {
 						nil,
 					)
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -462,7 +462,7 @@ var _ = Context("opCaller", func() {
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
-						pkg:                fakePkg,
+						dotYmlGetter:       fakeDotYmlGetter,
 						pubSub:             fakePubSub,
 						opCallInterpreter:  fakeOpCallInterpreter,
 						outputsInterpreter: new(outputs.FakeInterpreter),
@@ -591,8 +591,8 @@ var _ = Context("opCaller", func() {
 							nil,
 						)
 
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+						fakeDotYmlGetter := new(dotyml.FakeGetter)
+						fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -604,7 +604,7 @@ var _ = Context("opCaller", func() {
 						fakePubSub.SubscribeReturns(eventChannel, nil)
 
 						objectUnderTest := _opCaller{
-							pkg:                fakePkg,
+							dotYmlGetter:       fakeDotYmlGetter,
 							pubSub:             fakePubSub,
 							opCallInterpreter:  fakeOpCallInterpreter,
 							outputsInterpreter: fakeOutputsInterpreter,

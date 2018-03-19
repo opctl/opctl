@@ -1,4 +1,4 @@
-package pkg
+package op
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "pkg")
+	RunSpecs(t, "op")
 }

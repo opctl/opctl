@@ -1,14 +1,37 @@
-package pkg
+package op
+
+//go:generate counterfeiter -o ./fakeInstaller.go --fake-name FakeInstaller ./ Installer
 
 import (
 	"context"
+	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"io"
 	"path/filepath"
 )
 
+type Installer interface {
+	// Install installs an op; path will be created if it doesn't exist
+	Install(
+		ctx context.Context,
+		path string,
+		opDirHandle model.DataHandle,
+	) error
+}
+
+// NewInstaller returns an initialized Installer instance
+func NewInstaller() Installer {
+	return _installer{
+		os: ios.New(),
+	}
+}
+
+type _installer struct {
+	os ios.IOS
+}
+
 // Install installs an opspec pkg at path
-func (this _Pkg) Install(
+func (inst _installer) Install(
 	ctx context.Context,
 	path string,
 	handle model.DataHandle,
@@ -24,7 +47,7 @@ func (this _Pkg) Install(
 
 		if content.Mode.IsDir() {
 			// ensure content path exists
-			err = this.os.MkdirAll(
+			err = inst.os.MkdirAll(
 				dstPath,
 				content.Mode,
 			)
@@ -33,7 +56,7 @@ func (this _Pkg) Install(
 			}
 		} else {
 			// ensure content dir exists
-			err = this.os.MkdirAll(
+			err = inst.os.MkdirAll(
 				filepath.Dir(dstPath),
 				0777,
 			)
@@ -41,12 +64,12 @@ func (this _Pkg) Install(
 				return err
 			}
 
-			dst, err := this.os.Create(dstPath)
+			dst, err := inst.os.Create(dstPath)
 			if nil != err {
 				return err
 			}
 
-			err = this.os.Chmod(dstPath, content.Mode)
+			err = inst.os.Chmod(dstPath, content.Mode)
 			if nil != err {
 				return err
 			}

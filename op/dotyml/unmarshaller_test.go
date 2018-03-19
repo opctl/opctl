@@ -1,4 +1,4 @@
-package manifest
+package dotyml
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var _ = Context("_manifestUnmarshaller", func() {
+var _ = Context("unmarshaller", func() {
 
 	Context("Unmarshal", func() {
 
@@ -22,8 +22,8 @@ var _ = Context("_manifestUnmarshaller", func() {
 			// err to cause immediate return
 			fakeValidator.ValidateReturns([]error{errors.New("dummyError")})
 
-			objectUnderTest := _Manifest{
-				Validator: fakeValidator,
+			objectUnderTest := _unmarshaller{
+				validator: fakeValidator,
 			}
 
 			/* act */
@@ -49,8 +49,8 @@ var _ = Context("_manifestUnmarshaller", func() {
 				// err to cause immediate return
 				fakeValidator.ValidateReturns(errs)
 
-				objectUnderTest := _Manifest{
-					Validator: fakeValidator,
+				objectUnderTest := _unmarshaller{
+					validator: fakeValidator,
 				}
 
 				/* act */
@@ -102,8 +102,8 @@ var _ = Context("_manifestUnmarshaller", func() {
 					panic(err.Error())
 				}
 
-				objectUnderTest := _Manifest{
-					Validator: new(fakeValidator),
+				objectUnderTest := _unmarshaller{
+					validator: new(fakeValidator),
 				}
 
 				/* act */

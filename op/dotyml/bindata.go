@@ -3,7 +3,7 @@
 // github.com/opspec-io/spec/spec/op.yml.schema.json
 // DO NOT EDIT!
 
-package manifest
+package dotyml
 
 import (
 	"bytes"

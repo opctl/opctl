@@ -8,9 +8,9 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -298,6 +298,7 @@ var _ = Context("Interpreter", func() {
 			actualCtx,
 				actualPkgRef,
 				actualPkgProviders := fakeData.ResolveArgsForCall(0)
+
 			Expect(actualCtx).To(Equal(context.TODO()))
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
@@ -341,14 +342,14 @@ var _ = Context("Interpreter", func() {
 				fakeData := new(data.Fake)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakePkg := new(pkg.Fake)
+				fakeDotYmlGetter := new(dotyml.FakeGetter)
 				expectedErr := errors.New("dummyError")
 				// err to trigger immediate return
-				fakePkg.GetManifestReturns(nil, expectedErr)
+				fakeDotYmlGetter.GetReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
 					data:                fakeData,
-					pkg:                 fakePkg,
+					dotYmlGetter:        fakeDotYmlGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -362,7 +363,10 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				actualHandle := fakePkg.GetManifestArgsForCall(0)
+				actualCtx,
+					actualHandle := fakeDotYmlGetter.GetArgsForCall(0)
+
+				Expect(actualCtx).To(Equal(context.TODO()))
 				Expect(actualHandle).To(Equal(fakeDataHandle))
 			})
 			Context("pkg.GetManifest errs", func() {
@@ -372,12 +376,12 @@ var _ = Context("Interpreter", func() {
 					providedParentOpDirHandle.PathReturns(new(string))
 
 					expectedErr := errors.New("dummyError")
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(nil, expectedErr)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(nil, expectedErr)
 
 					objectUnderTest := _interpreter{
 						data:                new(data.Fake),
-						pkg:                 fakePkg,
+						dotYmlGetter:        fakeDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -426,11 +430,11 @@ var _ = Context("Interpreter", func() {
 						"dummyParam1Name": {String: &model.StringParam{}},
 					}
 
-					fakePkg := new(pkg.Fake)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					returnedManifest := &model.PkgManifest{
 						Inputs: expectedInputParams,
 					}
-					fakePkg.GetManifestReturns(returnedManifest, nil)
+					fakeDotYmlGetter.GetReturns(returnedManifest, nil)
 
 					fakeInputsInterpreter := new(inputs.FakeInterpreter)
 
@@ -439,7 +443,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest := _interpreter{
 						dcgScratchDir:       dcgScratchDir,
 						data:                fakeData,
-						pkg:                 fakePkg,
+						dotYmlGetter:        fakeDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 						inputsInterpreter:   fakeInputsInterpreter,
 					}

@@ -1,19 +1,26 @@
-package pkg
+package op
 
 import (
 	"errors"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"gopkg.in/yaml.v2"
-	"os"
-	"path/filepath"
 )
 
-var _ = Context("pkg", func() {
-
+var _ = Context("Creator", func() {
+	Context("NewCreator", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(NewCreator()).Should(Not(BeNil()))
+		})
+	})
 	Context("Create", func() {
 
 		It("should call os.MkdirAll with expected args", func() {
@@ -23,7 +30,7 @@ var _ = Context("pkg", func() {
 
 			fakeOS := new(ios.Fake)
 
-			objectUnderTest := &_Pkg{
+			objectUnderTest := _creator{
 				os:     fakeOS,
 				ioUtil: new(iioutil.Fake),
 			}
@@ -46,7 +53,7 @@ var _ = Context("pkg", func() {
 				fakeOS := new(ios.Fake)
 				fakeOS.MkdirAllReturns(expectedError)
 
-				objectUnderTest := &_Pkg{
+				objectUnderTest := _creator{
 					os: fakeOS,
 				}
 
@@ -75,19 +82,23 @@ var _ = Context("pkg", func() {
 			panic(err)
 		}
 
-		expectedPath := filepath.Join(providedPath, OpDotYmlFileName)
+		expectedPath := filepath.Join(providedPath, dotyml.FileName)
 		expectedData := expectedPkgManifestBytes
 		expectedPerms := os.FileMode(0777)
 
 		fakeIOUtil := new(iioutil.Fake)
 
-		objectUnderTest := &_Pkg{
+		objectUnderTest := _creator{
 			os:     new(ios.Fake),
 			ioUtil: fakeIOUtil,
 		}
 
 		/* act */
-		objectUnderTest.Create(providedPath, providedPkgName, providedPkgDescription)
+		objectUnderTest.Create(
+			providedPath,
+			providedPkgName,
+			providedPkgDescription,
+		)
 
 		/* assert */
 		actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
