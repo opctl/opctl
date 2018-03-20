@@ -12,7 +12,7 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallImage *model.SCGContainerCallImage,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.DCGContainerCallImage, error)
 }
 
@@ -30,11 +30,11 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallImage *model.SCGContainerCallImage,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.DCGContainerCallImage, error) {
 	// construct image
 	if scgContainerCallImage := scgContainerCallImage; scgContainerCallImage != nil {
-		ref, err := itp.expression.EvalToString(scope, scgContainerCallImage.Ref, opDirHandle)
+		ref, err := itp.expression.EvalToString(scope, scgContainerCallImage.Ref, opHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -44,12 +44,12 @@ func (itp _interpreter) Interpret(
 		}
 
 		if nil != scgContainerCallImage.PullCreds {
-			username, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Username, opDirHandle)
+			username, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Username, opHandle)
 			if nil != err {
 				return nil, err
 			}
 
-			password, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Password, opDirHandle)
+			password, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Password, opHandle)
 			if nil != err {
 				return nil, err
 			}

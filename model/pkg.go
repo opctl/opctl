@@ -13,7 +13,7 @@ type ReadSeekCloser interface {
 	io.Seeker
 }
 
-// DataHandle is a provider agnostic interface for interacting w/ pkg content
+// DataHandle is a provider agnostic interface for interacting w/ data
 type DataHandle interface {
 	// ListContents lists contents of a package
 	ListContents(

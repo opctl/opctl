@@ -8,12 +8,12 @@ import (
 )
 
 type Fake struct {
-	DeReferenceStub        func(ref string, scope map[string]*model.Value, opDirHandle model.DataHandle) (string, bool, error)
+	DeReferenceStub        func(ref string, scope map[string]*model.Value, opHandle model.DataHandle) (string, bool, error)
 	deReferenceMutex       sync.RWMutex
 	deReferenceArgsForCall []struct {
-		ref         string
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
+		ref      string
+		scope    map[string]*model.Value
+		opHandle model.DataHandle
 	}
 	deReferenceReturns struct {
 		result1 string
@@ -29,18 +29,18 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) DeReference(ref string, scope map[string]*model.Value, opDirHandle model.DataHandle) (string, bool, error) {
+func (fake *Fake) DeReference(ref string, scope map[string]*model.Value, opHandle model.DataHandle) (string, bool, error) {
 	fake.deReferenceMutex.Lock()
 	ret, specificReturn := fake.deReferenceReturnsOnCall[len(fake.deReferenceArgsForCall)]
 	fake.deReferenceArgsForCall = append(fake.deReferenceArgsForCall, struct {
-		ref         string
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
-	}{ref, scope, opDirHandle})
-	fake.recordInvocation("DeReference", []interface{}{ref, scope, opDirHandle})
+		ref      string
+		scope    map[string]*model.Value
+		opHandle model.DataHandle
+	}{ref, scope, opHandle})
+	fake.recordInvocation("DeReference", []interface{}{ref, scope, opHandle})
 	fake.deReferenceMutex.Unlock()
 	if fake.DeReferenceStub != nil {
-		return fake.DeReferenceStub(ref, scope, opDirHandle)
+		return fake.DeReferenceStub(ref, scope, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
@@ -57,7 +57,7 @@ func (fake *Fake) DeReferenceCallCount() int {
 func (fake *Fake) DeReferenceArgsForCall(i int) (string, map[string]*model.Value, model.DataHandle) {
 	fake.deReferenceMutex.RLock()
 	defer fake.deReferenceMutex.RUnlock()
-	return fake.deReferenceArgsForCall[i].ref, fake.deReferenceArgsForCall[i].scope, fake.deReferenceArgsForCall[i].opDirHandle
+	return fake.deReferenceArgsForCall[i].ref, fake.deReferenceArgsForCall[i].scope, fake.deReferenceArgsForCall[i].opHandle
 }
 
 func (fake *Fake) DeReferenceReturns(result1 string, result2 bool, result3 error) {

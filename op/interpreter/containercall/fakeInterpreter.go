@@ -8,14 +8,14 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(scope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, opDirHandle model.DataHandle) (*model.DCGContainerCall, error)
+	InterpretStub        func(scope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerID string, rootOpID string, opHandle model.DataHandle) (*model.DCGContainerCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		scope            map[string]*model.Value
 		scgContainerCall *model.SCGContainerCall
-		containerId      string
-		rootOpId         string
-		opDirHandle      model.DataHandle
+		containerID      string
+		rootOpID         string
+		opHandle         model.DataHandle
 	}
 	interpretReturns struct {
 		result1 *model.DCGContainerCall
@@ -29,20 +29,20 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerId string, rootOpId string, opDirHandle model.DataHandle) (*model.DCGContainerCall, error) {
+func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgContainerCall *model.SCGContainerCall, containerID string, rootOpID string, opHandle model.DataHandle) (*model.DCGContainerCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		scope            map[string]*model.Value
 		scgContainerCall *model.SCGContainerCall
-		containerId      string
-		rootOpId         string
-		opDirHandle      model.DataHandle
-	}{scope, scgContainerCall, containerId, rootOpId, opDirHandle})
-	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCall, containerId, rootOpId, opDirHandle})
+		containerID      string
+		rootOpID         string
+		opHandle         model.DataHandle
+	}{scope, scgContainerCall, containerID, rootOpID, opHandle})
+	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCall, containerID, rootOpID, opHandle})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, scgContainerCall, containerId, rootOpId, opDirHandle)
+		return fake.InterpretStub(scope, scgContainerCall, containerID, rootOpID, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -59,7 +59,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGContainerCall, string, string, model.DataHandle) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCall, fake.interpretArgsForCall[i].containerId, fake.interpretArgsForCall[i].rootOpId, fake.interpretArgsForCall[i].opDirHandle
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCall, fake.interpretArgsForCall[i].containerID, fake.interpretArgsForCall[i].rootOpID, fake.interpretArgsForCall[i].opHandle
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 *model.DCGContainerCall, result2 error) {

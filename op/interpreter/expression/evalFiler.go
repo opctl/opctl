@@ -25,7 +25,7 @@ type evalFiler interface {
 	EvalToFile(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 		scratchDir string,
 	) (*model.Value, error)
 }
@@ -53,7 +53,7 @@ type _evalFiler struct {
 func (ef _evalFiler) EvalToFile(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 	scratchDir string,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
@@ -63,7 +63,7 @@ func (ef _evalFiler) EvalToFile(
 		objectValue, err := ef.evalObjectInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
@@ -74,7 +74,7 @@ func (ef _evalFiler) EvalToFile(
 		arrayValue, err := ef.evalArrayInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
@@ -95,12 +95,12 @@ func (ef _evalFiler) EvalToFile(
 			if strings.HasPrefix(refExpression, "/") && len(expression) == possibleRefCloserIndex+1 {
 
 				// pkg fs ref
-				pkgFsRef, err := ef.interpolater.Interpolate(refExpression, scope, opDirHandle)
+				pkgFsRef, err := ef.interpolater.Interpolate(refExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
 
-				fileValue := filepath.Join(*opDirHandle.Path(), pkgFsRef)
+				fileValue := filepath.Join(*opHandle.Path(), pkgFsRef)
 
 				return &model.Value{File: &fileValue}, nil
 
@@ -108,7 +108,7 @@ func (ef _evalFiler) EvalToFile(
 
 				// dir scope ref w/ path
 				pathExpression := refParts[1]
-				path, err := ef.interpolater.Interpolate(pathExpression, scope, opDirHandle)
+				path, err := ef.interpolater.Interpolate(pathExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 				}
@@ -120,7 +120,7 @@ func (ef _evalFiler) EvalToFile(
 
 		}
 		// plain string
-		stringValue, err := ef.interpolater.Interpolate(expression, scope, opDirHandle)
+		stringValue, err := ef.interpolater.Interpolate(expression, scope, opHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
 		}

@@ -7,8 +7,8 @@ type DCG struct {
 }
 
 type DCGBaseCall struct {
-	RootOpId   string `json:"rootOpId"`
-	DataHandle DataHandle
+	RootOpID string `json:"rootOpId"`
+	OpHandle DataHandle
 }
 
 type DCGPullCreds struct {
@@ -20,7 +20,7 @@ type DCGContainer struct{}
 
 type DCGContainerCall struct {
 	DCGBaseCall
-	ContainerId string   `json:"containerId"`
+	ContainerID string   `json:"containerId"`
 	Cmd         []string `json:"cmd"`
 	// format: containerPath => hostPath
 	Dirs map[string]string `json:"dirs"`
@@ -45,10 +45,10 @@ type DCGOp struct{}
 
 type DCGOpCall struct {
 	DCGBaseCall
-	OpId         string            `json:"opId"`
+	OpID         string            `json:"opId"`
 	Inputs       map[string]*Value `json:"inputs"`
-	ChildCallSCG *SCG              `json:"childCallSCG"`
-	ChildCallId  string            `json:"childCallId"`
+	ChildCallSCG *SCG              `json:"childCallScg"`
+	ChildCallID  string            `json:"childCallId"`
 }
 
 type DCGOpCallPkg struct {

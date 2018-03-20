@@ -20,13 +20,13 @@ type _containerStdOutStreamer struct {
 }
 
 func (ctp _containerStdOutStreamer) Stream(
-	containerId string,
+	containerID string,
 	dst io.Writer,
 ) error {
 
 	src, err := ctp.dockerClient.ContainerLogs(
 		context.TODO(),
-		containerId,
+		containerID,
 		types.ContainerLogsOptions{
 			Follow:     true,
 			ShowStdout: true,

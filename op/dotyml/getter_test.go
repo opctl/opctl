@@ -15,50 +15,50 @@ var _ = Context("pkg", func() {
 
 	Context("GetManifest", func() {
 
-		It("should call opDirHandle.GetContent w/ expected args", func() {
+		It("should call opHandle.GetContent w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 			// err to trigger immediate return
-			providedOpDirHandle.GetContentReturns(nil, errors.New("dummyError"))
+			providedOpHandle.GetContentReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _getter{}
 
 			/* act */
 			objectUnderTest.Get(
 				providedCtx,
-				providedOpDirHandle,
+				providedOpHandle,
 			)
 
 			/* assert */
 			actualCtx,
-				actualPath := providedOpDirHandle.GetContentArgsForCall(0)
+				actualPath := providedOpHandle.GetContentArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualPath).To(Equal(FileName))
 		})
-		Context("opDirHandle.GetContent errs", func() {
+		Context("opHandle.GetContent errs", func() {
 			It("should return error", func() {
 				/* arrange */
 				getContentErr := errors.New("dummyError")
 
-				providedOpDirHandle := new(data.FakeHandle)
+				providedOpHandle := new(data.FakeHandle)
 				// err to trigger immediate return
-				providedOpDirHandle.GetContentReturns(nil, getContentErr)
+				providedOpHandle.GetContentReturns(nil, getContentErr)
 
 				objectUnderTest := _getter{}
 
 				/* act */
 				_, actualErr := objectUnderTest.Get(
 					context.Background(),
-					providedOpDirHandle,
+					providedOpHandle,
 				)
 
 				/* assert */
 				Expect(actualErr).To(Equal(getContentErr))
 			})
 		})
-		Context("opDirHandle.GetContent doesn't err", func() {
+		Context("opHandle.GetContent doesn't err", func() {
 			It("should call ioUtil.ReadAll w/ expected args", func() {
 				/* arrange */
 				file, err := ioutil.TempFile("", "")
@@ -66,8 +66,8 @@ var _ = Context("pkg", func() {
 					panic(err)
 				}
 
-				providedOpDirHandle := new(data.FakeHandle)
-				providedOpDirHandle.GetContentReturns(file, nil)
+				providedOpHandle := new(data.FakeHandle)
+				providedOpHandle.GetContentReturns(file, nil)
 
 				fakeIOUtil := new(iioutil.Fake)
 				// err to trigger immediate return
@@ -80,7 +80,7 @@ var _ = Context("pkg", func() {
 				/* act */
 				objectUnderTest.Get(
 					context.Background(),
-					providedOpDirHandle,
+					providedOpHandle,
 				)
 
 				/* assert */
@@ -96,8 +96,8 @@ var _ = Context("pkg", func() {
 						panic(err)
 					}
 
-					providedOpDirHandle := new(data.FakeHandle)
-					providedOpDirHandle.GetContentReturns(file, nil)
+					providedOpHandle := new(data.FakeHandle)
+					providedOpHandle.GetContentReturns(file, nil)
 
 					readAllErr := errors.New("dummyError")
 					fakeIOUtil := new(iioutil.Fake)
@@ -110,7 +110,7 @@ var _ = Context("pkg", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Get(
 						context.Background(),
-						providedOpDirHandle,
+						providedOpHandle,
 					)
 
 					/* assert */
@@ -125,8 +125,8 @@ var _ = Context("pkg", func() {
 						panic(err)
 					}
 
-					providedOpDirHandle := new(data.FakeHandle)
-					providedOpDirHandle.GetContentReturns(file, nil)
+					providedOpHandle := new(data.FakeHandle)
+					providedOpHandle.GetContentReturns(file, nil)
 
 					bytesFromReadAll := []byte{2, 3}
 					fakeIOUtil := new(iioutil.Fake)
@@ -148,7 +148,7 @@ var _ = Context("pkg", func() {
 					/* act */
 					actualPkgManifest, actualErr := objectUnderTest.Get(
 						context.Background(),
-						providedOpDirHandle,
+						providedOpHandle,
 					)
 
 					/* assert */

@@ -26,10 +26,10 @@ var _ = Context("serialCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
-			providedCallId := "dummyCallId"
+			providedCallID := "dummyCallID"
 			providedInboundScope := map[string]*model.Value{}
-			providedRootOpId := "dummyRootOpId"
-			providedOpDirHandle := new(data.FakeHandle)
+			providedRootOpID := "dummyRootOpID"
+			providedOpHandle := new(data.FakeHandle)
 			providedSCGSerialCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -52,7 +52,7 @@ var _ = Context("serialCaller", func() {
 					subscribeCallIndex++
 				}()
 				eventChannel := make(chan model.Event, 100)
-				eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+				eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpID: fmt.Sprintf("%v", subscribeCallIndex)}}
 				return eventChannel, make(chan error)
 			}
 
@@ -71,10 +71,10 @@ var _ = Context("serialCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				providedCallId,
+				providedCallID,
 				providedInboundScope,
-				providedRootOpId,
-				providedOpDirHandle,
+				providedRootOpID,
+				providedOpHandle,
 				providedSCGSerialCalls,
 			)
 
@@ -83,22 +83,22 @@ var _ = Context("serialCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
-					actualOpDirHandle,
-					actualRootOpId := fakeCaller.CallArgsForCall(expectedSCGIndex)
+					actualOpHandle,
+					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
-				Expect(actualRootOpId).To(Equal(providedRootOpId))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			}
 		})
 		Context("caller errors", func() {
 			It("should return the expected error", func() {
 				/* arrange */
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}
-				providedRootOpId := "dummyRootOpId"
-				providedOpDirHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
+				providedOpHandle := new(data.FakeHandle)
 				providedSCGSerialCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -114,10 +114,10 @@ var _ = Context("serialCaller", func() {
 
 				/* act */
 				actualErr := objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedInboundScope,
-					providedRootOpId,
-					providedOpDirHandle,
+					providedRootOpID,
+					providedOpHandle,
 					providedSCGSerialCalls,
 				)
 
@@ -129,7 +129,7 @@ var _ = Context("serialCaller", func() {
 			Context("childOutboundScope empty", func() {
 				It("should call secondChild w/ inboundScope", func() {
 					/* arrange */
-					providedCallId := "dummyCallId"
+					providedCallID := "dummyCallID"
 					providedScopeName1String := "dummyParentVar1Data"
 					providedScopeName2Dir := "dummyParentVar2Data"
 					providedInboundScope := map[string]*model.Value{
@@ -137,8 +137,8 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": {Dir: &providedScopeName2Dir},
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
-					providedRootOpId := "dummyRootOpId"
-					providedOpDirHandle := new(data.FakeHandle)
+					providedRootOpID := "dummyRootOpID"
+					providedOpHandle := new(data.FakeHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -155,7 +155,7 @@ var _ = Context("serialCaller", func() {
 							subscribeCallIndex++
 						}()
 						eventChannel := make(chan model.Event, 100)
-						eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpId: fmt.Sprintf("%v", subscribeCallIndex)}}
+						eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpID: fmt.Sprintf("%v", subscribeCallIndex)}}
 						return eventChannel, make(chan error)
 					}
 
@@ -174,10 +174,10 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						providedCallId,
+						providedCallID,
 						providedInboundScope,
-						providedRootOpId,
-						providedOpDirHandle,
+						providedRootOpID,
+						providedOpHandle,
 						providedSCGSerialCalls,
 					)
 
@@ -189,7 +189,7 @@ var _ = Context("serialCaller", func() {
 			Context("childOutboundScope not empty", func() {
 				It("should call secondChild w/ firstChildOutputs overlaying inboundScope", func() {
 					/* arrange */
-					providedCallId := "dummyCallId"
+					providedCallID := "dummyCallID"
 
 					providedInboundVar1String := "dummyParentVar1Data"
 					providedInboundVar2Dir := "dummyParentVar2Data"
@@ -212,8 +212,8 @@ var _ = Context("serialCaller", func() {
 						"dummyVar2Name": firstChildOutputs["dummyVar2Name"],
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
-					providedRootOpId := "dummyRootOpId"
-					providedOpDirHandle := new(data.FakeHandle)
+					providedRootOpID := "dummyRootOpID"
+					providedOpHandle := new(data.FakeHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -232,8 +232,8 @@ var _ = Context("serialCaller", func() {
 						eventChannel := make(chan model.Event, 100)
 						eventChannel <- model.Event{
 							ContainerExited: &model.ContainerExitedEvent{
-								RootOpId:    providedRootOpId,
-								ContainerId: fmt.Sprintf("%v", subscribeCallIndex),
+								RootOpID:    providedRootOpID,
+								ContainerID: fmt.Sprintf("%v", subscribeCallIndex),
 								Outputs:     firstChildOutputs,
 							},
 						}
@@ -255,10 +255,10 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
-						providedCallId,
+						providedCallID,
 						providedInboundScope,
-						providedRootOpId,
-						providedOpDirHandle,
+						providedRootOpID,
+						providedOpHandle,
 						providedSCGSerialCalls,
 					)
 

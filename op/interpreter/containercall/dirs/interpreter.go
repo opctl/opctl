@@ -14,7 +14,7 @@ import (
 
 type Interpreter interface {
 	Interpret(
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 		scope map[string]*model.Value,
 		scgContainerCallFiles map[string]string,
 		scratchDirPath string,
@@ -41,7 +41,7 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 	scope map[string]*model.Value,
 	scgContainerCallDirs map[string]string,
 	scratchDirPath string,
@@ -58,7 +58,7 @@ dirLoop:
 		dirValue, err := itp.expression.EvalToDir(
 			scope,
 			dirExpression,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf(

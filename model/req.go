@@ -27,7 +27,7 @@ type ListPkgContentsReq struct {
 }
 
 type KillOpReq struct {
-	OpId string
+	OpID string `json:"opId"`
 }
 
 type StartOpReq struct {

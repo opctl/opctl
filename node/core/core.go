@@ -43,7 +43,7 @@ type Core interface {
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
 	//  - ErrDataRefResolution on resolution failure
-	ResolvePkg(
+	ResolveData(
 		ctx context.Context,
 		pkgRef string,
 		pullCreds *model.PullCreds,
@@ -107,7 +107,7 @@ func New(
 		opCaller:            opCaller,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
-		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
+		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
 		dotYmlGetter:        dotyml.NewGetter(),
 		data:                data.New(),
@@ -124,6 +124,6 @@ type _core struct {
 	pubSub              pubsub.PubSub
 	dotYmlGetter        dotyml.Getter
 	data                data.Data
-	pkgCachePath        string
+	dataCachePath       string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

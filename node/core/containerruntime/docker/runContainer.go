@@ -99,8 +99,8 @@ func (cr _runContainer) RunContainer(
 	pullErr := cr.imagePuller.Pull(
 		ctx,
 		req.Image,
-		req.ContainerId,
-		req.RootOpId,
+		req.ContainerID,
+		req.RootOpID,
 		eventPublisher,
 	)
 	// don't err yet; image might be cached
@@ -111,7 +111,7 @@ func (cr _runContainer) RunContainer(
 		containerConfig,
 		hostConfig,
 		networkingConfig,
-		req.ContainerId,
+		req.ContainerID,
 	)
 	if nil != createErr {
 		if nil == pullErr {
@@ -136,7 +136,7 @@ func (cr _runContainer) RunContainer(
 
 	go func() {
 		if err := cr.containerStdErrStreamer.Stream(
-			req.ContainerId,
+			req.ContainerID,
 			stderr,
 		); nil != err {
 			errChan <- err
@@ -146,7 +146,7 @@ func (cr _runContainer) RunContainer(
 
 	go func() {
 		if err := cr.containerStdOutStreamer.Stream(
-			req.ContainerId,
+			req.ContainerID,
 			stdout,
 		); nil != err {
 			errChan <- err
@@ -157,7 +157,7 @@ func (cr _runContainer) RunContainer(
 	var exitCode int64
 	waitOkChan, waitErrChan := cr.dockerClient.ContainerWait(
 		ctx,
-		req.ContainerId,
+		req.ContainerID,
 		container.WaitConditionNotRunning,
 	)
 	select {

@@ -8,7 +8,7 @@ import (
 
 type containerLogStreamer interface {
 	Stream(
-		containerId string,
+		containerID string,
 		dst io.Writer,
 	) error
 }

@@ -33,10 +33,10 @@ var _ = Context("containerCaller", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Value{}
-			providedContainerId := "dummyContainerId"
+			providedContainerID := "dummyContainerID"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedOpDirHandle := new(data.FakeHandle)
-			providedRootOpId := "dummyRootOpId"
+			providedOpHandle := new(data.FakeHandle)
+			providedRootOpID := "dummyRootOpID"
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -45,9 +45,9 @@ var _ = Context("containerCaller", func() {
 			fakeContainerCallInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
-				Id:        providedContainerId,
-				PkgRef:    providedOpDirHandle.Ref(),
-				RootOpId:  providedRootOpId,
+				Id:        providedContainerID,
+				PkgRef:    providedOpHandle.Ref(),
+				RootOpID:  providedRootOpID,
 				Container: &dcgContainerDescriptor{},
 			}
 
@@ -67,10 +67,10 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedContainerId,
+				providedContainerID,
 				providedSCGContainerCall,
-				providedOpDirHandle,
-				providedRootOpId,
+				providedOpHandle,
+				providedRootOpID,
 			)
 
 			/* assert */
@@ -79,17 +79,17 @@ var _ = Context("containerCaller", func() {
 		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
 			/* arrange */
 			providedInboundScope := map[string]*model.Value{}
-			providedContainerId := "dummyContainerId"
+			providedContainerID := "dummyContainerID"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedOpDirHandle := new(data.FakeHandle)
-			providedRootOpId := "dummyRootOpId"
+			providedOpHandle := new(data.FakeHandle)
+			providedRootOpID := "dummyRootOpID"
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
-					ContainerId: providedContainerId,
-					PkgRef:      providedOpDirHandle.Ref(),
-					RootOpId:    providedRootOpId,
+					ContainerID: providedContainerID,
+					PkgRef:      providedOpHandle.Ref(),
+					RootOpID:    providedRootOpID,
 				},
 			}
 
@@ -112,10 +112,10 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				providedInboundScope,
-				providedContainerId,
+				providedContainerID,
 				providedSCGContainerCall,
-				providedOpDirHandle,
-				providedRootOpId,
+				providedOpHandle,
+				providedRootOpID,
 			)
 
 			/* assert */
@@ -153,10 +153,10 @@ var _ = Context("containerCaller", func() {
 			/* act */
 			objectUnderTest.Call(
 				map[string]*model.Value{},
-				"dummyContainerId",
+				"dummyContainerID",
 				&model.SCGContainerCall{},
 				new(data.FakeHandle),
-				"dummyRootOpId",
+				"dummyRootOpID",
 			)
 
 			/* assert */
@@ -186,10 +186,10 @@ var _ = Context("containerCaller", func() {
 				/* act */
 				actualError := objectUnderTest.Call(
 					map[string]*model.Value{},
-					"dummyContainerId",
+					"dummyContainerID",
 					&model.SCGContainerCall{},
 					new(data.FakeHandle),
-					"dummyRootOpId",
+					"dummyRootOpID",
 				)
 
 				/* assert */
@@ -199,7 +199,7 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
-		providedContainerId := "dummyContainerId"
+		providedContainerID := "dummyContainerID"
 
 		fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -217,30 +217,30 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			map[string]*model.Value{},
-			providedContainerId,
+			providedContainerID,
 			&model.SCGContainerCall{},
 			new(data.FakeHandle),
-			"dummyRootOpId",
+			"dummyRootOpID",
 		)
 
 		/* assert */
-		Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerId))
+		Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerID))
 	})
 
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Value{}
-		providedContainerId := "dummyContainerId"
+		providedContainerID := "dummyContainerID"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedOpDirHandle := new(data.FakeHandle)
-		providedRootOpId := "dummyRootOpId"
+		providedOpHandle := new(data.FakeHandle)
+		providedRootOpID := "dummyRootOpID"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerId: providedContainerId,
-				PkgRef:      providedOpDirHandle.Ref(),
-				RootOpId:    providedRootOpId,
+				ContainerID: providedContainerID,
+				PkgRef:      providedOpHandle.Ref(),
+				RootOpID:    providedRootOpID,
 			},
 		}
 
@@ -260,10 +260,10 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
-			providedContainerId,
+			providedContainerID,
 			providedSCGContainerCall,
-			providedOpDirHandle,
-			providedRootOpId,
+			providedOpHandle,
+			providedRootOpID,
 		)
 
 		/* assert */
@@ -279,17 +279,17 @@ var _ = Context("containerCaller", func() {
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
 		providedInboundScope := map[string]*model.Value{}
-		providedContainerId := "dummyContainerId"
+		providedContainerID := "dummyContainerID"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedOpDirHandle := new(data.FakeHandle)
-		providedRootOpId := "dummyRootOpId"
+		providedOpHandle := new(data.FakeHandle)
+		providedRootOpID := "dummyRootOpID"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerId: providedContainerId,
-				PkgRef:      providedOpDirHandle.Ref(),
-				RootOpId:    providedRootOpId,
+				ContainerID: providedContainerID,
+				PkgRef:      providedOpHandle.Ref(),
+				RootOpID:    providedRootOpID,
 			},
 		}
 
@@ -309,10 +309,10 @@ var _ = Context("containerCaller", func() {
 		/* act */
 		objectUnderTest.Call(
 			providedInboundScope,
-			providedContainerId,
+			providedContainerID,
 			providedSCGContainerCall,
-			providedOpDirHandle,
-			providedRootOpId,
+			providedOpHandle,
+			providedRootOpID,
 		)
 
 		/* assert */

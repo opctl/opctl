@@ -9,12 +9,12 @@ import (
 )
 
 type FakeInstaller struct {
-	InstallStub        func(ctx context.Context, path string, opDirHandle model.DataHandle) error
+	InstallStub        func(ctx context.Context, path string, opHandle model.DataHandle) error
 	installMutex       sync.RWMutex
 	installArgsForCall []struct {
-		ctx         context.Context
-		path        string
-		opDirHandle model.DataHandle
+		ctx      context.Context
+		path     string
+		opHandle model.DataHandle
 	}
 	installReturns struct {
 		result1 error
@@ -26,18 +26,18 @@ type FakeInstaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInstaller) Install(ctx context.Context, path string, opDirHandle model.DataHandle) error {
+func (fake *FakeInstaller) Install(ctx context.Context, path string, opHandle model.DataHandle) error {
 	fake.installMutex.Lock()
 	ret, specificReturn := fake.installReturnsOnCall[len(fake.installArgsForCall)]
 	fake.installArgsForCall = append(fake.installArgsForCall, struct {
-		ctx         context.Context
-		path        string
-		opDirHandle model.DataHandle
-	}{ctx, path, opDirHandle})
-	fake.recordInvocation("Install", []interface{}{ctx, path, opDirHandle})
+		ctx      context.Context
+		path     string
+		opHandle model.DataHandle
+	}{ctx, path, opHandle})
+	fake.recordInvocation("Install", []interface{}{ctx, path, opHandle})
 	fake.installMutex.Unlock()
 	if fake.InstallStub != nil {
-		return fake.InstallStub(ctx, path, opDirHandle)
+		return fake.InstallStub(ctx, path, opHandle)
 	}
 	if specificReturn {
 		return ret.result1
@@ -54,7 +54,7 @@ func (fake *FakeInstaller) InstallCallCount() int {
 func (fake *FakeInstaller) InstallArgsForCall(i int) (context.Context, string, model.DataHandle) {
 	fake.installMutex.RLock()
 	defer fake.installMutex.RUnlock()
-	return fake.installArgsForCall[i].ctx, fake.installArgsForCall[i].path, fake.installArgsForCall[i].opDirHandle
+	return fake.installArgsForCall[i].ctx, fake.installArgsForCall[i].path, fake.installArgsForCall[i].opHandle
 }
 
 func (fake *FakeInstaller) InstallReturns(result1 error) {

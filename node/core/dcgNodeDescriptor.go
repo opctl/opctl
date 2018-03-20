@@ -4,7 +4,7 @@ package core
 type dcgNodeDescriptor struct {
 	Id        string
 	PkgRef    string
-	RootOpId  string
+	RootOpID  string
 	Op        *dcgOpDescriptor
 	Container *dcgContainerDescriptor
 }

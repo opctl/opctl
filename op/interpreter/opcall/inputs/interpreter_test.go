@@ -35,7 +35,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedParam := providedInputParams[providedArgName]
 
-				providedParentOpDirHandle := new(data.FakeHandle)
+				providedParentOpHandle := new(data.FakeHandle)
 
 				providedScope := map[string]*model.Value{
 					"scopeRef1Name": {},
@@ -57,7 +57,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedInputArgs,
 					providedInputParams,
-					providedParentOpDirHandle,
+					providedParentOpHandle,
 					"dummyOpPath",
 					providedScope,
 					providedOpScratchDir,
@@ -67,14 +67,14 @@ var _ = Context("Interpreter", func() {
 				actualArgName,
 					actualArgValue,
 					actualParam,
-					actualParentOpDirHandle,
+					actualParentOpHandle,
 					actualScope,
 					actualOpScratchDir := fakeInputInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualArgName).To(Equal(providedArgName))
 				Expect(actualArgValue).To(Equal(providedArgValue))
 				Expect(actualParam).To(Equal(expectedParam))
-				Expect(actualParentOpDirHandle).To(Equal(providedParentOpDirHandle))
+				Expect(actualParentOpHandle).To(Equal(providedParentOpHandle))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
 

@@ -46,7 +46,7 @@ var _ = Context("Interpreter", func() {
 								}
 
 								data := data.New()
-								opDirHandle, err := data.Resolve(
+								opHandle, err := data.Resolve(
 									context.Background(),
 									absOpPath,
 									data.NewFSProvider(),
@@ -91,7 +91,7 @@ var _ = Context("Interpreter", func() {
 											scenario.Interpret.Scope,
 											scgOpCall,
 											"",
-											opDirHandle,
+											opHandle,
 											"",
 										)
 
@@ -113,8 +113,8 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should call pkg.NewFSProvider w/ expected args", func() {
 			/* arrange */
-			providedParentOpDirHandle := new(data.FakeHandle)
-			providedParentOpDirHandle.PathReturns(new(string))
+			providedParentOpHandle := new(data.FakeHandle)
+			providedParentOpHandle.PathReturns(new(string))
 
 			fakeData := new(data.Fake)
 			// error to trigger immediate return
@@ -133,29 +133,29 @@ var _ = Context("Interpreter", func() {
 						Ref: "dummyPkgRef",
 					},
 				},
-				"dummyOpId",
-				providedParentOpDirHandle,
-				"dummyRootOpId",
+				"dummyOpID",
+				providedParentOpHandle,
+				"dummyRootOpID",
 			)
 
 			/* assert */
-			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedParentOpDirHandle.Ref())))
+			Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(filepath.Dir(providedParentOpHandle.Ref())))
 		})
 		Context("scgOpCall.Pkg.PullCreds is nil", func() {
 			It("should call pkg.NewGitProvider w/ expected args", func() {
 				/* arrange */
-				providedParentOpDirHandle := new(data.FakeHandle)
-				providedParentOpDirHandle.PathReturns(new(string))
+				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle.PathReturns(new(string))
 
-				providedPkgCachePath := "dummyPkgCachePath"
+				providedDataCachePath := "dummyDataCachePath"
 
 				fakeData := new(data.Fake)
 				// error to trigger immediate return
 				fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _interpreter{
-					data:         fakeData,
-					pkgCachePath: providedPkgCachePath,
+					data:          fakeData,
+					dataCachePath: providedDataCachePath,
 				}
 
 				/* act */
@@ -166,16 +166,16 @@ var _ = Context("Interpreter", func() {
 							Ref: "dummyPkgRef",
 						},
 					},
-					"dummyOpId",
-					providedParentOpDirHandle,
-					"dummyRootOpId",
+					"dummyOpID",
+					providedParentOpHandle,
+					"dummyRootOpID",
 				)
 
 				/* assert */
 				actualBasePath,
 					actualPullCreds := fakeData.NewGitProviderArgsForCall(0)
 
-				Expect(actualBasePath).To(Equal(providedPkgCachePath))
+				Expect(actualBasePath).To(Equal(providedDataCachePath))
 				Expect(actualPullCreds).To(BeNil())
 			})
 		})
@@ -199,9 +199,9 @@ var _ = Context("Interpreter", func() {
 								PullCreds: &model.SCGPullCreds{},
 							},
 						},
-						"dummyOpId",
+						"dummyOpID",
 						new(data.FakeHandle),
-						"dummyRootOpId",
+						"dummyRootOpID",
 					)
 
 					/* assert */
@@ -211,10 +211,10 @@ var _ = Context("Interpreter", func() {
 			Context("string.Interpret doesn't err", func() {
 				It("should call pkg.NewGitProvider w/ expected args", func() {
 					/* arrange */
-					providedParentOpDirHandle := new(data.FakeHandle)
-					providedParentOpDirHandle.PathReturns(new(string))
+					providedParentOpHandle := new(data.FakeHandle)
+					providedParentOpHandle.PathReturns(new(string))
 
-					providedPkgCachePath := "dummyPkgCachePath"
+					providedDataCachePath := "dummyDataCachePath"
 
 					fakeExpression := new(expression.Fake)
 					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
@@ -226,9 +226,9 @@ var _ = Context("Interpreter", func() {
 					fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						expression:   fakeExpression,
-						data:         fakeData,
-						pkgCachePath: providedPkgCachePath,
+						expression:    fakeExpression,
+						data:          fakeData,
+						dataCachePath: providedDataCachePath,
 					}
 
 					/* act */
@@ -240,24 +240,24 @@ var _ = Context("Interpreter", func() {
 								PullCreds: &model.SCGPullCreds{},
 							},
 						},
-						"dummyOpId",
-						providedParentOpDirHandle,
-						"dummyRootOpId",
+						"dummyOpID",
+						providedParentOpHandle,
+						"dummyRootOpID",
 					)
 
 					/* assert */
 					actualBasePath,
 						actualPullCreds := fakeData.NewGitProviderArgsForCall(0)
 
-					Expect(actualBasePath).To(Equal(providedPkgCachePath))
+					Expect(actualBasePath).To(Equal(providedDataCachePath))
 					Expect(actualPullCreds).To(Equal(expectedPullCreds))
 				})
 			})
 		})
 		It("should call pkg.Resolve w/ expected args", func() {
 			/* arrange */
-			providedParentOpDirHandle := new(data.FakeHandle)
-			providedParentOpDirHandle.PathReturns(new(string))
+			providedParentOpHandle := new(data.FakeHandle)
+			providedParentOpHandle.PathReturns(new(string))
 
 			providedRootFSPath := "dummyRootFSPath"
 			providedSCGOpCall := &model.SCGOpCall{
@@ -281,17 +281,17 @@ var _ = Context("Interpreter", func() {
 			fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
-				data:         fakeData,
-				pkgCachePath: filepath.Join(providedRootFSPath, "pkgs"),
+				data:          fakeData,
+				dataCachePath: filepath.Join(providedRootFSPath, "pkgs"),
 			}
 
 			/* act */
 			objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				providedSCGOpCall,
-				"dummyOpId",
-				providedParentOpDirHandle,
-				"dummyRootOpId",
+				"dummyOpID",
+				providedParentOpHandle,
+				"dummyRootOpID",
 			)
 
 			/* assert */
@@ -306,8 +306,8 @@ var _ = Context("Interpreter", func() {
 		Context("pkg.Resolve errs", func() {
 			It("should return err", func() {
 				/* arrange */
-				providedParentOpDirHandle := new(data.FakeHandle)
-				providedParentOpDirHandle.PathReturns(new(string))
+				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle.PathReturns(new(string))
 
 				expectedErr := errors.New("dummyError")
 				fakeData := new(data.Fake)
@@ -322,9 +322,9 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
-					"dummyOpId",
-					providedParentOpDirHandle,
-					"dummyRootOpId",
+					"dummyOpID",
+					providedParentOpHandle,
+					"dummyRootOpID",
 				)
 
 				/* assert */
@@ -334,8 +334,8 @@ var _ = Context("Interpreter", func() {
 		Context("pkg.Resolve doesn't err", func() {
 			It("should call pkg.GetManifest w/ expected args", func() {
 				/* arrange */
-				providedParentOpDirHandle := new(data.FakeHandle)
-				providedParentOpDirHandle.PathReturns(new(string))
+				providedParentOpHandle := new(data.FakeHandle)
+				providedParentOpHandle.PathReturns(new(string))
 
 				fakeDataHandle := new(data.FakeHandle)
 
@@ -357,9 +357,9 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
-					"dummyOpId",
-					providedParentOpDirHandle,
-					"dummyRootOpId",
+					"dummyOpID",
+					providedParentOpHandle,
+					"dummyRootOpID",
 				)
 
 				/* assert */
@@ -372,8 +372,8 @@ var _ = Context("Interpreter", func() {
 			Context("pkg.GetManifest errs", func() {
 				It("should return err", func() {
 					/* arrange */
-					providedParentOpDirHandle := new(data.FakeHandle)
-					providedParentOpDirHandle.PathReturns(new(string))
+					providedParentOpHandle := new(data.FakeHandle)
+					providedParentOpHandle.PathReturns(new(string))
 
 					expectedErr := errors.New("dummyError")
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
@@ -389,9 +389,9 @@ var _ = Context("Interpreter", func() {
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
-						"dummyOpId",
-						providedParentOpDirHandle,
-						"dummyRootOpId",
+						"dummyOpID",
+						providedParentOpHandle,
+						"dummyRootOpID",
 					)
 
 					/* assert */
@@ -413,11 +413,11 @@ var _ = Context("Interpreter", func() {
 						Pkg:    &model.SCGOpCallPkg{},
 					}
 
-					providedOpId := "dummyOpId"
+					providedOpID := "dummyOpID"
 
-					providedParentOpDirHandle := new(data.FakeHandle)
+					providedParentOpHandle := new(data.FakeHandle)
 					parentOpDirPath := "dummyParentOpDirPath"
-					providedParentOpDirHandle.PathReturns(&parentOpDirPath)
+					providedParentOpHandle.PathReturns(&parentOpDirPath)
 
 					fakeDataHandle := new(data.FakeHandle)
 					opPath := "dummyOpPath"
@@ -452,25 +452,25 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						providedScope,
 						providedSCGOpCall,
-						providedOpId,
-						providedParentOpDirHandle,
-						"dummyRootOpId",
+						providedOpID,
+						providedParentOpHandle,
+						"dummyRootOpID",
 					)
 
 					/* assert */
 					actualSCGArgs,
 						actualSCGInputs,
-						actualParentOpDirHandle,
+						actualParentOpHandle,
 						actualPkgRef,
 						actualScope,
 						actualOpScratchDir := fakeInputsInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
-					Expect(actualParentOpDirHandle).To(Equal(providedParentOpDirHandle))
+					Expect(actualParentOpHandle).To(Equal(providedParentOpHandle))
 					Expect(actualPkgRef).To(Equal(opPath))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
-					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpId)))
+					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpID)))
 
 				})
 			})

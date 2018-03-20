@@ -12,7 +12,7 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCallEnvVars map[string]interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (map[string]string, error)
 }
 
@@ -30,7 +30,7 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCallEnvVars map[string]interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (map[string]string, error) {
 	dcgContainerCallEnvVars := map[string]string{}
 	for envVarName, envVarExpression := range scgContainerCallEnvVars {
@@ -46,7 +46,7 @@ func (itp _interpreter) Interpret(
 			envVarExpression = fmt.Sprintf("$(%v)", envVarName)
 		}
 
-		stringValue, err := itp.expression.EvalToString(scope, envVarExpression, opDirHandle)
+		stringValue, err := itp.expression.EvalToString(scope, envVarExpression, opHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind env var to '%v' via implicit ref; '%v' not in scope",

@@ -137,8 +137,8 @@ func (ps *pubSub) Publish(
 
 	for publishEventChannel, subscriptionInfo := range ps.subscriptions {
 
-		RootOpId := getEventRootOpId(event)
-		if !isRootOpIdExcludedByFilter(RootOpId, subscriptionInfo.Filter) {
+		RootOpID := getEventRootOpID(event)
+		if !isRootOpIDExcludedByFilter(RootOpID, subscriptionInfo.Filter) {
 
 			// use go routine because this publishEventChannel could be blocked
 			// for valid reasons such as replaying events from event store.

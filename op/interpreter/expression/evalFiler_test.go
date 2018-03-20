@@ -387,10 +387,10 @@ var _ = Context("EvalToFile", func() {
 			Context("interpolater.Interpolate doesn't error", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedOpDirHandle := new(data.FakeHandle)
+					providedOpHandle := new(data.FakeHandle)
 
 					opPath := "dummyOpPath"
-					providedOpDirHandle.PathReturns(&opPath)
+					providedOpHandle.PathReturns(&opPath)
 
 					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater := new(interpolater.Fake)
@@ -406,7 +406,7 @@ var _ = Context("EvalToFile", func() {
 					actualValue, actualErr := objectUnderTest.EvalToFile(
 						map[string]*model.Value{},
 						"$(/dummyPkgFSRef)",
-						providedOpDirHandle,
+						providedOpHandle,
 						"dummyScratchDir",
 					)
 
@@ -555,7 +555,7 @@ var _ = Context("EvalToFile", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyKey": {String: new(string)}}
 				providedExpression := "$(dummyRef)suffix"
-				providedOpDirHandle := new(data.FakeHandle)
+				providedOpHandle := new(data.FakeHandle)
 
 				interpolatedPath := "dummyInterpolatedPath"
 				fakeInterpolater := new(interpolater.Fake)
@@ -570,18 +570,18 @@ var _ = Context("EvalToFile", func() {
 				objectUnderTest.EvalToFile(
 					providedScope,
 					providedExpression,
-					providedOpDirHandle,
+					providedOpHandle,
 					"dummyScratchDir",
 				)
 
 				/* assert */
 				actualExpression,
 					actualScope,
-					actualOpDirHandle := fakeInterpolater.InterpolateArgsForCall(0)
+					actualOpHandle := fakeInterpolater.InterpolateArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
 			})
 			Context("interpolater.Interpolate errs", func() {
 				It("should return expected result", func() {
@@ -660,7 +660,7 @@ var _ = Context("EvalToFile", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyKey": {String: new(string)}}
 				providedExpression := "dummyExpression"
-				providedOpDirHandle := new(data.FakeHandle)
+				providedOpHandle := new(data.FakeHandle)
 
 				interpolatedPath := "dummyInterpolatedPath"
 				fakeInterpolater := new(interpolater.Fake)
@@ -675,18 +675,18 @@ var _ = Context("EvalToFile", func() {
 				objectUnderTest.EvalToFile(
 					providedScope,
 					providedExpression,
-					providedOpDirHandle,
+					providedOpHandle,
 					"dummyScratchDir",
 				)
 
 				/* assert */
 				actualExpression,
 					actualScope,
-					actualOpDirHandle := fakeInterpolater.InterpolateArgsForCall(0)
+					actualOpHandle := fakeInterpolater.InterpolateArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
 			})
 			Context("interpolater.Interpolate errs", func() {
 				It("should return expected result", func() {

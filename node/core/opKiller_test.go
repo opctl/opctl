@@ -11,7 +11,7 @@ var _ = Context("core", func() {
 	Context("Kill", func() {
 		It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 			/* arrange */
-			providedReq := model.KillOpReq{OpId: "dummyOpId"}
+			providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -24,11 +24,11 @@ var _ = Context("core", func() {
 			objectUnderTest.Kill(providedReq)
 
 			/* assert */
-			Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedReq.OpId))
+			Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedReq.OpID))
 		})
-		It("should call dcgNodeRepo.ListWithRootOpId w/ expected args", func() {
+		It("should call dcgNodeRepo.ListWithRootOpID w/ expected args", func() {
 			/* arrange */
-			providedReq := model.KillOpReq{OpId: "dummyOpId"}
+			providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -41,12 +41,12 @@ var _ = Context("core", func() {
 			objectUnderTest.Kill(providedReq)
 
 			/* assert */
-			Expect(fakeDCGNodeRepo.ListWithRootOpIdArgsForCall(0)).To(Equal(providedReq.OpId))
+			Expect(fakeDCGNodeRepo.ListWithRootOpIDArgsForCall(0)).To(Equal(providedReq.OpID))
 		})
-		Context("dcgNodeRepo.ListWithRootOpId returns nodes", func() {
+		Context("dcgNodeRepo.ListWithRootOpID returns nodes", func() {
 			It("should call dcgNodeRepo.DeleteIfExists w/ expected args for each", func() {
 				/* arrange */
-				providedReq := model.KillOpReq{OpId: "dummyOpId"}
+				providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
 				nodesReturnedFromDCGNodeRepo := []*dcgNodeDescriptor{
 					{Id: "dummyNode1Id"},
@@ -54,11 +54,11 @@ var _ = Context("core", func() {
 					{Id: "dummyNode3Id"},
 				}
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
-				fakeDCGNodeRepo.ListWithRootOpIdReturns(nodesReturnedFromDCGNodeRepo)
+				fakeDCGNodeRepo.ListWithRootOpIDReturns(nodesReturnedFromDCGNodeRepo)
 
 				// use map so order ignored; calls happen in parallel so all ordering bets are off
 				expectedCalls := map[string]bool{
-					providedReq.OpId:                   true,
+					providedReq.OpID:                   true,
 					nodesReturnedFromDCGNodeRepo[0].Id: true,
 					nodesReturnedFromDCGNodeRepo[1].Id: true,
 					nodesReturnedFromDCGNodeRepo[2].Id: true,
@@ -84,7 +84,7 @@ var _ = Context("core", func() {
 			})
 			It("should call containerRuntime.DeleteContainerIfExists w/ expected args for container nodes", func() {
 				/* arrange */
-				providedReq := model.KillOpReq{OpId: "dummyOpId"}
+				providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
 				nodesReturnedFromDCGNodeRepo := []*dcgNodeDescriptor{
 					{Id: "dummyNode1Id", Container: &dcgContainerDescriptor{}},
@@ -92,7 +92,7 @@ var _ = Context("core", func() {
 					{Id: "dummyNode3Id", Container: &dcgContainerDescriptor{}},
 				}
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
-				fakeDCGNodeRepo.ListWithRootOpIdReturns(nodesReturnedFromDCGNodeRepo)
+				fakeDCGNodeRepo.ListWithRootOpIDReturns(nodesReturnedFromDCGNodeRepo)
 
 				// use map so order ignored; calls happen in parallel so all ordering bets are off
 				expectedCalls := map[string]bool{

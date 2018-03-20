@@ -19,9 +19,9 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgContainerCall *model.SCGContainerCall,
-		containerId string,
-		rootOpId string,
-		opDirHandle model.DataHandle,
+		containerID string,
+		rootOpID string,
+		opHandle model.DataHandle,
 	) (*model.DCGContainerCall, error)
 }
 
@@ -55,22 +55,22 @@ type _interpreter struct {
 func (cc _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
-	containerId string,
-	rootOpId string,
-	opDirHandle model.DataHandle,
+	containerID string,
+	rootOpID string,
+	opHandle model.DataHandle,
 ) (*model.DCGContainerCall, error) {
 
 	dcgContainerCall := &model.DCGContainerCall{
 		DCGBaseCall: model.DCGBaseCall{
-			RootOpId:   rootOpId,
-			DataHandle: opDirHandle,
+			RootOpID: rootOpID,
+			OpHandle: opHandle,
 		},
 		Dirs:        map[string]string{},
 		EnvVars:     map[string]string{},
 		Files:       map[string]string{},
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
-		ContainerId: containerId,
+		ContainerID: containerID,
 		Name:        scgContainerCall.Name,
 		Ports:       scgContainerCall.Ports,
 	}
@@ -79,9 +79,9 @@ func (cc _interpreter) Interpret(
 	scratchDirPath := filepath.Join(
 		cc.rootFSPath,
 		"dcg",
-		rootOpId,
+		rootOpID,
 		"containers",
-		containerId,
+		containerID,
 		"fs",
 	)
 	if err := cc.os.MkdirAll(scratchDirPath, 0700); nil != err {
@@ -91,7 +91,7 @@ func (cc _interpreter) Interpret(
 	// construct cmd
 	for _, cmdEntryExpression := range scgContainerCall.Cmd {
 		// interpret each entry as string
-		cmdEntry, err := cc.expression.EvalToString(scope, cmdEntryExpression, opDirHandle)
+		cmdEntry, err := cc.expression.EvalToString(scope, cmdEntryExpression, opHandle)
 		if nil != err {
 			return nil, err
 		}
@@ -100,25 +100,25 @@ func (cc _interpreter) Interpret(
 
 	// interpret dirs
 	var err error
-	dcgContainerCall.Dirs, err = cc.dirsInterpreter.Interpret(opDirHandle, scope, scgContainerCall.Dirs, scratchDirPath)
+	dcgContainerCall.Dirs, err = cc.dirsInterpreter.Interpret(opHandle, scope, scgContainerCall.Dirs, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret envVars
-	dcgContainerCall.EnvVars, err = cc.envVarsInterpreter.Interpret(scope, scgContainerCall.EnvVars, opDirHandle)
+	dcgContainerCall.EnvVars, err = cc.envVarsInterpreter.Interpret(scope, scgContainerCall.EnvVars, opHandle)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret files
-	dcgContainerCall.Files, err = cc.filesInterpreter.Interpret(opDirHandle, scope, scgContainerCall.Files, scratchDirPath)
+	dcgContainerCall.Files, err = cc.filesInterpreter.Interpret(opHandle, scope, scgContainerCall.Files, scratchDirPath)
 	if nil != err {
 		return nil, err
 	}
 
 	// interpret image
-	dcgContainerCall.Image, err = cc.imageInterpreter.Interpret(scope, scgContainerCall.Image, opDirHandle)
+	dcgContainerCall.Image, err = cc.imageInterpreter.Interpret(scope, scgContainerCall.Image, opHandle)
 	if nil != err {
 		return nil, err
 	}

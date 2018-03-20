@@ -13,7 +13,7 @@ type evalArrayer interface {
 	EvalToArray(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -34,14 +34,14 @@ type _evalArrayer struct {
 func (ea _evalArrayer) EvalToArray(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case []interface{}:
 		arrayValue, err := ea.evalArrayInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to array; error was %v", expression, err)
@@ -56,7 +56,7 @@ func (ea _evalArrayer) EvalToArray(
 			stringValue, err := ea.interpolater.Interpolate(
 				expression,
 				scope,
-				opDirHandle,
+				opHandle,
 			)
 			if nil != err {
 				return nil, err

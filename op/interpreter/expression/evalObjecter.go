@@ -13,7 +13,7 @@ type evalObjecter interface {
 	EvalToObject(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -34,14 +34,14 @@ type _evalObjecter struct {
 func (eo _evalObjecter) EvalToObject(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case map[string]interface{}:
 		objectValue, err := eo.evalObjectInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to object; error was %v", expression, err)
@@ -56,7 +56,7 @@ func (eo _evalObjecter) EvalToObject(
 			stringValue, err := eo.interpolater.Interpolate(
 				expression,
 				scope,
-				opDirHandle,
+				opHandle,
 			)
 			if nil != err {
 				return nil, err

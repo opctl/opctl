@@ -17,8 +17,8 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Value,
 		opId string,
-		opDirHandle model.DataHandle,
-		rootOpId string,
+		opHandle model.DataHandle,
+		rootOpID string,
 		scgOpCall *model.SCGOpCall,
 	) error
 }
@@ -51,8 +51,8 @@ type _opCaller struct {
 func (oc _opCaller) Call(
 	inboundScope map[string]*model.Value,
 	opId string,
-	opDirHandle model.DataHandle,
-	rootOpId string,
+	opHandle model.DataHandle,
+	rootOpID string,
 	scgOpCall *model.SCGOpCall,
 ) error {
 	var err error
@@ -66,9 +66,9 @@ func (oc _opCaller) Call(
 				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
-						OpId:     opId,
+						OpID:     opId,
 						Outcome:  model.OpOutcomeKilled,
-						RootOpId: rootOpId,
+						RootOpID: rootOpID,
 						PkgRef:   scgOpCall.Pkg.Ref,
 					},
 				},
@@ -85,9 +85,9 @@ func (oc _opCaller) Call(
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
-						OpId:     opId,
+						OpID:     opId,
 						PkgRef:   scgOpCall.Pkg.Ref,
-						RootOpId: rootOpId,
+						RootOpID: rootOpID,
 					},
 				},
 			)
@@ -100,10 +100,10 @@ func (oc _opCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
-					OpId:     opId,
+					OpID:     opId,
 					PkgRef:   scgOpCall.Pkg.Ref,
 					Outcome:  opOutcome,
-					RootOpId: rootOpId,
+					RootOpID: rootOpID,
 					Outputs:  outputs,
 				},
 			},
@@ -115,7 +115,7 @@ func (oc _opCaller) Call(
 		&dcgNodeDescriptor{
 			Id:       opId,
 			PkgRef:   scgOpCall.Pkg.Ref,
-			RootOpId: rootOpId,
+			RootOpID: rootOpID,
 			Op:       &dcgOpDescriptor{},
 		},
 	)
@@ -124,8 +124,8 @@ func (oc _opCaller) Call(
 		inboundScope,
 		scgOpCall,
 		opId,
-		opDirHandle,
-		rootOpId,
+		opHandle,
+		rootOpID,
 	)
 	if nil != err {
 		return err
@@ -135,9 +135,9 @@ func (oc _opCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
-				OpId:     opId,
+				OpID:     opId,
 				PkgRef:   scgOpCall.Pkg.Ref,
-				RootOpId: rootOpId,
+				RootOpID: rootOpID,
 			},
 		},
 	)
@@ -152,14 +152,14 @@ func (oc _opCaller) Call(
 	}()
 
 	err = oc.caller.Call(
-		dcgOpCall.ChildCallId,
+		dcgOpCall.ChildCallID,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
-		dcgOpCall.DataHandle,
-		rootOpId,
+		dcgOpCall.OpHandle,
+		rootOpID,
 	)
 
-	isKilled = nil == oc.dcgNodeRepo.GetIfExists(rootOpId)
+	isKilled = nil == oc.dcgNodeRepo.GetIfExists(rootOpID)
 
 	if nil != err {
 		return err
@@ -170,12 +170,12 @@ func (oc _opCaller) Call(
 
 	opDotYml, err := oc.dotYmlGetter.Get(
 		context.TODO(),
-		dcgOpCall.DataHandle,
+		dcgOpCall.OpHandle,
 	)
 	if nil != err {
 		return err
 	}
-	opPath := dcgOpCall.DataHandle.Path()
+	opPath := dcgOpCall.OpHandle.Path()
 	opOutputs, err = oc.outputsInterpreter.Interpret(opOutputs, opDotYml.Outputs, *opPath)
 
 	// filter op outputs to bound call outputs
@@ -208,7 +208,7 @@ func (oc _opCaller) waitOnOpOutputs(
 	eventChannel, _ := oc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
-			Roots: []string{dcgOpCall.RootOpId},
+			Roots: []string{dcgOpCall.RootOpID},
 			Since: &eventFilterSince,
 		},
 	)
@@ -217,25 +217,25 @@ func (oc _opCaller) waitOnOpOutputs(
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.OpId:
+		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
 			// parent ended prematurely
 			return nil
-		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.ChildCallId:
+		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.ChildCallID:
 			for name, value := range event.OpEnded.Outputs {
 				opOutputs[name] = value
 			}
 			break eventLoop
-		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgOpCall.ChildCallId:
+		case nil != event.ContainerExited && event.ContainerExited.ContainerID == dcgOpCall.ChildCallID:
 			for name, value := range event.ContainerExited.Outputs {
 				opOutputs[name] = value
 			}
 			break eventLoop
-		case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == dcgOpCall.ChildCallId:
+		case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == dcgOpCall.ChildCallID:
 			for name, value := range event.SerialCallEnded.Outputs {
 				opOutputs[name] = value
 			}
 			break eventLoop
-		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == dcgOpCall.ChildCallId:
+		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == dcgOpCall.ChildCallID:
 			// parallel calls have no outputs
 			return nil
 		}

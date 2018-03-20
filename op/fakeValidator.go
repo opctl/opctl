@@ -9,11 +9,11 @@ import (
 )
 
 type FakeValidator struct {
-	ValidateStub        func(ctx context.Context, opDirHandle model.DataHandle) []error
+	ValidateStub        func(ctx context.Context, opHandle model.DataHandle) []error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		ctx         context.Context
-		opDirHandle model.DataHandle
+		ctx      context.Context
+		opHandle model.DataHandle
 	}
 	validateReturns struct {
 		result1 []error
@@ -25,17 +25,17 @@ type FakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeValidator) Validate(ctx context.Context, opDirHandle model.DataHandle) []error {
+func (fake *FakeValidator) Validate(ctx context.Context, opHandle model.DataHandle) []error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		ctx         context.Context
-		opDirHandle model.DataHandle
-	}{ctx, opDirHandle})
-	fake.recordInvocation("Validate", []interface{}{ctx, opDirHandle})
+		ctx      context.Context
+		opHandle model.DataHandle
+	}{ctx, opHandle})
+	fake.recordInvocation("Validate", []interface{}{ctx, opHandle})
 	fake.validateMutex.Unlock()
 	if fake.ValidateStub != nil {
-		return fake.ValidateStub(ctx, opDirHandle)
+		return fake.ValidateStub(ctx, opHandle)
 	}
 	if specificReturn {
 		return ret.result1
@@ -52,7 +52,7 @@ func (fake *FakeValidator) ValidateCallCount() int {
 func (fake *FakeValidator) ValidateArgsForCall(i int) (context.Context, model.DataHandle) {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
-	return fake.validateArgsForCall[i].ctx, fake.validateArgsForCall[i].opDirHandle
+	return fake.validateArgsForCall[i].ctx, fake.validateArgsForCall[i].opHandle
 }
 
 func (fake *FakeValidator) ValidateReturns(result1 []error) {

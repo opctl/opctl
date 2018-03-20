@@ -10,8 +10,8 @@ import (
 
 func NewStdOutWriteCloser(
 	eventPublisher pubsub.EventPublisher,
-	containerId string,
-	rootOpId string,
+	containerID string,
+	rootOpID string,
 ) io.WriteCloser {
 	pr, pw := io.Pipe()
 	go func() {
@@ -29,8 +29,8 @@ func NewStdOutWriteCloser(
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        b,
-							ContainerId: containerId,
-							RootOpId:    rootOpId,
+							ContainerID: containerID,
+							RootOpID:    rootOpID,
 						},
 					},
 				)
