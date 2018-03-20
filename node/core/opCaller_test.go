@@ -570,7 +570,11 @@ var _ = Context("opCaller", func() {
 						}
 
 						fakeOutputsInterpreter := new(outputs.FakeInterpreter)
-						interpretedOutputs := map[string]*model.Value{expectedOutputName: new(model.Value)}
+						interpretedOutputs := map[string]*model.Value{
+							expectedOutputName: new(model.Value),
+							// include unbound output to ensure it's not added to scope
+							"unexpectedOutputName": new(model.Value),
+						}
 						fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
 						expectedEvent := model.Event{
@@ -580,7 +584,9 @@ var _ = Context("opCaller", func() {
 								PkgRef:   providedSCGOpCall.Pkg.Ref,
 								Outcome:  model.OpOutcomeSucceeded,
 								RootOpID: providedRootOpID,
-								Outputs:  interpretedOutputs,
+								Outputs: map[string]*model.Value{
+									expectedOutputName: interpretedOutputs[expectedOutputName],
+								},
 							},
 						}
 
