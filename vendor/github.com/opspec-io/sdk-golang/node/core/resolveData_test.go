@@ -9,7 +9,7 @@ import (
 )
 
 var _ = Context("core", func() {
-	Context("ResolvePkg", func() {
+	Context("ResolveData", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
@@ -33,7 +33,7 @@ var _ = Context("core", func() {
 			}
 
 			/* act */
-			objectUnderTest.ResolvePkg(
+			objectUnderTest.ResolveData(
 				providedCtx,
 				providedPkgRef,
 				providedPullCreds,

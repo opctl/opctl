@@ -36,7 +36,7 @@ var _ = Context("Files", func() {
 				// implicitly bound
 				containerFilePath: nil,
 			}
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
@@ -50,7 +50,7 @@ var _ = Context("Files", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedOpDirHandle,
+				providedOpHandle,
 				providedScope,
 				providedSCGContainerCallFiles,
 				providedScratchDir,
@@ -59,11 +59,11 @@ var _ = Context("Files", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpDirHandle,
+				actualOpHandle,
 				actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerFilePath)))
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
 		})
 		Context("expression.EvalToFile errs", func() {

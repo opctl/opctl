@@ -42,18 +42,18 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolvePkgStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error)
-	resolvePkgMutex       sync.RWMutex
-	resolvePkgArgsForCall []struct {
+	ResolveDataStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error)
+	resolveDataMutex       sync.RWMutex
+	resolveDataArgsForCall []struct {
 		ctx       context.Context
 		pkgRef    string
 		pullCreds *model.PullCreds
 	}
-	resolvePkgReturns struct {
+	resolveDataReturns struct {
 		result1 model.DataHandle
 		result2 error
 	}
-	resolvePkgReturnsOnCall map[int]struct {
+	resolveDataReturnsOnCall map[int]struct {
 		result1 model.DataHandle
 		result2 error
 	}
@@ -189,54 +189,54 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkg(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error) {
-	fake.resolvePkgMutex.Lock()
-	ret, specificReturn := fake.resolvePkgReturnsOnCall[len(fake.resolvePkgArgsForCall)]
-	fake.resolvePkgArgsForCall = append(fake.resolvePkgArgsForCall, struct {
+func (fake *Fake) ResolveData(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error) {
+	fake.resolveDataMutex.Lock()
+	ret, specificReturn := fake.resolveDataReturnsOnCall[len(fake.resolveDataArgsForCall)]
+	fake.resolveDataArgsForCall = append(fake.resolveDataArgsForCall, struct {
 		ctx       context.Context
 		pkgRef    string
 		pullCreds *model.PullCreds
 	}{ctx, pkgRef, pullCreds})
-	fake.recordInvocation("ResolvePkg", []interface{}{ctx, pkgRef, pullCreds})
-	fake.resolvePkgMutex.Unlock()
-	if fake.ResolvePkgStub != nil {
-		return fake.ResolvePkgStub(ctx, pkgRef, pullCreds)
+	fake.recordInvocation("ResolveData", []interface{}{ctx, pkgRef, pullCreds})
+	fake.resolveDataMutex.Unlock()
+	if fake.ResolveDataStub != nil {
+		return fake.ResolveDataStub(ctx, pkgRef, pullCreds)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.resolvePkgReturns.result1, fake.resolvePkgReturns.result2
+	return fake.resolveDataReturns.result1, fake.resolveDataReturns.result2
 }
 
-func (fake *Fake) ResolvePkgCallCount() int {
-	fake.resolvePkgMutex.RLock()
-	defer fake.resolvePkgMutex.RUnlock()
-	return len(fake.resolvePkgArgsForCall)
+func (fake *Fake) ResolveDataCallCount() int {
+	fake.resolveDataMutex.RLock()
+	defer fake.resolveDataMutex.RUnlock()
+	return len(fake.resolveDataArgsForCall)
 }
 
-func (fake *Fake) ResolvePkgArgsForCall(i int) (context.Context, string, *model.PullCreds) {
-	fake.resolvePkgMutex.RLock()
-	defer fake.resolvePkgMutex.RUnlock()
-	return fake.resolvePkgArgsForCall[i].ctx, fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
+func (fake *Fake) ResolveDataArgsForCall(i int) (context.Context, string, *model.PullCreds) {
+	fake.resolveDataMutex.RLock()
+	defer fake.resolveDataMutex.RUnlock()
+	return fake.resolveDataArgsForCall[i].ctx, fake.resolveDataArgsForCall[i].pkgRef, fake.resolveDataArgsForCall[i].pullCreds
 }
 
-func (fake *Fake) ResolvePkgReturns(result1 model.DataHandle, result2 error) {
-	fake.ResolvePkgStub = nil
-	fake.resolvePkgReturns = struct {
+func (fake *Fake) ResolveDataReturns(result1 model.DataHandle, result2 error) {
+	fake.ResolveDataStub = nil
+	fake.resolveDataReturns = struct {
 		result1 model.DataHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkgReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
-	fake.ResolvePkgStub = nil
-	if fake.resolvePkgReturnsOnCall == nil {
-		fake.resolvePkgReturnsOnCall = make(map[int]struct {
+func (fake *Fake) ResolveDataReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
+	fake.ResolveDataStub = nil
+	if fake.resolveDataReturnsOnCall == nil {
+		fake.resolveDataReturnsOnCall = make(map[int]struct {
 			result1 model.DataHandle
 			result2 error
 		})
 	}
-	fake.resolvePkgReturnsOnCall[i] = struct {
+	fake.resolveDataReturnsOnCall[i] = struct {
 		result1 model.DataHandle
 		result2 error
 	}{result1, result2}
@@ -251,8 +251,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.killOpMutex.RUnlock()
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
-	fake.resolvePkgMutex.RLock()
-	defer fake.resolvePkgMutex.RUnlock()
+	fake.resolveDataMutex.RLock()
+	defer fake.resolveDataMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

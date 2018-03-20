@@ -22,17 +22,17 @@ func (this _core) StartOp(
 		}
 	}
 
-	opDirHandle, err := this.data.Resolve(
+	opHandle, err := this.data.Resolve(
 		ctx,
 		req.Pkg.Ref,
 		this.data.NewFSProvider(),
-		this.data.NewGitProvider(this.pkgCachePath, pullCreds),
+		this.data.NewGitProvider(this.dataCachePath, pullCreds),
 	)
 	if nil != err {
 		return "", err
 	}
 
-	opId, err := this.uniqueStringFactory.Construct()
+	opID, err := this.uniqueStringFactory.Construct()
 	if nil != err {
 		// end run immediately on any error
 		return "", err
@@ -41,7 +41,7 @@ func (this _core) StartOp(
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
 		Pkg: &model.SCGOpCallPkg{
-			Ref: opDirHandle.Ref(),
+			Ref: opHandle.Ref(),
 		},
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
@@ -53,7 +53,7 @@ func (this _core) StartOp(
 
 	opDotYml, err := this.dotYmlGetter.Get(
 		context.TODO(),
-		opDirHandle,
+		opHandle,
 	)
 	if nil != err {
 		return "", err
@@ -66,13 +66,13 @@ func (this _core) StartOp(
 	go func() {
 		this.opCaller.Call(
 			req.Args,
-			opId,
-			opDirHandle,
-			opId,
+			opID,
+			opHandle,
+			opID,
 			scgOpCall,
 		)
 	}()
 
-	return opId, nil
+	return opID, nil
 
 }

@@ -26,16 +26,16 @@ const (
 type ContainerExitedEvent struct {
 	ImageRef    string            `json:"imageRef"`
 	ExitCode    int64             `json:"exitCode"`
-	RootOpId    string            `json:"rootOpId"`
-	ContainerId string            `json:"containerId"`
+	RootOpID    string            `json:"rootOpId"`
+	ContainerID string            `json:"containerId"`
 	PkgRef      string            `json:"pkgRef"`
 	Outputs     map[string]*Value `json:"outputs"`
 }
 
 type ContainerStartedEvent struct {
 	ImageRef    string `json:"imageRef"`
-	RootOpId    string `json:"rootOpId"`
-	ContainerId string `json:"containerId"`
+	RootOpID    string `json:"rootOpId"`
+	ContainerID string `json:"containerId"`
 	PkgRef      string `json:"pkgRef"`
 }
 
@@ -43,8 +43,8 @@ type ContainerStartedEvent struct {
 type ContainerStdErrWrittenToEvent struct {
 	ImageRef    string `json:"imageRef"`
 	Data        []byte `json:"data"`
-	RootOpId    string `json:"rootOpId"`
-	ContainerId string `json:"containerId"`
+	RootOpID    string `json:"rootOpId"`
+	ContainerID string `json:"containerId"`
 	PkgRef      string `json:"pkgRef"`
 }
 
@@ -52,43 +52,43 @@ type ContainerStdErrWrittenToEvent struct {
 type ContainerStdOutWrittenToEvent struct {
 	ImageRef    string `json:"imageRef"`
 	Data        []byte `json:"data"`
-	RootOpId    string `json:"rootOpId"`
-	ContainerId string `json:"containerId"`
+	RootOpID    string `json:"rootOpId"`
+	ContainerID string `json:"containerId"`
 	PkgRef      string `json:"pkgRef"`
 }
 
 // OpErredEvent represents an op encountering an error condition
 type OpErredEvent struct {
-	RootOpId string `json:"rootOpId"`
+	RootOpID string `json:"rootOpId"`
 	Msg      string `json:"msg"`
-	OpId     string `json:"opId"`
+	OpID     string `json:"opId"`
 	PkgRef   string `json:"pkgRef"`
 }
 
 // OpEndedEvent represents the end of an op; no further events will occur for the op.
 type OpEndedEvent struct {
-	RootOpId string            `json:"rootOpId"`
-	OpId     string            `json:"opId"`
+	RootOpID string            `json:"rootOpId"`
+	OpID     string            `json:"opId"`
 	PkgRef   string            `json:"pkgRef"`
 	Outcome  string            `json:"outcome"`
 	Outputs  map[string]*Value `json:"outputs"`
 }
 
 type OpStartedEvent struct {
-	RootOpId string `json:"rootOpId"`
-	OpId     string `json:"opId"`
+	RootOpID string `json:"rootOpId"`
+	OpID     string `json:"opId"`
 	PkgRef   string `json:"pkgRef"`
 }
 
 // ParallelCallEndedEvent represents the exit of a parallel call; no further events will occur for the call.
 type ParallelCallEndedEvent struct {
-	RootOpId string `json:"rootOpId"`
-	CallId   string `json:"callId"`
+	RootOpID string `json:"rootOpId"`
+	CallID   string `json:"callId"`
 }
 
 // SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
-	RootOpId string            `json:"rootOpId"`
-	CallId   string            `json:"callId"`
+	RootOpID string            `json:"rootOpId"`
+	CallID   string            `json:"callId"`
 	Outputs  map[string]*Value `json:"outputs"`
 }

@@ -8,12 +8,12 @@ import (
 )
 
 type fakeEvalObjectInitializerer struct {
-	EvalStub        func(expression map[string]interface{}, scope map[string]*model.Value, opDirHandle model.DataHandle) (map[string]interface{}, error)
+	EvalStub        func(expression map[string]interface{}, scope map[string]*model.Value, opHandle model.DataHandle) (map[string]interface{}, error)
 	evalMutex       sync.RWMutex
 	evalArgsForCall []struct {
-		expression  map[string]interface{}
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
+		expression map[string]interface{}
+		scope      map[string]*model.Value
+		opHandle   model.DataHandle
 	}
 	evalReturns struct {
 		result1 map[string]interface{}
@@ -27,18 +27,18 @@ type fakeEvalObjectInitializerer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeEvalObjectInitializerer) Eval(expression map[string]interface{}, scope map[string]*model.Value, opDirHandle model.DataHandle) (map[string]interface{}, error) {
+func (fake *fakeEvalObjectInitializerer) Eval(expression map[string]interface{}, scope map[string]*model.Value, opHandle model.DataHandle) (map[string]interface{}, error) {
 	fake.evalMutex.Lock()
 	ret, specificReturn := fake.evalReturnsOnCall[len(fake.evalArgsForCall)]
 	fake.evalArgsForCall = append(fake.evalArgsForCall, struct {
-		expression  map[string]interface{}
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
-	}{expression, scope, opDirHandle})
-	fake.recordInvocation("Eval", []interface{}{expression, scope, opDirHandle})
+		expression map[string]interface{}
+		scope      map[string]*model.Value
+		opHandle   model.DataHandle
+	}{expression, scope, opHandle})
+	fake.recordInvocation("Eval", []interface{}{expression, scope, opHandle})
 	fake.evalMutex.Unlock()
 	if fake.EvalStub != nil {
-		return fake.EvalStub(expression, scope, opDirHandle)
+		return fake.EvalStub(expression, scope, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,7 +55,7 @@ func (fake *fakeEvalObjectInitializerer) EvalCallCount() int {
 func (fake *fakeEvalObjectInitializerer) EvalArgsForCall(i int) (map[string]interface{}, map[string]*model.Value, model.DataHandle) {
 	fake.evalMutex.RLock()
 	defer fake.evalMutex.RUnlock()
-	return fake.evalArgsForCall[i].expression, fake.evalArgsForCall[i].scope, fake.evalArgsForCall[i].opDirHandle
+	return fake.evalArgsForCall[i].expression, fake.evalArgsForCall[i].scope, fake.evalArgsForCall[i].opHandle
 }
 
 func (fake *fakeEvalObjectInitializerer) EvalReturns(result1 map[string]interface{}, result2 error) {

@@ -21,7 +21,7 @@ import (
 
 var _ = Context("GET /pkgs/{ref}/contents", func() {
 	Context("has basic auth header", func() {
-		It("should call core.ResolvePkg w/ expected args", func() {
+		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef%2F"
 			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
@@ -34,7 +34,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			fakeCore := new(core.Fake)
 			// error to trigger immediate return
-			fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
+			fakeCore.ResolveDataReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -51,7 +51,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			/* assert */
 			_,
 				actualPkgRef,
-				actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
@@ -61,7 +61,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 		})
 	})
 	Context("doesn't have basic auth header", func() {
-		It("should call core.ResolvePkg w/ expected args", func() {
+		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef%2F"
 			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
@@ -71,7 +71,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			fakeCore := new(core.Fake)
 			// error to trigger immediate return
-			fakeCore.ResolvePkgReturns(nil, errors.New("dummyError"))
+			fakeCore.ResolveDataReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -87,13 +87,13 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			/* assert */
 			_,
 				actualPkgRef,
-				actualPullCreds := fakeCore.ResolvePkgArgsForCall(0)
+				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
 			Expect(actualPkgRef).To(Equal(expectedPkgRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 	})
-	Context("core.ResolvePkg errs", func() {
+	Context("core.ResolveData errs", func() {
 		Context("err is model.ErrDataProviderAuthentication", func() {
 			It("should return expected result", func() {
 				/* arrange */
@@ -101,7 +101,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, pkgPullAuthenticationErr)
+				fakeCore.ResolveDataReturns(nil, pkgPullAuthenticationErr)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -132,7 +132,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, pkgPullAuthorizationErr)
+				fakeCore.ResolveDataReturns(nil, pkgPullAuthorizationErr)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -163,7 +163,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, pkgNotFoundErr)
+				fakeCore.ResolveDataReturns(nil, pkgNotFoundErr)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -194,7 +194,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
-				fakeCore.ResolvePkgReturns(nil, errors.New(expectedBody))
+				fakeCore.ResolveDataReturns(nil, errors.New(expectedBody))
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -219,7 +219,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			})
 		})
 	})
-	Context("core.ResolvePkg doesn't err", func() {
+	Context("core.ResolveData doesn't err", func() {
 		It("should call handle.ListContents", func() {
 			/* arrange */
 			fakeDataHandle := new(data.FakeHandle)
@@ -227,7 +227,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			fakeDataHandle.ListContentsReturns(nil, errors.New("dummyError"))
 
 			fakeCore := new(core.Fake)
-			fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
+			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -257,7 +257,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				fakeDataHandle.ListContentsReturns(nil, errors.New(expectedBody))
 
 				fakeCore := new(core.Fake)
-				fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
+				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -288,7 +288,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 					expectedBody := "dummyErrorMsg"
 
 					fakeCore := new(core.Fake)
-					fakeCore.ResolvePkgReturns(new(data.FakeHandle), nil)
+					fakeCore.ResolveDataReturns(new(data.FakeHandle), nil)
 
 					fakeJSON := new(ijson.Fake)
 					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
@@ -342,7 +342,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 					fakeHandle.ListContentsReturns(contentsList, nil)
 
-					fakeCore.ResolvePkgReturns(fakeHandle, nil)
+					fakeCore.ResolveDataReturns(fakeHandle, nil)
 
 					fakeJSON := new(ijson.Fake)
 					fakeJSON.NewEncoderStub = func(w io.Writer) *json.Encoder {

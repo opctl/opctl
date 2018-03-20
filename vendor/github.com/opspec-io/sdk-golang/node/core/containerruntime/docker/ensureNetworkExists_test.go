@@ -13,18 +13,18 @@ var _ = Context("EnsureNetworkExists", func() {
 		/* arrange */
 		fakeDockerClient := new(fakeDockerClient)
 
-		providedContainerId := "dummyContainerId"
+		providedContainerID := "dummyContainerID"
 
 		objectUnderTest := _containerRuntime{
 			dockerClient: fakeDockerClient,
 		}
 
 		/* act */
-		objectUnderTest.EnsureNetworkExists(providedContainerId)
+		objectUnderTest.EnsureNetworkExists(providedContainerID)
 
 		/* assert */
-		_, actualContainerId, actualVerbose := fakeDockerClient.NetworkInspectArgsForCall(0)
-		Expect(actualContainerId).To(Equal(providedContainerId))
+		_, actualContainerID, actualVerbose := fakeDockerClient.NetworkInspectArgsForCall(0)
+		Expect(actualContainerID).To(Equal(providedContainerID))
 		Expect(actualVerbose).To(Equal(types.NetworkInspectOptions{}))
 	})
 	Context("dockerClient.NetworkInspect doesn't err", func() {
@@ -32,14 +32,14 @@ var _ = Context("EnsureNetworkExists", func() {
 			/* arrange */
 			fakeDockerClient := new(fakeDockerClient)
 
-			providedContainerId := "dummyContainerId"
+			providedContainerID := "dummyContainerID"
 
 			objectUnderTest := _containerRuntime{
 				dockerClient: fakeDockerClient,
 			}
 
 			/* act */
-			actualErr := objectUnderTest.EnsureNetworkExists(providedContainerId)
+			actualErr := objectUnderTest.EnsureNetworkExists(providedContainerID)
 
 			/* assert */
 			Expect(actualErr).To(BeNil())
@@ -59,8 +59,8 @@ var _ = Context("EnsureNetworkExists", func() {
 					},
 				)
 
-				providedContainerId := "dummyContainerId"
-				expectedContainerId := providedContainerId
+				providedContainerID := "dummyContainerID"
+				expectedContainerID := providedContainerID
 				expectedNetworkCreations := types.NetworkCreate{
 					Attachable:     true,
 					CheckDuplicate: true,
@@ -71,11 +71,11 @@ var _ = Context("EnsureNetworkExists", func() {
 				}
 
 				/* act */
-				objectUnderTest.EnsureNetworkExists(providedContainerId)
+				objectUnderTest.EnsureNetworkExists(providedContainerID)
 
 				/* assert */
-				_, actualContainerId, actualNetworkCreations := fakeDockerClient.NetworkCreateArgsForCall(0)
-				Expect(actualContainerId).To(Equal(expectedContainerId))
+				_, actualContainerID, actualNetworkCreations := fakeDockerClient.NetworkCreateArgsForCall(0)
+				Expect(actualContainerID).To(Equal(expectedContainerID))
 				Expect(actualNetworkCreations).To(Equal(expectedNetworkCreations))
 			})
 			Context("dockerClient.NetworkCreate errors", func() {

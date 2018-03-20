@@ -15,7 +15,7 @@ type pkgFilePathDeReferencer interface {
 	DeReferencePkgFilePath(
 		ref string,
 		scope map[string]*model.Value,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (string, bool, error)
 }
 
@@ -28,11 +28,11 @@ type _pkgFilePathDeReferencer struct{}
 func (pfd _pkgFilePathDeReferencer) DeReferencePkgFilePath(
 	ref string,
 	scope map[string]*model.Value,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (string, bool, error) {
 	if strings.HasPrefix(ref, "/") {
 		// pkg content ref
-		contentReadSeekCloser, err := opDirHandle.GetContent(context.TODO(), ref)
+		contentReadSeekCloser, err := opHandle.GetContent(context.TODO(), ref)
 		if nil != err {
 			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}

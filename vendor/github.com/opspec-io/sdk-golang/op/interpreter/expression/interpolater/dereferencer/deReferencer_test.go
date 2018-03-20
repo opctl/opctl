@@ -13,7 +13,7 @@ var _ = Context("deReferencer", func() {
 		/* arrange */
 		providedRef := "dummyRef"
 		providedScope := map[string]*model.Value{"dummyName": {}}
-		providedOpDirHandle := new(data.FakeHandle)
+		providedOpHandle := new(data.FakeHandle)
 
 		fakePkgFilePathDeReferencer := new(fakePkgFilePathDeReferencer)
 		// err to trigger immediate return
@@ -27,17 +27,17 @@ var _ = Context("deReferencer", func() {
 		objectUnderTest.DeReference(
 			providedRef,
 			providedScope,
-			providedOpDirHandle,
+			providedOpHandle,
 		)
 
 		/* assert */
 		actualRef,
 			actualScope,
-			actualOpDirHandle := fakePkgFilePathDeReferencer.DeReferencePkgFilePathArgsForCall(0)
+			actualOpHandle := fakePkgFilePathDeReferencer.DeReferencePkgFilePathArgsForCall(0)
 
 		Expect(actualRef).To(Equal(providedRef))
 		Expect(actualScope).To(Equal(providedScope))
-		Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+		Expect(actualOpHandle).To(Equal(providedOpHandle))
 	})
 	Context("ref is pkgFilePathRef", func() {
 		It("should return expected result", func() {

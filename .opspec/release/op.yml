@@ -44,6 +44,7 @@ run:
     - op:
         pkg: { ref: build }
         inputs: { srcDir, gitBranch }
+        outputs: { srcDir }
     - op:
         pkg: { ref: release/to-equinox }
         inputs: { equinoxSigningKey, equinoxToken, srcDir, version }

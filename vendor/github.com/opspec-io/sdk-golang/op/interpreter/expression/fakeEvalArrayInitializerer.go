@@ -8,12 +8,12 @@ import (
 )
 
 type fakeEvalArrayInitializerer struct {
-	EvalStub        func(expression []interface{}, scope map[string]*model.Value, opDirHandle model.DataHandle) ([]interface{}, error)
+	EvalStub        func(expression []interface{}, scope map[string]*model.Value, opHandle model.DataHandle) ([]interface{}, error)
 	evalMutex       sync.RWMutex
 	evalArgsForCall []struct {
-		expression  []interface{}
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
+		expression []interface{}
+		scope      map[string]*model.Value
+		opHandle   model.DataHandle
 	}
 	evalReturns struct {
 		result1 []interface{}
@@ -27,7 +27,7 @@ type fakeEvalArrayInitializerer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeEvalArrayInitializerer) Eval(expression []interface{}, scope map[string]*model.Value, opDirHandle model.DataHandle) ([]interface{}, error) {
+func (fake *fakeEvalArrayInitializerer) Eval(expression []interface{}, scope map[string]*model.Value, opHandle model.DataHandle) ([]interface{}, error) {
 	var expressionCopy []interface{}
 	if expression != nil {
 		expressionCopy = make([]interface{}, len(expression))
@@ -36,14 +36,14 @@ func (fake *fakeEvalArrayInitializerer) Eval(expression []interface{}, scope map
 	fake.evalMutex.Lock()
 	ret, specificReturn := fake.evalReturnsOnCall[len(fake.evalArgsForCall)]
 	fake.evalArgsForCall = append(fake.evalArgsForCall, struct {
-		expression  []interface{}
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
-	}{expressionCopy, scope, opDirHandle})
-	fake.recordInvocation("Eval", []interface{}{expressionCopy, scope, opDirHandle})
+		expression []interface{}
+		scope      map[string]*model.Value
+		opHandle   model.DataHandle
+	}{expressionCopy, scope, opHandle})
+	fake.recordInvocation("Eval", []interface{}{expressionCopy, scope, opHandle})
 	fake.evalMutex.Unlock()
 	if fake.EvalStub != nil {
-		return fake.EvalStub(expression, scope, opDirHandle)
+		return fake.EvalStub(expression, scope, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -60,7 +60,7 @@ func (fake *fakeEvalArrayInitializerer) EvalCallCount() int {
 func (fake *fakeEvalArrayInitializerer) EvalArgsForCall(i int) ([]interface{}, map[string]*model.Value, model.DataHandle) {
 	fake.evalMutex.RLock()
 	defer fake.evalMutex.RUnlock()
-	return fake.evalArgsForCall[i].expression, fake.evalArgsForCall[i].scope, fake.evalArgsForCall[i].opDirHandle
+	return fake.evalArgsForCall[i].expression, fake.evalArgsForCall[i].scope, fake.evalArgsForCall[i].opHandle
 }
 
 func (fake *fakeEvalArrayInitializerer) EvalReturns(result1 []interface{}, result2 error) {

@@ -8,15 +8,15 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(name string, value interface{}, param *model.Param, parentOpDirHandle model.DataHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error)
+	InterpretStub        func(name string, value interface{}, param *model.Param, parentOpHandle model.DataHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		name              string
-		value             interface{}
-		param             *model.Param
-		parentOpDirHandle model.DataHandle
-		scope             map[string]*model.Value
-		opScratchDir      string
+		name           string
+		value          interface{}
+		param          *model.Param
+		parentOpHandle model.DataHandle
+		scope          map[string]*model.Value
+		opScratchDir   string
 	}
 	interpretReturns struct {
 		result1 *model.Value
@@ -30,21 +30,21 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(name string, value interface{}, param *model.Param, parentOpDirHandle model.DataHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error) {
+func (fake *FakeInterpreter) Interpret(name string, value interface{}, param *model.Param, parentOpHandle model.DataHandle, scope map[string]*model.Value, opScratchDir string) (*model.Value, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		name              string
-		value             interface{}
-		param             *model.Param
-		parentOpDirHandle model.DataHandle
-		scope             map[string]*model.Value
-		opScratchDir      string
-	}{name, value, param, parentOpDirHandle, scope, opScratchDir})
-	fake.recordInvocation("Interpret", []interface{}{name, value, param, parentOpDirHandle, scope, opScratchDir})
+		name           string
+		value          interface{}
+		param          *model.Param
+		parentOpHandle model.DataHandle
+		scope          map[string]*model.Value
+		opScratchDir   string
+	}{name, value, param, parentOpHandle, scope, opScratchDir})
+	fake.recordInvocation("Interpret", []interface{}{name, value, param, parentOpHandle, scope, opScratchDir})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(name, value, param, parentOpDirHandle, scope, opScratchDir)
+		return fake.InterpretStub(name, value, param, parentOpHandle, scope, opScratchDir)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -61,7 +61,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 func (fake *FakeInterpreter) InterpretArgsForCall(i int) (string, interface{}, *model.Param, model.DataHandle, map[string]*model.Value, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].parentOpDirHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].opScratchDir
+	return fake.interpretArgsForCall[i].name, fake.interpretArgsForCall[i].value, fake.interpretArgsForCall[i].param, fake.interpretArgsForCall[i].parentOpHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].opScratchDir
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 *model.Value, result2 error) {

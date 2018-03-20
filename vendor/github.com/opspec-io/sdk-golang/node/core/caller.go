@@ -13,8 +13,8 @@ type caller interface {
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
-		opDirHandle model.DataHandle,
-		rootOpId string,
+		opHandle model.DataHandle,
+		rootOpID string,
 	) error
 }
 
@@ -37,8 +37,8 @@ func (this _caller) Call(
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
-	opDirHandle model.DataHandle,
-	rootOpId string,
+	opHandle model.DataHandle,
+	rootOpID string,
 ) error {
 
 	if nil == scg {
@@ -52,31 +52,31 @@ func (this _caller) Call(
 			scope,
 			id,
 			scg.Container,
-			opDirHandle,
-			rootOpId,
+			opHandle,
+			rootOpID,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
 			scope,
 			id,
-			opDirHandle,
-			rootOpId,
+			opHandle,
+			rootOpID,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
 		return this.parallelCaller.Call(
 			id,
 			scope,
-			rootOpId,
-			opDirHandle,
+			rootOpID,
+			opHandle,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
 		return this.serialCaller.Call(
 			id,
 			scope,
-			rootOpId,
-			opDirHandle,
+			rootOpID,
+			opHandle,
 			scg.Serial,
 		)
 	default:

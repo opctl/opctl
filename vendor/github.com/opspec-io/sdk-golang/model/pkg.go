@@ -13,7 +13,7 @@ type ReadSeekCloser interface {
 	io.Seeker
 }
 
-// DataHandle is a provider agnostic interface for interacting w/ pkg content
+// DataHandle is a provider agnostic interface for interacting w/ data
 type DataHandle interface {
 	// ListContents lists contents of a package
 	ListContents(
@@ -42,7 +42,6 @@ type DataHandle interface {
 
 type PkgManifest struct {
 	Description string            `yaml:"description"`
-	Icon        string            `yaml:"icon,omitempty"`
 	Inputs      map[string]*Param `yaml:"inputs,omitempty"`
 	Name        string            `yaml:"name"`
 	Outputs     map[string]*Param `yaml:"outputs,omitempty"`

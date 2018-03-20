@@ -7,11 +7,11 @@ import (
 )
 
 func (ctp _containerRuntime) DeleteContainerIfExists(
-	containerId string,
+	containerID string,
 ) (err error) {
 	err = ctp.dockerClient.ContainerRemove(
 		context.Background(),
-		containerId,
+		containerID,
 		types.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,

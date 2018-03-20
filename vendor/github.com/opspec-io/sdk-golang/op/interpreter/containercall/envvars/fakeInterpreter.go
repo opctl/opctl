@@ -8,12 +8,12 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(scope map[string]*model.Value, scgContainerCallEnvVars map[string]interface{}, opDirHandle model.DataHandle) (map[string]string, error)
+	InterpretStub        func(scope map[string]*model.Value, scgContainerCallEnvVars map[string]interface{}, opHandle model.DataHandle) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		scope                   map[string]*model.Value
 		scgContainerCallEnvVars map[string]interface{}
-		opDirHandle             model.DataHandle
+		opHandle                model.DataHandle
 	}
 	interpretReturns struct {
 		result1 map[string]string
@@ -27,18 +27,18 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgContainerCallEnvVars map[string]interface{}, opDirHandle model.DataHandle) (map[string]string, error) {
+func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgContainerCallEnvVars map[string]interface{}, opHandle model.DataHandle) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		scope                   map[string]*model.Value
 		scgContainerCallEnvVars map[string]interface{}
-		opDirHandle             model.DataHandle
-	}{scope, scgContainerCallEnvVars, opDirHandle})
-	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCallEnvVars, opDirHandle})
+		opHandle                model.DataHandle
+	}{scope, scgContainerCallEnvVars, opHandle})
+	fake.recordInvocation("Interpret", []interface{}{scope, scgContainerCallEnvVars, opHandle})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, scgContainerCallEnvVars, opDirHandle)
+		return fake.InterpretStub(scope, scgContainerCallEnvVars, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,7 +55,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, map[string]interface{}, model.DataHandle) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallEnvVars, fake.interpretArgsForCall[i].opDirHandle
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallEnvVars, fake.interpretArgsForCall[i].opHandle
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 map[string]string, result2 error) {

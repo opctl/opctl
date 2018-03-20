@@ -18,21 +18,21 @@ var _ = Context("gitHandle", func() {
 
 		It("should call os.Open w/ expected args", func() {
 			/* arrange */
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 			providedContentPath := "dummyContentPath"
 
 			fakeOS := new(ios.Fake)
 
 			objectUnderTest := gitHandle{
 				os:   fakeOS,
-				path: providedPkgPath,
+				path: providedOpPath,
 			}
 
 			/* act */
 			objectUnderTest.GetContent(nil, providedContentPath)
 
 			/* assert */
-			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedPkgPath, providedContentPath)))
+			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedOpPath, providedContentPath)))
 		})
 	})
 
@@ -43,7 +43,7 @@ var _ = Context("gitHandle", func() {
 	Context("ListContents", func() {
 		It("should call ioutil.ReadDir w/ expected args", func() {
 			/* arrange */
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 
 			fakeIOUtil := new(iioutil.Fake)
 
@@ -52,14 +52,14 @@ var _ = Context("gitHandle", func() {
 
 			objectUnderTest := gitHandle{
 				ioUtil: fakeIOUtil,
-				path:   providedPkgPath,
+				path:   providedOpPath,
 			}
 
 			/* act */
 			objectUnderTest.ListContents(nil)
 
 			/* assert */
-			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedPkgPath))
+			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedOpPath))
 		})
 		Context("ioutil.ReadDir errors", func() {
 			It("should be returned", func() {
@@ -85,14 +85,14 @@ var _ = Context("gitHandle", func() {
 		Context("ioutil.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
-				rootPkgPath := fmt.Sprintf("%v/testdata/listContents", wd)
+				rootOpPath := fmt.Sprintf("%v/testdata/listContents", wd)
 
-				dirStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1"))
+				dirStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1"))
 				if nil != err {
 					panic(err)
 				}
 
-				fileStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
+				fileStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1/file2.txt"))
 				if nil != err {
 					panic(err)
 				}
@@ -117,7 +117,7 @@ var _ = Context("gitHandle", func() {
 
 				objectUnderTest := gitHandle{
 					ioUtil: iioutil.New(),
-					path:   rootPkgPath,
+					path:   rootOpPath,
 				}
 
 				/* act */

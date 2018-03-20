@@ -10,7 +10,7 @@ var _ = Context("core", func() {
 	Context("KillOp", func() {
 		It("should call opKiller.Kill w/ expected args", func() {
 			/* arrange */
-			providedReq := model.KillOpReq{OpId: "dummyOpId"}
+			providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
 			fakeOpKiller := new(fakeOpKiller)
 

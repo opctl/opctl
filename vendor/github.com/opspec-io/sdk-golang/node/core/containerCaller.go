@@ -19,10 +19,10 @@ type containerCaller interface {
 	// Executes a container call
 	Call(
 		inboundScope map[string]*model.Value,
-		containerId string,
+		containerID string,
 		scgContainerCall *model.SCGContainerCall,
-		opDirHandle model.DataHandle,
-		rootOpId string,
+		opHandle model.DataHandle,
+		rootOpID string,
 	) error
 }
 
@@ -53,25 +53,25 @@ type _containerCaller struct {
 
 func (cc _containerCaller) Call(
 	inboundScope map[string]*model.Value,
-	containerId string,
+	containerID string,
 	scgContainerCall *model.SCGContainerCall,
-	opDirHandle model.DataHandle,
-	rootOpId string,
+	opHandle model.DataHandle,
+	rootOpID string,
 ) error {
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
-		cc.dcgNodeRepo.DeleteIfExists(containerId)
+		cc.dcgNodeRepo.DeleteIfExists(containerID)
 
-		cc.containerRuntime.DeleteContainerIfExists(containerId)
+		cc.containerRuntime.DeleteContainerIfExists(containerID)
 
 	}()
 
 	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
-			Id:        containerId,
-			PkgRef:    opDirHandle.Ref(),
-			RootOpId:  rootOpId,
+			Id:        containerID,
+			PkgRef:    opHandle.Ref(),
+			RootOpID:  rootOpID,
 			Container: &dcgContainerDescriptor{},
 		},
 	)
@@ -79,9 +79,9 @@ func (cc _containerCaller) Call(
 	dcgContainerCall, err := cc.containerCall.Interpret(
 		inboundScope,
 		scgContainerCall,
-		containerId,
-		rootOpId,
-		opDirHandle,
+		containerID,
+		rootOpID,
+		opHandle,
 	)
 	if nil != err {
 		return err
@@ -91,9 +91,9 @@ func (cc _containerCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
-				ContainerId: containerId,
-				PkgRef:      opDirHandle.Ref(),
-				RootOpId:    rootOpId,
+				ContainerID: containerID,
+				PkgRef:      opHandle.Ref(),
+				RootOpID:    rootOpID,
 			},
 		},
 	)
@@ -179,9 +179,9 @@ func (cc _containerCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerId: containerId,
-				PkgRef:      opDirHandle.Ref(),
-				RootOpId:    rootOpId,
+				ContainerID: containerID,
+				PkgRef:      opHandle.Ref(),
+				RootOpID:    rootOpID,
 				ExitCode:    exitCode,
 				Outputs:     interpretOutputsResult.outputs,
 			},
@@ -207,10 +207,10 @@ func (this _containerCaller) interpretLogs(
 						Timestamp: time.Now().UTC(),
 						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
 							Data:        chunk,
-							ContainerId: dcgContainerCall.ContainerId,
+							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.DataHandle.Ref(),
-							RootOpId:    dcgContainerCall.RootOpId,
+							PkgRef:      dcgContainerCall.OpHandle.Ref(),
+							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},
 				)
@@ -228,10 +228,10 @@ func (this _containerCaller) interpretLogs(
 						Timestamp: time.Now().UTC(),
 						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
 							Data:        chunk,
-							ContainerId: dcgContainerCall.ContainerId,
+							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.DataHandle.Ref(),
-							RootOpId:    dcgContainerCall.RootOpId,
+							PkgRef:      dcgContainerCall.OpHandle.Ref(),
+							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},
 				)
@@ -264,7 +264,7 @@ func (this _containerCaller) interpretOutputs(
 	for socketAddr, name := range scgContainerCall.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerId}
+			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerID}
 		}
 	}
 	for scgContainerFilePath, name := range scgContainerCall.Files {

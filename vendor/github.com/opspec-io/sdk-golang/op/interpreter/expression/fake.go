@@ -8,12 +8,12 @@ import (
 )
 
 type Fake struct {
-	EvalToArrayStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToArrayStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToArrayMutex       sync.RWMutex
 	evalToArrayArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToArrayReturns struct {
 		result1 *model.Value
@@ -23,12 +23,12 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToBooleanStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToBooleanStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToBooleanMutex       sync.RWMutex
 	evalToBooleanArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToBooleanReturns struct {
 		result1 *model.Value
@@ -38,12 +38,12 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToDirStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToDirStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToDirMutex       sync.RWMutex
 	evalToDirArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToDirReturns struct {
 		result1 *model.Value
@@ -53,13 +53,13 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToFileStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle, scratchDir string) (*model.Value, error)
+	EvalToFileStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle, scratchDir string) (*model.Value, error)
 	evalToFileMutex       sync.RWMutex
 	evalToFileArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-		scratchDir  string
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+		scratchDir string
 	}
 	evalToFileReturns struct {
 		result1 *model.Value
@@ -69,12 +69,12 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToNumberStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToNumberStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToNumberMutex       sync.RWMutex
 	evalToNumberArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToNumberReturns struct {
 		result1 *model.Value
@@ -84,12 +84,12 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToObjectStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToObjectStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToObjectMutex       sync.RWMutex
 	evalToObjectArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToObjectReturns struct {
 		result1 *model.Value
@@ -99,12 +99,12 @@ type Fake struct {
 		result1 *model.Value
 		result2 error
 	}
-	EvalToStringStub        func(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error)
+	EvalToStringStub        func(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error)
 	evalToStringMutex       sync.RWMutex
 	evalToStringArgsForCall []struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
 	}
 	evalToStringReturns struct {
 		result1 *model.Value
@@ -118,18 +118,18 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) EvalToArray(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToArray(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToArrayMutex.Lock()
 	ret, specificReturn := fake.evalToArrayReturnsOnCall[len(fake.evalToArrayArgsForCall)]
 	fake.evalToArrayArgsForCall = append(fake.evalToArrayArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToArray", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToArray", []interface{}{scope, expression, opHandle})
 	fake.evalToArrayMutex.Unlock()
 	if fake.EvalToArrayStub != nil {
-		return fake.EvalToArrayStub(scope, expression, opDirHandle)
+		return fake.EvalToArrayStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -146,7 +146,7 @@ func (fake *Fake) EvalToArrayCallCount() int {
 func (fake *Fake) EvalToArrayArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToArrayMutex.RLock()
 	defer fake.evalToArrayMutex.RUnlock()
-	return fake.evalToArrayArgsForCall[i].scope, fake.evalToArrayArgsForCall[i].expression, fake.evalToArrayArgsForCall[i].opDirHandle
+	return fake.evalToArrayArgsForCall[i].scope, fake.evalToArrayArgsForCall[i].expression, fake.evalToArrayArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToArrayReturns(result1 *model.Value, result2 error) {
@@ -171,18 +171,18 @@ func (fake *Fake) EvalToArrayReturnsOnCall(i int, result1 *model.Value, result2 
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToBoolean(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToBoolean(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToBooleanMutex.Lock()
 	ret, specificReturn := fake.evalToBooleanReturnsOnCall[len(fake.evalToBooleanArgsForCall)]
 	fake.evalToBooleanArgsForCall = append(fake.evalToBooleanArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToBoolean", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToBoolean", []interface{}{scope, expression, opHandle})
 	fake.evalToBooleanMutex.Unlock()
 	if fake.EvalToBooleanStub != nil {
-		return fake.EvalToBooleanStub(scope, expression, opDirHandle)
+		return fake.EvalToBooleanStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -199,7 +199,7 @@ func (fake *Fake) EvalToBooleanCallCount() int {
 func (fake *Fake) EvalToBooleanArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToBooleanMutex.RLock()
 	defer fake.evalToBooleanMutex.RUnlock()
-	return fake.evalToBooleanArgsForCall[i].scope, fake.evalToBooleanArgsForCall[i].expression, fake.evalToBooleanArgsForCall[i].opDirHandle
+	return fake.evalToBooleanArgsForCall[i].scope, fake.evalToBooleanArgsForCall[i].expression, fake.evalToBooleanArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToBooleanReturns(result1 *model.Value, result2 error) {
@@ -224,18 +224,18 @@ func (fake *Fake) EvalToBooleanReturnsOnCall(i int, result1 *model.Value, result
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToDir(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToDirMutex.Lock()
 	ret, specificReturn := fake.evalToDirReturnsOnCall[len(fake.evalToDirArgsForCall)]
 	fake.evalToDirArgsForCall = append(fake.evalToDirArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToDir", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToDir", []interface{}{scope, expression, opHandle})
 	fake.evalToDirMutex.Unlock()
 	if fake.EvalToDirStub != nil {
-		return fake.EvalToDirStub(scope, expression, opDirHandle)
+		return fake.EvalToDirStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -252,7 +252,7 @@ func (fake *Fake) EvalToDirCallCount() int {
 func (fake *Fake) EvalToDirArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToDirMutex.RLock()
 	defer fake.evalToDirMutex.RUnlock()
-	return fake.evalToDirArgsForCall[i].scope, fake.evalToDirArgsForCall[i].expression, fake.evalToDirArgsForCall[i].opDirHandle
+	return fake.evalToDirArgsForCall[i].scope, fake.evalToDirArgsForCall[i].expression, fake.evalToDirArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToDirReturns(result1 *model.Value, result2 error) {
@@ -277,19 +277,19 @@ func (fake *Fake) EvalToDirReturnsOnCall(i int, result1 *model.Value, result2 er
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle, scratchDir string) (*model.Value, error) {
+func (fake *Fake) EvalToFile(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle, scratchDir string) (*model.Value, error) {
 	fake.evalToFileMutex.Lock()
 	ret, specificReturn := fake.evalToFileReturnsOnCall[len(fake.evalToFileArgsForCall)]
 	fake.evalToFileArgsForCall = append(fake.evalToFileArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-		scratchDir  string
-	}{scope, expression, opDirHandle, scratchDir})
-	fake.recordInvocation("EvalToFile", []interface{}{scope, expression, opDirHandle, scratchDir})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+		scratchDir string
+	}{scope, expression, opHandle, scratchDir})
+	fake.recordInvocation("EvalToFile", []interface{}{scope, expression, opHandle, scratchDir})
 	fake.evalToFileMutex.Unlock()
 	if fake.EvalToFileStub != nil {
-		return fake.EvalToFileStub(scope, expression, opDirHandle, scratchDir)
+		return fake.EvalToFileStub(scope, expression, opHandle, scratchDir)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -306,7 +306,7 @@ func (fake *Fake) EvalToFileCallCount() int {
 func (fake *Fake) EvalToFileArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle, string) {
 	fake.evalToFileMutex.RLock()
 	defer fake.evalToFileMutex.RUnlock()
-	return fake.evalToFileArgsForCall[i].scope, fake.evalToFileArgsForCall[i].expression, fake.evalToFileArgsForCall[i].opDirHandle, fake.evalToFileArgsForCall[i].scratchDir
+	return fake.evalToFileArgsForCall[i].scope, fake.evalToFileArgsForCall[i].expression, fake.evalToFileArgsForCall[i].opHandle, fake.evalToFileArgsForCall[i].scratchDir
 }
 
 func (fake *Fake) EvalToFileReturns(result1 *model.Value, result2 error) {
@@ -331,18 +331,18 @@ func (fake *Fake) EvalToFileReturnsOnCall(i int, result1 *model.Value, result2 e
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToNumber(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToNumber(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToNumberMutex.Lock()
 	ret, specificReturn := fake.evalToNumberReturnsOnCall[len(fake.evalToNumberArgsForCall)]
 	fake.evalToNumberArgsForCall = append(fake.evalToNumberArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToNumber", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToNumber", []interface{}{scope, expression, opHandle})
 	fake.evalToNumberMutex.Unlock()
 	if fake.EvalToNumberStub != nil {
-		return fake.EvalToNumberStub(scope, expression, opDirHandle)
+		return fake.EvalToNumberStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -359,7 +359,7 @@ func (fake *Fake) EvalToNumberCallCount() int {
 func (fake *Fake) EvalToNumberArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToNumberMutex.RLock()
 	defer fake.evalToNumberMutex.RUnlock()
-	return fake.evalToNumberArgsForCall[i].scope, fake.evalToNumberArgsForCall[i].expression, fake.evalToNumberArgsForCall[i].opDirHandle
+	return fake.evalToNumberArgsForCall[i].scope, fake.evalToNumberArgsForCall[i].expression, fake.evalToNumberArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToNumberReturns(result1 *model.Value, result2 error) {
@@ -384,18 +384,18 @@ func (fake *Fake) EvalToNumberReturnsOnCall(i int, result1 *model.Value, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToObject(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToObject(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToObjectMutex.Lock()
 	ret, specificReturn := fake.evalToObjectReturnsOnCall[len(fake.evalToObjectArgsForCall)]
 	fake.evalToObjectArgsForCall = append(fake.evalToObjectArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToObject", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToObject", []interface{}{scope, expression, opHandle})
 	fake.evalToObjectMutex.Unlock()
 	if fake.EvalToObjectStub != nil {
-		return fake.EvalToObjectStub(scope, expression, opDirHandle)
+		return fake.EvalToObjectStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -412,7 +412,7 @@ func (fake *Fake) EvalToObjectCallCount() int {
 func (fake *Fake) EvalToObjectArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToObjectMutex.RLock()
 	defer fake.evalToObjectMutex.RUnlock()
-	return fake.evalToObjectArgsForCall[i].scope, fake.evalToObjectArgsForCall[i].expression, fake.evalToObjectArgsForCall[i].opDirHandle
+	return fake.evalToObjectArgsForCall[i].scope, fake.evalToObjectArgsForCall[i].expression, fake.evalToObjectArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToObjectReturns(result1 *model.Value, result2 error) {
@@ -437,18 +437,18 @@ func (fake *Fake) EvalToObjectReturnsOnCall(i int, result1 *model.Value, result2
 	}{result1, result2}
 }
 
-func (fake *Fake) EvalToString(scope map[string]*model.Value, expression interface{}, opDirHandle model.DataHandle) (*model.Value, error) {
+func (fake *Fake) EvalToString(scope map[string]*model.Value, expression interface{}, opHandle model.DataHandle) (*model.Value, error) {
 	fake.evalToStringMutex.Lock()
 	ret, specificReturn := fake.evalToStringReturnsOnCall[len(fake.evalToStringArgsForCall)]
 	fake.evalToStringArgsForCall = append(fake.evalToStringArgsForCall, struct {
-		scope       map[string]*model.Value
-		expression  interface{}
-		opDirHandle model.DataHandle
-	}{scope, expression, opDirHandle})
-	fake.recordInvocation("EvalToString", []interface{}{scope, expression, opDirHandle})
+		scope      map[string]*model.Value
+		expression interface{}
+		opHandle   model.DataHandle
+	}{scope, expression, opHandle})
+	fake.recordInvocation("EvalToString", []interface{}{scope, expression, opHandle})
 	fake.evalToStringMutex.Unlock()
 	if fake.EvalToStringStub != nil {
-		return fake.EvalToStringStub(scope, expression, opDirHandle)
+		return fake.EvalToStringStub(scope, expression, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -465,7 +465,7 @@ func (fake *Fake) EvalToStringCallCount() int {
 func (fake *Fake) EvalToStringArgsForCall(i int) (map[string]*model.Value, interface{}, model.DataHandle) {
 	fake.evalToStringMutex.RLock()
 	defer fake.evalToStringMutex.RUnlock()
-	return fake.evalToStringArgsForCall[i].scope, fake.evalToStringArgsForCall[i].expression, fake.evalToStringArgsForCall[i].opDirHandle
+	return fake.evalToStringArgsForCall[i].scope, fake.evalToStringArgsForCall[i].expression, fake.evalToStringArgsForCall[i].opHandle
 }
 
 func (fake *Fake) EvalToStringReturns(result1 *model.Value, result2 error) {

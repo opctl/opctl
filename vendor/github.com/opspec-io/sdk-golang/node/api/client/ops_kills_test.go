@@ -21,7 +21,7 @@ var _ = Context("KillOp", func() {
 		/* arrange */
 		providedCtx := context.TODO()
 		providedReq := model.KillOpReq{
-			OpId: "dummyRootOpId",
+			OpID: "dummyRootOpID",
 		}
 
 		expectedReqUrl := url.URL{}

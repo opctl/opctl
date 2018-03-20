@@ -60,7 +60,7 @@ type Client interface {
 		ctx context.Context,
 		req model.StartOpReq,
 	) (
-		opId string,
+		opID string,
 		err error,
 	)
 }

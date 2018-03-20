@@ -34,7 +34,7 @@ func NewBuntDBEventStore(
 
 type buntDBEventStore struct {
 	db               *buntdb.DB
-	eventsByRootOpId map[string][]*model.Event
+	eventsByRootOpID map[string][]*model.Event
 	eventsMutex      sync.RWMutex
 }
 
@@ -78,7 +78,7 @@ func (this *buntDBEventStore) List(ctx context.Context,
 					return false
 				}
 
-				if isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
+				if isRootOpIDExcludedByFilter(getEventRootOpID(event), filter) {
 					return true
 				}
 

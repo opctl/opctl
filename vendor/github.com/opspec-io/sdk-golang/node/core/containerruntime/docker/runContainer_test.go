@@ -207,9 +207,9 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
-					RootOpId: "dummyRootOpId",
+					RootOpID: "dummyRootOpID",
 				},
-				ContainerId: "dummyContainerId",
+				ContainerID: "dummyContainerID",
 				Image:       &model.DCGContainerCallImage{Ref: "dummyImage"},
 			}
 
@@ -242,14 +242,14 @@ var _ = Context("RunContainer", func() {
 			/* assert */
 			actualCtx,
 				actualImage,
-				actualContainerId,
-				actualRootOpId,
+				actualContainerID,
+				actualRootOpID,
 				actualEventPublisher := fakeImagePuller.PullArgsForCall(0)
 
 			Expect(actualCtx).ToNot(BeNil())
 			Expect(actualImage).To(Equal(providedReq.Image))
-			Expect(actualContainerId).To(Equal(providedReq.ContainerId))
-			Expect(actualRootOpId).To(Equal(providedReq.RootOpId))
+			Expect(actualContainerID).To(Equal(providedReq.ContainerID))
+			Expect(actualRootOpID).To(Equal(providedReq.RootOpID))
 			Expect(actualEventPublisher).To(Equal(providedEventPublisher))
 		})
 
@@ -257,9 +257,9 @@ var _ = Context("RunContainer", func() {
 			/* arrange */
 			providedReq := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
-					RootOpId: "dummyRootOpId",
+					RootOpID: "dummyRootOpID",
 				},
-				ContainerId: "dummyContainerId",
+				ContainerID: "dummyContainerID",
 				Image:       &model.DCGContainerCallImage{},
 				Name:        "dummyName",
 			}
@@ -313,7 +313,7 @@ var _ = Context("RunContainer", func() {
 			Expect(actualContainerConfig).To(Equal(expectedContainerConfig))
 			Expect(actualHostConfig).To(Equal(expectedHostConfig))
 			Expect(actualNetworkingConfig).To(Equal(expectedNetworkingConfig))
-			Expect(actualContainerName).To(Equal(providedReq.ContainerId))
+			Expect(actualContainerName).To(Equal(providedReq.ContainerID))
 		})
 	})
 })

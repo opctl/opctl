@@ -15,8 +15,8 @@ type serialCaller interface {
 	Call(
 		callId string,
 		inboundScope map[string]*model.Value,
-		rootOpId string,
-		opDirHandle model.DataHandle,
+		rootOpID string,
+		opHandle model.DataHandle,
 		scgSerialCall []*model.SCG,
 	) error
 }
@@ -44,8 +44,8 @@ type _serialCaller struct {
 func (this _serialCaller) Call(
 	callId string,
 	inboundScope map[string]*model.Value,
-	rootOpId string,
-	opDirHandle model.DataHandle,
+	rootOpID string,
+	opHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
 ) error {
 	outputs := map[string]*model.Value{}
@@ -59,8 +59,8 @@ func (this _serialCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				SerialCallEnded: &model.SerialCallEndedEvent{
-					CallId:   callId,
-					RootOpId: rootOpId,
+					CallID:   callId,
+					RootOpID: rootOpID,
 					Outputs:  outputs,
 				},
 			},
@@ -72,18 +72,18 @@ func (this _serialCaller) Call(
 	for _, scgCall := range scgSerialCall {
 		eventFilterSince := time.Now().UTC()
 
-		childCallId, err := this.uniqueStringFactory.Construct()
+		childCallID, err := this.uniqueStringFactory.Construct()
 		if nil != err {
 			// end run immediately on any error
 			return err
 		}
 
 		if err := this.caller.Call(
-			childCallId,
+			childCallID,
 			outputs,
 			scgCall,
-			opDirHandle,
-			rootOpId,
+			opHandle,
+			rootOpID,
 		); nil != err {
 			// end run immediately on any error
 			return err
@@ -96,7 +96,7 @@ func (this _serialCaller) Call(
 		eventChannel, _ := this.pubSub.Subscribe(
 			ctx,
 			model.EventFilter{
-				Roots: []string{rootOpId},
+				Roots: []string{rootOpID},
 				Since: &eventFilterSince,
 			},
 		)
@@ -105,22 +105,22 @@ func (this _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outputs w/ outputs, child outputs having precedence
 			switch {
-			case nil != event.OpEnded && event.OpEnded.OpId == childCallId:
+			case nil != event.OpEnded && event.OpEnded.OpID == childCallID:
 				for name, value := range event.OpEnded.Outputs {
 					outputs[name] = value
 				}
 				break eventLoop
-			case nil != event.ContainerExited && event.ContainerExited.ContainerId == childCallId:
+			case nil != event.ContainerExited && event.ContainerExited.ContainerID == childCallID:
 				for name, value := range event.ContainerExited.Outputs {
 					outputs[name] = value
 				}
 				break eventLoop
-			case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == childCallId:
+			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == childCallID:
 				for name, value := range event.SerialCallEnded.Outputs {
 					outputs[name] = value
 				}
 				break eventLoop
-			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == childCallId:
+			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == childCallID:
 				break eventLoop
 			}
 		}

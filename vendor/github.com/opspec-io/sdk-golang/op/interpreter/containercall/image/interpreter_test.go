@@ -43,7 +43,7 @@ var _ = Context("Interpreter", func() {
 					"name1": {String: &providedString1},
 				}
 
-				providedOpDirHandle := new(data.FakeHandle)
+				providedOpHandle := new(data.FakeHandle)
 
 				providedSCGContainerCallImage := &model.SCGContainerCallImage{
 					Ref: "dummyImageRef",
@@ -64,30 +64,30 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCallImage,
-					providedOpDirHandle,
+					providedOpHandle,
 				)
 
 				/* assert */
 				actualImageRefScope,
 					actualImageRef,
-					actualImageRefOpDirHandle := fakeExpression.EvalToStringArgsForCall(0)
+					actualImageRefOpHandle := fakeExpression.EvalToStringArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
-				Expect(actualImageRefOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualImageRefOpHandle).To(Equal(providedOpHandle))
 
 				actualUsernameScope,
 					actualUsername,
-					actualUsernameOpDirHandle := fakeExpression.EvalToStringArgsForCall(1)
+					actualUsernameOpHandle := fakeExpression.EvalToStringArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
-				Expect(actualUsernameOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualUsernameOpHandle).To(Equal(providedOpHandle))
 
 				actualPasswordScope,
 					actualPassword,
-					actualPasswordOpDirHandle := fakeExpression.EvalToStringArgsForCall(2)
+					actualPasswordOpHandle := fakeExpression.EvalToStringArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
-				Expect(actualPasswordOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualPasswordOpHandle).To(Equal(providedOpHandle))
 			})
 			It("should return expected dcg.Image", func() {
 

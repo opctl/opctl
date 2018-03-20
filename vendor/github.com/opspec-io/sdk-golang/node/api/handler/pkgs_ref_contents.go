@@ -28,7 +28,7 @@ func (hdlr _handler) pkgs_ref_contents(
 		}
 	}
 
-	opDirHandle, err := hdlr.core.ResolvePkg(
+	opHandle, err := hdlr.core.ResolveData(
 		httpReq.Context(),
 		pkgRef,
 		pullCreds,
@@ -49,7 +49,7 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
-	pkgContentsList, err := opDirHandle.ListContents(
+	pkgContentsList, err := opHandle.ListContents(
 		httpReq.Context(),
 	)
 	if nil != err {

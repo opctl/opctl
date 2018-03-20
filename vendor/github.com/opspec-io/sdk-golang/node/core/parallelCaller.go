@@ -17,8 +17,8 @@ type parallelCaller interface {
 	Call(
 		callId string,
 		inboundScope map[string]*model.Value,
-		rootOpId string,
-		opDirHandle model.DataHandle,
+		rootOpID string,
+		opHandle model.DataHandle,
 		scgParallelCall []*model.SCG,
 	) error
 }
@@ -49,8 +49,8 @@ type _parallelCaller struct {
 func (this _parallelCaller) Call(
 	callId string,
 	inboundScope map[string]*model.Value,
-	rootOpId string,
-	opDirHandle model.DataHandle,
+	rootOpID string,
+	opHandle model.DataHandle,
 	scgParallelCall []*model.SCG,
 ) error {
 
@@ -61,8 +61,8 @@ func (this _parallelCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				ParallelCallEnded: &model.ParallelCallEndedEvent{
-					CallId:   callId,
-					RootOpId: rootOpId,
+					CallID:   callId,
+					RootOpID: rootOpID,
 				},
 			},
 		)
@@ -87,7 +87,7 @@ func (this _parallelCaller) Call(
 		go func(childCall *model.SCG) {
 			defer wg.Done()
 
-			childCallId, err := this.uniqueStringFactory.Construct()
+			childCallID, err := this.uniqueStringFactory.Construct()
 			if nil != err {
 				childErrChannel <- err
 				// trigger cancellation
@@ -98,11 +98,11 @@ func (this _parallelCaller) Call(
 			go func() {
 				defer close(childDoneChannel)
 				if childErr := this.caller.Call(
-					childCallId,
+					childCallID,
 					inboundScope,
 					childCall,
-					opDirHandle,
-					rootOpId,
+					opHandle,
+					rootOpID,
 				); nil != childErr {
 					childErrChannel <- childErr
 					// trigger cancellation
@@ -113,7 +113,7 @@ func (this _parallelCaller) Call(
 			select {
 			case <-cancellationChannel:
 				// ensure resources immediately reclaimed
-				this.opKiller.Kill(model.KillOpReq{OpId: rootOpId})
+				this.opKiller.Kill(model.KillOpReq{OpID: rootOpID})
 			case <-childDoneChannel:
 			}
 		}(childCall)

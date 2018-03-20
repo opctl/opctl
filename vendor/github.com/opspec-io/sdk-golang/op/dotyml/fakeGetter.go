@@ -9,11 +9,11 @@ import (
 )
 
 type FakeGetter struct {
-	GetStub        func(ctx context.Context, opDirHandle model.DataHandle) (*model.PkgManifest, error)
+	GetStub        func(ctx context.Context, opHandle model.DataHandle) (*model.PkgManifest, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
-		ctx         context.Context
-		opDirHandle model.DataHandle
+		ctx      context.Context
+		opHandle model.DataHandle
 	}
 	getReturns struct {
 		result1 *model.PkgManifest
@@ -27,17 +27,17 @@ type FakeGetter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeGetter) Get(ctx context.Context, opDirHandle model.DataHandle) (*model.PkgManifest, error) {
+func (fake *FakeGetter) Get(ctx context.Context, opHandle model.DataHandle) (*model.PkgManifest, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
-		ctx         context.Context
-		opDirHandle model.DataHandle
-	}{ctx, opDirHandle})
-	fake.recordInvocation("Get", []interface{}{ctx, opDirHandle})
+		ctx      context.Context
+		opHandle model.DataHandle
+	}{ctx, opHandle})
+	fake.recordInvocation("Get", []interface{}{ctx, opHandle})
 	fake.getMutex.Unlock()
 	if fake.GetStub != nil {
-		return fake.GetStub(ctx, opDirHandle)
+		return fake.GetStub(ctx, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -54,7 +54,7 @@ func (fake *FakeGetter) GetCallCount() int {
 func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, model.DataHandle) {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
-	return fake.getArgsForCall[i].ctx, fake.getArgsForCall[i].opDirHandle
+	return fake.getArgsForCall[i].ctx, fake.getArgsForCall[i].opHandle
 }
 
 func (fake *FakeGetter) GetReturns(result1 *model.PkgManifest, result2 error) {

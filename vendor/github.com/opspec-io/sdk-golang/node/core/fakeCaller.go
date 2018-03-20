@@ -8,14 +8,14 @@ import (
 )
 
 type fakeCaller struct {
-	CallStub        func(id string, scope map[string]*model.Value, scg *model.SCG, opDirHandle model.DataHandle, rootOpId string) error
+	CallStub        func(id string, scope map[string]*model.Value, scg *model.SCG, opHandle model.DataHandle, rootOpID string) error
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		id          string
-		scope       map[string]*model.Value
-		scg         *model.SCG
-		opDirHandle model.DataHandle
-		rootOpId    string
+		id       string
+		scope    map[string]*model.Value
+		scg      *model.SCG
+		opHandle model.DataHandle
+		rootOpID string
 	}
 	callReturns struct {
 		result1 error
@@ -27,20 +27,20 @@ type fakeCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCaller) Call(id string, scope map[string]*model.Value, scg *model.SCG, opDirHandle model.DataHandle, rootOpId string) error {
+func (fake *fakeCaller) Call(id string, scope map[string]*model.Value, scg *model.SCG, opHandle model.DataHandle, rootOpID string) error {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		id          string
-		scope       map[string]*model.Value
-		scg         *model.SCG
-		opDirHandle model.DataHandle
-		rootOpId    string
-	}{id, scope, scg, opDirHandle, rootOpId})
-	fake.recordInvocation("Call", []interface{}{id, scope, scg, opDirHandle, rootOpId})
+		id       string
+		scope    map[string]*model.Value
+		scg      *model.SCG
+		opHandle model.DataHandle
+		rootOpID string
+	}{id, scope, scg, opHandle, rootOpID})
+	fake.recordInvocation("Call", []interface{}{id, scope, scg, opHandle, rootOpID})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(id, scope, scg, opDirHandle, rootOpId)
+		return fake.CallStub(id, scope, scg, opHandle, rootOpID)
 	}
 	if specificReturn {
 		return ret.result1
@@ -57,7 +57,7 @@ func (fake *fakeCaller) CallCallCount() int {
 func (fake *fakeCaller) CallArgsForCall(i int) (string, map[string]*model.Value, *model.SCG, model.DataHandle, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].id, fake.callArgsForCall[i].scope, fake.callArgsForCall[i].scg, fake.callArgsForCall[i].opDirHandle, fake.callArgsForCall[i].rootOpId
+	return fake.callArgsForCall[i].id, fake.callArgsForCall[i].scope, fake.callArgsForCall[i].scg, fake.callArgsForCall[i].opHandle, fake.callArgsForCall[i].rootOpID
 }
 
 func (fake *fakeCaller) CallReturns(result1 error) {

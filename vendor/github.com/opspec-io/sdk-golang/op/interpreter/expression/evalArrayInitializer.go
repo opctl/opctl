@@ -15,7 +15,7 @@ type evalArrayInitializerer interface {
 	Eval(
 		expression []interface{},
 		scope map[string]*model.Value,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) ([]interface{}, error)
 }
 
@@ -37,7 +37,7 @@ type _evalArrayInitializerer struct {
 func (eoi _evalArrayInitializerer) Eval(
 	expression []interface{},
 	scope map[string]*model.Value,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) ([]interface{}, error) {
 	arrayBytes, err := eoi.json.Marshal(expression)
 	if nil != err {
@@ -47,7 +47,7 @@ func (eoi _evalArrayInitializerer) Eval(
 	arrayJSON, err := eoi.interpolater.Interpolate(
 		string(arrayBytes),
 		scope,
-		opDirHandle,
+		opHandle,
 	)
 	if nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as arrayInitializer; error was %v", expression, err)

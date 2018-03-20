@@ -7,10 +7,10 @@ import (
 )
 
 type fakeContainerLogStreamer struct {
-	StreamStub        func(containerId string, dst io.Writer) error
+	StreamStub        func(containerID string, dst io.Writer) error
 	streamMutex       sync.RWMutex
 	streamArgsForCall []struct {
-		containerId string
+		containerID string
 		dst         io.Writer
 	}
 	streamReturns struct {
@@ -23,17 +23,17 @@ type fakeContainerLogStreamer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerLogStreamer) Stream(containerId string, dst io.Writer) error {
+func (fake *fakeContainerLogStreamer) Stream(containerID string, dst io.Writer) error {
 	fake.streamMutex.Lock()
 	ret, specificReturn := fake.streamReturnsOnCall[len(fake.streamArgsForCall)]
 	fake.streamArgsForCall = append(fake.streamArgsForCall, struct {
-		containerId string
+		containerID string
 		dst         io.Writer
-	}{containerId, dst})
-	fake.recordInvocation("Stream", []interface{}{containerId, dst})
+	}{containerID, dst})
+	fake.recordInvocation("Stream", []interface{}{containerID, dst})
 	fake.streamMutex.Unlock()
 	if fake.StreamStub != nil {
-		return fake.StreamStub(containerId, dst)
+		return fake.StreamStub(containerID, dst)
 	}
 	if specificReturn {
 		return ret.result1
@@ -50,7 +50,7 @@ func (fake *fakeContainerLogStreamer) StreamCallCount() int {
 func (fake *fakeContainerLogStreamer) StreamArgsForCall(i int) (string, io.Writer) {
 	fake.streamMutex.RLock()
 	defer fake.streamMutex.RUnlock()
-	return fake.streamArgsForCall[i].containerId, fake.streamArgsForCall[i].dst
+	return fake.streamArgsForCall[i].containerID, fake.streamArgsForCall[i].dst
 }
 
 func (fake *fakeContainerLogStreamer) StreamReturns(result1 error) {

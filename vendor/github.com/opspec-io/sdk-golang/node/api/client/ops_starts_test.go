@@ -35,7 +35,7 @@ var _ = Context("StartOp", func() {
 		expectedReqUrl.Path = api.URLOps_Starts
 
 		expectedReqBytes, _ := json.Marshal(providedReq)
-		expectedResult := "dummyOpId"
+		expectedResult := "dummyOpID"
 
 		expectedHttpReq, _ := http.NewRequest(
 			"POST",

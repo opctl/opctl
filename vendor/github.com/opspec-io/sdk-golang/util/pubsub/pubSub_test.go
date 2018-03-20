@@ -30,8 +30,8 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
-							RootOpId: "dummyRootOpId",
-							OpId:     "dummyOpId",
+							RootOpID: "dummyRootOpID",
+							OpID:     "dummyOpID",
 							PkgRef:   "dummyPkgRef",
 						},
 					}
@@ -52,12 +52,12 @@ var _ = Context("pubSub", func() {
 			Context("isn't subscribed", func() {
 				It("doesn't receive event", func() {
 					/* arrange */
-					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootOpId"}}
+					subscriberEventFilter := model.EventFilter{Roots: []string{"notPublishedRootOpID"}}
 
 					publishedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
-							RootOpId: "dummyRootOpId",
-							OpId:     "dummyOpId",
+							RootOpID: "dummyRootOpID",
+							OpID:     "dummyOpID",
 							PkgRef:   "dummyPkgRef",
 						},
 					}
@@ -82,8 +82,8 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent := model.Event{
 						ContainerStarted: &model.ContainerStartedEvent{
-							RootOpId:    "dummyRootOpId",
-							ContainerId: "dummyContainerId",
+							RootOpID:    "dummyRootOpID",
+							ContainerID: "dummyContainerID",
 							PkgRef:      "dummyPkgRef",
 						},
 					}
@@ -107,15 +107,15 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent := model.Event{
 						OpStarted: &model.OpStartedEvent{
-							RootOpId: "dummyRootOpId",
-							OpId:     "dummyOpId",
+							RootOpID: "dummyRootOpID",
+							OpID:     "dummyOpID",
 							PkgRef:   "dummyPkgRef",
 						},
 					}
 
 					providedFilter := model.EventFilter{
 						Roots: []string{
-							expectedEvent.OpStarted.RootOpId,
+							expectedEvent.OpStarted.RootOpID,
 						},
 					}
 
@@ -140,8 +140,8 @@ var _ = Context("pubSub", func() {
 					/* arrange */
 					expectedEvent1 := model.Event{
 						ContainerStarted: &model.ContainerStartedEvent{
-							RootOpId:    "dummyRootOpId",
-							ContainerId: "dummyContainerId",
+							RootOpID:    "dummyRootOpID",
+							ContainerID: "dummyContainerID",
 							PkgRef:      "dummyPkgRef",
 						},
 						Timestamp: time.Now(),
@@ -149,8 +149,8 @@ var _ = Context("pubSub", func() {
 
 					expectedEvent2 := model.Event{
 						OpStarted: &model.OpStartedEvent{
-							RootOpId: "dummyRootOpId",
-							OpId:     "dummyOpId",
+							RootOpID: "dummyRootOpID",
+							OpID:     "dummyOpID",
 							PkgRef:   "dummyPkgRef",
 						},
 						Timestamp: time.Now(),

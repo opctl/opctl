@@ -34,7 +34,7 @@ var _ = Context("Dirs", func() {
 				// implicitly bound
 				containerDirPath: "",
 			}
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
@@ -48,7 +48,7 @@ var _ = Context("Dirs", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				providedOpDirHandle,
+				providedOpHandle,
 				providedScope,
 				providedSCGContainerCallDirs,
 				providedScratchDir,
@@ -57,11 +57,11 @@ var _ = Context("Dirs", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpDirHandle := fakeExpression.EvalToDirArgsForCall(0)
+				actualOpHandle := fakeExpression.EvalToDirArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerDirPath)))
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("expression.EvalToDir errs", func() {
 			It("should return expected error", func() {

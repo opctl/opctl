@@ -8,10 +8,10 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(opDirHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error)
+	InterpretStub        func(opHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		opDirHandle           model.DataHandle
+		opHandle              model.DataHandle
 		scope                 map[string]*model.Value
 		scgContainerCallFiles map[string]interface{}
 		scratchDirPath        string
@@ -28,19 +28,19 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(opDirHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error) {
+func (fake *FakeInterpreter) Interpret(opHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]interface{}, scratchDirPath string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		opDirHandle           model.DataHandle
+		opHandle              model.DataHandle
 		scope                 map[string]*model.Value
 		scgContainerCallFiles map[string]interface{}
 		scratchDirPath        string
-	}{opDirHandle, scope, scgContainerCallFiles, scratchDirPath})
-	fake.recordInvocation("Interpret", []interface{}{opDirHandle, scope, scgContainerCallFiles, scratchDirPath})
+	}{opHandle, scope, scgContainerCallFiles, scratchDirPath})
+	fake.recordInvocation("Interpret", []interface{}{opHandle, scope, scgContainerCallFiles, scratchDirPath})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(opDirHandle, scope, scgContainerCallFiles, scratchDirPath)
+		return fake.InterpretStub(opHandle, scope, scgContainerCallFiles, scratchDirPath)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -57,7 +57,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.DataHandle, map[string]*model.Value, map[string]interface{}, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].opDirHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath
+	return fake.interpretArgsForCall[i].opHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 map[string]string, result2 error) {

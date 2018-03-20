@@ -43,7 +43,7 @@ func (c client) StartOp(
 	// don't leak resources
 	defer httpResp.Body.Close()
 
-	opIdBuffer, err := ioutil.ReadAll(httpResp.Body)
-	return string(opIdBuffer), nil
+	opIDBuffer, err := ioutil.ReadAll(httpResp.Body)
+	return string(opIDBuffer), nil
 
 }

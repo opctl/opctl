@@ -58,7 +58,7 @@ func (plr _puller) Pull(
 		return err
 	}
 
-	pkgPath := parsedPkgRef.ToPath(path)
+	opPath := parsedPkgRef.ToPath(path)
 
 	cloneOptions := &git.CloneOptions{
 		URL:           fmt.Sprintf("https://%v", parsedPkgRef.Name),
@@ -75,30 +75,30 @@ func (plr _puller) Pull(
 	}
 
 	if _, err := plr.git.PlainClone(
-		pkgPath,
+		opPath,
 		false,
 		cloneOptions,
 	); nil != err {
 		switch err.Error() {
 		case transport.ErrAuthenticationRequired.Error():
 			// clone failed; cleanup remnants
-			plr.os.RemoveAll(pkgPath)
+			plr.os.RemoveAll(opPath)
 			return model.ErrDataProviderAuthentication{}
 		case transport.ErrAuthorizationFailed.Error():
 			// clone failed; cleanup remnants
-			plr.os.RemoveAll(pkgPath)
+			plr.os.RemoveAll(opPath)
 			return model.ErrDataProviderAuthorization{}
 		case git.ErrRepositoryAlreadyExists.Error():
 			return nil
 			// NoOp on repo already exists
 		default:
 			// clone failed; cleanup remnants
-			plr.os.RemoveAll(pkgPath)
+			plr.os.RemoveAll(opPath)
 			return err
 		}
 	}
 
 	// remove pkg '.git' sub dir
-	return plr.os.RemoveAll(filepath.Join(pkgPath, ".git"))
+	return plr.os.RemoveAll(filepath.Join(opPath, ".git"))
 
 }

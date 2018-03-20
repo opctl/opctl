@@ -50,7 +50,7 @@ var _ = Context("Interpreter", func() {
 			providedScope := map[string]*model.Value{
 				envVarName: nil,
 			}
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 
 			fakeExpression := new(expression.Fake)
 			fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
@@ -66,17 +66,17 @@ var _ = Context("Interpreter", func() {
 					// implicitly bound to string
 					envVarName: nil,
 				},
-				providedOpDirHandle,
+				providedOpHandle,
 			)
 
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpDirHandle := fakeExpression.EvalToStringArgsForCall(0)
+				actualOpHandle := fakeExpression.EvalToStringArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", envVarName)))
-			Expect(actualOpDirHandle).To(Equal(actualOpDirHandle))
+			Expect(actualOpHandle).To(Equal(actualOpHandle))
 		})
 		Context("expression.EvalToString errs", func() {
 			It("should return expected result", func() {
