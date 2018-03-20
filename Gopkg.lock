@@ -744,7 +744,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "d405fc5c94e78da547f4e3c6ef4a3d30b0bdc855"
+  revision = "91dfe209b2fb04952b39bc79efd87e3b72fde73b"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -994,7 +994,7 @@
     "unix",
     "windows"
   ]
-  revision = "d8e400bc7db4870d786864138af681469693d18c"
+  revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
 
 [[projects]]
   name = "golang.org/x/text"

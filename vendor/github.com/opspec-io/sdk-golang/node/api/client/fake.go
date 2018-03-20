@@ -62,7 +62,7 @@ type Fake struct {
 		result1 []*model.PkgContent
 		result2 error
 	}
-	StartOpStub        func(ctx context.Context, req model.StartOpReq) (opId string, err error)
+	StartOpStub        func(ctx context.Context, req model.StartOpReq) (opID string, err error)
 	startOpMutex       sync.RWMutex
 	startOpArgsForCall []struct {
 		ctx context.Context
@@ -284,7 +284,7 @@ func (fake *Fake) ListPkgContentsReturnsOnCall(i int, result1 []*model.PkgConten
 	}{result1, result2}
 }
 
-func (fake *Fake) StartOp(ctx context.Context, req model.StartOpReq) (opId string, err error) {
+func (fake *Fake) StartOp(ctx context.Context, req model.StartOpReq) (opID string, err error) {
 	fake.startOpMutex.Lock()
 	ret, specificReturn := fake.startOpReturnsOnCall[len(fake.startOpArgsForCall)]
 	fake.startOpArgsForCall = append(fake.startOpArgsForCall, struct {

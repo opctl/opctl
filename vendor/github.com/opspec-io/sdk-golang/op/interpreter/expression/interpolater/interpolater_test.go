@@ -46,9 +46,9 @@ var _ = Context("Interpolate", func() {
 								panic(fmt.Errorf("error getting absPath for %v; error was %v", path, err))
 							}
 
-							opDirHandle, err := data.Resolve(context.Background(), absPath, pkgFsProvider)
+							opHandle, err := data.Resolve(context.Background(), absPath, pkgFsProvider)
 							if nil != err {
-								panic(fmt.Errorf("error getting opDirHandle for %v; error was %v", path, err))
+								panic(fmt.Errorf("error getting opHandle for %v; error was %v", path, err))
 							}
 
 							for _, scenario := range scenarioDotYml {
@@ -64,7 +64,7 @@ var _ = Context("Interpolate", func() {
 								actualResult, actualErr := objectUnderTest.Interpolate(
 									scenario.Template,
 									scenario.Scope,
-									opDirHandle,
+									opHandle,
 								)
 
 								/* assert */

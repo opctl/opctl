@@ -15,7 +15,7 @@ type evalObjectInitializerer interface {
 	Eval(
 		expression map[string]interface{},
 		scope map[string]*model.Value,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (map[string]interface{}, error)
 }
 
@@ -37,7 +37,7 @@ type _evalObjectInitializerer struct {
 func (eoi _evalObjectInitializerer) Eval(
 	expression map[string]interface{},
 	scope map[string]*model.Value,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (map[string]interface{}, error) {
 
 	// expand shorthand properties w/out mutating original (maps passed by reference in go)
@@ -58,7 +58,7 @@ func (eoi _evalObjectInitializerer) Eval(
 	objectJSON, err := eoi.interpolater.Interpolate(
 		string(objectBytes),
 		scope,
-		opDirHandle,
+		opHandle,
 	)
 	if nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as objectInitializer; error was %v", expression, err)

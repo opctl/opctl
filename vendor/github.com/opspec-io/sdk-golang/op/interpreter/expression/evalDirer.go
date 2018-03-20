@@ -22,7 +22,7 @@ type evalDirer interface {
 	EvalToDir(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -41,7 +41,7 @@ type _evalDirer struct {
 func (ed _evalDirer) EvalToDir(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case string:
@@ -59,18 +59,18 @@ func (ed _evalDirer) EvalToDir(
 			if strings.HasPrefix(refExpression, "/") {
 
 				// pkg fs ref
-				pkgFsRef, err := ed.interpolater.Interpolate(refExpression, scope, opDirHandle)
+				pkgFsRef, err := ed.interpolater.Interpolate(refExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
-				pkgPath := opDirHandle.Path()
-				dirValue = filepath.Join(*pkgPath, pkgFsRef)
+				opPath := opHandle.Path()
+				dirValue = filepath.Join(*opPath, pkgFsRef)
 
 			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
 
 				// scope ref w/ path
 				pathExpression := refParts[1]
-				path, err := ed.interpolater.Interpolate(pathExpression, scope, opDirHandle)
+				path, err := ed.interpolater.Interpolate(pathExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 				}

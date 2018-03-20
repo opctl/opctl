@@ -228,7 +228,7 @@ var _ = Context("Run", func() {
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					fakeOpspecNodeAPIClient := new(client.Fake)
-					fakeOpspecNodeAPIClient.StartOpReturns("dummyOpId", returnedError)
+					fakeOpspecNodeAPIClient.StartOpReturns("dummyOpID", returnedError)
 
 					objectUnderTest := _core{
 						opDotYmlGetter:      fakeOpDotYmlGetter,
@@ -251,11 +251,11 @@ var _ = Context("Run", func() {
 			Context("opspecNodeAPIClient.StartOp doesn't error", func() {
 				It("should call opspecNodeAPIClient.GetEventStream w/ expected args", func() {
 					/* arrange */
-					rootOpIdReturnedFromStartOp := "dummyRootOpId"
+					rootOpIDReturnedFromStartOp := "dummyRootOpID"
 					startTime := time.Now().UTC()
 					expectedReq := &model.GetEventStreamReq{
 						Filter: model.EventFilter{
-							Roots: []string{rootOpIdReturnedFromStartOp},
+							Roots: []string{rootOpIDReturnedFromStartOp},
 							Since: &startTime,
 						},
 					}
@@ -268,7 +268,7 @@ var _ = Context("Run", func() {
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					fakeOpspecNodeAPIClient := new(client.Fake)
-					fakeOpspecNodeAPIClient.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
+					fakeOpspecNodeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
 					fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
@@ -368,7 +368,7 @@ var _ = Context("Run", func() {
 					})
 					Context("event channel doesn't close", func() {
 						Context("event received", func() {
-							rootOpId := "dummyRootOpId"
+							rootOpID := "dummyRootOpID"
 							Context("OpEndedEvent", func() {
 								Context("Outcome==SUCCEEDED", func() {
 									It("should call exiter w/ expected args", func() {
@@ -376,10 +376,10 @@ var _ = Context("Run", func() {
 										opEndedEvent := model.Event{
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
-												OpId:     rootOpId,
+												OpID:     rootOpID,
 												PkgRef:   "dummyPkgRef",
 												Outcome:  model.OpOutcomeSucceeded,
-												RootOpId: rootOpId,
+												RootOpID: rootOpID,
 											},
 										}
 
@@ -397,7 +397,7 @@ var _ = Context("Run", func() {
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
 											opDotYmlGetter:      fakeOpDotYmlGetter,
@@ -423,10 +423,10 @@ var _ = Context("Run", func() {
 										opEndedEvent := model.Event{
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
-												OpId:     rootOpId,
+												OpID:     rootOpID,
 												PkgRef:   "dummyPkgRef",
 												Outcome:  model.OpOutcomeKilled,
-												RootOpId: rootOpId,
+												RootOpID: rootOpID,
 											},
 										}
 
@@ -444,7 +444,7 @@ var _ = Context("Run", func() {
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
 											opDotYmlGetter:      fakeOpDotYmlGetter,
@@ -471,10 +471,10 @@ var _ = Context("Run", func() {
 										opEndedEvent := model.Event{
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
-												OpId:     rootOpId,
+												OpID:     rootOpID,
 												PkgRef:   "dummyPkgRef",
 												Outcome:  model.OpOutcomeFailed,
-												RootOpId: rootOpId,
+												RootOpID: rootOpID,
 											},
 										}
 
@@ -492,7 +492,7 @@ var _ = Context("Run", func() {
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
 											opDotYmlGetter:      fakeOpDotYmlGetter,
@@ -518,10 +518,10 @@ var _ = Context("Run", func() {
 										opEndedEvent := model.Event{
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
-												OpId:     rootOpId,
+												OpID:     rootOpID,
 												PkgRef:   "dummyPkgRef",
 												Outcome:  "some unexpected outcome",
-												RootOpId: rootOpId,
+												RootOpID: rootOpID,
 											},
 										}
 
@@ -539,7 +539,7 @@ var _ = Context("Run", func() {
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
+										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
 											opDotYmlGetter:      fakeOpDotYmlGetter,

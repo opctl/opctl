@@ -12,7 +12,7 @@ type Interpreter interface {
 	Interpret(
 		outputArgs map[string]*model.Value,
 		outputParams map[string]*model.Param,
-		pkgPath string,
+		opPath string,
 	) (
 		map[string]*model.Value,
 		error,
@@ -35,13 +35,13 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	outputArgs map[string]*model.Value,
 	outputParams map[string]*model.Param,
-	pkgPath string,
+	opPath string,
 ) (
 	map[string]*model.Value,
 	error,
 ) {
 
-	argsWithDefaults := itp.paramsDefaulter.Default(outputArgs, outputParams, pkgPath)
+	argsWithDefaults := itp.paramsDefaulter.Default(outputArgs, outputParams, opPath)
 
 	return argsWithDefaults, itp.paramsValidator.Validate(argsWithDefaults, outputParams)
 

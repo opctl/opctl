@@ -15,7 +15,7 @@ type Installer interface {
 	Install(
 		ctx context.Context,
 		path string,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) error
 }
 

@@ -8,12 +8,12 @@ import (
 )
 
 type FakeDefaulter struct {
-	DefaultStub        func(args map[string]*model.Value, params map[string]*model.Param, pkgPath string) map[string]*model.Value
+	DefaultStub        func(args map[string]*model.Value, params map[string]*model.Param, opPath string) map[string]*model.Value
 	defaultMutex       sync.RWMutex
 	defaultArgsForCall []struct {
-		args    map[string]*model.Value
-		params  map[string]*model.Param
-		pkgPath string
+		args   map[string]*model.Value
+		params map[string]*model.Param
+		opPath string
 	}
 	defaultReturns struct {
 		result1 map[string]*model.Value
@@ -25,18 +25,18 @@ type FakeDefaulter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDefaulter) Default(args map[string]*model.Value, params map[string]*model.Param, pkgPath string) map[string]*model.Value {
+func (fake *FakeDefaulter) Default(args map[string]*model.Value, params map[string]*model.Param, opPath string) map[string]*model.Value {
 	fake.defaultMutex.Lock()
 	ret, specificReturn := fake.defaultReturnsOnCall[len(fake.defaultArgsForCall)]
 	fake.defaultArgsForCall = append(fake.defaultArgsForCall, struct {
-		args    map[string]*model.Value
-		params  map[string]*model.Param
-		pkgPath string
-	}{args, params, pkgPath})
-	fake.recordInvocation("Default", []interface{}{args, params, pkgPath})
+		args   map[string]*model.Value
+		params map[string]*model.Param
+		opPath string
+	}{args, params, opPath})
+	fake.recordInvocation("Default", []interface{}{args, params, opPath})
 	fake.defaultMutex.Unlock()
 	if fake.DefaultStub != nil {
-		return fake.DefaultStub(args, params, pkgPath)
+		return fake.DefaultStub(args, params, opPath)
 	}
 	if specificReturn {
 		return ret.result1
@@ -53,7 +53,7 @@ func (fake *FakeDefaulter) DefaultCallCount() int {
 func (fake *FakeDefaulter) DefaultArgsForCall(i int) (map[string]*model.Value, map[string]*model.Param, string) {
 	fake.defaultMutex.RLock()
 	defer fake.defaultMutex.RUnlock()
-	return fake.defaultArgsForCall[i].args, fake.defaultArgsForCall[i].params, fake.defaultArgsForCall[i].pkgPath
+	return fake.defaultArgsForCall[i].args, fake.defaultArgsForCall[i].params, fake.defaultArgsForCall[i].opPath
 }
 
 func (fake *FakeDefaulter) DefaultReturns(result1 map[string]*model.Value) {

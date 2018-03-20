@@ -137,12 +137,12 @@ var _ = Context("core", func() {
 						expectedSCGOpCall.Outputs[name] = ""
 					}
 
-					expectedOpId := "dummyOpId"
+					expectedOpID := "dummyOpID"
 
 					fakeOpCaller := new(fakeOpCaller)
 
 					fakeUniqueStringFactory := new(uniquestring.Fake)
-					fakeUniqueStringFactory.ConstructReturns(expectedOpId, nil)
+					fakeUniqueStringFactory.ConstructReturns(expectedOpID, nil)
 
 					objectUnderTest := _core{
 						containerRuntime:    new(containerruntime.Fake),
@@ -164,15 +164,15 @@ var _ = Context("core", func() {
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
 					actualInboundScope,
-						actualOpId,
-						actualOpDirHandle,
-						actualRootOpId,
+						actualOpID,
+						actualOpHandle,
+						actualRootOpID,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 					Expect(actualInboundScope).To(Equal(providedReq.Args))
-					Expect(actualOpId).To(Equal(expectedOpId))
-					Expect(actualOpDirHandle).To(Equal(fakeDataHandle))
-					Expect(actualRootOpId).To(Equal(actualOpId))
+					Expect(actualOpID).To(Equal(expectedOpID))
+					Expect(actualOpHandle).To(Equal(fakeDataHandle))
+					Expect(actualRootOpID).To(Equal(actualOpID))
 					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 				})
 			})

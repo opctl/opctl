@@ -12,7 +12,7 @@ type Validator interface {
 	// Validate validates an op
 	Validate(
 		ctx context.Context,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) []error
 }
 
@@ -29,12 +29,12 @@ type _validator struct {
 
 func (vdr _validator) Validate(
 	ctx context.Context,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) []error {
 	errs := []error{}
 	if _, err := vdr.dotYmlGetter.Get(
 		ctx,
-		opDirHandle,
+		opHandle,
 	); nil != err {
 		errs = append(errs, err)
 	}

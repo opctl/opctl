@@ -5,14 +5,14 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-// Resolve attempts to resolve a pkg via local filesystem or git
+// Resolve attempts to resolve data via local filesystem or git
 // nil pullCreds will be ignored
 //
 // expected errs:
 //  - ErrDataProviderAuthentication on authentication failure
 //  - ErrDataProviderAuthorization on authorization failure
 //  - ErrDataRefResolution on resolution failure
-func (this _core) ResolvePkg(
+func (this _core) ResolveData(
 	ctx context.Context,
 	pkgRef string,
 	pullCreds *model.PullCreds,
@@ -24,6 +24,6 @@ func (this _core) ResolvePkg(
 		ctx,
 		pkgRef,
 		this.data.NewFSProvider(),
-		this.data.NewGitProvider(this.pkgCachePath, pullCreds),
+		this.data.NewGitProvider(this.dataCachePath, pullCreds),
 	)
 }

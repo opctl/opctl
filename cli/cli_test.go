@@ -259,16 +259,16 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedOpId := "dummyOpId"
+					expectedOpID := "dummyOpID"
 
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
-					objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpId})
+					objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpID})
 
 					/* assert */
 					Expect(fakeCore.OpKillCallCount()).To(Equal(1))
-					Expect(fakeCore.OpKillArgsForCall(0)).To(Equal(expectedOpId))
+					Expect(fakeCore.OpKillArgsForCall(0)).To(Equal(expectedOpID))
 				})
 			})
 

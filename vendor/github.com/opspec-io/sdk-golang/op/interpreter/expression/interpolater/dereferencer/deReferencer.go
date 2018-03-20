@@ -17,7 +17,7 @@ type DeReferencer interface {
 	DeReference(
 		ref string,
 		scope map[string]*model.Value,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (string, bool, error)
 }
 
@@ -43,7 +43,7 @@ type _deReferencer struct {
 func (dr _deReferencer) DeReference(
 	ref string,
 	scope map[string]*model.Value,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (string, bool, error) {
 
 	var (
@@ -52,7 +52,7 @@ func (dr _deReferencer) DeReference(
 	)
 
 	var isPkgFilePathRef bool
-	if value, isPkgFilePathRef, err = dr.pkgFilePathDeReferencer.DeReferencePkgFilePath(ref, scope, opDirHandle); isPkgFilePathRef {
+	if value, isPkgFilePathRef, err = dr.pkgFilePathDeReferencer.DeReferencePkgFilePath(ref, scope, opHandle); isPkgFilePathRef {
 		return value, isPkgFilePathRef, err
 	}
 

@@ -62,7 +62,7 @@ func (this _core) Run(
 	)
 
 	// start op
-	rootOpId, err := this.opspecNodeAPIClient.StartOp(
+	rootOpID, err := this.opspecNodeAPIClient.StartOp(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
@@ -80,7 +80,7 @@ func (this _core) Run(
 	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
-				Roots: []string{rootOpId},
+				Roots: []string{rootOpID},
 				Since: &startTime,
 			},
 		},
@@ -102,7 +102,7 @@ func (this _core) Run(
 				this.opspecNodeAPIClient.KillOp(
 					ctx,
 					model.KillOpReq{
-						OpId: rootOpId,
+						OpID: rootOpID,
 					},
 				)
 			} else {
@@ -119,7 +119,7 @@ func (this _core) Run(
 			this.cliOutput.Event(&event)
 
 			if nil != event.OpEnded {
-				if event.OpEnded.OpId == rootOpId {
+				if event.OpEnded.OpID == rootOpID {
 					switch event.OpEnded.Outcome {
 					case model.OpOutcomeSucceeded:
 						this.cliExiter.Exit(cliexiter.ExitReq{Code: 0})

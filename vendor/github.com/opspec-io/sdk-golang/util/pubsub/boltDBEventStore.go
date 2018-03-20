@@ -42,7 +42,7 @@ func NewBoltDBEventStore(
 
 type boltDBEventStore struct {
 	db               *bolt.DB
-	eventsByRootOpId map[string][]*model.Event
+	eventsByRootOpID map[string][]*model.Event
 	eventsMutex      sync.RWMutex
 }
 
@@ -88,7 +88,7 @@ func (this *boltDBEventStore) List(ctx context.Context,
 					return err
 				}
 
-				if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
+				if !isRootOpIDExcludedByFilter(getEventRootOpID(event), filter) {
 					eventChannel <- event
 				}
 			}

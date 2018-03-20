@@ -5,14 +5,14 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-func isRootOpIdExcludedByFilter(
-	rootOpId string,
+func isRootOpIDExcludedByFilter(
+	rootOpID string,
 	filter model.EventFilter,
 ) bool {
 	if nil != filter.Roots {
 		isMatchFound := false
-		for _, includedRootOpId := range filter.Roots {
-			if includedRootOpId == rootOpId {
+		for _, includedRootOpID := range filter.Roots {
+			if includedRootOpID == rootOpID {
 				isMatchFound = true
 				break
 			}
@@ -24,28 +24,28 @@ func isRootOpIdExcludedByFilter(
 	return false
 }
 
-func getEventRootOpId(
+func getEventRootOpID(
 	event model.Event,
 ) string {
 	switch {
 	case nil != event.ContainerExited:
-		return event.ContainerExited.RootOpId
+		return event.ContainerExited.RootOpID
 	case nil != event.ContainerStarted:
-		return event.ContainerStarted.RootOpId
+		return event.ContainerStarted.RootOpID
 	case nil != event.ContainerStdErrWrittenTo:
-		return event.ContainerStdErrWrittenTo.RootOpId
+		return event.ContainerStdErrWrittenTo.RootOpID
 	case nil != event.ContainerStdOutWrittenTo:
-		return event.ContainerStdOutWrittenTo.RootOpId
+		return event.ContainerStdOutWrittenTo.RootOpID
 	case nil != event.OpErred:
-		return event.OpErred.RootOpId
+		return event.OpErred.RootOpID
 	case nil != event.OpEnded:
-		return event.OpEnded.RootOpId
+		return event.OpEnded.RootOpID
 	case nil != event.OpStarted:
-		return event.OpStarted.RootOpId
+		return event.OpStarted.RootOpID
 	case nil != event.ParallelCallEnded:
-		return event.ParallelCallEnded.RootOpId
+		return event.ParallelCallEnded.RootOpID
 	case nil != event.SerialCallEnded:
-		return event.SerialCallEnded.RootOpId
+		return event.SerialCallEnded.RootOpID
 	default:
 		panic(fmt.Sprintf("Received unexpected event %v\n", event))
 	}

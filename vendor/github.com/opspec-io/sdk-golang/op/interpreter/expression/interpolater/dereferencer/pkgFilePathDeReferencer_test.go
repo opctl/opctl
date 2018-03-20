@@ -11,7 +11,7 @@ import (
 
 var _ = Context("pkgFilePathDeReferencer", func() {
 	Context("ref is pkg file path ref", func() {
-		It("should call opDirHandle.GetContent w/ expected args", func() {
+		It("should call opHandle.GetContent w/ expected args", func() {
 			/* arrange */
 			providedRef := "/dummyRef"
 			fakeDataHandle := new(data.FakeHandle)

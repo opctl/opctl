@@ -12,7 +12,7 @@ type Getter interface {
 	// Get gets the validated, deserialized representation of an "op.yml" file
 	Get(
 		ctx context.Context,
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (
 		*model.PkgManifest,
 		error,
@@ -33,12 +33,12 @@ type _getter struct {
 
 func (gtr _getter) Get(
 	ctx context.Context,
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (
 	*model.PkgManifest,
 	error,
 ) {
-	manifestReader, err := opDirHandle.GetContent(ctx, FileName)
+	manifestReader, err := opHandle.GetContent(ctx, FileName)
 	if nil != err {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ type Interpreter interface {
 		name string,
 		value interface{},
 		param *model.Param,
-		parentOpDirHandle model.DataHandle,
+		parentOpHandle model.DataHandle,
 		scope map[string]*model.Value,
 		opScratchDir string,
 	) (*model.Value, error)
@@ -34,7 +34,7 @@ func (itp _interpreter) Interpret(
 	name string,
 	valueExpression interface{},
 	param *model.Param,
-	parentOpDirHandle model.DataHandle,
+	parentOpHandle model.DataHandle,
 	scope map[string]*model.Value,
 	opScratchDir string,
 ) (*model.Value, error) {
@@ -54,43 +54,43 @@ func (itp _interpreter) Interpret(
 
 	switch {
 	case nil != param.Array:
-		arrayValue, err := itp.expression.EvalToArray(scope, valueExpression, parentOpDirHandle)
+		arrayValue, err := itp.expression.EvalToArray(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return arrayValue, nil
 	case nil != param.Boolean:
-		booleanValue, err := itp.expression.EvalToBoolean(scope, valueExpression, parentOpDirHandle)
+		booleanValue, err := itp.expression.EvalToBoolean(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return booleanValue, nil
 	case nil != param.File:
-		fileValue, err := itp.expression.EvalToFile(scope, valueExpression, parentOpDirHandle, opScratchDir)
+		fileValue, err := itp.expression.EvalToFile(scope, valueExpression, parentOpHandle, opScratchDir)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return fileValue, nil
 	case nil != param.Dir:
-		dirValue, err := itp.expression.EvalToDir(scope, valueExpression, parentOpDirHandle)
+		dirValue, err := itp.expression.EvalToDir(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return dirValue, nil
 	case nil != param.Number:
-		numberValue, err := itp.expression.EvalToNumber(scope, valueExpression, parentOpDirHandle)
+		numberValue, err := itp.expression.EvalToNumber(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return numberValue, nil
 	case nil != param.Object:
-		objectValue, err := itp.expression.EvalToObject(scope, valueExpression, parentOpDirHandle)
+		objectValue, err := itp.expression.EvalToObject(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return objectValue, nil
 	case nil != param.String:
-		stringValue, err := itp.expression.EvalToString(scope, valueExpression, parentOpDirHandle)
+		stringValue, err := itp.expression.EvalToString(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}

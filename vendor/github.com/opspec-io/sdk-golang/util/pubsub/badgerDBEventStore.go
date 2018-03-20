@@ -95,7 +95,7 @@ func (er badgerDBEventStore) List(
 					return err
 				}
 
-				if !isRootOpIdExcludedByFilter(getEventRootOpId(event), filter) {
+				if !isRootOpIDExcludedByFilter(getEventRootOpID(event), filter) {
 					select {
 					case <-ctx.Done():
 						return ctx.Err()

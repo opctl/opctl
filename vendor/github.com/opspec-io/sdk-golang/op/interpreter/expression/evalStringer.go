@@ -12,7 +12,7 @@ type evalStringer interface {
 	EvalToString(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -35,7 +35,7 @@ type _evalStringer struct {
 func (es _evalStringer) EvalToString(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	var value *model.Value
 
@@ -46,7 +46,7 @@ func (es _evalStringer) EvalToString(
 		objectValue, err := es.evalObjectInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
@@ -57,7 +57,7 @@ func (es _evalStringer) EvalToString(
 		arrayValue, err := es.evalArrayInitializerer.Eval(
 			expression,
 			scope,
-			opDirHandle,
+			opHandle,
 		)
 		if nil != err {
 			return nil, fmt.Errorf("unable to evaluate %+v to string; error was %v", expression, err)
@@ -71,7 +71,7 @@ func (es _evalStringer) EvalToString(
 			stringValue, err := es.interpolater.Interpolate(
 				expression,
 				scope,
-				opDirHandle,
+				opHandle,
 			)
 			if nil != err {
 				return nil, err

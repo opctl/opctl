@@ -13,7 +13,7 @@ type evalBooleaner interface {
 	EvalToBoolean(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -32,7 +32,7 @@ type _evalBooleaner struct {
 func (ea _evalBooleaner) EvalToBoolean(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case bool:
@@ -45,7 +45,7 @@ func (ea _evalBooleaner) EvalToBoolean(
 			stringValue, err := ea.interpolater.Interpolate(
 				expression,
 				scope,
-				opDirHandle,
+				opHandle,
 			)
 			if nil != err {
 				return nil, err

@@ -26,11 +26,11 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				objectUnderTest.Call(
-					"dummyCallId",
+					"dummyCallID",
 					map[string]*model.Value{},
 					nil,
 					new(data.FakeHandle),
-					"dummyRootOpId",
+					"dummyRootOpID",
 				)
 			})
 		})
@@ -39,36 +39,36 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeContainerCaller := new(fakeContainerCaller)
 
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
 				}
-				providedOpDirHandle := new(data.FakeHandle)
-				providedRootOpId := "dummyRootOpId"
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
 
 				objectUnderTest := newCaller(fakeContainerCaller)
 
 				/* act */
 				objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedArgs,
 					providedSCG,
-					providedOpDirHandle,
-					providedRootOpId,
+					providedOpHandle,
+					providedRootOpID,
 				)
 
 				/* assert */
 				actualArgs,
-					actualCallId,
+					actualCallID,
 					actualSCG,
-					actualOpDirHandle,
-					actualRootOpId := fakeContainerCaller.CallArgsForCall(0)
-				Expect(actualCallId).To(Equal(providedCallId))
+					actualOpHandle,
+					actualRootOpID := fakeContainerCaller.CallArgsForCall(0)
+				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualSCG).To(Equal(providedSCG.Container))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
-				Expect(actualRootOpId).To(Equal(providedRootOpId))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
 		Context("Op SCG", func() {
@@ -76,7 +76,7 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeOpCaller := new(fakeOpCaller)
 
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Op: &model.SCGOpCall{
@@ -85,31 +85,31 @@ var _ = Context("caller", func() {
 						},
 					},
 				}
-				providedOpDirHandle := new(data.FakeHandle)
-				providedRootOpId := "dummyRootOpId"
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
 				objectUnderTest.setOpCaller(fakeOpCaller)
 
 				/* act */
 				objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedArgs,
 					providedSCG,
-					providedOpDirHandle,
-					providedRootOpId,
+					providedOpHandle,
+					providedRootOpID,
 				)
 
 				/* assert */
 				actualArgs,
-					actualCallId,
+					actualCallID,
 					actualPkgRef,
-					actualRootOpId,
+					actualRootOpID,
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
-				Expect(actualCallId).To(Equal(providedCallId))
+				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualPkgRef).To(Equal(providedOpDirHandle))
-				Expect(actualRootOpId).To(Equal(providedRootOpId))
+				Expect(actualPkgRef).To(Equal(providedOpHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
 		})
@@ -118,37 +118,37 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeParallelCaller := new(fakeParallelCaller)
 
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Parallel: []*model.SCG{
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpDirHandle := new(data.FakeHandle)
-				providedRootOpId := "dummyRootOpId"
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
 				objectUnderTest.setParallelCaller(fakeParallelCaller)
 
 				/* act */
 				objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedArgs,
 					providedSCG,
-					providedOpDirHandle,
-					providedRootOpId,
+					providedOpHandle,
+					providedRootOpID,
 				)
 
 				/* assert */
-				providedCallId,
+				providedCallID,
 					actualArgs,
-					actualRootOpId,
-					actualOpDirHandle,
+					actualRootOpID,
+					actualOpHandle,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualRootOpId).To(Equal(providedRootOpId))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
 				Expect(actualSCG).To(Equal(providedSCG.Parallel))
 			})
 		})
@@ -158,38 +158,38 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeSerialCaller := new(fakeSerialCaller)
 
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Serial: []*model.SCG{
 						{Container: &model.SCGContainerCall{}},
 					},
 				}
-				providedOpDirHandle := new(data.FakeHandle)
-				providedRootOpId := "dummyRootOpId"
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
 				objectUnderTest.setSerialCaller(fakeSerialCaller)
 
 				/* act */
 				objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedArgs,
 					providedSCG,
-					providedOpDirHandle,
-					providedRootOpId,
+					providedOpHandle,
+					providedRootOpID,
 				)
 
 				/* assert */
-				actualCallId,
+				actualCallID,
 					actualArgs,
-					actualRootOpId,
-					actualOpDirHandle,
+					actualRootOpID,
+					actualOpHandle,
 					actualSCG := fakeSerialCaller.CallArgsForCall(0)
-				Expect(actualCallId).To(Equal(providedCallId))
+				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualRootOpId).To(Equal(providedRootOpId))
-				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
 				Expect(actualSCG).To(Equal(providedSCG.Serial))
 			})
 		})
@@ -198,11 +198,11 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeSerialCaller := new(fakeSerialCaller)
 
-				providedCallId := "dummyCallId"
+				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
-				providedOpDirHandle := new(data.FakeHandle)
-				providedRootOpId := "dummyRootOpId"
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "dummyRootOpID"
 				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
 
 				objectUnderTest := newCaller(new(fakeContainerCaller))
@@ -210,11 +210,11 @@ var _ = Context("caller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					providedCallId,
+					providedCallID,
 					providedArgs,
 					providedSCG,
-					providedOpDirHandle,
-					providedRootOpId,
+					providedOpHandle,
+					providedRootOpID,
 				)
 
 				/* assert */

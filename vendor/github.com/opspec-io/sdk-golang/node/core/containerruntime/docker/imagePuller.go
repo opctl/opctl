@@ -17,8 +17,8 @@ type imagePuller interface {
 	Pull(
 		ctx context.Context,
 		dcgContainerImage *model.DCGContainerCallImage,
-		containerId string,
-		rootOpId string,
+		containerID string,
+		rootOpID string,
 		eventPublisher pubsub.EventPublisher,
 	) error
 }
@@ -38,8 +38,8 @@ type _imagePuller struct {
 func (ip _imagePuller) Pull(
 	ctx context.Context,
 	dcgContainerImage *model.DCGContainerCallImage,
-	containerId string,
-	rootOpId string,
+	containerID string,
+	rootOpID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
 
@@ -67,7 +67,7 @@ func (ip _imagePuller) Pull(
 	}
 	defer imagePullResp.Close()
 
-	stdOutWriter := NewStdOutWriteCloser(eventPublisher, containerId, rootOpId)
+	stdOutWriter := NewStdOutWriteCloser(eventPublisher, containerID, rootOpID)
 	defer stdOutWriter.Close()
 
 	dec := json.NewDecoder(imagePullResp)

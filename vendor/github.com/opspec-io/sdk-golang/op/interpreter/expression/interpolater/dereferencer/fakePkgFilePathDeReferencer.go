@@ -8,12 +8,12 @@ import (
 )
 
 type fakePkgFilePathDeReferencer struct {
-	DeReferencePkgFilePathStub        func(ref string, scope map[string]*model.Value, opDirHandle model.DataHandle) (string, bool, error)
+	DeReferencePkgFilePathStub        func(ref string, scope map[string]*model.Value, opHandle model.DataHandle) (string, bool, error)
 	deReferencePkgFilePathMutex       sync.RWMutex
 	deReferencePkgFilePathArgsForCall []struct {
-		ref         string
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
+		ref      string
+		scope    map[string]*model.Value
+		opHandle model.DataHandle
 	}
 	deReferencePkgFilePathReturns struct {
 		result1 string
@@ -29,18 +29,18 @@ type fakePkgFilePathDeReferencer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakePkgFilePathDeReferencer) DeReferencePkgFilePath(ref string, scope map[string]*model.Value, opDirHandle model.DataHandle) (string, bool, error) {
+func (fake *fakePkgFilePathDeReferencer) DeReferencePkgFilePath(ref string, scope map[string]*model.Value, opHandle model.DataHandle) (string, bool, error) {
 	fake.deReferencePkgFilePathMutex.Lock()
 	ret, specificReturn := fake.deReferencePkgFilePathReturnsOnCall[len(fake.deReferencePkgFilePathArgsForCall)]
 	fake.deReferencePkgFilePathArgsForCall = append(fake.deReferencePkgFilePathArgsForCall, struct {
-		ref         string
-		scope       map[string]*model.Value
-		opDirHandle model.DataHandle
-	}{ref, scope, opDirHandle})
-	fake.recordInvocation("DeReferencePkgFilePath", []interface{}{ref, scope, opDirHandle})
+		ref      string
+		scope    map[string]*model.Value
+		opHandle model.DataHandle
+	}{ref, scope, opHandle})
+	fake.recordInvocation("DeReferencePkgFilePath", []interface{}{ref, scope, opHandle})
 	fake.deReferencePkgFilePathMutex.Unlock()
 	if fake.DeReferencePkgFilePathStub != nil {
-		return fake.DeReferencePkgFilePathStub(ref, scope, opDirHandle)
+		return fake.DeReferencePkgFilePathStub(ref, scope, opHandle)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
@@ -57,7 +57,7 @@ func (fake *fakePkgFilePathDeReferencer) DeReferencePkgFilePathCallCount() int {
 func (fake *fakePkgFilePathDeReferencer) DeReferencePkgFilePathArgsForCall(i int) (string, map[string]*model.Value, model.DataHandle) {
 	fake.deReferencePkgFilePathMutex.RLock()
 	defer fake.deReferencePkgFilePathMutex.RUnlock()
-	return fake.deReferencePkgFilePathArgsForCall[i].ref, fake.deReferencePkgFilePathArgsForCall[i].scope, fake.deReferencePkgFilePathArgsForCall[i].opDirHandle
+	return fake.deReferencePkgFilePathArgsForCall[i].ref, fake.deReferencePkgFilePathArgsForCall[i].scope, fake.deReferencePkgFilePathArgsForCall[i].opHandle
 }
 
 func (fake *fakePkgFilePathDeReferencer) DeReferencePkgFilePathReturns(result1 string, result2 bool, result3 error) {

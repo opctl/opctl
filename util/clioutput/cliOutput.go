@@ -77,7 +77,7 @@ func (this _cliOutput) Event(event *model.Event) {
 func (this _cliOutput) containerExited(event *model.Event) {
 	this.Info(
 		"ContainerExited Id='%v' PkgRef='%v' ExitCode='%v' Timestamp='%v'\n",
-		event.ContainerExited.ContainerId,
+		event.ContainerExited.ContainerID,
 		event.ContainerExited.PkgRef,
 		event.ContainerExited.ExitCode,
 		event.Timestamp.Format(time.RFC3339),
@@ -87,7 +87,7 @@ func (this _cliOutput) containerExited(event *model.Event) {
 func (this _cliOutput) containerStarted(event *model.Event) {
 	this.Info(
 		"ContainerStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
-		event.ContainerStarted.ContainerId,
+		event.ContainerStarted.ContainerID,
 		event.ContainerStarted.PkgRef,
 		event.Timestamp.Format(time.RFC3339),
 	)
@@ -104,7 +104,7 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 func (this _cliOutput) opErred(event *model.Event) {
 	this.Error(
 		"OpErred Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
-		event.OpErred.OpId,
+		event.OpErred.OpID,
 		event.OpErred.PkgRef,
 		event.Timestamp.Format(time.RFC3339),
 		event.OpErred.Msg,
@@ -114,7 +114,7 @@ func (this _cliOutput) opErred(event *model.Event) {
 func (this _cliOutput) opEnded(event *model.Event) {
 	message := fmt.Sprintf(
 		"OpEnded Id='%v' PkgRef='%v' Outcome='%v' Timestamp='%v'\n",
-		event.OpEnded.OpId,
+		event.OpEnded.OpID,
 		event.OpEnded.PkgRef,
 		event.OpEnded.Outcome,
 		event.Timestamp.Format(time.RFC3339),
@@ -132,7 +132,7 @@ func (this _cliOutput) opEnded(event *model.Event) {
 func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
 		"OpStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
-		event.OpStarted.OpId,
+		event.OpStarted.OpID,
 		event.OpStarted.PkgRef,
 		event.Timestamp.Format(time.RFC3339),
 	)

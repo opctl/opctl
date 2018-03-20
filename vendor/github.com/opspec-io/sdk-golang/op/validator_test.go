@@ -81,7 +81,7 @@ var _ = Describe("Validator", func() {
 		It("should call dotYmlGetter.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 
 			fakeDotYmlGetter := new(dotyml.FakeGetter)
 			// error to trigger immediate return
@@ -94,15 +94,15 @@ var _ = Describe("Validator", func() {
 			/* act */
 			objectUnderTest.Validate(
 				providedCtx,
-				providedOpDirHandle,
+				providedOpHandle,
 			)
 
 			/* assert */
 			actualCtx,
-				actualOpDirHandle := fakeDotYmlGetter.GetArgsForCall(0)
+				actualOpHandle := fakeDotYmlGetter.GetArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("dotYmlGetter.Get errs", func() {
 			It("should return expected result", func() {

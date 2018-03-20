@@ -28,15 +28,15 @@ var _ = Context("Interpreter", func() {
 		It("calls os.MkdirAll w/ expected scratchdir path & returns error", func() {
 			/* arrange */
 			rootFSPath := "/dummyRootFSPath"
-			providedContainerId := "dummyContainerId"
-			providedRootOpId := "dummyRootOpId"
+			providedContainerID := "dummyContainerID"
+			providedRootOpID := "dummyRootOpID"
 
 			expectedScratchDirPath := filepath.Join(
 				rootFSPath,
 				"dcg",
-				providedRootOpId,
+				providedRootOpID,
 				"containers",
-				providedContainerId,
+				providedContainerID,
 				"fs",
 			)
 			expectedScratchDirMode := os.FileMode(0700)
@@ -56,8 +56,8 @@ var _ = Context("Interpreter", func() {
 			_, actualError := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				&model.SCGContainerCall{},
-				providedContainerId,
-				providedRootOpId,
+				providedContainerID,
+				providedRootOpID,
 				new(data.FakeHandle),
 			)
 
@@ -75,7 +75,7 @@ var _ = Context("Interpreter", func() {
 				providedCurrentScope := map[string]*model.Value{
 					"name1": {String: &providedString1},
 				}
-				providedOpDirHandle := new(data.FakeHandle)
+				providedOpHandle := new(data.FakeHandle)
 
 				providedSCGContainerCall := &model.SCGContainerCall{
 					Cmd: []interface{}{
@@ -101,19 +101,19 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					providedCurrentScope,
 					providedSCGContainerCall,
-					"dummyContainerId",
-					"dummyRootOpId",
-					providedOpDirHandle,
+					"dummyContainerID",
+					"dummyRootOpID",
+					providedOpHandle,
 				)
 
 				/* assert */
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
 					actualScope,
 						actualCmdEntry,
-						actualOpDirHandle := fakeExpression.EvalToStringArgsForCall(expectedCmdIndex)
+						actualOpHandle := fakeExpression.EvalToStringArgsForCall(expectedCmdIndex)
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
-					Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+					Expect(actualOpHandle).To(Equal(providedOpHandle))
 				}
 			})
 			It("should return expected dcg.Cmd", func() {
@@ -148,8 +148,8 @@ var _ = Context("Interpreter", func() {
 				actualDCGContainerCall, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCGContainerCall,
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -175,16 +175,16 @@ var _ = Context("Interpreter", func() {
 			}
 
 			providedRootFSPath := "dummyRootFSPath"
-			providedContainerId := "dummyContainerId"
-			providedRootOpId := "dummyRootOpId"
-			providedOpDirHandle := new(data.FakeHandle)
+			providedContainerID := "dummyContainerID"
+			providedRootOpID := "dummyRootOpID"
+			providedOpHandle := new(data.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
 				providedRootFSPath,
 				"dcg",
-				providedRootOpId,
+				providedRootOpID,
 				"containers",
-				providedContainerId,
+				providedContainerID,
 				"fs",
 			)
 
@@ -204,14 +204,14 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				providedContainerId,
-				providedRootOpId,
-				providedOpDirHandle,
+				providedContainerID,
+				providedRootOpID,
+				providedOpHandle,
 			)
 
 			/* assert */
-			actualOpDirHandle, actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirsInterpreter.InterpretArgsForCall(0)
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			actualOpHandle, actualScope, actualScgContainerCallDirs, actualScratchDir := fakeDirsInterpreter.InterpretArgsForCall(0)
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallDirs).To(Equal(providedSCGContainerCall.Dirs))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
@@ -234,8 +234,8 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -266,8 +266,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -292,7 +292,7 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 
 			fakeEnvVarsInterpreter := new(envvars.FakeInterpreter)
 
@@ -309,19 +309,19 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				"dummyContainerId",
-				"dummyRootOpId",
-				providedOpDirHandle,
+				"dummyContainerID",
+				"dummyRootOpID",
+				providedOpHandle,
 			)
 
 			/* assert */
 			actualScope,
 				actualScgContainerCallEnvVars,
-				actualOpDirHandle := fakeEnvVarsInterpreter.InterpretArgsForCall(0)
+				actualOpHandle := fakeEnvVarsInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallEnvVars).To(Equal(providedSCGContainerCall.EnvVars))
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 		})
 		Context("envVars.Interpret errors", func() {
@@ -341,8 +341,8 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -373,8 +373,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -400,16 +400,16 @@ var _ = Context("Interpreter", func() {
 			}
 
 			providedRootFSPath := "dummyRootFSPath"
-			providedContainerId := "dummyContainerId"
-			providedRootOpId := "dummyRootOpId"
-			providedOpDirHandle := new(data.FakeHandle)
+			providedContainerID := "dummyContainerID"
+			providedRootOpID := "dummyRootOpID"
+			providedOpHandle := new(data.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
 				providedRootFSPath,
 				"dcg",
-				providedRootOpId,
+				providedRootOpID,
 				"containers",
-				providedContainerId,
+				providedContainerID,
 				"fs",
 			)
 
@@ -429,14 +429,14 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				providedContainerId,
-				providedRootOpId,
-				providedOpDirHandle,
+				providedContainerID,
+				providedRootOpID,
+				providedOpHandle,
 			)
 
 			/* assert */
-			actualOpDirHandle, actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFilesInterpreter.InterpretArgsForCall(0)
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			actualOpHandle, actualScope, actualScgContainerCallFiles, actualScratchDir := fakeFilesInterpreter.InterpretArgsForCall(0)
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallFiles).To(Equal(providedSCGContainerCall.Files))
 			Expect(actualScratchDir).To(Equal(expectedScratchDirPath))
@@ -460,8 +460,8 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -492,8 +492,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -519,7 +519,7 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedOpDirHandle := new(data.FakeHandle)
+			providedOpHandle := new(data.FakeHandle)
 
 			fakeImageInterpreter := new(image.FakeInterpreter)
 
@@ -536,19 +536,19 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				"dummyContainerId",
-				"dummyRootOpId",
-				providedOpDirHandle,
+				"dummyContainerID",
+				"dummyRootOpID",
+				providedOpHandle,
 			)
 
 			/* assert */
 			actualScope,
 				actualScgContainerCallImage,
-				actualOpDirHandle := fakeImageInterpreter.InterpretArgsForCall(0)
+				actualOpHandle := fakeImageInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualScgContainerCallImage).To(Equal(providedSCGContainerCall.Image))
-			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 		})
 		Context("image.Interpret errors", func() {
@@ -570,8 +570,8 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -606,8 +606,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -633,15 +633,15 @@ var _ = Context("Interpreter", func() {
 			}
 
 			providedRootFSPath := "dummyRootFSPath"
-			providedContainerId := "dummyContainerId"
-			providedRootOpId := "dummyRootOpId"
+			providedContainerID := "dummyContainerID"
+			providedRootOpID := "dummyRootOpID"
 
 			expectedScratchDirPath := filepath.Join(
 				providedRootFSPath,
 				"dcg",
-				providedRootOpId,
+				providedRootOpID,
 				"containers",
-				providedContainerId,
+				providedContainerID,
 				"fs",
 			)
 
@@ -661,8 +661,8 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				providedScope,
 				providedSCGContainerCall,
-				providedContainerId,
-				providedRootOpId,
+				providedContainerID,
+				providedRootOpID,
 				new(data.FakeHandle),
 			)
 
@@ -692,8 +692,8 @@ var _ = Context("Interpreter", func() {
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
@@ -724,8 +724,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGContainerCall{},
-					"dummyContainerId",
-					"dummyRootOpId",
+					"dummyContainerID",
+					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 

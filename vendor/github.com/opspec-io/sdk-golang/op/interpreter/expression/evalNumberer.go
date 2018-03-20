@@ -13,7 +13,7 @@ type evalNumberer interface {
 	EvalToNumber(
 		scope map[string]*model.Value,
 		expression interface{},
-		opDirHandle model.DataHandle,
+		opHandle model.DataHandle,
 	) (*model.Value, error)
 }
 
@@ -32,7 +32,7 @@ type _evalNumberer struct {
 func (en _evalNumberer) EvalToNumber(
 	scope map[string]*model.Value,
 	expression interface{},
-	opDirHandle model.DataHandle,
+	opHandle model.DataHandle,
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case float64:
@@ -45,7 +45,7 @@ func (en _evalNumberer) EvalToNumber(
 			stringValue, err := en.interpolater.Interpolate(
 				expression,
 				scope,
-				opDirHandle,
+				opHandle,
 			)
 			if nil != err {
 				return nil, err

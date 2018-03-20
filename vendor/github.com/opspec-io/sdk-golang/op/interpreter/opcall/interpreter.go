@@ -19,9 +19,9 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgOpCall *model.SCGOpCall,
-		opId string,
-		parentOpDirHandle model.DataHandle,
-		rootOpId string,
+		opID string,
+		parentOpHandle model.DataHandle,
+		rootOpID string,
 	) (*model.DCGOpCall, error)
 }
 
@@ -34,7 +34,7 @@ func NewInterpreter(
 		expression:          expression.New(),
 		data:                data.New(),
 		dotYmlGetter:        dotyml.NewGetter(),
-		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
+		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 		inputsInterpreter:   inputs.NewInterpreter(),
 	}
@@ -45,7 +45,7 @@ type _interpreter struct {
 	expression          expression.Expression
 	data                data.Data
 	dotYmlGetter        dotyml.Getter
-	pkgCachePath        string
+	dataCachePath       string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	inputsInterpreter   inputs.Interpreter
 }
@@ -53,34 +53,34 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
-	opId string,
-	parentOpDirHandle model.DataHandle,
-	rootOpId string,
+	opID string,
+	parentOpHandle model.DataHandle,
+	rootOpID string,
 ) (*model.DCGOpCall, error) {
 
 	var pkgPullCreds *model.PullCreds
 	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		evaluatedUsername, err := itp.expression.EvalToString(scope, scgPullCreds.Username, parentOpDirHandle)
+		evaluatedUsername, err := itp.expression.EvalToString(scope, scgPullCreds.Username, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}
 		pkgPullCreds.Username = *evaluatedUsername.String
 
-		evaluatedPassword, err := itp.expression.EvalToString(scope, scgPullCreds.Password, parentOpDirHandle)
+		evaluatedPassword, err := itp.expression.EvalToString(scope, scgPullCreds.Password, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}
 		pkgPullCreds.Password = *evaluatedPassword.String
 	}
 
-	parentOpDirPath := parentOpDirHandle.Path()
-	opDirHandle, err := itp.data.Resolve(
+	parentOpDirPath := parentOpHandle.Path()
+	opHandle, err := itp.data.Resolve(
 		context.TODO(),
 		scgOpCall.Pkg.Ref,
 		itp.data.NewFSProvider(filepath.Dir(*parentOpDirPath)),
-		itp.data.NewGitProvider(itp.pkgCachePath, pkgPullCreds),
+		itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
 	)
 	if nil != err {
 		return nil, err
@@ -88,37 +88,37 @@ func (itp _interpreter) Interpret(
 
 	opManifest, err := itp.dotYmlGetter.Get(
 		context.TODO(),
-		opDirHandle,
+		opHandle,
 	)
 	if nil != err {
 		return nil, err
 	}
 
-	childCallId, err := itp.uniqueStringFactory.Construct()
+	childCallID, err := itp.uniqueStringFactory.Construct()
 	if nil != err {
 		return nil, err
 	}
 
 	dcgOpCall := &model.DCGOpCall{
 		DCGBaseCall: model.DCGBaseCall{
-			RootOpId:   rootOpId,
-			DataHandle: opDirHandle,
+			RootOpID: rootOpID,
+			OpHandle: opHandle,
 		},
-		OpId:         opId,
-		ChildCallId:  childCallId,
+		OpID:         opID,
+		ChildCallID:  childCallID,
 		ChildCallSCG: opManifest.Run,
 	}
 
 	dcgOpCall.Inputs, err = itp.inputsInterpreter.Interpret(
 		scgOpCall.Inputs,
 		opManifest.Inputs,
-		parentOpDirHandle,
-		*opDirHandle.Path(),
+		parentOpHandle,
+		*opHandle.Path(),
 		scope,
-		filepath.Join(itp.dcgScratchDir, opId),
+		filepath.Join(itp.dcgScratchDir, opID),
 	)
 	if nil != err {
-		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", dcgOpCall.DataHandle.Ref(), err)
+		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", dcgOpCall.OpHandle.Ref(), err)
 	}
 
 	return dcgOpCall, nil
