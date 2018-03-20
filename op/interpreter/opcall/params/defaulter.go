@@ -14,7 +14,7 @@ type Defaulter interface {
 	Default(
 		args map[string]*model.Value,
 		params map[string]*model.Param,
-		pkgPath string,
+		opPath string,
 	) map[string]*model.Value
 }
 
@@ -29,7 +29,7 @@ type _defaulter struct {
 func (dft _defaulter) Default(
 	args map[string]*model.Value,
 	params map[string]*model.Param,
-	pkgPath string,
+	opPath string,
 ) map[string]*model.Value {
 	argsWithDefaults := map[string]*model.Value{}
 
@@ -43,10 +43,10 @@ func (dft _defaulter) Default(
 			case nil != paramValue.Boolean && nil != paramValue.Boolean.Default:
 				argsWithDefaults[paramName] = &model.Value{Boolean: paramValue.Boolean.Default}
 			case nil != paramValue.Dir && nil != paramValue.Dir.Default && strings.HasPrefix(*paramValue.Dir.Default, "/"):
-				dirValue := filepath.Join(pkgPath, *paramValue.Dir.Default)
+				dirValue := filepath.Join(opPath, *paramValue.Dir.Default)
 				argsWithDefaults[paramName] = &model.Value{Dir: &dirValue}
 			case nil != paramValue.File && nil != paramValue.File.Default && strings.HasPrefix(*paramValue.File.Default, "/"):
-				fileValue := filepath.Join(pkgPath, *paramValue.File.Default)
+				fileValue := filepath.Join(opPath, *paramValue.File.Default)
 				argsWithDefaults[paramName] = &model.Value{File: &fileValue}
 			case nil != paramValue.Number && nil != paramValue.Number.Default:
 				argsWithDefaults[paramName] = &model.Value{Number: paramValue.Number.Default}

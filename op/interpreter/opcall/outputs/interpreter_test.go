@@ -21,7 +21,7 @@ var _ = Context("outputs.interpreter", func() {
 			/* arrange */
 			providedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 
 			fakeParamsDefaulter := new(params.FakeDefaulter)
 
@@ -34,23 +34,23 @@ var _ = Context("outputs.interpreter", func() {
 			objectUnderTest.Interpret(
 				providedOutputArgs,
 				providedOutputParams,
-				providedPkgPath,
+				providedOpPath,
 			)
 
 			/* assert */
 			actualOutputArgs,
 				actualOutputParams,
-				actualPkgPath := fakeParamsDefaulter.DefaultArgsForCall(0)
+				actualOpPath := fakeParamsDefaulter.DefaultArgsForCall(0)
 
 			Expect(actualOutputArgs).To(Equal(providedOutputArgs))
 			Expect(actualOutputParams).To(Equal(providedOutputParams))
-			Expect(actualPkgPath).To(Equal(providedPkgPath))
+			Expect(actualOpPath).To(Equal(providedOpPath))
 
 		})
 		It("should call paramsValidator.Validate w/ expected args & return expected result", func() {
 			/* arrange */
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 
 			fakeParamsDefaulter := new(params.FakeDefaulter)
 			defaultedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
@@ -70,7 +70,7 @@ var _ = Context("outputs.interpreter", func() {
 			actualOutputs, actualErr := objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				providedOutputParams,
-				providedPkgPath,
+				providedOpPath,
 			)
 
 			/* assert */

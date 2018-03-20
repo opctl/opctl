@@ -18,7 +18,7 @@ type Interpreter interface {
 		inputArgs map[string]interface{},
 		inputParams map[string]*model.Param,
 		parentOpDirHandle model.DataHandle,
-		pkgPath string,
+		opPath string,
 		scope map[string]*model.Value,
 		opScratchDir string,
 	) (map[string]*model.Value, error)
@@ -43,7 +43,7 @@ func (itp _interpreter) Interpret(
 	inputArgs map[string]interface{},
 	inputParams map[string]*model.Param,
 	parentOpDirHandle model.DataHandle,
-	pkgPath string,
+	opPath string,
 	scope map[string]*model.Value,
 	opScratchDir string,
 ) (map[string]*model.Value, error) {
@@ -83,7 +83,7 @@ func (itp _interpreter) Interpret(
 	}
 
 	// 2) apply defaults
-	argsWithDefaults := itp.paramsDefaulter.Default(interpretedArgs, inputParams, pkgPath)
+	argsWithDefaults := itp.paramsDefaulter.Default(interpretedArgs, inputParams, opPath)
 
 	// 3) validate
 	return argsWithDefaults, itp.paramsValidator.Validate(argsWithDefaults, inputParams)

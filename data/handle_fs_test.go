@@ -17,21 +17,21 @@ var _ = Context("fsHandle", func() {
 
 		It("should call os.Open w/ expected args", func() {
 			/* arrange */
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 			providedContentPath := "dummyContentPath"
 
 			fakeOS := new(ios.Fake)
 
 			objectUnderTest := fsHandle{
 				os:   fakeOS,
-				path: providedPkgPath,
+				path: providedOpPath,
 			}
 
 			/* act */
 			objectUnderTest.GetContent(nil, providedContentPath)
 
 			/* assert */
-			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedPkgPath, providedContentPath)))
+			Expect(fakeOS.OpenArgsForCall(0)).To(Equal(filepath.Join(providedOpPath, providedContentPath)))
 		})
 	})
 
@@ -42,7 +42,7 @@ var _ = Context("fsHandle", func() {
 	Context("ListContents", func() {
 		It("should call ioutil.ReadDir w/ expected args", func() {
 			/* arrange */
-			providedPkgPath := "dummyPkgPath"
+			providedOpPath := "dummyOpPath"
 
 			fakeIOUtil := new(iioutil.Fake)
 
@@ -51,14 +51,14 @@ var _ = Context("fsHandle", func() {
 
 			objectUnderTest := fsHandle{
 				ioUtil: fakeIOUtil,
-				path:   providedPkgPath,
+				path:   providedOpPath,
 			}
 
 			/* act */
 			objectUnderTest.ListContents(nil)
 
 			/* assert */
-			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedPkgPath))
+			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedOpPath))
 		})
 		Context("ioutil.ReadDir errors", func() {
 			It("should be returned", func() {
@@ -84,14 +84,14 @@ var _ = Context("fsHandle", func() {
 		Context("ioutil.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
-				rootPkgPath := filepath.Join(wd, "/testdata/listContents")
+				rootOpPath := filepath.Join(wd, "/testdata/listContents")
 
-				dirStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1"))
+				dirStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1"))
 				if nil != err {
 					panic(err)
 				}
 
-				fileStat, err := os.Stat(filepath.Join(rootPkgPath, "/dir1/file2.txt"))
+				fileStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1/file2.txt"))
 				if nil != err {
 					panic(err)
 				}
@@ -116,7 +116,7 @@ var _ = Context("fsHandle", func() {
 
 				objectUnderTest := fsHandle{
 					ioUtil: iioutil.New(),
-					path:   rootPkgPath,
+					path:   rootOpPath,
 				}
 
 				/* act */

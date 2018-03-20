@@ -57,7 +57,7 @@ func (oc _opCaller) Call(
 ) error {
 	var err error
 	var isKilled bool
-	var outputs map[string]*model.Value
+	outputs := map[string]*model.Value{}
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		if isKilled {
@@ -142,12 +142,11 @@ func (oc _opCaller) Call(
 		},
 	)
 
-	// interpret outputs
-	outputsChan := make(chan map[string]*model.Value, 1)
+	// establish op output channel
+	opOutputsChan := make(chan map[string]*model.Value, 1)
 	go func() {
-		outputsChan <- oc.interpretOutputs(
+		opOutputsChan <- oc.waitOnOpOutputs(
 			context.TODO(),
-			scgOpCall,
 			dcgOpCall,
 		)
 	}()
@@ -166,26 +165,38 @@ func (oc _opCaller) Call(
 		return err
 	}
 
-	// wait on outputs
-	outputs = <-outputsChan
+	// wait on op outputs
+	opOutputs := <-opOutputsChan
 
-	childOpDotYml, err := oc.dotYmlGetter.Get(
+	opDotYml, err := oc.dotYmlGetter.Get(
 		context.TODO(),
 		dcgOpCall.DataHandle,
 	)
 	if nil != err {
 		return err
 	}
+	opPath := dcgOpCall.DataHandle.Path()
+	opOutputs, err = oc.outputsInterpreter.Interpret(opOutputs, opDotYml.Outputs, *opPath)
 
-	childPkgPath := dcgOpCall.DataHandle.Path()
-	outputs, err = oc.outputsInterpreter.Interpret(outputs, childOpDotYml.Outputs, *childPkgPath)
+	// filter op outputs to bound call outputs
+	for boundName, boundValue := range scgOpCall.Outputs {
+		// return bound outputs
+		if "" == boundValue {
+			// implicit value
+			boundValue = boundName
+		}
+		for opOutputName, opOutputValue := range opOutputs {
+			if boundValue == opOutputName {
+				outputs[boundName] = opOutputValue
+			}
+		}
+	}
 
 	return err
 }
 
-func (oc _opCaller) interpretOutputs(
+func (oc _opCaller) waitOnOpOutputs(
 	ctx context.Context,
-	scgOpCall *model.SCGOpCall,
 	dcgOpCall *model.DCGOpCall,
 ) map[string]*model.Value {
 
@@ -202,7 +213,7 @@ func (oc _opCaller) interpretOutputs(
 		},
 	)
 
-	childOutputs := map[string]*model.Value{}
+	opOutputs := map[string]*model.Value{}
 eventLoop:
 	for event := range eventChannel {
 		switch {
@@ -211,17 +222,17 @@ eventLoop:
 			return nil
 		case nil != event.OpEnded && event.OpEnded.OpId == dcgOpCall.ChildCallId:
 			for name, value := range event.OpEnded.Outputs {
-				childOutputs[name] = value
+				opOutputs[name] = value
 			}
 			break eventLoop
 		case nil != event.ContainerExited && event.ContainerExited.ContainerId == dcgOpCall.ChildCallId:
 			for name, value := range event.ContainerExited.Outputs {
-				childOutputs[name] = value
+				opOutputs[name] = value
 			}
 			break eventLoop
 		case nil != event.SerialCallEnded && event.SerialCallEnded.CallId == dcgOpCall.ChildCallId:
 			for name, value := range event.SerialCallEnded.Outputs {
-				childOutputs[name] = value
+				opOutputs[name] = value
 			}
 			break eventLoop
 		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallId == dcgOpCall.ChildCallId:
@@ -230,19 +241,5 @@ eventLoop:
 		}
 	}
 
-	outputs := map[string]*model.Value{}
-	for boundName, boundValue := range scgOpCall.Outputs {
-		// return bound outputs
-		if "" == boundValue {
-			// implicit value
-			boundValue = boundName
-		}
-		for childOutputName, childOutputValue := range childOutputs {
-			if boundValue == childOutputName {
-				outputs[boundName] = childOutputValue
-			}
-		}
-	}
-
-	return outputs
+	return opOutputs
 }

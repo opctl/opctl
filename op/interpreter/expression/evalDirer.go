@@ -63,8 +63,8 @@ func (ed _evalDirer) EvalToDir(
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
-				pkgPath := opDirHandle.Path()
-				dirValue = filepath.Join(*pkgPath, pkgFsRef)
+				opPath := opDirHandle.Path()
+				dirValue = filepath.Join(*opPath, pkgFsRef)
 
 			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
 

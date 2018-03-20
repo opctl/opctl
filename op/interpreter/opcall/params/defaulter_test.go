@@ -36,7 +36,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						"dummyPkgPath",
+						"dummyOpPath",
 					)
 
 					/* assert */
@@ -65,7 +65,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						"dummyPkgPath",
+						"dummyOpPath",
 					)
 
 					/* assert */
@@ -83,11 +83,11 @@ var _ = Context("Defaulter", func() {
 					providedOutputParams := map[string]*model.Param{
 						providedOutputName: {Dir: &model.DirParam{Default: &providedOutputDefault}},
 					}
-					providedPkgPath := "dummyPkgPath"
+					providedOpPath := "dummyOpPath"
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputValue := filepath.Join(providedPkgPath, providedOutputDefault)
+					expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
 					expectedOutputs := map[string]*model.Value{
 						providedOutputName: {Dir: &expectedOutputValue},
 					}
@@ -96,7 +96,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						providedPkgPath,
+						providedOpPath,
 					)
 
 					/* assert */
@@ -110,7 +110,7 @@ var _ = Context("Defaulter", func() {
 					/* arrange */
 					providedOutputName := "outputName"
 					providedOutputDefault := "/pkgFileDefault"
-					providedPkgPath := "dummyPkgPath"
+					providedOpPath := "dummyOpPath"
 
 					providedOutputParams := map[string]*model.Param{
 						providedOutputName: {File: &model.FileParam{Default: &providedOutputDefault}},
@@ -118,7 +118,7 @@ var _ = Context("Defaulter", func() {
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputValue := filepath.Join(providedPkgPath, providedOutputDefault)
+					expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
 					expectedOutputs := map[string]*model.Value{
 						providedOutputName: {File: &expectedOutputValue},
 					}
@@ -127,7 +127,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						providedPkgPath,
+						providedOpPath,
 					)
 
 					/* assert */
@@ -156,7 +156,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						"dummyPkgPath",
+						"dummyOpPath",
 					)
 
 					/* assert */
@@ -185,7 +185,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						"dummyPkgPath",
+						"dummyOpPath",
 					)
 
 					/* assert */
@@ -214,7 +214,7 @@ var _ = Context("Defaulter", func() {
 					actualOutputs := objectUnderTest.Default(
 						map[string]*model.Value{},
 						providedOutputParams,
-						"dummyPkgPath",
+						"dummyOpPath",
 					)
 
 					/* assert */

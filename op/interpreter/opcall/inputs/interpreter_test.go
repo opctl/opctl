@@ -58,7 +58,7 @@ var _ = Context("Interpreter", func() {
 					providedInputArgs,
 					providedInputParams,
 					providedParentOpDirHandle,
-					"dummyPkgPath",
+					"dummyOpPath",
 					providedScope,
 					providedOpScratchDir,
 				)
@@ -92,7 +92,7 @@ var _ = Context("Interpreter", func() {
 						providedArgName: nil,
 					}
 
-					providedPkgPath := "dummyPkgPath"
+					providedOpPath := "dummyOpPath"
 
 					expectedInput := &model.Value{String: new(string)}
 					expectedInputs := map[string]*model.Value{
@@ -115,7 +115,7 @@ var _ = Context("Interpreter", func() {
 						providedInputArgs,
 						providedParams,
 						new(data.FakeHandle),
-						providedPkgPath,
+						providedOpPath,
 						map[string]*model.Value{},
 						"dummyOpScratchDir",
 					)
@@ -123,11 +123,11 @@ var _ = Context("Interpreter", func() {
 					/* assert */
 					actualInputs,
 						actualParams,
-						actualPkgPath := fakeParamsDefaulter.DefaultArgsForCall(0)
+						actualOpPath := fakeParamsDefaulter.DefaultArgsForCall(0)
 
 					Expect(actualInputs).To(Equal(expectedInputs))
 					Expect(actualParams).To(Equal(providedParams))
-					Expect(actualPkgPath).To(Equal(providedPkgPath))
+					Expect(actualOpPath).To(Equal(providedOpPath))
 				})
 				It("should call validate.Validate w/ expected args", func() {
 					/* arrange */
@@ -160,7 +160,7 @@ var _ = Context("Interpreter", func() {
 						providedInputArgs,
 						providedInputParams,
 						new(data.FakeHandle),
-						"dummyPkgPath",
+						"dummyOpPath",
 						map[string]*model.Value{},
 						"dummyOpScratchDir",
 					)

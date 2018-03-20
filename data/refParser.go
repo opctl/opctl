@@ -13,7 +13,7 @@ import (
 // refParser parses "dataRef"
 type refParser interface {
 	Parse(
-		opRef string,
+		dataRef string,
 	) (
 		*Ref,
 		error,
@@ -40,9 +40,9 @@ func (pr Ref) ToPath(basePath string) string {
 
 // Parse parses a ref
 func (rp _refParser) Parse(
-	opRef string,
+	dataRef string,
 ) (*Ref, error) {
-	refURI, err := url.Parse(filepath.ToSlash(opRef))
+	refURI, err := url.Parse(filepath.ToSlash(dataRef))
 	if nil != err {
 		return nil, err
 	}

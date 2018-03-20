@@ -500,6 +500,7 @@ var _ = Context("opCaller", func() {
 								PkgRef:   providedSCGOpCall.Pkg.Ref,
 								Outcome:  model.OpOutcomeFailed,
 								RootOpId: providedRootOpId,
+								Outputs:  map[string]*model.Value{},
 							},
 						}
 
@@ -557,14 +558,19 @@ var _ = Context("opCaller", func() {
 						/* arrange */
 						providedOpId := "dummyOpId"
 						providedRootOpId := "dummyRootOpId"
+						expectedOutputName := "expectedOutputName"
+
 						providedSCGOpCall := &model.SCGOpCall{
 							Pkg: &model.SCGOpCallPkg{
 								Ref: "dummyPkgRef",
 							},
+							Outputs: map[string]string{
+								expectedOutputName: "",
+							},
 						}
 
 						fakeOutputsInterpreter := new(outputs.FakeInterpreter)
-						interpretedOutputs := map[string]*model.Value{"dummyOutputName": new(model.Value)}
+						interpretedOutputs := map[string]*model.Value{expectedOutputName: new(model.Value)}
 						fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
 						expectedEvent := model.Event{

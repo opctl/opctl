@@ -40,15 +40,15 @@ var _ = Context("Interpreter", func() {
 							scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
 							if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
 								/* arrange */
-								absPkgPath, err := filepath.Abs(path)
+								absOpPath, err := filepath.Abs(path)
 								if nil != err {
-									panic(fmt.Errorf("error getting absPkgPath %v; error was %v", path, err))
+									panic(fmt.Errorf("error getting absOpPath %v; error was %v", path, err))
 								}
 
 								data := data.New()
 								opDirHandle, err := data.Resolve(
 									context.Background(),
-									absPkgPath,
+									absOpPath,
 									data.NewFSProvider(),
 								)
 								if nil != err {
@@ -75,7 +75,7 @@ var _ = Context("Interpreter", func() {
 									if nil != scenario.Interpret {
 										scgOpCall := &model.SCGOpCall{
 											Pkg: &model.SCGOpCallPkg{
-												Ref: absPkgPath,
+												Ref: absOpPath,
 											},
 											Inputs: map[string]interface{}{},
 										}
@@ -420,8 +420,8 @@ var _ = Context("Interpreter", func() {
 					providedParentOpDirHandle.PathReturns(&parentOpDirPath)
 
 					fakeDataHandle := new(data.FakeHandle)
-					pkgPath := "dummyPkgPath"
-					fakeDataHandle.PathReturns(&pkgPath)
+					opPath := "dummyOpPath"
+					fakeDataHandle.PathReturns(&opPath)
 
 					fakeData := new(data.Fake)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
@@ -468,7 +468,7 @@ var _ = Context("Interpreter", func() {
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
 					Expect(actualParentOpDirHandle).To(Equal(providedParentOpDirHandle))
-					Expect(actualPkgRef).To(Equal(pkgPath))
+					Expect(actualPkgRef).To(Equal(opPath))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpId)))
 

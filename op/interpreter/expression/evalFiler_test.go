@@ -389,8 +389,8 @@ var _ = Context("EvalToFile", func() {
 					/* arrange */
 					providedOpDirHandle := new(data.FakeHandle)
 
-					pkgPath := "dummyPkgPath"
-					providedOpDirHandle.PathReturns(&pkgPath)
+					opPath := "dummyOpPath"
+					providedOpDirHandle.PathReturns(&opPath)
 
 					interpolatedPath := "dummyInterpolatedPath"
 					fakeInterpolater := new(interpolater.Fake)
@@ -400,7 +400,7 @@ var _ = Context("EvalToFile", func() {
 						interpolater: fakeInterpolater,
 					}
 
-					expectedFileValue := filepath.Join(pkgPath, interpolatedPath)
+					expectedFileValue := filepath.Join(opPath, interpolatedPath)
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.EvalToFile(
