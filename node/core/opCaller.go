@@ -16,7 +16,7 @@ type opCaller interface {
 	// Executes an op call
 	Call(
 		inboundScope map[string]*model.Value,
-		opId string,
+		opID string,
 		opHandle model.DataHandle,
 		rootOpID string,
 		scgOpCall *model.SCGOpCall,
@@ -50,7 +50,7 @@ type _opCaller struct {
 
 func (oc _opCaller) Call(
 	inboundScope map[string]*model.Value,
-	opId string,
+	opID string,
 	opHandle model.DataHandle,
 	rootOpID string,
 	scgOpCall *model.SCGOpCall,
@@ -66,7 +66,7 @@ func (oc _opCaller) Call(
 				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
-						OpID:     opId,
+						OpID:     opID,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpID: rootOpID,
 						PkgRef:   scgOpCall.Pkg.Ref,
@@ -76,7 +76,7 @@ func (oc _opCaller) Call(
 			return
 		}
 
-		oc.dcgNodeRepo.DeleteIfExists(opId)
+		oc.dcgNodeRepo.DeleteIfExists(opID)
 
 		var opOutcome string
 		if nil != err {
@@ -85,7 +85,7 @@ func (oc _opCaller) Call(
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
-						OpID:     opId,
+						OpID:     opID,
 						PkgRef:   scgOpCall.Pkg.Ref,
 						RootOpID: rootOpID,
 					},
@@ -100,7 +100,7 @@ func (oc _opCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
-					OpID:     opId,
+					OpID:     opID,
 					PkgRef:   scgOpCall.Pkg.Ref,
 					Outcome:  opOutcome,
 					RootOpID: rootOpID,
@@ -113,7 +113,7 @@ func (oc _opCaller) Call(
 
 	oc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
-			Id:       opId,
+			Id:       opID,
 			PkgRef:   scgOpCall.Pkg.Ref,
 			RootOpID: rootOpID,
 			Op:       &dcgOpDescriptor{},
@@ -123,7 +123,7 @@ func (oc _opCaller) Call(
 	dcgOpCall, err := oc.opCallInterpreter.Interpret(
 		inboundScope,
 		scgOpCall,
-		opId,
+		opID,
 		opHandle,
 		rootOpID,
 	)
@@ -135,7 +135,7 @@ func (oc _opCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
-				OpID:     opId,
+				OpID:     opID,
 				PkgRef:   scgOpCall.Pkg.Ref,
 				RootOpID: rootOpID,
 			},

@@ -19,7 +19,7 @@ type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
 		scgOpCall *model.SCGOpCall,
-		opId string,
+		opID string,
 		parentOpHandle model.DataHandle,
 		rootOpID string,
 	) (*model.DCGOpCall, error)
@@ -53,7 +53,7 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	scgOpCall *model.SCGOpCall,
-	opId string,
+	opID string,
 	parentOpHandle model.DataHandle,
 	rootOpID string,
 ) (*model.DCGOpCall, error) {
@@ -104,7 +104,7 @@ func (itp _interpreter) Interpret(
 			RootOpID: rootOpID,
 			OpHandle: opHandle,
 		},
-		OpID:         opId,
+		OpID:         opID,
 		ChildCallID:  childCallID,
 		ChildCallSCG: opManifest.Run,
 	}
@@ -115,7 +115,7 @@ func (itp _interpreter) Interpret(
 		parentOpHandle,
 		*opHandle.Path(),
 		scope,
-		filepath.Join(itp.dcgScratchDir, opId),
+		filepath.Join(itp.dcgScratchDir, opID),
 	)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret call to %v; error was: %v", dcgOpCall.OpHandle.Ref(), err)

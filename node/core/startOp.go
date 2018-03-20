@@ -32,7 +32,7 @@ func (this _core) StartOp(
 		return "", err
 	}
 
-	opId, err := this.uniqueStringFactory.Construct()
+	opID, err := this.uniqueStringFactory.Construct()
 	if nil != err {
 		// end run immediately on any error
 		return "", err
@@ -66,13 +66,13 @@ func (this _core) StartOp(
 	go func() {
 		this.opCaller.Call(
 			req.Args,
-			opId,
+			opID,
 			opHandle,
-			opId,
+			opID,
 			scgOpCall,
 		)
 	}()
 
-	return opId, nil
+	return opID, nil
 
 }

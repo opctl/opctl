@@ -42,7 +42,6 @@ type DataHandle interface {
 
 type PkgManifest struct {
 	Description string            `yaml:"description"`
-	Icon        string            `yaml:"icon,omitempty"`
 	Inputs      map[string]*Param `yaml:"inputs,omitempty"`
 	Name        string            `yaml:"name"`
 	Outputs     map[string]*Param `yaml:"outputs,omitempty"`

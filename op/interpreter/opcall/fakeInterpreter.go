@@ -8,12 +8,12 @@ import (
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error)
+	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opID string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		scope          map[string]*model.Value
 		scgOpCall      *model.SCGOpCall
-		opId           string
+		opID           string
 		parentOpHandle model.DataHandle
 		rootOpID       string
 	}
@@ -29,20 +29,20 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opId string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error) {
+func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opID string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		scope          map[string]*model.Value
 		scgOpCall      *model.SCGOpCall
-		opId           string
+		opID           string
 		parentOpHandle model.DataHandle
 		rootOpID       string
-	}{scope, scgOpCall, opId, parentOpHandle, rootOpID})
-	fake.recordInvocation("Interpret", []interface{}{scope, scgOpCall, opId, parentOpHandle, rootOpID})
+	}{scope, scgOpCall, opID, parentOpHandle, rootOpID})
+	fake.recordInvocation("Interpret", []interface{}{scope, scgOpCall, opID, parentOpHandle, rootOpID})
 	fake.interpretMutex.Unlock()
 	if fake.InterpretStub != nil {
-		return fake.InterpretStub(scope, scgOpCall, opId, parentOpHandle, rootOpID)
+		return fake.InterpretStub(scope, scgOpCall, opID, parentOpHandle, rootOpID)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -59,7 +59,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGOpCall, string, model.DataHandle, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
-	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opId, fake.interpretArgsForCall[i].parentOpHandle, fake.interpretArgsForCall[i].rootOpID
+	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opID, fake.interpretArgsForCall[i].parentOpHandle, fake.interpretArgsForCall[i].rootOpID
 }
 
 func (fake *FakeInterpreter) InterpretReturns(result1 *model.DCGOpCall, result2 error) {
