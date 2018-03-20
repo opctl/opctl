@@ -5,10 +5,10 @@ import (
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/containercall"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"io"
 	"time"
@@ -22,8 +22,8 @@ var _ = Context("containerCaller", func() {
 		It("should return containerCaller", func() {
 			/* arrange/act/assert */
 			Expect(newContainerCaller(
-				new(containerprovider.Fake),
-				new(containercall.Fake),
+				new(containerruntime.Fake),
+				new(containercall.FakeInterpreter),
 				new(pubsub.Fake),
 				new(fakeDCGNodeRepo),
 			)).To(Not(BeNil()))
@@ -35,18 +35,18 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedPkgHandle := new(pkg.FakeHandle)
+			providedOpDirHandle := new(data.FakeHandle)
 			providedRootOpId := "dummyRootOpId"
 
 			fakePubSub := new(pubsub.Fake)
 
-			fakeContainerCall := new(containercall.Fake)
+			fakeContainerCallInterpreter := new(containercall.FakeInterpreter)
 			// error to trigger immediate return
-			fakeContainerCall.InterpretReturns(nil, errors.New("dummyError"))
+			fakeContainerCallInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerId,
-				PkgRef:    providedPkgHandle.Ref(),
+				PkgRef:    providedOpDirHandle.Ref(),
 				RootOpId:  providedRootOpId,
 				Container: &dcgContainerDescriptor{},
 			}
@@ -57,11 +57,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider: new(containerprovider.Fake),
-				containerCall:     fakeContainerCall,
-				pubSub:            fakePubSub,
-				dcgNodeRepo:       fakeDCGNodeRepo,
-				io:                fakeIIO,
+				containerRuntime: new(containerruntime.Fake),
+				containerCall:    fakeContainerCallInterpreter,
+				pubSub:           fakePubSub,
+				dcgNodeRepo:      fakeDCGNodeRepo,
+				io:               fakeIIO,
 			}
 
 			/* act */
@@ -69,7 +69,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedSCGContainerCall,
-				providedPkgHandle,
+				providedOpDirHandle,
 				providedRootOpId,
 			)
 
@@ -81,20 +81,20 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope := map[string]*model.Value{}
 			providedContainerId := "dummyContainerId"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedPkgHandle := new(pkg.FakeHandle)
+			providedOpDirHandle := new(data.FakeHandle)
 			providedRootOpId := "dummyRootOpId"
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerId: providedContainerId,
-					PkgRef:      providedPkgHandle.Ref(),
+					PkgRef:      providedOpDirHandle.Ref(),
 					RootOpId:    providedRootOpId,
 				},
 			}
 
-			fakeContainerCall := new(containercall.Fake)
-			fakeContainerCall.InterpretReturns(&model.DCGContainerCall{Image: &model.DCGContainerCallImage{}}, nil)
+			fakeContainerCallInterpreter := new(containercall.FakeInterpreter)
+			fakeContainerCallInterpreter.InterpretReturns(&model.DCGContainerCall{Image: &model.DCGContainerCallImage{}}, nil)
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -102,11 +102,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider: new(containerprovider.Fake),
-				containerCall:     fakeContainerCall,
-				pubSub:            fakePubSub,
-				dcgNodeRepo:       new(fakeDCGNodeRepo),
-				io:                fakeIIO,
+				containerRuntime: new(containerruntime.Fake),
+				containerCall:    fakeContainerCallInterpreter,
+				pubSub:           fakePubSub,
+				dcgNodeRepo:      new(fakeDCGNodeRepo),
+				io:               fakeIIO,
 			}
 
 			/* act */
@@ -114,7 +114,7 @@ var _ = Context("containerCaller", func() {
 				providedInboundScope,
 				providedContainerId,
 				providedSCGContainerCall,
-				providedPkgHandle,
+				providedOpDirHandle,
 				providedRootOpId,
 			)
 
@@ -128,14 +128,14 @@ var _ = Context("containerCaller", func() {
 
 			Expect(actualEvent).To(Equal(expectedEvent))
 		})
-		It("should call containerProvider.RunContainer w/ expected args", func() {
+		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
 			expectedDCGContainerCall := &model.DCGContainerCall{}
 
-			fakeContainerCall := new(containercall.Fake)
-			fakeContainerCall.InterpretReturns(expectedDCGContainerCall, nil)
+			fakeContainerCallInterpreter := new(containercall.FakeInterpreter)
+			fakeContainerCallInterpreter.InterpretReturns(expectedDCGContainerCall, nil)
 
-			fakeContainerProvider := new(containerprovider.Fake)
+			fakeContainerRuntime := new(containerruntime.Fake)
 
 			fakePubSub := new(pubsub.Fake)
 
@@ -143,11 +143,11 @@ var _ = Context("containerCaller", func() {
 			fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 			objectUnderTest := _containerCaller{
-				containerProvider: fakeContainerProvider,
-				containerCall:     fakeContainerCall,
-				pubSub:            fakePubSub,
-				dcgNodeRepo:       new(fakeDCGNodeRepo),
-				io:                fakeIIO,
+				containerRuntime: fakeContainerRuntime,
+				containerCall:    fakeContainerCallInterpreter,
+				pubSub:           fakePubSub,
+				dcgNodeRepo:      new(fakeDCGNodeRepo),
+				io:               fakeIIO,
 			}
 
 			/* act */
@@ -155,32 +155,32 @@ var _ = Context("containerCaller", func() {
 				map[string]*model.Value{},
 				"dummyContainerId",
 				&model.SCGContainerCall{},
-				new(pkg.FakeHandle),
+				new(data.FakeHandle),
 				"dummyRootOpId",
 			)
 
 			/* assert */
-			_, actualDCGContainerCall, actualEventPublisher, _, _ := fakeContainerProvider.RunContainerArgsForCall(0)
+			_, actualDCGContainerCall, actualEventPublisher, _, _ := fakeContainerRuntime.RunContainerArgsForCall(0)
 			Expect(actualDCGContainerCall).To(Equal(expectedDCGContainerCall))
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
-		Context("containerProvider.RunContainer errors", func() {
+		Context("containerRuntime.RunContainer errors", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
 
-				fakeContainerProvider := new(containerprovider.Fake)
-				fakeContainerProvider.RunContainerReturns(nil, expectedError)
+				fakeContainerRuntime := new(containerruntime.Fake)
+				fakeContainerRuntime.RunContainerReturns(nil, expectedError)
 
 				fakeIIO := new(iio.Fake)
 				fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 				objectUnderTest := _containerCaller{
-					containerProvider: fakeContainerProvider,
-					containerCall:     new(containercall.Fake),
-					pubSub:            new(pubsub.Fake),
-					dcgNodeRepo:       new(fakeDCGNodeRepo),
-					io:                fakeIIO,
+					containerRuntime: fakeContainerRuntime,
+					containerCall:    new(containercall.FakeInterpreter),
+					pubSub:           new(pubsub.Fake),
+					dcgNodeRepo:      new(fakeDCGNodeRepo),
+					io:               fakeIIO,
 				}
 
 				/* act */
@@ -188,7 +188,7 @@ var _ = Context("containerCaller", func() {
 					map[string]*model.Value{},
 					"dummyContainerId",
 					&model.SCGContainerCall{},
-					new(pkg.FakeHandle),
+					new(data.FakeHandle),
 					"dummyRootOpId",
 				)
 
@@ -207,11 +207,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider: new(containerprovider.Fake),
-			containerCall:     new(containercall.Fake),
-			pubSub:            new(pubsub.Fake),
-			dcgNodeRepo:       fakeDCGNodeRepo,
-			io:                fakeIIO,
+			containerRuntime: new(containerruntime.Fake),
+			containerCall:    new(containercall.FakeInterpreter),
+			pubSub:           new(pubsub.Fake),
+			dcgNodeRepo:      fakeDCGNodeRepo,
+			io:               fakeIIO,
 		}
 
 		/* act */
@@ -219,7 +219,7 @@ var _ = Context("containerCaller", func() {
 			map[string]*model.Value{},
 			providedContainerId,
 			&model.SCGContainerCall{},
-			new(pkg.FakeHandle),
+			new(data.FakeHandle),
 			"dummyRootOpId",
 		)
 
@@ -232,14 +232,14 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedPkgHandle := new(pkg.FakeHandle)
+		providedOpDirHandle := new(data.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				PkgRef:      providedPkgHandle.Ref(),
+				PkgRef:      providedOpDirHandle.Ref(),
 				RootOpId:    providedRootOpId,
 			},
 		}
@@ -250,11 +250,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider: new(containerprovider.Fake),
-			containerCall:     new(containercall.Fake),
-			pubSub:            fakePubSub,
-			dcgNodeRepo:       new(fakeDCGNodeRepo),
-			io:                fakeIIO,
+			containerRuntime: new(containerruntime.Fake),
+			containerCall:    new(containercall.FakeInterpreter),
+			pubSub:           fakePubSub,
+			dcgNodeRepo:      new(fakeDCGNodeRepo),
+			io:               fakeIIO,
 		}
 
 		/* act */
@@ -262,7 +262,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedSCGContainerCall,
-			providedPkgHandle,
+			providedOpDirHandle,
 			providedRootOpId,
 		)
 
@@ -281,14 +281,14 @@ var _ = Context("containerCaller", func() {
 		providedInboundScope := map[string]*model.Value{}
 		providedContainerId := "dummyContainerId"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedPkgHandle := new(pkg.FakeHandle)
+		providedOpDirHandle := new(data.FakeHandle)
 		providedRootOpId := "dummyRootOpId"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerId: providedContainerId,
-				PkgRef:      providedPkgHandle.Ref(),
+				PkgRef:      providedOpDirHandle.Ref(),
 				RootOpId:    providedRootOpId,
 			},
 		}
@@ -299,11 +299,11 @@ var _ = Context("containerCaller", func() {
 		fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 		objectUnderTest := _containerCaller{
-			containerProvider: new(containerprovider.Fake),
-			containerCall:     new(containercall.Fake),
-			pubSub:            fakePubSub,
-			dcgNodeRepo:       new(fakeDCGNodeRepo),
-			io:                fakeIIO,
+			containerRuntime: new(containerruntime.Fake),
+			containerCall:    new(containercall.FakeInterpreter),
+			pubSub:           fakePubSub,
+			dcgNodeRepo:      new(fakeDCGNodeRepo),
+			io:               fakeIIO,
 		}
 
 		/* act */
@@ -311,7 +311,7 @@ var _ = Context("containerCaller", func() {
 			providedInboundScope,
 			providedContainerId,
 			providedSCGContainerCall,
-			providedPkgHandle,
+			providedOpDirHandle,
 			providedRootOpId,
 		)
 

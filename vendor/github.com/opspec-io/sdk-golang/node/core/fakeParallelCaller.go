@@ -8,13 +8,13 @@ import (
 )
 
 type fakeParallelCaller struct {
-	CallStub        func(callId string, inboundScope map[string]*model.Value, rootOpId string, pkgHandle model.PkgHandle, scgParallelCall []*model.SCG) error
+	CallStub        func(callId string, inboundScope map[string]*model.Value, rootOpId string, opDirHandle model.DataHandle, scgParallelCall []*model.SCG) error
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		callId          string
 		inboundScope    map[string]*model.Value
 		rootOpId        string
-		pkgHandle       model.PkgHandle
+		opDirHandle     model.DataHandle
 		scgParallelCall []*model.SCG
 	}
 	callReturns struct {
@@ -27,7 +27,7 @@ type fakeParallelCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*model.Value, rootOpId string, pkgHandle model.PkgHandle, scgParallelCall []*model.SCG) error {
+func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*model.Value, rootOpId string, opDirHandle model.DataHandle, scgParallelCall []*model.SCG) error {
 	var scgParallelCallCopy []*model.SCG
 	if scgParallelCall != nil {
 		scgParallelCallCopy = make([]*model.SCG, len(scgParallelCall))
@@ -39,13 +39,13 @@ func (fake *fakeParallelCaller) Call(callId string, inboundScope map[string]*mod
 		callId          string
 		inboundScope    map[string]*model.Value
 		rootOpId        string
-		pkgHandle       model.PkgHandle
+		opDirHandle     model.DataHandle
 		scgParallelCall []*model.SCG
-	}{callId, inboundScope, rootOpId, pkgHandle, scgParallelCallCopy})
-	fake.recordInvocation("Call", []interface{}{callId, inboundScope, rootOpId, pkgHandle, scgParallelCallCopy})
+	}{callId, inboundScope, rootOpId, opDirHandle, scgParallelCallCopy})
+	fake.recordInvocation("Call", []interface{}{callId, inboundScope, rootOpId, opDirHandle, scgParallelCallCopy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(callId, inboundScope, rootOpId, pkgHandle, scgParallelCall)
+		return fake.CallStub(callId, inboundScope, rootOpId, opDirHandle, scgParallelCall)
 	}
 	if specificReturn {
 		return ret.result1
@@ -59,10 +59,10 @@ func (fake *fakeParallelCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeParallelCaller) CallArgsForCall(i int) (string, map[string]*model.Value, string, model.PkgHandle, []*model.SCG) {
+func (fake *fakeParallelCaller) CallArgsForCall(i int) (string, map[string]*model.Value, string, model.DataHandle, []*model.SCG) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].callId, fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].pkgHandle, fake.callArgsForCall[i].scgParallelCall
+	return fake.callArgsForCall[i].callId, fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].rootOpId, fake.callArgsForCall[i].opDirHandle, fake.callArgsForCall[i].scgParallelCall
 }
 
 func (fake *fakeParallelCaller) CallReturns(result1 error) {

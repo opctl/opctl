@@ -1,0 +1,131 @@
+package containercall
+
+//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
+
+import (
+	"github.com/golang-interfaces/ios"
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/dirs"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/envvars"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/files"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/image"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/sockets"
+	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"path/filepath"
+)
+
+type Interpreter interface {
+	// Interpret interprets an SCGContainerCall into a DCGContainerCall
+	Interpret(
+		scope map[string]*model.Value,
+		scgContainerCall *model.SCGContainerCall,
+		containerId string,
+		rootOpId string,
+		opDirHandle model.DataHandle,
+	) (*model.DCGContainerCall, error)
+}
+
+// NewInterpreter returns an initialized Interpreter instance
+func NewInterpreter(
+	rootFSPath string,
+) Interpreter {
+	return _interpreter{
+		dirsInterpreter:    dirs.NewInterpreter(rootFSPath),
+		envVarsInterpreter: envvars.NewInterpreter(),
+		filesInterpreter:   files.NewInterpreter(rootFSPath),
+		imageInterpreter:   image.NewInterpreter(),
+		os:                 ios.New(),
+		rootFSPath:         rootFSPath,
+		expression:         expression.New(),
+		socketsInterpreter: sockets.NewInterpreter(),
+	}
+}
+
+type _interpreter struct {
+	dirsInterpreter    dirs.Interpreter
+	envVarsInterpreter envvars.Interpreter
+	filesInterpreter   files.Interpreter
+	imageInterpreter   image.Interpreter
+	os                 ios.IOS
+	rootFSPath         string
+	expression         expression.Expression
+	socketsInterpreter sockets.Interpreter
+}
+
+func (cc _interpreter) Interpret(
+	scope map[string]*model.Value,
+	scgContainerCall *model.SCGContainerCall,
+	containerId string,
+	rootOpId string,
+	opDirHandle model.DataHandle,
+) (*model.DCGContainerCall, error) {
+
+	dcgContainerCall := &model.DCGContainerCall{
+		DCGBaseCall: model.DCGBaseCall{
+			RootOpId:   rootOpId,
+			DataHandle: opDirHandle,
+		},
+		Dirs:        map[string]string{},
+		EnvVars:     map[string]string{},
+		Files:       map[string]string{},
+		Sockets:     map[string]string{},
+		WorkDir:     scgContainerCall.WorkDir,
+		ContainerId: containerId,
+		Name:        scgContainerCall.Name,
+		Ports:       scgContainerCall.Ports,
+	}
+
+	// construct dcg container path
+	scratchDirPath := filepath.Join(
+		cc.rootFSPath,
+		"dcg",
+		rootOpId,
+		"containers",
+		containerId,
+		"fs",
+	)
+	if err := cc.os.MkdirAll(scratchDirPath, 0700); nil != err {
+		return nil, err
+	}
+
+	// construct cmd
+	for _, cmdEntryExpression := range scgContainerCall.Cmd {
+		// interpret each entry as string
+		cmdEntry, err := cc.expression.EvalToString(scope, cmdEntryExpression, opDirHandle)
+		if nil != err {
+			return nil, err
+		}
+		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, *cmdEntry.String)
+	}
+
+	// interpret dirs
+	var err error
+	dcgContainerCall.Dirs, err = cc.dirsInterpreter.Interpret(opDirHandle, scope, scgContainerCall.Dirs, scratchDirPath)
+	if nil != err {
+		return nil, err
+	}
+
+	// interpret envVars
+	dcgContainerCall.EnvVars, err = cc.envVarsInterpreter.Interpret(scope, scgContainerCall.EnvVars, opDirHandle)
+	if nil != err {
+		return nil, err
+	}
+
+	// interpret files
+	dcgContainerCall.Files, err = cc.filesInterpreter.Interpret(opDirHandle, scope, scgContainerCall.Files, scratchDirPath)
+	if nil != err {
+		return nil, err
+	}
+
+	// interpret image
+	dcgContainerCall.Image, err = cc.imageInterpreter.Interpret(scope, scgContainerCall.Image, opDirHandle)
+	if nil != err {
+		return nil, err
+	}
+
+	// interpret sockets
+	dcgContainerCall.Sockets, err = cc.socketsInterpreter.Interpret(scope, scgContainerCall.Sockets, scratchDirPath)
+
+	return dcgContainerCall, err
+
+}

@@ -8,10 +8,10 @@ import (
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"github.com/opspec-io/sdk-golang/node/core"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -96,10 +96,10 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 		})
 	})
 	Context("core.ResolvePkg errs", func() {
-		Context("err is model.ErrPkgPullAuthentication", func() {
+		Context("err is model.ErrDataProviderAuthentication", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgPullAuthenticationErr := model.ErrPkgPullAuthentication{}
+				pkgPullAuthenticationErr := model.ErrDataProviderAuthentication{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -127,10 +127,10 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				Expect(actualBody).To(Equal(pkgPullAuthenticationErr.Error()))
 			})
 		})
-		Context("err is model.ErrPkgPullAuthorization", func() {
+		Context("err is model.ErrDataProviderAuthorization", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgPullAuthorizationErr := model.ErrPkgPullAuthorization{}
+				pkgPullAuthorizationErr := model.ErrDataProviderAuthorization{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -158,10 +158,10 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				Expect(actualBody).To(Equal(pkgPullAuthorizationErr.Error()))
 			})
 		})
-		Context("err is model.ErrPkgNotFound", func() {
+		Context("err is model.ErrDataRefResolution", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgNotFoundErr := model.ErrPkgNotFound{}
+				pkgNotFoundErr := model.ErrDataRefResolution{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -230,12 +230,12 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				panic(err.Error())
 			}
 
-			fakePkgHandle := new(pkg.FakeHandle)
+			fakeDataHandle := new(data.FakeHandle)
 			// error to trigger immediate return
-			fakePkgHandle.GetContentReturns(nil, errors.New("dummyError"))
+			fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
 			fakeCore := new(core.Fake)
-			fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+			fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -250,7 +250,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 
 			/* assert */
 			_,
-				actualPkgRef := fakePkgHandle.GetContentArgsForCall(0)
+				actualPkgRef := fakeDataHandle.GetContentArgsForCall(0)
 
 			Expect(actualPkgRef).To(Equal(expectedContentPath))
 		})
@@ -259,11 +259,11 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				/* arrange */
 				expectedBody := "dummyErrorMsg"
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgHandle.GetContentReturns(nil, errors.New(expectedBody))
+				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle.GetContentReturns(nil, errors.New(expectedBody))
 
 				fakeCore := new(core.Fake)
-				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+				fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -295,11 +295,11 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				expectedReadSeeker, err := ioutil.TempFile("", "")
 				defer expectedReadSeeker.Close()
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgHandle.GetContentReturns(expectedReadSeeker, nil)
+				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle.GetContentReturns(expectedReadSeeker, nil)
 
 				fakeCore := new(core.Fake)
-				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+				fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
 
 				fakeHTTP := new(ihttp.Fake)
 

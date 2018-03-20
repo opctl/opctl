@@ -22,11 +22,11 @@ func (this _core) StartOp(
 		}
 	}
 
-	pkgHandle, err := this.pkg.Resolve(
+	opDirHandle, err := this.data.Resolve(
 		ctx,
 		req.Pkg.Ref,
-		this.pkg.NewFSProvider(),
-		this.pkg.NewGitProvider(this.pkgCachePath, pullCreds),
+		this.data.NewFSProvider(),
+		this.data.NewGitProvider(this.pkgCachePath, pullCreds),
 	)
 	if nil != err {
 		return "", err
@@ -41,7 +41,7 @@ func (this _core) StartOp(
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
 		Pkg: &model.SCGOpCallPkg{
-			Ref: pkgHandle.Ref(),
+			Ref: opDirHandle.Ref(),
 		},
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
@@ -51,11 +51,14 @@ func (this _core) StartOp(
 		scgOpCall.Inputs[name] = ""
 	}
 
-	pkgManifest, err := this.pkg.GetManifest(pkgHandle)
+	opDotYml, err := this.dotYmlGetter.Get(
+		context.TODO(),
+		opDirHandle,
+	)
 	if nil != err {
 		return "", err
 	}
-	for name := range pkgManifest.Outputs {
+	for name := range opDotYml.Outputs {
 		// implicitly bind
 		scgOpCall.Outputs[name] = ""
 	}
@@ -64,7 +67,7 @@ func (this _core) StartOp(
 		this.opCaller.Call(
 			req.Args,
 			opId,
-			pkgHandle,
+			opDirHandle,
 			opId,
 			scgOpCall,
 		)

@@ -24,9 +24,9 @@ type Client interface {
 	// GetContent gets content from a package
 	//
 	// expected errs:
-	//  - ErrPkgPullAuthentication on authentication failure
-	//  - ErrPkgPullAuthorization on authorization failure
-	//  - ErrPkgNotFound on resolution failure
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
 	GetPkgContent(
 		ctx context.Context,
 		req model.GetPkgContentReq,
@@ -45,9 +45,9 @@ type Client interface {
 	// ListContents lists contents of a package
 	//
 	// expected errs:
-	//  - ErrPkgPullAuthentication on authentication failure
-	//  - ErrPkgPullAuthorization on authorization failure
-	//  - ErrPkgNotFound on resolution failure
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
 	ListPkgContents(
 		ctx context.Context,
 		req model.ListPkgContentsReq,

@@ -8,10 +8,10 @@ import (
 	"github.com/gorilla/mux"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
 	"github.com/opspec-io/sdk-golang/node/core"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -94,10 +94,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 		})
 	})
 	Context("core.ResolvePkg errs", func() {
-		Context("err is model.ErrPkgPullAuthentication", func() {
+		Context("err is model.ErrDataProviderAuthentication", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgPullAuthenticationErr := model.ErrPkgPullAuthentication{}
+				pkgPullAuthenticationErr := model.ErrDataProviderAuthentication{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -125,10 +125,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				Expect(actualBody).To(Equal(pkgPullAuthenticationErr.Error()))
 			})
 		})
-		Context("err is model.ErrPkgPullAuthorization", func() {
+		Context("err is model.ErrDataProviderAuthorization", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgPullAuthorizationErr := model.ErrPkgPullAuthorization{}
+				pkgPullAuthorizationErr := model.ErrDataProviderAuthorization{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -156,10 +156,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				Expect(actualBody).To(Equal(pkgPullAuthorizationErr.Error()))
 			})
 		})
-		Context("err is model.ErrPkgNotFound", func() {
+		Context("err is model.ErrDataRefResolution", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				pkgNotFoundErr := model.ErrPkgNotFound{}
+				pkgNotFoundErr := model.ErrDataRefResolution{}
 
 				fakeCore := new(core.Fake)
 				// error to trigger immediate return
@@ -222,12 +222,12 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 	Context("core.ResolvePkg doesn't err", func() {
 		It("should call handle.ListContents", func() {
 			/* arrange */
-			fakePkgHandle := new(pkg.FakeHandle)
+			fakeDataHandle := new(data.FakeHandle)
 			// error to trigger immediate return
-			fakePkgHandle.ListContentsReturns(nil, errors.New("dummyError"))
+			fakeDataHandle.ListContentsReturns(nil, errors.New("dummyError"))
 
 			fakeCore := new(core.Fake)
-			fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+			fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
 
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
@@ -245,19 +245,19 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			Expect(fakePkgHandle.ListContentsCallCount()).To(Equal(1))
+			Expect(fakeDataHandle.ListContentsCallCount()).To(Equal(1))
 		})
 		Context("handle.ListContents errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				expectedBody := "dummyErrorMsg"
 
-				fakePkgHandle := new(pkg.FakeHandle)
+				fakeDataHandle := new(data.FakeHandle)
 				// error to trigger immediate return
-				fakePkgHandle.ListContentsReturns(nil, errors.New(expectedBody))
+				fakeDataHandle.ListContentsReturns(nil, errors.New(expectedBody))
 
 				fakeCore := new(core.Fake)
-				fakeCore.ResolvePkgReturns(fakePkgHandle, nil)
+				fakeCore.ResolvePkgReturns(fakeDataHandle, nil)
 
 				objectUnderTest := New(fakeCore)
 				recorder := httptest.NewRecorder()
@@ -288,7 +288,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 					expectedBody := "dummyErrorMsg"
 
 					fakeCore := new(core.Fake)
-					fakeCore.ResolvePkgReturns(new(pkg.FakeHandle), nil)
+					fakeCore.ResolvePkgReturns(new(data.FakeHandle), nil)
 
 					fakeJSON := new(ijson.Fake)
 					fakeJSON.NewEncoderReturns(json.NewEncoder(errWriter{Msg: expectedBody}))
@@ -329,7 +329,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 					fakeCore := new(core.Fake)
 
-					fakeHandle := new(pkg.FakeHandle)
+					fakeHandle := new(data.FakeHandle)
 
 					contentsList := []*model.PkgContent{
 						{Path: "dummyPath"},

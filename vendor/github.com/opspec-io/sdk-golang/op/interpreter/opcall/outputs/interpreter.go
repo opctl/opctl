@@ -1,0 +1,48 @@
+package outputs
+
+//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
+
+import (
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/params"
+)
+
+type Interpreter interface {
+	// Interpret applies defaults to & validates output args
+	Interpret(
+		outputArgs map[string]*model.Value,
+		outputParams map[string]*model.Param,
+		pkgPath string,
+	) (
+		map[string]*model.Value,
+		error,
+	)
+}
+
+// NewInterpreter returns an initialized Interpreter instance
+func NewInterpreter() Interpreter {
+	return _interpreter{
+		paramsDefaulter: params.NewDefaulter(),
+		paramsValidator: params.NewValidator(),
+	}
+}
+
+type _interpreter struct {
+	paramsDefaulter params.Defaulter
+	paramsValidator params.Validator
+}
+
+func (itp _interpreter) Interpret(
+	outputArgs map[string]*model.Value,
+	outputParams map[string]*model.Param,
+	pkgPath string,
+) (
+	map[string]*model.Value,
+	error,
+) {
+
+	argsWithDefaults := itp.paramsDefaulter.Default(outputArgs, outputParams, pkgPath)
+
+	return argsWithDefaults, itp.paramsValidator.Validate(argsWithDefaults, outputParams)
+
+}

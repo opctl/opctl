@@ -131,7 +131,7 @@ var _ = Context("GetPkgContent", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrPkgPullAuthentication{}))
+				Expect(actualErr).To(Equal(model.ErrDataProviderAuthentication{}))
 
 			})
 		})
@@ -158,7 +158,7 @@ var _ = Context("GetPkgContent", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrPkgPullAuthorization{}))
+				Expect(actualErr).To(Equal(model.ErrDataProviderAuthorization{}))
 
 			})
 
@@ -186,7 +186,7 @@ var _ = Context("GetPkgContent", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrPkgNotFound{}))
+				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
 
 			})
 

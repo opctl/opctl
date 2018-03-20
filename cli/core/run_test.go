@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
@@ -11,29 +13,29 @@ import (
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api/client"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"time"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 )
 
 var _ = Context("Run", func() {
 	Context("Execute", func() {
-		It("should call pkgResolver.Resolve w/ expected args", func() {
+		It("should call dataResolver.Resolve w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
 
-			fakePkg := new(pkg.Fake)
+			fakeOpDotYmlGetter := new(dotyml.FakeGetter)
 			// err to trigger immediate return
-			fakePkg.GetManifestReturns(nil, errors.New("dummyError"))
+			fakeOpDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
 
-			fakePkgHandle := new(pkg.FakeHandle)
-			fakePkgResolver := new(fakePkgResolver)
-			fakePkgResolver.ResolveReturns(fakePkgHandle)
+			fakeOpHandle := new(data.FakeHandle)
+			fakeDataResolver := new(fakeDataResolver)
+			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _core{
-				pkg:               fakePkg,
-				pkgResolver:       fakePkgResolver,
+				opDotYmlGetter:    fakeOpDotYmlGetter,
+				dataResolver:      fakeDataResolver,
 				cliExiter:         new(cliexiter.Fake),
 				cliParamSatisfier: new(cliparamsatisfier.Fake),
 			}
@@ -42,23 +44,25 @@ var _ = Context("Run", func() {
 			objectUnderTest.Run(context.TODO(), providedPkgRef, &RunOpts{})
 
 			/* assert */
-			actualPkgRef, actualPullCreds := fakePkgResolver.ResolveArgsForCall(0)
+			actualPkgRef, actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
 			Expect(actualPkgRef).To(Equal(providedPkgRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
-		It("should call pkg.GetManifest w/ expected args", func() {
+		It("should call pkg.Get w/ expected args", func() {
 			/* arrange */
-			fakePkg := new(pkg.Fake)
-			// error to trigger immediate return
-			fakePkg.GetManifestReturns(nil, errors.New("dummyError"))
+			providedCtx := context.Background()
 
-			fakePkgHandle := new(pkg.FakeHandle)
-			fakePkgResolver := new(fakePkgResolver)
-			fakePkgResolver.ResolveReturns(fakePkgHandle)
+			fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+			// error to trigger immediate return
+			fakeOpDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
+
+			fakeOpHandle := new(data.FakeHandle)
+			fakeDataResolver := new(fakeDataResolver)
+			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _core{
-				pkg:                 fakePkg,
-				pkgResolver:         fakePkgResolver,
+				opDotYmlGetter:      fakeOpDotYmlGetter,
+				dataResolver:        fakeDataResolver,
 				opspecNodeAPIClient: new(client.Fake),
 				cliExiter:           new(cliexiter.Fake),
 				cliParamSatisfier:   new(cliparamsatisfier.Fake),
@@ -67,28 +71,36 @@ var _ = Context("Run", func() {
 			}
 
 			/* act */
-			objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+			objectUnderTest.Run(
+				providedCtx,
+				"",
+				new(RunOpts),
+			)
 
 			/* assert */
-			Expect(fakePkg.GetManifestArgsForCall(0)).To(Equal(fakePkgHandle))
+			actualCtx,
+				actualOpHandle := fakeOpDotYmlGetter.GetArgsForCall(0)
+
+			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(actualOpHandle).To(Equal(fakeOpHandle))
 		})
-		Context("pkg.GetManifest errors", func() {
+		Context("pkg.Get errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				getManifestErr := errors.New("dummyError")
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetManifestReturns(nil, getManifestErr)
+				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpDotYmlGetter.GetReturns(nil, getManifestErr)
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgResolver := new(fakePkgResolver)
-				fakePkgResolver.ResolveReturns(fakePkgHandle)
+				fakeOpHandle := new(data.FakeHandle)
+				fakeDataResolver := new(fakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					pkg:               fakePkg,
-					pkgResolver:       fakePkgResolver,
+					opDotYmlGetter:    fakeOpDotYmlGetter,
+					dataResolver:      fakeDataResolver,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
 					os:                new(ios.Fake),
@@ -102,11 +114,11 @@ var _ = Context("Run", func() {
 					To(Equal(cliexiter.ExitReq{Message: getManifestErr.Error(), Code: 1}))
 			})
 		})
-		Context("pkg.GetManifest doesn't error", func() {
+		Context("pkg.Get doesn't error", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"
-				pkgManifest := &model.PkgManifest{
+				opDotYml := &model.PkgManifest{
 					Inputs: map[string]*model.Param{
 						param1Name: {
 							String: &model.StringParam{},
@@ -114,14 +126,14 @@ var _ = Context("Run", func() {
 					},
 				}
 
-				expectedParams := pkgManifest.Inputs
+				expectedParams := opDotYml.Inputs
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetManifestReturns(pkgManifest, nil)
+				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpDotYmlGetter.GetReturns(opDotYml, nil)
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgResolver := new(fakePkgResolver)
-				fakePkgResolver.ResolveReturns(fakePkgHandle)
+				fakeOpHandle := new(data.FakeHandle)
+				fakeDataResolver := new(fakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				fakeOpspecNodeAPIClient := new(client.Fake)
@@ -132,8 +144,8 @@ var _ = Context("Run", func() {
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 				objectUnderTest := _core{
-					pkg:                 fakePkg,
-					pkgResolver:         fakePkgResolver,
+					opDotYmlGetter:      fakeOpDotYmlGetter,
+					dataResolver:        fakeDataResolver,
 					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 					cliExiter:           new(cliexiter.Fake),
 					cliParamSatisfier:   fakeCliParamSatisfier,
@@ -166,14 +178,14 @@ var _ = Context("Run", func() {
 					},
 				}
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgHandle.RefReturns(resolvedPkgRef)
+				fakeOpHandle := new(data.FakeHandle)
+				fakeOpHandle.RefReturns(resolvedPkgRef)
 
-				fakePkgResolver := new(fakePkgResolver)
-				fakePkgResolver.ResolveReturns(fakePkgHandle)
+				fakeDataResolver := new(fakeDataResolver)
+				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				fakeOpspecNodeAPIClient := new(client.Fake)
@@ -185,8 +197,8 @@ var _ = Context("Run", func() {
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 				objectUnderTest := _core{
-					pkg:                 fakePkg,
-					pkgResolver:         fakePkgResolver,
+					opDotYmlGetter:      fakeOpDotYmlGetter,
+					dataResolver:        fakeDataResolver,
 					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 					cliExiter:           new(cliexiter.Fake),
 					cliParamSatisfier:   fakeCliParamSatisfier,
@@ -208,19 +220,19 @@ var _ = Context("Run", func() {
 					fakeCliExiter := new(cliexiter.Fake)
 					returnedError := errors.New("dummyError")
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+					fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgResolver := new(fakePkgResolver)
-					fakePkgResolver.ResolveReturns(fakePkgHandle)
+					fakeOpHandle := new(data.FakeHandle)
+					fakeDataResolver := new(fakeDataResolver)
+					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					fakeOpspecNodeAPIClient := new(client.Fake)
 					fakeOpspecNodeAPIClient.StartOpReturns("dummyOpId", returnedError)
 
 					objectUnderTest := _core{
-						pkg:                 fakePkg,
-						pkgResolver:         fakePkgResolver,
+						opDotYmlGetter:      fakeOpDotYmlGetter,
+						dataResolver:        fakeDataResolver,
 						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 						cliExiter:           fakeCliExiter,
 						cliParamSatisfier:   new(cliparamsatisfier.Fake),
@@ -248,12 +260,12 @@ var _ = Context("Run", func() {
 						},
 					}
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+					fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgResolver := new(fakePkgResolver)
-					fakePkgResolver.ResolveReturns(fakePkgHandle)
+					fakeOpHandle := new(data.FakeHandle)
+					fakeDataResolver := new(fakeDataResolver)
+					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 					fakeOpspecNodeAPIClient := new(client.Fake)
 					fakeOpspecNodeAPIClient.StartOpReturns(rootOpIdReturnedFromStartOp, nil)
@@ -262,8 +274,8 @@ var _ = Context("Run", func() {
 					fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						pkg:                 fakePkg,
-						pkgResolver:         fakePkgResolver,
+						opDotYmlGetter:      fakeOpDotYmlGetter,
+						dataResolver:        fakeDataResolver,
 						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 						cliExiter:           new(cliexiter.Fake),
 						cliParamSatisfier:   new(cliparamsatisfier.Fake),
@@ -290,19 +302,19 @@ var _ = Context("Run", func() {
 						fakeCliExiter := new(cliexiter.Fake)
 						returnedError := errors.New("dummyError")
 
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+						fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+						fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-						fakePkgHandle := new(pkg.FakeHandle)
-						fakePkgResolver := new(fakePkgResolver)
-						fakePkgResolver.ResolveReturns(fakePkgHandle)
+						fakeOpHandle := new(data.FakeHandle)
+						fakeDataResolver := new(fakeDataResolver)
+						fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 						fakeOpspecNodeAPIClient := new(client.Fake)
 						fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 						objectUnderTest := _core{
-							pkg:                 fakePkg,
-							pkgResolver:         fakePkgResolver,
+							opDotYmlGetter:      fakeOpDotYmlGetter,
+							dataResolver:        fakeDataResolver,
 							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 							cliExiter:           fakeCliExiter,
 							cliParamSatisfier:   new(cliparamsatisfier.Fake),
@@ -324,12 +336,12 @@ var _ = Context("Run", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
 
-							fakePkg := new(pkg.Fake)
-							fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+							fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+							fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-							fakePkgHandle := new(pkg.FakeHandle)
-							fakePkgResolver := new(fakePkgResolver)
-							fakePkgResolver.ResolveReturns(fakePkgHandle)
+							fakeOpHandle := new(data.FakeHandle)
+							fakeDataResolver := new(fakeDataResolver)
+							fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 							fakeOpspecNodeAPIClient := new(client.Fake)
 							eventChannel := make(chan model.Event)
@@ -337,8 +349,8 @@ var _ = Context("Run", func() {
 							fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 							objectUnderTest := _core{
-								pkg:                 fakePkg,
-								pkgResolver:         fakePkgResolver,
+								opDotYmlGetter:      fakeOpDotYmlGetter,
+								dataResolver:        fakeDataResolver,
 								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 								cliExiter:           fakeCliExiter,
 								cliParamSatisfier:   new(cliparamsatisfier.Fake),
@@ -373,12 +385,12 @@ var _ = Context("Run", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakePkg := new(pkg.Fake)
-										fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-										fakePkgHandle := new(pkg.FakeHandle)
-										fakePkgResolver := new(fakePkgResolver)
-										fakePkgResolver.ResolveReturns(fakePkgHandle)
+										fakeOpHandle := new(data.FakeHandle)
+										fakeDataResolver := new(fakeDataResolver)
+										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeOpspecNodeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
@@ -388,8 +400,8 @@ var _ = Context("Run", func() {
 										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 										objectUnderTest := _core{
-											pkg:                 fakePkg,
-											pkgResolver:         fakePkgResolver,
+											opDotYmlGetter:      fakeOpDotYmlGetter,
+											dataResolver:        fakeDataResolver,
 											cliColorer:          clicolorer.New(),
 											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 											cliExiter:           fakeCliExiter,
@@ -420,12 +432,12 @@ var _ = Context("Run", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakePkg := new(pkg.Fake)
-										fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-										fakePkgHandle := new(pkg.FakeHandle)
-										fakePkgResolver := new(fakePkgResolver)
-										fakePkgResolver.ResolveReturns(fakePkgHandle)
+										fakeOpHandle := new(data.FakeHandle)
+										fakeDataResolver := new(fakeDataResolver)
+										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeOpspecNodeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
@@ -435,8 +447,8 @@ var _ = Context("Run", func() {
 										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 										objectUnderTest := _core{
-											pkg:                 fakePkg,
-											pkgResolver:         fakePkgResolver,
+											opDotYmlGetter:      fakeOpDotYmlGetter,
+											dataResolver:        fakeDataResolver,
 											cliColorer:          clicolorer.New(),
 											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 											cliExiter:           fakeCliExiter,
@@ -468,12 +480,12 @@ var _ = Context("Run", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakePkg := new(pkg.Fake)
-										fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-										fakePkgHandle := new(pkg.FakeHandle)
-										fakePkgResolver := new(fakePkgResolver)
-										fakePkgResolver.ResolveReturns(fakePkgHandle)
+										fakeOpHandle := new(data.FakeHandle)
+										fakeDataResolver := new(fakeDataResolver)
+										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeOpspecNodeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
@@ -483,8 +495,8 @@ var _ = Context("Run", func() {
 										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 										objectUnderTest := _core{
-											pkg:                 fakePkg,
-											pkgResolver:         fakePkgResolver,
+											opDotYmlGetter:      fakeOpDotYmlGetter,
+											dataResolver:        fakeDataResolver,
 											cliColorer:          clicolorer.New(),
 											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 											cliExiter:           fakeCliExiter,
@@ -515,12 +527,12 @@ var _ = Context("Run", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakePkg := new(pkg.Fake)
-										fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
-										fakePkgHandle := new(pkg.FakeHandle)
-										fakePkgResolver := new(fakePkgResolver)
-										fakePkgResolver.ResolveReturns(fakePkgHandle)
+										fakeOpHandle := new(data.FakeHandle)
+										fakeDataResolver := new(fakeDataResolver)
+										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeOpspecNodeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
@@ -530,8 +542,8 @@ var _ = Context("Run", func() {
 										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpId, nil)
 
 										objectUnderTest := _core{
-											pkg:                 fakePkg,
-											pkgResolver:         fakePkgResolver,
+											opDotYmlGetter:      fakeOpDotYmlGetter,
+											dataResolver:        fakeDataResolver,
 											cliColorer:          clicolorer.New(),
 											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
 											cliExiter:           fakeCliExiter,

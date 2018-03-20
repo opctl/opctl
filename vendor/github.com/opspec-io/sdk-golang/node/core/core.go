@@ -4,9 +4,10 @@ package core
 import "github.com/opspec-io/sdk-golang/model"
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/containercall"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"path/filepath"
@@ -35,38 +36,38 @@ type Core interface {
 		err error,
 	)
 
-	// Resolve attempts to resolve a pkg via local filesystem or git
+	// Resolve attempts to resolve an op via local filesystem or git
 	// nil pullCreds will be ignored
 	//
 	// expected errs:
-	//  - ErrPkgPullAuthentication on authentication failure
-	//  - ErrPkgPullAuthorization on authorization failure
-	//  - ErrPkgNotFound on resolution failure
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
+	//  - ErrDataRefResolution on resolution failure
 	ResolvePkg(
 		ctx context.Context,
 		pkgRef string,
 		pullCreds *model.PullCreds,
 	) (
-		model.PkgHandle,
+		model.DataHandle,
 		error,
 	)
 }
 
 func New(
 	pubSub pubsub.PubSub,
-	containerProvider containerprovider.ContainerProvider,
+	containerRuntime containerruntime.ContainerRuntime,
 	rootFSPath string,
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
 	dcgNodeRepo := newDCGNodeRepo()
 
-	opKiller := newOpKiller(dcgNodeRepo, containerProvider)
+	opKiller := newOpKiller(dcgNodeRepo, containerRuntime)
 
 	caller := newCaller(
 		newContainerCaller(
-			containerProvider,
-			containercall.New(rootFSPath),
+			containerRuntime,
+			containercall.NewInterpreter(rootFSPath),
 			pubSub,
 			dcgNodeRepo,
 		),
@@ -101,26 +102,28 @@ func New(
 	)
 
 	core = _core{
-		containerProvider:   containerProvider,
+		containerRuntime:    containerRuntime,
 		dcgNodeRepo:         dcgNodeRepo,
 		opCaller:            opCaller,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
 		pkgCachePath:        filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
-		pkg:                 pkg.New(),
+		dotYmlGetter:        dotyml.NewGetter(),
+		data:                data.New(),
 	}
 
 	return
 }
 
 type _core struct {
-	containerProvider   containerprovider.ContainerProvider
+	containerRuntime    containerruntime.ContainerRuntime
 	dcgNodeRepo         dcgNodeRepo
 	opCaller            opCaller
 	opKiller            opKiller
 	pubSub              pubsub.PubSub
-	pkg                 pkg.Pkg
+	dotYmlGetter        dotyml.Getter
+	data                data.Data
 	pkgCachePath        string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }

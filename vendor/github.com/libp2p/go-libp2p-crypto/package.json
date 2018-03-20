@@ -24,6 +24,12 @@
       "hash": "QmWq5PJgAQKDWQerAijYUVKW8mN5MDatK5j7VMp8rizKQd",
       "name": "btcec",
       "version": "0.0.1"
+    },
+    {
+      "author": "minio",
+      "hash": "QmXTpwq2AkzQsPjKqFQDNY2bMdsAT53hUBETeyj8QRHTZU",
+      "name": "sha256-simd",
+      "version": "0.1.1"
     }
   ],
   "gxVersion": "0.4.0",
@@ -31,6 +37,6 @@
   "license": "MIT",
   "name": "go-libp2p-crypto",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "1.6.0"
+  "version": "1.6.2"
 }
 
