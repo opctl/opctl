@@ -5,12 +5,12 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Context("ErrPkgPullAuthentication", func() {
+var _ = Context("ErrDataProviderAuthentication", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			expectedResult := "Pkg pull failed due to invalid/lack of authentication"
-			objectUnderTest := ErrPkgPullAuthentication{}
+			objectUnderTest := ErrDataProviderAuthentication{}
 
 			/* act */
 			actualResult := objectUnderTest.Error()
@@ -22,12 +22,12 @@ var _ = Context("ErrPkgPullAuthentication", func() {
 	})
 })
 
-var _ = Context("ErrPkgPullAuthorization", func() {
+var _ = Context("ErrDataProviderAuthorization", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			expectedResult := "Pkg pull failed due to insufficient/lack of authorization"
-			objectUnderTest := ErrPkgPullAuthorization{}
+			objectUnderTest := ErrDataProviderAuthorization{}
 
 			/* act */
 			actualResult := objectUnderTest.Error()
@@ -38,12 +38,12 @@ var _ = Context("ErrPkgPullAuthorization", func() {
 		})
 	})
 })
-var _ = Context("ErrPkgNotFound", func() {
+var _ = Context("ErrDataRefResolution", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			expectedResult := "Provider failed to resolve the requested pkg"
-			objectUnderTest := ErrPkgNotFound{}
+			objectUnderTest := ErrDataRefResolution{}
 
 			/* act */
 			actualResult := objectUnderTest.Error()

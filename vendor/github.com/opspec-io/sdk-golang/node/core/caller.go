@@ -13,7 +13,7 @@ type caller interface {
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 		rootOpId string,
 	) error
 }
@@ -37,7 +37,7 @@ func (this _caller) Call(
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 	rootOpId string,
 ) error {
 
@@ -52,14 +52,14 @@ func (this _caller) Call(
 			scope,
 			id,
 			scg.Container,
-			pkgHandle,
+			opDirHandle,
 			rootOpId,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
 			scope,
 			id,
-			pkgHandle,
+			opDirHandle,
 			rootOpId,
 			scg.Op,
 		)
@@ -68,7 +68,7 @@ func (this _caller) Call(
 			id,
 			scope,
 			rootOpId,
-			pkgHandle,
+			opDirHandle,
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
@@ -76,7 +76,7 @@ func (this _caller) Call(
 			id,
 			scope,
 			rootOpId,
-			pkgHandle,
+			opDirHandle,
 			scg.Serial,
 		)
 	default:

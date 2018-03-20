@@ -5,9 +5,9 @@ package core
 import (
 	"context"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall"
-	outputsPkg "github.com/opspec-io/sdk-golang/opcall/outputs"
-	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -17,7 +17,7 @@ type opCaller interface {
 	Call(
 		inboundScope map[string]*model.Value,
 		opId string,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 		rootOpId string,
 		scgOpCall *model.SCGOpCall,
 	) error
@@ -30,28 +30,28 @@ func newOpCaller(
 	rootFSPath string,
 ) opCaller {
 	return _opCaller{
-		outputs:     outputsPkg.New(),
-		opCall:      opcall.New(rootFSPath),
-		pkg:         pkg.New(),
-		pubSub:      pubSub,
-		dcgNodeRepo: dcgNodeRepo,
-		caller:      caller,
+		outputsInterpreter: outputs.NewInterpreter(),
+		opCallInterpreter:  opcall.NewInterpreter(rootFSPath),
+		dotYmlGetter:       dotyml.NewGetter(),
+		pubSub:             pubSub,
+		dcgNodeRepo:        dcgNodeRepo,
+		caller:             caller,
 	}
 }
 
 type _opCaller struct {
-	outputs     outputsPkg.Outputs
-	opCall      opcall.OpCall
-	pkg         pkg.Pkg
-	pubSub      pubsub.PubSub
-	dcgNodeRepo dcgNodeRepo
-	caller      caller
+	outputsInterpreter outputs.Interpreter
+	opCallInterpreter  opcall.Interpreter
+	dotYmlGetter       dotyml.Getter
+	pubSub             pubsub.PubSub
+	dcgNodeRepo        dcgNodeRepo
+	caller             caller
 }
 
 func (oc _opCaller) Call(
 	inboundScope map[string]*model.Value,
 	opId string,
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 	rootOpId string,
 	scgOpCall *model.SCGOpCall,
 ) error {
@@ -120,11 +120,11 @@ func (oc _opCaller) Call(
 		},
 	)
 
-	dcgOpCall, err := oc.opCall.Interpret(
+	dcgOpCall, err := oc.opCallInterpreter.Interpret(
 		inboundScope,
 		scgOpCall,
 		opId,
-		pkgHandle,
+		opDirHandle,
 		rootOpId,
 	)
 	if nil != err {
@@ -156,7 +156,7 @@ func (oc _opCaller) Call(
 		dcgOpCall.ChildCallId,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
-		dcgOpCall.PkgHandle,
+		dcgOpCall.DataHandle,
 		rootOpId,
 	)
 
@@ -169,13 +169,16 @@ func (oc _opCaller) Call(
 	// wait on outputs
 	outputs = <-outputsChan
 
-	childPkg, err := oc.pkg.GetManifest(dcgOpCall.PkgHandle)
+	childOpDotYml, err := oc.dotYmlGetter.Get(
+		context.TODO(),
+		dcgOpCall.DataHandle,
+	)
 	if nil != err {
 		return err
 	}
 
-	childPkgPath := dcgOpCall.PkgHandle.Path()
-	outputs, err = oc.outputs.Interpret(outputs, childPkg.Outputs, *childPkgPath)
+	childPkgPath := dcgOpCall.DataHandle.Path()
+	outputs, err = oc.outputsInterpreter.Interpret(outputs, childOpDotYml.Outputs, *childPkgPath)
 
 	return err
 }

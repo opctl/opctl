@@ -4,7 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
 )
 
 var _ = Context("core", func() {
@@ -16,8 +16,8 @@ var _ = Context("core", func() {
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 			objectUnderTest := _opKiller{
-				containerProvider: new(containerprovider.Fake),
-				dcgNodeRepo:       fakeDCGNodeRepo,
+				containerRuntime: new(containerruntime.Fake),
+				dcgNodeRepo:      fakeDCGNodeRepo,
 			}
 
 			/* act */
@@ -33,8 +33,8 @@ var _ = Context("core", func() {
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 			objectUnderTest := _opKiller{
-				containerProvider: new(containerprovider.Fake),
-				dcgNodeRepo:       fakeDCGNodeRepo,
+				containerRuntime: new(containerruntime.Fake),
+				dcgNodeRepo:      fakeDCGNodeRepo,
 			}
 
 			/* act */
@@ -65,8 +65,8 @@ var _ = Context("core", func() {
 				}
 
 				objectUnderTest := _opKiller{
-					containerProvider: new(containerprovider.Fake),
-					dcgNodeRepo:       fakeDCGNodeRepo,
+					containerRuntime: new(containerruntime.Fake),
+					dcgNodeRepo:      fakeDCGNodeRepo,
 				}
 
 				/* act */
@@ -82,7 +82,7 @@ var _ = Context("core", func() {
 
 				Expect(actualCalls).To(Equal(expectedCalls))
 			})
-			It("should call containerProvider.DeleteContainerIfExists w/ expected args for container nodes", func() {
+			It("should call containerRuntime.DeleteContainerIfExists w/ expected args for container nodes", func() {
 				/* arrange */
 				providedReq := model.KillOpReq{OpId: "dummyOpId"}
 
@@ -101,11 +101,11 @@ var _ = Context("core", func() {
 					nodesReturnedFromDCGNodeRepo[2].Id: true,
 				}
 
-				fakeContainerProvider := new(containerprovider.Fake)
+				fakeContainerRuntime := new(containerruntime.Fake)
 
 				objectUnderTest := &_opKiller{
-					containerProvider: fakeContainerProvider,
-					dcgNodeRepo:       fakeDCGNodeRepo,
+					containerRuntime: fakeContainerRuntime,
+					dcgNodeRepo:      fakeDCGNodeRepo,
 				}
 
 				/* act */
@@ -114,8 +114,8 @@ var _ = Context("core", func() {
 				/* assert */
 				actualCalls := map[string]bool{}
 				callIndex := 0
-				for callIndex < fakeContainerProvider.DeleteContainerIfExistsCallCount() {
-					actualCalls[fakeContainerProvider.DeleteContainerIfExistsArgsForCall(callIndex)] = true
+				for callIndex < fakeContainerRuntime.DeleteContainerIfExistsCallCount() {
+					actualCalls[fakeContainerRuntime.DeleteContainerIfExistsArgsForCall(callIndex)] = true
 					callIndex++
 				}
 

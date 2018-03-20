@@ -9,21 +9,21 @@ import (
 // nil pullCreds will be ignored
 //
 // expected errs:
-//  - ErrPkgPullAuthentication on authentication failure
-//  - ErrPkgPullAuthorization on authorization failure
-//  - ErrPkgNotFound on resolution failure
+//  - ErrDataProviderAuthentication on authentication failure
+//  - ErrDataProviderAuthorization on authorization failure
+//  - ErrDataRefResolution on resolution failure
 func (this _core) ResolvePkg(
 	ctx context.Context,
 	pkgRef string,
 	pullCreds *model.PullCreds,
 ) (
-	model.PkgHandle,
+	model.DataHandle,
 	error,
 ) {
-	return this.pkg.Resolve(
+	return this.data.Resolve(
 		ctx,
 		pkgRef,
-		this.pkg.NewFSProvider(),
-		this.pkg.NewGitProvider(this.pkgCachePath, pullCreds),
+		this.data.NewFSProvider(),
+		this.data.NewGitProvider(this.pkgCachePath, pullCreds),
 	)
 }

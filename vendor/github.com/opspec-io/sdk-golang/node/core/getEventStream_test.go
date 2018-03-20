@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 )
@@ -26,7 +26,7 @@ var _ = Context("core", func() {
 			fakePubSub := new(pubsub.Fake)
 
 			objectUnderTest := _core{
-				containerProvider:   new(containerprovider.Fake),
+				containerRuntime:    new(containerruntime.Fake),
 				pubSub:              fakePubSub,
 				opCaller:            new(fakeOpCaller),
 				dcgNodeRepo:         new(fakeDCGNodeRepo),

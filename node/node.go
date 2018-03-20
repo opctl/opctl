@@ -6,7 +6,7 @@ import (
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
 	"github.com/opspec-io/sdk-golang/node/core"
-	"github.com/opspec-io/sdk-golang/util/containerprovider/docker"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime/docker"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"os"
 	"path"
@@ -27,13 +27,13 @@ func New() {
 		panic(fmt.Errorf("node already running w/ PId: %v\n", pIdOExistingNode))
 	}
 
-	containerProvider, err := docker.New()
+	containerRuntime, err := docker.New()
 	if nil != err {
 		panic(err)
 	}
 
 	// cleanup [legacy] opspec.engine container if exists; ignore errors
-	containerProvider.DeleteContainerIfExists("opspec.engine")
+	containerRuntime.DeleteContainerIfExists("opspec.engine")
 
 	// cleanup existing pkg cache
 	pkgCachePath := filepath.Join(rootFSPath, "pkgs")
@@ -54,7 +54,7 @@ func New() {
 	httpErrChannel :=
 		newHttpListener(core.New(
 			pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
-			containerProvider,
+			containerRuntime,
 			rootFSPath,
 		)).
 			Listen(ctx)

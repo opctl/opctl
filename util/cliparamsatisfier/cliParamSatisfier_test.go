@@ -8,7 +8,7 @@ import (
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall/inputs"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/params"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -27,9 +27,9 @@ var _ = Context("parameterSatisfier", func() {
 			}
 
 			objectUnderTest := _CLIParamSatisfier{
-				cliExiter: new(cliexiter.Fake),
-				cliOutput: new(clioutput.Fake),
-				inputs:    new(inputs.Fake),
+				cliExiter:       new(cliexiter.Fake),
+				cliOutput:       new(clioutput.Fake),
+				paramsValidator: new(params.FakeValidator),
 			}
 
 			/* act */
@@ -70,19 +70,21 @@ var _ = Context("parameterSatisfier", func() {
 					valueString := string(valueBytes)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					fakeInputs := new(inputs.Fake)
+					fakeParamsValidator := new(params.FakeValidator)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiter.Fake),
-						cliOutput: new(clioutput.Fake),
-						inputs:    fakeInputs,
+						cliExiter:       new(cliexiter.Fake),
+						cliOutput:       new(clioutput.Fake),
+						paramsValidator: fakeParamsValidator,
 					}
 
 					/* act */
 					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
-					actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+					actualValues,
+						actualParams := fakeParamsValidator.ValidateArgsForCall(0)
+
 					Expect(actualValues).To(Equal(expectedValues))
 					Expect(actualParams).To(Equal(providedInputs))
 				})
@@ -106,10 +108,10 @@ var _ = Context("parameterSatisfier", func() {
 					fakeCoerce := new(coerce.Fake)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiter.Fake),
-						cliOutput: new(clioutput.Fake),
-						coerce:    fakeCoerce,
-						inputs:    new(inputs.Fake),
+						cliExiter:       new(cliexiter.Fake),
+						cliOutput:       new(clioutput.Fake),
+						coerce:          fakeCoerce,
+						paramsValidator: new(params.FakeValidator),
 					}
 
 					/* act */
@@ -142,20 +144,20 @@ var _ = Context("parameterSatisfier", func() {
 
 						fakeCoerce.ToBooleanReturns(expectedValues[input1Name], nil)
 
-						fakeInputs := new(inputs.Fake)
+						fakeParamsValidator := new(params.FakeValidator)
 
 						objectUnderTest := _CLIParamSatisfier{
-							cliExiter: new(cliexiter.Fake),
-							cliOutput: new(clioutput.Fake),
-							coerce:    fakeCoerce,
-							inputs:    fakeInputs,
+							cliExiter:       new(cliexiter.Fake),
+							cliOutput:       new(clioutput.Fake),
+							coerce:          fakeCoerce,
+							paramsValidator: fakeParamsValidator,
 						}
 
 						/* act */
 						objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 						/* assert */
-						actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+						actualValues, actualParams := fakeParamsValidator.ValidateArgsForCall(0)
 						Expect(actualValues).To(Equal(expectedValues))
 						Expect(actualParams).To(Equal(providedInputs))
 					})
@@ -180,10 +182,10 @@ var _ = Context("parameterSatisfier", func() {
 					fakeCoerce := new(coerce.Fake)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiter.Fake),
-						cliOutput: new(clioutput.Fake),
-						coerce:    fakeCoerce,
-						inputs:    new(inputs.Fake),
+						cliExiter:       new(cliexiter.Fake),
+						cliOutput:       new(clioutput.Fake),
+						coerce:          fakeCoerce,
+						paramsValidator: new(params.FakeValidator),
 					}
 
 					/* act */
@@ -216,20 +218,20 @@ var _ = Context("parameterSatisfier", func() {
 
 						fakeCoerce.ToNumberReturns(expectedValues[input1Name], nil)
 
-						fakeInputs := new(inputs.Fake)
+						fakeParamsValidator := new(params.FakeValidator)
 
 						objectUnderTest := _CLIParamSatisfier{
-							cliExiter: new(cliexiter.Fake),
-							cliOutput: new(clioutput.Fake),
-							coerce:    fakeCoerce,
-							inputs:    fakeInputs,
+							cliExiter:       new(cliexiter.Fake),
+							cliOutput:       new(clioutput.Fake),
+							coerce:          fakeCoerce,
+							paramsValidator: fakeParamsValidator,
 						}
 
 						/* act */
 						objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 						/* assert */
-						actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+						actualValues, actualParams := fakeParamsValidator.ValidateArgsForCall(0)
 						Expect(actualValues).To(Equal(expectedValues))
 						Expect(actualParams).To(Equal(providedInputs))
 					})
@@ -264,19 +266,21 @@ var _ = Context("parameterSatisfier", func() {
 					valueString := string(valueBytes)
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					fakeInputs := new(inputs.Fake)
+					fakeParamsValidator := new(params.FakeValidator)
 
 					objectUnderTest := _CLIParamSatisfier{
-						cliExiter: new(cliexiter.Fake),
-						cliOutput: new(clioutput.Fake),
-						inputs:    fakeInputs,
+						cliExiter:       new(cliexiter.Fake),
+						cliOutput:       new(clioutput.Fake),
+						paramsValidator: fakeParamsValidator,
 					}
 
 					/* act */
 					objectUnderTest.Satisfy(providedInputSourcer, providedInputs)
 
 					/* assert */
-					actualValues, actualParams := fakeInputs.ValidateArgsForCall(0)
+					actualValues,
+						actualParams := fakeParamsValidator.ValidateArgsForCall(0)
+
 					Expect(actualValues).To(Equal(expectedValues))
 					Expect(actualParams).To(Equal(providedInputs))
 				})

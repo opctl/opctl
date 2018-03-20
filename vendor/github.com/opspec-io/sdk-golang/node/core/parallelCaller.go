@@ -18,7 +18,7 @@ type parallelCaller interface {
 		callId string,
 		inboundScope map[string]*model.Value,
 		rootOpId string,
-		pkgHandle model.PkgHandle,
+		opDirHandle model.DataHandle,
 		scgParallelCall []*model.SCG,
 	) error
 }
@@ -50,7 +50,7 @@ func (this _parallelCaller) Call(
 	callId string,
 	inboundScope map[string]*model.Value,
 	rootOpId string,
-	pkgHandle model.PkgHandle,
+	opDirHandle model.DataHandle,
 	scgParallelCall []*model.SCG,
 ) error {
 
@@ -101,7 +101,7 @@ func (this _parallelCaller) Call(
 					childCallId,
 					inboundScope,
 					childCall,
-					pkgHandle,
+					opDirHandle,
 					rootOpId,
 				); nil != childErr {
 					childErrChannel <- childErr

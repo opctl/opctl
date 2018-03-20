@@ -42,7 +42,7 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolvePkgStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error)
+	ResolvePkgStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error)
 	resolvePkgMutex       sync.RWMutex
 	resolvePkgArgsForCall []struct {
 		ctx       context.Context
@@ -50,11 +50,11 @@ type Fake struct {
 		pullCreds *model.PullCreds
 	}
 	resolvePkgReturns struct {
-		result1 model.PkgHandle
+		result1 model.DataHandle
 		result2 error
 	}
 	resolvePkgReturnsOnCall map[int]struct {
-		result1 model.PkgHandle
+		result1 model.DataHandle
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -189,7 +189,7 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkg(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.PkgHandle, error) {
+func (fake *Fake) ResolvePkg(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error) {
 	fake.resolvePkgMutex.Lock()
 	ret, specificReturn := fake.resolvePkgReturnsOnCall[len(fake.resolvePkgArgsForCall)]
 	fake.resolvePkgArgsForCall = append(fake.resolvePkgArgsForCall, struct {
@@ -220,24 +220,24 @@ func (fake *Fake) ResolvePkgArgsForCall(i int) (context.Context, string, *model.
 	return fake.resolvePkgArgsForCall[i].ctx, fake.resolvePkgArgsForCall[i].pkgRef, fake.resolvePkgArgsForCall[i].pullCreds
 }
 
-func (fake *Fake) ResolvePkgReturns(result1 model.PkgHandle, result2 error) {
+func (fake *Fake) ResolvePkgReturns(result1 model.DataHandle, result2 error) {
 	fake.ResolvePkgStub = nil
 	fake.resolvePkgReturns = struct {
-		result1 model.PkgHandle
+		result1 model.DataHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolvePkgReturnsOnCall(i int, result1 model.PkgHandle, result2 error) {
+func (fake *Fake) ResolvePkgReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
 	fake.ResolvePkgStub = nil
 	if fake.resolvePkgReturnsOnCall == nil {
 		fake.resolvePkgReturnsOnCall = make(map[int]struct {
-			result1 model.PkgHandle
+			result1 model.DataHandle
 			result2 error
 		})
 	}
 	fake.resolvePkgReturnsOnCall[i] = struct {
-		result1 model.PkgHandle
+		result1 model.DataHandle
 		result2 error
 	}{result1, result2}
 }

@@ -4,13 +4,13 @@ import (
 	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 )
 
 var _ = Context("core", func() {
 	Context("ResolvePkg", func() {
-		It("should call pkg.Resolve w/ expected args", func() {
+		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedPkgRef := "dummyPkgRef"
@@ -19,17 +19,17 @@ var _ = Context("core", func() {
 				Password: "dummyPassword",
 			}
 
-			fakePkg := new(pkg.Fake)
+			fakeData := new(data.Fake)
 
-			expectedPkgProviders := []pkg.Provider{
-				new(pkg.FakeProvider),
-				new(pkg.FakeProvider),
+			expectedPkgProviders := []data.Provider{
+				new(data.FakeProvider),
+				new(data.FakeProvider),
 			}
-			fakePkg.NewFSProviderReturns(expectedPkgProviders[0])
-			fakePkg.NewGitProviderReturns(expectedPkgProviders[1])
+			fakeData.NewFSProviderReturns(expectedPkgProviders[0])
+			fakeData.NewGitProviderReturns(expectedPkgProviders[1])
 
 			objectUnderTest := _core{
-				pkg: fakePkg,
+				data: fakeData,
 			}
 
 			/* act */
@@ -42,7 +42,7 @@ var _ = Context("core", func() {
 			/* assert */
 			actualCtx,
 				actualPkgRef,
-				actualPkgProviders := fakePkg.ResolveArgsForCall(0)
+				actualPkgProviders := fakeData.ResolveArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualPkgRef).To(Equal(providedPkgRef))

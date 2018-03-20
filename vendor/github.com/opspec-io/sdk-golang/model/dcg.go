@@ -7,8 +7,8 @@ type DCG struct {
 }
 
 type DCGBaseCall struct {
-	RootOpId  string `json:"rootOpId"`
-	PkgHandle PkgHandle
+	RootOpId   string `json:"rootOpId"`
+	DataHandle DataHandle
 }
 
 type DCGPullCreds struct {

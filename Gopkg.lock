@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "72ba7f593fa4dbb628cf5ee83cd7daf955934cf5"
+  revision = "0c1006f1abc1af7aa6b9847754370d054dfa6c68"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -351,7 +351,7 @@
   branch = "master"
   name = "github.com/ipfs/go-log"
   packages = ["."]
-  revision = "0e2a17b81af445147a78d94a45d4398c4008c219"
+  revision = "59b4549305c9c7a81367b9ff34597ba8babea832"
 
 [[projects]]
   name = "github.com/jackpal/gateway"
@@ -402,8 +402,8 @@
 [[projects]]
   name = "github.com/kevinburke/ssh_config"
   packages = ["."]
-  revision = "0ff8514904a8ebfcfb3c32ad73e1f8498a7f81b4"
-  version = "0.3"
+  revision = "9fc7bb800b555d63157c65a904c86a2cc7b4e795"
+  version = "0.4"
 
 [[projects]]
   branch = "master"
@@ -450,7 +450,7 @@
     ".",
     "pb"
   ]
-  revision = "f2afd8b3d4e358a6092159c813cb2bdf6d984e68"
+  revision = "18915b5467c77ad8c07a35328c2cab468667a4e8"
 
 [[projects]]
   branch = "master"
@@ -714,35 +714,37 @@
   branch = "master"
   name = "github.com/opspec-io/sdk-golang"
   packages = [
-    "containercall",
-    "containercall/dirs",
-    "containercall/envvars",
-    "containercall/files",
-    "containercall/image",
-    "containercall/sockets",
     "data",
     "data/coerce",
-    "expression",
-    "expression/interpolater",
-    "expression/interpolater/dereferencer",
     "model",
     "node/api",
     "node/api/client",
     "node/api/handler",
     "node/core",
-    "opcall",
-    "opcall/inputs",
-    "opcall/outputs",
-    "opcall/params",
-    "pkg",
-    "pkg/manifest",
-    "util/containerprovider",
-    "util/containerprovider/docker",
+    "node/core/containerruntime",
+    "node/core/containerruntime/docker",
+    "op",
+    "op/dotyml",
+    "op/interpreter/containercall",
+    "op/interpreter/containercall/dirs",
+    "op/interpreter/containercall/envvars",
+    "op/interpreter/containercall/files",
+    "op/interpreter/containercall/image",
+    "op/interpreter/containercall/sockets",
+    "op/interpreter/expression",
+    "op/interpreter/expression/interpolater",
+    "op/interpreter/expression/interpolater/dereferencer",
+    "op/interpreter/opcall",
+    "op/interpreter/opcall/inputs",
+    "op/interpreter/opcall/inputs/input",
+    "op/interpreter/opcall/outputs",
+    "op/interpreter/opcall/params",
+    "op/interpreter/opcall/params/param",
     "util/iruntime",
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "e078b7a2a8f1719f2e0e8fc9061f540abbe8758b"
+  revision = "d405fc5c94e78da547f4e3c6ef4a3d30b0bdc855"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -754,7 +756,7 @@
   branch = "master"
   name = "github.com/peterh/liner"
   packages = ["."]
-  revision = "161ea9c37d6d4e97afe7f8f9cde7e647d49bd091"
+  revision = "6106ee4fe3e8435f18cd10e34557e5e50f0e792a"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -962,7 +964,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "374053ea96cb300f8671b8d3b07edeeb06e203b4"
+  revision = "c3a3ad6d03f7a915c0f7e194b7152974bb73d287"
 
 [[projects]]
   branch = "master"
@@ -977,7 +979,7 @@
     "proxy",
     "trace"
   ]
-  revision = "e0c57d8f86c17f0724497efcb3bc617e82834821"
+  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
 
 [[projects]]
   branch = "master"
@@ -992,7 +994,7 @@
     "unix",
     "windows"
   ]
-  revision = "2f1e207ee39ff70f3433e49c6eb52677a515e3b5"
+  revision = "d8e400bc7db4870d786864138af681469693d18c"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -1095,6 +1097,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5d4a60830f576d366dc722b45f3838c405b212da5e803e137318d09166d101c5"
+  inputs-digest = "a26aa7ec48ba398da3e2ca57b2908b347f98ac2061db1f5183f455b121d098b4"
   solver-name = "gps-cdcl"
   solver-version = 1

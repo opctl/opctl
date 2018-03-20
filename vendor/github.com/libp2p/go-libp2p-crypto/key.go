@@ -15,13 +15,13 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
-	"crypto/sha256"
 	"crypto/sha512"
 	"hash"
 
 	pb "github.com/libp2p/go-libp2p-crypto/pb"
 
 	"github.com/gogo/protobuf/proto"
+	sha256 "github.com/minio/sha256-simd"
 )
 
 var ErrBadKeyType = errors.New("invalid or unsupported key type")

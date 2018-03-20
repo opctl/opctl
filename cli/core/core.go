@@ -4,6 +4,10 @@ package core
 
 import (
 	"context"
+	"io"
+	"net/url"
+	"os"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/nodeprovider"
@@ -14,50 +18,51 @@ import (
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
 	"github.com/opspec-io/sdk-golang/node/api/client"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"io"
-	"net/url"
-	"os"
+	"github.com/opspec-io/sdk-golang/op"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 )
 
 type Core interface {
-	OpKill(
-		ctx context.Context,
-		opId string,
-	)
+	Events()
 
 	NodeCreate()
 
 	NodeKill()
 
-	Run(
+	Ls(
 		ctx context.Context,
-		pkgRef string,
-		opts *RunOpts,
+		dirRef string,
 	)
 
-	PkgCreate(
+	OpCreate(
 		path string,
 		description string,
 		name string,
 	)
 
-	PkgLs(
-		path string,
-	)
-
-	PkgInstall(
+	OpInstall(
+		ctx context.Context,
 		path,
-		pkgRef,
+		opRef,
 		username,
 		password string,
 	)
 
-	PkgValidate(
-		pkgRef string,
+	OpKill(
+		ctx context.Context,
+		opId string,
 	)
 
-	Events()
+	OpValidate(
+		ctx context.Context,
+		opRef string,
+	)
+
+	Run(
+		ctx context.Context,
+		opRef string,
+		opts *RunOpts,
+	)
 
 	SelfUpdate(
 		channel string,
@@ -89,35 +94,43 @@ func New(
 	)
 
 	return &_core{
-		opspecNodeAPIClient:     opspecNodeAPIClient,
-		pkg:                     pkg.New(),
-		pkgResolver:             newPkgResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
 		cliColorer:              cliColorer,
 		cliExiter:               cliExiter,
 		cliOutput:               cliOutput,
 		cliParamSatisfier:       cliParamSatisfier,
+		opDotYmlGetter:          dotyml.NewGetter(),
+		ioutil:                  iioutil.New(),
 		nodeProvider:            local.New(),
 		nodeReachabilityEnsurer: newNodeReachabilityEnsurer(cliExiter),
-		updater:                 updater.New(),
+		opCreator:               op.NewCreator(),
+		opInstaller:             op.NewInstaller(),
+		opLister:                op.NewLister(),
+		opspecNodeAPIClient:     opspecNodeAPIClient,
+		opValidator:             op.NewValidator(),
 		os:                      _os,
+		dataResolver:            newDataResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
+		updater:                 updater.New(),
 		writer:                  os.Stdout,
-		ioutil:                  iioutil.New(),
 	}
 
 }
 
 type _core struct {
-	opspecNodeAPIClient     client.Client
-	pkg                     pkg.Pkg
-	pkgResolver             pkgResolver
 	cliColorer              clicolorer.CliColorer
 	cliExiter               cliexiter.CliExiter
 	cliOutput               clioutput.CliOutput
 	cliParamSatisfier       cliparamsatisfier.CLIParamSatisfier
+	opDotYmlGetter          dotyml.Getter
+	ioutil                  iioutil.IIOUtil
 	nodeProvider            nodeprovider.NodeProvider
 	nodeReachabilityEnsurer nodeReachabilityEnsurer
-	updater                 updater.Updater
+	opCreator               op.Creator
+	opInstaller             op.Installer
+	opLister                op.Lister
+	opspecNodeAPIClient     client.Client
+	opValidator             op.Validator
 	os                      ios.IOS
+	dataResolver            dataResolver
+	updater                 updater.Updater
 	writer                  io.Writer
-	ioutil                  iioutil.IIOUtil
 }

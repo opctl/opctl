@@ -4,12 +4,13 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
 	"crypto/x509"
 	"errors"
 
-	proto "github.com/gogo/protobuf/proto"
 	pb "github.com/libp2p/go-libp2p-crypto/pb"
+
+	proto "github.com/gogo/protobuf/proto"
+	sha256 "github.com/minio/sha256-simd"
 )
 
 type RsaPrivateKey struct {

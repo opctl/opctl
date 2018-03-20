@@ -14,17 +14,20 @@ import (
 
 func (this _core) Run(
 	ctx context.Context,
-	pkgRef string,
+	opRef string,
 	opts *RunOpts,
 ) {
 	startTime := time.Now().UTC()
 
-	pkgHandle := this.pkgResolver.Resolve(
-		pkgRef,
+	opHandle := this.dataResolver.Resolve(
+		opRef,
 		nil,
 	)
 
-	pkgManifest, err := this.pkg.GetManifest(pkgHandle)
+	opDotYml, err := this.opDotYmlGetter.Get(
+		ctx,
+		opHandle,
+	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
 		return // support fake exiter
@@ -42,10 +45,10 @@ func (this _core) Run(
 			this.cliParamSatisfier.NewSliceInputSrc(opts.Args, "="),
 			ymlFileInputSrc,
 			this.cliParamSatisfier.NewEnvVarInputSrc(),
-			this.cliParamSatisfier.NewParamDefaultInputSrc(pkgManifest.Inputs),
-			this.cliParamSatisfier.NewCliPromptInputSrc(pkgManifest.Inputs),
+			this.cliParamSatisfier.NewParamDefaultInputSrc(opDotYml.Inputs),
+			this.cliParamSatisfier.NewCliPromptInputSrc(opDotYml.Inputs),
 		),
-		pkgManifest.Inputs,
+		opDotYml.Inputs,
 	)
 
 	// init signal channel
@@ -64,7 +67,7 @@ func (this _core) Run(
 		model.StartOpReq{
 			Args: argsMap,
 			Pkg: &model.DCGOpCallPkg{
-				Ref: pkgHandle.Ref(),
+				Ref: opHandle.Ref(),
 			},
 		},
 	)

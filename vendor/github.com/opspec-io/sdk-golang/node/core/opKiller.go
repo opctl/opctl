@@ -4,7 +4,7 @@ package core
 
 import (
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
 	"sync"
 )
 
@@ -14,17 +14,17 @@ type opKiller interface {
 
 func newOpKiller(
 	dcgNodeRepo dcgNodeRepo,
-	containerProvider containerprovider.ContainerProvider,
+	containerRuntime containerruntime.ContainerRuntime,
 ) opKiller {
 	return _opKiller{
-		dcgNodeRepo:       dcgNodeRepo,
-		containerProvider: containerProvider,
+		dcgNodeRepo:      dcgNodeRepo,
+		containerRuntime: containerRuntime,
 	}
 }
 
 type _opKiller struct {
-	dcgNodeRepo       dcgNodeRepo
-	containerProvider containerprovider.ContainerProvider
+	dcgNodeRepo      dcgNodeRepo
+	containerRuntime containerruntime.ContainerRuntime
 }
 
 func (this _opKiller) Kill(
@@ -40,7 +40,7 @@ func (this _opKiller) Kill(
 			this.dcgNodeRepo.DeleteIfExists(childNode.Id)
 
 			if nil != childNode.Container {
-				this.containerProvider.DeleteContainerIfExists(
+				this.containerRuntime.DeleteContainerIfExists(
 					childNode.Id,
 				)
 			}

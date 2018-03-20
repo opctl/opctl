@@ -5,9 +5,10 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"github.com/opspec-io/sdk-golang/util/containerprovider"
+	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"time"
@@ -33,18 +34,19 @@ var _ = Context("core", func() {
 			})
 		})
 		Context("req.Pkg not nil", func() {
-			It("should call pkg.GetManifest w/ expected args", func() {
+			It("should call data.Get w/ expected args", func() {
 				/* arrange */
-				fakePkg := new(pkg.Fake)
+				fakeData := new(data.Fake)
+				fakeDataHandle := new(data.FakeHandle)
+				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkg.ResolveReturns(fakePkgHandle, nil)
-
+				fakeDotYmlGetter := new(dotyml.FakeGetter)
 				// err to trigger immediate return
-				fakePkg.GetManifestReturns(nil, errors.New("dummyError"))
+				fakeDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
-					pkg:                 fakePkg,
+					data:                fakeData,
+					dotYmlGetter:        fakeDotYmlGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -55,22 +57,26 @@ var _ = Context("core", func() {
 				)
 
 				/* assert */
+				actualCtx,
+					actualDataHandle := fakeDotYmlGetter.GetArgsForCall(0)
 
-				Expect(fakePkg.GetManifestArgsForCall(0)).To(Equal(fakePkgHandle))
+				Expect(actualCtx).To(Equal(actualCtx))
+				Expect(actualDataHandle).To(Equal(fakeDataHandle))
 			})
-			Context("pkg.GetManifest errs", func() {
+			Context("data.Get errs", func() {
 				It("should return expected error", func() {
 					/* arrange */
-					fakePkg := new(pkg.Fake)
+					fakeData := new(data.Fake)
+					fakeDataHandle := new(data.FakeHandle)
+					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkg.ResolveReturns(fakePkgHandle, nil)
-
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, expectedErr)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, expectedErr)
 
 					objectUnderTest := _core{
-						pkg:                 fakePkg,
+						data:                fakeData,
+						dotYmlGetter:        fakeDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -84,7 +90,7 @@ var _ = Context("core", func() {
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})
-			Context("pkg.GetManifest doesn't err", func() {
+			Context("data.Get doesn't err", func() {
 				It("should call opCaller.Call w/ expected args", func() {
 					/* arrange */
 					providedArg1String := "dummyArg1Value"
@@ -103,10 +109,9 @@ var _ = Context("core", func() {
 						},
 					}
 
-					fakePkg := new(pkg.Fake)
-
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkg.ResolveReturns(fakePkgHandle, nil)
+					fakeData := new(data.Fake)
+					fakeDataHandle := new(data.FakeHandle)
+					fakeData.ResolveReturns(fakeDataHandle, nil)
 
 					pkgManifest := &model.PkgManifest{
 						Outputs: map[string]*model.Param{
@@ -114,11 +119,13 @@ var _ = Context("core", func() {
 							"dummyOutput2": nil,
 						},
 					}
-					fakePkg.GetManifestReturns(pkgManifest, nil)
+
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(pkgManifest, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
-							Ref: fakePkgHandle.Ref(),
+							Ref: fakeDataHandle.Ref(),
 						},
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
@@ -138,9 +145,10 @@ var _ = Context("core", func() {
 					fakeUniqueStringFactory.ConstructReturns(expectedOpId, nil)
 
 					objectUnderTest := _core{
-						containerProvider:   new(containerprovider.Fake),
+						containerRuntime:    new(containerruntime.Fake),
 						pubSub:              new(pubsub.Fake),
-						pkg:                 fakePkg,
+						data:                fakeData,
+						dotYmlGetter:        fakeDotYmlGetter,
 						opCaller:            fakeOpCaller,
 						dcgNodeRepo:         new(fakeDCGNodeRepo),
 						uniqueStringFactory: fakeUniqueStringFactory,
@@ -157,13 +165,13 @@ var _ = Context("core", func() {
 					time.Sleep(time.Millisecond * 500)
 					actualInboundScope,
 						actualOpId,
-						actualPkgHandle,
+						actualOpDirHandle,
 						actualRootOpId,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 					Expect(actualInboundScope).To(Equal(providedReq.Args))
 					Expect(actualOpId).To(Equal(expectedOpId))
-					Expect(actualPkgHandle).To(Equal(fakePkgHandle))
+					Expect(actualOpDirHandle).To(Equal(fakeDataHandle))
 					Expect(actualRootOpId).To(Equal(actualOpId))
 					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 				})

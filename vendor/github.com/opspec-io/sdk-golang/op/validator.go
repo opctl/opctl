@@ -1,0 +1,43 @@
+package op
+
+//go:generate counterfeiter -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
+
+import (
+	"context"
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
+)
+
+type Validator interface {
+	// Validate validates an op
+	Validate(
+		ctx context.Context,
+		opDirHandle model.DataHandle,
+	) []error
+}
+
+// NewValidator returns an initialized Validator instance
+func NewValidator() Validator {
+	return _validator{
+		dotYmlGetter: dotyml.NewGetter(),
+	}
+}
+
+type _validator struct {
+	dotYmlGetter dotyml.Getter
+}
+
+func (vdr _validator) Validate(
+	ctx context.Context,
+	opDirHandle model.DataHandle,
+) []error {
+	errs := []error{}
+	if _, err := vdr.dotYmlGetter.Get(
+		ctx,
+		opDirHandle,
+	); nil != err {
+		errs = append(errs, err)
+	}
+
+	return errs
+}

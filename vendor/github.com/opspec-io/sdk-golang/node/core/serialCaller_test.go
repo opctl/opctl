@@ -6,8 +6,8 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/pkg"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 )
@@ -29,7 +29,7 @@ var _ = Context("serialCaller", func() {
 			providedCallId := "dummyCallId"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpId := "dummyRootOpId"
-			providedPkgHandle := new(pkg.FakeHandle)
+			providedOpDirHandle := new(data.FakeHandle)
 			providedSCGSerialCalls := []*model.SCG{
 				{
 					Container: &model.SCGContainerCall{},
@@ -74,7 +74,7 @@ var _ = Context("serialCaller", func() {
 				providedCallId,
 				providedInboundScope,
 				providedRootOpId,
-				providedPkgHandle,
+				providedOpDirHandle,
 				providedSCGSerialCalls,
 			)
 
@@ -83,12 +83,12 @@ var _ = Context("serialCaller", func() {
 				actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
-					actualPkgHandle,
+					actualOpDirHandle,
 					actualRootOpId := fakeCaller.CallArgsForCall(expectedSCGIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
-				Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+				Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			}
 		})
@@ -98,7 +98,7 @@ var _ = Context("serialCaller", func() {
 				providedCallId := "dummyCallId"
 				providedInboundScope := map[string]*model.Value{}
 				providedRootOpId := "dummyRootOpId"
-				providedPkgHandle := new(pkg.FakeHandle)
+				providedOpDirHandle := new(data.FakeHandle)
 				providedSCGSerialCalls := []*model.SCG{
 					{
 						Container: &model.SCGContainerCall{},
@@ -117,7 +117,7 @@ var _ = Context("serialCaller", func() {
 					providedCallId,
 					providedInboundScope,
 					providedRootOpId,
-					providedPkgHandle,
+					providedOpDirHandle,
 					providedSCGSerialCalls,
 				)
 
@@ -138,7 +138,7 @@ var _ = Context("serialCaller", func() {
 					}
 					expectedInboundScopeToSecondChild := providedInboundScope
 					providedRootOpId := "dummyRootOpId"
-					providedPkgHandle := new(pkg.FakeHandle)
+					providedOpDirHandle := new(data.FakeHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -177,7 +177,7 @@ var _ = Context("serialCaller", func() {
 						providedCallId,
 						providedInboundScope,
 						providedRootOpId,
-						providedPkgHandle,
+						providedOpDirHandle,
 						providedSCGSerialCalls,
 					)
 
@@ -213,7 +213,7 @@ var _ = Context("serialCaller", func() {
 						"dummyVar3Name": providedInboundScope["dummyVar3Name"],
 					}
 					providedRootOpId := "dummyRootOpId"
-					providedPkgHandle := new(pkg.FakeHandle)
+					providedOpDirHandle := new(data.FakeHandle)
 					providedSCGSerialCalls := []*model.SCG{
 						{
 							Container: &model.SCGContainerCall{},
@@ -258,7 +258,7 @@ var _ = Context("serialCaller", func() {
 						providedCallId,
 						providedInboundScope,
 						providedRootOpId,
-						providedPkgHandle,
+						providedOpDirHandle,
 						providedSCGSerialCalls,
 					)
 

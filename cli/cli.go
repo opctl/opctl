@@ -5,11 +5,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+
 	mow "github.com/jawher/mow.cli"
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
-	"github.com/opspec-io/sdk-golang/pkg"
-	"path/filepath"
+	"github.com/opspec-io/sdk-golang/op"
 )
 
 type cli interface {
@@ -38,10 +39,10 @@ func newCli(
 	})
 
 	cli.Command(
-		"ls", "List package operations (only opspec 0.1.5 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
-			path := lsCmd.StringOpt("path", pkg.DotOpspecDirName, "Path to list operations from")
+		"ls", "List operations (only opspec 0.1.5 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
+			dirRef := lsCmd.StringArg("DIR_REF", op.DotOpspecDirName, "Reference to dir ops will be listed from")
 			lsCmd.Action = func() {
-				core.PkgLs(*path)
+				core.Ls(context.TODO(), *dirRef)
 			}
 		})
 
@@ -62,6 +63,35 @@ func newCli(
 
 	cli.Command("op", "Manage ops", func(opCmd *mow.Cmd) {
 
+		opCmd.Command(
+			"create", "Create an op",
+			func(createCmd *mow.Cmd) {
+				path := createCmd.StringOpt("path", op.DotOpspecDirName, "Path the op will be created at")
+				description := createCmd.StringOpt("d description", "", "Op description")
+				name := createCmd.StringArg("NAME", "", "Op name")
+
+				createCmd.Action = func() {
+					core.OpCreate(*path, *description, *name)
+				}
+			})
+
+		opCmd.Command(
+			"install", "Installs an op",
+			func(installCmd *mow.Cmd) {
+				defaultPath := fmt.Sprintf("%v/OP_REF", op.DotOpspecDirName)
+				path := installCmd.StringOpt("path", defaultPath, "Path the op will be installed at")
+				opRef := installCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
+				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
+
+				installCmd.Action = func() {
+					if *path == defaultPath {
+						*path = filepath.Join(op.DotOpspecDirName, *opRef)
+					}
+					core.OpInstall(context.TODO(), *path, *opRef, *username, *password)
+				}
+			})
+
 		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
 			opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
@@ -70,57 +100,25 @@ func newCli(
 			}
 		})
 
-	})
-
-	cli.Command("pkg", "Manage packages", func(pkgCmd *mow.Cmd) {
-
-		pkgCmd.Command(
-			"create", "Create a package",
-			func(createCmd *mow.Cmd) {
-				path := createCmd.StringOpt("path", pkg.DotOpspecDirName, "Path the package will be created at")
-				description := createCmd.StringOpt("d description", "", "Package description")
-				name := createCmd.StringArg("NAME", "", "Package name")
-
-				createCmd.Action = func() {
-					core.PkgCreate(*path, *description, *name)
-				}
-			})
-
-		pkgCmd.Command(
-			"install", "Installs a package",
-			func(installCmd *mow.Cmd) {
-				defaultPath := fmt.Sprintf("%v/PKG_REF", pkg.DotOpspecDirName)
-				path := installCmd.StringOpt("path", defaultPath, "Path the package will be installed at")
-				pkgRef := installCmd.StringArg("PKG_REF", "", "Package reference (`host/path/repo#tag`)")
-				username := installCmd.StringOpt("u username", "", "Username used to auth w/ the pkg source")
-				password := installCmd.StringOpt("p password", "", "Password used to auth w/ the pkg source")
-
-				installCmd.Action = func() {
-					if *path == defaultPath {
-						*path = filepath.Join(pkg.DotOpspecDirName, *pkgRef)
-					}
-					core.PkgInstall(*path, *pkgRef, *username, *password)
-				}
-			})
-
-		pkgCmd.Command(
-			"validate", "Validates a package",
+		opCmd.Command(
+			"validate", "Validates an op",
 			func(validateCmd *mow.Cmd) {
-				pkgRef := validateCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 				validateCmd.Action = func() {
-					core.PkgValidate(*pkgRef)
+					core.OpValidate(context.TODO(), *opRef)
 				}
 			})
+
 	})
 
 	cli.Command("run", "Start and wait on an op", func(runCmd *mow.Cmd) {
 		args := runCmd.StringsOpt("a", []string{}, "Explicitly pass args to op in format `-a NAME1=VALUE1 -a NAME2=VALUE2`")
-		argFile := runCmd.StringOpt("arg-file", filepath.Join(pkg.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
-		pkgRef := runCmd.StringArg("PKG_REF", "", "Package reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
+		argFile := runCmd.StringOpt("arg-file", filepath.Join(op.DotOpspecDirName, "args.yml"), "Read in a file of args in yml format")
+		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 		runCmd.Action = func() {
-			core.Run(context.TODO(), *pkgRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
+			core.Run(context.TODO(), *opRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
 		}
 	})
 

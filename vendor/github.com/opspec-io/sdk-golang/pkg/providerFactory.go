@@ -13,8 +13,8 @@ type Provider interface {
 	// TryResolve resolves a package from the source.
 	//
 	// expected errs:
-	//  - ErrPkgPullAuthentication on authentication failure
-	//  - ErrPkgPullAuthorization on authorization failure
+	//  - ErrDataProviderAuthentication on authentication failure
+	//  - ErrDataProviderAuthorization on authorization failure
 	//  - ErrPkgNotFound on resolution failure
 	TryResolve(
 		ctx context.Context,

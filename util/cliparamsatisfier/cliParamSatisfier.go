@@ -6,14 +6,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"sort"
+
 	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall/inputs"
-	"path/filepath"
-	"sort"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/params"
 )
 
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer
@@ -37,16 +38,16 @@ func New(
 		cliExiter:       cliExiter,
 		cliOutput:       cliOutput,
 		coerce:          coerce.New(),
-		inputs:          inputs.New(),
+		paramsValidator: params.NewValidator(),
 		InputSrcFactory: newInputSrcFactory(),
 	}
 }
 
 type _CLIParamSatisfier struct {
-	cliExiter cliexiter.CliExiter
-	cliOutput clioutput.CliOutput
-	coerce    coerce.Coerce
-	inputs    inputs.Inputs
+	cliExiter       cliexiter.CliExiter
+	cliOutput       clioutput.CliOutput
+	coerce          coerce.Coerce
+	paramsValidator params.Validator
 	InputSrcFactory
 }
 
@@ -142,12 +143,12 @@ func (cps _CLIParamSatisfier) Satisfy(
 				arg = &model.Value{String: rawArg}
 			}
 
-			argErrors := cps.inputs.Validate(
+			validateErr := cps.paramsValidator.Validate(
 				map[string]*model.Value{paramName: arg},
 				map[string]*model.Param{paramName: param},
 			)
-			if len(argErrors) > 0 {
-				cps.notifyOfArgErrors(argErrors[paramName], paramName)
+			if nil != validateErr {
+				cps.notifyOfArgErrors([]error{validateErr}, paramName)
 
 				// param not satisfied; re-attempt it!
 				continue

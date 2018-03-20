@@ -1,13 +1,13 @@
 package crypto
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"io"
 
 	btcec "github.com/btcsuite/btcd/btcec"
 	proto "github.com/gogo/protobuf/proto"
 	pb "github.com/libp2p/go-libp2p-crypto/pb"
+	sha256 "github.com/minio/sha256-simd"
 )
 
 type Secp256k1PrivateKey btcec.PrivateKey

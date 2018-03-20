@@ -4,6 +4,10 @@ inputs:
   srcDir:
     dir:
       default: .
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
 run:
   serial:
     - container:

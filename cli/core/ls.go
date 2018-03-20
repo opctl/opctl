@@ -1,14 +1,15 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
-	"path/filepath"
 	"text/tabwriter"
 )
 
-func (this _core) PkgLs(
-	path string,
+func (this _core) Ls(
+	ctx context.Context,
+	dirRef string,
 ) {
 	_tabWriter := new(tabwriter.Writer)
 	defer _tabWriter.Flush()
@@ -16,14 +17,14 @@ func (this _core) PkgLs(
 
 	fmt.Fprintln(_tabWriter, "NAME\tVERSION\tDESCRIPTION")
 
-	cwd, err := this.os.Getwd()
-	if nil != err {
-		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
-		return // support fake exiter
-	}
+	dirHandle := this.dataResolver.Resolve(
+		dirRef,
+		nil,
+	)
 
-	packages, err := this.pkg.ListOps(
-		filepath.Join(cwd, path),
+	packages, err := this.opLister.List(
+		ctx,
+		dirHandle,
 	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})

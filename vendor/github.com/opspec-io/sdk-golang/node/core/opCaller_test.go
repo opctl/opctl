@@ -4,10 +4,11 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/opcall"
-	"github.com/opspec-io/sdk-golang/opcall/outputs"
-	"github.com/opspec-io/sdk-golang/pkg"
+	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
+	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"time"
 )
@@ -43,22 +44,22 @@ var _ = Context("opCaller", func() {
 
 			fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
-			fakeOpCall := new(opcall.Fake)
+			fakeOpCallInterpreter := new(opcall.FakeInterpreter)
 			// error to trigger immediate return
-			fakeOpCall.InterpretReturns(nil, errors.New("dummyError"))
+			fakeOpCallInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _opCaller{
-				opCall:      fakeOpCall,
-				pubSub:      new(pubsub.Fake),
-				dcgNodeRepo: fakeDCGNodeRepo,
-				caller:      new(fakeCaller),
+				opCallInterpreter: fakeOpCallInterpreter,
+				pubSub:            new(pubsub.Fake),
+				dcgNodeRepo:       fakeDCGNodeRepo,
+				caller:            new(fakeCaller),
 			}
 
 			/* act */
 			objectUnderTest.Call(
 				map[string]*model.Value{},
 				providedOpId,
-				new(pkg.FakeHandle),
+				new(data.FakeHandle),
 				providedRootOpId,
 				providedSCGOpCall,
 			)
@@ -71,18 +72,18 @@ var _ = Context("opCaller", func() {
 			providedScope := map[string]*model.Value{}
 			providedOpId := "dummyOpId"
 			providedRootOpId := "dummyRootOpId"
-			providedPkgHandle := new(pkg.FakeHandle)
+			providedOpDirHandle := new(data.FakeHandle)
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
 					Ref: "dummyPkgRef",
 				},
 			}
 
-			fakeOpCall := new(opcall.Fake)
+			fakeOpCallInterpreter := new(opcall.FakeInterpreter)
 
 			// error to trigger immediate return
 			expectedErr := errors.New("dummyError")
-			fakeOpCall.InterpretReturns(
+			fakeOpCallInterpreter.InterpretReturns(
 				&model.DCGOpCall{
 					DCGBaseCall: model.DCGBaseCall{},
 				},
@@ -90,17 +91,17 @@ var _ = Context("opCaller", func() {
 			)
 
 			objectUnderTest := _opCaller{
-				opCall:      fakeOpCall,
-				pubSub:      new(pubsub.Fake),
-				dcgNodeRepo: new(fakeDCGNodeRepo),
-				caller:      new(fakeCaller),
+				opCallInterpreter: fakeOpCallInterpreter,
+				pubSub:            new(pubsub.Fake),
+				dcgNodeRepo:       new(fakeDCGNodeRepo),
+				caller:            new(fakeCaller),
 			}
 
 			/* act */
 			actualErr := objectUnderTest.Call(
 				providedScope,
 				providedOpId,
-				providedPkgHandle,
+				providedOpDirHandle,
 				providedRootOpId,
 				providedSCGOpCall,
 			)
@@ -109,13 +110,13 @@ var _ = Context("opCaller", func() {
 			actualScope,
 				actualSCGOpCall,
 				actualOpId,
-				actualPkgHandle,
-				actualRootOpId := fakeOpCall.InterpretArgsForCall(0)
+				actualOpDirHandle,
+				actualRootOpId := fakeOpCallInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualSCGOpCall).To(Equal(providedSCGOpCall))
 			Expect(actualOpId).To(Equal(providedOpId))
-			Expect(actualPkgHandle).To(Equal(providedPkgHandle))
+			Expect(actualOpDirHandle).To(Equal(providedOpDirHandle))
 			Expect(actualRootOpId).To(Equal(providedRootOpId))
 
 			Expect(actualErr).To(Equal(expectedErr))
@@ -141,8 +142,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeOpCall := new(opcall.Fake)
-				fakeOpCall.InterpretReturns(
+				fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+				fakeOpCallInterpreter.InterpretReturns(
 					nil,
 					errors.New(expectedEvent.OpErred.Msg),
 				)
@@ -153,17 +154,17 @@ var _ = Context("opCaller", func() {
 				fakePubSub := new(pubsub.Fake)
 
 				objectUnderTest := _opCaller{
-					opCall:      fakeOpCall,
-					pubSub:      fakePubSub,
-					dcgNodeRepo: fakeDCGNodeRepo,
-					caller:      new(fakeCaller),
+					opCallInterpreter: fakeOpCallInterpreter,
+					pubSub:            fakePubSub,
+					dcgNodeRepo:       fakeDCGNodeRepo,
+					caller:            new(fakeCaller),
 				}
 
 				/* act */
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					providedOpId,
-					new(pkg.FakeHandle),
+					new(data.FakeHandle),
 					providedRootOpId,
 					providedSCGOpCall,
 				)
@@ -199,8 +200,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeOpCall := new(opcall.Fake)
-				fakeOpCall.InterpretReturns(
+				fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+				fakeOpCallInterpreter.InterpretReturns(
 					&model.DCGOpCall{
 						DCGBaseCall: model.DCGBaseCall{},
 					},
@@ -218,17 +219,17 @@ var _ = Context("opCaller", func() {
 				fakeCaller.CallReturns(errors.New("dummyError"))
 
 				objectUnderTest := _opCaller{
-					opCall:      fakeOpCall,
-					pubSub:      fakePubSub,
-					dcgNodeRepo: new(fakeDCGNodeRepo),
-					caller:      fakeCaller,
+					opCallInterpreter: fakeOpCallInterpreter,
+					pubSub:            fakePubSub,
+					dcgNodeRepo:       new(fakeDCGNodeRepo),
+					caller:            fakeCaller,
 				}
 
 				/* act */
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					providedOpId,
-					new(pkg.FakeHandle),
+					new(data.FakeHandle),
 					providedRootOpId,
 					providedSCGOpCall,
 				)
@@ -250,7 +251,7 @@ var _ = Context("opCaller", func() {
 				dummyString := "dummyString"
 				dcgOpCall := model.DCGOpCall{
 					DCGBaseCall: model.DCGBaseCall{
-						PkgHandle: new(pkg.FakeHandle),
+						DataHandle: new(data.FakeHandle),
 					},
 					ChildCallId: "dummyChildCallId",
 					ChildCallSCG: &model.SCG{
@@ -264,8 +265,8 @@ var _ = Context("opCaller", func() {
 						"dummyScopeName": {String: &dummyString},
 					},
 				}
-				fakeOpCall := new(opcall.Fake)
-				fakeOpCall.InterpretReturns(
+				fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+				fakeOpCallInterpreter.InterpretReturns(
 					&dcgOpCall,
 					nil,
 				)
@@ -281,17 +282,17 @@ var _ = Context("opCaller", func() {
 				fakeCaller.CallReturns(errors.New("dummyErr"))
 
 				objectUnderTest := _opCaller{
-					opCall:      fakeOpCall,
-					pubSub:      fakePubSub,
-					dcgNodeRepo: new(fakeDCGNodeRepo),
-					caller:      fakeCaller,
+					opCallInterpreter: fakeOpCallInterpreter,
+					pubSub:            fakePubSub,
+					dcgNodeRepo:       new(fakeDCGNodeRepo),
+					caller:            fakeCaller,
 				}
 
 				/* act */
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					"dummyOpId",
-					new(pkg.FakeHandle),
+					new(data.FakeHandle),
 					providedRootOpId,
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 				)
@@ -306,28 +307,28 @@ var _ = Context("opCaller", func() {
 				Expect(actualChildCallId).To(Equal(dcgOpCall.ChildCallId))
 				Expect(actualChildCallScope).To(Equal(dcgOpCall.Inputs))
 				Expect(actualChildSCG).To(Equal(dcgOpCall.ChildCallSCG))
-				Expect(actualPkgRef).To(Equal(dcgOpCall.PkgHandle))
+				Expect(actualPkgRef).To(Equal(dcgOpCall.DataHandle))
 				Expect(actualRootOpId).To(Equal(providedRootOpId))
 			})
 			It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
 				/* arrange */
 				providedRootOpId := "dummyRootOpId"
 
-				fakePkgHandle := new(pkg.FakeHandle)
-				fakePkgHandle.PathReturns(new(string))
+				fakeDataHandle := new(data.FakeHandle)
+				fakeDataHandle.PathReturns(new(string))
 
-				fakeOpCall := new(opcall.Fake)
-				fakeOpCall.InterpretReturns(
+				fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+				fakeOpCallInterpreter.InterpretReturns(
 					&model.DCGOpCall{
 						DCGBaseCall: model.DCGBaseCall{
-							PkgHandle: fakePkgHandle,
+							DataHandle: fakeDataHandle,
 						},
 					},
 					nil,
 				)
 
-				fakePkg := new(pkg.Fake)
-				fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+				fakeDotYmlGetter := new(dotyml.FakeGetter)
+				fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -338,19 +339,19 @@ var _ = Context("opCaller", func() {
 				fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
 				objectUnderTest := _opCaller{
-					pkg:         fakePkg,
-					pubSub:      fakePubSub,
-					opCall:      fakeOpCall,
-					outputs:     new(outputs.Fake),
-					dcgNodeRepo: fakeDCGNodeRepo,
-					caller:      new(fakeCaller),
+					dotYmlGetter:       fakeDotYmlGetter,
+					pubSub:             fakePubSub,
+					opCallInterpreter:  fakeOpCallInterpreter,
+					outputsInterpreter: new(outputs.FakeInterpreter),
+					dcgNodeRepo:        fakeDCGNodeRepo,
+					caller:             new(fakeCaller),
 				}
 
 				/* act */
 				objectUnderTest.Call(
 					map[string]*model.Value{},
 					"dummyOpId",
-					new(pkg.FakeHandle),
+					new(data.FakeHandle),
 					providedRootOpId,
 					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 				)
@@ -379,21 +380,21 @@ var _ = Context("opCaller", func() {
 						},
 					}
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.PathReturns(new(string))
+					fakeDataHandle := new(data.FakeHandle)
+					fakeDataHandle.PathReturns(new(string))
 
-					fakeOpCall := new(opcall.Fake)
-					fakeOpCall.InterpretReturns(
+					fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+					fakeOpCallInterpreter.InterpretReturns(
 						&model.DCGOpCall{
 							DCGBaseCall: model.DCGBaseCall{
-								PkgHandle: fakePkgHandle,
+								DataHandle: fakeDataHandle,
 							},
 						},
 						nil,
 					)
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 					eventChannel := make(chan model.Event)
@@ -402,19 +403,19 @@ var _ = Context("opCaller", func() {
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
-						pkg:         fakePkg,
-						pubSub:      fakePubSub,
-						opCall:      fakeOpCall,
-						outputs:     new(outputs.Fake),
-						dcgNodeRepo: new(fakeDCGNodeRepo),
-						caller:      new(fakeCaller),
+						dotYmlGetter:       fakeDotYmlGetter,
+						pubSub:             fakePubSub,
+						opCallInterpreter:  fakeOpCallInterpreter,
+						outputsInterpreter: new(outputs.FakeInterpreter),
+						dcgNodeRepo:        new(fakeDCGNodeRepo),
+						caller:             new(fakeCaller),
 					}
 
 					/* act */
 					objectUnderTest.Call(
 						map[string]*model.Value{},
 						providedOpId,
-						new(pkg.FakeHandle),
+						new(data.FakeHandle),
 						providedRootOpId,
 						providedSCGOpCall,
 					)
@@ -435,21 +436,21 @@ var _ = Context("opCaller", func() {
 					/* arrange */
 					providedOpId := "dummyOpId"
 
-					fakePkgHandle := new(pkg.FakeHandle)
-					fakePkgHandle.PathReturns(new(string))
+					fakeDataHandle := new(data.FakeHandle)
+					fakeDataHandle.PathReturns(new(string))
 
-					fakeOpCall := new(opcall.Fake)
-					fakeOpCall.InterpretReturns(
+					fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+					fakeOpCallInterpreter.InterpretReturns(
 						&model.DCGOpCall{
 							DCGBaseCall: model.DCGBaseCall{
-								PkgHandle: fakePkgHandle,
+								DataHandle: fakeDataHandle,
 							},
 						},
 						nil,
 					)
 
-					fakePkg := new(pkg.Fake)
-					fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -461,19 +462,19 @@ var _ = Context("opCaller", func() {
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
 					objectUnderTest := _opCaller{
-						pkg:         fakePkg,
-						pubSub:      fakePubSub,
-						opCall:      fakeOpCall,
-						outputs:     new(outputs.Fake),
-						dcgNodeRepo: fakeDCGNodeRepo,
-						caller:      new(fakeCaller),
+						dotYmlGetter:       fakeDotYmlGetter,
+						pubSub:             fakePubSub,
+						opCallInterpreter:  fakeOpCallInterpreter,
+						outputsInterpreter: new(outputs.FakeInterpreter),
+						dcgNodeRepo:        fakeDCGNodeRepo,
+						caller:             new(fakeCaller),
 					}
 
 					/* act */
 					objectUnderTest.Call(
 						map[string]*model.Value{},
 						providedOpId,
-						new(pkg.FakeHandle),
+						new(data.FakeHandle),
 						"dummyRootOpId",
 						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
 					)
@@ -502,8 +503,8 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeOpCall := new(opcall.Fake)
-						fakeOpCall.InterpretReturns(
+						fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+						fakeOpCallInterpreter.InterpretReturns(
 							&model.DCGOpCall{
 								DCGBaseCall: model.DCGBaseCall{},
 							},
@@ -525,17 +526,17 @@ var _ = Context("opCaller", func() {
 						)
 
 						objectUnderTest := _opCaller{
-							pubSub:      fakePubSub,
-							opCall:      fakeOpCall,
-							dcgNodeRepo: fakeDCGNodeRepo,
-							caller:      fakeCaller,
+							pubSub:            fakePubSub,
+							opCallInterpreter: fakeOpCallInterpreter,
+							dcgNodeRepo:       fakeDCGNodeRepo,
+							caller:            fakeCaller,
 						}
 
 						/* act */
 						objectUnderTest.Call(
 							map[string]*model.Value{},
 							providedOpId,
-							new(pkg.FakeHandle),
+							new(data.FakeHandle),
 							providedRootOpId,
 							providedSCGOpCall,
 						)
@@ -562,9 +563,9 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakeOutputs := new(outputs.Fake)
+						fakeOutputsInterpreter := new(outputs.FakeInterpreter)
 						interpretedOutputs := map[string]*model.Value{"dummyOutputName": new(model.Value)}
-						fakeOutputs.InterpretReturns(interpretedOutputs, nil)
+						fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
 						expectedEvent := model.Event{
 							Timestamp: time.Now().UTC(),
@@ -577,21 +578,21 @@ var _ = Context("opCaller", func() {
 							},
 						}
 
-						fakePkgHandle := new(pkg.FakeHandle)
-						fakePkgHandle.PathReturns(new(string))
+						fakeDataHandle := new(data.FakeHandle)
+						fakeDataHandle.PathReturns(new(string))
 
-						fakeOpCall := new(opcall.Fake)
-						fakeOpCall.InterpretReturns(
+						fakeOpCallInterpreter := new(opcall.FakeInterpreter)
+						fakeOpCallInterpreter.InterpretReturns(
 							&model.DCGOpCall{
 								DCGBaseCall: model.DCGBaseCall{
-									PkgHandle: fakePkgHandle,
+									DataHandle: fakeDataHandle,
 								},
 							},
 							nil,
 						)
 
-						fakePkg := new(pkg.Fake)
-						fakePkg.GetManifestReturns(&model.PkgManifest{}, nil)
+						fakeDotYmlGetter := new(dotyml.FakeGetter)
+						fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -603,19 +604,19 @@ var _ = Context("opCaller", func() {
 						fakePubSub.SubscribeReturns(eventChannel, nil)
 
 						objectUnderTest := _opCaller{
-							pkg:         fakePkg,
-							pubSub:      fakePubSub,
-							opCall:      fakeOpCall,
-							outputs:     fakeOutputs,
-							dcgNodeRepo: fakeDCGNodeRepo,
-							caller:      new(fakeCaller),
+							dotYmlGetter:       fakeDotYmlGetter,
+							pubSub:             fakePubSub,
+							opCallInterpreter:  fakeOpCallInterpreter,
+							outputsInterpreter: fakeOutputsInterpreter,
+							dcgNodeRepo:        fakeDCGNodeRepo,
+							caller:             new(fakeCaller),
 						}
 
 						/* act */
 						objectUnderTest.Call(
 							map[string]*model.Value{},
 							providedOpId,
-							new(pkg.FakeHandle),
+							new(data.FakeHandle),
 							providedRootOpId,
 							providedSCGOpCall,
 						)
