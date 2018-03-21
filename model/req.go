@@ -49,21 +49,23 @@ type StartOpReqOp struct {
 func (sor *StartOpReq) UnmarshalJSON(
 	b []byte,
 ) error {
-	if err := json.Unmarshal(b, sor); nil != err {
-		return err
-	}
-
 	// handle deprecated property
 	deprecated := struct {
-		Pkg *DCGOpCallPkg `json:"pkg"`
+		Args map[string]*Value
+		Op   *StartOpReqOp `json:",omitempty"`
+		Pkg  *StartOpReqOp `json:",omitempty"`
 	}{}
 	if err := json.Unmarshal(b, &deprecated); nil != err {
 		return err
 	}
 
+	sor.Args = deprecated.Args
+
+	if nil != deprecated.Op {
+		sor.Op = *deprecated.Op
+	}
 	if nil != deprecated.Pkg {
-		sor.Op.Ref = deprecated.Pkg.Ref
-		sor.Op.PullCreds = deprecated.Pkg.PullCreds
+		sor.Op = *deprecated.Pkg
 	}
 	return nil
 

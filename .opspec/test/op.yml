@@ -25,11 +25,7 @@ run:
     - op:
         pkg: { ref: test/unit }
         inputs: { srcDir }
-        outputs: { srcDir }
-    - op:
-        pkg: { ref: github.com/opspec-pkgs/golang.aggregate-coverprofiles#2.1.0 }
-        inputs: { srcDir }
-        outputs: { coverprofile }
+        outputs: { srcDir, coverprofile}
     - op:
         pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0 }
-        inputs: { coverprofile, minCoverage: 70 }
+        inputs: { coverprofile, minCoverage: 50 }

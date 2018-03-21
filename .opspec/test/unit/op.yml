@@ -9,6 +9,9 @@ outputs:
   srcDir:
     dir:
       description: directory containing the projects source code
+  coverprofile:
+    file:
+      description: aggregate coverprofile
 run:
   container:
     cmd:
@@ -20,7 +23,15 @@ run:
         go get github.com/onsi/gomega
 
         echo "unit testing code"
-        ginkgo --v -cover -race -r
+        go test -coverprofile=coverprofile ./...
+
+        echo "stripping generated code"
+        sed '/fake/d' -i coverprofile
+        sed '/bindata/d' -i coverprofile
+
+        cat coverprofile > /coverprofile
+    files:
+      /coverprofile: $(coverprofile)
     dirs:
       /go/src/github.com/opspec-io/sdk-golang: $(srcDir)
     image: { ref: 'golang:1.10.0' }
