@@ -17,7 +17,7 @@ var _ = Context("fsHandle", func() {
 			providedCtx := context.TODO()
 			providedContentPath := "dummyContentPath"
 
-			dataRef := "dummyPkgRef"
+			dataRef := "dummyDataRef"
 			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(client.Fake)
@@ -49,7 +49,7 @@ var _ = Context("fsHandle", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
-			dataRef := "dummyPkgRef"
+			dataRef := "dummyDataRef"
 			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(client.Fake)
@@ -78,7 +78,7 @@ var _ = Context("fsHandle", func() {
 	Context("Ref", func() {
 		It("should return expected ref", func() {
 			/* arrange */
-			dataRef := "dummyPkgRef"
+			dataRef := "dummyDataRef"
 
 			fakeClient := new(client.Fake)
 

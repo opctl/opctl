@@ -136,7 +136,7 @@ var _ = Context("gitHandle", func() {
 	Context("Ref", func() {
 		It("should return expected ref", func() {
 			/* arrange */
-			dataRef := "dummyPkgRef"
+			dataRef := "dummyDataRef"
 
 			objectUnderTest := gitHandle{
 				dataRef: dataRef,

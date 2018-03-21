@@ -21,7 +21,7 @@ var _ = Context("puller", func() {
 	Context("Pull", func() {
 		It("should call refParser.Parse w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef"
+			providedDataRef := "dummyDataRef"
 
 			fakeRefParser := new(fakeRefParser)
 			// error to trigger immediate return
@@ -35,12 +35,12 @@ var _ = Context("puller", func() {
 			objectUnderTest.Pull(
 				context.Background(),
 				"dummyPath",
-				providedPkgRef,
+				providedDataRef,
 				nil,
 			)
 
 			/* assert */
-			Expect(fakeRefParser.ParseArgsForCall(0)).To(Equal(providedPkgRef))
+			Expect(fakeRefParser.ParseArgsForCall(0)).To(Equal(providedDataRef))
 		})
 		Context("refParser.Parse errs", func() {
 			It("should return error", func() {
@@ -58,7 +58,7 @@ var _ = Context("puller", func() {
 				actualError := objectUnderTest.Pull(
 					context.Background(),
 					"dummyPath",
-					"dummyPkgRef",
+					"dummyDataRef",
 					nil,
 				)
 
@@ -78,7 +78,7 @@ var _ = Context("puller", func() {
 				}
 
 				ref := &Ref{
-					Name:    "dummyPkgRef",
+					Name:    "dummyDataRef",
 					Version: "0.0.0",
 				}
 
@@ -108,7 +108,7 @@ var _ = Context("puller", func() {
 				objectUnderTest.Pull(
 					providedCtx,
 					providedPath,
-					"dummyPkgRef",
+					"dummyDataRef",
 					providedPullCreds,
 				)
 
@@ -144,7 +144,7 @@ var _ = Context("puller", func() {
 						actualError := objectUnderTest.Pull(
 							context.Background(),
 							"dummyPath",
-							"dummyPkgRef",
+							"dummyDataRef",
 							nil,
 						)
 
@@ -160,7 +160,7 @@ var _ = Context("puller", func() {
 						providedPath := "dummyPath"
 
 						ref := &Ref{
-							Name:    "dummyPkgRef",
+							Name:    "dummyDataRef",
 							Version: "0.0.0",
 						}
 
@@ -188,7 +188,7 @@ var _ = Context("puller", func() {
 						actualError := objectUnderTest.Pull(
 							context.Background(),
 							providedPath,
-							"dummyPkgRef",
+							"dummyDataRef",
 							nil,
 						)
 
@@ -204,7 +204,7 @@ var _ = Context("puller", func() {
 						providedPath := "dummyPath"
 
 						ref := &Ref{
-							Name:    "dummyPkgRef",
+							Name:    "dummyDataRef",
 							Version: "0.0.0",
 						}
 
@@ -232,7 +232,7 @@ var _ = Context("puller", func() {
 						actualError := objectUnderTest.Pull(
 							context.Background(),
 							providedPath,
-							"dummyPkgRef",
+							"dummyDataRef",
 							nil,
 						)
 
@@ -247,7 +247,7 @@ var _ = Context("puller", func() {
 						/* arrange */
 						providedPath := "dummypath"
 						ref := &Ref{
-							Name:    "dummyPkgRef",
+							Name:    "dummyDataRef",
 							Version: "0.0.0",
 						}
 
@@ -271,7 +271,7 @@ var _ = Context("puller", func() {
 						actualError := objectUnderTest.Pull(
 							context.Background(),
 							providedPath,
-							"dummyPkgRef",
+							"dummyDataRef",
 							nil,
 						)
 
@@ -297,7 +297,7 @@ var _ = Context("puller", func() {
 					actualErr := objectUnderTest.Pull(
 						context.Background(),
 						"dummyPath",
-						"dummyPkgRef",
+						"dummyDataRef",
 						nil,
 					)
 
@@ -311,7 +311,7 @@ var _ = Context("puller", func() {
 					providedPath := "dummypath"
 
 					ref := &Ref{
-						Name:    "dummyPkgRef",
+						Name:    "dummyDataRef",
 						Version: "0.0.0",
 					}
 
@@ -334,7 +334,7 @@ var _ = Context("puller", func() {
 					actualError := objectUnderTest.Pull(
 						context.Background(),
 						providedPath,
-						"dummyPkgRef",
+						"dummyDataRef",
 						nil,
 					)
 

@@ -35,12 +35,12 @@ var _ = Context("refParser", func() {
 		Context("url.Parse errors", func() {
 			It("should error", func() {
 				/* arrange */
-				providedPkgRef := "::"
+				providedDataRef := "::"
 
 				objectUnderTest := _refParser{}
 
 				/* act */
-				_, actualErr := objectUnderTest.Parse(providedPkgRef)
+				_, actualErr := objectUnderTest.Parse(providedDataRef)
 
 				/* assert */
 				Expect(actualErr).To(Not(BeNil()))
@@ -51,18 +51,18 @@ var _ = Context("refParser", func() {
 				/* arrange */
 				providedFullyQualifiedPkgName := "somehost.com/path/pkgName"
 				providedPkgVersion := "0.0.0"
-				providedOpRef := fmt.Sprintf("%v#%v/some/op/path", providedFullyQualifiedPkgName, providedPkgVersion)
-				expectedPkgRef := &Ref{
+				providedDataRef := fmt.Sprintf("%v#%v/some/op/path", providedFullyQualifiedPkgName, providedPkgVersion)
+				expectedDataRef := &Ref{
 					Name:    providedFullyQualifiedPkgName,
 					Version: providedPkgVersion,
 				}
 				objectUnderTest := _refParser{}
 
 				/* act */
-				actualPkgRef, actualErr := objectUnderTest.Parse(providedOpRef)
+				actualPkgRef, actualErr := objectUnderTest.Parse(providedDataRef)
 
 				/* assert */
-				Expect(actualPkgRef).To(Equal(expectedPkgRef))
+				Expect(actualPkgRef).To(Equal(expectedDataRef))
 				Expect(actualErr).To(BeNil())
 
 			})

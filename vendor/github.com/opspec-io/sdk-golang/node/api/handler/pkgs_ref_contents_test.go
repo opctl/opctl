@@ -23,8 +23,8 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 	Context("has basic auth header", func() {
 		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef%2F"
-			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			providedOpRef := "dummyOpRef%2F"
+			expectedOpRef, err := url.PathUnescape(providedOpRef)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -39,7 +39,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents", providedPkgRef), nil)
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents", providedOpRef), nil)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -53,7 +53,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				actualPkgRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgRef).To(Equal(expectedOpRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
 				Username: providedUsername,
 				Password: providedPassword,
@@ -63,8 +63,8 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 	Context("doesn't have basic auth header", func() {
 		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef%2F"
-			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			providedOpRef := "dummyOpRef%2F"
+			expectedOpRef, err := url.PathUnescape(providedOpRef)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -76,7 +76,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents", providedPkgRef), nil)
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents", providedOpRef), nil)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -89,7 +89,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				actualPkgRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgRef).To(Equal(expectedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 	})

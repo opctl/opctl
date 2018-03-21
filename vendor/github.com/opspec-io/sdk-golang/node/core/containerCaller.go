@@ -93,6 +93,7 @@ func (cc _containerCaller) Call(
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerID: containerID,
 				PkgRef:      opHandle.Ref(),
+				OpRef:       opHandle.Ref(),
 				RootOpID:    rootOpID,
 			},
 		},
@@ -181,6 +182,7 @@ func (cc _containerCaller) Call(
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: containerID,
 				PkgRef:      opHandle.Ref(),
+				OpRef:       opHandle.Ref(),
 				RootOpID:    rootOpID,
 				ExitCode:    exitCode,
 				Outputs:     interpretOutputsResult.outputs,
@@ -210,6 +212,7 @@ func (this _containerCaller) interpretLogs(
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
 							PkgRef:      dcgContainerCall.OpHandle.Ref(),
+							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},
@@ -231,6 +234,7 @@ func (this _containerCaller) interpretLogs(
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
 							PkgRef:      dcgContainerCall.OpHandle.Ref(),
+							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
 					},

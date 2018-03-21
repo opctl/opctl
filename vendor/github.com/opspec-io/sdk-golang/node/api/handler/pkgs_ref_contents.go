@@ -13,7 +13,7 @@ func (hdlr _handler) pkgs_ref_contents(
 ) {
 	vars := mux.Vars(httpReq)
 
-	pkgRef, err := url.PathUnescape(vars["ref"])
+	dataRef, err := url.PathUnescape(vars["ref"])
 	if nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
@@ -30,7 +30,7 @@ func (hdlr _handler) pkgs_ref_contents(
 
 	opHandle, err := hdlr.core.ResolveData(
 		httpReq.Context(),
-		pkgRef,
+		dataRef,
 		pullCreds,
 	)
 	if nil != err {
