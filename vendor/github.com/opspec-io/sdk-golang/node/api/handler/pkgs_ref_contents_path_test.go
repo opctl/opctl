@@ -25,8 +25,8 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 	Context("has basic auth header", func() {
 		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef%2F"
-			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			providedOpRef := "dummyOpRef%2F"
+			expectedOpRef, err := url.PathUnescape(providedOpRef)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -41,7 +41,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef), nil)
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedOpRef), nil)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -55,7 +55,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				actualPkgRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgRef).To(Equal(expectedOpRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
 				Username: providedUsername,
 				Password: providedPassword,
@@ -65,8 +65,8 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 	Context("doesn't have basic auth header", func() {
 		It("should call core.ResolveData w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef%2F"
-			expectedPkgRef, err := url.PathUnescape(providedPkgRef)
+			providedOpRef := "dummyOpRef%2F"
+			expectedOpRef, err := url.PathUnescape(providedOpRef)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -78,7 +78,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedPkgRef), nil)
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/%v/contents/dummyPath", providedOpRef), nil)
 			if nil != err {
 				panic(err.Error())
 			}
@@ -91,7 +91,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 				actualPkgRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgRef).To(Equal(expectedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 	})
@@ -224,7 +224,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 	Context("core.GetPkgContent doesn't err", func() {
 		It("should call handle.GetContent w/ expected args", func() {
 			/* arrange */
-			providedContentPath := "dummyPkgRef%2F"
+			providedContentPath := "dummyOpRef%2F"
 			expectedContentPath, err := url.PathUnescape(providedContentPath)
 			if nil != err {
 				panic(err.Error())
@@ -240,7 +240,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			objectUnderTest := New(fakeCore)
 			recorder := httptest.NewRecorder()
 
-			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/dummyPkgRef/contents/%v", providedContentPath), nil)
+			httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/pkgs/dummyOpRef/contents/%v", providedContentPath), nil)
 			if nil != err {
 				panic(err.Error())
 			}

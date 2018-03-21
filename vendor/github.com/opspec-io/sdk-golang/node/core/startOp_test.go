@@ -105,7 +105,7 @@ var _ = Context("core", func() {
 							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
 						Pkg: &model.DCGOpCallPkg{
-							Ref: "dummyPkgRef",
+							Ref: "dummyOpRef",
 						},
 					}
 

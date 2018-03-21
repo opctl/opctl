@@ -72,7 +72,7 @@ var _ = Context("EvalToFile", func() {
 			providedExpression := map[string]interface{}{
 				"prop1Name": "prop1Value",
 			}
-			providedPkgRef := new(data.FakeHandle)
+			providedOpRef := new(data.FakeHandle)
 
 			fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
 			// err to trigger immediate return
@@ -87,7 +87,7 @@ var _ = Context("EvalToFile", func() {
 			objectUnderTest.EvalToFile(
 				providedScope,
 				providedExpression,
-				providedPkgRef,
+				providedOpRef,
 				"dummyScratchDir",
 			)
 
@@ -98,7 +98,7 @@ var _ = Context("EvalToFile", func() {
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 
 		})
 		Context("evalObjectInitializerer.Eval errs", func() {
@@ -197,7 +197,7 @@ var _ = Context("EvalToFile", func() {
 			providedExpression := []interface{}{
 				"item1",
 			}
-			providedPkgRef := new(data.FakeHandle)
+			providedOpRef := new(data.FakeHandle)
 
 			fakeEvalArrayInitializerer := new(fakeEvalArrayInitializerer)
 			// err to trigger immediate return
@@ -212,7 +212,7 @@ var _ = Context("EvalToFile", func() {
 			arrayUnderTest.EvalToFile(
 				providedScope,
 				providedExpression,
-				providedPkgRef,
+				providedOpRef,
 				"dummyScratchDir",
 			)
 
@@ -223,7 +223,7 @@ var _ = Context("EvalToFile", func() {
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 
 		})
 		Context("evalArrayInitializerer.Eval errs", func() {
@@ -322,7 +322,7 @@ var _ = Context("EvalToFile", func() {
 
 				pkgFSRef := "/dummyPkgFSRef"
 				providedExpression := fmt.Sprintf("$(%v)", pkgFSRef)
-				providedPkgRef := new(data.FakeHandle)
+				providedOpRef := new(data.FakeHandle)
 
 				fakeInterpolater := new(interpolater.Fake)
 				// err to trigger immediate return
@@ -336,7 +336,7 @@ var _ = Context("EvalToFile", func() {
 				objectUnderTest.EvalToFile(
 					providedScope,
 					providedExpression,
-					providedPkgRef,
+					providedOpRef,
 					"dummyScratchDir",
 				)
 
@@ -347,7 +347,7 @@ var _ = Context("EvalToFile", func() {
 
 				Expect(actualExpression).To(Equal(pkgFSRef))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgRef).To(Equal(providedOpRef))
 			})
 			Context("interpolater.Interpolate errs", func() {
 				It("should return expected result", func() {
@@ -455,7 +455,7 @@ var _ = Context("EvalToFile", func() {
 
 				providedPath := "dummyPath"
 				providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
-				providedPkgRef := new(data.FakeHandle)
+				providedOpRef := new(data.FakeHandle)
 
 				fakeInterpolater := new(interpolater.Fake)
 				// err to trigger immediate return
@@ -469,7 +469,7 @@ var _ = Context("EvalToFile", func() {
 				objectUnderTest.EvalToFile(
 					providedScope,
 					providedExpression,
-					providedPkgRef,
+					providedOpRef,
 					"dummyScratchDir",
 				)
 
@@ -480,7 +480,7 @@ var _ = Context("EvalToFile", func() {
 
 				Expect(actualExpression).To(Equal(providedPath))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgRef).To(Equal(providedOpRef))
 			})
 			Context("interpolater.Interpolate errs", func() {
 				It("should return expected result", func() {

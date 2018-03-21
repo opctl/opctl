@@ -23,7 +23,7 @@ var _ = Context("GetPkgContent", func() {
 		providedCtx := context.TODO()
 		providedReq := model.GetPkgContentReq{
 			ContentPath: "dummy/content/path",
-			PkgRef:      "dummyPkgRef",
+			PkgRef:      "dummyOpRef",
 			PullCreds: &model.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",

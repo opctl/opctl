@@ -14,7 +14,7 @@ import (
 //  - ErrDataRefResolution on resolution failure
 func (this _core) ResolveData(
 	ctx context.Context,
-	pkgRef string,
+	dataRef string,
 	pullCreds *model.PullCreds,
 ) (
 	model.DataHandle,
@@ -22,7 +22,7 @@ func (this _core) ResolveData(
 ) {
 	return this.data.Resolve(
 		ctx,
-		pkgRef,
+		dataRef,
 		this.data.NewFSProvider(),
 		this.data.NewGitProvider(this.dataCachePath, pullCreds),
 	)

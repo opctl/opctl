@@ -32,7 +32,8 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
-							PkgRef:   "dummyPkgRef",
+							PkgRef:   "dummyOpRef",
+							OpRef:    "dummyOpRef",
 						},
 					}
 
@@ -58,7 +59,8 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
-							PkgRef:   "dummyPkgRef",
+							PkgRef:   "dummyOpRef",
+							OpRef:    "dummyOpRef",
 						},
 					}
 
@@ -84,7 +86,8 @@ var _ = Context("pubSub", func() {
 						ContainerStarted: &model.ContainerStartedEvent{
 							RootOpID:    "dummyRootOpID",
 							ContainerID: "dummyContainerID",
-							PkgRef:      "dummyPkgRef",
+							PkgRef:      "dummyOpRef",
+							OpRef:       "dummyOpRef",
 						},
 					}
 
@@ -109,7 +112,8 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
-							PkgRef:   "dummyPkgRef",
+							PkgRef:   "dummyOpRef",
+							OpRef:    "dummyOpRef",
 						},
 					}
 
@@ -142,7 +146,8 @@ var _ = Context("pubSub", func() {
 						ContainerStarted: &model.ContainerStartedEvent{
 							RootOpID:    "dummyRootOpID",
 							ContainerID: "dummyContainerID",
-							PkgRef:      "dummyPkgRef",
+							PkgRef:      "dummyOpRef",
+							OpRef:       "dummyOpRef",
 						},
 						Timestamp: time.Now(),
 					}
@@ -151,7 +156,8 @@ var _ = Context("pubSub", func() {
 						OpStarted: &model.OpStartedEvent{
 							RootOpID: "dummyRootOpID",
 							OpID:     "dummyOpID",
-							PkgRef:   "dummyPkgRef",
+							PkgRef:   "dummyOpRef",
+							OpRef:    "dummyOpRef",
 						},
 						Timestamp: time.Now(),
 					}

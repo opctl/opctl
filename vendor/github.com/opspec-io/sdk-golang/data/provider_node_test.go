@@ -13,7 +13,7 @@ var _ = Context("fsProvider", func() {
 	Context("TryResolve", func() {
 		It("should call nodeClient.ListPkgContents w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef"
+			providedDataRef := "dummyDataRef"
 
 			fakeNodeClient := new(client.Fake)
 
@@ -30,7 +30,7 @@ var _ = Context("fsProvider", func() {
 			/* act */
 			objectUnderTest.TryResolve(
 				context.Background(),
-				providedPkgRef,
+				providedDataRef,
 			)
 
 			/* assert */
@@ -39,7 +39,7 @@ var _ = Context("fsProvider", func() {
 
 			Expect(actualContext).To(Equal(context.TODO()))
 			Expect(actualReq).To(Equal(model.ListPkgContentsReq{
-				PkgRef:    providedPkgRef,
+				PkgRef:    providedDataRef,
 				PullCreds: providedPullCreds,
 			}))
 		})
@@ -58,7 +58,7 @@ var _ = Context("fsProvider", func() {
 				/* act */
 				_, actualErr := objectUnderTest.TryResolve(
 					context.Background(),
-					"dummyPkgRef",
+					"dummyDataRef",
 				)
 
 				/* assert */
@@ -68,7 +68,7 @@ var _ = Context("fsProvider", func() {
 		Context("nodeClient.ListPkgContents doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedPkgRef := "dummyPkgRef"
+				providedDataRef := "dummyDataRef"
 
 				fakeNodeClient := new(client.Fake)
 
@@ -88,11 +88,11 @@ var _ = Context("fsProvider", func() {
 				/* act */
 				actualHandle, actualErr := objectUnderTest.TryResolve(
 					context.Background(),
-					providedPkgRef,
+					providedDataRef,
 				)
 
 				/* assert */
-				Expect(actualHandle).To(Equal(newNodeHandle(fakeNodeClient, providedPkgRef, providedPullCreds)))
+				Expect(actualHandle).To(Equal(newNodeHandle(fakeNodeClient, providedDataRef, providedPullCreds)))
 				Expect(actualErr).To(BeNil())
 			})
 		})

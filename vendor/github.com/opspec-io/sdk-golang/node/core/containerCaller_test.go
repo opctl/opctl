@@ -89,6 +89,7 @@ var _ = Context("containerCaller", func() {
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerID: providedContainerID,
 					PkgRef:      providedOpHandle.Ref(),
+					OpRef:       providedOpHandle.Ref(),
 					RootOpID:    providedRootOpID,
 				},
 			}
@@ -240,6 +241,7 @@ var _ = Context("containerCaller", func() {
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedContainerID,
 				PkgRef:      providedOpHandle.Ref(),
+				OpRef:       providedOpHandle.Ref(),
 				RootOpID:    providedRootOpID,
 			},
 		}
@@ -289,6 +291,7 @@ var _ = Context("containerCaller", func() {
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedContainerID,
 				PkgRef:      providedOpHandle.Ref(),
+				OpRef:       providedOpHandle.Ref(),
 				RootOpID:    providedRootOpID,
 			},
 		}

@@ -44,7 +44,7 @@ var _ = Context("EvalToDir", func() {
 
 			providedPath := "dummyPath"
 			providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
-			providedPkgRef := new(data.FakeHandle)
+			providedOpRef := new(data.FakeHandle)
 
 			fakeInterpolater := new(interpolater.Fake)
 			// err to trigger immediate return
@@ -58,7 +58,7 @@ var _ = Context("EvalToDir", func() {
 			objectUnderTest.EvalToDir(
 				providedScope,
 				providedExpression,
-				providedPkgRef,
+				providedOpRef,
 			)
 
 			/* assert */
@@ -68,7 +68,7 @@ var _ = Context("EvalToDir", func() {
 
 			Expect(actualExpression).To(Equal(providedPath))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 		})
 		Context("interpolater.Interpolate errs", func() {
 			It("should return expected result", func() {

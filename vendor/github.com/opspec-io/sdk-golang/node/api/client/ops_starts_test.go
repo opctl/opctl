@@ -23,7 +23,7 @@ var _ = Context("StartOp", func() {
 		providedReq := model.StartOpReq{
 			Args: map[string]*model.Value{},
 			Pkg: &model.DCGOpCallPkg{
-				Ref: "dummyPkgRef",
+				Ref: "dummyOpRef",
 				PullCreds: &model.DCGPullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",

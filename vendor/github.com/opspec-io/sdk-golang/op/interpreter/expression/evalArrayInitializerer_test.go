@@ -79,7 +79,7 @@ var _ = Context("evalArrayInitializerer", func() {
 
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyName": {}}
-				providedPkgRef := new(data.FakeHandle)
+				providedOpRef := new(data.FakeHandle)
 
 				fakeJSON := new(ijson.Fake)
 				expectedExpression := []byte{2, 3, 4, 1}
@@ -98,7 +98,7 @@ var _ = Context("evalArrayInitializerer", func() {
 				arrayUnderTest.Eval(
 					[]interface{}{},
 					providedScope,
-					providedPkgRef,
+					providedOpRef,
 				)
 
 				/* assert */
@@ -108,7 +108,7 @@ var _ = Context("evalArrayInitializerer", func() {
 
 				Expect(actualExpression).To(Equal(string(expectedExpression)))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedPkgRef))
+				Expect(actualPkgRef).To(Equal(providedOpRef))
 
 			})
 			Context("interpolater.Interpolate errs", func() {
@@ -152,7 +152,7 @@ var _ = Context("evalArrayInitializerer", func() {
 
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyName": {}}
-					providedPkgRef := new(data.FakeHandle)
+					providedOpRef := new(data.FakeHandle)
 
 					fakeJSON := new(ijson.Fake)
 
@@ -170,7 +170,7 @@ var _ = Context("evalArrayInitializerer", func() {
 					arrayUnderTest.Eval(
 						[]interface{}{},
 						providedScope,
-						providedPkgRef,
+						providedOpRef,
 					)
 
 					/* assert */

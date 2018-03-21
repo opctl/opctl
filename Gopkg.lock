@@ -744,7 +744,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "91dfe209b2fb04952b39bc79efd87e3b72fde73b"
+  revision = "a352acb4c16fbf833e1e888e00a8c0ea81e91ac2"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -964,7 +964,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "c3a3ad6d03f7a915c0f7e194b7152974bb73d287"
+  revision = "80db560fac1fb3e6ac81dbc7f8ae4c061f5257bd"
 
 [[projects]]
   branch = "master"
