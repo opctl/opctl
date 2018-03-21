@@ -7,17 +7,11 @@ defining, distributing, and controlling operations.
 
 The long term vision being worked towards includes:
 
-#### Characteristics
-
-- distributed (peer to peer)
-- self-healing
-- fault-tolerant
-
 #### Scope
 
-- operation definition
-- operation distribution
-- operation control
+- op definition format
+- op control API
+- op data API
 
 #### Deliverables
 

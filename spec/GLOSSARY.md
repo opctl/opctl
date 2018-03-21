@@ -14,10 +14,6 @@ see [nodes](nodes.md)
 
 see [ops](ops.md)
 
-## Package
-
-see [packages](pkgs.md)
-
 ## RECOMMENDED
 
 as defined by [RFC 2119](https://tools.ietf.org/html/rfc2119)

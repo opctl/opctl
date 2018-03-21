@@ -106,9 +106,9 @@ paths:
                     ref:
                       type: string
                       format: uri-reference
-                      description: reference to a pkg
+                      description: reference to an op
                     pullCreds:
-                      description: credentials used during authentication with the source of the package
+                      description: credentials used during authentication with the source of the op
                       required:
                         - username
                         - password
@@ -190,7 +190,7 @@ paths:
                 items:
                   properties:
                     path:
-                      description: absolute path within pkg
+                      description: absolute path within dir
                       type: string
                     size:
                       type: integer
@@ -585,8 +585,11 @@ components:
           type: string
         containerId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
         outputs:
           type: object
           additionalProperties:
@@ -600,8 +603,11 @@ components:
           type: string
         containerId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
       type: object
     containerStdErrWrittenToEvent:
       properties:
@@ -614,8 +620,11 @@ components:
           type: string
         containerId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
       type: object
     containerStdOutWrittenToEvent:
       properties:
@@ -628,8 +637,11 @@ components:
           type: string
         containerId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
       type: object
     opErredEvent:
       properties:
@@ -639,8 +651,11 @@ components:
           type: string
         opId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
       type: object
     opEndedEvent:
       properties:
@@ -648,8 +663,11 @@ components:
           type: string
         opId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
         outcome:
           enum:
             - SUCCEEDED
@@ -667,8 +685,11 @@ components:
           type: string
         opId:
           type: string
+        opRef:
+          type: string
         pkgRef:
           type: string
+          deprecated: true
       type: object
     parallelCallEndedEvent:
       properties:

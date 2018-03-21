@@ -10,8 +10,8 @@ All notable changes will be documented in this file in accordance with
 - [Add `opspec` property to op schema](https://github.com/opspec-io/spec/issues/20)
 - Support client back pressure in `GET event-stream` endpoint via `ack`
   query param
-- [Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
-- [Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+- [Support declaring SVG icon for op](https://github.com/opspec-io/spec/issues/139)
+- [Support CommonMark for op & param descriptions](https://github.com/opspec-io/spec/issues/174)
 - [Support boolean type](https://github.com/opspec-io/spec/issues/195)
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
@@ -19,6 +19,9 @@ All notable changes will be documented in this file in accordance with
 
 ### Deprecated
 
+- `pkg` attribute in
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall); `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
+- `pkg` changed to `op` in [node-api.spec.yml#/components](spec/node-api.spec.yml#/components)
 - [Deprecate pkgs API](https://github.com/opspec-io/spec/issues/205)
 - `stdOut` & `stdErr` attributes from
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
@@ -62,7 +65,7 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
-- [Support using pkg dir/file as input/output param default](https://github.com/opspec-io/spec/issues/127)
+- [Support using dir/file embedded in op as input/output param default](https://github.com/opspec-io/spec/issues/127)
 - [Allow path expansion w/in sub op call inputs](https://github.com/opspec-io/spec/issues/120)
 - [Allow string/number literals as sub op call inputs](https://github.com/opspec-io/spec/issues/121)
 - [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opspec-io/spec/issues/117)
@@ -104,7 +107,7 @@ paramName:
 ### Removed
 
 - `docker-compose.yml`; replaced with container calls
-- collections; replaced w/ package resolution
+- collections
 - bubbling of default collection lookup
 
 ## \[0.1.2] - 2016-09-10
