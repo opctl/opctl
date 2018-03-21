@@ -837,98 +837,101 @@
       ],
       "additionalProperties": false
     },
+    "opCallOutputs": {
+      "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME = $(OUTPUT_NAME)",
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "opCallInputs": {
+      "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE = $(INPUT_NAME)",
+      "type": "object",
+      "patternProperties": {
+        "[-_.a-zA-Z0-9]+": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/expression"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "opCall": {
       "title": "opCall",
       "type": "object",
       "properties": {
         "op": {
-          "allOf": [
+          "oneOf": [
             {
               "type": "object",
               "properties": {
                 "inputs": {
-                  "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE = $(INPUT_NAME)",
-                  "type": "object",
-                  "patternProperties": {
-                    "[-_.a-zA-Z0-9]+": {
-                      "oneOf": [
-                        {
-                          "type": "null"
-                        },
-                        {
-                          "$ref": "#/definitions/expression"
-                        }
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
+                  "$ref": "#/definitions/opCallInputs"
                 },
                 "outputs": {
-                  "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME = $(OUTPUT_NAME)",
-                  "type": "object",
-                  "patternProperties": {
-                    "[-_.a-zA-Z0-9]+": {
-                      "oneOf": [
-                        {
-                          "type": "null"
-                        },
-                        {
-                          "type": "string"
-                        }
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
+                  "$ref": "#/definitions/opCallOutputs"
+                },
+                "pullCreds": {
+                  "$ref": "#/definitions/pullCreds"
+                },
+                "ref": {
+                  "description": "Reference to an op",
+                  "type": "string",
+                  "format": "uri-reference"
                 }
-              }
+              },
+              "required": [
+                "ref"
+              ],
+              "additionalProperties": false
             },
             {
-              "oneOf": [
-                {
+              "type": "object",
+              "deprecated": true,
+              "properties": {
+                "inputs": {
+                  "$ref": "#/definitions/opCallInputs"
+                },
+                "outputs": {
+                  "$ref": "#/definitions/opCallOutputs"
+                },
+                "pkg": {
                   "type": "object",
                   "properties": {
-                    "pullCreds": {
-                      "$ref": "#/definitions/pullCreds"
-                    },
                     "ref": {
                       "description": "Reference to an op",
                       "type": "string",
                       "format": "uri-reference"
+                    },
+                    "pullCreds": {
+                      "$ref": "#/definitions/pullCreds"
                     }
                   },
                   "required": [
                     "ref"
                   ],
                   "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "deprecated": true,
-                  "properties": {
-                    "pkg": {
-                      "type": "object",
-                      "properties": {
-                        "ref": {
-                          "description": "Reference to an op",
-                          "type": "string",
-                          "format": "uri-reference"
-                        },
-                        "pullCreds": {
-                          "$ref": "#/definitions/pullCreds"
-                        }
-                      },
-                      "required": [
-                        "ref"
-                      ],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": [
-                    "pkg"
-                  ],
-                  "additionalProperties": false
                 }
-              ]
+              },
+              "required": [
+                "pkg"
+              ],
+              "additionalProperties": false
             }
           ]
         }
