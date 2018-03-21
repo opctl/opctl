@@ -13,7 +13,7 @@ var _ = Context("core", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedPkgRef := "dummyPkgRef"
+			providedOpRef := "dummyOpRef"
 			providedPullCreds := &model.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
@@ -35,7 +35,7 @@ var _ = Context("core", func() {
 			/* act */
 			objectUnderTest.ResolveData(
 				providedCtx,
-				providedPkgRef,
+				providedOpRef,
 				providedPullCreds,
 			)
 
@@ -45,7 +45,7 @@ var _ = Context("core", func() {
 				actualPkgProviders := fakeData.ResolveArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 			Expect(actualPkgProviders).To(ConsistOf(expectedPkgProviders))
 		})
 	})

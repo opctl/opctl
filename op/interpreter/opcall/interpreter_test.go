@@ -130,7 +130,7 @@ var _ = Context("Interpreter", func() {
 				map[string]*model.Value{},
 				&model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyPkgRef",
+						Ref: "dummyOpRef",
 					},
 				},
 				"dummyOpID",
@@ -163,7 +163,7 @@ var _ = Context("Interpreter", func() {
 					map[string]*model.Value{},
 					&model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyPkgRef",
+							Ref: "dummyOpRef",
 						},
 					},
 					"dummyOpID",
@@ -236,7 +236,7 @@ var _ = Context("Interpreter", func() {
 						map[string]*model.Value{},
 						&model.SCGOpCall{
 							Pkg: &model.SCGOpCallPkg{
-								Ref:       "dummyPkgRef",
+								Ref:       "dummyOpRef",
 								PullCreds: &model.SCGPullCreds{},
 							},
 						},
@@ -262,11 +262,11 @@ var _ = Context("Interpreter", func() {
 			providedRootFSPath := "dummyRootFSPath"
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyPkgRef",
+					Ref: "dummyOpRef",
 				},
 			}
 
-			expectedPkgRef := providedSCGOpCall.Pkg.Ref
+			expectedOpRef := providedSCGOpCall.Pkg.Ref
 
 			fakeData := new(data.Fake)
 
@@ -300,7 +300,7 @@ var _ = Context("Interpreter", func() {
 				actualPkgProviders := fakeData.ResolveArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(context.TODO()))
-			Expect(actualPkgRef).To(Equal(expectedPkgRef))
+			Expect(actualPkgRef).To(Equal(expectedOpRef))
 			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
 		})
 		Context("pkg.Resolve errs", func() {

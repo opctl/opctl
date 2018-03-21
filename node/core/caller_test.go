@@ -81,7 +81,7 @@ var _ = Context("caller", func() {
 				providedSCG := &model.SCG{
 					Op: &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyPkgRef",
+							Ref: "dummyOpRef",
 						},
 					},
 				}

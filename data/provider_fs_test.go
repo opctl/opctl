@@ -16,7 +16,7 @@ var _ = Context("fsProvider", func() {
 		Context("dataRef is absolute path", func() {
 			It("should call fs.Stat w/ expected args", func() {
 				/* arrange */
-				providedPkgRef := "/dummyFullyQualifiedName"
+				providedDataRef := "/dummyFullyQualifiedName"
 
 				fakeOS := new(ios.Fake)
 				// error to trigger immediate return
@@ -29,11 +29,11 @@ var _ = Context("fsProvider", func() {
 				/* act */
 				objectUnderTest.TryResolve(
 					context.Background(),
-					providedPkgRef,
+					providedDataRef,
 				)
 
 				/* assert */
-				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedPkgRef))
+				Expect(fakeOS.StatArgsForCall(0)).To(Equal(providedDataRef))
 			})
 			Context("os.Stat errs", func() {
 				It("should return err", func() {
@@ -50,7 +50,7 @@ var _ = Context("fsProvider", func() {
 					/* act */
 					_, actualError := objectUnderTest.TryResolve(
 						context.Background(),
-						"/dummyPkgRef",
+						"/dummyDataRef",
 					)
 
 					/* assert */
@@ -91,13 +91,13 @@ var _ = Context("fsProvider", func() {
 				Context("dataRef/.opspec exists", func() {
 					It("should call fs.Stat w/ expected args", func() {
 						/* arrange */
-						providedPkgRef := "dummyPkgRef"
+						providedDataRef := "dummyDataRef"
 						basePath := "dummyBasePath"
 
 						expectedPath := filepath.Join(
 							basePath,
 							DotOpspecDirName,
-							providedPkgRef,
+							providedDataRef,
 						)
 
 						fakeOS := new(ios.Fake)
@@ -111,7 +111,7 @@ var _ = Context("fsProvider", func() {
 						/* act */
 						objectUnderTest.TryResolve(
 							context.Background(),
-							providedPkgRef,
+							providedDataRef,
 						)
 
 						/* assert */
@@ -133,7 +133,7 @@ var _ = Context("fsProvider", func() {
 							/* act */
 							_, actualError := objectUnderTest.TryResolve(
 								context.Background(),
-								"dummyPkgRef",
+								"dummyDataRef",
 							)
 
 							/* assert */
@@ -143,13 +143,13 @@ var _ = Context("fsProvider", func() {
 					Context("fs.Stat doesn't err", func() {
 						It("should return expected result", func() {
 							/* arrange */
-							providedPkgRef := "dummyPkgRef"
+							providedDataRef := "dummyDataRef"
 							basePath := "dummyBasePath"
 
 							expectedHandle := newFSHandle(filepath.Join(
 								basePath,
 								DotOpspecDirName,
-								providedPkgRef,
+								providedDataRef,
 							))
 
 							fakeOS := new(ios.Fake)
@@ -163,7 +163,7 @@ var _ = Context("fsProvider", func() {
 							/* act */
 							actualHandle, actualError := objectUnderTest.TryResolve(
 								context.Background(),
-								providedPkgRef,
+								providedDataRef,
 							)
 
 							/* assert */
@@ -175,12 +175,12 @@ var _ = Context("fsProvider", func() {
 				Context("dataRef/.opspec doesn't exist", func() {
 					It("should call fs.Stat w/ expected args", func() {
 						/* arrange */
-						providedPkgRef := "dummyPkgRef"
+						providedDataRef := "dummyDataRef"
 						basePath := "dummyBasePath"
 
 						expectedPath := filepath.Join(
 							basePath,
-							providedPkgRef,
+							providedDataRef,
 						)
 
 						fakeOS := new(ios.Fake)
@@ -194,7 +194,7 @@ var _ = Context("fsProvider", func() {
 						/* act */
 						objectUnderTest.TryResolve(
 							context.Background(),
-							providedPkgRef,
+							providedDataRef,
 						)
 
 						/* assert */
@@ -217,7 +217,7 @@ var _ = Context("fsProvider", func() {
 							/* act */
 							_, actualError := objectUnderTest.TryResolve(
 								context.Background(),
-								"dummyPkgRef",
+								"dummyDataRef",
 							)
 
 							/* assert */
@@ -227,12 +227,12 @@ var _ = Context("fsProvider", func() {
 					Context("fs.Stat doesn't err", func() {
 						It("should return expected result", func() {
 							/* arrange */
-							providedPkgRef := "dummyPkgRef"
+							providedDataRef := "dummyDataRef"
 							basePath := "dummyBasePath"
 
 							expectedHandle := newFSHandle(filepath.Join(
 								basePath,
-								providedPkgRef,
+								providedDataRef,
 							))
 
 							fakeOS := new(ios.Fake)
@@ -246,7 +246,7 @@ var _ = Context("fsProvider", func() {
 							/* act */
 							actualHandle, actualError := objectUnderTest.TryResolve(
 								context.Background(),
-								providedPkgRef,
+								providedDataRef,
 							)
 
 							/* assert */

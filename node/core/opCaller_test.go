@@ -32,7 +32,7 @@ var _ = Context("opCaller", func() {
 			providedRootOpID := "dummyRootOpID"
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyPkgRef",
+					Ref: "dummyOpRef",
 				}}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
@@ -75,7 +75,7 @@ var _ = Context("opCaller", func() {
 			providedOpHandle := new(data.FakeHandle)
 			providedSCGOpCall := &model.SCGOpCall{
 				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyPkgRef",
+					Ref: "dummyOpRef",
 				},
 			}
 
@@ -128,7 +128,7 @@ var _ = Context("opCaller", func() {
 				providedRootOpID := "dummyRootOpID"
 				providedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyPkgRef",
+						Ref: "dummyOpRef",
 					},
 				}
 
@@ -138,6 +138,7 @@ var _ = Context("opCaller", func() {
 						Msg:      "dummyError",
 						OpID:     providedOpID,
 						PkgRef:   providedSCGOpCall.Pkg.Ref,
+						OpRef:    providedSCGOpCall.Pkg.Ref,
 						RootOpID: providedRootOpID,
 					},
 				}
@@ -187,7 +188,7 @@ var _ = Context("opCaller", func() {
 				providedRootOpID := "dummyRootOpID"
 				providedSCGOpCall := &model.SCGOpCall{
 					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyPkgRef",
+						Ref: "dummyOpRef",
 					},
 				}
 
@@ -196,6 +197,7 @@ var _ = Context("opCaller", func() {
 					OpStarted: &model.OpStartedEvent{
 						OpID:     providedOpID,
 						PkgRef:   providedSCGOpCall.Pkg.Ref,
+						OpRef:    providedSCGOpCall.Pkg.Ref,
 						RootOpID: providedRootOpID,
 					},
 				}
@@ -366,7 +368,7 @@ var _ = Context("opCaller", func() {
 					providedRootOpID := "dummyRootOpID"
 					providedSCGOpCall := &model.SCGOpCall{
 						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyPkgRef",
+							Ref: "dummyOpRef",
 						},
 					}
 
@@ -489,7 +491,7 @@ var _ = Context("opCaller", func() {
 						providedRootOpID := "dummyRootOpID"
 						providedSCGOpCall := &model.SCGOpCall{
 							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyPkgRef",
+								Ref: "dummyOpRef",
 							},
 						}
 
@@ -562,7 +564,7 @@ var _ = Context("opCaller", func() {
 
 						providedSCGOpCall := &model.SCGOpCall{
 							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyPkgRef",
+								Ref: "dummyOpRef",
 							},
 							Outputs: map[string]string{
 								expectedOutputName: "",

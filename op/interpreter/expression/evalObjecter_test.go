@@ -20,7 +20,7 @@ var _ = Context("EvalToObject", func() {
 			providedExpression := map[string]interface{}{
 				"prop1Name": "prop1Value",
 			}
-			providedPkgRef := new(data.FakeHandle)
+			providedOpRef := new(data.FakeHandle)
 
 			fakeEvalObjectInitializerer := new(fakeEvalObjectInitializerer)
 			// err to trigger immediate return
@@ -35,7 +35,7 @@ var _ = Context("EvalToObject", func() {
 			objectUnderTest.EvalToObject(
 				providedScope,
 				providedExpression,
-				providedPkgRef,
+				providedOpRef,
 			)
 
 			/* assert */
@@ -45,7 +45,7 @@ var _ = Context("EvalToObject", func() {
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 
 		})
 		Context("evalObjectInitializer.Eval errs", func() {
@@ -112,7 +112,7 @@ var _ = Context("EvalToObject", func() {
 			/* arrange */
 			providedScope := map[string]*model.Value{"dummyName": {}}
 			providedExpression := "dummyExpression"
-			providedPkgRef := new(data.FakeHandle)
+			providedOpRef := new(data.FakeHandle)
 
 			fakeInterpolater := new(interpolater.Fake)
 			// err to trigger immediate return
@@ -126,7 +126,7 @@ var _ = Context("EvalToObject", func() {
 			objectUnderTest.EvalToObject(
 				providedScope,
 				providedExpression,
-				providedPkgRef,
+				providedOpRef,
 			)
 
 			/* assert */
@@ -136,7 +136,7 @@ var _ = Context("EvalToObject", func() {
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			Expect(actualPkgRef).To(Equal(providedOpRef))
 
 		})
 		Context("interpolater.Interpolate errs", func() {

@@ -21,7 +21,7 @@ var _ = Context("ListPkgContents", func() {
 		/* arrange */
 		providedCtx := context.TODO()
 		providedReq := model.ListPkgContentsReq{
-			PkgRef: "dummyPkgRef",
+			PkgRef: "dummyOpRef",
 			PullCreds: &model.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",

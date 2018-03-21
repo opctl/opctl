@@ -42,11 +42,11 @@ type Fake struct {
 		result1 string
 		result2 error
 	}
-	ResolveDataStub        func(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error)
+	ResolveDataStub        func(ctx context.Context, dataRef string, pullCreds *model.PullCreds) (model.DataHandle, error)
 	resolveDataMutex       sync.RWMutex
 	resolveDataArgsForCall []struct {
 		ctx       context.Context
-		pkgRef    string
+		dataRef   string
 		pullCreds *model.PullCreds
 	}
 	resolveDataReturns struct {
@@ -189,18 +189,18 @@ func (fake *Fake) StartOpReturnsOnCall(i int, result1 string, result2 error) {
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolveData(ctx context.Context, pkgRef string, pullCreds *model.PullCreds) (model.DataHandle, error) {
+func (fake *Fake) ResolveData(ctx context.Context, dataRef string, pullCreds *model.PullCreds) (model.DataHandle, error) {
 	fake.resolveDataMutex.Lock()
 	ret, specificReturn := fake.resolveDataReturnsOnCall[len(fake.resolveDataArgsForCall)]
 	fake.resolveDataArgsForCall = append(fake.resolveDataArgsForCall, struct {
 		ctx       context.Context
-		pkgRef    string
+		dataRef   string
 		pullCreds *model.PullCreds
-	}{ctx, pkgRef, pullCreds})
-	fake.recordInvocation("ResolveData", []interface{}{ctx, pkgRef, pullCreds})
+	}{ctx, dataRef, pullCreds})
+	fake.recordInvocation("ResolveData", []interface{}{ctx, dataRef, pullCreds})
 	fake.resolveDataMutex.Unlock()
 	if fake.ResolveDataStub != nil {
-		return fake.ResolveDataStub(ctx, pkgRef, pullCreds)
+		return fake.ResolveDataStub(ctx, dataRef, pullCreds)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -217,7 +217,7 @@ func (fake *Fake) ResolveDataCallCount() int {
 func (fake *Fake) ResolveDataArgsForCall(i int) (context.Context, string, *model.PullCreds) {
 	fake.resolveDataMutex.RLock()
 	defer fake.resolveDataMutex.RUnlock()
-	return fake.resolveDataArgsForCall[i].ctx, fake.resolveDataArgsForCall[i].pkgRef, fake.resolveDataArgsForCall[i].pullCreds
+	return fake.resolveDataArgsForCall[i].ctx, fake.resolveDataArgsForCall[i].dataRef, fake.resolveDataArgsForCall[i].pullCreds
 }
 
 func (fake *Fake) ResolveDataReturns(result1 model.DataHandle, result2 error) {

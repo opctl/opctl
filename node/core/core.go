@@ -45,7 +45,7 @@ type Core interface {
 	//  - ErrDataRefResolution on resolution failure
 	ResolveData(
 		ctx context.Context,
-		pkgRef string,
+		dataRef string,
 		pullCreds *model.PullCreds,
 	) (
 		model.DataHandle,

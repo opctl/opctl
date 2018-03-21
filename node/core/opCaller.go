@@ -87,6 +87,7 @@ func (oc _opCaller) Call(
 						Msg:      err.Error(),
 						OpID:     opID,
 						PkgRef:   scgOpCall.Pkg.Ref,
+						OpRef:    scgOpCall.Pkg.Ref,
 						RootOpID: rootOpID,
 					},
 				},
@@ -137,6 +138,7 @@ func (oc _opCaller) Call(
 			OpStarted: &model.OpStartedEvent{
 				OpID:     opID,
 				PkgRef:   scgOpCall.Pkg.Ref,
+				OpRef:    scgOpCall.Pkg.Ref,
 				RootOpID: rootOpID,
 			},
 		},
