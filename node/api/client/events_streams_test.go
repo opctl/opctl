@@ -28,18 +28,18 @@ var _ = Context("GetEventStream", func() {
 		}
 
 		// construct expected URL
-		expectedReqUrl := url.URL{}
-		expectedReqUrl.Scheme = "ws"
-		expectedReqUrl.Path = api.URLEvents_Stream
+		expectedReqURL := url.URL{}
+		expectedReqURL.Scheme = "ws"
+		expectedReqURL.Path = api.URLEvents_Stream
 
-		queryValues := expectedReqUrl.Query()
+		queryValues := expectedReqURL.Query()
 		if nil != providedReq.Filter.Since {
 			queryValues.Add("since", providedReq.Filter.Since.Format(time.RFC3339))
 		}
 		if nil != providedReq.Filter.Roots {
 			queryValues.Add("roots", strings.Join(providedReq.Filter.Roots, ","))
 		}
-		expectedReqUrl.RawQuery = queryValues.Encode()
+		expectedReqURL.RawQuery = queryValues.Encode()
 
 		fakeWSDialer := new(iwebsocket.FakeDialer)
 		//error to trigger immediate retur
@@ -53,8 +53,8 @@ var _ = Context("GetEventStream", func() {
 		objectUnderTest.GetEventStream(providedReq)
 
 		/* assert */
-		actualReqUrl, _ := fakeWSDialer.DialArgsForCall(0)
-		Expect(actualReqUrl).To(Equal(expectedReqUrl.String()))
+		actualReqURL, _ := fakeWSDialer.DialArgsForCall(0)
+		Expect(actualReqURL).To(Equal(expectedReqURL.String()))
 
 	})
 })

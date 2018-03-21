@@ -88,11 +88,11 @@ var _ = Context("EvalToString", func() {
 				/* assert */
 				actualExpression,
 					actualScope,
-					actualPkgRef := fakeEvalObjectInitializerer.EvalArgsForCall(0)
+					actualOpRef := fakeEvalObjectInitializerer.EvalArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedOpRef))
+				Expect(actualOpRef).To(Equal(providedOpRef))
 
 			})
 			Context("evalObjectInitializerer.Eval errs", func() {
@@ -206,11 +206,11 @@ var _ = Context("EvalToString", func() {
 				/* assert */
 				actualExpression,
 					actualScope,
-					actualPkgRef := fakeEvalArrayInitializerer.EvalArgsForCall(0)
+					actualOpRef := fakeEvalArrayInitializerer.EvalArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedOpRef))
+				Expect(actualOpRef).To(Equal(providedOpRef))
 
 			})
 			Context("evalArrayInitializerer.Eval errs", func() {
@@ -320,11 +320,11 @@ var _ = Context("EvalToString", func() {
 				/* assert */
 				actualExpression,
 					actualScope,
-					actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
+					actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(providedExpression))
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualPkgRef).To(Equal(providedOpRef))
+				Expect(actualOpRef).To(Equal(providedOpRef))
 
 			})
 			Context("interpolater.Interpolate errs", func() {

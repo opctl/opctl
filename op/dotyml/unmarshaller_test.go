@@ -90,9 +90,7 @@ var _ = Context("unmarshaller", func() {
 					Outputs:     dummyParams,
 					Run: &model.SCG{
 						Op: &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyOpRef",
-							},
+							Ref: "dummyOpRef",
 						},
 					},
 					Version: "dummyVersion",

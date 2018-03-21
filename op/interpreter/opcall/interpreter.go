@@ -59,7 +59,7 @@ func (itp _interpreter) Interpret(
 ) (*model.DCGOpCall, error) {
 
 	var pkgPullCreds *model.PullCreds
-	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
+	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
 		evaluatedUsername, err := itp.expression.EvalToString(scope, scgPullCreds.Username, parentOpHandle)
@@ -78,7 +78,7 @@ func (itp _interpreter) Interpret(
 	parentOpDirPath := parentOpHandle.Path()
 	opHandle, err := itp.data.Resolve(
 		context.TODO(),
-		scgOpCall.Pkg.Ref,
+		scgOpCall.Ref,
 		itp.data.NewFSProvider(filepath.Dir(*parentOpDirPath)),
 		itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
 	)

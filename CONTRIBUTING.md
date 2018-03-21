@@ -16,3 +16,14 @@ Contributions are subject to:
   outcome
 - adherence to
   [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments)
+
+
+# Testing
+
+`opctl run test` runs all tests inclusive of code coverage.
+
+## Fakes
+
+To streamline unit test related maintenance, [counterfeiter](https://github.com/maxbrunsfeld/counterfeiter) is used to auto-generate fake implementations of interfaces.
+
+The fakes are then used to assert on & stub the object under tests interactions w/ its dependencies. 

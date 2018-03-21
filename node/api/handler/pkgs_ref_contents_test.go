@@ -50,10 +50,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			/* assert */
 			_,
-				actualPkgRef,
+				actualOpRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedOpRef))
+			Expect(actualOpRef).To(Equal(expectedOpRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
 				Username: providedUsername,
 				Password: providedPassword,
@@ -86,10 +86,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			/* assert */
 			_,
-				actualPkgRef,
+				actualOpRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedOpRef))
+			Expect(actualOpRef).To(Equal(expectedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 	})

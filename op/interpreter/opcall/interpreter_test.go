@@ -74,9 +74,7 @@ var _ = Context("Interpreter", func() {
 								for _, scenario := range scenarioDotYml {
 									if nil != scenario.Interpret {
 										scgOpCall := &model.SCGOpCall{
-											Pkg: &model.SCGOpCallPkg{
-												Ref: absOpPath,
-											},
+											Ref:    absOpPath,
 											Inputs: map[string]interface{}{},
 										}
 
@@ -129,9 +127,7 @@ var _ = Context("Interpreter", func() {
 			objectUnderTest.Interpret(
 				map[string]*model.Value{},
 				&model.SCGOpCall{
-					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyOpRef",
-					},
+					Ref: "dummyOpRef",
 				},
 				"dummyOpID",
 				providedParentOpHandle,
@@ -162,9 +158,7 @@ var _ = Context("Interpreter", func() {
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					&model.SCGOpCall{
-						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyOpRef",
-						},
+						Ref: "dummyOpRef",
 					},
 					"dummyOpID",
 					providedParentOpHandle,
@@ -195,9 +189,7 @@ var _ = Context("Interpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						&model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								PullCreds: &model.SCGPullCreds{},
-							},
+							PullCreds: &model.SCGPullCreds{},
 						},
 						"dummyOpID",
 						new(data.FakeHandle),
@@ -235,10 +227,8 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						&model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref:       "dummyOpRef",
-								PullCreds: &model.SCGPullCreds{},
-							},
+							Ref:       "dummyOpRef",
+							PullCreds: &model.SCGPullCreds{},
 						},
 						"dummyOpID",
 						providedParentOpHandle,
@@ -261,12 +251,10 @@ var _ = Context("Interpreter", func() {
 
 			providedRootFSPath := "dummyRootFSPath"
 			providedSCGOpCall := &model.SCGOpCall{
-				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyOpRef",
-				},
+				Ref: "dummyOpRef",
 			}
 
-			expectedOpRef := providedSCGOpCall.Pkg.Ref
+			expectedOpRef := providedSCGOpCall.Ref
 
 			fakeData := new(data.Fake)
 
@@ -296,11 +284,11 @@ var _ = Context("Interpreter", func() {
 
 			/* assert */
 			actualCtx,
-				actualPkgRef,
+				actualOpRef,
 				actualPkgProviders := fakeData.ResolveArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(context.TODO()))
-			Expect(actualPkgRef).To(Equal(expectedOpRef))
+			Expect(actualOpRef).To(Equal(expectedOpRef))
 			Expect(actualPkgProviders).To(Equal(expectedPkgProviders))
 		})
 		Context("pkg.Resolve errs", func() {
@@ -321,7 +309,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+					&model.SCGOpCall{},
 					"dummyOpID",
 					providedParentOpHandle,
 					"dummyRootOpID",
@@ -356,7 +344,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+					&model.SCGOpCall{},
 					"dummyOpID",
 					providedParentOpHandle,
 					"dummyRootOpID",
@@ -388,7 +376,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						map[string]*model.Value{},
-						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+						&model.SCGOpCall{},
 						"dummyOpID",
 						providedParentOpHandle,
 						"dummyRootOpID",
@@ -410,7 +398,6 @@ var _ = Context("Interpreter", func() {
 
 					providedSCGOpCall := &model.SCGOpCall{
 						Inputs: expectedInputArgs,
-						Pkg:    &model.SCGOpCallPkg{},
 					}
 
 					providedOpID := "dummyOpID"
@@ -461,14 +448,14 @@ var _ = Context("Interpreter", func() {
 					actualSCGArgs,
 						actualSCGInputs,
 						actualParentOpHandle,
-						actualPkgRef,
+						actualOpRef,
 						actualScope,
 						actualOpScratchDir := fakeInputsInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(expectedScope))
 					Expect(actualSCGArgs).To(Equal(expectedInputArgs))
 					Expect(actualParentOpHandle).To(Equal(providedParentOpHandle))
-					Expect(actualPkgRef).To(Equal(opPath))
+					Expect(actualOpRef).To(Equal(opPath))
 					Expect(actualSCGInputs).To(Equal(expectedInputParams))
 					Expect(actualOpScratchDir).To(Equal(filepath.Join(dcgScratchDir, providedOpID)))
 

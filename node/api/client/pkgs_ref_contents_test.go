@@ -28,17 +28,17 @@ var _ = Context("ListPkgContents", func() {
 			},
 		}
 
-		expectedReqUrl := url.URL{}
+		expectedReqURL := url.URL{}
 		path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
-		expectedReqUrl.Path = path
+		expectedReqURL.Path = path
 
-		expectedHttpReq, _ := http.NewRequest(
+		expectedHTTPReq, _ := http.NewRequest(
 			"GET",
-			expectedReqUrl.String(),
+			expectedReqURL.String(),
 			nil,
 		)
 
-		expectedHttpReq.SetBasicAuth(
+		expectedHTTPReq.SetBasicAuth(
 			providedReq.PullCreds.Username,
 			providedReq.PullCreds.Password,
 		)
@@ -60,12 +60,12 @@ var _ = Context("ListPkgContents", func() {
 		objectUnderTest.ListPkgContents(providedCtx, providedReq)
 
 		/* assert */
-		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
 
-		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
-		Expect(actualHttpReq.Body).To(BeNil())
-		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
-		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+		Expect(actualHTTPReq.Body).To(BeNil())
+		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
 	})
 	Context("StatusCode < 400", func() {

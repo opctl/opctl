@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -15,14 +16,16 @@ type GetEventStreamReq struct {
 	Filter EventFilter
 }
 
+// GetPkgContentReq deprecated
 type GetPkgContentReq struct {
 	ContentPath string
-	PullCreds   *PullCreds
+	PullCreds   *PullCreds `json:",omitempty"`
 	PkgRef      string
 }
 
+// ListPkgContentsReq deprecated
 type ListPkgContentsReq struct {
-	PullCreds *PullCreds
+	PullCreds *PullCreds `json:",omitempty"`
 	PkgRef    string
 }
 
@@ -33,5 +36,35 @@ type KillOpReq struct {
 type StartOpReq struct {
 	// map of args keyed by input name
 	Args map[string]*Value
-	Pkg  *DCGOpCallPkg
+	// Op details the op to start
+	Op StartOpReqOp
+}
+
+type StartOpReqOp struct {
+	Ref       string
+	PullCreds *PullCreds `json:",omitempty"`
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface to handle deprecated properties gracefully in one place
+func (sor *StartOpReq) UnmarshalJSON(
+	b []byte,
+) error {
+	if err := json.Unmarshal(b, sor); nil != err {
+		return err
+	}
+
+	// handle deprecated property
+	deprecated := struct {
+		Pkg *DCGOpCallPkg `json:"pkg"`
+	}{}
+	if err := json.Unmarshal(b, &deprecated); nil != err {
+		return err
+	}
+
+	if nil != deprecated.Pkg {
+		sor.Op.Ref = deprecated.Pkg.Ref
+		sor.Op.PullCreds = deprecated.Pkg.PullCreds
+	}
+	return nil
+
 }

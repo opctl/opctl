@@ -55,11 +55,11 @@ var _ = Context("EvalToBoolean", func() {
 			/* assert */
 			actualExpression,
 				actualScope,
-				actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
+				actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
 
 			Expect(actualExpression).To(Equal(providedExpression))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedOpRef))
+			Expect(actualOpRef).To(Equal(providedOpRef))
 
 		})
 		Context("interpolater.Interpolate errs", func() {

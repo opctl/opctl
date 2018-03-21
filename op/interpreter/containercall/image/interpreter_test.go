@@ -110,7 +110,7 @@ var _ = Context("Interpreter", func() {
 
 				expectedImage := &model.DCGContainerCallImage{
 					Ref: expectedImageRef,
-					PullCreds: &model.DCGPullCreds{
+					PullCreds: &model.PullCreds{
 						Username: expectedUsername,
 						Password: expectedPassword,
 					},

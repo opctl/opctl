@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -10,23 +9,11 @@ func (this _core) StartOp(
 	ctx context.Context,
 	req model.StartOpReq,
 ) (string, error) {
-	if nil == req.Pkg {
-		return "", errors.New("pkg required")
-	}
-
-	var pullCreds *model.PullCreds
-	if nil != req.Pkg.PullCreds {
-		pullCreds = &model.PullCreds{
-			Username: req.Pkg.PullCreds.Username,
-			Password: req.Pkg.PullCreds.Password,
-		}
-	}
-
 	opHandle, err := this.data.Resolve(
 		ctx,
-		req.Pkg.Ref,
+		req.Op.Ref,
 		this.data.NewFSProvider(),
-		this.data.NewGitProvider(this.dataCachePath, pullCreds),
+		this.data.NewGitProvider(this.dataCachePath, req.Op.PullCreds),
 	)
 	if nil != err {
 		return "", err
@@ -40,9 +27,7 @@ func (this _core) StartOp(
 
 	// construct scgOpCall
 	scgOpCall := &model.SCGOpCall{
-		Pkg: &model.SCGOpCallPkg{
-			Ref: opHandle.Ref(),
-		},
+		Ref:     opHandle.Ref(),
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
 	}
@@ -52,7 +37,7 @@ func (this _core) StartOp(
 	}
 
 	opDotYml, err := this.dotYmlGetter.Get(
-		context.TODO(),
+		ctx,
 		opHandle,
 	)
 	if nil != err {

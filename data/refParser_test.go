@@ -59,10 +59,10 @@ var _ = Context("refParser", func() {
 				objectUnderTest := _refParser{}
 
 				/* act */
-				actualPkgRef, actualErr := objectUnderTest.Parse(providedDataRef)
+				actualDataRef, actualErr := objectUnderTest.Parse(providedDataRef)
 
 				/* assert */
-				Expect(actualPkgRef).To(Equal(expectedDataRef))
+				Expect(actualDataRef).To(Equal(expectedDataRef))
 				Expect(actualErr).To(BeNil())
 
 			})

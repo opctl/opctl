@@ -11,11 +11,6 @@ type DCGBaseCall struct {
 	OpHandle DataHandle
 }
 
-type DCGPullCreds struct {
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-}
-
 type DCGContainer struct{}
 
 type DCGContainerCall struct {
@@ -37,8 +32,8 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
-	Ref       string        `yaml:"ref"`
-	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
+	Ref       string     `yaml:"ref"`
+	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
 }
 
 type DCGOp struct{}
@@ -52,6 +47,6 @@ type DCGOpCall struct {
 }
 
 type DCGOpCallPkg struct {
-	Ref       string        `yaml:"ref"`
-	PullCreds *DCGPullCreds `yaml:"pullCreds,omitempty"`
+	Ref       string     `yaml:"ref"`
+	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
 }

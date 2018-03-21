@@ -43,13 +43,41 @@ type SCGContainerCallImage struct {
 }
 
 type SCGOpCall struct {
-	Pkg *SCGOpCallPkg `yaml:"pkg"`
+	// Ref represents a references to the op; will be interpolated
+	Ref string `yaml:"ref"`
+	// PullCreds represent creds for pulling the op from a provider
+	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 	// binds scope to inputs of referenced op
 	Inputs map[string]interface{} `yaml:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
 	Outputs map[string]string `yaml:"outputs,omitempty"`
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface to handle deprecated properties gracefully in one place
+func (soc *SCGOpCall) UnmarshalYAML(
+	unmarshal func(interface{}) error,
+) error {
+
+	if err := unmarshal(soc); nil != err {
+		return err
+	}
+
+	// handle deprecated property
+	deprecated := struct {
+		Pkg *SCGOpCallPkg `yaml:"pkg"`
+	}{}
+	if err := unmarshal(&deprecated); nil != err {
+		return err
+	}
+
+	if nil != deprecated.Pkg {
+		soc.Ref = deprecated.Pkg.Ref
+		soc.PullCreds = deprecated.Pkg.PullCreds
+	}
+	return nil
+}
+
+// SCGOpCallPkg deprecated
 type SCGOpCallPkg struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`

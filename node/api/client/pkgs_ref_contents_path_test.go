@@ -33,18 +33,18 @@ var _ = Context("GetPkgContent", func() {
 		path := strings.Replace(api.URLPkgs_Ref_Contents_Path, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
 		path = strings.Replace(path, "{path}", url.PathEscape(providedReq.ContentPath), 1)
 
-		expectedReqUrl, err := url.Parse(path)
+		expectedReqURL, err := url.Parse(path)
 		if nil != err {
 			panic(err)
 		}
 
-		expectedHttpReq, _ := http.NewRequest(
+		expectedHTTPReq, _ := http.NewRequest(
 			"GET",
-			expectedReqUrl.String(),
+			expectedReqURL.String(),
 			nil,
 		)
 
-		expectedHttpReq.SetBasicAuth(
+		expectedHTTPReq.SetBasicAuth(
 			providedReq.PullCreds.Username,
 			providedReq.PullCreds.Password,
 		)
@@ -54,7 +54,7 @@ var _ = Context("GetPkgContent", func() {
 			&http.Response{
 				Body:       ioutil.NopCloser(strings.NewReader("dummyBody")),
 				StatusCode: http.StatusOK,
-				Request:    expectedHttpReq,
+				Request:    expectedHTTPReq,
 			},
 			nil,
 		)
@@ -67,12 +67,12 @@ var _ = Context("GetPkgContent", func() {
 		objectUnderTest.GetPkgContent(providedCtx, providedReq)
 
 		/* assert */
-		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
 
-		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
-		Expect(actualHttpReq.Body).To(BeNil())
-		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
-		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+		Expect(actualHTTPReq.Body).To(BeNil())
+		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
 	})
 	Context("StatusCode < 400", func() {

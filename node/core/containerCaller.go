@@ -70,7 +70,7 @@ func (cc _containerCaller) Call(
 	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:        containerID,
-			PkgRef:    opHandle.Ref(),
+			OpRef:     opHandle.Ref(),
 			RootOpID:  rootOpID,
 			Container: &dcgContainerDescriptor{},
 		},
@@ -92,7 +92,6 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
 				ContainerID: containerID,
-				PkgRef:      opHandle.Ref(),
 				OpRef:       opHandle.Ref(),
 				RootOpID:    rootOpID,
 			},
@@ -181,7 +180,6 @@ func (cc _containerCaller) Call(
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: containerID,
-				PkgRef:      opHandle.Ref(),
 				OpRef:       opHandle.Ref(),
 				RootOpID:    rootOpID,
 				ExitCode:    exitCode,
@@ -211,7 +209,6 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.OpHandle.Ref(),
 							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
@@ -233,7 +230,6 @@ func (this _containerCaller) interpretLogs(
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
-							PkgRef:      dcgContainerCall.OpHandle.Ref(),
 							OpRef:       dcgContainerCall.OpHandle.Ref(),
 							RootOpID:    dcgContainerCall.RootOpID,
 						},
