@@ -9,25 +9,25 @@ import (
 )
 
 type FakeLister struct {
-	ListStub        func(ctx context.Context, dirHandle model.DataHandle) ([]*model.PkgManifest, error)
+	ListStub        func(ctx context.Context, dirHandle model.DataHandle) ([]*model.OpDotYml, error)
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
 		ctx       context.Context
 		dirHandle model.DataHandle
 	}
 	listReturns struct {
-		result1 []*model.PkgManifest
+		result1 []*model.OpDotYml
 		result2 error
 	}
 	listReturnsOnCall map[int]struct {
-		result1 []*model.PkgManifest
+		result1 []*model.OpDotYml
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeLister) List(ctx context.Context, dirHandle model.DataHandle) ([]*model.PkgManifest, error) {
+func (fake *FakeLister) List(ctx context.Context, dirHandle model.DataHandle) ([]*model.OpDotYml, error) {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
@@ -57,24 +57,24 @@ func (fake *FakeLister) ListArgsForCall(i int) (context.Context, model.DataHandl
 	return fake.listArgsForCall[i].ctx, fake.listArgsForCall[i].dirHandle
 }
 
-func (fake *FakeLister) ListReturns(result1 []*model.PkgManifest, result2 error) {
+func (fake *FakeLister) ListReturns(result1 []*model.OpDotYml, result2 error) {
 	fake.ListStub = nil
 	fake.listReturns = struct {
-		result1 []*model.PkgManifest
+		result1 []*model.OpDotYml
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeLister) ListReturnsOnCall(i int, result1 []*model.PkgManifest, result2 error) {
+func (fake *FakeLister) ListReturnsOnCall(i int, result1 []*model.OpDotYml, result2 error) {
 	fake.ListStub = nil
 	if fake.listReturnsOnCall == nil {
 		fake.listReturnsOnCall = make(map[int]struct {
-			result1 []*model.PkgManifest
+			result1 []*model.OpDotYml
 			result2 error
 		})
 	}
 	fake.listReturnsOnCall[i] = struct {
-		result1 []*model.PkgManifest
+		result1 []*model.OpDotYml
 		result2 error
 	}{result1, result2}
 }

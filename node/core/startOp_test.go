@@ -163,7 +163,7 @@ var _ = Context("core", func() {
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, expectedErr)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
@@ -204,7 +204,7 @@ var _ = Context("core", func() {
 					fakeDataHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					pkgManifest := &model.PkgManifest{
+					opDotYml := &model.OpDotYml{
 						Outputs: map[string]*model.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
@@ -212,7 +212,7 @@ var _ = Context("core", func() {
 					}
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(pkgManifest, nil)
+					fakeDotYmlGetter.GetReturns(opDotYml, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
 						Ref:     fakeDataHandle.Ref(),
@@ -222,7 +222,7 @@ var _ = Context("core", func() {
 					for name := range providedReq.Args {
 						expectedSCGOpCall.Inputs[name] = ""
 					}
-					for name := range pkgManifest.Outputs {
+					for name := range opDotYml.Outputs {
 						expectedSCGOpCall.Outputs[name] = ""
 					}
 

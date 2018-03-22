@@ -9,17 +9,17 @@ import (
 )
 
 type FakeHandle struct {
-	ListContentsStub        func(ctx context.Context) ([]*model.PkgContent, error)
-	listContentsMutex       sync.RWMutex
-	listContentsArgsForCall []struct {
+	ListDescendantsStub        func(ctx context.Context) ([]*model.DataNode, error)
+	listDescendantsMutex       sync.RWMutex
+	listDescendantsArgsForCall []struct {
 		ctx context.Context
 	}
-	listContentsReturns struct {
-		result1 []*model.PkgContent
+	listDescendantsReturns struct {
+		result1 []*model.DataNode
 		result2 error
 	}
-	listContentsReturnsOnCall map[int]struct {
-		result1 []*model.PkgContent
+	listDescendantsReturnsOnCall map[int]struct {
+		result1 []*model.DataNode
 		result2 error
 	}
 	GetContentStub        func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error)
@@ -58,53 +58,53 @@ type FakeHandle struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandle) ListContents(ctx context.Context) ([]*model.PkgContent, error) {
-	fake.listContentsMutex.Lock()
-	ret, specificReturn := fake.listContentsReturnsOnCall[len(fake.listContentsArgsForCall)]
-	fake.listContentsArgsForCall = append(fake.listContentsArgsForCall, struct {
+func (fake *FakeHandle) ListDescendants(ctx context.Context) ([]*model.DataNode, error) {
+	fake.listDescendantsMutex.Lock()
+	ret, specificReturn := fake.listDescendantsReturnsOnCall[len(fake.listDescendantsArgsForCall)]
+	fake.listDescendantsArgsForCall = append(fake.listDescendantsArgsForCall, struct {
 		ctx context.Context
 	}{ctx})
-	fake.recordInvocation("ListContents", []interface{}{ctx})
-	fake.listContentsMutex.Unlock()
-	if fake.ListContentsStub != nil {
-		return fake.ListContentsStub(ctx)
+	fake.recordInvocation("ListDescendants", []interface{}{ctx})
+	fake.listDescendantsMutex.Unlock()
+	if fake.ListDescendantsStub != nil {
+		return fake.ListDescendantsStub(ctx)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.listContentsReturns.result1, fake.listContentsReturns.result2
+	return fake.listDescendantsReturns.result1, fake.listDescendantsReturns.result2
 }
 
-func (fake *FakeHandle) ListContentsCallCount() int {
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
-	return len(fake.listContentsArgsForCall)
+func (fake *FakeHandle) ListDescendantsCallCount() int {
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
+	return len(fake.listDescendantsArgsForCall)
 }
 
-func (fake *FakeHandle) ListContentsArgsForCall(i int) context.Context {
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
-	return fake.listContentsArgsForCall[i].ctx
+func (fake *FakeHandle) ListDescendantsArgsForCall(i int) context.Context {
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
+	return fake.listDescendantsArgsForCall[i].ctx
 }
 
-func (fake *FakeHandle) ListContentsReturns(result1 []*model.PkgContent, result2 error) {
-	fake.ListContentsStub = nil
-	fake.listContentsReturns = struct {
-		result1 []*model.PkgContent
+func (fake *FakeHandle) ListDescendantsReturns(result1 []*model.DataNode, result2 error) {
+	fake.ListDescendantsStub = nil
+	fake.listDescendantsReturns = struct {
+		result1 []*model.DataNode
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) ListContentsReturnsOnCall(i int, result1 []*model.PkgContent, result2 error) {
-	fake.ListContentsStub = nil
-	if fake.listContentsReturnsOnCall == nil {
-		fake.listContentsReturnsOnCall = make(map[int]struct {
-			result1 []*model.PkgContent
+func (fake *FakeHandle) ListDescendantsReturnsOnCall(i int, result1 []*model.DataNode, result2 error) {
+	fake.ListDescendantsStub = nil
+	if fake.listDescendantsReturnsOnCall == nil {
+		fake.listDescendantsReturnsOnCall = make(map[int]struct {
+			result1 []*model.DataNode
 			result2 error
 		})
 	}
-	fake.listContentsReturnsOnCall[i] = struct {
-		result1 []*model.PkgContent
+	fake.listDescendantsReturnsOnCall[i] = struct {
+		result1 []*model.DataNode
 		result2 error
 	}{result1, result2}
 }
@@ -244,8 +244,8 @@ func (fake *FakeHandle) RefReturnsOnCall(i int, result1 string) {
 func (fake *FakeHandle) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.listContentsMutex.RLock()
-	defer fake.listContentsMutex.RUnlock()
+	fake.listDescendantsMutex.RLock()
+	defer fake.listDescendantsMutex.RUnlock()
 	fake.getContentMutex.RLock()
 	defer fake.getContentMutex.RUnlock()
 	fake.pathMutex.RLock()

@@ -39,20 +39,20 @@ func (gh gitHandle) GetContent(
 	return gh.os.Open(filepath.Join(gh.path, contentPath))
 }
 
-func (gh gitHandle) ListContents(
+func (gh gitHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
-	return gh.rListContents(gh.path)
+	return gh.rListDescendants(gh.path)
 }
 
-// rListContents recursively lists pkg contents at path
-func (gh gitHandle) rListContents(
+// rListDescendants recursively lists descendants of the current data node
+func (gh gitHandle) rListDescendants(
 	path string,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
 	childFileInfos, err := gh.ioUtil.ReadDir(path)
@@ -60,13 +60,13 @@ func (gh gitHandle) rListContents(
 		return nil, err
 	}
 
-	var contents []*model.PkgContent
+	var contents []*model.DataNode
 	for _, contentFileInfo := range childFileInfos {
 		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
-			childContents, err := gh.rListContents(absContentPath)
+			childContents, err := gh.rListDescendants(absContentPath)
 			if nil != err {
 				return nil, err
 			}
@@ -80,7 +80,7 @@ func (gh gitHandle) rListContents(
 
 		contents = append(
 			contents,
-			&model.PkgContent{
+			&model.DataNode{
 				Mode: contentFileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
 				Size: contentFileInfo.Size(),

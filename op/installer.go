@@ -36,7 +36,7 @@ func (inst _installer) Install(
 	path string,
 	handle model.DataHandle,
 ) error {
-	contentsList, err := handle.ListContents(ctx)
+	contentsList, err := handle.ListDescendants(ctx)
 	if nil != err {
 		return err
 	}

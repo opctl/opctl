@@ -19,13 +19,13 @@ var _ = Context("Lister", func() {
 		})
 	})
 	Context("List", func() {
-		It("should call dirHandle.ListContents w/ expected args", func() {
+		It("should call dirHandle.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
 			providedDirHandle := new(data.FakeHandle)
 			// err to trigger immediate return
-			providedDirHandle.ListContentsReturns(nil, errors.New("dummyError"))
+			providedDirHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _lister{}
 
@@ -36,16 +36,16 @@ var _ = Context("Lister", func() {
 			)
 
 			/* assert */
-			actualCtx := providedDirHandle.ListContentsArgsForCall(0)
+			actualCtx := providedDirHandle.ListDescendantsArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 		})
-		Context("dirHandle.ListContents errs", func() {
+		Context("dirHandle.ListDescendants errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDirHandle := new(data.FakeHandle)
-				listContentsErr := errors.New("listContentsErr")
-				providedDirHandle.ListContentsReturns(nil, listContentsErr)
+				listDescendantsErr := errors.New("listDescendantsErr")
+				providedDirHandle.ListDescendantsReturns(nil, listDescendantsErr)
 
 				objectUnderTest := _lister{}
 
@@ -56,21 +56,21 @@ var _ = Context("Lister", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(listContentsErr))
+				Expect(actualErr).To(Equal(listDescendantsErr))
 			})
 		})
-		Context("dirHandle.ListContents doesn't err", func() {
-			Context("dirHandle.ListContents returns items", func() {
+		Context("dirHandle.ListDescendants doesn't err", func() {
+			Context("dirHandle.ListDescendants returns items", func() {
 				Context("item.Path ends w/ op.yml", func() {
 					It("should call dirHandle.GetContent w/ expected args", func() {
 						/* arrange */
 						providedCtx := context.Background()
 
 						providedDirHandle := new(data.FakeHandle)
-						item := model.PkgContent{
+						item := model.DataNode{
 							Path: dotyml.FileName,
 						}
-						providedDirHandle.ListContentsReturns([]*model.PkgContent{&item}, nil)
+						providedDirHandle.ListDescendantsReturns([]*model.DataNode{&item}, nil)
 
 						// err to trigger immediate return
 						providedDirHandle.GetContentReturns(nil, errors.New("dummyError"))
@@ -95,7 +95,7 @@ var _ = Context("Lister", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							providedDirHandle := new(data.FakeHandle)
-							providedDirHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+							providedDirHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 							getContentErr := errors.New("getContentErr")
 							providedDirHandle.GetContentReturns(nil, getContentErr)

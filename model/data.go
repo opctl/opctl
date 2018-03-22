@@ -1,5 +1,52 @@
 package model
 
+//go:generate counterfeiter -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ DataHandle
+
+import (
+	"context"
+	"io"
+	"os"
+)
+
+type ReadSeekCloser interface {
+	io.ReadCloser
+	io.Seeker
+}
+
+// DataHandle is a provider agnostic interface for interacting w/ data
+type DataHandle interface {
+	// ListDescendants lists descendant of the data node pointed to by the current handle
+	ListDescendants(
+		ctx context.Context,
+	) (
+		[]*DataNode,
+		error,
+	)
+
+	// GetContent gets data from the current handle
+	GetContent(
+		ctx context.Context,
+		contentPath string,
+	) (
+		ReadSeekCloser,
+		error,
+	)
+
+	// Path the local path of the pkg
+	// returns nil if data doesn't exist locally
+	Path() *string
+
+	// Ref returns a ref to the data
+	Ref() string
+}
+
+// DataNode represents an entry in a file system (a directory or file)
+type DataNode struct {
+	Path string
+	Size int64
+	Mode os.FileMode
+}
+
 // Value represents a typed value
 type Value struct {
 	Array   []interface{}          `json:"array,omitempty"`
@@ -10,4 +57,10 @@ type Value struct {
 	Object  map[string]interface{} `json:"object,omitempty"`
 	Socket  *string                `json:"socket,omitempty"`
 	String  *string                `json:"string,omitempty"`
+}
+
+// PullCreds contains authentication attributes for auth'ing w/ a data provider
+type PullCreds struct {
+	Username,
+	Password string
 }

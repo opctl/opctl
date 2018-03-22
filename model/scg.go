@@ -1,5 +1,9 @@
 package model
 
+import (
+	"encoding/json"
+)
+
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
 	Container *SCGContainerCall `yaml:"container,omitempty"`
@@ -53,33 +57,43 @@ type SCGOpCall struct {
 	Outputs map[string]string `yaml:"outputs,omitempty"`
 }
 
-// UnmarshalYAML implements the yaml.Unmarshaler interface to handle deprecated properties gracefully in one place
-func (soc *SCGOpCall) UnmarshalYAML(
-	unmarshal func(interface{}) error,
+// UnmarshalJSON implements the json.Unmarshaler interface to handle deprecated properties gracefully in one place
+func (soc *SCGOpCall) UnmarshalJSON(
+	b []byte,
 ) error {
-
-	if err := unmarshal(soc); nil != err {
-		return err
+	type deprecatedPkg struct {
+		// Ref represents a references to the op; will be interpolated
+		Ref string `yaml:"ref"`
+		// PullCreds represent creds for pulling the op from a provider
+		PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
 	}
 
 	// handle deprecated property
 	deprecated := struct {
-		Pkg *SCGOpCallPkg `yaml:"pkg"`
+		Pkg *deprecatedPkg `yaml:"pkg,omitempty"`
+		// Ref represents a references to the op; will be interpolated
+		Ref string `yaml:"ref"`
+		// PullCreds represent creds for pulling the op from a provider
+		PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
+		// binds scope to inputs of referenced op
+		Inputs map[string]interface{} `yaml:"inputs,omitempty"`
+		// binds scope to outputs of referenced op
+		Outputs map[string]string `yaml:"outputs,omitempty"`
 	}{}
-	if err := unmarshal(&deprecated); nil != err {
+	if err := json.Unmarshal(b, &deprecated); nil != err {
 		return err
 	}
 
 	if nil != deprecated.Pkg {
 		soc.Ref = deprecated.Pkg.Ref
 		soc.PullCreds = deprecated.Pkg.PullCreds
+	} else {
+		soc.Ref = deprecated.Ref
+		soc.PullCreds = deprecated.PullCreds
 	}
-	return nil
-}
 
-// SCGOpCallPkg deprecated
-type SCGOpCallPkg struct {
-	// will be interpolated
-	Ref       string        `yaml:"ref"`
-	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
+	soc.Inputs = deprecated.Inputs
+	soc.Outputs = deprecated.Outputs
+
+	return nil
 }

@@ -16,17 +16,17 @@ type GetEventStreamReq struct {
 	Filter EventFilter
 }
 
-// GetPkgContentReq deprecated
-type GetPkgContentReq struct {
+// GetDataReq deprecated
+type GetDataReq struct {
 	ContentPath string
-	PullCreds   *PullCreds `json:",omitempty"`
+	PullCreds   *PullCreds `json:"pullCreds,omitempty"`
 	PkgRef      string
 }
 
-// ListPkgContentsReq deprecated
-type ListPkgContentsReq struct {
-	PullCreds *PullCreds `json:",omitempty"`
-	PkgRef    string
+// ListDescendantsReq deprecated
+type ListDescendantsReq struct {
+	PullCreds *PullCreds `json:"pullCreds,omitempty"`
+	PkgRef    string     `json:pkgRef`
 }
 
 type KillOpReq struct {
@@ -35,14 +35,14 @@ type KillOpReq struct {
 
 type StartOpReq struct {
 	// map of args keyed by input name
-	Args map[string]*Value
+	Args map[string]*Value `json:"args,omitempty"`
 	// Op details the op to start
-	Op StartOpReqOp
+	Op StartOpReqOp `json:"op,omitempty"`
 }
 
 type StartOpReqOp struct {
 	Ref       string
-	PullCreds *PullCreds `json:",omitempty"`
+	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface to handle deprecated properties gracefully in one place
@@ -51,9 +51,9 @@ func (sor *StartOpReq) UnmarshalJSON(
 ) error {
 	// handle deprecated property
 	deprecated := struct {
-		Args map[string]*Value
-		Op   *StartOpReqOp `json:",omitempty"`
-		Pkg  *StartOpReqOp `json:",omitempty"`
+		Args map[string]*Value `json:"args,omitempty"`
+		Op   *StartOpReqOp     `json:"op,omitempty"`
+		Pkg  *StartOpReqOp     `json:"pkg,omitempty"`
 	}{}
 	if err := json.Unmarshal(b, &deprecated); nil != err {
 		return err

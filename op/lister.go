@@ -15,7 +15,7 @@ type Lister interface {
 	List(
 		ctx context.Context,
 		dirHandle model.DataHandle,
-	) ([]*model.PkgManifest, error)
+	) ([]*model.OpDotYml, error)
 }
 
 // NewLister returns an initialized Lister instance
@@ -34,14 +34,14 @@ type _lister struct {
 func (ls _lister) List(
 	ctx context.Context,
 	dirHandle model.DataHandle,
-) ([]*model.PkgManifest, error) {
+) ([]*model.OpDotYml, error) {
 
-	contents, err := dirHandle.ListContents(ctx)
+	contents, err := dirHandle.ListDescendants(ctx)
 	if nil != err {
 		return nil, err
 	}
 
-	var ops []*model.PkgManifest
+	var ops []*model.OpDotYml
 	for _, content := range contents {
 		if path.Base(content.Path) == dotyml.FileName {
 

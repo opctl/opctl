@@ -9,25 +9,25 @@ import (
 )
 
 type FakeGetter struct {
-	GetStub        func(ctx context.Context, opHandle model.DataHandle) (*model.PkgManifest, error)
+	GetStub        func(ctx context.Context, opHandle model.DataHandle) (*model.OpDotYml, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		ctx      context.Context
 		opHandle model.DataHandle
 	}
 	getReturns struct {
-		result1 *model.PkgManifest
+		result1 *model.OpDotYml
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 *model.PkgManifest
+		result1 *model.OpDotYml
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeGetter) Get(ctx context.Context, opHandle model.DataHandle) (*model.PkgManifest, error) {
+func (fake *FakeGetter) Get(ctx context.Context, opHandle model.DataHandle) (*model.OpDotYml, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -57,24 +57,24 @@ func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, model.DataHandle
 	return fake.getArgsForCall[i].ctx, fake.getArgsForCall[i].opHandle
 }
 
-func (fake *FakeGetter) GetReturns(result1 *model.PkgManifest, result2 error) {
+func (fake *FakeGetter) GetReturns(result1 *model.OpDotYml, result2 error) {
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 *model.PkgManifest
+		result1 *model.OpDotYml
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *model.PkgManifest, result2 error) {
+func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *model.OpDotYml, result2 error) {
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *model.PkgManifest
+			result1 *model.OpDotYml
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 *model.PkgManifest
+		result1 *model.OpDotYml
 		result2 error
 	}{result1, result2}
 }

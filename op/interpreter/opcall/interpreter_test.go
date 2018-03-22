@@ -330,14 +330,14 @@ var _ = Context("Interpreter", func() {
 				fakeData := new(data.Fake)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
 				expectedErr := errors.New("dummyError")
 				// err to trigger immediate return
-				fakeDotYmlGetter.GetReturns(nil, expectedErr)
+				fakeOpDotYmlGetter.GetReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
 					data:                fakeData,
-					dotYmlGetter:        fakeDotYmlGetter,
+					opOpDotYmlGetter:    fakeOpDotYmlGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -352,7 +352,7 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualCtx,
-					actualHandle := fakeDotYmlGetter.GetArgsForCall(0)
+					actualHandle := fakeOpDotYmlGetter.GetArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(context.TODO()))
 				Expect(actualHandle).To(Equal(fakeDataHandle))
@@ -364,12 +364,12 @@ var _ = Context("Interpreter", func() {
 					providedParentOpHandle.PathReturns(new(string))
 
 					expectedErr := errors.New("dummyError")
-					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(nil, expectedErr)
+					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+					fakeOpDotYmlGetter.GetReturns(nil, expectedErr)
 
 					objectUnderTest := _interpreter{
 						data:                new(data.Fake),
-						dotYmlGetter:        fakeDotYmlGetter,
+						opOpDotYmlGetter:    fakeOpDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -417,11 +417,11 @@ var _ = Context("Interpreter", func() {
 						"dummyParam1Name": {String: &model.StringParam{}},
 					}
 
-					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					returnedManifest := &model.PkgManifest{
+					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+					returnedManifest := &model.OpDotYml{
 						Inputs: expectedInputParams,
 					}
-					fakeDotYmlGetter.GetReturns(returnedManifest, nil)
+					fakeOpDotYmlGetter.GetReturns(returnedManifest, nil)
 
 					fakeInputsInterpreter := new(inputs.FakeInterpreter)
 
@@ -430,7 +430,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest := _interpreter{
 						dcgScratchDir:       dcgScratchDir,
 						data:                fakeData,
-						dotYmlGetter:        fakeDotYmlGetter,
+						opOpDotYmlGetter:    fakeOpDotYmlGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 						inputsInterpreter:   fakeInputsInterpreter,
 					}

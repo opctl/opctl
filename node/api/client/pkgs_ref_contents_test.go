@@ -14,13 +14,13 @@ import (
 	"strings"
 )
 
-var _ = Context("ListPkgContents", func() {
+var _ = Context("ListDescendants", func() {
 
 	It("should call httpClient.Do() w/ expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.ListPkgContentsReq{
+		providedReq := model.ListDescendantsReq{
 			PkgRef: "dummyOpRef",
 			PullCreds: &model.PullCreds{
 				Username: "dummyUsername",
@@ -57,7 +57,7 @@ var _ = Context("ListPkgContents", func() {
 		}
 
 		/* act */
-		objectUnderTest.ListPkgContents(providedCtx, providedReq)
+		objectUnderTest.ListDescendants(providedCtx, providedReq)
 
 		/* assert */
 		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
@@ -86,13 +86,13 @@ var _ = Context("ListPkgContents", func() {
 			}
 
 			/* act */
-			actualContentsList, actualErr := objectUnderTest.ListPkgContents(
+			actualContentsList, actualErr := objectUnderTest.ListDescendants(
 				context.TODO(),
-				model.ListPkgContentsReq{},
+				model.ListDescendantsReq{},
 			)
 
 			/* assert */
-			Expect(actualContentsList).To(Equal([]*model.PkgContent{}))
+			Expect(actualContentsList).To(Equal([]*model.DataNode{}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -115,9 +115,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -142,9 +142,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -170,9 +170,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -199,9 +199,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */

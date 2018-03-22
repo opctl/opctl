@@ -15,13 +15,13 @@ import (
 	"strings"
 )
 
-var _ = Context("GetPkgContent", func() {
+var _ = Context("GetData", func() {
 
 	It("should call httpClient.Do() with expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.GetPkgContentReq{
+		providedReq := model.GetDataReq{
 			ContentPath: "dummy/content/path",
 			PkgRef:      "dummyOpRef",
 			PullCreds: &model.PullCreds{
@@ -64,7 +64,7 @@ var _ = Context("GetPkgContent", func() {
 		}
 
 		/* act */
-		objectUnderTest.GetPkgContent(providedCtx, providedReq)
+		objectUnderTest.GetData(providedCtx, providedReq)
 
 		/* assert */
 		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
@@ -96,9 +96,9 @@ var _ = Context("GetPkgContent", func() {
 			}
 
 			/* act */
-			actualReadSeekCloser, actualErr := objectUnderTest.GetPkgContent(
+			actualReadSeekCloser, actualErr := objectUnderTest.GetData(
 				context.TODO(),
-				model.GetPkgContentReq{},
+				model.GetDataReq{},
 			)
 
 			/* assert */
@@ -125,9 +125,9 @@ var _ = Context("GetPkgContent", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetPkgContent(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetPkgContentReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
@@ -152,9 +152,9 @@ var _ = Context("GetPkgContent", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetPkgContent(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetPkgContentReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
@@ -180,9 +180,9 @@ var _ = Context("GetPkgContent", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetPkgContent(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetPkgContentReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */
@@ -209,9 +209,9 @@ var _ = Context("GetPkgContent", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.GetPkgContent(
+				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetPkgContentReq{},
+					model.GetDataReq{},
 				)
 
 				/* assert */

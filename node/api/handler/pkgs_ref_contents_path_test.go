@@ -221,7 +221,7 @@ var _ = Context("GET /pkgs/{ref}/contents/{path}", func() {
 			})
 		})
 	})
-	Context("core.GetPkgContent doesn't err", func() {
+	Context("core.GetData doesn't err", func() {
 		It("should call handle.GetContent w/ expected args", func() {
 			/* arrange */
 			providedContentPath := "dummyOpRef%2F"

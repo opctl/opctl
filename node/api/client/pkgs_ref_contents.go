@@ -13,11 +13,11 @@ import (
 	"strings"
 )
 
-func (c client) ListPkgContents(
+func (c client) ListDescendants(
 	ctx context.Context,
-	req model.ListPkgContentsReq,
+	req model.ListDescendantsReq,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
 
@@ -69,7 +69,7 @@ func (c client) ListPkgContents(
 		}
 	}
 
-	var contentList []*model.PkgContent
+	var contentList []*model.DataNode
 	return contentList, json.NewDecoder(httpResp.Body).Decode(&contentList)
 
 }

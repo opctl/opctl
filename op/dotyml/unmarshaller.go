@@ -15,7 +15,7 @@ type Unmarshaller interface {
 	// Unmarshal validates and unmarshals an "op.yml" file
 	Unmarshal(
 		manifestBytes []byte,
-	) (*model.PkgManifest, error)
+	) (*model.OpDotYml, error)
 }
 
 // NewUnmarshaller returns an initialized Unmarshaller instance
@@ -31,7 +31,7 @@ type _unmarshaller struct {
 
 func (uml _unmarshaller) Unmarshal(
 	manifestBytes []byte,
-) (*model.PkgManifest, error) {
+) (*model.OpDotYml, error) {
 
 	var err error
 
@@ -55,12 +55,12 @@ func (uml _unmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	pkgManifest := model.PkgManifest{}
+	opDotYml := model.OpDotYml{}
 
 	manifestJSONBytes, err := yaml.YAMLToJSON([]byte(manifestBytes))
 	if nil != err {
 		return nil, err
 	}
-	return &pkgManifest, json.Unmarshal(manifestJSONBytes, &pkgManifest)
+	return &opDotYml, json.Unmarshal(manifestJSONBytes, &opDotYml)
 
 }

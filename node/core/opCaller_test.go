@@ -321,7 +321,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -385,7 +385,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 					eventChannel := make(chan model.Event)
@@ -441,7 +441,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -591,7 +591,7 @@ var _ = Context("opCaller", func() {
 						)
 
 						fakeDotYmlGetter := new(dotyml.FakeGetter)
-						fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+						fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})

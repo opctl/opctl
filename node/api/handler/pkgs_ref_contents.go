@@ -49,7 +49,7 @@ func (hdlr _handler) pkgs_ref_contents(
 		return
 	}
 
-	pkgContentsList, err := opHandle.ListContents(
+	dataNodesList, err := opHandle.ListDescendants(
 		httpReq.Context(),
 	)
 	if nil != err {
@@ -59,7 +59,7 @@ func (hdlr _handler) pkgs_ref_contents(
 
 	httpResp.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	if err := hdlr.json.NewEncoder(httpResp).Encode(pkgContentsList); nil != err {
+	if err := hdlr.json.NewEncoder(httpResp).Encode(dataNodesList); nil != err {
 		http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 		return
 	}
