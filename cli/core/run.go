@@ -66,7 +66,7 @@ func (this _core) Run(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
-			Pkg: &model.DCGOpCallPkg{
+			Op: model.StartOpReqOp{
 				Ref: opHandle.Ref(),
 			},
 		},

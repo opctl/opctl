@@ -36,11 +36,23 @@ type CliColorer interface {
 }
 
 func New() CliColorer {
+	attentionCliColorer := color.New(color.FgHiYellow, color.Bold)
+	attentionCliColorer.EnableColor()
+
+	errorCliColorer := color.New(color.FgHiRed, color.Bold)
+	errorCliColorer.EnableColor()
+
+	infoCliColorer := color.New(color.FgHiCyan, color.Bold)
+	infoCliColorer.EnableColor()
+
+	successCliColorer := color.New(color.FgHiGreen, color.Bold)
+	successCliColorer.EnableColor()
+
 	return &cliColorer{
-		attentionCliColorer: color.New(color.FgHiYellow, color.Bold),
-		errorCliColorer:     color.New(color.FgHiRed, color.Bold),
-		infoCliColorer:      color.New(color.FgHiCyan, color.Bold),
-		successCliColorer:   color.New(color.FgHiGreen, color.Bold),
+		attentionCliColorer: attentionCliColorer,
+		errorCliColorer:     errorCliColorer,
+		infoCliColorer:      infoCliColorer,
+		successCliColorer:   successCliColorer,
 	}
 }
 
@@ -51,7 +63,7 @@ type cliColorer struct {
 	successCliColorer   *color.Color
 }
 
-func (this cliColorer) Disable() {
+func (this *cliColorer) Disable() {
 	this.attentionCliColorer.DisableColor()
 	this.errorCliColorer.DisableColor()
 	this.infoCliColorer.DisableColor()

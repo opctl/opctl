@@ -584,7 +584,7 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				expectedDCGContainerCallImage := &model.DCGContainerCallImage{
 					Ref: "dummyImageRef",
-					PullCreds: &model.DCGPullCreds{
+					PullCreds: &model.PullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},

@@ -14,7 +14,7 @@ type Getter interface {
 		ctx context.Context,
 		opHandle model.DataHandle,
 	) (
-		*model.PkgManifest,
+		*model.OpDotYml,
 		error,
 	)
 }
@@ -35,7 +35,7 @@ func (gtr _getter) Get(
 	ctx context.Context,
 	opHandle model.DataHandle,
 ) (
-	*model.PkgManifest,
+	*model.OpDotYml,
 	error,
 ) {
 	manifestReader, err := opHandle.GetContent(ctx, FileName)

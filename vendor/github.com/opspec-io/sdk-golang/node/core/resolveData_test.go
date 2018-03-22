@@ -41,11 +41,11 @@ var _ = Context("core", func() {
 
 			/* assert */
 			actualCtx,
-				actualPkgRef,
+				actualOpRef,
 				actualPkgProviders := fakeData.ResolveArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualPkgRef).To(Equal(providedOpRef))
+			Expect(actualOpRef).To(Equal(providedOpRef))
 			Expect(actualPkgProviders).To(ConsistOf(expectedPkgProviders))
 		})
 	})

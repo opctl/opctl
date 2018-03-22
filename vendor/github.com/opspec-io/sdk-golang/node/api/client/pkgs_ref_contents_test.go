@@ -14,13 +14,13 @@ import (
 	"strings"
 )
 
-var _ = Context("ListPkgContents", func() {
+var _ = Context("ListDescendants", func() {
 
 	It("should call httpClient.Do() w/ expected args & return result", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.ListPkgContentsReq{
+		providedReq := model.ListDescendantsReq{
 			PkgRef: "dummyOpRef",
 			PullCreds: &model.PullCreds{
 				Username: "dummyUsername",
@@ -28,17 +28,17 @@ var _ = Context("ListPkgContents", func() {
 			},
 		}
 
-		expectedReqUrl := url.URL{}
+		expectedReqURL := url.URL{}
 		path := strings.Replace(api.URLPkgs_Ref_Contents, "{ref}", url.PathEscape(providedReq.PkgRef), 1)
-		expectedReqUrl.Path = path
+		expectedReqURL.Path = path
 
-		expectedHttpReq, _ := http.NewRequest(
+		expectedHTTPReq, _ := http.NewRequest(
 			"GET",
-			expectedReqUrl.String(),
+			expectedReqURL.String(),
 			nil,
 		)
 
-		expectedHttpReq.SetBasicAuth(
+		expectedHTTPReq.SetBasicAuth(
 			providedReq.PullCreds.Username,
 			providedReq.PullCreds.Password,
 		)
@@ -57,15 +57,15 @@ var _ = Context("ListPkgContents", func() {
 		}
 
 		/* act */
-		objectUnderTest.ListPkgContents(providedCtx, providedReq)
+		objectUnderTest.ListDescendants(providedCtx, providedReq)
 
 		/* assert */
-		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
 
-		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
-		Expect(actualHttpReq.Body).To(BeNil())
-		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
-		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+		Expect(actualHTTPReq.Body).To(BeNil())
+		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
 	})
 	Context("StatusCode < 400", func() {
@@ -86,13 +86,13 @@ var _ = Context("ListPkgContents", func() {
 			}
 
 			/* act */
-			actualContentsList, actualErr := objectUnderTest.ListPkgContents(
+			actualContentsList, actualErr := objectUnderTest.ListDescendants(
 				context.TODO(),
-				model.ListPkgContentsReq{},
+				model.ListDescendantsReq{},
 			)
 
 			/* assert */
-			Expect(actualContentsList).To(Equal([]*model.PkgContent{}))
+			Expect(actualContentsList).To(Equal([]*model.DataNode{}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -115,9 +115,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -142,9 +142,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -170,9 +170,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */
@@ -199,9 +199,9 @@ var _ = Context("ListPkgContents", func() {
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.ListPkgContents(
+				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListPkgContentsReq{},
+					model.ListDescendantsReq{},
 				)
 
 				/* assert */

@@ -13,9 +13,9 @@ import (
 	"strings"
 )
 
-func (c client) GetPkgContent(
+func (c client) GetData(
 	ctx context.Context,
-	req model.GetPkgContentReq,
+	req model.GetDataReq,
 ) (
 	model.ReadSeekCloser,
 	error,

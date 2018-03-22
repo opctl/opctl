@@ -36,20 +36,20 @@ func (lh fsHandle) GetContent(
 	return lh.os.Open(filepath.Join(lh.path, contentPath))
 }
 
-func (lh fsHandle) ListContents(
+func (lh fsHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
-	return lh.rListContents(lh.path)
+	return lh.rListDescendants(lh.path)
 }
 
-// rListContents recursively lists pkg contents at path
-func (lh fsHandle) rListContents(
+// rListDescendants recursively lists descendants of the current data node
+func (lh fsHandle) rListDescendants(
 	path string,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
 	childFileInfos, err := lh.ioUtil.ReadDir(path)
@@ -57,14 +57,14 @@ func (lh fsHandle) rListContents(
 		return nil, err
 	}
 
-	var contents []*model.PkgContent
+	var contents []*model.DataNode
 	for _, contentFileInfo := range childFileInfos {
 
 		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
 		if contentFileInfo.IsDir() {
 			// recurse into child dirs
-			childContents, err := lh.rListContents(absContentPath)
+			childContents, err := lh.rListDescendants(absContentPath)
 			if nil != err {
 				return nil, err
 			}
@@ -77,7 +77,7 @@ func (lh fsHandle) rListContents(
 		}
 		contents = append(
 			contents,
-			&model.PkgContent{
+			&model.DataNode{
 				Mode: contentFileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
 				Size: contentFileInfo.Size(),

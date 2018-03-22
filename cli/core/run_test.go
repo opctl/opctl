@@ -23,7 +23,7 @@ var _ = Context("Run", func() {
 	Context("Execute", func() {
 		It("should call dataResolver.Resolve w/ expected args", func() {
 			/* arrange */
-			providedPkgRef := "dummyPkgRef"
+			providedOpRef := "dummyOpRef"
 
 			fakeOpDotYmlGetter := new(dotyml.FakeGetter)
 			// err to trigger immediate return
@@ -41,14 +41,14 @@ var _ = Context("Run", func() {
 			}
 
 			/* act */
-			objectUnderTest.Run(context.TODO(), providedPkgRef, &RunOpts{})
+			objectUnderTest.Run(context.TODO(), providedOpRef, &RunOpts{})
 
 			/* assert */
-			actualPkgRef, actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
-			Expect(actualPkgRef).To(Equal(providedPkgRef))
+			actualOpRef, actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
+			Expect(actualOpRef).To(Equal(providedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
-		It("should call pkg.Get w/ expected args", func() {
+		It("should call data.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
@@ -84,7 +84,7 @@ var _ = Context("Run", func() {
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualOpHandle).To(Equal(fakeOpHandle))
 		})
-		Context("pkg.Get errors", func() {
+		Context("data.Get errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
 				getManifestErr := errors.New("dummyError")
@@ -114,11 +114,11 @@ var _ = Context("Run", func() {
 					To(Equal(cliexiter.ExitReq{Message: getManifestErr.Error(), Code: 1}))
 			})
 		})
-		Context("pkg.Get doesn't error", func() {
+		Context("data.Get doesn't error", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"
-				opDotYml := &model.PkgManifest{
+				opDotYml := &model.OpDotYml{
 					Inputs: map[string]*model.Param{
 						param1Name: {
 							String: &model.StringParam{},
@@ -163,7 +163,7 @@ var _ = Context("Run", func() {
 			})
 			It("should call opspecNodeAPIClient.StartOp w/ expected args", func() {
 				/* arrange */
-				resolvedPkgRef := "dummyPkgRef"
+				resolvedOpRef := "dummyOpRef"
 
 				providedContext := context.TODO()
 				expectedCtx := providedContext
@@ -173,16 +173,16 @@ var _ = Context("Run", func() {
 					Args: map[string]*model.Value{
 						"dummyArg1Name": {String: &expectedArg1ValueString},
 					},
-					Pkg: &model.DCGOpCallPkg{
-						Ref: resolvedPkgRef,
+					Op: model.StartOpReqOp{
+						Ref: resolvedOpRef,
 					},
 				}
 
 				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-				fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+				fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 				fakeOpHandle := new(data.FakeHandle)
-				fakeOpHandle.RefReturns(resolvedPkgRef)
+				fakeOpHandle.RefReturns(resolvedOpRef)
 
 				fakeDataResolver := new(fakeDataResolver)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
@@ -221,7 +221,7 @@ var _ = Context("Run", func() {
 					returnedError := errors.New("dummyError")
 
 					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(fakeDataResolver)
@@ -261,7 +261,7 @@ var _ = Context("Run", func() {
 					}
 
 					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(fakeDataResolver)
@@ -303,7 +303,7 @@ var _ = Context("Run", func() {
 						returnedError := errors.New("dummyError")
 
 						fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-						fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+						fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 						fakeOpHandle := new(data.FakeHandle)
 						fakeDataResolver := new(fakeDataResolver)
@@ -337,7 +337,7 @@ var _ = Context("Run", func() {
 							fakeCliExiter := new(cliexiter.Fake)
 
 							fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-							fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+							fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 							fakeOpHandle := new(data.FakeHandle)
 							fakeDataResolver := new(fakeDataResolver)
@@ -377,7 +377,7 @@ var _ = Context("Run", func() {
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
 												OpID:     rootOpID,
-												PkgRef:   "dummyPkgRef",
+												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeSucceeded,
 												RootOpID: rootOpID,
 											},
@@ -386,7 +386,7 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
@@ -424,7 +424,7 @@ var _ = Context("Run", func() {
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
 												OpID:     rootOpID,
-												PkgRef:   "dummyPkgRef",
+												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeKilled,
 												RootOpID: rootOpID,
 											},
@@ -433,7 +433,7 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
@@ -472,7 +472,7 @@ var _ = Context("Run", func() {
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
 												OpID:     rootOpID,
-												PkgRef:   "dummyPkgRef",
+												OpRef:    "dummyOpRef",
 												Outcome:  model.OpOutcomeFailed,
 												RootOpID: rootOpID,
 											},
@@ -481,7 +481,7 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
@@ -519,7 +519,7 @@ var _ = Context("Run", func() {
 											Timestamp: time.Now(),
 											OpEnded: &model.OpEndedEvent{
 												OpID:     rootOpID,
-												PkgRef:   "dummyPkgRef",
+												OpRef:    "dummyOpRef",
 												Outcome:  "some unexpected outcome",
 												RootOpID: rootOpID,
 											},
@@ -528,7 +528,7 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)

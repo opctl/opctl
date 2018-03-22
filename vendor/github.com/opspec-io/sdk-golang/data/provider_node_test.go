@@ -11,7 +11,7 @@ import (
 
 var _ = Context("fsProvider", func() {
 	Context("TryResolve", func() {
-		It("should call nodeClient.ListPkgContents w/ expected args", func() {
+		It("should call nodeClient.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedDataRef := "dummyDataRef"
 
@@ -35,21 +35,21 @@ var _ = Context("fsProvider", func() {
 
 			/* assert */
 			actualContext,
-				actualReq := fakeNodeClient.ListPkgContentsArgsForCall(0)
+				actualReq := fakeNodeClient.ListDescendantsArgsForCall(0)
 
 			Expect(actualContext).To(Equal(context.TODO()))
-			Expect(actualReq).To(Equal(model.ListPkgContentsReq{
+			Expect(actualReq).To(Equal(model.ListDescendantsReq{
 				PkgRef:    providedDataRef,
 				PullCreds: providedPullCreds,
 			}))
 		})
-		Context("nodeClient.ListPkgContentd errs", func() {
+		Context("nodeClient.ListDataNoded errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				fakeNodeClient := new(client.Fake)
 
-				listPkgContentsErr := errors.New("dummyError")
-				fakeNodeClient.ListPkgContentsReturns(nil, listPkgContentsErr)
+				listDataNodesErr := errors.New("dummyError")
+				fakeNodeClient.ListDescendantsReturns(nil, listDataNodesErr)
 
 				objectUnderTest := nodeProvider{
 					nodeClient: fakeNodeClient,
@@ -62,10 +62,10 @@ var _ = Context("fsProvider", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(listPkgContentsErr))
+				Expect(actualErr).To(Equal(listDataNodesErr))
 			})
 		})
-		Context("nodeClient.ListPkgContents doesn't err", func() {
+		Context("nodeClient.ListDescendants doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"

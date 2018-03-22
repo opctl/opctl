@@ -160,51 +160,47 @@ func TestPublicKeyExtraction(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	id, err := IDFromEd25519PublicKey(originalPub)
+	id, err := IDFromPublicKey(originalPub)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	extractedPub := id.ExtractPublicKey()
-	if !originalPub.Equals(extractedPub) {
+	extractedPub, err := id.ExtractPublicKey()
+	if err != nil {
 		t.Fatal(err)
+	}
+	if extractedPub == nil {
+		t.Fatal("failed to extract public key")
+	}
+	if !originalPub.Equals(extractedPub) {
+		t.Fatal("extracted public key doesn't match")
 	}
 
 	// Test invalid multihash (invariant of the type of public key)
-	if ID("").ExtractPublicKey() != nil {
-		t.Fatal("Expecting a nil public key")
+	pk, err := ID("").ExtractPublicKey()
+	if err == nil {
+		t.Fatal("expected an error")
 	}
-}
+	if pk != nil {
+		t.Fatal("expected a nil public key")
+	}
 
-func TestEd25519PublicKeyExtraction(t *testing.T) {
-	randomKey := make([]byte, 32)
-	_, err := rand.Read(randomKey)
+	// Shouldn't work for, e.g. RSA keys (too large)
+
+	_, rsaPub, err := ic.GenerateKeyPair(ic.RSA, 2048)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	// Error case 1: Invalid multihash
-	_, err = ID("").ExtractEd25519PublicKey()
-	if err != MultihashDecodeErr {
-		t.Fatal("Error case 1: Expected an error")
+	rsaId, err := IDFromPublicKey(rsaPub)
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Error case 2: Non-ID multihash
-	_, err = ID(append([]byte{0x01 /* != 0x00 (id) */, 0x22, 0xed, 0x01}, randomKey...)).ExtractEd25519PublicKey()
-	if err != MultihashCodecErr {
-		t.Fatal("Error case 2: Expecting an error")
+	extractedRsaPub, err := rsaId.ExtractPublicKey()
+	if err != nil {
+		t.Fatal(err)
 	}
-
-	// Error case 3: Non-34 multihash length
-	_, err = ID(append([]byte{0x00, 0x23 /* 35 = 34 + 1 != 35 */, 0xed, 0x01, 0x00 /* extra byte */}, randomKey...)).ExtractEd25519PublicKey()
-	if err != MultihashLengthErr {
-		t.Fatal("Error case 3: Expecting an error")
-	}
-
-	// Error case 4: Non-ed25519 code
-	_, err = ID(append([]byte{0x00, 0x22, 0xef /* != 0xed */, 0x01}, randomKey...)).ExtractEd25519PublicKey()
-	if err != CodePrefixErr {
-		t.Fatal("Error case 4: Expecting an error")
+	if extractedRsaPub != nil {
+		t.Fatal("expected to fail to extract public key from rsa ID")
 	}
 }
 

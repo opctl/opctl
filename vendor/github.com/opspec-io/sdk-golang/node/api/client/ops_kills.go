@@ -20,12 +20,12 @@ func (c client) KillOp(
 		return err
 	}
 
-	reqUrl := c.baseUrl
-	reqUrl.Path = path.Join(reqUrl.Path, api.URLOps_Kills)
+	reqURL := c.baseUrl
+	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Kills)
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		reqUrl.String(),
+		reqURL.String(),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {

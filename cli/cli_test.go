@@ -52,7 +52,7 @@ var _ = Context("cli", func() {
 					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 					/* act */
-					objectUnderTest.Run([]string{"opctl", "ls", "-c", expectedDirRef})
+					objectUnderTest.Run([]string{"opctl", "ls", expectedDirRef})
 
 					/* assert */
 					actualCtx,
@@ -62,7 +62,7 @@ var _ = Context("cli", func() {
 					Expect(actualDirRef).To(Equal(expectedDirRef))
 				})
 			})
-			Context("w/out path", func() {
+			Context("w/out dirRef", func() {
 
 				It("should call core.Ls w/ expected args", func() {
 					/* arrange */

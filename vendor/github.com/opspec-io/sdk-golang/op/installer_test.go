@@ -21,7 +21,7 @@ var _ = Context("Installer", func() {
 		})
 	})
 	Context("Install", func() {
-		It("should call handle.ListContents w/ expected args", func() {
+		It("should call handle.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
@@ -35,15 +35,15 @@ var _ = Context("Installer", func() {
 			objectUnderTest.Install(providedCtx, "", fakeHandle)
 
 			/* assert */
-			Expect(fakeHandle.ListContentsArgsForCall(0)).To(Equal(providedCtx))
+			Expect(fakeHandle.ListDescendantsArgsForCall(0)).To(Equal(providedCtx))
 		})
-		Context("handle.ListContents errs", func() {
+		Context("handle.ListDescendants errs", func() {
 			It("should return error", func() {
 				/* arrange */
 				expectedError := errors.New("dummyError")
 
 				fakeHandle := new(data.FakeHandle)
-				fakeHandle.ListContentsReturns(nil, expectedError)
+				fakeHandle.ListDescendantsReturns(nil, expectedError)
 
 				objectUnderTest := _installer{
 					os: new(ios.Fake),
@@ -56,19 +56,19 @@ var _ = Context("Installer", func() {
 				Expect(actualError).To(Equal(expectedError))
 			})
 		})
-		Context("handle.ListContents doesn't err", func() {
+		Context("handle.ListDescendants doesn't err", func() {
 			It("should call handle.GetContent w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.TODO()
 
 				fakeHandle := new(data.FakeHandle)
-				contentsList := []*model.PkgContent{
+				contentsList := []*model.DataNode{
 					{
-						Path: "pkgContent1Path",
+						Path: "dataNode1Path",
 					},
 				}
 
-				fakeHandle.ListContentsReturns(
+				fakeHandle.ListDescendantsReturns(
 					contentsList,
 					nil,
 				)
@@ -96,7 +96,7 @@ var _ = Context("Installer", func() {
 					expectedError := errors.New("dummyError")
 
 					fakeHandle := new(data.FakeHandle)
-					fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, expectedError)
+					fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, expectedError)
 
 					fakeHandle.GetContentReturns(nil, expectedError)
 
@@ -119,14 +119,14 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.PkgContent{
+						contentsList := []*model.DataNode{
 							{
-								Path: "pkgContent1Path",
+								Path: "dataNode1Path",
 								Mode: os.ModeDir,
 							},
 						}
 
-						fakeHandle.ListContentsReturns(
+						fakeHandle.ListDescendantsReturns(
 							contentsList,
 							nil,
 						)
@@ -157,7 +157,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListContentsReturns([]*model.PkgContent{{Mode: os.ModeDir}}, nil)
+							fakeHandle.ListDescendantsReturns([]*model.DataNode{{Mode: os.ModeDir}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -181,13 +181,13 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.PkgContent{
+						contentsList := []*model.DataNode{
 							{
-								Path: "pkgContent1Path",
+								Path: "dataNode1Path",
 							},
 						}
 
-						fakeHandle.ListContentsReturns(
+						fakeHandle.ListDescendantsReturns(
 							contentsList,
 							nil,
 						)
@@ -220,7 +220,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+							fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -242,13 +242,13 @@ var _ = Context("Installer", func() {
 							providedPath := "dummyPath"
 
 							fakeHandle := new(data.FakeHandle)
-							contentsList := []*model.PkgContent{
+							contentsList := []*model.DataNode{
 								{
-									Path: "pkgContent1Path",
+									Path: "dataNode1Path",
 								},
 							}
 
-							fakeHandle.ListContentsReturns(
+							fakeHandle.ListDescendantsReturns(
 								contentsList,
 								nil,
 							)
@@ -275,7 +275,7 @@ var _ = Context("Installer", func() {
 								expectedError := errors.New("dummyError")
 
 								fakeHandle := new(data.FakeHandle)
-								fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+								fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(nil, expectedError)
@@ -297,14 +297,14 @@ var _ = Context("Installer", func() {
 								providedPath := "dummyPath"
 
 								fakeHandle := new(data.FakeHandle)
-								contentsList := []*model.PkgContent{
+								contentsList := []*model.DataNode{
 									{
 										Mode: os.FileMode(0777),
-										Path: "pkgContent1Path",
+										Path: "dataNode1Path",
 									},
 								}
 
-								fakeHandle.ListContentsReturns(
+								fakeHandle.ListDescendantsReturns(
 									contentsList,
 									nil,
 								)
@@ -334,7 +334,7 @@ var _ = Context("Installer", func() {
 									expectedError := errors.New("dummyError")
 
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 									fakeOS := new(ios.Fake)
 									fakeOS.ChmodReturns(expectedError)
@@ -354,7 +354,7 @@ var _ = Context("Installer", func() {
 								It("should copy content", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 									// create tmpfile to use as src
 									contentSrc, err := ioutil.TempFile("", "")
@@ -401,7 +401,7 @@ var _ = Context("Installer", func() {
 								It("shouldn't err", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListContentsReturns([]*model.PkgContent{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
 
 									// create tmpfile to use as src
 									file, err := ioutil.TempFile("", "")

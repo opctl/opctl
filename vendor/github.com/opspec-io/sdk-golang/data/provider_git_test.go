@@ -35,10 +35,10 @@ var _ = Context("gitProvider", func() {
 
 				/* assert */
 				actualCtx,
-					actualPkgRef := fakeLocalFSProvider.TryResolveArgsForCall(0)
+					actualDataRef := fakeLocalFSProvider.TryResolveArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(providedCtx))
-				Expect(actualPkgRef).To(Equal(providedDataRef))
+				Expect(actualDataRef).To(Equal(providedDataRef))
 			})
 			Context("localFSProvider.TryResolve errors", func() {
 				It("should return err", func() {
@@ -116,11 +116,11 @@ var _ = Context("gitProvider", func() {
 						/* assert */
 						actualCtx,
 							actualBasePath,
-							actualPkgRef,
+							actualDataRef,
 							actualPullCreds := fakePuller.PullArgsForCall(0)
 						Expect(actualCtx).To(Equal(providedCtx))
 						Expect(actualBasePath).To(Equal(basePath))
-						Expect(actualPkgRef).To(Equal(providedDataRef))
+						Expect(actualDataRef).To(Equal(providedDataRef))
 						Expect(actualPullCreds).To(Equal(pullCreds))
 					})
 					Context("puller.Pull errors", func() {
@@ -234,14 +234,14 @@ var _ = Context("gitProvider", func() {
 
 				/* assert */
 				actualCtx0,
-					actualPkgRef0 := fakeLocalFSProvider.TryResolveArgsForCall(0)
+					actualDataRef0 := fakeLocalFSProvider.TryResolveArgsForCall(0)
 				Expect(actualCtx0).To(Equal(providedCtx0))
-				Expect(actualPkgRef0).To(Equal(providedDataRef0))
+				Expect(actualDataRef0).To(Equal(providedDataRef0))
 
 				actualCtx1,
-					actualPkgRef1 := fakeLocalFSProvider.TryResolveArgsForCall(1)
+					actualDataRef1 := fakeLocalFSProvider.TryResolveArgsForCall(1)
 				Expect(actualCtx1).To(Equal(providedCtx1))
-				Expect(actualPkgRef1).To(Equal(providedDataRef1))
+				Expect(actualDataRef1).To(Equal(providedDataRef1))
 			})
 		})
 	})

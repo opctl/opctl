@@ -33,7 +33,7 @@ func NewInterpreter(
 		dcgScratchDir:       filepath.Join(rootFSPath, "dcg"),
 		expression:          expression.New(),
 		data:                data.New(),
-		dotYmlGetter:        dotyml.NewGetter(),
+		opOpDotYmlGetter:    dotyml.NewGetter(),
 		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 		inputsInterpreter:   inputs.NewInterpreter(),
@@ -44,7 +44,7 @@ type _interpreter struct {
 	dcgScratchDir       string
 	expression          expression.Expression
 	data                data.Data
-	dotYmlGetter        dotyml.Getter
+	opOpDotYmlGetter    dotyml.Getter
 	dataCachePath       string
 	uniqueStringFactory uniquestring.UniqueStringFactory
 	inputsInterpreter   inputs.Interpreter
@@ -59,7 +59,7 @@ func (itp _interpreter) Interpret(
 ) (*model.DCGOpCall, error) {
 
 	var pkgPullCreds *model.PullCreds
-	if scgPullCreds := scgOpCall.Pkg.PullCreds; nil != scgPullCreds {
+	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
 		evaluatedUsername, err := itp.expression.EvalToString(scope, scgPullCreds.Username, parentOpHandle)
@@ -78,7 +78,7 @@ func (itp _interpreter) Interpret(
 	parentOpDirPath := parentOpHandle.Path()
 	opHandle, err := itp.data.Resolve(
 		context.TODO(),
-		scgOpCall.Pkg.Ref,
+		scgOpCall.Ref,
 		itp.data.NewFSProvider(filepath.Dir(*parentOpDirPath)),
 		itp.data.NewGitProvider(itp.dataCachePath, pkgPullCreds),
 	)
@@ -86,7 +86,7 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	opManifest, err := itp.dotYmlGetter.Get(
+	opDotYml, err := itp.opOpDotYmlGetter.Get(
 		context.TODO(),
 		opHandle,
 	)
@@ -106,12 +106,12 @@ func (itp _interpreter) Interpret(
 		},
 		OpID:         opID,
 		ChildCallID:  childCallID,
-		ChildCallSCG: opManifest.Run,
+		ChildCallSCG: opDotYml.Run,
 	}
 
 	dcgOpCall.Inputs, err = itp.inputsInterpreter.Interpret(
 		scgOpCall.Inputs,
-		opManifest.Inputs,
+		opDotYml.Inputs,
 		parentOpHandle,
 		*opHandle.Path(),
 		scope,

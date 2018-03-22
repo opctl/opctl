@@ -47,19 +47,19 @@ func (cr _creator) Create(
 		return err
 	}
 
-	pkgManifest := model.PkgManifest{
+	opDotYml := model.OpDotYml{
 		Description: pkgDescription,
 		Name:        pkgName,
 	}
 
-	pkgManifestBytes, err := yaml.Marshal(&pkgManifest)
+	opDotYmlBytes, err := yaml.Marshal(&opDotYml)
 	if nil != err {
 		return err
 	}
 
 	return cr.ioUtil.WriteFile(
 		filepath.Join(path, dotyml.FileName),
-		pkgManifestBytes,
+		opDotYmlBytes,
 		0777,
 	)
 

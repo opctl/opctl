@@ -21,15 +21,15 @@ type Client interface {
 		err error,
 	)
 
-	// GetContent gets content from a package
+	// GetData gets data
 	//
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
 	//  - ErrDataRefResolution on resolution failure
-	GetPkgContent(
+	GetData(
 		ctx context.Context,
-		req model.GetPkgContentReq,
+		req model.GetDataReq,
 	) (
 		model.ReadSeekCloser,
 		error,
@@ -42,17 +42,17 @@ type Client interface {
 		err error,
 	)
 
-	// ListContents lists contents of a package
+	// ListDescendants lists file system entries
 	//
 	// expected errs:
 	//  - ErrDataProviderAuthentication on authentication failure
 	//  - ErrDataProviderAuthorization on authorization failure
 	//  - ErrDataRefResolution on resolution failure
-	ListPkgContents(
+	ListDescendants(
 		ctx context.Context,
-		req model.ListPkgContentsReq,
+		req model.ListDescendantsReq,
 	) (
-		[]*model.PkgContent,
+		[]*model.DataNode,
 		error,
 	)
 

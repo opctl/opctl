@@ -2,8 +2,7 @@
 .idea/
 
 ### codecov.io
-coverage.txt
-*.coverprofile
+coverprofile
 
 ### OSX
 .DS_Store

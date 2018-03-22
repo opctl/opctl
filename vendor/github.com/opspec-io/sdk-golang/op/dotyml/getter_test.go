@@ -132,13 +132,13 @@ var _ = Context("pkg", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadAllReturns(bytesFromReadAll, nil)
 
-					expectedPkgManifest := &model.PkgManifest{
+					expectedOpDotYml := &model.OpDotYml{
 						Name: "dummyName",
 					}
 					expectedErr := errors.New("dummyError")
 					FakeUnmarshaller := new(FakeUnmarshaller)
 
-					FakeUnmarshaller.UnmarshalReturns(expectedPkgManifest, expectedErr)
+					FakeUnmarshaller.UnmarshalReturns(expectedOpDotYml, expectedErr)
 
 					objectUnderTest := _getter{
 						ioUtil:       fakeIOUtil,
@@ -146,14 +146,14 @@ var _ = Context("pkg", func() {
 					}
 
 					/* act */
-					actualPkgManifest, actualErr := objectUnderTest.Get(
+					actualOpDotYml, actualErr := objectUnderTest.Get(
 						context.Background(),
 						providedOpHandle,
 					)
 
 					/* assert */
 					Expect(FakeUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(bytesFromReadAll))
-					Expect(actualPkgManifest).To(Equal(expectedPkgManifest))
+					Expect(actualOpDotYml).To(Equal(expectedOpDotYml))
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})

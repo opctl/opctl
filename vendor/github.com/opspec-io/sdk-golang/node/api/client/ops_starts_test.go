@@ -22,24 +22,24 @@ var _ = Context("StartOp", func() {
 		providedCtx := context.TODO()
 		providedReq := model.StartOpReq{
 			Args: map[string]*model.Value{},
-			Pkg: &model.DCGOpCallPkg{
+			Op: model.StartOpReqOp{
 				Ref: "dummyOpRef",
-				PullCreds: &model.DCGPullCreds{
+				PullCreds: &model.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				},
 			},
 		}
 
-		expectedReqUrl := url.URL{}
-		expectedReqUrl.Path = api.URLOps_Starts
+		expectedReqURL := url.URL{}
+		expectedReqURL.Path = api.URLOps_Starts
 
 		expectedReqBytes, _ := json.Marshal(providedReq)
 		expectedResult := "dummyOpID"
 
-		expectedHttpReq, _ := http.NewRequest(
+		expectedHTTPReq, _ := http.NewRequest(
 			"POST",
-			expectedReqUrl.String(),
+			expectedReqURL.String(),
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
@@ -54,12 +54,12 @@ var _ = Context("StartOp", func() {
 		actualResult, _ := objectUnderTest.StartOp(providedCtx, providedReq)
 
 		/* assert */
-		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
 
-		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
-		Expect(actualHttpReq.Body).To(Equal(expectedHttpReq.Body))
-		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
-		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+		Expect(actualHTTPReq.Body).To(Equal(expectedHTTPReq.Body))
+		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
 		Expect(expectedResult).To(Equal(actualResult))
 

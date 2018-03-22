@@ -39,7 +39,7 @@ var _ = Context("fsHandle", func() {
 	if nil != err {
 		panic(err)
 	}
-	Context("ListContents", func() {
+	Context("ListDescendants", func() {
 		It("should call ioutil.ReadDir w/ expected args", func() {
 			/* arrange */
 			providedOpPath := "dummyOpPath"
@@ -55,7 +55,7 @@ var _ = Context("fsHandle", func() {
 			}
 
 			/* act */
-			objectUnderTest.ListContents(nil)
+			objectUnderTest.ListDescendants(nil)
 
 			/* assert */
 			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedOpPath))
@@ -74,7 +74,7 @@ var _ = Context("fsHandle", func() {
 				}
 
 				/* act */
-				_, actualError := objectUnderTest.ListContents(nil)
+				_, actualError := objectUnderTest.ListDescendants(nil)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
@@ -84,7 +84,7 @@ var _ = Context("fsHandle", func() {
 		Context("ioutil.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
-				rootOpPath := filepath.Join(wd, "/testdata/listContents")
+				rootOpPath := filepath.Join(wd, "/testdata/listDescendants")
 
 				dirStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1"))
 				if nil != err {
@@ -96,7 +96,7 @@ var _ = Context("fsHandle", func() {
 					panic(err)
 				}
 
-				expectedContents := []*model.PkgContent{
+				expectedContents := []*model.DataNode{
 					{
 						Mode: fileStat.Mode(),
 						Path: "/dir1/file2.txt",
@@ -120,7 +120,7 @@ var _ = Context("fsHandle", func() {
 				}
 
 				/* act */
-				actualContents, err := objectUnderTest.ListContents(nil)
+				actualContents, err := objectUnderTest.ListDescendants(nil)
 				if nil != err {
 					panic(err)
 				}

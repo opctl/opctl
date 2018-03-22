@@ -100,7 +100,7 @@
     "digestset",
     "reference"
   ]
-  revision = "607ae5d128a82f280e8c7f453d5fb30c535bda17"
+  revision = "23bef416bdd6dcff90083288c284367cf6af955e"
 
 [[projects]]
   branch = "master"
@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "0c1006f1abc1af7aa6b9847754370d054dfa6c68"
+  revision = "766d9edf39b79e11018bb0f55056b5bd915ddf3c"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -508,7 +508,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-peer"
   packages = ["."]
-  revision = "296ae64e3db4af20e64270faa18e28797643480e"
+  revision = "da74849e053d3a8c1750b2f88a70ad39d357c957"
 
 [[projects]]
   branch = "master"
@@ -669,12 +669,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/multiformats/go-multicodec-packed"
-  packages = ["."]
-  revision = "9004b413b478e5a878e4a879358cce02e5df4995"
-
-[[projects]]
-  branch = "master"
   name = "github.com/multiformats/go-multihash"
   packages = ["."]
   revision = "265e72146e710ff649c6982e3699d01d4e9a18bb"
@@ -744,7 +738,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "a352acb4c16fbf833e1e888e00a8c0ea81e91ac2"
+  revision = "60a1666fc75b1a3441bb2ab342c0c8d12d586ebb"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -896,7 +890,7 @@
   branch = "master"
   name = "github.com/whyrusleeping/go-smux-yamux"
   packages = ["."]
-  revision = "4b90b786fa86d970c5db5a3b61088de8c8c0c14c"
+  revision = "49f324a2b63e778df703cf8e5a502bd56a683ef3"
 
 [[projects]]
   branch = "master"
@@ -914,7 +908,7 @@
   branch = "master"
   name = "github.com/whyrusleeping/yamux"
   packages = ["."]
-  revision = "7e8368b995874cb6ce27e42d3d9115221f4c879e"
+  revision = "63d22127b261bf7014885d25fabe034bed14f04b"
 
 [[projects]]
   branch = "master"
@@ -964,7 +958,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "80db560fac1fb3e6ac81dbc7f8ae4c061f5257bd"
+  revision = "88942b9c40a4c9d203b82b3731787b672d6e809b"
 
 [[projects]]
   branch = "master"
@@ -994,7 +988,7 @@
     "unix",
     "windows"
   ]
-  revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
+  revision = "91ee8cde435411ca3f1cd365e8f20131aed4d0a1"
 
 [[projects]]
   name = "golang.org/x/text"
