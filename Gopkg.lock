@@ -105,7 +105,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "57c504799d979caa706142e6f5dc4be4a5b1e3e2"
+  revision = "2e3056128cc839b5fdee8edeb651f4ecc244db78"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -165,6 +165,12 @@
   name = "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
   packages = ["."]
   revision = "c86b4da0f9b3ee69c524006032c209f986d663b7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang-interfaces/gopkg.in-yaml.v2"
+  packages = ["."]
+  revision = "18ed951e741ba2e449a89a7f460a17835d28746d"
 
 [[projects]]
   branch = "master"
@@ -597,6 +603,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ea1acda3956b3346f147f57f71f982df71c3c3fa203f8eaa7e2273676cdfde81"
+  inputs-digest = "a2626800a6e90c96f909e70b74815d881d07494f674224581e8b0b4727c0be89"
   solver-name = "gps-cdcl"
   solver-version = 1
