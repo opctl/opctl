@@ -31,9 +31,9 @@ func (np nodeProvider) TryResolve(
 ) (model.DataHandle, error) {
 
 	// ensure resolvable by listing contents w/out err
-	if _, err := np.nodeClient.ListPkgContents(
+	if _, err := np.nodeClient.ListDescendants(
 		ctx,
-		model.ListPkgContentsReq{
+		model.ListDescendantsReq{
 			PkgRef:    dataRef,
 			PullCreds: np.pullCreds,
 		},

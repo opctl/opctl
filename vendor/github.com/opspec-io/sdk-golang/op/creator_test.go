@@ -74,7 +74,7 @@ var _ = Context("Creator", func() {
 		providedPkgName := "dummyPkgName"
 		providedPkgDescription := "dummyPkgDescription"
 
-		expectedPkgManifestBytes, err := yaml.Marshal(&model.PkgManifest{
+		expectedOpDotYmlBytes, err := yaml.Marshal(&model.OpDotYml{
 			Description: providedPkgDescription,
 			Name:        providedPkgName,
 		})
@@ -83,7 +83,7 @@ var _ = Context("Creator", func() {
 		}
 
 		expectedPath := filepath.Join(providedPath, dotyml.FileName)
-		expectedData := expectedPkgManifestBytes
+		expectedData := expectedOpDotYmlBytes
 		expectedPerms := os.FileMode(0777)
 
 		fakeIOUtil := new(iioutil.Fake)

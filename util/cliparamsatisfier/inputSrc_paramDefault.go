@@ -35,6 +35,8 @@ func (this paramDefaultInputSrc) ReadString(
 		switch {
 		case nil != inputValue.Array && nil != inputValue.Array.Default:
 			return nil, true
+		case nil != inputValue.Boolean && nil != inputValue.Boolean.Default:
+			return nil, true
 		case nil != inputValue.Dir && nil != inputValue.Dir.Default:
 			if strings.HasPrefix(*inputValue.Dir.Default, "/") {
 				// defaulted to pkg dir

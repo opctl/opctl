@@ -25,9 +25,9 @@ func (nh nodeHandle) GetContent(
 	model.ReadSeekCloser,
 	error,
 ) {
-	return nh.client.GetPkgContent(
+	return nh.client.GetData(
 		ctx,
-		model.GetPkgContentReq{
+		model.GetDataReq{
 			ContentPath: contentPath,
 			PkgRef:      nh.dataRef,
 			PullCreds:   nh.pullCreds,
@@ -42,15 +42,15 @@ type nodeHandle struct {
 	pullCreds *model.PullCreds
 }
 
-func (nh nodeHandle) ListContents(
+func (nh nodeHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.PkgContent,
+	[]*model.DataNode,
 	error,
 ) {
-	return nh.client.ListPkgContents(
+	return nh.client.ListDescendants(
 		ctx,
-		model.ListPkgContentsReq{
+		model.ListDescendantsReq{
 			PkgRef:    nh.dataRef,
 			PullCreds: nh.pullCreds,
 		},

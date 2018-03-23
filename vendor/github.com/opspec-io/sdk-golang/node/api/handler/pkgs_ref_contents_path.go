@@ -57,7 +57,7 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		return
 	}
 
-	pkgContentReader, err := opHandle.GetContent(
+	dataNodeReader, err := opHandle.GetContent(
 		httpReq.Context(),
 		contentPath,
 	)
@@ -71,6 +71,6 @@ func (hdlr _handler) pkgs_ref_contents_path(
 		httpReq,
 		path.Base(contentPath),
 		time.Time{},
-		pkgContentReader,
+		dataNodeReader,
 	)
 }

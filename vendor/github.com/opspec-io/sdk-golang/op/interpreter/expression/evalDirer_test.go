@@ -64,11 +64,11 @@ var _ = Context("EvalToDir", func() {
 			/* assert */
 			actualExpression,
 				actualScope,
-				actualPkgRef := fakeInterpolater.InterpolateArgsForCall(0)
+				actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
 
 			Expect(actualExpression).To(Equal(providedPath))
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualPkgRef).To(Equal(providedOpRef))
+			Expect(actualOpRef).To(Equal(providedOpRef))
 		})
 		Context("interpolater.Interpolate errs", func() {
 			It("should return expected result", func() {

@@ -24,14 +24,14 @@ var _ = Context("KillOp", func() {
 			OpID: "dummyRootOpID",
 		}
 
-		expectedReqUrl := url.URL{}
-		expectedReqUrl.Path = api.URLOps_Kills
+		expectedReqURL := url.URL{}
+		expectedReqURL.Path = api.URLOps_Kills
 
 		expectedBytes, _ := json.Marshal(providedReq)
 
-		expectedHttpReq, _ := http.NewRequest(
+		expectedHTTPReq, _ := http.NewRequest(
 			"POST",
-			expectedReqUrl.String(),
+			expectedReqURL.String(),
 			bytes.NewBuffer(expectedBytes),
 		)
 
@@ -46,12 +46,12 @@ var _ = Context("KillOp", func() {
 		objectUnderTest.KillOp(providedCtx, providedReq)
 
 		/* assert */
-		actualHttpReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
 
-		Expect(actualHttpReq.URL).To(Equal(expectedHttpReq.URL))
-		Expect(actualHttpReq.Body).To(Equal(expectedHttpReq.Body))
-		Expect(actualHttpReq.Header).To(Equal(expectedHttpReq.Header))
-		Expect(actualHttpReq.Context()).To(Equal(providedCtx))
+		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
+		Expect(actualHTTPReq.Body).To(Equal(expectedHTTPReq.Body))
+		Expect(actualHTTPReq.Header).To(Equal(expectedHTTPReq.Header))
+		Expect(actualHTTPReq.Context()).To(Equal(providedCtx))
 
 	})
 })

@@ -12,21 +12,21 @@ func (c client) GetEventStream(
 	req *model.GetEventStreamReq,
 ) (chan model.Event, error) {
 
-	reqUrl := c.baseUrl
-	reqUrl.Scheme = "ws"
-	reqUrl.Path = path.Join(reqUrl.Path, api.URLEvents_Stream)
+	reqURL := c.baseUrl
+	reqURL.Scheme = "ws"
+	reqURL.Path = path.Join(reqURL.Path, api.URLEvents_Stream)
 
-	queryValues := reqUrl.Query()
+	queryValues := reqURL.Query()
 	if nil != req.Filter.Since {
 		queryValues.Add("since", req.Filter.Since.Format(time.RFC3339))
 	}
 	if nil != req.Filter.Roots {
 		queryValues.Add("roots", strings.Join(req.Filter.Roots, ","))
 	}
-	reqUrl.RawQuery = queryValues.Encode()
+	reqURL.RawQuery = queryValues.Encode()
 
 	wsConn, _, err := c.wsDialer.Dial(
-		reqUrl.String(),
+		reqURL.String(),
 		nil,
 	)
 	if err != nil {

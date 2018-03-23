@@ -40,7 +40,7 @@ var _ = Context("gitHandle", func() {
 	if nil != err {
 		panic(err)
 	}
-	Context("ListContents", func() {
+	Context("ListDescendants", func() {
 		It("should call ioutil.ReadDir w/ expected args", func() {
 			/* arrange */
 			providedOpPath := "dummyOpPath"
@@ -56,7 +56,7 @@ var _ = Context("gitHandle", func() {
 			}
 
 			/* act */
-			objectUnderTest.ListContents(nil)
+			objectUnderTest.ListDescendants(nil)
 
 			/* assert */
 			Expect(fakeIOUtil.ReadDirArgsForCall(0)).To(Equal(providedOpPath))
@@ -75,7 +75,7 @@ var _ = Context("gitHandle", func() {
 				}
 
 				/* act */
-				_, actualError := objectUnderTest.ListContents(nil)
+				_, actualError := objectUnderTest.ListDescendants(nil)
 
 				/* assert */
 				Expect(actualError).To(Equal(expectedError))
@@ -85,7 +85,7 @@ var _ = Context("gitHandle", func() {
 		Context("ioutil.ReadDir doesn't error", func() {
 			It("should return expected contentList", func() {
 				/* arrange */
-				rootOpPath := fmt.Sprintf("%v/testdata/listContents", wd)
+				rootOpPath := fmt.Sprintf("%v/testdata/listDescendants", wd)
 
 				dirStat, err := os.Stat(filepath.Join(rootOpPath, "/dir1"))
 				if nil != err {
@@ -97,7 +97,7 @@ var _ = Context("gitHandle", func() {
 					panic(err)
 				}
 
-				expectedContents := []*model.PkgContent{
+				expectedContents := []*model.DataNode{
 					{
 						Mode: fileStat.Mode(),
 						Path: "/dir1/file2.txt",
@@ -121,7 +121,7 @@ var _ = Context("gitHandle", func() {
 				}
 
 				/* act */
-				actualContents, err := objectUnderTest.ListContents(nil)
+				actualContents, err := objectUnderTest.ListDescendants(nil)
 				if nil != err {
 					panic(err)
 				}

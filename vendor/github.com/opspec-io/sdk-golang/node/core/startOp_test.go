@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 	"errors"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
@@ -11,31 +13,120 @@ import (
 	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
-	"time"
 )
 
 var _ = Context("core", func() {
 	Context("StartOp", func() {
-		Context("req.Pkg nil", func() {
-			It("should return expected error", func() {
-				/* arrange */
-				expectedErr := errors.New("pkg required")
+		It("should call data.NewGitProvider w/ expected args", func() {
+			/* arrange */
+			providedStartOpReq := model.StartOpReq{
+				Op: model.StartOpReqOp{
+					PullCreds: &model.PullCreds{
+						Username: "dummyUsername",
+						Password: "dummyPassword",
+					},
+				},
+			}
+			providedDataCachePath := "providedDataCachePath"
 
-				objectUnderTest := _core{}
+			fakeData := new(data.Fake)
+			// err to trigger immediate return
+			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
+
+			objectUnderTest := _core{
+				data:          fakeData,
+				dataCachePath: providedDataCachePath,
+			}
+
+			/* act */
+			objectUnderTest.StartOp(
+				context.Background(),
+				providedStartOpReq,
+			)
+
+			/* assert */
+			actualCachePath,
+				actualPullCreds := fakeData.NewGitProviderArgsForCall(0)
+
+			Expect(actualCachePath).To(Equal(providedDataCachePath))
+			Expect(actualPullCreds).To(Equal(providedStartOpReq.Op.PullCreds))
+		})
+		It("should call data.Resolve w/ expected args", func() {
+			/* arrange */
+			providedCtx := context.Background()
+			providedStartOpReq := model.StartOpReq{
+				Op: model.StartOpReqOp{
+					Ref: "dummyOpRef",
+				},
+			}
+
+			fakeData := new(data.Fake)
+			// err to trigger immediate return
+			fakeData.ResolveReturns(nil, errors.New("dummyErr"))
+
+			fsProvider := new(data.FakeProvider)
+			fakeData.NewFSProviderReturns(fsProvider)
+
+			gitProvider := new(data.FakeProvider)
+			fakeData.NewGitProviderReturns(gitProvider)
+
+			expectedProviders := []data.Provider{
+				fsProvider,
+				gitProvider,
+			}
+
+			objectUnderTest := _core{
+				data: fakeData,
+			}
+
+			/* act */
+			objectUnderTest.StartOp(
+				providedCtx,
+				providedStartOpReq,
+			)
+
+			/* assert */
+			actualCtx,
+				actualOpRef,
+				actualProviders := fakeData.ResolveArgsForCall(0)
+
+			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(actualOpRef).To(Equal(providedStartOpReq.Op.Ref))
+			Expect(actualProviders).To(Equal(expectedProviders))
+		})
+		Context("data.Resolve errs", func() {
+			It("should return expected result", func() {
+
+				/* arrange */
+				providedCtx := context.Background()
+				providedStartOpReq := model.StartOpReq{
+					Op: model.StartOpReqOp{
+						Ref: "dummyOpRef",
+					},
+				}
+
+				fakeData := new(data.Fake)
+				expectedErr := errors.New("dummyErr")
+				fakeData.ResolveReturns(nil, expectedErr)
+
+				objectUnderTest := _core{
+					data: fakeData,
+				}
 
 				/* act */
 				_, actualErr := objectUnderTest.StartOp(
-					context.Background(),
-					model.StartOpReq{},
+					providedCtx,
+					providedStartOpReq,
 				)
 
 				/* assert */
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("req.Pkg not nil", func() {
+		Context("data.Resolve doesn't err", func() {
 			It("should call data.Get w/ expected args", func() {
 				/* arrange */
+				providedCtx := context.Background()
 				fakeData := new(data.Fake)
 				fakeDataHandle := new(data.FakeHandle)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
@@ -52,15 +143,15 @@ var _ = Context("core", func() {
 
 				/* act */
 				objectUnderTest.StartOp(
-					context.Background(),
-					model.StartOpReq{Pkg: &model.DCGOpCallPkg{}},
+					providedCtx,
+					model.StartOpReq{},
 				)
 
 				/* assert */
 				actualCtx,
 					actualDataHandle := fakeDotYmlGetter.GetArgsForCall(0)
 
-				Expect(actualCtx).To(Equal(actualCtx))
+				Expect(actualCtx).To(Equal(providedCtx))
 				Expect(actualDataHandle).To(Equal(fakeDataHandle))
 			})
 			Context("data.Get errs", func() {
@@ -72,7 +163,7 @@ var _ = Context("core", func() {
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, expectedErr)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
@@ -83,7 +174,7 @@ var _ = Context("core", func() {
 					/* act */
 					_, actualErr := objectUnderTest.StartOp(
 						context.Background(),
-						model.StartOpReq{Pkg: &model.DCGOpCallPkg{}},
+						model.StartOpReq{},
 					)
 
 					/* assert */
@@ -104,7 +195,7 @@ var _ = Context("core", func() {
 							"dummyArg3Name": {Dir: &providedArg3Dir},
 							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
-						Pkg: &model.DCGOpCallPkg{
+						Op: model.StartOpReqOp{
 							Ref: "dummyOpRef",
 						},
 					}
@@ -113,7 +204,7 @@ var _ = Context("core", func() {
 					fakeDataHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					pkgManifest := &model.PkgManifest{
+					opDotYml := &model.OpDotYml{
 						Outputs: map[string]*model.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
@@ -121,19 +212,17 @@ var _ = Context("core", func() {
 					}
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(pkgManifest, nil)
+					fakeDotYmlGetter.GetReturns(opDotYml, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
-						Pkg: &model.SCGOpCallPkg{
-							Ref: fakeDataHandle.Ref(),
-						},
+						Ref:     fakeDataHandle.Ref(),
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
 					for name := range providedReq.Args {
 						expectedSCGOpCall.Inputs[name] = ""
 					}
-					for name := range pkgManifest.Outputs {
+					for name := range opDotYml.Outputs {
 						expectedSCGOpCall.Outputs[name] = ""
 					}
 

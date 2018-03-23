@@ -12,7 +12,7 @@ var _ = Context("fsHandle", func() {
 
 	Context("GetContent", func() {
 
-		It("should call client.GetPkgContent w/ expected args", func() {
+		It("should call client.GetData w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 			providedContentPath := "dummyContentPath"
@@ -33,10 +33,10 @@ var _ = Context("fsHandle", func() {
 
 			/* assert */
 			actualCtx,
-				actualReq := fakeClient.GetPkgContentArgsForCall(0)
+				actualReq := fakeClient.GetDataArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualReq).To(Equal(model.GetPkgContentReq{
+			Expect(actualReq).To(Equal(model.GetDataReq{
 				ContentPath: providedContentPath,
 				PkgRef:      dataRef,
 				PullCreds:   pullCreds,
@@ -44,8 +44,8 @@ var _ = Context("fsHandle", func() {
 		})
 	})
 
-	Context("ListContents", func() {
-		It("should call client.ListPkgContents w/ expected args", func() {
+	Context("ListDescendants", func() {
+		It("should call client.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
 
@@ -61,14 +61,14 @@ var _ = Context("fsHandle", func() {
 			}
 
 			/* act */
-			objectUnderTest.ListContents(providedCtx)
+			objectUnderTest.ListDescendants(providedCtx)
 
 			/* assert */
 			actualCtx,
-				actualReq := fakeClient.ListPkgContentsArgsForCall(0)
+				actualReq := fakeClient.ListDescendantsArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualReq).To(Equal(model.ListPkgContentsReq{
+			Expect(actualReq).To(Equal(model.ListDescendantsReq{
 				PkgRef:    dataRef,
 				PullCreds: pullCreds,
 			}))

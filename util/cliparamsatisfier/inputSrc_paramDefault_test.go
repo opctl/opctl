@@ -58,6 +58,28 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						Expect(actualOk).To(BeTrue())
 					})
 				})
+				Context("input is boolean", func() {
+					It("should return expected result", func() {
+						/* arrange */
+						inputName := "dummyInputName"
+						paramDefault := true
+						param := &model.Param{
+							Boolean: &model.BooleanParam{Default: &paramDefault},
+						}
+
+						inputSrcFactory := _InputSrcFactory{}
+						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
+							map[string]*model.Param{inputName: param},
+						)
+
+						/* act */
+						actualValue, actualOk := objectUnderTest.ReadString(inputName)
+
+						/* assert */
+						Expect(actualValue).To(BeNil())
+						Expect(actualOk).To(BeTrue())
+					})
+				})
 				Context("input is dir", func() {
 					Context("default is abs path", func() {
 						It("should return expected result", func() {

@@ -50,10 +50,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			/* assert */
 			_,
-				actualPkgRef,
+				actualOpRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedOpRef))
+			Expect(actualOpRef).To(Equal(expectedOpRef))
 			Expect(*actualPullCreds).To(Equal(model.PullCreds{
 				Username: providedUsername,
 				Password: providedPassword,
@@ -86,10 +86,10 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 			/* assert */
 			_,
-				actualPkgRef,
+				actualOpRef,
 				actualPullCreds := fakeCore.ResolveDataArgsForCall(0)
 
-			Expect(actualPkgRef).To(Equal(expectedOpRef))
+			Expect(actualOpRef).To(Equal(expectedOpRef))
 			Expect(actualPullCreds).To(BeNil())
 		})
 	})
@@ -220,11 +220,11 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 		})
 	})
 	Context("core.ResolveData doesn't err", func() {
-		It("should call handle.ListContents", func() {
+		It("should call handle.ListDescendants", func() {
 			/* arrange */
 			fakeDataHandle := new(data.FakeHandle)
 			// error to trigger immediate return
-			fakeDataHandle.ListContentsReturns(nil, errors.New("dummyError"))
+			fakeDataHandle.ListDescendantsReturns(nil, errors.New("dummyError"))
 
 			fakeCore := new(core.Fake)
 			fakeCore.ResolveDataReturns(fakeDataHandle, nil)
@@ -245,16 +245,16 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 			objectUnderTest.ServeHTTP(recorder, httpReq)
 
 			/* assert */
-			Expect(fakeDataHandle.ListContentsCallCount()).To(Equal(1))
+			Expect(fakeDataHandle.ListDescendantsCallCount()).To(Equal(1))
 		})
-		Context("handle.ListContents errs", func() {
+		Context("handle.ListDescendants errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				expectedBody := "dummyErrorMsg"
 
 				fakeDataHandle := new(data.FakeHandle)
 				// error to trigger immediate return
-				fakeDataHandle.ListContentsReturns(nil, errors.New(expectedBody))
+				fakeDataHandle.ListDescendantsReturns(nil, errors.New(expectedBody))
 
 				fakeCore := new(core.Fake)
 				fakeCore.ResolveDataReturns(fakeDataHandle, nil)
@@ -281,7 +281,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 				Expect(actualBody).To(Equal(expectedBody))
 			})
 		})
-		Context("handle.ListContents doesn't err", func() {
+		Context("handle.ListDescendants doesn't err", func() {
 			Context("encoder.Encode errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
@@ -331,7 +331,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 
 					fakeHandle := new(data.FakeHandle)
 
-					contentsList := []*model.PkgContent{
+					contentsList := []*model.DataNode{
 						{Path: "dummyPath"},
 					}
 
@@ -340,7 +340,7 @@ var _ = Context("GET /pkgs/{ref}/contents", func() {
 						panic(err)
 					}
 
-					fakeHandle.ListContentsReturns(contentsList, nil)
+					fakeHandle.ListDescendantsReturns(contentsList, nil)
 
 					fakeCore.ResolveDataReturns(fakeHandle, nil)
 

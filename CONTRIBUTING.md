@@ -24,7 +24,7 @@ Contributions are subject to:
 
 CLI, distributed w/ the opctl binary
 
-The web app is built using [mow](https://github.com/jawher/mow.cli)
+The CLI is built using [mow](https://github.com/jawher/mow.cli)
 
 ## /docs
 
@@ -50,3 +50,14 @@ opctl website, hosted at [https://opctl.io](https://opctl.io)
 
 It is a static website built using
 [metalsmith](https://github.com/metalsmith/metalsmith)
+
+
+# Testing
+
+`opctl run test` runs all unit tests inclusive of code coverage.
+
+## Fakes
+
+To streamline unit test related maintenance, [counterfeiter](https://github.com/maxbrunsfeld/counterfeiter) is used to auto-generate fake implementations of interfaces.
+
+The fakes are then used to assert on & stub the object under tests interactions w/ its dependencies. 

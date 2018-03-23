@@ -48,6 +48,8 @@ func (vdt _validator) Validate(
 	switch {
 	case nil != param.Array:
 		return vdt.validateArray(value, param.Array.Constraints)
+	case nil != param.Boolean:
+		return vdt.validateBoolean(value)
 	case nil != param.Dir:
 		return vdt.validateDir(value)
 	case nil != param.File:

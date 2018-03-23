@@ -62,7 +62,7 @@ var _ = Context("unmarshaller", func() {
 		})
 		Context("Validator.Validate doesn't return errors", func() {
 
-			It("should return expected pkgManifest", func() {
+			It("should return expected opDotYml", func() {
 
 				/* arrange */
 				paramDefault := "dummyDefault"
@@ -83,21 +83,19 @@ var _ = Context("unmarshaller", func() {
 					},
 				}
 
-				expectedPkgManifest := &model.PkgManifest{
+				expectedOpDotYml := &model.OpDotYml{
 					Description: "dummyDescription",
 					Inputs:      dummyParams,
 					Name:        "dummyName",
 					Outputs:     dummyParams,
 					Run: &model.SCG{
 						Op: &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyOpRef",
-							},
+							Ref: "dummyOpRef",
 						},
 					},
 					Version: "dummyVersion",
 				}
-				providedBytes, err := yaml.Marshal(expectedPkgManifest)
+				providedBytes, err := yaml.Marshal(expectedOpDotYml)
 				if nil != err {
 					panic(err.Error())
 				}
@@ -107,10 +105,10 @@ var _ = Context("unmarshaller", func() {
 				}
 
 				/* act */
-				actualPkgManifest, _ := objectUnderTest.Unmarshal(providedBytes)
+				actualOpDotYml, _ := objectUnderTest.Unmarshal(providedBytes)
 
 				/* assert */
-				Expect(actualPkgManifest).To(Equal(expectedPkgManifest))
+				Expect(actualOpDotYml).To(Equal(expectedOpDotYml))
 
 			})
 		})

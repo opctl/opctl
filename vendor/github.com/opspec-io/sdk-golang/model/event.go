@@ -24,23 +24,19 @@ const (
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
 type ContainerExitedEvent struct {
-	ImageRef    string `json:"imageRef"`
-	ExitCode    int64  `json:"exitCode"`
-	RootOpID    string `json:"rootOpId"`
-	ContainerID string `json:"containerId"`
-	// deprecated; use OpRef
-	PkgRef  string            `json:"pkgRef"`
-	OpRef   string            `json:"opRef"`
-	Outputs map[string]*Value `json:"outputs"`
+	ImageRef    string            `json:"imageRef"`
+	ExitCode    int64             `json:"exitCode"`
+	RootOpID    string            `json:"rootOpId"`
+	ContainerID string            `json:"containerId"`
+	OpRef       string            `json:"opRef"`
+	Outputs     map[string]*Value `json:"outputs"`
 }
 
 type ContainerStartedEvent struct {
 	ImageRef    string `json:"imageRef"`
 	RootOpID    string `json:"rootOpId"`
 	ContainerID string `json:"containerId"`
-	// deprecated; use OpRef
-	PkgRef string `json:"pkgRef"`
-	OpRef  string `json:"opRef"`
+	OpRef       string `json:"opRef"`
 }
 
 // ContainerStdErrWrittenToEvent represents a single write to a containers std err.
@@ -49,9 +45,7 @@ type ContainerStdErrWrittenToEvent struct {
 	Data        []byte `json:"data"`
 	RootOpID    string `json:"rootOpId"`
 	ContainerID string `json:"containerId"`
-	// deprecated; use OpRef
-	PkgRef string `json:"pkgRef"`
-	OpRef  string `json:"opRef"`
+	OpRef       string `json:"opRef"`
 }
 
 // ContainerStdOutWrittenToEvent represents a single write to a containers std out.
@@ -60,9 +54,7 @@ type ContainerStdOutWrittenToEvent struct {
 	Data        []byte `json:"data"`
 	RootOpID    string `json:"rootOpId"`
 	ContainerID string `json:"containerId"`
-	// deprecated; use OpRef
-	PkgRef string `json:"pkgRef"`
-	OpRef  string `json:"opRef"`
+	OpRef       string `json:"opRef"`
 }
 
 // OpErredEvent represents an op encountering an error condition
@@ -70,29 +62,23 @@ type OpErredEvent struct {
 	RootOpID string `json:"rootOpId"`
 	Msg      string `json:"msg"`
 	OpID     string `json:"opId"`
-	// deprecated; use OpRef
-	PkgRef string `json:"pkgRef"`
-	OpRef  string `json:"opRef"`
+	OpRef    string `json:"opRef"`
 }
 
 // OpEndedEvent represents the end of an op; no further events will occur for the op.
 type OpEndedEvent struct {
-	RootOpID string `json:"rootOpId"`
-	OpID     string `json:"opId"`
-	// deprecated; use OpRef
-	PkgRef  string            `json:"pkgRef"`
-	OpRef   string            `json:"opRef"`
-	Outcome string            `json:"outcome"`
-	Outputs map[string]*Value `json:"outputs"`
+	RootOpID string            `json:"rootOpId"`
+	OpID     string            `json:"opId"`
+	OpRef    string            `json:"opRef"`
+	Outcome  string            `json:"outcome"`
+	Outputs  map[string]*Value `json:"outputs"`
 }
 
 // OpStartedEvent represents the start of an op
 type OpStartedEvent struct {
 	RootOpID string `json:"rootOpId"`
 	OpID     string `json:"opId"`
-	// deprecated; use OpRef
-	PkgRef string `json:"pkgRef"`
-	OpRef  string `json:"opRef"`
+	OpRef    string `json:"opRef"`
 }
 
 // ParallelCallEndedEvent represents the exit of a parallel call; no further events will occur for the call.

@@ -80,9 +80,7 @@ var _ = Context("caller", func() {
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Op: &model.SCGOpCall{
-						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyOpRef",
-						},
+						Ref: "dummyOpRef",
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
@@ -103,12 +101,12 @@ var _ = Context("caller", func() {
 				/* assert */
 				actualArgs,
 					actualCallID,
-					actualPkgRef,
+					actualOpRef,
 					actualRootOpID,
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualPkgRef).To(Equal(providedOpHandle))
+				Expect(actualOpRef).To(Equal(providedOpHandle))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})

@@ -69,7 +69,7 @@ func (oc _opCaller) Call(
 						OpID:     opID,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpID: rootOpID,
-						PkgRef:   scgOpCall.Pkg.Ref,
+						OpRef:    scgOpCall.Ref,
 					},
 				},
 			)
@@ -86,8 +86,7 @@ func (oc _opCaller) Call(
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
 						OpID:     opID,
-						PkgRef:   scgOpCall.Pkg.Ref,
-						OpRef:    scgOpCall.Pkg.Ref,
+						OpRef:    scgOpCall.Ref,
 						RootOpID: rootOpID,
 					},
 				},
@@ -102,7 +101,7 @@ func (oc _opCaller) Call(
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpID:     opID,
-					PkgRef:   scgOpCall.Pkg.Ref,
+					OpRef:    scgOpCall.Ref,
 					Outcome:  opOutcome,
 					RootOpID: rootOpID,
 					Outputs:  outputs,
@@ -115,7 +114,7 @@ func (oc _opCaller) Call(
 	oc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:       opID,
-			PkgRef:   scgOpCall.Pkg.Ref,
+			OpRef:    scgOpCall.Ref,
 			RootOpID: rootOpID,
 			Op:       &dcgOpDescriptor{},
 		},
@@ -137,8 +136,7 @@ func (oc _opCaller) Call(
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
 				OpID:     opID,
-				PkgRef:   scgOpCall.Pkg.Ref,
-				OpRef:    scgOpCall.Pkg.Ref,
+				OpRef:    scgOpCall.Ref,
 				RootOpID: rootOpID,
 			},
 		},

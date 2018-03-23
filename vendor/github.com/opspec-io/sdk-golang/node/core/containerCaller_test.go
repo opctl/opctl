@@ -46,7 +46,7 @@ var _ = Context("containerCaller", func() {
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:        providedContainerID,
-				PkgRef:    providedOpHandle.Ref(),
+				OpRef:     providedOpHandle.Ref(),
 				RootOpID:  providedRootOpID,
 				Container: &dcgContainerDescriptor{},
 			}
@@ -88,7 +88,6 @@ var _ = Context("containerCaller", func() {
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
 					ContainerID: providedContainerID,
-					PkgRef:      providedOpHandle.Ref(),
 					OpRef:       providedOpHandle.Ref(),
 					RootOpID:    providedRootOpID,
 				},
@@ -240,7 +239,6 @@ var _ = Context("containerCaller", func() {
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedContainerID,
-				PkgRef:      providedOpHandle.Ref(),
 				OpRef:       providedOpHandle.Ref(),
 				RootOpID:    providedRootOpID,
 			},
@@ -290,7 +288,6 @@ var _ = Context("containerCaller", func() {
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedContainerID,
-				PkgRef:      providedOpHandle.Ref(),
 				OpRef:       providedOpHandle.Ref(),
 				RootOpID:    providedRootOpID,
 			},

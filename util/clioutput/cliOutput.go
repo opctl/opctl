@@ -76,9 +76,9 @@ func (this _cliOutput) Event(event *model.Event) {
 
 func (this _cliOutput) containerExited(event *model.Event) {
 	this.Info(
-		"ContainerExited Id='%v' PkgRef='%v' ExitCode='%v' Timestamp='%v'\n",
+		"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
 		event.ContainerExited.ContainerID,
-		event.ContainerExited.PkgRef,
+		event.ContainerExited.OpRef,
 		event.ContainerExited.ExitCode,
 		event.Timestamp.Format(time.RFC3339),
 	)
@@ -86,9 +86,9 @@ func (this _cliOutput) containerExited(event *model.Event) {
 
 func (this _cliOutput) containerStarted(event *model.Event) {
 	this.Info(
-		"ContainerStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
+		"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
 		event.ContainerStarted.ContainerID,
-		event.ContainerStarted.PkgRef,
+		event.ContainerStarted.OpRef,
 		event.Timestamp.Format(time.RFC3339),
 	)
 }
@@ -103,9 +103,9 @@ func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
 
 func (this _cliOutput) opErred(event *model.Event) {
 	this.Error(
-		"OpErred Id='%v' PkgRef='%v' Timestamp='%v' Msg='%v'\n",
+		"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
 		event.OpErred.OpID,
-		event.OpErred.PkgRef,
+		event.OpErred.OpRef,
 		event.Timestamp.Format(time.RFC3339),
 		event.OpErred.Msg,
 	)
@@ -113,9 +113,9 @@ func (this _cliOutput) opErred(event *model.Event) {
 
 func (this _cliOutput) opEnded(event *model.Event) {
 	message := fmt.Sprintf(
-		"OpEnded Id='%v' PkgRef='%v' Outcome='%v' Timestamp='%v'\n",
+		"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
 		event.OpEnded.OpID,
-		event.OpEnded.PkgRef,
+		event.OpEnded.OpRef,
 		event.OpEnded.Outcome,
 		event.Timestamp.Format(time.RFC3339),
 	)
@@ -131,9 +131,9 @@ func (this _cliOutput) opEnded(event *model.Event) {
 
 func (this _cliOutput) opStarted(event *model.Event) {
 	this.Info(
-		"OpStarted Id='%v' PkgRef='%v' Timestamp='%v'\n",
+		"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
 		event.OpStarted.OpID,
-		event.OpStarted.PkgRef,
+		event.OpStarted.OpRef,
 		event.Timestamp.Format(time.RFC3339),
 	)
 }

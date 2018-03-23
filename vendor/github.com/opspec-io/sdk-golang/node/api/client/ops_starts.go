@@ -22,12 +22,12 @@ func (c client) StartOp(
 		return "", nil
 	}
 
-	reqUrl := c.baseUrl
-	reqUrl.Path = path.Join(reqUrl.Path, api.URLOps_Starts)
+	reqURL := c.baseUrl
+	reqURL.Path = path.Join(reqURL.Path, api.URLOps_Starts)
 
 	httpReq, err := http.NewRequest(
 		"POST",
-		reqUrl.String(),
+		reqURL.String(),
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {

@@ -54,7 +54,7 @@ func (itp _interpreter) Interpret(
 				return nil, err
 			}
 
-			dcgContainerCallImage.PullCreds = &model.DCGPullCreds{
+			dcgContainerCallImage.PullCreds = &model.PullCreds{
 				Username: *username.String,
 				Password: *password.String,
 			}

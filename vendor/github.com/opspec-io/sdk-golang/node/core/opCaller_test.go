@@ -31,13 +31,12 @@ var _ = Context("opCaller", func() {
 			providedOpID := "dummyOpID"
 			providedRootOpID := "dummyRootOpID"
 			providedSCGOpCall := &model.SCGOpCall{
-				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyOpRef",
-				}}
+				Ref: "dummyOpRef",
+			}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
 				Id:       providedOpID,
-				PkgRef:   providedSCGOpCall.Pkg.Ref,
+				OpRef:    providedSCGOpCall.Ref,
 				RootOpID: providedRootOpID,
 				Op:       &dcgOpDescriptor{},
 			}
@@ -74,9 +73,7 @@ var _ = Context("opCaller", func() {
 			providedRootOpID := "dummyRootOpID"
 			providedOpHandle := new(data.FakeHandle)
 			providedSCGOpCall := &model.SCGOpCall{
-				Pkg: &model.SCGOpCallPkg{
-					Ref: "dummyOpRef",
-				},
+				Ref: "dummyOpRef",
 			}
 
 			fakeOpCallInterpreter := new(opcall.FakeInterpreter)
@@ -127,9 +124,7 @@ var _ = Context("opCaller", func() {
 				providedOpID := "dummyOpID"
 				providedRootOpID := "dummyRootOpID"
 				providedSCGOpCall := &model.SCGOpCall{
-					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyOpRef",
-					},
+					Ref: "dummyOpRef",
 				}
 
 				expectedEvent := model.Event{
@@ -137,8 +132,7 @@ var _ = Context("opCaller", func() {
 					OpErred: &model.OpErredEvent{
 						Msg:      "dummyError",
 						OpID:     providedOpID,
-						PkgRef:   providedSCGOpCall.Pkg.Ref,
-						OpRef:    providedSCGOpCall.Pkg.Ref,
+						OpRef:    providedSCGOpCall.Ref,
 						RootOpID: providedRootOpID,
 					},
 				}
@@ -187,17 +181,14 @@ var _ = Context("opCaller", func() {
 				providedOpID := "dummyOpID"
 				providedRootOpID := "dummyRootOpID"
 				providedSCGOpCall := &model.SCGOpCall{
-					Pkg: &model.SCGOpCallPkg{
-						Ref: "dummyOpRef",
-					},
+					Ref: "dummyOpRef",
 				}
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
 					OpStarted: &model.OpStartedEvent{
 						OpID:     providedOpID,
-						PkgRef:   providedSCGOpCall.Pkg.Ref,
-						OpRef:    providedSCGOpCall.Pkg.Ref,
+						OpRef:    providedSCGOpCall.Ref,
 						RootOpID: providedRootOpID,
 					},
 				}
@@ -296,20 +287,20 @@ var _ = Context("opCaller", func() {
 					"dummyOpID",
 					new(data.FakeHandle),
 					providedRootOpID,
-					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+					&model.SCGOpCall{},
 				)
 
 				/* assert */
 				actualChildCallID,
 					actualChildCallScope,
 					actualChildSCG,
-					actualPkgRef,
+					actualOpRef,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 				Expect(actualChildCallID).To(Equal(dcgOpCall.ChildCallID))
 				Expect(actualChildCallScope).To(Equal(dcgOpCall.Inputs))
 				Expect(actualChildSCG).To(Equal(dcgOpCall.ChildCallSCG))
-				Expect(actualPkgRef).To(Equal(dcgOpCall.OpHandle))
+				Expect(actualOpRef).To(Equal(dcgOpCall.OpHandle))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 			It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
@@ -330,7 +321,7 @@ var _ = Context("opCaller", func() {
 				)
 
 				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -355,7 +346,7 @@ var _ = Context("opCaller", func() {
 					"dummyOpID",
 					new(data.FakeHandle),
 					providedRootOpID,
-					&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+					&model.SCGOpCall{},
 				)
 
 				/* assert */
@@ -367,9 +358,7 @@ var _ = Context("opCaller", func() {
 					providedOpID := "dummyOpID"
 					providedRootOpID := "dummyRootOpID"
 					providedSCGOpCall := &model.SCGOpCall{
-						Pkg: &model.SCGOpCallPkg{
-							Ref: "dummyOpRef",
-						},
+						Ref: "dummyOpRef",
 					}
 
 					expectedEvent := model.Event{
@@ -378,7 +367,7 @@ var _ = Context("opCaller", func() {
 							OpID:     providedOpID,
 							Outcome:  model.OpOutcomeKilled,
 							RootOpID: providedRootOpID,
-							PkgRef:   providedSCGOpCall.Pkg.Ref,
+							OpRef:    providedSCGOpCall.Ref,
 						},
 					}
 
@@ -396,7 +385,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakePubSub := new(pubsub.Fake)
 					eventChannel := make(chan model.Event)
@@ -452,7 +441,7 @@ var _ = Context("opCaller", func() {
 					)
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 					fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 					fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
@@ -478,7 +467,7 @@ var _ = Context("opCaller", func() {
 						providedOpID,
 						new(data.FakeHandle),
 						"dummyRootOpID",
-						&model.SCGOpCall{Pkg: &model.SCGOpCallPkg{}},
+						&model.SCGOpCall{},
 					)
 
 					/* assert */
@@ -490,16 +479,14 @@ var _ = Context("opCaller", func() {
 						providedOpID := "dummyOpID"
 						providedRootOpID := "dummyRootOpID"
 						providedSCGOpCall := &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyOpRef",
-							},
+							Ref: "dummyOpRef",
 						}
 
 						expectedEvent := model.Event{
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
 								OpID:     providedOpID,
-								PkgRef:   providedSCGOpCall.Pkg.Ref,
+								OpRef:    providedSCGOpCall.Ref,
 								Outcome:  model.OpOutcomeFailed,
 								RootOpID: providedRootOpID,
 								Outputs:  map[string]*model.Value{},
@@ -563,9 +550,7 @@ var _ = Context("opCaller", func() {
 						expectedOutputName := "expectedOutputName"
 
 						providedSCGOpCall := &model.SCGOpCall{
-							Pkg: &model.SCGOpCallPkg{
-								Ref: "dummyOpRef",
-							},
+							Ref: "dummyOpRef",
 							Outputs: map[string]string{
 								expectedOutputName: "",
 							},
@@ -583,7 +568,7 @@ var _ = Context("opCaller", func() {
 							Timestamp: time.Now().UTC(),
 							OpEnded: &model.OpEndedEvent{
 								OpID:     providedOpID,
-								PkgRef:   providedSCGOpCall.Pkg.Ref,
+								OpRef:    providedSCGOpCall.Ref,
 								Outcome:  model.OpOutcomeSucceeded,
 								RootOpID: providedRootOpID,
 								Outputs: map[string]*model.Value{
@@ -606,7 +591,7 @@ var _ = Context("opCaller", func() {
 						)
 
 						fakeDotYmlGetter := new(dotyml.FakeGetter)
-						fakeDotYmlGetter.GetReturns(&model.PkgManifest{}, nil)
+						fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
 
 						fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 						fakeDCGNodeRepo.GetIfExistsReturns(&dcgNodeDescriptor{})
