@@ -4,9 +4,8 @@ package dotyml
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/ghodss/yaml"
+	"github.com/chrisdostert/yaml"
 	"github.com/opspec-io/sdk-golang/model"
 )
 
@@ -56,11 +55,6 @@ func (uml _unmarshaller) Unmarshal(
 
 	// 2) build
 	opDotYml := model.OpDotYml{}
-
-	manifestJSONBytes, err := yaml.YAMLToJSON([]byte(manifestBytes))
-	if nil != err {
-		return nil, err
-	}
-	return &opDotYml, json.Unmarshal(manifestJSONBytes, &opDotYml)
+	return &opDotYml, yaml.Unmarshal(manifestBytes, &opDotYml)
 
 }
