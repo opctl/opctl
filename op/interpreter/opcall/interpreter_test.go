@@ -9,8 +9,8 @@ import (
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -119,8 +119,7 @@ var _ = Context("Interpreter", func() {
 			fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
-				expression: new(expression.Fake),
-				data:       fakeData,
+				data: fakeData,
 			}
 
 			/* act */
@@ -174,15 +173,15 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("scgOpCall.Pkg.PullCreds isn't nil", func() {
-			Context("string.Interpret errs", func() {
+			Context("stringInterpreter.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					fakeExpression := new(expression.Fake)
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 					interpretError := errors.New("dummyError")
-					fakeExpression.EvalToStringReturns(nil, interpretError)
+					fakeStringInterpreter.InterpretReturns(nil, interpretError)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						stringInterpreter: fakeStringInterpreter,
 					}
 
 					/* act */
@@ -200,7 +199,7 @@ var _ = Context("Interpreter", func() {
 					Expect(actualError).To(Equal(interpretError))
 				})
 			})
-			Context("string.Interpret doesn't err", func() {
+			Context("stringInterpreter.Interpret doesn't err", func() {
 				It("should call pkg.NewGitProvider w/ expected args", func() {
 					/* arrange */
 					providedParentOpHandle := new(data.FakeHandle)
@@ -208,19 +207,19 @@ var _ = Context("Interpreter", func() {
 
 					providedDataCachePath := "dummyDataCachePath"
 
-					fakeExpression := new(expression.Fake)
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
-					fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
-					fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
+					fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
+					fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
 
 					fakeData := new(data.Fake)
 					// error to trigger immediate return
 					fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						expression:    fakeExpression,
-						data:          fakeData,
-						dataCachePath: providedDataCachePath,
+						stringInterpreter: fakeStringInterpreter,
+						data:              fakeData,
+						dataCachePath:     providedDataCachePath,
 					}
 
 					/* act */

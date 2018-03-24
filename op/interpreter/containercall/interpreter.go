@@ -10,7 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/files"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/image"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/sockets"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"path/filepath"
 )
 
@@ -36,7 +36,7 @@ func NewInterpreter(
 		imageInterpreter:   image.NewInterpreter(),
 		os:                 ios.New(),
 		rootFSPath:         rootFSPath,
-		expression:         expression.New(),
+		stringInterpreter:  stringPkg.NewInterpreter(),
 		socketsInterpreter: sockets.NewInterpreter(),
 	}
 }
@@ -48,7 +48,7 @@ type _interpreter struct {
 	imageInterpreter   image.Interpreter
 	os                 ios.IOS
 	rootFSPath         string
-	expression         expression.Expression
+	stringInterpreter  stringPkg.Interpreter
 	socketsInterpreter sockets.Interpreter
 }
 
@@ -91,7 +91,7 @@ func (cc _interpreter) Interpret(
 	// construct cmd
 	for _, cmdEntryExpression := range scgContainerCall.Cmd {
 		// interpret each entry as string
-		cmdEntry, err := cc.expression.EvalToString(scope, cmdEntryExpression, opHandle)
+		cmdEntry, err := cc.stringInterpreter.Interpret(scope, cmdEntryExpression, opHandle)
 		if nil != err {
 			return nil, err
 		}

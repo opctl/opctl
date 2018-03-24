@@ -5,7 +5,13 @@ package input
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/array"
+	"github.com/opspec-io/sdk-golang/op/interpreter/boolean"
+	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
+	"github.com/opspec-io/sdk-golang/op/interpreter/file"
+	"github.com/opspec-io/sdk-golang/op/interpreter/number"
+	"github.com/opspec-io/sdk-golang/op/interpreter/object"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 )
 
 type Interpreter interface {
@@ -22,12 +28,24 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		expression: expression.New(),
+		arrayInterpreter:   array.NewInterpreter(),
+		booleanInterpreter: boolean.NewInterpreter(),
+		dirInterpreter:     dir.NewInterpreter(),
+		fileInterpreter:    file.NewInterpreter(),
+		numberInterpreter:  number.NewInterpreter(),
+		objectInterpreter:  object.NewInterpreter(),
+		stringInterpreter:  stringPkg.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	expression expression.Expression
+	arrayInterpreter   array.Interpreter
+	booleanInterpreter boolean.Interpreter
+	dirInterpreter     dir.Interpreter
+	fileInterpreter    file.Interpreter
+	numberInterpreter  number.Interpreter
+	objectInterpreter  object.Interpreter
+	stringInterpreter  stringPkg.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -54,43 +72,43 @@ func (itp _interpreter) Interpret(
 
 	switch {
 	case nil != param.Array:
-		arrayValue, err := itp.expression.EvalToArray(scope, valueExpression, parentOpHandle)
+		arrayValue, err := itp.arrayInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return arrayValue, nil
 	case nil != param.Boolean:
-		booleanValue, err := itp.expression.EvalToBoolean(scope, valueExpression, parentOpHandle)
+		booleanValue, err := itp.booleanInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return booleanValue, nil
 	case nil != param.File:
-		fileValue, err := itp.expression.EvalToFile(scope, valueExpression, parentOpHandle, opScratchDir)
+		fileValue, err := itp.fileInterpreter.Interpret(scope, valueExpression, parentOpHandle, opScratchDir)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return fileValue, nil
 	case nil != param.Dir:
-		dirValue, err := itp.expression.EvalToDir(scope, valueExpression, parentOpHandle)
+		dirValue, err := itp.dirInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return dirValue, nil
 	case nil != param.Number:
-		numberValue, err := itp.expression.EvalToNumber(scope, valueExpression, parentOpHandle)
+		numberValue, err := itp.numberInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return numberValue, nil
 	case nil != param.Object:
-		objectValue, err := itp.expression.EvalToObject(scope, valueExpression, parentOpHandle)
+		objectValue, err := itp.objectInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}
 		return objectValue, nil
 	case nil != param.String:
-		stringValue, err := itp.expression.EvalToString(scope, valueExpression, parentOpHandle)
+		stringValue, err := itp.stringInterpreter.Interpret(scope, valueExpression, parentOpHandle)
 		if nil != err {
 			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
 		}

@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
 	"io/ioutil"
 	"path/filepath"
 )
@@ -25,7 +25,7 @@ var _ = Context("Dirs", func() {
 		if nil != err {
 			panic(err)
 		}
-		It("should call expression.EvalToDir w/ expected args", func() {
+		It("should call dirInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 
 			containerDirPath := "/dummyDir1Path.txt"
@@ -38,12 +38,12 @@ var _ = Context("Dirs", func() {
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
-			fakeExpression := new(expression.Fake)
+			fakeDirInterpreter := new(dir.FakeInterpreter)
 			// error to trigger immediate return
-			fakeExpression.EvalToDirReturns(nil, errors.New("dummyError"))
+			fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
-				expression: fakeExpression,
+				dirInterpreter: fakeDirInterpreter,
 			}
 
 			/* act */
@@ -57,13 +57,13 @@ var _ = Context("Dirs", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpHandle := fakeExpression.EvalToDirArgsForCall(0)
+				actualOpHandle := fakeDirInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerDirPath)))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
-		Context("expression.EvalToDir errs", func() {
+		Context("dirInterpreter.Interpret errs", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				containerDirPath := "/dummyDir1Path.txt"
@@ -74,8 +74,8 @@ var _ = Context("Dirs", func() {
 
 				getContentErr := fmt.Errorf("dummyError")
 
-				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToDirReturns(nil, getContentErr)
+				fakeDirInterpreter := new(dir.FakeInterpreter)
+				fakeDirInterpreter.InterpretReturns(nil, getContentErr)
 
 				expectedErr := fmt.Errorf(
 					"unable to bind %v to %v; error was %v",
@@ -85,7 +85,7 @@ var _ = Context("Dirs", func() {
 				)
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					dirInterpreter: fakeDirInterpreter,
 				}
 
 				/* act */
@@ -100,23 +100,23 @@ var _ = Context("Dirs", func() {
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("expression.EvalToDir doesn't err", func() {
+		Context("dirInterpreter.Interpret doesn't err", func() {
 			Context("value.Dir not prefixed by rootFSPath", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					containerDirPath := "/dummyDir1Path.txt"
 
-					fakeExpression := new(expression.Fake)
+					fakeDirInterpreter := new(dir.FakeInterpreter)
 					filePath := tempDir.Name()
-					fakeExpression.EvalToDirReturns(&model.Value{Dir: &filePath}, nil)
+					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
 					expectedDCGContainerCallDirs := map[string]string{
 						containerDirPath: filePath,
 					}
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
-						rootFSPath: "dummyRootFSPath",
+						dirInterpreter: fakeDirInterpreter,
+						rootFSPath:     "dummyRootFSPath",
 					}
 
 					/* act */
@@ -142,9 +142,9 @@ var _ = Context("Dirs", func() {
 					providedScratchDir := "dummyScratchDir"
 					containerDirPath := "/dummyDir1Path.txt"
 
-					fakeExpression := new(expression.Fake)
+					fakeDirInterpreter := new(dir.FakeInterpreter)
 					filePath := tempDir.Name()
-					fakeExpression.EvalToDirReturns(&model.Value{Dir: &filePath}, nil)
+					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
 					expectedPath := filepath.Join(providedScratchDir, containerDirPath)
 
@@ -154,8 +154,8 @@ var _ = Context("Dirs", func() {
 					fakeDirCopier.OSReturns(errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
-						dirCopier:  fakeDirCopier,
+						dirInterpreter: fakeDirInterpreter,
+						dirCopier:      fakeDirCopier,
 					}
 
 					/* act */
@@ -182,9 +182,9 @@ var _ = Context("Dirs", func() {
 						/* arrange */
 						containerDirPath := "/dummyDir1Path.txt"
 
-						fakeExpression := new(expression.Fake)
+						fakeDirInterpreter := new(dir.FakeInterpreter)
 						filePath := tempDir.Name()
-						fakeExpression.EvalToDirReturns(&model.Value{Dir: &filePath}, nil)
+						fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
 
 						fakeDirCopier := new(dircopier.Fake)
 
@@ -201,8 +201,8 @@ var _ = Context("Dirs", func() {
 						)
 
 						objectUnderTest := _interpreter{
-							expression: fakeExpression,
-							dirCopier:  fakeDirCopier,
+							dirInterpreter: fakeDirInterpreter,
+							dirCopier:      fakeDirCopier,
 						}
 
 						/* act */

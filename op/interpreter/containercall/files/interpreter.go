@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/file"
 	"path/filepath"
 	"strings"
 )
@@ -26,18 +26,18 @@ func NewInterpreter(
 	rootFSPath string,
 ) Interpreter {
 	return _interpreter{
-		expression: expression.New(),
-		fileCopier: filecopier.New(),
-		os:         ios.New(),
-		rootFSPath: rootFSPath,
+		fileCopier:      filecopier.New(),
+		fileInterpreter: file.NewInterpreter(),
+		os:              ios.New(),
+		rootFSPath:      rootFSPath,
 	}
 }
 
 type _interpreter struct {
-	expression expression.Expression
-	fileCopier filecopier.FileCopier
-	os         ios.IOS
-	rootFSPath string
+	fileCopier      filecopier.FileCopier
+	fileInterpreter file.Interpreter
+	os              ios.IOS
+	rootFSPath      string
 }
 
 func (itp _interpreter) Interpret(
@@ -55,7 +55,7 @@ fileLoop:
 			fileExpression = fmt.Sprintf("$(%v)", scgContainerFilePath)
 		}
 
-		fileValue, err := itp.expression.EvalToFile(
+		fileValue, err := itp.fileInterpreter.Interpret(
 			scope,
 			fileExpression,
 			opHandle,

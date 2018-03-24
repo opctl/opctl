@@ -5,7 +5,7 @@ package envvars
 import (
 	"fmt"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 )
 
 type Interpreter interface {
@@ -19,12 +19,12 @@ type Interpreter interface {
 // NewInterpreter returns a new Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		expression: expression.New(),
+		stringInterpreter: stringPkg.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	expression expression.Expression
+	stringInterpreter stringPkg.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -46,7 +46,7 @@ func (itp _interpreter) Interpret(
 			envVarExpression = fmt.Sprintf("$(%v)", envVarName)
 		}
 
-		stringValue, err := itp.expression.EvalToString(scope, envVarExpression, opHandle)
+		stringValue, err := itp.stringInterpreter.Interpret(scope, envVarExpression, opHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind env var to '%v' via implicit ref; '%v' not in scope",

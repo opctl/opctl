@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 )
 
 var _ = Context("Interpreter", func() {
@@ -20,9 +20,7 @@ var _ = Context("Interpreter", func() {
 		Context("scgContainerCallImage is nil", func() {
 			It("should return expected error", func() {
 				/* arrange */
-				objectUnderTest := _interpreter{
-					expression: new(expression.Fake),
-				}
+				objectUnderTest := _interpreter{}
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
@@ -36,7 +34,7 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("scgContainerCallImage isn't nill", func() {
-			It("should call expression.EvalToString w/ expected args", func() {
+			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -53,11 +51,11 @@ var _ = Context("Interpreter", func() {
 					},
 				}
 
-				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					stringInterpreter: fakeStringInterpreter,
 				}
 
 				/* act */
@@ -70,21 +68,21 @@ var _ = Context("Interpreter", func() {
 				/* assert */
 				actualImageRefScope,
 					actualImageRef,
-					actualImageRefOpHandle := fakeExpression.EvalToStringArgsForCall(0)
+					actualImageRefOpHandle := fakeStringInterpreter.InterpretArgsForCall(0)
 				Expect(actualImageRef).To(Equal(providedSCGContainerCallImage.Ref))
 				Expect(actualImageRefScope).To(Equal(providedCurrentScope))
 				Expect(actualImageRefOpHandle).To(Equal(providedOpHandle))
 
 				actualUsernameScope,
 					actualUsername,
-					actualUsernameOpHandle := fakeExpression.EvalToStringArgsForCall(1)
+					actualUsernameOpHandle := fakeStringInterpreter.InterpretArgsForCall(1)
 				Expect(actualUsername).To(Equal(providedSCGContainerCallImage.PullCreds.Username))
 				Expect(actualUsernameScope).To(Equal(providedCurrentScope))
 				Expect(actualUsernameOpHandle).To(Equal(providedOpHandle))
 
 				actualPasswordScope,
 					actualPassword,
-					actualPasswordOpHandle := fakeExpression.EvalToStringArgsForCall(2)
+					actualPasswordOpHandle := fakeStringInterpreter.InterpretArgsForCall(2)
 				Expect(actualPassword).To(Equal(providedSCGContainerCallImage.PullCreds.Password))
 				Expect(actualPasswordScope).To(Equal(providedCurrentScope))
 				Expect(actualPasswordOpHandle).To(Equal(providedOpHandle))
@@ -97,16 +95,16 @@ var _ = Context("Interpreter", func() {
 					PullCreds: &model.SCGPullCreds{},
 				}
 
-				fakeExpression := new(expression.Fake)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 				expectedImageRef := "expectedImageRef"
-				fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedImageRef}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedImageRef}, nil)
 
 				expectedUsername := "expectedUsername"
-				fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedUsername}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedUsername}, nil)
 
 				expectedPassword := "expectedPassword"
-				fakeExpression.EvalToStringReturnsOnCall(2, &model.Value{String: &expectedPassword}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(2, &model.Value{String: &expectedPassword}, nil)
 
 				expectedImage := &model.DCGContainerCallImage{
 					Ref: expectedImageRef,
@@ -117,7 +115,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					stringInterpreter: fakeStringInterpreter,
 				}
 
 				/* act */

@@ -8,8 +8,8 @@ import (
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"path/filepath"
 )
@@ -31,23 +31,23 @@ func NewInterpreter(
 ) Interpreter {
 	return _interpreter{
 		dcgScratchDir:       filepath.Join(rootFSPath, "dcg"),
-		expression:          expression.New(),
 		data:                data.New(),
-		opOpDotYmlGetter:    dotyml.NewGetter(),
 		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 		inputsInterpreter:   inputs.NewInterpreter(),
+		opOpDotYmlGetter:    dotyml.NewGetter(),
+		stringInterpreter:   stringPkg.NewInterpreter(),
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 }
 
 type _interpreter struct {
 	dcgScratchDir       string
-	expression          expression.Expression
 	data                data.Data
-	opOpDotYmlGetter    dotyml.Getter
 	dataCachePath       string
-	uniqueStringFactory uniquestring.UniqueStringFactory
 	inputsInterpreter   inputs.Interpreter
+	opOpDotYmlGetter    dotyml.Getter
+	stringInterpreter   stringPkg.Interpreter
+	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
 func (itp _interpreter) Interpret(
@@ -62,13 +62,13 @@ func (itp _interpreter) Interpret(
 	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		evaluatedUsername, err := itp.expression.EvalToString(scope, scgPullCreds.Username, parentOpHandle)
+		evaluatedUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}
 		pkgPullCreds.Username = *evaluatedUsername.String
 
-		evaluatedPassword, err := itp.expression.EvalToString(scope, scgPullCreds.Password, parentOpHandle)
+		evaluatedPassword, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Password, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}

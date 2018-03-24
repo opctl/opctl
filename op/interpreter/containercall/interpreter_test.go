@@ -12,7 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/files"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/image"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/sockets"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"os"
 	"path/filepath"
 )
@@ -69,7 +69,7 @@ var _ = Context("Interpreter", func() {
 		})
 
 		Context("container.Cmd not empty", func() {
-			It("should call expression.EvalToString w/ expected args for each container.Cmd entry", func() {
+			It("should call stringInterpreter.Interpret w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
 				providedCurrentScope := map[string]*model.Value{
@@ -84,15 +84,15 @@ var _ = Context("Interpreter", func() {
 					},
 				}
 
-				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
 					imageInterpreter:   new(image.FakeInterpreter),
-					expression:         fakeExpression,
+					stringInterpreter:  fakeStringInterpreter,
 					os:                 new(ios.Fake),
 					socketsInterpreter: new(sockets.FakeInterpreter),
 				}
@@ -110,7 +110,8 @@ var _ = Context("Interpreter", func() {
 				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
 					actualScope,
 						actualCmdEntry,
-						actualOpHandle := fakeExpression.EvalToStringArgsForCall(expectedCmdIndex)
+						actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(expectedCmdIndex)
+
 					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
 					Expect(actualScope).To(Equal(providedCurrentScope))
 					Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -130,16 +131,16 @@ var _ = Context("Interpreter", func() {
 					},
 				}
 
-				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToStringReturnsOnCall(0, &model.Value{String: &expectedCmd[0]}, nil)
-				fakeExpression.EvalToStringReturnsOnCall(1, &model.Value{String: &expectedCmd[1]}, nil)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedCmd[0]}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedCmd[1]}, nil)
 
 				objectUnderTest := _interpreter{
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
 					imageInterpreter:   new(image.FakeInterpreter),
-					expression:         fakeExpression,
+					stringInterpreter:  fakeStringInterpreter,
 					os:                 new(ios.Fake),
 					socketsInterpreter: new(sockets.FakeInterpreter),
 				}
