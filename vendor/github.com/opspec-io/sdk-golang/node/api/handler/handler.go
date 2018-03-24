@@ -1,61 +1,60 @@
-/*
-Package handler implements an http.Handler for an opspec node
-*/
 package handler
 
 import (
-	"github.com/golang-interfaces/encoding-ijson"
-	"github.com/golang-interfaces/github.com-gorilla-websocket"
-	"github.com/golang-interfaces/ihttp"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
-	"github.com/opspec-io/sdk-golang/node/api"
-	"github.com/opspec-io/sdk-golang/node/core"
 	"net/http"
+
+	"github.com/opspec-io/sdk-golang/node/api/handler/data"
+	"github.com/opspec-io/sdk-golang/node/api/handler/events"
+	"github.com/opspec-io/sdk-golang/node/api/handler/liveness"
+	"github.com/opspec-io/sdk-golang/node/api/handler/ops"
+	"github.com/opspec-io/sdk-golang/node/api/handler/pkgs"
+	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opspec-io/sdk-golang/util/urlpath"
 )
 
 func New(
 	core core.Core,
 ) http.Handler {
-
-	router := mux.NewRouter()
-
-	router.UseEncodedPath()
-
-	handler := _handler{
-		core:   core,
-		http:   ihttp.New(),
-		json:   ijson.New(),
-		Router: router,
-		upgrader: &websocket.Upgrader{
-			ReadBufferSize:  4096,
-			WriteBufferSize: 4096,
-			CheckOrigin: func(r *http.Request) bool {
-				return true
-			},
-		},
+	return _handler{
+		dataHandler:     data.NewHandler(core),
+		eventsHandler:   events.NewHandler(core),
+		livenessHandler: liveness.NewHandler(core),
+		opsHandler:      ops.NewHandler(core),
+		pkgsHandler:     pkgs.NewHandler(core),
 	}
-
-	router.HandleFunc(api.URLEvents_Stream, handler.events_streams).Methods(http.MethodGet)
-
-	router.HandleFunc(api.URLLiveness, handler.liveness).Methods(http.MethodGet)
-
-	router.HandleFunc(api.URLOps_Kills, handler.ops_kills).Methods(http.MethodPost)
-
-	router.HandleFunc(api.URLOps_Starts, handler.ops_starts).Methods(http.MethodPost)
-
-	router.HandleFunc(api.URLPkgs_Ref_Contents, handler.pkgs_ref_contents).Methods(http.MethodGet)
-
-	router.HandleFunc(api.URLPkgs_Ref_Contents_Path, handler.pkgs_ref_contents_path).Methods(http.MethodGet)
-
-	return router
-
 }
 
 type _handler struct {
-	core core.Core
-	http ihttp.IHTTP
-	json ijson.IJSON
-	*mux.Router
-	upgrader iwebsocket.Upgrader
+	dataHandler     data.Handler
+	eventsHandler   events.Handler
+	livenessHandler liveness.Handler
+	opsHandler      ops.Handler
+	pkgsHandler     pkgs.Handler
+}
+
+func (hdlr _handler) ServeHTTP(
+	httpResp http.ResponseWriter,
+	httpReq *http.Request,
+) {
+	pathSegment, err := urlpath.NextSegment(httpReq.URL)
+	if nil != err {
+		http.Error(httpResp, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	switch pathSegment {
+	case "data":
+		hdlr.dataHandler.Handle(httpResp, httpReq)
+	case "events":
+		hdlr.eventsHandler.Handle(httpResp, httpReq)
+	case "liveness":
+		hdlr.livenessHandler.Handle(httpResp, httpReq)
+	case "ops":
+		hdlr.opsHandler.Handle(httpResp, httpReq)
+	case "pkgs":
+		// deprecated resource
+		hdlr.pkgsHandler.Handle(httpResp, httpReq)
+	default:
+		http.NotFoundHandler().ServeHTTP(httpResp, httpReq)
+	}
 }

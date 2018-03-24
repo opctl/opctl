@@ -8,7 +8,7 @@ export default ({
     <div style={{color: 'rgb(96, 253, 255)'}}>
       ContainerStarted
       Id='{containerStarted.containerId}'
-      PkgRef='{containerStarted.pkgRef}'
+      OpRef='{containerStarted.opRef}'
       Timestamp='{timestamp}'
     </div>
   );

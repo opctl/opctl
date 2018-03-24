@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/file"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -27,7 +27,7 @@ var _ = Context("Files", func() {
 		panic(err)
 	}
 	Context("Interpret", func() {
-		It("should call expression.EvalToFile w/ expected args", func() {
+		It("should call fileInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 
 			containerFilePath := "/dummyFile1Path.txt"
@@ -40,12 +40,12 @@ var _ = Context("Files", func() {
 			providedScope := map[string]*model.Value{}
 			providedScratchDir := "dummyScratchDir"
 
-			fakeExpression := new(expression.Fake)
+			fakeFileInterpreter := new(file.FakeInterpreter)
 			// error to trigger immediate return
-			fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
+			fakeFileInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
-				expression: fakeExpression,
+				fileInterpreter: fakeFileInterpreter,
 			}
 
 			/* act */
@@ -60,13 +60,14 @@ var _ = Context("Files", func() {
 			actualScope,
 				actualExpression,
 				actualOpHandle,
-				actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
+				actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
+
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", containerFilePath)))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
 		})
-		Context("expression.EvalToFile errs", func() {
+		Context("fileInterpreter.Interpret errs", func() {
 			It("should return expected error", func() {
 				/* arrange */
 				containerFilePath := "/dummyFile1Path.txt"
@@ -77,8 +78,8 @@ var _ = Context("Files", func() {
 
 				getContentErr := fmt.Errorf("dummyError")
 
-				fakeExpression := new(expression.Fake)
-				fakeExpression.EvalToFileReturns(nil, getContentErr)
+				fakeFileInterpreter := new(file.FakeInterpreter)
+				fakeFileInterpreter.InterpretReturns(nil, getContentErr)
 
 				expectedErr := fmt.Errorf(
 					"unable to bind %v to %v; error was %v",
@@ -88,7 +89,7 @@ var _ = Context("Files", func() {
 				)
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					fileInterpreter: fakeFileInterpreter,
 				}
 
 				/* act */
@@ -103,23 +104,23 @@ var _ = Context("Files", func() {
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("expression.EvalToFile doesn't err", func() {
+		Context("fileInterpreter.Interpret doesn't err", func() {
 			Context("value.File not prefixed by rootFSPath", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
 
-					fakeExpression := new(expression.Fake)
+					fakeFileInterpreter := new(file.FakeInterpreter)
 					filePath := tempFile.Name()
-					fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
 					expectedDCGContainerCallFiles := map[string]string{
 						containerFilePath: filePath,
 					}
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
-						rootFSPath: "dummyRootFSPath",
+						fileInterpreter: fakeFileInterpreter,
+						rootFSPath:      "dummyRootFSPath",
 					}
 
 					/* act */
@@ -145,9 +146,9 @@ var _ = Context("Files", func() {
 					containerFilePath := "/parent/child/dummyFilePath.txt"
 					providedScratchDirPath := "dummyScratchDirPath"
 
-					fakeExpression := new(expression.Fake)
+					fakeFileInterpreter := new(file.FakeInterpreter)
 					filePath := tempFile.Name()
-					fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
 					fakeOS := new(ios.Fake)
 
@@ -157,8 +158,8 @@ var _ = Context("Files", func() {
 					expectedPath := filepath.Join(providedScratchDirPath, filepath.Dir(containerFilePath))
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
-						os:         fakeOS,
+						fileInterpreter: fakeFileInterpreter,
+						os:              fakeOS,
 					}
 
 					/* act */
@@ -185,9 +186,9 @@ var _ = Context("Files", func() {
 						/* arrange */
 						containerFilePath := "/dummyFile1Path.txt"
 
-						fakeExpression := new(expression.Fake)
+						fakeFileInterpreter := new(file.FakeInterpreter)
 						filePath := tempFile.Name()
-						fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
 						fakeOS := new(ios.Fake)
 
@@ -202,8 +203,8 @@ var _ = Context("Files", func() {
 						)
 
 						objectUnderTest := _interpreter{
-							expression: fakeExpression,
-							os:         fakeOS,
+							fileInterpreter: fakeFileInterpreter,
+							os:              fakeOS,
 						}
 
 						/* act */
@@ -227,9 +228,9 @@ var _ = Context("Files", func() {
 						providedScratchDir := "dummyScratchDir"
 						containerFilePath := "/dummyFile1Path.txt"
 
-						fakeExpression := new(expression.Fake)
+						fakeFileInterpreter := new(file.FakeInterpreter)
 						filePath := tempFile.Name()
-						fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
 						expectedPath := filepath.Join(providedScratchDir, containerFilePath)
 
@@ -239,9 +240,9 @@ var _ = Context("Files", func() {
 						fakeFileCopier.OSReturns(errors.New("dummyError"))
 
 						objectUnderTest := _interpreter{
-							expression: fakeExpression,
-							fileCopier: fakeFileCopier,
-							os:         new(ios.Fake),
+							fileInterpreter: fakeFileInterpreter,
+							fileCopier:      fakeFileCopier,
+							os:              new(ios.Fake),
 						}
 
 						/* act */
@@ -268,9 +269,9 @@ var _ = Context("Files", func() {
 							/* arrange */
 							containerFilePath := "/dummyFile1Path.txt"
 
-							fakeExpression := new(expression.Fake)
+							fakeFileInterpreter := new(file.FakeInterpreter)
 							filePath := tempFile.Name()
-							fakeExpression.EvalToFileReturns(&model.Value{File: &filePath}, nil)
+							fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
 
 							fakeFileCopier := new(filecopier.Fake)
 
@@ -287,9 +288,9 @@ var _ = Context("Files", func() {
 							)
 
 							objectUnderTest := _interpreter{
-								expression: fakeExpression,
-								fileCopier: fakeFileCopier,
-								os:         new(ios.Fake),
+								fileInterpreter: fakeFileInterpreter,
+								fileCopier:      fakeFileCopier,
+								os:              new(ios.Fake),
 							}
 
 							/* act */

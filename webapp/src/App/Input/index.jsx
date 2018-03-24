@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Description from '../Pkg/Input/Description';
+import Description from '../Op/Input/Description';
 
 export default class Input extends Component {
   state = {
@@ -47,8 +47,8 @@ export default class Input extends Component {
             : null
         }
         {
-          this.props.description && this.props.pkgRef
-            ? <Description value={this.props.description} pkgRef={this.props.pkgRef}/>
+          this.props.description && this.props.opRef
+            ? <Description value={this.props.description} opRef={this.props.opRef}/>
             : null
         }
         <input

@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import {Responsive as ResponsiveReactGridLayout} from "react-grid-layout";
 import {HotKeys} from 'react-hotkeys';
-import PkgSelector from '../../PkgSelector';
+import OpSelector from '../../OpSelector';
 import {AutoSizer} from 'react-virtualized';
 import Item from './Item';
 import 'react-grid-layout/css/styles.css';
@@ -33,11 +33,11 @@ export default class OperationsView extends PureComponent {
 
   isItemStartable = (inputs, args) => Object.keys(inputs || []).length === Object.keys(args).length;
 
-  addItem = ({pkg, pkgRef}) => {
-    const isStartable = this.isItemStartable(pkg.inputs, {});
+  addItem = ({op, opRef}) => {
+    const isStartable = this.isItemStartable(op.inputs, {});
     const item = {
-      pkgRef,
-      pkg,
+      opRef,
+      op,
       args: {},
       i: uuidV4(),
       x: (this.state.items.length * 2) % (12),
@@ -86,7 +86,7 @@ export default class OperationsView extends PureComponent {
         const itemIndex = prevState.items.findIndex(item => item.i === itemId);
         const items = [...prevState.items];
         const item = Object.assign({}, prevState.items[itemIndex], configuration);
-        item.isStartable = this.isItemStartable(item.pkg.inputs, item.args);
+        item.isStartable = this.isItemStartable(item.op.inputs, item.args);
         items[itemIndex] = item;
         return {items};
       }
@@ -106,11 +106,11 @@ export default class OperationsView extends PureComponent {
     const item = this.state.items.find(item => item.i === itemId);
 
     if (!item.isStartable) {
-      toast.error(`Unable to start ${item.name || item.pkgRef}; configuration required`);
+      toast.error(`Unable to start ${item.name || item.opRef}; configuration required`);
       return;
     }
 
-    const args = Object.entries(item.pkg.inputs || [])
+    const args = Object.entries(item.op.inputs || [])
       .reduce((args, [name, param]) => {
         if (param.array) args[name] = {array: item.args[name]};
         if (param.boolean) args[name] = {boolean: item.args[name]};
@@ -125,8 +125,8 @@ export default class OperationsView extends PureComponent {
 
     opspecNodeApiClient.op_start({
       args,
-      pkg: {
-        ref: item.pkgRef,
+      op: {
+        ref: item.opRef,
       }
     })
       .then(opId => {
@@ -165,8 +165,8 @@ export default class OperationsView extends PureComponent {
     if (fullScreenItem) {
       return (<Item
         opId={fullScreenItem.opId}
-        pkgRef={fullScreenItem.pkgRef}
-        pkg={fullScreenItem.pkg}
+        opRef={fullScreenItem.opRef}
+        op={fullScreenItem.op}
         name={fullScreenItem.name}
         isFullScreen={true}
         isStartable={fullScreenItem.isStartable}
@@ -193,7 +193,7 @@ export default class OperationsView extends PureComponent {
         }}
         onClick={this.unSelectAllItems}
       >
-        <PkgSelector
+        <OpSelector
           onSelect={this.addItem}
         />
         <AutoSizer>
@@ -214,8 +214,8 @@ export default class OperationsView extends PureComponent {
                   key={item.i}>
                   <Item
                     opId={item.opId}
-                    pkgRef={item.pkgRef}
-                    pkg={item.pkg}
+                    opRef={item.opRef}
+                    op={item.op}
                     name={item.name}
                     isAllItemsSelected={this.state.isAllItemsSelected}
                     isStartable={item.isStartable}

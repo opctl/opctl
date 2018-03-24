@@ -23,7 +23,7 @@ export default ({
     <div style={{color}}>
       OpEnded
       Id='{opEnded.opId}'
-      PkgRef='{opEnded.pkgRef}'
+      OpRef='{opEnded.opRef}'
       Outcome='{opEnded.outcome}'
       Timestamp='{timestamp}'
     </div>

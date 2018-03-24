@@ -7,7 +7,7 @@ import TopMenu from './TopMenu';
 import SideMenu from './SideMenu';
 import {Route} from 'react-router-dom'
 import {ToastContainer} from 'react-toastify';
-import PkgView from './views/Pkg';
+import OpView from './views/Op';
 
 // shared vendor css
 import './bootstrap.css';
@@ -47,7 +47,7 @@ export default class Page extends Component {
             }}>
             <Route exact path="/" component={Operations}/>
             <Route path="/events" component={Events}/>
-            <Route path="/pkg" component={PkgView}/>
+            <Route path="/op" component={OpView}/>
             <Route path="/environment" component={Environment}/>
           </div>
         </div>

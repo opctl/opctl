@@ -94,7 +94,7 @@
     "digestset",
     "reference"
   ]
-  revision = "23bef416bdd6dcff90083288c284367cf6af955e"
+  revision = "83389a148052d74ac602f5f1d62f86ff2f3c4aa5"
 
 [[projects]]
   branch = "master"
@@ -121,7 +121,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "5f17312653c3e4dc5474f86692b09f06262a1ebd"
+  revision = "deed26f7f0f9a9d279b8ac99389f204d9063d1a4"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -351,7 +351,7 @@
   branch = "master"
   name = "github.com/ipfs/go-log"
   packages = ["."]
-  revision = "59b4549305c9c7a81367b9ff34597ba8babea832"
+  revision = "4b54e7d2460df21c1c2d345af2337f91bfc938ca"
 
 [[projects]]
   name = "github.com/jackpal/gateway"
@@ -426,7 +426,7 @@
     "p2p/protocol/identify",
     "p2p/protocol/identify/pb"
   ]
-  revision = "6877a20c8a91eb0d53244d4c358ed8b6aa085eba"
+  revision = "69cb86bb8f588b334ce60348001455470d9ff9da"
 
 [[projects]]
   branch = "master"
@@ -435,7 +435,7 @@
     ".",
     "pb"
   ]
-  revision = "6dc6e9b7982f4e7ecc9277008b071d697dd61adb"
+  revision = "2f2d5a1f58dc246f0f2f09398fb9b3c69dad4d46"
 
 [[projects]]
   branch = "master"
@@ -575,13 +575,13 @@
     "poll",
     "singlepoll"
   ]
-  revision = "fd1c23f6a3bec461e179006b4eef0682a6f4fea5"
+  revision = "b2f2e4cd8932fbd181b9202ffa22bd5206390045"
 
 [[projects]]
   branch = "master"
   name = "github.com/libp2p/go-sockaddr"
   packages = ["net"]
-  revision = "09ae606455f81dc795c406a93b35993fcfc3a912"
+  revision = "f3e9f73a53d14d8257cb9da3d83dda07bbd8b2fe"
 
 [[projects]]
   branch = "master"
@@ -659,7 +659,7 @@
   branch = "master"
   name = "github.com/multiformats/go-multiaddr-dns"
   packages = ["."]
-  revision = "5f14fbd77f3d6828cfdd58ecfac0217238cb0f8c"
+  revision = "c3d4fcd3cbaf54a24b0b68f1461986ede1d59859"
 
 [[projects]]
   branch = "master"
@@ -714,31 +714,53 @@
     "node/api",
     "node/api/client",
     "node/api/handler",
+    "node/api/handler/data",
+    "node/api/handler/data/ref",
+    "node/api/handler/events",
+    "node/api/handler/events/stream",
+    "node/api/handler/liveness",
+    "node/api/handler/ops",
+    "node/api/handler/ops/kills",
+    "node/api/handler/ops/starts",
+    "node/api/handler/pkgs",
+    "node/api/handler/pkgs/ref",
+    "node/api/handler/pkgs/ref/contents",
+    "node/api/handler/pkgs/ref/contents/path",
     "node/core",
     "node/core/containerruntime",
     "node/core/containerruntime/docker",
     "op",
     "op/dotyml",
+    "op/interpreter",
+    "op/interpreter/array",
+    "op/interpreter/array/initializer",
+    "op/interpreter/boolean",
     "op/interpreter/containercall",
     "op/interpreter/containercall/dirs",
     "op/interpreter/containercall/envvars",
     "op/interpreter/containercall/files",
     "op/interpreter/containercall/image",
     "op/interpreter/containercall/sockets",
-    "op/interpreter/expression",
-    "op/interpreter/expression/interpolater",
-    "op/interpreter/expression/interpolater/dereferencer",
+    "op/interpreter/dir",
+    "op/interpreter/file",
+    "op/interpreter/interpolater",
+    "op/interpreter/interpolater/dereferencer",
+    "op/interpreter/number",
+    "op/interpreter/object",
+    "op/interpreter/object/initializer",
     "op/interpreter/opcall",
     "op/interpreter/opcall/inputs",
     "op/interpreter/opcall/inputs/input",
     "op/interpreter/opcall/outputs",
     "op/interpreter/opcall/params",
     "op/interpreter/opcall/params/param",
+    "op/interpreter/string",
     "util/iruntime",
     "util/pubsub",
-    "util/uniquestring"
+    "util/uniquestring",
+    "util/urlpath"
   ]
-  revision = "37d0ec9d5ccbfd7a67410b8ab3a9af48bef1b3b8"
+  revision = "8c65ecba8cf44474edf51cee2b5c550dc29eaa6f"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -988,7 +1010,7 @@
     "unix",
     "windows"
   ]
-  revision = "91ee8cde435411ca3f1cd365e8f20131aed4d0a1"
+  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [[projects]]
   name = "golang.org/x/text"

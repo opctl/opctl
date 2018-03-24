@@ -4,8 +4,8 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@opspec/sdk": "0.0.0-alpha.19",
-    "ansi-to-react": "2.0.0",
+    "@opspec/sdk": "0.0.0-alpha.21",
+    "ansi-to-react": "2.0.6",
     "bootstrap": "4.0.0-beta",
     "brace": "^0.10.0",
     "highlightjs": "^9.10.0",

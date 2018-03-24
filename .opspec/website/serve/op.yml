@@ -25,5 +25,5 @@ run:
           /src: $(srcDir)
         ports:
           '8080': '8080'
-        image: { ref: 'node:9.3.0-alpine' }
+        image: { ref: 'node:9.9.0-alpine' }
         workDir: /src/build

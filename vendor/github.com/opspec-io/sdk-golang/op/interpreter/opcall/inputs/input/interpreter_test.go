@@ -8,7 +8,13 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/array"
+	"github.com/opspec-io/sdk-golang/op/interpreter/boolean"
+	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
+	"github.com/opspec-io/sdk-golang/op/interpreter/file"
+	"github.com/opspec-io/sdk-golang/op/interpreter/number"
+	"github.com/opspec-io/sdk-golang/op/interpreter/object"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/object"
 )
 
 var _ = Context("Interpreter", func() {
@@ -95,18 +101,18 @@ var _ = Context("Interpreter", func() {
 		})
 		Context("Arg is string", func() {
 			Context("Input is array", func() {
-				It("should call expression.EvalToArray w/ expected args", func() {
+				It("should call arrayInterpreter.Interpret w/ expected args", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
 					providedExpression := "[dummyItem]"
 					providedOpHandle := new(data.FakeHandle)
 
-					fakeExpression := new(expression.Fake)
+					fakeArrayInterpreter := new(array.FakeInterpreter)
 
-					fakeExpression.EvalToArrayReturns(nil, errors.New("dummyError"))
+					fakeArrayInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						arrayInterpreter: fakeArrayInterpreter,
 					}
 
 					/* act */
@@ -122,7 +128,7 @@ var _ = Context("Interpreter", func() {
 					/* assert */
 					actualScope,
 						actualExpression,
-						actualOpHandle := fakeExpression.EvalToArrayArgsForCall(0)
+						actualOpHandle := fakeArrayInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(providedScope))
 					Expect(actualExpression).To(Equal(providedExpression))
@@ -130,13 +136,13 @@ var _ = Context("Interpreter", func() {
 
 				})
 				It("should return expected results", func() {
-					fakeExpression := new(expression.Fake)
+					fakeArrayInterpreter := new(array.FakeInterpreter)
 
 					arrayValue := new(model.Value)
-					fakeExpression.EvalToArrayReturns(arrayValue, nil)
+					fakeArrayInterpreter.InterpretReturns(arrayValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						arrayInterpreter: fakeArrayInterpreter,
 					}
 
 					/* act */
@@ -157,13 +163,13 @@ var _ = Context("Interpreter", func() {
 			Context("Input is boolean", func() {
 				It("should return expected results", func() {
 					/* arrange */
-					fakeExpression := new(expression.Fake)
+					fakeBooleanInterpreter := new(boolean.FakeInterpreter)
 
 					interpolatedValue := &model.Value{Boolean: new(bool)}
-					fakeExpression.EvalToBooleanReturns(interpolatedValue, nil)
+					fakeBooleanInterpreter.InterpretReturns(interpolatedValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						booleanInterpreter: fakeBooleanInterpreter,
 					}
 
 					/* act */
@@ -184,13 +190,13 @@ var _ = Context("Interpreter", func() {
 			Context("Input is dir", func() {
 				It("should return expected results", func() {
 					/* arrange */
-					fakeExpression := new(expression.Fake)
+					fakeDirInterpreter := new(dir.FakeInterpreter)
 
 					interpolatedValue := &model.Value{Dir: new(string)}
-					fakeExpression.EvalToDirReturns(interpolatedValue, nil)
+					fakeDirInterpreter.InterpretReturns(interpolatedValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						dirInterpreter: fakeDirInterpreter,
 					}
 
 					/* act */
@@ -209,19 +215,19 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("Input is file", func() {
-				It("should call expression.EvalToFile w/ expected args", func() {
+				It("should call fileInterpreter.Interpret w/ expected args", func() {
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
 					providedExpression := "$(/somePkgFile)"
 					providedOpHandle := new(data.FakeHandle)
 					providedScratchDir := "dummyScratchDir"
 
-					fakeExpression := new(expression.Fake)
+					fakeFileInterpreter := new(file.FakeInterpreter)
 
-					fakeExpression.EvalToFileReturns(nil, errors.New("dummyError"))
+					fakeFileInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						fileInterpreter: fakeFileInterpreter,
 					}
 
 					/* act */
@@ -238,7 +244,7 @@ var _ = Context("Interpreter", func() {
 					actualScope,
 						actualExpression,
 						actualOpHandle,
-						actualScratchDir := fakeExpression.EvalToFileArgsForCall(0)
+						actualScratchDir := fakeFileInterpreter.InterpretArgsForCall(0)
 
 					Expect(actualScope).To(Equal(providedScope))
 					Expect(actualExpression).To(Equal(providedExpression))
@@ -247,13 +253,13 @@ var _ = Context("Interpreter", func() {
 
 				})
 				It("should return expected results", func() {
-					fakeExpression := new(expression.Fake)
+					fakeFileInterpreter := new(file.FakeInterpreter)
 
 					fileValue := new(model.Value)
-					fakeExpression.EvalToFileReturns(fileValue, nil)
+					fakeFileInterpreter.InterpretReturns(fileValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						fileInterpreter: fakeFileInterpreter,
 					}
 
 					/* act */
@@ -274,12 +280,12 @@ var _ = Context("Interpreter", func() {
 			Context("Input is number", func() {
 				It("should call validate w/ expected args", func() {
 					/* arrange */
-					fakeExpression := new(expression.Fake)
+					fakeNumberInterpreter := new(number.FakeInterpreter)
 					interpretedValue := model.Value{Number: new(float64)}
-					fakeExpression.EvalToNumberReturns(&interpretedValue, nil)
+					fakeNumberInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						numberInterpreter: fakeNumberInterpreter,
 					}
 
 					/* act */
@@ -302,12 +308,12 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{Object: &model.ObjectParam{}}
 
-					fakeExpression := new(expression.Fake)
+					fakeObjectInterpreter := new(object.FakeInterpreter)
 					interpretedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
-					fakeExpression.EvalToObjectReturns(&interpretedValue, nil)
+					fakeObjectInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						objectInterpreter: fakeObjectInterpreter,
 					}
 
 					/* act */
@@ -330,12 +336,12 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedParam := &model.Param{String: &model.StringParam{}}
 
-					fakeExpression := new(expression.Fake)
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 					interpretedValue := model.Value{String: new(string)}
-					fakeExpression.EvalToStringReturns(&interpretedValue, nil)
+					fakeStringInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						stringInterpreter: fakeStringInterpreter,
 					}
 
 					/* act */
@@ -357,16 +363,16 @@ var _ = Context("Interpreter", func() {
 				It("should return expected error", func() {
 					/* arrange */
 					providedName := "dummyName"
-					fakeExpression := new(expression.Fake)
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 					interpolatedValue := "dummyValue"
 					interpretedValue := model.Value{String: &interpolatedValue}
-					fakeExpression.EvalToStringReturns(&interpretedValue, nil)
+					fakeStringInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					expectedError := fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", providedName, interpolatedValue)
 
 					objectUnderTest := _interpreter{
-						expression: fakeExpression,
+						stringInterpreter: fakeStringInterpreter,
 					}
 
 					/* act */

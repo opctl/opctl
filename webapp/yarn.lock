@@ -594,9 +594,9 @@
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@codefresh-io/docker-reference/-/docker-reference-0.0.5.tgz#bf039ee1fe373ef823149b6336cc04d5979fbcd4"
 
-"@opspec/sdk@0.0.0-alpha.19":
-  version "0.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@opspec/sdk/-/sdk-0.0.0-alpha.19.tgz#3eb7cc31315cdbc78737446e3a5f88207676dd1d"
+"@opspec/sdk@0.0.0-alpha.20":
+  version "0.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/@opspec/sdk/-/sdk-0.0.0-alpha.20.tgz#d3a98ad53a4c41e64cd3dc5c1424e60f0b728d3e"
   dependencies:
     "@codefresh-io/docker-reference" "^0.0.5"
     ajv "^5.2.3"

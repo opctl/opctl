@@ -8,7 +8,7 @@ export default ({
     <div style={{color: 'rgb(96, 253, 255)'}}>
       OpStarted
       Id='{opStarted.opId}'
-      PkgRef='{opStarted.pkgRef}'
+      OpRef='{opStarted.opRef}'
       Timestamp='{timestamp}'
     </div>
   );

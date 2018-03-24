@@ -39,7 +39,7 @@ func (hd _httpListener) Listen(
 
 	router.PathPrefix("/api/").Handler(
 		hd.StripPrefix(
-			"/api",
+			"/api/",
 			handler.New(
 				hd.opspecNodeCore,
 			),

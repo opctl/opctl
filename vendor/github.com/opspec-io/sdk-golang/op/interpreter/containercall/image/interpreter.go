@@ -4,8 +4,9 @@ package image
 
 import (
 	"errors"
+
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 )
 
 type Interpreter interface {
@@ -16,15 +17,15 @@ type Interpreter interface {
 	) (*model.DCGContainerCallImage, error)
 }
 
-// NewInterpreter returns an initialized Interpreter instance
+// NewInterpreter returns an initialized Interpreter instance.
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		expression: expression.New(),
+		stringInterpreter: stringPkg.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	expression expression.Expression
+	stringInterpreter stringPkg.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -32,34 +33,36 @@ func (itp _interpreter) Interpret(
 	scgContainerCallImage *model.SCGContainerCallImage,
 	opHandle model.DataHandle,
 ) (*model.DCGContainerCallImage, error) {
+
+	if nil == scgContainerCallImage {
+		return nil, errors.New("image required")
+	}
+
 	// construct image
-	if scgContainerCallImage := scgContainerCallImage; scgContainerCallImage != nil {
-		ref, err := itp.expression.EvalToString(scope, scgContainerCallImage.Ref, opHandle)
+	ref, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.Ref, opHandle)
+	if nil != err {
+		return nil, err
+	}
+
+	dcgContainerCallImage := &model.DCGContainerCallImage{
+		Ref: *ref.String,
+	}
+
+	if nil != scgContainerCallImage.PullCreds {
+		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username, opHandle)
 		if nil != err {
 			return nil, err
 		}
 
-		dcgContainerCallImage := &model.DCGContainerCallImage{
-			Ref: *ref.String,
+		password, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Password, opHandle)
+		if nil != err {
+			return nil, err
 		}
 
-		if nil != scgContainerCallImage.PullCreds {
-			username, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Username, opHandle)
-			if nil != err {
-				return nil, err
-			}
-
-			password, err := itp.expression.EvalToString(scope, scgContainerCallImage.PullCreds.Password, opHandle)
-			if nil != err {
-				return nil, err
-			}
-
-			dcgContainerCallImage.PullCreds = &model.PullCreds{
-				Username: *username.String,
-				Password: *password.String,
-			}
+		dcgContainerCallImage.PullCreds = &model.PullCreds{
+			Username: *username.String,
+			Password: *password.String,
 		}
-		return dcgContainerCallImage, nil
 	}
-	return nil, errors.New("image required")
+	return dcgContainerCallImage, nil
 }

@@ -8,7 +8,7 @@ export default ({
     <div style={{color: 'rgb(255, 110, 103)'}}>
       OpErred
       Id='{opErred.opId}'
-      PkgRef='{opErred.pkgRef}'
+      OpRef='{opErred.opRef}'
       Timestamp='{timestamp}'
       Msg='{opErred.msg}'
     </div>

@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {AutoSizer} from 'react-virtualized';
 import {HotKeys} from 'react-hotkeys';
 import Header from './Header'
-import Inputs from '../../../Pkg/Inputs'
+import Inputs from '../../../Op/Inputs'
 import EventStream from '../../../EventStream'
 import {Modal, ModalBody} from 'reactstrap';
 import Input from '../../../Input';
@@ -13,7 +13,7 @@ import './index.css';
 class Item extends PureComponent {
   args = this.props.args;
   state = {
-    name: this.props.name || this.props.pkgRef,
+    name: this.props.name || this.props.opRef,
   };
 
   ensureEventStreamClosed = () => {
@@ -134,10 +134,10 @@ class Item extends PureComponent {
                     onValid={this.handleNameChanged}
                   />
                   <Inputs
-                    value={this.props.pkg.inputs}
+                    value={this.props.op.inputs}
                     onInvalid={this.handleInvalidArg}
                     onValid={this.handleValidArg}
-                    pkgRef={this.props.pkgRef}
+                    opRef={this.props.opRef}
                     values={this.args}
                   />
                 </ModalBody>
