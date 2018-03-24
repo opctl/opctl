@@ -5,8 +5,8 @@ package dotyml
 import (
 	"bytes"
 	"fmt"
-	"github.com/chrisdostert/yaml"
 	"github.com/opspec-io/sdk-golang/model"
+	"gopkg.in/yaml.v2"
 )
 
 // @TODO make private

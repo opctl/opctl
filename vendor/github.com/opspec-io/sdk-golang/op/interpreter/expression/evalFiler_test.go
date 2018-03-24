@@ -64,6 +64,59 @@ var _ = Context("EvalToFile", func() {
 			Expect(actualErr).To(Equal(toFileErr))
 		})
 	})
+	Context("expression is int", func() {
+		It("should call coerce.ToFile w/ expected args", func() {
+			/* arrange */
+			providedExpression := 2
+			providedScratchDir := "dummyScratchDir"
+
+			expectedNumber := float64(providedExpression)
+
+			fakeCoerce := new(coerce.Fake)
+
+			objectUnderTest := _evalFiler{
+				coerce: fakeCoerce,
+			}
+
+			/* act */
+			objectUnderTest.EvalToFile(
+				map[string]*model.Value{},
+				providedExpression,
+				new(data.FakeHandle),
+				providedScratchDir,
+			)
+
+			/* assert */
+			actualValue,
+				actualScratchDir := fakeCoerce.ToFileArgsForCall(0)
+			Expect(*actualValue).To(Equal(model.Value{Number: &expectedNumber}))
+			Expect(actualScratchDir).To(Equal(providedScratchDir))
+		})
+		It("should return expected result", func() {
+			/* arrange */
+			fakeCoerce := new(coerce.Fake)
+			coercedValue := model.Value{Number: new(float64)}
+			toFileErr := errors.New("dummyError")
+
+			fakeCoerce.ToFileReturns(&coercedValue, toFileErr)
+
+			objectUnderTest := _evalFiler{
+				coerce: fakeCoerce,
+			}
+
+			/* act */
+			actualValue, actualErr := objectUnderTest.EvalToFile(
+				map[string]*model.Value{},
+				2,
+				new(data.FakeHandle),
+				"dummyScratchDir",
+			)
+
+			/* assert */
+			Expect(*actualValue).To(Equal(coercedValue))
+			Expect(actualErr).To(Equal(toFileErr))
+		})
+	})
 	Context("expression is map[string]interface{}", func() {
 		It("should call evalObjectInitializerer.Eval w/ expected args", func() {
 

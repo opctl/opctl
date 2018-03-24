@@ -21,8 +21,11 @@
 
 ignored = ["github.com/Sirupsen/logrus"]
 
+# why is gopkg.in/yaml.v2 being routed to a fork?
+# to workaround go-yaml#139 in a pragmatic way
 [[constraint]]
-  name = "github.com/chrisdostert/yaml"
+  name = "gopkg.in/yaml.v2"
+  source = "github.com/chrisdostert/yaml"
   branch = "v2"
 
 [[constraint]]

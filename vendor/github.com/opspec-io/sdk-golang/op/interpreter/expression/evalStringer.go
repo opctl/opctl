@@ -42,6 +42,9 @@ func (es _evalStringer) EvalToString(
 	switch expression := expression.(type) {
 	case float64:
 		value = &model.Value{Number: &expression}
+	case int:
+		expressionAsFloat64 := float64(expression)
+		value = &model.Value{Number: &expressionAsFloat64}
 	case map[string]interface{}:
 		objectValue, err := es.evalObjectInitializerer.Eval(
 			expression,

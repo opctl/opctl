@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/chrisdostert/yaml"
+	"gopkg.in/yaml.v2"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

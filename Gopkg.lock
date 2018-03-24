@@ -63,12 +63,6 @@
   revision = "2be2f12b358dc57d70b8f501b00be450192efbc3"
 
 [[projects]]
-  branch = "v2"
-  name = "github.com/chrisdostert/yaml"
-  packages = ["."]
-  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
-
-[[projects]]
   name = "github.com/coreos/go-semver"
   packages = ["semver"]
   revision = "8ab6407b697782a06568d4b7f1db25550ec2e4c6"
@@ -744,7 +738,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "0bdeaeb2226c531318838b66b53b667c339786b3"
+  revision = "37d0ec9d5ccbfd7a67410b8ab3a9af48bef1b3b8"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -1089,14 +1083,15 @@
   version = "v0.1.2"
 
 [[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
-  version = "v2.1.1"
+  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
+  source = "github.com/chrisdostert/yaml"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a26aa7ec48ba398da3e2ca57b2908b347f98ac2061db1f5183f455b121d098b4"
+  inputs-digest = "c301dcd51ea53bf789abb085b46dde7d549c4ac7094244c10e706521f3b67615"
   solver-name = "gps-cdcl"
   solver-version = 1

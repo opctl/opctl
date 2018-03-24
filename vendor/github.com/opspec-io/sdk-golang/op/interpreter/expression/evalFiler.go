@@ -19,7 +19,6 @@ type evalFiler interface {
 	// Examples of valid file expressions:
 	// scope ref: $(scope-ref)
 	// scope ref w/ path: $(scope-ref/file.txt)
-	// scope ref w/ deprecated path: $(scope-ref)/file.txt
 	// pkg fs ref: $(/pkg-fs-ref)
 	// pkg fs ref w/ path: $(/pkg-fs-ref/file.txt)
 	EvalToFile(
@@ -59,6 +58,9 @@ func (ef _evalFiler) EvalToFile(
 	switch expression := expression.(type) {
 	case float64:
 		return ef.coerce.ToFile(&model.Value{Number: &expression}, scratchDir)
+	case int:
+		expressionAsFloat64 := float64(expression)
+		return ef.coerce.ToFile(&model.Value{Number: &expressionAsFloat64}, scratchDir)
 	case map[string]interface{}:
 		objectValue, err := ef.evalObjectInitializerer.Eval(
 			expression,
