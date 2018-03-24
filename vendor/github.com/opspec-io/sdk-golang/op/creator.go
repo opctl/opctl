@@ -3,11 +3,11 @@ package op
 //go:generate counterfeiter -o ./fakeCreator.go --fake-name FakeCreator ./ Creator
 
 import (
+	"github.com/chrisdostert/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"gopkg.in/yaml.v2"
 	"path/filepath"
 )
 

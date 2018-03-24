@@ -22,10 +22,10 @@ var Dns6Protocol = ma.Protocol{
 	Transcoder: DnsTranscoder,
 }
 var DnsaddrProtocol = ma.Protocol{
-	Code:       12345,
+	Code:       56,
 	Size:       ma.LengthPrefixedVarSize,
 	Name:       "dnsaddr",
-	VCode:      ma.CodeToVarint(12345),
+	VCode:      ma.CodeToVarint(56),
 	Transcoder: DnsTranscoder,
 }
 

@@ -1,9 +1,5 @@
 package model
 
-import (
-	"encoding/json"
-)
-
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
 	Container *SCGContainerCall `yaml:"container,omitempty"`
@@ -57,9 +53,9 @@ type SCGOpCall struct {
 	Outputs map[string]string `yaml:"outputs,omitempty"`
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface to handle deprecated properties gracefully in one place
-func (soc *SCGOpCall) UnmarshalJSON(
-	b []byte,
+// UnmarshalYAML implements the yaml.Unmarshaler interface to handle deprecated properties gracefully in one place
+func (soc *SCGOpCall) UnmarshalYAML(
+	unmarshal func(interface{}) error,
 ) error {
 	type deprecatedPkg struct {
 		// Ref represents a references to the op; will be interpolated
@@ -80,7 +76,7 @@ func (soc *SCGOpCall) UnmarshalJSON(
 		// binds scope to outputs of referenced op
 		Outputs map[string]string `yaml:"outputs,omitempty"`
 	}{}
-	if err := json.Unmarshal(b, &deprecated); nil != err {
+	if err := unmarshal(&deprecated); nil != err {
 		return err
 	}
 

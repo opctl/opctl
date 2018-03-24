@@ -17,12 +17,6 @@
   revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
 
 [[projects]]
-  name = "github.com/Jeffail/gabs"
-  packages = ["."]
-  revision = "2a3aa15961d5fee6047b8151b67ac2f08ba2c48c"
-  version = "1.0"
-
-[[projects]]
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
   revision = "7da180ee92d8bd8bb8c37fc560e673e6557c392f"
@@ -67,6 +61,12 @@
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   revision = "2be2f12b358dc57d70b8f501b00be450192efbc3"
+
+[[projects]]
+  branch = "v2"
+  name = "github.com/chrisdostert/yaml"
+  packages = ["."]
+  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
 
 [[projects]]
   name = "github.com/coreos/go-semver"
@@ -127,7 +127,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "766d9edf39b79e11018bb0f55056b5bd915ddf3c"
+  revision = "5f17312653c3e4dc5474f86692b09f06262a1ebd"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -224,6 +224,12 @@
   name = "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
   packages = ["."]
   revision = "c86b4da0f9b3ee69c524006032c209f986d663b7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang-interfaces/gopkg.in-yaml.v2"
+  packages = ["."]
+  revision = "18ed951e741ba2e449a89a7f460a17835d28746d"
 
 [[projects]]
   branch = "master"
@@ -575,7 +581,7 @@
     "poll",
     "singlepoll"
   ]
-  revision = "99b8511da09c3f00966861e1ed210e808c568112"
+  revision = "fd1c23f6a3bec461e179006b4eef0682a6f4fea5"
 
 [[projects]]
   branch = "master"
@@ -659,7 +665,7 @@
   branch = "master"
   name = "github.com/multiformats/go-multiaddr-dns"
   packages = ["."]
-  revision = "b431cd0a670beb991d0d0dc3defd2b89125aa34e"
+  revision = "5f14fbd77f3d6828cfdd58ecfac0217238cb0f8c"
 
 [[projects]]
   branch = "master"
@@ -738,7 +744,7 @@
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "60a1666fc75b1a3441bb2ab342c0c8d12d586ebb"
+  revision = "0bdeaeb2226c531318838b66b53b667c339786b3"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"

@@ -3,10 +3,10 @@ package dotyml
 import (
 	"errors"
 	"fmt"
+	"github.com/chrisdostert/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"gopkg.in/yaml.v2"
 )
 
 var _ = Context("unmarshaller", func() {
@@ -69,12 +69,12 @@ var _ = Context("unmarshaller", func() {
 				dummyParams := map[string]*model.Param{
 					"dummyName": {
 						String: &model.StringParam{
-							Constraints: &model.StringConstraints{
-								MinLength: 0,
-								MaxLength: 1000,
-								Pattern:   "dummyPattern",
-								Format:    "dummyFormat",
-								Enum:      []string{"dummyEnumItem1"},
+							Constraints: map[string]interface{}{
+								"MinLength": 0,
+								"MaxLength": 1000,
+								"Pattern":   "dummyPattern",
+								"Format":    "dummyFormat",
+								"Enum":      []interface{}{"dummyEnumItem1"},
 							},
 							Default:     &paramDefault,
 							Description: "dummyDescription",
@@ -108,7 +108,7 @@ var _ = Context("unmarshaller", func() {
 				actualOpDotYml, _ := objectUnderTest.Unmarshal(providedBytes)
 
 				/* assert */
-				Expect(actualOpDotYml).To(Equal(expectedOpDotYml))
+				Expect(*actualOpDotYml).To(Equal(*expectedOpDotYml))
 
 			})
 		})

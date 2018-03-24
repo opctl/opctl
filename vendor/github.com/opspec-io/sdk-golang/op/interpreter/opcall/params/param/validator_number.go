@@ -12,7 +12,7 @@ import (
 // validateNumber validates a value against a number parameter
 func (vdt _validator) validateNumber(
 	value *model.Value,
-	constraints *model.NumberConstraints,
+	constraints map[string]interface{},
 ) []error {
 	valueAsNumber, err := vdt.coerce.ToNumber(value)
 	if nil != err {
@@ -22,15 +22,6 @@ func (vdt _validator) validateNumber(
 	// guard no constraints
 	if nil != constraints {
 		errs := []error{}
-
-		constraintsJsonBytes, err := json.Marshal(constraints)
-		if err != nil {
-			// handle syntax errors specially
-			return append(
-				errs,
-				fmt.Errorf("error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()),
-			)
-		}
 
 		valueJsonBytes, err := json.Marshal(valueAsNumber.Number)
 		if err != nil {
@@ -42,7 +33,7 @@ func (vdt _validator) validateNumber(
 		}
 
 		result, err := gojsonschema.Validate(
-			gojsonschema.NewBytesLoader(constraintsJsonBytes),
+			gojsonschema.NewGoLoader(constraints),
 			gojsonschema.NewBytesLoader(valueJsonBytes),
 		)
 		if err != nil {

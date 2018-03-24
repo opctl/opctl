@@ -3,7 +3,7 @@ package expression
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/encoding-ijson"
+	"github.com/golang-interfaces/gopkg.in-yaml.v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
@@ -15,7 +15,7 @@ import (
 var _ = Context("evalObjectInitializerer", func() {
 	Context("Eval", func() {
 		Context("expression contains shorthand property", func() {
-			It("should call json.Marshal w/ expected args", func() {
+			It("should call yaml.Marshal w/ expected args", func() {
 				/* arrange */
 				shortHandPropName := "prop1Name"
 				providedExpression := map[string]interface{}{
@@ -30,12 +30,12 @@ var _ = Context("evalObjectInitializerer", func() {
 						interpolater.RefEnd),
 				}
 
-				fakeJSON := new(ijson.Fake)
+				fakeYAML := new(iyaml.Fake)
 				// err to trigger immediate return
-				fakeJSON.MarshalReturns([]byte{}, errors.New("dummyError"))
+				fakeYAML.MarshalReturns([]byte{}, errors.New("dummyError"))
 
 				objectUnderTest := _evalObjectInitializerer{
-					json: fakeJSON,
+					yaml: fakeYAML,
 				}
 
 				/* act */
@@ -46,23 +46,23 @@ var _ = Context("evalObjectInitializerer", func() {
 				)
 
 				/* assert */
-				actualExpression := fakeJSON.MarshalArgsForCall(0)
+				actualExpression := fakeYAML.MarshalArgsForCall(0)
 
 				Expect(actualExpression).To(Equal(expectedExpression))
 			})
 		})
-		It("should call json.Marshal w/ expected args", func() {
+		It("should call yaml.Marshal w/ expected args", func() {
 			/* arrange */
 			providedExpression := map[string]interface{}{
 				"prop1Name": "prop1Value",
 			}
 
-			fakeJSON := new(ijson.Fake)
+			fakeYAML := new(iyaml.Fake)
 			// err to trigger immediate return
-			fakeJSON.MarshalReturns([]byte{}, errors.New("dummyError"))
+			fakeYAML.MarshalReturns([]byte{}, errors.New("dummyError"))
 
 			objectUnderTest := _evalObjectInitializerer{
-				json: fakeJSON,
+				yaml: fakeYAML,
 			}
 
 			/* act */
@@ -73,21 +73,21 @@ var _ = Context("evalObjectInitializerer", func() {
 			)
 
 			/* assert */
-			actualExpression := fakeJSON.MarshalArgsForCall(0)
+			actualExpression := fakeYAML.MarshalArgsForCall(0)
 
 			Expect(actualExpression).To(Equal(providedExpression))
 		})
-		Context("json.Marshal errs", func() {
+		Context("yaml.Marshal errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedExpression := map[string]interface{}{
 					"prop1Name": "prop1Value",
 				}
 
-				fakeJSON := new(ijson.Fake)
+				fakeYAML := new(iyaml.Fake)
 				marshalErr := errors.New("marshalErr")
 				// err to trigger immediate return
-				fakeJSON.MarshalReturns([]byte{}, marshalErr)
+				fakeYAML.MarshalReturns([]byte{}, marshalErr)
 
 				expectedErr := fmt.Errorf(
 					"unable to eval %+v as objectInitializer; error was %v",
@@ -96,7 +96,7 @@ var _ = Context("evalObjectInitializerer", func() {
 				)
 
 				objectUnderTest := _evalObjectInitializerer{
-					json: fakeJSON,
+					yaml: fakeYAML,
 				}
 
 				/* act */
@@ -111,23 +111,23 @@ var _ = Context("evalObjectInitializerer", func() {
 
 			})
 		})
-		Context("json.Marshal doesn't err", func() {
+		Context("yaml.Marshal doesn't err", func() {
 			It("should call interpolater.Interpolate w/ expected args", func() {
 
 				/* arrange */
 				providedScope := map[string]*model.Value{"dummyName": {}}
 				providedOpRef := new(data.FakeHandle)
 
-				fakeJSON := new(ijson.Fake)
+				fakeYAML := new(iyaml.Fake)
 				expectedExpression := []byte{2, 3, 4, 1}
-				fakeJSON.MarshalReturns(expectedExpression, nil)
+				fakeYAML.MarshalReturns(expectedExpression, nil)
 
 				fakeInterpolater := new(interpolater.Fake)
 				// err to trigger immediate return
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 				objectUnderTest := _evalObjectInitializerer{
-					json:         fakeJSON,
+					yaml:         fakeYAML,
 					interpolater: fakeInterpolater,
 				}
 
@@ -168,7 +168,7 @@ var _ = Context("evalObjectInitializerer", func() {
 					)
 
 					objectUnderTest := _evalObjectInitializerer{
-						json:         new(ijson.Fake),
+						yaml:         new(iyaml.Fake),
 						interpolater: fakeInterpolater,
 					}
 
@@ -185,13 +185,13 @@ var _ = Context("evalObjectInitializerer", func() {
 				})
 			})
 			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call json.Unmarshal w/ expected args", func() {
+				It("should call yaml.Unmarshal w/ expected args", func() {
 
 					/* arrange */
 					providedScope := map[string]*model.Value{"dummyName": {}}
 					providedOpRef := new(data.FakeHandle)
 
-					fakeJSON := new(ijson.Fake)
+					fakeYAML := new(iyaml.Fake)
 
 					fakeInterpolater := new(interpolater.Fake)
 					expectedString := "dummyString"
@@ -199,7 +199,7 @@ var _ = Context("evalObjectInitializerer", func() {
 					fakeInterpolater.InterpolateReturns(expectedString, nil)
 
 					objectUnderTest := _evalObjectInitializerer{
-						json:         fakeJSON,
+						yaml:         fakeYAML,
 						interpolater: fakeInterpolater,
 					}
 
@@ -211,12 +211,12 @@ var _ = Context("evalObjectInitializerer", func() {
 					)
 
 					/* assert */
-					actualBytes, _ := fakeJSON.UnmarshalArgsForCall(0)
+					actualBytes, _ := fakeYAML.UnmarshalArgsForCall(0)
 
 					Expect(string(actualBytes)).To(Equal(string(expectedString)))
 
 				})
-				Context("json.Unmarshal errs", func() {
+				Context("yaml.Unmarshal errs", func() {
 					It("should return expected result", func() {
 
 						/* arrange */
@@ -224,10 +224,10 @@ var _ = Context("evalObjectInitializerer", func() {
 							"prop1Name": "prop1Value",
 						}
 
-						fakeJSON := new(ijson.Fake)
+						fakeYAML := new(iyaml.Fake)
 						unmarshalErr := errors.New("unmarshalErr")
 						// err to trigger immediate return
-						fakeJSON.UnmarshalReturns(unmarshalErr)
+						fakeYAML.UnmarshalReturns(unmarshalErr)
 
 						expectedErr := fmt.Errorf(
 							"unable to eval %+v as objectInitializer; error was %v",
@@ -236,7 +236,7 @@ var _ = Context("evalObjectInitializerer", func() {
 						)
 
 						objectUnderTest := _evalObjectInitializerer{
-							json:         fakeJSON,
+							yaml:         fakeYAML,
 							interpolater: new(interpolater.Fake),
 						}
 
@@ -251,7 +251,7 @@ var _ = Context("evalObjectInitializerer", func() {
 						Expect(actualErr).To(Equal(expectedErr))
 					})
 				})
-				Context("json.Unmarshal doesn't err", func() {
+				Context("yaml.Unmarshal doesn't err", func() {
 					It("should return expected result", func() {
 
 						/* arrange */
@@ -259,13 +259,13 @@ var _ = Context("evalObjectInitializerer", func() {
 							"prop1Name": "prop1Value",
 						}
 
-						fakeJSON := new(ijson.Fake)
+						fakeYAML := new(iyaml.Fake)
 
 						mapKey := "dummyMapKey"
 						mapValue := "dummyMapValue"
 						expectedValue := map[string]interface{}{mapKey: mapValue}
 
-						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
+						fakeYAML.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().SetMapIndex(
 								reflect.ValueOf(mapKey),
 								reflect.ValueOf(mapValue),
@@ -274,7 +274,7 @@ var _ = Context("evalObjectInitializerer", func() {
 						}
 
 						objectUnderTest := _evalObjectInitializerer{
-							json:         fakeJSON,
+							yaml:         fakeYAML,
 							interpolater: new(interpolater.Fake),
 						}
 

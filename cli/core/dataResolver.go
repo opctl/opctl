@@ -123,16 +123,16 @@ var (
 		usernameInputName: {
 			String: &model.StringParam{
 				Description: "username used to auth w/ the pkg source",
-				Constraints: &model.StringConstraints{
-					MinLength: 1,
+				Constraints: map[string]interface{}{
+					"MinLength": 1,
 				},
 			},
 		},
 		passwordInputName: {
 			String: &model.StringParam{
 				Description: "password used to auth w/ the pkg source",
-				Constraints: &model.StringConstraints{
-					MinLength: 1,
+				Constraints: map[string]interface{}{
+					"MinLength": 1,
 				},
 				IsSecret: true,
 			},

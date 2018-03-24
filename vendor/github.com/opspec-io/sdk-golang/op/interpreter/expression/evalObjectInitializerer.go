@@ -2,7 +2,7 @@ package expression
 
 import (
 	"fmt"
-	"github.com/golang-interfaces/encoding-ijson"
+	"github.com/golang-interfaces/gopkg.in-yaml.v2"
 	"github.com/opspec-io/sdk-golang/data/coerce"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/expression/interpolater"
@@ -24,14 +24,14 @@ func newEvalObjectInitializerer() evalObjectInitializerer {
 	return _evalObjectInitializerer{
 		coerce:       coerce.New(),
 		interpolater: interpolater.New(),
-		json:         ijson.New(),
+		yaml:         iyaml.New(),
 	}
 }
 
 type _evalObjectInitializerer struct {
 	coerce       coerce.Coerce
 	interpolater interpolater.Interpolater
-	json         ijson.IJSON
+	yaml         iyaml.IYAML
 }
 
 func (eoi _evalObjectInitializerer) Eval(
@@ -50,12 +50,12 @@ func (eoi _evalObjectInitializerer) Eval(
 		}
 	}
 
-	objectBytes, err := eoi.json.Marshal(expressionWithExpandedShorthandProps)
+	objectBytes, err := eoi.yaml.Marshal(expressionWithExpandedShorthandProps)
 	if nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as objectInitializer; error was %v", expression, err)
 	}
 
-	objectJSON, err := eoi.interpolater.Interpolate(
+	objectYAML, err := eoi.interpolater.Interpolate(
 		string(objectBytes),
 		scope,
 		opHandle,
@@ -65,7 +65,7 @@ func (eoi _evalObjectInitializerer) Eval(
 	}
 
 	object := map[string]interface{}{}
-	if err := eoi.json.Unmarshal([]byte(objectJSON), &object); nil != err {
+	if err := eoi.yaml.Unmarshal([]byte(objectYAML), &object); nil != err {
 		return nil, fmt.Errorf("unable to eval %+v as objectInitializer; error was %v", expression, err)
 	}
 

@@ -47,6 +47,12 @@
   version = "v1.3.1"
 
 [[projects]]
+  branch = "v2"
+  name = "github.com/chrisdostert/yaml"
+  packages = ["."]
+  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
+
+[[projects]]
   name = "github.com/dgraph-io/badger"
   packages = [
     ".",
@@ -72,7 +78,7 @@
     "digestset",
     "reference"
   ]
-  revision = "6fca8d6e6713acbdf3f9ca40cf6370fc5ee5ee53"
+  revision = "23bef416bdd6dcff90083288c284367cf6af955e"
 
 [[projects]]
   branch = "master"
@@ -99,7 +105,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "fb95dc7eac3ae177d61f7bd67aea5ddeb94454b8"
+  revision = "2e3056128cc839b5fdee8edeb651f4ecc244db78"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -159,6 +165,12 @@
   name = "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
   packages = ["."]
   revision = "c86b4da0f9b3ee69c524006032c209f986d663b7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang-interfaces/gopkg.in-yaml.v2"
+  packages = ["."]
+  revision = "18ed951e741ba2e449a89a7f460a17835d28746d"
 
 [[projects]]
   branch = "master"
@@ -241,8 +253,8 @@
 [[projects]]
   name = "github.com/kevinburke/ssh_config"
   packages = ["."]
-  revision = "0ff8514904a8ebfcfb3c32ad73e1f8498a7f81b4"
-  version = "0.3"
+  revision = "9fc7bb800b555d63157c65a904c86a2cc7b4e795"
+  version = "0.4"
 
 [[projects]]
   branch = "master"
@@ -458,7 +470,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "182114d582623c1caa54f73de9c7224e23a48487"
+  revision = "88942b9c40a4c9d203b82b3731787b672d6e809b"
 
 [[projects]]
   branch = "master"
@@ -473,13 +485,13 @@
     "proxy",
     "trace"
   ]
-  revision = "803fdb99c0f72e493c28ef2099d250a9c989d8ff"
+  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sync"
   packages = ["singleflight"]
-  revision = "fd80eb99c8f653c847d294a001bdf2a3a6f768f5"
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
 
 [[projects]]
   branch = "master"
@@ -488,7 +500,7 @@
     "unix",
     "windows"
   ]
-  revision = "8c0ece68c28377f4c326d85b94f8df0dace46f80"
+  revision = "91ee8cde435411ca3f1cd365e8f20131aed4d0a1"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -591,6 +603,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2693287be83c937b03adcde119d06a0e99e6e89a612c92d0d4483da899185a9d"
+  inputs-digest = "a2626800a6e90c96f909e70b74815d881d07494f674224581e8b0b4727c0be89"
   solver-name = "gps-cdcl"
   solver-version = 1
