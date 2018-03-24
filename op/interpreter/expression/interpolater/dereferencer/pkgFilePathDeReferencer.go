@@ -34,13 +34,13 @@ func (pfd _pkgFilePathDeReferencer) DeReferencePkgFilePath(
 		// pkg content ref
 		contentReadSeekCloser, err := opHandle.GetContent(context.TODO(), ref)
 		if nil != err {
-			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
+			return "", true, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}
 		defer contentReadSeekCloser.Close()
 
 		contentBytes, err := ioutil.ReadAll(contentReadSeekCloser)
 		if nil != err {
-			return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
+			return "", true, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 		}
 		return string(contentBytes), true, nil
 	}

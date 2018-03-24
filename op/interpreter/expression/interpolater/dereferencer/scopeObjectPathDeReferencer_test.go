@@ -17,13 +17,21 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				/* arrange */
 
 				// build up object
+				pathSegmentDoesNotExist := "pathSegmentDoesNotExist"
+
 				pathSegment1 := "pathSegment1"
 				pathSegment1Value := map[string]interface{}{}
 
 				objectRef := "dummyObjectRef"
 				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
 
-				providedRef := strings.Join([]string{objectRef, pathSegment1, "doesNotExist"}, ".")
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegmentDoesNotExist}, ".")
+
+				expectedErr := fmt.Errorf(
+					"unable to deReference '%v'; error was: unable to deReference '%v'; path doesn't exist",
+					providedRef,
+					pathSegmentDoesNotExist,
+				)
 
 				fakeCoerce := new(coerce.Fake)
 				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
@@ -42,8 +50,46 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				/* assert */
 				Expect(actualString).To(Equal(""))
-				Expect(actualOk).To(Equal(false))
-				Expect(actualErr).To(Equal(fmt.Errorf("unable to deReference '%v'; path doesn't exist", providedRef)))
+				Expect(actualOk).To(Equal(true))
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("property is bool", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := true
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
+				// err to trigger immediate return
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _scopeObjectPathDeReferencer{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				objectUnderTest.DeReferenceScopeObjectPath(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+				)
+
+				/* assert */
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Boolean: &pathSegment2Value}))
 			})
 		})
 		Context("property is float64", func() {
@@ -84,13 +130,15 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				Expect(*actualValue).To(Equal(model.Value{Number: &pathSegment2Value}))
 			})
 		})
-		Context("property is map[string]interface{}", func() {
+		Context("property is int", func() {
 			It("should call coerce.Coerce w/ expected args", func() {
 				/* arrange */
 
 				// build up object
 				pathSegment2 := "pathSegment2"
-				pathSegment2Value := map[string]interface{}{"dummyKey": "dummyValue"}
+				pathSegment2Value := 2
+
+				expectedNumber := float64(pathSegment2Value)
 
 				pathSegment1 := "pathSegment1"
 				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
@@ -119,11 +167,48 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				/* assert */
 				actualValue := fakeCoerce.ToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Number: &expectedNumber}))
+			})
+		})
+		Context("property is map[string]interface{}", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
+				/* arrange */
+
+				// build up object
+				pathSegment2 := "pathSegment2"
+				pathSegment2Value := map[string]interface{}{"dummyKey": "dummyValue"}
+
+				pathSegment1 := "pathSegment1"
+				pathSegment1Value := map[string]interface{}{pathSegment2: pathSegment2Value}
+
+				objectRef := "dummyObjectRef"
+				objectValue := map[string]interface{}{pathSegment1: pathSegment1Value}
+
+				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
+
+				fakeCoerce := new(coerce.Fake)
+				// err to trigger immediate return
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
+
+				objectUnderTest := _scopeObjectPathDeReferencer{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				objectUnderTest.DeReferenceScopeObjectPath(
+					providedRef,
+					map[string]*model.Value{
+						objectRef: {Object: objectValue},
+					},
+				)
+
+				/* assert */
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
 				Expect(*actualValue).To(Equal(model.Value{Object: pathSegment2Value}))
 			})
 		})
 		Context("property is string", func() {
-			It("should return expected result", func() {
+			It("should call coerce.Coerce w/ expected args", func() {
 				/* arrange */
 
 				// build up object
@@ -140,13 +225,15 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 
 				fakeCoerce := new(coerce.Fake)
 				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
+				// err to trigger immediate return
+				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _scopeObjectPathDeReferencer{
 					coerce: fakeCoerce,
 				}
 
 				/* act */
-				actualString, actualOk, actualErr := objectUnderTest.DeReferenceScopeObjectPath(
+				objectUnderTest.DeReferenceScopeObjectPath(
 					providedRef,
 					map[string]*model.Value{
 						objectRef: {Object: objectValue},
@@ -154,9 +241,8 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				)
 
 				/* assert */
-				Expect(actualString).To(Equal(pathSegment2Value))
-				Expect(actualOk).To(Equal(true))
-				Expect(actualErr).To(BeNil())
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{String: &pathSegment2Value}))
 			})
 		})
 		Context("property is []interface{}", func() {
