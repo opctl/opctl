@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
+	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
 	"path/filepath"
 	"strings"
 )
@@ -26,18 +26,18 @@ func NewInterpreter(
 	rootFSPath string,
 ) Interpreter {
 	return _interpreter{
-		dirCopier:  dircopier.New(),
-		expression: expression.New(),
-		os:         ios.New(),
-		rootFSPath: rootFSPath,
+		dirCopier:      dircopier.New(),
+		dirInterpreter: dir.NewInterpreter(),
+		os:             ios.New(),
+		rootFSPath:     rootFSPath,
 	}
 }
 
 type _interpreter struct {
-	dirCopier  dircopier.DirCopier
-	expression expression.Expression
-	os         ios.IOS
-	rootFSPath string
+	dirCopier      dircopier.DirCopier
+	dirInterpreter dir.Interpreter
+	os             ios.IOS
+	rootFSPath     string
 }
 
 func (itp _interpreter) Interpret(
@@ -55,7 +55,7 @@ dirLoop:
 			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
-		dirValue, err := itp.expression.EvalToDir(
+		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			dirExpression,
 			opHandle,

@@ -1,13 +1,13 @@
 package envvars
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/expression"
-	"github.com/pkg/errors"
+	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 )
 
 var _ = Context("Interpreter", func() {
@@ -44,7 +44,7 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 		})
-		It("should call expression.EvalToString w/ expected args", func() {
+		It("should call stringInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			envVarName := "dummyEnvVar"
 			providedScope := map[string]*model.Value{
@@ -52,11 +52,11 @@ var _ = Context("Interpreter", func() {
 			}
 			providedOpHandle := new(data.FakeHandle)
 
-			fakeExpression := new(expression.Fake)
-			fakeExpression.EvalToStringReturns(&model.Value{String: new(string)}, nil)
+			fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+			fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
 
 			objectUnderTest := _interpreter{
-				expression: fakeExpression,
+				stringInterpreter: fakeStringInterpreter,
 			}
 
 			/* act */
@@ -72,21 +72,21 @@ var _ = Context("Interpreter", func() {
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpHandle := fakeExpression.EvalToStringArgsForCall(0)
+				actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", envVarName)))
 			Expect(actualOpHandle).To(Equal(actualOpHandle))
 		})
-		Context("expression.EvalToString errs", func() {
+		Context("stringInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				envVarName := "dummyEnvVar"
 
-				fakeExpression := new(expression.Fake)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 				interpretErr := errors.New("dummyError")
-				fakeExpression.EvalToStringReturns(nil, interpretErr)
+				fakeStringInterpreter.InterpretReturns(nil, interpretErr)
 
 				expectedErr := fmt.Errorf(
 					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
@@ -95,7 +95,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					stringInterpreter: fakeStringInterpreter,
 				}
 
 				/* act */
@@ -114,22 +114,22 @@ var _ = Context("Interpreter", func() {
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("expression.EvalToString doesn't err", func() {
+		Context("stringInterpreter.Interpret doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				envVarName := "dummyEnvVar"
 
-				fakeExpression := new(expression.Fake)
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 				interpretedEnvVar := "dummyEnvVarValue"
-				fakeExpression.EvalToStringReturns(&model.Value{String: &interpretedEnvVar}, nil)
+				fakeStringInterpreter.InterpretReturns(&model.Value{String: &interpretedEnvVar}, nil)
 
 				expectedEnvVars := map[string]string{
 					envVarName: interpretedEnvVar,
 				}
 
 				objectUnderTest := _interpreter{
-					expression: fakeExpression,
+					stringInterpreter: fakeStringInterpreter,
 				}
 
 				/* act */

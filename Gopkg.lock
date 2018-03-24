@@ -575,7 +575,7 @@
     "poll",
     "singlepoll"
   ]
-  revision = "fd1c23f6a3bec461e179006b4eef0682a6f4fea5"
+  revision = "0a2ac17eec90004010c11491ca977499830d2b7e"
 
 [[projects]]
   branch = "master"
@@ -719,26 +719,35 @@
     "node/core/containerruntime/docker",
     "op",
     "op/dotyml",
+    "op/interpreter",
+    "op/interpreter/array",
+    "op/interpreter/array/initializer",
+    "op/interpreter/boolean",
     "op/interpreter/containercall",
     "op/interpreter/containercall/dirs",
     "op/interpreter/containercall/envvars",
     "op/interpreter/containercall/files",
     "op/interpreter/containercall/image",
     "op/interpreter/containercall/sockets",
-    "op/interpreter/expression",
-    "op/interpreter/expression/interpolater",
-    "op/interpreter/expression/interpolater/dereferencer",
+    "op/interpreter/dir",
+    "op/interpreter/file",
+    "op/interpreter/interpolater",
+    "op/interpreter/interpolater/dereferencer",
+    "op/interpreter/number",
+    "op/interpreter/object",
+    "op/interpreter/object/initializer",
     "op/interpreter/opcall",
     "op/interpreter/opcall/inputs",
     "op/interpreter/opcall/inputs/input",
     "op/interpreter/opcall/outputs",
     "op/interpreter/opcall/params",
     "op/interpreter/opcall/params/param",
+    "op/interpreter/string",
     "util/iruntime",
     "util/pubsub",
     "util/uniquestring"
   ]
-  revision = "37d0ec9d5ccbfd7a67410b8ab3a9af48bef1b3b8"
+  revision = "8d6320ebcd0388aab486f108811f3db2597527db"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
