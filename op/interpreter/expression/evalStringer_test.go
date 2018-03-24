@@ -59,6 +59,54 @@ var _ = Context("EvalToString", func() {
 				Expect(actualErr).To(Equal(toStringErr))
 			})
 		})
+		Context("expression is int", func() {
+			It("should call coerce.ToString w/ expected args", func() {
+				/* arrange */
+				providedExpression := 2
+
+				expectedNumber := float64(providedExpression)
+
+				fakeCoerce := new(coerce.Fake)
+
+				objectUnderTest := _evalStringer{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				objectUnderTest.EvalToString(
+					map[string]*model.Value{},
+					providedExpression,
+					new(data.FakeHandle),
+				)
+
+				/* assert */
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Number: &expectedNumber}))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				fakeCoerce := new(coerce.Fake)
+				coercedValue := model.Value{Number: new(float64)}
+				toStringErr := errors.New("dummyError")
+
+				fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
+
+				objectUnderTest := _evalStringer{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				actualValue, actualErr := objectUnderTest.EvalToString(
+					map[string]*model.Value{},
+					2,
+					new(data.FakeHandle),
+				)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(coercedValue))
+				Expect(actualErr).To(Equal(toStringErr))
+			})
+		})
 		Context("expression is map[string]interface{}", func() {
 			It("should call evalObjectInitializerer.Eval w/ expected args", func() {
 
