@@ -26,13 +26,16 @@ ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
   branch = "master"
   name = "github.com/appdataspec/sdk-golang"
 
-[[constraint]]
-  branch = "master"
-  name = "github.com/equinox-io/equinox"
+# why is gopkg.in/yaml.v2 being routed to a fork?
+# to workaround go-yaml#139 in a pragmatic way
+[[override]]
+  name = "gopkg.in/yaml.v2"
+  source = "github.com/chrisdostert/yaml"
+  branch = "v2"
 
 [[constraint]]
   branch = "master"
-  name = "github.com/ghodss/yaml"
+  name = "github.com/equinox-io/equinox"
 
 [[constraint]]
   branch = "master"

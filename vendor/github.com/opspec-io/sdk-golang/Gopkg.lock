@@ -17,12 +17,6 @@
   revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
 
 [[projects]]
-  name = "github.com/Jeffail/gabs"
-  packages = ["."]
-  revision = "2a3aa15961d5fee6047b8151b67ac2f08ba2c48c"
-  version = "1.0"
-
-[[projects]]
   name = "github.com/Microsoft/go-winio"
   packages = ["."]
   revision = "7da180ee92d8bd8bb8c37fc560e673e6557c392f"
@@ -45,12 +39,6 @@
   packages = ["."]
   revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
   version = "v1.3.1"
-
-[[projects]]
-  branch = "v2"
-  name = "github.com/chrisdostert/yaml"
-  packages = ["."]
-  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
 
 [[projects]]
   name = "github.com/dgraph-io/badger"
@@ -105,7 +93,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "2e3056128cc839b5fdee8edeb651f4ecc244db78"
+  revision = "5f17312653c3e4dc5474f86692b09f06262a1ebd"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -135,12 +123,6 @@
   ]
   revision = "f6c17b524822278a87e3b3bd809fec33b51f5b46"
   version = "v1.9.0"
-
-[[projects]]
-  name = "github.com/ghodss/yaml"
-  packages = ["."]
-  revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
-  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -595,14 +577,15 @@
   version = "v0.1.2"
 
 [[projects]]
+  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
-  version = "v2.1.1"
+  revision = "085f0f8678c0002dbfd8a3912144044f3f1f86f2"
+  source = "github.com/chrisdostert/yaml"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a2626800a6e90c96f909e70b74815d881d07494f674224581e8b0b4727c0be89"
+  inputs-digest = "bc5e72c58af29fef8f91f84660d50f6e9dc38210b0d825702ca094b3b01696a8"
   solver-name = "gps-cdcl"
   solver-version = 1

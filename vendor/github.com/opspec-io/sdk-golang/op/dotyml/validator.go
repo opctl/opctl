@@ -4,8 +4,8 @@ package dotyml
 
 import (
 	"fmt"
-	"github.com/ghodss/yaml"
 	"github.com/xeipuuv/gojsonschema"
+	"gopkg.in/yaml.v2"
 )
 
 type validator interface {
@@ -41,7 +41,8 @@ func (vdr _validator) Validate(
 	manifestBytes []byte,
 ) []error {
 
-	manifestJSONBytes, err := yaml.YAMLToJSON(manifestBytes)
+	unmarshalledYAML := map[string]interface{}{}
+	err := yaml.Unmarshal(manifestBytes, unmarshalledYAML)
 	if nil != err {
 		// handle syntax errors specially
 		return []error{err}
@@ -49,7 +50,7 @@ func (vdr _validator) Validate(
 
 	var errs []error
 	result, err := vdr.manifestSchema.Validate(
-		gojsonschema.NewBytesLoader(manifestJSONBytes),
+		gojsonschema.NewGoLoader(unmarshalledYAML),
 	)
 	if nil != err {
 		// handle syntax errors specially
