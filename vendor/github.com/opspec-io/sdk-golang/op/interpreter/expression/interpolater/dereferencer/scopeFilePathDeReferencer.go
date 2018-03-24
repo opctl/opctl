@@ -40,7 +40,7 @@ func (sfd _scopeFilePathDeReferencer) DeReferenceScopeFilePath(
 
 			contentBytes, err := sfd.ioutil.ReadFile(filepath.Join(*scopeValue.Dir, filePath))
 			if nil != err {
-				return "", false, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
+				return "", true, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 			}
 			return string(contentBytes), true, nil
 		}

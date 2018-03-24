@@ -22,6 +22,10 @@
 ignored = ["github.com/Sirupsen/logrus"]
 
 [[constraint]]
+  name = "github.com/chrisdostert/yaml"
+  branch = "v2"
+
+[[constraint]]
   name = "github.com/docker/docker"
   branch = "master"
 

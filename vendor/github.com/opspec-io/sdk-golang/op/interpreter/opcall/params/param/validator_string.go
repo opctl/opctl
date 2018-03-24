@@ -12,7 +12,7 @@ import (
 // validateString validates a value against a string parameter
 func (vdt _validator) validateString(
 	value *model.Value,
-	constraints *model.StringConstraints,
+	constraints map[string]interface{},
 ) []error {
 	valueAsString, err := vdt.coerce.ToString(value)
 	if nil != err {
@@ -22,16 +22,6 @@ func (vdt _validator) validateString(
 	// guard no constraints
 	if nil != constraints {
 		errs := []error{}
-
-		// perform validations supported by gojsonschema
-		constraintsJsonBytes, err := json.Marshal(constraints)
-		if err != nil {
-			// handle syntax errors specially
-			return append(
-				errs,
-				fmt.Errorf("error interpreting constraints; the pkg likely has a syntax error. Details: %v", err.Error()),
-			)
-		}
 
 		valueJsonBytes, err := json.Marshal(valueAsString.String)
 		if err != nil {
@@ -43,7 +33,7 @@ func (vdt _validator) validateString(
 		}
 
 		result, err := gojsonschema.Validate(
-			gojsonschema.NewBytesLoader(constraintsJsonBytes),
+			gojsonschema.NewGoLoader(constraints),
 			gojsonschema.NewBytesLoader(valueJsonBytes),
 		)
 		if err != nil {

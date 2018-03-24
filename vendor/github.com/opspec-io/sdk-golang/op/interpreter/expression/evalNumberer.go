@@ -37,6 +37,9 @@ func (en _evalNumberer) EvalToNumber(
 	switch expression := expression.(type) {
 	case float64:
 		return &model.Value{Number: &expression}, nil
+	case int:
+		expAsFloat64 := float64(expression)
+		return &model.Value{Number: &expAsFloat64}, nil
 	case string:
 		var value *model.Value
 		if ref, ok := tryResolveExplicitRef(expression, scope); ok {
