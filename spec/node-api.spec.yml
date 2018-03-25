@@ -91,35 +91,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - pkg
-              properties:
-                args:
-                  type: object
-                  description: arguments passed to the op to satisfy inputs
-                  additionalProperties:
-                    $ref: '#/components/schemas/value'
-                pkg:
-                  required:
-                    - ref
-                  properties:
-                    ref:
-                      type: string
-                      format: uri-reference
-                      description: reference to an op
-                    pullCreds:
-                      description: credentials used during authentication with the source of the op
-                      required:
-                        - username
-                        - password
-                      properties:
-                        username:
-                          type: string
-                        password:
-                          type: string
-                      type: object
-                  type: object
-              type: object
+              $ref: '#/components/schemas/startOpReq'
         required: true
   /ops/kills:
     post:
@@ -512,6 +484,51 @@ components:
     rangeNotSatisfiable:
       description: HTTP/1.1 ["Range Not Satisfiable" response status code](https://tools.ietf.org/html/rfc7233#section-4.4)
   schemas:
+    pullCreds:
+      description: credentials used during authentication with the source of the op
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      type: object
+    startOpReqArgs:
+      type: object
+      description: arguments passed to the op to satisfy inputs
+      additionalProperties:
+        $ref: '#/components/schemas/value'
+    startOpReqOp:
+      required:
+        - ref
+      properties:
+        ref:
+          type: string
+          format: uri-reference
+          description: reference to an op
+        pullCreds:
+          $ref: '#/components/schemas/pullCreds'
+      type: object
+    startOpReq:
+      oneOf:
+        - type: object
+          properties:
+            args:
+              $ref: 
+                '#/components/schemas/startOpReqArgs'
+            op:
+              $ref:
+                '#/components/schemas/startOpReqOp'
+        - type: object
+          properties:
+            args:
+              $ref: 
+                '#/components/schemas/startOpReqArgs'
+            pkg:
+              $ref:
+                '#/components/schemas/startOpReqOp'
     value:
       description: a typed value
       oneOf:
@@ -587,9 +604,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
         outputs:
           type: object
           additionalProperties:
@@ -605,9 +619,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
       type: object
     containerStdErrWrittenToEvent:
       properties:
@@ -622,9 +633,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
       type: object
     containerStdOutWrittenToEvent:
       properties:
@@ -639,9 +647,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
       type: object
     opErredEvent:
       properties:
@@ -653,9 +658,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
       type: object
     opEndedEvent:
       properties:
@@ -665,9 +667,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
         outcome:
           enum:
             - SUCCEEDED
@@ -687,9 +686,6 @@ components:
           type: string
         opRef:
           type: string
-        pkgRef:
-          type: string
-          deprecated: true
       type: object
     parallelCallEndedEvent:
       properties:

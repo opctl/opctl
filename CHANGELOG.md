@@ -15,6 +15,7 @@ All notable changes will be documented in this file in accordance with
 - [Support boolean type](https://github.com/opspec-io/spec/issues/195)
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
+- Object/Array initializers
 - [Unified data API](https://github.com/opspec-io/spec/issues/204)
 
 ### Deprecated

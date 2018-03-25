@@ -10,9 +10,9 @@ Ops are:
 
 ## Definition
 
-An op MAY be defined via a plain old directory.
+An op MAY be defined via a file directory.
 
-The directory:
+The file directory:
 - MUST contain:
   - an [op.yml file](#opyml-file)
 - MAY contain:
