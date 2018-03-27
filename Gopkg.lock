@@ -93,7 +93,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "5f17312653c3e4dc5474f86692b09f06262a1ebd"
+  revision = "29fc64b590badcb1c3f5beff7563ffd31eb58974"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -201,18 +201,6 @@
   packages = ["proto"]
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
   version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
-  version = "v1.1"
-
-[[projects]]
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
-  version = "v1.6.1"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -482,7 +470,7 @@
     "unix",
     "windows"
   ]
-  revision = "91ee8cde435411ca3f1cd365e8f20131aed4d0a1"
+  revision = "13d03a9a82fba647c21a0ef8fba44a795d0f0835"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -586,6 +574,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bc5e72c58af29fef8f91f84660d50f6e9dc38210b0d825702ca094b3b01696a8"
+  inputs-digest = "f1ce674d89c9acde12c4d00b21e290c685f9190c61e14d8e69edeed3181402dd"
   solver-name = "gps-cdcl"
   solver-version = 1
