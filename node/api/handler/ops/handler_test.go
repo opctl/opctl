@@ -3,6 +3,7 @@ package ops
 import (
 	"github.com/opspec-io/sdk-golang/node/api/handler/ops/kills"
 	"github.com/opspec-io/sdk-golang/node/api/handler/ops/starts"
+	"github.com/opspec-io/sdk-golang/node/core"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,6 +13,12 @@ import (
 )
 
 var _ = Context("Handler", func() {
+	Context("NewHandler", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+		})
+	})
 	Context("Handle", func() {
 		Context("next URL path segment isn't starts or kills", func() {
 			It("should return expected result", func() {

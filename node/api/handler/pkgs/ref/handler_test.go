@@ -19,6 +19,12 @@ import (
 )
 
 var _ = Context("Handler", func() {
+	Context("NewHandler", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+		})
+	})
 	Context("Handle", func() {
 		Context("next URL path segment is empty", func() {
 			It("should return expected result", func() {

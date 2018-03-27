@@ -10,12 +10,19 @@ import (
 	"github.com/opspec-io/sdk-golang/node/api/handler/liveness"
 	"github.com/opspec-io/sdk-golang/node/api/handler/ops"
 	"github.com/opspec-io/sdk-golang/node/api/handler/pkgs"
+	"github.com/opspec-io/sdk-golang/node/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Context("Handler", func() {
+	Context("New", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(New(new(core.Fake))).Should(Not(BeNil()))
+		})
+	})
 	Context("Handle", func() {
 		Context("next URL path segment is empty", func() {
 			It("should return expected result", func() {
@@ -29,7 +36,7 @@ var _ = Context("Handler", func() {
 				}
 
 				/* act */
-				objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
+				objectUnderTest.ServeHTTP(providedHTTPResp, providedHTTPReq)
 
 				/* assert */
 				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
@@ -53,7 +60,7 @@ var _ = Context("Handler", func() {
 				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
 
 				/* assert */
 				_, actualHTTPReq := fakeDataHandler.HandleArgsForCall(0)
@@ -82,7 +89,7 @@ var _ = Context("Handler", func() {
 				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
 
 				/* assert */
 				_, actualHTTPReq := fakeEventsHandler.HandleArgsForCall(0)
@@ -111,7 +118,7 @@ var _ = Context("Handler", func() {
 				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
 
 				/* assert */
 				_, actualHTTPReq := fakeLivenessHandler.HandleArgsForCall(0)
@@ -140,7 +147,7 @@ var _ = Context("Handler", func() {
 				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
 
 				/* assert */
 				_, actualHTTPReq := fakeOpsHandler.HandleArgsForCall(0)
@@ -169,7 +176,7 @@ var _ = Context("Handler", func() {
 				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.ServeHTTP(httptest.NewRecorder(), providedHTTPReq)
 
 				/* assert */
 				_, actualHTTPReq := fakePkgsHandler.HandleArgsForCall(0)

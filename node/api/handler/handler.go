@@ -12,16 +12,9 @@ import (
 	"github.com/opspec-io/sdk-golang/util/urlpath"
 )
 
-type Handler interface {
-	Handle(
-		httpResp http.ResponseWriter,
-		httpReq *http.Request,
-	)
-}
-
 func New(
 	core core.Core,
-) Handler {
+) http.Handler {
 	return _handler{
 		dataHandler:     data.NewHandler(core),
 		eventsHandler:   events.NewHandler(core),
@@ -39,7 +32,7 @@ type _handler struct {
 	pkgsHandler     pkgs.Handler
 }
 
-func (hdlr _handler) Handle(
+func (hdlr _handler) ServeHTTP(
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {

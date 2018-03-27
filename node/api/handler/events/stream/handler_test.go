@@ -17,6 +17,12 @@ import (
 )
 
 var _ = Context("Handler", func() {
+	Context("NewHandler", func() {
+		It("should not return nil", func() {
+			/* arrange/act/assert */
+			Expect(NewHandler(new(core.Fake))).Should(Not(BeNil()))
+		})
+	})
 	Context("Handle", func() {
 		Context("upgrader.Upgrade errors", func() {
 			It("should return StatusCode of 400", func() {
