@@ -19,7 +19,7 @@ run:
         inputs: { srcDir }
         outputs: { srcDir }
     - container:
-        image: { ref: 'node:9.4.0-alpine'}
+        image: { ref: 'node:9.9.0-alpine'}
         cmd: [npm, test]
         dirs:
           /src: $(srcDir)

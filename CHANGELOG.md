@@ -6,6 +6,12 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.0.0-alpha.20
+
+### Removed
+
+- `node/api/client#pkg_content_list` & `node/api/client#pkg_content_get` methods; use `node/api/client#data_get`
+
 ## 0.0.0-alpha.19
 
 ### Added
