@@ -11,7 +11,7 @@ outputs:
       description: dir containing the projects source code
 run:
   container:
-    image: { ref: 'node:9.4.0-alpine'}
+    image: { ref: 'node:9.9.0-alpine'}
     cmd: [yarn]
     dirs:
       /src: $(srcDir)

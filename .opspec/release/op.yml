@@ -5,15 +5,12 @@ inputs:
     dir:
       description: dir containing the projects source code
       default: .
-  npmEmail:
+  npmAuthToken:
     string:
-      description: email for publishing to https://registry.npmjs.org/
-  npmUsername:
-    string:
-      description: username cred for publishing to https://registry.npmjs.org/
-  npmPassword:
-    string:
-      description: password cred for publishing to https://registry.npmjs.org/
+      description: |
+        authToken cred for auth w/ registry; see 
+        [how to create a new authentication token](https://docs.npmjs.com/private-modules/ci-server-config#how-to-create-a-new-authentication-token)
+        for how to create one for the [npm](https://npmjs.com) registry. 
       isSecret: true
   version:
     string:
@@ -26,18 +23,16 @@ run:
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: github.com/opspec-pkgs/npm.pkg.set-version#1.0.0 }
+        pkg: { ref: github.com/opspec-pkgs/npm.pkg.set-version#1.1.0 }
         inputs:
           pkgDotJson: $(srcDir/package.json)
           version:
         outputs:
           $(srcDir/package.json): pkgDotJson
     - op:
-        pkg: { ref: github.com/opspec-pkgs/npm.publish-dir#1.0.0 }
+        pkg: { ref: github.com/opspec-pkgs/npm.publish-dir#2.0.0 }
         inputs:
-          email: $(npmEmail)
-          username: $(npmUsername)
-          password: $(npmPassword)
+          authToken: $(npmAuthToken)
           access: public
           pkgDir: $(srcDir)
 
