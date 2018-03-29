@@ -6,7 +6,6 @@ import (
 	"github.com/opspec-io/sdk-golang/node/api/handler/pkgs/ref/contents"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 
 	"github.com/opspec-io/sdk-golang/data"
@@ -38,13 +37,17 @@ var _ = Context("Handler", func() {
 				}
 
 				/* act */
-				objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
+				objectUnderTest.Handle(
+					"dummyDataRef",
+					providedHTTPResp,
+					providedHTTPReq,
+				)
 
 				/* assert */
 				Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
 			})
 		})
-		Context("next URL path segment isn't empty", func() {
+		Context("next URL path segment is 'contents'", func() {
 			Context("req has BasicAuth", func() {
 				It("should call core.ResolveData w/ expected args", func() {
 					/* arrange */
@@ -60,7 +63,7 @@ var _ = Context("Handler", func() {
 						core: fakeCore,
 					}
 
-					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", providedDataRef, nil)
+					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 					if nil != err {
 						panic(err.Error())
 					}
@@ -76,7 +79,11 @@ var _ = Context("Handler", func() {
 					}
 
 					/* act */
-					objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+					objectUnderTest.Handle(
+						providedDataRef,
+						httptest.NewRecorder(),
+						providedHTTPReq,
+					)
 
 					/* assert */
 					_,
@@ -99,13 +106,17 @@ var _ = Context("Handler", func() {
 					core: fakeCore,
 				}
 
-				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", providedDataRef, nil)
+				providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 				if nil != err {
 					panic(err.Error())
 				}
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.Handle(
+					providedDataRef,
+					httptest.NewRecorder(),
+					providedHTTPReq,
+				)
 
 				/* assert */
 				_,
@@ -130,13 +141,17 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", url.PathEscape(providedDataRef), nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
 
 						/* act */
-						objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
+						objectUnderTest.Handle(
+							providedDataRef,
+							providedHTTPResp,
+							providedHTTPReq,
+						)
 
 						/* assert */
 						Expect(providedHTTPResp.Code).To(Equal(http.StatusUnauthorized))
@@ -157,13 +172,17 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", url.PathEscape(providedDataRef), nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
 
 						/* act */
-						objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
+						objectUnderTest.Handle(
+							providedDataRef,
+							providedHTTPResp,
+							providedHTTPReq,
+						)
 
 						/* assert */
 						Expect(providedHTTPResp.Code).To(Equal(http.StatusForbidden))
@@ -181,13 +200,17 @@ var _ = Context("Handler", func() {
 						}
 						providedHTTPResp := httptest.NewRecorder()
 
-						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "dummyDataRef", nil)
+						providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 						if nil != err {
 							panic(err.Error())
 						}
 
 						/* act */
-						objectUnderTest.Handle(providedHTTPResp, providedHTTPReq)
+						objectUnderTest.Handle(
+							"dummyDataRef",
+							providedHTTPResp,
+							providedHTTPReq,
+						)
 
 						/* assert */
 						Expect(providedHTTPResp.Code).To(Equal(http.StatusNotFound))
@@ -210,13 +233,17 @@ var _ = Context("Handler", func() {
 						contentsHandler: fakeContentsHandler,
 					}
 
-					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", providedDataRef, nil)
+					providedHTTPReq, err := http.NewRequest("dummyHttpMethod", "contents", nil)
 					if nil != err {
 						panic(err.Error())
 					}
 
 					/* act */
-					objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+					objectUnderTest.Handle(
+						providedDataRef,
+						httptest.NewRecorder(),
+						providedHTTPReq,
+					)
 
 					/* assert */
 					actualDataHandle,

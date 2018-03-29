@@ -14,6 +14,7 @@ import (
 
 type Handler interface {
 	Handle(
+		dataRef string,
 		res http.ResponseWriter,
 		req *http.Request,
 	)
@@ -35,6 +36,7 @@ type _handler struct {
 }
 
 func (hdlr _handler) Handle(
+	dataRef string,
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {
@@ -46,9 +48,6 @@ func (hdlr _handler) Handle(
 
 	switch pathSegment {
 	case "":
-		http.Error(httpResp, "", http.StatusNotFound)
-		return
-	default:
 		var pullCreds *model.PullCreds
 		pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
 		if hasBasicAuth {
@@ -60,17 +59,17 @@ func (hdlr _handler) Handle(
 
 		dataHandle, err := hdlr.core.ResolveData(
 			httpReq.Context(),
-			pathSegment,
+			dataRef,
 			pullCreds,
 		)
 		if nil != err {
 			var status int
 			switch err.(type) {
 			case model.ErrDataProviderAuthentication:
-				hdlr.setWWWAuthenticateHeader(pathSegment, httpResp.Header())
+				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusUnauthorized
 			case model.ErrDataProviderAuthorization:
-				hdlr.setWWWAuthenticateHeader(pathSegment, httpResp.Header())
+				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusForbidden
 			case model.ErrDataRefResolution:
 				status = http.StatusNotFound
@@ -82,8 +81,10 @@ func (hdlr _handler) Handle(
 		}
 
 		hdlr.handleGetOrHeader.HandleGetOrHead(dataHandle, httpResp, httpReq)
+	default:
+		http.Error(httpResp, "", http.StatusNotFound)
+		return
 	}
-
 }
 
 func (hdlr _handler) setWWWAuthenticateHeader(

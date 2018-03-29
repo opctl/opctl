@@ -41,26 +41,34 @@ var _ = Context("Handler", func() {
 		Context("next URL path segment isnt empty", func() {
 			It("should call refHandler.Handle w/ expected args", func() {
 				/* arrange */
+				providedPath := "ref/dummy"
+				providedPathParts := strings.SplitN(providedPath, "/", 2)
+
+				providedHTTPRes := httptest.NewRecorder()
+				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
+				if nil != err {
+					panic(err.Error())
+				}
+
 				fakeRefHandler := new(ref.FakeHandler)
 
 				objectUnderTest := _handler{
 					refHandler: fakeRefHandler,
 				}
 
-				providedPath := "ref/dummy"
-				providedHTTPReq, err := http.NewRequest("dummyMethod", providedPath, nil)
-				if nil != err {
-					panic(err.Error())
-				}
-
-				expectedURLPath := strings.SplitN(providedPath, "/", 2)[1]
+				expectedDataRef := providedPathParts[0]
+				expectedURLPath := providedPathParts[1]
 
 				/* act */
-				objectUnderTest.Handle(httptest.NewRecorder(), providedHTTPReq)
+				objectUnderTest.Handle(providedHTTPRes, providedHTTPReq)
 
 				/* assert */
-				_, actualHTTPReq := fakeRefHandler.HandleArgsForCall(0)
+				actualDataRef,
+					actualHTTPRes,
+					actualHTTPReq := fakeRefHandler.HandleArgsForCall(0)
 
+				Expect(actualDataRef).To(Equal(expectedDataRef))
+				Expect(actualHTTPRes).To(Equal(providedHTTPRes))
 				Expect(actualHTTPReq.URL.Path).To(Equal(expectedURLPath))
 
 				// this works because our URL path set mutates the httpRequest

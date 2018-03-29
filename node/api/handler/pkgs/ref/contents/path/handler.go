@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// Handler deprecated
 type Handler interface {
 	Handle(
 		dataHandle model.DataHandle,

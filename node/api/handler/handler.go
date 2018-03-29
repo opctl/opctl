@@ -52,6 +52,7 @@ func (hdlr _handler) ServeHTTP(
 	case "ops":
 		hdlr.opsHandler.Handle(httpResp, httpReq)
 	case "pkgs":
+		// deprecated resource
 		hdlr.pkgsHandler.Handle(httpResp, httpReq)
 	default:
 		http.NotFoundHandler().ServeHTTP(httpResp, httpReq)

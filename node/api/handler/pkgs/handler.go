@@ -10,6 +10,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/urlpath"
 )
 
+// Handler deprecated; use data
 type Handler interface {
 	Handle(
 		httpResp http.ResponseWriter,
@@ -46,6 +47,7 @@ func (hdlr _handler) Handle(
 		return
 	default:
 		hdlr.refHandler.Handle(
+			pathSegment,
 			httpResp,
 			httpReq,
 		)

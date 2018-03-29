@@ -46,6 +46,7 @@ func (hdlr _handler) Handle(
 		return
 	default:
 		hdlr.refHandler.Handle(
+			pathSegment,
 			httpResp,
 			httpReq,
 		)

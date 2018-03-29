@@ -7,26 +7,28 @@ import (
 )
 
 type FakeHandler struct {
-	HandleStub        func(res http.ResponseWriter, req *http.Request)
+	HandleStub        func(dataRef string, res http.ResponseWriter, req *http.Request)
 	handleMutex       sync.RWMutex
 	handleArgsForCall []struct {
-		res http.ResponseWriter
-		req *http.Request
+		dataRef string
+		res     http.ResponseWriter
+		req     *http.Request
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandler) Handle(res http.ResponseWriter, req *http.Request) {
+func (fake *FakeHandler) Handle(dataRef string, res http.ResponseWriter, req *http.Request) {
 	fake.handleMutex.Lock()
 	fake.handleArgsForCall = append(fake.handleArgsForCall, struct {
-		res http.ResponseWriter
-		req *http.Request
-	}{res, req})
-	fake.recordInvocation("Handle", []interface{}{res, req})
+		dataRef string
+		res     http.ResponseWriter
+		req     *http.Request
+	}{dataRef, res, req})
+	fake.recordInvocation("Handle", []interface{}{dataRef, res, req})
 	fake.handleMutex.Unlock()
 	if fake.HandleStub != nil {
-		fake.HandleStub(res, req)
+		fake.HandleStub(dataRef, res, req)
 	}
 }
 
@@ -36,10 +38,10 @@ func (fake *FakeHandler) HandleCallCount() int {
 	return len(fake.handleArgsForCall)
 }
 
-func (fake *FakeHandler) HandleArgsForCall(i int) (http.ResponseWriter, *http.Request) {
+func (fake *FakeHandler) HandleArgsForCall(i int) (string, http.ResponseWriter, *http.Request) {
 	fake.handleMutex.RLock()
 	defer fake.handleMutex.RUnlock()
-	return fake.handleArgsForCall[i].res, fake.handleArgsForCall[i].req
+	return fake.handleArgsForCall[i].dataRef, fake.handleArgsForCall[i].res, fake.handleArgsForCall[i].req
 }
 
 func (fake *FakeHandler) Invocations() map[string][][]interface{} {

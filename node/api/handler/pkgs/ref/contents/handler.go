@@ -12,6 +12,7 @@ import (
 	"github.com/opspec-io/sdk-golang/util/urlpath"
 )
 
+// Handler deprecated
 type Handler interface {
 	Handle(
 		dataHandle model.DataHandle,
