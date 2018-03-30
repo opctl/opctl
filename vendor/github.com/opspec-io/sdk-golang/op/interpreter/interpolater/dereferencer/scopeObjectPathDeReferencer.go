@@ -35,8 +35,13 @@ func (sod _scopeObjectPathDeReferencer) DeReferenceScopeObjectPath(
 	refParts := strings.SplitN(ref, ".", 2)
 	if len(refParts) > 1 {
 		if scopeValue, isPropertyRef := scope[refParts[0]]; isPropertyRef {
+			scopeValueAsObject, err := sod.coerce.ToObject(scopeValue)
+			if nil != err {
+				return "", true, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
+			}
+
 			// scope object ref w/ path
-			value, err := sod.walk(refParts[1], scopeValue.Object)
+			value, err := sod.walk(refParts[1], scopeValueAsObject.Object)
 			if nil != err {
 				return "", true, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
 			}

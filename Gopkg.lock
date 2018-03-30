@@ -121,7 +121,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "deed26f7f0f9a9d279b8ac99389f204d9063d1a4"
+  revision = "635f359f8b61887faa9427d9c673be96faf992b5"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -760,7 +760,7 @@
     "util/uniquestring",
     "util/urlpath"
   ]
-  revision = "8c65ecba8cf44474edf51cee2b5c550dc29eaa6f"
+  revision = "d3dbf906d57369ddb0341e8c247f9d5877a1e95c"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -980,7 +980,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "88942b9c40a4c9d203b82b3731787b672d6e809b"
+  revision = "12892e8c234f4fe6f6803f052061de9057903bb2"
 
 [[projects]]
   branch = "master"
@@ -995,7 +995,7 @@
     "proxy",
     "trace"
   ]
-  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
+  revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
 
 [[projects]]
   branch = "master"
