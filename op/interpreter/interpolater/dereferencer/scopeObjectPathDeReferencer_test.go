@@ -187,6 +187,7 @@ var _ = Context("scopeObjectPathDeReferencer", func() {
 				providedRef := strings.Join([]string{objectRef, pathSegment1, pathSegment2}, ".")
 
 				fakeCoerce := new(coerce.Fake)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: objectValue}, nil)
 				// err to trigger immediate return
 				fakeCoerce.ToStringReturns(nil, errors.New("dummyError"))
 
