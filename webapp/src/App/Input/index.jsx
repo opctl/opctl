@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Description from '../Op/Input/Description';
+import Description from '../Op/Param/Description';
 
 export default class Input extends Component {
   state = {

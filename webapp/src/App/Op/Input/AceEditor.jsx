@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import AceEditor from 'react-ace';
-import Description from './Description';
+import Description from '../Param/Description';
 import 'brace';
 import 'brace/mode/yaml';
 import 'brace/theme/github';

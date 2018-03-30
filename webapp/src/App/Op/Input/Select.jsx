@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Description from './Description';
+import Description from '../Param/Description';
 
 export default class Select extends Component {
   constructor(props) {

@@ -8,7 +8,7 @@ export default class OpView extends Component {
     super(props);
 
     this.state = {};
-    this.initialOpRef = new URLSearchParams(props.location.search).get('op') || 'github.com/opspec-pkgs/uuid.v4.generate#1.0.0';
+    this.initialOpRef = new URLSearchParams(props.location.search).get('op') || 'github.com/opspec-pkgs/uuid.v4.generate#1.1.0';
   }
 
   handleSelect(selection) {

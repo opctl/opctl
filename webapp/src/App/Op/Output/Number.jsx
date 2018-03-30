@@ -1,23 +1,45 @@
-import React from 'react';
-import Description from './Description';
+import React, { Component } from 'react';
+import Description from '../Param/Description';
+import opspecNodeApiClient from '../../../core/clients/opspecNodeApi';
 
-export default ({
-                  name,
-                  param,
-                  opRef,
-                  value,
-                }) => {
-  return (
-    <div className='form-group'>
-      <label className='form-control-label' htmlFor={name}>{name}</label>
-      <Description value={param.description} opRef={opRef}/>
-      <input
-        className='form-control'
-        id={name}
-        readOnly={true}
-        type={param.isSecret ? 'password' : 'number'}
-        value={value || param.default || ""}
-      />
-    </div>
-  );
+export default class Number extends Component {
+  state = {};
+
+  componentDidMount() {
+    this._loadValue()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.value !== prevProps.value) {
+      this._loadValue();
+    }
+  }
+
+  render() {
+    return (
+      <div className='form-group'>
+        <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
+        <Description value={this.props.param.description} opRef={this.props.opRef} />
+        <input
+          className='form-control'
+          id={this.props.name}
+          readOnly={true}
+          type={this.props.param.isSecret ? 'password' : 'number'}
+          value={this.state.value || ''}
+        />
+      </div>);
+  }
+
+  _loadValue() {
+    const { value, param } = this.props;
+    if (value) {
+      opspecNodeApiClient.data_get({
+        dataRef: value,
+      })
+        .then(data => data.text())
+        .then(value => this.setState({ value }))
+    } else {
+      this.setState({ value: param.default || '' });
+    }
+  }
 }
