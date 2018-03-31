@@ -2,14 +2,14 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "$id": "https://opspec.io/0.1.6/op.yml.schema.json",
   "title": "op.yml",
-  "description": "Defines a pkg",
+  "description": "Defines an op",
   "properties": {
     "name": {
-      "description": "Name of the pkg",
+      "description": "Name of the op",
       "type": "string"
     },
     "description": {
-      "description": "Description of the pkg",
+      "description": "Description of the op",
       "$ref": "#/definitions/markdown"
     },
     "inputs": {
@@ -19,14 +19,14 @@
       "$ref": "#/definitions/param"
     },
     "run": {
-      "$ref": "#/definitions/scg"
+      "$ref": "#/definitions/call"
     },
     "version": {
       "description": "Version of the op",
       "$ref": "#/definitions/semVer"
     },
     "opspec": {
-      "description": "Version of [opspec](https://opspec.io) used by the pkg",
+      "description": "Version of [opspec](https://opspec.io) used by the op",
       "$ref": "#/definitions/semVer"
     }
   },
@@ -136,7 +136,7 @@
               "$ref": "#/definitions/markdown"
             },
             "default": {
-              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
               "type": "string"
             },
             "isSecret": {
@@ -163,7 +163,7 @@
               "$ref": "#/definitions/markdown"
             },
             "default": {
-              "description": "Default value; an absolute path from root of pkg or relative path interpreted from the dir in which the op is run",
+              "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
               "type": "string"
             },
             "isSecret": {
@@ -181,7 +181,7 @@
     },
     "pullCreds": {
       "type": "object",
-      "description": "Credentials used during authentication with the source of an image or pkg",
+      "description": "Credentials used during authentication with the source of an image or op",
       "properties": {
         "username": {
           "description": "expression coercible to string value",
@@ -668,9 +668,9 @@
         }
       ]
     },
-    "scg": {
-      "title": "scg",
-      "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) of an op",
+    "call": {
+      "title": "call",
+      "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) node of an op",
       "oneOf": [
         {
           "$ref": "#/definitions/containerCall"
@@ -707,7 +707,7 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(will be bound to same path in pkg)",
+                      "description": "(will be bound to same path in op)",
                       "type": "null"
                     },
                     {
@@ -745,7 +745,7 @@
                 "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
                   "oneOf": [
                     {
-                      "description": "(will be bound to same path in pkg)",
+                      "description": "(will be bound to same path in op)",
                       "type": "null"
                     },
                     {
@@ -838,7 +838,7 @@
       "additionalProperties": false
     },
     "opCallOutputs": {
-      "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME = $(OUTPUT_NAME)",
+      "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME == OUTPUT_NAME",
       "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
@@ -855,7 +855,7 @@
       "additionalProperties": false
     },
     "opCallInputs": {
-      "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE = $(INPUT_NAME)",
+      "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE == $(INPUT_NAME)",
       "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
@@ -948,7 +948,7 @@
         "parallel": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/scg"
+            "$ref": "#/definitions/call"
           }
         }
       },
@@ -964,7 +964,7 @@
         "serial": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/scg"
+            "$ref": "#/definitions/call"
           }
         }
       },

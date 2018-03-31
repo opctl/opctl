@@ -20,22 +20,18 @@ run:
       - sh
       - -ce
       - |
-        echo "installing gitbook pdf/ebook gen deps"
-        apt update
-        apt install -y calibre
-
         echo "installing gitbook cli"
-        yarn global add svgexport gitbook-cli
+        yarn global add gitbook-cli 
+        
+        # @TODO remove when https://github.com/GitbookIO/gitbook/issues/1309 fixed
+        yarn add gitbook
 
         echo "installing plugins"
         gitbook install
 
         echo "compiling website"
         gitbook build . ../build/latest
-
-        echo "compiling pdf"
-        gitbook pdf . ../build/latest/opspec$(version).pdf
     dirs:
       /src: $(srcDir)
-    image: { ref: 'node:9.3.0' }
+    image: { ref: 'node:9.9.0' }
     workDir: /src/spec

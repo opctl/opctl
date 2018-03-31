@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "ajv-cli": "^3.0.0",
-    "swagger2openapi": "^2.11.16"
-  }
-}

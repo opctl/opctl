@@ -1,4 +1,4 @@
-description: Runs all ops necessary to build & deploy the spec
+description: Deploys artifacts from build
 name: deploy
 inputs:
   srcDir:

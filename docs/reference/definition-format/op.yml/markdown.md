@@ -3,43 +3,62 @@ supported where noted.
 
 > relative &/or absolute paths will be resolved from the root of the op
 
-```yaml
-> link to embedded file
+## Examples
+
+### link to embedded file
+
+```markdown
 checkout [this op's op.yml](op.yml)
+```
 
-> display embedded image
+### display embedded image
+
+```markdown
 checkout this image ![my image](/my-image.png)
+```
 
-> headings
+### headings
+
+```markdown
 # h1
 ## h2
 ### h3
 #### h4
 ##### h5
 ###### h6
+```
 
-> bold
+### bold
+```markdown
 **bolded**
+```
 
-> italic
+### italic
+```markdown
 *italicized*
+```
 
-> strike through
+### strike through
+```markdown
 ~~striken~~
+```
 
-> unordered list
-
+### unordered list
+```markdown
 - an item
   - sub item
 - another item
+```
 
-> ordered list
-
+### ordered list
+```markdown
 1. first item
   1. sub item
 1. second item
+```
 
-> table
+### table
+```markdown
 | title 1 | title 2 | title 3 |
 |:-------:|:-------:|:-------:|
 | entry 1 | entry 2 | entry 3 |

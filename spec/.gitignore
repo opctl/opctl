@@ -1,6 +1,7 @@
 ### gitbook
 _book/
-*.pdf
 
-### npm
+### yarn
 node_modules/
+package.json
+yarn-error.log

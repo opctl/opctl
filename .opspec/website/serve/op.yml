@@ -8,5 +8,6 @@ inputs:
 run:
   container:
     image: { ref: 'httpd:2.4.25-alpine' }
-    dirs: { /usr/local/apache2/htdocs/: $(srcDir) }
+    dirs:
+      /usr/local/apache2/htdocs/: $(srcDir)
     ports: { '80': '80' }

@@ -1,8 +1,11 @@
 # use a super creative name
-name: hello-world
+name: run-a-container
 
-# describe what your op does
-description: echo's hello world.. because we gotta start somewhere.
+# describe what your op does using markdown
+description: |
+  - starts a container
+  - echo's hello world.. because we gotta start somewhere.
+  - exits
 
 run:
 

@@ -2,17 +2,11 @@
 
 Opspec is a set of vendor & platform agnostic standards for defining, distributing, and controlling operations.
 
-### Characteristics
-
-- distributed (peer to peer)
-- fault-tolerant
-- scalable
-
 ### Scope
 
-- operation definition
-- operation distribution
-- operation control
+- op definition format
+- op control API
+- op data API
 
 ## Language
 

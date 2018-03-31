@@ -16,7 +16,10 @@ run:
       - -ce
       - |
         echo "installing gitbook cli"
-        yarn global add svgexport gitbook-cli
+        yarn global add gitbook-cli
+
+        # @TODO remove when https://github.com/GitbookIO/gitbook/issues/1309 fixed
+        yarn add gitbook
 
         echo "installing plugins"
         gitbook install
@@ -25,5 +28,5 @@ run:
         gitbook build . ../build/docs
     dirs:
       /src: $(srcDir)
-    image: { ref: 'node:9.3.0' }
+    image: { ref: 'node:9.9.0' }
     workDir: /src/docs
