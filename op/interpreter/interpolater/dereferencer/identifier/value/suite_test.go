@@ -1,4 +1,4 @@
-package dereferencer
+package value
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "op/interpreter/interpolater/dereferencer")
+	RunSpecs(t, "op/interpreter/interpolater/dereferencer/identifier/value")
 }
