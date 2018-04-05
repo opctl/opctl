@@ -18,7 +18,7 @@ var _ = Context("Interpolate", func() {
 		It("should return result fulfilling scenario", func() {
 			rootPath := "testdata/interpolater/Interpolate"
 			data := data.New()
-			pkgFsProvider := data.NewFSProvider()
+			fsProvider := data.NewFSProvider()
 
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
@@ -46,7 +46,7 @@ var _ = Context("Interpolate", func() {
 								panic(fmt.Errorf("error getting absPath for %v; error was %v", path, err))
 							}
 
-							opHandle, err := data.Resolve(context.Background(), absPath, pkgFsProvider)
+							opHandle, err := data.Resolve(context.Background(), absPath, fsProvider)
 							if nil != err {
 								panic(fmt.Errorf("error getting opHandle for %v; error was %v", path, err))
 							}

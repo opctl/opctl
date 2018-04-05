@@ -9,8 +9,8 @@ import (
 	"github.com/opspec-io/sdk-golang/model"
 )
 
-var _ = Context("pkgFilePathDeReferencer", func() {
-	Context("ref is pkg file path ref", func() {
+var _ = Context("opFilePathDeReferencer", func() {
+	Context("ref is op file path ref", func() {
 		It("should call opHandle.GetContent w/ expected args", func() {
 			/* arrange */
 			providedRef := "/dummyRef"
@@ -18,10 +18,10 @@ var _ = Context("pkgFilePathDeReferencer", func() {
 			// err to trigger immediate return
 			fakeDataHandle.GetContentReturns(nil, errors.New("dummyError"))
 
-			objectUnderTest := _pkgFilePathDeReferencer{}
+			objectUnderTest := _opFilePathDeReferencer{}
 
 			/* act */
-			objectUnderTest.DeReferencePkgFilePath(
+			objectUnderTest.DeReferenceOpFilePath(
 				providedRef,
 				map[string]*model.Value{},
 				fakeDataHandle,
