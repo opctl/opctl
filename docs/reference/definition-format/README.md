@@ -3,5 +3,5 @@ Each op is defined as a file directory, similar in concept to [apple application
 Within the directory, conventional [files](#files) are used to define all aspects of the op.
 
 ## Files
-* [op.yml file](op.yml) (required)
-* [icon.svg file](icon.svg) (optional)
+* [op.yml file](op.yml/README.md) (required)
+* [icon.svg file](icon.svg/README.md) (optional)
