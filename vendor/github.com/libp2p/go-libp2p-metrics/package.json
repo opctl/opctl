@@ -27,9 +27,9 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmXfkENeeBvh3zYA51MaSdGUdBjhQ99cP5WQe8zgr6wchG",
+      "hash": "QmRQX1yaPQFynWkByKcQTPpy3uC21oXZ5X32KEcLZnefz8",
       "name": "go-libp2p-net",
-      "version": "2.0.5"
+      "version": "2.0.6"
     },
     {
       "author": "Stebalien",
@@ -43,6 +43,6 @@
   "license": "",
   "name": "go-libp2p-metrics",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "2.0.4"
+  "version": "2.0.5"
 }
 

@@ -121,7 +121,7 @@
     "pkg/term",
     "pkg/term/windows"
   ]
-  revision = "635f359f8b61887faa9427d9c673be96faf992b5"
+  revision = "a8260058e39f7014f811394f86ae2c0bc899e11e"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -426,7 +426,7 @@
     "p2p/protocol/identify",
     "p2p/protocol/identify/pb"
   ]
-  revision = "69cb86bb8f588b334ce60348001455470d9ff9da"
+  revision = "91411f2ebff404261654e0f7250ad594d9ea89dc"
 
 [[projects]]
   branch = "master"
@@ -435,7 +435,7 @@
     ".",
     "pb"
   ]
-  revision = "2f2d5a1f58dc246f0f2f09398fb9b3c69dad4d46"
+  revision = "e20638587d44b800489fc461da07b893af9760f8"
 
 [[projects]]
   branch = "master"
@@ -456,7 +456,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-host"
   packages = ["."]
-  revision = "dfeeb00fc9decef43a6bc47b555a530cb38e0c62"
+  revision = "e9d58839c95837b733102954920ebbff72c69fc5"
 
 [[projects]]
   branch = "master"
@@ -468,7 +468,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-interface-connmgr"
   packages = ["."]
-  revision = "201197111979ad70393a51d80cb12c5dfcee9d01"
+  revision = "8ba060b3c75a9b7b01ea213d8802ee5c84dde68a"
 
 [[projects]]
   branch = "master"
@@ -490,7 +490,7 @@
     "conn",
     "stream"
   ]
-  revision = "a3a76fa99809135a2421982ff2958a544aa517ee"
+  revision = "1fcfeaed47fa227c959c57cce7c983983dd0e889"
 
 [[projects]]
   branch = "master"
@@ -502,7 +502,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-net"
   packages = ["."]
-  revision = "64c31f18a9753193909544f1a606148894cbe878"
+  revision = "efcfaff497d0007eb472424afb7b022774b8b925"
 
 [[projects]]
   branch = "master"
@@ -538,7 +538,7 @@
   branch = "master"
   name = "github.com/libp2p/go-libp2p-swarm"
   packages = ["."]
-  revision = "c0bf6756a81190a94b5946f952cd4fc7d342b0d3"
+  revision = "b9fb1d413744ac7fd7e72743750da84d3f3b9afe"
 
 [[projects]]
   branch = "master"
@@ -745,6 +745,11 @@
     "op/interpreter/file",
     "op/interpreter/interpolater",
     "op/interpreter/interpolater/dereferencer",
+    "op/interpreter/interpolater/dereferencer/direntry",
+    "op/interpreter/interpolater/dereferencer/identifier/bracketed",
+    "op/interpreter/interpolater/dereferencer/identifier/bracketed/item",
+    "op/interpreter/interpolater/dereferencer/identifier/unbracketed",
+    "op/interpreter/interpolater/dereferencer/identifier/value",
     "op/interpreter/number",
     "op/interpreter/object",
     "op/interpreter/object/initializer",
@@ -760,7 +765,7 @@
     "util/uniquestring",
     "util/urlpath"
   ]
-  revision = "d3dbf906d57369ddb0341e8c247f9d5877a1e95c"
+  revision = "6dcb0cfcd4f1937add50f1e2a63c423e41f13d79"
 
 [[projects]]
   name = "github.com/pelletier/go-buffruneio"
@@ -980,7 +985,7 @@
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "12892e8c234f4fe6f6803f052061de9057903bb2"
+  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
 
 [[projects]]
   branch = "master"
@@ -995,7 +1000,7 @@
     "proxy",
     "trace"
   ]
-  revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
+  revision = "b3c676e531a6dc479fa1b35ac961c13f5e2b4d2e"
 
 [[projects]]
   branch = "master"
@@ -1010,7 +1015,7 @@
     "unix",
     "windows"
   ]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -1048,8 +1053,8 @@
     "osfs",
     "util"
   ]
-  revision = "027dceab1aa836eb310d92c2eb2266e4dc9f4b81"
-  version = "v4.1.0"
+  revision = "df053870ae7070b0350624ba5a22161ba3796cc0"
+  version = "v4.1.1"
 
 [[projects]]
   name = "gopkg.in/src-d/go-git.v4"
@@ -1095,8 +1100,8 @@
     "utils/merkletrie/internal/frame",
     "utils/merkletrie/noder"
   ]
-  revision = "1d28459504251497e0ce6132a0fadd5eb44ffd22"
-  version = "v4.2.0"
+  revision = "247cf690745dfd67ccd9f0c07878e6dd85e6c9ed"
+  version = "v4.2.1"
 
 [[projects]]
   name = "gopkg.in/warnings.v0"
