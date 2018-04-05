@@ -1,9 +1,7 @@
 package direntry
 
 import (
-	"errors"
 	"fmt"
-	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -37,7 +35,7 @@ var _ = Context("DeReferencer", func() {
 			})
 		})
 		Context("ref is scope file path ref", func() {
-			It("should call ioutil.ReadFile w/ expected args", func() {
+			It("should return expected result", func() {
 				/* arrange */
 				value := "/dummyScopeValue"
 
@@ -45,25 +43,20 @@ var _ = Context("DeReferencer", func() {
 
 				expectedPath := filepath.Join(value, providedRef)
 
-				fakeIoUtil := new(iioutil.Fake)
-				// err to trigger immediate return
-				fakeIoUtil.ReadFileReturns([]byte{}, errors.New("dummyError"))
-
-				objectUnderTest := _deReferencer{
-					ioutil: fakeIoUtil,
-				}
+				objectUnderTest := _deReferencer{}
 
 				/* act */
 
-				objectUnderTest.DeReference(
+				actualRefRemainder, actualValue, actualErr := objectUnderTest.DeReference(
 					providedRef,
 					&model.Value{Dir: &value},
 				)
 
 				/* assert */
-				actualPath := fakeIoUtil.ReadFileArgsForCall(0)
+				Expect(actualRefRemainder).To(BeEmpty())
+				Expect(*actualValue).To(Equal(model.Value{File: &expectedPath}))
+				Expect(actualErr).To(BeNil())
 
-				Expect(actualPath).To(Equal(expectedPath))
 			})
 		})
 	})

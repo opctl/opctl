@@ -4,11 +4,9 @@ package direntry
 
 import (
 	"fmt"
+	"github.com/opspec-io/sdk-golang/model"
 	"path/filepath"
 	"strings"
-
-	"github.com/golang-interfaces/iioutil"
-	"github.com/opspec-io/sdk-golang/model"
 )
 
 // DeReferencer de references a dir entry ref i.e. refs of the form name/sub/file.ext
@@ -22,13 +20,10 @@ type DeReferencer interface {
 }
 
 func NewDeReferencer() DeReferencer {
-	return _deReferencer{
-		ioutil: iioutil.New(),
-	}
+	return _deReferencer{}
 }
 
 type _deReferencer struct {
-	ioutil iioutil.IIOUtil
 }
 
 func (dr _deReferencer) DeReference(
@@ -40,12 +35,7 @@ func (dr _deReferencer) DeReference(
 		return "", nil, fmt.Errorf("unable to deReference '%v'; expected '/'", ref)
 	}
 
-	contentBytes, err := dr.ioutil.ReadFile(filepath.Join(*data.Dir, ref))
-	if nil != err {
-		return "", nil, fmt.Errorf("unable to deReference '%v'; error was: %v", ref, err.Error())
-	}
+	fileValue := filepath.Join(*data.Dir, ref)
 
-	contentString := string(contentBytes)
-
-	return "", &model.Value{File: &contentString}, nil
+	return "", &model.Value{File: &fileValue}, nil
 }
