@@ -6,6 +6,16 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.1.24 - 2018-04-06
+
+### Added 
+
+- [opspec 0.1.6 support](https://github.com/opspec-io/spec/blob/0.1.6/CHANGELOG.md#016)
+
+### Removed 
+
+- [opspec 0.1.5 support](https://github.com/opspec-io/spec/blob/0.1.6/CHANGELOG.md#015)
+
 ## 0.1.23 - 2018-01-15
 
 ### Added

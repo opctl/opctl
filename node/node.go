@@ -59,15 +59,9 @@ func New() {
 		)).
 			Listen(ctx)
 
-	libP2PErrChannel :=
-		newLibP2PListener().
-			Listen(ctx)
-
 	select {
 	case httpErr := <-httpErrChannel:
 		panic(httpErr)
-	case libP2PErr := <-libP2PErrChannel:
-		panic(libP2PErr)
 	}
 
 }

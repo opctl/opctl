@@ -30,5 +30,5 @@ where it's output is easily monitored.
 ### cleanup
 
 During creation, [filesystem](../../filesystem/README.md) will be
-cleaned of any existing events, packages, and temp files/dirs to ensure
+cleaned of any existing events, ops, and temp files/dirs to ensure
 the created node starts from a clean slate.

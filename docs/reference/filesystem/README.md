@@ -2,7 +2,7 @@
 
 * [{root}](root/README.md)
   * [pid.lock](root/pid.lock.md)
-  * [pkgs](root/pkgs/README.md)
+  * [ops](root/ops/README.md)
   * [dcg](root/dcg/README.md)
     * [event.db](root/dcg/event.db.md)
     * [{op_id}](root/dcg/op_id/README.md)

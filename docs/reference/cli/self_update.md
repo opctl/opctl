@@ -18,17 +18,17 @@ The release channel to update from
 get latest stable release
 ```shell
 opctl self-update
-# output: Updated to new version: 0.1.23!
+# output: Updated to new version: 0.1.24!
 ```
 
 play around w/ latest beta release
  ```shell
 opctl self-update -c beta
-# output: Updated to new version: 0.1.23-beta.1!
+# output: Updated to new version: 0.1.24-beta.1!
 ```
 
 play times over; switch back to latest stable release
 ```shell
 opctl self-update
-# output: Updated to new version: 0.1.23!
+# output: Updated to new version: 0.1.24!
 ```

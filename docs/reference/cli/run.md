@@ -1,4 +1,4 @@
-## `run [OPTIONS] PKG_REF`
+## `run [OPTIONS] OP_REF`
 
 Start and wait on an op
 
@@ -6,9 +6,9 @@ Start and wait on an op
 
 ## Arguments
 
-### `PKG_REF`
+### `OP_REF`
 
-Package reference (either `relative/path`, `/absolute/path`,
+Op reference (either `relative/path`, `/absolute/path`,
 `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path`
 (since v0.1.24))
 
@@ -24,23 +24,23 @@ Read in a file of args in yml format
 
 ## Examples
 
-### local pkg ref w/out args
+### local op ref w/out args
 
 ```shell
 opctl run myop
 ```
 
-### remote pkg ref w/ args (must be installed first)
+### remote op ref w/ args (must be installed first)
 
 ```shell
-opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-pkgs/slack.chat.post-message#0.1.1
+opctl run -a apiToken="my-token" -a channelName="my-channel" -a msg="hello!" github.com/opspec-ops/slack.chat.post-message#0.1.1
 ```
 
 ## Notes
 
-### pkg source username/password prompt
+### op source username/password prompt
 
-If auth w/ the pkg source fails the cli will (re)prompt for username &
+If auth w/ the op source fails the cli will (re)prompt for username &
 password.
 
 > in non-interactive terminals, the cli will note that it can't prompt

@@ -39,7 +39,7 @@ func newCli(
 	})
 
 	cli.Command(
-		"ls", "List operations (only opspec 0.1.5 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
+		"ls", "List operations (only opspec 0.1.6 compatible operations will be listed)", func(lsCmd *mow.Cmd) {
 			const DirRefArgName = "DIR_REF"
 			lsCmd.Spec = fmt.Sprintf("[%v]", DirRefArgName)
 			dirRef := lsCmd.StringArg(DirRefArgName, op.DotOpspecDirName, "Reference to dir ops will be listed from")

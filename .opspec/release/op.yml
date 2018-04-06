@@ -53,6 +53,7 @@ run:
         inputs: { dockerDSocket, dockerPassword, dockerUsername, version }
     
     # run last to give equinox.io time to finish releasing
+    # @TODO: determine channel from version
     - op:
         pkg: { ref: test/system/opspec }
-        inputs: { srcDir }
+        inputs: { srcDir, channel: alpha }

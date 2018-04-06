@@ -11,13 +11,17 @@ export default ({
     <div className='form-group'>
       <label className='form-control-label' htmlFor={name}>{name}</label>
       <Description value={param.description} opRef={opRef}/>
-      <input
+      {
+        value
+        ?<a className='form-control' href={value || param.default || ''}>view file</a>
+        : <input
         className='form-control'
         id={name}
         readOnly={true}
         type='text'
         value={value || param.default || ""}
-      />
+      /> 
+      }
     </div>
   );
 }
