@@ -7,9 +7,12 @@ inputs:
     dir:
       default: .
       description: directory containing the projects source code
+  channel:
+    string:
+      constraints: { enum: [stable, alpha, beta] }
 run:
   container:
-    image: { ref: 'opctl/opctl:alpha' }
+    image: { ref: 'opctl/opctl:$(channel)' }
     dirs:
       /src: $(srcDir)
       /sharness:

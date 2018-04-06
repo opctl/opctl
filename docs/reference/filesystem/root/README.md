@@ -8,7 +8,7 @@ Contains all opctl state.
 ## Sub paths
 
 * [pid.lock](pid.lock.md)
-* [pkgs](pkgs/README.md)
+* [ops](ops/README.md)
 * [dcg](dcg/README.md)
   * [event.db](dcg/event.db.md)
   * [{op_id}](dcg/op_id/README.md)

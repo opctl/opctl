@@ -1,12 +1,7 @@
-## package
+## op
 
-an opspec [package](https://opspec.io/latest/packages.html)
+an opspec [op](https://opspec.io/0.1.6/ops.html)
 
 ## node
 
-an opspec [node](https://opspec.io/latest/nodes.html)
-
-## op
-
-an opspec [op](https://opspec.io/latest/ops.html)
-
+an opspec [node](https://opspec.io/0.1.6/nodes.html)

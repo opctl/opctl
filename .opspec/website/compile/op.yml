@@ -35,6 +35,9 @@ run:
             echo "installing gitbook cli"
             yarn global add gitbook-cli
 
+            # @TODO remove when https://github.com/GitbookIO/gitbook/issues/1309 fixed
+            yarn add gitbook
+
             echo "installing plugins"
             gitbook install
 
