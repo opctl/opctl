@@ -1,9 +1,6 @@
 description: performs a release
 name: release
 inputs:
-  dockerDSocket:
-    socket:
-      description: socket for docker daemon
   dockerPassword:
     string:
       constraints: { minLength: 1 }
@@ -44,16 +41,18 @@ run:
     - op:
         pkg: { ref: build }
         inputs: { srcDir, gitBranch }
-        outputs: { srcDir }
+        outputs: { opctlForLinux, srcDir }
+
+    # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
+    # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
+    # requiring the current build artifact such as system testing or publishing to docker. 
     - op:
         pkg: { ref: release/to-equinox }
         inputs: { equinoxSigningKey, equinoxToken, srcDir, version }
+
     - op:
         pkg: { ref: release/to-docker }
-        inputs: { dockerDSocket, dockerPassword, dockerUsername, version }
-    
-    # run last to give equinox.io time to finish releasing
-    # @TODO: determine channel from version
-    - op:
-        pkg: { ref: test/system/opspec }
-        inputs: { srcDir, channel: alpha }
+        inputs:
+          dockerPassword:
+          dockerUsername:
+          opctlForLinux:

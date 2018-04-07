@@ -11,6 +11,9 @@ inputs:
       default: .
       description: directory containing the projects source code
 outputs:
+  opctlForLinux:
+    file:
+      description: opctl for linux binary resulting from the build
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -20,6 +23,19 @@ run:
         pkg: { ref: ../test }
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/golang.build.bin#1.1.0 }
+        inputs:
+          baseImport: github.com/opctl/opctl
+          import: github.com/opctl/opctl/cli
+          srcDir: 
+        outputs:
+          opctlForLinux: bin
+    - op:
+        pkg: { ref: ../../test/system/opspec }
+        inputs:
+          srcDir:
+          opctlForLinux:
     - op:
         pkg: { ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2 }
         inputs: { dotGitDir: $(srcDir/.git) }

@@ -32,12 +32,12 @@ do
       case "$expect" in
         success)
           test_expect_success "$scenario_description" "
-              opctl run --arg-file /args.yml "$dir"
+              /opctl run --arg-file /args.yml "$dir"
           "
           ;;
         failure)
           test_expect_success "$scenario_description" "
-              test_must_fail opctl run --arg-file /args.yml "$dir"
+              test_must_fail /opctl run --arg-file /args.yml "$dir"
           "
           ;;
       esac

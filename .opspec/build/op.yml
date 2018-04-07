@@ -11,6 +11,9 @@ inputs:
       default: .
       description: directory containing the projects source code
 outputs:
+  opctlForLinux:
+    file:
+      description: opctl for linux binary resulting from the build
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -19,7 +22,7 @@ run:
     - op:
         pkg: { ref: node/build }
         inputs: { srcDir }
-        outputs: { srcDir }
+        outputs: { opctlForLinux, srcDir }
     - op:
         pkg: { ref: webapp/build }
         inputs: { srcDir }

@@ -1,9 +1,6 @@
 name: release/to-docker
-description: runs all ops necessary to cut a release to docker
+description: releases opctl to [docker hub](https://hub.docker.com/r/opctl/opctl/)
 inputs:
-  dockerDSocket:
-    socket:
-      description: socket for docker daemon
   dockerPassword:
     string:
       constraints: { minLength: 1 }
@@ -13,10 +10,9 @@ inputs:
     string:
       constraints: { minLength: 1 }
       description: username for docker registry
-  version:
-    string:
-      constraints: { format: semver }
-      description: version of opctl being released
+  opctlForLinux:
+    file:
+      description: opctl for linux binary to release. Image tag will be determined via `opctl -v` command. 
 run:
   serial:
     - container:
@@ -24,42 +20,37 @@ run:
           - sh
           - -ce
           - |
-            echo "determining channel"
-            case "$(version)" in
-              *beta*)
-                channel=beta
-                ;;
-              *alpha*)
-                channel=alpha
-                ;;
-              *)
-                channel=stable
-                ;;
-            esac
+            # construct context
+            chmod +x /opctl
+            cp /opctl /context/opctl
+            cp /entrypoint.sh /context/entrypoint.sh
 
-            dockerImageRef=opctl/opctl:"$channel"
-            echo -n "$dockerImageRef" > /dockerImageRef
-
-            echo "compiling image"
-            docker build --build-arg CHANNEL="$channel" --no-cache -t "$dockerImageRef" .
-        dirs:
-          /workDir: $(/)
+            # construct version
+            echo "opctl -v returned: \$(/opctl -v 2>&1)"
+            version=\$(/opctl -v 2>&1)
+            echo -n "opctl/opctl:${version}" > /imageName
+        image: { ref: 'alpine:3.4' }
         files:
-          /dockerImageRef: $(dockerImageRef)
-        image: { ref: 'docker:17.07.0-dind' }
-        sockets:
-          /var/run/docker.sock: dockerDSocket
-        workDir: /workDir
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "authenticating"
-            docker login -u "$(dockerUsername)" -p "$(dockerPassword)"
-
-            echo "pushing image"
-            docker push "$(dockerImageRef)"
-        image: { ref: 'docker:1.11' }
-        sockets:
-          /var/run/docker.sock: dockerDSocket
+          /opctl: $(opctlForLinux)
+          /imageName: $(imageName)
+          /entrypoint.sh:
+        dirs:
+          /context: $(context)
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/docker.image.build#2.1.0 }
+        inputs:
+          imageName:
+          dockerfile: $(/Dockerfile)
+          context:
+          username: $(dockerUsername)
+          password: $(dockerPassword)
+          registry: https://docker.io
+        outputs:
+          imageTar:
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/docker.image.push#2.1.0 }
+        inputs:
+          imageTar:
+          imageName:
+          username: $(dockerUsername)
+          password: $(dockerPassword)
