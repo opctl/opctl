@@ -1,22 +1,21 @@
-description: |
-  runs the [opspec test suite](https://github.com/opspec-io/spec) against opctl alpha channel. Ideally it would run against the
-  current build artifact but this isn't possible due to use of equinox.io
+description: runs the [opspec test suite](https://github.com/opspec-io/spec) against opctl. 
 name: test/system/opspec
 inputs:
   srcDir:
     dir:
       default: .
       description: directory containing the projects source code
-  channel:
-    string:
-      constraints: { enum: [stable, alpha, beta] }
+  opctlForLinux:
+    file:
+      description: opctl for linux binary to be tested
 run:
   container:
-    image: { ref: 'opctl/opctl:$(channel)' }
+    image: { ref: 'docker:18.02.0-dind' }
     dirs:
       /src: $(srcDir)
       /sharness:
     files:
+      /opctl: $(opctlForLinux)
       /cmd.sh:
       /yaml:
     cmd: [/cmd.sh]
