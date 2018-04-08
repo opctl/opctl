@@ -16,6 +16,7 @@ inputs:
     string:
       constraints: { format: semver }
       description: version being published
+opspec: 0.1.6
 run:
   serial:
     - op:

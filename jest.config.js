@@ -4,8 +4,8 @@ module.exports = {
     global: {
       functions: 50,
       lines: 61,
-      statements: 59,
-    },
+      statements: 59
+    }
   },
-  roots: ["lib"],
-};
+  roots: ['lib']
+}

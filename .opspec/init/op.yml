@@ -9,6 +9,7 @@ outputs:
   srcDir:
     dir:
       description: dir containing the projects source code
+opspec: 0.1.6
 run:
   container:
     image: { ref: 'node:9.9.0-alpine'}
