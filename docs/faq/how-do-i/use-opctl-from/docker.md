@@ -12,5 +12,5 @@ of v0.1.15), which features a ready to use opctl node.
 ### Examples
 
 ```shell
-docker run --privileged opctl/opctl:stable opctl run github.com/opspec-pkgs/uuid.v4.generate#1.0.0
+docker run --privileged opctl/opctl:0.1.24 opctl run github.com/opspec-pkgs/uuid.v4.generate#1.0.0
 ```

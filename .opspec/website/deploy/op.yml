@@ -1,4 +1,4 @@
-description: deploys the website
+description: deploys artifacts generated from website/build to AWS
 name: website/deploy
 inputs:
   srcDir:
@@ -15,26 +15,21 @@ inputs:
       description: secret access key for AWS
       isSecret: true
 run:
-  serial:
-    - op:
-        pkg: { ref: compile }
-        inputs: { srcDir }
-        outputs: { srcDir }
-    - container:
-        cmd:
-          - sh
-          - -ce
-          - |
-            echo "installing deps"
-            pip install awscli
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        pip install awscli
 
-            echo "deploy"
-            aws s3 sync . s3://opctl.io --delete
-        dirs:
-          /src: $(srcDir)
-        envVars:
-          AWS_ACCESS_KEY_ID:
-          AWS_SECRET_ACCESS_KEY:
-          AWS_DEFAULT_REGION: us-west-2
-        image: { ref: 'python:2.7' }
-        workDir: /src/build
+        echo "deploy"
+        aws s3 sync . s3://opctl.io --delete
+    dirs:
+      /src: $(srcDir)
+    envVars:
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      AWS_DEFAULT_REGION: us-west-2
+    image: { ref: 'python:2.7' }
+    workDir: /src/build
