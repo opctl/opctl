@@ -3,15 +3,16 @@ package client
 import (
 	"context"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"strings"
 )
 
 var _ = Context("ListDescendants", func() {
@@ -92,7 +93,7 @@ var _ = Context("ListDescendants", func() {
 			)
 
 			/* assert */
-			Expect(actualContentsList).To(Equal([]*model.DataNode{}))
+			Expect(actualContentsList).To(Equal([]*model.DirEntry{}))
 			Expect(actualErr).To(BeNil())
 
 		})

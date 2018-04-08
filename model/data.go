@@ -19,7 +19,7 @@ type DataHandle interface {
 	ListDescendants(
 		ctx context.Context,
 	) (
-		[]*DataNode,
+		[]*DirEntry,
 		error,
 	)
 
@@ -32,16 +32,16 @@ type DataHandle interface {
 		error,
 	)
 
-	// Path the local path of the pkg
+	// Path returns the local path of the data; may or may not be same as Ref
 	// returns nil if data doesn't exist locally
 	Path() *string
 
-	// Ref returns a ref to the data
+	// Ref returns a ref to the data; may or may not be same as Path
 	Ref() string
 }
 
-// DataNode represents an entry in a file system (a directory or file)
-type DataNode struct {
+// DirEntry represents an entry in a directory (a sub directory or file)
+type DirEntry struct {
 	Path string
 	Size int64
 	Mode os.FileMode

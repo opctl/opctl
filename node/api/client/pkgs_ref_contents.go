@@ -5,19 +5,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/api"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/api"
 )
 
 func (c client) ListDescendants(
 	ctx context.Context,
 	req model.ListDescendantsReq,
 ) (
-	[]*model.DataNode,
+	[]*model.DirEntry,
 	error,
 ) {
 
@@ -69,7 +70,7 @@ func (c client) ListDescendants(
 		}
 	}
 
-	var contentList []*model.DataNode
+	var contentList []*model.DirEntry
 	return contentList, json.NewDecoder(httpResp.Body).Decode(&contentList)
 
 }

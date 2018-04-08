@@ -3,14 +3,15 @@ package op
 import (
 	"context"
 	"errors"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("Installer", func() {
@@ -62,9 +63,9 @@ var _ = Context("Installer", func() {
 				providedCtx := context.TODO()
 
 				fakeHandle := new(data.FakeHandle)
-				contentsList := []*model.DataNode{
+				contentsList := []*model.DirEntry{
 					{
-						Path: "dataNode1Path",
+						Path: "dirEntry1Path",
 					},
 				}
 
@@ -96,7 +97,7 @@ var _ = Context("Installer", func() {
 					expectedError := errors.New("dummyError")
 
 					fakeHandle := new(data.FakeHandle)
-					fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, expectedError)
+					fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, expectedError)
 
 					fakeHandle.GetContentReturns(nil, expectedError)
 
@@ -119,9 +120,9 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.DataNode{
+						contentsList := []*model.DirEntry{
 							{
-								Path: "dataNode1Path",
+								Path: "dirEntry1Path",
 								Mode: os.ModeDir,
 							},
 						}
@@ -157,7 +158,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListDescendantsReturns([]*model.DataNode{{Mode: os.ModeDir}}, nil)
+							fakeHandle.ListDescendantsReturns([]*model.DirEntry{{Mode: os.ModeDir}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -181,9 +182,9 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.DataNode{
+						contentsList := []*model.DirEntry{
 							{
-								Path: "dataNode1Path",
+								Path: "dirEntry1Path",
 							},
 						}
 
@@ -220,7 +221,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+							fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -242,9 +243,9 @@ var _ = Context("Installer", func() {
 							providedPath := "dummyPath"
 
 							fakeHandle := new(data.FakeHandle)
-							contentsList := []*model.DataNode{
+							contentsList := []*model.DirEntry{
 								{
-									Path: "dataNode1Path",
+									Path: "dirEntry1Path",
 								},
 							}
 
@@ -275,7 +276,7 @@ var _ = Context("Installer", func() {
 								expectedError := errors.New("dummyError")
 
 								fakeHandle := new(data.FakeHandle)
-								fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+								fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(nil, expectedError)
@@ -297,10 +298,10 @@ var _ = Context("Installer", func() {
 								providedPath := "dummyPath"
 
 								fakeHandle := new(data.FakeHandle)
-								contentsList := []*model.DataNode{
+								contentsList := []*model.DirEntry{
 									{
 										Mode: os.FileMode(0777),
-										Path: "dataNode1Path",
+										Path: "dirEntry1Path",
 									},
 								}
 
@@ -334,7 +335,7 @@ var _ = Context("Installer", func() {
 									expectedError := errors.New("dummyError")
 
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 									fakeOS := new(ios.Fake)
 									fakeOS.ChmodReturns(expectedError)
@@ -354,7 +355,7 @@ var _ = Context("Installer", func() {
 								It("should copy content", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 									// create tmpfile to use as src
 									contentSrc, err := ioutil.TempFile("", "")
@@ -401,7 +402,7 @@ var _ = Context("Installer", func() {
 								It("shouldn't err", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 									// create tmpfile to use as src
 									file, err := ioutil.TempFile("", "")

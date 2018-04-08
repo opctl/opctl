@@ -9,17 +9,17 @@ import (
 )
 
 type FakeHandle struct {
-	ListDescendantsStub        func(ctx context.Context) ([]*model.DataNode, error)
+	ListDescendantsStub        func(ctx context.Context) ([]*model.DirEntry, error)
 	listDescendantsMutex       sync.RWMutex
 	listDescendantsArgsForCall []struct {
 		ctx context.Context
 	}
 	listDescendantsReturns struct {
-		result1 []*model.DataNode
+		result1 []*model.DirEntry
 		result2 error
 	}
 	listDescendantsReturnsOnCall map[int]struct {
-		result1 []*model.DataNode
+		result1 []*model.DirEntry
 		result2 error
 	}
 	GetContentStub        func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error)
@@ -58,7 +58,7 @@ type FakeHandle struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandle) ListDescendants(ctx context.Context) ([]*model.DataNode, error) {
+func (fake *FakeHandle) ListDescendants(ctx context.Context) ([]*model.DirEntry, error) {
 	fake.listDescendantsMutex.Lock()
 	ret, specificReturn := fake.listDescendantsReturnsOnCall[len(fake.listDescendantsArgsForCall)]
 	fake.listDescendantsArgsForCall = append(fake.listDescendantsArgsForCall, struct {
@@ -87,24 +87,24 @@ func (fake *FakeHandle) ListDescendantsArgsForCall(i int) context.Context {
 	return fake.listDescendantsArgsForCall[i].ctx
 }
 
-func (fake *FakeHandle) ListDescendantsReturns(result1 []*model.DataNode, result2 error) {
+func (fake *FakeHandle) ListDescendantsReturns(result1 []*model.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
 	fake.listDescendantsReturns = struct {
-		result1 []*model.DataNode
+		result1 []*model.DirEntry
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) ListDescendantsReturnsOnCall(i int, result1 []*model.DataNode, result2 error) {
+func (fake *FakeHandle) ListDescendantsReturnsOnCall(i int, result1 []*model.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
 	if fake.listDescendantsReturnsOnCall == nil {
 		fake.listDescendantsReturnsOnCall = make(map[int]struct {
-			result1 []*model.DataNode
+			result1 []*model.DirEntry
 			result2 error
 		})
 	}
 	fake.listDescendantsReturnsOnCall[i] = struct {
-		result1 []*model.DataNode
+		result1 []*model.DirEntry
 		result2 error
 	}{result1, result2}
 }

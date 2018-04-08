@@ -48,18 +48,18 @@ type Fake struct {
 	killOpReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ListDescendantsStub      func(ctx context.Context, req model.ListDescendantsReq) ([]*model.DataNode, error)
-	listDataNodesMutex       sync.RWMutex
-	listDataNodesArgsForCall []struct {
+	ListDescendantsStub      func(ctx context.Context, req model.ListDescendantsReq) ([]*model.DirEntry, error)
+	listDirEntrysMutex       sync.RWMutex
+	listDirEntrysArgsForCall []struct {
 		ctx context.Context
 		req model.ListDescendantsReq
 	}
-	listDataNodesReturns struct {
-		result1 []*model.DataNode
+	listDirEntrysReturns struct {
+		result1 []*model.DirEntry
 		result2 error
 	}
-	listDataNodesReturnsOnCall map[int]struct {
-		result1 []*model.DataNode
+	listDirEntrysReturnsOnCall map[int]struct {
+		result1 []*model.DirEntry
 		result2 error
 	}
 	StartOpStub        func(ctx context.Context, req model.StartOpReq) (opID string, err error)
@@ -232,54 +232,54 @@ func (fake *Fake) KillOpReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) ListDescendants(ctx context.Context, req model.ListDescendantsReq) ([]*model.DataNode, error) {
-	fake.listDataNodesMutex.Lock()
-	ret, specificReturn := fake.listDataNodesReturnsOnCall[len(fake.listDataNodesArgsForCall)]
-	fake.listDataNodesArgsForCall = append(fake.listDataNodesArgsForCall, struct {
+func (fake *Fake) ListDescendants(ctx context.Context, req model.ListDescendantsReq) ([]*model.DirEntry, error) {
+	fake.listDirEntrysMutex.Lock()
+	ret, specificReturn := fake.listDirEntrysReturnsOnCall[len(fake.listDirEntrysArgsForCall)]
+	fake.listDirEntrysArgsForCall = append(fake.listDirEntrysArgsForCall, struct {
 		ctx context.Context
 		req model.ListDescendantsReq
 	}{ctx, req})
 	fake.recordInvocation("ListDescendants", []interface{}{ctx, req})
-	fake.listDataNodesMutex.Unlock()
+	fake.listDirEntrysMutex.Unlock()
 	if fake.ListDescendantsStub != nil {
 		return fake.ListDescendantsStub(ctx, req)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.listDataNodesReturns.result1, fake.listDataNodesReturns.result2
+	return fake.listDirEntrysReturns.result1, fake.listDirEntrysReturns.result2
 }
 
 func (fake *Fake) ListDescendantsCallCount() int {
-	fake.listDataNodesMutex.RLock()
-	defer fake.listDataNodesMutex.RUnlock()
-	return len(fake.listDataNodesArgsForCall)
+	fake.listDirEntrysMutex.RLock()
+	defer fake.listDirEntrysMutex.RUnlock()
+	return len(fake.listDirEntrysArgsForCall)
 }
 
 func (fake *Fake) ListDescendantsArgsForCall(i int) (context.Context, model.ListDescendantsReq) {
-	fake.listDataNodesMutex.RLock()
-	defer fake.listDataNodesMutex.RUnlock()
-	return fake.listDataNodesArgsForCall[i].ctx, fake.listDataNodesArgsForCall[i].req
+	fake.listDirEntrysMutex.RLock()
+	defer fake.listDirEntrysMutex.RUnlock()
+	return fake.listDirEntrysArgsForCall[i].ctx, fake.listDirEntrysArgsForCall[i].req
 }
 
-func (fake *Fake) ListDescendantsReturns(result1 []*model.DataNode, result2 error) {
+func (fake *Fake) ListDescendantsReturns(result1 []*model.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
-	fake.listDataNodesReturns = struct {
-		result1 []*model.DataNode
+	fake.listDirEntrysReturns = struct {
+		result1 []*model.DirEntry
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ListDescendantsReturnsOnCall(i int, result1 []*model.DataNode, result2 error) {
+func (fake *Fake) ListDescendantsReturnsOnCall(i int, result1 []*model.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
-	if fake.listDataNodesReturnsOnCall == nil {
-		fake.listDataNodesReturnsOnCall = make(map[int]struct {
-			result1 []*model.DataNode
+	if fake.listDirEntrysReturnsOnCall == nil {
+		fake.listDirEntrysReturnsOnCall = make(map[int]struct {
+			result1 []*model.DirEntry
 			result2 error
 		})
 	}
-	fake.listDataNodesReturnsOnCall[i] = struct {
-		result1 []*model.DataNode
+	fake.listDirEntrysReturnsOnCall[i] = struct {
+		result1 []*model.DirEntry
 		result2 error
 	}{result1, result2}
 }
@@ -345,8 +345,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.getDataMutex.RUnlock()
 	fake.killOpMutex.RLock()
 	defer fake.killOpMutex.RUnlock()
-	fake.listDataNodesMutex.RLock()
-	defer fake.listDataNodesMutex.RUnlock()
+	fake.listDirEntrysMutex.RLock()
+	defer fake.listDirEntrysMutex.RUnlock()
 	fake.startOpMutex.RLock()
 	defer fake.startOpMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

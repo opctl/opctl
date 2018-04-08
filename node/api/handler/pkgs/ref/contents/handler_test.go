@@ -127,7 +127,7 @@ var _ = Context("Handler", func() {
 					fakeCore := new(core.Fake)
 
 					fakeHandle := new(data.FakeHandle)
-					contentsList := []*model.DataNode{
+					contentsList := []*model.DirEntry{
 						{Path: "dummyPath"},
 					}
 					fakeHandle.ListDescendantsReturns(contentsList, nil)

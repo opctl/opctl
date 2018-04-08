@@ -12,6 +12,7 @@ outputs:
   coverprofile:
     file:
       description: aggregate coverprofile
+opspec: 0.1.6
 run:
   serial:
     - op:
