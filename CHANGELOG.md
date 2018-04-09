@@ -3,7 +3,7 @@
 All notable changes will be documented in this file in accordance with
 [![keepachangelog 1.0.0](https://img.shields.io/badge/keepachangelog-1.0.0-brightgreen.svg)](http://keepachangelog.com/en/1.0.0/)
 
-## \[0.1.6]
+## \[0.1.6] - 2018-04-05
 
 ### Added
 
@@ -28,7 +28,7 @@ All notable changes will be documented in this file in accordance with
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use files.
 
-## Removed
+### Removed
 
 - [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opspec-io/spec/issues/184)
 
