@@ -16,6 +16,8 @@ All notable changes will be documented in this file in accordance with
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
 - Object/Array initializers
+- Reference object property via `object[propertyName]`
+- Reference array item via `array[index]` or `array[-index]` to index from end of array
 - [Unified data API](https://github.com/opspec-io/spec/issues/204)
 
 ### Deprecated
