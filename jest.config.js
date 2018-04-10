@@ -2,9 +2,10 @@ module.exports = {
   verbose: true,
   coverageThreshold: {
     global: {
-      functions: 50,
-      lines: 61,
-      statements: 59
+      functions: 57,
+      lines: 77,
+      statements: 75,
+      branch: 84
     }
   },
   roots: ['lib']

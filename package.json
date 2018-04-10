@@ -24,14 +24,14 @@
     "universal-websocket-client": "^1.0.1"
   },
   "standard": {
-    "env": [
+    "envs": [
       "jest"
     ]
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.0",
-    "jest": "^21.2.1",
+    "jest": "^22.4.3",
     "nock": "^9.0.22",
     "standard": "^11.0.1"
   }
