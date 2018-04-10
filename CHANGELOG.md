@@ -7,17 +7,17 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
-- [Add `opspec` property to op schema](https://github.com/opspec-io/spec/issues/20)
-- Support client back pressure in `GET event-stream` endpoint via `ack`
-  query param
+- [`opspec` property in op schema](https://github.com/opspec-io/spec/issues/20)
+- Client back pressure in `GET event-stream` endpoint via `ack` query param
 - [Support declaring SVG icon for op](https://github.com/opspec-io/spec/issues/139)
 - [Support CommonMark for op & param descriptions](https://github.com/opspec-io/spec/issues/174)
-- [Support boolean type](https://github.com/opspec-io/spec/issues/195)
+- [Boolean type](https://github.com/opspec-io/spec/issues/195)
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
-- Object/Array initializers
-- Reference object property via `object[propertyName]`
-- Reference array item via `array[index]` or `array[-index]` to index from end of array
+- Object & Array initializers
+- Referencing object properties via `object[propertyName]`
+- Referencing array items via `array[index]` or `array[-index]` to index from end of array
+- Escape references via `\$()` i.e. prefixing reference `$()` w/ `\`
 - [Unified data API](https://github.com/opspec-io/spec/issues/204)
 
 ### Deprecated
