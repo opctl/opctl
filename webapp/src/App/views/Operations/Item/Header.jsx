@@ -1,17 +1,17 @@
-import React, {PureComponent} from 'react';
-import MdMoreVert from 'react-icons/lib/md/more-vert';
-import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
+import React, {PureComponent} from 'react'
+import MdMoreVert from 'react-icons/lib/md/more-vert'
+import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap'
 
-const dragHandleClassName = 'dragHandle';
+const dragHandleClassName = 'dragHandle'
 
 export default class Header extends PureComponent {
   state = {dropdownOpen: false};
 
   toggleDropdown = () => {
-    this.setState(prevState => ({dropdownOpen: !prevState.dropdownOpen}));
+    this.setState(prevState => ({dropdownOpen: !prevState.dropdownOpen}))
   };
 
-  render() {
+  render () {
     return (
       <div
         className={dragHandleClassName}
@@ -39,7 +39,7 @@ export default class Header extends PureComponent {
             isOpen={this.state.dropdownOpen}
             toggle={this.toggleDropdown}
           >
-            <DropdownToggle tag="div">
+            <DropdownToggle tag='div'>
               <MdMoreVert
                 style={{
                   transform: 'rotate(-90deg) translateY(-50%)'
@@ -49,12 +49,10 @@ export default class Header extends PureComponent {
             <DropdownMenu right>
               {
                 this.props.isKillable
-                  ?
-                  <DropdownItem onClick={this.props.onKill}>
+                  ? <DropdownItem onClick={this.props.onKill}>
                     Kill (ctrl+c)
                   </DropdownItem>
-                  :
-                  <DropdownItem onClick={this.props.onStart} disabled={!this.props.isStartable}>
+                  : <DropdownItem onClick={this.props.onStart} disabled={!this.props.isStartable}>
                     Start (enter)
                   </DropdownItem>
               }
@@ -72,6 +70,6 @@ export default class Header extends PureComponent {
           </Dropdown>
         </div>
       </div>
-    );
+    )
   }
 }

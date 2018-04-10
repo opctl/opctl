@@ -1,15 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import String from './String';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import String from './String'
 
-it('renders without crashing', () => {
-  /* arrange */
-  const div = document.createElement('div');
+describe('String', () => {
+  it('renders without crashing', () => {
+    /* arrange */
+    const div = document.createElement('div')
 
-  /* act/assert */
-  ReactDOM.render(
-    <String
-      param={{description: ''}}
-    />,
-    div);
-});
+    /* act/assert */
+    ReactDOM.render(
+      <String
+        param={{description: ''}}
+      />,
+      div)
+  })
+})

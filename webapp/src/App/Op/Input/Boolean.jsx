@@ -1,5 +1,5 @@
-import React from 'react';
-import Input from '../../Input';
+import React from 'react'
+import Input from '../../Input'
 
 export default ({name, onValid, opRef, boolean, value}) =>
   <Input
@@ -9,5 +9,5 @@ export default ({name, onValid, opRef, boolean, value}) =>
     opRef={opRef}
     type='checkbox'
     validate={value => ([])}
-    value={'undefined' === typeof value? boolean.default : value}
-  />;
+    value={typeof value === 'undefined' ? boolean.default : value}
+  />

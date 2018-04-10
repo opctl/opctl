@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import Description from '../Param/Description';
-import opspecNodeApiClient from '../../../core/clients/opspecNodeApi';
+import React, { Component } from 'react'
+import Description from '../Param/Description'
+import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
 
-export default class String extends Component {
+export default class Boolean extends Component {
   state = {};
 
-  componentDidMount() {
+  componentDidMount () {
     this._loadValue()
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (this.props.value !== prevProps.value) {
-      this._loadValue();
+      this._loadValue()
     }
   }
 
-  render() {
+  render () {
     return (
       <div className='form-group'>
         <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
@@ -23,23 +23,23 @@ export default class String extends Component {
         <input
           className='form-control'
           id={this.props.name}
-          readOnly={true}
+          readOnly
           type='checkbox'
           value={this.state.value || false}
         />
-      </div>);
+      </div>)
   }
 
-  _loadValue() {
-    const { value, param } = this.props;
-    if ('undefined' !== typeof value) {
+  _loadValue () {
+    const { value, param } = this.props
+    if (typeof value !== 'undefined') {
       opspecNodeApiClient.data_get({
-        dataRef: value,
+        dataRef: value
       })
         .then(data => data.text())
         .then(value => this.setState({ value }))
     } else {
-      this.setState({ value: param.default || "" });
+      this.setState({ value: param.default || '' })
     }
   }
 }

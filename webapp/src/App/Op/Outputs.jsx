@@ -1,8 +1,8 @@
-import React from 'react';
-import Output from './Output/index';
+import React from 'react'
+import Output from './Output/index'
 
 export default ({params = {}, opRef, values = {}}) => {
-  if (!params || Object.entries(params).length === 0) return (null);
+  if (!params || Object.entries(params).length === 0) return (null)
 
   return (
     <div>
@@ -19,5 +19,5 @@ export default ({params = {}, opRef, values = {}}) => {
         )
       }
     </div>
-  );
+  )
 }

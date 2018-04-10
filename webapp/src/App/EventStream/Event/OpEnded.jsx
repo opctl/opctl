@@ -1,20 +1,20 @@
-import React from 'react';
+import React from 'react'
 
 export default ({
-                  opEnded,
-                  timestamp,
-                }) => {
-  let color;
+  opEnded,
+  timestamp
+}) => {
+  let color
   switch (opEnded.outcome) {
     case 'FAILED':
-      color = 'rgb(255, 110, 103)';
-      break;
+      color = 'rgb(255, 110, 103)'
+      break
     case 'SUCCEEDED':
-      color = 'rgb(95, 250, 104)';
-      break;
+      color = 'rgb(95, 250, 104)'
+      break
     case 'KILLED':
-      color = 'rgb(96, 253, 255)';
-      break;
+      color = 'rgb(96, 253, 255)'
+      break
     default:
       throw new Error(`received unexpected OpEnded.Outcome: '${opEnded.outcome}'`)
   }
@@ -27,5 +27,5 @@ export default ({
       Outcome='{opEnded.outcome}'
       Timestamp='{timestamp}'
     </div>
-  );
+  )
 }

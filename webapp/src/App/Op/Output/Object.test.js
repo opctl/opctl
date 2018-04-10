@@ -1,17 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Object from './Object';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Object from './Object'
 
-it('renders without crashing', () => {
-  /* arrange */
-  const div = document.createElement('div');
-  const dummyYamlObject = JSON.stringify({});
+describe('Object', () => {
+  it('renders without crashing', () => {
+    /* arrange */
+    const div = document.createElement('div')
+    const dummyYamlObject = JSON.stringify({})
 
-  /* act/assert */
-  ReactDOM.render(
-    <Object
-      param={{description: ''}}
-      value={dummyYamlObject}
-    />,
-    div);
-});
+    /* act/assert */
+    ReactDOM.render(
+      <Object
+        param={{description: ''}}
+        value={dummyYamlObject}
+      />,
+      div)
+  })
+})

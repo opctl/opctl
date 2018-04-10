@@ -1,26 +1,26 @@
-import opspecNodeApiClient from '../clients/opspecNodeApi';
-import uuidV4 from 'uuid/v4';
-import filterChecker from './filterChecker';
+import opspecNodeApiClient from '../clients/opspecNodeApi'
+import uuidV4 from 'uuid/v4'
+import filterChecker from './filterChecker'
 
-const events = [];
-const subscriptions = [];
+const events = []
+const subscriptions = []
 
-class eventStore {
-  constructor() {
-      opspecNodeApiClient.event_stream_get({
-        onEvent: event => this.add(event),
-      });
+class EventStore {
+  constructor () {
+    opspecNodeApiClient.event_stream_get({
+      onEvent: event => this.add(event)
+    })
   }
 
-  add(event) {
-    events.push(event);
+  add (event) {
+    events.push(event)
     Object.values(subscriptions).forEach(subscription => {
       if (subscription.onEvent) {
         if (!filterChecker.isFiltered(subscription.filter, event)) {
-          subscription.onEvent(event);
+          subscription.onEvent(event)
         }
       }
-    });
+    })
   }
 
   /**
@@ -30,23 +30,23 @@ class eventStore {
    * @param {Function} onEvent
    * @returns {function()} cancel; cancels any further calls to onEvent
    */
-  getStream({
-                    filter,
-                    onEvent,
-                  }) {
-    const subscriptionId = uuidV4();
+  getStream ({
+    filter,
+    onEvent
+  }) {
+    const subscriptionId = uuidV4()
 
     events.forEach(event => {
       if (onEvent) {
         if (!filterChecker.isFiltered(filter, event)) {
-          onEvent(event);
+          onEvent(event)
         }
       }
-    });
-    subscriptions[subscriptionId] = {onEvent, filter};
+    })
+    subscriptions[subscriptionId] = {onEvent, filter}
 
     return () => delete subscriptions[subscriptionId]
   }
 }
 
-export default new eventStore()
+export default new EventStore()

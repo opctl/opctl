@@ -1,14 +1,14 @@
-import React from 'react';
-import Ansi from 'ansi-to-react';
+import React from 'react'
+import Ansi from 'ansi-to-react'
 
 export default ({
-                  containerStdErrWrittenTo,
-                }) => {
+  containerStdErrWrittenTo
+}) => {
   return (
     <div>
       <Ansi>
-        {atob(containerStdErrWrittenTo.data)}
+        {window.atob(containerStdErrWrittenTo.data)}
       </Ansi>
     </div>
-  );
+  )
 }

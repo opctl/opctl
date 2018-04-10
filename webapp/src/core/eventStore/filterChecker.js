@@ -1,36 +1,36 @@
 
 const getEventRootOpId = (event) => {
   if (event.containerExited) {
-    return event.containerExited.rootOpId;
+    return event.containerExited.rootOpId
   } else if (event.containerStarted) {
-    return event.containerStarted.rootOpId;
+    return event.containerStarted.rootOpId
   } else if (event.containerStdErrWrittenTo) {
-    return event.containerStdErrWrittenTo.rootOpId;
+    return event.containerStdErrWrittenTo.rootOpId
   } else if (event.containerStdOutWrittenTo) {
-    return event.containerStdOutWrittenTo.rootOpId;
+    return event.containerStdOutWrittenTo.rootOpId
   } else if (event.opErred) {
-    return event.opErred.rootOpId;
+    return event.opErred.rootOpId
   } else if (event.opEnded) {
     return event.opEnded.rootOpId
   } else if (event.opStarted) {
-    return event.opStarted.rootOpId;
+    return event.opStarted.rootOpId
   } else if (event.parallelCallEnded) {
-    return event.parallelCallEnded.rootOpId;
+    return event.parallelCallEnded.rootOpId
   } else if (event.serialCallEnded) {
-    return event.serialCallEnded.rootOpId;
+    return event.serialCallEnded.rootOpId
   } else {
-    throw new Error(`received unexpected event ${JSON.stringify(event)}`);
+    throw new Error(`received unexpected event ${JSON.stringify(event)}`)
   }
-};
+}
 
 class FilterChecker {
-  isFiltered(filter, event) {
+  isFiltered (filter, event) {
     if (filter && Array.isArray(filter.roots)) {
       return !filter.roots.find(rootOpId => rootOpId === getEventRootOpId(event))
     }
     // @TODO: apply filter.since
-    return false;
+    return false
   }
 }
 
-export default new FilterChecker();
+export default new FilterChecker()

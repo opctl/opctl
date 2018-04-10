@@ -1,8 +1,8 @@
-import React from 'react';
-import Input from './Input/index';
+import React from 'react'
+import Input from './Input/index'
 
 export default ({value, onInvalid, onValid, opRef, values}) => {
-  if (!value || Object.entries(value).length === 0) return (null);
+  if (!value || Object.entries(value).length === 0) return (null)
 
   return (
     <div>
@@ -19,5 +19,5 @@ export default ({value, onInvalid, onValid, opRef, values}) => {
         />
       )}
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import React from 'react';
-import './index.css';
+import React from 'react'
+import './index.css'
 import { NavLink } from 'react-router-dom'
 
 export default ({ isCollapsed }) => {
@@ -11,16 +11,15 @@ export default ({ isCollapsed }) => {
         </NavLink>
       </li>
       <li className='menu-item'>
-        <NavLink to='/' exact={true}>
+        <NavLink to='/' exact>
           operations
         </NavLink>
       </li>
       <li className='menu-item'>
-        <NavLink to='/environment' exact={true}>
+        <NavLink to='/environment' exact>
           environment
         </NavLink>
       </li>
     </ul>
-  );
+  )
 }
-

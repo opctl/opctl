@@ -1,25 +1,25 @@
-import React from 'react';
-import InputArray from './Array';
-import InputBoolean from './Boolean';
-import InputDir from './Dir';
-import InputFile from './File';
-import InputNumber from './Number';
-import InputObject from './Object';
-import InputSocket from './Socket';
-import InputString from './String';
-import contentStore from '../../../core/contentStore';
+import React from 'react'
+import InputArray from './Array'
+import InputBoolean from './Boolean'
+import InputDir from './Dir'
+import InputFile from './File'
+import InputNumber from './Number'
+import InputObject from './Object'
+import InputSocket from './Socket'
+import InputString from './String'
+import contentStore from '../../../core/contentStore'
 
 export default ({
-                  input,
-                  name,
-                  onInvalid,
-                  onValid,
-                  opRef,
-                  value,
-                }) => {
-  const environment = contentStore.get({key: 'environment'}) || [];
-  const variable = environment.find(variable => variable.name === name) || {};
-  value = value || variable.value;
+  input,
+  name,
+  onInvalid,
+  onValid,
+  opRef,
+  value
+}) => {
+  const environment = contentStore.get({key: 'environment'}) || []
+  const variable = environment.find(variable => variable.name === name) || {}
+  value = value || variable.value
 
   // delegate to component for input
   if (input.array) {

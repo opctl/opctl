@@ -1,33 +1,33 @@
-import React, { Component } from 'react';
-import Markdown from './Markdown';
-import Icon from './Icon';
-import Inputs from './Inputs';
-import Outputs from './Outputs';
-import EventStream from '../EventStream';
-import opspecNodeApiClient from '../../core/clients/opspecNodeApi';
-import { toast } from 'react-toastify';
+import React, { Component } from 'react'
+import Markdown from './Markdown'
+import Icon from './Icon'
+import Inputs from './Inputs'
+import Outputs from './Outputs'
+import EventStream from '../EventStream'
+import opspecNodeApiClient from '../../core/clients/opspecNodeApi'
+import { toast } from 'react-toastify'
 
 export default class Op extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       isStartable: (props.value.inputs || []).length === 0,
       isKillable: false,
-      outputs: {},
-    };
+      outputs: {}
+    }
   }
 
   handleInvalid = (name) => {
-    this.args = this.args || {};
-    delete this.args[name];
-    this.setState({ isStartable: false });
+    this.args = this.args || {}
+    delete this.args[name]
+    this.setState({ isStartable: false })
   };
 
   handleValid = (name, value) => {
-    this.args = this.args || {};
-    this.args[name] = value;
-    this.setState({ isStartable: Object.keys(this.props.value.inputs).length === Object.keys(this.args).length });
+    this.args = this.args || {}
+    this.args[name] = value
+    this.setState({ isStartable: Object.keys(this.props.value.inputs).length === Object.keys(this.args).length })
   };
 
   kill = () => {
@@ -35,52 +35,52 @@ export default class Op extends Component {
       opId: this.state.opId
     })
       .then(() => this.setState({ isKillable: false }))
-      .catch(error => toast.error(error.message));
+      .catch(error => toast.error(error.message))
   };
 
   start = () => {
     const args = Object.entries(this.props.value.inputs || [])
       .reduce((args, [name, param]) => {
-        if (param.array) args[name] = {array: this.args[name]};
-        if (param.boolean) args[name] = {boolean: this.args[name]};
-        if (param.dir) args[name] = {dir: this.args[name]};
-        if (param.file) args[name] = {file: this.args[name]};
-        if (param.number) args[name] = {number: this.args[name]};
-        if (param.object) args[name] = {object: this.args[name]};
-        if (param.socket) args[name] = {socket: this.args[name]};
-        if (param.string) args[name] = {string: this.args[name]};
-        return args;
-      }, {});
+        if (param.array) args[name] = {array: this.args[name]}
+        if (param.boolean) args[name] = {boolean: this.args[name]}
+        if (param.dir) args[name] = {dir: this.args[name]}
+        if (param.file) args[name] = {file: this.args[name]}
+        if (param.number) args[name] = {number: this.args[name]}
+        if (param.object) args[name] = {object: this.args[name]}
+        if (param.socket) args[name] = {socket: this.args[name]}
+        if (param.string) args[name] = {string: this.args[name]}
+        return args
+      }, {})
 
     opspecNodeApiClient.op_start({
       args,
       op: {
-        ref: this.props.opRef,
+        ref: this.props.opRef
       }
     })
       .then(opId => {
-        this.setState({ opId, isKillable: true });
+        this.setState({ opId, isKillable: true })
 
         opspecNodeApiClient.event_stream_get({
           filter: {
-            roots: [opId],
+            roots: [opId]
           },
           onEvent: event => {
             if (event.opEnded && event.opEnded.opId === opId) {
               this.setState({
                 isKillable: false,
-                outputs: event.opEnded.outputs,
-              });
+                outputs: event.opEnded.outputs
+              })
             }
-          },
+          }
         })
       })
-      .catch(error => toast.error(error.message));
+      .catch(error => toast.error(error.message))
   };
 
-  render() {
+  render () {
     return (
-      <div style={{height:'100%'}}>
+      <div style={{height: '100%'}}>
         <form onSubmit={e => {
           e.preventDefault()
         }}>
@@ -101,8 +101,8 @@ export default class Op extends Component {
           />
           <div className='form-group'>
             {
-              this.state.isKillable ?
-                <button
+              this.state.isKillable
+                ? <button
                   className='col-12 btn btn-primary btn-lg'
                   id='opKill'
                   onClick={this.kill}
@@ -123,14 +123,14 @@ export default class Op extends Component {
         </form>
         <br />
         {
-          this.state.opId ?
-            <div style={{height: '100%'}}>
+          this.state.opId
+            ? <div style={{height: '100%'}}>
               <h2>Event Stream:</h2>
               <EventStream key={this.state.opId} filter={{ roots: [this.state.opId] }} />
             </div>
             : null
         }
       </div>
-    );
+    )
   }
 }

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
 export default ({
-                  opStarted,
-                  timestamp,
-                }) => {
+  opStarted,
+  timestamp
+}) => {
   return (
     <div style={{color: 'rgb(96, 253, 255)'}}>
       OpStarted
@@ -11,5 +11,5 @@ export default ({
       OpRef='{opStarted.opRef}'
       Timestamp='{timestamp}'
     </div>
-  );
+  )
 }
