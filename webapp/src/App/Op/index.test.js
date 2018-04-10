@@ -1,10 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Op from './index';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Op from './index'
 
 it('renders without crashing', () => {
   /* arrange */
-  const div = document.createElement('div');
+  const div = document.createElement('div')
 
   /* act/assert */
   ReactDOM.render(
@@ -13,5 +13,5 @@ it('renders without crashing', () => {
       opRef={'dummyOpRef'}
     />,
     div
-  );
-});
+  )
+})

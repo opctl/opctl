@@ -1,5 +1,5 @@
-import React from 'react';
-import Input from '../../Input';
+import React from 'react'
+import Input from '../../Input'
 
 export default ({name, onValid, opRef, socket, value}) =>
   <Input
@@ -11,5 +11,4 @@ export default ({name, onValid, opRef, socket, value}) =>
     // @TODO validate
     validate={value => ([])}
     value={value}
-  />;
-
+  />

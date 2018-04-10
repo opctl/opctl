@@ -1,92 +1,92 @@
-import React, {PureComponent} from 'react';
-import {AutoSizer} from 'react-virtualized';
-import {HotKeys} from 'react-hotkeys';
+import React, {PureComponent} from 'react'
+import {AutoSizer} from 'react-virtualized'
+import {HotKeys} from 'react-hotkeys'
 import Header from './Header'
 import Inputs from '../../../Op/Inputs'
 import EventStream from '../../../EventStream'
-import {Modal, ModalBody} from 'reactstrap';
-import Input from '../../../Input';
-import eventStore from '../../../../core/eventStore';
-import reactClickOutside from 'react-click-outside';
-import './index.css';
+import {Modal, ModalBody} from 'reactstrap'
+import Input from '../../../Input'
+import eventStore from '../../../../core/eventStore'
+import reactClickOutside from 'react-click-outside'
+import './index.css'
 
 class Item extends PureComponent {
   args = this.props.args;
   state = {
-    name: this.props.name || this.props.opRef,
+    name: this.props.name || this.props.opRef
   };
 
   ensureEventStreamClosed = () => {
-    if (this.eventStreamCloser) this.eventStreamCloser();
+    if (this.eventStreamCloser) this.eventStreamCloser()
   };
 
   toggleConfigurationModal = () => {
-    this.setState(prevState => ({isConfigurationVisible: !prevState.isConfigurationVisible}));
+    this.setState(prevState => ({isConfigurationVisible: !prevState.isConfigurationVisible}))
   };
 
   // this method is required by react-click-outside
-  handleClickOutside() {
-    this.setState({isSelected: false});
+  handleClickOutside () {
+    this.setState({isSelected: false})
   }
 
   handleSelected = () => {
-    this.setState({isSelected: true});
+    this.setState({isSelected: true})
   };
 
   handleInvalidArg = (name) => {
-    delete this.args[name];
+    delete this.args[name]
 
-    this.props.onConfigured({args: this.args});
+    this.props.onConfigured({args: this.args})
   };
 
   handleValidArg = (name, value) => {
-    this.args[name] = value;
+    this.args[name] = value
 
-    this.props.onConfigured({args: this.args});
+    this.props.onConfigured({args: this.args})
   };
 
   handleNameChanged = (name) => {
-    this.setState({name});
-    this.props.onConfigured({name});
+    this.setState({name})
+    this.props.onConfigured({name})
   };
 
   processEventStream = ({opId}) => {
     this.eventStreamCloser = eventStore.getStream({
       filter: {
-        roots: [opId],
+        roots: [opId]
       },
       onEvent: event => {
         if (event.opStarted) {
-          this.setState({isKillable: true});
+          this.setState({isKillable: true})
         }
         if (event.opEnded && event.opEnded.opId === opId) {
           this.setState({
             isKillable: false,
-            outputs: event.opEnded.outputs,
-          });
+            outputs: event.opEnded.outputs
+          })
         }
-      },
+      }
     })
   };
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (nextProps.opId !== this.props.opId) {
-      this.ensureEventStreamClosed();
-      this.processEventStream({opId: nextProps.opId});
+      this.ensureEventStreamClosed()
+      this.processEventStream({opId: nextProps.opId})
     }
   }
 
-  componentWillMount() {
+  componentWillMount () {
     if (this.props.opId) {
-      this.processEventStream({opId: this.props.opId});
+      this.processEventStream({opId: this.props.opId})
     }
   }
 
-  componentWillUnmount() {
-    this.ensureEventStreamClosed();
+  componentWillUnmount () {
+    this.ensureEventStreamClosed()
   }
 
-  render() {
+  render () {
     return (
       <AutoSizer>
         {({height, width}) => (
@@ -94,12 +94,12 @@ class Item extends PureComponent {
             keyMap={{
               del: 'del',
               kill: 'ctrl+c',
-              start: 'enter',
+              start: 'enter'
             }}
             handlers={{
               del: this.props.onDelete,
               kill: this.props.onKill,
-              start: this.props.onStart,
+              start: this.props.onStart
             }}
           >
             <div
@@ -153,25 +153,22 @@ class Item extends PureComponent {
                     top: '37px',
                     height: `${height - 40}px`,
                     zIndex: 1,
-                    cursor: 'pointer',
-                  }}>
-                  </div>
+                    cursor: 'pointer'
+                  }} />
               }
               <div style={{marginTop: '37px', height: 'calc(100% - 37px)'}}>
                 {
                   this.props.opId
-                    ?
-                    <EventStream key={this.props.opId} filter={{roots: [this.props.opId]}}/>
-                    :
-                    null
+                    ? <EventStream key={this.props.opId} filter={{roots: [this.props.opId]}} />
+                    : null
                 }
               </div>
             </div>
           </HotKeys>
         )}
       </AutoSizer>
-    );
+    )
   }
 }
 
-export default reactClickOutside(Item);
+export default reactClickOutside(Item)

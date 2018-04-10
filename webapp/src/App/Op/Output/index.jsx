@@ -1,19 +1,19 @@
-import React from 'react';
-import OutputArray from './Array';
-import OutputBoolean from './Boolean';
-import OutputDir from './Dir';
-import OutputFile from './File';
-import OutputNumber from './Number';
-import OutputObject from './Object';
-import OutputSocket from './Socket';
-import OutputString from './String';
+import React from 'react'
+import OutputArray from './Array'
+import OutputBoolean from './Boolean'
+import OutputDir from './Dir'
+import OutputFile from './File'
+import OutputNumber from './Number'
+import OutputObject from './Object'
+import OutputSocket from './Socket'
+import OutputString from './String'
 
 export default ({
-                  name,
-                  param,
-                  opRef,
-                  value,
-                }) => {
+  name,
+  param,
+  opRef,
+  value
+}) => {
   // delegate to component for output
   if (param.array) {
     return <OutputArray

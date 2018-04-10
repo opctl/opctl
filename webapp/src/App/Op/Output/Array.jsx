@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
-import jsYaml from 'js-yaml';
-import Textarea from 'react-textarea-autosize';
-import Description from '../Param/Description';
-import opspecNodeApiClient from '../../../core/clients/opspecNodeApi';
+import React, { Component } from 'react'
+import jsYaml from 'js-yaml'
+import Textarea from 'react-textarea-autosize'
+import Description from '../Param/Description'
+import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
 
-export default class String extends Component {
+export default class Array extends Component {
   state = {};
 
-  componentDidMount() {
+  componentDidMount () {
     this._loadValue()
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (this.props.value !== prevProps.value) {
-      this._loadValue();
+      this._loadValue()
     }
   }
 
-  render() {
+  render () {
     return (
       <div className='form-group'>
         <label className='form-control-label' htmlFor={this.props.name}>{this.props.name}</label>
@@ -26,21 +26,21 @@ export default class String extends Component {
           className='form-control'
           value={this.state.value || ''}
           id={this.props.name}
-          readOnly={true}
+          readOnly
         />
-      </div>);
+      </div>)
   }
 
-  _loadValue() {
-    const { value, param } = this.props;
+  _loadValue () {
+    const { value, param } = this.props
     if (value) {
       opspecNodeApiClient.data_get({
-        dataRef: value,
+        dataRef: value
       })
         .then(data => data.json())
         .then(value => this.setState({ value: jsYaml.safeDump(value) }))
     } else {
-      this.setState({ value: value || param.default ? jsYaml.safeDump(param.default) : '' });
+      this.setState({ value: value || param.default ? jsYaml.safeDump(param.default) : '' })
     }
   }
 }

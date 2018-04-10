@@ -38,11 +38,7 @@ hosts the opctl web app & an opspec node
 
 ## /webapp
 
-web app, distributed w/ the opctl binary & hosted by the opctl daemon.
-
-It is a static web app built using
-[react](https://facebook.github.io/react/) & was bootstrapped with
-[Create React App](https://github.com/facebookincubator/create-react-app).
+see [/webapp/CONTRIBUTING.md](/webapp/CONTRIBUTING.md)
 
 ## /website
 
@@ -50,7 +46,6 @@ opctl website, hosted at [https://opctl.io](https://opctl.io)
 
 It is a static website built using
 [metalsmith](https://github.com/metalsmith/metalsmith)
-
 
 # Testing
 

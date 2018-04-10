@@ -1,40 +1,39 @@
-import React, {PureComponent} from 'react';
-import {Responsive as ResponsiveReactGridLayout} from "react-grid-layout";
-import {HotKeys} from 'react-hotkeys';
-import OpSelector from '../../OpSelector';
-import {AutoSizer} from 'react-virtualized';
-import Item from './Item';
-import 'react-grid-layout/css/styles.css';
-import opspecNodeApiClient from "../../../core/clients/opspecNodeApi";
-import contentStore from "../../../core/contentStore";
-import uuidV4 from 'uuid/v4';
-import {toast} from "react-toastify";
+import React, {PureComponent} from 'react'
+import {Responsive as ResponsiveReactGridLayout} from 'react-grid-layout'
+import {HotKeys} from 'react-hotkeys'
+import OpSelector from '../../OpSelector'
+import {AutoSizer} from 'react-virtualized'
+import Item from './Item'
+import 'react-grid-layout/css/styles.css'
+import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
+import contentStore from '../../../core/contentStore'
+import uuidV4 from 'uuid/v4'
+import {toast} from 'react-toastify'
 
-const dragHandleClassName = 'dragHandle';
-const CONTENT_STORE_KEY = 'operations';
+const dragHandleClassName = 'dragHandle'
+const CONTENT_STORE_KEY = 'operations'
 
 export default class OperationsView extends PureComponent {
   static defaultProps = {
-    className: "layout",
+    className: 'layout',
     cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
     rowHeight: 100
   };
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
-    this.state = contentStore.get({key: CONTENT_STORE_KEY})
-      ||
+    this.state = contentStore.get({key: CONTENT_STORE_KEY}) ||
       {
         layouts: {},
-        items: [],
-      };
+        items: []
+      }
   }
 
   isItemStartable = (inputs, args) => Object.keys(inputs || []).length === Object.keys(args).length;
 
   addItem = ({op, opRef}) => {
-    const isStartable = this.isItemStartable(op.inputs, {});
+    const isStartable = this.isItemStartable(op.inputs, {})
     const item = {
       opRef,
       op,
@@ -44,131 +43,131 @@ export default class OperationsView extends PureComponent {
       y: 10000000000000, // puts it at the bottom
       w: 2,
       h: 2,
-      isStartable,
-    };
+      isStartable
+    }
 
     this.setState(
       prevState => ({
-        items: [...prevState.items, item],
+        items: [...prevState.items, item]
       })
-    );
+    )
   };
 
-  componentDidUpdate() {
-    contentStore.set({key: CONTENT_STORE_KEY, value: this.state});
+  componentDidUpdate () {
+    contentStore.set({key: CONTENT_STORE_KEY, value: this.state})
   }
 
   handleLayoutChange = (layout, layouts) => {
-    this.setState({layouts});
+    this.setState({layouts})
   };
 
   deleteItem = (itemId) => {
     this.setState(
       prevState => ({items: prevState.items.filter(item => item.i !== itemId)})
-    );
+    )
   };
 
   toggleFullScreenItem = (itemId) => {
     this.setState(
       prevState => {
-        const itemIndex = prevState.items.findIndex(item => item.i === itemId);
-        const items = [...prevState.items];
-        const item = prevState.items[itemIndex];
-        items[itemIndex] = Object.assign({}, item, {isFullScreen: !item.isFullScreen});
-        return {items};
+        const itemIndex = prevState.items.findIndex(item => item.i === itemId)
+        const items = [...prevState.items]
+        const item = prevState.items[itemIndex]
+        items[itemIndex] = Object.assign({}, item, {isFullScreen: !item.isFullScreen})
+        return {items}
       }
-    );
+    )
   };
 
   updateItemConfiguration = (itemId, configuration) => {
     this.setState(
       prevState => {
-        const itemIndex = prevState.items.findIndex(item => item.i === itemId);
-        const items = [...prevState.items];
-        const item = Object.assign({}, prevState.items[itemIndex], configuration);
-        item.isStartable = this.isItemStartable(item.op.inputs, item.args);
-        items[itemIndex] = item;
-        return {items};
+        const itemIndex = prevState.items.findIndex(item => item.i === itemId)
+        const items = [...prevState.items]
+        const item = Object.assign({}, prevState.items[itemIndex], configuration)
+        item.isStartable = this.isItemStartable(item.op.inputs, item.args)
+        items[itemIndex] = item
+        return {items}
       }
-    );
+    )
   };
 
   selectAllItems = () => {
-    this.setState({isAllItemsSelected: true});
-    return false;
+    this.setState({isAllItemsSelected: true})
+    return false
   };
 
   unSelectAllItems = () => {
-    this.setState({isAllItemsSelected: false});
+    this.setState({isAllItemsSelected: false})
   };
 
   startItem = (itemId) => {
-    const item = this.state.items.find(item => item.i === itemId);
+    const item = this.state.items.find(item => item.i === itemId)
 
     if (!item.isStartable) {
-      toast.error(`Unable to start ${item.name || item.opRef}; configuration required`);
-      return;
+      toast.error(`Unable to start ${item.name || item.opRef}; configuration required`)
+      return
     }
 
     const args = Object.entries(item.op.inputs || [])
       .reduce((args, [name, param]) => {
-        if (param.array) args[name] = {array: item.args[name]};
-        if (param.boolean) args[name] = {boolean: item.args[name]};
-        if (param.dir) args[name] = {dir: item.args[name]};
-        if (param.file) args[name] = {file: item.args[name]};
-        if (param.number) args[name] = {number: item.args[name]};
-        if (param.object) args[name] = {object: item.args[name]};
-        if (param.socket) args[name] = {socket: item.args[name]};
-        if (param.string) args[name] = {string: item.args[name]};
-        return args;
-      }, {});
+        if (param.array) args[name] = {array: item.args[name]}
+        if (param.boolean) args[name] = {boolean: item.args[name]}
+        if (param.dir) args[name] = {dir: item.args[name]}
+        if (param.file) args[name] = {file: item.args[name]}
+        if (param.number) args[name] = {number: item.args[name]}
+        if (param.object) args[name] = {object: item.args[name]}
+        if (param.socket) args[name] = {socket: item.args[name]}
+        if (param.string) args[name] = {string: item.args[name]}
+        return args
+      }, {})
 
     opspecNodeApiClient.op_start({
       args,
       op: {
-        ref: item.opRef,
+        ref: item.opRef
       }
     })
       .then(opId => {
-        this.updateItemConfiguration(itemId, {opId});
+        this.updateItemConfiguration(itemId, {opId})
       })
       .catch(error => {
-        toast.error(error.message);
-      });
+        toast.error(error.message)
+      })
   };
 
   startAllItems = () => {
-    if (!this.state.isAllItemsSelected) return;
-    this.state.items.forEach(item => this.startItem(item.i));
+    if (!this.state.isAllItemsSelected) return
+    this.state.items.forEach(item => this.startItem(item.i))
   };
 
   killItem = (itemId) => {
-    const item = this.state.items.find(item => item.i === itemId);
+    const item = this.state.items.find(item => item.i === itemId)
     opspecNodeApiClient.op_kill({
       opId: item.opId
     })
       .then(() => {
-        this.updateItemConfiguration(item.i, {isKillable: false});
+        this.updateItemConfiguration(item.i, {isKillable: false})
       })
       .catch(error => {
-        toast.error(error.message);
-      });
+        toast.error(error.message)
+      })
   };
 
   killAllItems = () => {
-    if (!this.state.isAllItemsSelected) return;
-    this.state.items.forEach(item => this.killItem(item.i));
+    if (!this.state.isAllItemsSelected) return
+    this.state.items.forEach(item => this.killItem(item.i))
   };
 
-  render() {
-    const fullScreenItem = this.state.items.find(item => item.isFullScreen);
+  render () {
+    const fullScreenItem = this.state.items.find(item => item.isFullScreen)
     if (fullScreenItem) {
       return (<Item
         opId={fullScreenItem.opId}
         opRef={fullScreenItem.opRef}
         op={fullScreenItem.op}
         name={fullScreenItem.name}
-        isFullScreen={true}
+        isFullScreen
         isStartable={fullScreenItem.isStartable}
         onDelete={this.deleteItem.bind(this, fullScreenItem.i)}
         onStart={this.startItem.bind(this, fullScreenItem.i)}
@@ -184,12 +183,12 @@ export default class OperationsView extends PureComponent {
         keyMap={{
           'selectAllItems': 'ctrl+a',
           'killAllItems': 'ctrl+c',
-          'startAllItems': 'enter',
+          'startAllItems': 'enter'
         }}
         handlers={{
           'selectAllItems': this.selectAllItems,
           'killAllItems': this.killAllItems,
-          'startAllItems': this.startAllItems,
+          'startAllItems': this.startAllItems
         }}
         onClick={this.unSelectAllItems}
       >

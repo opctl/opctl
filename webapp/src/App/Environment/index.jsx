@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import Variables from './Variables';
-import './index.css';
+import React, {Component} from 'react'
+import Variables from './Variables'
+import './index.css'
 
 export default class Environment extends Component {
-  render() {
+  render () {
     return (
       <div className='container'>
-        <Variables/>
+        <Variables />
       </div>
-    );
+    )
   }
 }

@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 import './index.css'
-import MdDeHaze from 'react-icons/lib/md/dehaze';
+import MdDeHaze from 'react-icons/lib/md/dehaze'
 
 export default ({ onCollapseToggled }) =>
   <div>
@@ -9,8 +9,8 @@ export default ({ onCollapseToggled }) =>
         <a
           href='/#/'
           onClick={e => {
-            onCollapseToggled();
-            e.preventDefault();
+            onCollapseToggled()
+            e.preventDefault()
           }}
         >
           <MdDeHaze size={30} />
@@ -22,7 +22,5 @@ export default ({ onCollapseToggled }) =>
         </a>
       </div>
     </div>
-    <div style={{ height: '58px' }}>
-    </div>
-  </div>;
-
+    <div style={{ height: '58px' }} />
+  </div>

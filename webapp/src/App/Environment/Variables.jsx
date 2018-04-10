@@ -1,30 +1,30 @@
-import React, {Component} from 'react';
-import Entry from './Variable';
-import contentStore from '../../core/contentStore';
-import uuidV4 from 'uuid/v4';
-const key = 'environment';
+import React, {Component} from 'react'
+import Entry from './Variable'
+import contentStore from '../../core/contentStore'
+import uuidV4 from 'uuid/v4'
+const key = 'environment'
 
 export default class Variables extends Component {
   state =
     {
-      variables: contentStore.get({key}) || [],
+      variables: contentStore.get({key}) || []
     };
 
   handleInvalid = () => {
-    this.setState({isVariableAddDisabled: true});
+    this.setState({isVariableAddDisabled: true})
   };
 
   handleValid = value => {
     this.setState(prevState => {
-      const nextVariables = [...prevState.variables];
-      const entryIndex = prevState.variables.findIndex(entry => entry.id === value.id);
-      nextVariables[entryIndex] = value;
-      contentStore.set({key, value: nextVariables});
+      const nextVariables = [...prevState.variables]
+      const entryIndex = prevState.variables.findIndex(entry => entry.id === value.id)
+      nextVariables[entryIndex] = value
+      contentStore.set({key, value: nextVariables})
       return {
         variables: nextVariables,
         isVariableAddDisabled: false
-      };
-    });
+      }
+    })
   };
 
   addVariable = () => {
@@ -33,18 +33,18 @@ export default class Variables extends Component {
         ...prevState.variables,
         {
           id: uuidV4(),
-          name: "",
-          value: "",
-        },
-      ];
+          name: '',
+          value: ''
+        }
+      ]
 
       return {
         variables: nextVariables
-      };
+      }
     })
   };
 
-  render() {
+  render () {
     return (
       <div>
         <h2>Variables</h2>
@@ -64,10 +64,10 @@ export default class Variables extends Component {
             />
           )}
         </ul>
-        <br/>
+        <br />
         <div className='form-group'>
           <button
-            type="button"
+            type='button'
             className='btn btn-secondary btn-sm'
             onClick={this.addVariable}
             disabled={this.state.isVariableAddDisabled}
@@ -76,6 +76,6 @@ export default class Variables extends Component {
           </button>
         </div>
       </div>
-    );
+    )
   }
 }

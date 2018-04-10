@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
 export default ({
-                  containerExited,
-                  timestamp,
-                }) => {
+  containerExited,
+  timestamp
+}) => {
   return (
     <div style={{color: 'rgb(96, 253, 255)'}}>
       ContainerExited
@@ -12,5 +12,5 @@ export default ({
       ExitCode='{containerExited.exitCode}'
       Timestamp='{timestamp}'
     </div>
-  );
+  )
 }

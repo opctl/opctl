@@ -1,16 +1,16 @@
-const keyQualifier = 'content';
+const keyQualifier = 'content'
 class ContentStore {
   /**
    * gets content from store
    * @param key
    * @returns {*}
    */
-  get({key}){
+  get ({key}) {
     if (global.localStorage) {
-      const qualifiedKey = [keyQualifier, key].join('.');
-      return JSON.parse(global.localStorage.getItem(qualifiedKey)) || null;
+      const qualifiedKey = [keyQualifier, key].join('.')
+      return JSON.parse(global.localStorage.getItem(qualifiedKey)) || null
     }
-    return null;
+    return null
   }
 
   /**
@@ -18,15 +18,15 @@ class ContentStore {
    * @param key
    * @param value
    */
-  set({key, value}){
+  set ({key, value}) {
     if (global.localStorage) {
-      const qualifiedKey = [keyQualifier, key].join('.');
+      const qualifiedKey = [keyQualifier, key].join('.')
       global.localStorage.setItem(
         qualifiedKey,
         JSON.stringify(value)
-      );
+      )
     }
   }
 }
 
-export default new ContentStore();
+export default new ContentStore()

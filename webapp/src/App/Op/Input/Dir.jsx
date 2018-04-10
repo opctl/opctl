@@ -1,5 +1,5 @@
-import React from 'react';
-import Input from '../../Input';
+import React from 'react'
+import Input from '../../Input'
 
 export default ({dir, name, onValid, opRef, value}) =>
   <Input
@@ -11,5 +11,4 @@ export default ({dir, name, onValid, opRef, value}) =>
     // @TODO validate
     validate={value => ([])}
     value={value || dir.default}
-  />;
-
+  />

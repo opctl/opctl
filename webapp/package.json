@@ -23,17 +23,24 @@
     "react-toastify": "2.1.0",
     "react-virtualized": "^9.18.5",
     "reactstrap": "^5.0.0-alpha.4",
+    "standard": "^11.0.1",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
     "node-sass-chokidar": "0.0.3",
     "react-scripts": "2.0.0-next.9754a231"
   },
+  "standard": {
+    "parser": "babel-eslint",
+    "env": [
+      "jest"
+    ]
+  },
   "scripts": {
     "start": "export PORT=80; react-scripts start",
     "build": "npm run build-css && react-scripts build",
     "build-css": "node-sass-chokidar src/ -o src/",
-    "test": "CI=true react-scripts test --env=jsdom",
+    "test": "standard --fix && CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": {

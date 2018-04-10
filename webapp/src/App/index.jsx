@@ -1,41 +1,40 @@
-import React, {Component} from 'react';
-import Operations from './views/Operations';
-import Events from './views/Events';
-import Environment from './views/Environment';
-import {HashRouter} from 'react-router-dom'
-import TopMenu from './TopMenu';
-import SideMenu from './SideMenu';
-import {Route} from 'react-router-dom'
-import {ToastContainer} from 'react-toastify';
-import OpView from './views/Op';
+import React, {Component} from 'react'
+import Operations from './views/Operations'
+import Events from './views/Events'
+import Environment from './views/Environment'
+import {Route, HashRouter} from 'react-router-dom'
+import TopMenu from './TopMenu'
+import SideMenu from './SideMenu'
+import {ToastContainer} from 'react-toastify'
+import OpView from './views/Op'
 
 // shared vendor css
-import './bootstrap.css';
+import './bootstrap.css'
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'react-virtualized/styles.css'
-import 'react-resizable/css/styles.css';
+import 'react-resizable/css/styles.css'
 
 export default class Page extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
-    this.state = {};
+    this.state = {}
   }
 
-  handleSideMenuToggled() {
+  handleSideMenuToggled () {
     this.setState(state => {
       return {
-        isSideMenuCollapsed: !state.isSideMenuCollapsed,
-      };
+        isSideMenuCollapsed: !state.isSideMenuCollapsed
+      }
     })
   }
 
-  render() {
+  render () {
     return (
       <HashRouter>
         <div style={{height: '100vh'}}>
-          <TopMenu onCollapseToggled={() => this.handleSideMenuToggled()}/>
-          <SideMenu isCollapsed={this.state.isSideMenuCollapsed}/>
+          <TopMenu onCollapseToggled={() => this.handleSideMenuToggled()} />
+          <SideMenu isCollapsed={this.state.isSideMenuCollapsed} />
           <ToastContainer
             autoClose={20000}
             style={{zIndex: 100000}}
@@ -43,15 +42,15 @@ export default class Page extends Component {
           <div
             style={{
               height: 'calc(100vh - 58px)',
-              marginLeft: this.state.isSideMenuCollapsed ? '0' : '269px',
+              marginLeft: this.state.isSideMenuCollapsed ? '0' : '269px'
             }}>
-            <Route exact path="/" component={Operations}/>
-            <Route path="/events" component={Events}/>
-            <Route path="/op" component={OpView}/>
-            <Route path="/environment" component={Environment}/>
+            <Route exact path='/' component={Operations} />
+            <Route path='/events' component={Events} />
+            <Route path='/op' component={OpView} />
+            <Route path='/environment' component={Environment} />
           </div>
         </div>
       </HashRouter>
-    );
+    )
   }
 }

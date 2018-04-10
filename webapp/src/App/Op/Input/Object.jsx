@@ -1,7 +1,7 @@
-import React from 'react';
-import jsYaml from 'js-yaml';
-import TextArea from './AceEditor';
-import opspecDataValidator from '@opspec/sdk/lib/data/object/validator';
+import React from 'react'
+import jsYaml from 'js-yaml'
+import TextArea from './AceEditor'
+import opspecDataValidator from '@opspec/sdk/lib/data/object/validator'
 
 export default ({name, object, onInvalid, onValid, opRef, value}) => (
   <TextArea
@@ -14,9 +14,9 @@ export default ({name, object, onInvalid, onValid, opRef, value}) => (
       try {
         return opspecDataValidator.validate(jsYaml.safeLoad(value), object.constraints)
       } catch (err) {
-        return [err];
+        return [err]
       }
     }}
     value={value || jsYaml.safeDump(object.default ? object.default : '')}
   />
-);
+)

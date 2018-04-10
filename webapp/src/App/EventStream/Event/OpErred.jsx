@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
 export default ({
-                  opErred,
-                  timestamp,
-                }) => {
+  opErred,
+  timestamp
+}) => {
   return (
     <div style={{color: 'rgb(255, 110, 103)'}}>
       OpErred
@@ -12,5 +12,5 @@ export default ({
       Timestamp='{timestamp}'
       Msg='{opErred.msg}'
     </div>
-  );
+  )
 }

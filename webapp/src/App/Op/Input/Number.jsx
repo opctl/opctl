@@ -1,7 +1,7 @@
-import React from 'react';
-import Input from '../../Input';
-import Select from './Select';
-import opspecDataValidator from '@opspec/sdk/lib/data/number/validator';
+import React from 'react'
+import Input from '../../Input'
+import Select from './Select'
+import opspecDataValidator from '@opspec/sdk/lib/data/number/validator'
 
 export default ({name, number, onInvalid, onValid, opRef, value}) => {
   if (number.constraints && !number.isSecret && number.constraints.enum) {
@@ -26,4 +26,4 @@ export default ({name, number, onInvalid, onValid, opRef, value}) => {
     validate={value => opspecDataValidator.validate(Number(value), number.constraints)}
     value={value || number.default}
   />
-};
+}
