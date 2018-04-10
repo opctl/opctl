@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/opspec-io/sdk-js.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-js)
 [![Coverage](https://codecov.io/gh/opspec-io/sdk-js/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-js)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
