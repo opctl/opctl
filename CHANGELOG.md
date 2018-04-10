@@ -15,9 +15,9 @@ All notable changes will be documented in this file in accordance with
 - [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
 - [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
 - Object & Array initializers
-- Referencing object properties via `object[propertyName]`
-- Referencing array items via `array[index]` or `array[-index]` to index from end of array
-- Escape references via `\$()` i.e. prefixing reference `$()` w/ `\`
+- Support referencing object properties via `object[propertyName]`
+- Support referencing array items via `array[index]` or `array[-index]` to index from end of array
+- [Interpolation escape syntax](https://github.com/opspec-io/spec/issues/193) by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
 - [Unified data API](https://github.com/opspec-io/spec/issues/204)
 
 ### Deprecated
