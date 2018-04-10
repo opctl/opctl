@@ -12,6 +12,7 @@ outputs:
   coverageReport:
     file:
       description: coverage report
+opspec: 0.1.6
 run:
   serial:
     - op:

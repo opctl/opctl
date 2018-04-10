@@ -3,7 +3,7 @@
   "version": "0.0.0-alpha.21",
   "description": "Javascript SDK for opspec",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "standard --fix && jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
   "keywords": [
     "opspec"
   ],
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/opspec-io/sdk-js/issues"
   },
@@ -23,10 +23,16 @@
     "node-fetch": "^1.7.3",
     "universal-websocket-client": "^1.0.1"
   },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "jest": "^21.2.1",
-    "nock": "^9.0.22"
+    "nock": "^9.0.22",
+    "standard": "^11.0.1"
   }
 }
