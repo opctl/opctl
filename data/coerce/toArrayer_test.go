@@ -26,6 +26,41 @@ var _ = Context("toArrayer", func() {
 				Expect(actualErr).To(BeNil())
 			})
 		})
+		Context("Value.Array isn't nil", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedValue := &model.Value{
+					Array: []interface{}{"dummyItem"},
+				}
+
+				arrayUnderTest := _toArrayer{}
+
+				/* act */
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(Equal(providedValue))
+				Expect(actualErr).To(BeNil())
+			})
+		})
+		Context("Value.Boolean isn't nil", func() {
+			It("should return expected result", func() {
+				/* arrange */
+				providedBoolean := true
+				providedValue := &model.Value{
+					Boolean: &providedBoolean,
+				}
+
+				arrayUnderTest := _toArrayer{}
+
+				/* act */
+				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
+
+				/* assert */
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce boolean '%v' to array; incompatible types", providedBoolean)))
+			})
+		})
 		Context("Value.Dir isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
@@ -188,11 +223,12 @@ var _ = Context("toArrayer", func() {
 				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce number '%v' to array; incompatible types", providedNumber)))
 			})
 		})
-		Context("Value.Array isn't nil", func() {
+		Context("Value.Socket isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
+				providedSocket := "dummySocket"
 				providedValue := &model.Value{
-					Array: []interface{}{"dummyItem"},
+					Socket: &providedSocket,
 				}
 
 				arrayUnderTest := _toArrayer{}
@@ -201,8 +237,8 @@ var _ = Context("toArrayer", func() {
 				actualValue, actualErr := arrayUnderTest.ToArray(providedValue)
 
 				/* assert */
-				Expect(actualValue).To(Equal(providedValue))
-				Expect(actualErr).To(BeNil())
+				Expect(actualValue).To(BeNil())
+				Expect(actualErr).To(Equal(fmt.Errorf("unable to coerce socket '%v' to array; incompatible types", providedSocket)))
 			})
 		})
 		Context("Value.String isn't nil", func() {
