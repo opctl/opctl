@@ -1,4 +1,4 @@
-# How do I use opctl from Travis-ci?
+## How do I use opctl from Travis-ci?
 
 [Travis ci](https://travis-ci.org/) looks for a `travis.yml` file at the root of each repo to identify ci "stages".
 
@@ -16,7 +16,7 @@ travis.yml
 language: generic
 sudo: required
 before_script:
-- curl -L https://bin.equinox.io/c/46sMA3YsjZ6/opctl-stable-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+- curl -L https://github.com/opctl/opctl/releases/download/0.1.24/opctl0.1.24.linux.tgz | sudo tar -xzv -C /usr/local/bin
 services:
 - docker
 script:
