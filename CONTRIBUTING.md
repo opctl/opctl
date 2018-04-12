@@ -30,6 +30,8 @@ The CLI is built using [mow](https://github.com/jawher/mow.cli)
 
 docs, hosted at [https://opctl.io/docs](https://opctl.io/docs)
 
+It is static documentation built using [gitbook](https://toolchain.gitbook.com/)
+
 ## /node
 
 daemon, distributed w/ the opctl binary
