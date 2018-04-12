@@ -1,4 +1,4 @@
-# How do I update opctl
+## How do I update opctl
 
 `opctl` has "self update" capabilities baked in but it will not do so
 without being asked.

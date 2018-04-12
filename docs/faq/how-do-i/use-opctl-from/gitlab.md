@@ -1,4 +1,4 @@
-# How do I use opctl from Gitlab?
+## How do I use opctl from Gitlab?
 
 [Gitlab](https://gitlab.io) ci looks for a `.gitlab-ci.yml` file at the root of each repo to identify ci "stages".
 
@@ -12,7 +12,7 @@ just a matter of defining your `.gitlab-ci.yml` as follows:
 
 .gitlab-ci.yml
 ```yaml
-image: opctl/opctl:stable
+image: opctl/opctl:0.1.24
 stages:
   - build
   - deploy
