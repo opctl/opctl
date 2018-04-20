@@ -19,18 +19,18 @@ Contributions are subject to:
 
 ## /docs
 
-docs, hosted at [https://opctl.io/docs](https://opctl.io/docs)
+docs, hosted at [https://opspec.io/docs](https://opspec.io/docs)
 
 They're maintained as a [gitbook](https://toolchain.gitbook.com/)
 
 ## /spec
 
-the spec itself.
+the spec, hosted at [https://opspec.io/{VERSION}](https://opspec.io/0.1.6) or https://opspec.io/latest](https://opspec.io/latest/)
 
 It's maintained as a [gitbook](https://toolchain.gitbook.com/)
 
 ## /website
 
-opctl website, hosted at [https://opctl.io](https://opctl.io)
+opctl website, hosted at [https://opspec.io](https://opspec.io)
 
 It's maintained as a [metalsmith](https://github.com/metalsmith/metalsmith) site
