@@ -25,7 +25,7 @@ They're maintained as a [gitbook](https://toolchain.gitbook.com/)
 
 ## /spec
 
-the spec, hosted at [https://opspec.io/{VERSION}](https://opspec.io/0.1.6) or https://opspec.io/latest](https://opspec.io/latest/)
+the spec, hosted at [https://opspec.io/{VERSION}](https://opspec.io/0.1.6) or [https://opspec.io/latest](https://opspec.io/latest/)
 
 It's maintained as a [gitbook](https://toolchain.gitbook.com/)
 
