@@ -18,7 +18,7 @@ Contributions are subject to:
   [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments)
 
 
-# Repo organization
+# Repo layout
 
 ## /cli
 
