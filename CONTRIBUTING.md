@@ -30,7 +30,7 @@ The CLI is built using [mow](https://github.com/jawher/mow.cli)
 
 docs, hosted at [https://opctl.io/docs](https://opctl.io/docs)
 
-It is static documentation built using [gitbook](https://toolchain.gitbook.com/)
+They're maintained as a [gitbook](https://toolchain.gitbook.com/)
 
 ## /node
 
@@ -46,8 +46,7 @@ see [/webapp/CONTRIBUTING.md](/webapp/CONTRIBUTING.md)
 
 opctl website, hosted at [https://opctl.io](https://opctl.io)
 
-It is a static website built using
-[metalsmith](https://github.com/metalsmith/metalsmith)
+It's maintained as a [metalsmith](https://github.com/metalsmith/metalsmith) site
 
 # Testing
 
