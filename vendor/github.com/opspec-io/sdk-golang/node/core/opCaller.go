@@ -4,12 +4,13 @@ package core
 
 import (
 	"context"
+	"time"
+
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"time"
 )
 
 type opCaller interface {
@@ -27,11 +28,11 @@ func newOpCaller(
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 	caller caller,
-	rootFSPath string,
+	dataDirPath string,
 ) opCaller {
 	return _opCaller{
 		outputsInterpreter: outputs.NewInterpreter(),
-		opCallInterpreter:  opcall.NewInterpreter(rootFSPath),
+		opCallInterpreter:  opcall.NewInterpreter(dataDirPath),
 		dotYmlGetter:       dotyml.NewGetter(),
 		pubSub:             pubSub,
 		dcgNodeRepo:        dcgNodeRepo,

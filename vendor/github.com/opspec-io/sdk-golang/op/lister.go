@@ -61,7 +61,7 @@ func (ls _lister) List(
 			if opDotYml, err := ls.dotYmlUnmarshaller.Unmarshal(
 				opDotYmlBytes,
 			); nil == err {
-				// ignore err'd pkgs
+				// ignore invalid ops
 				ops = append(ops, opDotYml)
 			}
 		}

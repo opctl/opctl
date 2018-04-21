@@ -3,12 +3,13 @@ package path
 //go:generate counterfeiter -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
 
 import (
-	"github.com/golang-interfaces/ihttp"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
 	"net/http"
 	pathPkg "path"
 	"time"
+
+	"github.com/golang-interfaces/ihttp"
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/core"
 )
 
 // Handler deprecated
@@ -42,7 +43,7 @@ func (hdlr _handler) Handle(
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {
-	dataNodeReader, err := dataHandle.GetContent(
+	dirEntryReader, err := dataHandle.GetContent(
 		httpReq.Context(),
 		dataPath,
 	)
@@ -56,6 +57,6 @@ func (hdlr _handler) Handle(
 		httpReq,
 		pathPkg.Base(dataPath),
 		time.Time{},
-		dataNodeReader,
+		dirEntryReader,
 	)
 }

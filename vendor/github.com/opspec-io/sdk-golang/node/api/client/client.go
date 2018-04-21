@@ -5,12 +5,13 @@ package client
 
 import (
 	"context"
+	"net/url"
+
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/sethgrid/pester"
-	"net/url"
 )
 
 type Client interface {
@@ -52,7 +53,7 @@ type Client interface {
 		ctx context.Context,
 		req model.ListDescendantsReq,
 	) (
-		[]*model.DataNode,
+		[]*model.DirEntry,
 		error,
 	)
 

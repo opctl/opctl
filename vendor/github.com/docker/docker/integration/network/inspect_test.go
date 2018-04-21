@@ -15,14 +15,13 @@ import (
 )
 
 const defaultSwarmPort = 2477
-const dockerdBinary = "dockerd"
 
 func TestInspectNetwork(t *testing.T) {
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
 	defer d.Stop(t)
-	client, err := client.NewClientWithOpts(client.WithHost((d.Sock())))
-	assert.NilError(t, err)
+	client := d.NewClientT(t)
+	defer client.Close()
 
 	overlayName := "overlay1"
 	networkCreate := types.NetworkCreate{

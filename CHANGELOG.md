@@ -6,6 +6,10 @@ accordance with
 
 ## \[Unreleased]
 
+### Added
+
+- [Ability to specify custom node data dir](https://github.com/opctl/opctl/issues/449)
+
 ## 0.1.24 - 2018-04-06
 
 ### Added 

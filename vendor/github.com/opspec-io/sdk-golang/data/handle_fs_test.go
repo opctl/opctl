@@ -2,13 +2,14 @@ package data
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("fsHandle", func() {
@@ -96,7 +97,7 @@ var _ = Context("fsHandle", func() {
 					panic(err)
 				}
 
-				expectedContents := []*model.DataNode{
+				expectedContents := []*model.DirEntry{
 					{
 						Mode: fileStat.Mode(),
 						Path: "/dir1/file2.txt",

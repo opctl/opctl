@@ -67,10 +67,10 @@ var _ = Context("Lister", func() {
 						providedCtx := context.Background()
 
 						providedDirHandle := new(data.FakeHandle)
-						item := model.DataNode{
+						item := model.DirEntry{
 							Path: dotyml.FileName,
 						}
-						providedDirHandle.ListDescendantsReturns([]*model.DataNode{&item}, nil)
+						providedDirHandle.ListDescendantsReturns([]*model.DirEntry{&item}, nil)
 
 						// err to trigger immediate return
 						providedDirHandle.GetContentReturns(nil, errors.New("dummyError"))
@@ -95,7 +95,7 @@ var _ = Context("Lister", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							providedDirHandle := new(data.FakeHandle)
-							providedDirHandle.ListDescendantsReturns([]*model.DataNode{{}}, nil)
+							providedDirHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
 
 							getContentErr := errors.New("getContentErr")
 							providedDirHandle.GetContentReturns(nil, getContentErr)

@@ -9,6 +9,7 @@ outputs:
   srcDir:
     dir:
       description: directory containing the projects source code
+opspec: 0.1.6
 run:
   container:
     cmd:

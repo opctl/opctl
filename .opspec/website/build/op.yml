@@ -25,7 +25,7 @@ run:
           /src: $(srcDir)
         envVars:
           DEBUG: 'metalsmith:*'
-        image: { ref: 'node:9.9.0-alpine' }
+        image: { ref: 'node:9.9.0' }
         workDir: /src/website
     - container:
         cmd:
