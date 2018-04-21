@@ -1,7 +1,6 @@
 package network // import "github.com/docker/docker/integration/network"
 
 import (
-	"runtime"
 	"testing"
 	"time"
 
@@ -18,8 +17,8 @@ func TestServiceWithPredefinedNetwork(t *testing.T) {
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
 	defer d.Stop(t)
-	client, err := client.NewClientWithOpts(client.WithHost((d.Sock())))
-	assert.NilError(t, err)
+	client := d.NewClientT(t)
+	defer client.Close()
 
 	hostName := "host"
 	var instances uint64 = 1
@@ -32,18 +31,8 @@ func TestServiceWithPredefinedNetwork(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	pollSettings := func(config *poll.Settings) {
-		if runtime.GOARCH == "arm64" || runtime.GOARCH == "arm" {
-			config.Timeout = 50 * time.Second
-			config.Delay = 100 * time.Millisecond
-		} else {
-			config.Timeout = 30 * time.Second
-			config.Delay = 100 * time.Millisecond
-		}
-	}
-
 	serviceID := serviceResp.ID
-	poll.WaitOn(t, serviceRunningCount(client, serviceID, instances), pollSettings)
+	poll.WaitOn(t, serviceRunningCount(client, serviceID, instances), swarm.ServicePoll)
 
 	_, _, err = client.ServiceInspectWithRaw(context.Background(), serviceID, types.ServiceInspectOptions{})
 	assert.NilError(t, err)
@@ -54,30 +43,17 @@ func TestServiceWithPredefinedNetwork(t *testing.T) {
 
 const ingressNet = "ingress"
 
-func TestServiceWithIngressNetwork(t *testing.T) {
+func TestServiceRemoveKeepsIngressNetwork(t *testing.T) {
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
 	defer d.Stop(t)
+	client := d.NewClientT(t)
+	defer client.Close()
 
-	client, err := client.NewClientWithOpts(client.WithHost((d.Sock())))
-	assert.NilError(t, err)
-
-	pollSettings := func(config *poll.Settings) {
-		if runtime.GOARCH == "arm64" || runtime.GOARCH == "arm" {
-			config.Timeout = 50 * time.Second
-			config.Delay = 100 * time.Millisecond
-		} else {
-			config.Timeout = 30 * time.Second
-			config.Delay = 100 * time.Millisecond
-		}
-	}
-
-	poll.WaitOn(t, swarmIngressReady(client), pollSettings)
+	poll.WaitOn(t, swarmIngressReady(client), swarm.NetworkPoll)
 
 	var instances uint64 = 1
-	serviceName := "TestIngressService"
-	serviceSpec := swarmServiceSpec(serviceName, instances)
-	serviceSpec.TaskTemplate.Networks = append(serviceSpec.TaskTemplate.Networks, swarmtypes.NetworkAttachmentConfig{Target: ingressNet})
+	serviceSpec := swarmServiceSpec(t.Name()+"-service", instances)
 	serviceSpec.EndpointSpec = &swarmtypes.EndpointSpec{
 		Ports: []swarmtypes.PortConfig{
 			{
@@ -94,7 +70,7 @@ func TestServiceWithIngressNetwork(t *testing.T) {
 	assert.NilError(t, err)
 
 	serviceID := serviceResp.ID
-	poll.WaitOn(t, serviceRunningCount(client, serviceID, instances), pollSettings)
+	poll.WaitOn(t, serviceRunningCount(client, serviceID, instances), swarm.ServicePoll)
 
 	_, _, err = client.ServiceInspectWithRaw(context.Background(), serviceID, types.ServiceInspectOptions{})
 	assert.NilError(t, err)
@@ -102,8 +78,8 @@ func TestServiceWithIngressNetwork(t *testing.T) {
 	err = client.ServiceRemove(context.Background(), serviceID)
 	assert.NilError(t, err)
 
-	poll.WaitOn(t, serviceIsRemoved(client, serviceID), pollSettings)
-	poll.WaitOn(t, noServices(client), pollSettings)
+	poll.WaitOn(t, serviceIsRemoved(client, serviceID), swarm.ServicePoll)
+	poll.WaitOn(t, noServices(client), swarm.ServicePoll)
 
 	// Ensure that "ingress" is not removed or corrupted
 	time.Sleep(10 * time.Second)

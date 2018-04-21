@@ -3,6 +3,8 @@ package containercall
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 import (
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/dirs"
@@ -11,7 +13,6 @@ import (
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/image"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/sockets"
 	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
-	"path/filepath"
 )
 
 type Interpreter interface {
@@ -27,15 +28,15 @@ type Interpreter interface {
 
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter(
-	rootFSPath string,
+	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
-		dirsInterpreter:    dirs.NewInterpreter(rootFSPath),
+		dirsInterpreter:    dirs.NewInterpreter(dataDirPath),
 		envVarsInterpreter: envvars.NewInterpreter(),
-		filesInterpreter:   files.NewInterpreter(rootFSPath),
+		filesInterpreter:   files.NewInterpreter(dataDirPath),
 		imageInterpreter:   image.NewInterpreter(),
 		os:                 ios.New(),
-		rootFSPath:         rootFSPath,
+		dataDirPath:        dataDirPath,
 		stringInterpreter:  stringPkg.NewInterpreter(),
 		socketsInterpreter: sockets.NewInterpreter(),
 	}
@@ -47,7 +48,7 @@ type _interpreter struct {
 	filesInterpreter   files.Interpreter
 	imageInterpreter   image.Interpreter
 	os                 ios.IOS
-	rootFSPath         string
+	dataDirPath        string
 	stringInterpreter  stringPkg.Interpreter
 	socketsInterpreter sockets.Interpreter
 }
@@ -77,7 +78,7 @@ func (cc _interpreter) Interpret(
 
 	// construct dcg container path
 	scratchDirPath := filepath.Join(
-		cc.rootFSPath,
+		cc.dataDirPath,
 		"dcg",
 		rootOpID,
 		"containers",

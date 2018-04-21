@@ -34,7 +34,7 @@ import (
 	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/pkg/ioutils"
 	"github.com/opencontainers/image-spec/specs-go/v1"
-	specs "github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -114,6 +114,13 @@ type client struct {
 	containers map[string]*container
 }
 
+func (c *client) reconnect() error {
+	c.Lock()
+	err := c.remote.Reconnect()
+	c.Unlock()
+	return err
+}
+
 func (c *client) setRemote(remote *containerd.Client) {
 	c.Lock()
 	c.remote = remote
@@ -131,9 +138,30 @@ func (c *client) Version(ctx context.Context) (containerd.Version, error) {
 	return c.getRemote().Version(ctx)
 }
 
+// Restore loads the containerd container.
+// It should not be called concurrently with any other operation for the given ID.
 func (c *client) Restore(ctx context.Context, id string, attachStdio StdioCallback) (alive bool, pid int, err error) {
 	c.Lock()
-	defer c.Unlock()
+	_, ok := c.containers[id]
+	if ok {
+		c.Unlock()
+		return false, 0, errors.WithStack(newConflictError("id already in use"))
+	}
+
+	cntr := &container{}
+	c.containers[id] = cntr
+	cntr.mu.Lock()
+	defer cntr.mu.Unlock()
+
+	c.Unlock()
+
+	defer func() {
+		if err != nil {
+			c.Lock()
+			delete(c.containers, id)
+			c.Unlock()
+		}
+	}()
 
 	var dio *cio.DirectIO
 	defer func() {
@@ -144,9 +172,9 @@ func (c *client) Restore(ctx context.Context, id string, attachStdio StdioCallba
 		err = wrapError(err)
 	}()
 
-	ctr, err := c.remote.LoadContainer(ctx, id)
+	ctr, err := c.getRemote().LoadContainer(ctx, id)
 	if err != nil {
-		return false, -1, errors.WithStack(err)
+		return false, -1, errors.WithStack(wrapError(err))
 	}
 
 	attachIO := func(fifos *cio.FIFOSet) (cio.IO, error) {
@@ -160,24 +188,23 @@ func (c *client) Restore(ctx context.Context, id string, attachStdio StdioCallba
 	}
 	t, err := ctr.Task(ctx, attachIO)
 	if err != nil && !containerderrors.IsNotFound(err) {
-		return false, -1, err
+		return false, -1, errors.Wrap(wrapError(err), "error getting containerd task for container")
 	}
 
 	if t != nil {
 		s, err := t.Status(ctx)
 		if err != nil {
-			return false, -1, err
+			return false, -1, errors.Wrap(wrapError(err), "error getting task status")
 		}
 
 		alive = s.Status != containerd.Stopped
 		pid = int(t.Pid())
 	}
-	c.containers[id] = &container{
-		bundleDir: filepath.Join(c.stateDir, id),
-		ctr:       ctr,
-		task:      t,
-		// TODO(mlaventure): load execs
-	}
+
+	cntr.bundleDir = filepath.Join(c.stateDir, id)
+	cntr.ctr = ctr
+	cntr.task = t
+	// TODO(mlaventure): load execs
 
 	c.logger.WithFields(logrus.Fields{
 		"container": id,
@@ -205,7 +232,7 @@ func (c *client) Create(ctx context.Context, id string, ociSpec *specs.Spec, run
 		// TODO(mlaventure): when containerd support lcow, revisit runtime value
 		containerd.WithRuntime(fmt.Sprintf("io.containerd.runtime.v1.%s", runtime.GOOS), runtimeOptions))
 	if err != nil {
-		return err
+		return wrapError(err)
 	}
 
 	c.Lock()
@@ -286,7 +313,7 @@ func (c *client) Start(ctx context.Context, id, checkpointDir string, withStdin 
 			rio.Cancel()
 			rio.Close()
 		}
-		return -1, err
+		return -1, wrapError(err)
 	}
 
 	ctr.setTask(t)
@@ -300,7 +327,7 @@ func (c *client) Start(ctx context.Context, id, checkpointDir string, withStdin 
 				Error("failed to delete task after fail start")
 		}
 		ctr.setTask(nil)
-		return -1, err
+		return -1, wrapError(err)
 	}
 
 	return int(t.Pid()), nil
@@ -344,7 +371,7 @@ func (c *client) Exec(ctx context.Context, containerID, processID string, spec *
 	})
 	if err != nil {
 		close(stdinCloseSync)
-		return -1, err
+		return -1, wrapError(err)
 	}
 
 	ctr.addProcess(processID, p)
@@ -355,7 +382,7 @@ func (c *client) Exec(ctx context.Context, containerID, processID string, spec *
 	if err = p.Start(ctx); err != nil {
 		p.Delete(context.Background())
 		ctr.deleteProcess(processID)
-		return -1, err
+		return -1, wrapError(err)
 	}
 
 	return int(p.Pid()), nil
@@ -393,7 +420,7 @@ func (c *client) Pause(ctx context.Context, containerID string) error {
 		return err
 	}
 
-	return p.(containerd.Task).Pause(ctx)
+	return wrapError(p.(containerd.Task).Pause(ctx))
 }
 
 func (c *client) Resume(ctx context.Context, containerID string) error {
@@ -493,7 +520,7 @@ func (c *client) Delete(ctx context.Context, containerID string) error {
 	}
 
 	if err := ctr.ctr.Delete(ctx); err != nil {
-		return err
+		return wrapError(err)
 	}
 
 	if os.Getenv("LIBCONTAINERD_NOCLEAN") != "1" {
@@ -523,7 +550,7 @@ func (c *client) Status(ctx context.Context, containerID string) (Status, error)
 
 	s, err := t.Status(ctx)
 	if err != nil {
-		return StatusUnknown, err
+		return StatusUnknown, wrapError(err)
 	}
 
 	return Status(s.Status), nil
@@ -537,7 +564,7 @@ func (c *client) CreateCheckpoint(ctx context.Context, containerID, checkpointDi
 
 	img, err := p.(containerd.Task).Checkpoint(ctx)
 	if err != nil {
-		return err
+		return wrapError(err)
 	}
 	// Whatever happens, delete the checkpoint from containerd
 	defer func() {

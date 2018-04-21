@@ -1,7 +1,6 @@
 package network // import "github.com/docker/docker/integration/network"
 
 import (
-	"runtime"
 	"testing"
 	"time"
 
@@ -16,14 +15,13 @@ import (
 )
 
 const defaultSwarmPort = 2477
-const dockerdBinary = "dockerd"
 
 func TestInspectNetwork(t *testing.T) {
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
 	defer d.Stop(t)
-	client, err := client.NewClientWithOpts(client.WithHost((d.Sock())))
-	assert.NilError(t, err)
+	client := d.NewClientT(t)
+	defer client.Close()
 
 	overlayName := "overlay1"
 	networkCreate := types.NetworkCreate{
@@ -46,15 +44,8 @@ func TestInspectNetwork(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	pollSettings := func(config *poll.Settings) {
-		if runtime.GOARCH == "arm64" || runtime.GOARCH == "arm" {
-			config.Timeout = 30 * time.Second
-			config.Delay = 100 * time.Millisecond
-		}
-	}
-
 	serviceID := serviceResp.ID
-	poll.WaitOn(t, serviceRunningTasksCount(client, serviceID, instances), pollSettings)
+	poll.WaitOn(t, serviceRunningTasksCount(client, serviceID, instances), swarm.ServicePoll)
 
 	_, _, err = client.ServiceInspectWithRaw(context.Background(), serviceID, types.ServiceInspectOptions{})
 	assert.NilError(t, err)
@@ -84,8 +75,8 @@ func TestInspectNetwork(t *testing.T) {
 	err = client.ServiceRemove(context.Background(), serviceID)
 	assert.NilError(t, err)
 
-	poll.WaitOn(t, serviceIsRemoved(client, serviceID), pollSettings)
-	poll.WaitOn(t, noTasks(client), pollSettings)
+	poll.WaitOn(t, serviceIsRemoved(client, serviceID), swarm.ServicePoll)
+	poll.WaitOn(t, noTasks(client), swarm.ServicePoll)
 
 	serviceResp, err = client.ServiceCreate(context.Background(), serviceSpec, types.ServiceCreateOptions{
 		QueryRegistry: false,
@@ -93,13 +84,13 @@ func TestInspectNetwork(t *testing.T) {
 	assert.NilError(t, err)
 
 	serviceID2 := serviceResp.ID
-	poll.WaitOn(t, serviceRunningTasksCount(client, serviceID2, instances), pollSettings)
+	poll.WaitOn(t, serviceRunningTasksCount(client, serviceID2, instances), swarm.ServicePoll)
 
 	err = client.ServiceRemove(context.Background(), serviceID2)
 	assert.NilError(t, err)
 
-	poll.WaitOn(t, serviceIsRemoved(client, serviceID2), pollSettings)
-	poll.WaitOn(t, noTasks(client), pollSettings)
+	poll.WaitOn(t, serviceIsRemoved(client, serviceID2), swarm.ServicePoll)
+	poll.WaitOn(t, noTasks(client), swarm.ServicePoll)
 
 	err = client.NetworkRemove(context.Background(), overlayID)
 	assert.NilError(t, err)

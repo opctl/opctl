@@ -5,13 +5,14 @@ package opcall
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
 	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
-	"path/filepath"
 )
 
 type Interpreter interface {
@@ -27,12 +28,12 @@ type Interpreter interface {
 
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter(
-	rootFSPath string,
+	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
-		dcgScratchDir:       filepath.Join(rootFSPath, "dcg"),
+		dcgScratchDir:       filepath.Join(dataDirPath, "dcg"),
 		data:                data.New(),
-		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
+		dataCachePath:       filepath.Join(dataDirPath, "ops"),
 		inputsInterpreter:   inputs.NewInterpreter(),
 		opOpDotYmlGetter:    dotyml.NewGetter(),
 		stringInterpreter:   stringPkg.NewInterpreter(),
