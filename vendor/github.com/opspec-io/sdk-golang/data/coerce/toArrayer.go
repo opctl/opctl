@@ -35,6 +35,10 @@ func (c _toArrayer) ToArray(
 	switch {
 	case nil == value:
 		return nil, nil
+	case nil != value.Array:
+		return value, nil
+	case nil != value.Boolean:
+		return nil, fmt.Errorf("unable to coerce boolean '%v' to array; incompatible types", *value.Boolean)
 	case nil != value.Dir:
 		return nil, fmt.Errorf("unable to coerce dir '%v' to array; incompatible types", *value.Dir)
 	case nil != value.File:
@@ -50,8 +54,8 @@ func (c _toArrayer) ToArray(
 		return &model.Value{Array: valueArray}, nil
 	case nil != value.Number:
 		return nil, fmt.Errorf("unable to coerce number '%v' to array; incompatible types", *value.Number)
-	case nil != value.Array:
-		return value, nil
+	case nil != value.Socket:
+		return nil, fmt.Errorf("unable to coerce socket '%v' to array; incompatible types", *value.Socket)
 	case nil != value.String:
 		valueArray := []interface{}{}
 		err := c.json.Unmarshal([]byte(*value.String), &valueArray)

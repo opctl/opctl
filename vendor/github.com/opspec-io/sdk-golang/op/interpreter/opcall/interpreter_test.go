@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
@@ -13,9 +17,6 @@ import (
 	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("Interpreter", func() {
@@ -248,7 +249,7 @@ var _ = Context("Interpreter", func() {
 			providedParentOpHandle := new(data.FakeHandle)
 			providedParentOpHandle.PathReturns(new(string))
 
-			providedRootFSPath := "dummyRootFSPath"
+			provideddataDirPath := "dummydataDirPath"
 			providedSCGOpCall := &model.SCGOpCall{
 				Ref: "dummyOpRef",
 			}
@@ -269,7 +270,7 @@ var _ = Context("Interpreter", func() {
 
 			objectUnderTest := _interpreter{
 				data:          fakeData,
-				dataCachePath: filepath.Join(providedRootFSPath, "pkgs"),
+				dataCachePath: filepath.Join(provideddataDirPath, "ops"),
 			}
 
 			/* act */

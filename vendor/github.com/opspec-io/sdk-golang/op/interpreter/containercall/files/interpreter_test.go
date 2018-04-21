@@ -3,6 +3,10 @@ package files
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
@@ -10,9 +14,6 @@ import (
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/file"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("Files", func() {
@@ -105,7 +106,7 @@ var _ = Context("Files", func() {
 			})
 		})
 		Context("fileInterpreter.Interpret doesn't err", func() {
-			Context("value.File not prefixed by rootFSPath", func() {
+			Context("value.File not prefixed by dataDirPath", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					containerFilePath := "/dummyFile1Path.txt"
@@ -120,7 +121,7 @@ var _ = Context("Files", func() {
 
 					objectUnderTest := _interpreter{
 						fileInterpreter: fakeFileInterpreter,
-						rootFSPath:      "dummyRootFSPath",
+						dataDirPath:     "dummydataDirPath",
 					}
 
 					/* act */
@@ -140,7 +141,7 @@ var _ = Context("Files", func() {
 
 				})
 			})
-			Context("value.File prefixed by rootFSPath", func() {
+			Context("value.File prefixed by dataDirPath", func() {
 				It("should call os.MkdirAll w/ expected args", func() {
 					/* arrange */
 					containerFilePath := "/parent/child/dummyFilePath.txt"

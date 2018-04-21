@@ -51,7 +51,7 @@ func (hdlr _handler) Handle(
 
 	switch pathSegment {
 	case "":
-		dataNodesList, err := dataHandle.ListDescendants(
+		dirEntriesList, err := dataHandle.ListDescendants(
 			httpReq.Context(),
 		)
 		if nil != err {
@@ -61,7 +61,7 @@ func (hdlr _handler) Handle(
 
 		httpResp.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-		if err := hdlr.json.NewEncoder(httpResp).Encode(dataNodesList); nil != err {
+		if err := hdlr.json.NewEncoder(httpResp).Encode(dirEntriesList); nil != err {
 			http.Error(httpResp, err.Error(), http.StatusInternalServerError)
 			return
 		}

@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)[![Go Report Card](https://goreportcard.com/badge/github.com/opspec-io/sdk-golang)](https://goreportcard.com/report/github.com/opspec-io/sdk-golang)[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
+[![Build Status](https://travis-ci.org/opspec-io/sdk-golang.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-golang)
+[![Go Report Card](https://goreportcard.com/badge/github.com/opspec-io/sdk-golang)](https://goreportcard.com/report/github.com/opspec-io/sdk-golang)
+[![Coverage](https://codecov.io/gh/opspec-io/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-golang)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
@@ -6,6 +8,10 @@
 > not be considered stable."*
 
 Golang SDK for [opspec](https://opspec.io)
+
+# Documentation
+
+see [![GoDoc](https://godoc.org/github.com/opspec-io/sdk-golang?status.svg)](http://godoc.org/github.com/opspec-io/sdk-golang)
 
 # Support
 

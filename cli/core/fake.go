@@ -10,17 +10,19 @@ type Fake struct {
 	EventsStub            func()
 	eventsMutex           sync.RWMutex
 	eventsArgsForCall     []struct{}
-	NodeCreateStub        func()
+	NodeCreateStub        func(opts NodeCreateOpts)
 	nodeCreateMutex       sync.RWMutex
-	nodeCreateArgsForCall []struct{}
-	NodeKillStub          func()
-	nodeKillMutex         sync.RWMutex
-	nodeKillArgsForCall   []struct{}
-	LsStub                func(ctx context.Context, path string)
-	lsMutex               sync.RWMutex
-	lsArgsForCall         []struct {
-		ctx  context.Context
-		path string
+	nodeCreateArgsForCall []struct {
+		opts NodeCreateOpts
+	}
+	NodeKillStub        func()
+	nodeKillMutex       sync.RWMutex
+	nodeKillArgsForCall []struct{}
+	LsStub              func(ctx context.Context, dirRef string)
+	lsMutex             sync.RWMutex
+	lsArgsForCall       []struct {
+		ctx    context.Context
+		dirRef string
 	}
 	OpCreateStub        func(path string, description string, name string)
 	opCreateMutex       sync.RWMutex
@@ -82,13 +84,15 @@ func (fake *Fake) EventsCallCount() int {
 	return len(fake.eventsArgsForCall)
 }
 
-func (fake *Fake) NodeCreate() {
+func (fake *Fake) NodeCreate(opts NodeCreateOpts) {
 	fake.nodeCreateMutex.Lock()
-	fake.nodeCreateArgsForCall = append(fake.nodeCreateArgsForCall, struct{}{})
-	fake.recordInvocation("NodeCreate", []interface{}{})
+	fake.nodeCreateArgsForCall = append(fake.nodeCreateArgsForCall, struct {
+		opts NodeCreateOpts
+	}{opts})
+	fake.recordInvocation("NodeCreate", []interface{}{opts})
 	fake.nodeCreateMutex.Unlock()
 	if fake.NodeCreateStub != nil {
-		fake.NodeCreateStub()
+		fake.NodeCreateStub(opts)
 	}
 }
 
@@ -96,6 +100,12 @@ func (fake *Fake) NodeCreateCallCount() int {
 	fake.nodeCreateMutex.RLock()
 	defer fake.nodeCreateMutex.RUnlock()
 	return len(fake.nodeCreateArgsForCall)
+}
+
+func (fake *Fake) NodeCreateArgsForCall(i int) NodeCreateOpts {
+	fake.nodeCreateMutex.RLock()
+	defer fake.nodeCreateMutex.RUnlock()
+	return fake.nodeCreateArgsForCall[i].opts
 }
 
 func (fake *Fake) NodeKill() {
@@ -114,16 +124,16 @@ func (fake *Fake) NodeKillCallCount() int {
 	return len(fake.nodeKillArgsForCall)
 }
 
-func (fake *Fake) Ls(ctx context.Context, path string) {
+func (fake *Fake) Ls(ctx context.Context, dirRef string) {
 	fake.lsMutex.Lock()
 	fake.lsArgsForCall = append(fake.lsArgsForCall, struct {
-		ctx  context.Context
-		path string
-	}{ctx, path})
-	fake.recordInvocation("Ls", []interface{}{ctx, path})
+		ctx    context.Context
+		dirRef string
+	}{ctx, dirRef})
+	fake.recordInvocation("Ls", []interface{}{ctx, dirRef})
 	fake.lsMutex.Unlock()
 	if fake.LsStub != nil {
-		fake.LsStub(ctx, path)
+		fake.LsStub(ctx, dirRef)
 	}
 }
 
@@ -136,7 +146,7 @@ func (fake *Fake) LsCallCount() int {
 func (fake *Fake) LsArgsForCall(i int) (context.Context, string) {
 	fake.lsMutex.RLock()
 	defer fake.lsMutex.RUnlock()
-	return fake.lsArgsForCall[i].ctx, fake.lsArgsForCall[i].path
+	return fake.lsArgsForCall[i].ctx, fake.lsArgsForCall[i].dirRef
 }
 
 func (fake *Fake) OpCreate(path string, description string, name string) {

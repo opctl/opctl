@@ -3,22 +3,31 @@
 [Visual studio team services](https://www.visualstudio.com/team-services/) (VSTS)
 allows defining "build"'s and "tasks" from their UI
 
-Agents from their "Hosted Linux" agent queue include a docker daemon so running opctl is
-a matter of:
+The VSTS "Hosted Linux" agent queue runs dockerized linux agents. The docker socket from the host gets mounted at /var/run/docker.sock inside each agent container, so running opctl is a matter of:
 
 - choosing "Hosted Linux Preview" for Agent queue
-- adding a task which installs opctl (see [install opctl task](#install-opctl-task))
+- adding a task which creates an opctl node w/ a custom data dir (see [create opctl node task](#create-opctl-node-task))
 - adding tasks with your calls to opctl (see [opctl run task](#opctl-run-task))
 
 ### Examples
 
-#### Install opctl task
+#### Create opctl node task
 
 Task: "Shell Script"
 
 Type: "Inline"
 
-Script: "curl -L https://github.com/opctl/opctl/releases/download/0.1.24/opctl0.1.24.linux.tgz | sudo tar -xzv -C /usr/local/bin"
+Script:
+```bash
+# beta build required for custom data dir support
+curl -L https://bin.equinox.io/c/4fmGop7rntx/opctl-beta-linux-amd64.tgz | sudo tar -xzv -C /usr/local/bin
+
+# manually create an opctl node.
+# custom node data dir required because VSTS only makes build dir available to docker daemon
+#
+# the node will remain running throughout the build and get used by all tasks calling `opctl run ...`
+nohup opctl node create --data-dir=.opctl &>/dev/null &
+```
 
 #### Opctl run task
 
@@ -26,6 +35,6 @@ Task: "Shell Script"
 
 Type: "Inline"
 
-> passes an arg `someArg` to the op from a VSTS "Variable" `someArg`
+> disables color (because vsts doesn't interpret ansi escape codes), & passes an arg `someArg` to the op from a VSTS "Variable" `someArg`
 
-Script: "opctl run -a someArg=$(someArg) test"
+Script: "opctl --nc run -a someArg=$(someArg) test"

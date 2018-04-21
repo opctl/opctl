@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/node/api/client"
 )
@@ -45,7 +46,7 @@ type nodeHandle struct {
 func (nh nodeHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.DataNode,
+	[]*model.DirEntry,
 	error,
 ) {
 	return nh.client.ListDescendants(

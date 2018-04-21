@@ -2,6 +2,9 @@ package containercall
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,8 +16,6 @@ import (
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/image"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall/sockets"
 	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
-	"os"
-	"path/filepath"
 )
 
 var _ = Context("Interpreter", func() {
@@ -27,12 +28,12 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("calls os.MkdirAll w/ expected scratchdir path & returns error", func() {
 			/* arrange */
-			rootFSPath := "/dummyRootFSPath"
+			dataDirPath := "/dummydataDirPath"
 			providedContainerID := "dummyContainerID"
 			providedRootOpID := "dummyRootOpID"
 
 			expectedScratchDirPath := filepath.Join(
-				rootFSPath,
+				dataDirPath,
 				"dcg",
 				providedRootOpID,
 				"containers",
@@ -48,8 +49,8 @@ var _ = Context("Interpreter", func() {
 			fakeOS.MkdirAllReturns(expectedError)
 
 			objectUnderTest := _interpreter{
-				os:         fakeOS,
-				rootFSPath: rootFSPath,
+				os:          fakeOS,
+				dataDirPath: dataDirPath,
 			}
 
 			/* act */
@@ -175,13 +176,13 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedRootFSPath := "dummyRootFSPath"
+			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
 			providedRootOpID := "dummyRootOpID"
 			providedOpHandle := new(data.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
-				providedRootFSPath,
+				provideddataDirPath,
 				"dcg",
 				providedRootOpID,
 				"containers",
@@ -197,7 +198,7 @@ var _ = Context("Interpreter", func() {
 				filesInterpreter:   new(files.FakeInterpreter),
 				imageInterpreter:   new(image.FakeInterpreter),
 				os:                 new(ios.Fake),
-				rootFSPath:         providedRootFSPath,
+				dataDirPath:        provideddataDirPath,
 				socketsInterpreter: new(sockets.FakeInterpreter),
 			}
 
@@ -400,13 +401,13 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedRootFSPath := "dummyRootFSPath"
+			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
 			providedRootOpID := "dummyRootOpID"
 			providedOpHandle := new(data.FakeHandle)
 
 			expectedScratchDirPath := filepath.Join(
-				providedRootFSPath,
+				provideddataDirPath,
 				"dcg",
 				providedRootOpID,
 				"containers",
@@ -422,7 +423,7 @@ var _ = Context("Interpreter", func() {
 				filesInterpreter:   fakeFilesInterpreter,
 				imageInterpreter:   new(image.FakeInterpreter),
 				os:                 new(ios.Fake),
-				rootFSPath:         providedRootFSPath,
+				dataDirPath:        provideddataDirPath,
 				socketsInterpreter: new(sockets.FakeInterpreter),
 			}
 
@@ -633,12 +634,12 @@ var _ = Context("Interpreter", func() {
 				},
 			}
 
-			providedRootFSPath := "dummyRootFSPath"
+			provideddataDirPath := "dummydataDirPath"
 			providedContainerID := "dummyContainerID"
 			providedRootOpID := "dummyRootOpID"
 
 			expectedScratchDirPath := filepath.Join(
-				providedRootFSPath,
+				provideddataDirPath,
 				"dcg",
 				providedRootOpID,
 				"containers",
@@ -654,7 +655,7 @@ var _ = Context("Interpreter", func() {
 				filesInterpreter:   new(files.FakeInterpreter),
 				imageInterpreter:   new(image.FakeInterpreter),
 				os:                 new(ios.Fake),
-				rootFSPath:         providedRootFSPath,
+				dataDirPath:        provideddataDirPath,
 				socketsInterpreter: fakeSocketsInterpreter,
 			}
 

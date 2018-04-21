@@ -4,12 +4,13 @@ package files
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/file"
-	"path/filepath"
-	"strings"
 )
 
 type Interpreter interface {
@@ -23,13 +24,13 @@ type Interpreter interface {
 
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter(
-	rootFSPath string,
+	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
 		fileCopier:      filecopier.New(),
 		fileInterpreter: file.NewInterpreter(),
 		os:              ios.New(),
-		rootFSPath:      rootFSPath,
+		dataDirPath:     dataDirPath,
 	}
 }
 
@@ -37,7 +38,7 @@ type _interpreter struct {
 	fileCopier      filecopier.FileCopier
 	fileInterpreter file.Interpreter
 	os              ios.IOS
-	rootFSPath      string
+	dataDirPath     string
 }
 
 func (itp _interpreter) Interpret(
@@ -70,7 +71,7 @@ fileLoop:
 			)
 		}
 
-		if !strings.HasPrefix(*fileValue.File, itp.rootFSPath) {
+		if !strings.HasPrefix(*fileValue.File, itp.dataDirPath) {
 			// bound to non rootFS file
 			dcgContainerCallFiles[scgContainerFilePath] = *fileValue.File
 			continue fileLoop

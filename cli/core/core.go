@@ -25,7 +25,9 @@ import (
 type Core interface {
 	Events()
 
-	NodeCreate()
+	NodeCreate(
+		opts NodeCreateOpts,
+	)
 
 	NodeKill()
 

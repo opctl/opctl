@@ -4,13 +4,14 @@ package core
 import "github.com/opspec-io/sdk-golang/model"
 import (
 	"context"
+	"path/filepath"
+
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
 	"github.com/opspec-io/sdk-golang/op/dotyml"
 	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
 	"github.com/opspec-io/sdk-golang/util/pubsub"
 	"github.com/opspec-io/sdk-golang/util/uniquestring"
-	"path/filepath"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
@@ -56,7 +57,7 @@ type Core interface {
 func New(
 	pubSub pubsub.PubSub,
 	containerRuntime containerruntime.ContainerRuntime,
-	rootFSPath string,
+	dataDirPath string,
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
@@ -67,7 +68,7 @@ func New(
 	caller := newCaller(
 		newContainerCaller(
 			containerRuntime,
-			containercall.NewInterpreter(rootFSPath),
+			containercall.NewInterpreter(dataDirPath),
 			pubSub,
 			dcgNodeRepo,
 		),
@@ -94,7 +95,7 @@ func New(
 		pubSub,
 		dcgNodeRepo,
 		caller,
-		rootFSPath,
+		dataDirPath,
 	)
 
 	caller.setOpCaller(
@@ -107,7 +108,7 @@ func New(
 		opCaller:            opCaller,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
-		dataCachePath:       filepath.Join(rootFSPath, "pkgs"),
+		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
 		dotYmlGetter:        dotyml.NewGetter(),
 		data:                data.New(),

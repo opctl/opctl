@@ -4,12 +4,13 @@ package dirs
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
-	"path/filepath"
-	"strings"
 )
 
 type Interpreter interface {
@@ -23,13 +24,13 @@ type Interpreter interface {
 
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter(
-	rootFSPath string,
+	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
 		dirCopier:      dircopier.New(),
 		dirInterpreter: dir.NewInterpreter(),
 		os:             ios.New(),
-		rootFSPath:     rootFSPath,
+		dataDirPath:    dataDirPath,
 	}
 }
 
@@ -37,7 +38,7 @@ type _interpreter struct {
 	dirCopier      dircopier.DirCopier
 	dirInterpreter dir.Interpreter
 	os             ios.IOS
-	rootFSPath     string
+	dataDirPath    string
 }
 
 func (itp _interpreter) Interpret(
@@ -69,7 +70,7 @@ dirLoop:
 			)
 		}
 
-		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.rootFSPath) {
+		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.dataDirPath) {
 			// bound to non rootFS dir
 			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
 			continue dirLoop

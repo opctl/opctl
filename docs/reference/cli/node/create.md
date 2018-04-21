@@ -5,13 +5,16 @@ stderr/stdout/stdin/PGId (process group id) and blocks until killed.
 
 > There can be only one node running at a time on a given machine.
 
+## Options
+
+### `--data-dir` (since v0.1.25)
+Path of dir used to store node data
 
 ## Notes
 
 ### lockfile
 
-Upon creation, nodes populate a lockfile at
-[per user app data](https://github.com/appdataspec/spec/blob/master/index.md#per-user-app-data)/lockfile.pid
+Upon creation, nodes populate a lockfile at [data-dir](../../data-dir/README.md)/lockfile.pid
 containing their PId (process id).
 
 ### concurrency
@@ -29,6 +32,6 @@ where it's output is easily monitored.
 
 ### cleanup
 
-During creation, [filesystem](../../filesystem/README.md) will be
+During creation, [data-dir](../../data-dir/README.md) will be
 cleaned of any existing events, ops, and temp files/dirs to ensure
 the created node starts from a clean slate.

@@ -3,14 +3,15 @@ package dirs
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
+
 	"github.com/golang-utils/dircopier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/data"
 	"github.com/opspec-io/sdk-golang/model"
 	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
-	"io/ioutil"
-	"path/filepath"
 )
 
 var _ = Context("Dirs", func() {
@@ -101,7 +102,7 @@ var _ = Context("Dirs", func() {
 			})
 		})
 		Context("dirInterpreter.Interpret doesn't err", func() {
-			Context("value.Dir not prefixed by rootFSPath", func() {
+			Context("value.Dir not prefixed by dataDirPath", func() {
 				It("should return expected results", func() {
 					/* arrange */
 					containerDirPath := "/dummyDir1Path.txt"
@@ -116,7 +117,7 @@ var _ = Context("Dirs", func() {
 
 					objectUnderTest := _interpreter{
 						dirInterpreter: fakeDirInterpreter,
-						rootFSPath:     "dummyRootFSPath",
+						dataDirPath:    "dummydataDirPath",
 					}
 
 					/* act */
@@ -136,7 +137,7 @@ var _ = Context("Dirs", func() {
 
 				})
 			})
-			Context("value.Dir prefixed by rootFSPath", func() {
+			Context("value.Dir prefixed by dataDirPath", func() {
 				It("should call dircopier.OS w/ expected args", func() {
 					/* arrange */
 					providedScratchDir := "dummyScratchDir"

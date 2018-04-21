@@ -51,8 +51,14 @@ func newCli(
 	cli.Command("node", "Manage nodes", func(nodeCmd *mow.Cmd) {
 
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
+			dataDir := createCmd.StringOpt("data-dir", "", "Path of dir used to store node data (since v0.1.25)")
+
 			createCmd.Action = func() {
-				core.NodeCreate()
+				core.NodeCreate(
+					corePkg.NodeCreateOpts{
+						DataDir: *dataDir,
+					},
+				)
 			}
 		})
 

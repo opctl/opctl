@@ -3,12 +3,13 @@ package ref
 //go:generate counterfeiter -o ./fakeHandleGetOrHeader.go --fake-name fakeHandleGetOrHeader ./ handleGetOrHeader
 
 import (
-	"github.com/golang-interfaces/ihttp"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
 	"net/http"
 	"path"
 	"time"
+
+	"github.com/golang-interfaces/ihttp"
+	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opspec-io/sdk-golang/node/core"
 )
 
 // handleGetOrHeader handles GET or HEAD's
@@ -50,7 +51,7 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		return
 	}
 
-	dataNodeReader, err := dataHandle.GetContent(
+	dirEntryReader, err := dataHandle.GetContent(
 		httpReq.Context(),
 		"",
 	)
@@ -64,6 +65,6 @@ func (hg _handleGetOrHeader) HandleGetOrHead(
 		httpReq,
 		path.Base(dataHandle.Ref()),
 		time.Time{},
-		dataNodeReader,
+		dirEntryReader,
 	)
 }

@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opspec-io/sdk-golang/model"
@@ -43,13 +44,13 @@ var _ = Context("fsProvider", func() {
 				PullCreds: providedPullCreds,
 			}))
 		})
-		Context("nodeClient.ListDataNoded errs", func() {
+		Context("nodeClient.ListDirEntryd errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				fakeNodeClient := new(client.Fake)
 
-				listDataNodesErr := errors.New("dummyError")
-				fakeNodeClient.ListDescendantsReturns(nil, listDataNodesErr)
+				listDirEntrysErr := errors.New("dummyError")
+				fakeNodeClient.ListDescendantsReturns(nil, listDirEntrysErr)
 
 				objectUnderTest := nodeProvider{
 					nodeClient: fakeNodeClient,
@@ -62,7 +63,7 @@ var _ = Context("fsProvider", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(listDataNodesErr))
+				Expect(actualErr).To(Equal(listDirEntrysErr))
 			})
 		})
 		Context("nodeClient.ListDescendants doesn't err", func() {

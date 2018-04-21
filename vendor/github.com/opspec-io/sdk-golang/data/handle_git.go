@@ -2,11 +2,12 @@ package data
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	"github.com/opspec-io/sdk-golang/model"
-	"os"
-	"path/filepath"
 )
 
 func newGitHandle(
@@ -42,7 +43,7 @@ func (gh gitHandle) GetContent(
 func (gh gitHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.DataNode,
+	[]*model.DirEntry,
 	error,
 ) {
 	return gh.rListDescendants(gh.path)
@@ -52,7 +53,7 @@ func (gh gitHandle) ListDescendants(
 func (gh gitHandle) rListDescendants(
 	path string,
 ) (
-	[]*model.DataNode,
+	[]*model.DirEntry,
 	error,
 ) {
 	childFileInfos, err := gh.ioUtil.ReadDir(path)
@@ -60,7 +61,7 @@ func (gh gitHandle) rListDescendants(
 		return nil, err
 	}
 
-	var contents []*model.DataNode
+	var contents []*model.DirEntry
 	for _, contentFileInfo := range childFileInfos {
 		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
@@ -80,7 +81,7 @@ func (gh gitHandle) rListDescendants(
 
 		contents = append(
 			contents,
-			&model.DataNode{
+			&model.DirEntry{
 				Mode: contentFileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
 				Size: contentFileInfo.Size(),
