@@ -28,5 +28,5 @@ submit a PR.
 ## Support
 
 Join us on
-[![Slack](https://opspec-slackin.herokuapp.com/badge.svg)](https://opspec-slackin.herokuapp.com/)
+[![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
 or [open an issue](https://github.com/opspec-io/sdk-golang/issues)
