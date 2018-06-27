@@ -18,7 +18,7 @@ export default ({ onCollapseToggled }) =>
       </div>
       <div className='menu-item logo'>
         <a href='https://opctl.io'>
-          <img src='logo-text_rect.png' alt='opctl logo' height={30} />
+          <img src='logo.svg' alt='opctl logo' height={30} />
         </a>
       </div>
     </div>
