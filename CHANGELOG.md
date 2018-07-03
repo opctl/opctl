@@ -7,42 +7,42 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
-- [`opspec` property in op schema](https://github.com/opspec-io/spec/issues/20)
+- [`opspec` property in op schema](https://github.com/opctl/spec/issues/20)
 - Client back pressure in `GET event-stream` endpoint via `ack` query param
-- [Support declaring SVG icon for op](https://github.com/opspec-io/spec/issues/139)
-- [Support CommonMark for op & param descriptions](https://github.com/opspec-io/spec/issues/174)
-- [Boolean type](https://github.com/opspec-io/spec/issues/195)
-- [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opspec-io/spec/issues/196)
-- [Support paths in object refs](https://github.com/opspec-io/spec/issues/170)
+- [Support declaring SVG icon for op](https://github.com/opctl/spec/issues/139)
+- [Support CommonMark for op & param descriptions](https://github.com/opctl/spec/issues/174)
+- [Boolean type](https://github.com/opctl/spec/issues/195)
+- [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opctl/spec/issues/196)
+- [Support paths in object refs](https://github.com/opctl/spec/issues/170)
 - Object & Array initializers
 - Support referencing object properties via `object[propertyName]`
 - Support referencing array items via `array[index]` or `array[-index]` to index from end of array
-- [Interpolation escape syntax](https://github.com/opspec-io/spec/issues/193) by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
-- [Unified data API](https://github.com/opspec-io/spec/issues/204)
+- [Interpolation escape syntax](https://github.com/opctl/spec/issues/193) by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
+- [Unified data API](https://github.com/opctl/spec/issues/204)
 
 ### Deprecated
 
 - `pkg` attribute in
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall); `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
 - `pkg` changed to `op` in [node-api.spec.yml#/components](spec/node-api.spec.yml#/components)
-- [Deprecate pkgs API](https://github.com/opspec-io/spec/issues/205)
+- [Deprecate pkgs API](https://github.com/opctl/spec/issues/205)
 - `stdOut` & `stdErr` attributes from
   [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/containerCall).
   Use files.
 
 ### Removed
 
-- [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opspec-io/spec/issues/184)
+- [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opctl/spec/issues/184)
 
 ## \[0.1.5] - 2017-09-27
 
 ### Added
 
-- [Type coercion](https://github.com/opspec-io/spec/issues/165)
-- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opspec-io/spec/issues/132)
-- [Support binding strings &/or numbers to/from container files](https://github.com/opspec-io/spec/issues/131)
-- [Add support for object param type](https://github.com/opspec-io/spec/issues/65)
-- [Add support for array param type](https://github.com/opspec-io/spec/issues/160)
+- [Type coercion](https://github.com/opctl/spec/issues/165)
+- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opctl/spec/issues/132)
+- [Support binding strings &/or numbers to/from container files](https://github.com/opctl/spec/issues/131)
+- [Add support for object param type](https://github.com/opctl/spec/issues/65)
+- [Add support for array param type](https://github.com/opctl/spec/issues/160)
 
 ### Deprecated
 
@@ -68,10 +68,10 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
-- [Support using dir/file embedded in op as input/output param default](https://github.com/opspec-io/spec/issues/127)
-- [Allow path expansion w/in sub op call inputs](https://github.com/opspec-io/spec/issues/120)
-- [Allow string/number literals as sub op call inputs](https://github.com/opspec-io/spec/issues/121)
-- [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opspec-io/spec/issues/117)
+- [Support using dir/file embedded in op as input/output param default](https://github.com/opctl/spec/issues/127)
+- [Allow path expansion w/in sub op call inputs](https://github.com/opctl/spec/issues/120)
+- [Allow string/number literals as sub op call inputs](https://github.com/opctl/spec/issues/121)
+- [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opctl/spec/issues/117)
 
 ### Deprecated
 
@@ -90,7 +90,7 @@ All notable changes will be documented in this file in accordance with
 - `string` and `number` parameter constraints
 - support for container calls
 - `filter` to node API `/events/stream` resource
-- [support for private images](https://github.com/opspec-io/spec/issues/71)
+- [support for private images](https://github.com/opctl/spec/issues/71)
 
 ### Changed
 

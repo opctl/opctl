@@ -1,33 +1,11 @@
-description: runs all build ops
+description: runs a build
 name: build
 inputs:
   srcDir:
     dir:
       default: .
       description: directory containing the projects source code
-  version:
-    string:
-      description: version of spec being built
-      constraints: { format: semver }
 run:
-  serial:
-    - op:
-        pkg: { ref: clean }
-        inputs: { srcDir }
-        outputs: { srcDir }
-    - op:
-        pkg: { ref: test }
-        inputs: { srcDir }
-    - parallel:
-      - op:
-          pkg: { ref: docs/build }
-          inputs: { srcDir }
-          outputs: { srcDir }
-      - op:
-          pkg: { ref: spec/build }
-          inputs: { srcDir, version }
-          outputs: { srcDir }
-      - op:
-          pkg: { ref: website/build }
-          inputs: { srcDir }
-          outputs: { srcDir }
+  op:
+    pkg: { ref: test }
+    inputs: { srcDir }

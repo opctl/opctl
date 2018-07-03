@@ -1,7 +1,0 @@
-### gitbook
-_book/
-
-### yarn
-node_modules/
-package.json
-yarn-error.log

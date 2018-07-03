@@ -11,7 +11,7 @@ They can be consumed via tools like [opctl](https://opctl.io).
 Contributions are subject to:
 
 - accepted review by one or more
-  [maintainers](https://github.com/orgs/opspec-io/teams/maintainers/members)
+  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
 - the [build](.opspec/build) op continuing to run with a successful
   outcome
 
