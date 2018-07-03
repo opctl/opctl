@@ -5,7 +5,7 @@ Integrations with opctl of varying fidelity, language, and platform, have and wi
 
 This repo exists to formalize the specifications of opctl so such integrations can be reliable & consistent.
 
-Rules of thumb for all integrations should be
+Rule of thumb for all integrations should be
 - If it's not mentioned in this repo, don't rely on it.
 - If it is mentioned in this repo, adhere.
 
