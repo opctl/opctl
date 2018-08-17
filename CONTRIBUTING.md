@@ -26,12 +26,6 @@ CLI, distributed w/ the opctl binary
 
 The CLI is built using [mow](https://github.com/jawher/mow.cli)
 
-## /docs
-
-docs, hosted at [https://opctl.io/docs](https://opctl.io/docs)
-
-They're maintained as a [gitbook](https://toolchain.gitbook.com/)
-
 ## /node
 
 daemon, distributed w/ the opctl binary
@@ -41,12 +35,6 @@ hosts the opctl web app & an opspec node
 ## /webapp
 
 see [/webapp/CONTRIBUTING.md](/webapp/CONTRIBUTING.md)
-
-## /website
-
-opctl website, hosted at [https://opctl.io](https://opctl.io)
-
-It's maintained as a [metalsmith](https://github.com/metalsmith/metalsmith) site
 
 # Testing
 
