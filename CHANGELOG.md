@@ -10,6 +10,10 @@ accordance with
 
 - [Ability to specify custom node data dir](https://github.com/opctl/opctl/issues/449)
 
+### Changed
+
+- website/docs moved to [https://github.com/opctl/website](https://github.com/opctl/website)
+
 ## 0.1.24 - 2018-04-06
 
 ### Added 
