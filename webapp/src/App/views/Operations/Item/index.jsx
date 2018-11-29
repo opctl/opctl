@@ -1,10 +1,10 @@
-import React, {PureComponent} from 'react'
-import {AutoSizer} from 'react-virtualized'
-import {HotKeys} from 'react-hotkeys'
+import React, { PureComponent } from 'react'
+import { AutoSizer } from 'react-virtualized'
+import { HotKeys } from 'react-hotkeys'
 import Header from './Header'
 import Inputs from '../../../Op/Inputs'
 import EventStream from '../../../EventStream'
-import {Modal, ModalBody} from 'reactstrap'
+import { Modal, ModalBody } from 'reactstrap'
 import Input from '../../../Input'
 import eventStore from '../../../../core/eventStore'
 import reactClickOutside from 'react-click-outside'
@@ -21,43 +21,43 @@ class Item extends PureComponent {
   };
 
   toggleConfigurationModal = () => {
-    this.setState(prevState => ({isConfigurationVisible: !prevState.isConfigurationVisible}))
+    this.setState(prevState => ({ isConfigurationVisible: !prevState.isConfigurationVisible }))
   };
 
   // this method is required by react-click-outside
   handleClickOutside () {
-    this.setState({isSelected: false})
+    this.setState({ isSelected: false })
   }
 
   handleSelected = () => {
-    this.setState({isSelected: true})
+    this.setState({ isSelected: true })
   };
 
   handleInvalidArg = (name) => {
     delete this.args[name]
 
-    this.props.onConfigured({args: this.args})
+    this.props.onConfigured({ args: this.args })
   };
 
   handleValidArg = (name, value) => {
     this.args[name] = value
 
-    this.props.onConfigured({args: this.args})
+    this.props.onConfigured({ args: this.args })
   };
 
   handleNameChanged = (name) => {
-    this.setState({name})
-    this.props.onConfigured({name})
+    this.setState({ name })
+    this.props.onConfigured({ name })
   };
 
-  processEventStream = ({opId}) => {
+  processEventStream = ({ opId }) => {
     this.eventStreamCloser = eventStore.getStream({
       filter: {
         roots: [opId]
       },
       onEvent: event => {
         if (event.opStarted) {
-          this.setState({isKillable: true})
+          this.setState({ isKillable: true })
         }
         if (event.opEnded && event.opEnded.opId === opId) {
           this.setState({
@@ -72,13 +72,13 @@ class Item extends PureComponent {
   componentWillReceiveProps (nextProps) {
     if (nextProps.opId !== this.props.opId) {
       this.ensureEventStreamClosed()
-      this.processEventStream({opId: nextProps.opId})
+      this.processEventStream({ opId: nextProps.opId })
     }
   }
 
   componentWillMount () {
     if (this.props.opId) {
-      this.processEventStream({opId: this.props.opId})
+      this.processEventStream({ opId: this.props.opId })
     }
   }
 
@@ -89,7 +89,7 @@ class Item extends PureComponent {
   render () {
     return (
       <AutoSizer>
-        {({height, width}) => (
+        {({ height, width }) => (
           <HotKeys
             keyMap={{
               del: 'del',
@@ -104,7 +104,7 @@ class Item extends PureComponent {
           >
             <div
               tabIndex='-1'
-              style={{height, width, border: 'dashed 3px #ececec'}}
+              style={{ height, width, border: 'dashed 3px #ececec' }}
               onClick={this.handleSelected}
             >
               <Header
@@ -156,10 +156,10 @@ class Item extends PureComponent {
                     cursor: 'pointer'
                   }} />
               }
-              <div style={{marginTop: '37px', height: 'calc(100% - 37px)'}}>
+              <div style={{ marginTop: '37px', height: 'calc(100% - 37px)' }}>
                 {
                   this.props.opId
-                    ? <EventStream key={this.props.opId} filter={{roots: [this.props.opId]}} />
+                    ? <EventStream key={this.props.opId} filter={{ roots: [this.props.opId] }} />
                     : null
                 }
               </div>

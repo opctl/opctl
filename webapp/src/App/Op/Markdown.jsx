@@ -3,7 +3,7 @@ import Markdown from 'react-remarkable'
 import highlightJs from 'highlightjs'
 import 'highlightjs/styles/github.css'
 
-export default ({value, opRef}) => {
+export default ({ value, opRef }) => {
   value = !value ? '' : value.replace(
     /]\(\/.+\)/,
     match => {

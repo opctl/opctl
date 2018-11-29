@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Operations from './views/Operations'
 import Events from './views/Events'
 import Environment from './views/Environment'
-import {Route, HashRouter} from 'react-router-dom'
+import { Route, HashRouter } from 'react-router-dom'
 import TopMenu from './TopMenu'
 import SideMenu from './SideMenu'
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import OpView from './views/Op'
 
 // shared vendor css
@@ -32,12 +32,12 @@ export default class Page extends Component {
   render () {
     return (
       <HashRouter>
-        <div style={{height: '100vh'}}>
+        <div style={{ height: '100vh' }}>
           <TopMenu onCollapseToggled={() => this.handleSideMenuToggled()} />
           <SideMenu isCollapsed={this.state.isSideMenuCollapsed} />
           <ToastContainer
             autoClose={20000}
-            style={{zIndex: 100000}}
+            style={{ zIndex: 100000 }}
           />
           <div
             style={{

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default ({value, opRef}) => {
+export default ({ value, opRef }) => {
   if (value) {
     value = value.replace(
       /^\/.+$/,
@@ -12,5 +12,5 @@ export default ({value, opRef}) => {
     value = 'opspec-icon.svg'
   }
 
-  return (<img src={value} alt={'icon'} style={{height: '10vw'}} />)
+  return (<img src={value} alt={'icon'} style={{ height: '10vw' }} />)
 }

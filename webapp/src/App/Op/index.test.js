@@ -9,7 +9,7 @@ it('renders without crashing', () => {
   /* act/assert */
   ReactDOM.render(
     <Op
-      value={{description: ''}}
+      value={{ description: '' }}
       opRef={'dummyOpRef'}
     />,
     div

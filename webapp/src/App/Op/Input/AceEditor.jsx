@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import AceEditor from 'react-ace'
 import Description from '../Param/Description'
 import 'brace'
@@ -21,7 +21,7 @@ export default class TextArea extends Component {
 
   processValue (value) {
     const validationErrs = this.props.validate(value) || []
-    this.setState(prevState => ({validationErrs, value}))
+    this.setState(prevState => ({ validationErrs, value }))
 
     if (validationErrs.length === 0) {
       this.props.onValid(value)

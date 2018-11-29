@@ -1,7 +1,7 @@
 import React from 'react'
 import Input from '../../Input'
 
-export default ({dir, name, onValid, opRef, value}) =>
+export default ({ dir, name, onValid, opRef, value }) =>
   <Input
     description={dir.description}
     name={name}

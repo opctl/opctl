@@ -20,7 +20,7 @@ export default ({
   }
 
   return (
-    <div style={{color}}>
+    <div style={{ color }}>
       OpEnded
       Id='{opEnded.opId}'
       OpRef='{opEnded.opRef}'

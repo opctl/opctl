@@ -1,7 +1,7 @@
 import React from 'react'
 import Output from './Output/index'
 
-export default ({params = {}, opRef, values = {}}) => {
+export default ({ params = {}, opRef, values = {} }) => {
   if (!params || Object.entries(params).length === 0) return (null)
 
   return (

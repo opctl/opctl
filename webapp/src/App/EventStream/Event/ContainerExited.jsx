@@ -5,7 +5,7 @@ export default ({
   timestamp
 }) => {
   return (
-    <div style={{color: 'rgb(96, 253, 255)'}}>
+    <div style={{ color: 'rgb(96, 253, 255)' }}>
       ContainerExited
       Id='{containerExited.containerId}'
       OpRef='{containerExited.opRef}'

@@ -43,7 +43,7 @@ class EventStore {
         }
       }
     })
-    subscriptions[subscriptionId] = {onEvent, filter}
+    subscriptions[subscriptionId] = { onEvent, filter }
 
     return () => delete subscriptions[subscriptionId]
   }

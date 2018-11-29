@@ -11,7 +11,7 @@ describe('Object', () => {
     /* act/assert */
     ReactDOM.render(
       <Object
-        param={{description: ''}}
+        param={{ description: '' }}
         value={dummyYamlObject}
       />,
       div)

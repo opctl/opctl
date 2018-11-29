@@ -1,7 +1,7 @@
 import React from 'react'
 import Input from '../../Input'
 
-export default ({name, onValid, opRef, socket, value}) =>
+export default ({ name, onValid, opRef, socket, value }) =>
   <Input
     description={socket.description}
     name={name}

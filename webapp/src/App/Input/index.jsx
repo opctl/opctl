@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Description from '../Op/Param/Description'
 
 export default class Input extends Component {
@@ -13,7 +13,7 @@ export default class Input extends Component {
 
   processValue (value) {
     const validationErrs = this.props.validate(value) || []
-    this.setState({validationErrs, value})
+    this.setState({ validationErrs, value })
 
     if (validationErrs.length === 0) {
       this.props.onValid(value)

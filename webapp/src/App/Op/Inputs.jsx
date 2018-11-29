@@ -1,7 +1,7 @@
 import React from 'react'
 import Input from './Input/index'
 
-export default ({value, onInvalid, onValid, opRef, values}) => {
+export default ({ value, onInvalid, onValid, opRef, values }) => {
   if (!value || Object.entries(value).length === 0) return (null)
 
   return (
