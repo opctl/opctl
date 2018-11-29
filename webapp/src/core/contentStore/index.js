@@ -5,7 +5,7 @@ class ContentStore {
    * @param key
    * @returns {*}
    */
-  get ({key}) {
+  get ({ key }) {
     if (global.localStorage) {
       const qualifiedKey = [keyQualifier, key].join('.')
       return JSON.parse(global.localStorage.getItem(qualifiedKey)) || null
@@ -18,7 +18,7 @@ class ContentStore {
    * @param key
    * @param value
    */
-  set ({key, value}) {
+  set ({ key, value }) {
     if (global.localStorage) {
       const qualifiedKey = [keyQualifier, key].join('.')
       global.localStorage.setItem(

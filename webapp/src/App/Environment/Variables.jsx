@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Entry from './Variable'
 import contentStore from '../../core/contentStore'
 import uuidV4 from 'uuid/v4'
@@ -7,11 +7,11 @@ const key = 'environment'
 export default class Variables extends Component {
   state =
     {
-      variables: contentStore.get({key}) || []
+      variables: contentStore.get({ key }) || []
     };
 
   handleInvalid = () => {
-    this.setState({isVariableAddDisabled: true})
+    this.setState({ isVariableAddDisabled: true })
   };
 
   handleValid = value => {
@@ -19,7 +19,7 @@ export default class Variables extends Component {
       const nextVariables = [...prevState.variables]
       const entryIndex = prevState.variables.findIndex(entry => entry.id === value.id)
       nextVariables[entryIndex] = value
-      contentStore.set({key, value: nextVariables})
+      contentStore.set({ key, value: nextVariables })
       return {
         variables: nextVariables,
         isVariableAddDisabled: false

@@ -1,7 +1,7 @@
 import React from 'react'
 import Input from '../../Input'
 
-export default ({name, onValid, opRef, boolean, value}) =>
+export default ({ name, onValid, opRef, boolean, value }) =>
   <Input
     description={boolean.description}
     name={name}

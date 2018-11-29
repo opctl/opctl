@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Input from '../Input'
 import './variable.css'
 
@@ -12,7 +12,7 @@ export default class Entry extends Component {
         value: prevState.value,
         id: prevState.id
       })
-      return {name}
+      return { name }
     })
   };
 
@@ -23,12 +23,12 @@ export default class Entry extends Component {
         value,
         id: prevState.id
       })
-      return {value}
+      return { value }
     })
   };
 
   render () {
-    const {onInvalid} = this.props
+    const { onInvalid } = this.props
     return (
       <li className='list-group-item'>
         <div className='row'>
@@ -38,7 +38,7 @@ export default class Entry extends Component {
               onInvalid={onInvalid}
               onValid={this.handleValidName}
               type={'text'}
-              validate={entryName => entryName.length > 0 ? [] : [{message: 'name required'}]}
+              validate={entryName => entryName.length > 0 ? [] : [{ message: 'name required' }]}
               value={this.state.name}
             />
           </div>

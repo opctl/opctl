@@ -41,14 +41,14 @@ export default class Op extends Component {
   start = () => {
     const args = Object.entries(this.props.value.inputs || [])
       .reduce((args, [name, param]) => {
-        if (param.array) args[name] = {array: this.args[name]}
-        if (param.boolean) args[name] = {boolean: this.args[name]}
-        if (param.dir) args[name] = {dir: this.args[name]}
-        if (param.file) args[name] = {file: this.args[name]}
-        if (param.number) args[name] = {number: this.args[name]}
-        if (param.object) args[name] = {object: this.args[name]}
-        if (param.socket) args[name] = {socket: this.args[name]}
-        if (param.string) args[name] = {string: this.args[name]}
+        if (param.array) args[name] = { array: this.args[name] }
+        if (param.boolean) args[name] = { boolean: this.args[name] }
+        if (param.dir) args[name] = { dir: this.args[name] }
+        if (param.file) args[name] = { file: this.args[name] }
+        if (param.number) args[name] = { number: this.args[name] }
+        if (param.object) args[name] = { object: this.args[name] }
+        if (param.socket) args[name] = { socket: this.args[name] }
+        if (param.string) args[name] = { string: this.args[name] }
         return args
       }, {})
 
@@ -80,7 +80,7 @@ export default class Op extends Component {
 
   render () {
     return (
-      <div style={{height: '100%'}}>
+      <div style={{ height: '100%' }}>
         <form onSubmit={e => {
           e.preventDefault()
         }}>
@@ -124,7 +124,7 @@ export default class Op extends Component {
         <br />
         {
           this.state.opId
-            ? <div style={{height: '100%'}}>
+            ? <div style={{ height: '100%' }}>
               <h2>Event Stream:</h2>
               <EventStream key={this.state.opId} filter={{ roots: [this.state.opId] }} />
             </div>

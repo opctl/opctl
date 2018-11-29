@@ -1,14 +1,14 @@
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import MdMoreVert from 'react-icons/lib/md/more-vert'
-import {Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap'
+import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
 
 const dragHandleClassName = 'dragHandle'
 
 export default class Header extends PureComponent {
-  state = {dropdownOpen: false};
+  state = { dropdownOpen: false };
 
   toggleDropdown = () => {
-    this.setState(prevState => ({dropdownOpen: !prevState.dropdownOpen}))
+    this.setState(prevState => ({ dropdownOpen: !prevState.dropdownOpen }))
   };
 
   render () {
@@ -31,10 +31,10 @@ export default class Header extends PureComponent {
           whiteSpace: 'nowrap'
         }}
       >
-        <div style={{overflow: 'hidden', marginLeft: '4px', width: 'calc(100% - 36px)', height: '37px'}}>
+        <div style={{ overflow: 'hidden', marginLeft: '4px', width: 'calc(100% - 36px)', height: '37px' }}>
           {this.props.name}
         </div>
-        <div style={{right: 0, top: 0, position: 'absolute', cursor: 'pointer'}}>
+        <div style={{ right: 0, top: 0, position: 'absolute', cursor: 'pointer' }}>
           <Dropdown
             isOpen={this.state.dropdownOpen}
             toggle={this.toggleDropdown}

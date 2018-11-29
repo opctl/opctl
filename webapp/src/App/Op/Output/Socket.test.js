@@ -9,7 +9,7 @@ it('renders without crashing', () => {
   /* act/assert */
   ReactDOM.render(
     <Socket
-      param={{description: ''}}
+      param={{ description: '' }}
     />,
     div)
 })

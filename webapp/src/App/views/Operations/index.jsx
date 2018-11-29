@@ -1,14 +1,14 @@
-import React, {PureComponent} from 'react'
-import {Responsive as ResponsiveReactGridLayout} from 'react-grid-layout'
-import {HotKeys} from 'react-hotkeys'
+import React, { PureComponent } from 'react'
+import { Responsive as ResponsiveReactGridLayout } from 'react-grid-layout'
+import { HotKeys } from 'react-hotkeys'
 import OpSelector from '../../OpSelector'
-import {AutoSizer} from 'react-virtualized'
+import { AutoSizer } from 'react-virtualized'
 import Item from './Item'
 import 'react-grid-layout/css/styles.css'
 import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
 import contentStore from '../../../core/contentStore'
 import uuidV4 from 'uuid/v4'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 
 const dragHandleClassName = 'dragHandle'
 const CONTENT_STORE_KEY = 'operations'
@@ -16,14 +16,14 @@ const CONTENT_STORE_KEY = 'operations'
 export default class OperationsView extends PureComponent {
   static defaultProps = {
     className: 'layout',
-    cols: {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
+    cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
     rowHeight: 100
   };
 
   constructor (props) {
     super(props)
 
-    this.state = contentStore.get({key: CONTENT_STORE_KEY}) ||
+    this.state = contentStore.get({ key: CONTENT_STORE_KEY }) ||
       {
         layouts: {},
         items: []
@@ -32,7 +32,7 @@ export default class OperationsView extends PureComponent {
 
   isItemStartable = (inputs, args) => Object.keys(inputs || []).length === Object.keys(args).length;
 
-  addItem = ({op, opRef}) => {
+  addItem = ({ op, opRef }) => {
     const isStartable = this.isItemStartable(op.inputs, {})
     const item = {
       opRef,
@@ -54,16 +54,16 @@ export default class OperationsView extends PureComponent {
   };
 
   componentDidUpdate () {
-    contentStore.set({key: CONTENT_STORE_KEY, value: this.state})
+    contentStore.set({ key: CONTENT_STORE_KEY, value: this.state })
   }
 
   handleLayoutChange = (layout, layouts) => {
-    this.setState({layouts})
+    this.setState({ layouts })
   };
 
   deleteItem = (itemId) => {
     this.setState(
-      prevState => ({items: prevState.items.filter(item => item.i !== itemId)})
+      prevState => ({ items: prevState.items.filter(item => item.i !== itemId) })
     )
   };
 
@@ -73,8 +73,8 @@ export default class OperationsView extends PureComponent {
         const itemIndex = prevState.items.findIndex(item => item.i === itemId)
         const items = [...prevState.items]
         const item = prevState.items[itemIndex]
-        items[itemIndex] = Object.assign({}, item, {isFullScreen: !item.isFullScreen})
-        return {items}
+        items[itemIndex] = Object.assign({}, item, { isFullScreen: !item.isFullScreen })
+        return { items }
       }
     )
   };
@@ -87,18 +87,18 @@ export default class OperationsView extends PureComponent {
         const item = Object.assign({}, prevState.items[itemIndex], configuration)
         item.isStartable = this.isItemStartable(item.op.inputs, item.args)
         items[itemIndex] = item
-        return {items}
+        return { items }
       }
     )
   };
 
   selectAllItems = () => {
-    this.setState({isAllItemsSelected: true})
+    this.setState({ isAllItemsSelected: true })
     return false
   };
 
   unSelectAllItems = () => {
-    this.setState({isAllItemsSelected: false})
+    this.setState({ isAllItemsSelected: false })
   };
 
   startItem = (itemId) => {
@@ -111,14 +111,14 @@ export default class OperationsView extends PureComponent {
 
     const args = Object.entries(item.op.inputs || [])
       .reduce((args, [name, param]) => {
-        if (param.array) args[name] = {array: item.args[name]}
-        if (param.boolean) args[name] = {boolean: item.args[name]}
-        if (param.dir) args[name] = {dir: item.args[name]}
-        if (param.file) args[name] = {file: item.args[name]}
-        if (param.number) args[name] = {number: item.args[name]}
-        if (param.object) args[name] = {object: item.args[name]}
-        if (param.socket) args[name] = {socket: item.args[name]}
-        if (param.string) args[name] = {string: item.args[name]}
+        if (param.array) args[name] = { array: item.args[name] }
+        if (param.boolean) args[name] = { boolean: item.args[name] }
+        if (param.dir) args[name] = { dir: item.args[name] }
+        if (param.file) args[name] = { file: item.args[name] }
+        if (param.number) args[name] = { number: item.args[name] }
+        if (param.object) args[name] = { object: item.args[name] }
+        if (param.socket) args[name] = { socket: item.args[name] }
+        if (param.string) args[name] = { string: item.args[name] }
         return args
       }, {})
 
@@ -129,7 +129,7 @@ export default class OperationsView extends PureComponent {
       }
     })
       .then(opId => {
-        this.updateItemConfiguration(itemId, {opId})
+        this.updateItemConfiguration(itemId, { opId })
       })
       .catch(error => {
         toast.error(error.message)
@@ -147,7 +147,7 @@ export default class OperationsView extends PureComponent {
       opId: item.opId
     })
       .then(() => {
-        this.updateItemConfiguration(item.i, {isKillable: false})
+        this.updateItemConfiguration(item.i, { isKillable: false })
       })
       .catch(error => {
         toast.error(error.message)
@@ -196,7 +196,7 @@ export default class OperationsView extends PureComponent {
           onSelect={this.addItem}
         />
         <AutoSizer>
-          {({width}) =>
+          {({ width }) =>
             <ResponsiveReactGridLayout
               width={width}
               // avoids creation of stacking context per item which causes dropdown from one item to render behind other items
@@ -205,7 +205,7 @@ export default class OperationsView extends PureComponent {
               onLayoutChange={this.handleLayoutChange}
               draggableHandle={`.${dragHandleClassName}`}
               // ensures grid is "selectable" so hotkeys will work within it
-              style={{width}}
+              style={{ width }}
             >
               {this.state.items.map(item =>
                 <div

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Description from '../Param/Description'
 
 export default class Select extends Component {
@@ -17,7 +17,7 @@ export default class Select extends Component {
 
   processValue (value) {
     const validationErrs = this.props.validate(value) || []
-    this.setState(prevState => ({validationErrs, value}))
+    this.setState(prevState => ({ validationErrs, value }))
 
     if (validationErrs.length === 0) {
       this.props.onValid(value)

@@ -3,7 +3,7 @@ import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
 import opspecDataValidator from '@opspec/sdk/lib/data/object/validator'
 
-export default ({name, object, onInvalid, onValid, opRef, value}) => (
+export default ({ name, object, onInvalid, onValid, opRef, value }) => (
   <TextArea
     description={object.description}
     name={name}

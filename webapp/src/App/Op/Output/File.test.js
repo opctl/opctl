@@ -9,7 +9,7 @@ it('renders without crashing', () => {
   /* act/assert */
   ReactDOM.render(
     <File
-      param={{description: ''}}
+      param={{ description: '' }}
     />,
     div)
 })

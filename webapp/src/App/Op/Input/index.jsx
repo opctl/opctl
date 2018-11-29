@@ -17,7 +17,7 @@ export default ({
   opRef,
   value
 }) => {
-  const environment = contentStore.get({key: 'environment'}) || []
+  const environment = contentStore.get({ key: 'environment' }) || []
   const variable = environment.find(variable => variable.name === name) || {}
   value = value || variable.value
 

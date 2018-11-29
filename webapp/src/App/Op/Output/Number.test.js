@@ -10,7 +10,7 @@ describe('Number', () => {
     /* act/assert */
     ReactDOM.render(
       <Number
-        param={{description: ''}}
+        param={{ description: '' }}
       />,
       div)
   })

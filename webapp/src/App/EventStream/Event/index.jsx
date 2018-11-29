@@ -9,7 +9,7 @@ import EventOpStarted from './OpStarted'
 import EventSerialCallEnded from './SerialCallEnded'
 import EventParallelCallEnded from './ParallelCallEnded'
 
-const Event = ({event, style}) => {
+const Event = ({ event, style }) => {
   // delegate to typed event component
   let component
   if (event.containerExited) {
