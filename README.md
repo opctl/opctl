@@ -11,6 +11,16 @@
 
 see [website](https://opctl.io)
 
+# Used By
+
+These awesome companies use opctl. represent by adding yours (or one you know of) to the list!
+- [Era of Health](https://eraofhealth.com/)
+- [Expedia](https://www.expedia.com)
+- [Nintex](https://www.nintex.com)
+- [ProKarma](https://prokarma.com/)
+- [Remitly](https://www.remitly.com)
+- [Samsung (SDS)](https://www.samsungsds.com)
+
 # Support
 
 join us on
