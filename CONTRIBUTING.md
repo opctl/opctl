@@ -11,7 +11,7 @@ They can be consumed via tools like [opctl](https://opctl.io).
 Contributions are subject to:
 
 - accepted review by one or more
-  [maintainers](https://github.com/orgs/opspec-io/teams/maintainers/members)
+  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
 - the [build](.opspec/build) op continuing to run with a successful
   outcome
 - adherence to
@@ -21,7 +21,7 @@ Contributions are subject to:
 
 ## GoDoc
 
-Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](http://godoc.org/github.com/opspec-io/sdk-golang)
+Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](http://godoc.org/github.com/opctl/sdk-golang)
 
 
 # Testing

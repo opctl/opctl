@@ -2,12 +2,12 @@ package bracketed
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed/item"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed/item"
 	"strings"
 
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
 
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 // DeReferencer dereferences a bracketed identifier from ref by consuming from '[' up to & including the first ']'

@@ -78,10 +78,6 @@ func (daemon *Daemon) mountVolumes(container *container.Container) error {
 	return nil
 }
 
-func detachMounted(path string) error {
-	return nil
-}
-
 func (daemon *Daemon) setupSecretDir(c *container.Container) (setupErr error) {
 	if len(c.SecretReferences) == 0 {
 		return nil
@@ -155,7 +151,7 @@ func (daemon *Daemon) isNetworkHotPluggable() bool {
 	return true
 }
 
-func setupPathsAndSandboxOptions(container *container.Container, sboxOptions *[]libnetwork.SandboxOption) error {
+func (daemon *Daemon) setupPathsAndSandboxOptions(container *container.Container, sboxOptions *[]libnetwork.SandboxOption) error {
 	return nil
 }
 
@@ -174,7 +170,7 @@ func (daemon *Daemon) initializeNetworkingPaths(container *container.Container, 
 				continue
 			}
 
-			ep, err := nc.GetEndpointInNetwork(sn)
+			ep, err := getEndpointInNetwork(nc.Name, sn)
 			if err != nil {
 				continue
 			}

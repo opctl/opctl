@@ -5,12 +5,12 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/data/coerce"
-	"github.com/opspec-io/sdk-golang/model"
-	arrayInitializer "github.com/opspec-io/sdk-golang/op/interpreter/array/initializer"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater"
-	objectInitializer "github.com/opspec-io/sdk-golang/op/interpreter/object/initializer"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
+	arrayInitializer "github.com/opctl/sdk-golang/op/interpreter/array/initializer"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater"
+	objectInitializer "github.com/opctl/sdk-golang/op/interpreter/object/initializer"
 	"path/filepath"
 )
 

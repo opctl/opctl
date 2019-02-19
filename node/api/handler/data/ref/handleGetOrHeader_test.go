@@ -1,7 +1,7 @@
 package ref
 
 import (
-	"github.com/opspec-io/sdk-golang/data"
+	"github.com/opctl/sdk-golang/data"
 	"net/http"
 	"net/http/httptest"
 

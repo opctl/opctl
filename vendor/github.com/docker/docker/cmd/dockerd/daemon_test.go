@@ -4,26 +4,29 @@ import (
 	"testing"
 
 	"github.com/docker/docker/daemon/config"
-	"github.com/docker/docker/internal/testutil"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"github.com/gotestyourself/gotestyourself/fs"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/fs"
 )
 
-func defaultOptions(configFile string) *daemonOptions {
+func defaultOptions(t *testing.T, configFile string) *daemonOptions {
 	opts := newDaemonOptions(&config.Config{})
 	opts.flags = &pflag.FlagSet{}
 	opts.InstallFlags(opts.flags)
-	installConfigFlags(opts.daemonConfig, opts.flags)
+	if err := installConfigFlags(opts.daemonConfig, opts.flags); err != nil {
+		t.Fatal(err)
+	}
+	defaultDaemonConfigFile, err := getDefaultDaemonConfigFile()
+	assert.NilError(t, err)
 	opts.flags.StringVar(&opts.configFile, "config-file", defaultDaemonConfigFile, "")
 	opts.configFile = configFile
 	return opts
 }
 
 func TestLoadDaemonCliConfigWithoutOverriding(t *testing.T) {
-	opts := defaultOptions("")
+	opts := defaultOptions(t, "")
 	opts.Debug = true
 
 	loadedConfig, err := loadDaemonCliConfig(opts)
@@ -35,7 +38,7 @@ func TestLoadDaemonCliConfigWithoutOverriding(t *testing.T) {
 }
 
 func TestLoadDaemonCliConfigWithTLS(t *testing.T) {
-	opts := defaultOptions("")
+	opts := defaultOptions(t, "")
 	opts.TLSOptions.CAFile = "/tmp/ca.pem"
 	opts.TLS = true
 
@@ -50,7 +53,7 @@ func TestLoadDaemonCliConfigWithConflicts(t *testing.T) {
 	defer tempFile.Remove()
 	configFile := tempFile.Path()
 
-	opts := defaultOptions(configFile)
+	opts := defaultOptions(t, configFile)
 	flags := opts.flags
 
 	assert.Check(t, flags.Set("config-file", configFile))
@@ -58,7 +61,7 @@ func TestLoadDaemonCliConfigWithConflicts(t *testing.T) {
 	assert.Check(t, flags.Set("label", "l2=baz"))
 
 	_, err := loadDaemonCliConfig(opts)
-	testutil.ErrorContains(t, err, "as a flag and in the configuration file: labels")
+	assert.Check(t, is.ErrorContains(err, "as a flag and in the configuration file: labels"))
 }
 
 func TestLoadDaemonCliWithConflictingNodeGenericResources(t *testing.T) {
@@ -66,7 +69,7 @@ func TestLoadDaemonCliWithConflictingNodeGenericResources(t *testing.T) {
 	defer tempFile.Remove()
 	configFile := tempFile.Path()
 
-	opts := defaultOptions(configFile)
+	opts := defaultOptions(t, configFile)
 	flags := opts.flags
 
 	assert.Check(t, flags.Set("config-file", configFile))
@@ -74,11 +77,11 @@ func TestLoadDaemonCliWithConflictingNodeGenericResources(t *testing.T) {
 	assert.Check(t, flags.Set("node-generic-resource", "r2=baz"))
 
 	_, err := loadDaemonCliConfig(opts)
-	testutil.ErrorContains(t, err, "as a flag and in the configuration file: node-generic-resources")
+	assert.Check(t, is.ErrorContains(err, "as a flag and in the configuration file: node-generic-resources"))
 }
 
 func TestLoadDaemonCliWithConflictingLabels(t *testing.T) {
-	opts := defaultOptions("")
+	opts := defaultOptions(t, "")
 	flags := opts.flags
 
 	assert.Check(t, flags.Set("label", "foo=bar"))
@@ -89,7 +92,7 @@ func TestLoadDaemonCliWithConflictingLabels(t *testing.T) {
 }
 
 func TestLoadDaemonCliWithDuplicateLabels(t *testing.T) {
-	opts := defaultOptions("")
+	opts := defaultOptions(t, "")
 	flags := opts.flags
 
 	assert.Check(t, flags.Set("label", "foo=the-same"))
@@ -103,7 +106,7 @@ func TestLoadDaemonCliConfigWithTLSVerify(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(`{"tlsverify": true}`))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	opts.TLSOptions.CAFile = "/tmp/ca.pem"
 
 	loadedConfig, err := loadDaemonCliConfig(opts)
@@ -116,7 +119,7 @@ func TestLoadDaemonCliConfigWithExplicitTLSVerifyFalse(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(`{"tlsverify": false}`))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	opts.TLSOptions.CAFile = "/tmp/ca.pem"
 
 	loadedConfig, err := loadDaemonCliConfig(opts)
@@ -129,7 +132,7 @@ func TestLoadDaemonCliConfigWithoutTLSVerify(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(`{}`))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	opts.TLSOptions.CAFile = "/tmp/ca.pem"
 
 	loadedConfig, err := loadDaemonCliConfig(opts)
@@ -142,12 +145,11 @@ func TestLoadDaemonCliConfigWithLogLevel(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(`{"log-level": "warn"}`))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	loadedConfig, err := loadDaemonCliConfig(opts)
 	assert.NilError(t, err)
 	assert.Assert(t, loadedConfig != nil)
 	assert.Check(t, is.Equal("warn", loadedConfig.LogLevel))
-	assert.Check(t, is.Equal(logrus.WarnLevel, logrus.GetLevel()))
 }
 
 func TestLoadDaemonConfigWithEmbeddedOptions(t *testing.T) {
@@ -155,7 +157,7 @@ func TestLoadDaemonConfigWithEmbeddedOptions(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(content))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	loadedConfig, err := loadDaemonCliConfig(opts)
 	assert.NilError(t, err)
 	assert.Assert(t, loadedConfig != nil)
@@ -172,7 +174,7 @@ func TestLoadDaemonConfigWithRegistryOptions(t *testing.T) {
 	tempFile := fs.NewFile(t, "config", fs.WithContent(content))
 	defer tempFile.Remove()
 
-	opts := defaultOptions(tempFile.Path())
+	opts := defaultOptions(t, tempFile.Path())
 	loadedConfig, err := loadDaemonCliConfig(opts)
 	assert.NilError(t, err)
 	assert.Assert(t, loadedConfig != nil)
@@ -180,4 +182,23 @@ func TestLoadDaemonConfigWithRegistryOptions(t *testing.T) {
 	assert.Check(t, is.Len(loadedConfig.AllowNondistributableArtifacts, 1))
 	assert.Check(t, is.Len(loadedConfig.Mirrors, 1))
 	assert.Check(t, is.Len(loadedConfig.InsecureRegistries, 1))
+}
+
+func TestConfigureDaemonLogs(t *testing.T) {
+	conf := &config.Config{}
+	err := configureDaemonLogs(conf)
+	assert.NilError(t, err)
+	assert.Check(t, is.Equal(logrus.InfoLevel, logrus.GetLevel()))
+
+	conf.LogLevel = "warn"
+	err = configureDaemonLogs(conf)
+	assert.NilError(t, err)
+	assert.Check(t, is.Equal(logrus.WarnLevel, logrus.GetLevel()))
+
+	conf.LogLevel = "foobar"
+	err = configureDaemonLogs(conf)
+	assert.Error(t, err, "unable to parse logging level: foobar")
+
+	// log level should not be changed after a failure
+	assert.Check(t, is.Equal(logrus.WarnLevel, logrus.GetLevel()))
 }

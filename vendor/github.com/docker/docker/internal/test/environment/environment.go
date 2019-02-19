@@ -1,6 +1,7 @@
 package environment // import "github.com/docker/docker/internal/test/environment"
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,7 +11,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/internal/test/fixtures/load"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 )
 
 // Execution contains information about the current test execution and daemon
@@ -121,7 +121,7 @@ func (e *Execution) IsRemoteDaemon() bool {
 	return !e.IsLocalDaemon()
 }
 
-// DaemonAPIVersion returns the negociated daemon api version
+// DaemonAPIVersion returns the negotiated daemon api version
 func (e *Execution) DaemonAPIVersion() string {
 	version, err := e.APIClient().ServerVersion(context.TODO())
 	if err != nil {
@@ -143,6 +143,12 @@ func (e *Execution) Print() {
 // APIClient returns an APIClient connected to the daemon under test
 func (e *Execution) APIClient() client.APIClient {
 	return e.client
+}
+
+// IsUserNamespace returns whether the user namespace remapping is enabled
+func (e *Execution) IsUserNamespace() bool {
+	root := os.Getenv("DOCKER_REMAP_ROOT")
+	return root != ""
 }
 
 // EnsureFrozenImagesLinux loads frozen test images into the daemon

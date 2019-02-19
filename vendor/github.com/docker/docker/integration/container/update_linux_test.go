@@ -9,20 +9,19 @@ import (
 
 	containertypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/integration/internal/container"
-	"github.com/docker/docker/internal/test/request"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"github.com/gotestyourself/gotestyourself/poll"
-	"github.com/gotestyourself/gotestyourself/skip"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/poll"
+	"gotest.tools/skip"
 )
 
 func TestUpdateMemory(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 	skip.If(t, !testEnv.DaemonInfo.MemoryLimit)
 	skip.If(t, !testEnv.DaemonInfo.SwapLimit)
 
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	cID := container.Run(t, ctx, client, func(c *container.TestContainerConfig) {
@@ -67,10 +66,8 @@ func TestUpdateMemory(t *testing.T) {
 }
 
 func TestUpdateCPUQuota(t *testing.T) {
-	t.Parallel()
-
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	cID := container.Run(t, ctx, client)
@@ -84,13 +81,12 @@ func TestUpdateCPUQuota(t *testing.T) {
 		{desc: "a lower value", update: 10000},
 		{desc: "unset value", update: -1},
 	} {
-		if _, err := client.ContainerUpdate(ctx, cID, containertypes.UpdateConfig{
+		_, err := client.ContainerUpdate(ctx, cID, containertypes.UpdateConfig{
 			Resources: containertypes.Resources{
 				CPUQuota: test.update,
 			},
-		}); err != nil {
-			t.Fatal(err)
-		}
+		})
+		assert.NilError(t, err)
 
 		inspect, err := client.ContainerInspect(ctx, cID)
 		assert.NilError(t, err)

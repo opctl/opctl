@@ -4,12 +4,12 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"github.com/opspec-io/sdk-golang/op/interpreter/opcall"
-	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/outputs"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/op/interpreter/opcall"
+	"github.com/opctl/sdk-golang/op/interpreter/opcall/outputs"
+	"github.com/opctl/sdk-golang/util/pubsub"
 	"time"
 )
 

@@ -15,8 +15,8 @@ import (
 	"github.com/docker/docker/oci"
 	"github.com/docker/docker/pkg/idtools"
 	"github.com/docker/docker/pkg/mount"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 )
 
 const mountsFixture = `142 78 0:38 / / rw,relatime - aufs none rw,si=573b861da0b3a05b,dio
@@ -116,7 +116,7 @@ func TestNotCleanupMounts(t *testing.T) {
 }
 
 // TestTmpfsDevShmSizeOverride checks that user-specified /dev/tmpfs mount
-// size is not overriden by the default shmsize (that should only be used
+// size is not overridden by the default shmsize (that should only be used
 // for default /dev/shm (as in "shareable" and "private" ipc modes).
 // https://github.com/moby/moby/issues/35271
 func TestTmpfsDevShmSizeOverride(t *testing.T) {
@@ -124,7 +124,7 @@ func TestTmpfsDevShmSizeOverride(t *testing.T) {
 	mnt := "/dev/shm"
 
 	d := Daemon{
-		idMappings: &idtools.IDMappings{},
+		idMapping: &idtools.IdentityMapping{},
 	}
 	c := &container.Container{
 		HostConfig: &containertypes.HostConfig{
@@ -229,33 +229,37 @@ func checkMounted(t *testing.T, p string, expect bool) {
 }
 
 func TestRootMountCleanup(t *testing.T) {
+	if os.Getuid() != 0 {
+		t.Skip("root required")
+	}
+
 	t.Parallel()
 
 	testRoot, err := ioutil.TempDir("", t.Name())
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 	defer os.RemoveAll(testRoot)
 	cfg := &config.Config{}
 
 	err = mount.MakePrivate(testRoot)
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 	defer mount.Unmount(testRoot)
 
 	cfg.ExecRoot = filepath.Join(testRoot, "exec")
 	cfg.Root = filepath.Join(testRoot, "daemon")
 
 	err = os.Mkdir(cfg.ExecRoot, 0755)
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 	err = os.Mkdir(cfg.Root, 0755)
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 
 	d := &Daemon{configStore: cfg, root: cfg.Root}
 	unmountFile := getUnmountOnShutdownPath(cfg)
 
 	t.Run("regular dir no mountpoint", func(t *testing.T) {
 		err = setupDaemonRootPropagation(cfg)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		_, err = os.Stat(unmountFile)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		checkMounted(t, cfg.Root, true)
 
 		assert.Assert(t, d.cleanupMounts())
@@ -267,11 +271,11 @@ func TestRootMountCleanup(t *testing.T) {
 
 	t.Run("root is a private mountpoint", func(t *testing.T) {
 		err = mount.MakePrivate(cfg.Root)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		defer mount.Unmount(cfg.Root)
 
 		err = setupDaemonRootPropagation(cfg)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		assert.Check(t, ensureShared(cfg.Root))
 
 		_, err = os.Stat(unmountFile)
@@ -283,11 +287,11 @@ func TestRootMountCleanup(t *testing.T) {
 	// mount is pre-configured with a shared mount
 	t.Run("root is a shared mountpoint", func(t *testing.T) {
 		err = mount.MakeShared(cfg.Root)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		defer mount.Unmount(cfg.Root)
 
 		err = setupDaemonRootPropagation(cfg)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 
 		if _, err := os.Stat(unmountFile); err == nil {
 			t.Fatal("unmount file should not exist")
@@ -301,13 +305,13 @@ func TestRootMountCleanup(t *testing.T) {
 	// does not need mount but unmount file exists from previous run
 	t.Run("old mount file is cleaned up on setup if not needed", func(t *testing.T) {
 		err = mount.MakeShared(testRoot)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 		defer mount.MakePrivate(testRoot)
 		err = ioutil.WriteFile(unmountFile, nil, 0644)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 
 		err = setupDaemonRootPropagation(cfg)
-		assert.Assert(t, err)
+		assert.NilError(t, err)
 
 		_, err = os.Stat(unmountFile)
 		assert.Check(t, os.IsNotExist(err), err)

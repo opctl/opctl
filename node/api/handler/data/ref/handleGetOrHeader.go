@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/golang-interfaces/ihttp"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/core"
 )
 
 // handleGetOrHeader handles GET or HEAD's

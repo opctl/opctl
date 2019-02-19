@@ -35,9 +35,9 @@ run:
         files:
           /coverprofile: $(coverprofile)
         dirs:
-          /go/src/github.com/opspec-io/sdk-golang: $(srcDir)
-        image: { ref: 'golang:1.10.0' }
-        workDir: /go/src/github.com/opspec-io/sdk-golang
+          /go/src/github.com/opctl/sdk-golang: $(srcDir)
+        image: { ref: 'golang:1.11.5' }
+        workDir: /go/src/github.com/opctl/sdk-golang
     - op:
         pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0 }
-        inputs: { coverprofile, minCoverage: 49 }
+        inputs: { coverprofile, minCoverage: 48 }

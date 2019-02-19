@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 // Resolve attempts to resolve data via local filesystem or git

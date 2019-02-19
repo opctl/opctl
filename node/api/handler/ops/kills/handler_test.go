@@ -7,8 +7,8 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/node/api"
-	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/node/api"
+	"github.com/opctl/sdk-golang/node/core"
 )
 
 var _ = Context("Handler", func() {

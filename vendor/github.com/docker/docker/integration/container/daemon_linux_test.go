@@ -11,9 +11,9 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/integration/internal/container"
 	"github.com/docker/docker/internal/test/daemon"
-	"github.com/gotestyourself/gotestyourself/assert"
-	"github.com/gotestyourself/gotestyourself/skip"
 	"golang.org/x/sys/unix"
+	"gotest.tools/assert"
+	"gotest.tools/skip"
 )
 
 // This is a regression test for #36145
@@ -27,25 +27,25 @@ import (
 // the container process, then start dockerd back up and attempt to start the
 // container again.
 func TestContainerStartOnDaemonRestart(t *testing.T) {
-	skip.If(t, testEnv.IsRemoteDaemon(), "cannot start daemon on remote test run")
+	skip.If(t, testEnv.IsRemoteDaemon, "cannot start daemon on remote test run")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 	t.Parallel()
 
 	d := daemon.New(t)
 	d.StartWithBusybox(t, "--iptables=false")
 	defer d.Stop(t)
 
-	client, err := d.NewClient()
-	assert.Check(t, err, "error creating client")
+	c := d.NewClientT(t)
 
 	ctx := context.Background()
 
-	cID := container.Create(t, ctx, client)
-	defer client.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})
+	cID := container.Create(t, ctx, c)
+	defer c.ContainerRemove(ctx, cID, types.ContainerRemoveOptions{Force: true})
 
-	err = client.ContainerStart(ctx, cID, types.ContainerStartOptions{})
+	err := c.ContainerStart(ctx, cID, types.ContainerStartOptions{})
 	assert.Check(t, err, "error starting test container")
 
-	inspect, err := client.ContainerInspect(ctx, cID)
+	inspect, err := c.ContainerInspect(ctx, cID)
 	assert.Check(t, err, "error getting inspect data")
 
 	ppid := getContainerdShimPid(t, inspect)
@@ -61,7 +61,7 @@ func TestContainerStartOnDaemonRestart(t *testing.T) {
 
 	d.Start(t, "--iptables=false")
 
-	err = client.ContainerStart(ctx, cID, types.ContainerStartOptions{})
+	err = c.ContainerStart(ctx, cID, types.ContainerStartOptions{})
 	assert.Check(t, err, "failed to start test container")
 }
 

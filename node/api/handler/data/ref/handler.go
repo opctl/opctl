@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
-	"github.com/opspec-io/sdk-golang/util/urlpath"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/util/urlpath"
 )
 
 type Handler interface {

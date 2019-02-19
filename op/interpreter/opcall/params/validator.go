@@ -6,8 +6,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/params/param"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/opcall/params/param"
 )
 
 type Validator interface {

@@ -10,12 +10,12 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"github.com/opspec-io/sdk-golang/op/interpreter/opcall/inputs"
-	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
-	"github.com/opspec-io/sdk-golang/util/uniquestring"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/op/interpreter/opcall/inputs"
+	stringPkg "github.com/opctl/sdk-golang/op/interpreter/string"
+	"github.com/opctl/sdk-golang/util/uniquestring"
 	"gopkg.in/yaml.v2"
 )
 
@@ -33,7 +33,7 @@ var _ = Context("Interpreter", func() {
 				if nil != err {
 					panic(err)
 				}
-				rootPath := "../../../github.com/opspec-io/test-suite/scenarios/pkg"
+				rootPath := "../../../github.com/opctl/test-suite/scenarios/pkg"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {

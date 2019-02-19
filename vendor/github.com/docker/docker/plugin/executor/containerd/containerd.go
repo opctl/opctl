@@ -7,8 +7,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/cio"
-	"github.com/containerd/containerd/linux/runctypes"
+	"github.com/containerd/containerd/runtime/linux/runctypes"
 	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/libcontainerd"
 	"github.com/opencontainers/runtime-spec/specs-go"
@@ -16,8 +17,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// pluginNamespace is the name used for the plugins namespace
-const pluginNamespace = "plugins.moby"
+// PluginNamespace is the name used for the plugins namespace
+const PluginNamespace = "plugins.moby"
 
 // ExitHandler represents an object that is called when the exit event is received from containerd
 type ExitHandler interface {
@@ -38,12 +39,13 @@ type Client interface {
 }
 
 // New creates a new containerd plugin executor
-func New(rootDir string, remote libcontainerd.Remote, exitHandler ExitHandler) (*Executor, error) {
+func New(ctx context.Context, rootDir string, cli *containerd.Client, exitHandler ExitHandler) (*Executor, error) {
 	e := &Executor{
 		rootDir:     rootDir,
 		exitHandler: exitHandler,
 	}
-	client, err := remote.NewClient(pluginNamespace, e)
+
+	client, err := libcontainerd.NewClient(ctx, cli, rootDir, PluginNamespace, e)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating containerd exec client")
 	}
@@ -56,6 +58,19 @@ type Executor struct {
 	rootDir     string
 	client      Client
 	exitHandler ExitHandler
+}
+
+// deleteTaskAndContainer deletes plugin task and then plugin container from containerd
+func deleteTaskAndContainer(ctx context.Context, cli Client, id string) {
+	_, _, err := cli.DeleteTask(ctx, id)
+	if err != nil && !errdefs.IsNotFound(err) {
+		logrus.WithError(err).WithField("id", id).Error("failed to delete plugin task from containerd")
+	}
+
+	err = cli.Delete(ctx, id)
+	if err != nil && !errdefs.IsNotFound(err) {
+		logrus.WithError(err).WithField("id", id).Error("failed to delete plugin container from containerd")
+	}
 }
 
 // Create creates a new container
@@ -87,34 +102,21 @@ func (e *Executor) Create(id string, spec specs.Spec, stdout, stderr io.WriteClo
 
 	_, err = e.client.Start(ctx, id, "", false, attachStreamsFunc(stdout, stderr))
 	if err != nil {
-		if _, _, err2 := e.client.DeleteTask(ctx, id); err2 != nil && !errdefs.IsNotFound(err2) {
-			logrus.WithError(err2).WithField("id", id).Warn("Received an error while attempting to clean up containerd plugin task after failed start")
-		}
-		if err2 := e.client.Delete(ctx, id); err2 != nil && !errdefs.IsNotFound(err2) {
-			logrus.WithError(err2).WithField("id", id).Warn("Received an error while attempting to clean up containerd plugin container after failed start")
-		}
+		deleteTaskAndContainer(ctx, e.client, id)
 	}
 	return err
 }
 
 // Restore restores a container
-func (e *Executor) Restore(id string, stdout, stderr io.WriteCloser) error {
+func (e *Executor) Restore(id string, stdout, stderr io.WriteCloser) (bool, error) {
 	alive, _, err := e.client.Restore(context.Background(), id, attachStreamsFunc(stdout, stderr))
 	if err != nil && !errdefs.IsNotFound(err) {
-		return err
+		return false, err
 	}
 	if !alive {
-		_, _, err = e.client.DeleteTask(context.Background(), id)
-		if err != nil && !errdefs.IsNotFound(err) {
-			logrus.WithError(err).Errorf("failed to delete container plugin %s task from containerd", id)
-		}
-
-		err = e.client.Delete(context.Background(), id)
-		if err != nil && !errdefs.IsNotFound(err) {
-			logrus.WithError(err).Errorf("failed to delete container plugin %s from containerd", id)
-		}
+		deleteTaskAndContainer(context.Background(), e.client, id)
 	}
-	return nil
+	return alive, nil
 }
 
 // IsRunning returns if the container with the given id is running
@@ -133,14 +135,7 @@ func (e *Executor) Signal(id string, signal int) error {
 func (e *Executor) ProcessEvent(id string, et libcontainerd.EventType, ei libcontainerd.EventInfo) error {
 	switch et {
 	case libcontainerd.EventExit:
-		// delete task and container
-		if _, _, err := e.client.DeleteTask(context.Background(), id); err != nil {
-			logrus.WithError(err).Errorf("failed to delete container plugin %s task from containerd", id)
-		}
-
-		if err := e.client.Delete(context.Background(), id); err != nil {
-			logrus.WithError(err).Errorf("failed to delete container plugin %s from containerd", id)
-		}
+		deleteTaskAndContainer(context.Background(), e.client, id)
 		return e.exitHandler.HandleExitEvent(ei.ContainerID)
 	}
 	return nil

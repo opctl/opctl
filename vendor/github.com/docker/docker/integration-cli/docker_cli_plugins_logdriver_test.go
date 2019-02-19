@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
 	"strings"
 
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/integration-cli/checker"
 	"github.com/go-check/check"
-	"golang.org/x/net/context"
 )
 
 func (s *DockerSuite) TestPluginLogDriver(c *check.C) {
@@ -35,7 +35,7 @@ func (s *DockerSuite) TestPluginLogDriverInfoList(c *check.C) {
 
 	dockerCmd(c, "plugin", "install", pluginName)
 
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	c.Assert(err, checker.IsNil)
 	defer cli.Close()
 

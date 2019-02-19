@@ -3,8 +3,8 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/node/core/containerruntime"
+	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 var _ = Context("core", func() {

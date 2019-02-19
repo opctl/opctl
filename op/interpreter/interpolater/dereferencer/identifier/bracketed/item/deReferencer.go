@@ -4,8 +4,8 @@ package item
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
 )
 
 // DeReferencer dereferences an item from data via indexString.

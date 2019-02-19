@@ -2,8 +2,8 @@
 package interpreter
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater"
 	"strings"
 )
 

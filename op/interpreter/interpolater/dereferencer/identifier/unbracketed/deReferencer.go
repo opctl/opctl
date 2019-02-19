@@ -3,9 +3,9 @@ package unbracketed
 import (
 	"fmt"
 
-	"github.com/opspec-io/sdk-golang/data/coerce"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
 )
 
 // DeReferencer dereferences an unbracketed identifier from ref as determined by unbracketed/parser.go

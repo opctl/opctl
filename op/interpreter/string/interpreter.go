@@ -4,12 +4,12 @@ package string
 
 import (
 	"fmt"
-	"github.com/opspec-io/sdk-golang/data/coerce"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter"
-	arrayInitializer "github.com/opspec-io/sdk-golang/op/interpreter/array/initializer"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater"
-	objectInitializer "github.com/opspec-io/sdk-golang/op/interpreter/object/initializer"
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter"
+	arrayInitializer "github.com/opctl/sdk-golang/op/interpreter/array/initializer"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater"
+	objectInitializer "github.com/opctl/sdk-golang/op/interpreter/object/initializer"
 )
 
 type Interpreter interface {

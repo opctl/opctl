@@ -5,8 +5,8 @@ package op
 import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/dotyml"
 	"gopkg.in/yaml.v2"
 	"path/filepath"
 )

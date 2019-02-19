@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/core"
 )
 
 type Handler interface {

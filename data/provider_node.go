@@ -2,8 +2,8 @@ package data
 
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/api/client"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/api/client"
 	"net/url"
 )
 

@@ -4,7 +4,7 @@ package data
 
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"net/url"
 )
 

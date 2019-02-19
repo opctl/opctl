@@ -6,8 +6,8 @@ package containerruntime
 
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/util/pubsub"
 	"io"
 )
 

@@ -7,24 +7,27 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/docker/docker/api/types"
 	dclient "github.com/docker/docker/client"
 	"github.com/docker/docker/internal/test/daemon"
 	"github.com/docker/docker/internal/test/fakecontext"
 	"github.com/docker/docker/internal/test/request"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
 	"github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/filesync"
 	"golang.org/x/sync/errgroup"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/skip"
 )
 
 func TestBuildWithSession(t *testing.T) {
+	skip.If(t, testEnv.IsRemoteDaemon, "cannot run daemon when remote daemon")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 	d := daemon.New(t, daemon.WithExperimental)
 	d.StartWithBusybox(t)
 	defer d.Stop(t)
 
-	client, err := d.NewClient()
-	assert.NilError(t, err)
+	client := d.NewClientT(t)
 
 	dockerfile := `
 		FROM busybox
@@ -37,7 +40,7 @@ func TestBuildWithSession(t *testing.T) {
 	)
 	defer fctx.Close()
 
-	out := testBuildWithSession(t, client, d.Sock(), fctx.Dir, dockerfile)
+	out := testBuildWithSession(t, client, client.DaemonHost(), fctx.Dir, dockerfile)
 	assert.Check(t, is.Contains(out, "some content"))
 
 	fctx.Add("second", "contentcontent")
@@ -47,7 +50,7 @@ func TestBuildWithSession(t *testing.T) {
 	RUN cat /second
 	`
 
-	out = testBuildWithSession(t, client, d.Sock(), fctx.Dir, dockerfile)
+	out = testBuildWithSession(t, client, client.DaemonHost(), fctx.Dir, dockerfile)
 	assert.Check(t, is.Equal(strings.Count(out, "Using cache"), 2))
 	assert.Check(t, is.Contains(out, "contentcontent"))
 
@@ -55,7 +58,7 @@ func TestBuildWithSession(t *testing.T) {
 	assert.Check(t, err)
 	assert.Check(t, du.BuilderSize > 10)
 
-	out = testBuildWithSession(t, client, d.Sock(), fctx.Dir, dockerfile)
+	out = testBuildWithSession(t, client, client.DaemonHost(), fctx.Dir, dockerfile)
 	assert.Check(t, is.Equal(strings.Count(out, "Using cache"), 4))
 
 	du2, err := client.DiskUsage(context.TODO())
@@ -67,7 +70,7 @@ func TestBuildWithSession(t *testing.T) {
 	// FIXME(vdemeester) use sock here
 	res, body, err := request.Do(
 		"/build",
-		request.Host(d.Sock()),
+		request.Host(client.DaemonHost()),
 		request.Method(http.MethodPost),
 		request.RawContent(fctx.AsTarReader(t)),
 		request.ContentType("application/x-tar"))
@@ -79,7 +82,7 @@ func TestBuildWithSession(t *testing.T) {
 	assert.Check(t, is.Contains(string(outBytes), "Successfully built"))
 	assert.Check(t, is.Equal(strings.Count(string(outBytes), "Using cache"), 4))
 
-	_, err = client.BuildCachePrune(context.TODO())
+	_, err = client.BuildCachePrune(context.TODO(), types.BuildCachePruneOptions{All: true})
 	assert.Check(t, err)
 
 	du, err = client.DiskUsage(context.TODO())
@@ -87,8 +90,9 @@ func TestBuildWithSession(t *testing.T) {
 	assert.Check(t, is.Equal(du.BuilderSize, int64(0)))
 }
 
-func testBuildWithSession(t *testing.T, client dclient.APIClient, daemonSock string, dir, dockerfile string) (outStr string) {
-	sess, err := session.NewSession("foo1", "foo")
+func testBuildWithSession(t *testing.T, client dclient.APIClient, daemonHost string, dir, dockerfile string) (outStr string) {
+	ctx := context.Background()
+	sess, err := session.NewSession(ctx, "foo1", "foo")
 	assert.Check(t, err)
 
 	fsProvider := filesync.NewFSSyncProvider([]filesync.SyncedDir{
@@ -96,7 +100,7 @@ func testBuildWithSession(t *testing.T, client dclient.APIClient, daemonSock str
 	})
 	sess.Allow(fsProvider)
 
-	g, ctx := errgroup.WithContext(context.Background())
+	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
 		return sess.Run(ctx, client.DialSession)
@@ -106,7 +110,7 @@ func testBuildWithSession(t *testing.T, client dclient.APIClient, daemonSock str
 		// FIXME use sock here
 		res, body, err := request.Do(
 			"/build?remote=client-session&session="+sess.ID(),
-			request.Host(daemonSock),
+			request.Host(daemonHost),
 			request.Method(http.MethodPost),
 			request.With(func(req *http.Request) error {
 				req.Body = ioutil.NopCloser(strings.NewReader(dockerfile))

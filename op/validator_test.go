@@ -6,9 +6,9 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/dotyml"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -25,7 +25,7 @@ var _ = Describe("Validator", func() {
 	Context("Validate", func() {
 		Context("called w/ opspec test-suite scenarios", func() {
 			It("should return result fulfilling scenario.validate.expect", func() {
-				rootPath := "../github.com/opspec-io/test-suite/scenarios/pkg"
+				rootPath := "../github.com/opctl/test-suite/scenarios/pkg"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {

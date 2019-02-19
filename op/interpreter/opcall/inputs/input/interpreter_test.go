@@ -6,15 +6,15 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/array"
-	"github.com/opspec-io/sdk-golang/op/interpreter/boolean"
-	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
-	"github.com/opspec-io/sdk-golang/op/interpreter/file"
-	"github.com/opspec-io/sdk-golang/op/interpreter/number"
-	"github.com/opspec-io/sdk-golang/op/interpreter/object"
-	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/object"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/array"
+	"github.com/opctl/sdk-golang/op/interpreter/boolean"
+	"github.com/opctl/sdk-golang/op/interpreter/dir"
+	"github.com/opctl/sdk-golang/op/interpreter/file"
+	"github.com/opctl/sdk-golang/op/interpreter/number"
+	"github.com/opctl/sdk-golang/op/interpreter/object"
+	stringPkg "github.com/opctl/sdk-golang/op/interpreter/object"
 )
 
 var _ = Context("Interpreter", func() {

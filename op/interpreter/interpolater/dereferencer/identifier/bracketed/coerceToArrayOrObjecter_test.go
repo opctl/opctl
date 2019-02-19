@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data/coerce"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
 )
 
 var _ = Context("coerceToArrayOrObjecter", func() {

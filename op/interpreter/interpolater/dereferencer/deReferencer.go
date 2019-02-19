@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/direntry"
-	unbracketedIdentifier "github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/unbracketed"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/direntry"
+	unbracketedIdentifier "github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/unbracketed"
 
-	"github.com/opspec-io/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/data/coerce"
 
-	"github.com/opspec-io/sdk-golang/model"
-	bracketedIdentifier "github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed"
+	"github.com/opctl/sdk-golang/model"
+	bracketedIdentifier "github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed"
 )
 
 // DeReferencer de references refs of the form:

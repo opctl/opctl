@@ -3,11 +3,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -25,9 +27,8 @@ import (
 	"github.com/docker/docker/internal/test/request"
 	"github.com/docker/swarmkit/ca"
 	"github.com/go-check/check"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"golang.org/x/net/context"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 )
 
 var defaultReconciliationTimeout = 30 * time.Second
@@ -66,8 +67,8 @@ func (s *DockerSwarmSuite) TestAPISwarmInit(c *check.C) {
 	d1.Stop(c)
 	d2.Stop(c)
 
-	d1.Start(c)
-	d2.Start(c)
+	d1.StartNode(c)
+	d2.StartNode(c)
 
 	info = d1.SwarmInfo(c)
 	c.Assert(info.ControlAvailable, checker.True)
@@ -294,6 +295,13 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaderProxy(c *check.C) {
 }
 
 func (s *DockerSwarmSuite) TestAPISwarmLeaderElection(c *check.C) {
+	if runtime.GOARCH == "s390x" {
+		c.Skip("Disabled on s390x")
+	}
+	if runtime.GOARCH == "ppc64le" {
+		c.Skip("Disabled on  ppc64le")
+	}
+
 	// Create 3 nodes
 	d1 := s.AddDaemon(c, true, true)
 	d2 := s.AddDaemon(c, true, true)
@@ -332,6 +340,7 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaderElection(c *check.C) {
 	}
 
 	// wait for an election to occur
+	c.Logf("Waiting for election to occur...")
 	waitAndAssert(c, defaultReconciliationTimeout, checkLeader(d2, d3), checker.True)
 
 	// assert that we have a new leader
@@ -341,11 +350,10 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaderElection(c *check.C) {
 	stableleader := leader
 
 	// add the d1, the initial leader, back
-	d1.Start(c)
-
-	// TODO(stevvooe): may need to wait for rejoin here
+	d1.StartNode(c)
 
 	// wait for possible election
+	c.Logf("Waiting for possible election...")
 	waitAndAssert(c, defaultReconciliationTimeout, checkLeader(d1, d2, d3), checker.True)
 	// pick out the leader and the followers again
 
@@ -357,6 +365,13 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaderElection(c *check.C) {
 }
 
 func (s *DockerSwarmSuite) TestAPISwarmRaftQuorum(c *check.C) {
+	if runtime.GOARCH == "s390x" {
+		c.Skip("Disabled on s390x")
+	}
+	if runtime.GOARCH == "ppc64le" {
+		c.Skip("Disabled on  ppc64le")
+	}
+
 	d1 := s.AddDaemon(c, true, true)
 	d2 := s.AddDaemon(c, true, true)
 	d3 := s.AddDaemon(c, true, true)
@@ -377,17 +392,16 @@ func (s *DockerSwarmSuite) TestAPISwarmRaftQuorum(c *check.C) {
 	var service swarm.Service
 	simpleTestService(&service)
 	service.Spec.Name = "top2"
-	cli, err := d1.NewClient()
-	c.Assert(err, checker.IsNil)
+	cli := d1.NewClientT(c)
 	defer cli.Close()
 
 	// d1 will eventually step down from leader because there is no longer an active quorum, wait for that to happen
 	waitAndAssert(c, defaultReconciliationTimeout, func(c *check.C) (interface{}, check.CommentInterface) {
-		_, err = cli.ServiceCreate(context.Background(), service.Spec, types.ServiceCreateOptions{})
+		_, err := cli.ServiceCreate(context.Background(), service.Spec, types.ServiceCreateOptions{})
 		return err.Error(), nil
 	}, checker.Contains, "Make sure more than half of the managers are online.")
 
-	d2.Start(c)
+	d2.StartNode(c)
 
 	// make sure there is a leader
 	waitAndAssert(c, defaultReconciliationTimeout, d1.CheckLeader, checker.IsNil)
@@ -404,7 +418,7 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaveRemovesContainer(c *check.C) {
 	d.CreateService(c, simpleTestService, setInstances(instances))
 
 	id, err := d.Cmd("run", "-d", "busybox", "top")
-	c.Assert(err, checker.IsNil)
+	c.Assert(err, checker.IsNil, check.Commentf("%s", id))
 	id = strings.TrimSpace(id)
 
 	waitAndAssert(c, defaultReconciliationTimeout, d.CheckActiveContainerCount, checker.Equals, instances+1)
@@ -415,7 +429,7 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaveRemovesContainer(c *check.C) {
 	waitAndAssert(c, defaultReconciliationTimeout, d.CheckActiveContainerCount, checker.Equals, 1)
 
 	id2, err := d.Cmd("ps", "-q")
-	c.Assert(err, checker.IsNil)
+	c.Assert(err, checker.IsNil, check.Commentf("%s", id2))
 	c.Assert(id, checker.HasPrefix, strings.TrimSpace(id2))
 }
 
@@ -426,7 +440,7 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaveOnPendingJoin(c *check.C) {
 	d2 := s.AddDaemon(c, false, false)
 
 	id, err := d2.Cmd("run", "-d", "busybox", "top")
-	c.Assert(err, checker.IsNil)
+	c.Assert(err, checker.IsNil, check.Commentf("%s", id))
 	id = strings.TrimSpace(id)
 
 	c2 := d2.NewClientT(c)
@@ -445,7 +459,7 @@ func (s *DockerSwarmSuite) TestAPISwarmLeaveOnPendingJoin(c *check.C) {
 	waitAndAssert(c, defaultReconciliationTimeout, d2.CheckActiveContainerCount, checker.Equals, 1)
 
 	id2, err := d2.Cmd("ps", "-q")
-	c.Assert(err, checker.IsNil)
+	c.Assert(err, checker.IsNil, check.Commentf("%s", id2))
 	c.Assert(id, checker.HasPrefix, strings.TrimSpace(id2))
 }
 
@@ -463,8 +477,7 @@ func (s *DockerSwarmSuite) TestAPISwarmRestoreOnPendingJoin(c *check.C) {
 
 	waitAndAssert(c, defaultReconciliationTimeout, d.CheckLocalNodeState, checker.Equals, swarm.LocalNodeStatePending)
 
-	d.Stop(c)
-	d.Start(c)
+	d.RestartNode(c)
 
 	info := d.SwarmInfo(c)
 	c.Assert(info.LocalNodeState, checker.Equals, swarm.LocalNodeStateInactive)
@@ -477,25 +490,23 @@ func (s *DockerSwarmSuite) TestAPISwarmManagerRestore(c *check.C) {
 	id := d1.CreateService(c, simpleTestService, setInstances(instances))
 
 	d1.GetService(c, id)
-	d1.Stop(c)
-	d1.Start(c)
+	d1.RestartNode(c)
 	d1.GetService(c, id)
 
 	d2 := s.AddDaemon(c, true, true)
 	d2.GetService(c, id)
-	d2.Stop(c)
-	d2.Start(c)
+	d2.RestartNode(c)
 	d2.GetService(c, id)
 
 	d3 := s.AddDaemon(c, true, true)
 	d3.GetService(c, id)
-	d3.Stop(c)
-	d3.Start(c)
+	d3.RestartNode(c)
 	d3.GetService(c, id)
 
-	d3.Kill()
+	err := d3.Kill()
+	assert.NilError(c, err)
 	time.Sleep(1 * time.Second) // time to handle signal
-	d3.Start(c)
+	d3.StartNode(c)
 	d3.GetService(c, id)
 }
 
@@ -853,10 +864,9 @@ func (s *DockerSwarmSuite) TestAPISwarmServicesUpdateWithName(c *check.C) {
 	instances = 5
 
 	setInstances(instances)(service)
-	cli, err := d.NewClient()
-	c.Assert(err, checker.IsNil)
+	cli := d.NewClientT(c)
 	defer cli.Close()
-	_, err = cli.ServiceUpdate(context.Background(), service.Spec.Name, service.Version, service.Spec, types.ServiceUpdateOptions{})
+	_, err := cli.ServiceUpdate(context.Background(), service.Spec.Name, service.Version, service.Spec, types.ServiceUpdateOptions{})
 	c.Assert(err, checker.IsNil)
 	waitAndAssert(c, defaultReconciliationTimeout, d.CheckActiveContainerCount, checker.Equals, instances)
 }
@@ -888,8 +898,7 @@ func (s *DockerSwarmSuite) TestAPISwarmErrorHandling(c *check.C) {
 // This test makes sure the fixes correctly output scopes instead.
 func (s *DockerSwarmSuite) TestAPIDuplicateNetworks(c *check.C) {
 	d := s.AddDaemon(c, true, true)
-	cli, err := d.NewClient()
-	c.Assert(err, checker.IsNil)
+	cli := d.NewClientT(c)
 	defer cli.Close()
 
 	name := "foo"
@@ -923,7 +932,7 @@ func (s *DockerSwarmSuite) TestAPISwarmHealthcheckNone(c *check.C) {
 	d := s.AddDaemon(c, true, true)
 
 	out, err := d.Cmd("network", "create", "-d", "overlay", "lb")
-	c.Assert(err, checker.IsNil, check.Commentf(out))
+	c.Assert(err, checker.IsNil, check.Commentf("%s", out))
 
 	instances := 1
 	d.CreateService(c, simpleTestService, setInstances(instances), func(s *swarm.Service) {
@@ -941,7 +950,7 @@ func (s *DockerSwarmSuite) TestAPISwarmHealthcheckNone(c *check.C) {
 	containers := d.ActiveContainers(c)
 
 	out, err = d.Cmd("exec", containers[0], "ping", "-c1", "-W3", "top")
-	c.Assert(err, checker.IsNil, check.Commentf(out))
+	c.Assert(err, checker.IsNil, check.Commentf("%s", out))
 }
 
 func (s *DockerSwarmSuite) TestSwarmRepeatedRootRotation(c *check.C) {
@@ -1018,8 +1027,7 @@ func (s *DockerSwarmSuite) TestAPINetworkInspectWithScope(c *check.C) {
 
 	name := "test-scoped-network"
 	ctx := context.Background()
-	apiclient, err := d.NewClient()
-	assert.NilError(c, err)
+	apiclient := d.NewClientT(c)
 
 	resp, err := apiclient.NetworkCreate(ctx, name, types.NetworkCreate{Driver: "overlay"})
 	assert.NilError(c, err)

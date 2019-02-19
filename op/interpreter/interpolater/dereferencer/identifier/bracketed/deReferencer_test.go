@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed/item"
-	"github.com/opspec-io/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/bracketed/item"
+	"github.com/opctl/sdk-golang/op/interpreter/interpolater/dereferencer/identifier/value"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 var _ = Context("DeReferencer", func() {

@@ -2,7 +2,7 @@ package op
 
 import (
 	"errors"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/op/dotyml"
 	"os"
 	"path/filepath"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"gopkg.in/yaml.v2"
 )
 

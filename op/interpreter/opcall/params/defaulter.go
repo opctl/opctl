@@ -3,7 +3,7 @@ package params
 //go:generate counterfeiter -o ./fakeDefaulter.go --fake-name FakeDefaulter ./ Defaulter
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"path/filepath"
 	"strings"
 )

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgraph-io/badger"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"log"
 	"os"
 	"path"
@@ -83,6 +83,7 @@ func (er badgerDBEventStore) List(
 			itOpts.PrefetchValues = true
 
 			it := txn.NewIterator(itOpts)
+			defer it.Close()
 			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
 			for it.Seek(sinceBytes); it.Valid(); it.Next() {
 				value, err := it.Item().Value()

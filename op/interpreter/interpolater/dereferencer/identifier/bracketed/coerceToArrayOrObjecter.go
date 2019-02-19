@@ -3,8 +3,8 @@ package bracketed
 //go:generate counterfeiter -o ./fakeCoerceToArrayOrObjecter.go --fake-name fakeCoerceToArrayOrObjecter ./ coerceToArrayOrObjecter
 
 import (
-	"github.com/opspec-io/sdk-golang/data/coerce"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
 )
 
 // coerceToArrayOrObjecter coerces data ao an object or an array value

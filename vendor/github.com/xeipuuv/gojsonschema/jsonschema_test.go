@@ -21,13 +21,15 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
+	"runtime"
 	"strings"
 	"testing"
 )
 
 type jsonSchemaTest struct {
 	Description string `json:"description"`
-	// Some tests do not pass yet, so some tests are manually edited to include
+	// Some tests may not always pass, so some tests are manually edited to include
 	// an extra attribute whether that specific test should be disabled and skipped
 	Disabled bool                 `json:"disabled"`
 	Schema   interface{}          `json:"schema"`
@@ -37,6 +39,84 @@ type jsonSchemaTestCase struct {
 	Description string      `json:"description"`
 	Data        interface{} `json:"data"`
 	Valid       bool        `json:"valid"`
+}
+
+//Skip any directories not named appropiately
+// filepath.Walk will also visit files in the root of the test directory
+var testDirectories = regexp.MustCompile(`(draft\d+)`)
+var draftMapping = map[string]Draft{
+	"draft4": Draft4,
+	"draft6": Draft6,
+	"draft7": Draft7,
+}
+
+func executeTests(t *testing.T, path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		t.Errorf("Error (%s)\n", err.Error())
+	}
+	fmt.Println(file.Name())
+
+	var tests []jsonSchemaTest
+	d := json.NewDecoder(file)
+	d.UseNumber()
+	err = d.Decode(&tests)
+
+	if err != nil {
+		t.Errorf("Error (%s)\n", err.Error())
+	}
+
+	draft := Hybrid
+	if m := testDirectories.FindString(path); m != "" {
+		draft = draftMapping[m]
+	}
+
+	for _, test := range tests {
+		fmt.Println("    " + test.Description)
+
+		if test.Disabled {
+			continue
+		}
+
+		testSchemaLoader := NewRawLoader(test.Schema)
+		sl := NewSchemaLoader()
+		sl.Draft = draft
+		sl.Validate = true
+		testSchema, err := sl.Compile(testSchemaLoader)
+
+		if err != nil {
+			t.Errorf("Error (%s)\n", err.Error())
+		}
+
+		for _, testCase := range test.Tests {
+			testDataLoader := NewRawLoader(testCase.Data)
+			result, err := testSchema.Validate(testDataLoader)
+
+			if err != nil {
+				t.Errorf("Error (%s)\n", err.Error())
+			}
+
+			if result.Valid() != testCase.Valid {
+				schemaString, _ := marshalToJsonString(test.Schema)
+				testCaseString, _ := marshalToJsonString(testCase.Data)
+
+				t.Errorf("Test failed : %s\n"+
+					"%s.\n"+
+					"%s.\n"+
+					"expects: %t, given %t\n"+
+					"Schema: %s\n"+
+					"Data: %s\n",
+					file.Name(),
+					test.Description,
+					testCase.Description,
+					testCase.Valid,
+					result.Valid(),
+					*schemaString,
+					*testCaseString)
+			}
+		}
+	}
+	return nil
 }
 
 func TestSuite(t *testing.T) {
@@ -50,83 +130,56 @@ func TestSuite(t *testing.T) {
 	go func() {
 		err := http.ListenAndServe(":1234", http.FileServer(http.Dir(filepath.Join(wd, "remotes"))))
 		if err != nil {
+
 			panic(err.Error())
 		}
 	}()
 
-	testDirectories := []string{"draft4", "draft6", "draft7"}
-
-	var files []string
-	for _, testDirectory := range testDirectories {
-		testFiles, err := ioutil.ReadDir(filepath.Join(wd, testDirectory))
-
-		if err != nil {
-			panic(err.Error())
+	err = filepath.Walk(wd, func(path string, fileInfo os.FileInfo, err error) error {
+		if fileInfo.IsDir() && path != wd && !testDirectories.MatchString(fileInfo.Name()) {
+			return filepath.SkipDir
 		}
-
-		for _, fileInfo := range testFiles {
-			if !fileInfo.IsDir() && strings.HasSuffix(fileInfo.Name(), ".json") {
-				files = append(files, filepath.Join(wd, testDirectory, fileInfo.Name()))
-			}
+		if !strings.HasSuffix(fileInfo.Name(), ".json") {
+			return nil
 		}
+		return executeTests(t, path)
+	})
+	if err != nil {
+		t.Errorf("Error (%s)\n", err.Error())
+	}
+}
+
+func TestFormats(t *testing.T) {
+	// Go 1.5 and 1.6 contain minor bugs in parsing URIs and unicode which makes the test suite fail uri and idn-email formats
+	// Therefore disable these tests for these go versions
+	if strings.HasPrefix(runtime.Version(), "go1.5") || strings.HasPrefix(runtime.Version(), "go1.6") {
+		return
 	}
 
-	for _, filepath := range files {
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
+	wd = filepath.Join(wd, "testdata")
 
-		file, err := os.Open(filepath)
-		if err != nil {
-			t.Errorf("Error (%s)\n", err.Error())
-		}
-		fmt.Println(file.Name())
+	dirs, err := ioutil.ReadDir(wd)
 
-		var tests []jsonSchemaTest
-		d := json.NewDecoder(file)
-		d.UseNumber()
-		err = d.Decode(&tests)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		if err != nil {
-			t.Errorf("Error (%s)\n", err.Error())
-		}
-
-		for _, test := range tests {
-
-			if test.Disabled {
-				continue
-			}
-
-			testSchemaLoader := NewRawLoader(test.Schema)
-			testSchema, err := NewSchema(testSchemaLoader)
+	for _, dir := range dirs {
+		if testDirectories.MatchString(dir.Name()) {
+			formatsDirectory := filepath.Join(wd, dir.Name(), "optional", "format")
+			err = filepath.Walk(formatsDirectory, func(path string, fileInfo os.FileInfo, err error) error {
+				if fileInfo == nil || !strings.HasSuffix(fileInfo.Name(), ".json") {
+					return nil
+				}
+				return executeTests(t, path)
+			})
 
 			if err != nil {
 				t.Errorf("Error (%s)\n", err.Error())
-			}
-
-			for _, testCase := range test.Tests {
-				testDataLoader := NewRawLoader(testCase.Data)
-				result, err := testSchema.Validate(testDataLoader)
-
-				if err != nil {
-					t.Errorf("Error (%s)\n", err.Error())
-				}
-
-				if result.Valid() != testCase.Valid {
-					schemaString, _ := marshalToJsonString(test.Schema)
-					testCaseString, _ := marshalToJsonString(testCase.Data)
-
-					t.Errorf("Test failed : %s\n"+
-						"%s.\n"+
-						"%s.\n"+
-						"expects: %t, given %t\n"+
-						"Schema: %s\n"+
-						"Data: %s\n",
-						file.Name(),
-						test.Description,
-						testCase.Description,
-						testCase.Valid,
-						result.Valid(),
-						*schemaString,
-						*testCaseString)
-				}
 			}
 		}
 	}

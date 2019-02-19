@@ -3,8 +3,8 @@ package liveness
 //go:generate counterfeiter -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
 
 import (
-	"github.com/opspec-io/sdk-golang/node/core"
-	"github.com/opspec-io/sdk-golang/util/urlpath"
+	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/util/urlpath"
 	"net/http"
 )
 

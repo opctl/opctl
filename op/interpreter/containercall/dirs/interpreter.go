@@ -9,8 +9,8 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/op/interpreter/dir"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/op/interpreter/dir"
 )
 
 type Interpreter interface {

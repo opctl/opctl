@@ -2,6 +2,7 @@ package client // import "github.com/docker/docker/client"
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,8 +13,6 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
-
-	"golang.org/x/net/context"
 )
 
 func TestContainerWaitError(t *testing.T) {
@@ -66,7 +65,7 @@ func ExampleClient_ContainerWait_withTimeout() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	client, _ := NewEnvClient()
+	client, _ := NewClientWithOpts(FromEnv)
 	_, errC := client.ContainerWait(ctx, "container_id", "")
 	if err := <-errC; err != nil {
 		log.Fatal(err)

@@ -111,8 +111,15 @@ func (r *HttpReadSeeker) Read(p []byte) (n int, err error) {
 //
 // May return ErrRangeRequestsNotSupported, ErrInvalidRange or ErrContentHasChanged
 func (r *HttpReadSeeker) ReadAt(p []byte, off int64) (n int, err error) {
+	var nn int
+
 	r.Seek(off, 0)
-	return r.Read(p)
+
+	for n < len(p) && err == nil {
+		nn, err = r.Read(p[n:])
+		n += nn
+	}
+	return
 }
 
 // Close closes the response body
@@ -202,7 +209,12 @@ func (r *HttpReadSeeker) rangeRequest() error {
 	case http.StatusRequestedRangeNotSatisfiable:
 		return ErrInvalidRange
 	case http.StatusOK:
-		return ErrContentHasChanged
+		// some servers return 200 OK for bytes=0-
+		if r.pos > 0 ||
+			(etag != "" && etag != res.Header.Get("ETag")) {
+			return ErrContentHasChanged
+		}
+		fallthrough
 	case http.StatusPartialContent:
 		r.r = res.Body
 		return nil

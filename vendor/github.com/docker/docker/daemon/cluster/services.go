@@ -1,6 +1,7 @@
 package cluster // import "github.com/docker/docker/daemon/cluster"
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -22,7 +23,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 // GetServices returns all services of a managed swarm cluster.
@@ -67,7 +68,9 @@ func (c *Cluster) GetServices(options apitypes.ServiceListOptions) ([]types.Serv
 
 	r, err := state.controlClient.ListServices(
 		ctx,
-		&swarmapi.ListServicesRequest{Filters: filters})
+		&swarmapi.ListServicesRequest{Filters: filters},
+		grpc.MaxCallRecvMsgSize(defaultRecvSizeForListResponse),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -135,6 +138,8 @@ func (c *Cluster) CreateService(s types.ServiceSpec, encodedAuth string, queryRe
 		resp = &apitypes.ServiceCreateResponse{}
 
 		switch serviceSpec.Task.Runtime.(type) {
+		case *swarmapi.TaskSpec_Attachment:
+			return fmt.Errorf("invalid task spec: spec type %q not supported", types.RuntimeNetworkAttachment)
 		// handle other runtimes here
 		case *swarmapi.TaskSpec_Generic:
 			switch serviceSpec.Task.GetGeneric().Kind {
@@ -244,6 +249,8 @@ func (c *Cluster) UpdateService(serviceIDOrName string, version uint64, spec typ
 		resp = &apitypes.ServiceUpdateResponse{}
 
 		switch serviceSpec.Task.Runtime.(type) {
+		case *swarmapi.TaskSpec_Attachment:
+			return fmt.Errorf("invalid task spec: spec type %q not supported", types.RuntimeNetworkAttachment)
 		case *swarmapi.TaskSpec_Generic:
 			switch serviceSpec.Task.GetGeneric().Kind {
 			case string(types.RuntimePlugin):

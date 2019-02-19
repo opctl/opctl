@@ -5,12 +5,12 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opspec-io/sdk-golang/node/api/handler/data"
-	"github.com/opspec-io/sdk-golang/node/api/handler/events"
-	"github.com/opspec-io/sdk-golang/node/api/handler/liveness"
-	"github.com/opspec-io/sdk-golang/node/api/handler/ops"
-	"github.com/opspec-io/sdk-golang/node/api/handler/pkgs"
-	"github.com/opspec-io/sdk-golang/node/core"
+	"github.com/opctl/sdk-golang/node/api/handler/data"
+	"github.com/opctl/sdk-golang/node/api/handler/events"
+	"github.com/opctl/sdk-golang/node/api/handler/liveness"
+	"github.com/opctl/sdk-golang/node/api/handler/ops"
+	"github.com/opctl/sdk-golang/node/api/handler/pkgs"
+	"github.com/opctl/sdk-golang/node/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

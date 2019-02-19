@@ -5,9 +5,9 @@ package core
 import (
 	"bytes"
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"github.com/opspec-io/sdk-golang/util/uniquestring"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/util/uniquestring"
 	"sync"
 	"time"
 )

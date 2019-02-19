@@ -6,8 +6,8 @@ import (
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/pkg/errors"
 	"io/ioutil"
 )

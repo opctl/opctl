@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"golang.org/x/sync/singleflight"
 	"path/filepath"
 )

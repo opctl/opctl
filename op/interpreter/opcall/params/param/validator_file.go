@@ -3,7 +3,7 @@ package param
 import (
 	"errors"
 	"fmt"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 // validateFile validates a value against a file parameter

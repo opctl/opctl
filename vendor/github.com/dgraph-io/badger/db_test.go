@@ -19,11 +19,13 @@ package badger
 import (
 	"bytes"
 	"encoding/binary"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -32,9 +34,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dgraph-io/badger/options"
+
 	"github.com/dgraph-io/badger/y"
 	"github.com/stretchr/testify/require"
 )
+
+var mmap = flag.Bool("vlog_mmap", true, "Specify if value log must be memory-mapped")
 
 func getTestOptions(dir string) Options {
 	opt := DefaultOptions
@@ -43,6 +49,9 @@ func getTestOptions(dir string) Options {
 	opt.Dir = dir
 	opt.ValueDir = dir
 	opt.SyncWrites = false
+	if !*mmap {
+		opt.ValueLogLoadingMode = options.FileIO
+	}
 	return opt
 }
 
@@ -274,6 +283,38 @@ func TestTxnTooBig(t *testing.T) {
 	})
 }
 
+func TestForceCompactL0(t *testing.T) {
+	dir, err := ioutil.TempDir("", "badger")
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	opts := getTestOptions(dir)
+	opts.ValueLogFileSize = 15 << 20
+	db, err := OpenManaged(opts)
+	require.NoError(t, err)
+
+	data := func(i int) []byte {
+		return []byte(fmt.Sprintf("%b", i))
+	}
+	n := 80
+	m := 45 // Increasing would cause ErrTxnTooBig
+	sz := 32 << 10
+	v := make([]byte, sz)
+	for i := 0; i < n; i += 2 {
+		version := uint64(i)
+		txn := db.NewTransactionAt(version, true)
+		for j := 0; j < m; j++ {
+			require.NoError(t, txn.Set(data(j), v))
+		}
+		require.NoError(t, txn.CommitAt(version+1, nil))
+	}
+	db.Close()
+
+	db, err = OpenManaged(opts)
+	defer db.Close()
+	require.Equal(t, len(db.lc.levels[0].tables), 0)
+}
+
 // Put a lot of data to move some data to disk.
 // WARNING: This test might take a while but it should pass!
 func TestGetMore(t *testing.T) {
@@ -329,14 +370,14 @@ func TestGetMore(t *testing.T) {
 
 				vs, err := db.get(y.KeyWithTs(k, math.MaxUint64))
 				require.NoError(t, err)
-				fmt.Printf("wanted=%q Item: %s\n", k, item.ToString())
+				fmt.Printf("wanted=%q Item: %s\n", k, item)
 				fmt.Printf("on re-run, got version: %+v\n", vs)
 
 				txn := db.NewTransaction(false)
 				itr := txn.NewIterator(DefaultIteratorOptions)
 				for itr.Seek(k); itr.Valid(); itr.Next() {
 					item := itr.Item()
-					fmt.Printf("item=%s\n", item.ToString())
+					fmt.Printf("item=%s\n", item)
 					if !bytes.Equal(item.Key(), k) {
 						break
 					}
@@ -344,7 +385,7 @@ func TestGetMore(t *testing.T) {
 				itr.Close()
 				txn.Discard()
 			}
-			require.EqualValues(t, expectedValue, string(getItemValue(t, item)), "wanted=%q Item: %s\n", k, item.ToString())
+			require.EqualValues(t, expectedValue, string(getItemValue(t, item)), "wanted=%q Item: %s\n", k, item)
 			txn.Discard()
 		}
 
@@ -635,7 +676,7 @@ func TestDeleteWithoutSyncWrite(t *testing.T) {
 
 	require.NoError(t, kv.View(func(txn *Txn) error {
 		_, err := txn.Get(key)
-		require.Error(t, ErrKeyNotFound, err)
+		require.Equal(t, ErrKeyNotFound, err)
 		return nil
 	}))
 }
@@ -805,12 +846,12 @@ func TestGetSetRace(t *testing.T) {
 	})
 }
 
-func TestPurgeVersionsBelow(t *testing.T) {
+func TestDiscardVersionsBelow(t *testing.T) {
 	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
 		// Write 4 versions of the same key
 		for i := 0; i < 4; i++ {
 			err := db.Update(func(txn *Txn) error {
-				return txn.Set([]byte("answer"), []byte(fmt.Sprintf("%25d", i)))
+				return txn.Set([]byte("answer"), []byte(fmt.Sprintf("%d", i)))
 			})
 			require.NoError(t, err)
 		}
@@ -820,97 +861,45 @@ func TestPurgeVersionsBelow(t *testing.T) {
 		opts.PrefetchValues = false
 
 		// Verify that there are 4 versions, and record 3rd version (2nd from top in iteration)
-		var ts uint64
 		db.View(func(txn *Txn) error {
 			it := txn.NewIterator(opts)
+			defer it.Close()
 			var count int
 			for it.Rewind(); it.Valid(); it.Next() {
 				count++
 				item := it.Item()
-				if count == 2 {
-					ts = item.Version()
-				}
 				require.Equal(t, []byte("answer"), item.Key())
+				if item.DiscardEarlierVersions() {
+					break
+				}
 			}
 			require.Equal(t, 4, count)
 			return nil
 		})
 
-		// Delete all versions below the 3rd version
-		err := db.PurgeVersionsBelow([]byte("answer"), ts)
+		// Set new version and discard older ones.
+		err := db.Update(func(txn *Txn) error {
+			return txn.SetWithDiscard([]byte("answer"), []byte("5"), 0)
+		})
 		require.NoError(t, err)
-		require.NotEmpty(t, db.vlog.lfDiscardStats.m)
 
-		// Verify that there are only 2 versions left
+		// Verify that there are only 2 versions left, and versions
+		// below ts have been deleted.
 		db.View(func(txn *Txn) error {
 			it := txn.NewIterator(opts)
-			var count int
-			for it.Rewind(); it.Valid(); it.Next() {
-				count++
-				item := it.Item()
-				require.True(t, item.Version() >= ts,
-					"item version: %d older than ts: %d",
-					item.Version(), ts)
-				require.Equal(t, []byte("answer"), item.Key())
-			}
-			require.Equal(t, 2, count)
-			return nil
-		})
-	})
-}
-
-func TestPurgeOlderVersions(t *testing.T) {
-	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
-		// Write two versions of a key
-		err := db.Update(func(txn *Txn) error {
-			return txn.Set([]byte("answer"), []byte("42"))
-		})
-		require.NoError(t, err)
-
-		err = db.Update(func(txn *Txn) error {
-			return txn.Set([]byte("answer"), []byte("43"))
-		})
-		require.NoError(t, err)
-
-		opts := DefaultIteratorOptions
-		opts.AllVersions = true
-		opts.PrefetchValues = false
-
-		// Verify that two versions are found during iteration
-		err = db.View(func(txn *Txn) error {
-			it := txn.NewIterator(opts)
+			defer it.Close()
 			var count int
 			for it.Rewind(); it.Valid(); it.Next() {
 				count++
 				item := it.Item()
 				require.Equal(t, []byte("answer"), item.Key())
-			}
-			require.Equal(t, 2, count)
-			return nil
-		})
-		require.NoError(t, err)
-
-		// Invoke DeleteOlderVersions() to delete older version
-		err = db.PurgeOlderVersions()
-		require.NoError(t, err)
-
-		// Verify that only one version is found
-		err = db.View(func(txn *Txn) error {
-			it := txn.NewIterator(opts)
-			var count int
-			for it.Rewind(); it.Valid(); it.Next() {
-				count++
-				item := it.Item()
-				require.Equal(t, []byte("answer"), item.Key())
-				val, err := item.Value()
-				require.NoError(t, err)
-				t.Logf("Item value is %q", val)
-				//require.Equal(t, []byte("43"), val)
+				if item.DiscardEarlierVersions() {
+					break
+				}
 			}
 			require.Equal(t, 1, count)
 			return nil
 		})
-		require.NoError(t, err)
 	})
 }
 
@@ -935,7 +924,7 @@ func TestExpiry(t *testing.T) {
 			require.NoError(t, err)
 
 			_, err = txn.Get([]byte("answer2"))
-			require.Error(t, ErrKeyNotFound, err)
+			require.Equal(t, ErrKeyNotFound, err)
 			return nil
 		})
 		require.NoError(t, err)
@@ -945,6 +934,7 @@ func TestExpiry(t *testing.T) {
 		opts.PrefetchValues = false
 		err = db.View(func(txn *Txn) error {
 			it := txn.NewIterator(opts)
+			defer it.Close()
 			var count int
 			for it.Rewind(); it.Valid(); it.Next() {
 				count++
@@ -1027,6 +1017,54 @@ func TestCreateDirs(t *testing.T) {
 	_, err = os.Stat(dir)
 	require.NoError(t, err)
 }
+
+func TestGetSetDeadlock(t *testing.T) {
+	dir, err := ioutil.TempDir("", "badger")
+	fmt.Println(dir)
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	opt := DefaultOptions
+	opt.Dir = dir
+	opt.ValueDir = dir
+	opt.ValueLogFileSize = 1 << 20
+	db, err := Open(opt)
+	require.NoError(t, err)
+	defer db.Close()
+
+	val := make([]byte, 1<<19)
+	key := []byte("key1")
+	require.NoError(t, db.Update(func(txn *Txn) error {
+		rand.Read(val)
+		require.NoError(t, txn.Set(key, val))
+		return nil
+	}))
+
+	timeout, done := time.After(10*time.Second), make(chan bool)
+
+	go func() {
+		db.Update(func(txn *Txn) error {
+			item, err := txn.Get(key)
+			require.NoError(t, err)
+			_, err = item.Value() // This take a RLock on file
+			require.NoError(t, err)
+
+			rand.Read(val)
+			require.NoError(t, txn.Set(key, val))
+			require.NoError(t, txn.Set([]byte("key2"), val))
+			return nil
+		})
+		done <- true
+	}()
+
+	select {
+	case <-timeout:
+		t.Fatal("db.Update did not finish within 10s, assuming deadlock.")
+	case <-done:
+		t.Log("db.Update finished.")
+	}
+}
+
 func TestWriteDeadlock(t *testing.T) {
 	dir, err := ioutil.TempDir("", "badger")
 	fmt.Println(dir)
@@ -1065,6 +1103,7 @@ func TestWriteDeadlock(t *testing.T) {
 		opt := DefaultIteratorOptions
 		opt.PrefetchValues = false
 		it := txn.NewIterator(opt)
+		defer it.Close()
 		for it.Rewind(); it.Valid(); it.Next() {
 			item := it.Item()
 
@@ -1128,6 +1167,294 @@ func TestSequence(t *testing.T) {
 			return nil
 		})
 		require.NoError(t, err)
+	})
+}
+
+func TestSequence_Release(t *testing.T) {
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		// get sequence, use once and release
+		key := []byte("key")
+		seq, err := db.GetSequence(key, 1000)
+		require.NoError(t, err)
+		num, err := seq.Next()
+		require.NoError(t, err)
+		require.Equal(t, uint64(0), num)
+		require.NoError(t, seq.Release())
+
+		// we used up 0 and 1 should be stored now
+		err = db.View(func(txn *Txn) error {
+			item, err := txn.Get(key)
+			if err != nil {
+				return err
+			}
+			val, err := item.Value()
+			if err != nil {
+				return err
+			}
+			require.Equal(t, num+1, binary.BigEndian.Uint64(val))
+			return nil
+		})
+		require.NoError(t, err)
+
+		// using it again will lease 1+1000
+		num, err = seq.Next()
+		require.NoError(t, err)
+		require.Equal(t, uint64(1), num)
+		err = db.View(func(txn *Txn) error {
+			item, err := txn.Get(key)
+			if err != nil {
+				return err
+			}
+			val, err := item.Value()
+			if err != nil {
+				return err
+			}
+			require.Equal(t, uint64(1001), binary.BigEndian.Uint64(val))
+			return nil
+		})
+		require.NoError(t, err)
+	})
+}
+
+func uint64ToBytes(i uint64) []byte {
+	var buf [8]byte
+	binary.BigEndian.PutUint64(buf[:], i)
+	return buf[:]
+}
+
+func bytesToUint64(b []byte) uint64 {
+	return binary.BigEndian.Uint64(b)
+}
+
+// Merge function to add two uint64 numbers
+func add(existing, new []byte) []byte {
+	return uint64ToBytes(
+		bytesToUint64(existing) +
+			bytesToUint64(new))
+}
+
+func TestMergeOperatorGetBeforeAdd(t *testing.T) {
+	key := []byte("merge")
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		m := db.GetMergeOperator(key, add, 200*time.Millisecond)
+		defer m.Stop()
+
+		_, err := m.Get()
+		require.Equal(t, ErrKeyNotFound, err)
+	})
+}
+
+func TestMergeOperatorBeforeAdd(t *testing.T) {
+	key := []byte("merge")
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		m := db.GetMergeOperator(key, add, 200*time.Millisecond)
+		defer m.Stop()
+		time.Sleep(time.Second)
+	})
+}
+
+func TestMergeOperatorAddAndGet(t *testing.T) {
+	key := []byte("merge")
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		m := db.GetMergeOperator(key, add, 200*time.Millisecond)
+		defer m.Stop()
+
+		err := m.Add(uint64ToBytes(1))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(2))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(3))
+		require.NoError(t, err)
+
+		res, err := m.Get()
+		require.NoError(t, err)
+		require.Equal(t, uint64(6), bytesToUint64(res))
+	})
+}
+
+func TestMergeOperatorCompactBeforeGet(t *testing.T) {
+	key := []byte("merge")
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		m := db.GetMergeOperator(key, add, 200*time.Millisecond)
+		defer m.Stop()
+
+		err := m.Add(uint64ToBytes(1))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(2))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(3))
+		require.NoError(t, err)
+
+		time.Sleep(250 * time.Millisecond) // wait for merge to happen
+
+		res, err := m.Get()
+		require.NoError(t, err)
+		require.Equal(t, uint64(6), bytesToUint64(res))
+	})
+}
+
+func TestMergeOperatorGetAfterStop(t *testing.T) {
+	key := []byte("merge")
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		m := db.GetMergeOperator(key, add, 1*time.Second)
+
+		err := m.Add(uint64ToBytes(1))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(2))
+		require.NoError(t, err)
+		m.Add(uint64ToBytes(3))
+		require.NoError(t, err)
+
+		m.Stop()
+		res, err := m.Get()
+		require.NoError(t, err)
+		require.Equal(t, uint64(6), bytesToUint64(res))
+	})
+}
+
+func TestReadOnly(t *testing.T) {
+	dir, err := ioutil.TempDir("", "badger")
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+	opts := getTestOptions(dir)
+
+	// Create the DB
+	db, err := Open(opts)
+	require.NoError(t, err)
+	for i := 0; i < 10000; i++ {
+		txnSet(t, db, []byte(fmt.Sprintf("key%d", i)), []byte(fmt.Sprintf("value%d", i)), 0x00)
+	}
+
+	// Attempt a read-only open while it's open read-write.
+	opts.ReadOnly = true
+	_, err = Open(opts)
+	require.Error(t, err)
+	if err == ErrWindowsNotSupported {
+		return
+	}
+	require.Contains(t, err.Error(), "Another process is using this Badger database")
+	db.Close()
+
+	// Open one read-only
+	opts.ReadOnly = true
+	kv1, err := Open(opts)
+	require.NoError(t, err)
+	defer kv1.Close()
+
+	// Open another read-only
+	kv2, err := Open(opts)
+	require.NoError(t, err)
+	defer kv2.Close()
+
+	// Attempt a read-write open while it's open for read-only
+	opts.ReadOnly = false
+	_, err = Open(opts)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "Another process is using this Badger database")
+
+	// Get a thing from the DB
+	txn1 := kv1.NewTransaction(true)
+	v1, err := txn1.Get([]byte("key1"))
+	require.NoError(t, err)
+	b1, err := v1.Value()
+	require.NoError(t, err)
+	require.Equal(t, b1, []byte("value1"))
+	err = txn1.Commit(nil)
+	require.NoError(t, err)
+
+	// Get a thing from the DB via the other connection
+	txn2 := kv2.NewTransaction(true)
+	v2, err := txn2.Get([]byte("key2000"))
+	require.NoError(t, err)
+	b2, err := v2.Value()
+	require.NoError(t, err)
+	require.Equal(t, b2, []byte("value2000"))
+	err = txn2.Commit(nil)
+	require.NoError(t, err)
+
+	// Attempt to set a value on a read-only connection
+	txn := kv1.NewTransaction(true)
+	err = txn.SetWithMeta([]byte("key"), []byte("value"), 0x00)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "No sets or deletes are allowed in a read-only transaction")
+	err = txn.Commit(nil)
+	require.NoError(t, err)
+}
+
+func TestLSMOnly(t *testing.T) {
+	dir, err := ioutil.TempDir("", "badger")
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	opts := LSMOnlyOptions
+	opts.Dir = dir
+	opts.ValueDir = dir
+
+	dopts := DefaultOptions
+	require.NotEqual(t, dopts.ValueThreshold, opts.ValueThreshold)
+	require.NotEqual(t, dopts.ValueLogLoadingMode, opts.ValueLogLoadingMode)
+	require.NotEqual(t, dopts.ValueLogFileSize, opts.ValueLogFileSize)
+
+	dopts.ValueThreshold = 1 << 16
+	_, err = Open(dopts)
+	require.Equal(t, ErrValueThreshold, err)
+
+	opts.ValueLogMaxEntries = 100
+	db, err := Open(opts)
+	require.NoError(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	value := make([]byte, 128)
+	_, err = rand.Read(value)
+	for i := 0; i < 500; i++ {
+		require.NoError(t, err)
+		txnSet(t, db, []byte(fmt.Sprintf("key%d", i)), value, 0x00)
+	}
+	require.NoError(t, db.Close()) // Close to force compactions, so Value log GC would run.
+
+	db, err = Open(opts)
+	require.NoError(t, err)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	require.NoError(t, db.RunValueLogGC(0.2))
+}
+
+func TestMinReadTs(t *testing.T) {
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		for i := 0; i < 10; i++ {
+			require.NoError(t, db.Update(func(txn *Txn) error {
+				return txn.Set([]byte("x"), []byte("y"))
+			}))
+		}
+		time.Sleep(time.Millisecond)
+		require.Equal(t, uint64(10), db.orc.readTs())
+		min := db.orc.readMark.MinReadTs()
+		require.Equal(t, uint64(9), min)
+
+		readTxn := db.NewTransaction(false)
+		for i := 0; i < 10; i++ {
+			require.NoError(t, db.Update(func(txn *Txn) error {
+				return txn.Set([]byte("x"), []byte("y"))
+			}))
+		}
+		require.Equal(t, uint64(20), db.orc.readTs())
+		time.Sleep(time.Millisecond)
+		require.Equal(t, min, db.orc.readMark.MinReadTs())
+		readTxn.Discard()
+		time.Sleep(time.Millisecond)
+		require.Equal(t, uint64(19), db.orc.readMark.MinReadTs())
+
+		for i := 0; i < 10; i++ {
+			db.View(func(txn *Txn) error {
+				return nil
+			})
+		}
+		time.Sleep(time.Millisecond)
+		require.Equal(t, uint64(20), db.orc.readMark.MinReadTs())
 	})
 }
 
@@ -1236,6 +1563,7 @@ func ExampleTxn_NewIterator() {
 	var count int
 	err = db.View(func(txn *Txn) error {
 		it := txn.NewIterator(opt)
+		defer it.Close()
 		for it.Rewind(); it.Valid(); it.Next() {
 			count++
 		}
@@ -1247,4 +1575,14 @@ func ExampleTxn_NewIterator() {
 	fmt.Printf("Counted %d elements", count)
 	// Output:
 	// Counted 1000 elements
+}
+
+func TestMain(m *testing.M) {
+	// call flag.Parse() here if TestMain uses flags
+	go func() {
+		if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+			log.Fatalf("Unable to open http port at 8080")
+		}
+	}()
+	os.Exit(m.Run())
 }

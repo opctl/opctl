@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/api"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/api"
 	"path"
 	"strings"
 	"time"

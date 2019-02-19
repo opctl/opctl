@@ -5,9 +5,9 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
-	stringPkg "github.com/opspec-io/sdk-golang/op/interpreter/string"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
+	stringPkg "github.com/opctl/sdk-golang/op/interpreter/string"
 )
 
 var _ = Context("Interpreter", func() {

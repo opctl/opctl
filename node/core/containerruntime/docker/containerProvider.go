@@ -1,11 +1,11 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeDockerClient.go --fake-name fakeDockerClient /go/src/github.com/opspec-io/sdk-golang/vendor/github.com/docker/docker/client/interface.go CommonAPIClient
+//go:generate counterfeiter -o ./fakeDockerClient.go --fake-name fakeDockerClient /go/src/github.com/opctl/sdk-golang/vendor/github.com/docker/docker/client/interface.go CommonAPIClient
 
 import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/golang-interfaces/ios"
-	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opctl/sdk-golang/node/core/containerruntime"
 	"golang.org/x/net/context"
 )
 

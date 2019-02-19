@@ -1,17 +1,17 @@
 // Package core defines the core interface for an opspec node
 package core
 
-import "github.com/opspec-io/sdk-golang/model"
+import "github.com/opctl/sdk-golang/model"
 import (
 	"context"
 	"path/filepath"
 
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
-	"github.com/opspec-io/sdk-golang/op/interpreter/containercall"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
-	"github.com/opspec-io/sdk-golang/util/uniquestring"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/node/core/containerruntime"
+	"github.com/opctl/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/op/interpreter/containercall"
+	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/util/uniquestring"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core

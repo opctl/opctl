@@ -3,8 +3,8 @@ package core
 //go:generate counterfeiter -o ./fakeOpKiller.go --fake-name fakeOpKiller ./ opKiller
 
 import (
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/core/containerruntime"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/core/containerruntime"
 	"sync"
 )
 

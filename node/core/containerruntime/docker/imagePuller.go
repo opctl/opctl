@@ -8,8 +8,8 @@ import (
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/util/pubsub"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/util/pubsub"
 	"io"
 )
 
@@ -79,6 +79,6 @@ func (ip _imagePuller) Pull(
 			}
 			return err
 		}
-		jm.Display(stdOutWriter, nil)
+		jm.Display(stdOutWriter, false)
 	}
 }
