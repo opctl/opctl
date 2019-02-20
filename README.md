@@ -7,7 +7,7 @@
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-Golang SDK for [opspec](https://opspec.io)
+Golang SDK for [opctl](https://opctl.io)
 
 # Documentation
 
