@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/jawher/mow.cli/internal/container"
+	"github.com/jawher/mow.cli/internal/flow"
 )
 
 /*
@@ -17,7 +20,7 @@ type Cli struct {
 
 type cliVersion struct {
 	version string
-	option  *opt
+	option  *container.Container
 }
 
 /*
@@ -35,8 +38,8 @@ func App(name, desc string) *Cli {
 		Cmd: &Cmd{
 			name:          name,
 			desc:          desc,
-			optionsIdx:    map[string]*opt{},
-			argsIdx:       map[string]*arg{},
+			optionsIdx:    map[string]*container.Container{},
+			argsIdx:       map[string]*container.Container{},
 			ErrorHandling: flag.ExitOnError,
 		},
 	}
@@ -62,19 +65,19 @@ func (cli *Cli) Version(name, version string) {
 	cli.version = &cliVersion{version, option}
 }
 
-func (cli *Cli) parse(args []string, entry, inFlow, outFlow *step) error {
+func (cli *Cli) parse(args []string, entry, inFlow, outFlow *flow.Step) error {
 	// We overload Cmd.parse() and handle cases that only apply to the CLI command, like versioning
 	// After that, we just call Cmd.parse() for the default behavior
 	if cli.versionSetAndRequested(args) {
 		cli.PrintVersion()
-		exiter(0)
+		cli.onError(errVersionRequested)
 		return nil
 	}
 	return cli.Cmd.parse(args, entry, inFlow, outFlow)
 }
 
 func (cli *Cli) versionSetAndRequested(args []string) bool {
-	return cli.version != nil && cli.isArgSet(args, cli.version.option.names)
+	return cli.version != nil && cli.isFlagSet(args, cli.version.option.Names)
 }
 
 /*
@@ -97,17 +100,15 @@ func (cli *Cli) Run(args []string) error {
 	if err := cli.doInit(); err != nil {
 		panic(err)
 	}
-	inFlow := &step{desc: "RootIn"}
-	outFlow := &step{desc: "RootOut"}
+	inFlow := &flow.Step{Desc: "RootIn", Exiter: exiter}
+	outFlow := &flow.Step{Desc: "RootOut", Exiter: exiter}
 	return cli.parse(args[1:], inFlow, inFlow, outFlow)
 }
 
 /*
-ActionCommand(myFun) is syntactic sugar for
-func(cmd *cli.Cmd) { cmd.Action = myFun }
+ActionCommand is a convenience function to configure a command with an action.
 
-cmd.CommandAction(_, _, myFun } is syntactic sugar for
-cmd.Command(_, _, func(cmd *cli.Cmd) { cmd.Action = myFun })
+cmd.ActionCommand(_, _, myFunc) is equivalent to cmd.Command(_, _, func(cmd *cli.Cmd) { cmd.Action = myFunc })
 */
 func ActionCommand(action func()) CmdInitializer {
 	return func(cmd *Cmd) {
@@ -120,10 +121,8 @@ Exit causes the app the exit with the specified exit code while giving the After
 This should be used instead of os.Exit.
 */
 func Exit(code int) {
-	panic(exit(code))
+	panic(flow.ExitCode(code))
 }
-
-type exit int
 
 var exiter = func(code int) {
 	os.Exit(code)

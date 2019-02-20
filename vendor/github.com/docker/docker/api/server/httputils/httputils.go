@@ -1,6 +1,7 @@
 package httputils // import "github.com/docker/docker/api/server/httputils"
 
 import (
+	"context"
 	"io"
 	"mime"
 	"net/http"
@@ -9,13 +10,10 @@ import (
 	"github.com/docker/docker/errdefs"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/net/context"
 )
 
-type contextKey string
-
 // APIVersionKey is the client's requested API version.
-const APIVersionKey contextKey = "api-version"
+type APIVersionKey struct{}
 
 // APIFunc is an adapter to allow the use of ordinary functions as Docker API endpoints.
 // Any function that has the appropriate signature can be registered as an API endpoint (e.g. getVersion).
@@ -83,7 +81,7 @@ func VersionFromContext(ctx context.Context) string {
 		return ""
 	}
 
-	if val := ctx.Value(APIVersionKey); val != nil {
+	if val := ctx.Value(APIVersionKey{}); val != nil {
 		return val.(string)
 	}
 

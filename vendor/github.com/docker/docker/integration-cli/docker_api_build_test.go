@@ -3,6 +3,7 @@ package main
 import (
 	"archive/tar"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,9 +19,8 @@ import (
 	"github.com/docker/docker/internal/test/fakestorage"
 	"github.com/docker/docker/internal/test/request"
 	"github.com/go-check/check"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"golang.org/x/net/context"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 )
 
 func (s *DockerSuite) TestBuildAPIDockerFileRemote(c *check.C) {
@@ -298,7 +298,7 @@ func (s *DockerSuite) TestBuildOnBuildCache(c *check.C) {
 
 		out, err := request.ReadBody(body)
 		assert.NilError(c, err)
-		assert.Check(c, is.Contains(string(out), "Successfully built"))
+		assert.Assert(c, is.Contains(string(out), "Successfully built"))
 		return out
 	}
 
@@ -313,7 +313,7 @@ func (s *DockerSuite) TestBuildOnBuildCache(c *check.C) {
 	out := build(dockerfile)
 
 	imageIDs := getImageIDsFromBuild(c, out)
-	assert.Check(c, is.Len(imageIDs, 2))
+	assert.Assert(c, is.Len(imageIDs, 2))
 	parentID, childID := imageIDs[0], imageIDs[1]
 
 	client := testEnv.APIClient()
@@ -406,7 +406,8 @@ func (s *DockerSuite) TestBuildAddRemoteNoDecompress(c *check.C) {
 }
 
 func (s *DockerSuite) TestBuildChownOnCopy(c *check.C) {
-	testRequires(c, DaemonIsLinux)
+	// new feature added in 1.31 - https://github.com/moby/moby/pull/34263
+	testRequires(c, DaemonIsLinux, MinimumAPIVersion("1.31"))
 	dockerfile := `FROM busybox
 		RUN echo 'test1:x:1001:1001::/bin:/bin/false' >> /etc/passwd
 		RUN echo 'test1:x:1001:' >> /etc/group
@@ -456,8 +457,10 @@ COPY file /file`
 
 		out, err := request.ReadBody(body)
 		assert.NilError(c, err)
+		assert.Assert(c, is.Contains(string(out), "Successfully built"))
 
 		ids := getImageIDsFromBuild(c, out)
+		assert.Assert(c, is.Len(ids, 1))
 		return ids[len(ids)-1]
 	}
 
@@ -495,8 +498,10 @@ ADD file /file`
 
 		out, err := request.ReadBody(body)
 		assert.NilError(c, err)
+		assert.Assert(c, is.Contains(string(out), "Successfully built"))
 
 		ids := getImageIDsFromBuild(c, out)
+		assert.Assert(c, is.Len(ids, 1))
 		return ids[len(ids)-1]
 	}
 
@@ -542,7 +547,7 @@ type buildLine struct {
 }
 
 func getImageIDsFromBuild(c *check.C, output []byte) []string {
-	ids := []string{}
+	var ids []string
 	for _, line := range bytes.Split(output, []byte("\n")) {
 		if len(line) == 0 {
 			continue

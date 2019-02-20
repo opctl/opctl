@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	req "github.com/docker/docker/internal/test/request"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"github.com/gotestyourself/gotestyourself/skip"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/skip"
 )
 
 func TestSessionCreate(t *testing.T) {
 	skip.If(t, !testEnv.DaemonInfo.ExperimentalBuild)
+	skip.If(t, testEnv.OSType == "windows", "FIXME")
 
 	defer setupTest(t)()
 
@@ -28,6 +29,7 @@ func TestSessionCreate(t *testing.T) {
 
 func TestSessionCreateWithBadUpgrade(t *testing.T) {
 	skip.If(t, !testEnv.DaemonInfo.ExperimentalBuild)
+	skip.If(t, testEnv.OSType == "windows", "FIXME")
 
 	res, body, err := req.Post("/session")
 	assert.NilError(t, err)

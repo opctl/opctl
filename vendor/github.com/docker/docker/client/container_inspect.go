@@ -2,12 +2,12 @@ package client // import "github.com/docker/docker/client"
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/url"
 
 	"github.com/docker/docker/api/types"
-	"golang.org/x/net/context"
 )
 
 // ContainerInspect returns the container information.
@@ -19,10 +19,10 @@ func (cli *Client) ContainerInspect(ctx context.Context, containerID string) (ty
 	if err != nil {
 		return types.ContainerJSON{}, wrapResponseError(err, serverResp, "container", containerID)
 	}
+	defer ensureReaderClosed(serverResp)
 
 	var response types.ContainerJSON
 	err = json.NewDecoder(serverResp.body).Decode(&response)
-	ensureReaderClosed(serverResp)
 	return response, err
 }
 

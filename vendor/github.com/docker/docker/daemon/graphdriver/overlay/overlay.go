@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/docker/docker/daemon/graphdriver"
 	"github.com/docker/docker/daemon/graphdriver/copy"
@@ -22,6 +23,7 @@ import (
 	"github.com/docker/docker/pkg/idtools"
 	"github.com/docker/docker/pkg/locker"
 	"github.com/docker/docker/pkg/mount"
+	"github.com/docker/docker/pkg/parsers"
 	"github.com/docker/docker/pkg/system"
 	"github.com/opencontainers/selinux/go-selinux/label"
 	"github.com/sirupsen/logrus"
@@ -95,6 +97,8 @@ func (d *naiveDiffDriverWithApply) ApplyDiff(id, parent string, diff io.Reader) 
 // of that. This means all child images share file (but not directory)
 // data with the parent.
 
+type overlayOptions struct{}
+
 // Driver contains information about the home directory and the list of active mounts that are created using this driver.
 type Driver struct {
 	home          string
@@ -115,6 +119,10 @@ func init() {
 // If an overlay filesystem is not supported over an existing filesystem then
 // error graphdriver.ErrIncompatibleFS is returned.
 func Init(home string, options []string, uidMaps, gidMaps []idtools.IDMap) (graphdriver.Driver, error) {
+	_, err := parseOptions(options)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := supportsOverlay(); err != nil {
 		return nil, graphdriver.ErrNotSupported
@@ -160,7 +168,7 @@ func Init(home string, options []string, uidMaps, gidMaps []idtools.IDMap) (grap
 		return nil, err
 	}
 	// Create the driver home dir
-	if err := idtools.MkdirAllAndChown(home, 0700, idtools.IDPair{rootUID, rootGID}); err != nil {
+	if err := idtools.MkdirAllAndChown(home, 0700, idtools.Identity{UID: rootUID, GID: rootGID}); err != nil {
 		return nil, err
 	}
 
@@ -174,6 +182,22 @@ func Init(home string, options []string, uidMaps, gidMaps []idtools.IDMap) (grap
 	}
 
 	return NaiveDiffDriverWithApply(d, uidMaps, gidMaps), nil
+}
+
+func parseOptions(options []string) (*overlayOptions, error) {
+	o := &overlayOptions{}
+	for _, option := range options {
+		key, _, err := parsers.ParseKeyValueOpt(option)
+		if err != nil {
+			return nil, err
+		}
+		key = strings.ToLower(key)
+		switch key {
+		default:
+			return nil, fmt.Errorf("overlay: unknown option %s", key)
+		}
+	}
+	return o, nil
 }
 
 func supportsOverlay() error {
@@ -267,7 +291,7 @@ func (d *Driver) Create(id, parent string, opts *graphdriver.CreateOpts) (retErr
 	if err != nil {
 		return err
 	}
-	root := idtools.IDPair{UID: rootUID, GID: rootGID}
+	root := idtools.Identity{UID: rootUID, GID: rootGID}
 
 	if err := idtools.MkdirAllAndChown(path.Dir(dir), 0700, root); err != nil {
 		return err
@@ -342,6 +366,9 @@ func (d *Driver) dir(id string) string {
 
 // Remove cleans the directories that are created for this id.
 func (d *Driver) Remove(id string) error {
+	if id == "" {
+		return fmt.Errorf("refusing to remove the directories: id is empty")
+	}
 	d.locker.Lock(id)
 	defer d.locker.Unlock(id)
 	return system.EnsureRemoveAll(d.dir(id))
@@ -386,7 +413,7 @@ func (d *Driver) Get(id, mountLabel string) (_ containerfs.ContainerFS, err erro
 	if err != nil {
 		return nil, err
 	}
-	if err := idtools.MkdirAndChown(mergedDir, 0700, idtools.IDPair{rootUID, rootGID}); err != nil {
+	if err := idtools.MkdirAndChown(mergedDir, 0700, idtools.Identity{UID: rootUID, GID: rootGID}); err != nil {
 		return nil, err
 	}
 	var (

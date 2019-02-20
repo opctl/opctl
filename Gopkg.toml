@@ -50,40 +50,12 @@ ignored = ["github.com/onsi/gomega", "github.com/onsi/ginkgo"]
   name = "github.com/golang-utils/lockfile"
 
 [[constraint]]
-  name = "github.com/gorilla/handlers"
-  version = "1.2.1"
-
-[[constraint]]
-  name = "github.com/gorilla/mux"
-  version = "1.5.0"
-
-[[constraint]]
-  name = "github.com/jawher/mow.cli"
-  revision = "0de3d3b4ed00f261460d12ecde4efa90fbfcd8ed"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/opspec-io/sdk-golang"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/peterh/liner"
-
-[[constraint]]
   name = "github.com/pkg/errors"
   version = "0.8.0"
 
 [[constraint]]
   name = "github.com/rakyll/statik"
   version = "0.1.1"
-
-[[override]]
-  branch = "master"
-  name = "github.com/multiformats/go-multiaddr"
-
-[[override]]
-  branch = "master"
-  name = "github.com/multiformats/go-multihash"
 
 [[override]]
   branch = "master"

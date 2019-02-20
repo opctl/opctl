@@ -132,7 +132,7 @@ func (daemon *Daemon) setupIpcDirs(c *container.Container) error {
 		fallthrough
 
 	case ipcMode.IsShareable():
-		rootIDs := daemon.idMappings.RootPair()
+		rootIDs := daemon.idMapping.RootPair()
 		if !c.HasMountFor("/dev/shm") {
 			shmPath, err := c.ShmResourcePath()
 			if err != nil {
@@ -179,7 +179,7 @@ func (daemon *Daemon) setupSecretDir(c *container.Container) (setupErr error) {
 	}
 
 	// retrieve possible remapped range start for root UID, GID
-	rootIDs := daemon.idMappings.RootPair()
+	rootIDs := daemon.idMapping.RootPair()
 
 	for _, s := range c.SecretReferences {
 		// TODO (ehazlett): use type switch when more are supported
@@ -278,7 +278,7 @@ func (daemon *Daemon) setupSecretDir(c *container.Container) (setupErr error) {
 // In practice this is using a tmpfs mount and is used for both "configs" and "secrets"
 func (daemon *Daemon) createSecretsDir(c *container.Container) error {
 	// retrieve possible remapped range start for root UID, GID
-	rootIDs := daemon.idMappings.RootPair()
+	rootIDs := daemon.idMapping.RootPair()
 	dir, err := c.SecretMountPath()
 	if err != nil {
 		return errors.Wrap(err, "error getting container secrets dir")
@@ -304,7 +304,7 @@ func (daemon *Daemon) remountSecretDir(c *container.Container) error {
 	if err := label.Relabel(dir, c.MountLabel, false); err != nil {
 		logrus.WithError(err).WithField("dir", dir).Warn("Error while attempting to set selinux label")
 	}
-	rootIDs := daemon.idMappings.RootPair()
+	rootIDs := daemon.idMapping.RootPair()
 	tmpfsOwnership := fmt.Sprintf("uid=%d,gid=%d", rootIDs.UID, rootIDs.GID)
 
 	// remount secrets ro
@@ -321,7 +321,7 @@ func (daemon *Daemon) cleanupSecretDir(c *container.Container) {
 		logrus.WithError(err).WithField("container", c.ID).Warn("error getting secrets mount path for container")
 	}
 	if err := mount.RecursiveUnmount(dir); err != nil {
-		logrus.WithField("dir", dir).WithError(err).Warn("Error while attmepting to unmount dir, this may prevent removal of container.")
+		logrus.WithField("dir", dir).WithError(err).Warn("Error while attempting to unmount dir, this may prevent removal of container.")
 	}
 	if err := os.RemoveAll(dir); err != nil && !os.IsNotExist(err) {
 		logrus.WithField("dir", dir).WithError(err).Error("Error removing dir.")
@@ -351,10 +351,6 @@ func killProcessDirectly(cntr *container.Container) error {
 	return nil
 }
 
-func detachMounted(path string) error {
-	return unix.Unmount(path, unix.MNT_DETACH)
-}
-
 func isLinkable(child *container.Container) bool {
 	// A container is linkable only if it belongs to the default network
 	_, ok := child.NetworkSettings.Networks[runconfig.DefaultDaemonNetworkMode().NetworkName()]
@@ -369,8 +365,16 @@ func (daemon *Daemon) isNetworkHotPluggable() bool {
 	return true
 }
 
-func setupPathsAndSandboxOptions(container *container.Container, sboxOptions *[]libnetwork.SandboxOption) error {
+func (daemon *Daemon) setupPathsAndSandboxOptions(container *container.Container, sboxOptions *[]libnetwork.SandboxOption) error {
 	var err error
+
+	if container.HostConfig.NetworkMode.IsHost() {
+		// Point to the host files, so that will be copied into the container running in host mode
+		*sboxOptions = append(*sboxOptions, libnetwork.OptionOriginHostsPath("/etc/hosts"))
+		*sboxOptions = append(*sboxOptions, libnetwork.OptionOriginResolvConfPath("/etc/resolv.conf"))
+	} else {
+		*sboxOptions = append(*sboxOptions, libnetwork.OptionOriginResolvConfPath(daemon.configStore.GetResolvConf()))
+	}
 
 	container.HostsPath, err = container.GetRootResourcePath("hosts")
 	if err != nil {
@@ -399,5 +403,5 @@ func (daemon *Daemon) setupContainerMountsRoot(c *container.Container) error {
 	if err != nil {
 		return err
 	}
-	return idtools.MkdirAllAndChown(p, 0700, daemon.idMappings.RootPair())
+	return idtools.MkdirAllAndChown(p, 0700, daemon.idMapping.RootPair())
 }

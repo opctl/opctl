@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,7 +18,6 @@ import (
 	"github.com/docker/docker/integration-cli/checker"
 	"github.com/docker/docker/internal/test/request"
 	"github.com/go-check/check"
-	"golang.org/x/net/context"
 )
 
 var expectedNetworkInterfaceStats = strings.Split("rx_bytes rx_dropped rx_errors rx_packets tx_bytes tx_dropped tx_errors tx_packets", " ")
@@ -97,7 +97,7 @@ func (s *DockerSuite) TestAPIStatsStoppedContainerInGoroutines(c *check.C) {
 }
 
 func (s *DockerSuite) TestAPIStatsNetworkStats(c *check.C) {
-	testRequires(c, SameHostDaemon)
+	testRequires(c, testEnv.IsLocalDaemon)
 
 	out := runSleepingContainer(c)
 	id := strings.TrimSpace(out)
@@ -165,7 +165,7 @@ func (s *DockerSuite) TestAPIStatsNetworkStats(c *check.C) {
 
 func (s *DockerSuite) TestAPIStatsNetworkStatsVersioning(c *check.C) {
 	// Windows doesn't support API versions less than 1.25, so no point testing 1.17 .. 1.21
-	testRequires(c, SameHostDaemon, DaemonIsLinux)
+	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
 
 	out := runSleepingContainer(c)
 	id := strings.TrimSpace(out)
@@ -262,7 +262,7 @@ func jsonBlobHasGTE121NetworkStats(blob map[string]interface{}) bool {
 
 func (s *DockerSuite) TestAPIStatsContainerNotFound(c *check.C) {
 	testRequires(c, DaemonIsLinux)
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	c.Assert(err, checker.IsNil)
 	defer cli.Close()
 

@@ -17,8 +17,6 @@
 package badger
 
 import (
-	"bytes"
-	"container/heap"
 	"encoding/binary"
 	"expvar"
 	"log"
@@ -27,7 +25,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
+
+	"github.com/dgraph-io/badger/options"
 
 	"golang.org/x/net/trace"
 
@@ -41,6 +42,7 @@ var (
 	badgerPrefix = []byte("!badger!")     // Prefix for internal keys used by badger.
 	head         = []byte("!badger!head") // For storing value offset for replay.
 	txnKey       = []byte("!badger!txn")  // For indicating end of entries in txn.
+	badgerMove   = []byte("!badger!move") // For key-value pairs which got moved during GC.
 )
 
 type closers struct {
@@ -72,6 +74,8 @@ type DB struct {
 	writeCh   chan *request
 	flushChan chan flushTask // For flushing memtables.
 
+	blockWrites int32
+
 	orc *oracle
 }
 
@@ -99,7 +103,7 @@ func replayFunction(out *DB) func(Entry, valuePointer) error {
 	first := true
 	return func(e Entry, vp valuePointer) error { // Function for replaying.
 		if first {
-			out.elog.Printf("First key=%s\n", e.Key)
+			out.elog.Printf("First key=%q\n", e.Key)
 		}
 		first = false
 
@@ -166,12 +170,24 @@ func Open(opt Options) (db *DB, err error) {
 	opt.maxBatchSize = (15 * opt.MaxTableSize) / 100
 	opt.maxBatchCount = opt.maxBatchSize / int64(skl.MaxNodeSize)
 
+	if opt.ValueThreshold > math.MaxUint16-16 {
+		return nil, ErrValueThreshold
+	}
+
+	if opt.ReadOnly {
+		// Can't truncate if the DB is read only.
+		opt.Truncate = false
+	}
+
 	for _, path := range []string{opt.Dir, opt.ValueDir} {
 		dirExists, err := exists(path)
 		if err != nil {
 			return nil, y.Wrapf(err, "Invalid Dir: %q", path)
 		}
 		if !dirExists {
+			if opt.ReadOnly {
+				return nil, y.Wrapf(err, "Cannot find Dir for read-only open: %q", path)
+			}
 			// Try to create the directory
 			err = os.Mkdir(path, 0700)
 			if err != nil {
@@ -187,8 +203,8 @@ func Open(opt Options) (db *DB, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	dirLockGuard, err := acquireDirectoryLock(opt.Dir, lockFile)
+	var dirLockGuard, valueDirLockGuard *directoryLockGuard
+	dirLockGuard, err = acquireDirectoryLock(opt.Dir, lockFile, opt.ReadOnly)
 	if err != nil {
 		return nil, err
 	}
@@ -197,9 +213,8 @@ func Open(opt Options) (db *DB, err error) {
 			_ = dirLockGuard.release()
 		}
 	}()
-	var valueDirLockGuard *directoryLockGuard
 	if absValueDir != absDir {
-		valueDirLockGuard, err = acquireDirectoryLock(opt.ValueDir, lockFile)
+		valueDirLockGuard, err = acquireDirectoryLock(opt.ValueDir, lockFile, opt.ReadOnly)
 		if err != nil {
 			return nil, err
 		}
@@ -212,7 +227,11 @@ func Open(opt Options) (db *DB, err error) {
 	if !(opt.ValueLogFileSize <= 2<<30 && opt.ValueLogFileSize >= 1<<20) {
 		return nil, ErrValueLogSize
 	}
-	manifestFile, manifest, err := openOrCreateManifestFile(opt.Dir)
+	if !(opt.ValueLogLoadingMode == options.FileIO ||
+		opt.ValueLogLoadingMode == options.MemoryMap) {
+		return nil, ErrInvalidLoadingMode
+	}
+	manifestFile, manifest, err := openOrCreateManifestFile(opt.Dir, opt.ReadOnly)
 	if err != nil {
 		return nil, err
 	}
@@ -223,12 +242,12 @@ func Open(opt Options) (db *DB, err error) {
 	}()
 
 	orc := &oracle{
-		isManaged:      opt.managedTxns,
-		nextCommit:     1,
-		pendingCommits: make(map[uint64]struct{}),
-		commits:        make(map[uint64]uint64),
+		isManaged:  opt.managedTxns,
+		nextCommit: 1,
+		commits:    make(map[uint64]uint64),
+		readMark:   y.WaterMark{},
 	}
-	heap.Init(&orc.commitMark)
+	orc.readMark.Init()
 
 	db = &DB{
 		imm:           make([]*skl.Skiplist, 0, opt.NumMemtables),
@@ -253,11 +272,13 @@ func Open(opt Options) (db *DB, err error) {
 		return nil, err
 	}
 
-	db.closers.compactors = y.NewCloser(1)
-	db.lc.startCompact(db.closers.compactors)
+	if !opt.ReadOnly {
+		db.closers.compactors = y.NewCloser(1)
+		db.lc.startCompact(db.closers.compactors)
 
-	db.closers.memtable = y.NewCloser(1)
-	go db.flushMemtable(db.closers.memtable) // Need levels controller to be up.
+		db.closers.memtable = y.NewCloser(1)
+		go db.flushMemtable(db.closers.memtable) // Need levels controller to be up.
+	}
 
 	if err = db.vlog.Open(db, opt); err != nil {
 		return nil, err
@@ -313,7 +334,8 @@ func Open(opt Options) (db *DB, err error) {
 }
 
 // Close closes a DB. It's crucial to call it to ensure all the pending updates
-// make their way to disk.
+// make their way to disk. Calling DB.Close() multiple times is not safe and would
+// cause panic.
 func (db *DB) Close() (err error) {
 	db.elog.Printf("Closing database")
 	// Stop value GC first.
@@ -360,11 +382,31 @@ func (db *DB) Close() (err error) {
 	}
 	db.flushChan <- flushTask{nil, valuePointer{}} // Tell flusher to quit.
 
-	db.closers.memtable.Wait()
-	db.elog.Printf("Memtable flushed")
+	if db.closers.memtable != nil {
+		db.closers.memtable.Wait()
+		db.elog.Printf("Memtable flushed")
+	}
+	if db.closers.compactors != nil {
+		db.closers.compactors.SignalAndWait()
+		db.elog.Printf("Compaction finished")
+	}
 
-	db.closers.compactors.SignalAndWait()
-	db.elog.Printf("Compaction finished")
+	// Force Compact L0
+	// We don't need to care about cstatus since no parallel compaction is running.
+	cd := compactDef{
+		elog:      trace.New("Badger", "Compact"),
+		thisLevel: db.lc.levels[0],
+		nextLevel: db.lc.levels[1],
+	}
+	cd.elog.SetMaxEvents(100)
+	defer cd.elog.Finish()
+	if db.lc.fillTablesL0(&cd) {
+		if err := db.lc.runCompactDef(0, cd); err != nil {
+			cd.elog.LazyPrintf("\tLOG Compact FAILED with error: %+v: %+v", err, cd)
+		}
+	} else {
+		cd.elog.LazyPrintf("fillTables failed for level zero. No compaction required")
+	}
 
 	if lcErr := db.lc.close(); err == nil {
 		err = errors.Wrap(lcErr, "DB.Close")
@@ -374,8 +416,10 @@ func (db *DB) Close() (err error) {
 
 	db.elog.Finish()
 
-	if guardErr := db.dirLockGuard.release(); err == nil {
-		err = errors.Wrap(guardErr, "DB.Close")
+	if db.dirLockGuard != nil {
+		if guardErr := db.dirLockGuard.release(); err == nil {
+			err = errors.Wrap(guardErr, "DB.Close")
+		}
 	}
 	if db.valueDirGuard != nil {
 		if guardErr := db.valueDirGuard.release(); err == nil {
@@ -445,6 +489,12 @@ func (db *DB) getMemTables() ([]*skl.Skiplist, func()) {
 
 // get returns the value in memtable or disk for given key.
 // Note that value will include meta byte.
+//
+// IMPORTANT: We should never write an entry with an older timestamp for the same key, We need to
+// maintain this invariant to search for the latest value of a key, or else we need to search in all
+// tables and find the max version among them.  To maintain this invariant, we also need to ensure
+// that all versions of a key are always present in the same table from level 1, because compaction
+// can push any table down.
 func (db *DB) get(key []byte) (y.ValueStruct, error) {
 	tables, decr := db.getMemTables() // Lock should be released.
 	defer decr()
@@ -548,8 +598,12 @@ func (db *DB) writeRequests(reqs []*request) error {
 			continue
 		}
 		count += len(b.Entries)
-		for err := db.ensureRoomForWrite(); err != nil; err = db.ensureRoomForWrite() {
-			db.elog.Printf("Making room for writes")
+		var i uint64
+		for err := db.ensureRoomForWrite(); err == errNoRoom; err = db.ensureRoomForWrite() {
+			i++
+			if i%100 == 0 {
+				db.elog.Printf("Making room for writes")
+			}
 			// We need to poll a bit because both hasRoomForWrite and the flusher need access to s.imm.
 			// When flushChan is full and you are blocked there, and the flusher is trying to update s.imm,
 			// you will get a deadlock.
@@ -571,6 +625,9 @@ func (db *DB) writeRequests(reqs []*request) error {
 }
 
 func (db *DB) sendToWriteCh(entries []*Entry) (*request, error) {
+	if atomic.LoadInt32(&db.blockWrites) == 1 {
+		return nil, ErrBlockedWrites
+	}
 	var count, size int64
 	for _, e := range entries {
 		size += int64(e.estimateSize(db.opt.ValueThreshold))
@@ -661,11 +718,7 @@ func (db *DB) batchSet(entries []*Entry) error {
 		return err
 	}
 
-	req.Wg.Wait()
-	req.Entries = nil
-	err = req.Err
-	requestPool.Put(req)
-	return err
+	return req.Wait()
 }
 
 // batchSetAsync is the asynchronous version of batchSet. It accepts a callback
@@ -680,10 +733,7 @@ func (db *DB) batchSetAsync(entries []*Entry, f func(error)) error {
 		return err
 	}
 	go func() {
-		req.Wg.Wait()
-		err := req.Err
-		req.Entries = nil
-		requestPool.Put(req)
+		err := req.Wait()
 		// Write is complete. Let's call the callback function now.
 		f(err)
 	}()
@@ -728,7 +778,7 @@ func arenaSize(opt Options) int64 {
 	return opt.MaxTableSize + opt.maxBatchSize + opt.maxBatchCount*int64(skl.MaxNodeSize)
 }
 
-// WriteLevel0Table flushes memtable. It drops deleteValues.
+// WriteLevel0Table flushes memtable.
 func writeLevel0Table(s *skl.Skiplist, f *os.File) error {
 	iter := s.NewIterator()
 	defer iter.Close()
@@ -748,6 +798,8 @@ type flushTask struct {
 	vptr valuePointer
 }
 
+// TODO: Ensure that this function doesn't return, or is handled by another wrapper function.
+// Otherwise, we would have no goroutine which can flush memtables.
 func (db *DB) flushMemtable(lc *y.Closer) error {
 	defer lc.Done()
 
@@ -804,7 +856,12 @@ func (db *DB) flushMemtable(lc *y.Closer) error {
 
 		// Update s.imm. Need a lock.
 		db.Lock()
-		y.AssertTrue(ft.mt == db.imm[0]) //For now, single threaded.
+		// This is a single-threaded operation. ft.mt corresponds to the head of
+		// db.imm list. Once we flush it, we advance db.imm. The next ft.mt
+		// which would arrive here would match db.imm[0], because we acquire a
+		// lock over DB when pushing to flushChan.
+		// TODO: This logic is dirty AF. Any change and this could easily break.
+		y.AssertTrue(ft.mt == db.imm[0])
 		db.imm = db.imm[1:]
 		ft.mt.DecrRef() // Return memory.
 		db.Unlock()
@@ -859,7 +916,6 @@ func (db *DB) calculateSize() {
 		_, vlogSize = totalSize(db.opt.ValueDir)
 	}
 	y.VlogSize.Set(db.opt.Dir, newInt(vlogSize))
-
 }
 
 func (db *DB) updateSize(lc *y.Closer) {
@@ -878,146 +934,33 @@ func (db *DB) updateSize(lc *y.Closer) {
 	}
 }
 
-// PurgeVersionsBelow will delete all versions of a key below the specified version
-func (db *DB) PurgeVersionsBelow(key []byte, ts uint64) error {
-	txn := db.NewTransaction(false)
-	defer txn.Discard()
-	return db.purgeVersionsBelow(txn, key, ts)
-}
-
-func (db *DB) purgeVersionsBelow(txn *Txn, key []byte, ts uint64) error {
-	opts := DefaultIteratorOptions
-	opts.AllVersions = true
-	opts.PrefetchValues = false
-	it := txn.NewIterator(opts)
-	defer it.Close()
-
-	var entries []*Entry
-
-	for it.Seek(key); it.ValidForPrefix(key); it.Next() {
-		item := it.Item()
-		if !bytes.Equal(key, item.Key()) || item.Version() >= ts {
-			continue
-		}
-
-		// Found an older version. Mark for deletion
-		entries = append(entries,
-			&Entry{
-				Key:  y.KeyWithTs(key, item.version),
-				meta: bitDelete,
-			})
-		db.vlog.updateGCStats(item)
-	}
-	return db.batchSet(entries)
-}
-
-// PurgeOlderVersions deletes older versions of all keys.
+// RunValueLogGC triggers a value log garbage collection.
 //
-// This function could be called prior to doing garbage collection to clean up
-// older versions that are no longer needed. The caller must make sure that
-// there are no long-running read transactions running before this function is
-// called, otherwise they will not work as expected.
-func (db *DB) PurgeOlderVersions() error {
-	return db.View(func(txn *Txn) error {
-		opts := DefaultIteratorOptions
-		opts.AllVersions = true
-		opts.PrefetchValues = false
-		it := txn.NewIterator(opts)
-		defer it.Close()
-
-		var entries []*Entry
-		var lastKey []byte
-		var count, size int
-		var wg sync.WaitGroup
-		errChan := make(chan error, 1)
-
-		// func to check for pending error before sending off a batch for writing
-		batchSetAsyncIfNoErr := func(entries []*Entry) error {
-			select {
-			case err := <-errChan:
-				return err
-			default:
-				wg.Add(1)
-				return txn.db.batchSetAsync(entries, func(err error) {
-					defer wg.Done()
-					if err != nil {
-						select {
-						case errChan <- err:
-						default:
-						}
-					}
-				})
-			}
-		}
-
-		for it.Rewind(); it.Valid(); it.Next() {
-			item := it.Item()
-			if !bytes.Equal(lastKey, item.Key()) {
-				lastKey = y.SafeCopy(lastKey, item.Key())
-				continue
-			}
-			// Found an older version. Mark for deletion
-			e := &Entry{
-				Key:  y.KeyWithTs(lastKey, item.version),
-				meta: bitDelete,
-			}
-			db.vlog.updateGCStats(item)
-			curSize := e.estimateSize(db.opt.ValueThreshold)
-
-			// Batch up min(1000, maxBatchCount) entries at a time and write
-			// Ensure that total batch size doesn't exceed maxBatchSize
-			if count == 1000 || count+1 >= int(db.opt.maxBatchCount) ||
-				size+curSize >= int(db.opt.maxBatchSize) {
-				if err := batchSetAsyncIfNoErr(entries); err != nil {
-					return err
-				}
-				count = 0
-				size = 0
-				entries = []*Entry{}
-			}
-			size += curSize
-			count++
-			entries = append(entries, e)
-		}
-
-		// Write last batch pending deletes
-		if count > 0 {
-			if err := batchSetAsyncIfNoErr(entries); err != nil {
-				return err
-			}
-		}
-
-		wg.Wait()
-
-		select {
-		case err := <-errChan:
-			return err
-		default:
-			return nil
-		}
-	})
-}
-
-// RunValueLogGC would trigger a value log garbage collection with no guarantees that a call would
-// result in a space reclaim. Every run would in the best case rewrite only one log file. So,
-// repeated calls may be necessary.
+// It picks value log files to perform GC based on statistics that are collected
+// duing compactions.  If no such statistics are available, then log files are
+// picked in random order. The process stops as soon as the first log file is
+// encountered which does not result in garbage collection.
 //
-// The way it currently works is that it would randomly pick up a value log file, and sample it. If
-// the sample shows that we can discard at least discardRatio space of that file, it would be
-// rewritten. Else, an ErrNoRewrite error would be returned indicating that the GC didn't result in
-// any file rewrite.
+// When a log file is picked, it is first sampled. If the sample shows that we
+// can discard at least discardRatio space of that file, it would be rewritten.
 //
-// We recommend setting discardRatio to 0.5, thus indicating that a file be rewritten if half the
-// space can be discarded.  This results in a lifetime value log write amplification of 2 (1 from
-// original write + 0.5 rewrite + 0.25 + 0.125 + ... = 2). Setting it to higher value would result
-// in fewer space reclaims, while setting it to a lower value would result in more space reclaims at
-// the cost of increased activity on the LSM tree. discardRatio must be in the range (0.0, 1.0),
-// both endpoints excluded, otherwise an ErrInvalidRequest is returned.
+// If a call to RunValueLogGC results in no rewrites, then an ErrNoRewrite is
+// thrown indicating that the call resulted in no file rewrites.
 //
-// Only one GC is allowed at a time. If another value log GC is running, or DB has been closed, this
-// would return an ErrRejected.
+// We recommend setting discardRatio to 0.5, thus indicating that a file be
+// rewritten if half the space can be discarded.  This results in a lifetime
+// value log write amplification of 2 (1 from original write + 0.5 rewrite +
+// 0.25 + 0.125 + ... = 2). Setting it to higher value would result in fewer
+// space reclaims, while setting it to a lower value would result in more space
+// reclaims at the cost of increased activity on the LSM tree. discardRatio
+// must be in the range (0.0, 1.0), both endpoints excluded, otherwise an
+// ErrInvalidRequest is returned.
 //
-// Note: Every time GC is run, it would produce a spike of activity on the LSM tree.
+// Only one GC is allowed at a time. If another value log GC is running, or DB
+// has been closed, this would return an ErrRejected.
+//
+// Note: Every time GC is run, it would produce a spike of activity on the LSM
+// tree.
 func (db *DB) RunValueLogGC(discardRatio float64) error {
 	if discardRatio >= 1.0 || discardRatio <= 0.0 {
 		return ErrInvalidRequest
@@ -1077,6 +1020,24 @@ func (seq *Sequence) Next() (uint64, error) {
 	return val, nil
 }
 
+// Release the leased sequence to avoid wasted integers. This should be done right
+// before closing the associated DB. However it is valid to use the sequence after
+// it was released, causing a new lease with full bandwidth.
+func (seq *Sequence) Release() error {
+	seq.Lock()
+	defer seq.Unlock()
+	err := seq.db.Update(func(txn *Txn) error {
+		var buf [8]byte
+		binary.BigEndian.PutUint64(buf[:], seq.next)
+		return txn.Set(seq.key, buf[:])
+	})
+	if err != nil {
+		return err
+	}
+	seq.leased = seq.next
+	return nil
+}
+
 func (seq *Sequence) updateLease() error {
 	return seq.db.Update(func(txn *Txn) error {
 		item, err := txn.Get(seq.key)
@@ -1124,4 +1085,168 @@ func (db *DB) GetSequence(key []byte, bandwidth uint64) (*Sequence, error) {
 	}
 	err := seq.updateLease()
 	return seq, err
+}
+
+func (db *DB) Tables() []TableInfo {
+	return db.lc.getTableInfo()
+}
+
+// MaxBatchCount returns max possible entries in batch
+func (db *DB) MaxBatchCount() int64 {
+	return db.opt.maxBatchCount
+}
+
+// MaxBatchCount returns max possible batch size
+func (db *DB) MaxBatchSize() int64 {
+	return db.opt.maxBatchSize
+}
+
+// MergeOperator represents a Badger merge operator.
+type MergeOperator struct {
+	sync.RWMutex
+	f      MergeFunc
+	db     *DB
+	key    []byte
+	closer *y.Closer
+}
+
+// MergeFunc accepts two byte slices, one representing an existing value, and
+// another representing a new value that needs to be ‘merged’ into it. MergeFunc
+// contains the logic to perform the ‘merge’ and return an updated value.
+// MergeFunc could perform operations like integer addition, list appends etc.
+// Note that the ordering of the operands is unspecified, so the merge func
+// should either be agnostic to ordering or do additional handling if ordering
+// is required.
+type MergeFunc func(existing, val []byte) []byte
+
+// GetMergeOperator creates a new MergeOperator for a given key and returns a
+// pointer to it. It also fires off a goroutine that performs a compaction using
+// the merge function that runs periodically, as specified by dur.
+func (db *DB) GetMergeOperator(key []byte,
+	f MergeFunc, dur time.Duration) *MergeOperator {
+	op := &MergeOperator{
+		f:      f,
+		db:     db,
+		key:    key,
+		closer: y.NewCloser(1),
+	}
+
+	go op.runCompactions(dur)
+	return op
+}
+
+var errNoMerge = errors.New("No need for merge")
+
+func (op *MergeOperator) iterateAndMerge(txn *Txn) (val []byte, err error) {
+	opt := DefaultIteratorOptions
+	opt.AllVersions = true
+	it := txn.NewIterator(opt)
+	defer it.Close()
+
+	var numVersions int
+	for it.Rewind(); it.ValidForPrefix(op.key); it.Next() {
+		item := it.Item()
+		numVersions++
+		if numVersions == 1 {
+			val, err = item.ValueCopy(val)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			newVal, err := item.Value()
+			if err != nil {
+				return nil, err
+			}
+			val = op.f(val, newVal)
+		}
+		if item.DiscardEarlierVersions() {
+			break
+		}
+	}
+	if numVersions == 0 {
+		return nil, ErrKeyNotFound
+	} else if numVersions == 1 {
+		return val, errNoMerge
+	}
+	return val, nil
+}
+
+func (op *MergeOperator) compact() error {
+	op.Lock()
+	defer op.Unlock()
+	err := op.db.Update(func(txn *Txn) error {
+		var (
+			val []byte
+			err error
+		)
+		val, err = op.iterateAndMerge(txn)
+		if err != nil {
+			return err
+		}
+
+		// Write value back to db
+		if err := txn.SetWithDiscard(op.key, val, 0); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err == ErrKeyNotFound || err == errNoMerge {
+		// pass.
+	} else if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (op *MergeOperator) runCompactions(dur time.Duration) {
+	ticker := time.NewTicker(dur)
+	defer op.closer.Done()
+	var stop bool
+	for {
+		select {
+		case <-op.closer.HasBeenClosed():
+			stop = true
+		case <-ticker.C: // wait for tick
+		}
+		if err := op.compact(); err != nil {
+			log.Printf("Error while running merge operation: %s", err)
+		}
+		if stop {
+			ticker.Stop()
+			break
+		}
+	}
+}
+
+// Add records a value in Badger which will eventually be merged by a background
+// routine into the values that were recorded by previous invocations to Add().
+func (op *MergeOperator) Add(val []byte) error {
+	return op.db.Update(func(txn *Txn) error {
+		return txn.Set(op.key, val)
+	})
+}
+
+// Get returns the latest value for the merge operator, which is derived by
+// applying the merge function to all the values added so far.
+//
+// If Add has not been called even once, Get will return ErrKeyNotFound.
+func (op *MergeOperator) Get() ([]byte, error) {
+	op.RLock()
+	defer op.RUnlock()
+	var existing []byte
+	err := op.db.View(func(txn *Txn) (err error) {
+		existing, err = op.iterateAndMerge(txn)
+		return err
+	})
+	if err == errNoMerge {
+		return existing, nil
+	}
+	return existing, err
+}
+
+// Stop waits for any pending merge to complete and then stops the background
+// goroutine.
+func (op *MergeOperator) Stop() {
+	op.closer.SignalAndWait()
 }

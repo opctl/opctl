@@ -1,0 +1,30 @@
+description: generates fakes for interfaces using 'go generate'
+name: gen-fakes
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+  path:
+    string:
+      description: relative path to file containing a 'go:generate counterfeiter' pre-processing directive
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+opspec: 0.1.6
+run:
+  container:
+    cmd:
+      - sh
+      - -ce
+      - |
+        echo "installing deps"
+        go get github.com/maxbrunsfeld/counterfeiter
+
+        echo "generating fakes"
+        go generate "$(path)"
+    dirs:
+      /go/src/github.com/opctl/sdk-golang: $(srcDir)
+    image: { ref: 'golang:1.11.5' }
+    workDir: /go/src/github.com/opctl/sdk-golang

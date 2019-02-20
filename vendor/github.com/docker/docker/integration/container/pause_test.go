@@ -9,20 +9,20 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/versions"
 	"github.com/docker/docker/integration/internal/container"
 	"github.com/docker/docker/internal/test/request"
-	"github.com/docker/docker/internal/testutil"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"github.com/gotestyourself/gotestyourself/poll"
-	"github.com/gotestyourself/gotestyourself/skip"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/poll"
+	"gotest.tools/skip"
 )
 
 func TestPause(t *testing.T) {
 	skip.If(t, testEnv.DaemonInfo.OSType == "windows" && testEnv.DaemonInfo.Isolation == "process")
 
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	cID := container.Run(t, ctx, client)
@@ -51,24 +51,24 @@ func TestPause(t *testing.T) {
 }
 
 func TestPauseFailsOnWindowsServerContainers(t *testing.T) {
-	skip.If(t, (testEnv.DaemonInfo.OSType != "windows" || testEnv.DaemonInfo.Isolation != "process"))
+	skip.If(t, testEnv.DaemonInfo.OSType != "windows" || testEnv.DaemonInfo.Isolation != "process")
 
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	cID := container.Run(t, ctx, client)
 	poll.WaitOn(t, container.IsInState(ctx, client, cID, "running"), poll.WithDelay(100*time.Millisecond))
 
 	err := client.ContainerPause(ctx, cID)
-	testutil.ErrorContains(t, err, "cannot pause Windows Server Containers")
+	assert.Check(t, is.ErrorContains(err, "cannot pause Windows Server Containers"))
 }
 
 func TestPauseStopPausedContainer(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
-
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
+	skip.If(t, versions.LessThan(testEnv.DaemonAPIVersion(), "1.31"), "broken in earlier versions")
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	cID := container.Run(t, ctx, client)
@@ -84,7 +84,7 @@ func TestPauseStopPausedContainer(t *testing.T) {
 }
 
 func getEventActions(t *testing.T, messages <-chan events.Message, errs <-chan error) []string {
-	actions := []string{}
+	var actions []string
 	for {
 		select {
 		case err := <-errs:

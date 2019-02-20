@@ -28,7 +28,9 @@ func (s *DockerSuite) TestLinksInvalidContainerTarget(c *check.C) {
 	// an invalid container target should produce an error
 	c.Assert(err, checker.NotNil, check.Commentf("out: %s", out))
 	// an invalid container target should produce an error
-	c.Assert(out, checker.Contains, "could not get container")
+	// note: convert the output to lowercase first as the error string
+	// capitalization was changed after API version 1.32
+	c.Assert(strings.ToLower(out), checker.Contains, "could not get container")
 }
 
 func (s *DockerSuite) TestLinksPingLinkedContainers(c *check.C) {
@@ -137,7 +139,7 @@ func (s *DockerSuite) TestLinksNotStartedParentNotFail(c *check.C) {
 
 func (s *DockerSuite) TestLinksHostsFilesInject(c *check.C) {
 	testRequires(c, DaemonIsLinux)
-	testRequires(c, SameHostDaemon, ExecSupport)
+	testRequires(c, testEnv.IsLocalDaemon, ExecSupport)
 
 	out, _ := dockerCmd(c, "run", "-itd", "--name", "one", "busybox", "top")
 	idOne := strings.TrimSpace(out)
@@ -155,7 +157,7 @@ func (s *DockerSuite) TestLinksHostsFilesInject(c *check.C) {
 
 func (s *DockerSuite) TestLinksUpdateOnRestart(c *check.C) {
 	testRequires(c, DaemonIsLinux)
-	testRequires(c, SameHostDaemon, ExecSupport)
+	testRequires(c, testEnv.IsLocalDaemon, ExecSupport)
 	dockerCmd(c, "run", "-d", "--name", "one", "busybox", "top")
 	out, _ := dockerCmd(c, "run", "-d", "--name", "two", "--link", "one:onetwo", "--link", "one:one", "busybox", "top")
 	id := strings.TrimSpace(string(out))

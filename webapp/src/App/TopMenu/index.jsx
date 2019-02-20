@@ -1,6 +1,6 @@
 import React from 'react'
 import './index.css'
-import MdDeHaze from 'react-icons/lib/md/dehaze'
+import { MdDehaze } from 'react-icons/md'
 
 export default ({ onCollapseToggled }) =>
   <div>
@@ -13,7 +13,7 @@ export default ({ onCollapseToggled }) =>
             e.preventDefault()
           }}
         >
-          <MdDeHaze size={30} />
+          <MdDehaze size={30} />
         </a>
       </div>
       <div className='menu-item logo'>

@@ -1,4 +1,4 @@
-description: runs the [opspec test suite](https://github.com/opspec-io/spec) against opctl. 
+description: runs the [opspec test suite](https://github.com/opctl/spec) against opctl. 
 name: test/system/opspec
 inputs:
   srcDir:

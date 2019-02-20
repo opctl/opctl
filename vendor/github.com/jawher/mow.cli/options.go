@@ -2,8 +2,10 @@ package cli
 
 import (
 	"flag"
-	"fmt"
 	"strings"
+
+	"github.com/jawher/mow.cli/internal/container"
+	"github.com/jawher/mow.cli/internal/values"
 )
 
 // BoolOpt describes a boolean option
@@ -229,51 +231,28 @@ The one letter names will then be called with a single dash (short option), the 
 The result will be stored in the value parameter (a value implementing the flag.Value interface) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) VarOpt(name string, value flag.Value, desc string) {
-	c.mkOpt(opt{name: name, desc: desc, value: value})
-}
-
-type opt struct {
-	name            string
-	desc            string
-	envVar          string
-	names           []string
-	hideValue       bool
-	valueSetFromEnv bool
-	valueSetByUser  *bool
-	value           flag.Value
-}
-
-func (o *opt) isBool() bool {
-	if bf, ok := o.value.(boolValued); ok {
-		return bf.IsBoolFlag()
-	}
-
-	return false
-}
-
-func (o *opt) String() string {
-	return fmt.Sprintf("Opt(%v)", o.names)
+	c.mkOpt(container.Container{Name: name, Desc: desc, Value: value})
 }
 
 func mkOptStrs(optName string) []string {
-	namesSl := strings.Split(optName, " ")
-	for i, name := range namesSl {
+	res := strings.Fields(optName)
+	for i, name := range res {
 		prefix := "-"
 		if len(name) > 1 {
 			prefix = "--"
 		}
-		namesSl[i] = prefix + name
+		res[i] = prefix + name
 	}
-	return namesSl
+	return res
 }
 
-func (c *Cmd) mkOpt(opt opt) {
-	opt.valueSetFromEnv = setFromEnv(opt.value, opt.envVar)
+func (c *Cmd) mkOpt(opt container.Container) {
+	opt.ValueSetFromEnv = values.SetFromEnv(opt.Value, opt.EnvVar)
 
-	opt.names = mkOptStrs(opt.name)
+	opt.Names = mkOptStrs(opt.Name)
 
 	c.options = append(c.options, &opt)
-	for _, name := range opt.names {
+	for _, name := range opt.Names {
 		c.optionsIdx[name] = &opt
 	}
 }

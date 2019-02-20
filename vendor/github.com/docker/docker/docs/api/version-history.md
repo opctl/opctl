@@ -13,9 +13,68 @@ keywords: "API, Docker, rcli, REST, documentation"
      will be rejected.
 -->
 
+## v1.40 API changes
+
+[Docker Engine API v1.40](https://docs.docker.com/engine/api/v1.40/) documentation
+
+* The `/_ping` endpoint can now be accessed both using `GET` or `HEAD` requests.
+  when accessed using a `HEAD` request, all headers are returned, but the body
+  is empty (`Content-Length: 0`). This change is not versioned, and affects all
+  API versions if the daemon has this patch. Clients are recommended to try
+  using `HEAD`, but fallback to `GET` if the `HEAD` requests fails.
+* `GET /_ping` and `HEAD /_ping` now set `Cache-Control` and `Pragma` headers to
+  prevent the result from being cached. This change is not versioned, and affects
+  all API versions if the daemon has this patch.
+* `GET /services` now returns `Sysctls` as part of the `ContainerSpec`.
+* `GET /services/{id}` now returns `Sysctls` as part of the `ContainerSpec`.
+* `POST /services/create` now accepts `Sysctls` as part of the `ContainerSpec`.
+* `POST /services/{id}/update` now accepts `Sysctls` as part of the `ContainerSpec`.
+* `GET /tasks` now  returns `Sysctls` as part of the `ContainerSpec`.
+* `GET /tasks/{id}` now  returns `Sysctls` as part of the `ContainerSpec`.
+* `GET /nodes` now supports a filter type `node.label` filter to filter nodes based
+  on the node.label. The format of the label filter is `node.label=<key>`/`node.label=<key>=<value>`
+  to return those with the specified labels, or `node.label!=<key>`/`node.label!=<key>=<value>`
+  to return those without the specified labels.
+* `POST /containers/create`, `GET /containers/{id}/json`, and `GET /containers/json` now supports
+  `BindOptions.NonRecursive`.
+* `POST /swarm/init` now accepts a `DataPathPort` property to set data path port number.
+* `GET /info` now returns information about `DataPathPort` that is currently used in swarm
+* `GET /swarm` endpoint now returns DataPathPort info
+* `POST /containers/create` now takes `KernelMemoryTCP` field to set hard limit for kernel TCP buffer memory.
+* `GET /service` now  returns `MaxReplicas` as part of the `Placement`.
+* `GET /service/{id}` now  returns `MaxReplicas` as part of the `Placement`.
+* `POST /service/create` and `POST /services/(id or name)/update` now take the field `MaxReplicas`
+  as part of the service `Placement`, allowing to specify maximum replicas per node for the service.
+* `GET /containers` now returns `Capabilities` field as part of the `HostConfig`.
+* `GET /containers/{id}` now returns `Capabilities` field as part of the `HostConfig`.
+* `POST /containers/create` now takes `Capabilities` field to set exact list kernel capabilities to be available for      container (this overrides the default set).
+
+## V1.39 API changes
+
+[Docker Engine API v1.39](https://docs.docker.com/engine/api/v1.39/) documentation
+
+* `GET /info` now returns an empty string, instead of `<unknown>` for `KernelVersion`
+  and `OperatingSystem` if the daemon was unable to obtain this information.
+* `GET /info` now returns information about the product license, if a license
+  has been applied to the daemon.
+* `GET /info` now returns a `Warnings` field, containing warnings and informational
+  messages about missing features, or issues related to the daemon configuration.
+* `POST /swarm/init` now accepts a `DefaultAddrPool` property to set global scope default address pool
+* `POST /swarm/init` now accepts a `SubnetSize` property to set global scope networks by giving the
+  length of the subnet masks for every such network
+
+## V1.38 API changes
+
+[Docker Engine API v1.38](https://docs.docker.com/engine/api/v1.38/) documentation
+
+
+* `GET /tasks` and `GET /tasks/{id}` now return a `NetworkAttachmentSpec` field,
+  containing the `ContainerID` for non-service containers connected to "attachable"
+  swarm-scoped networks.
+
 ## v1.37 API changes
 
-[Docker Engine API v1.37](https://docs.docker.com/engine/api/v1.36/) documentation
+[Docker Engine API v1.37](https://docs.docker.com/engine/api/v1.37/) documentation
 
 * `POST /containers/create` and `POST /services/create` now supports exposing SCTP ports.
 * `POST /configs/create` and `POST /configs/{id}/create` now accept a `Templating` driver.

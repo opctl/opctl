@@ -1,13 +1,13 @@
 package middleware // import "github.com/docker/docker/api/server/middleware"
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"runtime"
 
 	"github.com/docker/docker/api/server/httputils"
 	"github.com/docker/docker/api/types/versions"
-	"golang.org/x/net/context"
 )
 
 // VersionMiddleware is a middleware that
@@ -58,7 +58,7 @@ func (v VersionMiddleware) WrapHandler(handler func(ctx context.Context, w http.
 		if versions.GreaterThan(apiVersion, v.defaultVersion) {
 			return versionUnsupportedError{version: apiVersion, maxVersion: v.defaultVersion}
 		}
-		ctx = context.WithValue(ctx, httputils.APIVersionKey, apiVersion)
+		ctx = context.WithValue(ctx, httputils.APIVersionKey{}, apiVersion)
 		return handler(ctx, w, r, vars)
 	}
 

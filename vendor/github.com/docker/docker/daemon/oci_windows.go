@@ -10,6 +10,7 @@ import (
 	containertypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/container"
 	"github.com/docker/docker/oci"
+	"github.com/docker/docker/oci/caps"
 	"github.com/docker/docker/pkg/sysinfo"
 	"github.com/docker/docker/pkg/system"
 	"github.com/opencontainers/runtime-spec/specs-go"
@@ -156,7 +157,7 @@ func (daemon *Daemon) createSpec(c *container.Container) (*specs.Spec, error) {
 				continue
 			}
 
-			ep, err := c.GetEndpointInNetwork(sn)
+			ep, err := getEndpointInNetwork(c.Name, sn)
 			if err != nil {
 				continue
 			}
@@ -211,7 +212,9 @@ func (daemon *Daemon) createSpec(c *container.Container) (*specs.Spec, error) {
 		if !system.LCOWSupported() {
 			return nil, fmt.Errorf("Linux containers on Windows are not supported")
 		}
-		daemon.createSpecLinuxFields(c, &s)
+		if err := daemon.createSpecLinuxFields(c, &s); err != nil {
+			return nil, err
+		}
 	default:
 		return nil, fmt.Errorf("Unsupported platform %q", img.OS)
 	}
@@ -247,45 +250,7 @@ func (daemon *Daemon) createSpecWindowsFields(c *container.Container, s *specs.S
 	// First boot optimization
 	s.Windows.IgnoreFlushesDuringBoot = !c.HasBeenStartedBefore
 
-	// In s.Windows.Resources
-	cpuShares := uint16(c.HostConfig.CPUShares)
-	cpuMaximum := uint16(c.HostConfig.CPUPercent) * 100
-	cpuCount := uint64(c.HostConfig.CPUCount)
-	if c.HostConfig.NanoCPUs > 0 {
-		if isHyperV {
-			cpuCount = uint64(c.HostConfig.NanoCPUs / 1e9)
-			leftoverNanoCPUs := c.HostConfig.NanoCPUs % 1e9
-			if leftoverNanoCPUs != 0 {
-				cpuCount++
-				cpuMaximum = uint16(c.HostConfig.NanoCPUs / int64(cpuCount) / (1e9 / 10000))
-				if cpuMaximum < 1 {
-					// The requested NanoCPUs is so small that we rounded to 0, use 1 instead
-					cpuMaximum = 1
-				}
-			}
-		} else {
-			cpuMaximum = uint16(c.HostConfig.NanoCPUs / int64(sysinfo.NumCPU()) / (1e9 / 10000))
-			if cpuMaximum < 1 {
-				// The requested NanoCPUs is so small that we rounded to 0, use 1 instead
-				cpuMaximum = 1
-			}
-		}
-	}
-	memoryLimit := uint64(c.HostConfig.Memory)
-	s.Windows.Resources = &specs.WindowsResources{
-		CPU: &specs.WindowsCPUResources{
-			Maximum: &cpuMaximum,
-			Shares:  &cpuShares,
-			Count:   &cpuCount,
-		},
-		Memory: &specs.WindowsMemoryResources{
-			Limit: &memoryLimit,
-		},
-		Storage: &specs.WindowsStorageResources{
-			Bps:  &c.HostConfig.IOMaximumBandwidth,
-			Iops: &c.HostConfig.IOMaximumIOps,
-		},
-	}
+	setResourcesInSpec(c, s, isHyperV)
 
 	// Read and add credentials from the security options if a credential spec has been provided.
 	if c.HostConfig.SecurityOpt != nil {
@@ -330,18 +295,100 @@ func (daemon *Daemon) createSpecWindowsFields(c *container.Container, s *specs.S
 		s.Windows.CredentialSpec = cs
 	}
 
+	// Do we have any assigned devices?
+	if len(c.HostConfig.Devices) > 0 {
+		if isHyperV {
+			return errors.New("device assignment is not supported for HyperV containers")
+		}
+		if system.GetOSVersion().Build < 17763 {
+			return errors.New("device assignment requires Windows builds RS5 (17763+) or later")
+		}
+		for _, deviceMapping := range c.HostConfig.Devices {
+			srcParts := strings.SplitN(deviceMapping.PathOnHost, "/", 2)
+			if len(srcParts) != 2 {
+				return errors.New("invalid device assignment path")
+			}
+			if srcParts[0] != "class" {
+				return errors.Errorf("invalid device assignment type: '%s' should be 'class'", srcParts[0])
+			}
+			wd := specs.WindowsDevice{
+				ID:     srcParts[1],
+				IDType: srcParts[0],
+			}
+			s.Windows.Devices = append(s.Windows.Devices, wd)
+		}
+	}
+
 	return nil
 }
 
 // Sets the Linux-specific fields of the OCI spec
 // TODO: @jhowardmsft LCOW Support. We need to do a lot more pulling in what can
 // be pulled in from oci_linux.go.
-func (daemon *Daemon) createSpecLinuxFields(c *container.Container, s *specs.Spec) {
+func (daemon *Daemon) createSpecLinuxFields(c *container.Container, s *specs.Spec) error {
 	if len(s.Process.Cwd) == 0 {
 		s.Process.Cwd = `/`
 	}
 	s.Root.Path = "rootfs"
 	s.Root.Readonly = c.HostConfig.ReadonlyRootfs
+
+	setResourcesInSpec(c, s, true) // LCOW is Hyper-V only
+
+	capabilities, err := caps.TweakCapabilities(oci.DefaultCapabilities(), c.HostConfig.CapAdd, c.HostConfig.CapDrop, c.HostConfig.Capabilities, c.HostConfig.Privileged)
+	if err != nil {
+		return fmt.Errorf("linux spec capabilities: %v", err)
+	}
+	if err := oci.SetCapabilities(s, capabilities); err != nil {
+		return fmt.Errorf("linux spec capabilities: %v", err)
+	}
+	devPermissions, err := oci.AppendDevicePermissionsFromCgroupRules(nil, c.HostConfig.DeviceCgroupRules)
+	if err != nil {
+		return fmt.Errorf("linux runtime spec devices: %v", err)
+	}
+	s.Linux.Resources.Devices = devPermissions
+	return nil
+}
+
+func setResourcesInSpec(c *container.Container, s *specs.Spec, isHyperV bool) {
+	// In s.Windows.Resources
+	cpuShares := uint16(c.HostConfig.CPUShares)
+	cpuMaximum := uint16(c.HostConfig.CPUPercent) * 100
+	cpuCount := uint64(c.HostConfig.CPUCount)
+	if c.HostConfig.NanoCPUs > 0 {
+		if isHyperV {
+			cpuCount = uint64(c.HostConfig.NanoCPUs / 1e9)
+			leftoverNanoCPUs := c.HostConfig.NanoCPUs % 1e9
+			if leftoverNanoCPUs != 0 {
+				cpuCount++
+				cpuMaximum = uint16(c.HostConfig.NanoCPUs / int64(cpuCount) / (1e9 / 10000))
+				if cpuMaximum < 1 {
+					// The requested NanoCPUs is so small that we rounded to 0, use 1 instead
+					cpuMaximum = 1
+				}
+			}
+		} else {
+			cpuMaximum = uint16(c.HostConfig.NanoCPUs / int64(sysinfo.NumCPU()) / (1e9 / 10000))
+			if cpuMaximum < 1 {
+				// The requested NanoCPUs is so small that we rounded to 0, use 1 instead
+				cpuMaximum = 1
+			}
+		}
+	}
+	memoryLimit := uint64(c.HostConfig.Memory)
+	s.Windows.Resources = &specs.WindowsResources{
+		CPU: &specs.WindowsCPUResources{
+			Maximum: &cpuMaximum,
+			Shares:  &cpuShares,
+			Count:   &cpuCount,
+		},
+		Memory: &specs.WindowsMemoryResources{
+			Limit: &memoryLimit,
+		},
+		Storage: &specs.WindowsStorageResources{
+			Bps:  &c.HostConfig.IOMaximumBandwidth,
+			Iops: &c.HostConfig.IOMaximumIOps,
+		},
+	}
 }
 
 func escapeArgs(args []string) []string {

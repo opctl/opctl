@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/docker/docker/libcontainerd"
-	"github.com/gotestyourself/gotestyourself/assert"
-	specs "github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
+	"gotest.tools/assert"
 )
 
 func TestLifeCycle(t *testing.T) {
@@ -28,7 +28,7 @@ func TestLifeCycle(t *testing.T) {
 	mock.simulateStartError(false, id)
 
 	err = exec.Create(id, specs.Spec{}, nil, nil)
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 	running, _ := exec.IsRunning(id)
 	assert.Assert(t, running)
 
@@ -39,12 +39,12 @@ func TestLifeCycle(t *testing.T) {
 	mock.HandleExitEvent(id) // simulate a plugin that exits
 
 	err = exec.Create(id, specs.Spec{}, nil, nil)
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 }
 
 func setupTest(t *testing.T, client Client, eh ExitHandler) (*Executor, func()) {
 	rootDir, err := ioutil.TempDir("", "test-daemon")
-	assert.Assert(t, err)
+	assert.NilError(t, err)
 	assert.Assert(t, client != nil)
 	assert.Assert(t, eh != nil)
 

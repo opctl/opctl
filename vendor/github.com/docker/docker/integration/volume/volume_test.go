@@ -2,7 +2,8 @@ package volume
 
 import (
 	"context"
-	"fmt"
+	"net/http"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -12,19 +13,19 @@ import (
 	volumetypes "github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/integration/internal/container"
 	"github.com/docker/docker/internal/test/request"
-	"github.com/docker/docker/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/skip"
 )
 
 func TestVolumesCreateAndList(t *testing.T) {
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
 	name := t.Name()
-	vol, err := client.VolumeCreate(ctx, volumetypes.VolumesCreateBody{
+	vol, err := client.VolumeCreate(ctx, volumetypes.VolumeCreateBody{
 		Name: name,
 	})
 	assert.NilError(t, err)
@@ -35,7 +36,7 @@ func TestVolumesCreateAndList(t *testing.T) {
 		Driver:     "local",
 		Scope:      "local",
 		Name:       name,
-		Mountpoint: fmt.Sprintf("%s/volumes/%s/_data", testEnv.DaemonInfo.DockerRootDir, name),
+		Mountpoint: filepath.Join(testEnv.DaemonInfo.DockerRootDir, "volumes", name, "_data"),
 	}
 	assert.Check(t, is.DeepEqual(vol, expected, cmpopts.EquateEmpty()))
 
@@ -48,20 +49,21 @@ func TestVolumesCreateAndList(t *testing.T) {
 }
 
 func TestVolumesRemove(t *testing.T) {
+	skip.If(t, testEnv.OSType == "windows", "FIXME")
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
-	prefix, _ := getPrefixAndSlashFromDaemonPlatform()
+	prefix, slash := getPrefixAndSlashFromDaemonPlatform()
 
-	id := container.Create(t, ctx, client, container.WithVolume(prefix+"foo"))
+	id := container.Create(t, ctx, client, container.WithVolume(prefix+slash+"foo"))
 
 	c, err := client.ContainerInspect(ctx, id)
 	assert.NilError(t, err)
 	vname := c.Mounts[0].Name
 
 	err = client.VolumeRemove(ctx, vname, false)
-	testutil.ErrorContains(t, err, "volume is in use")
+	assert.Check(t, is.ErrorContains(err, "volume is in use"))
 
 	err = client.ContainerRemove(ctx, id, types.ContainerRemoveOptions{
 		Force: true,
@@ -74,36 +76,50 @@ func TestVolumesRemove(t *testing.T) {
 
 func TestVolumesInspect(t *testing.T) {
 	defer setupTest(t)()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 	ctx := context.Background()
 
-	// sampling current time minus a minute so to now have false positive in case of delays
-	now := time.Now().Truncate(time.Minute)
-
-	name := t.Name()
-	_, err := client.VolumeCreate(ctx, volumetypes.VolumesCreateBody{
-		Name: name,
-	})
+	now := time.Now()
+	vol, err := client.VolumeCreate(ctx, volumetypes.VolumeCreateBody{})
 	assert.NilError(t, err)
 
-	vol, err := client.VolumeInspect(ctx, name)
+	inspected, err := client.VolumeInspect(ctx, vol.Name)
 	assert.NilError(t, err)
 
-	expected := types.Volume{
-		// Ignore timestamp of CreatedAt
-		CreatedAt:  vol.CreatedAt,
-		Driver:     "local",
-		Scope:      "local",
-		Name:       name,
-		Mountpoint: fmt.Sprintf("%s/volumes/%s/_data", testEnv.DaemonInfo.DockerRootDir, name),
+	assert.Check(t, is.DeepEqual(inspected, vol, cmpopts.EquateEmpty()))
+
+	// comparing CreatedAt field time for the new volume to now. Truncate to 1 minute precision to avoid false positive
+	createdAt, err := time.Parse(time.RFC3339, strings.TrimSpace(inspected.CreatedAt))
+	assert.NilError(t, err)
+	assert.Check(t, createdAt.Truncate(time.Minute).Equal(now.Truncate(time.Minute)), "CreatedAt (%s) not equal to creation time (%s)", createdAt, now)
+}
+
+func TestVolumesInvalidJSON(t *testing.T) {
+	defer setupTest(t)()
+
+	endpoints := []string{"/volumes/create"}
+
+	for _, ep := range endpoints {
+		t.Run(ep, func(t *testing.T) {
+			t.Parallel()
+
+			res, body, err := request.Post(ep, request.RawString("{invalid json"), request.JSON)
+			assert.NilError(t, err)
+			assert.Equal(t, res.StatusCode, http.StatusBadRequest)
+
+			buf, err := request.ReadBody(body)
+			assert.NilError(t, err)
+			assert.Check(t, is.Contains(string(buf), "invalid character 'i' looking for beginning of object key string"))
+
+			res, body, err = request.Post(ep, request.JSON)
+			assert.NilError(t, err)
+			assert.Equal(t, res.StatusCode, http.StatusBadRequest)
+
+			buf, err = request.ReadBody(body)
+			assert.NilError(t, err)
+			assert.Check(t, is.Contains(string(buf), "got EOF while reading request body"))
+		})
 	}
-	assert.Check(t, is.DeepEqual(vol, expected, cmpopts.EquateEmpty()))
-
-	// comparing CreatedAt field time for the new volume to now. Removing a minute from both to avoid false positive
-	testCreatedAt, err := time.Parse(time.RFC3339, strings.TrimSpace(vol.CreatedAt))
-	assert.NilError(t, err)
-	testCreatedAt = testCreatedAt.Truncate(time.Minute)
-	assert.Check(t, is.Equal(testCreatedAt.Equal(now), true), "Time Volume is CreatedAt not equal to current time")
 }
 
 func getPrefixAndSlashFromDaemonPlatform() (prefix, slash string) {

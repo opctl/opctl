@@ -1,0 +1,43 @@
+description: runs unit tests
+name: test/unit
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+outputs:
+  srcDir:
+    dir:
+      description: directory containing the projects source code
+  coverprofile:
+    file:
+      description: aggregate coverprofile
+opspec: 0.1.6
+run:
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            go get github.com/onsi/ginkgo/ginkgo
+            go get github.com/onsi/gomega
+
+            echo "unit testing code"
+            go test -coverprofile=coverprofile ./...
+
+            echo "stripping generated code"
+            sed '/fake/d' -i coverprofile
+            sed '/bindata/d' -i coverprofile
+
+            cat coverprofile > /coverprofile
+        files:
+          /coverprofile: $(coverprofile)
+        dirs:
+          /go/src/github.com/opctl/sdk-golang: $(srcDir)
+        image: { ref: 'golang:1.11.5' }
+        workDir: /go/src/github.com/opctl/sdk-golang
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0 }
+        inputs: { coverprofile, minCoverage: 48 }

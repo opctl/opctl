@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/model"
-	"github.com/opspec-io/sdk-golang/node/api/client"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/node/api/client"
 )
 
 var _ = Context("events", func() {

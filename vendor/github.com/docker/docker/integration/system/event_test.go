@@ -13,18 +13,22 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/strslice"
+	"github.com/docker/docker/api/types/versions"
 	"github.com/docker/docker/integration/internal/container"
 	"github.com/docker/docker/internal/test/request"
 	req "github.com/docker/docker/internal/test/request"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/skip"
 )
 
-func TestEvents(t *testing.T) {
+func TestEventsExecDie(t *testing.T) {
+	skip.If(t, versions.LessThan(testEnv.DaemonAPIVersion(), "1.36"), "broken in earlier versions")
+	skip.If(t, testEnv.OSType == "windows", "FIXME. Suspect may need to wait until container is running before exec")
 	defer setupTest(t)()
 	ctx := context.Background()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 
 	cID := container.Run(t, ctx, client)
 
@@ -59,7 +63,7 @@ func TestEvents(t *testing.T) {
 		assert.Equal(t, m.Actor.Attributes["execID"], id.ID)
 		assert.Equal(t, m.Actor.Attributes["exitCode"], "0")
 	case err = <-errors:
-		t.Fatal(err)
+		assert.NilError(t, err)
 	case <-time.After(time.Second * 3):
 		t.Fatal("timeout hit")
 	}
@@ -71,9 +75,10 @@ func TestEvents(t *testing.T) {
 // backward compatibility so old `JSONMessage` could still be used.
 // This test verifies that backward compatibility maintains.
 func TestEventsBackwardsCompatible(t *testing.T) {
+	skip.If(t, testEnv.OSType == "windows", "Windows doesn't support back-compat messages")
 	defer setupTest(t)()
 	ctx := context.Background()
-	client := request.NewAPIClient(t)
+	client := testEnv.APIClient()
 
 	since := request.DaemonTime(ctx, t, client, testEnv)
 	ts := strconv.FormatInt(since.Unix(), 10)
@@ -104,7 +109,7 @@ func TestEventsBackwardsCompatible(t *testing.T) {
 			if err == io.EOF {
 				break
 			}
-			t.Fatal(err)
+			assert.NilError(t, err)
 		}
 		if event.Status == "create" && event.ID == cID {
 			containerCreateEvent = &event

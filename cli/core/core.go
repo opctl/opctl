@@ -17,9 +17,9 @@ import (
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
-	"github.com/opspec-io/sdk-golang/node/api/client"
-	"github.com/opspec-io/sdk-golang/op"
-	"github.com/opspec-io/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/node/api/client"
+	"github.com/opctl/sdk-golang/op"
+	"github.com/opctl/sdk-golang/op/dotyml"
 )
 
 type Core interface {

@@ -18,18 +18,18 @@ accordance with
 
 ### Added 
 
-- [opspec 0.1.6 support](https://github.com/opspec-io/spec/blob/0.1.6/CHANGELOG.md#016)
+- [opspec 0.1.6 support](https://github.com/opctl/spec/blob/0.1.6/CHANGELOG.md#016)
 
 ### Removed 
 
-- [opspec 0.1.5 support](https://github.com/opspec-io/spec/blob/0.1.6/CHANGELOG.md#015)
+- [opspec 0.1.5 support](https://github.com/opctl/spec/blob/0.1.6/CHANGELOG.md#015)
 
 ## 0.1.23 - 2018-01-15
 
 ### Added
 
-- [opspec 0.1.6) Support declaring SVG icon for pkg](https://github.com/opspec-io/spec/issues/139)
-- [opspec 0.1.6) Support CommonMark for pkg & param descriptions](https://github.com/opspec-io/spec/issues/174)
+- [opspec 0.1.6) Support declaring SVG icon for pkg](https://github.com/opctl/spec/issues/139)
+- [opspec 0.1.6) Support CommonMark for pkg & param descriptions](https://github.com/opctl/spec/issues/174)
 
 ### Fixed
 
@@ -137,7 +137,7 @@ accordance with
 ### Changed
 
 - refactored to use
-  [opspec sdk](https://github.com/opspec-io/sdk-golang)
+  [opspec sdk](https://github.com/opctl/sdk-golang)
 
 ### Fixed
 
@@ -151,7 +151,7 @@ accordance with
 
 ### Fixed
 
-- [failure of serial operation run does not immediately fail all following operations](https://github.com/opspec-io/cli/issues/5)
+- [failure of serial operation run does not immediately fail all following operations](https://github.com/opctl/cli/issues/5)
 
 ### Removed
 
@@ -161,7 +161,7 @@ accordance with
 
 ### Fixed
 
-- [opctl does not wait for parallel op containers to die before returning](https://github.com/opspec-io/cli/issues/8)
+- [opctl does not wait for parallel op containers to die before returning](https://github.com/opctl/cli/issues/8)
 - [Many parallel ops crash engine](https://github.com/opctl/opctl/issues/17)
 
 ## 0.1.6 - 2016-08-21

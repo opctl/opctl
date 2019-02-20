@@ -26,13 +26,13 @@ func (s *DockerSuite) TestCreateArgs(c *check.C) {
 
 	out, _ = dockerCmd(c, "inspect", cleanedContainerID)
 
-	containers := []struct {
+	var containers []struct {
 		ID      string
 		Created time.Time
 		Path    string
 		Args    []string
 		Image   string
-	}{}
+	}
 
 	err := json.Unmarshal([]byte(out), &containers)
 	c.Assert(err, check.IsNil, check.Commentf("Error inspecting the container: %s", err))
@@ -75,7 +75,7 @@ func (s *DockerSuite) TestCreateShrinkRootfs(c *check.C) {
 
 	// Ensure this fails because of the defaultBaseFsSize is 10G
 	out, _, err := dockerCmdWithError("create", "--storage-opt", "size=5G", "busybox")
-	c.Assert(err, check.NotNil, check.Commentf(out))
+	c.Assert(err, check.NotNil, check.Commentf("%s", out))
 	c.Assert(out, checker.Contains, "Container size cannot be smaller than")
 }
 
@@ -87,11 +87,11 @@ func (s *DockerSuite) TestCreateHostConfig(c *check.C) {
 
 	out, _ = dockerCmd(c, "inspect", cleanedContainerID)
 
-	containers := []struct {
+	var containers []struct {
 		HostConfig *struct {
 			PublishAllPorts bool
 		}
-	}{}
+	}
 
 	err := json.Unmarshal([]byte(out), &containers)
 	c.Assert(err, check.IsNil, check.Commentf("Error inspecting the container: %s", err))
@@ -109,11 +109,11 @@ func (s *DockerSuite) TestCreateWithPortRange(c *check.C) {
 
 	out, _ = dockerCmd(c, "inspect", cleanedContainerID)
 
-	containers := []struct {
+	var containers []struct {
 		HostConfig *struct {
 			PortBindings map[nat.Port][]nat.PortBinding
 		}
-	}{}
+	}
 	err := json.Unmarshal([]byte(out), &containers)
 	c.Assert(err, check.IsNil, check.Commentf("Error inspecting the container: %s", err))
 	c.Assert(containers, checker.HasLen, 1)
@@ -138,11 +138,11 @@ func (s *DockerSuite) TestCreateWithLargePortRange(c *check.C) {
 
 	out, _ = dockerCmd(c, "inspect", cleanedContainerID)
 
-	containers := []struct {
+	var containers []struct {
 		HostConfig *struct {
 			PortBindings map[nat.Port][]nat.PortBinding
 		}
-	}{}
+	}
 
 	err := json.Unmarshal([]byte(out), &containers)
 	c.Assert(err, check.IsNil, check.Commentf("Error inspecting the container: %s", err))
@@ -171,7 +171,7 @@ func (s *DockerSuite) TestCreateEchoStdout(c *check.C) {
 }
 
 func (s *DockerSuite) TestCreateVolumesCreated(c *check.C) {
-	testRequires(c, SameHostDaemon)
+	testRequires(c, testEnv.IsLocalDaemon)
 	prefix, slash := getPrefixAndSlashFromDaemonPlatform()
 
 	name := "test_create_volume"
@@ -249,7 +249,7 @@ func (s *DockerSuite) TestCreateRM(c *check.C) {
 
 func (s *DockerSuite) TestCreateModeIpcContainer(c *check.C) {
 	// Uses Linux specific functionality (--ipc)
-	testRequires(c, DaemonIsLinux, SameHostDaemon)
+	testRequires(c, DaemonIsLinux, testEnv.IsLocalDaemon)
 
 	out, _ := dockerCmd(c, "create", "busybox")
 	id := strings.TrimSpace(out)
