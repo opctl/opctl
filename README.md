@@ -26,11 +26,9 @@ npm install --save @opspec/sdk
 ```javascript
 const OpspecNodeApiClient = require('@opspec/sdk/lib/node/api/client');
 
-const demoOpctlNodeBaseUrl = 'https://alpha.opctl.io/api';
-// for local opctl node use
-// const localOpctlNodeBaseUrl = 'localhost:42224/api';
+const localOpctlNodeBaseUrl = 'localhost:42224/api';
 
-const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: demoOpctlNodeBaseUrl });
+const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: localOpctlNodeBaseUrl });
 
 opspecNodeApiClient.liveness_get()
   .then(() => console.log('node alive!'))
