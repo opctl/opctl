@@ -23,8 +23,8 @@ import (
 	"github.com/docker/docker/pkg/stringid"
 	"github.com/docker/go-connections/sockets"
 	"github.com/docker/go-connections/tlsconfig"
-	"github.com/gotestyourself/gotestyourself/assert"
 	"github.com/pkg/errors"
+	"gotest.tools/assert"
 )
 
 type testingT interface {
@@ -38,6 +38,7 @@ type logT interface {
 }
 
 const defaultDockerdBinary = "dockerd"
+const containerdSocket = "/var/run/docker/containerd/containerd.sock"
 
 var errDaemonNotStarted = errors.New("daemon not started")
 
@@ -66,13 +67,16 @@ type Daemon struct {
 	userlandProxy bool
 	execRoot      string
 	experimental  bool
+	init          bool
 	dockerdBinary string
 	log           logT
 
 	// swarm related field
 	swarmListenAddr string
 	SwarmPort       int // FIXME(vdemeester) should probably not be exported
-
+	DefaultAddrPool []string
+	SubnetSize      uint32
+	DataPathPort    uint32
 	// cached information
 	CachedInfo types.Info
 }
@@ -109,12 +113,13 @@ func New(t testingT, ops ...func(*Daemon)) *Daemon {
 		}
 	}
 	d := &Daemon{
-		id:              id,
-		Folder:          daemonFolder,
-		Root:            daemonRoot,
-		storageDriver:   storageDriver,
-		userlandProxy:   userlandProxy,
-		execRoot:        filepath.Join(os.TempDir(), "docker-execroot", id),
+		id:            id,
+		Folder:        daemonFolder,
+		Root:          daemonRoot,
+		storageDriver: storageDriver,
+		userlandProxy: userlandProxy,
+		// dxr stands for docker-execroot (shortened for avoiding unix(7) path length limitation)
+		execRoot:        filepath.Join(os.TempDir(), "dxr", id),
 		dockerdBinary:   defaultDockerdBinary,
 		swarmListenAddr: defaultSwarmListenAddr,
 		SwarmPort:       DefaultSwarmPort,
@@ -199,7 +204,7 @@ func (d *Daemon) Start(t testingT, args ...string) {
 		ht.Helper()
 	}
 	if err := d.StartWithError(args...); err != nil {
-		t.Fatalf("Error starting daemon with arguments: %v", args)
+		t.Fatalf("failed to start daemon with arguments %v : %v", args, err)
 	}
 }
 
@@ -222,14 +227,17 @@ func (d *Daemon) StartWithLogFile(out *os.File, providedArgs ...string) error {
 		return errors.Wrapf(err, "[%s] could not find docker binary in $PATH", d.id)
 	}
 	args := append(d.GlobalFlags,
-		"--containerd", "/var/run/docker/containerd/docker-containerd.sock",
+		"--containerd", containerdSocket,
 		"--data-root", d.Root,
 		"--exec-root", d.execRoot,
 		"--pidfile", fmt.Sprintf("%s/docker.pid", d.Folder),
 		fmt.Sprintf("--userland-proxy=%t", d.userlandProxy),
 	)
 	if d.experimental {
-		args = append(args, "--experimental", "--init")
+		args = append(args, "--experimental")
+	}
+	if d.init {
+		args = append(args, "--init")
 	}
 	if !(d.UseDefaultHost || d.UseDefaultTLSHost) {
 		args = append(args, []string{"--host", d.Sock()}...)
@@ -278,7 +286,10 @@ func (d *Daemon) StartWithLogFile(out *os.File, providedArgs ...string) error {
 
 	d.Wait = wait
 
-	tick := time.Tick(500 * time.Millisecond)
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+	tick := ticker.C
+
 	// make sure daemon is ready to receive requests
 	startTime := time.Now().Unix()
 	for {
@@ -320,8 +331,8 @@ func (d *Daemon) StartWithLogFile(out *os.File, providedArgs ...string) error {
 				return errors.Errorf("[%s] error querying daemon for root directory: %v", d.id, err)
 			}
 			return nil
-		case <-d.Wait:
-			return errors.Errorf("[%s] Daemon exited during startup", d.id)
+		case err := <-d.Wait:
+			return errors.Errorf("[%s] Daemon exited during startup: %v", d.id, err)
 		}
 	}
 }
@@ -416,7 +427,9 @@ func (d *Daemon) StopWithError() error {
 	}()
 
 	i := 1
-	tick := time.Tick(time.Second)
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+	tick := ticker.C
 
 	if err := d.cmd.Process.Signal(os.Interrupt); err != nil {
 		if strings.Contains(err.Error(), "os: process already finished") {
@@ -431,7 +444,7 @@ out1:
 			return err
 		case <-time.After(20 * time.Second):
 			// time for stopping jobs and run onShutdown hooks
-			d.log.Logf("[%s] daemon started", d.id)
+			d.log.Logf("[%s] daemon stop timeout", d.id)
 			break out1
 		}
 	}
@@ -546,7 +559,7 @@ func (d *Daemon) LoadBusybox(t assert.TestingT) {
 	if ht, ok := t.(test.HelperT); ok {
 		ht.Helper()
 	}
-	clientHost, err := client.NewEnvClient()
+	clientHost, err := client.NewClientWithOpts(client.FromEnv)
 	assert.NilError(t, err, "failed to create client")
 	defer clientHost.Close()
 
@@ -555,11 +568,10 @@ func (d *Daemon) LoadBusybox(t assert.TestingT) {
 	assert.NilError(t, err, "failed to download busybox")
 	defer reader.Close()
 
-	client, err := d.NewClient()
-	assert.NilError(t, err, "failed to create client")
-	defer client.Close()
+	c := d.NewClientT(t)
+	defer c.Close()
 
-	resp, err := client.ImageLoad(ctx, reader, true)
+	resp, err := c.ImageLoad(ctx, reader, true)
 	assert.NilError(t, err, "failed to load busybox")
 	defer resp.Body.Close()
 }
@@ -619,7 +631,7 @@ func (d *Daemon) queryRootDir() (string, error) {
 		return "", err
 	}
 
-	client := &http.Client{
+	c := &http.Client{
 		Transport: clientConfig.transport,
 	}
 
@@ -631,7 +643,7 @@ func (d *Daemon) queryRootDir() (string, error) {
 	req.URL.Host = clientConfig.addr
 	req.URL.Scheme = clientConfig.scheme
 
-	resp, err := client.Do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -659,9 +671,8 @@ func (d *Daemon) Info(t assert.TestingT) types.Info {
 	if ht, ok := t.(test.HelperT); ok {
 		ht.Helper()
 	}
-	apiclient, err := d.NewClient()
-	assert.NilError(t, err)
-	info, err := apiclient.Info(context.Background())
+	c := d.NewClientT(t)
+	info, err := c.Info(context.Background())
 	assert.NilError(t, err)
 	return info
 }

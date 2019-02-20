@@ -10,7 +10,7 @@ import (
 	mow "github.com/jawher/mow.cli"
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/util/clicolorer"
-	"github.com/opspec-io/sdk-golang/op"
+	"github.com/opctl/sdk-golang/op"
 )
 
 type cli interface {

@@ -18,6 +18,7 @@ import (
 	"github.com/docker/docker/internal/test/request"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/go-check/check"
+	"github.com/pkg/errors"
 	"golang.org/x/net/websocket"
 )
 
@@ -25,7 +26,7 @@ func (s *DockerSuite) TestGetContainersAttachWebsocket(c *check.C) {
 	testRequires(c, DaemonIsLinux)
 	out, _ := dockerCmd(c, "run", "-dit", "busybox", "cat")
 
-	rwc, err := request.SockConn(time.Duration(10*time.Second), daemonHost())
+	rwc, err := request.SockConn(time.Duration(10*time.Second), request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 
 	cleanedContainerID := strings.TrimSpace(out)
@@ -140,12 +141,12 @@ func (s *DockerSuite) TestPostContainersAttach(c *check.C) {
 	cid, _ := dockerCmd(c, "run", "-di", "busybox", "cat")
 	cid = strings.TrimSpace(cid)
 	// Attach to the container's stdout stream.
-	conn, br, err := sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", daemonHost())
+	conn, br, err := sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	// Check if the data from stdout can be received.
 	expectSuccess(conn, br, "stdout", false)
 	// Attach to the container's stderr stream.
-	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", daemonHost())
+	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	// Since the container only emits stdout, attaching to stderr should return nothing.
 	expectTimeout(conn, br, "stdout")
@@ -153,10 +154,10 @@ func (s *DockerSuite) TestPostContainersAttach(c *check.C) {
 	// Test the similar functions of the stderr stream.
 	cid, _ = dockerCmd(c, "run", "-di", "busybox", "/bin/sh", "-c", "cat >&2")
 	cid = strings.TrimSpace(cid)
-	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", daemonHost())
+	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	expectSuccess(conn, br, "stderr", false)
-	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", daemonHost())
+	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	expectTimeout(conn, br, "stderr")
 
@@ -164,30 +165,32 @@ func (s *DockerSuite) TestPostContainersAttach(c *check.C) {
 	cid, _ = dockerCmd(c, "run", "-dit", "busybox", "/bin/sh", "-c", "cat >&2")
 	cid = strings.TrimSpace(cid)
 	// Attach to stdout only.
-	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", daemonHost())
+	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stdout=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	expectSuccess(conn, br, "stdout", true)
 
 	// Attach without stdout stream.
-	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", daemonHost())
+	conn, br, err = sockRequestHijack("POST", "/containers/"+cid+"/attach?stream=1&stdin=1&stderr=1", nil, "text/plain", request.DaemonHost())
 	c.Assert(err, checker.IsNil)
 	// Nothing should be received because both the stdout and stderr of the container will be
 	// sent to the client as stdout when tty is enabled.
 	expectTimeout(conn, br, "stdout")
 
 	// Test the client API
-	// Make sure we don't see "hello" if Logs is false
-	client, err := client.NewEnvClient()
+	client, err := client.NewClientWithOpts(client.FromEnv)
 	c.Assert(err, checker.IsNil)
 	defer client.Close()
 
 	cid, _ = dockerCmd(c, "run", "-di", "busybox", "/bin/sh", "-c", "echo hello; cat")
 	cid = strings.TrimSpace(cid)
 
+	// Make sure we don't see "hello" if Logs is false
 	attachOpts := types.ContainerAttachOptions{
 		Stream: true,
 		Stdin:  true,
 		Stdout: true,
+		Stderr: true,
+		Logs:   false,
 	}
 
 	resp, err := client.ContainerAttach(context.Background(), cid, attachOpts)
@@ -205,10 +208,15 @@ func (s *DockerSuite) TestPostContainersAttach(c *check.C) {
 	_, err = resp.Conn.Write([]byte("success"))
 	c.Assert(err, checker.IsNil)
 
-	actualStdout := new(bytes.Buffer)
-	actualStderr := new(bytes.Buffer)
-	stdcopy.StdCopy(actualStdout, actualStderr, resp.Reader)
-	c.Assert(actualStdout.Bytes(), checker.DeepEquals, []byte("hello\nsuccess"), check.Commentf("Attach didn't return the expected data from stdout"))
+	var outBuf, errBuf bytes.Buffer
+	_, err = stdcopy.StdCopy(&outBuf, &errBuf, resp.Reader)
+	if err != nil && errors.Cause(err).(net.Error).Timeout() {
+		// ignore the timeout error as it is expected
+		err = nil
+	}
+	c.Assert(err, checker.IsNil)
+	c.Assert(errBuf.String(), checker.Equals, "")
+	c.Assert(outBuf.String(), checker.Equals, "hello\nsuccess")
 }
 
 // SockRequestHijack creates a connection to specified host (with method, contenttype, …) and returns a hijacked connection

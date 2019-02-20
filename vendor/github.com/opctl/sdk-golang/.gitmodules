@@ -1,0 +1,6 @@
+[submodule "github.com/opctl/test-suite"]
+	path = github.com/opctl/test-suite
+	url = https://github.com/opctl/test-suite.git
+[submodule "github.com/opctl/spec"]
+	path = github.com/opctl/spec
+	url = https://github.com/opctl/spec.git

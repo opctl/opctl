@@ -11,6 +11,7 @@ import (
 
 	"github.com/docker/docker/pkg/idtools"
 	"github.com/docker/docker/pkg/mount"
+	"gotest.tools/skip"
 )
 
 func TestGetAddress(t *testing.T) {
@@ -30,18 +31,14 @@ func TestGetAddress(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	// TODO Windows: Investigate why this test fails on Windows under CI
-	//               but passes locally.
-	if runtime.GOOS == "windows" {
-		t.Skip("Test failing on Windows CI")
-	}
+	skip.If(t, runtime.GOOS == "windows", "FIXME: investigate why this test fails on CI")
 	rootDir, err := ioutil.TempDir("", "local-volume-test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(rootDir)
 
-	r, err := New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err := New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +80,7 @@ func TestInitializeWithVolumes(t *testing.T) {
 	}
 	defer os.RemoveAll(rootDir)
 
-	r, err := New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err := New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,7 +90,7 @@ func TestInitializeWithVolumes(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r, err = New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err = New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -115,7 +112,7 @@ func TestCreate(t *testing.T) {
 	}
 	defer os.RemoveAll(rootDir)
 
-	r, err := New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err := New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -152,7 +149,7 @@ func TestCreate(t *testing.T) {
 		}
 	}
 
-	r, err = New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err = New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,20 +178,15 @@ func TestValidateName(t *testing.T) {
 }
 
 func TestCreateWithOpts(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip()
-	}
-	if os.Getuid() != 0 {
-		t.Skip("root required")
-	}
-
+	skip.If(t, runtime.GOOS == "windows")
+	skip.If(t, os.Getuid() != 0, "requires mounts")
 	rootDir, err := ioutil.TempDir("", "local-volume-test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(rootDir)
 
-	r, err := New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err := New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,7 +261,7 @@ func TestCreateWithOpts(t *testing.T) {
 		t.Fatal("expected mount to still be active")
 	}
 
-	r, err = New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err = New(rootDir, idtools.Identity{UID: 0, GID: 0})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -284,14 +276,14 @@ func TestCreateWithOpts(t *testing.T) {
 	}
 }
 
-func TestRealodNoOpts(t *testing.T) {
+func TestRelaodNoOpts(t *testing.T) {
 	rootDir, err := ioutil.TempDir("", "volume-test-reload-no-opts")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(rootDir)
 
-	r, err := New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err := New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -319,7 +311,7 @@ func TestRealodNoOpts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r, err = New(rootDir, idtools.IDPair{UID: 0, GID: 0})
+	r, err = New(rootDir, idtools.Identity{UID: os.Geteuid(), GID: os.Getegid()})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -20,22 +20,11 @@
 # # Run tests e.g. integration, py
 # # hack/make.sh binary test-integration test-docker-py
 #
-# # Publish a release:
-# docker run --privileged \
-#  -e AWS_S3_BUCKET=baz \
-#  -e AWS_ACCESS_KEY=foo \
-#  -e AWS_SECRET_KEY=bar \
-#  -e GPG_PASSPHRASE=gloubiboulga \
-#  docker hack/release.sh
-#
 # Note: AppArmor used to mess with privileged mode, but this is no longer
 # the case. Therefore, you don't have to disable it anymore.
 #
 
-FROM golang:1.10.1 AS base
-# FIXME(vdemeester) this is kept for other script depending on it to not fail right away
-# Remove this once the other scripts uses something else to detect the version
-ENV GO_VERSION 1.10.1
+FROM golang:1.11.5 AS base
 # allow replacing httpredir or deb mirror
 ARG APT_MIRROR=deb.debian.org
 RUN sed -ri "s/(httpredir|deb).debian.org/$APT_MIRROR/g" /etc/apt/sources.list
@@ -43,7 +32,7 @@ RUN sed -ri "s/(httpredir|deb).debian.org/$APT_MIRROR/g" /etc/apt/sources.list
 FROM base AS criu
 # Install CRIU for checkpoint/restore support
 ENV CRIU_VERSION 3.6
-# Install dependancy packages specific to criu
+# Install dependency packages specific to criu
 RUN apt-get update && apt-get install -y \
 	libnet-dev \
 	libprotobuf-c0-dev \
@@ -85,7 +74,7 @@ RUN set -x \
 
 FROM base AS docker-py
 # Get the "docker-py" source so we can run their integration tests
-ENV DOCKER_PY_COMMIT 8b246db271a85d6541dc458838627e89c683e42f
+ENV DOCKER_PY_COMMIT ac922192959870774ad8428344d9faa0555f7ba6
 RUN git clone https://github.com/docker/docker-py.git /build \
 	&& cd /build \
 	&& git checkout -q $DOCKER_PY_COMMIT
@@ -126,58 +115,65 @@ FROM base AS tomlv
 ENV INSTALL_BINARY_NAME=tomlv
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS vndr
 ENV INSTALL_BINARY_NAME=vndr
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS containerd
 RUN apt-get update && apt-get install -y btrfs-tools
 ENV INSTALL_BINARY_NAME=containerd
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS proxy
 ENV INSTALL_BINARY_NAME=proxy
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS gometalinter
 ENV INSTALL_BINARY_NAME=gometalinter
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS dockercli
 ENV INSTALL_BINARY_NAME=dockercli
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM runtime-dev AS runc
 ENV INSTALL_BINARY_NAME=runc
 COPY hack/dockerfile/install/install.sh ./install.sh
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
-RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
 
 FROM base AS tini
 RUN apt-get update && apt-get install -y cmake vim-common
 COPY hack/dockerfile/install/install.sh ./install.sh
 ENV INSTALL_BINARY_NAME=tini
 COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
+RUN PREFIX=/build ./install.sh $INSTALL_BINARY_NAME
+
+FROM base AS rootlesskit
+ENV INSTALL_BINARY_NAME=rootlesskit
+COPY hack/dockerfile/install/install.sh ./install.sh
+COPY hack/dockerfile/install/$INSTALL_BINARY_NAME.installer ./
 RUN PREFIX=/build/ ./install.sh $INSTALL_BINARY_NAME
-
-
+COPY ./contrib/dockerd-rootless.sh /build
 
 # TODO: Some of this is only really needed for testing, it would be nice to split this up
 FROM runtime-dev AS dev
 RUN groupadd -r docker
 RUN useradd --create-home --gid docker unprivilegeduser
+# Let us use a .bashrc file
+RUN ln -sfv /go/src/github.com/docker/docker/.bashrc ~/.bashrc
 # Activate bash completion and include Docker's completion if mounted with DOCKER_BASH_COMPLETION_PATH
 RUN echo "source /usr/share/bash-completion/bash_completion" >> /etc/bash.bashrc
 RUN ln -s /usr/local/completion/bash/docker /etc/bash_completion.d/docker
@@ -191,7 +187,11 @@ RUN apt-get update && apt-get install -y \
 	btrfs-tools \
 	iptables \
 	jq \
+	libcap2-bin \
 	libdevmapper-dev \
+# libffi-dev and libssl-dev appear to be required for compiling paramiko on s390x/ppc64le
+	libffi-dev \
+	libssl-dev \
 	libudev-dev \
 	libsystemd-dev \
 	binutils-mingw-w64 \
@@ -200,6 +200,8 @@ RUN apt-get update && apt-get install -y \
 	pigz \
 	python-backports.ssl-match-hostname \
 	python-dev \
+# python-cffi appears to be required for compiling paramiko on s390x/ppc64le
+	python-cffi \
 	python-mock \
 	python-pip \
 	python-requests \
@@ -232,9 +234,12 @@ COPY --from=docker-py /build/ /docker-py
 # split out into a separate image, including all the `python-*` deps installed
 # above.
 RUN cd /docker-py \
-	&& pip install docker-pycreds==0.2.1 \
+	&& pip install docker-pycreds==0.4.0 \
+	&& pip install paramiko==2.4.2 \
 	&& pip install yamllint==1.5.0 \
 	&& pip install -r test-requirements.txt
+COPY --from=rootlesskit /build/ /usr/local/bin/
+COPY --from=djs55/vpnkit@sha256:e508a17cfacc8fd39261d5b4e397df2b953690da577e2c987a47630cd0c42f8e /vpnkit /usr/local/bin/vpnkit.x86_64
 
 ENV PATH=/usr/local/cli:$PATH
 ENV DOCKER_BUILDTAGS apparmor seccomp selinux
@@ -244,5 +249,7 @@ WORKDIR /go/src/github.com/docker/docker
 VOLUME /var/lib/docker
 # Wrap all commands in the "docker-in-docker" script to allow nested containers
 ENTRYPOINT ["hack/dind"]
+
+FROM dev AS final
 # Upload docker source
 COPY . /go/src/github.com/docker/docker

@@ -10,15 +10,38 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/containerd/containerd/linux"
+	"github.com/containerd/containerd/runtime/v1/linux"
 	"github.com/docker/docker/cmd/dockerd/hack"
 	"github.com/docker/docker/daemon"
-	"github.com/docker/docker/libcontainerd"
+	"github.com/docker/docker/daemon/config"
+	"github.com/docker/docker/libcontainerd/supervisor"
+	"github.com/docker/docker/pkg/homedir"
+	"github.com/docker/docker/rootless"
 	"github.com/docker/libnetwork/portallocator"
 	"golang.org/x/sys/unix"
 )
 
-const defaultDaemonConfigFile = "/etc/docker/daemon.json"
+func getDefaultDaemonConfigDir() (string, error) {
+	if !rootless.RunningWithNonRootUsername() {
+		return "/etc/docker", nil
+	}
+	// NOTE: CLI uses ~/.docker while the daemon uses ~/.config/docker, because
+	// ~/.docker was not designed to store daemon configurations.
+	// In future, the daemon directory may be renamed to ~/.config/moby-engine (?).
+	configHome, err := homedir.GetConfigHome()
+	if err != nil {
+		return "", nil
+	}
+	return filepath.Join(configHome, "docker"), nil
+}
+
+func getDefaultDaemonConfigFile() (string, error) {
+	dir, err := getDefaultDaemonConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "daemon.json"), nil
+}
 
 // setDefaultUmask sets the umask to 0022 to avoid problems
 // caused by custom umask
@@ -32,27 +55,19 @@ func setDefaultUmask() error {
 	return nil
 }
 
-func getDaemonConfDir(_ string) string {
-	return "/etc/docker"
+func getDaemonConfDir(_ string) (string, error) {
+	return getDefaultDaemonConfigDir()
 }
 
-func (cli *DaemonCli) getPlatformRemoteOptions() ([]libcontainerd.RemoteOption, error) {
-	opts := []libcontainerd.RemoteOption{
-		libcontainerd.WithOOMScore(cli.Config.OOMScoreAdjust),
-		libcontainerd.WithPlugin("linux", &linux.Config{
+func (cli *DaemonCli) getPlatformContainerdDaemonOpts() ([]supervisor.DaemonOpt, error) {
+	opts := []supervisor.DaemonOpt{
+		supervisor.WithOOMScore(cli.Config.OOMScoreAdjust),
+		supervisor.WithPlugin("linux", &linux.Config{
 			Shim:        daemon.DefaultShimBinary,
 			Runtime:     daemon.DefaultRuntimeBinary,
 			RuntimeRoot: filepath.Join(cli.Config.Root, "runc"),
 			ShimDebug:   cli.Config.Debug,
 		}),
-	}
-	if cli.Config.Debug {
-		opts = append(opts, libcontainerd.WithLogLevel("debug"))
-	}
-	if cli.Config.ContainerdAddr != "" {
-		opts = append(opts, libcontainerd.WithRemoteAddr(cli.Config.ContainerdAddr))
-	} else {
-		opts = append(opts, libcontainerd.WithStartDaemon(true))
 	}
 
 	return opts, nil
@@ -107,11 +122,26 @@ func allocateDaemonPort(addr string) error {
 func wrapListeners(proto string, ls []net.Listener) []net.Listener {
 	switch proto {
 	case "unix":
-		ls[0] = &hack.MalformedHostHeaderOverride{ls[0]}
+		ls[0] = &hack.MalformedHostHeaderOverride{Listener: ls[0]}
 	case "fd":
 		for i := range ls {
-			ls[i] = &hack.MalformedHostHeaderOverride{ls[i]}
+			ls[i] = &hack.MalformedHostHeaderOverride{Listener: ls[i]}
 		}
 	}
 	return ls
+}
+
+func newCgroupParent(config *config.Config) string {
+	cgroupParent := "docker"
+	useSystemd := daemon.UsingSystemd(config)
+	if useSystemd {
+		cgroupParent = "system.slice"
+	}
+	if config.CgroupParent != "" {
+		cgroupParent = config.CgroupParent
+	}
+	if useSystemd {
+		cgroupParent = cgroupParent + ":" + "docker" + ":"
+	}
+	return cgroupParent
 }

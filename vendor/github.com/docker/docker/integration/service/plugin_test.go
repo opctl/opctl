@@ -15,12 +15,13 @@ import (
 	"github.com/docker/docker/internal/test/daemon"
 	"github.com/docker/docker/internal/test/fixtures/plugin"
 	"github.com/docker/docker/internal/test/registry"
-	"github.com/gotestyourself/gotestyourself/assert"
-	"github.com/gotestyourself/gotestyourself/poll"
-	"github.com/gotestyourself/gotestyourself/skip"
+	"gotest.tools/assert"
+	"gotest.tools/poll"
+	"gotest.tools/skip"
 )
 
 func TestServicePlugin(t *testing.T) {
+	skip.If(t, testEnv.IsRemoteDaemon, "cannot run daemon when remote daemon")
 	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 	skip.If(t, os.Getenv("DOCKER_ENGINE_GOARCH") != "amd64")
 	defer setupTest(t)()
@@ -106,7 +107,7 @@ func TestServicePlugin(t *testing.T) {
 
 func makePlugin(repo, name string, constraints []string) func(*swarmtypes.Service) {
 	return func(s *swarmtypes.Service) {
-		s.Spec.TaskTemplate.Runtime = "plugin"
+		s.Spec.TaskTemplate.Runtime = swarmtypes.RuntimePlugin
 		s.Spec.TaskTemplate.PluginSpec = &runtime.PluginSpec{
 			Name:   name,
 			Remote: repo,

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 	"os"
 	"os/signal"
 	"syscall"

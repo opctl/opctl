@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
 	"net/url"
 )
 

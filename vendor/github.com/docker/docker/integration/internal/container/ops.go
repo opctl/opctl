@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	containertypes "github.com/docker/docker/api/types/container"
+	mounttypes "github.com/docker/docker/api/types/mount"
 	networktypes "github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/strslice"
 	"github.com/docker/go-connections/nat"
@@ -68,6 +69,13 @@ func WithWorkingDir(dir string) func(*TestContainerConfig) {
 	}
 }
 
+// WithMount adds an mount
+func WithMount(m mounttypes.Mount) func(*TestContainerConfig) {
+	return func(c *TestContainerConfig) {
+		c.HostConfig.Mounts = append(c.HostConfig.Mounts, m)
+	}
+}
+
 // WithVolume sets the volume of the container
 func WithVolume(name string) func(*TestContainerConfig) {
 	return func(c *TestContainerConfig) {
@@ -115,4 +123,22 @@ func WithIPv6(network, ip string) func(*TestContainerConfig) {
 		}
 		c.NetworkingConfig.EndpointsConfig[network].IPAMConfig.IPv6Address = ip
 	}
+}
+
+// WithLogDriver sets the log driver to use for the container
+func WithLogDriver(driver string) func(*TestContainerConfig) {
+	return func(c *TestContainerConfig) {
+		if c.HostConfig == nil {
+			c.HostConfig = &containertypes.HostConfig{}
+		}
+		c.HostConfig.LogConfig.Type = driver
+	}
+}
+
+// WithAutoRemove sets the container to be removed on exit
+func WithAutoRemove(c *TestContainerConfig) {
+	if c.HostConfig == nil {
+		c.HostConfig = &containertypes.HostConfig{}
+	}
+	c.HostConfig.AutoRemove = true
 }

@@ -38,6 +38,6 @@ run:
             echo "embedding webapp in node"
             statik -src webapp/build -dest node -f
         dirs:
-          /go/src/github.com/opspec-io/opctl: $(srcDir)
-        image: { ref: 'golang:1.10.0' }
-        workDir: /go/src/github.com/opspec-io/opctl
+          /go/src/github.com/opctl/opctl: $(srcDir)
+        image: { ref: 'golang:1.11.5' }
+        workDir: /go/src/github.com/opctl/opctl

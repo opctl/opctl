@@ -4,7 +4,7 @@ package clioutput
 import (
 	"sync"
 
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 type Fake struct {

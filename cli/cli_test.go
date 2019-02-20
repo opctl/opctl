@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/core"
@@ -19,7 +20,7 @@ var _ = Context("cli", func() {
 				objectUnderTest := newCli(new(core.Fake), fakeCliColorer)
 
 				/* act */
-				objectUnderTest.Run([]string{"opctl", "--no-color", "-v"})
+				objectUnderTest.Run([]string{"opctl", "--no-color", "ls"})
 
 				/* assert */
 				Expect(fakeCliColorer.DisableCallCount()).To(Equal(1))
@@ -135,7 +136,7 @@ var _ = Context("cli", func() {
 						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
 
 						/* act */
-						objectUnderTest.Run([]string{"opctl", "op", "create", "-c", expectedPath, expectedOpName})
+						objectUnderTest.Run([]string{"opctl", "op", "create", "--path", expectedPath, expectedOpName})
 
 						/* assert */
 						Expect(fakeCore.OpCreateCallCount()).To(Equal(1))
@@ -268,7 +269,12 @@ var _ = Context("cli", func() {
 
 					/* assert */
 					Expect(fakeCore.OpKillCallCount()).To(Equal(1))
-					Expect(fakeCore.OpKillArgsForCall(0)).To(Equal(expectedOpID))
+
+					actualCtx,
+						actualOpID := fakeCore.OpKillArgsForCall(0)
+
+					Expect(actualCtx).To(Equal(context.TODO()))
+					Expect(actualOpID).To(Equal(expectedOpID))
 				})
 			})
 
@@ -354,7 +360,7 @@ var _ = Context("cli", func() {
 
 					Expect(actualCtx).To(Equal(context.TODO()))
 					Expect(actualOpRef).To(Equal(expectedOpRef))
-					Expect(actualRunOpts).To(BeEmpty())
+					Expect(actualRunOpts.Args).To(BeEmpty())
 				})
 			})
 		})

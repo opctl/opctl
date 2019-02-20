@@ -5,19 +5,23 @@ package main
 import (
 	"github.com/docker/docker/daemon/config"
 	"github.com/docker/docker/opts"
-	units "github.com/docker/go-units"
+	"github.com/docker/docker/rootless"
+	"github.com/docker/go-units"
 	"github.com/spf13/pflag"
 )
 
 // installConfigFlags adds flags to the pflag.FlagSet to configure the daemon
-func installConfigFlags(conf *config.Config, flags *pflag.FlagSet) {
+func installConfigFlags(conf *config.Config, flags *pflag.FlagSet) error {
 	// First handle install flags which are consistent cross-platform
-	installCommonConfigFlags(conf, flags)
+	if err := installCommonConfigFlags(conf, flags); err != nil {
+		return err
+	}
 
 	// Then install flags common to unix platforms
 	installUnixConfigFlags(conf, flags)
 
 	conf.Ulimits = make(map[string]*units.Ulimit)
+	conf.NetworkConfig.DefaultAddressPools = opts.PoolsOpt{}
 
 	// Set default value for `--default-shm-size`
 	conf.ShmSize = opts.MemBytes(config.DefaultShmSize)
@@ -44,4 +48,8 @@ func installConfigFlags(conf *config.Config, flags *pflag.FlagSet) {
 	flags.Var(&conf.ShmSize, "default-shm-size", "Default shm size for containers")
 	flags.BoolVar(&conf.NoNewPrivileges, "no-new-privileges", false, "Set no-new-privileges by default for new containers")
 	flags.StringVar(&conf.IpcMode, "default-ipc-mode", config.DefaultIpcMode, `Default mode for containers ipc ("shareable" | "private")`)
+	flags.Var(&conf.NetworkConfig.DefaultAddressPools, "default-address-pool", "Default address pools for node specific local networks")
+	// Mostly users don't need to set this flag explicitly.
+	flags.BoolVar(&conf.Rootless, "rootless", rootless.RunningWithNonRootUsername(), "Enable rootless mode (experimental)")
+	return nil
 }

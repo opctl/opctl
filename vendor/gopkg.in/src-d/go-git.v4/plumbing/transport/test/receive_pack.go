@@ -231,7 +231,6 @@ func (s *ReceivePackSuite) receivePackNoCheck(c *C, ep *transport.Endpoint,
 	// fixtures are generated with read only permissions, this casuses
 	// errors deleting or modifying files.
 	rootPath := ep.Path
-	println("STAT", rootPath)
 	stat, err := os.Stat(ep.Path)
 
 	if rootPath != "" && err == nil && stat.IsDir() {
@@ -269,7 +268,6 @@ func (s *ReceivePackSuite) receivePackNoCheck(c *C, ep *transport.Endpoint,
 func (s *ReceivePackSuite) receivePack(c *C, ep *transport.Endpoint,
 	req *packp.ReferenceUpdateRequest, fixture *fixtures.Fixture,
 	callAdvertisedReferences bool) {
-
 	url := ""
 	if fixture != nil {
 		url = fixture.URL
@@ -280,7 +278,6 @@ func (s *ReceivePackSuite) receivePack(c *C, ep *transport.Endpoint,
 		ep.String(), url, callAdvertisedReferences,
 	)
 	report, err := s.receivePackNoCheck(c, ep, req, fixture, callAdvertisedReferences)
-
 	c.Assert(err, IsNil, comment)
 	if req.Capabilities.Supports(capability.ReportStatus) {
 		c.Assert(report, NotNil, comment)

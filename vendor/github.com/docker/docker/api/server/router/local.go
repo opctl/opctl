@@ -1,10 +1,7 @@
 package router // import "github.com/docker/docker/api/server/router"
 
 import (
-	"net/http"
-
 	"github.com/docker/docker/api/server/httputils"
-	"golang.org/x/net/context"
 )
 
 // RouteWrapper wraps a route with extra functionality.
@@ -71,34 +68,4 @@ func NewOptionsRoute(path string, handler httputils.APIFunc, opts ...RouteWrappe
 // NewHeadRoute initializes a new route with the http method HEAD.
 func NewHeadRoute(path string, handler httputils.APIFunc, opts ...RouteWrapper) Route {
 	return NewRoute("HEAD", path, handler, opts...)
-}
-
-func cancellableHandler(h httputils.APIFunc) httputils.APIFunc {
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, vars map[string]string) error {
-		if notifier, ok := w.(http.CloseNotifier); ok {
-			notify := notifier.CloseNotify()
-			notifyCtx, cancel := context.WithCancel(ctx)
-			finished := make(chan struct{})
-			defer close(finished)
-			ctx = notifyCtx
-			go func() {
-				select {
-				case <-notify:
-					cancel()
-				case <-finished:
-				}
-			}()
-		}
-		return h(ctx, w, r, vars)
-	}
-}
-
-// WithCancel makes new route which embeds http.CloseNotifier feature to
-// context.Context of handler.
-func WithCancel(r Route) Route {
-	return localRoute{
-		method:  r.Method(),
-		path:    r.Path(),
-		handler: cancellableHandler(r.Handler()),
-	}
 }

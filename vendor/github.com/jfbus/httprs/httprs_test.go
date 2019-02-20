@@ -42,7 +42,8 @@ func (f *fakeResponseWriter) Response() *http.Response {
 }
 
 type fakeRoundTripper struct {
-	src *os.File
+	src                    *os.File
+	downgradeZeroToNoRange bool
 }
 
 func (f *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
@@ -52,6 +53,12 @@ func (f *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	if f.downgradeZeroToNoRange {
+		// There are implementations that downgrades bytes=0- to a normal un-ranged GET
+		if r.Header.Get("Range") == "bytes=0-" {
+			r.Header.Del("Range")
+		}
+	}
 	http.ServeContent(fw, r, "temp.txt", time.Now(), f.src)
 
 	return fw.Response(), nil
@@ -59,27 +66,31 @@ func (f *fakeRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 
 const SZ = 4096
 
-func newRS() *HttpReadSeeker {
-	tmp, err := ioutil.TempFile(os.TempDir(), "httprs")
-	if err != nil {
-		return nil
-	}
-	for i := 0; i < SZ; i++ {
-		tmp.WriteString(fmt.Sprintf("%04d", i))
-	}
+type RSFactory func() *HttpReadSeeker
 
-	req, err := http.NewRequest("GET", "http://www.example.com", nil)
-	if err != nil {
-		return nil
+func newRSFactory(brokenServer bool) RSFactory {
+	return func() *HttpReadSeeker {
+		tmp, err := ioutil.TempFile(os.TempDir(), "httprs")
+		if err != nil {
+			return nil
+		}
+		for i := 0; i < SZ; i++ {
+			tmp.WriteString(fmt.Sprintf("%04d", i))
+		}
+
+		req, err := http.NewRequest("GET", "http://www.example.com", nil)
+		if err != nil {
+			return nil
+		}
+		res := &http.Response{
+			Header: http.Header{
+				"Accept-Ranges": []string{"bytes"},
+			},
+			Request:       req,
+			ContentLength: SZ * 4,
+		}
+		return NewHttpReadSeeker(res, &http.Client{Transport: &fakeRoundTripper{src: tmp, downgradeZeroToNoRange: brokenServer}})
 	}
-	res := &http.Response{
-		Header: http.Header{
-			"Accept-Ranges": []string{"bytes"},
-		},
-		Request:       req,
-		ContentLength: SZ * 4,
-	}
-	return NewHttpReadSeeker(res, &http.Client{Transport: &fakeRoundTripper{tmp}})
 }
 
 func TestHttpWebServer(t *testing.T) {
@@ -123,6 +134,22 @@ func TestHttpWebServer(t *testing.T) {
 }
 
 func TestHttpReaderSeeker(t *testing.T) {
+	tests := []struct {
+		name  string
+		newRS func() *HttpReadSeeker
+	}{
+		{name: "compliant", newRS: newRSFactory(false)},
+		{name: "broken", newRS: newRSFactory(true)},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			testHttpReaderSeeker(t, test.newRS)
+		})
+	}
+}
+
+func testHttpReaderSeeker(t *testing.T, newRS RSFactory) {
 	Convey("Scenario: testing HttpReaderSeeker", t, func() {
 
 		Convey("Read should start at the beginning", func() {

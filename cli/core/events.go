@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/model"
+	"github.com/opctl/sdk-golang/model"
 )
 
 func (this _core) Events() {

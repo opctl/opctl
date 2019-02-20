@@ -51,8 +51,36 @@ func TestTxnSimple(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, []byte("val=8"), val)
 
-		require.Error(t, ErrManagedTxn, txn.CommitAt(100, nil))
+		require.Equal(t, ErrManagedTxn, txn.CommitAt(100, nil))
 		require.NoError(t, txn.Commit(nil))
+	})
+}
+
+func TestTxnReadAfterWrite(t *testing.T) {
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		var wg sync.WaitGroup
+		N := 100
+		wg.Add(N)
+		for i := 0; i < N; i++ {
+			go func(i int) {
+				defer wg.Done()
+				key := []byte(fmt.Sprintf("key%d", i))
+				err := db.Update(func(tx *Txn) error {
+					return tx.Set(key, key)
+				})
+				require.NoError(t, err)
+				err = db.View(func(tx *Txn) error {
+					item, err := tx.Get(key)
+					require.NoError(t, err)
+					val, err := item.Value()
+					require.NoError(t, err)
+					require.Equal(t, val, key)
+					return nil
+				})
+				require.NoError(t, err)
+			}(i)
+		}
+		wg.Wait()
 	})
 }
 
@@ -128,6 +156,7 @@ func TestTxnVersions(t *testing.T) {
 		}
 
 		checkIterator := func(itr *Iterator, i int) {
+			defer itr.Close()
 			count := 0
 			for itr.Rewind(); itr.Valid(); itr.Next() {
 				item := itr.Item()
@@ -197,12 +226,14 @@ func TestTxnVersions(t *testing.T) {
 			opt.AllVersions = true
 			itr = txn.NewIterator(opt)
 			checkAllVersions(itr, i)
+			itr.Close()
 
 			opt = DefaultIteratorOptions
 			opt.AllVersions = true
 			opt.Reverse = true
 			itr = txn.NewIterator(opt)
 			checkAllVersions(itr, i)
+			itr.Close()
 
 			txn.Discard()
 		}
@@ -324,6 +355,7 @@ func TestTxnIterationEdgeCase(t *testing.T) {
 		require.Equal(t, uint64(4), db.orc.readTs())
 
 		checkIterator := func(itr *Iterator, expected []string) {
+			defer itr.Close()
 			var i int
 			for itr.Rewind(); itr.Valid(); itr.Next() {
 				item := itr.Item()
@@ -407,6 +439,7 @@ func TestTxnIterationEdgeCase2(t *testing.T) {
 		require.Equal(t, uint64(4), db.orc.readTs())
 
 		checkIterator := func(itr *Iterator, expected []string) {
+			defer itr.Close()
 			var i int
 			for itr.Rewind(); itr.Valid(); itr.Next() {
 				item := itr.Item()
@@ -435,6 +468,7 @@ func TestTxnIterationEdgeCase2(t *testing.T) {
 		itr.Seek(kc)
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kc)
+		itr.Close()
 
 		itr = txn.NewIterator(rev)
 		itr.Seek(ka)
@@ -443,6 +477,7 @@ func TestTxnIterationEdgeCase2(t *testing.T) {
 		itr.Seek(kc)
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kc)
+		itr.Close()
 
 		txn.readTs = 3
 		itr = txn.NewIterator(DefaultIteratorOptions)
@@ -509,6 +544,7 @@ func TestTxnIterationEdgeCase3(t *testing.T) {
 		itr.Seek([]byte("ac"))
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kc)
+		itr.Close()
 
 		//  Keys: "abc", "ade"
 		// Read pending writes.
@@ -530,6 +566,7 @@ func TestTxnIterationEdgeCase3(t *testing.T) {
 		itr.Seek([]byte("ad"))
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kd)
+		itr.Close()
 
 		itr = txn.NewIterator(rev)
 		itr.Seek([]byte("ac"))
@@ -548,6 +585,7 @@ func TestTxnIterationEdgeCase3(t *testing.T) {
 		itr.Seek([]byte("ad"))
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kc)
+		itr.Close()
 
 		//  Keys: "abc", "ade"
 		itr = txn2.NewIterator(rev)
@@ -567,10 +605,11 @@ func TestTxnIterationEdgeCase3(t *testing.T) {
 		itr.Seek([]byte("ac"))
 		require.True(t, itr.Valid())
 		require.Equal(t, itr.item.Key(), kb)
+		itr.Close()
 	})
 }
 
-func TestIteratorAllVersionsButDeleted(t *testing.T) {
+func TestIteratorAllVersionsWithDeleted(t *testing.T) {
 	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
 		// Write two keys
 		err := db.Update(func(txn *Txn) error {
@@ -599,16 +638,65 @@ func TestIteratorAllVersionsButDeleted(t *testing.T) {
 		opts.AllVersions = true
 		opts.PrefetchValues = false
 
-		// Verify that deleted key does not show up when AllVersions is set.
+		// Verify that deleted shows up when AllVersions is set.
 		err = db.View(func(txn *Txn) error {
 			it := txn.NewIterator(opts)
+			defer it.Close()
 			var count int
 			for it.Rewind(); it.Valid(); it.Next() {
 				count++
 				item := it.Item()
-				require.Equal(t, []byte("answer2"), item.Key())
+				if count == 1 {
+					require.Equal(t, []byte("answer1"), item.Key())
+					require.True(t, item.meta&bitDelete > 0)
+				} else {
+					require.Equal(t, []byte("answer2"), item.Key())
+				}
 			}
-			require.Equal(t, 1, count)
+			require.Equal(t, 2, count)
+			return nil
+		})
+		require.NoError(t, err)
+	})
+}
+
+func TestIteratorAllVersionsWithDeleted2(t *testing.T) {
+	runBadgerTest(t, nil, func(t *testing.T, db *DB) {
+		// Set and delete alternatively
+		for i := 0; i < 4; i++ {
+			err := db.Update(func(txn *Txn) error {
+				if i%2 == 0 {
+					txn.Set([]byte("key"), []byte("value"))
+					return nil
+				}
+				txn.Delete([]byte("key"))
+				return nil
+			})
+			require.NoError(t, err)
+		}
+
+		opts := DefaultIteratorOptions
+		opts.AllVersions = true
+		opts.PrefetchValues = false
+
+		// Verify that deleted shows up when AllVersions is set.
+		err := db.View(func(txn *Txn) error {
+			it := txn.NewIterator(opts)
+			defer it.Close()
+			var count int
+			for it.Rewind(); it.Valid(); it.Next() {
+				item := it.Item()
+				require.Equal(t, []byte("key"), item.Key())
+				if count%2 != 0 {
+					val, err := item.Value()
+					require.NoError(t, err)
+					require.Equal(t, val, []byte("value"))
+				} else {
+					require.True(t, item.meta&bitDelete > 0)
+				}
+				count++
+			}
+			require.Equal(t, 4, count)
 			return nil
 		})
 		require.NoError(t, err)
@@ -647,7 +735,7 @@ func TestManagedDB(t *testing.T) {
 	for i := 0; i <= 3; i++ {
 		require.NoError(t, txn.Set(key(i), val(i)))
 	}
-	require.Error(t, ErrManagedTxn, txn.Commit(nil))
+	require.Equal(t, ErrManagedTxn, txn.Commit(nil))
 	require.NoError(t, txn.CommitAt(3, nil))
 
 	// Read data at t=2.

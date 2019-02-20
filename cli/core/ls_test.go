@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opspec-io/sdk-golang/data"
-	"github.com/opspec-io/sdk-golang/op"
+	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/op"
 	"os"
 )
 

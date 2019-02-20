@@ -2,6 +2,7 @@ package secret // import "github.com/docker/docker/integration/secret"
 
 import (
 	"bytes"
+	"context"
 	"sort"
 	"testing"
 	"time"
@@ -11,16 +12,14 @@ import (
 	swarmtypes "github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/integration/internal/swarm"
-	"github.com/docker/docker/internal/testutil"
 	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/gotestyourself/gotestyourself/assert"
-	is "github.com/gotestyourself/gotestyourself/assert/cmp"
-	"github.com/gotestyourself/gotestyourself/skip"
-	"golang.org/x/net/context"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"gotest.tools/skip"
 )
 
 func TestSecretInspect(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
@@ -30,7 +29,7 @@ func TestSecretInspect(t *testing.T) {
 
 	ctx := context.Background()
 
-	testName := "test_secret"
+	testName := "test_secret_" + t.Name()
 	secretID := createSecret(ctx, t, client, testName, []byte("TESTINGDATA"), nil)
 
 	secret, _, err := client.SecretInspectWithRaw(context.Background(), secretID)
@@ -43,7 +42,7 @@ func TestSecretInspect(t *testing.T) {
 }
 
 func TestSecretList(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
@@ -52,8 +51,8 @@ func TestSecretList(t *testing.T) {
 	defer client.Close()
 	ctx := context.Background()
 
-	testName0 := "test0"
-	testName1 := "test1"
+	testName0 := "test0_" + t.Name()
+	testName1 := "test1_" + t.Name()
 	testNames := []string{testName0, testName1}
 	sort.Strings(testNames)
 
@@ -63,19 +62,10 @@ func TestSecretList(t *testing.T) {
 	// create secret test1
 	secret1ID := createSecret(ctx, t, client, testName1, []byte("TESTINGDATA1"), map[string]string{"type": "production"})
 
-	names := func(entries []swarmtypes.Secret) []string {
-		values := []string{}
-		for _, entry := range entries {
-			values = append(values, entry.Spec.Name)
-		}
-		sort.Strings(values)
-		return values
-	}
-
 	// test by `secret ls`
 	entries, err := client.SecretList(ctx, types.SecretListOptions{})
 	assert.NilError(t, err)
-	assert.Check(t, is.DeepEqual(names(entries), testNames))
+	assert.Check(t, is.DeepEqual(secretNamesFromList(entries), testNames))
 
 	testCases := []struct {
 		filters  filters.Args
@@ -110,7 +100,7 @@ func TestSecretList(t *testing.T) {
 			Filters: tc.filters,
 		})
 		assert.NilError(t, err)
-		assert.Check(t, is.DeepEqual(names(entries), tc.expected))
+		assert.Check(t, is.DeepEqual(secretNamesFromList(entries), tc.expected))
 
 	}
 }
@@ -129,7 +119,7 @@ func createSecret(ctx context.Context, t *testing.T, client client.APIClient, na
 }
 
 func TestSecretsCreateAndDelete(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
@@ -138,7 +128,7 @@ func TestSecretsCreateAndDelete(t *testing.T) {
 	defer client.Close()
 	ctx := context.Background()
 
-	testName := "test_secret"
+	testName := "test_secret_" + t.Name()
 	secretID := createSecret(ctx, t, client, testName, []byte("TESTINGDATA"), nil)
 
 	// create an already existin secret, daemon should return a status code of 409
@@ -148,20 +138,20 @@ func TestSecretsCreateAndDelete(t *testing.T) {
 		},
 		Data: []byte("TESTINGDATA"),
 	})
-	testutil.ErrorContains(t, err, "already exists")
+	assert.Check(t, is.ErrorContains(err, "already exists"))
 
 	// Ported from original TestSecretsDelete
 	err = client.SecretRemove(ctx, secretID)
 	assert.NilError(t, err)
 
 	_, _, err = client.SecretInspectWithRaw(ctx, secretID)
-	testutil.ErrorContains(t, err, "No such secret")
+	assert.Check(t, is.ErrorContains(err, "No such secret"))
 
 	err = client.SecretRemove(ctx, "non-existin")
-	testutil.ErrorContains(t, err, "No such secret: non-existin")
+	assert.Check(t, is.ErrorContains(err, "No such secret: non-existin"))
 
 	// Ported from original TestSecretsCreteaWithLabels
-	testName = "test_secret_with_labels"
+	testName = "test_secret_with_labels_" + t.Name()
 	secretID = createSecret(ctx, t, client, testName, []byte("TESTINGDATA"), map[string]string{
 		"key1": "value1",
 		"key2": "value2",
@@ -176,7 +166,7 @@ func TestSecretsCreateAndDelete(t *testing.T) {
 }
 
 func TestSecretsUpdate(t *testing.T) {
-	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 
 	defer setupTest(t)()
 	d := swarm.NewSwarm(t, testEnv)
@@ -185,7 +175,7 @@ func TestSecretsUpdate(t *testing.T) {
 	defer client.Close()
 	ctx := context.Background()
 
-	testName := "test_secret"
+	testName := "test_secret_" + t.Name()
 	secretID := createSecret(ctx, t, client, testName, []byte("TESTINGDATA"), nil)
 
 	insp, _, err := client.SecretInspectWithRaw(ctx, secretID)
@@ -223,37 +213,41 @@ func TestSecretsUpdate(t *testing.T) {
 	// this test will produce an error in func UpdateSecret
 	insp.Spec.Data = []byte("TESTINGDATA2")
 	err = client.SecretUpdate(ctx, secretID, insp.Version, insp.Spec)
-	testutil.ErrorContains(t, err, "only updates to Labels are allowed")
+	assert.Check(t, is.ErrorContains(err, "only updates to Labels are allowed"))
 }
 
 func TestTemplatedSecret(t *testing.T) {
+	skip.If(t, testEnv.DaemonInfo.OSType == "windows")
 	d := swarm.NewSwarm(t, testEnv)
 	defer d.Stop(t)
 	client := d.NewClientT(t)
 	defer client.Close()
 	ctx := context.Background()
 
+	referencedSecretName := "referencedsecret_" + t.Name()
 	referencedSecretSpec := swarmtypes.SecretSpec{
 		Annotations: swarmtypes.Annotations{
-			Name: "referencedsecret",
+			Name: referencedSecretName,
 		},
 		Data: []byte("this is a secret"),
 	}
 	referencedSecret, err := client.SecretCreate(ctx, referencedSecretSpec)
 	assert.Check(t, err)
 
+	referencedConfigName := "referencedconfig_" + t.Name()
 	referencedConfigSpec := swarmtypes.ConfigSpec{
 		Annotations: swarmtypes.Annotations{
-			Name: "referencedconfig",
+			Name: referencedConfigName,
 		},
 		Data: []byte("this is a config"),
 	}
 	referencedConfig, err := client.ConfigCreate(ctx, referencedConfigSpec)
 	assert.Check(t, err)
 
+	templatedSecretName := "templated_secret_" + t.Name()
 	secretSpec := swarmtypes.SecretSpec{
 		Annotations: swarmtypes.Annotations{
-			Name: "templated_secret",
+			Name: templatedSecretName,
 		},
 		Templating: &swarmtypes.Driver{
 			Name: "golang",
@@ -266,6 +260,7 @@ func TestTemplatedSecret(t *testing.T) {
 	templatedSecret, err := client.SecretCreate(ctx, secretSpec)
 	assert.Check(t, err)
 
+	serviceName := "svc_" + t.Name()
 	serviceID := swarm.CreateService(t, d,
 		swarm.ServiceWithSecret(
 			&swarmtypes.SecretReference{
@@ -276,7 +271,7 @@ func TestTemplatedSecret(t *testing.T) {
 					Mode: 0600,
 				},
 				SecretID:   templatedSecret.ID,
-				SecretName: "templated_secret",
+				SecretName: templatedSecretName,
 			},
 		),
 		swarm.ServiceWithConfig(
@@ -288,7 +283,7 @@ func TestTemplatedSecret(t *testing.T) {
 					Mode: 0600,
 				},
 				ConfigID:   referencedConfig.ID,
-				ConfigName: "referencedconfig",
+				ConfigName: referencedConfigName,
 			},
 		),
 		swarm.ServiceWithSecret(
@@ -300,15 +295,15 @@ func TestTemplatedSecret(t *testing.T) {
 					Mode: 0600,
 				},
 				SecretID:   referencedSecret.ID,
-				SecretName: "referencedsecret",
+				SecretName: referencedSecretName,
 			},
 		),
-		swarm.ServiceWithName("svc"),
+		swarm.ServiceWithName(serviceName),
 	)
 
 	var tasks []swarmtypes.Task
 	waitAndAssert(t, 60*time.Second, func(t *testing.T) bool {
-		tasks = swarm.GetRunningTasks(t, d, serviceID)
+		tasks = swarm.GetRunningTasks(t, client, serviceID)
 		return len(tasks) > 0
 	})
 
@@ -326,7 +321,7 @@ func TestTemplatedSecret(t *testing.T) {
 		AttachStderr: true,
 	})
 
-	expect := "SERVICE_NAME=svc\n" +
+	expect := "SERVICE_NAME=" + serviceName + "\n" +
 		"this is a secret\n" +
 		"this is a config\n"
 	assertAttachedStream(t, attach, expect)
@@ -337,6 +332,56 @@ func TestTemplatedSecret(t *testing.T) {
 		AttachStderr: true,
 	})
 	assertAttachedStream(t, attach, "tmpfs on /run/secrets/templated_secret type tmpfs")
+}
+
+// Test case for 28884
+func TestSecretCreateResolve(t *testing.T) {
+	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+
+	defer setupTest(t)()
+	d := swarm.NewSwarm(t, testEnv)
+	defer d.Stop(t)
+	client := d.NewClientT(t)
+	defer client.Close()
+
+	ctx := context.Background()
+
+	testName := "test_secret_" + t.Name()
+	secretID := createSecret(ctx, t, client, testName, []byte("foo"), nil)
+
+	fakeName := secretID
+	fakeID := createSecret(ctx, t, client, fakeName, []byte("fake foo"), nil)
+
+	entries, err := client.SecretList(ctx, types.SecretListOptions{})
+	assert.NilError(t, err)
+	assert.Check(t, is.Contains(secretNamesFromList(entries), testName))
+	assert.Check(t, is.Contains(secretNamesFromList(entries), fakeName))
+
+	err = client.SecretRemove(ctx, secretID)
+	assert.NilError(t, err)
+
+	// Fake one will remain
+	entries, err = client.SecretList(ctx, types.SecretListOptions{})
+	assert.NilError(t, err)
+	assert.Assert(t, is.DeepEqual(secretNamesFromList(entries), []string{fakeName}))
+
+	// Remove based on name prefix of the fake one should not work
+	// as search is only done based on:
+	// - Full ID
+	// - Full Name
+	// - Partial ID (prefix)
+	err = client.SecretRemove(ctx, fakeName[:5])
+	assert.Assert(t, nil != err)
+	entries, err = client.SecretList(ctx, types.SecretListOptions{})
+	assert.NilError(t, err)
+	assert.Assert(t, is.DeepEqual(secretNamesFromList(entries), []string{fakeName}))
+
+	// Remove based on ID prefix of the fake one should succeed
+	err = client.SecretRemove(ctx, fakeID[:5])
+	assert.NilError(t, err)
+	entries, err = client.SecretList(ctx, types.SecretListOptions{})
+	assert.NilError(t, err)
+	assert.Assert(t, is.Equal(0, len(entries)))
 }
 
 func assertAttachedStream(t *testing.T, attach types.HijackedResponse, expect string) {
@@ -352,7 +397,7 @@ func waitAndAssert(t *testing.T, timeout time.Duration, f func(*testing.T) bool)
 	for {
 		select {
 		case <-after:
-			t.Fatalf("timed out waiting for condition")
+			t.Fatal("timed out waiting for condition")
 		default:
 		}
 		if f(t) {
@@ -360,4 +405,13 @@ func waitAndAssert(t *testing.T, timeout time.Duration, f func(*testing.T) bool)
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
+}
+
+func secretNamesFromList(entries []swarmtypes.Secret) []string {
+	var values []string
+	for _, entry := range entries {
+		values = append(values, entry.Spec.Name)
+	}
+	sort.Strings(values)
+	return values
 }

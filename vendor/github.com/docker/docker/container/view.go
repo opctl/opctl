@@ -340,7 +340,7 @@ func (v *memdbView) transform(container *Container) *Snapshot {
 	}
 
 	if len(container.Args) > 0 {
-		args := []string{}
+		var args []string
 		for _, arg := range container.Args {
 			if strings.Contains(arg, " ") {
 				args = append(args, fmt.Sprintf("'%s'", arg))
@@ -473,7 +473,7 @@ type namesByContainerIDIndexer struct{}
 func (e *namesByContainerIDIndexer) FromObject(obj interface{}) (bool, []byte, error) {
 	n, ok := obj.(nameAssociation)
 	if !ok {
-		return false, nil, fmt.Errorf(`%T does not have type "nameAssocation"`, obj)
+		return false, nil, fmt.Errorf(`%T does not have type "nameAssociation"`, obj)
 	}
 
 	// Add the null character as a terminator
