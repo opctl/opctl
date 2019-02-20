@@ -1,12 +1,12 @@
-[![Build Status](https://travis-ci.org/opspec-io/sdk-js.svg?branch=master)](https://travis-ci.org/opspec-io/sdk-js)
-[![Coverage](https://codecov.io/gh/opspec-io/sdk-js/branch/master/graph/badge.svg)](https://codecov.io/gh/opspec-io/sdk-js)
+[![Build Status](https://travis-ci.org/opctl/sdk-js.svg?branch=master)](https://travis-ci.org/opctl/sdk-js)
+[![Coverage](https://codecov.io/gh/opctl/sdk-js/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/sdk-js)
 
 > *Be advised: this project is currently at Major version zero. Per the
 > semantic versioning spec: "Major version zero (0.y.z) is for initial
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-Javascript SDK for [opspec](https://opspec.io)
+Javascript SDK for [opctl](https://opctl.io)
 
 # Supported runtimes
 
@@ -72,7 +72,7 @@ rootOpIdPromise.then(rootOpId => {
 
 join us on
 [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
-or [open an issue](https://github.com/opspec-io/sdk-js/issues)
+or [open an issue](https://github.com/opctl/sdk-js/issues)
 
 # Releases
 
