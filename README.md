@@ -14,7 +14,7 @@ see [website](https://opctl.io)
 # Used By
 
 These awesome companies use opctl. represent by adding yours (or one you know of) to the list!
-- [Era of Health](https://eraofhealth.com/)
+- [Era](https://helloera.co)
 - [Expedia](https://www.expedia.com)
 - [Nintex](https://www.nintex.com)
 - [ProKarma](https://prokarma.com/)

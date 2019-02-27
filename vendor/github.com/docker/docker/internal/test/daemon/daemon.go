@@ -88,6 +88,7 @@ func New(t testingT, ops ...func(*Daemon)) *Daemon {
 	if ht, ok := t.(test.HelperT); ok {
 		ht.Helper()
 	}
+	t.Log("Creating a new daemon")
 	dest := os.Getenv("DOCKER_INTEGRATION_DAEMON_DEST")
 	if dest == "" {
 		dest = os.Getenv("DEST")
@@ -167,16 +168,7 @@ func (d *Daemon) ReadLogFile() ([]byte, error) {
 	return ioutil.ReadFile(d.logFile.Name())
 }
 
-// NewClient creates new client based on daemon's socket path
-// FIXME(vdemeester): replace NewClient with NewClientT
-func (d *Daemon) NewClient() (*client.Client, error) {
-	return client.NewClientWithOpts(
-		client.FromEnv,
-		client.WithHost(d.Sock()))
-}
-
 // NewClientT creates new client based on daemon's socket path
-// FIXME(vdemeester): replace NewClient with NewClientT
 func (d *Daemon) NewClientT(t assert.TestingT) *client.Client {
 	if ht, ok := t.(test.HelperT); ok {
 		ht.Helper()

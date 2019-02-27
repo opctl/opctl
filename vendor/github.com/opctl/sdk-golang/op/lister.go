@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/op/dotyml"
-	"path"
+	"path/filepath"
 )
 
 type Lister interface {
@@ -43,7 +43,7 @@ func (ls _lister) List(
 
 	var ops []*model.OpDotYml
 	for _, content := range contents {
-		if path.Base(content.Path) == dotyml.FileName {
+		if filepath.Base(content.Path) == dotyml.FileName {
 
 			opDotYmlReader, err := dirHandle.GetContent(ctx, content.Path)
 			if nil != err {
