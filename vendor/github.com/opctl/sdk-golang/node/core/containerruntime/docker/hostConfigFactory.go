@@ -38,7 +38,7 @@ func (hcf _hostConfigFactory) Construct(
 	hostConfig := &container.HostConfig{
 		PortBindings: portBindings,
 		// support docker in docker
-		// @TODO: reconsider; can we avoid ctp?
+		// @TODO: reconsider; can we avoid this?
 		// see for similar discussion: https://github.com/kubernetes/kubernetes/issues/391
 		Privileged: true,
 	}
@@ -46,7 +46,7 @@ func (hcf _hostConfigFactory) Construct(
 		hostConfig.Binds = append(
 			hostConfig.Binds,
 			fmt.Sprintf(
-				"%v:%v",
+				"%v:%v:cached",
 				hcf.fsPathConverter.LocalToEngine(hostFilePath),
 				containerFilePath,
 			),
@@ -56,7 +56,7 @@ func (hcf _hostConfigFactory) Construct(
 		hostConfig.Binds = append(
 			hostConfig.Binds,
 			fmt.Sprintf(
-				"%v:%v",
+				"%v:%v:cached",
 				hcf.fsPathConverter.LocalToEngine(hostDirPath),
 				containerDirPath,
 			),
@@ -64,7 +64,7 @@ func (hcf _hostConfigFactory) Construct(
 	}
 	for containerSocketAddress, hostSocketAddress := range containerCallSockets {
 		const unixSocketAddressDiscriminationChars = `/\`
-		// note: ctp mechanism for determining the type of socket is naive; higher level of sophistication may be required
+		// note: this mechanism for determining the type of socket is naive; higher level of sophistication may be required
 		if strings.ContainsAny(hostSocketAddress, unixSocketAddressDiscriminationChars) {
 			hostConfig.Binds = append(
 				hostConfig.Binds,
