@@ -1,0 +1,23 @@
+{
+  "title": "booleanParam",
+  "description": "Boolean parameter of an op",
+  "type": "object",
+  "properties": {
+    "boolean": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "default": {
+          "description": "Default value",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "boolean"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "Expression which evaluates to a number",
+  "anyOf": [
+    {
+      "type": "number"
+    },
+    {
+      "description": "Reference which dereferences to a number coercible value",
+      "$ref": "reference.json"
+    },
+    {
+      "description": "Expression which evaluates to a number coercible string",
+      "$ref": "stringExpression.json"
+    }
+  ]
+}

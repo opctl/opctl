@@ -1,0 +1,29 @@
+{
+  "title": "objectParam",
+  "description": "Object parameter of an op",
+  "type": "object",
+  "properties": {
+    "object": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "default": {
+          "type": "object"
+        },
+        "isSecret": {
+          "description": "If the object is secret",
+          "type": "boolean"
+        },
+        "constraints": {
+          "$ref": "objectConstraints.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "object"
+  ]
+}

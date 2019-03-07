@@ -1,0 +1,23 @@
+{
+  "title": "socketParam",
+  "type": "object",
+  "description": "Socket parameter of an op",
+  "properties": {
+    "socket": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "isSecret": {
+          "description": "If the socket is secret",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "socket"
+  ]
+}

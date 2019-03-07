@@ -1,0 +1,16 @@
+{
+  "title": "serialCall",
+  "type": "object",
+  "properties": {
+    "serial": {
+      "type": "array",
+      "items": {
+        "$ref": "call.json"
+      }
+    }
+  },
+  "required": [
+    "serial"
+  ],
+  "additionalProperties": false
+}

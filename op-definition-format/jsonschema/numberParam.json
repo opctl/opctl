@@ -1,0 +1,29 @@
+{
+  "title": "numberParam",
+  "description": "Number parameter of an op",
+  "type": "object",
+  "properties": {
+    "number": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "default": {
+          "type": "number"
+        },
+        "isSecret": {
+          "description": "If the number is secret",
+          "type": "boolean"
+        },
+        "constraints": {
+          "$ref": "numberConstraints.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "number"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "description": "`$(IDENTIFIER)`, `$(IDENTIFIER.SUB.PROPERTY)`, `$(IDENTIFIER/PATH)`, or `$(/PATH)` (where root of `/` represents dir containing `op.yml`). Nesting up to one level is supported, i.e. `$(/$(REF))`",
+  "pattern": "^\\$\\(.+\\)$",
+  "type": "string"
+}

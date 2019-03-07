@@ -1,0 +1,19 @@
+{
+  "description": "Expression which evaluates to an array",
+  "oneOf": [
+    {
+      "type": "array",
+      "items": {
+        "$ref": "expression.json"
+      }
+    },
+    {
+      "description": "Reference which dereferences to an array coercible value",
+      "$ref": "reference.json"
+    },
+    {
+      "description": "Expression which evaluates to an array coercible string",
+      "$ref": "stringExpression.json"
+    }
+  ]
+}

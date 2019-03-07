@@ -1,0 +1,29 @@
+{
+  "title": "stringParam",
+  "type": "object",
+  "description": "String parameter of an op",
+  "properties": {
+    "string": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "default": {
+          "type": "string"
+        },
+        "isSecret": {
+          "description": "If the string is secret",
+          "type": "boolean"
+        },
+        "constraints": {
+          "$ref": "stringConstraints.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "string"
+  ]
+}

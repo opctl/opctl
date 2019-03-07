@@ -1,0 +1,35 @@
+{
+  "description": "Parameter of an op",
+  "type": "object",
+  "patternProperties": {
+    "[-_.a-zA-Z0-9]+": {
+      "oneOf": [
+        {
+          "$ref": "arrayParam.json"
+        },
+        {
+          "$ref": "booleanParam.json"
+        },
+        {
+          "$ref": "dirParam.json"
+        },
+        {
+          "$ref": "fileParam.json"
+        },
+        {
+          "$ref": "numberParam.json"
+        },
+        {
+          "$ref": "objectParam.json"
+        },
+        {
+          "$ref": "socketParam.json"
+        },
+        {
+          "$ref": "stringParam.json"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

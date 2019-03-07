@@ -1,0 +1,18 @@
+{
+  "title": "call",
+  "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) node of an op",
+  "oneOf": [
+    {
+      "$ref": "containerCall.json"
+    },
+    {
+      "$ref": "opCall.json"
+    },
+    {
+      "$ref": "parallelCall.json"
+    },
+    {
+      "$ref": "serialCall.json"
+    }
+  ]
+}

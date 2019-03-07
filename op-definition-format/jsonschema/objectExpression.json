@@ -1,0 +1,30 @@
+{
+  "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
+  "oneOf": [
+    {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "oneOf": [
+            {
+              "$ref": "expression.json"
+            },
+            {
+              "description": "Equivalent to \"PROPERTY\": \"$(PROPERTY)\"",
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Reference which dereferences to an object coercible value",
+      "$ref": "reference.json"
+    },
+    {
+      "description": "Expression which evaluates to an object coercible string",
+      "$ref": "stringExpression.json"
+    }
+  ]
+}

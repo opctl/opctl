@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$id": "https://opspec.io/0.1.6/op.yml.schema.json",
+  "title": "op.yml",
+  "description": "Defines an op",
+  "properties": {
+    "name": {
+      "description": "Name of the op",
+      "type": "string"
+    },
+    "description": {
+      "description": "Description of the op",
+      "$ref": "markdown.json"
+    },
+    "inputs": {
+      "$ref": "param.json"
+    },
+    "outputs": {
+      "$ref": "param.json"
+    },
+    "run": {
+      "$ref": "call.json"
+    },
+    "version": {
+      "description": "Version of the op",
+      "$ref": "semVer.json"
+    },
+    "opspec": {
+      "description": "Version of [opspec](https://opspec.io) used by the op",
+      "$ref": "semVer.json"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false
+}

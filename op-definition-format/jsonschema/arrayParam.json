@@ -1,0 +1,29 @@
+{
+  "title": "arrayParam",
+  "description": "Array parameter of an op",
+  "type": "object",
+  "properties": {
+    "array": {
+      "properties": {
+        "description": {
+          "$ref": "markdown.json"
+        },
+        "default": {
+          "type": "array"
+        },
+        "isSecret": {
+          "description": "If the array is secret",
+          "type": "boolean"
+        },
+        "constraints": {
+          "$ref": "arrayConstraints.json"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "array"
+  ]
+}

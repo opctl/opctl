@@ -1,0 +1,16 @@
+{
+  "title": "parallelCall",
+  "type": "object",
+  "properties": {
+    "parallel": {
+      "type": "array",
+      "items": {
+        "$ref": "call.json"
+      }
+    }
+  },
+  "required": [
+    "parallel"
+  ],
+  "additionalProperties": false
+}
