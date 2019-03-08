@@ -6,7 +6,7 @@
       "description": "Command run by a container; overrides any set at the image level",
       "type": "array",
       "items": {
-        "description": "expression coercible to string value",
+        "description": "Expression coercible to string value",
         "$ref": "expression.json"
       }
     },
@@ -21,7 +21,7 @@
               "type": "null"
             },
             {
-              "description": "expression coercible to dir value &/or scope ref to set upon exit",
+              "description": "Expression coercible to dir value &/or scope ref to set upon exit",
               "$ref": "expression.json"
             }
           ]
@@ -40,7 +40,7 @@
               "type": "null"
             },
             {
-              "description": "expression coercible to string value",
+              "description": "Expression coercible to string value",
               "$ref": "expression.json"
             }
           ]
@@ -59,7 +59,7 @@
               "type": "null"
             },
             {
-              "description": "expression coercible to file value &/or scope ref to set upon exit",
+              "description": "Expression coercible to file value &/or scope ref to set upon exit",
               "$ref": "expression.json"
             }
           ]

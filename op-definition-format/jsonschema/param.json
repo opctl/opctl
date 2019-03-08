@@ -1,34 +1,8 @@
 {
+  "additionalProperties": false,
   "description": "Parameter of an op",
-  "type": "object",
   "patternProperties": {
     "[-_.a-zA-Z0-9]+": {
-      "properties": {
-        "array": {
-          "$ref": "arrayParam.json"
-        },
-        "boolean": {
-          "$ref": "booleanParam.json"
-        },
-        "dir": {
-          "$ref": "dirParam.json"
-        },
-        "file": {
-          "$ref": "fileParam.json"
-        },
-        "number": {
-          "$ref": "numberParam.json"
-        },
-        "object": {
-          "$ref": "objectParam.json"
-        },
-        "socket": {
-          "$ref": "socketParam.json"
-        },
-        "string": {
-          "$ref": "stringParam.json"
-        }
-      },
       "oneOf": [
         {
           "required": [
@@ -70,8 +44,35 @@
             "string"
           ]
         }
-      ]
+      ],
+      "properties": {
+        "array": {
+          "$ref": "arrayParam.json"
+        },
+        "boolean": {
+          "$ref": "booleanParam.json"
+        },
+        "dir": {
+          "$ref": "dirParam.json"
+        },
+        "file": {
+          "$ref": "fileParam.json"
+        },
+        "number": {
+          "$ref": "numberParam.json"
+        },
+        "object": {
+          "$ref": "objectParam.json"
+        },
+        "socket": {
+          "$ref": "socketParam.json"
+        },
+        "string": {
+          "$ref": "stringParam.json"
+        }
+      },
+      "type": "object"
     }
   },
-  "additionalProperties": false
+  "type": "object"
 }

@@ -1,0 +1,24 @@
+{
+  "description": "Condition which evaluates to true or false",
+  "oneOf": [
+    {
+      "required": [
+        "eq"
+      ]
+    },
+    {
+      "required": [
+        "ne"
+      ]
+    }
+  ],
+  "properties": {
+    "eq": {
+      "$ref": "eqPredicate.json"
+    },
+    "ne": {
+      "$ref": "nePredicate.json"
+    }
+  },
+  "type": "object"
+}

@@ -1,12 +1,10 @@
 {
   "description": "Expression which evaluates to a string",
-  "anyOf": [
-    {
-      "type": "string"
-    },
-    {
-      "description": "Reference which dereferences to a string coercible value",
-      "$ref": "reference.json"
-    }
+  "type": [
+    "array",
+    "boolean",
+    "number",
+    "object",
+    "string"
   ]
 }

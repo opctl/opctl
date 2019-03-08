@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "$id": "https://opspec.io/0.1.6/op.yml.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://opspec.io/0.1.7/op.yml.schema.json",
   "title": "op.yml",
   "description": "Defines an op",
   "properties": {
@@ -13,10 +13,52 @@
       "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
     },
     "inputs": {
+      "additionalProperties": false,
       "description": "Parameter of an op",
-      "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
+          "oneOf": [
+            {
+              "required": [
+                "array"
+              ]
+            },
+            {
+              "required": [
+                "boolean"
+              ]
+            },
+            {
+              "required": [
+                "dir"
+              ]
+            },
+            {
+              "required": [
+                "file"
+              ]
+            },
+            {
+              "required": [
+                "number"
+              ]
+            },
+            {
+              "required": [
+                "object"
+              ]
+            },
+            {
+              "required": [
+                "socket"
+              ]
+            },
+            {
+              "required": [
+                "string"
+              ]
+            }
+          ],
           "properties": {
             "array": {
               "additionalProperties": false,
@@ -521,58 +563,39 @@
               "type": "object"
             }
           },
-          "oneOf": [
-            {
-              "required": [
-                "array"
-              ]
-            },
-            {
-              "required": [
-                "boolean"
-              ]
-            },
-            {
-              "required": [
-                "dir"
-              ]
-            },
-            {
-              "required": [
-                "file"
-              ]
-            },
-            {
-              "required": [
-                "number"
-              ]
-            },
-            {
-              "required": [
-                "object"
-              ]
-            },
-            {
-              "required": [
-                "socket"
-              ]
-            },
-            {
-              "required": [
-                "string"
-              ]
-            }
-          ]
+          "type": "object"
         }
       },
-      "additionalProperties": false
+      "type": "object"
     },
     "outputs": {
       "$ref": "#/properties/inputs"
     },
     "run": {
-      "title": "call",
+      "additionalProperties": false,
       "description": "A single node of the [call graph](https://en.wikipedia.org/wiki/Call_graph)",
+      "oneOf": [
+        {
+          "required": [
+            "container"
+          ]
+        },
+        {
+          "required": [
+            "op"
+          ]
+        },
+        {
+          "required": [
+            "parallel"
+          ]
+        },
+        {
+          "required": [
+            "serial"
+          ]
+        }
+      ],
       "properties": {
         "container": {
           "title": "containerCall",
@@ -582,7 +605,7 @@
               "description": "Command run by a container; overrides any set at the image level",
               "type": "array",
               "items": {
-                "description": "expression coercible to string value",
+                "description": "Expression coercible to string value",
                 "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
               }
             },
@@ -597,7 +620,7 @@
                       "type": "null"
                     },
                     {
-                      "description": "expression coercible to dir value &/or scope ref to set upon exit",
+                      "description": "Expression coercible to dir value &/or scope ref to set upon exit",
                       "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
                   ]
@@ -616,7 +639,7 @@
                       "type": "null"
                     },
                     {
-                      "description": "expression coercible to string value",
+                      "description": "Expression coercible to string value",
                       "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
                   ]
@@ -635,7 +658,7 @@
                       "type": "null"
                     },
                     {
-                      "description": "expression coercible to file value &/or scope ref to set upon exit",
+                      "description": "Expression coercible to file value &/or scope ref to set upon exit",
                       "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
                   ]
@@ -717,6 +740,44 @@
           ],
           "additionalProperties": false
         },
+        "if": {
+          "description": "Predicates which must all evaluate to true",
+          "type": "array",
+          "items": {
+            "description": "Condition which evaluates to true or false",
+            "oneOf": [
+              {
+                "required": [
+                  "eq"
+                ]
+              },
+              {
+                "required": [
+                  "ne"
+                ]
+              }
+            ],
+            "properties": {
+              "eq": {
+                "description": "True if all items are equal",
+                "type": "array",
+                "items": {
+                  "description": "Expression coercible to string value",
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                }
+              },
+              "ne": {
+                "description": "True if any items aren't equal",
+                "type": "array",
+                "items": {
+                  "description": "Expression coercible to string value",
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                }
+              }
+            },
+            "type": "object"
+          }
+        },
         "op": {
           "title": "opCall",
           "oneOf": [
@@ -734,101 +795,12 @@
                         },
                         {
                           "description": "Expression which evaluates to a value",
-                          "anyOf": [
-                            {
-                              "description": "Expression which evaluates to an array",
-                              "oneOf": [
-                                {
-                                  "type": "array",
-                                  "items": {
-                                    "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                                  }
-                                },
-                                {
-                                  "description": "Reference which dereferences to an array coercible value",
-                                  "pattern": "^\\$\\(.+\\)$",
-                                  "type": "string"
-                                },
-                                {
-                                  "description": "Expression which evaluates to an array coercible string",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
-                                }
-                              ]
-                            },
-                            {
-                              "description": "Expression which evaluates to a boolean",
-                              "anyOf": [
-                                {
-                                  "type": "boolean"
-                                },
-                                {
-                                  "description": "Reference which dereferences to a boolean coercible value",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                },
-                                {
-                                  "description": "Expression which evaluates to a boolean coercible string",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
-                                }
-                              ]
-                            },
-                            {
-                              "description": "Expression which evaluates to a number",
-                              "anyOf": [
-                                {
-                                  "type": "number"
-                                },
-                                {
-                                  "description": "Reference which dereferences to a number coercible value",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                },
-                                {
-                                  "description": "Expression which evaluates to a number coercible string",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
-                                }
-                              ]
-                            },
-                            {
-                              "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
-                              "oneOf": [
-                                {
-                                  "type": "object",
-                                  "patternProperties": {
-                                    "^.+$": {
-                                      "oneOf": [
-                                        {
-                                          "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                                        },
-                                        {
-                                          "description": "Equivalent to \"PROPERTY\": \"$(PROPERTY)\"",
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "description": "Reference which dereferences to an object coercible value",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                },
-                                {
-                                  "description": "Expression which evaluates to an object coercible string",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
-                                }
-                              ]
-                            },
-                            {
-                              "description": "Expression which evaluates to a string",
-                              "anyOf": [
-                                {
-                                  "type": "string"
-                                },
-                                {
-                                  "description": "Reference which dereferences to a string coercible value",
-                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                }
-                              ]
-                            }
+                          "type": [
+                            "array",
+                            "boolean",
+                            "number",
+                            "object",
+                            "string"
                           ]
                         }
                       ]
@@ -858,11 +830,11 @@
                   "description": "Credentials used during authentication with the source of an image or op",
                   "properties": {
                     "username": {
-                      "description": "expression coercible to string value",
+                      "description": "Expression coercible to string value",
                       "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     },
                     "password": {
-                      "description": "expression coercible to string value",
+                      "description": "Expression coercible to string value",
                       "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
                   },
@@ -933,29 +905,7 @@
           }
         }
       },
-      "oneOf": [
-        {
-          "required": [
-            "container"
-          ]
-        },
-        {
-          "required": [
-            "op"
-          ]
-        },
-        {
-          "required": [
-            "parallel"
-          ]
-        },
-        {
-          "required": [
-            "serial"
-          ]
-        }
-      ],
-      "additionalProperties": false
+      "title": "call"
     },
     "version": {
       "description": "Version of the op",

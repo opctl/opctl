@@ -1,16 +1,7 @@
 {
   "description": "Expression which evaluates to a boolean",
-  "anyOf": [
-    {
-      "type": "boolean"
-    },
-    {
-      "description": "Reference which dereferences to a boolean coercible value",
-      "$ref": "reference.json"
-    },
-    {
-      "description": "Expression which evaluates to a boolean coercible string",
-      "$ref": "stringExpression.json"
-    }
+  "type": [
+    "boolean",
+    "string"
   ]
 }

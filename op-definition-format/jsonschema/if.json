@@ -1,0 +1,7 @@
+{
+  "description": "Predicates which must all evaluate to true",
+  "type": "array",
+  "items": {
+    "$ref": "predicate.json"
+  }
+}

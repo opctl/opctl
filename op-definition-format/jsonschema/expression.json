@@ -1,20 +1,10 @@
 {
   "description": "Expression which evaluates to a value",
-  "anyOf": [
-    {
-      "$ref": "arrayExpression.json"
-    },
-    {
-      "$ref": "booleanExpression.json"
-    },
-    {
-      "$ref": "numberExpression.json"
-    },
-    {
-      "$ref": "objectExpression.json"
-    },
-    {
-      "$ref": "stringExpression.json"
-    }
+  "type": [
+    "array",
+    "boolean",
+    "number",
+    "object",
+    "string"
   ]
 }
