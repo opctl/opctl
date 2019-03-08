@@ -5,6 +5,7 @@ package core
 import (
 	"fmt"
 	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call"
 )
 
 type caller interface {
@@ -19,14 +20,17 @@ type caller interface {
 }
 
 func newCaller(
+	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
 ) *_caller {
 	return &_caller{
+		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
 	}
 }
 
 type _caller struct {
+	callInterpreter call.Interpreter
 	containerCaller containerCaller
 	opCaller        opCaller
 	parallelCaller  parallelCaller
@@ -46,9 +50,25 @@ func (this _caller) Call(
 		return nil
 	}
 
+	dcg, err := this.callInterpreter.Interpret(
+		scope,
+		scg,
+		id,
+		opHandle,
+		rootOpID,
+	)
+	if nil != err {
+		return err
+	}
+
+	if nil != dcg.If && !*dcg.If {
+		return nil
+	}
+
 	switch {
 	case nil != scg.Container:
 		return this.containerCaller.Call(
+			dcg.Container,
 			scope,
 			id,
 			scg.Container,
@@ -57,6 +77,7 @@ func (this _caller) Call(
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
+			dcg.Op,
 			scope,
 			id,
 			opHandle,

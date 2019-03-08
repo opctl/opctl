@@ -4,6 +4,7 @@ import "time"
 
 // Event represents a distributed state change
 type Event struct {
+	CallSkipped              *CallSkippedEvent              `json:"callSkipped,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
@@ -21,6 +22,12 @@ const (
 	OpOutcomeFailed    = "FAILED"
 	OpOutcomeKilled    = "KILLED"
 )
+
+// CallSkippedEvent represents a call was skipped due to if condition evaluating to false
+type CallSkippedEvent struct {
+	CallID     string `json:"callId`
+	RootCallID string `json:"rootCallId"`
+}
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
 type ContainerExitedEvent struct {

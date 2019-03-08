@@ -8,14 +8,15 @@ import (
 )
 
 type fakeContainerCaller struct {
-	CallStub        func(inboundScope map[string]*model.Value, containerID string, scgContainerCall *model.SCGContainerCall, opHandle model.DataHandle, rootOpID string) error
+	CallStub        func(*model.DCGContainerCall, map[string]*model.Value, string, *model.SCGContainerCall, model.DataHandle, string) error
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		inboundScope     map[string]*model.Value
-		containerID      string
-		scgContainerCall *model.SCGContainerCall
-		opHandle         model.DataHandle
-		rootOpID         string
+		arg1 *model.DCGContainerCall
+		arg2 map[string]*model.Value
+		arg3 string
+		arg4 *model.SCGContainerCall
+		arg5 model.DataHandle
+		arg6 string
 	}
 	callReturns struct {
 		result1 error
@@ -27,25 +28,27 @@ type fakeContainerCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerCaller) Call(inboundScope map[string]*model.Value, containerID string, scgContainerCall *model.SCGContainerCall, opHandle model.DataHandle, rootOpID string) error {
+func (fake *fakeContainerCaller) Call(arg1 *model.DCGContainerCall, arg2 map[string]*model.Value, arg3 string, arg4 *model.SCGContainerCall, arg5 model.DataHandle, arg6 string) error {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		inboundScope     map[string]*model.Value
-		containerID      string
-		scgContainerCall *model.SCGContainerCall
-		opHandle         model.DataHandle
-		rootOpID         string
-	}{inboundScope, containerID, scgContainerCall, opHandle, rootOpID})
-	fake.recordInvocation("Call", []interface{}{inboundScope, containerID, scgContainerCall, opHandle, rootOpID})
+		arg1 *model.DCGContainerCall
+		arg2 map[string]*model.Value
+		arg3 string
+		arg4 *model.SCGContainerCall
+		arg5 model.DataHandle
+		arg6 string
+	}{arg1, arg2, arg3, arg4, arg5, arg6})
+	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(inboundScope, containerID, scgContainerCall, opHandle, rootOpID)
+		return fake.CallStub(arg1, arg2, arg3, arg4, arg5, arg6)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.callReturns.result1
+	fakeReturns := fake.callReturns
+	return fakeReturns.result1
 }
 
 func (fake *fakeContainerCaller) CallCallCount() int {
@@ -54,13 +57,22 @@ func (fake *fakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeContainerCaller) CallArgsForCall(i int) (map[string]*model.Value, string, *model.SCGContainerCall, model.DataHandle, string) {
+func (fake *fakeContainerCaller) CallCalls(stub func(*model.DCGContainerCall, map[string]*model.Value, string, *model.SCGContainerCall, model.DataHandle, string) error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
+	fake.CallStub = stub
+}
+
+func (fake *fakeContainerCaller) CallArgsForCall(i int) (*model.DCGContainerCall, map[string]*model.Value, string, *model.SCGContainerCall, model.DataHandle, string) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
-	return fake.callArgsForCall[i].inboundScope, fake.callArgsForCall[i].containerID, fake.callArgsForCall[i].scgContainerCall, fake.callArgsForCall[i].opHandle, fake.callArgsForCall[i].rootOpID
+	argsForCall := fake.callArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
 }
 
 func (fake *fakeContainerCaller) CallReturns(result1 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	fake.callReturns = struct {
 		result1 error
@@ -68,6 +80,8 @@ func (fake *fakeContainerCaller) CallReturns(result1 error) {
 }
 
 func (fake *fakeContainerCaller) CallReturnsOnCall(i int, result1 error) {
+	fake.callMutex.Lock()
+	defer fake.callMutex.Unlock()
 	fake.CallStub = nil
 	if fake.callReturnsOnCall == nil {
 		fake.callReturnsOnCall = make(map[int]struct {

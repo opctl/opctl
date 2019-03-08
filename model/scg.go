@@ -3,16 +3,15 @@ package model
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
 	Container *SCGContainerCall `yaml:"container,omitempty"`
+	If        []*SCGPredicate   `yaml:"if,omitempty"`
 	Op        *SCGOpCall        `yaml:"op,omitempty"`
 	Parallel  []*SCG            `yaml:"parallel,omitempty"`
 	Serial    []*SCG            `yaml:"serial,omitempty"`
 }
 
-type SCGPullCreds struct {
-	// will be interpolated
-	Username string `yaml:"username"`
-	// will be interpolated
-	Password string `yaml:"password"`
+type SCGPredicate struct {
+	Eq []interface{} `yaml:"eq,omitempty"`
+	Ne []interface{} `yaml:"ne,omitempty"`
 }
 
 type SCGContainerCall struct {
@@ -51,6 +50,13 @@ type SCGOpCall struct {
 	Inputs map[string]interface{} `yaml:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
 	Outputs map[string]string `yaml:"outputs,omitempty"`
+}
+
+type SCGPullCreds struct {
+	// will be interpolated
+	Username string `yaml:"username"`
+	// will be interpolated
+	Password string `yaml:"password"`
 }
 
 // UnmarshalYAML implements the yaml.Unmarshaler interface to handle deprecated properties gracefully in one place

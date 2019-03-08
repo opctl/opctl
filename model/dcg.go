@@ -2,16 +2,17 @@ package model
 
 // dynamic call graph; see https://en.wikipedia.org/wiki/Call_graph
 type DCG struct {
-	Container *DCGContainer `json:"container,omitempty"`
-	Op        *DCGOp        `json:"op,omitempty"`
+	Container *DCGContainerCall `json:"container,omitempty"`
+	If        *bool             `json:"if,omitempty"`
+	Op        *DCGOpCall        `json:"op,omitempty"`
+	Parallel  []*SCG            `json:"parallel,omitempty"`
+	Serial    []*SCG            `json:"serial,omitempty"`
 }
 
 type DCGBaseCall struct {
 	RootOpID string `json:"rootOpId"`
 	OpHandle DataHandle
 }
-
-type DCGContainer struct{}
 
 type DCGContainerCall struct {
 	DCGBaseCall
@@ -36,7 +37,10 @@ type DCGContainerCallImage struct {
 	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
 }
 
-type DCGOp struct{}
+type DCGPredicate struct {
+	Eq []*Value `json:"eq"`
+	Ne []*Value `json:"ne"`
+}
 
 type DCGOpCall struct {
 	DCGBaseCall
