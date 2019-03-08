@@ -10,576 +10,554 @@
     },
     "description": {
       "description": "Description of the op",
-      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
+      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
     },
     "inputs": {
       "description": "Parameter of an op",
       "type": "object",
       "patternProperties": {
         "[-_.a-zA-Z0-9]+": {
-          "oneOf": [
-            {
+          "properties": {
+            "array": {
+              "additionalProperties": false,
               "title": "arrayParam",
               "description": "Array parameter of an op",
-              "type": "object",
               "properties": {
-                "array": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "type": "array"
+                },
+                "isSecret": {
+                  "description": "If the array is secret",
+                  "type": "boolean"
+                },
+                "constraints": {
+                  "title": "arrayConstraints",
+                  "type": "object",
                   "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
+                    "additionalItems": {
+                      "description": "JSON Schema [additionalItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.10)",
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                     },
-                    "default": {
-                      "type": "array"
-                    },
-                    "isSecret": {
-                      "description": "If the array is secret",
-                      "type": "boolean"
-                    },
-                    "constraints": {
-                      "title": "arrayConstraints",
-                      "type": "object",
-                      "properties": {
-                        "additionalItems": {
-                          "description": "JSON Schema [additionalItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.10)",
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
+                    "items": {
+                      "description": "JSON Schema [items keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.9)",
+                      "anyOf": [
+                        {
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                         },
-                        "items": {
-                          "description": "JSON Schema [items keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.9)",
-                          "anyOf": [
-                            {
-                              "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
-                            },
-                            {
-                              "items": {
-                                "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
-                              }
-                            }
-                          ]
-                        },
-                        "maxItems": {
-                          "description": "JSON Schema [maxItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.10)",
-                          "type": "integer",
-                          "minimum": 0
-                        },
-                        "minItems": {
-                          "description": "JSON Schema [minItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.11)",
-                          "type": "integer",
-                          "minimum": 0
-                        },
-                        "uniqueItems": {
-                          "description": "JSON Schema [uniqueItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.13)",
-                          "type": "boolean"
+                        {
+                          "items": {
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                          }
                         }
-                      },
-                      "additionalProperties": false
+                      ]
+                    },
+                    "maxItems": {
+                      "description": "JSON Schema [maxItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.10)",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": {
+                      "description": "JSON Schema [minItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.11)",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "uniqueItems": {
+                      "description": "JSON Schema [uniqueItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.13)",
+                      "type": "boolean"
                     }
                   },
                   "additionalProperties": false
                 }
               },
+              "type": "object"
+            },
+            "boolean": {
               "additionalProperties": false,
+              "title": "booleanParam",
+              "description": "Boolean parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "description": "Default value",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "dir": {
+              "additionalProperties": false,
+              "title": "dirParam",
+              "description": "Directory parameter of an op",
+              "properties": {
+                "description": {
+                  "title": "markdown",
+                  "description": "Markdown in [v0.28 CommonMark syntax](http://spec.commonmark.org/0.28/) including GFM table extension",
+                  "type": "string"
+                },
+                "default": {
+                  "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
+                  "type": "string"
+                },
+                "isSecret": {
+                  "description": "If the directory is secret",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "file": {
+              "additionalProperties": false,
+              "title": "fileParam",
+              "description": "File parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
+                  "type": "string"
+                },
+                "isSecret": {
+                  "description": "If the file is secret",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "number": {
+              "additionalProperties": false,
+              "title": "numberParam",
+              "description": "Number parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "type": "number"
+                },
+                "isSecret": {
+                  "description": "If the number is secret",
+                  "type": "boolean"
+                },
+                "constraints": {
+                  "title": "numberConstraints",
+                  "type": "object",
+                  "properties": {
+                    "allOf": {
+                      "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                      }
+                    },
+                    "anyOf": {
+                      "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                      }
+                    },
+                    "enum": {
+                      "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "format": {
+                      "oneOf": [
+                        {
+                          "title": "integer",
+                          "description": "Requires the number be an integer",
+                          "type": "string",
+                          "enum": [
+                            "integer"
+                          ]
+                        }
+                      ]
+                    },
+                    "maximum": {
+                      "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.2)",
+                      "type": "number"
+                    },
+                    "minimum": {
+                      "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.4)",
+                      "type": "number"
+                    },
+                    "multipleOf": {
+                      "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.1)",
+                      "type": "number"
+                    },
+                    "not": {
+                      "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                    },
+                    "oneOf": {
+                      "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "type": "object"
+            },
+            "object": {
+              "additionalProperties": false,
+              "title": "objectParam",
+              "description": "Object parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "type": "object"
+                },
+                "isSecret": {
+                  "description": "If the object is secret",
+                  "type": "boolean"
+                },
+                "constraints": {
+                  "title": "objectConstraints",
+                  "type": "object",
+                  "properties": {
+                    "additionalProperties": {
+                      "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-6.5.6)",
+                      "oneOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                        }
+                      ]
+                    },
+                    "allOf": {
+                      "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                      }
+                    },
+                    "anyOf": {
+                      "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                      }
+                    },
+                    "dependencies": {
+                      "description": "JSON Schema [dependencies keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.19)",
+                      "oneOf": [
+                        {
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                        },
+                        {
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      ]
+                    },
+                    "enum": {
+                      "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "null",
+                          "object"
+                        ]
+                      }
+                    },
+                    "maxProperties": {
+                      "description": "JSON Schema [maxProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.13)",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minProperties": {
+                      "description": "JSON Schema [minProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.14)",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "not": {
+                      "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                    },
+                    "oneOf": {
+                      "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                      }
+                    },
+                    "properties": {
+                      "description": "JSON Schema [properties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.16)",
+                      "type": "object",
+                      "additionalProperties": {
+                        "title": "typeConstraints",
+                        "description": "Parameter constraints",
+                        "anyOf": [
+                          {
+                            "properties": {
+                              "description": {
+                                "description": "JSON Schema [description](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-6.1)",
+                                "type": "string"
+                              },
+                              "title": {
+                                "description": "JSON Schema [title](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-6.1)",
+                                "type": "string"
+                              },
+                              "type": {
+                                "description": "JSON Schema [type](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21)",
+                                "type": [
+                                  "array",
+                                  "string"
+                                ]
+                              },
+                              "writeOnly": {
+                                "description": "JSON Schema [writeOnly](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-10.3)",
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          {
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/array/properties/constraints"
+                          },
+                          {
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                          },
+                          {
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                          },
+                          {
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                          }
+                        ]
+                      }
+                    },
+                    "patternProperties": {
+                      "description": "JSON Schema [patternProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.17)",
+                      "type": "object",
+                      "additionalProperties": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                      }
+                    },
+                    "required": {
+                      "description": "JSON Schema [required keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.15)",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "type": "object"
+            },
+            "socket": {
+              "additionalProperties": false,
+              "title": "socketParam",
+              "description": "Socket parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "isSecret": {
+                  "description": "If the socket is secret",
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "string": {
+              "additionalProperties": false,
+              "title": "stringParam",
+              "description": "String parameter of an op",
+              "properties": {
+                "description": {
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                },
+                "default": {
+                  "type": "string"
+                },
+                "isSecret": {
+                  "description": "If the string is secret",
+                  "type": "boolean"
+                },
+                "constraints": {
+                  "title": "stringConstraints",
+                  "type": "object",
+                  "properties": {
+                    "allOf": {
+                      "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                      }
+                    },
+                    "anyOf": {
+                      "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                      }
+                    },
+                    "enum": {
+                      "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "format": {
+                      "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7)",
+                      "oneOf": [
+                        {
+                          "title": "date-time",
+                          "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.1)",
+                          "type": "string",
+                          "enum": [
+                            "date-time"
+                          ]
+                        },
+                        {
+                          "title": "docker-image-ref",
+                          "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
+                          "type": "string",
+                          "enum": [
+                            "docker-image-ref"
+                          ]
+                        },
+                        {
+                          "title": "email",
+                          "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.2)",
+                          "type": "string",
+                          "enum": [
+                            "email"
+                          ]
+                        },
+                        {
+                          "title": "hostname",
+                          "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.3)",
+                          "type": "string",
+                          "enum": [
+                            "hostname"
+                          ]
+                        },
+                        {
+                          "title": "ipv4",
+                          "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.4)",
+                          "type": "string",
+                          "enum": [
+                            "ipv4"
+                          ]
+                        },
+                        {
+                          "title": "ipv6",
+                          "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.5)",
+                          "type": "string",
+                          "enum": [
+                            "ipv6"
+                          ]
+                        },
+                        {
+                          "title": "uri",
+                          "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.6)",
+                          "type": "string",
+                          "enum": [
+                            "uri"
+                          ]
+                        },
+                        {
+                          "title": "semver",
+                          "description": "A semantic version as defined by [semver.org](http://semver.org/)",
+                          "type": "string",
+                          "enum": [
+                            "semver"
+                          ]
+                        }
+                      ]
+                    },
+                    "maxLength": {
+                      "description": "JSON Schema [maxLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.6)",
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minLength": {
+                      "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.7)",
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
+                    "not": {
+                      "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                    },
+                    "oneOf": {
+                      "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                      }
+                    },
+                    "pattern": {
+                      "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.8)",
+                      "type": "string",
+                      "format": "regex"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "type": "object"
+            }
+          },
+          "oneOf": [
+            {
               "required": [
                 "array"
               ]
             },
             {
-              "title": "booleanParam",
-              "description": "Boolean parameter of an op",
-              "type": "object",
-              "properties": {
-                "boolean": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "default": {
-                      "description": "Default value",
-                      "type": "boolean"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "boolean"
               ]
             },
             {
-              "title": "dirParam",
-              "description": "Directory parameter of an op",
-              "type": "object",
-              "properties": {
-                "dir": {
-                  "properties": {
-                    "description": {
-                      "title": "markdown",
-                      "description": "Markdown in [v0.28 CommonMark syntax](http://spec.commonmark.org/0.28/) including GFM table extension",
-                      "type": "string"
-                    },
-                    "default": {
-                      "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
-                      "type": "string"
-                    },
-                    "isSecret": {
-                      "description": "If the directory is secret",
-                      "type": "boolean"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "dir"
               ]
             },
             {
-              "title": "fileParam",
-              "description": "File parameter of an op",
-              "type": "object",
-              "properties": {
-                "file": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "default": {
-                      "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
-                      "type": "string"
-                    },
-                    "isSecret": {
-                      "description": "If the file is secret",
-                      "type": "boolean"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "file"
               ]
             },
             {
-              "title": "numberParam",
-              "description": "Number parameter of an op",
-              "type": "object",
-              "properties": {
-                "number": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "default": {
-                      "type": "number"
-                    },
-                    "isSecret": {
-                      "description": "If the number is secret",
-                      "type": "boolean"
-                    },
-                    "constraints": {
-                      "title": "numberConstraints",
-                      "type": "object",
-                      "properties": {
-                        "allOf": {
-                          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/4/properties/number/properties/constraints"
-                          }
-                        },
-                        "anyOf": {
-                          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/4/properties/number/properties/constraints"
-                          }
-                        },
-                        "enum": {
-                          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
-                          "type": "array",
-                          "items": {
-                            "type": "number"
-                          }
-                        },
-                        "format": {
-                          "oneOf": [
-                            {
-                              "title": "integer",
-                              "description": "Requires the number be an integer",
-                              "type": "string",
-                              "enum": [
-                                "integer"
-                              ]
-                            }
-                          ]
-                        },
-                        "maximum": {
-                          "description": "JSON Schema [maximum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.2)",
-                          "type": "number"
-                        },
-                        "minimum": {
-                          "description": "JSON Schema [minimum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.4)",
-                          "type": "number"
-                        },
-                        "multipleOf": {
-                          "description": "JSON Schema [multipleOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.1)",
-                          "type": "number"
-                        },
-                        "not": {
-                          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/4/properties/number/properties/constraints"
-                        },
-                        "oneOf": {
-                          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/4/properties/number/properties/constraints"
-                          }
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "number"
               ]
             },
             {
-              "title": "objectParam",
-              "description": "Object parameter of an op",
-              "type": "object",
-              "properties": {
-                "object": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "default": {
-                      "type": "object"
-                    },
-                    "isSecret": {
-                      "description": "If the object is secret",
-                      "type": "boolean"
-                    },
-                    "constraints": {
-                      "title": "objectConstraints",
-                      "type": "object",
-                      "properties": {
-                        "additionalProperties": {
-                          "description": "JSON Schema [additionalProperties keyword](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-6.5.6)",
-                          "oneOf": [
-                            {
-                              "type": "boolean"
-                            },
-                            {
-                              "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
-                            }
-                          ]
-                        },
-                        "allOf": {
-                          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints"
-                          }
-                        },
-                        "anyOf": {
-                          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints"
-                          }
-                        },
-                        "dependencies": {
-                          "description": "JSON Schema [dependencies keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.19)",
-                          "oneOf": [
-                            {
-                              "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
-                            },
-                            {
-                              "items": {
-                                "type": "string"
-                              }
-                            }
-                          ]
-                        },
-                        "enum": {
-                          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
-                          "type": "array",
-                          "items": {
-                            "type": [
-                              "null",
-                              "object"
-                            ]
-                          }
-                        },
-                        "maxProperties": {
-                          "description": "JSON Schema [maxProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.13)",
-                          "type": "integer",
-                          "minimum": 0
-                        },
-                        "minProperties": {
-                          "description": "JSON Schema [minProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.14)",
-                          "type": "integer",
-                          "minimum": 0
-                        },
-                        "not": {
-                          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints"
-                        },
-                        "oneOf": {
-                          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints"
-                          }
-                        },
-                        "properties": {
-                          "description": "JSON Schema [properties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.16)",
-                          "type": "object",
-                          "additionalProperties": {
-                            "title": "typeConstraints",
-                            "description": "Parameter constraints",
-                            "anyOf": [
-                              {
-                                "properties": {
-                                  "description": {
-                                    "description": "JSON Schema [description](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-6.1)",
-                                    "type": "string"
-                                  },
-                                  "title": {
-                                    "description": "JSON Schema [title](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-6.1)",
-                                    "type": "string"
-                                  },
-                                  "type": {
-                                    "description": "JSON Schema [type](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21)",
-                                    "type": [
-                                      "array",
-                                      "string"
-                                    ]
-                                  },
-                                  "writeOnly": {
-                                    "description": "JSON Schema [writeOnly](https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-10.3)",
-                                    "type": "boolean"
-                                  }
-                                }
-                              },
-                              {
-                                "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/0/properties/array/properties/constraints"
-                              },
-                              {
-                                "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/4/properties/number/properties/constraints"
-                              },
-                              {
-                                "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints"
-                              },
-                              {
-                                "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/7/properties/string/properties/constraints"
-                              }
-                            ]
-                          }
-                        },
-                        "patternProperties": {
-                          "description": "JSON Schema [patternProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.17)",
-                          "type": "object",
-                          "additionalProperties": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/5/properties/object/properties/constraints/properties/properties/additionalProperties"
-                          }
-                        },
-                        "required": {
-                          "description": "JSON Schema [required keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.15)",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "object"
               ]
             },
             {
-              "title": "socketParam",
-              "type": "object",
-              "description": "Socket parameter of an op",
-              "properties": {
-                "socket": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "isSecret": {
-                      "description": "If the socket is secret",
-                      "type": "boolean"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "socket"
               ]
             },
             {
-              "title": "stringParam",
-              "type": "object",
-              "description": "String parameter of an op",
-              "properties": {
-                "string": {
-                  "properties": {
-                    "description": {
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/2/properties/dir/properties/description"
-                    },
-                    "default": {
-                      "type": "string"
-                    },
-                    "isSecret": {
-                      "description": "If the string is secret",
-                      "type": "boolean"
-                    },
-                    "constraints": {
-                      "title": "stringConstraints",
-                      "type": "object",
-                      "properties": {
-                        "allOf": {
-                          "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/7/properties/string/properties/constraints"
-                          }
-                        },
-                        "anyOf": {
-                          "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/7/properties/string/properties/constraints"
-                          }
-                        },
-                        "enum": {
-                          "description": "JSON Schema [enum keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20)",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "format": {
-                          "description": "Superset of JSON Schema [format keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7)",
-                          "oneOf": [
-                            {
-                              "title": "date-time",
-                              "description": "JSON Schema [date-time format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.1)",
-                              "type": "string",
-                              "enum": [
-                                "date-time"
-                              ]
-                            },
-                            {
-                              "title": "docker-image-ref",
-                              "description": "A docker image reference as defined by [github.com/docker/distribution/reference](https://github.com/docker/distribution/tree/docker/1.13/reference)",
-                              "type": "string",
-                              "enum": [
-                                "docker-image-ref"
-                              ]
-                            },
-                            {
-                              "title": "email",
-                              "description": "JSON Schema [email format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.2)",
-                              "type": "string",
-                              "enum": [
-                                "email"
-                              ]
-                            },
-                            {
-                              "title": "hostname",
-                              "description": "JSON Schema [hostname format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.3)",
-                              "type": "string",
-                              "enum": [
-                                "hostname"
-                              ]
-                            },
-                            {
-                              "title": "ipv4",
-                              "description": "JSON Schema [ipv4 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.4)",
-                              "type": "string",
-                              "enum": [
-                                "ipv4"
-                              ]
-                            },
-                            {
-                              "title": "ipv6",
-                              "description": "JSON Schema [ipv6 format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.5)",
-                              "type": "string",
-                              "enum": [
-                                "ipv6"
-                              ]
-                            },
-                            {
-                              "title": "uri",
-                              "description": "JSON Schema [uri format](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-7.3.6)",
-                              "type": "string",
-                              "enum": [
-                                "uri"
-                              ]
-                            },
-                            {
-                              "title": "semver",
-                              "description": "A semantic version as defined by [semver.org](http://semver.org/)",
-                              "type": "string",
-                              "enum": [
-                                "semver"
-                              ]
-                            }
-                          ]
-                        },
-                        "maxLength": {
-                          "description": "JSON Schema [maxLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.6)",
-                          "type": "integer",
-                          "minimum": 1
-                        },
-                        "minLength": {
-                          "description": "JSON Schema [minLength keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.7)",
-                          "type": "integer",
-                          "minimum": 0,
-                          "default": 0
-                        },
-                        "not": {
-                          "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/7/properties/string/properties/constraints"
-                        },
-                        "oneOf": {
-                          "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/7/properties/string/properties/constraints"
-                          }
-                        },
-                        "pattern": {
-                          "description": "JSON Schema [pattern keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.8)",
-                          "type": "string",
-                          "format": "regex"
-                        }
-                      },
-                      "additionalProperties": false
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "additionalProperties": false,
               "required": [
                 "string"
               ]
@@ -594,402 +572,390 @@
     },
     "run": {
       "title": "call",
-      "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) node of an op",
-      "oneOf": [
-        {
+      "description": "A single node of the [call graph](https://en.wikipedia.org/wiki/Call_graph)",
+      "properties": {
+        "container": {
           "title": "containerCall",
           "type": "object",
           "properties": {
-            "container": {
-              "properties": {
-                "cmd": {
-                  "description": "Command run by a container; overrides any set at the image level",
-                  "type": "array",
-                  "items": {
-                    "description": "expression coercible to string value",
-                    "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                  }
-                },
-                "dirs": {
-                  "type": "object",
-                  "description": "Directories in the container",
-                  "patternProperties": {
-                    "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                      "oneOf": [
-                        {
-                          "description": "(will be bound to same path in op)",
-                          "type": "null"
-                        },
-                        {
-                          "description": "expression coercible to dir value &/or scope ref to set upon exit",
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                        }
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "envVars": {
-                  "type": "object",
-                  "description": "Environment variables in the container",
-                  "patternProperties": {
-                    "^[^=]+$": {
-                      "oneOf": [
-                        {
-                          "description": "(will be bound to in scope ref w/ same name)",
-                          "type": "null"
-                        },
-                        {
-                          "description": "expression coercible to string value",
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                        }
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "files": {
-                  "type": "object",
-                  "description": "Files in the container",
-                  "patternProperties": {
-                    "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-                      "oneOf": [
-                        {
-                          "description": "(will be bound to same path in op)",
-                          "type": "null"
-                        },
-                        {
-                          "description": "expression coercible to file value &/or scope ref to set upon exit",
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                        }
-                      ]
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "image": {
-                  "type": "object",
-                  "properties": {
-                    "ref": {
-                      "description": "Reference to an image",
-                      "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+            "cmd": {
+              "description": "Command run by a container; overrides any set at the image level",
+              "type": "array",
+              "items": {
+                "description": "expression coercible to string value",
+                "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+              }
+            },
+            "dirs": {
+              "type": "object",
+              "description": "Directories in the container",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "oneOf": [
+                    {
+                      "description": "(will be bound to same path in op)",
+                      "type": "null"
                     },
-                    "pullCreds": {
-                      "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/pullCreds"
+                    {
+                      "description": "expression coercible to dir value &/or scope ref to set upon exit",
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
-                  },
-                  "required": [
-                    "ref"
-                  ],
-                  "additionalProperties": false
-                },
-                "name": {
-                  "description": "Name the container can be referenced by from other containers",
-                  "type": "string"
-                },
-                "ports": {
-                  "description": "Ports bound from the container to the host",
-                  "type": "object",
-                  "patternProperties": {
-                    "[0-9]+(-[0-9]+)?(tcp|udp)?": {
-                      "description": "Host port(s) to bind to",
-                      "type": "string",
-                      "pattern": "[0-9]+(-[0-9]+)?"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "envVars": {
+              "type": "object",
+              "description": "Environment variables in the container",
+              "patternProperties": {
+                "^[^=]+$": {
+                  "oneOf": [
+                    {
+                      "description": "(will be bound to in scope ref w/ same name)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "expression coercible to string value",
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
-                  },
-                  "additionalProperties": false
-                },
-                "sockets": {
-                  "type": "object",
-                  "patternProperties": {
-                    "[:a-zA-Z0-9]+": {
-                      "description": "Container socket address mapped to a socket ref",
-                      "type": "string"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "files": {
+              "type": "object",
+              "description": "Files in the container",
+              "patternProperties": {
+                "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+                  "oneOf": [
+                    {
+                      "description": "(will be bound to same path in op)",
+                      "type": "null"
+                    },
+                    {
+                      "description": "expression coercible to file value &/or scope ref to set upon exit",
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     }
-                  },
-                  "additionalProperties": false
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "ref": {
+                  "description": "Reference to an image",
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                 },
-                "stdErr": {
-                  "type": "object",
-                  "patternProperties": {
-                    "^.+$": {
-                      "description": "Container stderr prefix mapped to a string ref",
-                      "type": "string"
-                    }
-                  },
-                  "deprecated": true,
-                  "additionalProperties": false
-                },
-                "stdOut": {
-                  "type": "object",
-                  "patternProperties": {
-                    "^.+$": {
-                      "description": "Container stdout prefix mapped to a string ref",
-                      "type": "string"
-                    }
-                  },
-                  "deprecated": true,
-                  "additionalProperties": false
-                },
-                "workDir": {
-                  "description": "Working directory path (overrides any defined by image)",
-                  "type": "string"
+                "pullCreds": {
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/pullCreds"
                 }
               },
               "required": [
-                "image"
+                "ref"
               ],
               "additionalProperties": false
+            },
+            "name": {
+              "description": "Name the container can be referenced by from other containers",
+              "type": "string"
+            },
+            "ports": {
+              "description": "Ports bound from the container to the host",
+              "type": "object",
+              "patternProperties": {
+                "[0-9]+(-[0-9]+)?(tcp|udp)?": {
+                  "description": "Host port(s) to bind to",
+                  "type": "string",
+                  "pattern": "[0-9]+(-[0-9]+)?"
+                }
+              },
+              "additionalProperties": false
+            },
+            "sockets": {
+              "type": "object",
+              "patternProperties": {
+                "[:a-zA-Z0-9]+": {
+                  "description": "Container socket address mapped to a socket ref",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "stdErr": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stderr prefix mapped to a string ref",
+                  "type": "string"
+                }
+              },
+              "deprecated": true,
+              "additionalProperties": false
+            },
+            "stdOut": {
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "description": "Container stdout prefix mapped to a string ref",
+                  "type": "string"
+                }
+              },
+              "deprecated": true,
+              "additionalProperties": false
+            },
+            "workDir": {
+              "description": "Working directory path (overrides any defined by image)",
+              "type": "string"
             }
           },
           "required": [
-            "container"
+            "image"
           ],
           "additionalProperties": false
         },
-        {
+        "op": {
           "title": "opCall",
-          "type": "object",
-          "properties": {
-            "op": {
-              "oneOf": [
-                {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "inputs": {
+                  "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE == $(INPUT_NAME)",
                   "type": "object",
-                  "properties": {
-                    "inputs": {
-                      "description": "Initializes INPUT_NAME from VALUE in format 'INPUT_NAME: VALUE'. If VALUE is null, it MUST be assumed VALUE == $(INPUT_NAME)",
-                      "type": "object",
-                      "patternProperties": {
-                        "[-_.a-zA-Z0-9]+": {
-                          "oneOf": [
+                  "patternProperties": {
+                    "[-_.a-zA-Z0-9]+": {
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "description": "Expression which evaluates to a value",
+                          "anyOf": [
                             {
-                              "type": "null"
+                              "description": "Expression which evaluates to an array",
+                              "oneOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                                  }
+                                },
+                                {
+                                  "description": "Reference which dereferences to an array coercible value",
+                                  "pattern": "^\\$\\(.+\\)$",
+                                  "type": "string"
+                                },
+                                {
+                                  "description": "Expression which evaluates to an array coercible string",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
+                                }
+                              ]
                             },
                             {
-                              "description": "Expression which evaluates to a value",
+                              "description": "Expression which evaluates to a boolean",
                               "anyOf": [
                                 {
-                                  "description": "Expression which evaluates to an array",
-                                  "oneOf": [
-                                    {
-                                      "type": "array",
-                                      "items": {
-                                        "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                                      }
-                                    },
-                                    {
-                                      "description": "Reference which dereferences to an array coercible value",
-                                      "pattern": "^\\$\\(.+\\)$",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "description": "Expression which evaluates to an array coercible string",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/4"
-                                    }
-                                  ]
+                                  "type": "boolean"
                                 },
                                 {
-                                  "description": "Expression which evaluates to a boolean",
-                                  "anyOf": [
-                                    {
-                                      "type": "boolean"
-                                    },
-                                    {
-                                      "description": "Reference which dereferences to a boolean coercible value",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                    },
-                                    {
-                                      "description": "Expression which evaluates to a boolean coercible string",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/4"
-                                    }
-                                  ]
+                                  "description": "Reference which dereferences to a boolean coercible value",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
                                 },
                                 {
-                                  "description": "Expression which evaluates to a number",
-                                  "anyOf": [
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "description": "Reference which dereferences to a number coercible value",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                    },
-                                    {
-                                      "description": "Expression which evaluates to a number coercible string",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/4"
-                                    }
-                                  ]
+                                  "description": "Expression which evaluates to a boolean coercible string",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
+                                }
+                              ]
+                            },
+                            {
+                              "description": "Expression which evaluates to a number",
+                              "anyOf": [
+                                {
+                                  "type": "number"
                                 },
                                 {
-                                  "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
-                                  "oneOf": [
-                                    {
-                                      "type": "object",
-                                      "patternProperties": {
-                                        "^.+$": {
-                                          "oneOf": [
-                                            {
-                                              "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
-                                            },
-                                            {
-                                              "description": "Equivalent to \"PROPERTY\": \"$(PROPERTY)\"",
-                                              "type": "null"
-                                            }
-                                          ]
+                                  "description": "Reference which dereferences to a number coercible value",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
+                                },
+                                {
+                                  "description": "Expression which evaluates to a number coercible string",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
+                                }
+                              ]
+                            },
+                            {
+                              "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
+                              "oneOf": [
+                                {
+                                  "type": "object",
+                                  "patternProperties": {
+                                    "^.+$": {
+                                      "oneOf": [
+                                        {
+                                          "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                                        },
+                                        {
+                                          "description": "Equivalent to \"PROPERTY\": \"$(PROPERTY)\"",
+                                          "type": "null"
                                         }
-                                      },
-                                      "additionalProperties": false
-                                    },
-                                    {
-                                      "description": "Reference which dereferences to an object coercible value",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                    },
-                                    {
-                                      "description": "Expression which evaluates to an object coercible string",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/4"
+                                      ]
                                     }
-                                  ]
+                                  },
+                                  "additionalProperties": false
                                 },
                                 {
-                                  "description": "Expression which evaluates to a string",
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "description": "Reference which dereferences to a string coercible value",
-                                      "$ref": "#/properties/run/oneOf/0/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
-                                    }
-                                  ]
+                                  "description": "Reference which dereferences to an object coercible value",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
+                                },
+                                {
+                                  "description": "Expression which evaluates to an object coercible string",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/4"
+                                }
+                              ]
+                            },
+                            {
+                              "description": "Expression which evaluates to a string",
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "description": "Reference which dereferences to a string coercible value",
+                                  "$ref": "#/properties/run/properties/container/properties/cmd/items/anyOf/0/oneOf/1"
                                 }
                               ]
                             }
                           ]
                         }
-                      },
-                      "additionalProperties": false
-                    },
-                    "outputs": {
-                      "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME == OUTPUT_NAME",
-                      "type": "object",
-                      "patternProperties": {
-                        "[-_.a-zA-Z0-9]+": {
-                          "oneOf": [
-                            {
-                              "type": "null"
-                            },
-                            {
-                              "type": "string"
-                            }
-                          ]
-                        }
-                      },
-                      "additionalProperties": false
-                    },
-                    "pullCreds": {
-                      "type": "object",
-                      "description": "Credentials used during authentication with the source of an image or op",
-                      "properties": {
-                        "username": {
-                          "description": "expression coercible to string value",
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "outputs": {
+                  "description": "Initializes NAME from OUTPUT_NAME in format 'NAME: OUTPUT_NAME'. If OUTPUT_NAME is null, it MUST be assumed NAME == OUTPUT_NAME",
+                  "type": "object",
+                  "patternProperties": {
+                    "[-_.a-zA-Z0-9]+": {
+                      "oneOf": [
+                        {
+                          "type": "null"
                         },
-                        "password": {
-                          "description": "expression coercible to string value",
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                        {
+                          "type": "string"
                         }
-                      },
-                      "required": [
-                        "username",
-                        "password"
-                      ],
-                      "additionalProperties": false
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "pullCreds": {
+                  "type": "object",
+                  "description": "Credentials used during authentication with the source of an image or op",
+                  "properties": {
+                    "username": {
+                      "description": "expression coercible to string value",
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                     },
+                    "password": {
+                      "description": "expression coercible to string value",
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "ref": {
+                  "description": "Reference to an op",
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              },
+              "required": [
+                "ref"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "deprecated": true,
+              "properties": {
+                "inputs": {
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs"
+                },
+                "outputs": {
+                  "$ref": "#/properties/run/properties/op/oneOf/0/properties/outputs"
+                },
+                "pkg": {
+                  "type": "object",
+                  "properties": {
                     "ref": {
                       "description": "Reference to an op",
                       "type": "string",
                       "format": "uri-reference"
+                    },
+                    "pullCreds": {
+                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/pullCreds"
                     }
                   },
                   "required": [
                     "ref"
                   ],
                   "additionalProperties": false
-                },
-                {
-                  "type": "object",
-                  "deprecated": true,
-                  "properties": {
-                    "inputs": {
-                      "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/inputs"
-                    },
-                    "outputs": {
-                      "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/outputs"
-                    },
-                    "pkg": {
-                      "type": "object",
-                      "properties": {
-                        "ref": {
-                          "description": "Reference to an op",
-                          "type": "string",
-                          "format": "uri-reference"
-                        },
-                        "pullCreds": {
-                          "$ref": "#/properties/run/oneOf/1/properties/op/oneOf/0/properties/pullCreds"
-                        }
-                      },
-                      "required": [
-                        "ref"
-                      ],
-                      "additionalProperties": false
-                    }
-                  },
-                  "required": [
-                    "pkg"
-                  ],
-                  "additionalProperties": false
                 }
-              ]
+              },
+              "required": [
+                "pkg"
+              ],
+              "additionalProperties": false
             }
-          },
+          ]
+        },
+        "parallel": {
+          "title": "parallelCall",
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/run"
+          }
+        },
+        "serial": {
+          "title": "serialCall",
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/run"
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "container"
+          ]
+        },
+        {
           "required": [
             "op"
-          ],
-          "additionalProperties": false
+          ]
         },
         {
-          "title": "parallelCall",
-          "type": "object",
-          "properties": {
-            "parallel": {
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/run"
-              }
-            }
-          },
           "required": [
             "parallel"
-          ],
-          "additionalProperties": false
+          ]
         },
         {
-          "title": "serialCall",
-          "type": "object",
-          "properties": {
-            "serial": {
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/run"
-              }
-            }
-          },
           "required": [
             "serial"
-          ],
-          "additionalProperties": false
+          ]
         }
-      ]
+      ],
+      "additionalProperties": false
     },
     "version": {
       "description": "Version of the op",

@@ -3,30 +3,72 @@
   "type": "object",
   "patternProperties": {
     "[-_.a-zA-Z0-9]+": {
-      "oneOf": [
-        {
+      "properties": {
+        "array": {
           "$ref": "arrayParam.json"
         },
-        {
+        "boolean": {
           "$ref": "booleanParam.json"
         },
-        {
+        "dir": {
           "$ref": "dirParam.json"
         },
-        {
+        "file": {
           "$ref": "fileParam.json"
         },
-        {
+        "number": {
           "$ref": "numberParam.json"
         },
-        {
+        "object": {
           "$ref": "objectParam.json"
         },
-        {
+        "socket": {
           "$ref": "socketParam.json"
         },
-        {
+        "string": {
           "$ref": "stringParam.json"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "array"
+          ]
+        },
+        {
+          "required": [
+            "boolean"
+          ]
+        },
+        {
+          "required": [
+            "dir"
+          ]
+        },
+        {
+          "required": [
+            "file"
+          ]
+        },
+        {
+          "required": [
+            "number"
+          ]
+        },
+        {
+          "required": [
+            "object"
+          ]
+        },
+        {
+          "required": [
+            "socket"
+          ]
+        },
+        {
+          "required": [
+            "string"
+          ]
         }
       ]
     }

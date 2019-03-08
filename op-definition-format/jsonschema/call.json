@@ -1,18 +1,41 @@
 {
   "title": "call",
-  "description": "[Static call graph](https://en.wikipedia.org/wiki/Call_graph) node of an op",
-  "oneOf": [
-    {
+  "description": "A single node of the [call graph](https://en.wikipedia.org/wiki/Call_graph)",
+  "properties": {
+    "container": {
       "$ref": "containerCall.json"
     },
-    {
+    "op": {
       "$ref": "opCall.json"
     },
-    {
+    "parallel": {
       "$ref": "parallelCall.json"
     },
-    {
+    "serial": {
       "$ref": "serialCall.json"
     }
-  ]
+  },
+  "oneOf": [
+    {
+      "required": [
+        "container"
+      ]
+    },
+    {
+      "required": [
+        "op"
+      ]
+    },
+    {
+      "required": [
+        "parallel"
+      ]
+    },
+    {
+      "required": [
+        "serial"
+      ]
+    }
+  ],
+  "additionalProperties": false
 }

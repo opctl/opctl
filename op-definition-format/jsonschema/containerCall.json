@@ -2,150 +2,142 @@
   "title": "containerCall",
   "type": "object",
   "properties": {
-    "container": {
-      "properties": {
-        "cmd": {
-          "description": "Command run by a container; overrides any set at the image level",
-          "type": "array",
-          "items": {
-            "description": "expression coercible to string value",
-            "$ref": "expression.json"
-          }
-        },
-        "dirs": {
-          "type": "object",
-          "description": "Directories in the container",
-          "patternProperties": {
-            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "oneOf": [
-                {
-                  "description": "(will be bound to same path in op)",
-                  "type": "null"
-                },
-                {
-                  "description": "expression coercible to dir value &/or scope ref to set upon exit",
-                  "$ref": "expression.json"
-                }
-              ]
-            }
-          },
-          "additionalProperties": false
-        },
-        "envVars": {
-          "type": "object",
-          "description": "Environment variables in the container",
-          "patternProperties": {
-            "^[^=]+$": {
-              "oneOf": [
-                {
-                  "description": "(will be bound to in scope ref w/ same name)",
-                  "type": "null"
-                },
-                {
-                  "description": "expression coercible to string value",
-                  "$ref": "expression.json"
-                }
-              ]
-            }
-          },
-          "additionalProperties": false
-        },
-        "files": {
-          "type": "object",
-          "description": "Files in the container",
-          "patternProperties": {
-            "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
-              "oneOf": [
-                {
-                  "description": "(will be bound to same path in op)",
-                  "type": "null"
-                },
-                {
-                  "description": "expression coercible to file value &/or scope ref to set upon exit",
-                  "$ref": "expression.json"
-                }
-              ]
-            }
-          },
-          "additionalProperties": false
-        },
-        "image": {
-          "type": "object",
-          "properties": {
-            "ref": {
-              "description": "Reference to an image",
-              "$ref": "expression.json"
+    "cmd": {
+      "description": "Command run by a container; overrides any set at the image level",
+      "type": "array",
+      "items": {
+        "description": "expression coercible to string value",
+        "$ref": "expression.json"
+      }
+    },
+    "dirs": {
+      "type": "object",
+      "description": "Directories in the container",
+      "patternProperties": {
+        "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+          "oneOf": [
+            {
+              "description": "(will be bound to same path in op)",
+              "type": "null"
             },
-            "pullCreds": {
-              "$ref": "pullCreds.json"
+            {
+              "description": "expression coercible to dir value &/or scope ref to set upon exit",
+              "$ref": "expression.json"
             }
-          },
-          "required": [
-            "ref"
-          ],
-          "additionalProperties": false
-        },
-        "name": {
-          "description": "Name the container can be referenced by from other containers",
-          "type": "string"
-        },
-        "ports": {
-          "description": "Ports bound from the container to the host",
-          "type": "object",
-          "patternProperties": {
-            "[0-9]+(-[0-9]+)?(tcp|udp)?": {
-              "description": "Host port(s) to bind to",
-              "type": "string",
-              "pattern": "[0-9]+(-[0-9]+)?"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "envVars": {
+      "type": "object",
+      "description": "Environment variables in the container",
+      "patternProperties": {
+        "^[^=]+$": {
+          "oneOf": [
+            {
+              "description": "(will be bound to in scope ref w/ same name)",
+              "type": "null"
+            },
+            {
+              "description": "expression coercible to string value",
+              "$ref": "expression.json"
             }
-          },
-          "additionalProperties": false
-        },
-        "sockets": {
-          "type": "object",
-          "patternProperties": {
-            "[:a-zA-Z0-9]+": {
-              "description": "Container socket address mapped to a socket ref",
-              "type": "string"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "files": {
+      "type": "object",
+      "description": "Files in the container",
+      "patternProperties": {
+        "^([a-zA-Z]:)?[-_.\\/a-zA-Z0-9]+$": {
+          "oneOf": [
+            {
+              "description": "(will be bound to same path in op)",
+              "type": "null"
+            },
+            {
+              "description": "expression coercible to file value &/or scope ref to set upon exit",
+              "$ref": "expression.json"
             }
-          },
-          "additionalProperties": false
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "description": "Reference to an image",
+          "$ref": "expression.json"
         },
-        "stdErr": {
-          "type": "object",
-          "patternProperties": {
-            "^.+$": {
-              "description": "Container stderr prefix mapped to a string ref",
-              "type": "string"
-            }
-          },
-          "deprecated": true,
-          "additionalProperties": false
-        },
-        "stdOut": {
-          "type": "object",
-          "patternProperties": {
-            "^.+$": {
-              "description": "Container stdout prefix mapped to a string ref",
-              "type": "string"
-            }
-          },
-          "deprecated": true,
-          "additionalProperties": false
-        },
-        "workDir": {
-          "description": "Working directory path (overrides any defined by image)",
-          "type": "string"
+        "pullCreds": {
+          "$ref": "pullCreds.json"
         }
       },
       "required": [
-        "image"
+        "ref"
       ],
       "additionalProperties": false
+    },
+    "name": {
+      "description": "Name the container can be referenced by from other containers",
+      "type": "string"
+    },
+    "ports": {
+      "description": "Ports bound from the container to the host",
+      "type": "object",
+      "patternProperties": {
+        "[0-9]+(-[0-9]+)?(tcp|udp)?": {
+          "description": "Host port(s) to bind to",
+          "type": "string",
+          "pattern": "[0-9]+(-[0-9]+)?"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sockets": {
+      "type": "object",
+      "patternProperties": {
+        "[:a-zA-Z0-9]+": {
+          "description": "Container socket address mapped to a socket ref",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stdErr": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "description": "Container stderr prefix mapped to a string ref",
+          "type": "string"
+        }
+      },
+      "deprecated": true,
+      "additionalProperties": false
+    },
+    "stdOut": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "description": "Container stdout prefix mapped to a string ref",
+          "type": "string"
+        }
+      },
+      "deprecated": true,
+      "additionalProperties": false
+    },
+    "workDir": {
+      "description": "Working directory path (overrides any defined by image)",
+      "type": "string"
     }
   },
   "required": [
-    "container"
+    "image"
   ],
   "additionalProperties": false
 }
