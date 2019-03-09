@@ -1,0 +1,10 @@
+name: inputs/string/constraints/maxlength
+inputs:
+  string:
+    string:
+      constraints:
+        maxLength: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

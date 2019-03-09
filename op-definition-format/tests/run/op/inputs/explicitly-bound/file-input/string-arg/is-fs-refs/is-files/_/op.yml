@@ -1,0 +1,10 @@
+name: _
+inputs:
+  file:
+    file: {}
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [cat, /file]
+    files:
+      /file: $(file)

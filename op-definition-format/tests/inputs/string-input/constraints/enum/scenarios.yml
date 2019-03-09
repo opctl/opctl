@@ -1,0 +1,14 @@
+- name: not in enum
+  call:
+    expect: failure
+    scope:
+      string:
+        string: b
+- name: not in enum
+  interpret:
+    expect: failure
+    scope:
+      string:
+        string: b
+- validate:
+    expect: success

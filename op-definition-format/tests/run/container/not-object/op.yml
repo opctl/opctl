@@ -1,0 +1,3 @@
+name: run/container/not-object
+run:
+  container: []

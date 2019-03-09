@@ -1,0 +1,14 @@
+- name: doesn't meet all allOf constraints
+  call:
+    expect: failure
+    scope:
+      string:
+        string: a
+- name: doesn't meet all allOf constraints
+  interpret:
+    expect: failure
+    scope:
+      string:
+        string: a
+- validate:
+    expect: success

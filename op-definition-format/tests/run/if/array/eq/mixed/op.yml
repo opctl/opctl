@@ -1,0 +1,5 @@
+name: run/if/array/ne/mixed
+run:
+  if:
+    - ne: [true, 2, { p1: v1 }, "string"]
+  serial: []

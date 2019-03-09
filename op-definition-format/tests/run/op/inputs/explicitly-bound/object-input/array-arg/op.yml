@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/object-input/array-arg
+run:
+  op:
+    pkg: { ref: array-arg/_ }
+    inputs: { object: [] }

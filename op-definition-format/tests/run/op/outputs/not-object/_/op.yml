@@ -1,0 +1,5 @@
+name: _
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

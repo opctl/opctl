@@ -1,0 +1,44 @@
+- name: meets one oneOf constraints
+  call:
+    expect: success
+    scope:
+      object:
+        object:
+          prop1: prop1Value
+- name: meets more than one oneOf constraints
+  call:
+    expect: failure
+    scope:
+      object:
+        object:
+          prop1: prop1Value
+          prop2: prop2Value
+- name: meets no oneOf constraints
+  call:
+    expect: failure
+    scope:
+      object:
+        object: {}
+- name: meets one oneOf constraints
+  interpret:
+    expect: success
+    scope:
+      object:
+        object:
+          prop1: prop1Value
+- name: meets more than one oneOf constraints
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object:
+          prop1: prop1Value
+          prop2: prop2Value
+- name: meets no oneOf constraints
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: {}
+- validate:
+    expect: success

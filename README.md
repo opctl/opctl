@@ -8,6 +8,8 @@ This repo exists to formalize the specifications of opctl so such integrations c
 Rule of thumb for all integrations should be
 - If it's not mentioned in this repo, don't rely on it.
 - If it is mentioned in this repo, adhere.
+- Verify applicable tests pass:
+  - [op-definition-format/tests](op-definition-format/tests)
 
 # Index
 - [api](api)

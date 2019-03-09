@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/number-input/string-arg/isnt-ref/contains-number
+run:
+  op:
+    pkg: { ref: contains-number/_ }
+    inputs: { number: "7"}

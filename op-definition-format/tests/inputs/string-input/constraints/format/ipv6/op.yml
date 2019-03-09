@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/ipv6
+inputs:
+  string:
+    string:
+      constraints:
+        format: ipv6
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

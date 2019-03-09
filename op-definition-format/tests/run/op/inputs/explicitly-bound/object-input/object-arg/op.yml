@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/object-input/object-arg
+run:
+  op:
+    pkg: { ref: object-arg/_ }
+    inputs: { object: {} }

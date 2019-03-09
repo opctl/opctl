@@ -1,0 +1,5 @@
+name: run/if/array/ne/booleans
+run:
+  if:
+    - ne: [true,false]
+  serial: []

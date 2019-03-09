@@ -1,0 +1,38 @@
+- name: meets no anyOf constraints
+  call:
+    expect: failure
+    scope:
+      object:
+        object: {}
+- name: meets one anyOf constraints
+  call:
+    expect: success
+    scope:
+      object:
+        object: {a: a}
+- name: meets all anyOf constraints
+  call:
+    expect: success
+    scope:
+      object:
+        object: {a: a, b: b}
+- name: meets no anyOf constraints
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: {}
+- name: meets one anyOf constraints
+  interpret:
+    expect: success
+    scope:
+      object:
+        object: {a: a}
+- name: meets all anyOf constraints
+  interpret:
+    expect: success
+    scope:
+      object:
+        object: {a: a, b: b}
+- validate:
+    expect: success
