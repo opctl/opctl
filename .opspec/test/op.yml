@@ -14,4 +14,4 @@ run:
     - op:
         pkg: { ref: github.com/opspec-pkgs/jsonschema.draft7.validate-schema#1.0.0 }
         inputs:
-          schema: $(srcDir/op-definition-format/jsonschema.json)
+          schema: $(srcDir/opspec/opfile/jsonschema.json)
