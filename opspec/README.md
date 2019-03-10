@@ -9,7 +9,7 @@ In Opspec, the highest level building block is an op.
 
 Ops serve a similar purpose as programs in other programming languages.
 
-Like programs, ops can require inputs, produce outputs, and call other programs.
+Like programs, ops can require inputs, produce outputs, and call other ops.
 
 ## Definition
 
