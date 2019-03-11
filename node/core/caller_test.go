@@ -8,6 +8,7 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call"
+	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 var _ = Context("caller", func() {
@@ -18,6 +19,7 @@ var _ = Context("caller", func() {
 				newCaller(
 					new(call.FakeInterpreter),
 					new(fakeContainerCaller),
+					new(pubsub.Fake),
 				),
 			).To(Not(BeNil()))
 		})
@@ -32,6 +34,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					new(call.FakeInterpreter),
 					fakeContainerCaller,
+					new(pubsub.Fake),
 				)
 
 				/* assert */
@@ -46,8 +49,6 @@ var _ = Context("caller", func() {
 		})
 		It("should call callInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			fakeContainerCaller := new(fakeContainerCaller)
-
 			providedCallID := "dummyCallID"
 			providedArgs := map[string]*model.Value{}
 			providedSCG := &model.SCG{}
@@ -62,7 +63,8 @@ var _ = Context("caller", func() {
 
 			objectUnderTest := newCaller(
 				fakeCallInterpreter,
-				fakeContainerCaller,
+				new(fakeContainerCaller),
+				new(pubsub.Fake),
 			)
 
 			/* act */
@@ -86,6 +88,51 @@ var _ = Context("caller", func() {
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))
 		})
+		Context("callInterpreter.Interpret result.If falsy", func() {
+			It("should call pubSub.Publish w/ expected args", func() {
+				/* arrange */
+				providedCallID := "dummyCallID"
+				providedRootOpID := "dummyRootOpID"
+
+				fakeCallInterpreter := new(call.FakeInterpreter)
+				falseBoolean := false
+				fakeCallInterpreter.InterpretReturns(
+					&model.DCG{
+						If: &falseBoolean,
+					},
+					nil,
+				)
+
+				expectedEvent := model.Event{
+					CallSkipped: &model.CallSkippedEvent{
+						CallID:     providedCallID,
+						RootCallID: providedRootOpID,
+					},
+				}
+
+				fakePubSub := new(pubsub.Fake)
+
+				objectUnderTest := newCaller(
+					fakeCallInterpreter,
+					new(fakeContainerCaller),
+					fakePubSub,
+				)
+
+				/* act */
+				objectUnderTest.Call(
+					providedCallID,
+					map[string]*model.Value{},
+					&model.SCG{},
+					new(data.FakeHandle),
+					providedRootOpID,
+				)
+
+				/* assert */
+				actualEvent := fakePubSub.PublishArgsForCall(0)
+
+				Expect(actualEvent).To(Equal(expectedEvent))
+			})
+		})
 		Context("Container SCG", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -108,6 +155,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					fakeCallInterpreter,
 					fakeContainerCaller,
+					new(pubsub.Fake),
 				)
 
 				/* act */
@@ -161,6 +209,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					fakeCallInterpreter,
 					new(fakeContainerCaller),
+					new(pubsub.Fake),
 				)
 				objectUnderTest.setOpCaller(fakeOpCaller)
 
@@ -212,6 +261,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					fakeCallInterpreter,
 					new(fakeContainerCaller),
+					new(pubsub.Fake),
 				)
 				objectUnderTest.setParallelCaller(fakeParallelCaller)
 
@@ -261,6 +311,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					fakeCallInterpreter,
 					new(fakeContainerCaller),
+					new(pubsub.Fake),
 				)
 				objectUnderTest.setSerialCaller(fakeSerialCaller)
 
@@ -307,6 +358,7 @@ var _ = Context("caller", func() {
 				objectUnderTest := newCaller(
 					fakeCallInterpreter,
 					new(fakeContainerCaller),
+					new(pubsub.Fake),
 				)
 				objectUnderTest.setSerialCaller(fakeSerialCaller)
 
