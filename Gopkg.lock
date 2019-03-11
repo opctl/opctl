@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:be8511fbdf669eb267e4ba4f964b9c380ec3b95b8931ee3e89ce22ae01418b4b"
+  digest = "1:eb2bba7e52ce5e06b6d212dba9adb3314c43b9e649ae90b2a543a275da6db873"
   name = "github.com/AndreasBriese/bbloom"
   packages = ["."]
   pruneopts = ""
-  revision = "343706a395b76e5ca5c7dca46a5d937b48febc74"
+  revision = "e2d15f34fcf99d5dbb871c820ec73f710fca9815"
 
 [[projects]]
   branch = "master"
@@ -77,18 +77,18 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a01511fe18f459e3982d45af2a375b83f11b69dadc31348285d863526a312158"
+  digest = "1:ce6b49c97a4d3d6f401b956c32bceab12c96a6cd724512fa21774fedc8876d1d"
   name = "github.com/docker/distribution"
   packages = [
     "digestset",
     "reference",
   ]
   pruneopts = ""
-  revision = "0d3efadf0154c2b8a4e7b6621fff9809655cc580"
+  revision = "6d62eb1d4a3515399431b713fde3ce5a9b40e8d5"
 
 [[projects]]
   branch = "master"
-  digest = "1:c1163a29461915bf1365edb31b1dc493ef8d4c4ca8e6f68c847c8b1cfac6d195"
+  digest = "1:5028d22d2f191fd1fa3e9fee1f4229fd9de368fba7f855c100810f96a82a2e4d"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -114,7 +114,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "501cb131a7b79682de2cdb83d86e20975f38702d"
+  revision = "33c3200e0d1638810721cf2e6a547fb9265968a5"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -433,7 +433,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d9988c5fdfc1084bba69a369bd02eba9840a48887de3d22582ffb9f4c8e622c7"
+  digest = "1:9bad91b472d140732a2ab585816ffb412f0174ec2073073453f8715fb8323884"
   name = "github.com/opctl/sdk-golang"
   packages = [
     "data",
@@ -457,44 +457,49 @@
     "node/core",
     "node/core/containerruntime",
     "node/core/containerruntime/docker",
-    "op",
-    "op/dotyml",
-    "op/interpreter",
-    "op/interpreter/array",
-    "op/interpreter/array/initializer",
-    "op/interpreter/boolean",
-    "op/interpreter/containercall",
-    "op/interpreter/containercall/dirs",
-    "op/interpreter/containercall/envvars",
-    "op/interpreter/containercall/files",
-    "op/interpreter/containercall/image",
-    "op/interpreter/containercall/sockets",
-    "op/interpreter/dir",
-    "op/interpreter/file",
-    "op/interpreter/interpolater",
-    "op/interpreter/interpolater/dereferencer",
-    "op/interpreter/interpolater/dereferencer/direntry",
-    "op/interpreter/interpolater/dereferencer/identifier/bracketed",
-    "op/interpreter/interpolater/dereferencer/identifier/bracketed/item",
-    "op/interpreter/interpolater/dereferencer/identifier/unbracketed",
-    "op/interpreter/interpolater/dereferencer/identifier/value",
-    "op/interpreter/number",
-    "op/interpreter/object",
-    "op/interpreter/object/initializer",
-    "op/interpreter/opcall",
-    "op/interpreter/opcall/inputs",
-    "op/interpreter/opcall/inputs/input",
-    "op/interpreter/opcall/outputs",
-    "op/interpreter/opcall/params",
-    "op/interpreter/opcall/params/param",
-    "op/interpreter/string",
+    "opspec",
+    "opspec/interpreter",
+    "opspec/interpreter/array",
+    "opspec/interpreter/array/initializer",
+    "opspec/interpreter/boolean",
+    "opspec/interpreter/call",
+    "opspec/interpreter/call/container",
+    "opspec/interpreter/call/container/dirs",
+    "opspec/interpreter/call/container/envvars",
+    "opspec/interpreter/call/container/files",
+    "opspec/interpreter/call/container/image",
+    "opspec/interpreter/call/container/sockets",
+    "opspec/interpreter/call/if/predicates",
+    "opspec/interpreter/call/if/predicates/predicate",
+    "opspec/interpreter/call/if/predicates/predicate/eq",
+    "opspec/interpreter/call/if/predicates/predicate/ne",
+    "opspec/interpreter/call/op",
+    "opspec/interpreter/call/op/inputs",
+    "opspec/interpreter/call/op/inputs/input",
+    "opspec/interpreter/call/op/outputs",
+    "opspec/interpreter/call/op/params",
+    "opspec/interpreter/call/op/params/param",
+    "opspec/interpreter/dir",
+    "opspec/interpreter/file",
+    "opspec/interpreter/interpolater",
+    "opspec/interpreter/interpolater/dereferencer",
+    "opspec/interpreter/interpolater/dereferencer/direntry",
+    "opspec/interpreter/interpolater/dereferencer/identifier/bracketed",
+    "opspec/interpreter/interpolater/dereferencer/identifier/bracketed/item",
+    "opspec/interpreter/interpolater/dereferencer/identifier/unbracketed",
+    "opspec/interpreter/interpolater/dereferencer/identifier/value",
+    "opspec/interpreter/number",
+    "opspec/interpreter/object",
+    "opspec/interpreter/object/initializer",
+    "opspec/interpreter/string",
+    "opspec/opfile",
     "util/iruntime",
     "util/pubsub",
     "util/uniquestring",
     "util/urlpath",
   ]
   pruneopts = ""
-  revision = "7e614b3175e7dbbd4239234da9235d2f07799108"
+  revision = "ddf018542b6b25c06a1c4e39beef46fd3eb09dfa"
 
 [[projects]]
   digest = "1:5d9b668b0b4581a978f07e7d2e3314af18eb27b3fb5d19b70185b7c575723d11"
@@ -572,12 +577,12 @@
   version = "1.0.0"
 
 [[projects]]
-  digest = "1:9a3c631555e0351fdc4e696577bb63afd90c399d782a8462dba9d100d7021db3"
+  digest = "1:b73fe282e350b3ef2c71d8ff08e929e0b9670b1bb5b7fde1d3c1b4cd6e6dc8b1"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = ""
-  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
-  version = "v1.3.0"
+  revision = "dae0fa8d5b0c810a8ab733fbd5510c7cae84eca4"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:740b31391e4c3e4d2b5a20e1cbf2c2f7765275ead23945acc7669c36c0b8095a"
@@ -693,7 +698,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:10f068b4b7d1a60a6d8a877c8f1d72b7e745cf1c32aaf9eaf11e2259938f0dfb"
+  digest = "1:f1282b7b8f47533e585be65217b076a5fa31c8b78aa2a3bd353e2bf5dcd8ce2e"
   name = "golang.org/x/crypto"
   packages = [
     "cast5",
@@ -715,11 +720,11 @@
     "ssh/terminal",
   ]
   pruneopts = ""
-  revision = "7f87c0fbb88b590338857bcb720678c2583d4dea"
+  revision = "c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58"
 
 [[projects]]
   branch = "master"
-  digest = "1:610e94429fbfde23aef262431c127307916a2c1c993a4047699e6cc9e26000b1"
+  digest = "1:a51d832881595a7312e766821f874b3172602f9adfbc5e6ddf6f5a75d55a23cc"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -729,26 +734,27 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "312bce6e941fc7e152b630a8643ea239afc12ddd"
+  revision = "d8887717615a059821345a5c23649351b52a1c0b"
 
 [[projects]]
   branch = "master"
-  digest = "1:814474ab808c5e04b9334d046f8a0060fc1724c2c02acfd00a7cc0008d675455"
+  digest = "1:0142c968b74c157abbb0220c05fa2bdde8a3a4509d6134b35ef75d5b58afb721"
   name = "golang.org/x/sync"
   packages = ["singleflight"]
   pruneopts = ""
-  revision = "37e7f081c4d4c64e13b10787722085407fe5d15f"
+  revision = "e225da77a7e68af35c70ccbf71af2b83e6acac3c"
 
 [[projects]]
   branch = "master"
-  digest = "1:0f39f8ca1c492b3b59020cb0f95e6635d5051bf7048a32ac5f9c6bf1adae6ec8"
+  digest = "1:02434eeec9c416e0b38ffa6501cdf1e9552ea0a894737232cd80b09134bbb5f6"
   name = "golang.org/x/sys"
   packages = [
+    "cpu",
     "unix",
     "windows",
   ]
   pruneopts = ""
-  revision = "775f8194d0f9e65c46913c7be783d3d95a29333c"
+  revision = "c8c8c57fd1e1a977c10821a559dda983a9a9a3b5"
 
 [[projects]]
   digest = "1:cc4fc94e3088593a2cde96c032e05d1e3c7d494147d7a7d707445ccc478bf4a0"
@@ -853,9 +859,9 @@
     "github.com/opctl/sdk-golang/node/api/handler",
     "github.com/opctl/sdk-golang/node/core",
     "github.com/opctl/sdk-golang/node/core/containerruntime/docker",
-    "github.com/opctl/sdk-golang/op",
-    "github.com/opctl/sdk-golang/op/dotyml",
-    "github.com/opctl/sdk-golang/op/interpreter/opcall/params",
+    "github.com/opctl/sdk-golang/opspec",
+    "github.com/opctl/sdk-golang/opspec/interpreter/call/op/params",
+    "github.com/opctl/sdk-golang/opspec/opfile",
     "github.com/opctl/sdk-golang/util/pubsub",
     "github.com/peterh/liner",
     "github.com/pkg/errors",

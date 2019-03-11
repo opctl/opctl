@@ -862,7 +862,7 @@ func (app *App) authorized(w http.ResponseWriter, r *http.Request, context *Cont
 		return err
 	}
 
-	dcontext.GetLogger(ctx).Info("authorized request")
+	dcontext.GetLogger(ctx, auth.UserNameKey).Info("authorized request")
 	// TODO(stevvooe): This pattern needs to be cleaned up a bit. One context
 	// should be replaced by another, rather than replacing the context on a
 	// mutable object.
@@ -896,7 +896,7 @@ func (app *App) nameRequired(r *http.Request) bool {
 func apiBase(w http.ResponseWriter, r *http.Request) {
 	const emptyJSON = "{}"
 	// Provide a simple /v2/ 200 OK response with empty json response.
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", fmt.Sprint(len(emptyJSON)))
 
 	fmt.Fprint(w, emptyJSON)

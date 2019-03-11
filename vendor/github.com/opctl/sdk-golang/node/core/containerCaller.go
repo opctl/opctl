@@ -8,7 +8,6 @@ import (
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/op/interpreter/containercall"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"io"
 	"strings"
@@ -18,6 +17,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
+		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
 		containerID string,
 		scgContainerCall *model.SCGContainerCall,
@@ -28,14 +28,12 @@ type containerCaller interface {
 
 func newContainerCaller(
 	containerRuntime containerruntime.ContainerRuntime,
-	containerCallInterpreter containercall.Interpreter,
 	pubSub pubsub.PubSub,
 	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
 		containerRuntime: containerRuntime,
-		containerCall:    containerCallInterpreter,
 		pubSub:           pubSub,
 		dcgNodeRepo:      dcgNodeRepo,
 		io:               iio.New(),
@@ -45,13 +43,13 @@ func newContainerCaller(
 
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
-	containerCall    containercall.Interpreter
 	pubSub           pubsub.PubSub
 	dcgNodeRepo      dcgNodeRepo
 	io               iio.IIO
 }
 
 func (cc _containerCaller) Call(
+	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
 	containerID string,
 	scgContainerCall *model.SCGContainerCall,
@@ -75,17 +73,6 @@ func (cc _containerCaller) Call(
 			Container: &dcgContainerDescriptor{},
 		},
 	)
-
-	dcgContainerCall, err := cc.containerCall.Interpret(
-		inboundScope,
-		scgContainerCall,
-		containerID,
-		rootOpID,
-		opHandle,
-	)
-	if nil != err {
-		return err
-	}
 
 	cc.pubSub.Publish(
 		model.Event{
@@ -114,7 +101,6 @@ func (cc _containerCaller) Call(
 		logChan <- cc.interpretLogs(
 			logStdOutPR,
 			logStdErrPR,
-			scgContainerCall,
 			dcgContainerCall,
 		)
 	}()
@@ -193,7 +179,6 @@ func (cc _containerCaller) Call(
 func (this _containerCaller) interpretLogs(
 	stdOutReader io.Reader,
 	stdErrReader io.Reader,
-	scgContainerCall *model.SCGContainerCall,
 	dcgContainerCall *model.DCGContainerCall,
 ) error {
 	stdOutLogChan := make(chan error, 1)

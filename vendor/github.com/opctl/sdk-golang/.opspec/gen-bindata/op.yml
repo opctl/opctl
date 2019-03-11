@@ -19,8 +19,8 @@ run:
         echo "installing deps"
         go get -u github.com/jteeuwen/go-bindata/...
 
-        echo "generating bindata for github.com/opctl/spec/spec/op.yml.schema.json"
-        go-bindata -pkg dotyml -o op/dotyml/bindata.go github.com/opctl/spec/spec/op.yml.schema.json
+        echo "generating bindata for github.com/opctl/spec/opspec/opfile/jsonschema.json"
+        go-bindata -pkg dotyml -o op/opfile/bindata.go github.com/opctl/spec/opspec/opfile/jsonschema.json
     dirs:
       /go/src/github.com/opctl/sdk-golang: $(srcDir)
     image: { ref: 'golang:1.11.5' }

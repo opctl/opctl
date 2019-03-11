@@ -1,17 +1,18 @@
 // Package core defines the core interface for an opspec node
 package core
 
-import "github.com/opctl/sdk-golang/model"
 import (
 	"context"
-	"path/filepath"
-
 	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/op/dotyml"
-	"github.com/opctl/sdk-golang/op/interpreter/containercall"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
+	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
+	"path/filepath"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
@@ -65,10 +66,15 @@ func New(
 
 	opKiller := newOpKiller(dcgNodeRepo, containerRuntime)
 
+	opInterpreter := op.NewInterpreter(dataDirPath)
+
 	caller := newCaller(
+		call.NewInterpreter(
+			container.NewInterpreter(dataDirPath),
+			dataDirPath,
+		),
 		newContainerCaller(
 			containerRuntime,
-			containercall.NewInterpreter(dataDirPath),
 			pubSub,
 			dcgNodeRepo,
 		),
@@ -104,14 +110,15 @@ func New(
 
 	core = _core{
 		containerRuntime:    containerRuntime,
+		data:                data.New(),
+		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
 		dcgNodeRepo:         dcgNodeRepo,
+		dotYmlGetter:        dotyml.NewGetter(),
 		opCaller:            opCaller,
+		opInterpreter:       opInterpreter,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
-		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
 		uniqueStringFactory: uniqueStringFactory,
-		dotYmlGetter:        dotyml.NewGetter(),
-		data:                data.New(),
 	}
 
 	return
@@ -119,12 +126,13 @@ func New(
 
 type _core struct {
 	containerRuntime    containerruntime.ContainerRuntime
-	dcgNodeRepo         dcgNodeRepo
-	opCaller            opCaller
-	opKiller            opKiller
-	pubSub              pubsub.PubSub
-	dotYmlGetter        dotyml.Getter
 	data                data.Data
 	dataCachePath       string
+	dcgNodeRepo         dcgNodeRepo
+	dotYmlGetter        dotyml.Getter
+	opCaller            opCaller
+	opInterpreter       op.Interpreter
+	opKiller            opKiller
+	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
