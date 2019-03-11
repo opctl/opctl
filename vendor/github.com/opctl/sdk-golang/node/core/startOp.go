@@ -63,9 +63,6 @@ func (this _core) StartOp(
 		this.opCaller.Call(
 			dcg,
 			req.Args,
-			opID,
-			opHandle,
-			opID,
 			scgOpCall,
 		)
 	}()

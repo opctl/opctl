@@ -3,6 +3,8 @@ package core
 
 import (
 	"context"
+	"path/filepath"
+
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
@@ -12,7 +14,6 @@ import (
 	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
-	"path/filepath"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
@@ -78,6 +79,7 @@ func New(
 			pubSub,
 			dcgNodeRepo,
 		),
+		pubSub,
 	)
 
 	caller.setParallelCaller(

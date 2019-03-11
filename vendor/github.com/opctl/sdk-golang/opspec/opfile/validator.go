@@ -16,7 +16,7 @@ type validator interface {
 }
 
 func newValidator() validator {
-	manifestSchemaBytes, err := githubComOpctlSpecOpspecOpfileJsonschemaJsonBytes()
+	manifestSchemaBytes, err := githubComOpctlSpecsOpspecOpfileJsonschemaJsonBytes()
 	if nil != err {
 		panic(err)
 	}

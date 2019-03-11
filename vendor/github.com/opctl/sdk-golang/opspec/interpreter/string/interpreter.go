@@ -4,6 +4,7 @@ package string
 
 import (
 	"fmt"
+
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter"
@@ -46,6 +47,8 @@ func (es _interpreter) Interpret(
 	var value *model.Value
 
 	switch expression := expression.(type) {
+	case bool:
+		value = &model.Value{Boolean: &expression}
 	case float64:
 		value = &model.Value{Number: &expression}
 	case int:
