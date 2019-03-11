@@ -28,6 +28,8 @@ func getEventRootOpID(
 	event model.Event,
 ) string {
 	switch {
+	case nil != event.CallSkipped:
+		return event.CallSkipped.RootCallID
 	case nil != event.ContainerExited:
 		return event.ContainerExited.RootOpID
 	case nil != event.ContainerStarted:

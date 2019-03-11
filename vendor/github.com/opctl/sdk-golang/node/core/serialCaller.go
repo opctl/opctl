@@ -105,6 +105,8 @@ func (this _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outputs w/ outputs, child outputs having precedence
 			switch {
+			case nil != event.CallSkipped && event.CallSkipped.CallID == childCallID:
+				break eventLoop
 			case nil != event.OpEnded && event.OpEnded.OpID == childCallID:
 				for name, value := range event.OpEnded.Outputs {
 					outputs[name] = value

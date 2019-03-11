@@ -16,7 +16,7 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api/client"
-	"github.com/opctl/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/opspec/opfile"
 )
 
 var _ = Context("Run", func() {

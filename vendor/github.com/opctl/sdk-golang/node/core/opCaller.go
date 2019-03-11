@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/op/dotyml"
-	"github.com/opctl/sdk-golang/op/interpreter/opcall"
-	"github.com/opctl/sdk-golang/op/interpreter/opcall/outputs"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/outputs"
+	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 type opCaller interface {
 	// Executes an op call
 	Call(
+		dcgOpCall *model.DCGOpCall,
 		inboundScope map[string]*model.Value,
 		opID string,
 		opHandle model.DataHandle,
@@ -32,7 +32,6 @@ func newOpCaller(
 ) opCaller {
 	return _opCaller{
 		outputsInterpreter: outputs.NewInterpreter(),
-		opCallInterpreter:  opcall.NewInterpreter(dataDirPath),
 		dotYmlGetter:       dotyml.NewGetter(),
 		pubSub:             pubSub,
 		dcgNodeRepo:        dcgNodeRepo,
@@ -42,7 +41,6 @@ func newOpCaller(
 
 type _opCaller struct {
 	outputsInterpreter outputs.Interpreter
-	opCallInterpreter  opcall.Interpreter
 	dotYmlGetter       dotyml.Getter
 	pubSub             pubsub.PubSub
 	dcgNodeRepo        dcgNodeRepo
@@ -50,6 +48,7 @@ type _opCaller struct {
 }
 
 func (oc _opCaller) Call(
+	dcgOpCall *model.DCGOpCall,
 	inboundScope map[string]*model.Value,
 	opID string,
 	opHandle model.DataHandle,
@@ -59,6 +58,7 @@ func (oc _opCaller) Call(
 	var err error
 	var isKilled bool
 	outputs := map[string]*model.Value{}
+
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		if isKilled {
@@ -70,7 +70,7 @@ func (oc _opCaller) Call(
 						OpID:     opID,
 						Outcome:  model.OpOutcomeKilled,
 						RootOpID: rootOpID,
-						OpRef:    scgOpCall.Ref,
+						OpRef:    dcgOpCall.OpHandle.Ref(),
 					},
 				},
 			)
@@ -87,7 +87,7 @@ func (oc _opCaller) Call(
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
 						OpID:     opID,
-						OpRef:    scgOpCall.Ref,
+						OpRef:    dcgOpCall.OpHandle.Ref(),
 						RootOpID: rootOpID,
 					},
 				},
@@ -102,7 +102,7 @@ func (oc _opCaller) Call(
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
 					OpID:     opID,
-					OpRef:    scgOpCall.Ref,
+					OpRef:    dcgOpCall.OpHandle.Ref(),
 					Outcome:  opOutcome,
 					RootOpID: rootOpID,
 					Outputs:  outputs,
@@ -115,29 +115,18 @@ func (oc _opCaller) Call(
 	oc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
 			Id:       opID,
-			OpRef:    scgOpCall.Ref,
+			OpRef:    dcgOpCall.OpHandle.Ref(),
 			RootOpID: rootOpID,
 			Op:       &dcgOpDescriptor{},
 		},
 	)
-
-	dcgOpCall, err := oc.opCallInterpreter.Interpret(
-		inboundScope,
-		scgOpCall,
-		opID,
-		opHandle,
-		rootOpID,
-	)
-	if nil != err {
-		return err
-	}
 
 	oc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
 				OpID:     opID,
-				OpRef:    scgOpCall.Ref,
+				OpRef:    dcgOpCall.OpHandle.Ref(),
 				RootOpID: rootOpID,
 			},
 		},
@@ -218,6 +207,8 @@ func (oc _opCaller) waitOnOpOutputs(
 eventLoop:
 	for event := range eventChannel {
 		switch {
+		case nil != event.CallSkipped && event.CallSkipped.CallID == dcgOpCall.ChildCallID:
+			break eventLoop
 		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
 			// parent ended prematurely
 			return nil

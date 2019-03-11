@@ -48,8 +48,20 @@ func (this _core) StartOp(
 		scgOpCall.Outputs[name] = ""
 	}
 
+	dcg, err := this.opInterpreter.Interpret(
+		req.Args,
+		scgOpCall,
+		opID,
+		opHandle,
+		opID,
+	)
+	if nil != err {
+		return "", err
+	}
+
 	go func() {
 		this.opCaller.Call(
+			dcg,
 			req.Args,
 			opID,
 			opHandle,

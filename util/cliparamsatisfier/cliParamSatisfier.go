@@ -14,7 +14,7 @@ import (
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/op/interpreter/opcall/params"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/params"
 )
 
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer

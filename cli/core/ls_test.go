@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/op"
+	"github.com/opctl/sdk-golang/opspec"
 	"os"
 )
 

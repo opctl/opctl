@@ -10,7 +10,8 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/op/dotyml"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
+	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
@@ -214,6 +215,10 @@ var _ = Context("core", func() {
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					fakeDotYmlGetter.GetReturns(opDotYml, nil)
 
+					expectedDCGOpCall := &model.DCGOpCall{}
+					fakeOpInterpreter := new(op.FakeInterpreter)
+					fakeOpInterpreter.InterpretReturns(expectedDCGOpCall, nil)
+
 					expectedSCGOpCall := &model.SCGOpCall{
 						Ref:     fakeDataHandle.Ref(),
 						Inputs:  map[string]interface{}{},
@@ -239,6 +244,7 @@ var _ = Context("core", func() {
 						data:                fakeData,
 						dotYmlGetter:        fakeDotYmlGetter,
 						opCaller:            fakeOpCaller,
+						opInterpreter:       fakeOpInterpreter,
 						dcgNodeRepo:         new(fakeDCGNodeRepo),
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
@@ -252,12 +258,14 @@ var _ = Context("core", func() {
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
-					actualInboundScope,
+					actualDCGOpCall,
+						actualInboundScope,
 						actualOpID,
 						actualOpHandle,
 						actualRootOpID,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
+					Expect(actualDCGOpCall).To(Equal(expectedDCGOpCall))
 					Expect(actualInboundScope).To(Equal(providedReq.Args))
 					Expect(actualOpID).To(Equal(expectedOpID))
 					Expect(actualOpHandle).To(Equal(fakeDataHandle))
