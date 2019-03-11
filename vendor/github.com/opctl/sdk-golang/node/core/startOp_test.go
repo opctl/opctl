@@ -260,16 +260,10 @@ var _ = Context("core", func() {
 					time.Sleep(time.Millisecond * 500)
 					actualDCGOpCall,
 						actualInboundScope,
-						actualOpID,
-						actualOpHandle,
-						actualRootOpID,
 						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
 
 					Expect(actualDCGOpCall).To(Equal(expectedDCGOpCall))
 					Expect(actualInboundScope).To(Equal(providedReq.Args))
-					Expect(actualOpID).To(Equal(expectedOpID))
-					Expect(actualOpHandle).To(Equal(fakeDataHandle))
-					Expect(actualRootOpID).To(Equal(actualOpID))
 					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
 				})
 			})

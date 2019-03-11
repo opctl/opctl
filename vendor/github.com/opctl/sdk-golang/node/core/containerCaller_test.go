@@ -17,6 +17,10 @@ var _ = Context("containerCaller", func() {
 	closedPipeReader, closedPipeWriter := io.Pipe()
 	closedPipeReader.Close()
 	closedPipeWriter.Close()
+	opHandleRef := "dummyOpRef"
+	fakeOpHandle := new(data.FakeHandle)
+	fakeOpHandle.RefReturns(opHandleRef)
+
 	Context("newContainerCaller", func() {
 		It("should return containerCaller", func() {
 			/* arrange/act/assert */
@@ -30,18 +34,22 @@ var _ = Context("containerCaller", func() {
 	Context("Call", func() {
 		It("should call dcgNodeRepo.Add w/ expected args", func() {
 			/* arrange */
+			providedDCGContainerCall := &model.DCGContainerCall{
+				DCGBaseCall: model.DCGBaseCall{
+					OpHandle: fakeOpHandle,
+					RootOpID: "providedRootID",
+				},
+				ContainerID: "providedContainerID",
+			}
 			providedInboundScope := map[string]*model.Value{}
-			providedContainerID := "dummyContainerID"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedOpHandle := new(data.FakeHandle)
-			providedRootOpID := "dummyRootOpID"
 
 			fakePubSub := new(pubsub.Fake)
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
-				Id:        providedContainerID,
-				OpRef:     providedOpHandle.Ref(),
-				RootOpID:  providedRootOpID,
+				Id:        providedDCGContainerCall.ContainerID,
+				OpRef:     providedDCGContainerCall.OpHandle.Ref(),
+				RootOpID:  providedDCGContainerCall.RootOpID,
 				Container: &dcgContainerDescriptor{},
 			}
 
@@ -63,12 +71,9 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				&model.DCGContainerCall{},
+				providedDCGContainerCall,
 				providedInboundScope,
-				providedContainerID,
 				providedSCGContainerCall,
-				providedOpHandle,
-				providedRootOpID,
 			)
 
 			/* assert */
@@ -76,18 +81,22 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
 			/* arrange */
+			providedDCGContainerCall := &model.DCGContainerCall{
+				DCGBaseCall: model.DCGBaseCall{
+					OpHandle: fakeOpHandle,
+					RootOpID: "providedRootID",
+				},
+				ContainerID: "providedContainerID",
+			}
 			providedInboundScope := map[string]*model.Value{}
-			providedContainerID := "dummyContainerID"
 			providedSCGContainerCall := &model.SCGContainerCall{}
-			providedOpHandle := new(data.FakeHandle)
-			providedRootOpID := "dummyRootOpID"
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				ContainerStarted: &model.ContainerStartedEvent{
-					ContainerID: providedContainerID,
-					OpRef:       providedOpHandle.Ref(),
-					RootOpID:    providedRootOpID,
+					ContainerID: providedDCGContainerCall.ContainerID,
+					OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+					RootOpID:    providedDCGContainerCall.RootOpID,
 				},
 			}
 
@@ -105,12 +114,9 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				&model.DCGContainerCall{},
+				providedDCGContainerCall,
 				providedInboundScope,
-				providedContainerID,
 				providedSCGContainerCall,
-				providedOpHandle,
-				providedRootOpID,
 			)
 
 			/* assert */
@@ -125,7 +131,11 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
-			providedDCGContainerCall := &model.DCGContainerCall{}
+			providedDCGContainerCall := &model.DCGContainerCall{
+				DCGBaseCall: model.DCGBaseCall{
+					OpHandle: fakeOpHandle,
+				},
+			}
 			fakeContainerRuntime := new(containerruntime.Fake)
 
 			fakePubSub := new(pubsub.Fake)
@@ -144,10 +154,7 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedDCGContainerCall,
 				map[string]*model.Value{},
-				"dummyContainerID",
 				&model.SCGContainerCall{},
-				new(data.FakeHandle),
-				"dummyRootOpID",
 			)
 
 			/* assert */
@@ -179,12 +186,13 @@ var _ = Context("containerCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
-					&model.DCGContainerCall{},
+					&model.DCGContainerCall{
+						DCGBaseCall: model.DCGBaseCall{
+							OpHandle: fakeOpHandle,
+						},
+					},
 					map[string]*model.Value{},
-					"dummyContainerID",
 					&model.SCGContainerCall{},
-					new(data.FakeHandle),
-					"dummyRootOpID",
 				)
 
 				/* assert */
@@ -194,7 +202,13 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call dcgNodeRepo.DeleteIfExists w/ expected args", func() {
 		/* arrange */
-		providedContainerID := "dummyContainerID"
+		providedDCGContainerCall := &model.DCGContainerCall{
+			DCGBaseCall: model.DCGBaseCall{
+				OpHandle: fakeOpHandle,
+				RootOpID: "providedRootID",
+			},
+			ContainerID: "providedContainerID",
+		}
 
 		fakeDCGNodeRepo := new(fakeDCGNodeRepo)
 
@@ -210,32 +224,33 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			&model.DCGContainerCall{},
+			providedDCGContainerCall,
 			map[string]*model.Value{},
-			providedContainerID,
 			&model.SCGContainerCall{},
-			new(data.FakeHandle),
-			"dummyRootOpID",
 		)
 
 		/* assert */
-		Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedContainerID))
+		Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedDCGContainerCall.ContainerID))
 	})
 
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
+		providedDCGContainerCall := &model.DCGContainerCall{
+			DCGBaseCall: model.DCGBaseCall{
+				OpHandle: fakeOpHandle,
+				RootOpID: "providedRootID",
+			},
+			ContainerID: "providedContainerID",
+		}
 		providedInboundScope := map[string]*model.Value{}
-		providedContainerID := "dummyContainerID"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedOpHandle := new(data.FakeHandle)
-		providedRootOpID := "dummyRootOpID"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerID: providedContainerID,
-				OpRef:       providedOpHandle.Ref(),
-				RootOpID:    providedRootOpID,
+				ContainerID: providedDCGContainerCall.ContainerID,
+				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+				RootOpID:    providedDCGContainerCall.RootOpID,
 			},
 		}
 
@@ -253,12 +268,9 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			&model.DCGContainerCall{},
+			providedDCGContainerCall,
 			providedInboundScope,
-			providedContainerID,
 			providedSCGContainerCall,
-			providedOpHandle,
-			providedRootOpID,
 		)
 
 		/* assert */
@@ -273,18 +285,22 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
+		providedDCGContainerCall := &model.DCGContainerCall{
+			DCGBaseCall: model.DCGBaseCall{
+				OpHandle: fakeOpHandle,
+				RootOpID: "providedRootID",
+			},
+			ContainerID: "providedContainerID",
+		}
 		providedInboundScope := map[string]*model.Value{}
-		providedContainerID := "dummyContainerID"
 		providedSCGContainerCall := &model.SCGContainerCall{}
-		providedOpHandle := new(data.FakeHandle)
-		providedRootOpID := "dummyRootOpID"
 
 		expectedEvent := model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerID: providedContainerID,
-				OpRef:       providedOpHandle.Ref(),
-				RootOpID:    providedRootOpID,
+				ContainerID: providedDCGContainerCall.ContainerID,
+				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+				RootOpID:    providedDCGContainerCall.RootOpID,
 			},
 		}
 
@@ -302,12 +318,9 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
-			&model.DCGContainerCall{},
+			providedDCGContainerCall,
 			providedInboundScope,
-			providedContainerID,
 			providedSCGContainerCall,
-			providedOpHandle,
-			providedRootOpID,
 		)
 
 		/* assert */

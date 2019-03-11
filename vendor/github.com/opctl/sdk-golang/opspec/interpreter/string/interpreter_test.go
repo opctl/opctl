@@ -15,6 +15,52 @@ import (
 
 var _ = Context("Interpret", func() {
 	var _ = Context("Interpret", func() {
+		Context("expression is bool", func() {
+			It("should call coerce.ToString w/ expected args", func() {
+				/* arrange */
+				providedExpression := false
+
+				fakeCoerce := new(coerce.Fake)
+
+				objectUnderTest := _interpreter{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					providedExpression,
+					new(data.FakeHandle),
+				)
+
+				/* assert */
+				actualValue := fakeCoerce.ToStringArgsForCall(0)
+				Expect(*actualValue).To(Equal(model.Value{Boolean: &providedExpression}))
+			})
+			It("should return expected result", func() {
+				/* arrange */
+				fakeCoerce := new(coerce.Fake)
+				coercedValue := model.Value{Number: new(bool)}
+				toStringErr := errors.New("dummyError")
+
+				fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
+
+				objectUnderTest := _interpreter{
+					coerce: fakeCoerce,
+				}
+
+				/* act */
+				actualValue, actualErr := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					false,
+					new(data.FakeHandle),
+				)
+
+				/* assert */
+				Expect(*actualValue).To(Equal(coercedValue))
+				Expect(actualErr).To(Equal(toStringErr))
+			})
+		})
 		Context("expression is float64", func() {
 			It("should call coerce.ToString w/ expected args", func() {
 				/* arrange */

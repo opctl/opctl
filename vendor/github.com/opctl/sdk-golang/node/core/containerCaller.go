@@ -5,13 +5,14 @@ package core
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
+	"time"
+
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
 	"github.com/opctl/sdk-golang/util/pubsub"
-	"io"
-	"strings"
-	"time"
 )
 
 type containerCaller interface {
@@ -19,10 +20,7 @@ type containerCaller interface {
 	Call(
 		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
-		containerID string,
 		scgContainerCall *model.SCGContainerCall,
-		opHandle model.DataHandle,
-		rootOpID string,
 	) error
 }
 
@@ -51,25 +49,22 @@ type _containerCaller struct {
 func (cc _containerCaller) Call(
 	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
-	containerID string,
 	scgContainerCall *model.SCGContainerCall,
-	opHandle model.DataHandle,
-	rootOpID string,
 ) error {
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 
-		cc.dcgNodeRepo.DeleteIfExists(containerID)
+		cc.dcgNodeRepo.DeleteIfExists(dcgContainerCall.ContainerID)
 
-		cc.containerRuntime.DeleteContainerIfExists(containerID)
+		cc.containerRuntime.DeleteContainerIfExists(dcgContainerCall.ContainerID)
 
 	}()
 
 	cc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
-			Id:        containerID,
-			OpRef:     opHandle.Ref(),
-			RootOpID:  rootOpID,
+			Id:        dcgContainerCall.ContainerID,
+			OpRef:     dcgContainerCall.OpHandle.Ref(),
+			RootOpID:  dcgContainerCall.RootOpID,
 			Container: &dcgContainerDescriptor{},
 		},
 	)
@@ -78,9 +73,9 @@ func (cc _containerCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerStarted: &model.ContainerStartedEvent{
-				ContainerID: containerID,
-				OpRef:       opHandle.Ref(),
-				RootOpID:    rootOpID,
+				ContainerID: dcgContainerCall.ContainerID,
+				OpRef:       dcgContainerCall.OpHandle.Ref(),
+				RootOpID:    dcgContainerCall.RootOpID,
 			},
 		},
 	)
@@ -165,9 +160,9 @@ func (cc _containerCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
-				ContainerID: containerID,
-				OpRef:       opHandle.Ref(),
-				RootOpID:    rootOpID,
+				ContainerID: dcgContainerCall.ContainerID,
+				OpRef:       dcgContainerCall.OpHandle.Ref(),
+				RootOpID:    dcgContainerCall.RootOpID,
 				ExitCode:    exitCode,
 				Outputs:     interpretOutputsResult.outputs,
 			},

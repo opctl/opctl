@@ -35,17 +35,17 @@ var _ = Context("opCaller", func() {
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: fakeOpHandle,
+					RootOpID: "providedRootID",
 				},
+				OpID: "providedOpID",
 			}
 
-			providedOpID := "dummyOpID"
-			providedRootOpID := "dummyRootOpID"
 			providedSCGOpCall := &model.SCGOpCall{}
 
 			expectedDCGNodeDescriptor := &dcgNodeDescriptor{
-				Id:       providedOpID,
+				Id:       providedDCGOpCall.OpID,
 				OpRef:    providedOpHandleRef,
-				RootOpID: providedRootOpID,
+				RootOpID: providedDCGOpCall.RootOpID,
 				Op:       &dcgOpDescriptor{},
 			}
 
@@ -71,9 +71,6 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedDCGOpCall,
 				map[string]*model.Value{},
-				providedOpID,
-				new(data.FakeHandle),
-				providedRootOpID,
 				providedSCGOpCall,
 			)
 
@@ -89,19 +86,19 @@ var _ = Context("opCaller", func() {
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: fakeOpHandle,
+					RootOpID: "providedRootID",
 				},
+				OpID: "providedOpId",
 			}
 
-			providedOpID := "dummyOpID"
-			providedRootOpID := "dummyRootOpID"
 			providedSCGOpCall := &model.SCGOpCall{}
 
 			expectedEvent := model.Event{
 				Timestamp: time.Now().UTC(),
 				OpStarted: &model.OpStartedEvent{
-					OpID:     providedOpID,
+					OpID:     providedDCGOpCall.OpID,
 					OpRef:    providedOpHandleRef,
-					RootOpID: providedRootOpID,
+					RootOpID: providedDCGOpCall.RootOpID,
 				},
 			}
 
@@ -125,9 +122,6 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedDCGOpCall,
 				map[string]*model.Value{},
-				providedOpID,
-				new(data.FakeHandle),
-				providedRootOpID,
 				providedSCGOpCall,
 			)
 
@@ -143,12 +137,11 @@ var _ = Context("opCaller", func() {
 		})
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
-			providedRootOpID := "dummyRootOpID"
-
 			dummyString := "dummyString"
-			dcgOpCall := &model.DCGOpCall{
+			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: new(data.FakeHandle),
+					RootOpID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
 				ChildCallSCG: &model.SCG{
@@ -161,6 +154,7 @@ var _ = Context("opCaller", func() {
 				Inputs: map[string]*model.Value{
 					"dummyScopeName": {String: &dummyString},
 				},
+				OpID: "providedOpID",
 			}
 
 			fakePubSub := new(pubsub.Fake)
@@ -181,11 +175,8 @@ var _ = Context("opCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				dcgOpCall,
+				providedDCGOpCall,
 				map[string]*model.Value{},
-				"dummyOpID",
-				new(data.FakeHandle),
-				providedRootOpID,
 				&model.SCGOpCall{},
 			)
 
@@ -196,11 +187,11 @@ var _ = Context("opCaller", func() {
 				actualOpRef,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
-			Expect(actualChildCallID).To(Equal(dcgOpCall.ChildCallID))
-			Expect(actualChildCallScope).To(Equal(dcgOpCall.Inputs))
-			Expect(actualChildSCG).To(Equal(dcgOpCall.ChildCallSCG))
-			Expect(actualOpRef).To(Equal(dcgOpCall.OpHandle))
-			Expect(actualRootOpID).To(Equal(providedRootOpID))
+			Expect(actualChildCallID).To(Equal(providedDCGOpCall.ChildCallID))
+			Expect(actualChildCallScope).To(Equal(providedDCGOpCall.Inputs))
+			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
+			Expect(actualOpRef).To(Equal(providedDCGOpCall.OpHandle))
+			Expect(actualRootOpID).To(Equal(providedDCGOpCall.RootOpID))
 		})
 		It("should call dcgNodeRepo.GetIfExists w/ expected args", func() {
 			/* arrange */
@@ -210,10 +201,9 @@ var _ = Context("opCaller", func() {
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: fakeHandle,
+					RootOpID: "providedRootID",
 				},
 			}
-
-			providedRootOpID := "dummyRootOpID"
 
 			fakeDotYmlGetter := new(dotyml.FakeGetter)
 			fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
@@ -238,14 +228,11 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedDCGOpCall,
 				map[string]*model.Value{},
-				"dummyOpID",
-				new(data.FakeHandle),
-				providedRootOpID,
 				&model.SCGOpCall{},
 			)
 
 			/* assert */
-			Expect(fakeDCGNodeRepo.GetIfExistsArgsForCall(0)).To(Equal(providedRootOpID))
+			Expect(fakeDCGNodeRepo.GetIfExistsArgsForCall(0)).To(Equal(providedDCGOpCall.RootOpID))
 		})
 		Context("dcgNodeRepo.GetIfExists returns nil", func() {
 			It("should call pubSub.Publish w/ expected args", func() {
@@ -258,19 +245,19 @@ var _ = Context("opCaller", func() {
 				providedDCGOpCall := &model.DCGOpCall{
 					DCGBaseCall: model.DCGBaseCall{
 						OpHandle: fakeOpHandle,
+						RootOpID: "providedRootID",
 					},
+					OpID: "providedOpID",
 				}
 
-				providedOpID := "dummyOpID"
-				providedRootOpID := "dummyRootOpID"
 				providedSCGOpCall := &model.SCGOpCall{}
 
 				expectedEvent := model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
-						OpID:     providedOpID,
+						OpID:     providedDCGOpCall.OpID,
 						Outcome:  model.OpOutcomeKilled,
-						RootOpID: providedRootOpID,
+						RootOpID: providedDCGOpCall.RootOpID,
 						OpRef:    providedOpHandleRef,
 					},
 				}
@@ -296,9 +283,6 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					providedDCGOpCall,
 					map[string]*model.Value{},
-					providedOpID,
-					new(data.FakeHandle),
-					providedRootOpID,
 					providedSCGOpCall,
 				)
 
@@ -323,9 +307,8 @@ var _ = Context("opCaller", func() {
 					DCGBaseCall: model.DCGBaseCall{
 						OpHandle: fakeHandle,
 					},
+					OpID: "providedOpID",
 				}
-
-				providedOpID := "dummyOpID"
 
 				fakeDotYmlGetter := new(dotyml.FakeGetter)
 				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
@@ -351,14 +334,11 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					providedDCGOpCall,
 					map[string]*model.Value{},
-					providedOpID,
-					new(data.FakeHandle),
-					"dummyRootOpID",
 					&model.SCGOpCall{},
 				)
 
 				/* assert */
-				Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedOpID))
+				Expect(fakeDCGNodeRepo.DeleteIfExistsArgsForCall(0)).To(Equal(providedDCGOpCall.OpID))
 			})
 			Context("caller.Call errs", func() {
 				It("should call pubSub.Publish w/ expected args", func() {
@@ -371,20 +351,20 @@ var _ = Context("opCaller", func() {
 					providedDCGOpCall := &model.DCGOpCall{
 						DCGBaseCall: model.DCGBaseCall{
 							OpHandle: fakeOpHandle,
+							RootOpID: "providedRootID",
 						},
+						OpID: "providedOpId",
 					}
 
-					providedOpID := "dummyOpID"
-					providedRootOpID := "dummyRootOpID"
 					providedSCGOpCall := &model.SCGOpCall{}
 
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEnded: &model.OpEndedEvent{
-							OpID:     providedOpID,
+							OpID:     providedDCGOpCall.OpID,
 							OpRef:    providedOpHandleRef,
 							Outcome:  model.OpOutcomeFailed,
-							RootOpID: providedRootOpID,
+							RootOpID: providedDCGOpCall.RootOpID,
 							Outputs:  map[string]*model.Value{},
 						},
 					}
@@ -413,9 +393,6 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedDCGOpCall,
 						map[string]*model.Value{},
-						providedOpID,
-						new(data.FakeHandle),
-						providedRootOpID,
 						providedSCGOpCall,
 					)
 
@@ -441,11 +418,11 @@ var _ = Context("opCaller", func() {
 					providedDCGOpCall := &model.DCGOpCall{
 						DCGBaseCall: model.DCGBaseCall{
 							OpHandle: fakeOpHandle,
+							RootOpID: "providedRootID",
 						},
+						OpID: "providedOpId",
 					}
 
-					providedOpID := "dummyOpID"
-					providedRootOpID := "dummyRootOpID"
 					expectedOutputName := "expectedOutputName"
 
 					providedSCGOpCall := &model.SCGOpCall{
@@ -465,10 +442,10 @@ var _ = Context("opCaller", func() {
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEnded: &model.OpEndedEvent{
-							OpID:     providedOpID,
+							OpID:     providedDCGOpCall.OpID,
 							OpRef:    providedOpHandleRef,
 							Outcome:  model.OpOutcomeSucceeded,
-							RootOpID: providedRootOpID,
+							RootOpID: providedDCGOpCall.RootOpID,
 							Outputs: map[string]*model.Value{
 								expectedOutputName: interpretedOutputs[expectedOutputName],
 							},
@@ -499,9 +476,6 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						providedDCGOpCall,
 						map[string]*model.Value{},
-						providedOpID,
-						new(data.FakeHandle),
-						providedRootOpID,
 						providedSCGOpCall,
 					)
 

@@ -4,8 +4,11 @@ package core
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call"
+	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 type caller interface {
@@ -22,10 +25,12 @@ type caller interface {
 func newCaller(
 	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
+	pubSub pubsub.PubSub,
 ) *_caller {
 	return &_caller{
 		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
+		pubSub:          pubSub,
 	}
 }
 
@@ -34,6 +39,7 @@ type _caller struct {
 	containerCaller containerCaller
 	opCaller        opCaller
 	parallelCaller  parallelCaller
+	pubSub          pubsub.PubSub
 	serialCaller    serialCaller
 }
 
@@ -62,6 +68,15 @@ func (this _caller) Call(
 	}
 
 	if nil != dcg.If && !*dcg.If {
+		this.pubSub.Publish(
+			model.Event{
+				CallSkipped: &model.CallSkippedEvent{
+					CallID:     id,
+					RootCallID: rootOpID,
+				},
+				Timestamp: time.Now().UTC(),
+			},
+		)
 		return nil
 	}
 
@@ -70,18 +85,12 @@ func (this _caller) Call(
 		return this.containerCaller.Call(
 			dcg.Container,
 			scope,
-			id,
 			scg.Container,
-			opHandle,
-			rootOpID,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
 			dcg.Op,
 			scope,
-			id,
-			opHandle,
-			rootOpID,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
