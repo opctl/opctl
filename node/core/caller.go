@@ -4,6 +4,7 @@ package core
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call"
@@ -73,6 +74,7 @@ func (this _caller) Call(
 					CallID:     id,
 					RootCallID: rootOpID,
 				},
+				Timestamp: time.Now().UTC(),
 			},
 		)
 		return nil
@@ -83,18 +85,12 @@ func (this _caller) Call(
 		return this.containerCaller.Call(
 			dcg.Container,
 			scope,
-			id,
 			scg.Container,
-			opHandle,
-			rootOpID,
 		)
 	case nil != scg.Op:
 		return this.opCaller.Call(
 			dcg.Op,
 			scope,
-			id,
-			opHandle,
-			rootOpID,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:

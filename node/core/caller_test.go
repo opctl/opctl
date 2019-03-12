@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -82,6 +83,7 @@ var _ = Context("caller", func() {
 				actualID,
 				actualOpHandle,
 				actualRootOpID := fakeCallInterpreter.InterpretArgsForCall(0)
+
 			Expect(actualScope).To(Equal(providedArgs))
 			Expect(actualSCG).To(Equal(providedSCG))
 			Expect(actualID).To(Equal(providedCallID))
@@ -130,6 +132,11 @@ var _ = Context("caller", func() {
 				/* assert */
 				actualEvent := fakePubSub.PublishArgsForCall(0)
 
+				// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
+				Expect(actualEvent.Timestamp).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
+				// set temporal fields to expected vals since they're already asserted
+				actualEvent.Timestamp = expectedEvent.Timestamp
+
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
 		})
@@ -138,13 +145,10 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeContainerCaller := new(fakeContainerCaller)
 
-				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
 				}
-				providedOpHandle := new(data.FakeHandle)
-				providedRootOpID := "dummyRootOpID"
 
 				expectedDCG := &model.DCG{
 					Container: &model.DCGContainerCall{},
@@ -160,26 +164,21 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
-					providedCallID,
+					"dummyCallID",
 					providedArgs,
 					providedSCG,
-					providedOpHandle,
-					providedRootOpID,
+					new(data.FakeHandle),
+					"dummyRootOpID",
 				)
 
 				/* assert */
 				actualDCGContainerCall,
 					actualArgs,
-					actualCallID,
-					actualSCG,
-					actualOpHandle,
-					actualRootOpID := fakeContainerCaller.CallArgsForCall(0)
+					actualSCG := fakeContainerCaller.CallArgsForCall(0)
+
 				Expect(actualDCGContainerCall).To(Equal(expectedDCG.Container))
-				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualSCG).To(Equal(providedSCG.Container))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
 		Context("Op SCG", func() {
@@ -225,15 +224,10 @@ var _ = Context("caller", func() {
 				/* assert */
 				actualDCGOpCall,
 					actualArgs,
-					actualCallID,
-					actualOpRef,
-					actualRootOpID,
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
+
 				Expect(actualDCGOpCall).To(Equal(expectedDCG.Op))
-				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
-				Expect(actualOpRef).To(Equal(providedOpHandle))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
 		})
@@ -280,6 +274,7 @@ var _ = Context("caller", func() {
 					actualRootOpID,
 					actualOpHandle,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
+
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -330,6 +325,7 @@ var _ = Context("caller", func() {
 					actualRootOpID,
 					actualOpHandle,
 					actualSCG := fakeSerialCaller.CallArgsForCall(0)
+
 				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))

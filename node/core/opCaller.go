@@ -17,9 +17,6 @@ type opCaller interface {
 	Call(
 		dcgOpCall *model.DCGOpCall,
 		inboundScope map[string]*model.Value,
-		opID string,
-		opHandle model.DataHandle,
-		rootOpID string,
 		scgOpCall *model.SCGOpCall,
 	) error
 }
@@ -50,9 +47,6 @@ type _opCaller struct {
 func (oc _opCaller) Call(
 	dcgOpCall *model.DCGOpCall,
 	inboundScope map[string]*model.Value,
-	opID string,
-	opHandle model.DataHandle,
-	rootOpID string,
 	scgOpCall *model.SCGOpCall,
 ) error {
 	var err error
@@ -67,9 +61,9 @@ func (oc _opCaller) Call(
 				model.Event{
 					Timestamp: time.Now().UTC(),
 					OpEnded: &model.OpEndedEvent{
-						OpID:     opID,
+						OpID:     dcgOpCall.OpID,
 						Outcome:  model.OpOutcomeKilled,
-						RootOpID: rootOpID,
+						RootOpID: dcgOpCall.RootOpID,
 						OpRef:    dcgOpCall.OpHandle.Ref(),
 					},
 				},
@@ -77,7 +71,7 @@ func (oc _opCaller) Call(
 			return
 		}
 
-		oc.dcgNodeRepo.DeleteIfExists(opID)
+		oc.dcgNodeRepo.DeleteIfExists(dcgOpCall.OpID)
 
 		var opOutcome string
 		if nil != err {
@@ -86,9 +80,9 @@ func (oc _opCaller) Call(
 					Timestamp: time.Now().UTC(),
 					OpErred: &model.OpErredEvent{
 						Msg:      err.Error(),
-						OpID:     opID,
+						OpID:     dcgOpCall.OpID,
 						OpRef:    dcgOpCall.OpHandle.Ref(),
-						RootOpID: rootOpID,
+						RootOpID: dcgOpCall.RootOpID,
 					},
 				},
 			)
@@ -101,10 +95,10 @@ func (oc _opCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				OpEnded: &model.OpEndedEvent{
-					OpID:     opID,
+					OpID:     dcgOpCall.OpID,
 					OpRef:    dcgOpCall.OpHandle.Ref(),
 					Outcome:  opOutcome,
-					RootOpID: rootOpID,
+					RootOpID: dcgOpCall.RootOpID,
 					Outputs:  outputs,
 				},
 			},
@@ -114,9 +108,9 @@ func (oc _opCaller) Call(
 
 	oc.dcgNodeRepo.Add(
 		&dcgNodeDescriptor{
-			Id:       opID,
+			Id:       dcgOpCall.OpID,
 			OpRef:    dcgOpCall.OpHandle.Ref(),
-			RootOpID: rootOpID,
+			RootOpID: dcgOpCall.RootOpID,
 			Op:       &dcgOpDescriptor{},
 		},
 	)
@@ -125,9 +119,9 @@ func (oc _opCaller) Call(
 		model.Event{
 			Timestamp: time.Now().UTC(),
 			OpStarted: &model.OpStartedEvent{
-				OpID:     opID,
+				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpHandle.Ref(),
-				RootOpID: rootOpID,
+				RootOpID: dcgOpCall.RootOpID,
 			},
 		},
 	)
@@ -146,10 +140,10 @@ func (oc _opCaller) Call(
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
 		dcgOpCall.OpHandle,
-		rootOpID,
+		dcgOpCall.RootOpID,
 	)
 
-	isKilled = nil == oc.dcgNodeRepo.GetIfExists(rootOpID)
+	isKilled = nil == oc.dcgNodeRepo.GetIfExists(dcgOpCall.RootOpID)
 
 	if nil != err {
 		return err
