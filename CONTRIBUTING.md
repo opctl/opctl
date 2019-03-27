@@ -16,6 +16,11 @@ Contributions are subject to:
   outcome
 - adherence to
   [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments)
+  
+# Dependency management
+
+ [dep](https://golang.github.io/dep/) is used to manage go dependencies
+All go dependencies are vendored. 
 
 # Documentation
 
