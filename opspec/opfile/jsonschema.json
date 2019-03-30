@@ -708,28 +708,6 @@
               },
               "additionalProperties": false
             },
-            "stdErr": {
-              "type": "object",
-              "patternProperties": {
-                "^.+$": {
-                  "description": "Container stderr prefix mapped to a string ref",
-                  "type": "string"
-                }
-              },
-              "deprecated": true,
-              "additionalProperties": false
-            },
-            "stdOut": {
-              "type": "object",
-              "patternProperties": {
-                "^.+$": {
-                  "description": "Container stdout prefix mapped to a string ref",
-                  "type": "string"
-                }
-              },
-              "deprecated": true,
-              "additionalProperties": false
-            },
             "workDir": {
               "description": "Working directory path (overrides any defined by image)",
               "type": "string"
