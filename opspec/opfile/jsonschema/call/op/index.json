@@ -1,0 +1,60 @@
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "$ref": "inputs.json"
+        },
+        "outputs": {
+          "$ref": "outputs.json"
+        },
+        "pullCreds": {
+          "$ref": "../pullCreds.json"
+        },
+        "ref": {
+          "description": "Reference to an op",
+          "type": "string",
+          "format": "uri-reference"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "deprecated": true,
+      "properties": {
+        "inputs": {
+          "$ref": "inputs.json"
+        },
+        "outputs": {
+          "$ref": "outputs.json"
+        },
+        "pkg": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "description": "Reference to an op",
+              "type": "string",
+              "format": "uri-reference"
+            },
+            "pullCreds": {
+              "$ref": "../pullCreds.json"
+            }
+          },
+          "required": [
+            "ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "pkg"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

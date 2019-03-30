@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/eq/booleans
+run:
+  loop:
+    until:
+      - eq: [true,false]
+  serial: []

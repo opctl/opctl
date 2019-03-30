@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://opspec.io/0.1.7/op.yml.schema.json",
-  "title": "op.yml",
+  "title": "Op File",
   "description": "Defines an op",
   "properties": {
     "name": {
@@ -740,8 +740,38 @@
           ],
           "additionalProperties": false
         },
+        "loop": {
+          "properties": {
+            "for": {
+              "properties": {
+                "each": {
+                  "description": "Iterable which will be iterated",
+                  "type": [
+                    "array",
+                    "string"
+                  ]
+                },
+                "value": {
+                  "description": "Variable the value of each iteration will be made available through",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "each"
+              ],
+              "type": "object"
+            },
+            "index": {
+              "type": "string"
+            },
+            "until": {
+              "$ref": "#/properties/run/properties/if/items"
+            }
+          },
+          "type": "object"
+        },
         "if": {
-          "description": "Predicates which must all evaluate to true",
+          "description": "If any predicate evaluates to false, the call will be skipped",
           "type": "array",
           "items": {
             "description": "Condition which evaluates to true or false",
@@ -779,7 +809,6 @@
           }
         },
         "op": {
-          "title": "opCall",
           "oneOf": [
             {
               "type": "object",

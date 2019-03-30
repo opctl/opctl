@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "for": {
+      "$ref": "for.json"
+    },
+    "index": {
+      "type": "string"
+    },
+    "until": {
+      "$ref": "../predicate/index.json"
+    }
+  },
+  "type": "object"
+}

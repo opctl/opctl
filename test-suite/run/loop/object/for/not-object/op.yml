@@ -1,0 +1,5 @@
+name: run/loop/object/for/not-object
+run:
+  loop:
+    for: *
+  serial: []

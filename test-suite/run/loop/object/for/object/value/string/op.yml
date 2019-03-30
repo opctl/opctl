@@ -1,0 +1,7 @@
+name: run/loop/object/for/object/value/string
+run:
+  loop:
+    for:
+      each: []
+      value: value
+  serial: []

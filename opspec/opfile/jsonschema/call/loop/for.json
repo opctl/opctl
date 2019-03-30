@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "each": {
+      "description": "Iterable which will be iterated",
+      "$ref": "../../arrayExpression.json"
+    },
+    "value": {
+      "description": "Variable the value of each iteration will be made available through",
+      "type": "string"
+    }
+  },
+  "required": [
+    "each"
+  ],
+  "type": "object"
+}

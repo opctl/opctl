@@ -1,5 +1,5 @@
-name: run/if/array/ne/mixed
+name: run/if/array/eq/mixed
 run:
   if:
-    - ne: [true, 2, { p1: v1 }, "string"]
+    - eq: [true, 2, { p1: v1 }, "string"]
   serial: []

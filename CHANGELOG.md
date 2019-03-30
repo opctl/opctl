@@ -8,6 +8,7 @@ All notable changes will be documented in this file in accordance with
 ### Added
 
 - [Conditional running](https://github.com/opctl/spec/issues/223)
+- [Looping](https://github.com/opctl/specs/issues/207)
 
 ## \[0.1.6] - 2018-04-05
 
