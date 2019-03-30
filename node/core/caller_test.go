@@ -20,6 +20,9 @@ var _ = Context("caller", func() {
 				newCaller(
 					new(call.FakeInterpreter),
 					new(fakeContainerCaller),
+					"dummyDataDir",
+					new(fakeDCGNodeRepo),
+					new(fakeOpKiller),
 					new(pubsub.Fake),
 				),
 			).To(Not(BeNil()))
@@ -32,11 +35,11 @@ var _ = Context("caller", func() {
 				fakeContainerCaller := new(fakeContainerCaller)
 
 				/* act */
-				objectUnderTest := newCaller(
-					new(call.FakeInterpreter),
-					fakeContainerCaller,
-					new(pubsub.Fake),
-				)
+				objectUnderTest := _caller{
+					callInterpreter: new(call.FakeInterpreter),
+					containerCaller: fakeContainerCaller,
+					pubSub:          new(pubsub.Fake),
+				}
 
 				/* assert */
 				objectUnderTest.Call(
@@ -62,11 +65,11 @@ var _ = Context("caller", func() {
 				nil,
 			)
 
-			objectUnderTest := newCaller(
-				fakeCallInterpreter,
-				new(fakeContainerCaller),
-				new(pubsub.Fake),
-			)
+			objectUnderTest := _caller{
+				callInterpreter: fakeCallInterpreter,
+				containerCaller: new(fakeContainerCaller),
+				pubSub:          new(pubsub.Fake),
+			}
 
 			/* act */
 			objectUnderTest.Call(
@@ -106,7 +109,7 @@ var _ = Context("caller", func() {
 				)
 
 				expectedEvent := model.Event{
-					CallSkipped: &model.CallSkippedEvent{
+					CallEnded: &model.CallEndedEvent{
 						CallID:     providedCallID,
 						RootCallID: providedRootOpID,
 					},
@@ -114,11 +117,11 @@ var _ = Context("caller", func() {
 
 				fakePubSub := new(pubsub.Fake)
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					new(fakeContainerCaller),
-					fakePubSub,
-				)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					containerCaller: new(fakeContainerCaller),
+					pubSub:          fakePubSub,
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -140,6 +143,56 @@ var _ = Context("caller", func() {
 				Expect(actualEvent).To(Equal(expectedEvent))
 			})
 		})
+
+		Context("callInterpreter.Interpret result.If falsy", func() {
+			It("should call looper.Loop w/ expected args", func() {
+				/* arrange */
+				providedCallID := "providedCallID"
+				providedScope := map[string]*model.Value{}
+				providedSCG := &model.SCG{
+					Container: &model.SCGContainerCall{},
+				}
+				providedOpHandle := new(data.FakeHandle)
+				providedRootOpID := "providedRootOpID"
+
+				expectedDCG := &model.DCG{
+					Loop: &model.DCGLoop{},
+				}
+				fakeCallInterpreter := new(call.FakeInterpreter)
+				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
+
+				fakeLooper := new(fakeLooper)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					looper:          fakeLooper,
+					pubSub:          new(pubsub.Fake),
+				}
+
+				/* act */
+				objectUnderTest.Call(
+					providedCallID,
+					providedScope,
+					providedSCG,
+					providedOpHandle,
+					providedRootOpID,
+				)
+
+				/* assert */
+
+				actualID,
+					actualScope,
+					actualSCG,
+					actualOpHandle,
+					actualRootOpID := fakeLooper.LoopArgsForCall(0)
+
+				Expect(actualID).To(Equal(providedCallID))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualSCG).To(Equal(providedSCG))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
+			})
+		})
+
 		Context("Container SCG", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -156,11 +209,11 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					fakeContainerCaller,
-					new(pubsub.Fake),
-				)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					containerCaller: fakeContainerCaller,
+					pubSub:          new(pubsub.Fake),
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -205,12 +258,11 @@ var _ = Context("caller", func() {
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					new(fakeContainerCaller),
-					new(pubsub.Fake),
-				)
-				objectUnderTest.setOpCaller(fakeOpCaller)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					opCaller:        fakeOpCaller,
+					pubSub:          new(pubsub.Fake),
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -252,12 +304,11 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					new(fakeContainerCaller),
-					new(pubsub.Fake),
-				)
-				objectUnderTest.setParallelCaller(fakeParallelCaller)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					parallelCaller:  fakeParallelCaller,
+					pubSub:          new(pubsub.Fake),
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -303,12 +354,12 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					new(fakeContainerCaller),
-					new(pubsub.Fake),
-				)
-				objectUnderTest.setSerialCaller(fakeSerialCaller)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					containerCaller: new(fakeContainerCaller),
+					pubSub:          new(pubsub.Fake),
+					serialCaller:    fakeSerialCaller,
+				}
 
 				/* act */
 				objectUnderTest.Call(
@@ -351,12 +402,12 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
-				objectUnderTest := newCaller(
-					fakeCallInterpreter,
-					new(fakeContainerCaller),
-					new(pubsub.Fake),
-				)
-				objectUnderTest.setSerialCaller(fakeSerialCaller)
+				objectUnderTest := _caller{
+					callInterpreter: fakeCallInterpreter,
+					containerCaller: new(fakeContainerCaller),
+					pubSub:          new(pubsub.Fake),
+					serialCaller:    fakeSerialCaller,
+				}
 
 				/* act */
 				actualError := objectUnderTest.Call(

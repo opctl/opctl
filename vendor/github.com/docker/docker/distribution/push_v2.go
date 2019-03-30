@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -181,26 +180,8 @@ func (p *v2Pusher) pushV2Tag(ctx context.Context, ref reference.NamedTagged, id 
 
 	putOptions := []distribution.ManifestServiceOption{distribution.WithTag(ref.Tag())}
 	if _, err = manSvc.Put(ctx, manifest, putOptions...); err != nil {
-		if runtime.GOOS == "windows" || p.config.TrustKey == nil || p.config.RequireSchema2 {
-			logrus.Warnf("failed to upload schema2 manifest: %v", err)
-			return err
-		}
-
-		logrus.Warnf("failed to upload schema2 manifest: %v - falling back to schema1", err)
-
-		manifestRef, err := reference.WithTag(p.repo.Named(), ref.Tag())
-		if err != nil {
-			return err
-		}
-		builder = schema1.NewConfigManifestBuilder(p.repo.Blobs(ctx), p.config.TrustKey, manifestRef, imgConfig)
-		manifest, err = manifestFromBuilder(ctx, builder, descriptors)
-		if err != nil {
-			return err
-		}
-
-		if _, err = manSvc.Put(ctx, manifest, putOptions...); err != nil {
-			return err
-		}
+		logrus.Warnf("failed to upload schema2 manifest: %v", err)
+		return err
 	}
 
 	var canonicalManifest []byte
@@ -668,7 +649,6 @@ func (bla byLikeness) Swap(i, j int) {
 }
 func (bla byLikeness) Len() int { return len(bla.arr) }
 
-// nolint: interfacer
 func sortV2MetadataByLikenessAndAge(repoInfo reference.Named, hmacKey []byte, marr []metadata.V2Metadata) {
 	// reverse the metadata array to shift the newest entries to the beginning
 	for i := 0; i < len(marr)/2; i++ {

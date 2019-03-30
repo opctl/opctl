@@ -4,14 +4,10 @@ package model
 type SCG struct {
 	Container *SCGContainerCall `yaml:"container,omitempty"`
 	If        []*SCGPredicate   `yaml:"if,omitempty"`
+	Loop      *SCGLoop          `yaml:"loop,omitempty"`
 	Op        *SCGOpCall        `yaml:"op,omitempty"`
 	Parallel  []*SCG            `yaml:"parallel,omitempty"`
 	Serial    []*SCG            `yaml:"serial,omitempty"`
-}
-
-type SCGPredicate struct {
-	Eq []interface{} `yaml:"eq,omitempty"`
-	Ne []interface{} `yaml:"ne,omitempty"`
 }
 
 type SCGContainerCall struct {
@@ -31,7 +27,7 @@ type SCGContainerCall struct {
 	StdErr  map[string]string      `yaml:"stdErr,omitempty"`
 	StdOut  map[string]string      `yaml:"stdOut,omitempty"`
 	WorkDir string                 `yaml:"workDir,omitempty"`
-	Name    string                 `yaml:"name,omitempty"`
+	Name    *string                `yaml:"name,omitempty"`
 	Ports   map[string]string      `yaml:"ports,omitempty"`
 }
 
@@ -39,6 +35,18 @@ type SCGContainerCallImage struct {
 	// will be interpolated
 	Ref       string        `yaml:"ref"`
 	PullCreds *SCGPullCreds `yaml:"pullCreds,omitempty"`
+}
+
+type SCGLoop struct {
+	For   *SCGLoopFor     `yaml:"for,omitempty"`
+	Index *string         `json:"index,omitempty"`
+	Until []*SCGPredicate `yaml:"until,omitempty"`
+}
+
+type SCGLoopFor struct {
+	// will be interpolated
+	Each  interface{} `yaml:"each"`
+	Value *string     `yaml:"value,omitempty"`
 }
 
 type SCGOpCall struct {
@@ -50,13 +58,6 @@ type SCGOpCall struct {
 	Inputs map[string]interface{} `yaml:"inputs,omitempty"`
 	// binds scope to outputs of referenced op
 	Outputs map[string]string `yaml:"outputs,omitempty"`
-}
-
-type SCGPullCreds struct {
-	// will be interpolated
-	Username string `yaml:"username"`
-	// will be interpolated
-	Password string `yaml:"password"`
 }
 
 // UnmarshalYAML implements the yaml.Unmarshaler interface to handle deprecated properties gracefully in one place
@@ -98,4 +99,16 @@ func (soc *SCGOpCall) UnmarshalYAML(
 	soc.Outputs = deprecated.Outputs
 
 	return nil
+}
+
+type SCGPredicate struct {
+	Eq []interface{} `yaml:"eq,omitempty"`
+	Ne []interface{} `yaml:"ne,omitempty"`
+}
+
+type SCGPullCreds struct {
+	// will be interpolated
+	Username string `yaml:"username"`
+	// will be interpolated
+	Password string `yaml:"password"`
 }

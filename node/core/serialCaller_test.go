@@ -19,7 +19,6 @@ var _ = Context("serialCaller", func() {
 			Expect(newSerialCaller(
 				new(fakeCaller),
 				new(pubsub.Fake),
-				new(uniquestring.Fake),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -67,7 +66,11 @@ var _ = Context("serialCaller", func() {
 				return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 			}
 
-			objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
+			objectUnderTest := _serialCaller{
+				caller:              fakeCaller,
+				pubSub:              fakePubSub,
+				uniqueStringFactory: fakeUniqueStringFactory,
+			}
 
 			/* act */
 			objectUnderTest.Call(
@@ -110,7 +113,11 @@ var _ = Context("serialCaller", func() {
 				fakeCaller := new(fakeCaller)
 				fakeCaller.CallReturns(callErr)
 
-				objectUnderTest := newSerialCaller(fakeCaller, new(pubsub.Fake), new(uniquestring.Fake))
+				objectUnderTest := _serialCaller{
+					caller:              fakeCaller,
+					pubSub:              new(pubsub.Fake),
+					uniqueStringFactory: new(uniquestring.Fake),
+				}
 
 				/* act */
 				actualErr := objectUnderTest.Call(
@@ -170,7 +177,11 @@ var _ = Context("serialCaller", func() {
 						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
-					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
+					objectUnderTest := _serialCaller{
+						caller:              fakeCaller,
+						pubSub:              fakePubSub,
+						uniqueStringFactory: fakeUniqueStringFactory,
+					}
 
 					/* act */
 					objectUnderTest.Call(
@@ -251,7 +262,11 @@ var _ = Context("serialCaller", func() {
 						return fmt.Sprintf("%v", uniqueStringCallIndex), nil
 					}
 
-					objectUnderTest := newSerialCaller(fakeCaller, fakePubSub, fakeUniqueStringFactory)
+					objectUnderTest := _serialCaller{
+						caller:              fakeCaller,
+						pubSub:              fakePubSub,
+						uniqueStringFactory: fakeUniqueStringFactory,
+					}
 
 					/* act */
 					objectUnderTest.Call(

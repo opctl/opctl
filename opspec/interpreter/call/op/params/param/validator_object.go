@@ -14,11 +14,6 @@ func (vdt _validator) validateObject(
 	value *model.Value,
 	constraints map[string]interface{},
 ) []error {
-	// handle no value passed
-	if nil == value || nil == value.Boolean {
-		return []error{errors.New("object required")}
-	}
-
 	valueAsObject, err := vdt.coerce.ToObject(value)
 	if nil != err {
 		return []error{err}

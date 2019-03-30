@@ -159,7 +159,7 @@ func (container *Container) UpdateContainer(hostConfig *containertypes.HostConfi
 		resources.MemorySwap != 0 ||
 		resources.MemorySwappiness != nil ||
 		resources.OomKillDisable != nil ||
-		resources.PidsLimit != 0 ||
+		(resources.PidsLimit != nil && *resources.PidsLimit != 0) ||
 		len(resources.Ulimits) != 0 ||
 		resources.CPUCount != 0 ||
 		resources.CPUPercent != 0 ||
@@ -180,11 +180,6 @@ func (container *Container) UpdateContainer(hostConfig *containertypes.HostConfi
 // BuildHostnameFile writes the container's hostname file.
 func (container *Container) BuildHostnameFile() error {
 	return nil
-}
-
-// EnableServiceDiscoveryOnDefaultNetwork Enable service discovery on default network
-func (container *Container) EnableServiceDiscoveryOnDefaultNetwork() bool {
-	return true
 }
 
 // GetMountPoints gives a platform specific transformation to types.MountPoint. Callers must hold a Container lock.

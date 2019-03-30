@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "op/interpreter/interpolater/dereferencer/identifier/value")
+	RunSpecs(t, "opspec/interpreter/interpolater/dereferencer/identifier/value")
 }

@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "op/interpreter/call/container/sockets")
+	RunSpecs(t, "opspec/interpreter/call/container/sockets")
 }

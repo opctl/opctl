@@ -118,6 +118,19 @@ func getMemoryResources(config containertypes.Resources) *specs.LinuxMemory {
 	return &memory
 }
 
+func getPidsLimit(config containertypes.Resources) *specs.LinuxPids {
+	if config.PidsLimit == nil {
+		return nil
+	}
+	if *config.PidsLimit <= 0 {
+		// docker API allows 0 and negative values to unset this to be consistent
+		// with default values. When updating values, runc requires -1 to unset
+		// the previous limit.
+		return &specs.LinuxPids{Limit: -1}
+	}
+	return &specs.LinuxPids{Limit: *config.PidsLimit}
+}
+
 func getCPUResources(config containertypes.Resources) (*specs.LinuxCPU, error) {
 	cpu := specs.LinuxCPU{}
 
@@ -453,9 +466,11 @@ func verifyPlatformContainerResources(resources *containertypes.Resources, sysIn
 	if resources.OomKillDisable != nil && *resources.OomKillDisable && resources.Memory == 0 {
 		warnings = append(warnings, "OOM killer is disabled for the container, but no memory limit is set, this can result in the system running out of resources.")
 	}
-	if resources.PidsLimit != 0 && !sysInfo.PidsLimit {
-		warnings = append(warnings, "Your kernel does not support pids limit capabilities or the cgroup is not mounted. PIDs limit discarded.")
-		resources.PidsLimit = 0
+	if resources.PidsLimit != nil && !sysInfo.PidsLimit {
+		if *resources.PidsLimit > 0 {
+			warnings = append(warnings, "Your kernel does not support PIDs limit capabilities or the cgroup is not mounted. PIDs limit discarded.")
+		}
+		resources.PidsLimit = nil
 	}
 
 	// cpu subsystem checks and adjustments

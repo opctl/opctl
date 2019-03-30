@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "op/interpreter/boolean")
+	RunSpecs(t, "opspec/interpreter/boolean")
 }

@@ -128,17 +128,35 @@ func WithIPv6(network, ip string) func(*TestContainerConfig) {
 // WithLogDriver sets the log driver to use for the container
 func WithLogDriver(driver string) func(*TestContainerConfig) {
 	return func(c *TestContainerConfig) {
-		if c.HostConfig == nil {
-			c.HostConfig = &containertypes.HostConfig{}
-		}
 		c.HostConfig.LogConfig.Type = driver
 	}
 }
 
 // WithAutoRemove sets the container to be removed on exit
 func WithAutoRemove(c *TestContainerConfig) {
-	if c.HostConfig == nil {
-		c.HostConfig = &containertypes.HostConfig{}
-	}
 	c.HostConfig.AutoRemove = true
+}
+
+// WithPidsLimit sets the container's "pids-limit
+func WithPidsLimit(limit *int64) func(*TestContainerConfig) {
+	return func(c *TestContainerConfig) {
+		if c.HostConfig == nil {
+			c.HostConfig = &containertypes.HostConfig{}
+		}
+		c.HostConfig.PidsLimit = limit
+	}
+}
+
+// WithRestartPolicy sets container's restart policy
+func WithRestartPolicy(policy string) func(c *TestContainerConfig) {
+	return func(c *TestContainerConfig) {
+		c.HostConfig.RestartPolicy.Name = policy
+	}
+}
+
+// WithUser sets the user
+func WithUser(user string) func(c *TestContainerConfig) {
+	return func(c *TestContainerConfig) {
+		c.Config.User = user
+	}
 }
