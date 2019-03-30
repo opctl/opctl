@@ -765,13 +765,17 @@
               "type": "string"
             },
             "until": {
-              "$ref": "#/properties/run/properties/if/items"
+              "description": "If any predicate evaluates to false, the loop will exit. Predicates are evaluated before every iteration.",
+              "type": "array",
+              "items": {
+                "$ref": "#/properties/run/properties/if/items"
+              }
             }
           },
           "type": "object"
         },
         "if": {
-          "description": "If any predicate evaluates to false, the call will be skipped",
+          "description": "If any predicate evaluates to false, the call (or \"loop\" iteration) will be skipped.",
           "type": "array",
           "items": {
             "description": "Condition which evaluates to true or false",

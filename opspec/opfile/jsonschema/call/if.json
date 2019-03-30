@@ -1,5 +1,5 @@
 {
-  "description": "If any predicate evaluates to false, the call will be skipped",
+  "description": "If any predicate evaluates to false, the call (or \"loop\" iteration) will be skipped.",
   "type": "array",
   "items": {
     "$ref": "predicate/index.json"

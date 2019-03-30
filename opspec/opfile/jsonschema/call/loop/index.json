@@ -7,7 +7,7 @@
       "type": "string"
     },
     "until": {
-      "$ref": "../predicate/index.json"
+      "$ref": "until.json"
     }
   },
   "type": "object"
