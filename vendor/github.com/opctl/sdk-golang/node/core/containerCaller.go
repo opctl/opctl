@@ -80,15 +80,8 @@ func (cc _containerCaller) Call(
 		},
 	)
 
-	// we need 2 stdOut readers
-	stdOutReader, stdOutWriter := cc.io.Pipe()
 	logStdOutPR, logStdOutPW := cc.io.Pipe()
-	outputsStdOutTR := io.TeeReader(stdOutReader, logStdOutPW)
-
-	// we need 2 stdErr readers
-	stdErrReader, stdErrWriter := cc.io.Pipe()
 	logStdErrPR, logStdErrPW := cc.io.Pipe()
-	outputsStdErrTR := io.TeeReader(stdErrReader, logStdErrPW)
 
 	// interpret logs
 	logChan := make(chan error, 1)
@@ -100,38 +93,17 @@ func (cc _containerCaller) Call(
 		)
 	}()
 
-	// interpret outputs
-	outputsChan := make(
-		chan struct {
-			outputs map[string]*model.Value
-			err     error
-		}, 1)
-	go func() {
-		// close pipes
-		defer logStdOutPW.Close()
-		defer logStdErrPW.Close()
-
-		outputs, err := cc.interpretOutputs(
-			outputsStdOutTR,
-			outputsStdErrTR,
-			scgContainerCall,
-			dcgContainerCall,
-		)
-		outputsChan <- struct {
-			outputs map[string]*model.Value
-			err     error
-		}{
-			outputs: outputs,
-			err:     err,
-		}
-	}()
+	outputs := cc.interpretOutputs(
+		scgContainerCall,
+		dcgContainerCall,
+	)
 
 	rawExitCode, err := cc.containerRuntime.RunContainer(
 		context.TODO(),
 		dcgContainerCall,
 		cc.pubSub,
-		stdOutWriter,
-		stdErrWriter,
+		logStdOutPW,
+		logStdErrPW,
 	)
 	// @TODO: handle no exit code
 	var exitCode int64
@@ -149,13 +121,6 @@ func (cc _containerCaller) Call(
 		err = logChanErr
 	}
 
-	// wait on outputsChan
-	interpretOutputsResult := <-outputsChan
-	if nil == err {
-		// non-destructively set err
-		err = interpretOutputsResult.err
-	}
-
 	cc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),
@@ -164,7 +129,7 @@ func (cc _containerCaller) Call(
 				OpRef:       dcgContainerCall.OpHandle.Ref(),
 				RootOpID:    dcgContainerCall.RootOpID,
 				ExitCode:    exitCode,
-				Outputs:     interpretOutputsResult.outputs,
+				Outputs:     outputs,
 			},
 		},
 	)
@@ -234,11 +199,9 @@ func (this _containerCaller) interpretLogs(
 }
 
 func (this _containerCaller) interpretOutputs(
-	stdOutReader io.Reader,
-	stdErrReader io.Reader,
 	scgContainerCall *model.SCGContainerCall,
 	dcgContainerCall *model.DCGContainerCall,
-) (map[string]*model.Value, error) {
+) map[string]*model.Value {
 	outputs := map[string]*model.Value{}
 
 	for socketAddr, name := range scgContainerCall.Sockets {
@@ -270,61 +233,5 @@ func (this _containerCaller) interpretOutputs(
 		}
 	}
 
-	stdErrOutputsChan := make(chan struct {
-		outputs map[string]*model.Value
-		err     error
-	}, 1)
-	go func() {
-		// add stdErr stdErrOutputs
-		stdErrOutputs := map[string]*model.Value{}
-		err := bindLines(
-			stdErrReader,
-			scgContainerCall.StdErr,
-			func(name string, value *string) {
-				stdErrOutputs[name] = &model.Value{String: value}
-			})
-		stdErrOutputsChan <- struct {
-			outputs map[string]*model.Value
-			err     error
-		}{outputs: stdErrOutputs, err: err}
-	}()
-
-	stdOutOutputsChan := make(chan struct {
-		outputs map[string]*model.Value
-		err     error
-	}, 1)
-	go func() {
-		// add stdOut stdOutOutputs
-		stdOutOutputs := map[string]*model.Value{}
-		err := bindLines(
-			stdOutReader,
-			scgContainerCall.StdOut,
-			func(name string, value *string) {
-				stdOutOutputs[name] = &model.Value{String: value}
-			})
-		stdOutOutputsChan <- struct {
-			outputs map[string]*model.Value
-			err     error
-		}{outputs: stdOutOutputs, err: err}
-	}()
-
-	// wait for stdErr result
-	chanResult := <-stdErrOutputsChan
-	if nil != chanResult.err {
-		return nil, chanResult.err
-	}
-	for name, value := range chanResult.outputs {
-		outputs[name] = value
-	}
-
-	// wait for stdOut result
-	chanResult = <-stdOutOutputsChan
-	if nil != chanResult.err {
-		return nil, chanResult.err
-	}
-	for name, value := range chanResult.outputs {
-		outputs[name] = value
-	}
-
-	return outputs, nil
+	return outputs
 }

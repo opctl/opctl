@@ -4,10 +4,11 @@ package core
 
 import (
 	"context"
+	"time"
+
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
-	"time"
 )
 
 type serialCaller interface {
@@ -24,13 +25,12 @@ type serialCaller interface {
 func newSerialCaller(
 	caller caller,
 	pubSub pubsub.PubSub,
-	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) serialCaller {
 
 	return _serialCaller{
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniqueStringFactory,
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 
 }
@@ -105,8 +105,6 @@ func (this _serialCaller) Call(
 		for event := range eventChannel {
 			// merge child outputs w/ outputs, child outputs having precedence
 			switch {
-			case nil != event.CallSkipped && event.CallSkipped.CallID == childCallID:
-				break eventLoop
 			case nil != event.OpEnded && event.OpEnded.OpID == childCallID:
 				for name, value := range event.OpEnded.Outputs {
 					outputs[name] = value
@@ -123,6 +121,8 @@ func (this _serialCaller) Call(
 				}
 				break eventLoop
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == childCallID:
+				break eventLoop
+			case nil != event.CallEnded && event.CallEnded.CallID == childCallID:
 				break eventLoop
 			}
 		}

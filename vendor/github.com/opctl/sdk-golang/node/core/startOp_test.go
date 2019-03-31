@@ -9,8 +9,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
 	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
@@ -183,7 +181,7 @@ var _ = Context("core", func() {
 				})
 			})
 			Context("data.Get doesn't err", func() {
-				It("should call opCaller.Call w/ expected args", func() {
+				It("should call caller.Call w/ expected args", func() {
 					/* arrange */
 					providedArg1String := "dummyArg1Value"
 					providedArg2Dir := "dummyArg2Value"
@@ -202,8 +200,8 @@ var _ = Context("core", func() {
 					}
 
 					fakeData := new(data.Fake)
-					fakeDataHandle := new(data.FakeHandle)
-					fakeData.ResolveReturns(fakeDataHandle, nil)
+					expectedOpHandle := new(data.FakeHandle)
+					fakeData.ResolveReturns(expectedOpHandle, nil)
 
 					opDotYml := &model.OpDotYml{
 						Outputs: map[string]*model.Param{
@@ -215,12 +213,8 @@ var _ = Context("core", func() {
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					fakeDotYmlGetter.GetReturns(opDotYml, nil)
 
-					expectedDCGOpCall := &model.DCGOpCall{}
-					fakeOpInterpreter := new(op.FakeInterpreter)
-					fakeOpInterpreter.InterpretReturns(expectedDCGOpCall, nil)
-
 					expectedSCGOpCall := &model.SCGOpCall{
-						Ref:     fakeDataHandle.Ref(),
+						Ref:     expectedOpHandle.Ref(),
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
 					}
@@ -231,21 +225,18 @@ var _ = Context("core", func() {
 						expectedSCGOpCall.Outputs[name] = ""
 					}
 
-					expectedOpID := "dummyOpID"
-
-					fakeOpCaller := new(fakeOpCaller)
-
+					expectedID := "expectedID"
+					expectedRootOpID := expectedID
 					fakeUniqueStringFactory := new(uniquestring.Fake)
-					fakeUniqueStringFactory.ConstructReturns(expectedOpID, nil)
+					fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
+
+					fakeCaller := new(fakeCaller)
 
 					objectUnderTest := _core{
-						containerRuntime:    new(containerruntime.Fake),
+						caller:              fakeCaller,
 						pubSub:              new(pubsub.Fake),
 						data:                fakeData,
 						dotYmlGetter:        fakeDotYmlGetter,
-						opCaller:            fakeOpCaller,
-						opInterpreter:       fakeOpInterpreter,
-						dcgNodeRepo:         new(fakeDCGNodeRepo),
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 
@@ -258,13 +249,17 @@ var _ = Context("core", func() {
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
-					actualDCGOpCall,
-						actualInboundScope,
-						actualSCGOpCall := fakeOpCaller.CallArgsForCall(0)
+					actualID,
+						actualScope,
+						actualSCG,
+						actualOpHandle,
+						actualRootOpID := fakeCaller.CallArgsForCall(0)
 
-					Expect(actualDCGOpCall).To(Equal(expectedDCGOpCall))
-					Expect(actualInboundScope).To(Equal(providedReq.Args))
-					Expect(actualSCGOpCall).To(Equal(expectedSCGOpCall))
+					Expect(actualID).To(Equal(expectedID))
+					Expect(actualScope).To(Equal(providedReq.Args))
+					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))
+					Expect(actualOpHandle).To(Equal(expectedOpHandle))
+					Expect(actualRootOpID).To(Equal(expectedRootOpID))
 				})
 			})
 		})

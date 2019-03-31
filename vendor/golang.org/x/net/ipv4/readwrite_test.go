@@ -14,11 +14,16 @@ import (
 	"testing"
 
 	"golang.org/x/net/internal/iana"
-	"golang.org/x/net/internal/nettest"
 	"golang.org/x/net/ipv4"
+	"golang.org/x/net/nettest"
 )
 
 func BenchmarkReadWriteUnicast(b *testing.B) {
+	switch runtime.GOOS {
+	case "aix", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
+		b.Skipf("not supported on %s", runtime.GOOS)
+	}
+
 	c, err := nettest.NewLocalPacketListener("udp4")
 	if err != nil {
 		b.Skipf("not supported on %s/%s: %v", runtime.GOOS, runtime.GOARCH, err)
@@ -45,7 +50,7 @@ func BenchmarkReadWriteUnicast(b *testing.B) {
 			b.Fatal(err)
 		}
 		cm := ipv4.ControlMessage{TTL: 1}
-		ifi := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
+		ifi, _ := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
 		if ifi != nil {
 			cm.IfIndex = ifi.Index
 		}
@@ -63,7 +68,7 @@ func BenchmarkReadWriteUnicast(b *testing.B) {
 
 func BenchmarkPacketConnReadWriteUnicast(b *testing.B) {
 	switch runtime.GOOS {
-	case "js", "nacl", "plan9", "windows":
+	case "aix", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
 		b.Skipf("not supported on %s", runtime.GOOS)
 	}
 
@@ -86,7 +91,8 @@ func BenchmarkPacketConnReadWriteUnicast(b *testing.B) {
 	cm := ipv4.ControlMessage{
 		Src: net.IPv4(127, 0, 0, 1),
 	}
-	if ifi := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback); ifi != nil {
+	ifi, _ := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
+	if ifi != nil {
 		cm.IfIndex = ifi.Index
 	}
 
@@ -213,7 +219,7 @@ func BenchmarkPacketConnReadWriteUnicast(b *testing.B) {
 
 func TestPacketConnConcurrentReadWriteUnicastUDP(t *testing.T) {
 	switch runtime.GOOS {
-	case "js", "nacl", "plan9", "windows":
+	case "aix", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
 		t.Skipf("not supported on %s", runtime.GOOS)
 	}
 
@@ -226,12 +232,12 @@ func TestPacketConnConcurrentReadWriteUnicastUDP(t *testing.T) {
 	defer p.Close()
 
 	dst := c.LocalAddr()
-	ifi := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
+	ifi, _ := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
 	cf := ipv4.FlagTTL | ipv4.FlagSrc | ipv4.FlagDst | ipv4.FlagInterface
 	wb := []byte("HELLO-R-U-THERE")
 
 	if err := p.SetControlMessage(cf, true); err != nil { // probe before test
-		if nettest.ProtocolNotSupported(err) {
+		if protocolNotSupported(err) {
 			t.Skipf("not supported on %s", runtime.GOOS)
 		}
 		t.Fatal(err)
@@ -293,7 +299,7 @@ func TestPacketConnConcurrentReadWriteUnicastUDP(t *testing.T) {
 
 func TestPacketConnConcurrentReadWriteUnicast(t *testing.T) {
 	switch runtime.GOOS {
-	case "js", "nacl", "plan9", "windows":
+	case "aix", "fuchsia", "hurd", "js", "nacl", "plan9", "windows":
 		t.Skipf("not supported on %s", runtime.GOOS)
 	}
 
@@ -351,11 +357,13 @@ func TestPacketConnConcurrentReadWriteUnicast(t *testing.T) {
 }
 
 func testPacketConnConcurrentReadWriteUnicast(t *testing.T, p *ipv4.PacketConn, data []byte, dst net.Addr, batch bool) {
-	ifi := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
+	t.Helper()
+
+	ifi, _ := nettest.RoutedInterface("ip4", net.FlagUp|net.FlagLoopback)
 	cf := ipv4.FlagTTL | ipv4.FlagSrc | ipv4.FlagDst | ipv4.FlagInterface
 
 	if err := p.SetControlMessage(cf, true); err != nil { // probe before test
-		if nettest.ProtocolNotSupported(err) {
+		if protocolNotSupported(err) {
 			t.Skipf("not supported on %s", runtime.GOOS)
 		}
 		t.Fatal(err)

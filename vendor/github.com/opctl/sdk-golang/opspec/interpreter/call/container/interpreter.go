@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/envvars"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/files"
@@ -31,6 +32,7 @@ func NewInterpreter(
 	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
+		cmdInterpreter:     cmd.NewInterpreter(),
 		dirsInterpreter:    dirs.NewInterpreter(dataDirPath),
 		envVarsInterpreter: envvars.NewInterpreter(),
 		filesInterpreter:   files.NewInterpreter(dataDirPath),
@@ -43,6 +45,7 @@ func NewInterpreter(
 }
 
 type _interpreter struct {
+	cmdInterpreter     cmd.Interpreter
 	dirsInterpreter    dirs.Interpreter
 	envVarsInterpreter envvars.Interpreter
 	filesInterpreter   files.Interpreter
@@ -72,7 +75,6 @@ func (itp _interpreter) Interpret(
 		Sockets:     map[string]string{},
 		WorkDir:     scgContainerCall.WorkDir,
 		ContainerID: containerID,
-		Name:        scgContainerCall.Name,
 		Ports:       scgContainerCall.Ports,
 	}
 
@@ -89,18 +91,14 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	// construct cmd
-	for _, cmdEntryExpression := range scgContainerCall.Cmd {
-		// interpret each entry as string
-		cmdEntry, err := itp.stringInterpreter.Interpret(scope, cmdEntryExpression, opHandle)
-		if nil != err {
-			return nil, err
-		}
-		dcgContainerCall.Cmd = append(dcgContainerCall.Cmd, *cmdEntry.String)
+	// interpret cmd
+	var err error
+	dcgContainerCall.Cmd, err = itp.cmdInterpreter.Interpret(scope, scgContainerCall.Cmd, opHandle)
+	if nil != err {
+		return nil, err
 	}
 
 	// interpret dirs
-	var err error
 	dcgContainerCall.Dirs, err = itp.dirsInterpreter.Interpret(opHandle, scope, scgContainerCall.Dirs, scratchDirPath)
 	if nil != err {
 		return nil, err
@@ -122,6 +120,15 @@ func (itp _interpreter) Interpret(
 	dcgContainerCall.Image, err = itp.imageInterpreter.Interpret(scope, scgContainerCall.Image, opHandle)
 	if nil != err {
 		return nil, err
+	}
+
+	// interpret name as string
+	if nil != scgContainerCall.Name {
+		dcgContainerCallName, err := itp.stringInterpreter.Interpret(scope, *scgContainerCall.Name, opHandle)
+		if nil != err {
+			return nil, err
+		}
+		dcgContainerCall.Name = dcgContainerCallName.String
 	}
 
 	// interpret sockets

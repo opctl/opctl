@@ -20,7 +20,7 @@ $theme-colors: (
   dark: $gray-800
 );
 
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "~bootstrap/scss/bootstrap.scss";
 
 /* custom overrides */
 label.form-control-label {

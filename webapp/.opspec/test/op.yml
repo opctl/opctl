@@ -1,0 +1,20 @@
+description: runs all webapp tests
+name: test
+inputs:
+  srcDir:
+    dir:
+      default: .
+run:
+  serial:
+    - op:
+        inputs:
+          srcDir:
+        outputs:
+          srcDir:
+        ref: ensureDeps
+    - container:
+        cmd: [ yarn, test ]
+        image: { ref: 'node:11.2.0-alpine' }
+        dirs:
+          /src: $(srcDir)
+        workDir: /src

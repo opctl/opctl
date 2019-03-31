@@ -3,6 +3,10 @@ package docker
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
+	"sync"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
@@ -10,9 +14,6 @@ import (
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/pkg/errors"
-	"io"
-	"strings"
-	"sync"
 )
 
 type runContainer interface {
@@ -86,12 +87,13 @@ func (cr _runContainer) RunContainer(
 	// construct networking config
 	networkingConfig := &network.NetworkingConfig{
 		EndpointsConfig: map[string]*network.EndpointSettings{
-			dockerNetworkName: {
-				Aliases: []string{
-					req.Name,
-				},
-			},
+			dockerNetworkName: {},
 		},
+	}
+	if nil != req.Name {
+		networkingConfig.EndpointsConfig[dockerNetworkName].Aliases = []string{
+			*req.Name,
+		}
 	}
 
 	// always pull latest version of image

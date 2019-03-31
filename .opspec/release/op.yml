@@ -42,17 +42,16 @@ run:
         pkg: { ref: build }
         inputs: { srcDir, gitBranch }
         outputs: { opctlForLinux, srcDir }
-
-    # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
-    # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
-    # requiring the current build artifact such as system testing or publishing to docker. 
-    - op:
-        pkg: { ref: release/to-equinox }
-        inputs: { equinoxSigningKey, equinoxToken, srcDir, version }
-
-    - op:
-        pkg: { ref: release/to-docker }
-        inputs:
-          dockerPassword:
-          dockerUsername:
-          opctlForLinux:
+    - parallel:
+        - op:
+            pkg: { ref: release/to-docker }
+            inputs:
+              dockerPassword:
+              dockerUsername:
+              opctlForLinux:
+        # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
+        # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
+        # requiring the current build artifact such as system testing or publishing to docker.
+        - op:
+            pkg: { ref: release/to-equinox }
+            inputs: { equinoxSigningKey, equinoxToken, srcDir, version }

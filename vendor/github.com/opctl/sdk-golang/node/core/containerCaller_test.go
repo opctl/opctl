@@ -250,6 +250,7 @@ var _ = Context("containerCaller", func() {
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
 				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+				Outputs:     map[string]*model.Value{},
 				RootOpID:    providedDCGContainerCall.RootOpID,
 			},
 		}
@@ -300,6 +301,7 @@ var _ = Context("containerCaller", func() {
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
 				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
+				Outputs:     map[string]*model.Value{},
 				RootOpID:    providedDCGContainerCall.RootOpID,
 			},
 		}

@@ -4,7 +4,7 @@ import "time"
 
 // Event represents a distributed state change
 type Event struct {
-	CallSkipped              *CallSkippedEvent              `json:"callSkipped,omitempty"`
+	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
@@ -23,8 +23,8 @@ const (
 	OpOutcomeKilled    = "KILLED"
 )
 
-// CallSkippedEvent represents a call was skipped due to if condition evaluating to false
-type CallSkippedEvent struct {
+// CallEndedEvent represents a call ended; no further events will occur for the call
+type CallEndedEvent struct {
 	CallID     string `json:"callId`
 	RootCallID string `json:"rootCallId"`
 }
