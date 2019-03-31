@@ -41,7 +41,7 @@
             },
             {
               "description": "Expression coercible to string value",
-              "$ref": "../expression.json"
+              "$ref": "../stringExpression.json"
             }
           ]
         }
@@ -60,7 +60,7 @@
             },
             {
               "description": "Expression coercible to file value &/or scope ref to set upon exit",
-              "$ref": "../expression.json"
+              "$ref": "../stringExpression.json"
             }
           ]
         }
@@ -85,7 +85,7 @@
     },
     "name": {
       "description": "Name the container can be referenced by from other containers",
-      "type": "string"
+      "$ref": "../stringExpression.json"
     },
     "ports": {
       "description": "Ports bound from the container to the host",
@@ -93,7 +93,11 @@
       "patternProperties": {
         "[0-9]+(-[0-9]+)?(tcp|udp)?": {
           "description": "Host port(s) to bind to",
-          "type": "string",
+          "type": [
+            "null",
+            "string",
+            "number"
+          ],
           "pattern": "[0-9]+(-[0-9]+)?"
         }
       },

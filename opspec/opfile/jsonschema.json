@@ -640,7 +640,7 @@
                     },
                     {
                       "description": "Expression coercible to string value",
-                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                      "$ref": "#/properties/run/properties/container/properties/name"
                     }
                   ]
                 }
@@ -659,7 +659,7 @@
                     },
                     {
                       "description": "Expression coercible to file value &/or scope ref to set upon exit",
-                      "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
+                      "$ref": "#/properties/run/properties/container/properties/name"
                     }
                   ]
                 }
@@ -684,7 +684,13 @@
             },
             "name": {
               "description": "Name the container can be referenced by from other containers",
-              "type": "string"
+              "type": [
+                "array",
+                "boolean",
+                "number",
+                "object",
+                "string"
+              ]
             },
             "ports": {
               "description": "Ports bound from the container to the host",
@@ -692,7 +698,11 @@
               "patternProperties": {
                 "[0-9]+(-[0-9]+)?(tcp|udp)?": {
                   "description": "Host port(s) to bind to",
-                  "type": "string",
+                  "type": [
+                    "null",
+                    "string",
+                    "number"
+                  ],
                   "pattern": "[0-9]+(-[0-9]+)?"
                 }
               },
