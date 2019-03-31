@@ -40,7 +40,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				fakeCoerce := new(coerce.Fake)
-				coercedValue := model.Value{Number: new(bool)}
+				coercedValue := model.Value{Boolean: new(bool)}
 				toStringErr := errors.New("dummyError")
 
 				fakeCoerce.ToStringReturns(&coercedValue, toStringErr)

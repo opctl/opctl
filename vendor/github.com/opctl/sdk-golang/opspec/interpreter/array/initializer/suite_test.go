@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "op/interpreter/array/initializer")
+	RunSpecs(t, "opspec/interpreter/array/initializer")
 }

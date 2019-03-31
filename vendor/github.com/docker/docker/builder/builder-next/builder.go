@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -312,19 +313,45 @@ func (b *Builder) Build(ctx context.Context, opt backend.BuildConfig) (*builder.
 	}
 	frontendAttrs["add-hosts"] = extraHosts
 
+	exporterName := ""
 	exporterAttrs := map[string]string{}
 
-	if len(opt.Options.Tags) > 0 {
-		exporterAttrs["name"] = strings.Join(opt.Options.Tags, ",")
+	if len(opt.Options.Outputs) > 1 {
+		return nil, errors.Errorf("multiple outputs not supported")
+	} else if len(opt.Options.Outputs) == 0 {
+		exporterName = "moby"
+	} else {
+		// cacheonly is a special type for triggering skipping all exporters
+		if opt.Options.Outputs[0].Type != "cacheonly" {
+			exporterName = opt.Options.Outputs[0].Type
+			exporterAttrs = opt.Options.Outputs[0].Attrs
+		}
+	}
+
+	if exporterName == "moby" {
+		if len(opt.Options.Tags) > 0 {
+			exporterAttrs["name"] = strings.Join(opt.Options.Tags, ",")
+		}
+	}
+
+	cache := controlapi.CacheOptions{}
+
+	if inlineCache := opt.Options.BuildArgs["BUILDKIT_INLINE_CACHE"]; inlineCache != nil {
+		if b, err := strconv.ParseBool(*inlineCache); err == nil && b {
+			cache.Exports = append(cache.Exports, &controlapi.CacheOptionsEntry{
+				Type: "inline",
+			})
+		}
 	}
 
 	req := &controlapi.SolveRequest{
 		Ref:           id,
-		Exporter:      "moby",
+		Exporter:      exporterName,
 		ExporterAttrs: exporterAttrs,
 		Frontend:      "dockerfile.v0",
 		FrontendAttrs: frontendAttrs,
 		Session:       opt.Options.SessionID,
+		Cache:         cache,
 	}
 
 	if opt.Options.NetworkMode == "host" {
@@ -339,6 +366,9 @@ func (b *Builder) Build(ctx context.Context, opt backend.BuildConfig) (*builder.
 		resp, err := b.controller.Solve(ctx, req)
 		if err != nil {
 			return err
+		}
+		if exporterName != "moby" {
+			return nil
 		}
 		id, ok := resp.ExporterResponse["containerimage.digest"]
 		if !ok {

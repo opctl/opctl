@@ -4,6 +4,7 @@ package model
 type DCG struct {
 	Container *DCGContainerCall `json:"container,omitempty"`
 	If        *bool             `json:"if,omitempty"`
+	Loop      *DCGLoop          `json:"loop,omitempty"`
 	Op        *DCGOpCall        `json:"op,omitempty"`
 	Parallel  []*SCG            `json:"parallel,omitempty"`
 	Serial    []*SCG            `json:"serial,omitempty"`
@@ -28,7 +29,7 @@ type DCGContainerCall struct {
 	// format: containerSocket => hostSocket
 	Sockets map[string]string `json:"sockets"`
 	WorkDir string            `json:"workDir"`
-	Name    string            `json:"name,omitempty"`
+	Name    *string           `json:"name,omitempty"`
 	Ports   map[string]string `json:"ports,omitempty"`
 }
 
@@ -37,9 +38,16 @@ type DCGContainerCallImage struct {
 	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
 }
 
-type DCGPredicate struct {
-	Eq []*Value `json:"eq"`
-	Ne []*Value `json:"ne"`
+type DCGLoop struct {
+	For   *DCGLoopFor `json:"for,omitempty"`
+	Index *string     `json:"index,omitempty"`
+	Until *bool       `json:"until,omitempty"`
+}
+
+type DCGLoopFor struct {
+	// an array or object
+	Each  *Value  `json:"each"`
+	Value *string `json:"value,omitempty"`
 }
 
 type DCGOpCall struct {
@@ -53,4 +61,9 @@ type DCGOpCall struct {
 type DCGOpCallPkg struct {
 	Ref       string     `yaml:"ref"`
 	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
+}
+
+type DCGPredicate struct {
+	Eq []*Value `json:"eq"`
+	Ne []*Value `json:"ne"`
 }

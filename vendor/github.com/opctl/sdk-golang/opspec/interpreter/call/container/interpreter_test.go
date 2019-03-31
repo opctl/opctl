@@ -10,12 +10,12 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/envvars"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/files"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/image"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/sockets"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 )
 
 var _ = Context("Interpreter", func() {
@@ -69,94 +69,109 @@ var _ = Context("Interpreter", func() {
 			Expect(actualError).To(Equal(expectedError))
 		})
 
-		Context("container.Cmd not empty", func() {
-			It("should call stringInterpreter.Interpret w/ expected args for each container.Cmd entry", func() {
+		It("should call cmd w/ expected args", func() {
+			/* arrange */
+			containerFileBind := "dummyContainerFileBind"
+
+			providedScope := map[string]*model.Value{
+				containerFileBind: {String: new(string)},
+			}
+
+			providedSCGContainerCall := &model.SCGContainerCall{
+				Cmd: []interface{}{
+					"cmd",
+				},
+			}
+
+			providedOpHandle := new(data.FakeHandle)
+
+			fakeCmdInterpreter := new(cmd.FakeInterpreter)
+
+			objectUnderTest := _interpreter{
+				cmdInterpreter:     fakeCmdInterpreter,
+				dirsInterpreter:    new(dirs.FakeInterpreter),
+				envVarsInterpreter: new(envvars.FakeInterpreter),
+				filesInterpreter:   new(files.FakeInterpreter),
+				imageInterpreter:   new(image.FakeInterpreter),
+				os:                 new(ios.Fake),
+				socketsInterpreter: new(sockets.FakeInterpreter),
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedScope,
+				providedSCGContainerCall,
+				"dummyContainerID",
+				"dummyRootOpID",
+				providedOpHandle,
+			)
+
+			/* assert */
+			actualScope,
+				actualScgContainerCallCmd,
+				actualOpHandle := fakeCmdInterpreter.InterpretArgsForCall(0)
+
+			Expect(actualScope).To(Equal(providedScope))
+			Expect(actualScgContainerCallCmd).To(Equal(providedSCGContainerCall.Cmd))
+			Expect(actualOpHandle).To(Equal(providedOpHandle))
+
+		})
+		Context("cmd.Interpret errors", func() {
+			It("should return expected error", func() {
 				/* arrange */
-				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Value{
-					"name1": {String: &providedString1},
-				}
-				providedOpHandle := new(data.FakeHandle)
-
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []interface{}{
-						"dummy1",
-						"dummy2",
-					},
-				}
-
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+				expectedErr := errors.New("dummyError")
+				fakeCmdInterpreter := new(cmd.FakeInterpreter)
+				fakeCmdInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
-					dirsInterpreter:    new(dirs.FakeInterpreter),
-					envVarsInterpreter: new(envvars.FakeInterpreter),
-					filesInterpreter:   new(files.FakeInterpreter),
-					imageInterpreter:   new(image.FakeInterpreter),
-					stringInterpreter:  fakeStringInterpreter,
-					os:                 new(ios.Fake),
-					socketsInterpreter: new(sockets.FakeInterpreter),
+					cmdInterpreter: fakeCmdInterpreter,
+					os:             new(ios.Fake),
 				}
 
 				/* act */
-				objectUnderTest.Interpret(
-					providedCurrentScope,
-					providedSCGContainerCall,
-					"dummyContainerID",
-					"dummyRootOpID",
-					providedOpHandle,
-				)
-
-				/* assert */
-				for expectedCmdIndex, expectedCmdEntry := range providedSCGContainerCall.Cmd {
-					actualScope,
-						actualCmdEntry,
-						actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(expectedCmdIndex)
-
-					Expect(actualCmdEntry).To(Equal(expectedCmdEntry))
-					Expect(actualScope).To(Equal(providedCurrentScope))
-					Expect(actualOpHandle).To(Equal(providedOpHandle))
-				}
-			})
-			It("should return expected dcg.Cmd", func() {
-				/* arrange */
-				expectedCmd := []string{
-					"dummyCmdEntry1",
-					"dummyCmdEntry2",
-				}
-
-				providedSCGContainerCall := &model.SCGContainerCall{
-					Cmd: []interface{}{
-						"dummy1",
-						"dummy2",
-					},
-				}
-
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedCmd[0]}, nil)
-				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedCmd[1]}, nil)
-
-				objectUnderTest := _interpreter{
-					dirsInterpreter:    new(dirs.FakeInterpreter),
-					envVarsInterpreter: new(envvars.FakeInterpreter),
-					filesInterpreter:   new(files.FakeInterpreter),
-					imageInterpreter:   new(image.FakeInterpreter),
-					stringInterpreter:  fakeStringInterpreter,
-					os:                 new(ios.Fake),
-					socketsInterpreter: new(sockets.FakeInterpreter),
-				}
-
-				/* act */
-				actualDCGContainerCall, _ := objectUnderTest.Interpret(
+				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					providedSCGContainerCall,
+					&model.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
 				)
 
 				/* assert */
-				Expect(actualDCGContainerCall.Cmd).To(Equal(expectedCmd))
+				Expect(actualErr).To(Equal(expectedErr))
+			})
+		})
+		Context("cmd.Interpret doesn't error", func() {
+			It("should return expected dcgContainerCall.Cmd", func() {
+				/* arrange */
+				expectedDCGContainerCallCmd := []string{
+					"cmd",
+				}
+
+				fakeCmdInterpreter := new(cmd.FakeInterpreter)
+				fakeCmdInterpreter.InterpretReturns(expectedDCGContainerCallCmd, nil)
+
+				objectUnderTest := _interpreter{
+					cmdInterpreter:     fakeCmdInterpreter,
+					dirsInterpreter:    new(dirs.FakeInterpreter),
+					envVarsInterpreter: new(envvars.FakeInterpreter),
+					filesInterpreter:   new(files.FakeInterpreter),
+					imageInterpreter:   new(image.FakeInterpreter),
+					os:                 new(ios.Fake),
+					socketsInterpreter: new(sockets.FakeInterpreter),
+				}
+
+				/* act */
+				actualResult, _ := objectUnderTest.Interpret(
+					map[string]*model.Value{},
+					&model.SCGContainerCall{},
+					"dummyContainerID",
+					"dummyRootOpID",
+					new(data.FakeHandle),
+				)
+
+				/* assert */
+				Expect(actualResult.Cmd).To(Equal(expectedDCGContainerCallCmd))
 			})
 		})
 
@@ -193,6 +208,7 @@ var _ = Context("Interpreter", func() {
 			fakeDirsInterpreter := new(dirs.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
+				cmdInterpreter:     new(cmd.FakeInterpreter),
 				dirsInterpreter:    fakeDirsInterpreter,
 				envVarsInterpreter: new(envvars.FakeInterpreter),
 				filesInterpreter:   new(files.FakeInterpreter),
@@ -226,6 +242,7 @@ var _ = Context("Interpreter", func() {
 				fakeDirsInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    fakeDirsInterpreter,
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					imageInterpreter:   new(image.FakeInterpreter),
@@ -256,6 +273,7 @@ var _ = Context("Interpreter", func() {
 				fakeDirsInterpreter.InterpretReturns(expectedDCGContainerCallDirs, nil)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    fakeDirsInterpreter,
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
@@ -299,6 +317,7 @@ var _ = Context("Interpreter", func() {
 			fakeEnvVarsInterpreter := new(envvars.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
+				cmdInterpreter:     new(cmd.FakeInterpreter),
 				dirsInterpreter:    new(dirs.FakeInterpreter),
 				envVarsInterpreter: fakeEnvVarsInterpreter,
 				filesInterpreter:   new(files.FakeInterpreter),
@@ -334,6 +353,7 @@ var _ = Context("Interpreter", func() {
 				fakeEnvVarsInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: fakeEnvVarsInterpreter,
 					os:                 new(ios.Fake),
@@ -363,6 +383,7 @@ var _ = Context("Interpreter", func() {
 				fakeEnvVarsInterpreter.InterpretReturns(expectedDCGContainerCallEnvVars, nil)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: fakeEnvVarsInterpreter,
 					filesInterpreter:   new(files.FakeInterpreter),
@@ -418,6 +439,7 @@ var _ = Context("Interpreter", func() {
 			fakeFilesInterpreter := new(files.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
+				cmdInterpreter:     new(cmd.FakeInterpreter),
 				dirsInterpreter:    new(dirs.FakeInterpreter),
 				envVarsInterpreter: new(envvars.FakeInterpreter),
 				filesInterpreter:   fakeFilesInterpreter,
@@ -451,6 +473,7 @@ var _ = Context("Interpreter", func() {
 				fakeFilesInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   fakeFilesInterpreter,
@@ -482,6 +505,7 @@ var _ = Context("Interpreter", func() {
 				fakeFilesInterpreter.InterpretReturns(expectedDCGContainerCallFiles, nil)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   fakeFilesInterpreter,
@@ -526,6 +550,7 @@ var _ = Context("Interpreter", func() {
 			fakeImageInterpreter := new(image.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
+				cmdInterpreter:     new(cmd.FakeInterpreter),
 				dirsInterpreter:    new(dirs.FakeInterpreter),
 				envVarsInterpreter: new(envvars.FakeInterpreter),
 				filesInterpreter:   new(files.FakeInterpreter),
@@ -561,6 +586,7 @@ var _ = Context("Interpreter", func() {
 				fakeImageInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
@@ -596,6 +622,7 @@ var _ = Context("Interpreter", func() {
 				fakeImageInterpreter.InterpretReturns(expectedDCGContainerCallImage, nil)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
@@ -650,6 +677,7 @@ var _ = Context("Interpreter", func() {
 			fakeSocketsInterpreter := new(sockets.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
+				cmdInterpreter:     new(cmd.FakeInterpreter),
 				dirsInterpreter:    new(dirs.FakeInterpreter),
 				envVarsInterpreter: new(envvars.FakeInterpreter),
 				filesInterpreter:   new(files.FakeInterpreter),
@@ -682,6 +710,7 @@ var _ = Context("Interpreter", func() {
 				fakeSocketsInterpreter.InterpretReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),
@@ -714,6 +743,7 @@ var _ = Context("Interpreter", func() {
 				fakeSocketsInterpreter.InterpretReturns(expectedDCGContainerCallSockets, nil)
 
 				objectUnderTest := _interpreter{
+					cmdInterpreter:     new(cmd.FakeInterpreter),
 					dirsInterpreter:    new(dirs.FakeInterpreter),
 					envVarsInterpreter: new(envvars.FakeInterpreter),
 					filesInterpreter:   new(files.FakeInterpreter),

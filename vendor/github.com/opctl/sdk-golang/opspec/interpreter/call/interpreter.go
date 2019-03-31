@@ -2,10 +2,13 @@ package call
 
 import (
 	"fmt"
+
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
+
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/if/predicates"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -28,6 +31,7 @@ func NewInterpreter(
 ) Interpreter {
 	return _interpreter{
 		containerCallInterpreter: containerCallInterpreter,
+		loopInterpreter:          loop.NewInterpreter(),
 		predicatesInterpreter:    predicates.NewInterpreter(),
 		opCallInterpreter:        op.NewInterpreter(dataDirPath),
 	}
@@ -35,6 +39,7 @@ func NewInterpreter(
 
 type _interpreter struct {
 	containerCallInterpreter container.Interpreter
+	loopInterpreter          loop.Interpreter
 	opCallInterpreter        op.Interpreter
 	predicatesInterpreter    predicates.Interpreter
 }
@@ -46,9 +51,9 @@ func (itp _interpreter) Interpret(
 	opHandle model.DataHandle,
 	rootOpID string,
 ) (*model.DCG, error) {
-	var ifPredicate *bool
+	var dcgIf *bool
 	if len(scg.If) > 0 {
-		ifPredicateBool, err := itp.predicatesInterpreter.Interpret(
+		dcgIfBool, err := itp.predicatesInterpreter.Interpret(
 			opHandle,
 			scg.If,
 			scope,
@@ -57,12 +62,25 @@ func (itp _interpreter) Interpret(
 			return nil, err
 		}
 
-		ifPredicate = &ifPredicateBool
+		dcgIf = &dcgIfBool
+	}
+
+	var dcgLoop *model.DCGLoop
+	if nil != scg.Loop {
+		var err error
+		dcgLoop, err = itp.loopInterpreter.Interpret(
+			opHandle,
+			scg.Loop,
+			scope,
+		)
+		if nil != err {
+			return nil, err
+		}
 	}
 
 	switch {
 	case nil != scg.Container:
-		scgContainerCall, err := itp.containerCallInterpreter.Interpret(
+		dcgContainerCall, err := itp.containerCallInterpreter.Interpret(
 			scope,
 			scg.Container,
 			id,
@@ -74,8 +92,9 @@ func (itp _interpreter) Interpret(
 		}
 
 		return &model.DCG{
-			Container: scgContainerCall,
-			If:        ifPredicate,
+			Container: dcgContainerCall,
+			If:        dcgIf,
+			Loop:      dcgLoop,
 		}, nil
 	case nil != scg.Op:
 		dcgOpCall, err := itp.opCallInterpreter.Interpret(
@@ -90,18 +109,21 @@ func (itp _interpreter) Interpret(
 		}
 
 		return &model.DCG{
-			Op: dcgOpCall,
-			If: ifPredicate,
+			Op:   dcgOpCall,
+			If:   dcgIf,
+			Loop: dcgLoop,
 		}, nil
 	case len(scg.Parallel) > 0:
 		return &model.DCG{
 			Parallel: scg.Parallel,
-			If:       ifPredicate,
+			If:       dcgIf,
+			Loop:     dcgLoop,
 		}, nil
 	case len(scg.Serial) > 0:
 		return &model.DCG{
 			Serial: scg.Serial,
-			If:     ifPredicate,
+			If:     dcgIf,
+			Loop:   dcgLoop,
 		}, nil
 	default:
 		return nil, fmt.Errorf("Invalid call graph %+v\n", scg)

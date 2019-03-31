@@ -201,8 +201,6 @@ func (oc _opCaller) waitOnOpOutputs(
 eventLoop:
 	for event := range eventChannel {
 		switch {
-		case nil != event.CallSkipped && event.CallSkipped.CallID == dcgOpCall.ChildCallID:
-			break eventLoop
 		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
 			// parent ended prematurely
 			return nil
@@ -224,6 +222,8 @@ eventLoop:
 		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == dcgOpCall.ChildCallID:
 			// parallel calls have no outputs
 			return nil
+		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
+			break eventLoop
 		}
 	}
 

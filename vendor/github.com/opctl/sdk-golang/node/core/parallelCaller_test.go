@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
@@ -19,7 +20,6 @@ var _ = Context("parallelCaller", func() {
 				new(fakeCaller),
 				new(fakeOpKiller),
 				new(pubsub.Fake),
-				new(uniquestring.Fake),
 			)).To(Not(BeNil()))
 		})
 	})
@@ -51,12 +51,12 @@ var _ = Context("parallelCaller", func() {
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
-			objectUnderTest := newParallelCaller(
-				fakeCaller,
-				new(fakeOpKiller),
-				new(pubsub.Fake),
-				fakeUniqueStringFactory,
-			)
+			objectUnderTest := _parallelCaller{
+				caller:              fakeCaller,
+				opKiller:            new(fakeOpKiller),
+				pubSub:              new(pubsub.Fake),
+				uniqueStringFactory: fakeUniqueStringFactory,
+			}
 
 			/* act */
 			objectUnderTest.Call(
@@ -123,12 +123,12 @@ var _ = Context("parallelCaller", func() {
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
-				objectUnderTest := newParallelCaller(
-					fakeCaller,
-					new(fakeOpKiller),
-					new(pubsub.Fake),
-					fakeUniqueStringFactory,
-				)
+				objectUnderTest := _parallelCaller{
+					caller:              fakeCaller,
+					opKiller:            new(fakeOpKiller),
+					pubSub:              new(pubsub.Fake),
+					uniqueStringFactory: fakeUniqueStringFactory,
+				}
 
 				/* act */
 				actualError := objectUnderTest.Call(
@@ -171,12 +171,12 @@ var _ = Context("parallelCaller", func() {
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				fakeUniqueStringFactory.ConstructReturns(returnedUniqueString, nil)
 
-				objectUnderTest := newParallelCaller(
-					fakeCaller,
-					new(fakeOpKiller),
-					new(pubsub.Fake),
-					fakeUniqueStringFactory,
-				)
+				objectUnderTest := _parallelCaller{
+					caller:              fakeCaller,
+					opKiller:            new(fakeOpKiller),
+					pubSub:              new(pubsub.Fake),
+					uniqueStringFactory: fakeUniqueStringFactory,
+				}
 
 				/* act */
 				actualError := objectUnderTest.Call(

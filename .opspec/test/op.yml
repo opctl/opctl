@@ -15,10 +15,6 @@ outputs:
 run:
   serial:
     - op:
-        pkg: { ref: clean }
-        inputs: { srcDir }
-        outputs: { srcDir }
-    - op:
         pkg: { ref: github.com/opspec-pkgs/golang.fmt#1.1.0 }
         inputs: { srcDir }
         outputs: { srcDir }
@@ -26,6 +22,3 @@ run:
         pkg: { ref: test/unit }
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }
-    - op:
-        pkg: { ref: webapp/test }
-        inputs: { srcDir: $(srcDir/webapp) }

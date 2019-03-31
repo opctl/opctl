@@ -27,14 +27,13 @@ func newParallelCaller(
 	caller caller,
 	opKiller opKiller,
 	pubSub pubsub.PubSub,
-	uniqueStringFactory uniquestring.UniqueStringFactory,
 ) parallelCaller {
 
 	return _parallelCaller{
 		opKiller:            opKiller,
 		caller:              caller,
 		pubSub:              pubSub,
-		uniqueStringFactory: uniqueStringFactory,
+		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
 
 }

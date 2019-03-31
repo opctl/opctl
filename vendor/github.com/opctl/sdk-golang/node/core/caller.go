@@ -25,38 +25,66 @@ type caller interface {
 func newCaller(
 	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
+	dataDirPath string,
+	dcgNodeRepo dcgNodeRepo,
+	opKiller opKiller,
 	pubSub pubsub.PubSub,
-) *_caller {
-	return &_caller{
+) caller {
+	instance := &_caller{
 		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
 		pubSub:          pubSub,
 	}
+
+	instance.looper = newLooper(
+		instance,
+		pubSub,
+	)
+
+	instance.opCaller = newOpCaller(
+		pubSub,
+		dcgNodeRepo,
+		instance,
+		dataDirPath,
+	)
+
+	instance.parallelCaller = newParallelCaller(
+		instance,
+		opKiller,
+		pubSub,
+	)
+
+	instance.serialCaller = newSerialCaller(
+		instance,
+		pubSub,
+	)
+
+	return instance
 }
 
 type _caller struct {
 	callInterpreter call.Interpreter
 	containerCaller containerCaller
+	looper          looper
 	opCaller        opCaller
 	parallelCaller  parallelCaller
 	pubSub          pubsub.PubSub
 	serialCaller    serialCaller
 }
 
-func (this _caller) Call(
+func (clr _caller) Call(
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
 	opHandle model.DataHandle,
 	rootOpID string,
 ) error {
-
 	if nil == scg {
 		// No Op
 		return nil
 	}
 
-	dcg, err := this.callInterpreter.Interpret(
+	dcg, err := clr.callInterpreter.Interpret(
 		scope,
 		scg,
 		id,
@@ -67,34 +95,47 @@ func (this _caller) Call(
 		return err
 	}
 
-	if nil != dcg.If && !*dcg.If {
-		this.pubSub.Publish(
+	defer func() {
+		clr.pubSub.Publish(
 			model.Event{
-				CallSkipped: &model.CallSkippedEvent{
+				CallEnded: &model.CallEndedEvent{
 					CallID:     id,
 					RootCallID: rootOpID,
 				},
 				Timestamp: time.Now().UTC(),
 			},
 		)
+	}()
+
+	if nil != dcg.If && !*dcg.If {
 		return nil
+	}
+
+	if nil != dcg.Loop {
+		return clr.looper.Loop(
+			id,
+			scope,
+			scg,
+			opHandle,
+			rootOpID,
+		)
 	}
 
 	switch {
 	case nil != scg.Container:
-		return this.containerCaller.Call(
+		return clr.containerCaller.Call(
 			dcg.Container,
 			scope,
 			scg.Container,
 		)
 	case nil != scg.Op:
-		return this.opCaller.Call(
+		return clr.opCaller.Call(
 			dcg.Op,
 			scope,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:
-		return this.parallelCaller.Call(
+		return clr.parallelCaller.Call(
 			id,
 			scope,
 			rootOpID,
@@ -102,7 +143,7 @@ func (this _caller) Call(
 			scg.Parallel,
 		)
 	case len(scg.Serial) > 0:
-		return this.serialCaller.Call(
+		return clr.serialCaller.Call(
 			id,
 			scope,
 			rootOpID,
@@ -113,22 +154,4 @@ func (this _caller) Call(
 		return fmt.Errorf("Invalid call graph %+v\n", scg)
 	}
 
-}
-
-func (this *_caller) setOpCaller(
-	opCaller opCaller,
-) {
-	this.opCaller = opCaller
-}
-
-func (this *_caller) setParallelCaller(
-	parallelCaller parallelCaller,
-) {
-	this.parallelCaller = parallelCaller
-}
-
-func (this *_caller) setSerialCaller(
-	serialCaller serialCaller,
-) {
-	this.serialCaller = serialCaller
 }

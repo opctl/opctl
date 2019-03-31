@@ -8,7 +8,20 @@ accordance with
 
 ### Added
 
+- up to 10x disk performance improvement on OSX
 - [Ability to specify custom node data dir](https://github.com/opctl/opctl/issues/449)
+- [Allow Numbers & Implicit Binding On Container Ports](https://github.com/opctl/specs/issues/233)
+- [Interpolate Container Name](https://github.com/opctl/specs/issues/232)
+- [Conditional running](https://github.com/opctl/specs/issues/223)
+- [Looping](https://github.com/opctl/specs/issues/207)
+
+### Fixed
+
+- [opctl ls on windows does not list anything](https://github.com/opctl/opctl/issues/460)
+
+### Removed
+
+- [`stdOut` & `stdErr` attributes from container call.](https://github.com/opctl/specs/issues/231). Use files.
 
 ### Changed
 

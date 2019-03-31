@@ -261,7 +261,7 @@ var _ = Context("RunContainer", func() {
 				},
 				ContainerID: "dummyContainerID",
 				Image:       &model.DCGContainerCallImage{},
-				Name:        "dummyName",
+				Name:        new(string),
 			}
 
 			fakeContainerConfigFactory := new(fakeContainerConfigFactory)
@@ -276,7 +276,7 @@ var _ = Context("RunContainer", func() {
 				EndpointsConfig: map[string]*network.EndpointSettings{
 					dockerNetworkName: {
 						Aliases: []string{
-							providedReq.Name,
+							*providedReq.Name,
 						},
 					},
 				},

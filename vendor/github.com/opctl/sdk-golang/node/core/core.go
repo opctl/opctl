@@ -79,44 +79,19 @@ func New(
 			pubSub,
 			dcgNodeRepo,
 		),
-		pubSub,
-	)
-
-	caller.setParallelCaller(
-		newParallelCaller(
-			caller,
-			opKiller,
-			pubSub,
-			uniqueStringFactory,
-		),
-	)
-
-	caller.setSerialCaller(
-		newSerialCaller(
-			caller,
-			pubSub,
-			uniqueStringFactory,
-		),
-	)
-
-	opCaller := newOpCaller(
-		pubSub,
-		dcgNodeRepo,
-		caller,
 		dataDirPath,
-	)
-
-	caller.setOpCaller(
-		opCaller,
+		dcgNodeRepo,
+		opKiller,
+		pubSub,
 	)
 
 	core = _core{
+		caller:              caller,
 		containerRuntime:    containerRuntime,
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
 		dcgNodeRepo:         dcgNodeRepo,
 		dotYmlGetter:        dotyml.NewGetter(),
-		opCaller:            opCaller,
 		opInterpreter:       opInterpreter,
 		opKiller:            opKiller,
 		pubSub:              pubSub,
@@ -127,12 +102,12 @@ func New(
 }
 
 type _core struct {
+	caller              caller
 	containerRuntime    containerruntime.ContainerRuntime
 	data                data.Data
 	dataCachePath       string
 	dcgNodeRepo         dcgNodeRepo
 	dotYmlGetter        dotyml.Getter
-	opCaller            opCaller
 	opInterpreter       op.Interpreter
 	opKiller            opKiller
 	pubSub              pubsub.PubSub

@@ -7,9 +7,9 @@ import TopMenu from './TopMenu'
 import SideMenu from './SideMenu'
 import { ToastContainer } from 'react-toastify'
 import OpView from './views/Op'
+import './bootstrap.scss'
 
 // shared vendor css
-import './bootstrap.css'
 import 'react-toastify/dist/ReactToastify.min.css'
 import 'react-virtualized/styles.css'
 import 'react-resizable/css/styles.css'

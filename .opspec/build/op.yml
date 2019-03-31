@@ -20,10 +20,30 @@ outputs:
 run:
   serial:
     - op:
+        ref: clean
+        inputs:
+          srcDir:
+        outputs:
+          srcDir:
+    - op:
+        ref: ../webapp/.opspec/build
+        inputs: { srcDir: $(srcDir/webapp) }
+    # embed webapp in node
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            echo "installing deps"
+            go get github.com/rakyll/statik
+
+            echo "embedding webapp in node"
+            statik -src webapp/build -dest node -f
+        dirs:
+          /go/src/github.com/opctl/opctl: $(srcDir)
+        image: { ref: 'golang:1.11.5' }
+        workDir: /go/src/github.com/opctl/opctl
+    - op:
         pkg: { ref: node/build }
         inputs: { srcDir }
         outputs: { opctlForLinux, srcDir }
-    - op:
-        pkg: { ref: webapp/build }
-        inputs: { srcDir }
-        outputs: { srcDir }
