@@ -138,25 +138,6 @@ func (lpr _looper) Loop(
 	}
 
 	for !lpr.isLoopEnded(index, dcgLoop) {
-		if err := lpr.scopeLoopVars(
-			index,
-			scope,
-			scgLoop,
-			opHandle,
-		); nil != err {
-			return err
-		}
-
-		// interpret this iteration of the loop
-		dcgLoop, err = lpr.loopInterpreter.Interpret(
-			opHandle,
-			scgLoop,
-			scope,
-		)
-		if nil != err {
-			return err
-		}
-
 		callID, err := lpr.uniqueStringFactory.Construct()
 		if nil != err {
 			return err
@@ -175,6 +156,25 @@ func (lpr _looper) Loop(
 		}
 
 		index++
+
+		if err := lpr.scopeLoopVars(
+			index,
+			scope,
+			scgLoop,
+			opHandle,
+		); nil != err {
+			return err
+		}
+
+		// interpret this iteration of the loop
+		dcgLoop, err = lpr.loopInterpreter.Interpret(
+			opHandle,
+			scgLoop,
+			scope,
+		)
+		if nil != err {
+			return err
+		}
 	}
 
 	// unshadow shadowed scope
