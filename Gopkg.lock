@@ -462,7 +462,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e493eeb6167d72809517d93956fd41321990cb1d80febc52d217f68472383a2e"
+  digest = "1:cdf90bc9ba668dd65fc67c17faba9d2154df5367e8c77a0d3ac7f66e7057c929"
   name = "github.com/opctl/sdk-golang"
   packages = [
     "data",
@@ -531,7 +531,7 @@
     "util/urlpath",
   ]
   pruneopts = ""
-  revision = "4e0c4024602e6895baab58881ae65c48f14c8826"
+  revision = "0a71c0854f61f558f0a11d09763406e9eccd45f7"
 
 [[projects]]
   digest = "1:5d9b668b0b4581a978f07e7d2e3314af18eb27b3fb5d19b70185b7c575723d11"
