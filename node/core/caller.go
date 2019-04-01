@@ -107,10 +107,6 @@ func (clr _caller) Call(
 		)
 	}()
 
-	if nil != dcg.If && !*dcg.If {
-		return nil
-	}
-
 	if nil != dcg.Loop {
 		return clr.looper.Loop(
 			id,
@@ -119,6 +115,10 @@ func (clr _caller) Call(
 			opHandle,
 			rootOpID,
 		)
+	}
+
+	if nil != dcg.If && !*dcg.If {
+		return nil
 	}
 
 	switch {
