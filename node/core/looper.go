@@ -137,7 +137,11 @@ func (lpr _looper) Loop(
 		return err
 	}
 
-	for !lpr.isLoopEnded(index, dcgLoop) {
+	if lpr.isLoopEnded(index, dcgLoop) {
+		return nil
+	}
+
+	for {
 		callID, err := lpr.uniqueStringFactory.Construct()
 		if nil != err {
 			return err
@@ -157,6 +161,10 @@ func (lpr _looper) Loop(
 
 		index++
 
+		if lpr.isLoopEnded(index, dcgLoop) {
+			break
+		}
+
 		if err := lpr.scopeLoopVars(
 			index,
 			scope,
@@ -166,7 +174,7 @@ func (lpr _looper) Loop(
 			return err
 		}
 
-		// interpret this iteration of the loop
+		// interpret next iteration of the loop
 		dcgLoop, err = lpr.loopInterpreter.Interpret(
 			opHandle,
 			scgLoop,
