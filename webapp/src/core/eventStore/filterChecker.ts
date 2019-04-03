@@ -1,6 +1,8 @@
 
 const getEventRootOpId = (event) => {
-  if (event.containerExited) {
+  if (event.callEnded) {
+    return event.callEnded.rootOpId
+  } else if (event.containerExited) {
     return event.containerExited.rootOpId
   } else if (event.containerStarted) {
     return event.containerStarted.rootOpId

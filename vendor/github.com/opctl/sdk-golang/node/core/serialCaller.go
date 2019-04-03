@@ -48,9 +48,9 @@ func (this _serialCaller) Call(
 	opHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
 ) error {
-	outputs := map[string]*model.Value{}
+	outboundScope := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
-		outputs[varName] = varData
+		outboundScope[varName] = varData
 	}
 
 	defer func() {
@@ -61,7 +61,7 @@ func (this _serialCaller) Call(
 				SerialCallEnded: &model.SerialCallEndedEvent{
 					CallID:   callId,
 					RootOpID: rootOpID,
-					Outputs:  outputs,
+					Outputs:  outboundScope,
 				},
 			},
 		)
@@ -80,7 +80,7 @@ func (this _serialCaller) Call(
 
 		if err := this.caller.Call(
 			childCallID,
-			outputs,
+			outboundScope,
 			scgCall,
 			opHandle,
 			rootOpID,
@@ -103,26 +103,29 @@ func (this _serialCaller) Call(
 
 	eventLoop:
 		for event := range eventChannel {
-			// merge child outputs w/ outputs, child outputs having precedence
+			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
 			case nil != event.OpEnded && event.OpEnded.OpID == childCallID:
 				for name, value := range event.OpEnded.Outputs {
-					outputs[name] = value
+					outboundScope[name] = value
 				}
 				break eventLoop
 			case nil != event.ContainerExited && event.ContainerExited.ContainerID == childCallID:
 				for name, value := range event.ContainerExited.Outputs {
-					outputs[name] = value
+					outboundScope[name] = value
 				}
 				break eventLoop
 			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == childCallID:
 				for name, value := range event.SerialCallEnded.Outputs {
-					outputs[name] = value
+					outboundScope[name] = value
 				}
 				break eventLoop
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == childCallID:
 				break eventLoop
 			case nil != event.CallEnded && event.CallEnded.CallID == childCallID:
+				for name, value := range event.CallEnded.Outputs {
+					outboundScope[name] = value
+				}
 				break eventLoop
 			}
 		}

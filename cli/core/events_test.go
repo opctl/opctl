@@ -15,13 +15,13 @@ var _ = Context("events", func() {
 			/* arrange */
 			fakeCliExiter := new(cliexiter.Fake)
 
-			fakeOpspecNodeAPIClient := new(client.Fake)
+			fakeAPIClient := new(client.Fake)
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
-			fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+			fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _core{
-				opspecNodeAPIClient:     fakeOpspecNodeAPIClient,
+				apiClient:               fakeAPIClient,
 				cliExiter:               fakeCliExiter,
 				nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
 			}
@@ -30,7 +30,7 @@ var _ = Context("events", func() {
 			objectUnderTest.Events()
 
 			/* assert */
-			Expect(fakeOpspecNodeAPIClient.GetEventStreamCallCount()).To(Equal(1))
+			Expect(fakeAPIClient.GetEventStreamCallCount()).To(Equal(1))
 
 		})
 		Context("client.GetEventStream errors", func() {
@@ -39,11 +39,11 @@ var _ = Context("events", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 				returnedError := errors.New("dummyError")
 
-				fakeOpspecNodeAPIClient := new(client.Fake)
-				fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
+				fakeAPIClient := new(client.Fake)
+				fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _core{
-					opspecNodeAPIClient:     fakeOpspecNodeAPIClient,
+					apiClient:               fakeAPIClient,
 					cliExiter:               fakeCliExiter,
 					nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
 				}
@@ -62,13 +62,13 @@ var _ = Context("events", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
 
-					fakeOpspecNodeAPIClient := new(client.Fake)
+					fakeAPIClient := new(client.Fake)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						opspecNodeAPIClient:     fakeOpspecNodeAPIClient,
+						apiClient:               fakeAPIClient,
 						cliExiter:               fakeCliExiter,
 						nodeReachabilityEnsurer: new(fakeNodeReachabilityEnsurer),
 					}

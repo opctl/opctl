@@ -10,7 +10,7 @@ func (this _core) Events() {
 	// ensure node reachable
 	this.nodeReachabilityEnsurer.EnsureNodeReachable()
 
-	eventChannel, err := this.opspecNodeAPIClient.GetEventStream(
+	eventChannel, err := this.apiClient.GetEventStream(
 		&model.GetEventStreamReq{},
 	)
 	if nil != err {
