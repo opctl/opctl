@@ -81,16 +81,20 @@ func New(
 	cliExiter := cliexiter.New(cliOutput, _os)
 	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
 
-	opspecNodeURL, err := url.Parse("http://localhost:42224/api")
+	apiBaseURLStr := os.Getenv("OPCTL_CLI_API_BASEURL")
+	if "" == apiBaseURLStr {
+		apiBaseURLStr = "http://localhost:42224/api"
+	}
+	apiBaseURL, err := url.Parse(apiBaseURLStr)
 	if nil != err {
 		panic(err)
 	}
 
-	opspecNodeAPIClient := client.New(
-		*opspecNodeURL,
+	apiClient := client.New(
+		*apiBaseURL,
 		&client.Opts{
 			RetryLogHook: func(err error) {
-				cliOutput.Attention("request resulted in a recoverable error & will be retried; error was: %v", err.Error())
+				cliOutput.Attention("request resulted in a recoverable error & will be retried; error was: %v", err)
 			},
 		},
 	)
@@ -107,10 +111,10 @@ func New(
 		opCreator:               op.NewCreator(),
 		opInstaller:             op.NewInstaller(),
 		opLister:                op.NewLister(),
-		opspecNodeAPIClient:     opspecNodeAPIClient,
+		apiClient:               apiClient,
 		opValidator:             op.NewValidator(),
 		os:                      _os,
-		dataResolver:            newDataResolver(cliExiter, cliParamSatisfier, *opspecNodeURL),
+		dataResolver:            newDataResolver(cliExiter, cliParamSatisfier, *apiBaseURL),
 		updater:                 updater.New(),
 		writer:                  os.Stdout,
 	}
@@ -129,7 +133,7 @@ type _core struct {
 	opCreator               op.Creator
 	opInstaller             op.Installer
 	opLister                op.Lister
-	opspecNodeAPIClient     client.Client
+	apiClient               client.Client
 	opValidator             op.Validator
 	os                      ios.IOS
 	dataResolver            dataResolver

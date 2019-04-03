@@ -61,13 +61,13 @@ var _ = Context("Run", func() {
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _core{
-				opDotYmlGetter:      fakeOpDotYmlGetter,
-				dataResolver:        fakeDataResolver,
-				opspecNodeAPIClient: new(client.Fake),
-				cliExiter:           new(cliexiter.Fake),
-				cliParamSatisfier:   new(cliparamsatisfier.Fake),
-				os:                  new(ios.Fake),
-				ioutil:              new(iioutil.Fake),
+				opDotYmlGetter:    fakeOpDotYmlGetter,
+				dataResolver:      fakeDataResolver,
+				apiClient:         new(client.Fake),
+				cliExiter:         new(cliexiter.Fake),
+				cliParamSatisfier: new(cliparamsatisfier.Fake),
+				os:                new(ios.Fake),
+				ioutil:            new(iioutil.Fake),
 			}
 
 			/* act */
@@ -136,21 +136,21 @@ var _ = Context("Run", func() {
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-				fakeOpspecNodeAPIClient := new(client.Fake)
+				fakeAPIClient := new(client.Fake)
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
-				fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 				objectUnderTest := _core{
-					opDotYmlGetter:      fakeOpDotYmlGetter,
-					dataResolver:        fakeDataResolver,
-					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-					cliExiter:           new(cliexiter.Fake),
-					cliParamSatisfier:   fakeCliParamSatisfier,
-					os:                  new(ios.Fake),
-					ioutil:              new(iioutil.Fake),
+					opDotYmlGetter:    fakeOpDotYmlGetter,
+					dataResolver:      fakeDataResolver,
+					apiClient:         fakeAPIClient,
+					cliExiter:         new(cliexiter.Fake),
+					cliParamSatisfier: fakeCliParamSatisfier,
+					os:                new(ios.Fake),
+					ioutil:            new(iioutil.Fake),
 				}
 
 				/* act */
@@ -161,7 +161,7 @@ var _ = Context("Run", func() {
 
 				Expect(actualParams).To(Equal(expectedParams))
 			})
-			It("should call opspecNodeAPIClient.StartOp w/ expected args", func() {
+			It("should call apiClient.StartOp w/ expected args", func() {
 				/* arrange */
 				resolvedOpRef := "dummyOpRef"
 
@@ -188,33 +188,33 @@ var _ = Context("Run", func() {
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
-				fakeOpspecNodeAPIClient := new(client.Fake)
+				fakeAPIClient := new(client.Fake)
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
-				fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 				objectUnderTest := _core{
-					opDotYmlGetter:      fakeOpDotYmlGetter,
-					dataResolver:        fakeDataResolver,
-					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-					cliExiter:           new(cliexiter.Fake),
-					cliParamSatisfier:   fakeCliParamSatisfier,
-					os:                  new(ios.Fake),
-					ioutil:              new(iioutil.Fake),
+					opDotYmlGetter:    fakeOpDotYmlGetter,
+					dataResolver:      fakeDataResolver,
+					apiClient:         fakeAPIClient,
+					cliExiter:         new(cliexiter.Fake),
+					cliParamSatisfier: fakeCliParamSatisfier,
+					os:                new(ios.Fake),
+					ioutil:            new(iioutil.Fake),
 				}
 
 				/* act */
 				objectUnderTest.Run(providedContext, "", &RunOpts{})
 
 				/* assert */
-				actualCtx, actualArgs := fakeOpspecNodeAPIClient.StartOpArgsForCall(0)
+				actualCtx, actualArgs := fakeAPIClient.StartOpArgsForCall(0)
 				Expect(actualCtx).To(Equal(expectedCtx))
 				Expect(actualArgs).To(Equal(expectedArgs))
 			})
-			Context("opspecNodeAPIClient.StartOp errors", func() {
+			Context("apiClient.StartOp errors", func() {
 				It("should call exiter w/ expected args", func() {
 					/* arrange */
 					fakeCliExiter := new(cliexiter.Fake)
@@ -227,17 +227,17 @@ var _ = Context("Run", func() {
 					fakeDataResolver := new(fakeDataResolver)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-					fakeOpspecNodeAPIClient := new(client.Fake)
-					fakeOpspecNodeAPIClient.StartOpReturns("dummyOpID", returnedError)
+					fakeAPIClient := new(client.Fake)
+					fakeAPIClient.StartOpReturns("dummyOpID", returnedError)
 
 					objectUnderTest := _core{
-						opDotYmlGetter:      fakeOpDotYmlGetter,
-						dataResolver:        fakeDataResolver,
-						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-						cliExiter:           fakeCliExiter,
-						cliParamSatisfier:   new(cliparamsatisfier.Fake),
-						os:                  new(ios.Fake),
-						ioutil:              new(iioutil.Fake),
+						opDotYmlGetter:    fakeOpDotYmlGetter,
+						dataResolver:      fakeDataResolver,
+						apiClient:         fakeAPIClient,
+						cliExiter:         fakeCliExiter,
+						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						os:                new(ios.Fake),
+						ioutil:            new(iioutil.Fake),
 					}
 
 					/* act */
@@ -248,8 +248,8 @@ var _ = Context("Run", func() {
 						To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 				})
 			})
-			Context("opspecNodeAPIClient.StartOp doesn't error", func() {
-				It("should call opspecNodeAPIClient.GetEventStream w/ expected args", func() {
+			Context("apiClient.StartOp doesn't error", func() {
+				It("should call apiClient.GetEventStream w/ expected args", func() {
 					/* arrange */
 					rootOpIDReturnedFromStartOp := "dummyRootOpID"
 					startTime := time.Now().UTC()
@@ -267,27 +267,27 @@ var _ = Context("Run", func() {
 					fakeDataResolver := new(fakeDataResolver)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-					fakeOpspecNodeAPIClient := new(client.Fake)
-					fakeOpspecNodeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
+					fakeAPIClient := new(client.Fake)
+					fakeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
-					fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _core{
-						opDotYmlGetter:      fakeOpDotYmlGetter,
-						dataResolver:        fakeDataResolver,
-						opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-						cliExiter:           new(cliexiter.Fake),
-						cliParamSatisfier:   new(cliparamsatisfier.Fake),
-						os:                  new(ios.Fake),
-						ioutil:              new(iioutil.Fake),
+						opDotYmlGetter:    fakeOpDotYmlGetter,
+						dataResolver:      fakeDataResolver,
+						apiClient:         fakeAPIClient,
+						cliExiter:         new(cliexiter.Fake),
+						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						os:                new(ios.Fake),
+						ioutil:            new(iioutil.Fake),
 					}
 
 					/* act */
 					objectUnderTest.Run(context.TODO(), "", &RunOpts{})
 
 					/* assert */
-					actualReq := fakeOpspecNodeAPIClient.GetEventStreamArgsForCall(0)
+					actualReq := fakeAPIClient.GetEventStreamArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(*actualReq.Filter.Since).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
@@ -296,7 +296,7 @@ var _ = Context("Run", func() {
 
 					Expect(actualReq).To(Equal(expectedReq))
 				})
-				Context("opspecNodeAPIClient.GetEventStream errors", func() {
+				Context("apiClient.GetEventStream errors", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						fakeCliExiter := new(cliexiter.Fake)
@@ -309,17 +309,17 @@ var _ = Context("Run", func() {
 						fakeDataResolver := new(fakeDataResolver)
 						fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-						fakeOpspecNodeAPIClient := new(client.Fake)
-						fakeOpspecNodeAPIClient.GetEventStreamReturns(nil, returnedError)
+						fakeAPIClient := new(client.Fake)
+						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 						objectUnderTest := _core{
-							opDotYmlGetter:      fakeOpDotYmlGetter,
-							dataResolver:        fakeDataResolver,
-							opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-							cliExiter:           fakeCliExiter,
-							cliParamSatisfier:   new(cliparamsatisfier.Fake),
-							os:                  new(ios.Fake),
-							ioutil:              new(iioutil.Fake),
+							opDotYmlGetter:    fakeOpDotYmlGetter,
+							dataResolver:      fakeDataResolver,
+							apiClient:         fakeAPIClient,
+							cliExiter:         fakeCliExiter,
+							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							os:                new(ios.Fake),
+							ioutil:            new(iioutil.Fake),
 						}
 
 						/* act */
@@ -330,7 +330,7 @@ var _ = Context("Run", func() {
 							To(Equal(cliexiter.ExitReq{Message: returnedError.Error(), Code: 1}))
 					})
 				})
-				Context("opspecNodeAPIClient.GetEventStream doesn't error", func() {
+				Context("apiClient.GetEventStream doesn't error", func() {
 					Context("event channel closes", func() {
 						It("should call exiter w/ expected args", func() {
 							/* arrange */
@@ -343,19 +343,19 @@ var _ = Context("Run", func() {
 							fakeDataResolver := new(fakeDataResolver)
 							fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-							fakeOpspecNodeAPIClient := new(client.Fake)
+							fakeAPIClient := new(client.Fake)
 							eventChannel := make(chan model.Event)
 							close(eventChannel)
-							fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
+							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 							objectUnderTest := _core{
-								opDotYmlGetter:      fakeOpDotYmlGetter,
-								dataResolver:        fakeDataResolver,
-								opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-								cliExiter:           fakeCliExiter,
-								cliParamSatisfier:   new(cliparamsatisfier.Fake),
-								os:                  new(ios.Fake),
-								ioutil:              new(iioutil.Fake),
+								opDotYmlGetter:    fakeOpDotYmlGetter,
+								dataResolver:      fakeDataResolver,
+								apiClient:         fakeAPIClient,
+								cliExiter:         fakeCliExiter,
+								cliParamSatisfier: new(cliparamsatisfier.Fake),
+								os:                new(ios.Fake),
+								ioutil:            new(iioutil.Fake),
 							}
 
 							/* act */
@@ -392,23 +392,23 @@ var _ = Context("Run", func() {
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeOpspecNodeAPIClient := new(client.Fake)
+										fakeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
-										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
-											opDotYmlGetter:      fakeOpDotYmlGetter,
-											dataResolver:        fakeDataResolver,
-											cliColorer:          clicolorer.New(),
-											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-											cliExiter:           fakeCliExiter,
-											cliOutput:           new(clioutput.Fake),
-											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											os:                  new(ios.Fake),
-											ioutil:              new(iioutil.Fake),
+											opDotYmlGetter:    fakeOpDotYmlGetter,
+											dataResolver:      fakeDataResolver,
+											cliColorer:        clicolorer.New(),
+											apiClient:         fakeAPIClient,
+											cliExiter:         fakeCliExiter,
+											cliOutput:         new(clioutput.Fake),
+											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											os:                new(ios.Fake),
+											ioutil:            new(iioutil.Fake),
 										}
 
 										/* act/assert */
@@ -439,23 +439,23 @@ var _ = Context("Run", func() {
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeOpspecNodeAPIClient := new(client.Fake)
+										fakeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
-										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
-											opDotYmlGetter:      fakeOpDotYmlGetter,
-											dataResolver:        fakeDataResolver,
-											cliColorer:          clicolorer.New(),
-											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-											cliExiter:           fakeCliExiter,
-											cliOutput:           new(clioutput.Fake),
-											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											os:                  new(ios.Fake),
-											ioutil:              new(iioutil.Fake),
+											opDotYmlGetter:    fakeOpDotYmlGetter,
+											dataResolver:      fakeDataResolver,
+											cliColorer:        clicolorer.New(),
+											apiClient:         fakeAPIClient,
+											cliExiter:         fakeCliExiter,
+											cliOutput:         new(clioutput.Fake),
+											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											os:                new(ios.Fake),
+											ioutil:            new(iioutil.Fake),
 										}
 
 										/* act/assert */
@@ -487,23 +487,23 @@ var _ = Context("Run", func() {
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeOpspecNodeAPIClient := new(client.Fake)
+										fakeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
-										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
-											opDotYmlGetter:      fakeOpDotYmlGetter,
-											dataResolver:        fakeDataResolver,
-											cliColorer:          clicolorer.New(),
-											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-											cliExiter:           fakeCliExiter,
-											cliOutput:           new(clioutput.Fake),
-											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											os:                  new(ios.Fake),
-											ioutil:              new(iioutil.Fake),
+											opDotYmlGetter:    fakeOpDotYmlGetter,
+											dataResolver:      fakeDataResolver,
+											cliColorer:        clicolorer.New(),
+											apiClient:         fakeAPIClient,
+											cliExiter:         fakeCliExiter,
+											cliOutput:         new(clioutput.Fake),
+											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											os:                new(ios.Fake),
+											ioutil:            new(iioutil.Fake),
 										}
 
 										/* act/assert */
@@ -534,23 +534,23 @@ var _ = Context("Run", func() {
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-										fakeOpspecNodeAPIClient := new(client.Fake)
+										fakeAPIClient := new(client.Fake)
 										eventChannel := make(chan model.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
-										fakeOpspecNodeAPIClient.GetEventStreamReturns(eventChannel, nil)
-										fakeOpspecNodeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
+										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _core{
-											opDotYmlGetter:      fakeOpDotYmlGetter,
-											dataResolver:        fakeDataResolver,
-											cliColorer:          clicolorer.New(),
-											opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-											cliExiter:           fakeCliExiter,
-											cliOutput:           new(clioutput.Fake),
-											cliParamSatisfier:   new(cliparamsatisfier.Fake),
-											os:                  new(ios.Fake),
-											ioutil:              new(iioutil.Fake),
+											opDotYmlGetter:    fakeOpDotYmlGetter,
+											dataResolver:      fakeDataResolver,
+											cliColorer:        clicolorer.New(),
+											apiClient:         fakeAPIClient,
+											cliExiter:         fakeCliExiter,
+											cliOutput:         new(clioutput.Fake),
+											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											os:                new(ios.Fake),
+											ioutil:            new(iioutil.Fake),
 										}
 
 										/* act/assert */

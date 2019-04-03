@@ -12,9 +12,9 @@ import (
 
 var _ = Context("opKill", func() {
 	Context("Execute", func() {
-		It("should call opspecNodeAPIClient.OpKill w/ expected args", func() {
+		It("should call apiClient.OpKill w/ expected args", func() {
 			/* arrange */
-			fakeOpspecNodeAPIClient := new(client.Fake)
+			fakeAPIClient := new(client.Fake)
 
 			providedCtx := context.TODO()
 
@@ -24,29 +24,29 @@ var _ = Context("opKill", func() {
 			}
 
 			objectUnderTest := _core{
-				opspecNodeAPIClient: fakeOpspecNodeAPIClient,
+				apiClient: fakeAPIClient,
 			}
 
 			/* act */
 			objectUnderTest.OpKill(expectedCtx, expectedReq.OpID)
 
 			/* assert */
-			actualCtx, actualReq := fakeOpspecNodeAPIClient.KillOpArgsForCall(0)
+			actualCtx, actualReq := fakeAPIClient.KillOpArgsForCall(0)
 			Expect(actualCtx).To(Equal(expectedCtx))
 			Expect(actualReq).To(BeEquivalentTo(expectedReq))
 		})
-		Context("opspecNodeAPIClient.OpKill errors", func() {
+		Context("apiClient.OpKill errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeOpspecNodeAPIClient := new(client.Fake)
+				fakeAPIClient := new(client.Fake)
 				expectedError := errors.New("dummyError")
-				fakeOpspecNodeAPIClient.KillOpReturns(expectedError)
+				fakeAPIClient.KillOpReturns(expectedError)
 
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _core{
-					opspecNodeAPIClient: fakeOpspecNodeAPIClient,
-					cliExiter:           fakeCliExiter,
+					apiClient: fakeAPIClient,
+					cliExiter: fakeCliExiter,
 				}
 
 				/* act */

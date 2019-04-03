@@ -14,6 +14,8 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
+	"log"
 	"net"
 	"os"
 	"strings"
@@ -117,7 +119,13 @@ func (app *Application) commands() []tool.Application {
 	}
 }
 
-func (app *Application) connect(ctx context.Context, client protocol.Client) (protocol.Server, error) {
+type cmdClient interface {
+	protocol.Client
+
+	prepare(app *Application, server protocol.Server)
+}
+
+func (app *Application) connect(ctx context.Context, client cmdClient) (protocol.Server, error) {
 	var server protocol.Server
 	switch app.Remote {
 	case "":
@@ -126,7 +134,7 @@ func (app *Application) connect(ctx context.Context, client protocol.Client) (pr
 		cr, sw, _ := os.Pipe()
 		sr, cw, _ := os.Pipe()
 		var jc *jsonrpc2.Conn
-		jc, server = protocol.NewClient(jsonrpc2.NewHeaderStream(cr, cw), client)
+		jc, server, _ = protocol.NewClient(jsonrpc2.NewHeaderStream(cr, cw), client)
 		go jc.Run(ctx)
 		go lsp.NewServer(jsonrpc2.NewHeaderStream(sr, sw)).Run(ctx)
 	default:
@@ -136,7 +144,7 @@ func (app *Application) connect(ctx context.Context, client protocol.Client) (pr
 		}
 		stream := jsonrpc2.NewHeaderStream(conn, conn)
 		var jc *jsonrpc2.Conn
-		jc, server = protocol.NewClient(stream, client)
+		jc, server, _ = protocol.NewClient(stream, client)
 		if err != nil {
 			return nil, err
 		}
@@ -144,6 +152,12 @@ func (app *Application) connect(ctx context.Context, client protocol.Client) (pr
 	}
 	params := &protocol.InitializeParams{}
 	params.RootURI = string(span.FileURI(app.Config.Dir))
+	params.Capabilities = map[string]interface{}{
+		"workspace": map[string]interface{}{
+			"configuration": true,
+		},
+	}
+	client.prepare(app, server)
 	if _, err := server.Initialize(ctx, params); err != nil {
 		return nil, err
 	}
@@ -155,15 +169,31 @@ func (app *Application) connect(ctx context.Context, client protocol.Client) (pr
 
 type baseClient struct {
 	protocol.Server
-	app *Application
+	app    *Application
+	server protocol.Server
+	fset   *token.FileSet
 }
 
 func (c *baseClient) ShowMessage(ctx context.Context, p *protocol.ShowMessageParams) error { return nil }
 func (c *baseClient) ShowMessageRequest(ctx context.Context, p *protocol.ShowMessageRequestParams) (*protocol.MessageActionItem, error) {
 	return nil, nil
 }
-func (c *baseClient) LogMessage(ctx context.Context, p *protocol.LogMessageParams) error { return nil }
-func (c *baseClient) Telemetry(ctx context.Context, t interface{}) error                 { return nil }
+func (c *baseClient) LogMessage(ctx context.Context, p *protocol.LogMessageParams) error {
+	switch p.Type {
+	case protocol.Error:
+		log.Print("Error:", p.Message)
+	case protocol.Warning:
+		log.Print("Warning:", p.Message)
+	case protocol.Info:
+		log.Print("Info:", p.Message)
+	case protocol.Log:
+		log.Print("Log:", p.Message)
+	default:
+		log.Print(p.Message)
+	}
+	return nil
+}
+func (c *baseClient) Telemetry(ctx context.Context, t interface{}) error { return nil }
 func (c *baseClient) RegisterCapability(ctx context.Context, p *protocol.RegistrationParams) error {
 	return nil
 }
@@ -196,4 +226,31 @@ func (c *baseClient) ApplyEdit(ctx context.Context, p *protocol.ApplyWorkspaceEd
 }
 func (c *baseClient) PublishDiagnostics(ctx context.Context, p *protocol.PublishDiagnosticsParams) error {
 	return nil
+}
+
+func (c *baseClient) prepare(app *Application, server protocol.Server) {
+	c.app = app
+	c.server = server
+	c.fset = token.NewFileSet()
+}
+
+func (c *baseClient) AddFile(ctx context.Context, uri span.URI) (*protocol.ColumnMapper, error) {
+	fname, err := uri.Filename()
+	if err != nil {
+		return nil, fmt.Errorf("%v: %v", uri, err)
+	}
+	content, err := ioutil.ReadFile(fname)
+	if err != nil {
+		return nil, fmt.Errorf("%v: %v", uri, err)
+	}
+	f := c.fset.AddFile(fname, -1, len(content))
+	f.SetLinesForContent(content)
+	m := protocol.NewColumnMapper(uri, c.fset, f, content)
+	p := &protocol.DidOpenTextDocumentParams{}
+	p.TextDocument.URI = string(uri)
+	p.TextDocument.Text = string(content)
+	if err := c.server.DidOpen(ctx, p); err != nil {
+		return nil, fmt.Errorf("%v: %v", uri, err)
+	}
+	return m, nil
 }
