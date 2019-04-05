@@ -3,6 +3,9 @@
   "title": "socketParam",
   "description": "Socket parameter of an op",
   "properties": {
+    "default": {
+      "type": "string"
+    },
     "description": {
       "$ref": "../markdown.json"
     },

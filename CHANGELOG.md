@@ -11,6 +11,7 @@ All notable changes will be documented in this file in accordance with
 - [Interpolate Container Name](https://github.com/opctl/specs/issues/232)
 - [Conditional running](https://github.com/opctl/specs/issues/223)
 - [Looping](https://github.com/opctl/specs/issues/207)
+- [Interpolate Param Defaults](https://github.com/opctl/specs/issues/236)
 
 ### Removed
 

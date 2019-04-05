@@ -7,8 +7,7 @@
       "$ref": "../markdown.json"
     },
     "default": {
-      "description": "Default value",
-      "type": "boolean"
+      "$ref": "../booleanExpression.json"
     }
   },
   "type": "object"

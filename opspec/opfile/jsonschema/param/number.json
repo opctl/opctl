@@ -7,7 +7,7 @@
       "$ref": "../markdown.json"
     },
     "default": {
-      "type": "number"
+      "$ref": "../numberExpression.json"
     },
     "isSecret": {
       "description": "If the number is secret",

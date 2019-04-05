@@ -7,7 +7,7 @@
       "$ref": "../markdown.json"
     },
     "default": {
-      "type": "array"
+      "$ref": "../arrayExpression.json"
     },
     "isSecret": {
       "description": "If the array is secret",

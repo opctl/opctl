@@ -7,7 +7,7 @@
       "$ref": "../markdown.json"
     },
     "default": {
-      "type": "object"
+      "$ref": "../objectExpression.json"
     },
     "isSecret": {
       "description": "If the object is secret",

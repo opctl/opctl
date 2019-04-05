@@ -1,0 +1,4 @@
+{
+  "description": "Expression which evaluates to a directory",
+  "type": "string"
+}
