@@ -36,6 +36,7 @@ var _ = Context("looper", func() {
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
 					loopInterpreter:     fakeLoopInterpreter,
+					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -72,6 +73,7 @@ var _ = Context("looper", func() {
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
 					loopInterpreter:     fakeLoopInterpreter,
+					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -127,6 +129,7 @@ var _ = Context("looper", func() {
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
 					loopInterpreter:     fakeLoopInterpreter,
+					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
 

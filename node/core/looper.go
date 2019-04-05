@@ -3,7 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeLooper.go --fake-name fakeLooper ./ looper
 
 import (
+	"context"
 	"github.com/opctl/sdk-golang/opspec/interpreter/array"
+	"time"
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
 	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
@@ -17,7 +19,7 @@ type looper interface {
 	// Loop loops a call
 	Loop(
 		id string,
-		scope map[string]*model.Value,
+		inboundScope map[string]*model.Value,
 		scg *model.SCG,
 		opHandle model.DataHandle,
 		rootOpID string,
@@ -66,27 +68,27 @@ func (lpr _looper) isLoopEnded(
 
 func (lpr _looper) scopeLoopVars(
 	index int,
-	scope map[string]*model.Value,
+	outboundScope map[string]*model.Value,
 	scgLoop *model.SCGLoop,
 	opHandle model.DataHandle,
 ) error {
 	if nil != scgLoop.Index {
-		// assign iteration index to requested scope variable
+		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		scope[*scgLoop.Index] = &model.Value{
+		outboundScope[*scgLoop.Index] = &model.Value{
 			Number: &indexAsFloat64,
 		}
 	}
 	if nil != scgLoop.For && nil != scgLoop.For.Value {
 		each, err := lpr.arrayInterpreter.Interpret(
-			scope,
+			outboundScope,
 			scgLoop.For.Each,
 			opHandle,
 		)
 
 		// interpret value as string since everything is coercible to string
-		scope[*scgLoop.For.Value], err = lpr.stringInterpreter.Interpret(
-			scope,
+		outboundScope[*scgLoop.For.Value], err = lpr.stringInterpreter.Interpret(
+			outboundScope,
 			each.Array[index],
 			opHandle,
 		)
@@ -99,24 +101,43 @@ func (lpr _looper) scopeLoopVars(
 
 func (lpr _looper) Loop(
 	id string,
-	scope map[string]*model.Value,
+	inboundScope map[string]*model.Value,
 	scg *model.SCG,
 	opHandle model.DataHandle,
 	rootOpID string,
 ) error {
+	outboundScope := map[string]*model.Value{}
+	for varName, varData := range inboundScope {
+		outboundScope[varName] = varData
+	}
+
+	defer func() {
+		// defer must be defined before conditional return statements so it always runs
+		lpr.pubSub.Publish(
+			model.Event{
+				Timestamp: time.Now().UTC(),
+				CallEnded: &model.CallEndedEvent{
+					CallID:     id,
+					RootCallID: rootOpID,
+					Outputs:    outboundScope,
+				},
+			},
+		)
+	}()
+
 	// store scope shadowed in loop
 	shadowedScope := map[string]*model.Value{}
 	if nil != scg.Loop.Index {
-		shadowedScope[*scg.Loop.Index] = scope[*scg.Loop.Index]
+		shadowedScope[*scg.Loop.Index] = outboundScope[*scg.Loop.Index]
 	}
 	if nil != scg.Loop.For && nil != scg.Loop.For.Value {
-		shadowedScope[*scg.Loop.For.Value] = scope[*scg.Loop.For.Value]
+		shadowedScope[*scg.Loop.For.Value] = outboundScope[*scg.Loop.For.Value]
 	}
 
 	index := 0
 	if err := lpr.scopeLoopVars(
 		index,
-		scope,
+		outboundScope,
 		scg.Loop,
 		opHandle,
 	); nil != err {
@@ -131,17 +152,16 @@ func (lpr _looper) Loop(
 	dcgLoop, err := lpr.loopInterpreter.Interpret(
 		opHandle,
 		scgLoop,
-		scope,
+		outboundScope,
 	)
 	if nil != err {
 		return err
 	}
 
-	if lpr.isLoopEnded(index, dcgLoop) {
-		return nil
-	}
+	ctx := context.TODO()
+	for !lpr.isLoopEnded(index, dcgLoop) {
+		eventFilterSince := time.Now().UTC()
 
-	for {
 		callID, err := lpr.uniqueStringFactory.Construct()
 		if nil != err {
 			return err
@@ -149,7 +169,7 @@ func (lpr _looper) Loop(
 
 		err = lpr.caller.Call(
 			callID,
-			scope,
+			outboundScope,
 			scg,
 			opHandle,
 			rootOpID,
@@ -159,6 +179,48 @@ func (lpr _looper) Loop(
 			return err
 		}
 
+		// subscribe to events
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		// @TODO: handle err channel
+		eventChannel, _ := lpr.pubSub.Subscribe(
+			ctx,
+			model.EventFilter{
+				Roots: []string{rootOpID},
+				Since: &eventFilterSince,
+			},
+		)
+
+	eventLoop:
+		for event := range eventChannel {
+			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
+			switch {
+			case nil != event.OpEnded && event.OpEnded.OpID == callID:
+				for name, value := range event.OpEnded.Outputs {
+					outboundScope[name] = value
+				}
+				break eventLoop
+			case nil != event.ContainerExited && event.ContainerExited.ContainerID == callID:
+				for name, value := range event.ContainerExited.Outputs {
+					outboundScope[name] = value
+				}
+				break eventLoop
+			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == callID:
+				for name, value := range event.SerialCallEnded.Outputs {
+					outboundScope[name] = value
+				}
+				break eventLoop
+			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == callID:
+				break eventLoop
+			case nil != event.CallEnded && event.CallEnded.CallID == callID:
+				for name, value := range event.CallEnded.Outputs {
+					outboundScope[name] = value
+				}
+				break eventLoop
+			}
+		}
+		cancel()
+
 		index++
 
 		if lpr.isLoopEnded(index, dcgLoop) {
@@ -167,7 +229,7 @@ func (lpr _looper) Loop(
 
 		if err := lpr.scopeLoopVars(
 			index,
-			scope,
+			outboundScope,
 			scgLoop,
 			opHandle,
 		); nil != err {
@@ -178,7 +240,7 @@ func (lpr _looper) Loop(
 		dcgLoop, err = lpr.loopInterpreter.Interpret(
 			opHandle,
 			scgLoop,
-			scope,
+			outboundScope,
 		)
 		if nil != err {
 			return err
@@ -187,7 +249,7 @@ func (lpr _looper) Loop(
 
 	// unshadow shadowed scope
 	for name, value := range shadowedScope {
-		scope[name] = value
+		outboundScope[name] = value
 	}
 	return nil
 }

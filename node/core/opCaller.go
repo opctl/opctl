@@ -51,7 +51,7 @@ func (oc _opCaller) Call(
 ) error {
 	var err error
 	var isKilled bool
-	outputs := map[string]*model.Value{}
+	outboundScope := map[string]*model.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
@@ -99,7 +99,7 @@ func (oc _opCaller) Call(
 					OpRef:    dcgOpCall.OpHandle.Ref(),
 					Outcome:  opOutcome,
 					RootOpID: dcgOpCall.RootOpID,
-					Outputs:  outputs,
+					Outputs:  outboundScope,
 				},
 			},
 		)
@@ -149,7 +149,7 @@ func (oc _opCaller) Call(
 		return err
 	}
 
-	// wait on op outputs
+	// wait on op outboundScope
 	opOutputs := <-opOutputsChan
 
 	opDotYml, err := oc.dotYmlGetter.Get(
@@ -162,16 +162,16 @@ func (oc _opCaller) Call(
 	opPath := dcgOpCall.OpHandle.Path()
 	opOutputs, err = oc.outputsInterpreter.Interpret(opOutputs, opDotYml.Outputs, *opPath)
 
-	// filter op outputs to bound call outputs
+	// filter op outboundScope to bound call outboundScope
 	for boundName, boundValue := range scgOpCall.Outputs {
-		// return bound outputs
+		// return bound outboundScope
 		if "" == boundValue {
 			// implicit value
 			boundValue = boundName
 		}
 		for opOutputName, opOutputValue := range opOutputs {
 			if boundValue == opOutputName {
-				outputs[boundName] = opOutputValue
+				outboundScope[boundName] = opOutputValue
 			}
 		}
 	}
@@ -220,9 +220,12 @@ eventLoop:
 			}
 			break eventLoop
 		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == dcgOpCall.ChildCallID:
-			// parallel calls have no outputs
+			// parallel calls have no outboundScope
 			return nil
 		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
+			for name, value := range event.CallEnded.Outputs {
+				opOutputs[name] = value
+			}
 			break eventLoop
 		}
 	}

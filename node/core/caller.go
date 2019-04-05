@@ -95,6 +95,16 @@ func (clr _caller) Call(
 		return err
 	}
 
+	if nil != dcg.Loop {
+		return clr.looper.Loop(
+			id,
+			scope,
+			scg,
+			opHandle,
+			rootOpID,
+		)
+	}
+
 	defer func() {
 		clr.pubSub.Publish(
 			model.Event{
@@ -106,16 +116,6 @@ func (clr _caller) Call(
 			},
 		)
 	}()
-
-	if nil != dcg.Loop {
-		return clr.looper.Loop(
-			id,
-			scope,
-			scg,
-			opHandle,
-			rootOpID,
-		)
-	}
 
 	if nil != dcg.If && !*dcg.If {
 		return nil
