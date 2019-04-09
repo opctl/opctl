@@ -589,18 +589,19 @@ type fakeDockerClient struct {
 	daemonHostReturnsOnCall map[int]struct {
 		result1 string
 	}
-	DialSessionStub        func(context.Context, string, map[string][]string) (net.Conn, error)
-	dialSessionMutex       sync.RWMutex
-	dialSessionArgsForCall []struct {
+	DialHijackStub        func(context.Context, string, string, map[string][]string) (net.Conn, error)
+	dialHijackMutex       sync.RWMutex
+	dialHijackArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string][]string
+		arg3 string
+		arg4 map[string][]string
 	}
-	dialSessionReturns struct {
+	dialHijackReturns struct {
 		result1 net.Conn
 		result2 error
 	}
-	dialSessionReturnsOnCall map[int]struct {
+	dialHijackReturnsOnCall map[int]struct {
 		result1 net.Conn
 		result2 error
 	}
@@ -4217,66 +4218,67 @@ func (fake *fakeDockerClient) DaemonHostReturnsOnCall(i int, result1 string) {
 	}{result1}
 }
 
-func (fake *fakeDockerClient) DialSession(arg1 context.Context, arg2 string, arg3 map[string][]string) (net.Conn, error) {
-	fake.dialSessionMutex.Lock()
-	ret, specificReturn := fake.dialSessionReturnsOnCall[len(fake.dialSessionArgsForCall)]
-	fake.dialSessionArgsForCall = append(fake.dialSessionArgsForCall, struct {
+func (fake *fakeDockerClient) DialHijack(arg1 context.Context, arg2 string, arg3 string, arg4 map[string][]string) (net.Conn, error) {
+	fake.dialHijackMutex.Lock()
+	ret, specificReturn := fake.dialHijackReturnsOnCall[len(fake.dialHijackArgsForCall)]
+	fake.dialHijackArgsForCall = append(fake.dialHijackArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string][]string
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("DialSession", []interface{}{arg1, arg2, arg3})
-	fake.dialSessionMutex.Unlock()
-	if fake.DialSessionStub != nil {
-		return fake.DialSessionStub(arg1, arg2, arg3)
+		arg3 string
+		arg4 map[string][]string
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("DialHijack", []interface{}{arg1, arg2, arg3, arg4})
+	fake.dialHijackMutex.Unlock()
+	if fake.DialHijackStub != nil {
+		return fake.DialHijackStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.dialSessionReturns
+	fakeReturns := fake.dialHijackReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
-func (fake *fakeDockerClient) DialSessionCallCount() int {
-	fake.dialSessionMutex.RLock()
-	defer fake.dialSessionMutex.RUnlock()
-	return len(fake.dialSessionArgsForCall)
+func (fake *fakeDockerClient) DialHijackCallCount() int {
+	fake.dialHijackMutex.RLock()
+	defer fake.dialHijackMutex.RUnlock()
+	return len(fake.dialHijackArgsForCall)
 }
 
-func (fake *fakeDockerClient) DialSessionCalls(stub func(context.Context, string, map[string][]string) (net.Conn, error)) {
-	fake.dialSessionMutex.Lock()
-	defer fake.dialSessionMutex.Unlock()
-	fake.DialSessionStub = stub
+func (fake *fakeDockerClient) DialHijackCalls(stub func(context.Context, string, string, map[string][]string) (net.Conn, error)) {
+	fake.dialHijackMutex.Lock()
+	defer fake.dialHijackMutex.Unlock()
+	fake.DialHijackStub = stub
 }
 
-func (fake *fakeDockerClient) DialSessionArgsForCall(i int) (context.Context, string, map[string][]string) {
-	fake.dialSessionMutex.RLock()
-	defer fake.dialSessionMutex.RUnlock()
-	argsForCall := fake.dialSessionArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+func (fake *fakeDockerClient) DialHijackArgsForCall(i int) (context.Context, string, string, map[string][]string) {
+	fake.dialHijackMutex.RLock()
+	defer fake.dialHijackMutex.RUnlock()
+	argsForCall := fake.dialHijackArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *fakeDockerClient) DialSessionReturns(result1 net.Conn, result2 error) {
-	fake.dialSessionMutex.Lock()
-	defer fake.dialSessionMutex.Unlock()
-	fake.DialSessionStub = nil
-	fake.dialSessionReturns = struct {
+func (fake *fakeDockerClient) DialHijackReturns(result1 net.Conn, result2 error) {
+	fake.dialHijackMutex.Lock()
+	defer fake.dialHijackMutex.Unlock()
+	fake.DialHijackStub = nil
+	fake.dialHijackReturns = struct {
 		result1 net.Conn
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeDockerClient) DialSessionReturnsOnCall(i int, result1 net.Conn, result2 error) {
-	fake.dialSessionMutex.Lock()
-	defer fake.dialSessionMutex.Unlock()
-	fake.DialSessionStub = nil
-	if fake.dialSessionReturnsOnCall == nil {
-		fake.dialSessionReturnsOnCall = make(map[int]struct {
+func (fake *fakeDockerClient) DialHijackReturnsOnCall(i int, result1 net.Conn, result2 error) {
+	fake.dialHijackMutex.Lock()
+	defer fake.dialHijackMutex.Unlock()
+	fake.DialHijackStub = nil
+	if fake.dialHijackReturnsOnCall == nil {
+		fake.dialHijackReturnsOnCall = make(map[int]struct {
 			result1 net.Conn
 			result2 error
 		})
 	}
-	fake.dialSessionReturnsOnCall[i] = struct {
+	fake.dialHijackReturnsOnCall[i] = struct {
 		result1 net.Conn
 		result2 error
 	}{result1, result2}
@@ -9025,8 +9027,8 @@ func (fake *fakeDockerClient) Invocations() map[string][][]interface{} {
 	defer fake.copyToContainerMutex.RUnlock()
 	fake.daemonHostMutex.RLock()
 	defer fake.daemonHostMutex.RUnlock()
-	fake.dialSessionMutex.RLock()
-	defer fake.dialSessionMutex.RUnlock()
+	fake.dialHijackMutex.RLock()
+	defer fake.dialHijackMutex.RUnlock()
 	fake.dialerMutex.RLock()
 	defer fake.dialerMutex.RUnlock()
 	fake.diskUsageMutex.RLock()

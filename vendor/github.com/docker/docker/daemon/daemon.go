@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -159,15 +160,18 @@ func (daemon *Daemon) NewResolveOptionsFunc() resolver.ResolveOptionsFunc {
 		)
 		// must trim "https://" or "http://" prefix
 		for i, v := range daemon.configStore.Mirrors {
-			v = strings.TrimPrefix(v, "https://")
-			v = strings.TrimPrefix(v, "http://")
+			if uri, err := url.Parse(v); err == nil {
+				v = uri.Host
+			}
 			mirrors[i] = v
 		}
 		// set "registry-mirrors"
 		m[registryKey] = resolver.RegistryConf{Mirrors: mirrors}
 		// set "insecure-registries"
 		for _, v := range daemon.configStore.InsecureRegistries {
-			v = strings.TrimPrefix(v, "http://")
+			if uri, err := url.Parse(v); err == nil {
+				v = uri.Host
+			}
 			m[v] = resolver.RegistryConf{
 				PlainHTTP: true,
 			}
@@ -321,16 +325,17 @@ func (daemon *Daemon) restore() error {
 				alive    bool
 				ec       uint32
 				exitedAt time.Time
+				process  libcontainerdtypes.Process
 			)
 
-			alive, _, err = daemon.containerd.Restore(context.Background(), c.ID, c.InitializeStdio)
+			alive, _, process, err = daemon.containerd.Restore(context.Background(), c.ID, c.InitializeStdio)
 			if err != nil && !errdefs.IsNotFound(err) {
 				logrus.Errorf("Failed to restore container %s with containerd: %s", c.ID, err)
 				return
 			}
-			if !alive {
-				ec, exitedAt, err = daemon.containerd.DeleteTask(context.Background(), c.ID)
-				if err != nil && !errdefs.IsNotFound(err) {
+			if !alive && process != nil {
+				ec, exitedAt, err = process.Delete(context.Background())
+				if err != nil {
 					logrus.WithError(err).Errorf("Failed to delete container %s from containerd", c.ID)
 					return
 				}
@@ -353,11 +358,11 @@ func (daemon *Daemon) restore() error {
 						logrus.WithField("container", c.ID).WithField("state", s).
 							Info("restored container paused")
 						switch s {
-						case libcontainerdtypes.StatusPaused, libcontainerdtypes.StatusPausing:
+						case containerd.Paused, containerd.Pausing:
 							// nothing to do
-						case libcontainerdtypes.StatusStopped:
+						case containerd.Stopped:
 							alive = false
-						case libcontainerdtypes.StatusUnknown:
+						case containerd.Unknown:
 							logrus.WithField("container", c.ID).
 								Error("Unknown status for container during restore")
 						default:
