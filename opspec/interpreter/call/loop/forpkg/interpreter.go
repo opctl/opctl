@@ -2,7 +2,7 @@ package forpkg
 
 import (
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array"
+	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -18,12 +18,12 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return &_interpreter{
-		arrayInterpreter: array.NewInterpreter(),
+		loopableInterpreter: loopable.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	arrayInterpreter array.Interpreter
+	loopableInterpreter loopable.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -31,11 +31,10 @@ func (itp _interpreter) Interpret(
 	scgLoopFor *model.SCGLoopFor,
 	scope map[string]*model.Value,
 ) (*model.DCGLoopFor, error) {
-	// @TODO: consider an iterableInterpreter to iterate over anything iterable; not only arrays
-	dcgForEach, err := itp.arrayInterpreter.Interpret(
-		scope,
+	dcgForEach, err := itp.loopableInterpreter.Interpret(
 		scgLoopFor.Each,
 		opHandle,
+		scope,
 	)
 	if nil != err {
 		return nil, err

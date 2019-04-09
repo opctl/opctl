@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array"
+	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 )
 
 var _ = Context("Interpreter", func() {
@@ -18,7 +18,7 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		It("should call arrayInterpreter.Interpret w/ expected args", func() {
+		It("should call loopableInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedSCGLoopFor := &model.SCGLoopFor{
 				Each: "Each",
@@ -27,10 +27,10 @@ var _ = Context("Interpreter", func() {
 			providedOpHandle := new(data.FakeHandle)
 			providedScope := map[string]*model.Value{}
 
-			fakeArrayInterpreter := new(array.FakeInterpreter)
+			fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
-				arrayInterpreter: fakeArrayInterpreter,
+				loopableInterpreter: fakeLoopableInterpreter,
 			}
 
 			/* act */
@@ -41,27 +41,27 @@ var _ = Context("Interpreter", func() {
 			)
 
 			/* assert */
-			actualScope,
-				actualSCGLoopForEach,
-				actualOpHandle := fakeArrayInterpreter.InterpretArgsForCall(0)
+			actualSCGLoopForEach,
+				actualOpHandle,
+				actualScope := fakeLoopableInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualSCGLoopForEach).To(Equal(providedSCGLoopFor.Each))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
+			Expect(actualScope).To(Equal(providedScope))
 		})
-		Context("arrayInterpreter.Interpret errs", func() {
+		Context("loopableInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeArrayInterpreter := new(array.FakeInterpreter)
+				fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
 				expectedError := errors.New("expectedError")
-				fakeArrayInterpreter.InterpretReturns(
+				fakeLoopableInterpreter.InterpretReturns(
 					nil,
 					expectedError,
 				)
 
 				objectUnderTest := _interpreter{
-					arrayInterpreter: fakeArrayInterpreter,
+					loopableInterpreter: fakeLoopableInterpreter,
 				}
 
 				/* act */
@@ -81,10 +81,10 @@ var _ = Context("Interpreter", func() {
 				Value: new(string),
 			}
 
-			fakeArrayInterpreter := new(array.FakeInterpreter)
+			fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
 			expectedDCGLoopForEach := &model.Value{}
-			fakeArrayInterpreter.InterpretReturns(
+			fakeLoopableInterpreter.InterpretReturns(
 				expectedDCGLoopForEach,
 				nil,
 			)
@@ -95,7 +95,7 @@ var _ = Context("Interpreter", func() {
 			}
 
 			objectUnderTest := _interpreter{
-				arrayInterpreter: fakeArrayInterpreter,
+				loopableInterpreter: fakeLoopableInterpreter,
 			}
 
 			/* act */
