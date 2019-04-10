@@ -1,6 +1,3 @@
-### JetBrains
-.idea/
-
 ### NPM
 node_modules
 
@@ -9,3 +6,6 @@ coverage/
 
 ### jest
 jest*/
+
+## build
+lib/

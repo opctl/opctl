@@ -1,38 +1,44 @@
 {
-  "name": "@opspec/sdk",
-  "version": "0.0.0-alpha.21",
-  "description": "Javascript SDK for opspec",
+  "dependencies": {
+    "@codefresh-io/docker-reference": "^0.0.5",
+    "@types/node-fetch": "^2.3.2",
+    "ajv": "^5.2.3",
+    "node-fetch": "^1.7.3",
+    "typescript": "^3.4.3",
+    "universal-websocket-client": "^1.0.1"
+  },
+  "files": [
+    "lib"
+  ],
+  "name": "@opctl/sdk",
+  "version": "0.0.0-alpha.0",
+  "description": "Javascript SDK for opctl",
   "scripts": {
-    "test": "standard --fix && jest --coverage"
+    "test": "standard --fix *.ts && tsc && jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/opspec-io/sdk-js.git"
+    "url": "git+https://github.com/opctl/sdk-js.git"
   },
   "keywords": [
-    "opspec"
+    "opctl"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/opspec-io/sdk-js/issues"
+    "url": "https://github.com/opctl/sdk-js/issues"
   },
   "main": "lib",
-  "dependencies": {
-    "@codefresh-io/docker-reference": "^0.0.5",
-    "ajv": "^5.2.3",
-    "node-fetch": "^1.7.3",
-    "universal-websocket-client": "^1.0.1"
-  },
   "standard": {
     "envs": [
       "jest"
     ]
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "jest": "^22.4.3",
+    "@types/ajv": "^1.0.0",
+    "@types/jest": "^24.0.11",
+    "jest": "^24.7.1",
     "nock": "^9.0.22",
-    "standard": "^11.0.1"
+    "standard": "^11.0.1",
+    "ts-jest": "^24.0.2"
   }
 }

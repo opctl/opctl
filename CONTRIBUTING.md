@@ -11,13 +11,18 @@ They can be consumed via tools like [opctl](https://opctl.io).
 Contributions are subject to:
 
 - accepted review by one or more
-  [maintainers](https://github.com/orgs/opspec-io/teams/maintainers/members)
+  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
 - the [build](.opspec/build) op continuing to run with a successful
   outcome
 
 # Repo layout
 
-The structure of this repo mirrors the [golang SDK](https://github.com/opspec-io/sdk-golang) less un implemented functionality. 
+The structure of this repo mirrors the [golang SDK](https://github.com/opctl/sdk-golang) less un implemented functionality. 
+
+# Types
+
+Source code of this project is maintained in typescript at [src](src).
+The build generates es5 and a type definition file at [lib](lib).
 
 # Code style
 

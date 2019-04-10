@@ -16,54 +16,59 @@ web browsers.
 # Installation
 
 ```shell
-npm install --save @opspec/sdk
+npm install --save @opctl/sdk
 ```
 
 # Usage
 
-## Node api client
+## API client
 
 ```javascript
-const OpspecNodeApiClient = require('@opspec/sdk/lib/node/api/client');
+import {
+  eventStreamGet,
+  livenessGet,
+  opKill,
+  opStart
+} from '@opctl/sdk/dist/api/client'
 
-const localOpctlNodeBaseUrl = 'localhost:42224/api';
+// opctl api available from nodes via localhost:42224/api
+const apiBaseUrl = 'localhost:42224/api'
 
-const opspecNodeApiClient = new OpspecNodeApiClient({ baseUrl: localOpctlNodeBaseUrl });
-
-opspecNodeApiClient.liveness_get()
-  .then(() => console.log('node alive!'))
-  .catch(err => console.log(`error checking node; error was: ${err.message}`));
+// get the liveness of the api
+await livenessGet(
+  apiBaseUrl
+)
 
 // start an op
-const rootOpIdPromise = opspecNodeApiClient.op_start({
-  args: {
+const rootOpId = await opStart(
+  apiBaseUrl,
+  {
     rawValue: {
       string: 'hello base64 url encoded world!',
     },
   },
-  op: {
-    ref: 'github.com/opspec-pkgs/base64url.encode#1.0.0',
-  },
-});
+  {
+    ref: 'github.com/opctl-pkgs/base64url.encode#1.0.0',
+  }
+)
 
-// wait for op to start then...
-rootOpIdPromise.then(rootOpId => {
-  
-  // kill the op
-  opspecNodeApiClient.op_kill({ opId: rootOpId })
-  .then(() => console.log('successfully killed op!'))
-  .catch(err => console.log(`error killing op; error was: ${err.message}`));
-  
-  // replay events via stream
-  opspecNodeApiClient.event_stream_get({
+// kill the op we started
+await opKill(
+  apiBaseUrl,
+  rootOpId
+)
+
+// replay events from our op via stream
+await eventStreamGet(
+  apiBaseUrl,
+  {
     filter: {
       roots: [rootOpId],
     },
     onEvent: event => console.log(`received op event: ${JSON.stringify(event)}`),
     onError: err => console.log(`error streaming op events; error was: ${JSON.stringify(err)}`),
-  });
-  
-});
+  }
+)
 ```
 
 # Support

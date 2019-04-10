@@ -1,4 +1,5 @@
 module.exports = {
+  preset: 'ts-jest',
   verbose: true,
   coverageThreshold: {
     global: {
@@ -8,5 +9,5 @@ module.exports = {
       branch: 91
     }
   },
-  roots: ['lib']
+  roots: ['src']
 }
