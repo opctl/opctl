@@ -4,14 +4,16 @@ import Icon from './Icon'
 import Inputs from './Inputs'
 import Outputs from './Outputs'
 import EventStream from '../EventStream'
-import opspecNodeApiClient from '../../core/clients/opspecNodeApi'
+import getApiBaseUrl from '../../core/getApiBaseUrl'
+import { opKill, opStart, eventStreamGet } from '@opctl/sdk/lib/api/client'
 import { toast } from 'react-toastify'
 
-export default class Op extends Component<any,any> {
-  constructor (props) {
+export default class Op extends Component<any, any> {
+  constructor(props) {
     super(props)
   }
   args
+  apiBaseUrl = getApiBaseUrl()
 
   state = {
     isStartable: (this.props.value.inputs || []).length === 0,
@@ -33,16 +35,17 @@ export default class Op extends Component<any,any> {
   };
 
   kill = () => {
-    opspecNodeApiClient.op_kill({
-      opId: this.state.opId
-    })
+    opKill(
+      this.apiBaseUrl,
+      this.state.opId
+    )
       .then(() => this.setState({ isKillable: false }))
       .catch(error => toast.error(error.message))
   };
 
   start = () => {
     const args = Object.entries(this.props.value.inputs || [])
-      .reduce((args, [name, param]: [string,any]) => {
+      .reduce((args, [name, param]: [string, any]) => {
         if (param.array) args[name] = { array: this.args[name] }
         if (param.boolean) args[name] = { boolean: this.args[name] }
         if (param.dir) args[name] = { dir: this.args[name] }
@@ -54,33 +57,37 @@ export default class Op extends Component<any,any> {
         return args
       }, {})
 
-    opspecNodeApiClient.op_start({
+    opStart(
+      this.apiBaseUrl,
       args,
-      op: {
+      {
         ref: this.props.opRef
       }
-    })
+    )
       .then(opId => {
         this.setState({ opId, isKillable: true })
 
-        opspecNodeApiClient.event_stream_get({
-          filter: {
-            roots: [opId]
-          },
-          onEvent: event => {
-            if (event.opEnded && event.opEnded.opId === opId) {
-              this.setState({
-                isKillable: false,
-                outputs: event.opEnded.outputs
-              })
+        eventStreamGet(
+          this.apiBaseUrl,
+          {
+            filter: {
+              roots: [opId]
+            },
+            onEvent: event => {
+              if (event.opEnded && event.opEnded.opId === opId) {
+                this.setState({
+                  isKillable: false,
+                  outputs: event.opEnded.outputs
+                })
+              }
             }
-          }
+          } as any
+        )
+      // .catch(error => toast.error(error.message))
         })
-      })
-      .catch(error => toast.error(error.message))
   };
 
-  render () {
+  render() {
     return (
       <div style={{ height: '100%' }}>
         <form onSubmit={e => {

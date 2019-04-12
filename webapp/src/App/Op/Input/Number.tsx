@@ -1,7 +1,7 @@
 import React from 'react'
 import Input from '../../Input'
 import Select from './Select'
-import opspecDataValidator from '@opspec/sdk/lib/data/number/validator'
+import paramNumberValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/number/validate'
 
 export default ({ name, number, onInvalid, onValid, opRef, value }) => {
   if (number.constraints && !number.isSecret && number.constraints.enum) {
@@ -12,7 +12,7 @@ export default ({ name, number, onInvalid, onValid, opRef, value }) => {
       onValid={value => onValid(value)}
       options={number.constraints.enum.map(item => ({ name: item, value: item }))}
       opRef={opRef}
-      validate={value => opspecDataValidator.validate(Number(value), number.constraints)}
+      validate={value => paramNumberValidate(Number(value), number.constraints)}
       value={value || number.default}
     />
   }
@@ -23,7 +23,7 @@ export default ({ name, number, onInvalid, onValid, opRef, value }) => {
     onValid={value => onValid(value)}
     opRef={opRef}
     type={number.isSecret ? 'password' : 'number'}
-    validate={value => opspecDataValidator.validate(Number(value), number.constraints)}
+    validate={value => paramNumberValidate(Number(value), number.constraints)}
     value={value || number.default}
   />
 }

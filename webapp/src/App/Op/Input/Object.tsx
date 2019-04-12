@@ -1,7 +1,7 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
-import opspecDataValidator from '@opspec/sdk/lib/data/object/validator'
+import paramObjectValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/object/validate'
 
 interface Props {
   name: string
@@ -30,7 +30,7 @@ export default (
       opRef={opRef}
       validate={value => {
         try {
-          return opspecDataValidator.validate(jsYaml.safeLoad(value), object.constraints)
+          return paramObjectValidate(jsYaml.safeLoad(value), object.constraints)
         } catch (err) {
           return [err]
         }

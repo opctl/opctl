@@ -89,9 +89,10 @@ var _ = Context("Interpreter", func() {
 				fakeStringInterpreter.InterpretReturns(nil, interpretErr)
 
 				expectedErr := fmt.Errorf(
-					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+					"unable to bind env var '%v' to '%v'; error was %v",
 					envVarName,
 					envVarName,
+					interpretErr,
 				)
 
 				objectUnderTest := _interpreter{

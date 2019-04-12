@@ -1,3 +1,6 @@
+jest.mock('@opctl/sdk/lib/api/client', () => ({
+  eventStreamGet: async () => { }
+}))
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Op from './index'

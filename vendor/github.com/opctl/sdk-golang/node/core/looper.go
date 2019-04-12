@@ -4,8 +4,10 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array"
+	"sort"
 	"time"
+
+	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
 	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
@@ -31,8 +33,8 @@ func newLooper(
 	pubSub pubsub.PubSub,
 ) looper {
 	return _looper{
-		arrayInterpreter:    array.NewInterpreter(),
 		caller:              caller,
+		loopableInterpreter: loopable.NewInterpreter(),
 		pubSub:              pubSub,
 		stringInterpreter:   stringPkg.NewInterpreter(),
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -41,8 +43,8 @@ func newLooper(
 }
 
 type _looper struct {
-	arrayInterpreter    array.Interpreter
 	caller              caller
+	loopableInterpreter loopable.Interpreter
 	pubSub              pubsub.PubSub
 	stringInterpreter   stringPkg.Interpreter
 	uniqueStringFactory uniquestring.UniqueStringFactory
@@ -58,14 +60,34 @@ func (lpr _looper) isLoopEnded(
 		return true
 	}
 
-	if nil != loop.For && index == len(loop.For.Each.Array) {
-		// each provided & iteration complete
+	if nil != loop.For {
+		if len(loop.For.Each.Array) != 0 {
+			return index == len(loop.For.Each.Array)
+		}
+		if len(loop.For.Each.Object) != 0 {
+			return index == len(loop.For.Each.Object)
+		}
+
+		// empty array or object
 		return true
 	}
 
 	return false
 }
 
+func (lpr _looper) sortMap(
+	m map[string]interface{},
+) []string {
+	names := make([]string, 0, len(m))
+	for name := range m {
+		names = append(names, name)
+	}
+
+	sort.Strings(names) //sort keys alphabetically
+	return names
+}
+
+// @TODO move this to loop interpreter
 func (lpr _looper) scopeLoopVars(
 	index int,
 	outboundScope map[string]*model.Value,
@@ -80,16 +102,31 @@ func (lpr _looper) scopeLoopVars(
 		}
 	}
 	if nil != scgLoop.For && nil != scgLoop.For.Value {
-		each, err := lpr.arrayInterpreter.Interpret(
-			outboundScope,
+		var rawValue interface{}
+
+		loopable, err := lpr.loopableInterpreter.Interpret(
 			scgLoop.For.Each,
 			opHandle,
+			outboundScope,
 		)
+
+		if nil != loopable.Array {
+			rawValue = loopable.Array[index]
+		} else {
+			sortedNames := lpr.sortMap(loopable.Object)
+			name := sortedNames[index]
+			rawValue = loopable.Object[name]
+
+			if nil != scgLoop.For.Key {
+				// only add key to scope if declared
+				outboundScope[*scgLoop.For.Key] = &model.Value{String: &name}
+			}
+		}
 
 		// interpret value as string since everything is coercible to string
 		outboundScope[*scgLoop.For.Value], err = lpr.stringInterpreter.Interpret(
 			outboundScope,
-			each.Array[index],
+			rawValue,
 			opHandle,
 		)
 		if nil != err {
@@ -129,6 +166,9 @@ func (lpr _looper) Loop(
 	shadowedScope := map[string]*model.Value{}
 	if nil != scg.Loop.Index {
 		shadowedScope[*scg.Loop.Index] = outboundScope[*scg.Loop.Index]
+	}
+	if nil != scg.Loop.For && nil != scg.Loop.For.Key {
+		shadowedScope[*scg.Loop.For.Key] = outboundScope[*scg.Loop.For.Key]
 	}
 	if nil != scg.Loop.For && nil != scg.Loop.For.Value {
 		shadowedScope[*scg.Loop.For.Value] = outboundScope[*scg.Loop.For.Value]

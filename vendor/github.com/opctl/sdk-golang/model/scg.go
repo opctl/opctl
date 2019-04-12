@@ -46,6 +46,7 @@ type SCGLoop struct {
 type SCGLoopFor struct {
 	// will be interpolated
 	Each  interface{} `yaml:"each"`
+	Key   *string     `yaml:"key,omitempty"`
 	Value *string     `yaml:"value,omitempty"`
 }
 

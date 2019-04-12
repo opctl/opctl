@@ -1,4 +1,5 @@
-import opspecNodeApiClient from '../clients/opspecNodeApi'
+import getApiBaseUrl from '../getApiBaseUrl'
+import { eventStreamGet } from '@opctl/sdk/lib/api/client'
 import uuidV4 from 'uuid/v4'
 import filterChecker from './filterChecker'
 
@@ -7,9 +8,12 @@ const subscriptions = [] as any[]
 
 class EventStore {
   constructor () {
-    opspecNodeApiClient.event_stream_get({
-      onEvent: event => this.add(event)
-    })
+    eventStreamGet(
+      getApiBaseUrl(),
+      {
+        onEvent: event => this.add(event)
+      } as any
+    )
   }
 
   add (event) {
