@@ -14,6 +14,7 @@ export default class _Websocket {
    */
   constructor(address: string) {
     this.address = address
+    this.client = new UniversalWebsocketClient(this.address)
     this._initClient()
   }
 

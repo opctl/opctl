@@ -1,6 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   verbose: true,
+  collectCoverage: true,
   coverageThreshold: {
     global: {
       functions: 60,

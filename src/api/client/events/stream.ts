@@ -6,27 +6,27 @@ export interface EventFilter {
 }
 
 export interface Options {
-    filter: EventFilter
+    filter?: EventFilter | null | undefined
 
     /**
      * Callback invoked when event stream closes
      */
-    onClose: () => void
+    onClose?: () => void | null | undefined
 
     /**
      * Callback invoked when an error is received
      */
-    onError: () => void
+    onError?: () => void | null | undefined
 
     /**
      * Callback invoked for each event received
      */
-    onEvent: (event: Event) => void
+    onEvent?: (event: Event) => void | null | undefined
 
     /**
      * Callback invoked when event stream opens
      */
-    onOpen: () => void
+    onOpen?: () => void | null | undefined
 }
 
 /**
@@ -66,7 +66,7 @@ export default function stream(
         // we ack every message which serves as backpressure so the server doesn't flood us
         setTimeout(() => webSocketClient.send(''), 0)
 
-        onEvent(JSON.parse(msg.data))
+        onEvent && onEvent(JSON.parse(msg.data))
     }
     webSocketClient.onopen = onOpen
 

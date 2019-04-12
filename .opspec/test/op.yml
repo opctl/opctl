@@ -25,5 +25,5 @@ run:
         dirs:
           /src: $(srcDir)
         files:
-          /src/coverage/coverage-final.json: $(coverageReport)
+          /src/coverage/lcov.info: $(coverageReport)
         workDir: /src
