@@ -11,22 +11,22 @@ export interface Options {
     /**
      * Callback invoked when event stream closes
      */
-    onClose?: () => void | null | undefined
+    onClose?: () => any
 
     /**
      * Callback invoked when an error is received
      */
-    onError?: () => void | null | undefined
+    onError?: (error: Error) => any
 
     /**
      * Callback invoked for each event received
      */
-    onEvent?: (event: Event) => void | null | undefined
+    onEvent?: (event: Event) => any
 
     /**
      * Callback invoked when event stream opens
      */
-    onOpen?: () => void | null | undefined
+    onOpen?: () => any
 }
 
 /**

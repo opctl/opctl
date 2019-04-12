@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@codefresh-io/docker-reference": "^0.0.5",
+    "@types/ajv": "^1.0.0",
     "@types/node-fetch": "^2.3.2",
     "ajv": "^5.2.3",
     "node-fetch": "^1.7.3",
@@ -11,10 +12,10 @@
     "lib"
   ],
   "name": "@opctl/sdk",
-  "version": "0.0.0-alpha.1",
+  "version": "0.0.0-alpha.4",
   "description": "Javascript SDK for opctl",
   "scripts": {
-    "test": "standard --fix *.ts && tsc && jest"
+    "test": "standard --fix *.ts && jest"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,6 @@
     ]
   },
   "devDependencies": {
-    "@types/ajv": "^1.0.0",
     "@types/jest": "^24.0.11",
     "jest": "^24.7.1",
     "nock": "^9.0.22",
