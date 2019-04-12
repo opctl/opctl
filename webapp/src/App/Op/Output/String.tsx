@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Description from '../Param/Description'
-import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
+import getApiBaseUrl from '../../../core/getApiBaseUrl'
+import { dataGet } from '@opctl/sdk/lib/api/client'
 
 interface Props {
   name: string
@@ -44,9 +45,10 @@ export default class String extends Component<Props, State> {
   _loadValue() {
     const { value, param } = this.props
     if (value) {
-      opspecNodeApiClient.data_get({
-        dataRef: value
-      })
+      dataGet(
+        getApiBaseUrl(),
+        value
+      )
         .then(data => data.text())
         .then(value => this.setState({ value }))
     } else {

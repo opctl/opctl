@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import jsYaml from 'js-yaml'
 import Textarea from 'react-textarea-autosize'
 import Description from '../Param/Description'
-import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
+import getApiBaseUrl from '../../../core/getApiBaseUrl'
+import { dataGet } from '@opctl/sdk/lib/api/client'
 
 interface Props {
   name: string
@@ -45,9 +46,10 @@ export default class _Object extends Component<Props, State> {
   _loadValue() {
     const { value, param } = this.props
     if (value) {
-      opspecNodeApiClient.data_get({
-        dataRef: value
-      })
+      dataGet(
+        getApiBaseUrl(),
+        value
+      )
         .then(data => data.json())
         .then(value => this.setState({ value: jsYaml.safeDump(value) }))
     } else {

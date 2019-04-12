@@ -114,8 +114,9 @@ func (app *Application) Run(ctx context.Context, args ...string) error {
 func (app *Application) commands() []tool.Application {
 	return []tool.Application{
 		&app.Serve,
-		&query{app: app},
 		&check{app: app},
+		&format{app: app},
+		&query{app: app},
 	}
 }
 
@@ -145,18 +146,14 @@ func (app *Application) connect(ctx context.Context, client cmdClient) (protocol
 		stream := jsonrpc2.NewHeaderStream(conn, conn)
 		var jc *jsonrpc2.Conn
 		jc, server, _ = protocol.NewClient(stream, client)
-		if err != nil {
-			return nil, err
-		}
 		go jc.Run(ctx)
 	}
+
 	params := &protocol.InitializeParams{}
 	params.RootURI = string(span.FileURI(app.Config.Dir))
-	params.Capabilities = map[string]interface{}{
-		"workspace": map[string]interface{}{
-			"configuration": true,
-		},
-	}
+	params.Capabilities.Workspace.Configuration = true
+	params.Capabilities.TextDocument.Hover.ContentFormat = []protocol.MarkupKind{protocol.PlainText}
+
 	client.prepare(app, server)
 	if _, err := server.Initialize(ctx, params); err != nil {
 		return nil, err

@@ -1,7 +1,7 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
-import opspecDataValidator from '@opspec/sdk/lib/data/array/validator'
+import paramArrayValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/array/validate'
 
 interface Props {
   array
@@ -30,7 +30,7 @@ export default (
     opRef={opRef}
     validate={value => {
       try {
-        return opspecDataValidator.validate(jsYaml.safeLoad(value), array.constraints)
+        return paramArrayValidate(jsYaml.safeLoad(value), array.constraints)
       } catch (err) {
         return [err]
       }

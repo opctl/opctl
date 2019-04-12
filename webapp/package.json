@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@opctl/sdk": "^0.0.0-alpha.4",
     "ansi-to-react": "5.0.0",
     "bootstrap": "^4.3.1",
     "brace": "^0.11.1",
@@ -22,18 +23,17 @@
     "react-toastify": "4.5.2",
     "react-virtualized": "^9.18.5",
     "reactstrap": "^7.1.0",
-    "typescript": "^3.3.4000",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@opspec/sdk": "0.0.0-alpha.21",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.11.5",
     "@types/react": "^16.8.8",
     "@types/react-dom": "^16.8.3",
     "node-sass": "^4.11.0",
     "react-scripts": "^2.1.8",
-    "standard": "^12.0.1"
+    "standard": "^12.0.1",
+    "typescript": "^3.4.3"
   },
   "standard": {
     "parser": "babel-eslint",

@@ -5,7 +5,8 @@ import OpSelector from '../../OpSelector'
 import { AutoSizer } from 'react-virtualized'
 import Item from './Item'
 import 'react-grid-layout/css/styles.css'
-import opspecNodeApiClient from '../../../core/clients/opspecNodeApi'
+import getApiBaseUrl from '../../../core/getApiBaseUrl'
+import { opStart, opKill } from '@opctl/sdk/lib/api/client'
 import contentStore from '../../../core/contentStore'
 import uuidV4 from 'uuid/v4'
 import { toast } from 'react-toastify'
@@ -36,6 +37,7 @@ export default class OperationsView extends PureComponent<any, State> {
       items: []
     }
 
+  apiBaseUrl = getApiBaseUrl()
   isItemStartable = (inputs, args) => Object.keys(inputs || []).length === Object.keys(args).length;
 
   addItem = ({ op, opRef }) => {
@@ -116,7 +118,7 @@ export default class OperationsView extends PureComponent<any, State> {
     }
 
     const args = Object.entries(item.op.inputs || [])
-      .reduce((args, [name, param]: [string,any]) => {
+      .reduce((args, [name, param]: [string, any]) => {
         if (param.array) args[name] = { array: item.args[name] }
         if (param.boolean) args[name] = { boolean: item.args[name] }
         if (param.dir) args[name] = { dir: item.args[name] }
@@ -128,12 +130,13 @@ export default class OperationsView extends PureComponent<any, State> {
         return args
       }, {})
 
-    opspecNodeApiClient.op_start({
+    opStart(
+      this.apiBaseUrl,
       args,
-      op: {
+      {
         ref: item.opRef
       }
-    })
+    )
       .then(opId => {
         this.updateItemConfiguration(itemId, { opId })
       })
@@ -149,9 +152,10 @@ export default class OperationsView extends PureComponent<any, State> {
 
   killItem = (itemId) => {
     const item = this.state.items.find(item => item.i === itemId)
-    opspecNodeApiClient.op_kill({
-      opId: item.opId
-    })
+    opKill(
+      this.apiBaseUrl,
+      item.opId
+    )
       .then(() => {
         this.updateItemConfiguration(item.i, { isKillable: false })
       })
