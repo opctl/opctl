@@ -1,0 +1,8 @@
+language: generic
+sudo: required
+before_script:
+- curl -L https://github.com/opctl/opctl/releases/download/0.1.24/opctl0.1.24.linux.tgz | sudo tar -xzv -C /usr/local/bin
+services:
+- docker
+script:
+- opctl run -a gitBranch=$TRAVIS_BRANCH build
