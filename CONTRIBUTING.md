@@ -19,11 +19,6 @@ Contributions are subject to:
 
 The structure of this repo mirrors the [golang SDK](https://github.com/opctl/sdk-golang) less un implemented functionality. 
 
-# Types
-
-Source code of this project is maintained in typescript at [src](src).
-The build generates es5 and a type definition file at [lib](lib).
-
 # Code style
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) is enforced.

@@ -19,6 +19,10 @@ web browsers.
 npm install --save @opctl/sdk
 ```
 
+# Typescript
+
+This library is written in typescript. The package published to NPM targets ES2015 and includes type declarations.
+
 # Usage
 
 ## API client

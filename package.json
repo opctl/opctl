@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@codefresh-io/docker-reference": "^0.0.5",
-    "@types/ajv": "^1.0.0",
     "@types/node-fetch": "^2.3.2",
     "ajv": "^5.2.3",
     "node-fetch": "^1.7.3",
