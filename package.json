@@ -24,7 +24,7 @@
     "lib"
   ],
   "name": "@opctl/sdk-react",
-  "version": "0.0.0-alpha.10",
+  "version": "0.0.0-alpha.13",
   "description": "React SDK for opctl",
   "scripts": {
     "test": "standard --fix *.ts && jest"

@@ -7,8 +7,7 @@ interface Props {
   isKillable: boolean
   isStartable: boolean
   name: string
-  onConfigure: (cfg: any) => any
-  onDelete: () => any
+  onDelete?: () => any | undefined | null
   onKill: () => any
   onStart: () => any
   onToggleFullScreen: () => any
@@ -28,21 +27,22 @@ export default class Header extends PureComponent<Props, State> {
   render() {
     return (
       <div
-        onDoubleClick={this.props.onToggleFullScreen}
         style={{
           width: '100%',
           height: '37px',
-          borderBottom: 'solid thin #ececec',
-          cursor: this.props.isFullScreen ? 'pointer' : '-webkit-grab',
           wordBreak: 'break-all',
           verticalAlign: 'middle',
-          textAlign: 'center',
           lineHeight: '37px',
           whiteSpace: 'nowrap',
           position: 'relative'
         }}
       >
-        <div style={{ overflow: 'hidden', marginLeft: '4px', width: 'calc(100% - 36px)', height: '37px' }}>
+        <div style={{
+          overflow: 'hidden',
+          marginLeft: '4px',
+          width: 'calc(100% - 36px)',
+          height: '37px'
+        }}>
           {this.props.name}
         </div>
         <div>
@@ -69,15 +69,19 @@ export default class Header extends PureComponent<Props, State> {
                   </DropdownItem>
                 }
                 <DropdownItem
-                  onClick={this.props.onConfigure}
+                  onClick={this.props.onToggleFullScreen}
                 >
-                  Configure
-              </DropdownItem>
-                <DropdownItem
-                  onClick={this.props.onDelete}
-                >
-                  Delete (del)
-              </DropdownItem>
+                  Toggle Full Screen
+                </DropdownItem>
+                {
+                  this.props.onDelete
+                    ? <DropdownItem
+                      onClick={this.props.onDelete}
+                    >
+                      Delete (del)
+                  </DropdownItem>
+                    : null
+                }
               </DropdownMenu>
             </Dropdown>
           </div>

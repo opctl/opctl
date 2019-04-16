@@ -2,10 +2,8 @@ import React, { Fragment, PureComponent } from 'react'
 import Header from './Header'
 import Inputs from './Inputs'
 import EventStream from '../EventStream'
-import { Modal, ModalBody } from 'reactstrap'
 import ReactModal from 'react-modal'
 import EventStore from '../eventStore'
-import { css } from 'emotion'
 
 interface Props {
   args: { [name: string]: any }
@@ -14,7 +12,7 @@ interface Props {
   isStartable: boolean
   name?: string | null | undefined
   onConfigure: (cfg: any) => any
-  onDelete: () => any
+  onDelete?: () => any | null | undefined
   onKill: () => any
   onStart: () => any
   op: any
@@ -115,57 +113,58 @@ export default class Op extends PureComponent<Props, State> {
           isFullScreen={this.state.isFullScreen}
           isKillable={this.state.isKillable}
           isStartable={this.props.isStartable}
-          onToggleFullScreen={() => this.setState(prevState => ({isFullScreen: !prevState.isFullScreen}))}
-          onConfigure={this.toggleConfigurationModal}
+          onToggleFullScreen={() => this.setState(prevState => ({ isFullScreen: !prevState.isFullScreen }))}
           onStart={this.props.onStart}
           onKill={this.props.onKill}
           onDelete={this.props.onDelete}
           name={this.state.name}
         />
-        <Modal
-          size='lg'
-          isOpen={this.state.isConfigurationVisible}
-          toggle={this.toggleConfigurationModal}
+        <ul
+          className='nav nav-tabs'
+          style={{
+            height: '37px'
+          }}
         >
-          <ModalBody>
-            <h2>Display</h2>
-            <div
-              className='form-group'
+          <li className='nav-item'>
+            <a
+              onClick={() => this.setState({ isConfigurationVisible: true })}
+              className={`nav-link ${this.state.isConfigurationVisible && 'active'}`}
+              href='#'
             >
-              <label
-                className='form-control-label'
-              >
-                name
-                      <input
-                  className='form-control'
-                  name='name'
-                  value={this.state.name}
-                  onChange={({ target }) => this.handleNameChanged(target.value)}
-                />
-              </label>
-            </div>
-            <Inputs
-              inputs={this.props.op.inputs}
-              onInvalid={this.handleInvalidArg}
-              onValid={this.handleValidArg}
-              opRef={this.props.opRef}
-              scope={this.args}
-            />
-          </ModalBody>
-        </Modal>
-        {
-          this.props.opId
-            ? <div className={css({
-              height: 'calc(100% - 37px)'
-            })}>
-              <EventStream
+              Configuration
+            </a>
+          </li>
+          <li className='nav-item'>
+            <a
+              onClick={() => this.setState({ isConfigurationVisible: false })}
+              className={`nav-link ${!this.state.isConfigurationVisible && 'active'}`}
+              href='#'
+            >
+              Logs
+            </a>
+          </li>
+        </ul>
+        <div
+          style={{
+            height: 'calc(100% - 74px)'
+          }}
+        >
+          {
+            this.state.isConfigurationVisible
+              ? <Inputs
+                inputs={this.props.op.inputs}
+                onInvalid={this.handleInvalidArg}
+                onValid={this.handleValidArg}
+                opRef={this.props.opRef}
+                scope={this.args}
+              />
+              : <EventStream
                 eventStore={this.props.eventStore}
                 key={this.props.opId}
                 filter={{ roots: [this.props.opId] }}
               />
-            </div>
-            : null
-        }
+          }
+        </div>
       </Fragment>
     )
 

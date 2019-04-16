@@ -10,7 +10,7 @@ it('renders without crashing', () => {
   ReactDOM.render(
     <Op
       args={{}}
-      eventStore={{} as any}
+      eventStore={{getStream: () => {}} as any}
       isKillable={false}
       isStartable={false}
       onConfigure={() => null}

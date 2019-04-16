@@ -22,8 +22,12 @@ export default (
   if (!inputs || Object.entries(inputs).length === 0) return (null)
 
   return (
-    <div>
-      <h2>Inputs</h2>
+    <div
+      style={{
+        marginTop: '1rem'
+      }}
+    >
+      <h4>Inputs</h4>
       {Object.entries(inputs).map(([name, input]) =>
         <Input
           {
