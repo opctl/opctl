@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { MdMoreVert } from 'react-icons/md'
+import IconMore from '../icons/More'
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
 
 interface Props {
@@ -52,11 +52,7 @@ export default class Header extends PureComponent<Props, State> {
               toggle={this.toggleDropdown}
             >
               <DropdownToggle tag='div'>
-                <MdMoreVert
-                  style={{
-                    transform: 'rotate(-90deg) translateY(-50%)'
-                  }}
-                />
+                <IconMore />
               </DropdownToggle>
               <DropdownMenu right>
                 {

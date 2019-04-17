@@ -17,6 +17,10 @@ outputs:
 opspec: 0.1.6
 run:
   serial:
+    - op:
+        pkg: { ref: test }
+        inputs: { srcDir }
+        outputs: { srcDir, coverageReport }
     - container:
         image: { ref: 'node:11.13.0-alpine' }
         cmd:
@@ -28,10 +32,6 @@ run:
         dirs:
           /src: $(srcDir)
         workDir: /src
-    - op:
-        pkg: { ref: test }
-        inputs: { srcDir }
-        outputs: { srcDir, coverageReport }
     - op:
         pkg: { ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2 }
         inputs: { dotGitDir: $(srcDir/.git) }

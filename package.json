@@ -10,7 +10,7 @@
     "js-yaml": "^3.13.1",
     "react": "^16.8.6",
     "react-ace": "^6.4.0",
-    "react-icons": "^3.5.0",
+    "react-hotkeys": "^1.1.4",
     "react-modal": "^3.8.1",
     "react-remarkable": "^1.1.3",
     "react-textarea-autosize": "^7.1.0",
@@ -24,7 +24,7 @@
     "lib"
   ],
   "name": "@opctl/sdk-react",
-  "version": "0.0.0-alpha.13",
+  "version": "0.0.0-alpha.16",
   "description": "React SDK for opctl",
   "scripts": {
     "test": "standard --fix *.ts && jest"

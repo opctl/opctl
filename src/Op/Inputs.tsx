@@ -23,6 +23,7 @@ export default (
 
   return (
     <div
+      className='container'
       style={{
         marginTop: '1rem'
       }}
