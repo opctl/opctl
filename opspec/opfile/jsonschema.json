@@ -665,7 +665,7 @@
                     },
                     {
                       "description": "Expression coercible to string value",
-                      "$ref": "#/properties/run/properties/container/properties/name"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
                     }
                   ]
                 }
@@ -684,7 +684,7 @@
                     },
                     {
                       "description": "Expression coercible to file value &/or scope ref to set upon exit",
-                      "$ref": "#/properties/run/properties/container/properties/name"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
                     }
                   ]
                 }
@@ -709,13 +709,7 @@
             },
             "name": {
               "description": "Name the container can be referenced by from other containers",
-              "type": [
-                "array",
-                "boolean",
-                "number",
-                "object",
-                "string"
-              ]
+              "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
             },
             "ports": {
               "description": "Ports bound from the container to the host",
@@ -758,11 +752,19 @@
             "for": {
               "properties": {
                 "each": {
-                  "description": "Iterable which will be iterated",
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/array/properties/default"
+                  "description": "Value to be looped over",
+                  "type": [
+                    "array",
+                    "object",
+                    "string"
+                  ]
+                },
+                "key": {
+                  "description": "Variable each iterations associated key will be made available through",
+                  "type": "string"
                 },
                 "value": {
-                  "description": "Variable the value of each iteration will be made available through",
+                  "description": "Variable each iterations associated value will be made available through",
                   "type": "string"
                 }
               },
