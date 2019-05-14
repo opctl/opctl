@@ -56,6 +56,7 @@ func (this _core) StartOp(
 				Op: scgOpCall,
 			},
 			opHandle,
+			nil,
 			opID,
 		)
 	}()

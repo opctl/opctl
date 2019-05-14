@@ -18,6 +18,7 @@ type caller interface {
 		scope map[string]*model.Value,
 		scg *model.SCG,
 		opHandle model.DataHandle,
+		parentCallID *string,
 		rootOpID string,
 	) error
 }
@@ -26,13 +27,14 @@ func newCaller(
 	callInterpreter call.Interpreter,
 	containerCaller containerCaller,
 	dataDirPath string,
-	dcgNodeRepo dcgNodeRepo,
-	opKiller opKiller,
+	callStore callStore,
+	callKiller callKiller,
 	pubSub pubsub.PubSub,
 ) caller {
 	instance := &_caller{
 		callInterpreter: callInterpreter,
 		containerCaller: containerCaller,
+		callStore:       callStore,
 		pubSub:          pubSub,
 	}
 
@@ -42,15 +44,15 @@ func newCaller(
 	)
 
 	instance.opCaller = newOpCaller(
+		callStore,
 		pubSub,
-		dcgNodeRepo,
 		instance,
 		dataDirPath,
 	)
 
 	instance.parallelCaller = newParallelCaller(
 		instance,
-		opKiller,
+		callKiller,
 		pubSub,
 	)
 
@@ -65,6 +67,7 @@ func newCaller(
 type _caller struct {
 	callInterpreter call.Interpreter
 	containerCaller containerCaller
+	callStore       callStore
 	looper          looper
 	opCaller        opCaller
 	parallelCaller  parallelCaller
@@ -77,6 +80,7 @@ func (clr _caller) Call(
 	scope map[string]*model.Value,
 	scg *model.SCG,
 	opHandle model.DataHandle,
+	parentCallID *string,
 	rootOpID string,
 ) error {
 	if nil == scg {
@@ -89,6 +93,7 @@ func (clr _caller) Call(
 		scg,
 		id,
 		opHandle,
+		parentCallID,
 		rootOpID,
 	)
 	if nil != err {
@@ -101,6 +106,7 @@ func (clr _caller) Call(
 			scope,
 			scg,
 			opHandle,
+			parentCallID,
 			rootOpID,
 		)
 	}
@@ -121,6 +127,8 @@ func (clr _caller) Call(
 		return nil
 	}
 
+	clr.callStore.Add(dcg)
+
 	switch {
 	case nil != scg.Container:
 		return clr.containerCaller.Call(
@@ -132,6 +140,7 @@ func (clr _caller) Call(
 		return clr.opCaller.Call(
 			dcg.Op,
 			scope,
+			parentCallID,
 			scg.Op,
 		)
 	case len(scg.Parallel) > 0:

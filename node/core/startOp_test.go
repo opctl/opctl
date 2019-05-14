@@ -253,12 +253,14 @@ var _ = Context("core", func() {
 						actualScope,
 						actualSCG,
 						actualOpHandle,
+						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 					Expect(actualID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
 					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))
 					Expect(actualOpHandle).To(Equal(expectedOpHandle))
+					Expect(actualParentCallID).To(BeNil())
 					Expect(actualRootOpID).To(Equal(expectedRootOpID))
 				})
 			})

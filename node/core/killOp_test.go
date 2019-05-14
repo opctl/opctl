@@ -8,21 +8,21 @@ import (
 
 var _ = Context("core", func() {
 	Context("KillOp", func() {
-		It("should call opKiller.Kill w/ expected args", func() {
+		It("should call callKiller.Kill w/ expected args", func() {
 			/* arrange */
 			providedReq := model.KillOpReq{OpID: "dummyOpID"}
 
-			fakeOpKiller := new(fakeOpKiller)
+			fakeCallKiller := new(fakeCallKiller)
 
 			objectUnderTest := _core{
-				opKiller: fakeOpKiller,
+				callKiller: fakeCallKiller,
 			}
 
 			/* act */
 			objectUnderTest.KillOp(providedReq)
 
 			/* assert */
-			Expect(fakeOpKiller.KillArgsForCall(0)).To(Equal(providedReq))
+			Expect(fakeCallKiller.KillArgsForCall(0)).To(Equal(providedReq.OpID))
 		})
 	})
 })

@@ -82,7 +82,9 @@ type Server struct {
 
 	textDocumentSyncKind protocol.TextDocumentSyncKind
 
-	views []*cache.View
+	viewMu  sync.Mutex
+	views   []*cache.View
+	viewMap map[span.URI]*cache.View
 
 	// undelivered is a cache of any diagnostics that the server
 	// failed to deliver for some reason.
@@ -110,8 +112,8 @@ func (s *Server) Exit(ctx context.Context) error {
 
 // Workspace
 
-func (s *Server) DidChangeWorkspaceFolders(context.Context, *protocol.DidChangeWorkspaceFoldersParams) error {
-	return notImplemented("DidChangeWorkspaceFolders")
+func (s *Server) DidChangeWorkspaceFolders(ctx context.Context, params *protocol.DidChangeWorkspaceFoldersParams) error {
+	return s.changeFolders(ctx, params.Event)
 }
 
 func (s *Server) DidChangeConfiguration(context.Context, *protocol.DidChangeConfigurationParams) error {
@@ -206,16 +208,16 @@ func (s *Server) CodeLens(context.Context, *protocol.CodeLensParams) ([]protocol
 	return nil, nil // ignore
 }
 
-func (s *Server) CodeLensResolve(context.Context, *protocol.CodeLens) (*protocol.CodeLens, error) {
-	return nil, notImplemented("CodeLensResolve")
+func (s *Server) ResolveCodeLens(context.Context, *protocol.CodeLens) (*protocol.CodeLens, error) {
+	return nil, notImplemented("ResolveCodeLens")
 }
 
-func (s *Server) DocumentLink(context.Context, *protocol.DocumentLinkParams) ([]protocol.DocumentLink, error) {
-	return nil, nil // ignore
+func (s *Server) DocumentLink(ctx context.Context, params *protocol.DocumentLinkParams) ([]protocol.DocumentLink, error) {
+	return s.documentLink(ctx, params)
 }
 
-func (s *Server) DocumentLinkResolve(context.Context, *protocol.DocumentLink) (*protocol.DocumentLink, error) {
-	return nil, notImplemented("DocumentLinkResolve")
+func (s *Server) ResolveDocumentLink(context.Context, *protocol.DocumentLink) (*protocol.DocumentLink, error) {
+	return nil, notImplemented("ResolveDocumentLink")
 }
 
 func (s *Server) DocumentColor(context.Context, *protocol.DocumentColorParams) ([]protocol.ColorInformation, error) {
@@ -231,21 +233,44 @@ func (s *Server) Formatting(ctx context.Context, params *protocol.DocumentFormat
 }
 
 func (s *Server) RangeFormatting(ctx context.Context, params *protocol.DocumentRangeFormattingParams) ([]protocol.TextEdit, error) {
-	return s.rangeFormatting(ctx, params)
+	return nil, notImplemented("RangeFormatting")
 }
 
 func (s *Server) OnTypeFormatting(context.Context, *protocol.DocumentOnTypeFormattingParams) ([]protocol.TextEdit, error) {
 	return nil, notImplemented("OnTypeFormatting")
 }
 
-func (s *Server) Rename(context.Context, *protocol.RenameParams) ([]protocol.WorkspaceEdit, error) {
+func (s *Server) Rename(context.Context, *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
 	return nil, notImplemented("Rename")
+}
+
+func (s *Server) Declaration(context.Context, *protocol.TextDocumentPositionParams) ([]protocol.DeclarationLink, error) {
+	return nil, notImplemented("Declaration")
 }
 
 func (s *Server) FoldingRange(context.Context, *protocol.FoldingRangeParams) ([]protocol.FoldingRange, error) {
 	return nil, notImplemented("FoldingRange")
 }
 
+func (s *Server) LogTraceNotification(context.Context, *protocol.LogTraceParams) error {
+	return notImplemented("LogtraceNotification")
+}
+
+func (s *Server) PrepareRename(context.Context, *protocol.TextDocumentPositionParams) (*protocol.Range, error) {
+	return nil, notImplemented("PrepareRename")
+}
+
+func (s *Server) Resolve(context.Context, *protocol.CompletionItem) (*protocol.CompletionItem, error) {
+	return nil, notImplemented("Resolve")
+}
+
+func (s *Server) SelectionRange(context.Context, *protocol.SelectionRangeParams) ([][]protocol.SelectionRange, error) {
+	return nil, notImplemented("SelectionRange")
+}
+
+func (s *Server) SetTraceNotification(context.Context, *protocol.SetTraceParams) error {
+	return notImplemented("SetTraceNotification")
+}
 func notImplemented(method string) *jsonrpc2.Error {
 	return jsonrpc2.NewErrorf(jsonrpc2.CodeMethodNotFound, "method %q not yet implemented", method)
 }

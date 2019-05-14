@@ -25,9 +25,9 @@ var _ = Context("serialCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
-			providedCallID := "dummyCallID"
+			providedCallID := "providedCallID"
 			providedInboundScope := map[string]*model.Value{}
-			providedRootOpID := "dummyRootOpID"
+			providedRootOpID := "providedRootOpID"
 			providedOpHandle := new(data.FakeHandle)
 			providedSCGSerialCalls := []*model.SCG{
 				{
@@ -87,11 +87,13 @@ var _ = Context("serialCaller", func() {
 					actualChildOutboundScope,
 					actualSCG,
 					actualOpHandle,
+					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentCallID).To(Equal(&providedCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			}
 		})
@@ -193,7 +195,7 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualInboundScopeToSecondChild, _, _, _ := fakeCaller.CallArgsForCall(1)
+					_, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
 					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})
@@ -278,7 +280,7 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualInboundScopeToSecondChild, _, _, _ := fakeCaller.CallArgsForCall(1)
+					_, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
 					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})

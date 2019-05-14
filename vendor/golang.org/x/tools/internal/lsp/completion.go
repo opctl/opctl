@@ -5,7 +5,6 @@
 package lsp
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"sort"
@@ -34,11 +33,23 @@ func (s *Server) completion(ctx context.Context, params *protocol.CompletionPara
 	items, prefix, err := source.Completion(ctx, f, rng.Start)
 	if err != nil {
 		s.log.Infof(ctx, "no completions found for %s:%v:%v: %v", uri, int(params.Position.Line), int(params.Position.Character), err)
-		items = []source.CompletionItem{}
+	}
+	// We might need to adjust the position to account for the prefix.
+	pos := params.Position
+	if prefix.Pos().IsValid() {
+		spn, err := span.NewRange(view.FileSet(), prefix.Pos(), 0).Span()
+		if err != nil {
+			s.log.Infof(ctx, "failed to get span for prefix position: %s:%v:%v: %v", uri, int(params.Position.Line), int(params.Position.Character), err)
+		}
+		if prefixPos, err := m.Position(spn.Start()); err == nil {
+			pos = prefixPos
+		} else {
+			s.log.Infof(ctx, "failed to convert prefix position: %s:%v:%v: %v", uri, int(params.Position.Line), int(params.Position.Character), err)
+		}
 	}
 	return &protocol.CompletionList{
 		IsIncomplete: false,
-		Items:        toProtocolCompletionItems(items, prefix, params.Position, s.insertTextFormat, s.usePlaceholders),
+		Items:        toProtocolCompletionItems(items, prefix.Content(), pos, s.insertTextFormat, s.usePlaceholders),
 	}, nil
 }
 
@@ -46,15 +57,19 @@ func toProtocolCompletionItems(candidates []source.CompletionItem, prefix string
 	sort.SliceStable(candidates, func(i, j int) bool {
 		return candidates[i].Score > candidates[j].Score
 	})
-	items := []protocol.CompletionItem{}
+	items := make([]protocol.CompletionItem, 0, len(candidates))
 	for i, candidate := range candidates {
 		// Match against the label.
 		if !strings.HasPrefix(candidate.Label, prefix) {
 			continue
 		}
-		insertText := labelToInsertText(candidate.Label, candidate.Kind, insertTextFormat, usePlaceholders)
-		if strings.HasPrefix(insertText, prefix) {
-			insertText = insertText[len(prefix):]
+		insertText := candidate.InsertText
+		if insertTextFormat == protocol.SnippetTextFormat {
+			if usePlaceholders && candidate.PlaceholderSnippet != nil {
+				insertText = candidate.PlaceholderSnippet.String()
+			} else if candidate.Snippet != nil {
+				insertText = candidate.Snippet.String()
+			}
 		}
 		item := protocol.CompletionItem{
 			Label:  candidate.Label,
@@ -72,7 +87,7 @@ func toProtocolCompletionItems(candidates []source.CompletionItem, prefix string
 			// according to their score. This can be removed upon the resolution of
 			// https://github.com/Microsoft/language-server-protocol/issues/348.
 			SortText:   fmt.Sprintf("%05d", i),
-			FilterText: insertText,
+			FilterText: candidate.InsertText,
 			Preselect:  i == 0,
 		}
 		// Trigger signature help for any function or method completion.
@@ -112,54 +127,4 @@ func toProtocolCompletionItemKind(kind source.CompletionItemKind) protocol.Compl
 	default:
 		return protocol.TextCompletion
 	}
-}
-
-func labelToInsertText(label string, kind source.CompletionItemKind, insertTextFormat protocol.InsertTextFormat, usePlaceholders bool) string {
-	switch kind {
-	case source.ConstantCompletionItem:
-		// The label for constants is of the format "<identifier> = <value>".
-		// We should not insert the " = <value>" part of the label.
-		if i := strings.Index(label, " ="); i >= 0 {
-			return label[:i]
-		}
-	case source.FunctionCompletionItem, source.MethodCompletionItem:
-		var trimmed, params string
-		if i := strings.Index(label, "("); i >= 0 {
-			trimmed = label[:i]
-			params = strings.Trim(label[i:], "()")
-		}
-		if params == "" || trimmed == "" {
-			return label
-		}
-		// Don't add parameters or parens for the plaintext insert format.
-		if insertTextFormat == protocol.PlainTextTextFormat {
-			return trimmed
-		}
-		// If we don't want to use placeholders, just add 2 parentheses with
-		// the cursor in the middle.
-		if !usePlaceholders {
-			return trimmed + "($1)"
-		}
-		// If signature help is not enabled, we should give the user parameters
-		// that they can tab through. The insert text format follows the
-		// specification defined by Microsoft for LSP. The "$", "}, and "\"
-		// characters should be escaped.
-		r := strings.NewReplacer(
-			`\`, `\\`,
-			`}`, `\}`,
-			`$`, `\$`,
-		)
-		b := bytes.NewBufferString(trimmed)
-		b.WriteByte('(')
-		for i, p := range strings.Split(params, ",") {
-			if i != 0 {
-				b.WriteString(", ")
-			}
-			fmt.Fprintf(b, "${%v:%v}", i+1, r.Replace(strings.TrimSpace(p)))
-		}
-		b.WriteByte(')')
-		return b.String()
-
-	}
-	return label
 }

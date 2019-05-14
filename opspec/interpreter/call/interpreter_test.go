@@ -51,6 +51,7 @@ var _ = Context("Interpreter", func() {
 					providedSCG,
 					"providedID",
 					providedOpHandle,
+					nil,
 					"providedRootOpID",
 				)
 
@@ -87,6 +88,7 @@ var _ = Context("Interpreter", func() {
 						},
 						"providedID",
 						new(data.FakeHandle),
+						nil,
 						"providedRootOpID",
 					)
 
@@ -120,6 +122,7 @@ var _ = Context("Interpreter", func() {
 					providedSCG,
 					providedID,
 					providedOpHandle,
+					nil,
 					providedRootOpID,
 				)
 
@@ -139,12 +142,17 @@ var _ = Context("Interpreter", func() {
 			})
 			It("should return expected result", func() {
 				/* arrange */
+				providedID := "providedID"
+
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
 					If: []*model.SCGPredicate{
 						&model.SCGPredicate{},
 					},
 				}
+
+				providedParentIDValue := "providedParentID"
+				providedParentID := &providedParentIDValue
 
 				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
 				expectedIf := true
@@ -157,8 +165,10 @@ var _ = Context("Interpreter", func() {
 				expectedDCGContainerCall := &model.DCGContainerCall{}
 
 				expectedDCG := &model.DCG{
-					If:        &expectedIf,
 					Container: expectedDCGContainerCall,
+					Id:        providedID,
+					If:        &expectedIf,
+					ParentID:  providedParentID,
 				}
 
 				objectUnderTest := _interpreter{
@@ -171,8 +181,9 @@ var _ = Context("Interpreter", func() {
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCG,
-					"providedID",
+					providedID,
 					new(data.FakeHandle),
+					providedParentID,
 					"providedRootOpID",
 				)
 
@@ -207,6 +218,7 @@ var _ = Context("Interpreter", func() {
 					providedSCG,
 					providedID,
 					providedOpHandle,
+					nil,
 					providedRootOpID,
 				)
 
@@ -226,12 +238,16 @@ var _ = Context("Interpreter", func() {
 			})
 			It("should return expected result", func() {
 				/* arrange */
+				providedID := "providedID"
+
 				providedSCG := &model.SCG{
 					If: []*model.SCGPredicate{
 						&model.SCGPredicate{},
 					},
 					Op: &model.SCGOpCall{},
 				}
+
+				providedParentID := "providedParentID"
 
 				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
 				expectedIf := true
@@ -244,8 +260,10 @@ var _ = Context("Interpreter", func() {
 				expectedDCGOpCall := &model.DCGOpCall{}
 
 				expectedDCG := &model.DCG{
-					If: &expectedIf,
-					Op: expectedDCGOpCall,
+					Id:       providedID,
+					If:       &expectedIf,
+					Op:       expectedDCGOpCall,
+					ParentID: &providedParentID,
 				}
 
 				objectUnderTest := _interpreter{
@@ -258,8 +276,9 @@ var _ = Context("Interpreter", func() {
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCG,
-					"providedID",
+					providedID,
 					new(data.FakeHandle),
+					&providedParentID,
 					"providedRootOpID",
 				)
 
@@ -272,6 +291,8 @@ var _ = Context("Interpreter", func() {
 		Context("scg.Parallel not empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
+				providedID := "providedID"
+
 				providedSCG := &model.SCG{
 					If: []*model.SCGPredicate{
 						&model.SCGPredicate{},
@@ -280,6 +301,8 @@ var _ = Context("Interpreter", func() {
 						&model.SCG{},
 					},
 				}
+
+				providedParentID := "providedParentID"
 
 				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
 				expectedIf := true
@@ -302,8 +325,9 @@ var _ = Context("Interpreter", func() {
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCG,
-					"providedID",
+					providedID,
 					new(data.FakeHandle),
+					&providedParentID,
 					"providedRootOpID",
 				)
 
@@ -316,6 +340,8 @@ var _ = Context("Interpreter", func() {
 		Context("scg.Serial not empty", func() {
 			It("should return expected result", func() {
 				/* arrange */
+				providedID := "providedID"
+
 				providedSCG := &model.SCG{
 					If: []*model.SCGPredicate{
 						&model.SCGPredicate{},
@@ -324,6 +350,8 @@ var _ = Context("Interpreter", func() {
 						&model.SCG{},
 					},
 				}
+
+				providedParentID := "providedParentID"
 
 				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
 				expectedIf := true
@@ -346,8 +374,9 @@ var _ = Context("Interpreter", func() {
 					actualError := objectUnderTest.Interpret(
 					map[string]*model.Value{},
 					providedSCG,
-					"providedID",
+					providedID,
 					new(data.FakeHandle),
+					&providedParentID,
 					"providedRootOpID",
 				)
 

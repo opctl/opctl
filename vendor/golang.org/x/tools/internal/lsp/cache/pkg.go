@@ -1,3 +1,7 @@
+// Copyright 2019 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package cache
 
 import (
@@ -108,7 +112,10 @@ func (pkg *Package) GetActionGraph(ctx context.Context, a *analysis.Analyzer) (*
 			}
 			sort.Strings(importPaths) // for determinism
 			for _, importPath := range importPaths {
-				dep := pkg.imports[importPath]
+				dep, ok := pkg.imports[importPath]
+				if !ok {
+					continue
+				}
 				act, err := dep.GetActionGraph(ctx, a)
 				if err != nil {
 					return nil, err
@@ -116,10 +123,13 @@ func (pkg *Package) GetActionGraph(ctx context.Context, a *analysis.Analyzer) (*
 				e.Deps = append(e.Deps, act)
 			}
 		}
-
 		e.succeeded = true
 	}
 	return e.Action, nil
+}
+
+func (pkg *Package) PkgPath() string {
+	return pkg.pkgPath
 }
 
 func (pkg *Package) GetFilenames() []string {
@@ -148,4 +158,14 @@ func (pkg *Package) GetTypesSizes() types.Sizes {
 
 func (pkg *Package) IsIllTyped() bool {
 	return pkg.types == nil && pkg.typesInfo == nil
+}
+
+func (pkg *Package) GetImport(pkgPath string) source.Package {
+	imported := pkg.imports[pkgPath]
+	// Be careful not to return a nil pointer because that still satisfies the
+	// interface.
+	if imported != nil {
+		return imported
+	}
+	return nil
 }

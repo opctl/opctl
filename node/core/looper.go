@@ -24,6 +24,7 @@ type looper interface {
 		inboundScope map[string]*model.Value,
 		scg *model.SCG,
 		opHandle model.DataHandle,
+		parentCallID *string,
 		rootOpID string,
 	) error
 }
@@ -141,6 +142,7 @@ func (lpr _looper) Loop(
 	inboundScope map[string]*model.Value,
 	scg *model.SCG,
 	opHandle model.DataHandle,
+	parentCallID *string,
 	rootOpID string,
 ) error {
 	outboundScope := map[string]*model.Value{}
@@ -212,6 +214,7 @@ func (lpr _looper) Loop(
 			outboundScope,
 			scg,
 			opHandle,
+			parentCallID,
 			rootOpID,
 		)
 		if nil != err {

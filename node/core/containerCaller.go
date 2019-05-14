@@ -27,13 +27,11 @@ type containerCaller interface {
 func newContainerCaller(
 	containerRuntime containerruntime.ContainerRuntime,
 	pubSub pubsub.PubSub,
-	dcgNodeRepo dcgNodeRepo,
 ) containerCaller {
 
 	return _containerCaller{
 		containerRuntime: containerRuntime,
 		pubSub:           pubSub,
-		dcgNodeRepo:      dcgNodeRepo,
 		io:               iio.New(),
 	}
 
@@ -42,7 +40,6 @@ func newContainerCaller(
 type _containerCaller struct {
 	containerRuntime containerruntime.ContainerRuntime
 	pubSub           pubsub.PubSub
-	dcgNodeRepo      dcgNodeRepo
 	io               iio.IIO
 }
 
@@ -51,24 +48,6 @@ func (cc _containerCaller) Call(
 	inboundScope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
 ) error {
-	defer func() {
-		// defer must be defined before conditional return statements so it always runs
-
-		cc.dcgNodeRepo.DeleteIfExists(dcgContainerCall.ContainerID)
-
-		cc.containerRuntime.DeleteContainerIfExists(dcgContainerCall.ContainerID)
-
-	}()
-
-	cc.dcgNodeRepo.Add(
-		&dcgNodeDescriptor{
-			Id:        dcgContainerCall.ContainerID,
-			OpRef:     dcgContainerCall.OpHandle.Ref(),
-			RootOpID:  dcgContainerCall.RootOpID,
-			Container: &dcgContainerDescriptor{},
-		},
-	)
-
 	cc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),

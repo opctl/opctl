@@ -14,7 +14,7 @@ import (
 type serialCaller interface {
 	// Executes a serial call
 	Call(
-		callId string,
+		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opHandle model.DataHandle,
@@ -42,7 +42,7 @@ type _serialCaller struct {
 }
 
 func (this _serialCaller) Call(
-	callId string,
+	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opHandle model.DataHandle,
@@ -59,7 +59,7 @@ func (this _serialCaller) Call(
 			model.Event{
 				Timestamp: time.Now().UTC(),
 				SerialCallEnded: &model.SerialCallEndedEvent{
-					CallID:   callId,
+					CallID:   callID,
 					RootOpID: rootOpID,
 					Outputs:  outboundScope,
 				},
@@ -83,6 +83,7 @@ func (this _serialCaller) Call(
 			outboundScope,
 			scgCall,
 			opHandle,
+			&callID,
 			rootOpID,
 		); nil != err {
 			// end run immediately on any error

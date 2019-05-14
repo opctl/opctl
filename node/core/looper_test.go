@@ -46,6 +46,7 @@ var _ = Context("looper", func() {
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
 					new(data.FakeHandle),
+					nil,
 					"rootOpID",
 				)
 
@@ -83,6 +84,7 @@ var _ = Context("looper", func() {
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
 					new(data.FakeHandle),
+					nil,
 					"rootOpID",
 				)
 
@@ -101,6 +103,8 @@ var _ = Context("looper", func() {
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
+				providedParentCallIDValue := "providedParentCallID"
+				providedParentCallID := &providedParentCallIDValue
 				providedRootOpID := "providedRootOpID"
 
 				fakeLoopInterpreter := new(loop.FakeInterpreter)
@@ -139,6 +143,7 @@ var _ = Context("looper", func() {
 					providedScope,
 					providedSCG,
 					providedOpHandle,
+					providedParentCallID,
 					providedRootOpID,
 				)
 
@@ -147,12 +152,14 @@ var _ = Context("looper", func() {
 					actualScope,
 					actualSCG,
 					actualOpHandle,
+					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 				Expect(actualCallID).To(Equal(expectedID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(providedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})

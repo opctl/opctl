@@ -5,11 +5,12 @@ package core
 import (
 	"bytes"
 	"fmt"
+	"sync"
+	"time"
+
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
-	"sync"
-	"time"
 )
 
 type parallelCaller interface {
@@ -25,12 +26,12 @@ type parallelCaller interface {
 
 func newParallelCaller(
 	caller caller,
-	opKiller opKiller,
+	callKiller callKiller,
 	pubSub pubsub.PubSub,
 ) parallelCaller {
 
 	return _parallelCaller{
-		opKiller:            opKiller,
+		callKiller:          callKiller,
 		caller:              caller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -39,7 +40,7 @@ func newParallelCaller(
 }
 
 type _parallelCaller struct {
-	opKiller            opKiller
+	callKiller          callKiller
 	caller              caller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
@@ -101,6 +102,7 @@ func (this _parallelCaller) Call(
 					inboundScope,
 					childCall,
 					opHandle,
+					&callId,
 					rootOpID,
 				); nil != childErr {
 					childErrChannel <- childErr
@@ -112,7 +114,7 @@ func (this _parallelCaller) Call(
 			select {
 			case <-cancellationChannel:
 				// ensure resources immediately reclaimed
-				this.opKiller.Kill(model.KillOpReq{OpID: rootOpID})
+				this.callKiller.Kill(childCallID)
 			case <-childDoneChannel:
 			}
 		}(childCall)

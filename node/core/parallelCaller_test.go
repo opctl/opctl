@@ -18,7 +18,7 @@ var _ = Context("parallelCaller", func() {
 			/* arrange/act/assert */
 			Expect(newParallelCaller(
 				new(fakeCaller),
-				new(fakeOpKiller),
+				new(fakeCallKiller),
 				new(pubsub.Fake),
 			)).To(Not(BeNil()))
 		})
@@ -53,7 +53,7 @@ var _ = Context("parallelCaller", func() {
 
 			objectUnderTest := _parallelCaller{
 				caller:              fakeCaller,
-				opKiller:            new(fakeOpKiller),
+				callKiller:          new(fakeCallKiller),
 				pubSub:              new(pubsub.Fake),
 				uniqueStringFactory: fakeUniqueStringFactory,
 			}
@@ -74,10 +74,12 @@ var _ = Context("parallelCaller", func() {
 					actualChildOutboundScope,
 					actualSCG,
 					actualOpHandle,
+					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentCallID).To(Equal(&providedCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				actualSCGParallelCalls = append(actualSCGParallelCalls, actualSCG)
 			}
@@ -125,7 +127,7 @@ var _ = Context("parallelCaller", func() {
 
 				objectUnderTest := _parallelCaller{
 					caller:              fakeCaller,
-					opKiller:            new(fakeOpKiller),
+					callKiller:          new(fakeCallKiller),
 					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
@@ -173,7 +175,7 @@ var _ = Context("parallelCaller", func() {
 
 				objectUnderTest := _parallelCaller{
 					caller:              fakeCaller,
-					opKiller:            new(fakeOpKiller),
+					callKiller:          new(fakeCallKiller),
 					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
@@ -194,10 +196,12 @@ var _ = Context("parallelCaller", func() {
 						actualChildOutboundScope,
 						actualSCG,
 						actualOpHandle,
+						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpHandle).To(Equal(providedOpHandle))
+					Expect(actualParentCallID).To(Equal(&providedCallID))
 					Expect(actualRootOpID).To(Equal(providedRootOpID))
 					actualSCGParallelCalls = append(actualSCGParallelCalls, actualSCG)
 				}

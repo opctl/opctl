@@ -25,7 +25,7 @@ const (
 
 // CallEndedEvent represents a call ended; no further events will occur for the call
 type CallEndedEvent struct {
-	CallID     string            `json:"callId`
+	CallID     string            `json:"callId"`
 	Outputs    map[string]*Value `json:"outputs"`
 	RootCallID string            `json:"rootCallId"`
 }
