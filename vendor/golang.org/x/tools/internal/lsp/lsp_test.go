@@ -42,8 +42,8 @@ func testLSP(t *testing.T, exporter packagestest.Exporter) {
 	log := xlog.New(xlog.StdSink{})
 	r := &runner{
 		server: &Server{
-			views:       []*cache.View{cache.NewView(ctx, log, "lsp_test", span.FileURI(data.Config.Dir), &data.Config)},
-			viewMap:     make(map[span.URI]*cache.View),
+			views:       []source.View{cache.NewView(ctx, log, "lsp_test", span.FileURI(data.Config.Dir), &data.Config)},
+			viewMap:     make(map[span.URI]source.View),
 			undelivered: make(map[span.URI][]source.Diagnostic),
 			log:         log,
 		},
@@ -151,17 +151,7 @@ func (r *runner) Completion(t *testing.T, data tests.Completions, snippets tests
 			t.Errorf("%s: %s", src, diff)
 		}
 	}
-	// Make sure we don't crash completing the first position in file set.
-	firstPos, err := span.NewRange(r.data.Exported.ExpectFileSet, 1, 2).Span()
-	if err != nil {
-		t.Fatal(err)
-	}
-	_ = r.runCompletion(t, firstPos)
 
-	r.checkCompletionSnippets(t, snippets, items)
-}
-
-func (r *runner) checkCompletionSnippets(t *testing.T, data tests.CompletionSnippets, items tests.CompletionItems) {
 	origPlaceHolders := r.server.usePlaceholders
 	origTextFormat := r.server.insertTextFormat
 	defer func() {
@@ -173,31 +163,28 @@ func (r *runner) checkCompletionSnippets(t *testing.T, data tests.CompletionSnip
 	for _, usePlaceholders := range []bool{true, false} {
 		r.server.usePlaceholders = usePlaceholders
 
-		for src, want := range data {
+		for src, want := range snippets {
 			list := r.runCompletion(t, src)
 
-			wantCompletion := items[want.CompletionItem]
-			var gotItem *protocol.CompletionItem
+			wantItem := items[want.CompletionItem]
+			var got *protocol.CompletionItem
 			for _, item := range list.Items {
-				if item.Label == wantCompletion.Label {
-					gotItem = &item
+				if item.Label == wantItem.Label {
+					got = &item
 					break
 				}
 			}
-
-			if gotItem == nil {
-				t.Fatalf("%s: couldn't find completion matching %q", src.URI(), wantCompletion.Label)
+			if got == nil {
+				t.Fatalf("%s: couldn't find completion matching %q", src.URI(), wantItem.Label)
 			}
-
 			var expected string
 			if usePlaceholders {
 				expected = want.PlaceholderSnippet
 			} else {
 				expected = want.PlainSnippet
 			}
-
-			if expected != gotItem.TextEdit.NewText {
-				t.Errorf("%s: expected snippet %q, got %q", src, expected, gotItem.TextEdit.NewText)
+			if expected != got.TextEdit.NewText {
+				t.Errorf("%s: expected snippet %q, got %q", src, expected, got.TextEdit.NewText)
 			}
 		}
 	}
@@ -471,7 +458,7 @@ func summarizeSymbols(i int, want []source.Symbol, got []protocol.DocumentSymbol
 	return msg.String()
 }
 
-func (r *runner) Signature(t *testing.T, data tests.Signatures) {
+func (r *runner) SignatureHelp(t *testing.T, data tests.Signatures) {
 	for spn, expectedSignatures := range data {
 		m := r.mapper(spn.URI())
 		loc, err := m.Location(spn)

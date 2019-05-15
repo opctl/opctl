@@ -107,9 +107,6 @@ var _ = Context("opCaller", func() {
 				OpID: "providedOpID",
 			}
 
-			providedParentCallIDValue := "providedParentCallID"
-			providedParentCallID := &providedParentCallIDValue
-
 			fakePubSub := new(pubsub.Fake)
 			eventChannel := make(chan model.Event)
 			// close eventChannel to trigger immediate return
@@ -130,7 +127,7 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedDCGOpCall,
 				map[string]*model.Value{},
-				providedParentCallID,
+				nil,
 				&model.SCGOpCall{},
 			)
 
@@ -146,7 +143,7 @@ var _ = Context("opCaller", func() {
 			Expect(actualChildCallScope).To(Equal(providedDCGOpCall.Inputs))
 			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
 			Expect(actualOpRef).To(Equal(providedDCGOpCall.OpHandle))
-			Expect(actualParentCallID).To(Equal(providedParentCallID))
+			Expect(actualParentCallID).To(Equal(&providedDCGOpCall.OpID))
 			Expect(actualRootOpID).To(Equal(providedDCGOpCall.RootOpID))
 		})
 		Context("callStore.Get(callID).IsKilled returns true", func() {

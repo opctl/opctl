@@ -81,7 +81,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c64c7a55021b4330eeb476b4ca028789b29ca023f47951be30fcad8809628e28"
+  digest = "1:cedaa68438be67d436b9792a2a5021ab10e46a6c389bb44e4af286dd551cf3e1"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -107,7 +107,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "3042254a87274ff5e9561f2da1a986a703dfc60f"
+  revision = "f4b9142210e9853ec454b6646ad2a38e0f77cd40"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -334,7 +334,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:580f79bbb55a397ea234a61ca53adde6fed16253ac52507e14db71adc811af86"
+  digest = "1:9e39b4722ac8f13cf5858519ed0a96732dad1c81872da7fbfbb3a61f8e27de18"
   name = "github.com/mmcloughlin/avo"
   packages = [
     "attr",
@@ -352,7 +352,7 @@
     "x86",
   ]
   pruneopts = ""
-  revision = "2e7d06bc7ada2979f17ccf8ebf486dba23b84fc7"
+  revision = "83fbad1a6b3cba8ac7711170e57953fd12cdc40a"
 
 [[projects]]
   branch = "master"
@@ -616,7 +616,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ccd51599eb31c3ee139de1b1fca3f5d3ddaa5ab37f3a1704a2a8426c0abd1e5b"
+  digest = "1:aa38821ad1406a84f9577465ef53e56ca4d90745a710c753190bf7792d726c82"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -629,7 +629,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "a4d6f7feada510cc50e69a37b484cb0fdc6b7876"
+  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
 
 [[projects]]
   branch = "master"
@@ -641,7 +641,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8f9263a1e1d886efe08142f5e47c16520d614e3640f10f4e09f98949742d5818"
+  digest = "1:c835b38cbfcccf755264465f1faf4e7558cfe128d2822dc2374169776af7a4a5"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -649,7 +649,7 @@
     "windows",
   ]
   pruneopts = ""
-  revision = "a5b02f93d862f065920dd6a40dddc66b60d0dec4"
+  revision = "06a5c494443846f634903706cba8f993687d3ff5"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -681,7 +681,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:567e1025a0ab22c6b09132d55ccf32d78dc5a3287cf5e75b19849d6b982101be"
+  digest = "1:9895924b5c7c5b7c8e244edd23016ac443ce0e3b29e4e297a8710d73ba649804"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -695,7 +695,7 @@
     "internal/semver",
   ]
   pruneopts = ""
-  revision = "7d589f28aaf42086c56499a48b55b9c1495e1453"
+  revision = "473d3dc1d7ebfe600ef76607c3e200794eaf947a"
 
 [[projects]]
   branch = "master"

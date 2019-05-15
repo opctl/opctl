@@ -116,7 +116,7 @@ func (oc _opCaller) Call(
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
 		dcgOpCall.OpHandle,
-		parentCallID,
+		&dcgOpCall.OpID,
 		dcgOpCall.RootOpID,
 	)
 

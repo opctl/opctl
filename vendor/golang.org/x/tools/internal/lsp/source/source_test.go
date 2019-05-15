@@ -27,7 +27,7 @@ func TestSource(t *testing.T) {
 }
 
 type runner struct {
-	view *cache.View
+	view source.View
 	data *tests.Data
 }
 
@@ -156,20 +156,8 @@ func (r *runner) Completion(t *testing.T, data tests.Completions, snippets tests
 			t.Errorf("%s: %s", src, diff)
 		}
 	}
-	// Make sure we don't crash completing the first position in file set.
-	uri := span.FileURI(r.view.FileSet().File(1).Name())
-	f, err := r.view.GetFile(ctx, uri)
-	if err != nil {
-		t.Fatalf("failed for %v: %v", uri, err)
-	}
-	source.Completion(ctx, f, 1)
-
-	r.checkCompletionSnippets(ctx, t, snippets, items)
-}
-
-func (r *runner) checkCompletionSnippets(ctx context.Context, t *testing.T, data tests.CompletionSnippets, items tests.CompletionItems) {
 	for _, usePlaceholders := range []bool{true, false} {
-		for src, want := range data {
+		for src, want := range snippets {
 			f, err := r.view.GetFile(ctx, src.URI())
 			if err != nil {
 				t.Fatalf("failed for %v: %v", src, err)
@@ -180,35 +168,23 @@ func (r *runner) checkCompletionSnippets(ctx context.Context, t *testing.T, data
 			if err != nil {
 				t.Fatalf("failed for %v: %v", src, err)
 			}
-
-			wantCompletion := items[want.CompletionItem]
-			var gotItem *source.CompletionItem
+			wantItem := items[want.CompletionItem]
+			var got *source.CompletionItem
 			for _, item := range list {
-				if item.Label == wantCompletion.Label {
-					gotItem = &item
+				if item.Label == wantItem.Label {
+					got = &item
 					break
 				}
 			}
-
-			if gotItem == nil {
-				t.Fatalf("%s: couldn't find completion matching %q", src.URI(), wantCompletion.Label)
+			if got == nil {
+				t.Fatalf("%s: couldn't find completion matching %q", src.URI(), wantItem.Label)
 			}
-
-			var expected string
+			expected := want.PlainSnippet
 			if usePlaceholders {
 				expected = want.PlaceholderSnippet
-			} else {
-				expected = want.PlainSnippet
 			}
-			insertText := gotItem.InsertText
-			if usePlaceholders && gotItem.PlaceholderSnippet != nil {
-				insertText = gotItem.PlaceholderSnippet.String()
-			} else if gotItem.Snippet != nil {
-				insertText = gotItem.Snippet.String()
-			}
-
-			if expected != insertText {
-				t.Errorf("%s: expected snippet %q, got %q", src, expected, insertText)
+			if actual := got.Snippet(usePlaceholders); expected != actual {
+				t.Errorf("%s: expected placeholder snippet %q, got %q", src, expected, actual)
 			}
 		}
 	}
@@ -439,7 +415,7 @@ func summarizeSymbols(i int, want []source.Symbol, got []source.Symbol, reason s
 	return msg.String()
 }
 
-func (r *runner) Signature(t *testing.T, data tests.Signatures) {
+func (r *runner) SignatureHelp(t *testing.T, data tests.Signatures) {
 	ctx := context.Background()
 	for spn, expectedSignatures := range data {
 		f, err := r.view.GetFile(ctx, spn.URI())
