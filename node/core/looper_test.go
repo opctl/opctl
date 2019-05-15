@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 
 	. "github.com/onsi/ginkgo"
@@ -42,6 +43,7 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					context.Background(),
 					"id",
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
@@ -80,6 +82,7 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					context.Background(),
 					"id",
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
@@ -139,6 +142,7 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					context.Background(),
 					"id",
 					providedScope,
 					providedSCG,
@@ -148,7 +152,8 @@ var _ = Context("looper", func() {
 				)
 
 				/* assert */
-				actualCallID,
+				_,
+					actualCallID,
 					actualScope,
 					actualSCG,
 					actualOpHandle,

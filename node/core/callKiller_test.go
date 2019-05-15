@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
+	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 var _ = Context("core", func() {
@@ -18,10 +19,14 @@ var _ = Context("core", func() {
 			objectUnderTest := _callKiller{
 				containerRuntime: new(containerruntime.Fake),
 				callStore:        fakeCallStore,
+				eventPublisher:   new(pubsub.FakeEventPublisher),
 			}
 
 			/* act */
-			objectUnderTest.Kill(providedCallID)
+			objectUnderTest.Kill(
+				providedCallID,
+				"rootCallID",
+			)
 
 			/* assert */
 			Expect(fakeCallStore.SetIsKilledArgsForCall(0)).To(Equal(providedCallID))
@@ -35,10 +40,14 @@ var _ = Context("core", func() {
 			objectUnderTest := _callKiller{
 				containerRuntime: new(containerruntime.Fake),
 				callStore:        fakeCallStore,
+				eventPublisher:   new(pubsub.FakeEventPublisher),
 			}
 
 			/* act */
-			objectUnderTest.Kill(providedCallID)
+			objectUnderTest.Kill(
+				providedCallID,
+				"rootCallID",
+			)
 
 			/* assert */
 			Expect(fakeCallStore.ListWithParentIDArgsForCall(0)).To(Equal(providedCallID))
@@ -67,10 +76,14 @@ var _ = Context("core", func() {
 				objectUnderTest := _callKiller{
 					containerRuntime: new(containerruntime.Fake),
 					callStore:        fakeCallStore,
+					eventPublisher:   new(pubsub.FakeEventPublisher),
 				}
 
 				/* act */
-				objectUnderTest.Kill(providedCallID)
+				objectUnderTest.Kill(
+					providedCallID,
+					"rootCallID",
+				)
 
 				/* assert */
 				actualCalls := map[string]bool{}
@@ -107,10 +120,14 @@ var _ = Context("core", func() {
 				objectUnderTest := &_callKiller{
 					containerRuntime: fakeContainerRuntime,
 					callStore:        fakeCallStore,
+					eventPublisher:   new(pubsub.FakeEventPublisher),
 				}
 
 				/* act */
-				objectUnderTest.Kill(providedCallID)
+				objectUnderTest.Kill(
+					providedCallID,
+					"rootCallID",
+				)
 
 				/* assert */
 				actualCalls := map[string]bool{}

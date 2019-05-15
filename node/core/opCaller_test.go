@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -69,6 +70,7 @@ var _ = Context("opCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedDCGOpCall,
 				map[string]*model.Value{},
 				nil,
@@ -88,6 +90,7 @@ var _ = Context("opCaller", func() {
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
 			dummyString := "dummyString"
+			providedCtx := context.Background()
 			providedDCGOpCall := &model.DCGOpCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: new(data.FakeHandle),
@@ -125,6 +128,7 @@ var _ = Context("opCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				providedCtx,
 				providedDCGOpCall,
 				map[string]*model.Value{},
 				nil,
@@ -132,13 +136,15 @@ var _ = Context("opCaller", func() {
 			)
 
 			/* assert */
-			actualChildCallID,
+			actualCtx,
+				actualChildCallID,
 				actualChildCallScope,
 				actualChildSCG,
 				actualOpRef,
 				actualParentCallID,
 				actualRootOpID := fakeCaller.CallArgsForCall(0)
 
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualChildCallID).To(Equal(providedDCGOpCall.ChildCallID))
 			Expect(actualChildCallScope).To(Equal(providedDCGOpCall.Inputs))
 			Expect(actualChildSCG).To(Equal(providedDCGOpCall.ChildCallSCG))
@@ -197,6 +203,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedDCGOpCall,
 					map[string]*model.Value{},
 					nil,
@@ -264,6 +271,7 @@ var _ = Context("opCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
+						context.Background(),
 						providedDCGOpCall,
 						map[string]*model.Value{},
 						nil,
@@ -346,6 +354,7 @@ var _ = Context("opCaller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedDCGOpCall,
 					map[string]*model.Value{},
 					nil,

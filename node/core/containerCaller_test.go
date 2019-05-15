@@ -1,7 +1,11 @@
 package core
 
 import (
+	"context"
 	"errors"
+	"io"
+	"time"
+
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -9,8 +13,6 @@ import (
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/core/containerruntime"
 	"github.com/opctl/sdk-golang/util/pubsub"
-	"io"
-	"time"
 )
 
 var _ = Context("containerCaller", func() {
@@ -65,6 +67,7 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedDCGContainerCall,
 				providedInboundScope,
 				providedSCGContainerCall,
@@ -82,6 +85,7 @@ var _ = Context("containerCaller", func() {
 		})
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedDCGContainerCall := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
 					OpHandle: fakeOpHandle,
@@ -102,6 +106,7 @@ var _ = Context("containerCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				providedCtx,
 				providedDCGContainerCall,
 				map[string]*model.Value{},
 				&model.SCGContainerCall{},
@@ -135,6 +140,7 @@ var _ = Context("containerCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					context.Background(),
 					&model.DCGContainerCall{
 						DCGBaseCall: model.DCGBaseCall{
 							OpHandle: fakeOpHandle,
@@ -185,6 +191,7 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
+			context.Background(),
 			providedDCGContainerCall,
 			providedInboundScope,
 			providedSCGContainerCall,
@@ -235,6 +242,7 @@ var _ = Context("containerCaller", func() {
 
 		/* act */
 		objectUnderTest.Call(
+			context.Background(),
 			providedDCGContainerCall,
 			providedInboundScope,
 			providedSCGContainerCall,

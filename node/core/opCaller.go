@@ -15,6 +15,7 @@ import (
 type opCaller interface {
 	// Executes an op call
 	Call(
+		ctx context.Context,
 		dcgOpCall *model.DCGOpCall,
 		inboundScope map[string]*model.Value,
 		parentCallID *string,
@@ -46,6 +47,7 @@ type _opCaller struct {
 }
 
 func (oc _opCaller) Call(
+	ctx context.Context,
 	dcgOpCall *model.DCGOpCall,
 	inboundScope map[string]*model.Value,
 	parentCallID *string,
@@ -106,12 +108,13 @@ func (oc _opCaller) Call(
 	opOutputsChan := make(chan map[string]*model.Value, 1)
 	go func() {
 		opOutputsChan <- oc.waitOnOpOutputs(
-			context.TODO(),
+			ctx,
 			dcgOpCall,
 		)
 	}()
 
 	err = oc.caller.Call(
+		ctx,
 		dcgOpCall.ChildCallID,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
@@ -128,7 +131,7 @@ func (oc _opCaller) Call(
 	opOutputs := <-opOutputsChan
 
 	opDotYml, err := oc.dotYmlGetter.Get(
-		context.TODO(),
+		ctx,
 		dcgOpCall.OpHandle,
 	)
 	if nil != err {

@@ -3,6 +3,7 @@ package core
 //go:generate counterfeiter -o ./fakeCaller.go --fake-name fakeCaller ./ caller
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 type caller interface {
 	// Call executes a call
 	Call(
+		ctx context.Context,
 		id string,
 		scope map[string]*model.Value,
 		scg *model.SCG,
@@ -76,6 +78,7 @@ type _caller struct {
 }
 
 func (clr _caller) Call(
+	ctx context.Context,
 	id string,
 	scope map[string]*model.Value,
 	scg *model.SCG,
@@ -83,6 +86,8 @@ func (clr _caller) Call(
 	parentCallID *string,
 	rootOpID string,
 ) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	if nil == scg {
 		// No Op
 		return nil
@@ -100,8 +105,23 @@ func (clr _caller) Call(
 		return err
 	}
 
+	go func() {
+		eventChannel, _ := clr.pubSub.Subscribe(
+			ctx,
+			model.EventFilter{Roots: []string{rootOpID}},
+		)
+		for event := range eventChannel {
+			switch {
+			// if call killed, propogate to context
+			case nil != event.CallKilled && event.CallKilled.CallID == id:
+				cancel()
+			}
+		}
+	}()
+
 	if nil != dcg.Loop {
 		return clr.looper.Loop(
+			ctx,
 			id,
 			scope,
 			scg,
@@ -132,12 +152,14 @@ func (clr _caller) Call(
 	switch {
 	case nil != scg.Container:
 		return clr.containerCaller.Call(
+			ctx,
 			dcg.Container,
 			scope,
 			scg.Container,
 		)
 	case nil != scg.Op:
 		return clr.opCaller.Call(
+			ctx,
 			dcg.Op,
 			scope,
 			parentCallID,
@@ -145,6 +167,7 @@ func (clr _caller) Call(
 		)
 	case len(scg.Parallel) > 0:
 		return clr.parallelCaller.Call(
+			ctx,
 			id,
 			scope,
 			rootOpID,
@@ -153,6 +176,7 @@ func (clr _caller) Call(
 		)
 	case len(scg.Serial) > 0:
 		return clr.serialCaller.Call(
+			ctx,
 			id,
 			scope,
 			rootOpID,

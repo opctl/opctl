@@ -183,6 +183,7 @@ var _ = Context("core", func() {
 			Context("data.Get doesn't err", func() {
 				It("should call caller.Call w/ expected args", func() {
 					/* arrange */
+					providedCtx := context.Background()
 					providedArg1String := "dummyArg1Value"
 					providedArg2Dir := "dummyArg2Value"
 					providedArg3Dir := "dummyArg3Value"
@@ -242,20 +243,22 @@ var _ = Context("core", func() {
 
 					/* act */
 					objectUnderTest.StartOp(
-						context.Background(),
+						providedCtx,
 						providedReq,
 					)
 
 					/* assert */
 					// Call happens in go routine; wait 500ms to allow it to occur
 					time.Sleep(time.Millisecond * 500)
-					actualID,
+					actualCtx,
+						actualID,
 						actualScope,
 						actualSCG,
 						actualOpHandle,
 						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(0)
 
+					Expect(actualCtx).To(Equal(providedCtx))
 					Expect(actualID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
 					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))

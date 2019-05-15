@@ -22,7 +22,10 @@ var _ = Context("core", func() {
 			objectUnderTest.KillOp(providedReq)
 
 			/* assert */
-			Expect(fakeCallKiller.KillArgsForCall(0)).To(Equal(providedReq.OpID))
+			actualCallID,
+				actualRootCallID := fakeCallKiller.KillArgsForCall(0)
+			Expect(actualCallID).To(Equal(providedReq.OpID))
+			Expect(actualRootCallID).To(Equal(providedReq.OpID))
 		})
 	})
 })

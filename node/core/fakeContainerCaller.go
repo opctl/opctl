@@ -2,18 +2,20 @@
 package core
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opctl/sdk-golang/model"
 )
 
 type fakeContainerCaller struct {
-	CallStub        func(*model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) error
+	CallStub        func(context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) error
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		arg1 *model.DCGContainerCall
-		arg2 map[string]*model.Value
-		arg3 *model.SCGContainerCall
+		arg1 context.Context
+		arg2 *model.DCGContainerCall
+		arg3 map[string]*model.Value
+		arg4 *model.SCGContainerCall
 	}
 	callReturns struct {
 		result1 error
@@ -25,18 +27,19 @@ type fakeContainerCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerCaller) Call(arg1 *model.DCGContainerCall, arg2 map[string]*model.Value, arg3 *model.SCGContainerCall) error {
+func (fake *fakeContainerCaller) Call(arg1 context.Context, arg2 *model.DCGContainerCall, arg3 map[string]*model.Value, arg4 *model.SCGContainerCall) error {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		arg1 *model.DCGContainerCall
-		arg2 map[string]*model.Value
-		arg3 *model.SCGContainerCall
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3})
+		arg1 context.Context
+		arg2 *model.DCGContainerCall
+		arg3 map[string]*model.Value
+		arg4 *model.SCGContainerCall
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(arg1, arg2, arg3)
+		return fake.CallStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
@@ -51,17 +54,17 @@ func (fake *fakeContainerCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeContainerCaller) CallCalls(stub func(*model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) error) {
+func (fake *fakeContainerCaller) CallCalls(stub func(context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *fakeContainerCaller) CallArgsForCall(i int) (*model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) {
+func (fake *fakeContainerCaller) CallArgsForCall(i int) (context.Context, *model.DCGContainerCall, map[string]*model.Value, *model.SCGContainerCall) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *fakeContainerCaller) CallReturns(result1 error) {

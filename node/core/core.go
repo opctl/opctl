@@ -11,7 +11,7 @@ import (
 	"github.com/opctl/sdk-golang/opspec/interpreter/call"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
@@ -65,7 +65,11 @@ func New(
 
 	callStore := newCallStore()
 
-	callKiller := newCallKiller(callStore, containerRuntime)
+	callKiller := newCallKiller(
+		callStore,
+		containerRuntime,
+		pubSub,
+	)
 
 	opInterpreter := op.NewInterpreter(dataDirPath)
 

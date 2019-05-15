@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
@@ -60,6 +61,7 @@ var _ = Context("parallelCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedCallID,
 				providedInboundScope,
 				providedRootOpID,
@@ -70,12 +72,14 @@ var _ = Context("parallelCaller", func() {
 			/* assert */
 			actualSCGParallelCalls := []*model.SCG{}
 			for callIndex := range providedSCGParallelCalls {
-				actualNodeId,
+				_,
+					actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
 					actualOpHandle,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
+
 				Expect(actualNodeId).To(Equal(returnedUniqueString))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -134,6 +138,7 @@ var _ = Context("parallelCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedInboundScope,
 					providedRootOpID,
@@ -182,6 +187,7 @@ var _ = Context("parallelCaller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedInboundScope,
 					providedRootOpID,
@@ -192,12 +198,14 @@ var _ = Context("parallelCaller", func() {
 				/* assert */
 				actualSCGParallelCalls := []*model.SCG{}
 				for callIndex := range providedSCGParallelCalls {
-					actualNodeId,
+					_,
+						actualNodeId,
 						actualChildOutboundScope,
 						actualSCG,
 						actualOpHandle,
 						actualParentCallID,
 						actualRootOpID := fakeCaller.CallArgsForCall(callIndex)
+
 					Expect(actualNodeId).To(Equal(returnedUniqueString))
 					Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 					Expect(actualOpHandle).To(Equal(providedOpHandle))

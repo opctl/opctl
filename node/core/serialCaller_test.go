@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
@@ -74,6 +75,7 @@ var _ = Context("serialCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedCallID,
 				providedInboundScope,
 				providedRootOpID,
@@ -83,12 +85,14 @@ var _ = Context("serialCaller", func() {
 
 			/* assert */
 			for expectedSCGIndex, expectedSCG := range providedSCGSerialCalls {
-				actualNodeId,
+				_,
+					actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
 					actualOpHandle,
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
+
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
@@ -123,6 +127,7 @@ var _ = Context("serialCaller", func() {
 
 				/* act */
 				actualErr := objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedInboundScope,
 					providedRootOpID,
@@ -187,6 +192,7 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
+						context.Background(),
 						providedCallID,
 						providedInboundScope,
 						providedRootOpID,
@@ -195,7 +201,7 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
+					_, _, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
 					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})
@@ -272,6 +278,7 @@ var _ = Context("serialCaller", func() {
 
 					/* act */
 					objectUnderTest.Call(
+						context.Background(),
 						providedCallID,
 						providedInboundScope,
 						providedRootOpID,
@@ -280,7 +287,7 @@ var _ = Context("serialCaller", func() {
 					)
 
 					/* assert */
-					_, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
+					_, _, actualInboundScopeToSecondChild, _, _, _, _ := fakeCaller.CallArgsForCall(1)
 					Expect(actualInboundScopeToSecondChild).To(Equal(expectedInboundScopeToSecondChild))
 				})
 			})

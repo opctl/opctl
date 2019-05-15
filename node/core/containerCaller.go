@@ -18,6 +18,7 @@ import (
 type containerCaller interface {
 	// Executes a container call
 	Call(
+		ctx context.Context,
 		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
 		scgContainerCall *model.SCGContainerCall,
@@ -44,6 +45,7 @@ type _containerCaller struct {
 }
 
 func (cc _containerCaller) Call(
+	ctx context.Context,
 	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
@@ -78,7 +80,7 @@ func (cc _containerCaller) Call(
 	)
 
 	rawExitCode, err := cc.containerRuntime.RunContainer(
-		context.TODO(),
+		ctx,
 		dcgContainerCall,
 		cc.pubSub,
 		logStdOutPW,

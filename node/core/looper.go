@@ -20,6 +20,7 @@ import (
 type looper interface {
 	// Loop loops a call
 	Loop(
+		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
 		scg *model.SCG,
@@ -138,6 +139,7 @@ func (lpr _looper) scopeLoopVars(
 }
 
 func (lpr _looper) Loop(
+	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
 	scg *model.SCG,
@@ -145,6 +147,9 @@ func (lpr _looper) Loop(
 	parentCallID *string,
 	rootOpID string,
 ) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	outboundScope := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outboundScope[varName] = varData
@@ -200,7 +205,6 @@ func (lpr _looper) Loop(
 		return err
 	}
 
-	ctx := context.TODO()
 	for !lpr.isLoopEnded(index, dcgLoop) {
 		eventFilterSince := time.Now().UTC()
 
@@ -210,6 +214,7 @@ func (lpr _looper) Loop(
 		}
 
 		err = lpr.caller.Call(
+			ctx,
 			callID,
 			outboundScope,
 			scg,
@@ -223,8 +228,6 @@ func (lpr _looper) Loop(
 		}
 
 		// subscribe to events
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
 		// @TODO: handle err channel
 		eventChannel, _ := lpr.pubSub.Subscribe(
 			ctx,

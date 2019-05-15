@@ -4,6 +4,7 @@ package core
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -16,6 +17,7 @@ import (
 type parallelCaller interface {
 	// Executes a parallel call
 	Call(
+		ctx context.Context,
 		callId string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
@@ -47,6 +49,7 @@ type _parallelCaller struct {
 }
 
 func (this _parallelCaller) Call(
+	ctx context.Context,
 	callId string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
@@ -73,12 +76,7 @@ func (this _parallelCaller) Call(
 	childErrChannel := make(chan error, len(scgParallelCall))
 
 	// setup cancellation
-	cancellationChannel := make(chan struct{})
-	cancellationReqChannel := make(chan struct{}, len(scgParallelCall))
-	go func() {
-		<-cancellationReqChannel
-		close(cancellationChannel)
-	}()
+	parallelCtx, parallelCancel := context.WithCancel(ctx)
 
 	// perform calls in parallel w/ cancellation
 	for _, childCall := range scgParallelCall {
@@ -90,14 +88,15 @@ func (this _parallelCaller) Call(
 			childCallID, err := this.uniqueStringFactory.Construct()
 			if nil != err {
 				childErrChannel <- err
-				// trigger cancellation
-				cancellationReqChannel <- struct{}{}
+				// trigger parallel cancellation
+				parallelCancel()
 			}
 
-			childDoneChannel := make(chan struct{})
+			childCtx, childCancel := context.WithCancel(parallelCtx)
 			go func() {
-				defer close(childDoneChannel)
+				defer childCancel()
 				if childErr := this.caller.Call(
+					childCtx,
 					childCallID,
 					inboundScope,
 					childCall,
@@ -106,26 +105,25 @@ func (this _parallelCaller) Call(
 					rootOpID,
 				); nil != childErr {
 					childErrChannel <- childErr
-					// trigger cancellation
-					cancellationReqChannel <- struct{}{}
+					// trigger parallel cancellation
+					parallelCancel()
 				}
 			}()
 
 			select {
-			case <-cancellationChannel:
+			case <-parallelCtx.Done():
 				// ensure resources immediately reclaimed
-				this.callKiller.Kill(childCallID)
-			case <-childDoneChannel:
+				this.callKiller.Kill(
+					childCallID,
+					rootOpID,
+				)
+			case <-childCtx.Done():
 			}
 		}(childCall)
 	}
 	wg.Wait()
 
-	if len(childErrChannel) == 0 {
-		// don't leak go routine
-		close(cancellationReqChannel)
-	} else {
-
+	if len(childErrChannel) != 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`
 -

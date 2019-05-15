@@ -14,6 +14,7 @@ import (
 type serialCaller interface {
 	// Executes a serial call
 	Call(
+		ctx context.Context,
 		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
@@ -42,12 +43,16 @@ type _serialCaller struct {
 }
 
 func (this _serialCaller) Call(
+	ctx context.Context,
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
 ) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	outboundScope := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outboundScope[varName] = varData
@@ -67,8 +72,6 @@ func (this _serialCaller) Call(
 		)
 	}()
 
-	ctx := context.TODO()
-
 	for _, scgCall := range scgSerialCall {
 		eventFilterSince := time.Now().UTC()
 
@@ -79,6 +82,7 @@ func (this _serialCaller) Call(
 		}
 
 		if err := this.caller.Call(
+			ctx,
 			childCallID,
 			outboundScope,
 			scgCall,
@@ -91,8 +95,6 @@ func (this _serialCaller) Call(
 		}
 
 		// subscribe to events
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
 		// @TODO: handle err channel
 		eventChannel, _ := this.pubSub.Subscribe(
 			ctx,

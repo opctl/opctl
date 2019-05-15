@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -44,6 +45,7 @@ var _ = Context("caller", func() {
 
 				/* assert */
 				objectUnderTest.Call(
+					context.Background(),
 					"dummyCallID",
 					map[string]*model.Value{},
 					nil,
@@ -78,6 +80,7 @@ var _ = Context("caller", func() {
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedCallID,
 				providedArgs,
 				providedSCG,
@@ -134,6 +137,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					map[string]*model.Value{},
 					&model.SCG{},
@@ -183,6 +187,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedScope,
 					providedSCG,
@@ -192,8 +197,8 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-
-				actualID,
+				_,
+					actualID,
 					actualScope,
 					actualSCG,
 					actualOpHandle,
@@ -234,6 +239,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					"dummyCallID",
 					providedArgs,
 					providedSCG,
@@ -243,7 +249,8 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				actualDCGContainerCall,
+				_,
+					actualDCGContainerCall,
 					actualArgs,
 					actualSCG := fakeContainerCaller.CallArgsForCall(0)
 
@@ -286,6 +293,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
@@ -295,7 +303,8 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				actualDCGOpCall,
+				_,
+					actualDCGOpCall,
 					actualArgs,
 					actualParentID,
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
@@ -336,6 +345,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
@@ -345,12 +355,14 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				providedCallID,
+				_,
+					actualCallID,
 					actualArgs,
 					actualRootOpID,
 					actualOpHandle,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
 
+				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -389,6 +401,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
@@ -398,7 +411,8 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				actualCallID,
+				_,
+					actualCallID,
 					actualArgs,
 					actualRootOpID,
 					actualOpHandle,
@@ -439,6 +453,7 @@ var _ = Context("caller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,

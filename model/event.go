@@ -5,6 +5,7 @@ import "time"
 // Event represents a distributed state change
 type Event struct {
 	CallEnded                *CallEndedEvent                `json:"callEnded,omitempty"`
+	CallKilled               *CallKilledEvent               `json:"callKilled,omitempty"`
 	ContainerExited          *ContainerExitedEvent          `json:"containerExited,omitempty"`
 	ContainerStarted         *ContainerStartedEvent         `json:"containerStarted,omitempty"`
 	ContainerStdErrWrittenTo *ContainerStdErrWrittenToEvent `json:"containerStdErrWrittenTo,omitempty"`
@@ -28,6 +29,12 @@ type CallEndedEvent struct {
 	CallID     string            `json:"callId"`
 	Outputs    map[string]*Value `json:"outputs"`
 	RootCallID string            `json:"rootCallId"`
+}
+
+// CallKilledEvent represents a call was killed; a CallEndedEvent will follow
+type CallKilledEvent struct {
+	CallID     string `json:"callId"`
+	RootCallID string `json:"rootCallId"`
 }
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
