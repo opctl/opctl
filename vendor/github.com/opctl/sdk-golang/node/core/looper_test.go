@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 
 	. "github.com/onsi/ginkgo"
@@ -42,10 +43,12 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					context.Background(),
 					"id",
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
 					new(data.FakeHandle),
+					nil,
 					"rootOpID",
 				)
 
@@ -79,10 +82,12 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					context.Background(),
 					"id",
 					map[string]*model.Value{},
 					&model.SCG{Loop: &model.SCGLoop{}},
 					new(data.FakeHandle),
+					nil,
 					"rootOpID",
 				)
 
@@ -93,6 +98,7 @@ var _ = Context("looper", func() {
 		Context("initial dcgLoop.Until false", func() {
 			It("should call caller.Call w/ expected args", func() {
 				/* arrange */
+				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 				index := "index"
 				providedSCG := &model.SCG{
@@ -101,6 +107,8 @@ var _ = Context("looper", func() {
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
+				providedParentCallIDValue := "providedParentCallID"
+				providedParentCallID := &providedParentCallIDValue
 				providedRootOpID := "providedRootOpID"
 
 				fakeLoopInterpreter := new(loop.FakeInterpreter)
@@ -135,24 +143,30 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
+					providedCtx,
 					"id",
 					providedScope,
 					providedSCG,
 					providedOpHandle,
+					providedParentCallID,
 					providedRootOpID,
 				)
 
 				/* assert */
-				actualCallID,
+				actualCtx,
+					actualCallID,
 					actualScope,
 					actualSCG,
 					actualOpHandle,
+					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
+				Expect(actualCtx).To(Equal(providedCtx))
 				Expect(actualCallID).To(Equal(expectedID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(providedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})

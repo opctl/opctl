@@ -3,6 +3,7 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"io"
 	"strings"
 	"text/tabwriter"
 
@@ -53,35 +54,49 @@ type Cmd struct {
 BoolParam represents a Bool option or argument
 */
 type BoolParam interface {
-	value() bool
+	value(into *bool) (flag.Value, *bool)
 }
 
 /*
 StringParam represents a String option or argument
 */
 type StringParam interface {
-	value() string
+	value(into *string) (flag.Value, *string)
 }
 
 /*
 IntParam represents an Int option or argument
 */
 type IntParam interface {
-	value() int
+	value(into *int) (flag.Value, *int)
+}
+
+/*
+Float64Param represents an Float64 option or argument
+*/
+type Float64Param interface {
+	value(into *float64) (flag.Value, *float64)
 }
 
 /*
 StringsParam represents a string slice option or argument
 */
 type StringsParam interface {
-	value() []string
+	value(into *[]string) (flag.Value, *[]string)
 }
 
 /*
-IntsParam represents an int slice option or argument
+IntsParam represents an float64 slice option or argument
 */
 type IntsParam interface {
-	value() []int
+	value(into *[]int) (flag.Value, *[]int)
+}
+
+/*
+Floats64Param represents an float64 slice option or argument
+*/
+type Floats64Param interface {
+	value(into *[]float64) (flag.Value, *[]float64)
 }
 
 /*
@@ -132,8 +147,7 @@ It accepts either a BoolOpt or a BoolArg struct.
 The result should be stored in a variable (a pointer to a bool) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) Bool(p BoolParam) *bool {
-	into := new(bool)
-	value := values.NewBool(into, p.value())
+	value, into := p.value(nil)
 
 	switch x := p.(type) {
 	case BoolOpt:
@@ -148,14 +162,32 @@ func (c *Cmd) Bool(p BoolParam) *bool {
 }
 
 /*
+BoolPtr can be used to add a bool option or argument to a command.
+It accepts either a pointer to a bool var and a BoolOpt or a BoolArg struct.
+
+The into parameter points to a variable (a pointer to a bool) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) BoolPtr(into *bool, p BoolParam) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case BoolOpt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case BoolArg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
 String can be used to add a string option or argument to a command.
 It accepts either a StringOpt or a StringArg struct.
 
 The result should be stored in a variable (a pointer to a string) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) String(p StringParam) *string {
-	into := new(string)
-	value := values.NewString(into, p.value())
+	value, into := p.value(nil)
 
 	switch x := p.(type) {
 	case StringOpt:
@@ -170,14 +202,32 @@ func (c *Cmd) String(p StringParam) *string {
 }
 
 /*
+StringPtr can be used to add a string option or argument to a command.
+It accepts either a pointer to a string var and a StringOpt or a StringArg struct.
+
+The into parameter points to a variable (a pointer to a string) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) StringPtr(into *string, p StringParam) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case StringOpt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case StringArg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
 Int can be used to add an int option or argument to a command.
 It accepts either a IntOpt or a IntArg struct.
 
 The result should be stored in a variable (a pointer to an int) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) Int(p IntParam) *int {
-	into := new(int)
-	value := values.NewInt(into, p.value())
+	value, into := p.value(nil)
 
 	switch x := p.(type) {
 	case IntOpt:
@@ -192,14 +242,72 @@ func (c *Cmd) Int(p IntParam) *int {
 }
 
 /*
+IntPtr can be used to add a int option or argument to a command.
+It accepts either a pointer to a int var and a IntOpt or a IntArg struct.
+
+The into parameter points to a variable (a pointer to a int) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) IntPtr(into *int, p IntParam) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case IntOpt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case IntArg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
+Float64 can be used to add a float64 option or argument to a command.
+It accepts either a Float64Opt or a Float64Arg struct.
+
+The result should be stored in a variable (a pointer to a float64) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) Float64(p Float64Param) *float64 {
+	value, into := p.value(nil)
+
+	switch x := p.(type) {
+	case Float64Opt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case Float64Arg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+
+	return into
+}
+
+/*
+Float64Ptr can be used to add a float64 option or argument to a command.
+It accepts either a pointer to a float64 var and a Float64Opt or a Float64Arg struct.
+
+The into parameter points to a variable (a pointer to a float64) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) Float64Ptr(into *float64, p Float64Param) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case Float64Opt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case Float64Arg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
 Strings can be used to add a string slice option or argument to a command.
 It accepts either a StringsOpt or a StringsArg struct.
 
 The result should be stored in a variable (a pointer to a string slice) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) Strings(p StringsParam) *[]string {
-	into := new([]string)
-	value := values.NewStrings(into, p.value())
+	value, into := p.value(nil)
 
 	switch x := p.(type) {
 	case StringsOpt:
@@ -214,14 +322,32 @@ func (c *Cmd) Strings(p StringsParam) *[]string {
 }
 
 /*
+StringsPtr can be used to add a string slice option or argument to a command.
+It accepts either a pointer to a string slice var and a StringsOpt or a StringsArg struct.
+
+The into parameter points to a variable (a pointer to a string slice) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) StringsPtr(into *[]string, p StringsParam) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case StringsOpt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case StringsArg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
 Ints can be used to add an int slice option or argument to a command.
 It accepts either a IntsOpt or a IntsArg struct.
 
 The result should be stored in a variable (a pointer to an int slice) which will be populated when the app is run and the call arguments get parsed
 */
 func (c *Cmd) Ints(p IntsParam) *[]int {
-	into := new([]int)
-	value := values.NewInts(into, p.value())
+	value, into := p.value(nil)
 
 	switch x := p.(type) {
 	case IntsOpt:
@@ -233,6 +359,65 @@ func (c *Cmd) Ints(p IntsParam) *[]int {
 	}
 
 	return into
+}
+
+/*
+IntsPtr can be used to add a int slice option or argument to a command.
+It accepts either a pointer to a int slice var and a IntsOpt or a IntsArg struct.
+
+The into parameter points to a variable (a pointer to a int slice) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) IntsPtr(into *[]int, p IntsParam) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case IntsOpt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case IntsArg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+}
+
+/*
+Floats64 can be used to add an float64 slice option or argument to a command.
+It accepts either a Floats64Opt or a Floats64Arg struct.
+
+The result should be stored in a variable (a pointer to an float64 slice) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) Floats64(p Floats64Param) *[]float64 {
+	value, into := p.value(nil)
+
+	switch x := p.(type) {
+	case Floats64Opt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case Floats64Arg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
+
+	return into
+}
+
+/*
+Floats64Ptr can be used to add a float64 slice option or argument to a command.
+It accepts either a pointer to a float64 slice var and a Floats64Opt or a Floats64Arg struct.
+
+The into parameter points to a variable (a pointer to a float64 slice) which will be populated when the app is run and the call arguments get parsed
+*/
+func (c *Cmd) Floats64Ptr(into *[]float64, p Floats64Param) {
+	value, _ := p.value(into)
+
+	switch x := p.(type) {
+	case Floats64Opt:
+		c.mkOpt(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	case Floats64Arg:
+		c.mkArg(container.Container{Name: x.Name, Desc: x.Desc, EnvVar: x.EnvVar, HideValue: x.HideValue, Value: value, ValueSetByUser: x.SetByUser})
+	default:
+		panic(fmt.Sprintf("Unhandled param %v", p))
+	}
 }
 
 /*
@@ -361,7 +546,7 @@ func (c *Cmd) printHelp(longDesc bool) {
 				env   = formatEnvVarsForHelp(arg.EnvVar)
 				value = formatValueForHelp(arg.HideValue, arg.Value)
 			)
-			fmt.Fprintf(w, "  %s\t%s\n", arg.Name, joinStrings(arg.Desc, env, value))
+			printTabbedRow(w, arg.Name, joinStrings(arg.Desc, env, value))
 		}
 	}
 
@@ -374,7 +559,7 @@ func (c *Cmd) printHelp(longDesc bool) {
 				env      = formatEnvVarsForHelp(opt.EnvVar)
 				value    = formatValueForHelp(opt.HideValue, opt.Value)
 			)
-			fmt.Fprintf(w, "  %s\t%s\n", optNames, joinStrings(opt.Desc, env, value))
+			printTabbedRow(w, optNames, joinStrings(opt.Desc, env, value))
 		}
 	}
 
@@ -410,7 +595,7 @@ func formatOptNamesForHelp(o *container.Container) string {
 	case short != "" && long != "":
 		return fmt.Sprintf("%s, %s", short, long)
 	case short != "":
-		return fmt.Sprintf("%s", short)
+		return short
 	case long != "":
 		// 2 spaces instead of the short option (-x), one space for the comma (,) and one space for the after comma blank
 		return fmt.Sprintf("    %s", long)
@@ -580,4 +765,17 @@ func joinStrings(parts ...string) string {
 		res += part
 	}
 	return res
+}
+
+func printTabbedRow(w io.Writer, s1 string, s2 string) {
+	lines := strings.Split(s2, "\n")
+	fmt.Fprintf(w, "  %s\t%s\n", s1, strings.TrimSpace(lines[0]))
+
+	if len(lines) == 1 {
+		return
+	}
+
+	for _, line := range lines[1:] {
+		fmt.Fprintf(w, "  %s\t%s\n", "", strings.TrimSpace(line))
+	}
 }

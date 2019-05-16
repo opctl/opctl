@@ -3,11 +3,16 @@ package model
 // dynamic call graph; see https://en.wikipedia.org/wiki/Call_graph
 type DCG struct {
 	Container *DCGContainerCall `json:"container,omitempty"`
-	If        *bool             `json:"if,omitempty"`
-	Loop      *DCGLoop          `json:"loop,omitempty"`
-	Op        *DCGOpCall        `json:"op,omitempty"`
-	Parallel  []*SCG            `json:"parallel,omitempty"`
-	Serial    []*SCG            `json:"serial,omitempty"`
+	// id of call
+	Id       string     `json:"id"`
+	If       *bool      `json:"if,omitempty"`
+	IsKilled bool       `json:"isKilled"`
+	Loop     *DCGLoop   `json:"loop,omitempty"`
+	Op       *DCGOpCall `json:"op,omitempty"`
+	Parallel []*SCG     `json:"parallel,omitempty"`
+	// id of parent call
+	ParentID *string `json:"parentId,omitempty"`
+	Serial   []*SCG  `json:"serial,omitempty"`
 }
 
 type DCGBaseCall struct {

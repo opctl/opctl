@@ -30,6 +30,8 @@ func getEventRootOpID(
 	switch {
 	case nil != event.CallEnded:
 		return event.CallEnded.RootCallID
+	case nil != event.CallKilled:
+		return event.CallKilled.RootCallID
 	case nil != event.ContainerExited:
 		return event.ContainerExited.RootOpID
 	case nil != event.ContainerStarted:

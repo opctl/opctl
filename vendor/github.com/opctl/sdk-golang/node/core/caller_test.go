@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -21,8 +22,8 @@ var _ = Context("caller", func() {
 					new(call.FakeInterpreter),
 					new(fakeContainerCaller),
 					"dummyDataDir",
-					new(fakeDCGNodeRepo),
-					new(fakeOpKiller),
+					new(fakeCallStore),
+					new(fakeCallKiller),
 					new(pubsub.Fake),
 				),
 			).To(Not(BeNil()))
@@ -37,16 +38,19 @@ var _ = Context("caller", func() {
 				/* act */
 				objectUnderTest := _caller{
 					callInterpreter: new(call.FakeInterpreter),
+					callStore:       new(fakeCallStore),
 					containerCaller: fakeContainerCaller,
 					pubSub:          new(pubsub.Fake),
 				}
 
 				/* assert */
 				objectUnderTest.Call(
+					context.Background(),
 					"dummyCallID",
 					map[string]*model.Value{},
 					nil,
 					new(data.FakeHandle),
+					nil,
 					"dummyRootOpID",
 				)
 			})
@@ -57,6 +61,8 @@ var _ = Context("caller", func() {
 			providedArgs := map[string]*model.Value{}
 			providedSCG := &model.SCG{}
 			providedOpHandle := new(data.FakeHandle)
+			providedParentIDValue := "providedParentID"
+			providedParentID := &providedParentIDValue
 			providedRootOpID := "dummyRootOpID"
 
 			fakeCallInterpreter := new(call.FakeInterpreter)
@@ -67,16 +73,19 @@ var _ = Context("caller", func() {
 
 			objectUnderTest := _caller{
 				callInterpreter: fakeCallInterpreter,
+				callStore:       new(fakeCallStore),
 				containerCaller: new(fakeContainerCaller),
 				pubSub:          new(pubsub.Fake),
 			}
 
 			/* act */
 			objectUnderTest.Call(
+				context.Background(),
 				providedCallID,
 				providedArgs,
 				providedSCG,
 				providedOpHandle,
+				providedParentID,
 				providedRootOpID,
 			)
 
@@ -85,12 +94,14 @@ var _ = Context("caller", func() {
 				actualSCG,
 				actualID,
 				actualOpHandle,
+				actualParentID,
 				actualRootOpID := fakeCallInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedArgs))
 			Expect(actualSCG).To(Equal(providedSCG))
 			Expect(actualID).To(Equal(providedCallID))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
+			Expect(actualParentID).To(Equal(providedParentID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))
 		})
 		Context("callInterpreter.Interpret result.If falsy", func() {
@@ -119,16 +130,19 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
 					pubSub:          fakePubSub,
 				}
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					map[string]*model.Value{},
 					&model.SCG{},
 					new(data.FakeHandle),
+					nil,
 					providedRootOpID,
 				)
 
@@ -153,6 +167,8 @@ var _ = Context("caller", func() {
 					Container: &model.SCGContainerCall{},
 				}
 				providedOpHandle := new(data.FakeHandle)
+				providedParentIDValue := "providedParentID"
+				providedParentID := &providedParentIDValue
 				providedRootOpID := "providedRootOpID"
 
 				expectedDCG := &model.DCG{
@@ -164,31 +180,36 @@ var _ = Context("caller", func() {
 				fakeLooper := new(fakeLooper)
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					looper:          fakeLooper,
 					pubSub:          new(pubsub.Fake),
 				}
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedScope,
 					providedSCG,
 					providedOpHandle,
+					providedParentID,
 					providedRootOpID,
 				)
 
 				/* assert */
-
-				actualID,
+				_,
+					actualID,
 					actualScope,
 					actualSCG,
 					actualOpHandle,
+					actualParentID,
 					actualRootOpID := fakeLooper.LoopArgsForCall(0)
 
 				Expect(actualID).To(Equal(providedCallID))
 				Expect(actualScope).To(Equal(providedScope))
 				Expect(actualSCG).To(Equal(providedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentID).To(Equal(providedParentID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
@@ -211,21 +232,25 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					containerCaller: fakeContainerCaller,
 					pubSub:          new(pubsub.Fake),
 				}
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					"dummyCallID",
 					providedArgs,
 					providedSCG,
 					new(data.FakeHandle),
+					nil,
 					"dummyRootOpID",
 				)
 
 				/* assert */
-				actualDCGContainerCall,
+				_,
+					actualDCGContainerCall,
 					actualArgs,
 					actualSCG := fakeContainerCaller.CallArgsForCall(0)
 
@@ -256,30 +281,37 @@ var _ = Context("caller", func() {
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
+				providedParentID := "providedParentID"
 				providedRootOpID := "dummyRootOpID"
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					opCaller:        fakeOpCaller,
 					pubSub:          new(pubsub.Fake),
 				}
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
 					providedOpHandle,
+					&providedParentID,
 					providedRootOpID,
 				)
 
 				/* assert */
-				actualDCGOpCall,
+				_,
+					actualDCGOpCall,
 					actualArgs,
+					actualParentID,
 					actualSCG := fakeOpCaller.CallArgsForCall(0)
 
 				Expect(actualDCGOpCall).To(Equal(expectedDCG.Op))
 				Expect(actualArgs).To(Equal(providedArgs))
+				Expect(actualParentID).To(Equal(actualParentID))
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
 		})
@@ -306,26 +338,31 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					parallelCaller:  fakeParallelCaller,
 					pubSub:          new(pubsub.Fake),
 				}
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
 					providedOpHandle,
+					nil,
 					providedRootOpID,
 				)
 
 				/* assert */
-				providedCallID,
+				_,
+					actualCallID,
 					actualArgs,
 					actualRootOpID,
 					actualOpHandle,
 					actualSCG := fakeParallelCaller.CallArgsForCall(0)
 
+				Expect(actualCallID).To(Equal(providedCallID))
 				Expect(actualArgs).To(Equal(providedArgs))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -356,6 +393,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
 					pubSub:          new(pubsub.Fake),
 					serialCaller:    fakeSerialCaller,
@@ -363,15 +401,18 @@ var _ = Context("caller", func() {
 
 				/* act */
 				objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
 					providedOpHandle,
+					nil,
 					providedRootOpID,
 				)
 
 				/* assert */
-				actualCallID,
+				_,
+					actualCallID,
 					actualArgs,
 					actualRootOpID,
 					actualOpHandle,
@@ -404,6 +445,7 @@ var _ = Context("caller", func() {
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
+					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
 					pubSub:          new(pubsub.Fake),
 					serialCaller:    fakeSerialCaller,
@@ -411,10 +453,12 @@ var _ = Context("caller", func() {
 
 				/* act */
 				actualError := objectUnderTest.Call(
+					context.Background(),
 					providedCallID,
 					providedArgs,
 					providedSCG,
 					providedOpHandle,
+					nil,
 					providedRootOpID,
 				)
 

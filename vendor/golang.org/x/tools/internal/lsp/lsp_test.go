@@ -9,7 +9,6 @@ import (
 	"context"
 	"fmt"
 	"go/token"
-	"os"
 	"os/exec"
 	"sort"
 	"strings"
@@ -34,18 +33,20 @@ type runner struct {
 	data   *tests.Data
 }
 
-func testLSP(t *testing.T, exporter packagestest.Exporter) {
-	ctx := context.Background()
+const viewName = "lsp_test"
 
+func testLSP(t *testing.T, exporter packagestest.Exporter) {
 	data := tests.Load(t, exporter, "testdata")
 	defer data.Exported.Cleanup()
 
 	log := xlog.New(xlog.StdSink{})
+	cache := cache.New()
+	session := cache.NewSession(log)
+	session.NewView(viewName, span.FileURI(data.Config.Dir), &data.Config)
 	r := &runner{
 		server: &Server{
-			views:       []*cache.View{cache.NewView(ctx, log, "lsp_test", span.FileURI(data.Config.Dir), &data.Config)},
+			session:     session,
 			undelivered: make(map[span.URI][]source.Diagnostic),
-			log:         log,
 		},
 		data: data,
 	}
@@ -53,7 +54,7 @@ func testLSP(t *testing.T, exporter packagestest.Exporter) {
 }
 
 func (r *runner) Diagnostics(t *testing.T, data tests.Diagnostics) {
-	v := r.server.views[0]
+	v := r.server.session.View(viewName)
 	for uri, want := range data {
 		results, err := source.Diagnostics(context.Background(), v, uri)
 		if err != nil {
@@ -130,26 +131,15 @@ func summarizeDiagnostics(i int, want []source.Diagnostic, got []source.Diagnost
 	return msg.String()
 }
 
-func (r *runner) Completion(t *testing.T, data tests.Completions, items tests.CompletionItems) {
+func (r *runner) Completion(t *testing.T, data tests.Completions, snippets tests.CompletionSnippets, items tests.CompletionItems) {
 	for src, itemList := range data {
 		var want []source.CompletionItem
 		for _, pos := range itemList {
 			want = append(want, *items[pos])
 		}
-		list, err := r.server.Completion(context.Background(), &protocol.CompletionParams{
-			TextDocumentPositionParams: protocol.TextDocumentPositionParams{
-				TextDocument: protocol.TextDocumentIdentifier{
-					URI: protocol.NewURI(src.URI()),
-				},
-				Position: protocol.Position{
-					Line:      float64(src.Start().Line() - 1),
-					Character: float64(src.Start().Column() - 1),
-				},
-			},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
+
+		list := r.runCompletion(t, src)
+
 		wantBuiltins := strings.Contains(string(src.URI()), "builtins")
 		var got []protocol.CompletionItem
 		for _, item := range list.Items {
@@ -158,31 +148,66 @@ func (r *runner) Completion(t *testing.T, data tests.Completions, items tests.Co
 			}
 			got = append(got, item)
 		}
-		if err != nil {
-			t.Fatalf("completion failed for %v: %v", src, err)
-		}
 		if diff := diffCompletionItems(t, src, want, got); diff != "" {
 			t.Errorf("%s: %s", src, diff)
 		}
 	}
 
-	// Make sure we don't crash completing the first position in file set.
-	firstFile := r.data.Config.Fset.Position(1).Filename
+	origPlaceHolders := r.server.usePlaceholders
+	origTextFormat := r.server.insertTextFormat
+	defer func() {
+		r.server.usePlaceholders = origPlaceHolders
+		r.server.insertTextFormat = origTextFormat
+	}()
 
-	_, err := r.server.Completion(context.Background(), &protocol.CompletionParams{
+	r.server.insertTextFormat = protocol.SnippetTextFormat
+	for _, usePlaceholders := range []bool{true, false} {
+		r.server.usePlaceholders = usePlaceholders
+
+		for src, want := range snippets {
+			list := r.runCompletion(t, src)
+
+			wantItem := items[want.CompletionItem]
+			var got *protocol.CompletionItem
+			for _, item := range list.Items {
+				if item.Label == wantItem.Label {
+					got = &item
+					break
+				}
+			}
+			if got == nil {
+				t.Fatalf("%s: couldn't find completion matching %q", src.URI(), wantItem.Label)
+			}
+			var expected string
+			if usePlaceholders {
+				expected = want.PlaceholderSnippet
+			} else {
+				expected = want.PlainSnippet
+			}
+			if expected != got.TextEdit.NewText {
+				t.Errorf("%s: expected snippet %q, got %q", src, expected, got.TextEdit.NewText)
+			}
+		}
+	}
+}
+
+func (r *runner) runCompletion(t *testing.T, src span.Span) *protocol.CompletionList {
+	t.Helper()
+	list, err := r.server.Completion(context.Background(), &protocol.CompletionParams{
 		TextDocumentPositionParams: protocol.TextDocumentPositionParams{
 			TextDocument: protocol.TextDocumentIdentifier{
-				URI: protocol.NewURI(span.FileURI(firstFile)),
+				URI: protocol.NewURI(src.URI()),
 			},
 			Position: protocol.Position{
-				Line:      0,
-				Character: 0,
+				Line:      float64(src.Start().Line() - 1),
+				Character: float64(src.Start().Column() - 1),
 			},
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
+	return list
 }
 
 func isBuiltin(item protocol.CompletionItem) bool {
@@ -252,16 +277,10 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		gofmted := string(r.data.Golden("gofmt", filename, func(golden string) error {
+		gofmted := string(r.data.Golden("gofmt", filename, func() ([]byte, error) {
 			cmd := exec.Command("gofmt", filename)
-			stdout, err := os.Create(golden)
-			if err != nil {
-				return err
-			}
-			defer stdout.Close()
-			cmd.Stdout = stdout
-			cmd.Run() // ignore error, sometimes we have intentionally ungofmt-able files
-			return nil
+			out, _ := cmd.Output() // ignore error, sometimes we have intentionally ungofmt-able files
+			return out, nil
 		}))
 
 		edits, err := r.server.Formatting(context.Background(), &protocol.DocumentFormattingParams{
@@ -275,7 +294,7 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 			}
 			continue
 		}
-		_, m, err := newColumnMap(ctx, r.server.findView(ctx, uri), uri)
+		_, m, err := getSourceFile(ctx, r.server.session.ViewOf(uri), uri)
 		if err != nil {
 			t.Error(err)
 		}
@@ -303,10 +322,15 @@ func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 			Position:     loc.Range.Start,
 		}
 		var locs []protocol.Location
+		var hover *protocol.Hover
 		if d.IsType {
 			locs, err = r.server.TypeDefinition(context.Background(), params)
 		} else {
 			locs, err = r.server.Definition(context.Background(), params)
+			if err != nil {
+				t.Fatalf("failed for %v: %v", d.Src, err)
+			}
+			hover, err = r.server.Hover(context.Background(), params)
 		}
 		if err != nil {
 			t.Fatalf("failed for %v: %v", d.Src, err)
@@ -320,6 +344,19 @@ func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 			t.Fatalf("failed for %v: %v", locs[0], err)
 		} else if def != d.Def {
 			t.Errorf("for %v got %v want %v", d.Src, def, d.Def)
+		}
+		if hover != nil {
+			tag := fmt.Sprintf("%s-hover", d.Name)
+			filename, err := d.Src.URI().Filename()
+			if err != nil {
+				t.Fatalf("failed for %v: %v", d.Def, err)
+			}
+			expectHover := string(r.data.Golden(tag, filename, func() ([]byte, error) {
+				return []byte(hover.Contents.Value), nil
+			}))
+			if hover.Contents.Value != expectHover {
+				t.Errorf("for %v got %q want %q", d.Src, hover.Contents.Value, expectHover)
+			}
 		}
 	}
 }
@@ -422,7 +459,7 @@ func summarizeSymbols(i int, want []source.Symbol, got []protocol.DocumentSymbol
 	return msg.String()
 }
 
-func (r *runner) Signature(t *testing.T, data tests.Signatures) {
+func (r *runner) SignatureHelp(t *testing.T, data tests.Signatures) {
 	for spn, expectedSignatures := range data {
 		m := r.mapper(spn.URI())
 		loc, err := m.Location(spn)
@@ -478,6 +515,41 @@ func diffSignatures(spn span.Span, want source.SignatureInformation, got *protoc
 	}
 
 	return ""
+}
+
+func (r *runner) Link(t *testing.T, data tests.Links) {
+	for uri, wantLinks := range data {
+		m := r.mapper(uri)
+		gotLinks, err := r.server.DocumentLink(context.Background(), &protocol.DocumentLinkParams{
+			TextDocument: protocol.TextDocumentIdentifier{
+				URI: protocol.NewURI(uri),
+			},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		links := make(map[span.Span]string, len(wantLinks))
+		for _, link := range wantLinks {
+			links[link.Src] = link.Target
+		}
+		for _, link := range gotLinks {
+			spn, err := m.RangeSpan(link.Range)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if target, ok := links[spn]; ok {
+				delete(links, spn)
+				if target != link.Target {
+					t.Errorf("for %v want %v, got %v\n", spn, link.Target, target)
+				}
+			} else {
+				t.Errorf("unexpected link %v:%v\n", spn, link.Target)
+			}
+		}
+		for spn, target := range links {
+			t.Errorf("missing link %v:%v\n", spn, target)
+		}
+	}
 }
 
 func (r *runner) mapper(uri span.URI) *protocol.ColumnMapper {

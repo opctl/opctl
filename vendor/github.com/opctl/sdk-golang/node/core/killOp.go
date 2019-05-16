@@ -7,5 +7,8 @@ import (
 func (this _core) KillOp(
 	req model.KillOpReq,
 ) {
-	this.opKiller.Kill(req)
+	this.callKiller.Kill(
+		req.OpID,
+		req.OpID,
+	)
 }

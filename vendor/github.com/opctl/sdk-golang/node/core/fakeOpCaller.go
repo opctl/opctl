@@ -2,18 +2,21 @@
 package core
 
 import (
+	"context"
 	"sync"
 
 	"github.com/opctl/sdk-golang/model"
 )
 
 type fakeOpCaller struct {
-	CallStub        func(*model.DCGOpCall, map[string]*model.Value, *model.SCGOpCall) error
+	CallStub        func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall) error
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
-		arg1 *model.DCGOpCall
-		arg2 map[string]*model.Value
-		arg3 *model.SCGOpCall
+		arg1 context.Context
+		arg2 *model.DCGOpCall
+		arg3 map[string]*model.Value
+		arg4 *string
+		arg5 *model.SCGOpCall
 	}
 	callReturns struct {
 		result1 error
@@ -25,18 +28,20 @@ type fakeOpCaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeOpCaller) Call(arg1 *model.DCGOpCall, arg2 map[string]*model.Value, arg3 *model.SCGOpCall) error {
+func (fake *fakeOpCaller) Call(arg1 context.Context, arg2 *model.DCGOpCall, arg3 map[string]*model.Value, arg4 *string, arg5 *model.SCGOpCall) error {
 	fake.callMutex.Lock()
 	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
-		arg1 *model.DCGOpCall
-		arg2 map[string]*model.Value
-		arg3 *model.SCGOpCall
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3})
+		arg1 context.Context
+		arg2 *model.DCGOpCall
+		arg3 map[string]*model.Value
+		arg4 *string
+		arg5 *model.SCGOpCall
+	}{arg1, arg2, arg3, arg4, arg5})
+	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(arg1, arg2, arg3)
+		return fake.CallStub(arg1, arg2, arg3, arg4, arg5)
 	}
 	if specificReturn {
 		return ret.result1
@@ -51,17 +56,17 @@ func (fake *fakeOpCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeOpCaller) CallCalls(stub func(*model.DCGOpCall, map[string]*model.Value, *model.SCGOpCall) error) {
+func (fake *fakeOpCaller) CallCalls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall) error) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *fakeOpCaller) CallArgsForCall(i int) (*model.DCGOpCall, map[string]*model.Value, *model.SCGOpCall) {
+func (fake *fakeOpCaller) CallArgsForCall(i int) (context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
 func (fake *fakeOpCaller) CallReturns(result1 error) {

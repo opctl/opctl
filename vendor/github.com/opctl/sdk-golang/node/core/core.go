@@ -11,7 +11,7 @@ import (
 	"github.com/opctl/sdk-golang/opspec/interpreter/call"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
@@ -63,9 +63,13 @@ func New(
 ) (core Core) {
 	uniqueStringFactory := uniquestring.NewUniqueStringFactory()
 
-	dcgNodeRepo := newDCGNodeRepo()
+	callStore := newCallStore()
 
-	opKiller := newOpKiller(dcgNodeRepo, containerRuntime)
+	callKiller := newCallKiller(
+		callStore,
+		containerRuntime,
+		pubSub,
+	)
 
 	opInterpreter := op.NewInterpreter(dataDirPath)
 
@@ -77,11 +81,10 @@ func New(
 		newContainerCaller(
 			containerRuntime,
 			pubSub,
-			dcgNodeRepo,
 		),
 		dataDirPath,
-		dcgNodeRepo,
-		opKiller,
+		callStore,
+		callKiller,
 		pubSub,
 	)
 
@@ -90,10 +93,10 @@ func New(
 		containerRuntime:    containerRuntime,
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
-		dcgNodeRepo:         dcgNodeRepo,
+		callStore:           callStore,
 		dotYmlGetter:        dotyml.NewGetter(),
 		opInterpreter:       opInterpreter,
-		opKiller:            opKiller,
+		callKiller:          callKiller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniqueStringFactory,
 	}
@@ -106,10 +109,10 @@ type _core struct {
 	containerRuntime    containerruntime.ContainerRuntime
 	data                data.Data
 	dataCachePath       string
-	dcgNodeRepo         dcgNodeRepo
+	callStore           callStore
 	dotYmlGetter        dotyml.Getter
 	opInterpreter       op.Interpreter
-	opKiller            opKiller
+	callKiller          callKiller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
