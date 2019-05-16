@@ -8,73 +8,60 @@ import (
 
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/outputs"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/pubsub"
 )
 
 type opCaller interface {
 	// Executes an op call
 	Call(
+		ctx context.Context,
 		dcgOpCall *model.DCGOpCall,
 		inboundScope map[string]*model.Value,
+		parentCallID *string,
 		scgOpCall *model.SCGOpCall,
 	) error
 }
 
 func newOpCaller(
+	callStore callStore,
 	pubSub pubsub.PubSub,
-	dcgNodeRepo dcgNodeRepo,
 	caller caller,
 	dataDirPath string,
 ) opCaller {
 	return _opCaller{
+		caller:             caller,
+		callStore:          callStore,
 		outputsInterpreter: outputs.NewInterpreter(),
 		dotYmlGetter:       dotyml.NewGetter(),
 		pubSub:             pubSub,
-		dcgNodeRepo:        dcgNodeRepo,
-		caller:             caller,
 	}
 }
 
 type _opCaller struct {
+	callStore          callStore
+	caller             caller
 	outputsInterpreter outputs.Interpreter
 	dotYmlGetter       dotyml.Getter
 	pubSub             pubsub.PubSub
-	dcgNodeRepo        dcgNodeRepo
-	caller             caller
 }
 
 func (oc _opCaller) Call(
+	ctx context.Context,
 	dcgOpCall *model.DCGOpCall,
 	inboundScope map[string]*model.Value,
+	parentCallID *string,
 	scgOpCall *model.SCGOpCall,
 ) error {
 	var err error
-	var isKilled bool
 	outboundScope := map[string]*model.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		if isKilled {
-			// guard: op killed (we got preempted)
-			oc.pubSub.Publish(
-				model.Event{
-					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEndedEvent{
-						OpID:     dcgOpCall.OpID,
-						Outcome:  model.OpOutcomeKilled,
-						RootOpID: dcgOpCall.RootOpID,
-						OpRef:    dcgOpCall.OpHandle.Ref(),
-					},
-				},
-			)
-			return
-		}
-
-		oc.dcgNodeRepo.DeleteIfExists(dcgOpCall.OpID)
-
 		var opOutcome string
-		if nil != err {
+		if oc.callStore.Get(dcgOpCall.OpID).IsKilled {
+			opOutcome = model.OpOutcomeKilled
+		} else if nil != err {
 			oc.pubSub.Publish(
 				model.Event{
 					Timestamp: time.Now().UTC(),
@@ -106,15 +93,6 @@ func (oc _opCaller) Call(
 
 	}()
 
-	oc.dcgNodeRepo.Add(
-		&dcgNodeDescriptor{
-			Id:       dcgOpCall.OpID,
-			OpRef:    dcgOpCall.OpHandle.Ref(),
-			RootOpID: dcgOpCall.RootOpID,
-			Op:       &dcgOpDescriptor{},
-		},
-	)
-
 	oc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),
@@ -130,20 +108,20 @@ func (oc _opCaller) Call(
 	opOutputsChan := make(chan map[string]*model.Value, 1)
 	go func() {
 		opOutputsChan <- oc.waitOnOpOutputs(
-			context.TODO(),
+			ctx,
 			dcgOpCall,
 		)
 	}()
 
 	err = oc.caller.Call(
+		ctx,
 		dcgOpCall.ChildCallID,
 		dcgOpCall.Inputs,
 		dcgOpCall.ChildCallSCG,
 		dcgOpCall.OpHandle,
+		&dcgOpCall.OpID,
 		dcgOpCall.RootOpID,
 	)
-
-	isKilled = nil == oc.dcgNodeRepo.GetIfExists(dcgOpCall.RootOpID)
 
 	if nil != err {
 		return err
@@ -153,7 +131,7 @@ func (oc _opCaller) Call(
 	opOutputs := <-opOutputsChan
 
 	opDotYml, err := oc.dotYmlGetter.Get(
-		context.TODO(),
+		ctx,
 		dcgOpCall.OpHandle,
 	)
 	if nil != err {
@@ -183,10 +161,6 @@ func (oc _opCaller) waitOnOpOutputs(
 	ctx context.Context,
 	dcgOpCall *model.DCGOpCall,
 ) map[string]*model.Value {
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	// subscribe to events
 	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := oc.pubSub.Subscribe(

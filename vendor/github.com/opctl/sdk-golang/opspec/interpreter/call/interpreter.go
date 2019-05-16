@@ -20,6 +20,7 @@ type Interpreter interface {
 		scg *model.SCG,
 		id string,
 		opHandle model.DataHandle,
+		parentID *string,
 		rootOpID string,
 	) (*model.DCG, error)
 }
@@ -49,11 +50,18 @@ func (itp _interpreter) Interpret(
 	scg *model.SCG,
 	id string,
 	opHandle model.DataHandle,
+	parentID *string,
 	rootOpID string,
 ) (*model.DCG, error) {
-	var dcgIf *bool
+	dcg := &model.DCG{
+		Id:       id,
+		ParentID: parentID,
+	}
+	var err error
+
 	if len(scg.If) > 0 {
-		dcgIfBool, err := itp.predicatesInterpreter.Interpret(
+		var dcgIf bool
+		dcgIf, err = itp.predicatesInterpreter.Interpret(
 			opHandle,
 			scg.If,
 			scope,
@@ -62,13 +70,11 @@ func (itp _interpreter) Interpret(
 			return nil, err
 		}
 
-		dcgIf = &dcgIfBool
+		dcg.If = &dcgIf
 	}
 
-	var dcgLoop *model.DCGLoop
 	if nil != scg.Loop {
-		var err error
-		dcgLoop, err = itp.loopInterpreter.Interpret(
+		dcg.Loop, err = itp.loopInterpreter.Interpret(
 			opHandle,
 			scg.Loop,
 			scope,
@@ -80,51 +86,29 @@ func (itp _interpreter) Interpret(
 
 	switch {
 	case nil != scg.Container:
-		dcgContainerCall, err := itp.containerCallInterpreter.Interpret(
+		dcg.Container, err = itp.containerCallInterpreter.Interpret(
 			scope,
 			scg.Container,
 			id,
 			rootOpID,
 			opHandle,
 		)
-		if nil != err {
-			return nil, err
-		}
-
-		return &model.DCG{
-			Container: dcgContainerCall,
-			If:        dcgIf,
-			Loop:      dcgLoop,
-		}, nil
+		return dcg, err
 	case nil != scg.Op:
-		dcgOpCall, err := itp.opCallInterpreter.Interpret(
+		dcg.Op, err = itp.opCallInterpreter.Interpret(
 			scope,
 			scg.Op,
 			id,
 			opHandle,
 			rootOpID,
 		)
-		if nil != err {
-			return nil, err
-		}
-
-		return &model.DCG{
-			Op:   dcgOpCall,
-			If:   dcgIf,
-			Loop: dcgLoop,
-		}, nil
+		return dcg, err
 	case len(scg.Parallel) > 0:
-		return &model.DCG{
-			Parallel: scg.Parallel,
-			If:       dcgIf,
-			Loop:     dcgLoop,
-		}, nil
+		dcg.Parallel = scg.Parallel
+		return dcg, nil
 	case len(scg.Serial) > 0:
-		return &model.DCG{
-			Serial: scg.Serial,
-			If:     dcgIf,
-			Loop:   dcgLoop,
-		}, nil
+		dcg.Serial = scg.Serial
+		return dcg, nil
 	default:
 		return nil, fmt.Errorf("Invalid call graph %+v\n", scg)
 	}

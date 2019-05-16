@@ -50,12 +50,15 @@ func (this _core) StartOp(
 
 	go func() {
 		this.caller.Call(
+			// call in background context
+			context.Background(),
 			opID,
 			req.Args,
 			&model.SCG{
 				Op: scgOpCall,
 			},
 			opHandle,
+			nil,
 			opID,
 		)
 	}()

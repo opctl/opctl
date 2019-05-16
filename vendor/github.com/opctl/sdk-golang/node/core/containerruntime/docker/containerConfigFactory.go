@@ -47,7 +47,7 @@ func (ccf _containerConfigFactory) Construct(
 	for port := range portBindings {
 		containerConfig.ExposedPorts[port] = struct{}{}
 	}
-	
+
 	for envVarName, envVarValue := range envVars {
 		containerConfig.Env = append(containerConfig.Env, fmt.Sprintf("%v=%v", envVarName, envVarValue))
 	}

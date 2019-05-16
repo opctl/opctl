@@ -26,7 +26,7 @@ type GetDataReq struct {
 // ListDescendantsReq deprecated
 type ListDescendantsReq struct {
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
-	PkgRef    string     `json:pkgRef`
+	PkgRef    string     `json:"pkgRef"`
 }
 
 type KillOpReq struct {
