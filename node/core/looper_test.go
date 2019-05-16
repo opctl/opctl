@@ -98,6 +98,7 @@ var _ = Context("looper", func() {
 		Context("initial dcgLoop.Until false", func() {
 			It("should call caller.Call w/ expected args", func() {
 				/* arrange */
+				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 				index := "index"
 				providedSCG := &model.SCG{
@@ -142,7 +143,7 @@ var _ = Context("looper", func() {
 
 				/* act */
 				objectUnderTest.Loop(
-					context.Background(),
+					providedCtx,
 					"id",
 					providedScope,
 					providedSCG,
@@ -152,7 +153,7 @@ var _ = Context("looper", func() {
 				)
 
 				/* assert */
-				_,
+				actualCtx,
 					actualCallID,
 					actualScope,
 					actualSCG,
@@ -160,6 +161,7 @@ var _ = Context("looper", func() {
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
+				Expect(actualCtx).To(Equal(providedCtx))
 				Expect(actualCallID).To(Equal(expectedID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(providedSCG))

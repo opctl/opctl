@@ -50,9 +50,6 @@ func (this _serialCaller) Call(
 	opHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
 ) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	outboundScope := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outboundScope[varName] = varData
@@ -132,7 +129,6 @@ func (this _serialCaller) Call(
 				break eventLoop
 			}
 		}
-		cancel()
 
 	}
 

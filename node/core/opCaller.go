@@ -161,10 +161,6 @@ func (oc _opCaller) waitOnOpOutputs(
 	ctx context.Context,
 	dcgOpCall *model.DCGOpCall,
 ) map[string]*model.Value {
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	// subscribe to events
 	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := oc.pubSub.Subscribe(

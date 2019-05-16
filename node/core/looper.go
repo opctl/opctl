@@ -147,9 +147,6 @@ func (lpr _looper) Loop(
 	parentCallID *string,
 	rootOpID string,
 ) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
 	outboundScope := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
 		outboundScope[varName] = varData
@@ -265,7 +262,6 @@ func (lpr _looper) Loop(
 				break eventLoop
 			}
 		}
-		cancel()
 
 		index++
 

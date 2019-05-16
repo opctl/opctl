@@ -26,6 +26,7 @@ var _ = Context("serialCaller", func() {
 	Context("Call", func() {
 		It("should call caller for every serialCall w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedCallID := "providedCallID"
 			providedInboundScope := map[string]*model.Value{}
 			providedRootOpID := "providedRootOpID"
@@ -75,7 +76,7 @@ var _ = Context("serialCaller", func() {
 
 			/* act */
 			objectUnderTest.Call(
-				context.Background(),
+				providedCtx,
 				providedCallID,
 				providedInboundScope,
 				providedRootOpID,
@@ -85,7 +86,7 @@ var _ = Context("serialCaller", func() {
 
 			/* assert */
 			for expectedSCGIndex, expectedSCG := range providedSCGSerialCalls {
-				_,
+				actualCtx,
 					actualNodeId,
 					actualChildOutboundScope,
 					actualSCG,
@@ -93,6 +94,7 @@ var _ = Context("serialCaller", func() {
 					actualParentCallID,
 					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
 
+				Expect(actualCtx).To(Equal(actualCtx))
 				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
