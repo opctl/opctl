@@ -63,17 +63,17 @@ func (itp _interpreter) Interpret(
 	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
 		pkgPullCreds = &model.PullCreds{}
 		var err error
-		evaluatedUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username, parentOpHandle)
+		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}
-		pkgPullCreds.Username = *evaluatedUsername.String
+		pkgPullCreds.Username = *interpretdUsername.String
 
-		evaluatedPassword, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Password, parentOpHandle)
+		interpretdPassword, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Password, parentOpHandle)
 		if nil != err {
 			return nil, err
 		}
-		pkgPullCreds.Password = *evaluatedPassword.String
+		pkgPullCreds.Password = *interpretdPassword.String
 	}
 
 	parentOpDirPath := parentOpHandle.Path()

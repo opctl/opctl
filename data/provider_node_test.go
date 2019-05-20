@@ -3,11 +3,11 @@ package data
 import (
 	"context"
 
+	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api/client"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("fsProvider", func() {

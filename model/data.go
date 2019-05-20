@@ -4,6 +4,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 )
@@ -57,6 +58,28 @@ type Value struct {
 	Object  map[string]interface{} `json:"object,omitempty"`
 	Socket  *string                `json:"socket,omitempty"`
 	String  *string                `json:"string,omitempty"`
+}
+
+// Unbox unboxes a Value into a native go type
+func (vlu Value) Unbox() (interface{}, error) {
+	if 0 != len(vlu.Array) {
+		return vlu.Array, nil
+	} else if nil != vlu.Boolean {
+		return vlu.Boolean, nil
+	} else if nil != vlu.Dir {
+		return vlu.Dir, nil
+	} else if nil != vlu.File {
+		return vlu.File, nil
+	} else if nil != vlu.Number {
+		return vlu.Number, nil
+	} else if 0 != len(vlu.Object) {
+		return vlu.Object, nil
+	} else if nil != vlu.Socket {
+		return vlu.Socket, nil
+	} else if nil != vlu.String {
+		return vlu.String, nil
+	}
+	return nil, fmt.Errorf("unable to unbox value %+v; box unknown", vlu)
 }
 
 // PullCreds contains authentication attributes for auth'ing w/ a data provider

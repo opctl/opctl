@@ -1,4 +1,4 @@
-package initializer
+package value
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opspec/interpreter/array/initializer")
+	RunSpecs(t, "opspec/interpreter/value")
 }

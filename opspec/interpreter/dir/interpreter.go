@@ -14,7 +14,7 @@ import (
 )
 
 type Interpreter interface {
-	// Interpret evaluates an expression to a dir value.
+	// Interpret interprets an expression to a dir value.
 	// Expression must be of type string.
 	//
 	// Examples of valid dir expressions:
@@ -65,7 +65,7 @@ func (ed _interpreter) Interpret(
 				// pkg fs ref
 				pkgFsRef, err := ed.interpolater.Interpolate(refExpression, scope, opHandle)
 				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
+					return nil, fmt.Errorf("unable to interpret pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
 				opPath := opHandle.Path()
 				dirValue = filepath.Join(*opPath, pkgFsRef)
@@ -76,7 +76,7 @@ func (ed _interpreter) Interpret(
 				pathExpression := refParts[1]
 				path, err := ed.interpolater.Interpolate(pathExpression, scope, opHandle)
 				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
+					return nil, fmt.Errorf("unable to interpret path %v; error was %v", pathExpression, err.Error())
 				}
 
 				dirValue := filepath.Join(*dcgValue.Dir, path)
@@ -88,6 +88,6 @@ func (ed _interpreter) Interpret(
 		}
 	}
 
-	return nil, fmt.Errorf("unable to evaluate %v to dir", expression)
+	return nil, fmt.Errorf("unable to interpret %v to dir", expression)
 
 }

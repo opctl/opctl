@@ -1,11 +1,11 @@
 package docker
 
 import (
+	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/pkg/errors"
 )
 
 var _ = Context("EnsureNetworkExists", func() {
