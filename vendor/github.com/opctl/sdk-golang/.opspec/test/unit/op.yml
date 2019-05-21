@@ -40,4 +40,4 @@ run:
         workDir: /go/src/github.com/opctl/sdk-golang
     - op:
         pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0 }
-        inputs: { coverprofile, minCoverage: 48 }
+        inputs: { coverprofile, minCoverage: 47 }

@@ -1,141 +1,106 @@
 package number
 
 import (
+	"errors"
+	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
-	"github.com/pkg/errors"
+	"github.com/opctl/sdk-golang/opspec/interpreter/value"
 )
 
 var _ = Context("Interpret", func() {
-	Context("expression is float64", func() {
-		It("should return expected result", func() {
-			/* arrange */
-			providedExpression := 3.3
+	It("should call valueInterpreter.Interpret w/ expected args", func() {
+		/* arrange */
+		providedScope := map[string]*model.Value{"dummyName": {}}
+		providedExpression := "dummyExpression"
+		providedOpRef := new(data.FakeHandle)
 
-			objectUnderTest := _interpreter{}
+		fakeValueInterpreter := new(value.FakeInterpreter)
+		// err to trigger immediate return
+		fakeValueInterpreter.InterpretReturns(model.Value{}, errors.New("dummyError"))
 
-			/* act */
-			actualNumber, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				providedExpression,
-				new(data.FakeHandle),
-			)
+		objectUnderTest := _interpreter{
+			valueInterpreter: fakeValueInterpreter,
+		}
 
-			/* assert */
-			Expect(*actualNumber).To(Equal(model.Value{Number: &providedExpression}))
-			Expect(actualErr).To(BeNil())
-		})
+		/* act */
+		objectUnderTest.Interpret(
+			providedScope,
+			providedExpression,
+			providedOpRef,
+		)
+
+		/* assert */
+		actualExpression,
+			actualScope,
+			actualOpRef := fakeValueInterpreter.InterpretArgsForCall(0)
+
+		Expect(actualExpression).To(Equal(providedExpression))
+		Expect(actualScope).To(Equal(providedScope))
+		Expect(actualOpRef).To(Equal(providedOpRef))
+
 	})
-	Context("expression is int", func() {
-		It("should return expected result", func() {
+	Context("valueInterpreter.Interpret errs", func() {
+		It("should return expected err", func() {
 			/* arrange */
-			providedExpression := 3
-			expectedNumber := float64(providedExpression)
-
-			objectUnderTest := _interpreter{}
-
-			/* act */
-			actualNumber, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				providedExpression,
-				new(data.FakeHandle),
-			)
-
-			/* assert */
-			Expect(*actualNumber).To(Equal(model.Value{Number: &expectedNumber}))
-			Expect(actualErr).To(BeNil())
-		})
-	})
-	Context("expression is string", func() {
-		It("should call interpolater.Interpolate w/ expected args", func() {
-			/* arrange */
-			providedScope := map[string]*model.Value{"dummyName": {}}
 			providedExpression := "dummyExpression"
-			providedOpRef := new(data.FakeHandle)
 
-			fakeInterpolater := new(interpolater.Fake)
-			// err to trigger immediate return
-			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+			fakeValueInterpreter := new(value.FakeInterpreter)
+			interpretErr := errors.New("dummyError")
+			fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
+
+			expectedErr := fmt.Errorf("unable to interpret %+v to number; error was %v", providedExpression, interpretErr)
 
 			objectUnderTest := _interpreter{
-				interpolater: fakeInterpolater,
+				valueInterpreter: fakeValueInterpreter,
 			}
 
 			/* act */
-			objectUnderTest.Interpret(
-				providedScope,
-				providedExpression,
-				providedOpRef,
+			_, actualErr := objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				"dummyExpression",
+				new(data.FakeHandle),
 			)
 
 			/* assert */
-			actualExpression,
-				actualScope,
-				actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
-
-			Expect(actualExpression).To(Equal(providedExpression))
-			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualOpRef).To(Equal(providedOpRef))
+			Expect(actualErr).To(Equal(expectedErr))
 
 		})
-		Context("interpolater.Interpolate errs", func() {
-			It("should return expected err", func() {
-				/* arrange */
-				fakeInterpolater := new(interpolater.Fake)
-				interpolateErr := errors.New("dummyError")
-				fakeInterpolater.InterpolateReturns("", interpolateErr)
+	})
+	Context("valueInterpreter.Interpret doesn't err", func() {
+		It("should call coerce.ToNumber w/ expected args & return result", func() {
+			/* arrange */
+			fakeValueInterpreter := new(value.FakeInterpreter)
 
-				objectUnderTest := _interpreter{
-					interpolater: fakeInterpolater,
-				}
+			expectedValue := model.Value{String: new(string)}
+			fakeValueInterpreter.InterpretReturns(expectedValue, nil)
 
-				/* act */
-				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					"dummyExpression",
-					new(data.FakeHandle),
-				)
+			fakeCoerce := new(coerce.Fake)
 
-				/* assert */
-				Expect(actualErr).To(Equal(interpolateErr))
+			coercedValue := model.Value{Number: new(float64)}
+			fakeCoerce.ToNumberReturns(&coercedValue, nil)
 
-			})
-		})
-		Context("interpolater.Interpolate doesn't err", func() {
-			It("should call coerce.ToNumber w/ expected args & return result", func() {
-				/* arrange */
-				fakeInterpolater := new(interpolater.Fake)
+			objectUnderTest := _interpreter{
+				coerce:           fakeCoerce,
+				valueInterpreter: fakeValueInterpreter,
+			}
 
-				interpolatedValue := "dummyString"
-				fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
+			/* act */
+			actualNumber, actualErr := objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				"dummyExpression",
+				new(data.FakeHandle),
+			)
 
-				fakeCoerce := new(coerce.Fake)
+			/* assert */
+			Expect(*fakeCoerce.ToNumberArgsForCall(0)).To(Equal(expectedValue))
 
-				coercedValue := model.Value{Number: new(float64)}
-				fakeCoerce.ToNumberReturns(&coercedValue, nil)
-
-				objectUnderTest := _interpreter{
-					coerce:       fakeCoerce,
-					interpolater: fakeInterpolater,
-				}
-
-				/* act */
-				actualNumber, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					"dummyExpression",
-					new(data.FakeHandle),
-				)
-
-				/* assert */
-				Expect(*fakeCoerce.ToNumberArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
-
-				Expect(*actualNumber).To(Equal(coercedValue))
-				Expect(actualErr).To(BeNil())
-			})
+			Expect(*actualNumber).To(Equal(coercedValue))
+			Expect(actualErr).To(BeNil())
 		})
 	})
 })

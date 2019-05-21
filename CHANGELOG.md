@@ -18,6 +18,8 @@ accordance with
 ### Fixed
 
 - [opctl ls on windows does not list anything](https://github.com/opctl/opctl/issues/460)
+- [object & array initializers don't support multiline values](https://github.com/opctl/sdk-golang/issues/416)
+- [errors from parallel calls not logged](https://github.com/opctl/opctl/issues/421)
 
 ### Removed
 

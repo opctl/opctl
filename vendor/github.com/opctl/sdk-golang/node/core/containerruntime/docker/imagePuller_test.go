@@ -3,12 +3,12 @@ package docker
 import (
 	"bytes"
 	"context"
+	"errors"
 	"github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/pkg/errors"
 	"io/ioutil"
 )
 

@@ -89,7 +89,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:36efdffc1f599f2995eccf57815f59940346135f457871ee34afa18f64da31c3"
+  digest = "1:5fbf8f5fb919f63aa35e7849ee9a23b7b580876ffd24c2fada340e5ada530b92"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -115,7 +115,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "34b56728ed7101c6b3cc0405f5fd6351073a8253"
+  revision = "cae3c91d6bf96cf46ce239451c1bfb154657794e"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -217,14 +217,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2badd7523593ecc1088d5124ba71aa15fdbdc8c1cb15f60eea73f621d5f53a21"
-  name = "github.com/golang-interfaces/gopkg.in-yaml.v2"
-  packages = ["."]
-  pruneopts = ""
-  revision = "18ed951e741ba2e449a89a7f460a17835d28746d"
-
-[[projects]]
-  branch = "master"
   digest = "1:69ef808a6180b41b18a6b32ca5defcb33d6c66808bf9cbb4f57f29704b8b758b"
   name = "github.com/golang-interfaces/ihttp"
   packages = ["."]
@@ -318,12 +310,12 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:65c7ed49d9f36dd4752e43013323fa9229db60b29aa4f5a75aaecda3130c74e2"
+  digest = "1:ec5262e6c65f9fcedc01d7789ee4e18ad429dde822cfd50e57e3fd77c4d70c73"
   name = "github.com/gorilla/mux"
   packages = ["."]
   pruneopts = ""
-  revision = "c5c6c98bc25355028a63748a498942a6398ccd22"
-  version = "v1.7.1"
+  revision = "ed099d42384823742bba0bf9a72b53b55c9e2e38"
+  version = "v1.7.2"
 
 [[projects]]
   digest = "1:09aa5dd1332b93c96bde671bafb053249dc813febf7d5ca84e8f382ba255d67d"
@@ -462,7 +454,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ef9c27ebabdb5477cd9f4acf46d3d6dea22f50437f0c9e049a9ff83b088bb880"
+  digest = "1:4f3e879ad41467590f7b2028a29392ca539b2b43590855b0583a7e844cfc93e4"
   name = "github.com/opctl/sdk-golang"
   packages = [
     "data",
@@ -489,7 +481,6 @@
     "opspec",
     "opspec/interpreter",
     "opspec/interpreter/array",
-    "opspec/interpreter/array/initializer",
     "opspec/interpreter/boolean",
     "opspec/interpreter/call",
     "opspec/interpreter/call/container",
@@ -523,8 +514,8 @@
     "opspec/interpreter/loopable",
     "opspec/interpreter/number",
     "opspec/interpreter/object",
-    "opspec/interpreter/object/initializer",
     "opspec/interpreter/string",
+    "opspec/interpreter/value",
     "opspec/opfile",
     "util/iruntime",
     "util/pubsub",
@@ -532,7 +523,7 @@
     "util/urlpath",
   ]
   pruneopts = ""
-  revision = "fe42d9afad9f8e51f24106f502feeffa3fc346ec"
+  revision = "ed8367cbeac77110d7391a0d4313dfa62d0240e1"
 
 [[projects]]
   digest = "1:5d9b668b0b4581a978f07e7d2e3314af18eb27b3fb5d19b70185b7c575723d11"
@@ -610,12 +601,12 @@
   version = "1.0.0"
 
 [[projects]]
-  digest = "1:631ea4a52a20ca54eceb1077e8c7e553a4f86a58639824825d9259374f7c362f"
+  digest = "1:1a405cddcf3368445051fb70ab465ae99da56ad7be8d8ca7fc52159d1c2d873c"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = ""
-  revision = "8bdbc7bcc01dcbb8ec23dc8a28e332258d25251f"
-  version = "v1.4.1"
+  revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
+  version = "v1.4.2"
 
 [[projects]]
   digest = "1:740b31391e4c3e4d2b5a20e1cbf2c2f7765275ead23945acc7669c36c0b8095a"
@@ -756,7 +747,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:aa38821ad1406a84f9577465ef53e56ca4d90745a710c753190bf7792d726c82"
+  digest = "1:c7da5579c766c6c7f70fb5c0ca8062114e7fcb6bb6b2cb163152a2ec9cec1846"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -766,7 +757,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
+  revision = "018c4d40a106a7ae83689758294fcd8d23850745"
 
 [[projects]]
   branch = "master"
@@ -778,7 +769,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:677902b7cbbfa124deba62fc56aaa9ec7ad76ab7c45d42f76c973d3e7a1ef109"
+  digest = "1:f8fc28f6666a22fb927b5a600299968203845989eba90b977525f3dcf37afd7e"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -786,11 +777,11 @@
     "windows",
   ]
   pruneopts = ""
-  revision = "61b9204099cb1bebc803c9ffb9b2d3acd9d457d9"
+  revision = "c432e742b0af385916e013f6a34e9e73d139cf82"
 
 [[projects]]
   branch = "master"
-  digest = "1:21c5bdb8fc3606d73a23250ea2d50ae4726fb8359dd144d08dfb4c6259bc2430"
+  digest = "1:3716001a76cf7b43f9e6cd6b7fcd827f36eae8955d7c721fec530ab1fc8e18f3"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -804,7 +795,7 @@
     "internal/semver",
   ]
   pruneopts = ""
-  revision = "b9584148efcb10d08933a70e48b8f7b0732a1b47"
+  revision = "2c78df6d2ceec2cde4b7bff46c9b42cd05742fe1"
 
 [[projects]]
   branch = "master"

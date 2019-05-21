@@ -49,9 +49,10 @@ func (itp _interpreter) Interpret(
 		stringValue, err := itp.stringInterpreter.Interpret(scope, envVarExpression, opHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
-				"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+				"unable to interpret %+v as value of env var '%v'; error was %v",
+				envVarExpression,
 				envVarName,
-				envVarName,
+				err,
 			)
 		}
 

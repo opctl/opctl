@@ -85,7 +85,7 @@ var _ = Context("Interpret", func() {
 				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
 
 				expectedErr := fmt.Errorf(
-					"unable to evaluate path %v; error was %v",
+					"unable to interpret path %v; error was %v",
 					providedPath,
 					interpolateErr.Error(),
 				)

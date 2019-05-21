@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
+	"github.com/opctl/sdk-golang/opspec/interpreter/value"
 )
 
 type Interpreter interface {
@@ -23,40 +22,29 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		coerce:       coerce.New(),
-		interpolater: interpolater.New(),
+		coerce:           coerce.New(),
+		valueInterpreter: value.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	coerce       coerce.Coerce
-	interpolater interpolater.Interpolater
+	coerce           coerce.Coerce
+	valueInterpreter value.Interpreter
 }
 
-func (ea _interpreter) Interpret(
+func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
 	opHandle model.DataHandle,
 ) (*model.Value, error) {
-	switch expression := expression.(type) {
-	case bool:
-		return &model.Value{Boolean: &expression}, nil
-	case string:
-		var value *model.Value
-		if ref, ok := interpreter.TryResolveExplicitRef(expression, scope); ok {
-			value = ref
-		} else {
-			stringValue, err := ea.interpolater.Interpolate(
-				expression,
-				scope,
-				opHandle,
-			)
-			if nil != err {
-				return nil, err
-			}
-			value = &model.Value{String: &stringValue}
-		}
-		return ea.coerce.ToBoolean(value)
+	value, err := itp.valueInterpreter.Interpret(
+		expression,
+		scope,
+		opHandle,
+	)
+	if nil != err {
+		return nil, fmt.Errorf("unable to interpret %+v to boolean; error was %v", expression, err)
 	}
-	return nil, fmt.Errorf("unable to interpretuate %+v to boolean; unsupported type", expression)
+
+	return itp.coerce.ToBoolean(&value)
 }

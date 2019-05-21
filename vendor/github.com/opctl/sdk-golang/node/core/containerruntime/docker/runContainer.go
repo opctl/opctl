@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -13,7 +14,6 @@ import (
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/pkg/errors"
 )
 
 type runContainer interface {
@@ -57,8 +57,6 @@ func (cr _runContainer) RunContainer(
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
 ) (*int64, error) {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 	defer stdout.Close()
 	defer stderr.Close()
 
@@ -105,7 +103,7 @@ func (cr _runContainer) RunContainer(
 		req.RootOpID,
 		eventPublisher,
 	)
-	// don't err yet; image might be cached
+	// don't err yet; image might be cached. We allow this to support offline use
 
 	// create container
 	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(
@@ -116,11 +114,17 @@ func (cr _runContainer) RunContainer(
 		req.ContainerID,
 	)
 	if nil != createErr {
-		if nil == pullErr {
-			return nil, createErr
+		select {
+		case <-ctx.Done():
+			// we got killed;
+			return nil, nil
+		default:
+			if nil == pullErr {
+				return nil, createErr
+			}
+			// if pullErr occurred prior; combine errors
+			return nil, errors.New(strings.Join([]string{pullErr.Error(), createErr.Error()}, ", "))
 		}
-		// if pullErr occurred prior; combine errors
-		return nil, errors.New(strings.Join([]string{pullErr.Error(), createErr.Error()}, ", "))
 	}
 
 	// start container
@@ -138,6 +142,7 @@ func (cr _runContainer) RunContainer(
 
 	go func() {
 		if err := cr.containerStdErrStreamer.Stream(
+			ctx,
 			req.ContainerID,
 			stderr,
 		); nil != err {
@@ -148,6 +153,7 @@ func (cr _runContainer) RunContainer(
 
 	go func() {
 		if err := cr.containerStdOutStreamer.Stream(
+			ctx,
 			req.ContainerID,
 			stdout,
 		); nil != err {

@@ -220,6 +220,7 @@ type cmdFile struct {
 	err            error
 	added          bool
 	hasDiagnostics chan struct{}
+	diagnosticsMu  sync.Mutex
 	diagnostics    []protocol.Diagnostic
 }
 
@@ -306,6 +307,8 @@ func (c *cmdClient) PublishDiagnostics(ctx context.Context, p *protocol.PublishD
 	defer c.filesMu.Unlock()
 	uri := span.URI(p.URI)
 	file := c.getFile(ctx, uri)
+	file.diagnosticsMu.Lock()
+	defer file.diagnosticsMu.Unlock()
 	hadDiagnostics := file.diagnostics != nil
 	file.diagnostics = p.Diagnostics
 	if file.diagnostics == nil {
@@ -339,7 +342,7 @@ func (c *cmdClient) getFile(ctx context.Context, uri span.URI) *cmdFile {
 		}
 		f := c.fset.AddFile(fname, -1, len(content))
 		f.SetLinesForContent(content)
-		file.mapper = protocol.NewColumnMapper(uri, c.fset, f, content)
+		file.mapper = protocol.NewColumnMapper(uri, fname, c.fset, f, content)
 	}
 	return file
 }

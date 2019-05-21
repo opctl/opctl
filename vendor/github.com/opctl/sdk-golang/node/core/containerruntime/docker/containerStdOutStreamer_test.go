@@ -15,6 +15,7 @@ var _ = Context("containerStdOutStreamer", func() {
 	Context("Stream", func() {
 		It("should call dockerClient.ContainerLogs w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedContainerID := "dummyContainerID"
 
 			fakeDockerClient := new(fakeDockerClient)
@@ -32,6 +33,7 @@ var _ = Context("containerStdOutStreamer", func() {
 
 			/* act */
 			objectUnderTest.Stream(
+				providedCtx,
 				providedContainerID,
 				nopWriteCloser{ioutil.Discard},
 			)
@@ -41,7 +43,7 @@ var _ = Context("containerStdOutStreamer", func() {
 				actualContainerID,
 				actualOptions := fakeDockerClient.ContainerLogsArgsForCall(0)
 
-			Expect(actualContext).To(Equal(context.TODO()))
+			Expect(actualContext).To(Equal(providedCtx))
 			Expect(actualContainerID).To(Equal(providedContainerID))
 			Expect(actualOptions).To(Equal(expectedOptions))
 		})
@@ -58,6 +60,7 @@ var _ = Context("containerStdOutStreamer", func() {
 
 				/* act */
 				actualErr := objectUnderTest.Stream(
+					context.Background(),
 					"dummyContainerID",
 					nopWriteCloser{ioutil.Discard},
 				)
@@ -90,6 +93,7 @@ var _ = Context("containerStdOutStreamer", func() {
 
 				/* act */
 				objectUnderTest.Stream(
+					context.Background(),
 					"dummyContainerID",
 					providedWriter,
 				)

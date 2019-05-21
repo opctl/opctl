@@ -1,9 +1,9 @@
 package docker
 
 import (
+	"context"
 	"github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
-	"golang.org/x/net/context"
 	"io"
 )
 
@@ -20,12 +20,13 @@ type _containerStdOutStreamer struct {
 }
 
 func (ctp _containerStdOutStreamer) Stream(
+	ctx context.Context,
 	containerID string,
 	dst io.Writer,
 ) error {
 
 	src, err := ctp.dockerClient.ContainerLogs(
-		context.TODO(),
+		ctx,
 		containerID,
 		types.ContainerLogsOptions{
 			Follow:     true,
