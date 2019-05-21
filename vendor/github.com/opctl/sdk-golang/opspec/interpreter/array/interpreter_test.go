@@ -1,199 +1,106 @@
 package array
 
 import (
+	"errors"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array/initializer"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
-	"github.com/pkg/errors"
+	"github.com/opctl/sdk-golang/opspec/interpreter/value"
 )
 
 var _ = Context("Interpret", func() {
-	var _ = Context("Interpret", func() {
-		Context("expression is []interface{}", func() {
+	It("should call valueInterpreter.Interpret w/ expected args", func() {
+		/* arrange */
+		providedScope := map[string]*model.Value{"dummyName": {}}
+		providedExpression := "dummyExpression"
+		providedOpRef := new(data.FakeHandle)
 
-			It("should call initializerInterpreter.Interpret w/ expected args", func() {
+		fakeValueInterpreter := new(value.FakeInterpreter)
+		// err to trigger immediate return
+		fakeValueInterpreter.InterpretReturns(model.Value{}, errors.New("dummyError"))
 
-				/* arrange */
-				providedScope := map[string]*model.Value{"dummyName": {}}
-				providedExpression := []interface{}{
-					"item1",
-				}
-				providedOpRef := new(data.FakeHandle)
+		objectUnderTest := _interpreter{
+			valueInterpreter: fakeValueInterpreter,
+		}
 
-				fakeInitializerInterpreter := new(initializer.FakeInterpreter)
-				// err to trigger immediate return
-				evalErr := errors.New("evalErr")
-				fakeInitializerInterpreter.InterpretReturns([]interface{}{}, evalErr)
+		/* act */
+		objectUnderTest.Interpret(
+			providedScope,
+			providedExpression,
+			providedOpRef,
+		)
 
-				objectUnderTest := _interpreter{
-					initializerInterpreter: fakeInitializerInterpreter,
-				}
+		/* assert */
+		actualExpression,
+			actualScope,
+			actualOpRef := fakeValueInterpreter.InterpretArgsForCall(0)
 
-				/* act */
-				objectUnderTest.Interpret(
-					providedScope,
-					providedExpression,
-					providedOpRef,
-				)
+		Expect(actualExpression).To(Equal(providedExpression))
+		Expect(actualScope).To(Equal(providedScope))
+		Expect(actualOpRef).To(Equal(providedOpRef))
 
-				/* assert */
-				actualExpression,
-					actualScope,
-					actualOpRef := fakeInitializerInterpreter.InterpretArgsForCall(0)
+	})
+	Context("valueInterpreter.Interpret errs", func() {
+		It("should return expected err", func() {
+			/* arrange */
+			providedExpression := "dummyExpression"
 
-				Expect(actualExpression).To(Equal(providedExpression))
-				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualOpRef).To(Equal(providedOpRef))
+			fakeValueInterpreter := new(value.FakeInterpreter)
+			interpretErr := errors.New("dummyError")
+			fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
 
-			})
-			Context("initializerInterpreter.Interpret errs", func() {
-				It("should return expected result", func() {
+			expectedErr := fmt.Errorf("unable to interpret %+v to array; error was %v", providedExpression, interpretErr)
 
-					/* arrange */
-					providedExpression := []interface{}{
-						"item1",
-					}
+			objectUnderTest := _interpreter{
+				valueInterpreter: fakeValueInterpreter,
+			}
 
-					fakeInitializerInterpreter := new(initializer.FakeInterpreter)
-					// err to trigger immediate return
-					evalErr := errors.New("evalErr")
-					fakeInitializerInterpreter.InterpretReturns([]interface{}{}, evalErr)
+			/* act */
+			_, actualErr := objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				"dummyExpression",
+				new(data.FakeHandle),
+			)
 
-					expectedErr := fmt.Errorf("unable to evaluate %+v to array; error was %v", providedExpression, evalErr)
+			/* assert */
+			Expect(actualErr).To(Equal(expectedErr))
 
-					objectUnderTest := _interpreter{
-						initializerInterpreter: fakeInitializerInterpreter,
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						providedExpression,
-						new(data.FakeHandle),
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-
-				})
-
-			})
-			Context("initializerInterpreter.Interpret doesn't err", func() {
-				It("should return expected result", func() {
-					/* arrange */
-					fakeInitializerInterpreter := new(initializer.FakeInterpreter)
-					expectedResult := []interface{}{"arrayItem"}
-					fakeInitializerInterpreter.InterpretReturns(expectedResult, nil)
-
-					objectUnderTest := _interpreter{
-						initializerInterpreter: fakeInitializerInterpreter,
-					}
-
-					/* act */
-					actualValue, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						[]interface{}{},
-						new(data.FakeHandle),
-					)
-
-					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Array: expectedResult}))
-					Expect(actualErr).To(BeNil())
-				})
-			})
 		})
-		Context("expression is string", func() {
-			It("should call interpolater.Interpolate w/ expected args", func() {
-				/* arrange */
-				providedScope := map[string]*model.Value{"dummyName": {}}
-				providedExpression := "dummyExpression"
-				providedOpRef := new(data.FakeHandle)
+	})
+	Context("valueInterpreter.Interpret doesn't err", func() {
+		It("should call coerce.ToArray w/ expected args & return result", func() {
+			/* arrange */
+			fakeValueInterpreter := new(value.FakeInterpreter)
 
-				fakeInterpolater := new(interpolater.Fake)
-				// err to trigger immediate return
-				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+			expectedValue := model.Value{String: new(string)}
+			fakeValueInterpreter.InterpretReturns(expectedValue, nil)
 
-				objectUnderTest := _interpreter{
-					interpolater: fakeInterpolater,
-				}
+			fakeCoerce := new(coerce.Fake)
 
-				/* act */
-				objectUnderTest.Interpret(
-					providedScope,
-					providedExpression,
-					providedOpRef,
-				)
+			coercedValue := model.Value{Array: []interface{}{}}
+			fakeCoerce.ToArrayReturns(&coercedValue, nil)
 
-				/* assert */
-				actualExpression,
-					actualScope,
-					actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
+			objectUnderTest := _interpreter{
+				coerce:           fakeCoerce,
+				valueInterpreter: fakeValueInterpreter,
+			}
 
-				Expect(actualExpression).To(Equal(providedExpression))
-				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualOpRef).To(Equal(providedOpRef))
+			/* act */
+			actualArray, actualErr := objectUnderTest.Interpret(
+				map[string]*model.Value{},
+				"dummyExpression",
+				new(data.FakeHandle),
+			)
 
-			})
-			Context("interpolater.Interpolate errs", func() {
-				It("should return expected err", func() {
-					/* arrange */
-					fakeInterpolater := new(interpolater.Fake)
-					interpolateErr := errors.New("dummyError")
-					fakeInterpolater.InterpolateReturns("", interpolateErr)
+			/* assert */
+			Expect(*fakeCoerce.ToArrayArgsForCall(0)).To(Equal(expectedValue))
 
-					objectUnderTest := _interpreter{
-						interpolater: fakeInterpolater,
-					}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						"dummyExpression",
-						new(data.FakeHandle),
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(interpolateErr))
-
-				})
-			})
-			Context("interpolater.Interpolate doesn't err", func() {
-				It("should call coerce.ToArray w/ expected args & return result", func() {
-					/* arrange */
-					fakeInterpolater := new(interpolater.Fake)
-
-					interpolatedValue := "dummyString"
-					fakeInterpolater.InterpolateReturns(interpolatedValue, nil)
-
-					fakeCoerce := new(coerce.Fake)
-
-					coercedValue := model.Value{Array: []interface{}{"arrayItem"}}
-					fakeCoerce.ToArrayReturns(&coercedValue, nil)
-
-					objectUnderTest := _interpreter{
-						coerce:       fakeCoerce,
-						interpolater: fakeInterpolater,
-					}
-
-					/* act */
-					actualValue, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						"dummyExpression",
-						new(data.FakeHandle),
-					)
-
-					/* assert */
-					Expect(*fakeCoerce.ToArrayArgsForCall(0)).To(Equal(model.Value{String: &interpolatedValue}))
-
-					Expect(*actualValue).To(Equal(coercedValue))
-					Expect(actualErr).To(BeNil())
-				})
-			})
+			Expect(*actualArray).To(Equal(coercedValue))
+			Expect(actualErr).To(BeNil())
 		})
 	})
 })

@@ -2,6 +2,7 @@ package docker
 
 import (
 	"context"
+	"errors"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
@@ -9,7 +10,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 )
@@ -205,6 +205,7 @@ var _ = Context("RunContainer", func() {
 		It("should call imagePuller.Pull w/ expected args", func() {
 
 			/* arrange */
+			providedCtx := context.Background()
 			providedReq := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
 					RootOpID: "dummyRootOpID",
@@ -232,7 +233,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
-				context.Background(),
+				providedCtx,
 				providedReq,
 				providedEventPublisher,
 				nopWriteCloser{ioutil.Discard},
@@ -246,7 +247,7 @@ var _ = Context("RunContainer", func() {
 				actualRootOpID,
 				actualEventPublisher := fakeImagePuller.PullArgsForCall(0)
 
-			Expect(actualCtx).ToNot(BeNil())
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualImage).To(Equal(providedReq.Image))
 			Expect(actualContainerID).To(Equal(providedReq.ContainerID))
 			Expect(actualRootOpID).To(Equal(providedReq.RootOpID))
@@ -255,6 +256,7 @@ var _ = Context("RunContainer", func() {
 
 		It("should call dockerClient.ContainerCreate w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			providedReq := &model.DCGContainerCall{
 				DCGBaseCall: model.DCGBaseCall{
 					RootOpID: "dummyRootOpID",
@@ -297,7 +299,7 @@ var _ = Context("RunContainer", func() {
 
 			/* act */
 			objectUnderTest.RunContainer(
-				context.Background(),
+				providedCtx,
 				providedReq,
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
@@ -305,11 +307,13 @@ var _ = Context("RunContainer", func() {
 			)
 
 			/* assert */
-			_,
+			actualCtx,
 				actualContainerConfig,
 				actualHostConfig,
 				actualNetworkingConfig,
 				actualContainerName := fakeDockerClient.ContainerCreateArgsForCall(0)
+
+			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualContainerConfig).To(Equal(expectedContainerConfig))
 			Expect(actualHostConfig).To(Equal(expectedHostConfig))
 			Expect(actualNetworkingConfig).To(Equal(expectedNetworkingConfig))

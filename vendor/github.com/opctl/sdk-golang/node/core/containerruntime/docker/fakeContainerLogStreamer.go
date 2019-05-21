@@ -2,16 +2,18 @@
 package docker
 
 import (
+	"context"
 	"io"
 	"sync"
 )
 
 type fakeContainerLogStreamer struct {
-	StreamStub        func(containerID string, dst io.Writer) error
+	StreamStub        func(context.Context, string, io.Writer) error
 	streamMutex       sync.RWMutex
 	streamArgsForCall []struct {
-		containerID string
-		dst         io.Writer
+		arg1 context.Context
+		arg2 string
+		arg3 io.Writer
 	}
 	streamReturns struct {
 		result1 error
@@ -23,22 +25,24 @@ type fakeContainerLogStreamer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeContainerLogStreamer) Stream(containerID string, dst io.Writer) error {
+func (fake *fakeContainerLogStreamer) Stream(arg1 context.Context, arg2 string, arg3 io.Writer) error {
 	fake.streamMutex.Lock()
 	ret, specificReturn := fake.streamReturnsOnCall[len(fake.streamArgsForCall)]
 	fake.streamArgsForCall = append(fake.streamArgsForCall, struct {
-		containerID string
-		dst         io.Writer
-	}{containerID, dst})
-	fake.recordInvocation("Stream", []interface{}{containerID, dst})
+		arg1 context.Context
+		arg2 string
+		arg3 io.Writer
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Stream", []interface{}{arg1, arg2, arg3})
 	fake.streamMutex.Unlock()
 	if fake.StreamStub != nil {
-		return fake.StreamStub(containerID, dst)
+		return fake.StreamStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.streamReturns.result1
+	fakeReturns := fake.streamReturns
+	return fakeReturns.result1
 }
 
 func (fake *fakeContainerLogStreamer) StreamCallCount() int {
@@ -47,13 +51,22 @@ func (fake *fakeContainerLogStreamer) StreamCallCount() int {
 	return len(fake.streamArgsForCall)
 }
 
-func (fake *fakeContainerLogStreamer) StreamArgsForCall(i int) (string, io.Writer) {
+func (fake *fakeContainerLogStreamer) StreamCalls(stub func(context.Context, string, io.Writer) error) {
+	fake.streamMutex.Lock()
+	defer fake.streamMutex.Unlock()
+	fake.StreamStub = stub
+}
+
+func (fake *fakeContainerLogStreamer) StreamArgsForCall(i int) (context.Context, string, io.Writer) {
 	fake.streamMutex.RLock()
 	defer fake.streamMutex.RUnlock()
-	return fake.streamArgsForCall[i].containerID, fake.streamArgsForCall[i].dst
+	argsForCall := fake.streamArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *fakeContainerLogStreamer) StreamReturns(result1 error) {
+	fake.streamMutex.Lock()
+	defer fake.streamMutex.Unlock()
 	fake.StreamStub = nil
 	fake.streamReturns = struct {
 		result1 error
@@ -61,6 +74,8 @@ func (fake *fakeContainerLogStreamer) StreamReturns(result1 error) {
 }
 
 func (fake *fakeContainerLogStreamer) StreamReturnsOnCall(i int, result1 error) {
+	fake.streamMutex.Lock()
+	defer fake.streamMutex.Unlock()
 	fake.StreamStub = nil
 	if fake.streamReturnsOnCall == nil {
 		fake.streamReturnsOnCall = make(map[int]struct {

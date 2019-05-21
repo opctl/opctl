@@ -82,6 +82,7 @@ var _ = Context("Interpreter", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				envVarName := "dummyEnvVar"
+				envVarExpression := "dummyEnvVarExpression"
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
@@ -89,9 +90,10 @@ var _ = Context("Interpreter", func() {
 				fakeStringInterpreter.InterpretReturns(nil, interpretErr)
 
 				expectedErr := fmt.Errorf(
-					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
+					"unable to interpret %+v as value of env var '%v'; error was %v",
+					envVarExpression,
 					envVarName,
-					envVarName,
+					interpretErr,
 				)
 
 				objectUnderTest := _interpreter{
@@ -100,12 +102,9 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{
-						envVarName: nil,
-					},
+					map[string]*model.Value{},
 					map[string]interface{}{
-						// implicitly bound to string
-						envVarName: "",
+						envVarName: envVarExpression,
 					},
 					new(data.FakeHandle),
 				)

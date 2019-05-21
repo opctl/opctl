@@ -4,20 +4,19 @@ package file
 
 import (
 	"fmt"
-	"github.com/golang-interfaces/iio"
-	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter"
-	arrayInitializer "github.com/opctl/sdk-golang/opspec/interpreter/array/initializer"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
-	objectInitializer "github.com/opctl/sdk-golang/opspec/interpreter/object/initializer"
 	"path/filepath"
 	"strings"
+
+	"github.com/opctl/sdk-golang/opspec/interpreter"
+	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
+
+	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/opspec/interpreter/value"
 )
 
 type Interpreter interface {
-	// Interpret evaluates an expression to a file value.
+	// Interpret interprets an expression to a file value.
 	// Expression must be a type supported by coerce.ToFile
 	// scratchDir will be used as the containing dir if file creation necessary
 	//
@@ -37,73 +36,38 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		arrayInitializerInterpreter:  arrayInitializer.NewInterpreter(),
-		objectInitializerInterpreter: objectInitializer.NewInterpreter(),
-		coerce:       coerce.New(),
-		interpolater: interpolater.New(),
-		io:           iio.New(),
-		os:           ios.New(),
+		coerce:           coerce.New(),
+		interpolater:     interpolater.New(),
+		valueInterpreter: value.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	arrayInitializerInterpreter  arrayInitializer.Interpreter
-	objectInitializerInterpreter objectInitializer.Interpreter
-	coerce                       coerce.Coerce
-	interpolater                 interpolater.Interpolater
-	io                           iio.IIO
-	os                           ios.IOS
+	coerce           coerce.Coerce
+	interpolater     interpolater.Interpolater
+	valueInterpreter value.Interpreter
 }
 
-func (ef _interpreter) Interpret(
+func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
 	expression interface{},
 	opHandle model.DataHandle,
 	scratchDir string,
 ) (*model.Value, error) {
-	switch expression := expression.(type) {
-	case float64:
-		return ef.coerce.ToFile(&model.Value{Number: &expression}, scratchDir)
-	case int:
-		expressionAsFloat64 := float64(expression)
-		return ef.coerce.ToFile(&model.Value{Number: &expressionAsFloat64}, scratchDir)
-	case map[string]interface{}:
-		objectValue, err := ef.objectInitializerInterpreter.Interpret(
-			expression,
-			scope,
-			opHandle,
-		)
-		if nil != err {
-			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
-		}
-
-		return ef.coerce.ToFile(&model.Value{Object: objectValue}, scratchDir)
-	case []interface{}:
-		arrayValue, err := ef.arrayInitializerInterpreter.Interpret(
-			expression,
-			scope,
-			opHandle,
-		)
-		if nil != err {
-			return nil, fmt.Errorf("unable to evaluate %+v to file; error was %v", expression, err)
-		}
-
-		return ef.coerce.ToFile(&model.Value{Array: arrayValue}, scratchDir)
-	case string:
-
-		possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
-		if ref, ok := interpreter.TryResolveExplicitRef(expression, scope); ok {
+	if expressionAsString, ok := expression.(string); ok {
+		possibleRefCloserIndex := strings.Index(expressionAsString, interpolater.RefEnd)
+		if ref, ok := interpreter.TryResolveExplicitRef(expressionAsString, scope); ok {
 			// scope ref w/out path
-			return ef.coerce.ToFile(ref, scratchDir)
-		} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
+			return itp.coerce.ToFile(ref, scratchDir)
+		} else if strings.HasPrefix(expressionAsString, interpolater.RefStart) && possibleRefCloserIndex > 0 {
 
-			refExpression := expression[2:possibleRefCloserIndex]
+			refExpression := expressionAsString[2:possibleRefCloserIndex]
 			refParts := strings.SplitN(refExpression, "/", 2)
 
-			if strings.HasPrefix(refExpression, "/") && len(expression) == possibleRefCloserIndex+1 {
+			if strings.HasPrefix(refExpression, "/") && len(expressionAsString) == possibleRefCloserIndex+1 {
 
 				// pkg fs ref
-				pkgFsRef, err := ef.interpolater.Interpolate(refExpression, scope, opHandle)
+				pkgFsRef, err := itp.interpolater.Interpolate(refExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
@@ -116,7 +80,7 @@ func (ef _interpreter) Interpret(
 
 				// dir scope ref w/ path
 				pathExpression := refParts[1]
-				path, err := ef.interpolater.Interpolate(pathExpression, scope, opHandle)
+				path, err := itp.interpolater.Interpolate(pathExpression, scope, opHandle)
 				if nil != err {
 					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
 				}
@@ -127,14 +91,16 @@ func (ef _interpreter) Interpret(
 			}
 
 		}
-		// plain string
-		stringValue, err := ef.interpolater.Interpolate(expression, scope, opHandle)
-		if nil != err {
-			return nil, fmt.Errorf("unable to evaluate %v to file; error was %v", expression, err.Error())
-		}
-		return ef.coerce.ToFile(&model.Value{String: &stringValue}, scratchDir)
 	}
 
-	return nil, fmt.Errorf("unable to evaluate %+v to file", expression)
+	value, err := itp.valueInterpreter.Interpret(
+		expression,
+		scope,
+		opHandle,
+	)
+	if nil != err {
+		return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
+	}
 
+	return itp.coerce.ToFile(&value, scratchDir)
 }
