@@ -799,6 +799,11 @@
               },
               {
                 "required": [
+                  "exists"
+                ]
+              },
+              {
+                "required": [
                   "ne"
                 ]
               }
@@ -811,6 +816,12 @@
                   "description": "Expression coercible to string value",
                   "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                 }
+              },
+              "exists": {
+                "description": "True if the provided ref query evaluate to a value (not null)",
+                "title": "refQuery",
+                "type": "string",
+                "pattern": "^\\$\\([\\/-_.a-zA-Z0-9]+\\?[\\/-_.a-zA-Z0-9]*\\)$"
               },
               "ne": {
                 "description": "True if any items aren't equal",

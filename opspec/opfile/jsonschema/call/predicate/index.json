@@ -8,6 +8,11 @@
     },
     {
       "required": [
+        "exists"
+      ]
+    },
+    {
+      "required": [
         "ne"
       ]
     }
@@ -15,6 +20,9 @@
   "properties": {
     "eq": {
       "$ref": "eq.json"
+    },
+    "exists": {
+      "$ref": "exists.json"
     },
     "ne": {
       "$ref": "ne.json"

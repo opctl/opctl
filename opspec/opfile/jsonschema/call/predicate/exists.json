@@ -1,0 +1,4 @@
+{
+  "description": "True if the provided ref query evaluate to a value (not null)",
+  "$ref": "../../refQuery.json"
+}

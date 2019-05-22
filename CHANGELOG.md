@@ -7,6 +7,7 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
+- [Exists predicate](https://github.com/opctl/specs/issues/241)
 - [Allow Numbers & Implicit Binding On Container Ports](https://github.com/opctl/specs/issues/233)
 - [Interpolate Container Name](https://github.com/opctl/specs/issues/232)
 - [Conditional running](https://github.com/opctl/specs/issues/223)
