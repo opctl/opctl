@@ -7,7 +7,8 @@
       "$ref": "../markdown.json"
     },
     "default": {
-      "$ref": "../fileExpression.json"
+      "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
+      "type": "string"
     },
     "isSecret": {
       "description": "If the file is secret",

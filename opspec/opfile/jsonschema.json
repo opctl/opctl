@@ -69,11 +69,7 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to an array",
-                  "type": [
-                    "array",
-                    "string"
-                  ]
+                  "type": "array"
                 },
                 "isSecret": {
                   "description": "If the array is secret",
@@ -129,11 +125,8 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to a boolean",
-                  "type": [
-                    "boolean",
-                    "string"
-                  ]
+                  "description": "Default value",
+                  "type": "boolean"
                 }
               },
               "type": "object"
@@ -149,7 +142,7 @@
                   "type": "string"
                 },
                 "default": {
-                  "description": "Expression which evaluates to a directory",
+                  "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
                   "type": "string"
                 },
                 "isSecret": {
@@ -168,7 +161,7 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to a file",
+                  "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
                   "type": "string"
                 },
                 "isSecret": {
@@ -187,11 +180,7 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to a number",
-                  "type": [
-                    "number",
-                    "string"
-                  ]
+                  "type": "number"
                 },
                 "isSecret": {
                   "description": "If the number is secret",
@@ -272,11 +261,7 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to an object. If provided as an object, property names & values will be interpolated",
-                  "type": [
-                    "object",
-                    "string"
-                  ]
+                  "type": "object"
                 },
                 "isSecret": {
                   "description": "If the object is secret",
@@ -425,9 +410,6 @@
               "title": "socketParam",
               "description": "Socket parameter of an op",
               "properties": {
-                "default": {
-                  "type": "string"
-                },
                 "description": {
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
@@ -447,14 +429,7 @@
                   "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
-                  "description": "Expression which evaluates to a string",
-                  "type": [
-                    "array",
-                    "boolean",
-                    "number",
-                    "object",
-                    "string"
-                  ]
+                  "type": "string"
                 },
                 "isSecret": {
                   "description": "If the string is secret",
@@ -665,7 +640,7 @@
                     },
                     {
                       "description": "Expression coercible to string value",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
+                      "$ref": "#/properties/run/properties/container/properties/name"
                     }
                   ]
                 }
@@ -684,7 +659,7 @@
                     },
                     {
                       "description": "Expression coercible to file value &/or scope ref to set upon exit",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
+                      "$ref": "#/properties/run/properties/container/properties/name"
                     }
                   ]
                 }
@@ -709,7 +684,13 @@
             },
             "name": {
               "description": "Name the container can be referenced by from other containers",
-              "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/default"
+              "type": [
+                "array",
+                "boolean",
+                "number",
+                "object",
+                "string"
+              ]
             },
             "ports": {
               "description": "Ports bound from the container to the host",
