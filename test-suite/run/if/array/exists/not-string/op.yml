@@ -1,4 +1,4 @@
-name: run/if/array/eq/exists/not-string
+name: run/if/array/exists/not-string
 run:
   if:
     - exists: 2
