@@ -787,6 +787,11 @@
                 "required": [
                   "ne"
                 ]
+              },
+              {
+                "required": [
+                  "notExists"
+                ]
               }
             ],
             "properties": {
@@ -810,6 +815,11 @@
                   "description": "Expression coercible to string value",
                   "$ref": "#/properties/run/properties/op/oneOf/0/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                 }
+              },
+              "notExists": {
+                "description": "True if no value exists w/ reference",
+                "type": "string",
+                "pattern": "^\\$\\(.+\\)$"
               }
             },
             "type": "object"
