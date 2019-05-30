@@ -81,7 +81,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cedaa68438be67d436b9792a2a5021ab10e46a6c389bb44e4af286dd551cf3e1"
+  digest = "1:bd22e50cff70e32db80d544ce4128aff9e3c4088aab30902be149692da1f7751"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -107,7 +107,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "f4b9142210e9853ec454b6646ad2a38e0f77cd40"
+  revision = "8d760280a232f98d92440539e1e8a8f66c213bdb"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -175,14 +175,6 @@
   packages = ["."]
   pruneopts = ""
   revision = "c86b4da0f9b3ee69c524006032c209f986d663b7"
-
-[[projects]]
-  branch = "master"
-  digest = "1:2badd7523593ecc1088d5124ba71aa15fdbdc8c1cb15f60eea73f621d5f53a21"
-  name = "github.com/golang-interfaces/gopkg.in-yaml.v2"
-  packages = ["."]
-  pruneopts = ""
-  revision = "18ed951e741ba2e449a89a7f460a17835d28746d"
 
 [[projects]]
   branch = "master"
@@ -439,7 +431,7 @@
 
 [[projects]]
   digest = "1:1d7e1867c49a6dd9856598ef7c3123604ea3daabf5b83f303ff457bcbc410b1d"
-  name = "errors"
+  name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = ""
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
@@ -470,12 +462,12 @@
   version = "1.0.0"
 
 [[projects]]
-  digest = "1:631ea4a52a20ca54eceb1077e8c7e553a4f86a58639824825d9259374f7c362f"
+  digest = "1:1a405cddcf3368445051fb70ab465ae99da56ad7be8d8ca7fc52159d1c2d873c"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = ""
-  revision = "8bdbc7bcc01dcbb8ec23dc8a28e332258d25251f"
-  version = "v1.4.1"
+  revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
+  version = "v1.4.2"
 
 [[projects]]
   digest = "1:740b31391e4c3e4d2b5a20e1cbf2c2f7765275ead23945acc7669c36c0b8095a"
@@ -591,7 +583,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5b3e9450868bcf9ecbca2b01ac04f142255b5744d89ec97e1ceedf57d4522645"
+  digest = "1:23603929c559ebf5fa44cc2ed4a72ae729292e2b7e0295ab0e743641f0a47535"
   name = "golang.org/x/crypto"
   packages = [
     "cast5",
@@ -612,11 +604,11 @@
     "ssh/knownhosts",
   ]
   pruneopts = ""
-  revision = "22d7a77e9e5f409e934ed268692e56707cd169e5"
+  revision = "20be4c3c3ed52bfccdb2d59a412ee1a936d175a7"
 
 [[projects]]
   branch = "master"
-  digest = "1:aa38821ad1406a84f9577465ef53e56ca4d90745a710c753190bf7792d726c82"
+  digest = "1:3fcc745bd071aa073bd666e01ff8df5fc72ab15f493ae7246710c66c738aab45"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -629,7 +621,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
+  revision = "f3200d17e092c607f615320ecaad13d87ad9a2b3"
 
 [[projects]]
   branch = "master"
@@ -641,7 +633,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c835b38cbfcccf755264465f1faf4e7558cfe128d2822dc2374169776af7a4a5"
+  digest = "1:53d2717ee0679c525202956060f1c602dda4277884ae4013b1b7d05b64cceea5"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -649,7 +641,7 @@
     "windows",
   ]
   pruneopts = ""
-  revision = "06a5c494443846f634903706cba8f993687d3ff5"
+  revision = "ad28b68e88f12448a1685d038ffea87bbbb34148"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -681,7 +673,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9895924b5c7c5b7c8e244edd23016ac443ce0e3b29e4e297a8710d73ba649804"
+  digest = "1:75617f1f008a46d337ab9e90edea0b9a75ce78b35cfc414280b2e0c79fdcfed0"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -695,26 +687,26 @@
     "internal/semver",
   ]
   pruneopts = ""
-  revision = "473d3dc1d7ebfe600ef76607c3e200794eaf947a"
+  revision = "75312fb06703a759656ae75b3d1c24b4aae95dfe"
 
 [[projects]]
   branch = "master"
-  digest = "1:e9dca05591f7c44d3a44e88a10f25d014040e8a7b3a7c2d3b097a4f6090d30f7"
+  digest = "1:303bb7bcb96f7562686015a90eabd865f2c32c468e6702e1724d69b178d0427b"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = ""
-  revision = "d00d292a067ce1aa0017b40ca75437b42461fa61"
+  revision = "fb225487d10142b5bcc35abfc6cb9a0609614976"
 
 [[projects]]
-  digest = "1:afc1b03a6d5ba3cbb2e0a12133e734d472e4df3b65f06e600a3d57a4b82f26cc"
+  digest = "1:6598c722afbc10dcbcace4e6504751b3a3b11f66d9251545fce457a66316c9a7"
   name = "google.golang.org/grpc"
   packages = [
     "codes",
     "status",
   ]
   pruneopts = ""
-  revision = "25c4f928eaa6d96443009bd842389fb4fa48664e"
-  version = "v1.20.1"
+  revision = "869adfc8d5a43efc0d05780ad109106f457f51e4"
+  version = "v1.21.0"
 
 [[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
@@ -837,7 +829,6 @@
     "github.com/golang-interfaces/encoding-ijson",
     "github.com/golang-interfaces/github.com-gorilla-websocket",
     "github.com/golang-interfaces/gopkg.in-src-d-go-git.v4",
-    "github.com/golang-interfaces/gopkg.in-yaml.v2",
     "github.com/golang-interfaces/ihttp",
     "github.com/golang-interfaces/iio",
     "github.com/golang-interfaces/iioutil",
@@ -849,7 +840,6 @@
     "github.com/jfbus/httprs",
     "github.com/onsi/ginkgo",
     "github.com/onsi/gomega",
-    "errors",
     "github.com/sethgrid/pester",
     "github.com/tidwall/buntdb",
     "github.com/xeipuuv/gojsonschema",

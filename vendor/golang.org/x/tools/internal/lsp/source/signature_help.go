@@ -24,8 +24,11 @@ type ParameterInformation struct {
 	Label string
 }
 
-func SignatureHelp(ctx context.Context, f File, pos token.Pos) (*SignatureInformation, error) {
-	fAST := f.GetAST(ctx)
+func SignatureHelp(ctx context.Context, f GoFile, pos token.Pos) (*SignatureInformation, error) {
+	file := f.GetAST(ctx)
+	if file == nil {
+		return nil, fmt.Errorf("no AST for %s", f.URI())
+	}
 	pkg := f.GetPackage(ctx)
 	if pkg == nil || pkg.IsIllTyped() {
 		return nil, fmt.Errorf("package for %s is ill typed", f.URI())
@@ -33,7 +36,7 @@ func SignatureHelp(ctx context.Context, f File, pos token.Pos) (*SignatureInform
 
 	// Find a call expression surrounding the query position.
 	var callExpr *ast.CallExpr
-	path, _ := astutil.PathEnclosingInterval(fAST, pos, pos)
+	path, _ := astutil.PathEnclosingInterval(file, pos, pos)
 	if path == nil {
 		return nil, fmt.Errorf("cannot find node enclosing position")
 	}
@@ -74,7 +77,7 @@ func SignatureHelp(ctx context.Context, f File, pos token.Pos) (*SignatureInform
 		return nil, fmt.Errorf("cannot find signature for Fun %[1]T (%[1]v)", callExpr.Fun)
 	}
 
-	qf := qualifier(fAST, pkg.GetTypes(), pkg.GetTypesInfo())
+	qf := qualifier(file, pkg.GetTypes(), pkg.GetTypesInfo())
 	params := formatParams(sig.Params(), sig.Variadic(), qf)
 	results, writeResultParens := formatResults(sig.Results(), qf)
 	activeParam := activeParameter(callExpr, sig.Params().Len(), sig.Variadic(), pos)
@@ -89,8 +92,8 @@ func SignatureHelp(ctx context.Context, f File, pos token.Pos) (*SignatureInform
 }
 
 func builtinSignature(ctx context.Context, v View, callExpr *ast.CallExpr, name string, pos token.Pos) (*SignatureInformation, error) {
-	decl := lookupBuiltin(v, name)
-	if decl == nil {
+	decl, ok := lookupBuiltinDecl(v, name).(*ast.FuncDecl)
+	if !ok {
 		return nil, fmt.Errorf("no function declaration for builtin: %s", name)
 	}
 	params, _ := formatFieldList(ctx, v, decl.Type.Params)

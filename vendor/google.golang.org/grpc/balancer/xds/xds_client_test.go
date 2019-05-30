@@ -30,18 +30,22 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	anypb "github.com/golang/protobuf/ptypes/any"
+	durationpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	wrpb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer"
+	"google.golang.org/grpc/balancer/xds/internal"
 	cdspb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/cds"
 	addresspb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/core/address"
 	basepb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/core/base"
 	discoverypb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/discovery"
 	edspb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/eds"
 	endpointpb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/api/v2/endpoint/endpoint"
-	adspb "google.golang.org/grpc/balancer/xds/internal/proto/envoy/service/discovery/v2/ads"
+	adsgrpc "google.golang.org/grpc/balancer/xds/internal/proto/envoy/service/discovery/v2/ads"
+	lrsgrpc "google.golang.org/grpc/balancer/xds/internal/proto/envoy/service/load_stats/v2/lrs"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/status"
 )
 
@@ -51,7 +55,7 @@ var (
 		Node: &basepb.Node{
 			Metadata: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					grpcHostname: {
+					internal.GrpcHostname: {
 						Kind: &structpb.Value_StringValue{StringValue: testServiceName},
 					},
 				},
@@ -201,7 +205,7 @@ type response struct {
 	err  error
 }
 
-func (ttd *testTrafficDirector) StreamAggregatedResources(s adspb.AggregatedDiscoveryService_StreamAggregatedResourcesServer) error {
+func (ttd *testTrafficDirector) StreamAggregatedResources(s adsgrpc.AggregatedDiscoveryService_StreamAggregatedResourcesServer) error {
 	for {
 		req, err := s.Recv()
 		if err != nil {
@@ -238,7 +242,7 @@ func (ttd *testTrafficDirector) StreamAggregatedResources(s adspb.AggregatedDisc
 	}
 }
 
-func (ttd *testTrafficDirector) DeltaAggregatedResources(adspb.AggregatedDiscoveryService_DeltaAggregatedResourcesServer) error {
+func (ttd *testTrafficDirector) DeltaAggregatedResources(adsgrpc.AggregatedDiscoveryService_DeltaAggregatedResourcesServer) error {
 	return status.Error(codes.Unimplemented, "")
 }
 
@@ -266,16 +270,24 @@ type testConfig struct {
 	svrErr               error
 }
 
-func setupServer(t *testing.T) (addr string, td *testTrafficDirector, cleanup func()) {
+func setupServer(t *testing.T) (addr string, td *testTrafficDirector, lrss *lrsServer, cleanup func()) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("listen failed due to: %v", err)
 	}
 	svr := grpc.NewServer()
 	td = newTestTrafficDirector()
-	adspb.RegisterAggregatedDiscoveryServiceServer(svr, td)
+	lrss = &lrsServer{
+		drops: make(map[string]uint64),
+		reportingInterval: &durationpb.Duration{
+			Seconds: 60 * 60, // 1 hour, each test can override this to a shorter duration.
+			Nanos:   0,
+		},
+	}
+	adsgrpc.RegisterAggregatedDiscoveryServiceServer(svr, td)
+	lrsgrpc.RegisterLoadReportingServiceServer(svr, lrss)
 	go svr.Serve(lis)
-	return lis.Addr().String(), td, func() {
+	return lis.Addr().String(), td, lrss, func() {
 		svr.Stop()
 		lis.Close()
 	}
@@ -301,14 +313,14 @@ func (s) TestXdsClientResponseHandling(t *testing.T) {
 }
 
 func testXdsClientResponseHandling(t *testing.T, test *testConfig) {
-	addr, td, cleanup := setupServer(t)
+	addr, td, _, cleanup := setupServer(t)
 	defer cleanup()
 	adsChan := make(chan proto.Message, 10)
 	newADS := func(ctx context.Context, i proto.Message) error {
 		adsChan <- i
 		return nil
 	}
-	client := newXDSClient(addr, testServiceName, test.doCDS, balancer.BuildOptions{}, newADS, func(context.Context) {}, func() {})
+	client := newXDSClient(addr, test.doCDS, balancer.BuildOptions{Target: resolver.Target{Endpoint: testServiceName}}, nil, newADS, func(context.Context) {}, func() {})
 	defer client.close()
 	go client.run()
 
@@ -365,7 +377,7 @@ func (s) TestXdsClientLoseContact(t *testing.T) {
 }
 
 func testXdsClientLoseContactRemoteClose(t *testing.T, test *testConfig) {
-	addr, td, cleanup := setupServer(t)
+	addr, td, _, cleanup := setupServer(t)
 	defer cleanup()
 	adsChan := make(chan proto.Message, 10)
 	newADS := func(ctx context.Context, i proto.Message) error {
@@ -376,7 +388,7 @@ func testXdsClientLoseContactRemoteClose(t *testing.T, test *testConfig) {
 	loseContactFunc := func(context.Context) {
 		contactChan <- &loseContact{}
 	}
-	client := newXDSClient(addr, testServiceName, test.doCDS, balancer.BuildOptions{}, newADS, loseContactFunc, func() {})
+	client := newXDSClient(addr, test.doCDS, balancer.BuildOptions{Target: resolver.Target{Endpoint: testServiceName}}, nil, newADS, loseContactFunc, func() {})
 	defer client.close()
 	go client.run()
 
@@ -398,7 +410,7 @@ func testXdsClientLoseContactRemoteClose(t *testing.T, test *testConfig) {
 }
 
 func testXdsClientLoseContactADSRelatedErrorOccur(t *testing.T, test *testConfig) {
-	addr, td, cleanup := setupServer(t)
+	addr, td, _, cleanup := setupServer(t)
 	defer cleanup()
 
 	adsChan := make(chan proto.Message, 10)
@@ -410,7 +422,7 @@ func testXdsClientLoseContactADSRelatedErrorOccur(t *testing.T, test *testConfig
 	loseContactFunc := func(context.Context) {
 		contactChan <- &loseContact{}
 	}
-	client := newXDSClient(addr, testServiceName, test.doCDS, balancer.BuildOptions{}, newADS, loseContactFunc, func() {})
+	client := newXDSClient(addr, test.doCDS, balancer.BuildOptions{Target: resolver.Target{Endpoint: testServiceName}}, nil, newADS, loseContactFunc, func() {})
 	defer client.close()
 	go client.run()
 
@@ -432,7 +444,7 @@ func (s) TestXdsClientExponentialRetry(t *testing.T) {
 	cfg := &testConfig{
 		svrErr: status.Errorf(codes.Aborted, "abort the stream to trigger retry"),
 	}
-	addr, td, cleanup := setupServer(t)
+	addr, td, _, cleanup := setupServer(t)
 	defer cleanup()
 
 	adsChan := make(chan proto.Message, 10)
@@ -444,7 +456,7 @@ func (s) TestXdsClientExponentialRetry(t *testing.T) {
 	loseContactFunc := func(context.Context) {
 		contactChan <- &loseContact{}
 	}
-	client := newXDSClient(addr, testServiceName, cfg.doCDS, balancer.BuildOptions{}, newADS, loseContactFunc, func() {})
+	client := newXDSClient(addr, cfg.doCDS, balancer.BuildOptions{Target: resolver.Target{Endpoint: testServiceName}}, nil, newADS, loseContactFunc, func() {})
 	defer client.close()
 	go client.run()
 

@@ -6,9 +6,7 @@ package cache
 
 import (
 	"context"
-	"go/ast"
 	"go/token"
-	"io/ioutil"
 	"path/filepath"
 	"strings"
 
@@ -16,95 +14,63 @@ import (
 	"golang.org/x/tools/internal/span"
 )
 
-// file holds all the information we know about a file.
-type file struct {
-	uris     []span.URI
-	filename string
-	basename string
+// viewFile extends source.File with helper methods for the view package.
+type viewFile interface {
+	source.File
 
-	view    *view
-	active  bool
-	content []byte
-	ast     *ast.File
-	token   *token.File
-	pkg     *pkg
-	meta    *metadata
-	imports []*ast.ImportSpec
+	filename() string
+	addURI(uri span.URI) int
+}
+
+// fileBase holds the common functionality for all files.
+// It is intended to be embedded in the file implementations
+type fileBase struct {
+	uris  []span.URI
+	fname string
+
+	view  *view
+	fc    *source.FileContent
+	token *token.File
 }
 
 func basename(filename string) string {
 	return strings.ToLower(filepath.Base(filename))
 }
 
-func (f *file) URI() span.URI {
+func (f *fileBase) URI() span.URI {
 	return f.uris[0]
 }
 
+func (f *fileBase) filename() string {
+	return f.fname
+}
+
 // View returns the view associated with the file.
-func (f *file) View() source.View {
+func (f *fileBase) View() source.View {
 	return f.view
 }
 
-// GetContent returns the contents of the file, reading it from file system if needed.
-func (f *file) GetContent(ctx context.Context) []byte {
+// Content returns the contents of the file, reading it from file system if needed.
+func (f *fileBase) Content(ctx context.Context) *source.FileContent {
 	f.view.mu.Lock()
 	defer f.view.mu.Unlock()
 
-	if ctx.Err() == nil {
-		f.read(ctx)
-	}
-
-	return f.content
+	f.read(ctx)
+	return f.fc
 }
 
-func (f *file) GetFileSet(ctx context.Context) *token.FileSet {
-	return f.view.config.Fset
-}
-
-func (f *file) GetToken(ctx context.Context) *token.File {
-	f.view.mu.Lock()
-	defer f.view.mu.Unlock()
-
-	if f.token == nil || len(f.view.contentChanges) > 0 {
-		if _, err := f.view.parse(ctx, f); err != nil {
-			return nil
-		}
-	}
-	return f.token
-}
-
-func (f *file) GetAST(ctx context.Context) *ast.File {
-	f.view.mu.Lock()
-	defer f.view.mu.Unlock()
-
-	if f.ast == nil || len(f.view.contentChanges) > 0 {
-		if _, err := f.view.parse(ctx, f); err != nil {
-			return nil
-		}
-	}
-	return f.ast
-}
-
-func (f *file) GetPackage(ctx context.Context) source.Package {
-	f.view.mu.Lock()
-	defer f.view.mu.Unlock()
-
-	if f.pkg == nil || len(f.view.contentChanges) > 0 {
-		if errs, err := f.view.parse(ctx, f); err != nil {
-			// Create diagnostics for errors if we are able to.
-			if len(errs) > 0 {
-				return &pkg{errors: errs}
-			}
-			return nil
-		}
-	}
-	return f.pkg
+func (f *fileBase) FileSet() *token.FileSet {
+	return f.view.Session().Cache().FileSet()
 }
 
 // read is the internal part of GetContent. It assumes that the caller is
 // holding the mutex of the file's view.
-func (f *file) read(ctx context.Context) {
-	if f.content != nil {
+func (f *fileBase) read(ctx context.Context) {
+	if err := ctx.Err(); err != nil {
+		f.fc = &source.FileContent{Error: err}
+		return
+	}
+	if f.fc != nil {
 		if len(f.view.contentChanges) == 0 {
 			return
 		}
@@ -113,74 +79,11 @@ func (f *file) read(ctx context.Context) {
 		err := f.view.applyContentChanges(ctx)
 		f.view.mcache.mu.Unlock()
 
-		if err == nil {
+		if err != nil {
+			f.fc = &source.FileContent{Error: err}
 			return
 		}
 	}
-	// We might have the content saved in an overlay.
-	if content, ok := f.view.config.Overlay[f.filename]; ok {
-		f.content = content
-		return
-	}
 	// We don't know the content yet, so read it.
-	content, err := ioutil.ReadFile(f.filename)
-	if err != nil {
-		f.view.Logger().Errorf(ctx, "unable to read file %s: %v", f.filename, err)
-		return
-	}
-	f.content = content
-}
-
-// isPopulated returns true if all of the computed fields of the file are set.
-func (f *file) isPopulated() bool {
-	return f.ast != nil && f.token != nil && f.pkg != nil && f.meta != nil && f.imports != nil
-}
-
-func (f *file) GetActiveReverseDeps(ctx context.Context) []source.File {
-	pkg := f.GetPackage(ctx)
-	if pkg == nil {
-		return nil
-	}
-
-	f.view.mu.Lock()
-	defer f.view.mu.Unlock()
-
-	f.view.mcache.mu.Lock()
-	defer f.view.mcache.mu.Unlock()
-
-	seen := make(map[string]struct{}) // visited packages
-	results := make(map[*file]struct{})
-	f.view.reverseDeps(ctx, seen, results, pkg.PkgPath())
-
-	files := make([]source.File, 0, len(results))
-	for rd := range results {
-		if rd == nil {
-			continue
-		}
-		// Don't return any of the active file's in this package.
-		if rd.pkg != nil && rd.pkg == pkg {
-			continue
-		}
-		files = append(files, rd)
-	}
-	return files
-}
-
-func (v *view) reverseDeps(ctx context.Context, seen map[string]struct{}, results map[*file]struct{}, pkgPath string) {
-	if _, ok := seen[pkgPath]; ok {
-		return
-	}
-	seen[pkgPath] = struct{}{}
-	m, ok := v.mcache.packages[pkgPath]
-	if !ok {
-		return
-	}
-	for _, filename := range m.files {
-		if f, err := v.getFile(span.FileURI(filename)); err == nil && f.active {
-			results[f] = struct{}{}
-		}
-	}
-	for parentPkgPath := range m.parents {
-		v.reverseDeps(ctx, seen, results, parentPkgPath)
-	}
+	f.fc = f.view.Session().ReadFile(f.URI())
 }

@@ -33,19 +33,24 @@ type runner struct {
 	data   *tests.Data
 }
 
-func testLSP(t *testing.T, exporter packagestest.Exporter) {
-	ctx := context.Background()
+const viewName = "lsp_test"
 
+func testLSP(t *testing.T, exporter packagestest.Exporter) {
 	data := tests.Load(t, exporter, "testdata")
 	defer data.Exported.Cleanup()
 
 	log := xlog.New(xlog.StdSink{})
+	cache := cache.New()
+	session := cache.NewSession(log)
+	view := session.NewView(viewName, span.FileURI(data.Config.Dir))
+	view.SetEnv(data.Config.Env)
+	for filename, content := range data.Config.Overlay {
+		session.SetOverlay(span.FileURI(filename), content)
+	}
 	r := &runner{
 		server: &Server{
-			views:       []source.View{cache.NewView(ctx, log, "lsp_test", span.FileURI(data.Config.Dir), &data.Config)},
-			viewMap:     make(map[span.URI]source.View),
+			session:     session,
 			undelivered: make(map[span.URI][]source.Diagnostic),
-			log:         log,
 		},
 		data: data,
 	}
@@ -53,9 +58,17 @@ func testLSP(t *testing.T, exporter packagestest.Exporter) {
 }
 
 func (r *runner) Diagnostics(t *testing.T, data tests.Diagnostics) {
-	v := r.server.views[0]
+	v := r.server.session.View(viewName)
 	for uri, want := range data {
-		results, err := source.Diagnostics(context.Background(), v, uri)
+		f, err := v.GetFile(context.Background(), uri)
+		if err != nil {
+			t.Fatalf("no file for %s: %v", f, err)
+		}
+		gof, ok := f.(source.GoFile)
+		if !ok {
+			t.Fatalf("%s is not a Go file: %v", uri, err)
+		}
+		results, err := source.Diagnostics(context.Background(), v, gof)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -293,7 +306,7 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 			}
 			continue
 		}
-		_, m, err := newColumnMap(ctx, r.server.findView(ctx, uri), uri)
+		_, m, err := getSourceFile(ctx, r.server.session.ViewOf(uri), uri)
 		if err != nil {
 			t.Error(err)
 		}
@@ -311,7 +324,10 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 
 func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 	for _, d := range data {
-		sm := r.mapper(d.Src.URI())
+		sm, err := r.mapper(d.Src.URI())
+		if err != nil {
+			t.Fatal(err)
+		}
 		loc, err := sm.Location(d.Src)
 		if err != nil {
 			t.Fatalf("failed for %v: %v", d.Src, err)
@@ -337,13 +353,6 @@ func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 		if len(locs) != 1 {
 			t.Errorf("got %d locations for definition, expected 1", len(locs))
 		}
-		locURI := span.NewURI(locs[0].URI)
-		lm := r.mapper(locURI)
-		if def, err := lm.Span(locs[0]); err != nil {
-			t.Fatalf("failed for %v: %v", locs[0], err)
-		} else if def != d.Def {
-			t.Errorf("for %v got %v want %v", d.Src, def, d.Def)
-		}
 		if hover != nil {
 			tag := fmt.Sprintf("%s-hover", d.Name)
 			filename, err := d.Src.URI().Filename()
@@ -356,13 +365,29 @@ func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 			if hover.Contents.Value != expectHover {
 				t.Errorf("for %v got %q want %q", d.Src, hover.Contents.Value, expectHover)
 			}
+		} else if !d.OnlyHover {
+			locURI := span.NewURI(locs[0].URI)
+			lm, err := r.mapper(locURI)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if def, err := lm.Span(locs[0]); err != nil {
+				t.Fatalf("failed for %v: %v", locs[0], err)
+			} else if def != d.Def {
+				t.Errorf("for %v got %v want %v", d.Src, def, d.Def)
+			}
+		} else {
+			t.Errorf("no tests ran for %s", d.Src.URI())
 		}
 	}
 }
 
 func (r *runner) Highlight(t *testing.T, data tests.Highlights) {
 	for name, locations := range data {
-		m := r.mapper(locations[0].URI())
+		m, err := r.mapper(locations[0].URI())
+		if err != nil {
+			t.Fatal(err)
+		}
 		loc, err := m.Location(locations[0])
 		if err != nil {
 			t.Fatalf("failed for %v: %v", locations[0], err)
@@ -404,16 +429,19 @@ func (r *runner) Symbol(t *testing.T, data tests.Symbols) {
 			t.Errorf("want %d top-level symbols in %v, got %d", len(expectedSymbols), uri, len(symbols))
 			continue
 		}
-		if diff := r.diffSymbols(uri, expectedSymbols, symbols); diff != "" {
+		if diff := r.diffSymbols(t, uri, expectedSymbols, symbols); diff != "" {
 			t.Error(diff)
 		}
 	}
 }
 
-func (r *runner) diffSymbols(uri span.URI, want []source.Symbol, got []protocol.DocumentSymbol) string {
+func (r *runner) diffSymbols(t *testing.T, uri span.URI, want []source.Symbol, got []protocol.DocumentSymbol) string {
 	sort.Slice(want, func(i, j int) bool { return want[i].Name < want[j].Name })
 	sort.Slice(got, func(i, j int) bool { return got[i].Name < got[j].Name })
-	m := r.mapper(uri)
+	m, err := r.mapper(uri)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(got) != len(want) {
 		return summarizeSymbols(-1, want, got, "different lengths got %v want %v", len(got), len(want))
 	}
@@ -432,7 +460,7 @@ func (r *runner) diffSymbols(uri span.URI, want []source.Symbol, got []protocol.
 		if w.SelectionSpan != spn {
 			return summarizeSymbols(i, want, got, "incorrect span got %v want %v", spn, w.SelectionSpan)
 		}
-		if msg := r.diffSymbols(uri, w.Children, g.Children); msg != "" {
+		if msg := r.diffSymbols(t, uri, w.Children, g.Children); msg != "" {
 			return fmt.Sprintf("children of %s: %s", w.Name, msg)
 		}
 	}
@@ -460,7 +488,10 @@ func summarizeSymbols(i int, want []source.Symbol, got []protocol.DocumentSymbol
 
 func (r *runner) SignatureHelp(t *testing.T, data tests.Signatures) {
 	for spn, expectedSignatures := range data {
-		m := r.mapper(spn.URI())
+		m, err := r.mapper(spn.URI())
+		if err != nil {
+			t.Fatal(err)
+		}
 		loc, err := m.Location(spn)
 		if err != nil {
 			t.Fatalf("failed for %v: %v", loc, err)
@@ -518,7 +549,10 @@ func diffSignatures(spn span.Span, want source.SignatureInformation, got *protoc
 
 func (r *runner) Link(t *testing.T, data tests.Links) {
 	for uri, wantLinks := range data {
-		m := r.mapper(uri)
+		m, err := r.mapper(uri)
+		if err != nil {
+			t.Fatal(err)
+		}
 		gotLinks, err := r.server.DocumentLink(context.Background(), &protocol.DocumentLinkParams{
 			TextDocument: protocol.TextDocumentIdentifier{
 				URI: protocol.NewURI(uri),
@@ -551,28 +585,28 @@ func (r *runner) Link(t *testing.T, data tests.Links) {
 	}
 }
 
-func (r *runner) mapper(uri span.URI) *protocol.ColumnMapper {
-	fname, err := uri.Filename()
+func (r *runner) mapper(uri span.URI) (*protocol.ColumnMapper, error) {
+	filename, err := uri.Filename()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	fset := r.data.Exported.ExpectFileSet
 	var f *token.File
 	fset.Iterate(func(check *token.File) bool {
-		if check.Name() == fname {
+		if check.Name() == filename {
 			f = check
 			return false
 		}
 		return true
 	})
 	if f == nil {
-		return nil
+		return nil, fmt.Errorf("no token.File for %s", uri)
 	}
 	content, err := r.data.Exported.FileContents(f.Name())
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return protocol.NewColumnMapper(uri, fset, f, content)
+	return protocol.NewColumnMapper(uri, filename, fset, f, content), nil
 }
 
 func TestBytesOffset(t *testing.T) {
@@ -602,7 +636,7 @@ func TestBytesOffset(t *testing.T) {
 		fset := token.NewFileSet()
 		f := fset.AddFile(fname, -1, len(test.text))
 		f.SetLinesForContent([]byte(test.text))
-		mapper := protocol.NewColumnMapper(span.FileURI(fname), fset, f, []byte(test.text))
+		mapper := protocol.NewColumnMapper(span.FileURI(fname), fname, fset, f, []byte(test.text))
 		got, err := mapper.Point(test.pos)
 		if err != nil && test.want != -1 {
 			t.Errorf("unexpected error: %v", err)

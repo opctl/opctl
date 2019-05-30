@@ -21,8 +21,8 @@ var _ = Context("Interpreter", func() {
 		It("should call predicateInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedSCGPredicates := []*model.SCGPredicate{
-				&model.SCGPredicate{Eq: []interface{}{"eq"}},
-				&model.SCGPredicate{Ne: []interface{}{"ne"}},
+				&model.SCGPredicate{Eq: new([]interface{})},
+				&model.SCGPredicate{Ne: new([]interface{})},
 			}
 
 			providedOpHandle := new(data.FakeHandle)
@@ -81,7 +81,7 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: []interface{}{"eq"}},
+						&model.SCGPredicate{Eq: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)
@@ -108,8 +108,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: []interface{}{"eq"}},
-						&model.SCGPredicate{Ne: []interface{}{"ne"}},
+						&model.SCGPredicate{Eq: new([]interface{})},
+						&model.SCGPredicate{Ne: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)
@@ -136,8 +136,8 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: []interface{}{"eq"}},
-						&model.SCGPredicate{Ne: []interface{}{"ne"}},
+						&model.SCGPredicate{Eq: new([]interface{})},
+						&model.SCGPredicate{Ne: new([]interface{})},
 					},
 					map[string]*model.Value{},
 				)

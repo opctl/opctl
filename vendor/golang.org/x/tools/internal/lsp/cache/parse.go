@@ -11,7 +11,6 @@ import (
 	"go/parser"
 	"go/scanner"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,6 +18,10 @@ import (
 
 	"golang.org/x/tools/internal/span"
 )
+
+func parseFile(fset *token.FileSet, filename string, src []byte) (*ast.File, error) {
+	return parser.ParseFile(fset, filename, src, parser.AllErrors|parser.ParseComments)
+}
 
 // We use a counting semaphore to limit
 // the number of parallel I/O calls per process.
@@ -37,51 +40,46 @@ func (imp *importer) parseFiles(filenames []string) ([]*ast.File, []error) {
 	parsed := make([]*ast.File, n)
 	errors := make([]error, n)
 	for i, filename := range filenames {
-		if imp.view.config.Context.Err() != nil {
+		if imp.ctx.Err() != nil {
 			parsed[i] = nil
-			errors[i] = imp.view.config.Context.Err()
+			errors[i] = imp.ctx.Err()
 			continue
 		}
 
 		// First, check if we have already cached an AST for this file.
 		f, err := imp.view.findFile(span.FileURI(filename))
-		if err != nil {
+		if err != nil || f == nil {
 			parsed[i], errors[i] = nil, err
+			continue
 		}
-		var fAST *ast.File
-		if f != nil {
-			fAST = f.ast
+		gof, ok := f.(*goFile)
+		if !ok {
+			parsed[i], errors[i] = nil, fmt.Errorf("Non go file in parse call: %v", filename)
+			continue
 		}
 
 		wg.Add(1)
 		go func(i int, filename string) {
 			ioLimit <- true // wait
 
-			if fAST != nil {
-				parsed[i], errors[i] = fAST, nil
+			if gof.ast != nil {
+				parsed[i], errors[i] = gof.ast, nil
 			} else {
 				// We don't have a cached AST for this file.
-				var src []byte
-				// Check for an available overlay.
-				for f, contents := range imp.view.config.Overlay {
-					if sameFile(f, filename) {
-						src = contents
-					}
+				gof.read(imp.ctx)
+				if gof.fc.Error != nil {
+					return
 				}
-				var err error
-				// We don't have an overlay, so we must read the file's contents.
+				src := gof.fc.Data
 				if src == nil {
-					src, err = ioutil.ReadFile(filename)
-				}
-				if err != nil {
-					parsed[i], errors[i] = nil, err
+					parsed[i], errors[i] = nil, fmt.Errorf("No source for %v", filename)
 				} else {
 					// ParseFile may return both an AST and an error.
-					parsed[i], errors[i] = imp.view.config.ParseFile(imp.view.config.Fset, filename, src)
+					parsed[i], errors[i] = parseFile(imp.fset, filename, src)
 
 					// Fix any badly parsed parts of the AST.
 					if file := parsed[i]; file != nil {
-						tok := imp.view.config.Fset.File(file.Pos())
+						tok := imp.fset.File(file.Pos())
 						imp.view.fix(imp.ctx, parsed[i], tok, src)
 					}
 				}
@@ -150,7 +148,7 @@ func (v *view) fix(ctx context.Context, file *ast.File, tok *token.File, src []b
 		switch n := n.(type) {
 		case *ast.BadStmt:
 			if err := v.parseDeferOrGoStmt(n, parent, tok, src); err != nil {
-				v.log.Debugf(ctx, "unable to parse defer or go from *ast.BadStmt: %v", err)
+				v.Session().Logger().Debugf(ctx, "unable to parse defer or go from *ast.BadStmt: %v", err)
 			}
 			return false
 		default:

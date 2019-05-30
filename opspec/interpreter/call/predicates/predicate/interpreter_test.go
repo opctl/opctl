@@ -9,6 +9,7 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/eq"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/exists"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/ne"
 )
 
@@ -26,7 +27,7 @@ var _ = Context("Interpreter", func() {
 				providedOpHandle := new(data.FakeHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
-					Eq: []interface{}{},
+					Eq: new([]interface{}),
 				}
 
 				providedScope := map[string]*model.Value{}
@@ -53,7 +54,47 @@ var _ = Context("Interpreter", func() {
 					actualScope := fakeEqInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualExpression).To(Equal(providedScgPredicate.Eq))
+				Expect(actualExpression).To(Equal(*providedScgPredicate.Eq))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+
+				Expect(actualResult).To(Equal(expectedResult))
+				Expect(actualError).To(Equal(expectedError))
+			})
+		})
+		Context("Exists Predicate", func() {
+			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
+				/* arrange */
+				providedOpHandle := new(data.FakeHandle)
+
+				providedScgPredicate := &model.SCGPredicate{
+					Exists: new(string),
+				}
+
+				providedScope := map[string]*model.Value{}
+
+				fakeExistsInterpreter := new(exists.FakeInterpreter)
+				expectedResult := true
+				expectedError := errors.New("expectedErr")
+				fakeExistsInterpreter.InterpretReturns(true, expectedError)
+
+				objectUnderTest := _interpreter{
+					existsInterpreter: fakeExistsInterpreter,
+				}
+
+				/* act */
+				actualResult, actualError := objectUnderTest.Interpret(
+					providedOpHandle,
+					providedScgPredicate,
+					providedScope,
+				)
+
+				/* assert */
+				actualExpression,
+					actualOpHandle,
+					actualScope := fakeExistsInterpreter.InterpretArgsForCall(0)
+
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualExpression).To(Equal(*providedScgPredicate.Exists))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 				Expect(actualResult).To(Equal(expectedResult))
@@ -66,7 +107,7 @@ var _ = Context("Interpreter", func() {
 				providedOpHandle := new(data.FakeHandle)
 
 				providedScgPredicate := &model.SCGPredicate{
-					Ne: []interface{}{},
+					Ne: new([]interface{}),
 				}
 
 				providedScope := map[string]*model.Value{}
@@ -93,7 +134,47 @@ var _ = Context("Interpreter", func() {
 					actualScope := fakeNeInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualExpression).To(Equal(providedScgPredicate.Ne))
+				Expect(actualExpression).To(Equal(*providedScgPredicate.Ne))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+
+				Expect(actualResult).To(Equal(expectedResult))
+				Expect(actualError).To(Equal(expectedError))
+			})
+		})
+		Context("NotExists Predicate", func() {
+			It("should call existsInterpreter.Interpret w/ expected args & return result", func() {
+				/* arrange */
+				providedOpHandle := new(data.FakeHandle)
+
+				providedScgPredicate := &model.SCGPredicate{
+					NotExists: new(string),
+				}
+
+				providedScope := map[string]*model.Value{}
+
+				fakeNotExistsInterpreter := new(exists.FakeInterpreter)
+				expectedResult := true
+				expectedError := errors.New("expectedErr")
+				fakeNotExistsInterpreter.InterpretReturns(true, expectedError)
+
+				objectUnderTest := _interpreter{
+					existsInterpreter: fakeNotExistsInterpreter,
+				}
+
+				/* act */
+				actualResult, actualError := objectUnderTest.Interpret(
+					providedOpHandle,
+					providedScgPredicate,
+					providedScope,
+				)
+
+				/* assert */
+				actualExpression,
+					actualOpHandle,
+					actualScope := fakeNotExistsInterpreter.InterpretArgsForCall(0)
+
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualExpression).To(Equal(*providedScgPredicate.NotExists))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
 
 				Expect(actualResult).To(Equal(expectedResult))

@@ -5,7 +5,9 @@ import (
 
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/eq"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/exists"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/ne"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/notexists"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -21,14 +23,18 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return &_interpreter{
-		eqInterpreter: eq.NewInterpreter(),
-		neInterpreter: ne.NewInterpreter(),
+		eqInterpreter:        eq.NewInterpreter(),
+		existsInterpreter:    exists.NewInterpreter(),
+		neInterpreter:        ne.NewInterpreter(),
+		notExistsInterpreter: notexists.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	eqInterpreter eq.Interpreter
-	neInterpreter ne.Interpreter
+	eqInterpreter        eq.Interpreter
+	existsInterpreter    exists.Interpreter
+	neInterpreter        ne.Interpreter
+	notExistsInterpreter notexists.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -39,13 +45,25 @@ func (itp _interpreter) Interpret(
 	switch {
 	case nil != scgPredicate.Eq:
 		return itp.eqInterpreter.Interpret(
-			scgPredicate.Eq,
+			*scgPredicate.Eq,
+			opHandle,
+			scope,
+		)
+	case nil != scgPredicate.Exists:
+		return itp.existsInterpreter.Interpret(
+			*scgPredicate.Exists,
 			opHandle,
 			scope,
 		)
 	case nil != scgPredicate.Ne:
 		return itp.neInterpreter.Interpret(
-			scgPredicate.Ne,
+			*scgPredicate.Ne,
+			opHandle,
+			scope,
+		)
+	case nil != scgPredicate.NotExists:
+		return itp.existsInterpreter.Interpret(
+			*scgPredicate.NotExists,
 			opHandle,
 			scope,
 		)
