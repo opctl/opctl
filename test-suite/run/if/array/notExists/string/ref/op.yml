@@ -1,0 +1,5 @@
+name: run/if/array/notExists/string/ref
+run:
+  if:
+    - notExists: $(/)
+  serial: []

@@ -1,6 +1,0 @@
-{
-  "title": "refQuery",
-  "description": "Query on a reference",
-  "type": "string",
-  "pattern": "^\\$\\([\\/-_.a-zA-Z0-9]+\\?[\\/-_.a-zA-Z0-9]*\\)$"
-}

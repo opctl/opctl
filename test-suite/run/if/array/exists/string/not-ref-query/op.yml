@@ -1,5 +1,0 @@
-name: run/if/array/exists/string/not-ref-query
-run:
-  if:
-    - exists: $(/)
-  serial: []
