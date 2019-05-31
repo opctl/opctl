@@ -3,7 +3,7 @@ package model
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
 	Container *SCGContainerCall `yaml:"container,omitempty"`
-	If        []*SCGPredicate   `yaml:"if,omitempty"`
+	If        *[]*SCGPredicate  `yaml:"if,omitempty"`
 	Loop      *SCGLoop          `yaml:"loop,omitempty"`
 	Op        *SCGOpCall        `yaml:"op,omitempty"`
 	Parallel  []*SCG            `yaml:"parallel,omitempty"`
@@ -103,8 +103,10 @@ func (soc *SCGOpCall) UnmarshalYAML(
 }
 
 type SCGPredicate struct {
-	Eq []interface{} `yaml:"eq,omitempty"`
-	Ne []interface{} `yaml:"ne,omitempty"`
+	Eq        *[]interface{} `yaml:"eq,omitempty"`
+	Exists    *string        `yaml:"exists,omitempty"`
+	Ne        *[]interface{} `yaml:"ne,omitempty"`
+	NotExists *string        `yaml:"notExists,omitempty"`
 }
 
 type SCGPullCreds struct {

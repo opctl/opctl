@@ -55,7 +55,11 @@ func getSourceFile(ctx context.Context, v source.View, uri span.URI) (source.Fil
 	if err != nil {
 		return nil, nil, err
 	}
-	m := protocol.NewColumnMapper(f.URI(), filename, f.GetFileSet(ctx), f.GetToken(ctx), f.GetContent(ctx))
+	fc := f.Content(ctx)
+	if fc.Error != nil {
+		return nil, nil, fc.Error
+	}
+	m := protocol.NewColumnMapper(f.URI(), filename, f.FileSet(), f.GetToken(ctx), fc.Data)
 
 	return f, m, nil
 }
@@ -67,7 +71,7 @@ func getGoFile(ctx context.Context, v source.View, uri span.URI) (source.GoFile,
 	}
 	gof, ok := f.(source.GoFile)
 	if !ok {
-		return nil, nil, fmt.Errorf("not a go file %v", f.URI())
+		return nil, nil, fmt.Errorf("not a Go file %v", f.URI())
 	}
 	return gof, m, nil
 }

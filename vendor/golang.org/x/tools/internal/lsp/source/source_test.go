@@ -32,6 +32,7 @@ type runner struct {
 }
 
 func testSource(t *testing.T, exporter packagestest.Exporter) {
+	ctx := context.Background()
 	data := tests.Load(t, exporter, "../testdata")
 	defer data.Exported.Cleanup()
 
@@ -39,15 +40,23 @@ func testSource(t *testing.T, exporter packagestest.Exporter) {
 	cache := cache.New()
 	session := cache.NewSession(log)
 	r := &runner{
-		view: session.NewView("source_test", span.FileURI(data.Config.Dir), &data.Config),
+		view: session.NewView("source_test", span.FileURI(data.Config.Dir)),
 		data: data,
+	}
+	r.view.SetEnv(data.Config.Env)
+	for filename, content := range data.Config.Overlay {
+		r.view.SetContent(ctx, span.FileURI(filename), content)
 	}
 	tests.Run(t, r, data)
 }
 
 func (r *runner) Diagnostics(t *testing.T, data tests.Diagnostics) {
 	for uri, want := range data {
-		results, err := source.Diagnostics(context.Background(), r.view, uri)
+		f, err := r.view.GetFile(context.Background(), uri)
+		if err != nil {
+			t.Fatal(err)
+		}
+		results, err := source.Diagnostics(context.Background(), r.view, f.(source.GoFile))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -134,6 +143,9 @@ func (r *runner) Completion(t *testing.T, data tests.Completions, snippets tests
 			t.Fatalf("failed for %v: %v", src, err)
 		}
 		tok := f.(source.GoFile).GetToken(ctx)
+		if tok == nil {
+			t.Fatalf("failed to get token for %v", src)
+		}
 		pos := tok.Pos(src.Start().Offset())
 		list, surrounding, err := source.Completion(ctx, f.(source.GoFile), pos)
 		if err != nil {
@@ -273,7 +285,7 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 		if err != nil {
 			t.Fatalf("failed for %v: %v", spn, err)
 		}
-		rng, err := spn.Range(span.NewTokenConverter(f.GetFileSet(ctx), f.GetToken(ctx)))
+		rng, err := spn.Range(span.NewTokenConverter(f.FileSet(), f.GetToken(ctx)))
 		if err != nil {
 			t.Fatalf("failed for %v: %v", spn, err)
 		}
@@ -285,7 +297,12 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 			continue
 		}
 		ops := source.EditsToDiff(edits)
-		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(f.GetContent(ctx))), ops), "")
+		fc := f.Content(ctx)
+		if fc.Error != nil {
+			t.Error(err)
+			continue
+		}
+		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(fc.Data)), ops), "")
 		if gofmted != got {
 			t.Errorf("format failed for %s, expected:\n%v\ngot:\n%v", filename, gofmted, got)
 		}

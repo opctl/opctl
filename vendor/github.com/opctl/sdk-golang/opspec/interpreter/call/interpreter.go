@@ -2,7 +2,6 @@ package call
 
 import (
 	"fmt"
-
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
 
 	"github.com/opctl/sdk-golang/model"
@@ -59,20 +58,6 @@ func (itp _interpreter) Interpret(
 	}
 	var err error
 
-	if len(scg.If) > 0 {
-		var dcgIf bool
-		dcgIf, err = itp.predicatesInterpreter.Interpret(
-			opHandle,
-			scg.If,
-			scope,
-		)
-		if nil != err {
-			return nil, err
-		}
-
-		dcg.If = &dcgIf
-	}
-
 	if nil != scg.Loop {
 		dcg.Loop, err = itp.loopInterpreter.Interpret(
 			opHandle,
@@ -81,6 +66,24 @@ func (itp _interpreter) Interpret(
 		)
 		if nil != err {
 			return nil, err
+		}
+	}
+
+	if nil != scg.If {
+		dcgIf, err := itp.predicatesInterpreter.Interpret(
+			opHandle,
+			*scg.If,
+			scope,
+		)
+		if nil != err {
+			return nil, err
+		}
+
+		dcg.If = &dcgIf
+
+		if !dcgIf {
+			// end interpretation early since call will be skipped
+			return dcg, err
 		}
 	}
 
