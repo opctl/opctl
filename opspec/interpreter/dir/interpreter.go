@@ -82,6 +82,8 @@ func (ed _interpreter) Interpret(
 				return &model.Value{Dir: &dirValue}, nil
 
 			}
+
+			return &model.Value{}, nil
 		}
 	}
 
