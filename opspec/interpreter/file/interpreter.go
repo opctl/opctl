@@ -4,11 +4,10 @@ package file
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter"
 	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference"
 
 	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
@@ -36,16 +35,16 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		coerce:           coerce.New(),
-		interpolater:     interpolater.New(),
-		valueInterpreter: value.NewInterpreter(),
+		coerce:               coerce.New(),
+		referenceInterpreter: reference.NewInterpreter(),
+		valueInterpreter:     value.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	coerce           coerce.Coerce
-	interpolater     interpolater.Interpolater
-	valueInterpreter value.Interpreter
+	coerce               coerce.Coerce
+	referenceInterpreter reference.Interpreter
+	valueInterpreter     value.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -54,42 +53,19 @@ func (itp _interpreter) Interpret(
 	opHandle model.DataHandle,
 	scratchDir string,
 ) (*model.Value, error) {
-	if expressionAsString, ok := expression.(string); ok {
-		if ref, ok := interpreter.TryResolveExplicitRef(expressionAsString, scope); ok {
-			// scope ref w/out path
-			return itp.coerce.ToFile(ref, scratchDir)
-		} else if strings.HasPrefix(expressionAsString, interpolater.RefStart) && strings.HasSuffix(expressionAsString, interpolater.RefEnd) {
+	expressionAsString, expressionIsString := expression.(string)
 
-			refExpression := strings.TrimSuffix(strings.TrimPrefix(expressionAsString, interpolater.RefStart), interpolater.RefEnd)
-			refParts := strings.SplitN(refExpression, "/", 2)
-
-			if strings.HasPrefix(refExpression, "/") {
-
-				// pkg fs ref
-				pkgFsRef, err := itp.interpolater.Interpolate(refExpression, scope, opHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate pkg fs ref %v; error was %v", refExpression, err.Error())
-				}
-
-				fileValue := filepath.Join(*opHandle.Path(), pkgFsRef)
-
-				return &model.Value{File: &fileValue}, nil
-
-			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
-
-				// dir scope ref w/ path
-				pathExpression := refParts[1]
-				path, err := itp.interpolater.Interpolate(pathExpression, scope, opHandle)
-				if nil != err {
-					return nil, fmt.Errorf("unable to evaluate path %v; error was %v", pathExpression, err.Error())
-				}
-
-				fileValue := filepath.Join(*dcgValue.Dir, path)
-				return &model.Value{File: &fileValue}, nil
-
-			}
-
+	// @TODO: this incorrectly treats $(inScope)$(inScope) as ref
+	if expressionIsString && strings.HasPrefix(expressionAsString, interpolater.RefStart) && strings.HasSuffix(expressionAsString, interpolater.RefEnd) {
+		value, err := itp.referenceInterpreter.Interpret(
+			expressionAsString,
+			scope,
+			opHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
 		}
+		return itp.coerce.ToFile(value, scratchDir)
 	}
 
 	value, err := itp.valueInterpreter.Interpret(

@@ -1,4 +1,4 @@
-package item
+package unbracketed
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opspec/interpreter/interpolater/dereferencer/identifier/bracketed/item")
+	RunSpecs(t, "opspec/interpreter/reference/identifier/unbracketed")
 }

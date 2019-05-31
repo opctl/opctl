@@ -1,6 +1,0 @@
-- template: $($(innerRef))
-  scope:
-    innerRef:
-      string:
-        outerRef
-  expected: $(outerRef)

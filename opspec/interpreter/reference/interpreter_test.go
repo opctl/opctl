@@ -1,15 +1,15 @@
-package dereferencer
+package reference
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Context("DeReferencer", func() {
-	Context("New", func() {
+var _ = Context("Interpreter", func() {
+	Context("NewInterpreter", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(New()).Should(Not(BeNil()))
+			Expect(NewInterpreter()).Should(Not(BeNil()))
 		})
 	})
 })

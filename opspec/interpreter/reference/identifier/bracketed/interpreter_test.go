@@ -4,32 +4,32 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/bracketed/item"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/bracketed/item"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 )
 
-var _ = Context("DeReferencer", func() {
-	Context("NewDeReferencer", func() {
+var _ = Context("Interpreter", func() {
+	Context("NewInterpreter", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewDeReferencer()).Should(Not(BeNil()))
+			Expect(NewInterpreter()).Should(Not(BeNil()))
 		})
 	})
-	Context("DeReference", func() {
+	Context("Interpret", func() {
 		Context("ref doesn't start w/ '['", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedRef := "dummyRef"
 
-				objectUnderTest := _deReferencer{}
-				expectedErr := fmt.Errorf("unable to deReference '%v'; expected '['", providedRef)
+				objectUnderTest := _interpreter{}
+				expectedErr := fmt.Errorf("unable to interpret '%v'; expected '['", providedRef)
 
 				/* act */
-				_, _, actualErr := objectUnderTest.DeReference(
+				_, _, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					nil,
 				)
@@ -43,11 +43,11 @@ var _ = Context("DeReferencer", func() {
 				/* arrange */
 				providedRef := "[dummyRef"
 
-				objectUnderTest := _deReferencer{}
-				expectedErr := fmt.Errorf("unable to deReference '%v'; expected ']'", providedRef)
+				objectUnderTest := _interpreter{}
+				expectedErr := fmt.Errorf("unable to interpret '%v'; expected ']'", providedRef)
 
 				/* act */
-				_, _, actualErr := objectUnderTest.DeReference(
+				_, _, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					nil,
 				)
@@ -65,12 +65,12 @@ var _ = Context("DeReferencer", func() {
 			// err to trigger immediate return
 			fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(nil, errors.New("dummyErr"))
 
-			objectUnderTest := _deReferencer{
+			objectUnderTest := _interpreter{
 				coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
 			}
 
 			/* act */
-			objectUnderTest.DeReference(
+			objectUnderTest.Interpret(
 				"[]",
 				&providedData,
 			)
@@ -92,14 +92,14 @@ var _ = Context("DeReferencer", func() {
 				coerceToArrayOrObjectErr := errors.New("coerceToArrayOrObjectErr")
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(nil, coerceToArrayOrObjectErr)
 
-				expectedErr := fmt.Errorf("unable to deReference '%v'; error was %v", providedRef, coerceToArrayOrObjectErr.Error())
+				expectedErr := fmt.Errorf("unable to interpret '%v'; error was %v", providedRef, coerceToArrayOrObjectErr.Error())
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
 				}
 
 				/* act */
-				_, _, actualErr := objectUnderTest.DeReference(
+				_, _, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					&providedData,
 				)
@@ -109,7 +109,7 @@ var _ = Context("DeReferencer", func() {
 			})
 		})
 		Context("data is array", func() {
-			It("should call itemDeReferencer.DeReference w/ expected args", func() {
+			It("should call itemInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedRefIdentifier := "dummyIdentifier"
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
@@ -118,29 +118,29 @@ var _ = Context("DeReferencer", func() {
 				coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-				fakeItemDeReferencer := new(item.FakeDeReferencer)
+				fakeItemInterpreter := new(item.FakeInterpreter)
 				// err to trigger immediate return
-				fakeItemDeReferencer.DeReferenceReturns(nil, errors.New("dummyErr"))
+				fakeItemInterpreter.InterpretReturns(nil, errors.New("dummyErr"))
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
-					itemDeReferencer:        fakeItemDeReferencer,
+					itemInterpreter:         fakeItemInterpreter,
 				}
 
 				/* act */
-				objectUnderTest.DeReference(
+				objectUnderTest.Interpret(
 					providedRef,
 					new(model.Value),
 				)
 
 				/* assert */
 				actualIdentifier,
-					actualArray := fakeItemDeReferencer.DeReferenceArgsForCall(0)
+					actualArray := fakeItemInterpreter.InterpretArgsForCall(0)
 
 				Expect(actualIdentifier).To(Equal(providedRefIdentifier))
 				Expect(actualArray).To(Equal(coercedArray))
 			})
-			Context("itemDeReferencer.DeReference errs", func() {
+			Context("itemInterpreter.Interpret errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
@@ -148,26 +148,26 @@ var _ = Context("DeReferencer", func() {
 					coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-					fakeItemDeReferencer := new(item.FakeDeReferencer)
-					itemDeReferencerErr := errors.New("itemDereferencerErr")
-					fakeItemDeReferencer.DeReferenceReturns(nil, itemDeReferencerErr)
+					fakeItemInterpreter := new(item.FakeInterpreter)
+					itemInterpreterErr := errors.New("itemDereferencerErr")
+					fakeItemInterpreter.InterpretReturns(nil, itemInterpreterErr)
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
-						itemDeReferencer:        fakeItemDeReferencer,
+						itemInterpreter:         fakeItemInterpreter,
 					}
 
 					/* act */
-					_, _, actualErr := objectUnderTest.DeReference(
+					_, _, actualErr := objectUnderTest.Interpret(
 						"[]",
 						new(model.Value),
 					)
 
 					/* assert */
-					Expect(actualErr).To(Equal(itemDeReferencerErr))
+					Expect(actualErr).To(Equal(itemInterpreterErr))
 				})
 			})
-			Context("itemDeReferencer.DeReferenceItem doesn't err", func() {
+			Context("itemInterpreter.InterpretItem doesn't err", func() {
 
 				It("should return expected result", func() {
 					/* arrange */
@@ -176,24 +176,24 @@ var _ = Context("DeReferencer", func() {
 					coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
-					fakeItemDeReferencer := new(item.FakeDeReferencer)
-					deReferencedItemValue := model.Value{}
-					fakeItemDeReferencer.DeReferenceReturns(&deReferencedItemValue, nil)
+					fakeItemInterpreter := new(item.FakeInterpreter)
+					interpretdItemValue := model.Value{}
+					fakeItemInterpreter.InterpretReturns(&interpretdItemValue, nil)
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
-						itemDeReferencer:        fakeItemDeReferencer,
+						itemInterpreter:         fakeItemInterpreter,
 					}
 
 					/* act */
-					actualRefRemainder, actualData, actualErr := objectUnderTest.DeReference(
+					actualRefRemainder, actualData, actualErr := objectUnderTest.Interpret(
 						"[]",
 						new(model.Value),
 					)
 
 					/* assert */
 					Expect(actualRefRemainder).To(BeEmpty())
-					Expect(*actualData).To(Equal(deReferencedItemValue))
+					Expect(*actualData).To(Equal(interpretdItemValue))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -212,13 +212,13 @@ var _ = Context("DeReferencer", func() {
 				// err to trigger immediate return
 				fakeValueConstructor.ConstructReturns(nil, errors.New("dummyErr"))
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
 					valueConstructor:        fakeValueConstructor,
 				}
 
 				/* act */
-				objectUnderTest.DeReference(
+				objectUnderTest.Interpret(
 					providedRef,
 					new(model.Value),
 				)
@@ -240,15 +240,15 @@ var _ = Context("DeReferencer", func() {
 					constructErr := errors.New("constructErr")
 					fakeValueConstructor.ConstructReturns(nil, constructErr)
 
-					expectedErr := fmt.Errorf("unable to deReference property; error was %v", constructErr.Error())
+					expectedErr := fmt.Errorf("unable to interpret property; error was %v", constructErr.Error())
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
 						valueConstructor:        fakeValueConstructor,
 					}
 
 					/* act */
-					_, _, actualErr := objectUnderTest.DeReference(
+					_, _, actualErr := objectUnderTest.Interpret(
 						"[]",
 						new(model.Value),
 					)
@@ -267,23 +267,23 @@ var _ = Context("DeReferencer", func() {
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
-					deReferencedItemValue := model.Value{}
-					fakeValueConstructor.ConstructReturns(&deReferencedItemValue, nil)
+					interpretdItemValue := model.Value{}
+					fakeValueConstructor.ConstructReturns(&interpretdItemValue, nil)
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerceToArrayOrObjecter: fakeCoerceToArrayOrObjecter,
 						valueConstructor:        fakeValueConstructor,
 					}
 
 					/* act */
-					actualRefRemainder, actualData, actualErr := objectUnderTest.DeReference(
+					actualRefRemainder, actualData, actualErr := objectUnderTest.Interpret(
 						"[]",
 						new(model.Value),
 					)
 
 					/* assert */
 					Expect(actualRefRemainder).To(BeEmpty())
-					Expect(*actualData).To(Equal(deReferencedItemValue))
+					Expect(*actualData).To(Equal(interpretdItemValue))
 					Expect(actualErr).To(BeNil())
 				})
 			})

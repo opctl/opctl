@@ -3,55 +3,33 @@ package dir
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
-	"path/filepath"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference"
 )
 
 var _ = Context("Interpret", func() {
 	Context("expression is scope ref", func() {
-		It("should return expected result", func() {
+		It("should call referenceInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			scopeName := "dummyScopeName"
-			providedExpression := fmt.Sprintf("$(%v)", scopeName)
-			scopeValue := model.Value{Dir: new(string)}
-			providedScope := map[string]*model.Value{
-				scopeName: &scopeValue,
-			}
+			providedScope := map[string]*model.Value{"": new(model.Value)}
 
-			objectUnderTest := _interpreter{}
-
-			/* act */
-			actualValue, actualErr := objectUnderTest.Interpret(
-				providedScope,
-				providedExpression,
-				new(data.FakeHandle),
-			)
-
-			/* assert */
-			Expect(*actualValue).To(Equal(scopeValue))
-			Expect(actualErr).To(BeNil())
-		})
-	})
-	Context("expression is scope ref w/ path", func() {
-		It("should call interpolater.Interpolate w/ expected args", func() {
-			/* arrange */
-			scopeName := "dummyScopeName"
-			providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
-
-			providedPath := "dummyPath"
-			providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
+			providedExpression := "$(providedReference)"
 			providedOpRef := new(data.FakeHandle)
 
-			fakeInterpolater := new(interpolater.Fake)
+			expectedReference := strings.TrimSuffix(strings.TrimPrefix(providedExpression, interpolater.RefStart), interpolater.RefEnd)
+
+			fakeReferenceInterpreter := new(reference.FakeInterpreter)
 			// err to trigger immediate return
-			fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+			fakeReferenceInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
-				interpolater: fakeInterpolater,
+				referenceInterpreter: fakeReferenceInterpreter,
 			}
 
 			/* act */
@@ -62,36 +40,30 @@ var _ = Context("Interpret", func() {
 			)
 
 			/* assert */
-			actualExpression,
+			expectedReference,
 				actualScope,
-				actualOpRef := fakeInterpolater.InterpolateArgsForCall(0)
+				actualOpRef := fakeReferenceInterpreter.InterpretArgsForCall(0)
 
-			Expect(actualExpression).To(Equal(providedPath))
+			Expect(expectedReference).To(Equal(expectedReference))
 			Expect(actualScope).To(Equal(providedScope))
 			Expect(actualOpRef).To(Equal(providedOpRef))
 		})
-		Context("interpolater.Interpolate errs", func() {
+		Context("referenceInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 
 				/* arrange */
-				scopeName := "dummyScopeName"
-				providedScope := map[string]*model.Value{scopeName: {Dir: new(string)}}
+				providedScope := map[string]*model.Value{"": new(model.Value)}
 
-				providedPath := "dummyPath"
-				providedExpression := fmt.Sprintf("$(%v/%v)", scopeName, providedPath)
+				providedExpression := "$(providedReference)"
 
-				fakeInterpolater := new(interpolater.Fake)
-				interpolateErr := errors.New("dummyError")
-				fakeInterpolater.InterpolateReturns("", errors.New("dummyError"))
+				fakeReferenceInterpreter := new(reference.FakeInterpreter)
+				interpretErr := errors.New("dummyError")
+				fakeReferenceInterpreter.InterpretReturns(nil, interpretErr)
 
-				expectedErr := fmt.Errorf(
-					"unable to interpret path %v; error was %v",
-					providedPath,
-					interpolateErr.Error(),
-				)
+				expectedErr := fmt.Errorf("unable to interpret %+v to file; error was %v", providedExpression, interpretErr)
 
 				objectUnderTest := _interpreter{
-					interpolater: fakeInterpolater,
+					referenceInterpreter: fakeReferenceInterpreter,
 				}
 
 				/* act */
@@ -107,31 +79,26 @@ var _ = Context("Interpret", func() {
 
 			})
 		})
-		Context("interpolater.Interpolate doesn't error", func() {
+		Context("referenceInterpreter.Interpret doesn't error", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				scopeName := "dummyScopeName"
-				scopeValue := "dummyScopeValue"
-
-				interpolatedExpression := "dummyInterpolatedExpression"
-				fakeInterpolater := new(interpolater.Fake)
-				fakeInterpolater.InterpolateReturns(interpolatedExpression, nil)
+				expectedValue := new(model.Value)
+				fakeReferenceInterpreter := new(reference.FakeInterpreter)
+				fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
 
 				objectUnderTest := _interpreter{
-					interpolater: fakeInterpolater,
+					referenceInterpreter: fakeReferenceInterpreter,
 				}
-
-				expectedFileValue := filepath.Join(scopeValue, interpolatedExpression)
 
 				/* act */
 				actualValue, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{scopeName: {Dir: &scopeValue}},
-					fmt.Sprintf("$(%v/path)", scopeName),
+					map[string]*model.Value{},
+					"$(providedReference)",
 					new(data.FakeHandle),
 				)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Dir: &expectedFileValue}))
+				Expect(actualValue).To(Equal(expectedValue))
 				Expect(actualErr).To(BeNil())
 			})
 		})

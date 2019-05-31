@@ -4,21 +4,21 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
 )
 
-var _ = Context("DeReferencer", func() {
-	Context("NewDeReferencer", func() {
+var _ = Context("Interpreter", func() {
+	Context("NewInterpreter", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewDeReferencer()).Should(Not(BeNil()))
+			Expect(NewInterpreter()).Should(Not(BeNil()))
 		})
 	})
-	Context("DeReference", func() {
+	Context("Interpret", func() {
 		It("should call parseIndexer.ParseIndex w/ expected args", func() {
 			/* arrange */
 			providedIndexString := "dummyIndexString"
@@ -28,12 +28,12 @@ var _ = Context("DeReferencer", func() {
 			// err to trigger immediate return
 			fakeParseIndexer.ParseIndexReturns(0, errors.New("dummyErr"))
 
-			objectUnderTest := _deReferencer{
+			objectUnderTest := _interpreter{
 				parseIndexer: fakeParseIndexer,
 			}
 
 			/* act */
-			objectUnderTest.DeReference(
+			objectUnderTest.Interpret(
 				providedIndexString,
 				providedData,
 			)
@@ -53,14 +53,14 @@ var _ = Context("DeReferencer", func() {
 				parseIndexErr := errors.New("dummyErr")
 				fakeParseIndexer.ParseIndexReturns(0, parseIndexErr)
 
-				expectedErr := fmt.Errorf("unable to deReference item; error was %v", parseIndexErr.Error())
+				expectedErr := fmt.Errorf("unable to interpret item; error was %v", parseIndexErr.Error())
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					parseIndexer: fakeParseIndexer,
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.DeReference(
+				_, actualErr := objectUnderTest.Interpret(
 					"dummyIndexString",
 					model.Value{},
 				)
@@ -83,13 +83,13 @@ var _ = Context("DeReferencer", func() {
 				// err to trigger immediate return
 				fakeValueConstructor.ConstructReturns(nil, errors.New("dummyErr"))
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					parseIndexer:     fakeParseIndexer,
 					valueConstructor: fakeValueConstructor,
 				}
 
 				/* act */
-				objectUnderTest.DeReference(
+				objectUnderTest.Interpret(
 					"dummyIndexString",
 					providedData,
 				)
@@ -111,15 +111,15 @@ var _ = Context("DeReferencer", func() {
 					constructValueErr := errors.New("constructValueErr")
 					fakeValueConstructor.ConstructReturns(nil, errors.New("constructValueErr"))
 
-					expectedErr := fmt.Errorf("unable to deReference item; error was %v", constructValueErr.Error())
+					expectedErr := fmt.Errorf("unable to interpret item; error was %v", constructValueErr.Error())
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						parseIndexer:     fakeParseIndexer,
 						valueConstructor: fakeValueConstructor,
 					}
 
 					/* act */
-					_, actualErr := objectUnderTest.DeReference(
+					_, actualErr := objectUnderTest.Interpret(
 						"dummyIndexString",
 						model.Value{Array: []interface{}{"dummyItem"}},
 					)
@@ -139,13 +139,13 @@ var _ = Context("DeReferencer", func() {
 					constructedValue := model.Value{String: new(string)}
 					fakeValueConstructor.ConstructReturns(&constructedValue, nil)
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						parseIndexer:     fakeParseIndexer,
 						valueConstructor: fakeValueConstructor,
 					}
 
 					/* act */
-					actualItemValue, actualErr := objectUnderTest.DeReference(
+					actualItemValue, actualErr := objectUnderTest.Interpret(
 						"dummyIndexString",
 						model.Value{Array: []interface{}{"dummyItem"}},
 					)

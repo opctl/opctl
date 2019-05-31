@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,14 +12,14 @@ import (
 	"github.com/opctl/sdk-golang/model"
 )
 
-var _ = Context("DeReferencer", func() {
-	Context("NewDeReferencer", func() {
+var _ = Context("Interpreter", func() {
+	Context("NewInterpreter", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
-			Expect(NewDeReferencer()).Should(Not(BeNil()))
+			Expect(NewInterpreter()).Should(Not(BeNil()))
 		})
 	})
-	Context("DeReference", func() {
+	Context("Interpret", func() {
 		It("should call coerce.ToObject w/ expected args", func() {
 			/* arrange */
 			providedData := model.Value{String: new(string)}
@@ -28,12 +28,12 @@ var _ = Context("DeReferencer", func() {
 			// err to trigger immediate return
 			fakeCoerce.ToObjectReturns(nil, errors.New("dummyErr"))
 
-			objectUnderTest := _deReferencer{
+			objectUnderTest := _interpreter{
 				coerce: fakeCoerce,
 			}
 
 			/* act */
-			objectUnderTest.DeReference(
+			objectUnderTest.Interpret(
 				"dummyRef",
 				&providedData,
 			)
@@ -55,14 +55,14 @@ var _ = Context("DeReferencer", func() {
 				toObjectErr := errors.New("toObjectErr")
 				fakeCoerce.ToObjectReturns(nil, toObjectErr)
 
-				expectedErr := fmt.Errorf("unable to deReference '%v'; error was %v", providedRef, toObjectErr.Error())
+				expectedErr := fmt.Errorf("unable to interpret '%v'; error was %v", providedRef, toObjectErr.Error())
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					coerce: fakeCoerce,
 				}
 
 				/* act */
-				_, _, actualErr := objectUnderTest.DeReference(
+				_, _, actualErr := objectUnderTest.Interpret(
 					providedRef,
 					&providedData,
 				)
@@ -84,13 +84,13 @@ var _ = Context("DeReferencer", func() {
 				fakeParser := new(FakeParser)
 				fakeParser.ParseReturns("dummyIdentifier", "dummyRefRemainder")
 
-				objectUnderTest := _deReferencer{
+				objectUnderTest := _interpreter{
 					coerce: fakeCoerce,
 					parser: fakeParser,
 				}
 
 				/* act */
-				objectUnderTest.DeReference(
+				objectUnderTest.Interpret(
 					providedRef,
 					nil,
 				)
@@ -114,15 +114,15 @@ var _ = Context("DeReferencer", func() {
 					identifier := "identifier"
 					fakeParser.ParseReturns(identifier, "dummyRefRemainder")
 
-					expectedErr := fmt.Errorf("unable to deReference '%v'; '%v' doesn't exist", providedRef, identifier)
+					expectedErr := fmt.Errorf("unable to interpret '%v'; '%v' doesn't exist", providedRef, identifier)
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerce: fakeCoerce,
 						parser: fakeParser,
 					}
 
 					/* act */
-					_, _, actualErr := objectUnderTest.DeReference(
+					_, _, actualErr := objectUnderTest.Interpret(
 						providedRef,
 						new(model.Value),
 					)
@@ -147,14 +147,14 @@ var _ = Context("DeReferencer", func() {
 					fakeValueConstructor := new(value.FakeConstructor)
 					fakeValueConstructor.ConstructReturns(nil, errors.New("dummyErr"))
 
-					objectUnderTest := _deReferencer{
+					objectUnderTest := _interpreter{
 						coerce:           fakeCoerce,
 						parser:           fakeParser,
 						valueConstructor: fakeValueConstructor,
 					}
 
 					/* act */
-					objectUnderTest.DeReference(
+					objectUnderTest.Interpret(
 						"dummyRef",
 						new(model.Value),
 					)
@@ -183,16 +183,16 @@ var _ = Context("DeReferencer", func() {
 						constructErr := errors.New("constructErr")
 						fakeValueConstructor.ConstructReturns(nil, constructErr)
 
-						objectUnderTest := _deReferencer{
+						objectUnderTest := _interpreter{
 							coerce:           fakeCoerce,
 							parser:           fakeParser,
 							valueConstructor: fakeValueConstructor,
 						}
 
-						expectedErr := fmt.Errorf("unable to deReference '%v'; error was %v", providedRef, constructErr.Error())
+						expectedErr := fmt.Errorf("unable to interpret '%v'; error was %v", providedRef, constructErr.Error())
 
 						/* act */
-						_, _, actualErr := objectUnderTest.DeReference(
+						_, _, actualErr := objectUnderTest.Interpret(
 							providedRef,
 							new(model.Value),
 						)
@@ -220,14 +220,14 @@ var _ = Context("DeReferencer", func() {
 						identifierValue := model.Value{String: new(string)}
 						fakeValueConstructor.ConstructReturns(&identifierValue, nil)
 
-						objectUnderTest := _deReferencer{
+						objectUnderTest := _interpreter{
 							coerce:           fakeCoerce,
 							parser:           fakeParser,
 							valueConstructor: fakeValueConstructor,
 						}
 
 						/* act */
-						actualRefRemainder, actualValue, actualErr := objectUnderTest.DeReference(
+						actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 							"dummyRef",
 							new(model.Value),
 						)

@@ -2,55 +2,56 @@ package bracketed
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/bracketed/item"
 	"strings"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater/dereferencer/identifier/value"
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/bracketed/item"
+
+	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
 
 	"github.com/opctl/sdk-golang/model"
 )
 
-// DeReferencer dereferences a bracketed identifier from ref by consuming from '[' up to & including the first ']'
+// Interpreter interprets a bracketed identifier from ref by consuming from '[' up to & including the first ']'
 // it's an error if ref doesn't start with '[' or contain ']'
 // returns ref remainder, dereferenced data, and error if one occurred
-type DeReferencer interface {
-	DeReference(
+type Interpreter interface {
+	Interpret(
 		ref string,
 		data *model.Value,
 	) (string, *model.Value, error)
 }
 
-func NewDeReferencer() DeReferencer {
-	return _deReferencer{
+func NewInterpreter() Interpreter {
+	return _interpreter{
 		coerceToArrayOrObjecter: newCoerceToArrayOrObjecter(),
-		itemDeReferencer:        item.NewDeReferencer(),
+		itemInterpreter:         item.NewInterpreter(),
 		valueConstructor:        value.NewConstructor(),
 	}
 }
 
-type _deReferencer struct {
+type _interpreter struct {
 	coerceToArrayOrObjecter coerceToArrayOrObjecter
-	itemDeReferencer        item.DeReferencer
+	itemInterpreter         item.Interpreter
 	valueConstructor        value.Constructor
 }
 
-func (dr _deReferencer) DeReference(
+func (dr _interpreter) Interpret(
 	ref string,
 	data *model.Value,
 ) (string, *model.Value, error) {
 
 	if !strings.HasPrefix(ref, "[") {
-		return "", nil, fmt.Errorf("unable to deReference '%v'; expected '['", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '['", ref)
 	}
 
 	indexOfNextCloseBracket := strings.Index(ref, "]")
 	if indexOfNextCloseBracket < 0 {
-		return "", nil, fmt.Errorf("unable to deReference '%v'; expected ']'", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v'; expected ']'", ref)
 	}
 
 	data, err := dr.coerceToArrayOrObjecter.CoerceToArrayOrObject(data)
 	if nil != err {
-		return "", nil, fmt.Errorf("unable to deReference '%v'; error was %v", ref, err.Error())
+		return "", nil, fmt.Errorf("unable to interpret '%v'; error was %v", ref, err.Error())
 	}
 
 	identifier := ref[1:indexOfNextCloseBracket]
@@ -58,7 +59,7 @@ func (dr _deReferencer) DeReference(
 
 	if nil != data.Array {
 		// data is array
-		itemValue, err := dr.itemDeReferencer.DeReference(identifier, *data)
+		itemValue, err := dr.itemInterpreter.Interpret(identifier, *data)
 		if nil != err {
 			return "", nil, err
 		}
@@ -70,7 +71,7 @@ func (dr _deReferencer) DeReference(
 	property := data.Object[identifier]
 	propertyValue, err := dr.valueConstructor.Construct(property)
 	if nil != err {
-		return "", nil, fmt.Errorf("unable to deReference property; error was %v", err.Error())
+		return "", nil, fmt.Errorf("unable to interpret property; error was %v", err.Error())
 	}
 	return refRemainder, propertyValue, nil
 }

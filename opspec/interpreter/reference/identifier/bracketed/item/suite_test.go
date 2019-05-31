@@ -1,4 +1,4 @@
-package direntry
+package item
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opspec/interpreter/interpolater/dereferencer/direntry")
+	RunSpecs(t, "opspec/interpreter/reference/identifier/bracketed/item")
 }
