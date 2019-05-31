@@ -6,11 +6,12 @@ package cache
 
 import (
 	"context"
+	"fmt"
 	"go/ast"
 	"go/parser"
-	"go/token"
 	"go/types"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"golang.org/x/tools/go/packages"
@@ -42,9 +43,8 @@ type view struct {
 	// Folder is the root of this view.
 	folder span.URI
 
-	// Config is the configuration used for the view's interaction with the
-	// go/packages API. It is shared across all views.
-	config packages.Config
+	// env is the environment to use when invoking underlying tools.
+	env []string
 
 	// keep track of files by uri and by basename, a single file may be mapped
 	// to multiple uris, and the same basename may map to multiple files
@@ -110,12 +110,40 @@ func (v *view) Folder() span.URI {
 
 // Config returns the configuration used for the view's interaction with the
 // go/packages API. It is shared across all views.
-func (v *view) Config() packages.Config {
-	return v.config
+func (v *view) buildConfig() *packages.Config {
+	//TODO:should we cache the config and/or overlay somewhere?
+	folderPath, err := v.folder.Filename()
+	if err != nil {
+		folderPath = ""
+	}
+	return &packages.Config{
+		Context: v.backgroundCtx,
+		Dir:     folderPath,
+		Env:     v.env,
+		Mode: packages.NeedName |
+			packages.NeedFiles |
+			packages.NeedCompiledGoFiles |
+			packages.NeedImports |
+			packages.NeedDeps |
+			packages.NeedTypesSizes,
+		Fset:      v.session.cache.fset,
+		Overlay:   v.session.buildOverlay(),
+		ParseFile: parseFile,
+		Tests:     true,
+	}
+}
+
+func (v *view) Env() []string {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	return v.env
 }
 
 func (v *view) SetEnv(env []string) {
-	v.config.Env = env
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	//TODO: this should invalidate the entire view
+	v.env = env
 }
 
 func (v *view) Shutdown(ctx context.Context) {
@@ -131,6 +159,13 @@ func (v *view) shutdown(context.Context) {
 	}
 }
 
+// Ignore checks if the given URI is a URI we ignore.
+// As of right now, we only ignore files in the "builtin" package.
+func (v *view) Ignore(uri span.URI) bool {
+	_, ok := v.ignoredURIs[uri]
+	return ok
+}
+
 func (v *view) BackgroundContext() context.Context {
 	v.mu.Lock()
 	defer v.mu.Unlock()
@@ -139,33 +174,33 @@ func (v *view) BackgroundContext() context.Context {
 }
 
 func (v *view) BuiltinPackage() *ast.Package {
+	if v.builtinPkg == nil {
+		v.buildBuiltinPkg()
+	}
 	return v.builtinPkg
 }
 
-func builtinPkg(cfg packages.Config) *ast.Package {
-	var bpkg *ast.Package
-	cfg.Mode = packages.LoadFiles
+func (v *view) buildBuiltinPkg() {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	cfg := *v.buildConfig()
 	pkgs, _ := packages.Load(&cfg, "builtin")
 	if len(pkgs) != 1 {
-		bpkg, _ = ast.NewPackage(cfg.Fset, nil, nil, nil)
-		return bpkg
+		v.builtinPkg, _ = ast.NewPackage(cfg.Fset, nil, nil, nil)
+		return
 	}
 	pkg := pkgs[0]
 	files := make(map[string]*ast.File)
 	for _, filename := range pkg.GoFiles {
 		file, err := parser.ParseFile(cfg.Fset, filename, nil, parser.ParseComments)
 		if err != nil {
-			bpkg, _ = ast.NewPackage(cfg.Fset, nil, nil, nil)
-			return bpkg
+			v.builtinPkg, _ = ast.NewPackage(cfg.Fset, nil, nil, nil)
+			return
 		}
 		files[filename] = file
+		v.ignoredURIs[span.NewURI(filename)] = struct{}{}
 	}
-	bpkg, _ = ast.NewPackage(cfg.Fset, files, nil, nil)
-	return bpkg
-}
-
-func (v *view) FileSet() *token.FileSet {
-	return v.config.Fset
+	v.builtinPkg, _ = ast.NewPackage(cfg.Fset, files, nil, nil)
 }
 
 // SetContent sets the overlay contents for a file.
@@ -179,7 +214,7 @@ func (v *view) SetContent(ctx context.Context, uri span.URI, content []byte) err
 	v.backgroundCtx, v.cancel = context.WithCancel(v.baseCtx)
 
 	v.contentChanges[uri] = func() {
-		v.applyContentChange(uri, content)
+		v.session.SetOverlay(uri, content)
 	}
 
 	return nil
@@ -204,19 +239,7 @@ func (v *view) applyContentChanges(ctx context.Context) error {
 	return nil
 }
 
-// setContent applies a content update for a given file. It assumes that the
-// caller is holding the view's mutex.
-func (v *view) applyContentChange(uri span.URI, content []byte) {
-	f, err := v.getFile(uri)
-	if err != nil {
-		return
-	}
-	f.setContent(content)
-}
-
-func (f *goFile) setContent(content []byte) {
-	f.content = content
-
+func (f *goFile) invalidate() {
 	// TODO(rstambler): Should we recompute these here?
 	f.ast = nil
 	f.token = nil
@@ -225,18 +248,7 @@ func (f *goFile) setContent(content []byte) {
 	if f.pkg != nil {
 		f.view.remove(f.pkg.pkgPath, map[string]struct{}{})
 	}
-
-	switch {
-	case f.active && content == nil:
-		// The file was active, so we need to forget its content.
-		f.active = false
-		delete(f.view.config.Overlay, f.filename())
-		f.content = nil
-	case content != nil:
-		// This is an active overlay, so we update the map.
-		f.active = true
-		f.view.config.Overlay[f.filename()] = f.content
-	}
+	f.fc = nil
 }
 
 // remove invalidates a package and its reverse dependencies in the view's
@@ -301,21 +313,37 @@ func (v *view) getFile(uri span.URI) (viewFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	f := &goFile{
-		fileBase: fileBase{
-			view:  v,
-			fname: filename,
-		},
+	var f viewFile
+	switch ext := filepath.Ext(filename); ext {
+	case ".go":
+		f = &goFile{
+			fileBase: fileBase{
+				view:  v,
+				fname: filename,
+			},
+		}
+		v.session.filesWatchMap.Watch(uri, func() {
+			f.(*goFile).invalidate()
+		})
+	case ".mod":
+		f = &modFile{
+			fileBase: fileBase{
+				view:  v,
+				fname: filename,
+			},
+		}
+	case ".sum":
+		f = &sumFile{
+			fileBase: fileBase{
+				view:  v,
+				fname: filename,
+			},
+		}
+	default:
+		return nil, fmt.Errorf("unsupported file extension: %s", ext)
 	}
 	v.mapFile(uri, f)
 	return f, nil
-}
-
-// Ignore checks if the given URI is a URI we ignore.
-// As of right now, we only ignore files in the "builtin" package.
-func (v *view) Ignore(uri span.URI) bool {
-	_, ok := v.ignoredURIs[uri]
-	return ok
 }
 
 // findFile checks the cache for any file matching the given uri.

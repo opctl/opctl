@@ -55,16 +55,15 @@ func (itp _interpreter) Interpret(
 	scratchDir string,
 ) (*model.Value, error) {
 	if expressionAsString, ok := expression.(string); ok {
-		possibleRefCloserIndex := strings.Index(expressionAsString, interpolater.RefEnd)
 		if ref, ok := interpreter.TryResolveExplicitRef(expressionAsString, scope); ok {
 			// scope ref w/out path
 			return itp.coerce.ToFile(ref, scratchDir)
-		} else if strings.HasPrefix(expressionAsString, interpolater.RefStart) && possibleRefCloserIndex > 0 {
+		} else if strings.HasPrefix(expressionAsString, interpolater.RefStart) && strings.HasSuffix(expressionAsString, interpolater.RefEnd) {
 
-			refExpression := expressionAsString[2:possibleRefCloserIndex]
+			refExpression := strings.TrimSuffix(strings.TrimPrefix(expressionAsString, interpolater.RefStart), interpolater.RefEnd)
 			refParts := strings.SplitN(refExpression, "/", 2)
 
-			if strings.HasPrefix(refExpression, "/") && len(expressionAsString) == possibleRefCloserIndex+1 {
+			if strings.HasPrefix(refExpression, "/") {
 
 				// pkg fs ref
 				pkgFsRef, err := itp.interpolater.Interpolate(refExpression, scope, opHandle)

@@ -7,10 +7,10 @@ package cache
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
-	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/internal/lsp/source"
 	"golang.org/x/tools/internal/lsp/xlog"
 	"golang.org/x/tools/internal/span"
@@ -24,6 +24,12 @@ type session struct {
 	viewMu  sync.Mutex
 	views   []*view
 	viewMap map[span.URI]source.View
+
+	overlayMu sync.Mutex
+	overlays  map[span.URI]*source.FileContent
+
+	openFiles     sync.Map
+	filesWatchMap *WatchMap
 }
 
 func (s *session) Shutdown(ctx context.Context) {
@@ -40,7 +46,7 @@ func (s *session) Cache() source.Cache {
 	return s.cache
 }
 
-func (s *session) NewView(name string, folder span.URI, config *packages.Config) source.View {
+func (s *session) NewView(name string, folder span.URI) source.View {
 	s.viewMu.Lock()
 	defer s.viewMu.Unlock()
 	ctx := context.Background()
@@ -49,10 +55,9 @@ func (s *session) NewView(name string, folder span.URI, config *packages.Config)
 		session:        s,
 		baseCtx:        ctx,
 		backgroundCtx:  backgroundCtx,
-		builtinPkg:     builtinPkg(*config),
 		cancel:         cancel,
-		config:         *config,
 		name:           name,
+		env:            os.Environ(),
 		folder:         folder,
 		filesByURI:     make(map[span.URI]viewFile),
 		filesByBase:    make(map[string][]viewFile),
@@ -64,9 +69,6 @@ func (s *session) NewView(name string, folder span.URI, config *packages.Config)
 			packages: make(map[string]*entry),
 		},
 		ignoredURIs: make(map[span.URI]struct{}),
-	}
-	for filename := range v.builtinPkg.Files {
-		v.ignoredURIs[span.NewURI(filename)] = struct{}{}
 	}
 	s.views = append(s.views, v)
 	// we always need to drop the view map
@@ -92,12 +94,11 @@ func (s *session) ViewOf(uri span.URI) source.View {
 	s.viewMu.Lock()
 	defer s.viewMu.Unlock()
 
-	// check if we already know this file
+	// Check if we already know this file.
 	if v, found := s.viewMap[uri]; found {
 		return v
 	}
-
-	// pick the best view for this file and memoize the result
+	// Pick the best view for this file and memoize the result.
 	v := s.bestView(uri)
 	s.viewMap[uri] = v
 	return v
@@ -129,7 +130,7 @@ func (s *session) bestView(uri span.URI) source.View {
 	if longest != nil {
 		return longest
 	}
-	//TODO: are there any more heuristics we can use?
+	// TODO: are there any more heuristics we can use?
 	return s.views[0]
 }
 
@@ -154,4 +155,73 @@ func (s *session) removeView(ctx context.Context, view *view) error {
 
 func (s *session) Logger() xlog.Logger {
 	return s.log
+}
+
+func (s *session) DidOpen(uri span.URI) {
+	s.openFiles.Store(uri, true)
+}
+
+func (s *session) DidSave(uri span.URI) {
+}
+
+func (s *session) DidClose(uri span.URI) {
+	s.openFiles.Delete(uri)
+}
+
+func (s *session) IsOpen(uri span.URI) bool {
+	_, open := s.openFiles.Load(uri)
+	return open
+}
+
+func (s *session) ReadFile(uri span.URI) *source.FileContent {
+	if overlay := s.readOverlay(uri); overlay != nil {
+		return overlay
+	}
+	// Fall back to the cache-level file system.
+	return s.Cache().ReadFile(uri)
+}
+
+func (s *session) SetOverlay(uri span.URI, data []byte) {
+	s.overlayMu.Lock()
+	defer func() {
+		s.overlayMu.Unlock()
+		s.filesWatchMap.Notify(uri)
+	}()
+
+	if data == nil {
+		delete(s.overlays, uri)
+		return
+	}
+	s.overlays[uri] = &source.FileContent{
+		URI:  uri,
+		Data: data,
+		Hash: hashContents(data),
+	}
+}
+
+func (s *session) readOverlay(uri span.URI) *source.FileContent {
+	s.overlayMu.Lock()
+	defer s.overlayMu.Unlock()
+
+	// We might have the content saved in an overlay.
+	if overlay, ok := s.overlays[uri]; ok {
+		return overlay
+	}
+	return nil
+}
+
+func (s *session) buildOverlay() map[string][]byte {
+	s.overlayMu.Lock()
+	defer s.overlayMu.Unlock()
+
+	overlays := make(map[string][]byte)
+	for uri, overlay := range s.overlays {
+		if overlay.Error != nil {
+			continue
+		}
+		if filename, err := uri.Filename(); err == nil {
+			overlays[filename] = overlay.Data
+		}
+	}
+	return overlays
 }

@@ -49,16 +49,13 @@ func (ed _interpreter) Interpret(
 ) (*model.Value, error) {
 	switch expression := expression.(type) {
 	case string:
-		possibleRefCloserIndex := strings.Index(expression, interpolater.RefEnd)
-
 		if ref, ok := interpreter.TryResolveExplicitRef(expression, scope); ok && nil != ref.Dir {
 			// scope ref w/out path
 			return ref, nil
-		} else if strings.HasPrefix(expression, interpolater.RefStart) && possibleRefCloserIndex > 0 {
+		} else if strings.HasPrefix(expression, interpolater.RefStart) && strings.HasSuffix(expression, interpolater.RefEnd) {
 
-			refExpression := expression[2:possibleRefCloserIndex]
+			refExpression := strings.TrimSuffix(strings.TrimPrefix(expression, interpolater.RefStart), interpolater.RefEnd)
 			refParts := strings.SplitN(refExpression, "/", 2)
-			var dirValue string
 
 			if strings.HasPrefix(refExpression, "/") {
 
@@ -67,8 +64,10 @@ func (ed _interpreter) Interpret(
 				if nil != err {
 					return nil, fmt.Errorf("unable to interpret pkg fs ref %v; error was %v", refExpression, err.Error())
 				}
+
 				opPath := opHandle.Path()
-				dirValue = filepath.Join(*opPath, pkgFsRef)
+				dirValue := filepath.Join(*opPath, pkgFsRef)
+				return &model.Value{Dir: &dirValue}, nil
 
 			} else if dcgValue, ok := scope[refParts[0]]; ok && nil != dcgValue.Dir {
 
@@ -84,7 +83,7 @@ func (ed _interpreter) Interpret(
 
 			}
 
-			return &model.Value{Dir: &dirValue}, nil
+			return &model.Value{Dir: new(string)}, nil
 		}
 	}
 

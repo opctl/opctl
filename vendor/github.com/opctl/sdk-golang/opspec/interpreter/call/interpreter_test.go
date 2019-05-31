@@ -23,14 +23,13 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		Context("scg.If not empty", func() {
+		Context("scg.If not nil", func() {
 			It("should call predicatesInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedScope := map[string]*model.Value{}
+				providedIf := new([]*model.SCGPredicate)
 				providedSCG := &model.SCG{
-					If: []*model.SCGPredicate{
-						&model.SCGPredicate{},
-					},
+					If: providedIf,
 				}
 
 				providedOpHandle := new(data.FakeHandle)
@@ -82,9 +81,7 @@ var _ = Context("Interpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						map[string]*model.Value{},
 						&model.SCG{
-							If: []*model.SCGPredicate{
-								&model.SCGPredicate{},
-							},
+							If: new([]*model.SCGPredicate),
 						},
 						"providedID",
 						new(data.FakeHandle),
@@ -146,20 +143,10 @@ var _ = Context("Interpreter", func() {
 
 				providedSCG := &model.SCG{
 					Container: &model.SCGContainerCall{},
-					If: []*model.SCGPredicate{
-						&model.SCGPredicate{},
-					},
 				}
 
 				providedParentIDValue := "providedParentID"
 				providedParentID := &providedParentIDValue
-
-				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
-				expectedIf := true
-				fakePredicatesInterpreter.InterpretReturns(
-					true,
-					nil,
-				)
 
 				fakeContainerCallInterpreter := new(container.FakeInterpreter)
 				expectedDCGContainerCall := &model.DCGContainerCall{}
@@ -167,13 +154,11 @@ var _ = Context("Interpreter", func() {
 				expectedDCG := &model.DCG{
 					Container: expectedDCGContainerCall,
 					Id:        providedID,
-					If:        &expectedIf,
 					ParentID:  providedParentID,
 				}
 
 				objectUnderTest := _interpreter{
 					containerCallInterpreter: fakeContainerCallInterpreter,
-					predicatesInterpreter:    fakePredicatesInterpreter,
 				}
 
 				/* act */
@@ -241,34 +226,22 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					If: []*model.SCGPredicate{
-						&model.SCGPredicate{},
-					},
 					Op: &model.SCGOpCall{},
 				}
 
 				providedParentID := "providedParentID"
-
-				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
-				expectedIf := true
-				fakePredicatesInterpreter.InterpretReturns(
-					true,
-					nil,
-				)
 
 				fakeOpCallInterpreter := new(op.FakeInterpreter)
 				expectedDCGOpCall := &model.DCGOpCall{}
 
 				expectedDCG := &model.DCG{
 					Id:       providedID,
-					If:       &expectedIf,
 					Op:       expectedDCGOpCall,
 					ParentID: &providedParentID,
 				}
 
 				objectUnderTest := _interpreter{
-					opCallInterpreter:     fakeOpCallInterpreter,
-					predicatesInterpreter: fakePredicatesInterpreter,
+					opCallInterpreter: fakeOpCallInterpreter,
 				}
 
 				/* act */
@@ -294,9 +267,6 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					If: []*model.SCGPredicate{
-						&model.SCGPredicate{},
-					},
 					Parallel: []*model.SCG{
 						&model.SCG{},
 					},
@@ -304,21 +274,11 @@ var _ = Context("Interpreter", func() {
 
 				providedParentID := "providedParentID"
 
-				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
-				expectedIf := true
-				fakePredicatesInterpreter.InterpretReturns(
-					true,
-					nil,
-				)
-
 				expectedDCG := &model.DCG{
-					If:       &expectedIf,
 					Parallel: providedSCG.Parallel,
 				}
 
-				objectUnderTest := _interpreter{
-					predicatesInterpreter: fakePredicatesInterpreter,
-				}
+				objectUnderTest := _interpreter{}
 
 				/* act */
 				actualDCG,
@@ -343,9 +303,6 @@ var _ = Context("Interpreter", func() {
 				providedID := "providedID"
 
 				providedSCG := &model.SCG{
-					If: []*model.SCGPredicate{
-						&model.SCGPredicate{},
-					},
 					Serial: []*model.SCG{
 						&model.SCG{},
 					},
@@ -353,21 +310,11 @@ var _ = Context("Interpreter", func() {
 
 				providedParentID := "providedParentID"
 
-				fakePredicatesInterpreter := new(predicates.FakeInterpreter)
-				expectedIf := true
-				fakePredicatesInterpreter.InterpretReturns(
-					true,
-					nil,
-				)
-
 				expectedDCG := &model.DCG{
-					If:     &expectedIf,
 					Serial: providedSCG.Serial,
 				}
 
-				objectUnderTest := _interpreter{
-					predicatesInterpreter: fakePredicatesInterpreter,
-				}
+				objectUnderTest := _interpreter{}
 
 				/* act */
 				actualDCG,
