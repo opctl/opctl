@@ -158,7 +158,7 @@ var _ = Context("Interpreter", func() {
 				fakeNotExistsInterpreter.InterpretReturns(true, expectedError)
 
 				objectUnderTest := _interpreter{
-					existsInterpreter: fakeNotExistsInterpreter,
+					notExistsInterpreter: fakeNotExistsInterpreter,
 				}
 
 				/* act */

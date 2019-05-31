@@ -62,7 +62,7 @@ func (itp _interpreter) Interpret(
 			scope,
 		)
 	case nil != scgPredicate.NotExists:
-		return itp.existsInterpreter.Interpret(
+		return itp.notExistsInterpreter.Interpret(
 			*scgPredicate.NotExists,
 			opHandle,
 			scope,
