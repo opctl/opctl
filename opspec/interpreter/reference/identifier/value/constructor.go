@@ -35,9 +35,9 @@ func (cvr _constructor) Construct(
 	case string:
 		return &model.Value{String: &data}, nil
 	case map[string]interface{}:
-		return &model.Value{Object: data}, nil
+		return &model.Value{Object: &data}, nil
 	case []interface{}:
-		return &model.Value{Array: data}, nil
+		return &model.Value{Array: &data}, nil
 	default:
 		return nil, fmt.Errorf("unable to construct value; '%+v' unexpected type", data)
 	}

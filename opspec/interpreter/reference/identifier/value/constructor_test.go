@@ -82,7 +82,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Object: providedData}))
+				Expect(*actualValue).To(Equal(model.Value{Object: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -96,7 +96,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Array: providedData}))
+				Expect(*actualValue).To(Equal(model.Value{Array: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})

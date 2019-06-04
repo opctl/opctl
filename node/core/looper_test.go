@@ -64,7 +64,7 @@ var _ = Context("looper", func() {
 					&model.DCGLoop{
 						For: &model.DCGLoopFor{
 							Each: &model.Value{
-								Array: []interface{}{},
+								Array: new([]interface{}),
 							},
 						},
 					},

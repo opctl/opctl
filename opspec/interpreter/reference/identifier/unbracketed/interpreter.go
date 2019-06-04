@@ -43,7 +43,7 @@ func (dr _interpreter) Interpret(
 
 	identifier, refRemainder := dr.parser.Parse(ref)
 
-	scopeValue, isValueInScope := dataAsObject.Object[identifier]
+	scopeValue, isValueInScope := (*dataAsObject.Object)[identifier]
 	if !isValueInScope {
 		return ref, nil, fmt.Errorf("unable to interpret '%v'; '%v' doesn't exist", ref, identifier)
 	}

@@ -63,11 +63,11 @@ func (lpr _looper) isLoopEnded(
 	}
 
 	if nil != loop.For {
-		if len(loop.For.Each.Array) != 0 {
-			return index == len(loop.For.Each.Array)
+		if nil != loop.For.Each.Array {
+			return index == len(*loop.For.Each.Array)
 		}
-		if len(loop.For.Each.Object) != 0 {
-			return index == len(loop.For.Each.Object)
+		if nil != loop.For.Each.Object {
+			return index == len(*loop.For.Each.Object)
 		}
 
 		// empty array or object
@@ -113,11 +113,11 @@ func (lpr _looper) scopeLoopVars(
 		)
 
 		if nil != loopable.Array {
-			rawValue = loopable.Array[index]
+			rawValue = (*loopable.Array)[index]
 		} else {
-			sortedNames := lpr.sortMap(loopable.Object)
+			sortedNames := lpr.sortMap(*loopable.Object)
 			name := sortedNames[index]
-			rawValue = loopable.Object[name]
+			rawValue = (*loopable.Object)[name]
 
 			if nil != scgLoop.For.Key {
 				// only add key to scope if declared

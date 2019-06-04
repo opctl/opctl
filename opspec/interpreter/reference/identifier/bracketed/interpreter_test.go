@@ -115,7 +115,7 @@ var _ = Context("Interpreter", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-				coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
+				coercedArray := model.Value{Array: new([]interface{})}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 				fakeItemInterpreter := new(item.FakeInterpreter)
@@ -145,7 +145,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
+					coercedArray := model.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 					fakeItemInterpreter := new(item.FakeInterpreter)
@@ -173,7 +173,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedArray := model.Value{Array: []interface{}{"dummyItem"}}
+					coercedArray := model.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 					fakeItemInterpreter := new(item.FakeInterpreter)
@@ -205,7 +205,8 @@ var _ = Context("Interpreter", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-				coercedObject := model.Value{Object: map[string]interface{}{providedRefIdentifier: "dummyValue"}}
+				object := &map[string]interface{}{providedRefIdentifier: "dummyValue"}
+				coercedObject := model.Value{Object: object}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 				fakeValueConstructor := new(value.FakeConstructor)
@@ -226,14 +227,14 @@ var _ = Context("Interpreter", func() {
 				/* assert */
 				actualObject := fakeValueConstructor.ConstructArgsForCall(0)
 
-				Expect(actualObject).To(Equal(coercedObject.Object[providedRefIdentifier]))
+				Expect(actualObject).To(Equal((*coercedObject.Object)[providedRefIdentifier]))
 			})
 			Context("valueConstructor.Construct errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedObject := model.Value{Object: map[string]interface{}{"dummyItem": nil}}
+					coercedObject := model.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
@@ -263,7 +264,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedObject := model.Value{Object: map[string]interface{}{"dummyItem": nil}}
+					coercedObject := model.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)

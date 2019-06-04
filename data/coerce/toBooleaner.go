@@ -49,7 +49,7 @@ func (c _toBooleaner) ToBoolean(
 	case nil == value:
 		return &model.Value{Boolean: new(bool)}, nil
 	case nil != value.Array:
-		booleanValue := len(value.Array) != 0
+		booleanValue := nil != value.Array && len(*value.Array) != 0
 		return &model.Value{Boolean: &booleanValue}, nil
 	case nil != value.Boolean:
 		return value, nil
@@ -73,7 +73,7 @@ func (c _toBooleaner) ToBoolean(
 		booleanValue := *value.Number != 0
 		return &model.Value{Boolean: &booleanValue}, nil
 	case nil != value.Object:
-		booleanValue := len(value.Object) != 0
+		booleanValue := nil != value.Object && len(*value.Object) != 0
 		return &model.Value{Boolean: &booleanValue}, nil
 	case nil != value.String:
 		booleanValue := c.isStringTruthy(*value.String)

@@ -19,10 +19,11 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
+
 		It("should call parseIndexer.ParseIndex w/ expected args", func() {
 			/* arrange */
 			providedIndexString := "dummyIndexString"
-			providedData := model.Value{Array: []interface{}{"dummyData"}}
+			providedData := model.Value{Array: new([]interface{})}
 
 			fakeParseIndexer := new(fakeParseIndexer)
 			// err to trigger immediate return
@@ -43,7 +44,7 @@ var _ = Context("Interpreter", func() {
 				actualArray := fakeParseIndexer.ParseIndexArgsForCall(0)
 
 			Expect(actualIndexString).To(Equal(providedIndexString))
-			Expect(actualArray).To(Equal(providedData.Array))
+			Expect(actualArray).To(Equal(*providedData.Array))
 		})
 		Context("parseIndexer.ParseIndex errs", func() {
 			It("should return expected result", func() {
@@ -62,7 +63,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					"dummyIndexString",
-					model.Value{},
+					model.Value{Array: new([]interface{})},
 				)
 
 				/* assert */
@@ -70,10 +71,12 @@ var _ = Context("Interpreter", func() {
 			})
 		})
 		Context("parseIndexer.ParseIndex doesn't err", func() {
+			array := &[]interface{}{"dummyItem"}
+			nonEmptyArrayValue := model.Value{Array: array}
 
 			It("should call valueConstructor.Construct w/ expected args", func() {
 				/* arrange */
-				providedData := model.Value{Array: []interface{}{"dummyData"}}
+				providedData := nonEmptyArrayValue
 
 				fakeParseIndexer := new(fakeParseIndexer)
 				parsedIndex := 0
@@ -97,13 +100,12 @@ var _ = Context("Interpreter", func() {
 				/* assert */
 				actualValue := fakeValueConstructor.ConstructArgsForCall(0)
 
-				Expect(actualValue).To(Equal(providedData.Array[parsedIndex]))
+				Expect(actualValue).To(Equal((*providedData.Array)[parsedIndex]))
 			})
 			Context("valueConstructor.Construct errs", func() {
 
 				It("should return expected result", func() {
 					/* arrange */
-
 					fakeParseIndexer := new(fakeParseIndexer)
 					fakeParseIndexer.ParseIndexReturns(0, nil)
 
@@ -121,7 +123,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						"dummyIndexString",
-						model.Value{Array: []interface{}{"dummyItem"}},
+						nonEmptyArrayValue,
 					)
 
 					/* assert */
@@ -147,7 +149,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					actualItemValue, actualErr := objectUnderTest.Interpret(
 						"dummyIndexString",
-						model.Value{Array: []interface{}{"dummyItem"}},
+						nonEmptyArrayValue,
 					)
 
 					/* assert */

@@ -79,7 +79,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeCoerce := new(coerce.Fake)
 				// empty Object to trigger immediate return
-				fakeCoerce.ToObjectReturns(&model.Value{Object: map[string]interface{}{}}, nil)
+				fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
 
 				fakeParser := new(FakeParser)
 				fakeParser.ParseReturns("dummyIdentifier", "dummyRefRemainder")
@@ -108,7 +108,7 @@ var _ = Context("Interpreter", func() {
 					providedRef := "dummyRef"
 
 					fakeCoerce := new(coerce.Fake)
-					fakeCoerce.ToObjectReturns(&model.Value{Object: map[string]interface{}{}}, nil)
+					fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
 
 					fakeParser := new(FakeParser)
 					identifier := "identifier"
@@ -138,7 +138,8 @@ var _ = Context("Interpreter", func() {
 					identifier := "identifier"
 
 					fakeCoerce := new(coerce.Fake)
-					objectValue := model.Value{Object: map[string]interface{}{identifier: "dummyValue"}}
+					object := &map[string]interface{}{identifier: "dummyValue"}
+					objectValue := model.Value{Object: object}
 					fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 					fakeParser := new(FakeParser)
@@ -161,7 +162,7 @@ var _ = Context("Interpreter", func() {
 
 					/* assert */
 					actualData := fakeValueConstructor.ConstructArgsForCall(0)
-					Expect(actualData).To(Equal(objectValue.Object[identifier]))
+					Expect(actualData).To(Equal((*objectValue.Object)[identifier]))
 				})
 				Context("valueConstructor.Construct errs", func() {
 
@@ -173,7 +174,8 @@ var _ = Context("Interpreter", func() {
 						identifier := "identifier"
 
 						fakeCoerce := new(coerce.Fake)
-						objectValue := model.Value{Object: map[string]interface{}{identifier: "dummyValue"}}
+						object := &map[string]interface{}{identifier: "dummyValue"}
+						objectValue := model.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 						fakeParser := new(FakeParser)
@@ -210,7 +212,8 @@ var _ = Context("Interpreter", func() {
 						refRemainder := "refRemainder"
 
 						fakeCoerce := new(coerce.Fake)
-						objectValue := model.Value{Object: map[string]interface{}{identifier: "dummyValue"}}
+						object := &map[string]interface{}{identifier: "dummyValue"}
+						objectValue := model.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 						fakeParser := new(FakeParser)

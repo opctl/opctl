@@ -68,7 +68,7 @@ func (dr _interpreter) Interpret(
 	}
 
 	// data is object
-	property := data.Object[identifier]
+	property := (*data.Object)[identifier]
 	propertyValue, err := dr.valueConstructor.Construct(property)
 	if nil != err {
 		return "", nil, fmt.Errorf("unable to interpret property; error was %v", err.Error())

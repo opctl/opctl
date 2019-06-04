@@ -81,7 +81,7 @@ var _ = Context("Interpret", func() {
 
 			fakeCoerce := new(coerce.Fake)
 
-			coercedValue := model.Value{Object: map[string]interface{}{}}
+			coercedValue := model.Value{Object: new(map[string]interface{})}
 			fakeCoerce.ToObjectReturns(&coercedValue, nil)
 
 			objectUnderTest := _interpreter{

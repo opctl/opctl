@@ -33,12 +33,12 @@ func (dr _interpreter) Interpret(
 	indexString string,
 	data model.Value,
 ) (*model.Value, error) {
-	itemIndex, err := dr.parseIndexer.ParseIndex(indexString, data.Array)
+	itemIndex, err := dr.parseIndexer.ParseIndex(indexString, *data.Array)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret item; error was %v", err.Error())
 	}
 
-	item := data.Array[itemIndex]
+	item := (*data.Array)[itemIndex]
 	itemValue, err := dr.valueConstructor.Construct(item)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret item; error was %v", err.Error())

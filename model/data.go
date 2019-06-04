@@ -50,19 +50,19 @@ type DirEntry struct {
 
 // Value represents a typed value
 type Value struct {
-	Array   []interface{}          `json:"array,omitempty"`
-	Boolean *bool                  `json:"boolean,omitempty"`
-	Dir     *string                `json:"dir,omitempty"`
-	File    *string                `json:"file,omitempty"`
-	Number  *float64               `json:"number,omitempty"`
-	Object  map[string]interface{} `json:"object,omitempty"`
-	Socket  *string                `json:"socket,omitempty"`
-	String  *string                `json:"string,omitempty"`
+	Array   *[]interface{}          `json:"array,omitempty"`
+	Boolean *bool                   `json:"boolean,omitempty"`
+	Dir     *string                 `json:"dir,omitempty"`
+	File    *string                 `json:"file,omitempty"`
+	Number  *float64                `json:"number,omitempty"`
+	Object  *map[string]interface{} `json:"object,omitempty"`
+	Socket  *string                 `json:"socket,omitempty"`
+	String  *string                 `json:"string,omitempty"`
 }
 
 // Unbox unboxes a Value into a native go type
 func (vlu Value) Unbox() (interface{}, error) {
-	if 0 != len(vlu.Array) {
+	if nil != vlu.Array {
 		return vlu.Array, nil
 	} else if nil != vlu.Boolean {
 		return vlu.Boolean, nil
@@ -72,7 +72,7 @@ func (vlu Value) Unbox() (interface{}, error) {
 		return vlu.File, nil
 	} else if nil != vlu.Number {
 		return vlu.Number, nil
-	} else if 0 != len(vlu.Object) {
+	} else if nil != vlu.Object {
 		return vlu.Object, nil
 	} else if nil != vlu.Socket {
 		return vlu.Socket, nil
