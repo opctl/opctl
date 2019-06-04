@@ -16,7 +16,7 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api/client"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 )
 
 var _ = Context("Run", func() {
@@ -251,6 +251,7 @@ var _ = Context("Run", func() {
 			Context("apiClient.StartOp doesn't error", func() {
 				It("should call apiClient.GetEventStream w/ expected args", func() {
 					/* arrange */
+					providedCtx := context.Background()
 					rootOpIDReturnedFromStartOp := "dummyRootOpID"
 					startTime := time.Now().UTC()
 					expectedReq := &model.GetEventStreamReq{
@@ -284,16 +285,18 @@ var _ = Context("Run", func() {
 					}
 
 					/* act */
-					objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+					objectUnderTest.Run(providedCtx, "", &RunOpts{})
 
 					/* assert */
-					actualReq := fakeAPIClient.GetEventStreamArgsForCall(0)
+					actualCtx,
+						actualReq := fakeAPIClient.GetEventStreamArgsForCall(0)
 
 					// @TODO: implement/use VTime (similar to IOS & VFS) so we don't need custom assertions on temporal fields
 					Expect(*actualReq.Filter.Since).To(BeTemporally("~", time.Now().UTC(), 5*time.Second))
 					// set temporal fields to expected vals since they're already asserted
 					actualReq.Filter.Since = &startTime
 
+					Expect(actualCtx).To(Equal(providedCtx))
 					Expect(actualReq).To(Equal(expectedReq))
 				})
 				Context("apiClient.GetEventStream errors", func() {

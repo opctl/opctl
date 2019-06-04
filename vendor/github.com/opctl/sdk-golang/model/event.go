@@ -26,9 +26,14 @@ const (
 
 // CallEndedEvent represents a call ended; no further events will occur for the call
 type CallEndedEvent struct {
-	CallID     string            `json:"callId"`
-	Outputs    map[string]*Value `json:"outputs"`
-	RootCallID string            `json:"rootCallId"`
+	CallID     string               `json:"callId"`
+	Error      *CallEndedEventError `json:"error,omitempty"`
+	Outputs    map[string]*Value    `json:"outputs"`
+	RootCallID string               `json:"rootCallId"`
+}
+
+type CallEndedEventError struct {
+	Message string `json:"message"`
 }
 
 // CallKilledEvent represents a call was killed; a CallEndedEvent will follow
@@ -98,13 +103,13 @@ type OpStartedEvent struct {
 
 // ParallelCallEndedEvent represents the exit of a parallel call; no further events will occur for the call.
 type ParallelCallEndedEvent struct {
-	RootOpID string `json:"rootOpId"`
 	CallID   string `json:"callId"`
+	RootOpID string `json:"rootOpId"`
 }
 
 // SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
-	RootOpID string            `json:"rootOpId"`
 	CallID   string            `json:"callId"`
 	Outputs  map[string]*Value `json:"outputs"`
+	RootOpID string            `json:"rootOpId"`
 }

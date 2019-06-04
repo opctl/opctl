@@ -56,12 +56,33 @@ dirLoop:
 			dirExpression = fmt.Sprintf("$(%v)", scgContainerDirPath)
 		}
 
+		dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
 		dirValue, err := itp.dirInterpreter.Interpret(
 			scope,
 			dirExpression,
 			opHandle,
 		)
 		if nil != err {
+			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment
+			if err := itp.os.MkdirAll(
+				dcgContainerCallDirs[scgContainerDirPath],
+				0700,
+			); nil != err {
+				return nil, err
+			}
+			continue dirLoop
+		}
+
+		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.dataDirPath) {
+			// bound to non rootFS dir
+			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
+			continue dirLoop
+		}
+
+		if err := itp.dirCopier.OS(
+			*dirValue.Dir,
+			dcgContainerCallDirs[scgContainerDirPath],
+		); nil != err {
 			return nil, fmt.Errorf(
 				"unable to bind %v to %v; error was %v",
 				scgContainerDirPath,
@@ -70,37 +91,6 @@ dirLoop:
 			)
 		}
 
-		if "" != *dirValue.Dir && !strings.HasPrefix(*dirValue.Dir, itp.dataDirPath) {
-			// bound to non rootFS dir
-			dcgContainerCallDirs[scgContainerDirPath] = *dirValue.Dir
-			continue dirLoop
-		}
-		dcgContainerCallDirs[scgContainerDirPath] = filepath.Join(scratchDirPath, scgContainerDirPath)
-
-		if "" == *dirValue.Dir {
-
-			if err := itp.os.MkdirAll(
-				dcgContainerCallDirs[scgContainerDirPath],
-				0700,
-			); nil != err {
-				return nil, err
-			}
-
-		} else {
-
-			if err := itp.dirCopier.OS(
-				*dirValue.Dir,
-				dcgContainerCallDirs[scgContainerDirPath],
-			); nil != err {
-				return nil, fmt.Errorf(
-					"unable to bind %v to %v; error was %v",
-					scgContainerDirPath,
-					dirExpression,
-					err,
-				)
-			}
-
-		}
 	}
 	return dcgContainerCallDirs, nil
 }

@@ -3,12 +3,13 @@ package coerce
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/encoding-ijson"
+	"strconv"
+
+	ijson "github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
-	"strconv"
 )
 
 var _ = Context("toStringer", func() {
@@ -29,7 +30,7 @@ var _ = Context("toStringer", func() {
 		Context("Value.Array isn't nil", func() {
 			It("should call json.Marshal w/ expected args", func() {
 				/* arrange */
-				providedArray := []interface{}{"dummyItem"}
+				providedArray := &[]interface{}{"dummyItem"}
 
 				providedValue := &model.Value{
 					Array: providedArray,
@@ -64,7 +65,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToString(
-						&model.Value{Array: []interface{}{""}},
+						&model.Value{Array: new([]interface{})},
 					)
 
 					/* assert */
@@ -89,7 +90,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToString(
-						&model.Value{Array: []interface{}{""}},
+						&model.Value{Array: new([]interface{})},
 					)
 
 					/* assert */
@@ -233,7 +234,7 @@ var _ = Context("toStringer", func() {
 		Context("Value.Object isn't nil", func() {
 			It("should call json.Marshal w/ expected args", func() {
 				/* arrange */
-				providedObject := map[string]interface{}{
+				providedObject := &map[string]interface{}{
 					"dummyName": "dummyValue",
 				}
 
@@ -270,7 +271,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToString(
-						&model.Value{Object: map[string]interface{}{"": ""}},
+						&model.Value{Object: new(map[string]interface{})},
 					)
 
 					/* assert */
@@ -295,7 +296,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToString(
-						&model.Value{Object: map[string]interface{}{"": ""}},
+						&model.Value{Object: new(map[string]interface{})},
 					)
 
 					/* assert */

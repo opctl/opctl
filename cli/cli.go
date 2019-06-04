@@ -34,7 +34,7 @@ func newCli(
 
 	cli.Command("events", "Stream events", func(eventsCmd *mow.Cmd) {
 		eventsCmd.Action = func() {
-			core.Events()
+			core.Events(context.TODO())
 		}
 	})
 

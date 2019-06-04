@@ -30,7 +30,7 @@ var _ = Context("toObjecter", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{
-					Array: []interface{}{},
+					Array: new([]interface{}),
 				}
 
 				objectUnderTest := _toObjecter{}
@@ -164,7 +164,8 @@ var _ = Context("toObjecter", func() {
 
 						mapKey := "dummyMapKey"
 						mapValue := "dummyMapValue"
-						expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
+						object := &map[string]interface{}{mapKey: mapValue}
+						expectedValue := model.Value{Object: object}
 
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().SetMapIndex(
@@ -213,9 +214,7 @@ var _ = Context("toObjecter", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{
-					Object: map[string]interface{}{
-						"dummyName": "dummyValue",
-					},
+					Object: new(map[string]interface{}),
 				}
 
 				objectUnderTest := _toObjecter{}
@@ -283,7 +282,8 @@ var _ = Context("toObjecter", func() {
 
 					mapKey := "dummyMapKey"
 					mapValue := "dummyMapValue"
-					expectedValue := model.Value{Object: map[string]interface{}{mapKey: mapValue}}
+					object := &map[string]interface{}{mapKey: mapValue}
+					expectedValue := model.Value{Object: object}
 
 					fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 						reflect.ValueOf(v).Elem().SetMapIndex(

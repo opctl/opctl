@@ -58,8 +58,8 @@ func (this _parallelCaller) Call(
 ) error {
 
 	defer func() {
-		// defer must be defined before conditional return statements so it always runs
 
+		// defer must be defined before conditional return statements so it always runs
 		this.pubSub.Publish(
 			model.Event{
 				Timestamp: time.Now().UTC(),
@@ -77,6 +77,7 @@ func (this _parallelCaller) Call(
 
 	// setup cancellation
 	parallelCtx, parallelCancel := context.WithCancel(ctx)
+	defer parallelCancel()
 
 	// perform calls in parallel w/ cancellation
 	for _, childCall := range scgParallelCall {

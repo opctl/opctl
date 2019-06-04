@@ -309,7 +309,7 @@ var _ = Context("Interpreter", func() {
 					providedParam := &model.Param{Object: &model.ObjectParam{}}
 
 					fakeObjectInterpreter := new(object.FakeInterpreter)
-					interpretedValue := model.Value{Object: map[string]interface{}{"dummyName": "dummyValue"}}
+					interpretedValue := model.Value{Object: new(map[string]interface{})}
 					fakeObjectInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{

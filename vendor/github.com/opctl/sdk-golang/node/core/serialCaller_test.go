@@ -53,7 +53,7 @@ var _ = Context("serialCaller", func() {
 					subscribeCallIndex++
 				}()
 				eventChannel := make(chan model.Event, 100)
-				eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpID: fmt.Sprintf("%v", subscribeCallIndex)}}
+				eventChannel <- model.Event{CallEnded: &model.CallEndedEvent{CallID: fmt.Sprintf("%v", subscribeCallIndex)}}
 				return eventChannel, make(chan error)
 			}
 
@@ -171,7 +171,7 @@ var _ = Context("serialCaller", func() {
 							subscribeCallIndex++
 						}()
 						eventChannel := make(chan model.Event, 100)
-						eventChannel <- model.Event{OpEnded: &model.OpEndedEvent{OpID: fmt.Sprintf("%v", subscribeCallIndex)}}
+						eventChannel <- model.Event{CallEnded: &model.CallEndedEvent{CallID: fmt.Sprintf("%v", subscribeCallIndex)}}
 						return eventChannel, make(chan error)
 					}
 
@@ -252,10 +252,10 @@ var _ = Context("serialCaller", func() {
 						}()
 						eventChannel := make(chan model.Event, 100)
 						eventChannel <- model.Event{
-							ContainerExited: &model.ContainerExitedEvent{
-								RootOpID:    providedRootOpID,
-								ContainerID: fmt.Sprintf("%v", subscribeCallIndex),
-								Outputs:     firstChildOutputs,
+							CallEnded: &model.CallEndedEvent{
+								RootCallID: providedRootOpID,
+								CallID:     fmt.Sprintf("%v", subscribeCallIndex),
+								Outputs:    firstChildOutputs,
 							},
 						}
 						return eventChannel, make(chan error)

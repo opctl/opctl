@@ -29,8 +29,9 @@ var _ = Context("toArrayer", func() {
 		Context("Value.Array isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
+				array := &[]interface{}{"dummyItem"}
 				providedValue := &model.Value{
-					Array: []interface{}{"dummyItem"},
+					Array: array,
 				}
 
 				arrayUnderTest := _toArrayer{}
@@ -181,7 +182,8 @@ var _ = Context("toArrayer", func() {
 						fakeJSON := new(ijson.Fake)
 
 						arrayItem := "dummyMapValue"
-						expectedValue := model.Value{Array: []interface{}{arrayItem}}
+						array := &[]interface{}{arrayItem}
+						expectedValue := model.Value{Array: array}
 
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))
@@ -295,7 +297,8 @@ var _ = Context("toArrayer", func() {
 					fakeJSON := new(ijson.Fake)
 
 					arrayItem := "dummyMapValue"
-					expectedValue := model.Value{Array: []interface{}{arrayItem}}
+					array := &[]interface{}{arrayItem}
+					expectedValue := model.Value{Array: array}
 
 					fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 						reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))

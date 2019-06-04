@@ -2,14 +2,16 @@
 
 
 [[projects]]
+  digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
   name = "github.com/gorilla/websocket"
   packages = ["."]
-  revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
-  version = "v1.2.0"
+  pruneopts = "UT"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "941e8dbe52e16e8a7dff4068b7ba53ae69a5748b29fbf2bcb5df3a063ac52261"
+  input-imports = ["github.com/gorilla/websocket"]
   solver-name = "gps-cdcl"
   solver-version = 1

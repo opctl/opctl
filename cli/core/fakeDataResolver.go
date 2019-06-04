@@ -8,11 +8,11 @@ import (
 )
 
 type fakeDataResolver struct {
-	ResolveStub        func(opRef string, pullCreds *model.PullCreds) model.DataHandle
+	ResolveStub        func(string, *model.PullCreds) model.DataHandle
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
-		opRef     string
-		pullCreds *model.PullCreds
+		arg1 string
+		arg2 *model.PullCreds
 	}
 	resolveReturns struct {
 		result1 model.DataHandle
@@ -24,22 +24,23 @@ type fakeDataResolver struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeDataResolver) Resolve(opRef string, pullCreds *model.PullCreds) model.DataHandle {
+func (fake *fakeDataResolver) Resolve(arg1 string, arg2 *model.PullCreds) model.DataHandle {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
-		opRef     string
-		pullCreds *model.PullCreds
-	}{opRef, pullCreds})
-	fake.recordInvocation("Resolve", []interface{}{opRef, pullCreds})
+		arg1 string
+		arg2 *model.PullCreds
+	}{arg1, arg2})
+	fake.recordInvocation("Resolve", []interface{}{arg1, arg2})
 	fake.resolveMutex.Unlock()
 	if fake.ResolveStub != nil {
-		return fake.ResolveStub(opRef, pullCreds)
+		return fake.ResolveStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.resolveReturns.result1
+	fakeReturns := fake.resolveReturns
+	return fakeReturns.result1
 }
 
 func (fake *fakeDataResolver) ResolveCallCount() int {
@@ -48,13 +49,22 @@ func (fake *fakeDataResolver) ResolveCallCount() int {
 	return len(fake.resolveArgsForCall)
 }
 
+func (fake *fakeDataResolver) ResolveCalls(stub func(string, *model.PullCreds) model.DataHandle) {
+	fake.resolveMutex.Lock()
+	defer fake.resolveMutex.Unlock()
+	fake.ResolveStub = stub
+}
+
 func (fake *fakeDataResolver) ResolveArgsForCall(i int) (string, *model.PullCreds) {
 	fake.resolveMutex.RLock()
 	defer fake.resolveMutex.RUnlock()
-	return fake.resolveArgsForCall[i].opRef, fake.resolveArgsForCall[i].pullCreds
+	argsForCall := fake.resolveArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *fakeDataResolver) ResolveReturns(result1 model.DataHandle) {
+	fake.resolveMutex.Lock()
+	defer fake.resolveMutex.Unlock()
 	fake.ResolveStub = nil
 	fake.resolveReturns = struct {
 		result1 model.DataHandle
@@ -62,6 +72,8 @@ func (fake *fakeDataResolver) ResolveReturns(result1 model.DataHandle) {
 }
 
 func (fake *fakeDataResolver) ResolveReturnsOnCall(i int, result1 model.DataHandle) {
+	fake.resolveMutex.Lock()
+	defer fake.resolveMutex.Unlock()
 	fake.ResolveStub = nil
 	if fake.resolveReturnsOnCall == nil {
 		fake.resolveReturnsOnCall = make(map[int]struct {

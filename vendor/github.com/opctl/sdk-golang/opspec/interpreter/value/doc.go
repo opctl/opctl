@@ -1,2 +1,2 @@
-// Package property exposes functionality for interpreting a value.
+// Package value exposes functionality for interpreting a value.
 package value

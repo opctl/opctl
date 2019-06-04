@@ -46,8 +46,8 @@ func (c _toArrayer) ToArray(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to array; error was %v", err.Error())
 		}
-		valueArray := []interface{}{}
-		err = c.json.Unmarshal([]byte(fileBytes), &valueArray)
+		valueArray := new([]interface{})
+		err = c.json.Unmarshal([]byte(fileBytes), valueArray)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to array; error was %v", err.Error())
 		}
@@ -57,8 +57,8 @@ func (c _toArrayer) ToArray(
 	case nil != value.Socket:
 		return nil, fmt.Errorf("unable to coerce socket '%v' to array; incompatible types", *value.Socket)
 	case nil != value.String:
-		valueArray := []interface{}{}
-		err := c.json.Unmarshal([]byte(*value.String), &valueArray)
+		valueArray := new([]interface{})
+		err := c.json.Unmarshal([]byte(*value.String), valueArray)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to array; error was %v", err.Error())
 		}

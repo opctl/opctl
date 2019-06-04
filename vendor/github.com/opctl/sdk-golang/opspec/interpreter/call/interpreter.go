@@ -106,10 +106,10 @@ func (itp _interpreter) Interpret(
 			rootOpID,
 		)
 		return dcg, err
-	case len(scg.Parallel) > 0:
+	case nil != scg.Parallel:
 		dcg.Parallel = scg.Parallel
 		return dcg, nil
-	case len(scg.Serial) > 0:
+	case nil != scg.Serial:
 		dcg.Serial = scg.Serial
 		return dcg, nil
 	default:

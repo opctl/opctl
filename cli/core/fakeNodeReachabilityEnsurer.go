@@ -8,14 +8,16 @@ import (
 type fakeNodeReachabilityEnsurer struct {
 	EnsureNodeReachableStub        func()
 	ensureNodeReachableMutex       sync.RWMutex
-	ensureNodeReachableArgsForCall []struct{}
-	invocations                    map[string][][]interface{}
-	invocationsMutex               sync.RWMutex
+	ensureNodeReachableArgsForCall []struct {
+	}
+	invocations      map[string][][]interface{}
+	invocationsMutex sync.RWMutex
 }
 
 func (fake *fakeNodeReachabilityEnsurer) EnsureNodeReachable() {
 	fake.ensureNodeReachableMutex.Lock()
-	fake.ensureNodeReachableArgsForCall = append(fake.ensureNodeReachableArgsForCall, struct{}{})
+	fake.ensureNodeReachableArgsForCall = append(fake.ensureNodeReachableArgsForCall, struct {
+	}{})
 	fake.recordInvocation("EnsureNodeReachable", []interface{}{})
 	fake.ensureNodeReachableMutex.Unlock()
 	if fake.EnsureNodeReachableStub != nil {
@@ -27,6 +29,12 @@ func (fake *fakeNodeReachabilityEnsurer) EnsureNodeReachableCallCount() int {
 	fake.ensureNodeReachableMutex.RLock()
 	defer fake.ensureNodeReachableMutex.RUnlock()
 	return len(fake.ensureNodeReachableArgsForCall)
+}
+
+func (fake *fakeNodeReachabilityEnsurer) EnsureNodeReachableCalls(stub func()) {
+	fake.ensureNodeReachableMutex.Lock()
+	defer fake.ensureNodeReachableMutex.Unlock()
+	fake.EnsureNodeReachableStub = stub
 }
 
 func (fake *fakeNodeReachabilityEnsurer) Invocations() map[string][][]interface{} {

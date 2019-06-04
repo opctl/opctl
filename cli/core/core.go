@@ -18,12 +18,14 @@ import (
 	"github.com/opctl/opctl/util/cliparamsatisfier"
 	"github.com/opctl/opctl/util/updater"
 	"github.com/opctl/sdk-golang/node/api/client"
-	"github.com/opctl/sdk-golang/opspec"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	op "github.com/opctl/sdk-golang/opspec"
+	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 )
 
 type Core interface {
-	Events()
+	Events(
+		ctx context.Context,
+	)
 
 	NodeCreate(
 		opts NodeCreateOpts,
