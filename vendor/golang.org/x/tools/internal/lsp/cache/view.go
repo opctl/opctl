@@ -15,12 +15,14 @@ import (
 	"sync"
 
 	"golang.org/x/tools/go/packages"
+	"golang.org/x/tools/internal/lsp/debug"
 	"golang.org/x/tools/internal/lsp/source"
 	"golang.org/x/tools/internal/span"
 )
 
 type view struct {
 	session *session
+	id      string
 
 	// mu protects all mutable state of the view.
 	mu sync.Mutex
@@ -45,6 +47,9 @@ type view struct {
 
 	// env is the environment to use when invoking underlying tools.
 	env []string
+
+	// buildFlags is the build flags to use when invoking underlying tools.
+	buildFlags []string
 
 	// keep track of files by uri and by basename, a single file may be mapped
 	// to multiple uris, and the same basename may map to multiple files
@@ -117,9 +122,10 @@ func (v *view) buildConfig() *packages.Config {
 		folderPath = ""
 	}
 	return &packages.Config{
-		Context: v.backgroundCtx,
-		Dir:     folderPath,
-		Env:     v.env,
+		Context:    v.backgroundCtx,
+		Dir:        folderPath,
+		Env:        v.env,
+		BuildFlags: v.buildFlags,
 		Mode: packages.NeedName |
 			packages.NeedFiles |
 			packages.NeedCompiledGoFiles |
@@ -146,6 +152,12 @@ func (v *view) SetEnv(env []string) {
 	v.env = env
 }
 
+func (v *view) SetBuildFlags(buildFlags []string) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	v.buildFlags = buildFlags
+}
+
 func (v *view) Shutdown(ctx context.Context) {
 	v.session.removeView(ctx, v)
 }
@@ -157,6 +169,7 @@ func (v *view) shutdown(context.Context) {
 		v.cancel()
 		v.cancel = nil
 	}
+	debug.DropView(debugView{v})
 }
 
 // Ignore checks if the given URI is a URI we ignore.
@@ -174,15 +187,13 @@ func (v *view) BackgroundContext() context.Context {
 }
 
 func (v *view) BuiltinPackage() *ast.Package {
-	if v.builtinPkg == nil {
-		v.buildBuiltinPkg()
-	}
 	return v.builtinPkg
 }
 
+// buildBuiltinPkg builds the view's builtin package.
+// It assumes that the view is not active yet,
+// i.e. it has not been added to the session's list of views.
 func (v *view) buildBuiltinPkg() {
-	v.mu.Lock()
-	defer v.mu.Unlock()
 	cfg := *v.buildConfig()
 	pkgs, _ := packages.Load(&cfg, "builtin")
 	if len(pkgs) != 1 {
@@ -395,3 +406,8 @@ func (v *view) mapFile(uri span.URI, f viewFile) {
 		v.filesByBase[basename] = append(v.filesByBase[basename], f)
 	}
 }
+
+type debugView struct{ *view }
+
+func (v debugView) ID() string             { return v.id }
+func (v debugView) Session() debug.Session { return debugSession{v.session} }

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	. "github.com/onsi/ginkgo"
@@ -14,9 +15,10 @@ import (
 
 var _ = Context("GetEventStream", func() {
 
-	It("should call wsDialer.Dial() w/ expected args", func() {
+	It("should call wsDialer.DialContext() w/ expected args", func() {
 
 		/* arrange */
+		providedCtx := context.Background()
 		providedSince := time.Now().UTC()
 		providedReq := &model.GetEventStreamReq{
 			Filter: model.EventFilter{
@@ -50,10 +52,16 @@ var _ = Context("GetEventStream", func() {
 		}
 
 		/* act */
-		objectUnderTest.GetEventStream(providedReq)
+		objectUnderTest.GetEventStream(
+			providedCtx,
+			providedReq,
+		)
 
 		/* assert */
-		actualReqURL, _ := fakeWSDialer.DialArgsForCall(0)
+		actualCtx,
+			actualReqURL, _ := fakeWSDialer.DialContextArgsForCall(0)
+
+		Expect(actualCtx).To(Equal(providedCtx))
 		Expect(actualReqURL).To(Equal(expectedReqURL.String()))
 
 	})

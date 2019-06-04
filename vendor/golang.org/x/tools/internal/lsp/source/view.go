@@ -129,6 +129,9 @@ type View interface {
 	// SetEnv is used to adjust the environment applied to the view.
 	SetEnv([]string)
 
+	// SetBuildFlags is used to adjust the build flags applied to the view.
+	SetBuildFlags([]string)
+
 	// Shutdown closes this view, and detaches it from it's session.
 	Shutdown(ctx context.Context)
 
@@ -148,7 +151,15 @@ type File interface {
 // GoFile represents a Go source file that has been type-checked.
 type GoFile interface {
 	File
+
+	// GetTrimmedAST returns an AST that may or may not contain function bodies.
+	// It should be used in scenarios where function bodies are not necessary.
+	GetTrimmedAST(ctx context.Context) *ast.File
+
+	// GetAST returns the full AST for the file.
 	GetAST(ctx context.Context) *ast.File
+
+	// GetPackage returns the package that this file belongs to.
 	GetPackage(ctx context.Context) Package
 
 	// GetActiveReverseDeps returns the active files belonging to the reverse

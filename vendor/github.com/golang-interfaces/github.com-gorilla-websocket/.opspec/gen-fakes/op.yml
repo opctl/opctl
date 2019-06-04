@@ -17,10 +17,9 @@ run:
       - |
         echo "installing deps"
         go get github.com/kardianos/govendor github.com/maxbrunsfeld/counterfeiter
-
         echo "generating fakes"
         govendor generate +local
     dirs:
-      /go/src/github.com/golang-interfaces/github.com-gorilla-websocket: srcDir
-    image: { ref: 'golang:1.8' }
+      /go/src/github.com/golang-interfaces/github.com-gorilla-websocket: $(srcDir)
+    image: { ref: 'golang:1.11' }
     workDir: /go/src/github.com/golang-interfaces/github.com-gorilla-websocket

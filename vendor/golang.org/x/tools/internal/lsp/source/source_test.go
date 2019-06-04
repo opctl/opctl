@@ -32,7 +32,6 @@ type runner struct {
 }
 
 func testSource(t *testing.T, exporter packagestest.Exporter) {
-	ctx := context.Background()
 	data := tests.Load(t, exporter, "../testdata")
 	defer data.Exported.Cleanup()
 
@@ -45,7 +44,7 @@ func testSource(t *testing.T, exporter packagestest.Exporter) {
 	}
 	r.view.SetEnv(data.Config.Env)
 	for filename, content := range data.Config.Overlay {
-		r.view.SetContent(ctx, span.FileURI(filename), content)
+		session.SetOverlay(span.FileURI(filename), content)
 	}
 	tests.Run(t, r, data)
 }
@@ -305,6 +304,47 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(fc.Data)), ops), "")
 		if gofmted != got {
 			t.Errorf("format failed for %s, expected:\n%v\ngot:\n%v", filename, gofmted, got)
+		}
+	}
+}
+
+func (r *runner) Import(t *testing.T, data tests.Imports) {
+	ctx := context.Background()
+	for _, spn := range data {
+		uri := spn.URI()
+		filename, err := uri.Filename()
+		if err != nil {
+			t.Fatal(err)
+		}
+		goimported := string(r.data.Golden("goimports", filename, func() ([]byte, error) {
+			cmd := exec.Command("goimports", filename)
+			out, _ := cmd.Output() // ignore error, sometimes we have intentionally ungofmt-able files
+			return out, nil
+		}))
+		f, err := r.view.GetFile(ctx, uri)
+		if err != nil {
+			t.Fatalf("failed for %v: %v", spn, err)
+		}
+		rng, err := spn.Range(span.NewTokenConverter(f.FileSet(), f.GetToken(ctx)))
+		if err != nil {
+			t.Fatalf("failed for %v: %v", spn, err)
+		}
+		edits, err := source.Imports(ctx, f.(source.GoFile), rng)
+		if err != nil {
+			if goimported != "" {
+				t.Error(err)
+			}
+			continue
+		}
+		ops := source.EditsToDiff(edits)
+		fc := f.Content(ctx)
+		if fc.Error != nil {
+			t.Error(err)
+			continue
+		}
+		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(fc.Data)), ops), "")
+		if goimported != got {
+			t.Errorf("import failed for %s, expected:\n%v\ngot:\n%v", filename, goimported, got)
 		}
 	}
 }
