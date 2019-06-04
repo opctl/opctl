@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"errors"
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
@@ -18,6 +19,47 @@ var _ = Context("RunContainer", func() {
 	closedContainerWaitOkBodyChan := make(chan container.ContainerWaitOKBody)
 	close(closedContainerWaitOkBodyChan)
 
+	It("should call dockerClient.ContainerRemove w/ expected args", func() {
+		/* arrange */
+		providedReq := &model.DCGContainerCall{
+			ContainerID: "containerID",
+			DCGBaseCall: model.DCGBaseCall{},
+		}
+
+		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
+			RemoveVolumes: true,
+			Force:         true,
+		}
+
+		fakeDockerClient := new(fakeDockerClient)
+		fakeDockerClient.ContainerWaitReturns(closedContainerWaitOkBodyChan, nil)
+
+		fakePortBindingsFactory := new(fakePortBindingsFactory)
+		// err to trigger immediate return
+		fakePortBindingsFactory.ConstructReturns(nil, errors.New("dummyError"))
+
+		objectUnderTest := _runContainer{
+			containerStdErrStreamer: new(fakeContainerLogStreamer),
+			containerStdOutStreamer: new(fakeContainerLogStreamer),
+			dockerClient:            fakeDockerClient,
+			portBindingsFactory:     fakePortBindingsFactory,
+		}
+
+		/* act */
+		objectUnderTest.RunContainer(
+			context.Background(),
+			providedReq,
+			new(pubsub.FakeEventPublisher),
+			nopWriteCloser{ioutil.Discard},
+			nopWriteCloser{ioutil.Discard},
+		)
+
+		/* assert */
+		_, actualContainerID, actualContainerRemoveOptions := fakeDockerClient.ContainerRemoveArgsForCall(0)
+		Expect(actualContainerID).To(Equal(providedReq.ContainerID))
+		Expect(actualContainerRemoveOptions).To(Equal(expectedContainerRemoveOptions))
+
+	})
 	It("should call portBindingsFactory.Construct w expected args", func() {
 		/* arrange */
 		providedReq := &model.DCGContainerCall{

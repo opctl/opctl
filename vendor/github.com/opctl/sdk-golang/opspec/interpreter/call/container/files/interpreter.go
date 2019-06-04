@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
+	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/file"
 )
@@ -27,6 +28,7 @@ func NewInterpreter(
 	dataDirPath string,
 ) Interpreter {
 	return _interpreter{
+		coerce:          coerce.New(),
 		fileCopier:      filecopier.New(),
 		fileInterpreter: file.NewInterpreter(),
 		os:              ios.New(),
@@ -35,6 +37,7 @@ func NewInterpreter(
 }
 
 type _interpreter struct {
+	coerce          coerce.Coerce
 	fileCopier      filecopier.FileCopier
 	fileInterpreter file.Interpreter
 	os              ios.IOS
@@ -63,12 +66,16 @@ fileLoop:
 			scratchDirPath,
 		)
 		if nil != err {
-			return nil, fmt.Errorf(
-				"unable to bind %v to %v; error was %v",
-				scgContainerFilePath,
-				fileExpression,
-				err,
-			)
+			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment
+			fileValue, err = itp.coerce.ToFile(&model.Value{String: new(string)}, scratchDirPath)
+			if nil != err {
+				return nil, fmt.Errorf(
+					"unable to bind %v to %v; error was %v",
+					scgContainerFilePath,
+					fileExpression,
+					err,
+				)
+			}
 		}
 
 		if !strings.HasPrefix(*fileValue.File, itp.dataDirPath) {

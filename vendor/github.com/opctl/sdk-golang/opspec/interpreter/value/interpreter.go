@@ -73,7 +73,7 @@ func (itp _interpreter) Interpret(
 			}
 		}
 
-		return model.Value{Object: value}, nil
+		return model.Value{Object: &value}, nil
 	case []interface{}:
 		// array initializer
 		value := []interface{}{}
@@ -93,7 +93,7 @@ func (itp _interpreter) Interpret(
 			}
 			value = append(value, itemValue)
 		}
-		return model.Value{Array: value}, nil
+		return model.Value{Array: &value}, nil
 	case string:
 		value, err := itp.interpolater.Interpolate(
 			typedValueExpression,

@@ -1,16 +1,20 @@
 package core
 
 import (
+	"context"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/sdk-golang/model"
 )
 
-func (this _core) Events() {
+func (this _core) Events(
+	ctx context.Context,
+) {
 
 	// ensure node reachable
 	this.nodeReachabilityEnsurer.EnsureNodeReachable()
 
 	eventChannel, err := this.apiClient.GetEventStream(
+		ctx,
 		&model.GetEventStreamReq{},
 	)
 	if nil != err {

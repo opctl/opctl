@@ -44,8 +44,8 @@ func (c _toObjecter) ToObject(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
-		valueMap := map[string]interface{}{}
-		err = c.json.Unmarshal([]byte(fileBytes), &valueMap)
+		valueMap := &map[string]interface{}{}
+		err = c.json.Unmarshal([]byte(fileBytes), valueMap)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
@@ -55,8 +55,8 @@ func (c _toObjecter) ToObject(
 	case nil != value.Object:
 		return value, nil
 	case nil != value.String:
-		valueMap := map[string]interface{}{}
-		err := c.json.Unmarshal([]byte(*value.String), &valueMap)
+		valueMap := &map[string]interface{}{}
+		err := c.json.Unmarshal([]byte(*value.String), valueMap)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to object; error was %v", err.Error())
 		}

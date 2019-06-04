@@ -78,6 +78,7 @@ func (this _core) Run(
 
 	// start event loop
 	eventChannel, err := this.apiClient.GetEventStream(
+		ctx,
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
 				Roots: []string{rootOpID},

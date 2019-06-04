@@ -30,6 +30,9 @@ var _ = Context("caller", func() {
 		})
 	})
 	Context("Call", func() {
+		closedEventChan := make(chan model.Event, 1000)
+		close(closedEventChan)
+
 		Context("Null SCG", func() {
 			It("should not throw", func() {
 				/* arrange */
@@ -55,6 +58,59 @@ var _ = Context("caller", func() {
 				)
 			})
 		})
+
+		Context("nil != scg.Loop", func() {
+			It("should call looper.Loop w/ expected args", func() {
+				/* arrange */
+				providedCallID := "providedCallID"
+				providedScope := map[string]*model.Value{}
+				providedSCG := &model.SCG{
+					Loop: &model.SCGLoop{},
+				}
+				providedOpHandle := new(data.FakeHandle)
+				providedParentIDValue := "providedParentID"
+				providedParentID := &providedParentIDValue
+				providedRootOpID := "providedRootOpID"
+
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
+				fakeLooper := new(fakeLooper)
+				objectUnderTest := _caller{
+					callStore: new(fakeCallStore),
+					looper:    fakeLooper,
+					pubSub:    fakePubSub,
+				}
+
+				/* act */
+				objectUnderTest.Call(
+					context.Background(),
+					providedCallID,
+					providedScope,
+					providedSCG,
+					providedOpHandle,
+					providedParentID,
+					providedRootOpID,
+				)
+
+				/* assert */
+				_,
+					actualID,
+					actualScope,
+					actualSCG,
+					actualOpHandle,
+					actualParentID,
+					actualRootOpID := fakeLooper.LoopArgsForCall(0)
+
+				Expect(actualID).To(Equal(providedCallID))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualSCG).To(Equal(providedSCG))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentID).To(Equal(providedParentID))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
+			})
+		})
 		It("should call callInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
@@ -71,11 +127,15 @@ var _ = Context("caller", func() {
 				nil,
 			)
 
+			fakePubSub := new(pubsub.Fake)
+			// ensure eventChan closed so call exits
+			fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 			objectUnderTest := _caller{
 				callInterpreter: fakeCallInterpreter,
 				callStore:       new(fakeCallStore),
 				containerCaller: new(fakeContainerCaller),
-				pubSub:          new(pubsub.Fake),
+				pubSub:          fakePubSub,
 			}
 
 			/* act */
@@ -127,6 +187,8 @@ var _ = Context("caller", func() {
 				}
 
 				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
@@ -158,62 +220,6 @@ var _ = Context("caller", func() {
 			})
 		})
 
-		Context("callInterpreter.Interpret result.If falsy", func() {
-			It("should call looper.Loop w/ expected args", func() {
-				/* arrange */
-				providedCallID := "providedCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
-				}
-				providedOpHandle := new(data.FakeHandle)
-				providedParentIDValue := "providedParentID"
-				providedParentID := &providedParentIDValue
-				providedRootOpID := "providedRootOpID"
-
-				expectedDCG := &model.DCG{
-					Loop: &model.DCGLoop{},
-				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
-				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
-
-				fakeLooper := new(fakeLooper)
-				objectUnderTest := _caller{
-					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
-					looper:          fakeLooper,
-					pubSub:          new(pubsub.Fake),
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedCallID,
-					providedScope,
-					providedSCG,
-					providedOpHandle,
-					providedParentID,
-					providedRootOpID,
-				)
-
-				/* assert */
-				_,
-					actualID,
-					actualScope,
-					actualSCG,
-					actualOpHandle,
-					actualParentID,
-					actualRootOpID := fakeLooper.LoopArgsForCall(0)
-
-				Expect(actualID).To(Equal(providedCallID))
-				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCG).To(Equal(providedSCG))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
-				Expect(actualParentID).To(Equal(providedParentID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
-			})
-		})
-
 		Context("Container SCG", func() {
 			It("should call containerCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -230,11 +236,15 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: fakeContainerCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -284,11 +294,15 @@ var _ = Context("caller", func() {
 				providedParentID := "providedParentID"
 				providedRootOpID := "dummyRootOpID"
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					opCaller:        fakeOpCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -336,11 +350,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					parallelCaller:  fakeParallelCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -391,11 +409,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
 
@@ -443,11 +465,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
 

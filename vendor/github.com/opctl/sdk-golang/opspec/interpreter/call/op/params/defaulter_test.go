@@ -20,7 +20,7 @@ var _ = Context("Defaulter", func() {
 				It("should set output to default", func() {
 					/* arrange */
 					providedOutputName := "outputName"
-					providedOutputDefault := []interface{}{}
+					providedOutputDefault := new([]interface{})
 
 					providedOutputParams := map[string]*model.Param{
 						providedOutputName: {Array: &model.ArrayParam{Default: providedOutputDefault}},
@@ -169,7 +169,7 @@ var _ = Context("Defaulter", func() {
 				It("should set output to default", func() {
 					/* arrange */
 					providedOutputName := "outputName"
-					providedOutputDefault := map[string]interface{}{}
+					providedOutputDefault := new(map[string]interface{})
 
 					providedOutputParams := map[string]*model.Param{
 						providedOutputName: {Object: &model.ObjectParam{Default: providedOutputDefault}},

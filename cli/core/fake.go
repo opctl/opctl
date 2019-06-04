@@ -7,74 +7,79 @@ import (
 )
 
 type Fake struct {
-	EventsStub            func()
-	eventsMutex           sync.RWMutex
-	eventsArgsForCall     []struct{}
-	NodeCreateStub        func(opts NodeCreateOpts)
+	EventsStub        func(context.Context)
+	eventsMutex       sync.RWMutex
+	eventsArgsForCall []struct {
+		arg1 context.Context
+	}
+	LsStub        func(context.Context, string)
+	lsMutex       sync.RWMutex
+	lsArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	NodeCreateStub        func(NodeCreateOpts)
 	nodeCreateMutex       sync.RWMutex
 	nodeCreateArgsForCall []struct {
-		opts NodeCreateOpts
+		arg1 NodeCreateOpts
 	}
 	NodeKillStub        func()
 	nodeKillMutex       sync.RWMutex
-	nodeKillArgsForCall []struct{}
-	LsStub              func(ctx context.Context, dirRef string)
-	lsMutex             sync.RWMutex
-	lsArgsForCall       []struct {
-		ctx    context.Context
-		dirRef string
+	nodeKillArgsForCall []struct {
 	}
-	OpCreateStub        func(path string, description string, name string)
+	OpCreateStub        func(string, string, string)
 	opCreateMutex       sync.RWMutex
 	opCreateArgsForCall []struct {
-		path        string
-		description string
-		name        string
+		arg1 string
+		arg2 string
+		arg3 string
 	}
-	OpInstallStub        func(ctx context.Context, path, opRef, username, password string)
+	OpInstallStub        func(context.Context, string, string, string, string)
 	opInstallMutex       sync.RWMutex
 	opInstallArgsForCall []struct {
-		ctx      context.Context
-		path     string
-		opRef    string
-		username string
-		password string
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+		arg5 string
 	}
-	OpKillStub        func(ctx context.Context, opId string)
+	OpKillStub        func(context.Context, string)
 	opKillMutex       sync.RWMutex
 	opKillArgsForCall []struct {
-		ctx  context.Context
-		opId string
+		arg1 context.Context
+		arg2 string
 	}
-	OpValidateStub        func(ctx context.Context, opRef string)
+	OpValidateStub        func(context.Context, string)
 	opValidateMutex       sync.RWMutex
 	opValidateArgsForCall []struct {
-		ctx   context.Context
-		opRef string
+		arg1 context.Context
+		arg2 string
 	}
-	RunStub        func(ctx context.Context, opRef string, opts *RunOpts)
+	RunStub        func(context.Context, string, *RunOpts)
 	runMutex       sync.RWMutex
 	runArgsForCall []struct {
-		ctx   context.Context
-		opRef string
-		opts  *RunOpts
+		arg1 context.Context
+		arg2 string
+		arg3 *RunOpts
 	}
-	SelfUpdateStub        func(channel string)
+	SelfUpdateStub        func(string)
 	selfUpdateMutex       sync.RWMutex
 	selfUpdateArgsForCall []struct {
-		channel string
+		arg1 string
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Events() {
+func (fake *Fake) Events(arg1 context.Context) {
 	fake.eventsMutex.Lock()
-	fake.eventsArgsForCall = append(fake.eventsArgsForCall, struct{}{})
-	fake.recordInvocation("Events", []interface{}{})
+	fake.eventsArgsForCall = append(fake.eventsArgsForCall, struct {
+		arg1 context.Context
+	}{arg1})
+	fake.recordInvocation("Events", []interface{}{arg1})
 	fake.eventsMutex.Unlock()
 	if fake.EventsStub != nil {
-		fake.EventsStub()
+		fake.EventsStub(arg1)
 	}
 }
 
@@ -84,15 +89,60 @@ func (fake *Fake) EventsCallCount() int {
 	return len(fake.eventsArgsForCall)
 }
 
-func (fake *Fake) NodeCreate(opts NodeCreateOpts) {
+func (fake *Fake) EventsCalls(stub func(context.Context)) {
+	fake.eventsMutex.Lock()
+	defer fake.eventsMutex.Unlock()
+	fake.EventsStub = stub
+}
+
+func (fake *Fake) EventsArgsForCall(i int) context.Context {
+	fake.eventsMutex.RLock()
+	defer fake.eventsMutex.RUnlock()
+	argsForCall := fake.eventsArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *Fake) Ls(arg1 context.Context, arg2 string) {
+	fake.lsMutex.Lock()
+	fake.lsArgsForCall = append(fake.lsArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("Ls", []interface{}{arg1, arg2})
+	fake.lsMutex.Unlock()
+	if fake.LsStub != nil {
+		fake.LsStub(arg1, arg2)
+	}
+}
+
+func (fake *Fake) LsCallCount() int {
+	fake.lsMutex.RLock()
+	defer fake.lsMutex.RUnlock()
+	return len(fake.lsArgsForCall)
+}
+
+func (fake *Fake) LsCalls(stub func(context.Context, string)) {
+	fake.lsMutex.Lock()
+	defer fake.lsMutex.Unlock()
+	fake.LsStub = stub
+}
+
+func (fake *Fake) LsArgsForCall(i int) (context.Context, string) {
+	fake.lsMutex.RLock()
+	defer fake.lsMutex.RUnlock()
+	argsForCall := fake.lsArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *Fake) NodeCreate(arg1 NodeCreateOpts) {
 	fake.nodeCreateMutex.Lock()
 	fake.nodeCreateArgsForCall = append(fake.nodeCreateArgsForCall, struct {
-		opts NodeCreateOpts
-	}{opts})
-	fake.recordInvocation("NodeCreate", []interface{}{opts})
+		arg1 NodeCreateOpts
+	}{arg1})
+	fake.recordInvocation("NodeCreate", []interface{}{arg1})
 	fake.nodeCreateMutex.Unlock()
 	if fake.NodeCreateStub != nil {
-		fake.NodeCreateStub(opts)
+		fake.NodeCreateStub(arg1)
 	}
 }
 
@@ -102,15 +152,23 @@ func (fake *Fake) NodeCreateCallCount() int {
 	return len(fake.nodeCreateArgsForCall)
 }
 
+func (fake *Fake) NodeCreateCalls(stub func(NodeCreateOpts)) {
+	fake.nodeCreateMutex.Lock()
+	defer fake.nodeCreateMutex.Unlock()
+	fake.NodeCreateStub = stub
+}
+
 func (fake *Fake) NodeCreateArgsForCall(i int) NodeCreateOpts {
 	fake.nodeCreateMutex.RLock()
 	defer fake.nodeCreateMutex.RUnlock()
-	return fake.nodeCreateArgsForCall[i].opts
+	argsForCall := fake.nodeCreateArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *Fake) NodeKill() {
 	fake.nodeKillMutex.Lock()
-	fake.nodeKillArgsForCall = append(fake.nodeKillArgsForCall, struct{}{})
+	fake.nodeKillArgsForCall = append(fake.nodeKillArgsForCall, struct {
+	}{})
 	fake.recordInvocation("NodeKill", []interface{}{})
 	fake.nodeKillMutex.Unlock()
 	if fake.NodeKillStub != nil {
@@ -124,42 +182,23 @@ func (fake *Fake) NodeKillCallCount() int {
 	return len(fake.nodeKillArgsForCall)
 }
 
-func (fake *Fake) Ls(ctx context.Context, dirRef string) {
-	fake.lsMutex.Lock()
-	fake.lsArgsForCall = append(fake.lsArgsForCall, struct {
-		ctx    context.Context
-		dirRef string
-	}{ctx, dirRef})
-	fake.recordInvocation("Ls", []interface{}{ctx, dirRef})
-	fake.lsMutex.Unlock()
-	if fake.LsStub != nil {
-		fake.LsStub(ctx, dirRef)
-	}
+func (fake *Fake) NodeKillCalls(stub func()) {
+	fake.nodeKillMutex.Lock()
+	defer fake.nodeKillMutex.Unlock()
+	fake.NodeKillStub = stub
 }
 
-func (fake *Fake) LsCallCount() int {
-	fake.lsMutex.RLock()
-	defer fake.lsMutex.RUnlock()
-	return len(fake.lsArgsForCall)
-}
-
-func (fake *Fake) LsArgsForCall(i int) (context.Context, string) {
-	fake.lsMutex.RLock()
-	defer fake.lsMutex.RUnlock()
-	return fake.lsArgsForCall[i].ctx, fake.lsArgsForCall[i].dirRef
-}
-
-func (fake *Fake) OpCreate(path string, description string, name string) {
+func (fake *Fake) OpCreate(arg1 string, arg2 string, arg3 string) {
 	fake.opCreateMutex.Lock()
 	fake.opCreateArgsForCall = append(fake.opCreateArgsForCall, struct {
-		path        string
-		description string
-		name        string
-	}{path, description, name})
-	fake.recordInvocation("OpCreate", []interface{}{path, description, name})
+		arg1 string
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("OpCreate", []interface{}{arg1, arg2, arg3})
 	fake.opCreateMutex.Unlock()
 	if fake.OpCreateStub != nil {
-		fake.OpCreateStub(path, description, name)
+		fake.OpCreateStub(arg1, arg2, arg3)
 	}
 }
 
@@ -169,25 +208,32 @@ func (fake *Fake) OpCreateCallCount() int {
 	return len(fake.opCreateArgsForCall)
 }
 
+func (fake *Fake) OpCreateCalls(stub func(string, string, string)) {
+	fake.opCreateMutex.Lock()
+	defer fake.opCreateMutex.Unlock()
+	fake.OpCreateStub = stub
+}
+
 func (fake *Fake) OpCreateArgsForCall(i int) (string, string, string) {
 	fake.opCreateMutex.RLock()
 	defer fake.opCreateMutex.RUnlock()
-	return fake.opCreateArgsForCall[i].path, fake.opCreateArgsForCall[i].description, fake.opCreateArgsForCall[i].name
+	argsForCall := fake.opCreateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *Fake) OpInstall(ctx context.Context, path string, opRef string, username string, password string) {
+func (fake *Fake) OpInstall(arg1 context.Context, arg2 string, arg3 string, arg4 string, arg5 string) {
 	fake.opInstallMutex.Lock()
 	fake.opInstallArgsForCall = append(fake.opInstallArgsForCall, struct {
-		ctx      context.Context
-		path     string
-		opRef    string
-		username string
-		password string
-	}{ctx, path, opRef, username, password})
-	fake.recordInvocation("OpInstall", []interface{}{ctx, path, opRef, username, password})
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 string
+		arg5 string
+	}{arg1, arg2, arg3, arg4, arg5})
+	fake.recordInvocation("OpInstall", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.opInstallMutex.Unlock()
 	if fake.OpInstallStub != nil {
-		fake.OpInstallStub(ctx, path, opRef, username, password)
+		fake.OpInstallStub(arg1, arg2, arg3, arg4, arg5)
 	}
 }
 
@@ -197,22 +243,29 @@ func (fake *Fake) OpInstallCallCount() int {
 	return len(fake.opInstallArgsForCall)
 }
 
+func (fake *Fake) OpInstallCalls(stub func(context.Context, string, string, string, string)) {
+	fake.opInstallMutex.Lock()
+	defer fake.opInstallMutex.Unlock()
+	fake.OpInstallStub = stub
+}
+
 func (fake *Fake) OpInstallArgsForCall(i int) (context.Context, string, string, string, string) {
 	fake.opInstallMutex.RLock()
 	defer fake.opInstallMutex.RUnlock()
-	return fake.opInstallArgsForCall[i].ctx, fake.opInstallArgsForCall[i].path, fake.opInstallArgsForCall[i].opRef, fake.opInstallArgsForCall[i].username, fake.opInstallArgsForCall[i].password
+	argsForCall := fake.opInstallArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
-func (fake *Fake) OpKill(ctx context.Context, opId string) {
+func (fake *Fake) OpKill(arg1 context.Context, arg2 string) {
 	fake.opKillMutex.Lock()
 	fake.opKillArgsForCall = append(fake.opKillArgsForCall, struct {
-		ctx  context.Context
-		opId string
-	}{ctx, opId})
-	fake.recordInvocation("OpKill", []interface{}{ctx, opId})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("OpKill", []interface{}{arg1, arg2})
 	fake.opKillMutex.Unlock()
 	if fake.OpKillStub != nil {
-		fake.OpKillStub(ctx, opId)
+		fake.OpKillStub(arg1, arg2)
 	}
 }
 
@@ -222,22 +275,29 @@ func (fake *Fake) OpKillCallCount() int {
 	return len(fake.opKillArgsForCall)
 }
 
+func (fake *Fake) OpKillCalls(stub func(context.Context, string)) {
+	fake.opKillMutex.Lock()
+	defer fake.opKillMutex.Unlock()
+	fake.OpKillStub = stub
+}
+
 func (fake *Fake) OpKillArgsForCall(i int) (context.Context, string) {
 	fake.opKillMutex.RLock()
 	defer fake.opKillMutex.RUnlock()
-	return fake.opKillArgsForCall[i].ctx, fake.opKillArgsForCall[i].opId
+	argsForCall := fake.opKillArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *Fake) OpValidate(ctx context.Context, opRef string) {
+func (fake *Fake) OpValidate(arg1 context.Context, arg2 string) {
 	fake.opValidateMutex.Lock()
 	fake.opValidateArgsForCall = append(fake.opValidateArgsForCall, struct {
-		ctx   context.Context
-		opRef string
-	}{ctx, opRef})
-	fake.recordInvocation("OpValidate", []interface{}{ctx, opRef})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("OpValidate", []interface{}{arg1, arg2})
 	fake.opValidateMutex.Unlock()
 	if fake.OpValidateStub != nil {
-		fake.OpValidateStub(ctx, opRef)
+		fake.OpValidateStub(arg1, arg2)
 	}
 }
 
@@ -247,23 +307,30 @@ func (fake *Fake) OpValidateCallCount() int {
 	return len(fake.opValidateArgsForCall)
 }
 
+func (fake *Fake) OpValidateCalls(stub func(context.Context, string)) {
+	fake.opValidateMutex.Lock()
+	defer fake.opValidateMutex.Unlock()
+	fake.OpValidateStub = stub
+}
+
 func (fake *Fake) OpValidateArgsForCall(i int) (context.Context, string) {
 	fake.opValidateMutex.RLock()
 	defer fake.opValidateMutex.RUnlock()
-	return fake.opValidateArgsForCall[i].ctx, fake.opValidateArgsForCall[i].opRef
+	argsForCall := fake.opValidateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *Fake) Run(ctx context.Context, opRef string, opts *RunOpts) {
+func (fake *Fake) Run(arg1 context.Context, arg2 string, arg3 *RunOpts) {
 	fake.runMutex.Lock()
 	fake.runArgsForCall = append(fake.runArgsForCall, struct {
-		ctx   context.Context
-		opRef string
-		opts  *RunOpts
-	}{ctx, opRef, opts})
-	fake.recordInvocation("Run", []interface{}{ctx, opRef, opts})
+		arg1 context.Context
+		arg2 string
+		arg3 *RunOpts
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Run", []interface{}{arg1, arg2, arg3})
 	fake.runMutex.Unlock()
 	if fake.RunStub != nil {
-		fake.RunStub(ctx, opRef, opts)
+		fake.RunStub(arg1, arg2, arg3)
 	}
 }
 
@@ -273,21 +340,28 @@ func (fake *Fake) RunCallCount() int {
 	return len(fake.runArgsForCall)
 }
 
+func (fake *Fake) RunCalls(stub func(context.Context, string, *RunOpts)) {
+	fake.runMutex.Lock()
+	defer fake.runMutex.Unlock()
+	fake.RunStub = stub
+}
+
 func (fake *Fake) RunArgsForCall(i int) (context.Context, string, *RunOpts) {
 	fake.runMutex.RLock()
 	defer fake.runMutex.RUnlock()
-	return fake.runArgsForCall[i].ctx, fake.runArgsForCall[i].opRef, fake.runArgsForCall[i].opts
+	argsForCall := fake.runArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *Fake) SelfUpdate(channel string) {
+func (fake *Fake) SelfUpdate(arg1 string) {
 	fake.selfUpdateMutex.Lock()
 	fake.selfUpdateArgsForCall = append(fake.selfUpdateArgsForCall, struct {
-		channel string
-	}{channel})
-	fake.recordInvocation("SelfUpdate", []interface{}{channel})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("SelfUpdate", []interface{}{arg1})
 	fake.selfUpdateMutex.Unlock()
 	if fake.SelfUpdateStub != nil {
-		fake.SelfUpdateStub(channel)
+		fake.SelfUpdateStub(arg1)
 	}
 }
 
@@ -297,10 +371,17 @@ func (fake *Fake) SelfUpdateCallCount() int {
 	return len(fake.selfUpdateArgsForCall)
 }
 
+func (fake *Fake) SelfUpdateCalls(stub func(string)) {
+	fake.selfUpdateMutex.Lock()
+	defer fake.selfUpdateMutex.Unlock()
+	fake.SelfUpdateStub = stub
+}
+
 func (fake *Fake) SelfUpdateArgsForCall(i int) string {
 	fake.selfUpdateMutex.RLock()
 	defer fake.selfUpdateMutex.RUnlock()
-	return fake.selfUpdateArgsForCall[i].channel
+	argsForCall := fake.selfUpdateArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *Fake) Invocations() map[string][][]interface{} {
@@ -308,12 +389,12 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.eventsMutex.RLock()
 	defer fake.eventsMutex.RUnlock()
+	fake.lsMutex.RLock()
+	defer fake.lsMutex.RUnlock()
 	fake.nodeCreateMutex.RLock()
 	defer fake.nodeCreateMutex.RUnlock()
 	fake.nodeKillMutex.RLock()
 	defer fake.nodeKillMutex.RUnlock()
-	fake.lsMutex.RLock()
-	defer fake.lsMutex.RUnlock()
 	fake.opCreateMutex.RLock()
 	defer fake.opCreateMutex.RUnlock()
 	fake.opInstallMutex.RLock()

@@ -8,8 +8,9 @@ import (
 type FakeConn struct {
 	CloseStub        func() error
 	closeMutex       sync.RWMutex
-	closeArgsForCall []struct{}
-	closeReturns     struct {
+	closeArgsForCall []struct {
+	}
+	closeReturns struct {
 		result1 error
 	}
 	closeReturnsOnCall map[int]struct {
@@ -22,7 +23,8 @@ type FakeConn struct {
 func (fake *FakeConn) Close() error {
 	fake.closeMutex.Lock()
 	ret, specificReturn := fake.closeReturnsOnCall[len(fake.closeArgsForCall)]
-	fake.closeArgsForCall = append(fake.closeArgsForCall, struct{}{})
+	fake.closeArgsForCall = append(fake.closeArgsForCall, struct {
+	}{})
 	fake.recordInvocation("Close", []interface{}{})
 	fake.closeMutex.Unlock()
 	if fake.CloseStub != nil {
@@ -31,7 +33,8 @@ func (fake *FakeConn) Close() error {
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.closeReturns.result1
+	fakeReturns := fake.closeReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeConn) CloseCallCount() int {
@@ -40,7 +43,15 @@ func (fake *FakeConn) CloseCallCount() int {
 	return len(fake.closeArgsForCall)
 }
 
+func (fake *FakeConn) CloseCalls(stub func() error) {
+	fake.closeMutex.Lock()
+	defer fake.closeMutex.Unlock()
+	fake.CloseStub = stub
+}
+
 func (fake *FakeConn) CloseReturns(result1 error) {
+	fake.closeMutex.Lock()
+	defer fake.closeMutex.Unlock()
 	fake.CloseStub = nil
 	fake.closeReturns = struct {
 		result1 error
@@ -48,6 +59,8 @@ func (fake *FakeConn) CloseReturns(result1 error) {
 }
 
 func (fake *FakeConn) CloseReturnsOnCall(i int, result1 error) {
+	fake.closeMutex.Lock()
+	defer fake.closeMutex.Unlock()
 	fake.CloseStub = nil
 	if fake.closeReturnsOnCall == nil {
 		fake.closeReturnsOnCall = make(map[int]struct {
@@ -64,7 +77,11 @@ func (fake *FakeConn) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.closeMutex.RLock()
 	defer fake.closeMutex.RUnlock()
-	return fake.invocations
+	copiedInvocations := map[string][][]interface{}{}
+	for key, value := range fake.invocations {
+		copiedInvocations[key] = value
+	}
+	return copiedInvocations
 }
 
 func (fake *FakeConn) recordInvocation(key string, args []interface{}) {

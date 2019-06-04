@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/opctl/sdk-golang/data/coerce"
+
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	. "github.com/onsi/ginkgo"
@@ -45,7 +47,12 @@ var _ = Context("Files", func() {
 			// error to trigger immediate return
 			fakeFileInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
+			fakeCoerce := new(coerce.Fake)
+			// error to trigger immediate return
+			fakeCoerce.ToFileReturns(nil, errors.New("dummyError"))
+
 			objectUnderTest := _interpreter{
+				coerce:          fakeCoerce,
 				fileInterpreter: fakeFileInterpreter,
 			}
 
@@ -69,40 +76,45 @@ var _ = Context("Files", func() {
 			Expect(actualScratchDir).To(Equal(providedScratchDir))
 		})
 		Context("fileInterpreter.Interpret errs", func() {
-			It("should return expected error", func() {
-				/* arrange */
-				containerFilePath := "/dummyFile1Path.txt"
-				providedSCGContainerCallFiles := map[string]interface{}{
-					// implicitly bound
-					containerFilePath: nil,
-				}
+			Context("coerce.ToFile errs", func() {
+				It("should return expected error", func() {
+					/* arrange */
+					containerFilePath := "/dummyFile1Path.txt"
+					providedSCGContainerCallFiles := map[string]interface{}{
+						// implicitly bound
+						containerFilePath: nil,
+					}
 
-				getContentErr := fmt.Errorf("dummyError")
+					fakeFileInterpreter := new(file.FakeInterpreter)
+					fakeFileInterpreter.InterpretReturns(nil, fmt.Errorf("interpretErr"))
 
-				fakeFileInterpreter := new(file.FakeInterpreter)
-				fakeFileInterpreter.InterpretReturns(nil, getContentErr)
+					toFileErr := fmt.Errorf("toFileErr")
+					fakeCoerce := new(coerce.Fake)
+					fakeCoerce.ToFileReturns(nil, toFileErr)
 
-				expectedErr := fmt.Errorf(
-					"unable to bind %v to %v; error was %v",
-					containerFilePath,
-					fmt.Sprintf("$(%v)", containerFilePath),
-					getContentErr,
-				)
+					expectedErr := fmt.Errorf(
+						"unable to bind %v to %v; error was %v",
+						containerFilePath,
+						fmt.Sprintf("$(%v)", containerFilePath),
+						toFileErr,
+					)
 
-				objectUnderTest := _interpreter{
-					fileInterpreter: fakeFileInterpreter,
-				}
+					objectUnderTest := _interpreter{
+						coerce:          fakeCoerce,
+						fileInterpreter: fakeFileInterpreter,
+					}
 
-				/* act */
-				_, actualErr := objectUnderTest.Interpret(
-					new(data.FakeHandle),
-					map[string]*model.Value{},
-					providedSCGContainerCallFiles,
-					"dummyScratchDirPath",
-				)
+					/* act */
+					_, actualErr := objectUnderTest.Interpret(
+						new(data.FakeHandle),
+						map[string]*model.Value{},
+						providedSCGContainerCallFiles,
+						"dummyScratchDirPath",
+					)
 
-				/* assert */
-				Expect(actualErr).To(Equal(expectedErr))
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
 			})
 		})
 		Context("fileInterpreter.Interpret doesn't err", func() {

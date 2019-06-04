@@ -1,7 +1,9 @@
 package core
 
 import (
+	"context"
 	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/util/cliexiter"
@@ -11,8 +13,9 @@ import (
 
 var _ = Context("events", func() {
 	Context("Execute", func() {
-		It("should call client.GetEventStream", func() {
+		It("should call client.GetEventStream w/ expected args", func() {
 			/* arrange */
+			providedCtx := context.Background()
 			fakeCliExiter := new(cliexiter.Fake)
 
 			fakeAPIClient := new(client.Fake)
@@ -27,10 +30,16 @@ var _ = Context("events", func() {
 			}
 
 			/* act */
-			objectUnderTest.Events()
+			objectUnderTest.Events(
+				providedCtx,
+			)
 
 			/* assert */
-			Expect(fakeAPIClient.GetEventStreamCallCount()).To(Equal(1))
+			actualCtx,
+				actualGetEventStreamReq := fakeAPIClient.GetEventStreamArgsForCall(0)
+
+			Expect(actualCtx).To(Equal(providedCtx))
+			Expect(*actualGetEventStreamReq).To(Equal(model.GetEventStreamReq{}))
 
 		})
 		Context("client.GetEventStream errors", func() {
@@ -49,7 +58,9 @@ var _ = Context("events", func() {
 				}
 
 				/* act */
-				objectUnderTest.Events()
+				objectUnderTest.Events(
+					context.Background(),
+				)
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -74,7 +85,9 @@ var _ = Context("events", func() {
 					}
 
 					/* act */
-					objectUnderTest.Events()
+					objectUnderTest.Events(
+						context.Background(),
+					)
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).

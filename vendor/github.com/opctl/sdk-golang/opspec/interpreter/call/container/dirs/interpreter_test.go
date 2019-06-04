@@ -4,7 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+
+	"github.com/golang-interfaces/ios"
 
 	"github.com/golang-utils/dircopier"
 	. "github.com/onsi/ginkgo"
@@ -42,9 +45,12 @@ var _ = Context("Dirs", func() {
 			fakeDirInterpreter := new(dir.FakeInterpreter)
 			// error to trigger immediate return
 			fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
+			fakeOS := new(ios.Fake)
+			fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
 			objectUnderTest := _interpreter{
 				dirInterpreter: fakeDirInterpreter,
+				os:             fakeOS,
 			}
 
 			/* act */
@@ -65,40 +71,44 @@ var _ = Context("Dirs", func() {
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
 		Context("dirInterpreter.Interpret errs", func() {
-			It("should return expected error", func() {
+			It("should call os.MkdirAll w/ expected args", func() {
 				/* arrange */
-				containerDirPath := "/dummyDir1Path.txt"
+				providedScratchDirPath := "providedScratchDirPath"
+
+				providedContainerDirPath := "/dummyDir1Path.txt"
 				providedSCGContainerCallDirs := map[string]string{
 					// implicitly bound
-					containerDirPath: "",
+					providedContainerDirPath: "",
 				}
 
-				getContentErr := fmt.Errorf("dummyError")
-
 				fakeDirInterpreter := new(dir.FakeInterpreter)
-				fakeDirInterpreter.InterpretReturns(nil, getContentErr)
+				fakeDirInterpreter.InterpretReturns(nil, errors.New("dummyError"))
 
-				expectedErr := fmt.Errorf(
-					"unable to bind %v to %v; error was %v",
-					containerDirPath,
-					fmt.Sprintf("$(%v)", containerDirPath),
-					getContentErr,
-				)
+				expectedPath := filepath.Join(providedScratchDirPath, providedContainerDirPath)
+
+				fakeOS := new(ios.Fake)
+				// error to trigger immediate return
+				fakeOS.MkdirAllReturns(errors.New("dummyError"))
 
 				objectUnderTest := _interpreter{
 					dirInterpreter: fakeDirInterpreter,
+					os:             fakeOS,
 				}
 
 				/* act */
-				_, actualErr := objectUnderTest.Interpret(
+				objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					map[string]*model.Value{},
 					providedSCGContainerCallDirs,
-					"dummyScratchDirPath",
+					providedScratchDirPath,
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(expectedErr))
+				actualPath,
+					actualMode := fakeOS.MkdirAllArgsForCall(0)
+
+				Expect(actualPath).To(Equal(expectedPath))
+				Expect(actualMode).To(Equal(os.FileMode(0700)))
 			})
 		})
 		Context("dirInterpreter.Interpret doesn't err", func() {

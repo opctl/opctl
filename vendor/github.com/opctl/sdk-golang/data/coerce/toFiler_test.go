@@ -108,7 +108,7 @@ var _ = Context("toFile", func() {
 		Context("Value.Array isn't nil", func() {
 			It("should call json.Marshal w/ expected args", func() {
 				/* arrange */
-				providedArray := []interface{}{"arrayItem"}
+				providedArray := &[]interface{}{"arrayItem"}
 
 				providedValue := &model.Value{
 					Array: providedArray,
@@ -144,7 +144,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					_, actualErr := arrayUnderTest.ToFile(
-						&model.Value{Array: []interface{}{""}},
+						&model.Value{Array: new([]interface{})},
 						"dummyScratchDir",
 					)
 
@@ -177,7 +177,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					arrayUnderTest.ToFile(
-						&model.Value{Array: []interface{}{""}},
+						&model.Value{Array: new([]interface{})},
 						providedScratchDir,
 					)
 
@@ -193,7 +193,7 @@ var _ = Context("toFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						providedValue := &model.Value{Array: []interface{}{""}}
+						providedValue := &model.Value{Array: new([]interface{})}
 
 						fakeIOUtil := new(iioutil.Fake)
 
@@ -243,7 +243,7 @@ var _ = Context("toFile", func() {
 						/* act */
 						actualValue, actualErr := arrayUnderTest.ToFile(
 							&model.Value{
-								Array: []interface{}{""},
+								Array: new([]interface{}),
 							},
 							providedScratchDir,
 						)
@@ -494,7 +494,7 @@ var _ = Context("toFile", func() {
 		Context("Value.Object isn't nil", func() {
 			It("should call json.Marshal w/ expected args", func() {
 				/* arrange */
-				providedObject := map[string]interface{}{
+				providedObject := &map[string]interface{}{
 					"dummyName": "dummyValue",
 				}
 
@@ -532,7 +532,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.ToFile(
-						&model.Value{Object: map[string]interface{}{"": ""}},
+						&model.Value{Object: new(map[string]interface{})},
 						"dummyScratchDir",
 					)
 
@@ -565,7 +565,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					objectUnderTest.ToFile(
-						&model.Value{Object: map[string]interface{}{"": ""}},
+						&model.Value{Object: new(map[string]interface{})},
 						providedScratchDir,
 					)
 
@@ -581,7 +581,7 @@ var _ = Context("toFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						providedValue := &model.Value{Object: map[string]interface{}{"": ""}}
+						providedValue := &model.Value{Object: new(map[string]interface{})}
 
 						fakeIOUtil := new(iioutil.Fake)
 
@@ -631,7 +631,7 @@ var _ = Context("toFile", func() {
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToFile(
 							&model.Value{
-								Object: map[string]interface{}{"": ""},
+								Object: new(map[string]interface{}),
 							},
 							providedScratchDir,
 						)

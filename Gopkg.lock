@@ -77,7 +77,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c8aa532f691206b9fb5836b96562663339917c675c66e124582da614631bfdb2"
+  digest = "1:a62a55367dbc4faad4e67337ec14ed9633c51fa9ac962e20c7667a90137ba8a2"
   name = "github.com/docker/distribution"
   packages = [
     "digestset",
@@ -85,11 +85,11 @@
     "registry/api/errcode",
   ]
   pruneopts = ""
-  revision = "3226863cbcba6dbc2f6c83a37b28126c934af3f8"
+  revision = "dcfe05ce6cff995f419f8df37b59987257ffb8c1"
 
 [[projects]]
   branch = "master"
-  digest = "1:bd22e50cff70e32db80d544ce4128aff9e3c4088aab30902be149692da1f7751"
+  digest = "1:5eac0e65f4fbeb74ff48888278981a7b71f278d30c2ab1a11b12ee4b9658febb"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -115,7 +115,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "8d760280a232f98d92440539e1e8a8f66c213bdb"
+  revision = "238f8eaa31aa74be843c81703fabf774863ec30c"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -201,11 +201,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:862442e77b697cf51f5c55afc2156e4965f7a2f2f657d9f1837f9e87cca46a23"
+  digest = "1:ed227491174392365055d615ef0a571c5a1abccaf286f00dafa8de903205e48a"
   name = "github.com/golang-interfaces/github.com-gorilla-websocket"
   packages = ["."]
   pruneopts = ""
-  revision = "1bd02c6d7eb0a86a55fd04bce8c4066c59739211"
+  revision = "f7c71d63fecb56f132a3967769042fa074e65e9c"
 
 [[projects]]
   branch = "master"
@@ -454,7 +454,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7c07f363d8507cc665463c2429b695c13419d6b46694dc45591d996d96a4ffae"
+  digest = "1:07a58450e6890cebda72373821141e530f09d8b90928fb4e7ceea5048215327b"
   name = "github.com/opctl/sdk-golang"
   packages = [
     "data",
@@ -479,7 +479,6 @@
     "node/core/containerruntime",
     "node/core/containerruntime/docker",
     "opspec",
-    "opspec/interpreter",
     "opspec/interpreter/array",
     "opspec/interpreter/boolean",
     "opspec/interpreter/call",
@@ -492,6 +491,7 @@
     "opspec/interpreter/call/container/sockets",
     "opspec/interpreter/call/loop",
     "opspec/interpreter/call/loop/forpkg",
+    "opspec/interpreter/call/loop/iteration",
     "opspec/interpreter/call/op",
     "opspec/interpreter/call/op/inputs",
     "opspec/interpreter/call/op/inputs/input",
@@ -507,15 +507,15 @@
     "opspec/interpreter/dir",
     "opspec/interpreter/file",
     "opspec/interpreter/interpolater",
-    "opspec/interpreter/interpolater/dereferencer",
-    "opspec/interpreter/interpolater/dereferencer/direntry",
-    "opspec/interpreter/interpolater/dereferencer/identifier/bracketed",
-    "opspec/interpreter/interpolater/dereferencer/identifier/bracketed/item",
-    "opspec/interpreter/interpolater/dereferencer/identifier/unbracketed",
-    "opspec/interpreter/interpolater/dereferencer/identifier/value",
     "opspec/interpreter/loopable",
     "opspec/interpreter/number",
     "opspec/interpreter/object",
+    "opspec/interpreter/reference",
+    "opspec/interpreter/reference/direntry",
+    "opspec/interpreter/reference/identifier/bracketed",
+    "opspec/interpreter/reference/identifier/bracketed/item",
+    "opspec/interpreter/reference/identifier/unbracketed",
+    "opspec/interpreter/reference/identifier/value",
     "opspec/interpreter/string",
     "opspec/interpreter/value",
     "opspec/opfile",
@@ -525,7 +525,7 @@
     "util/urlpath",
   ]
   pruneopts = ""
-  revision = "7bd6d77f13ba49eaf62244c2e0af7beb9c505e15"
+  revision = "8c8e3e0b0992ce3ca476a9581d349c7eff4f2b3e"
 
 [[projects]]
   digest = "1:5d9b668b0b4581a978f07e7d2e3314af18eb27b3fb5d19b70185b7c575723d11"
@@ -664,12 +664,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  branch = "master"
   digest = "1:1d7cab09854959fe179fe2f209400626f3dda9ec8e8b719c661d7b2add7b54b5"
   name = "github.com/tidwall/pretty"
   packages = ["."]
   pruneopts = ""
   revision = "1166b9ac2b65e46a43d8618d30d1554f4652d49b"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -724,7 +724,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:23603929c559ebf5fa44cc2ed4a72ae729292e2b7e0295ab0e743641f0a47535"
+  digest = "1:9d150270ca2c3356f2224a0878daa1652e4d0b25b345f18b4f6e156cc4b8ec5e"
   name = "golang.org/x/crypto"
   packages = [
     "cast5",
@@ -745,11 +745,11 @@
     "ssh/knownhosts",
   ]
   pruneopts = ""
-  revision = "20be4c3c3ed52bfccdb2d59a412ee1a936d175a7"
+  revision = "f99c8df09eb5bff426315721bfa5f16a99cad32c"
 
 [[projects]]
   branch = "master"
-  digest = "1:3fcc745bd071aa073bd666e01ff8df5fc72ab15f493ae7246710c66c738aab45"
+  digest = "1:5a56f211e7c12a65c5585c629457a2fb91d8719844ee8fab92727ea8adb5721c"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -759,7 +759,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "f3200d17e092c607f615320ecaad13d87ad9a2b3"
+  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
 
 [[projects]]
   branch = "master"
@@ -771,7 +771,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5b21e858c013e53335319c60090ce3a0a9f8158afcdd6f078bdce7694d94f074"
+  digest = "1:e2a6a7d92d5bdb8002c65aa0916c725c4afc019827d415a46046acafc42edb16"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -779,11 +779,11 @@
     "windows",
   ]
   pruneopts = ""
-  revision = "4c3a928424d249a1013e789cf5e458d480bcba16"
+  revision = "93c9922d18aeb82498a065f07aec7ad7fa60dfb7"
 
 [[projects]]
   branch = "master"
-  digest = "1:58c5aadf44e0d993affd2ca138cc2884befa2b2598c662b0f8d1b5bb866e3e90"
+  digest = "1:c0eeb263316fdb45bf9eb7da82cb9dd35ac14d37216b3f0456dd0e1a02142d84"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -797,26 +797,26 @@
     "internal/semver",
   ]
   pruneopts = ""
-  revision = "b3315ee88b7da2b23cc6c62484a006958910e841"
+  revision = "0945d3616f18a7224b3a184b8a5d5281f0f6daac"
 
 [[projects]]
   branch = "master"
-  digest = "1:303bb7bcb96f7562686015a90eabd865f2c32c468e6702e1724d69b178d0427b"
+  digest = "1:52c6a188a1f16480607d7753e02cbd5ad43089d5550c725f32f46d376c946f37"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = ""
-  revision = "fb225487d10142b5bcc35abfc6cb9a0609614976"
+  revision = "eb0b1bdb6ae60fcfc41b8d907b50dfb346112301"
 
 [[projects]]
-  digest = "1:6598c722afbc10dcbcace4e6504751b3a3b11f66d9251545fce457a66316c9a7"
+  digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"
   name = "google.golang.org/grpc"
   packages = [
     "codes",
     "status",
   ]
   pruneopts = ""
-  revision = "869adfc8d5a43efc0d05780ad109106f457f51e4"
-  version = "v1.21.0"
+  revision = "501c41df7f472c740d0674ff27122f3f48c80ce7"
+  version = "v1.21.1"
 
 [[projects]]
   digest = "1:cc4fc94e3088593a2cde96c032e05d1e3c7d494147d7a7d707445ccc478bf4a0"

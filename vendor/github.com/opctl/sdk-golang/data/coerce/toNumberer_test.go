@@ -29,7 +29,7 @@ var _ = Context("toNumberer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{
-					Array: []interface{}{},
+					Array: new([]interface{}),
 				}
 
 				arrayUnderTest := _toNumberer{}
@@ -155,7 +155,7 @@ var _ = Context("toNumberer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedValue := &model.Value{
-					Object: map[string]interface{}{},
+					Object: new(map[string]interface{}),
 				}
 
 				objectUnderTest := _toNumberer{}

@@ -38,7 +38,7 @@ var _ = Context("toBooleaner", func() {
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
-							Array: []interface{}{},
+							Array: new([]interface{}),
 						},
 					)
 
@@ -51,16 +51,16 @@ var _ = Context("toBooleaner", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					objectUnderTest := _toBooleaner{}
+					array := &[]interface{}{
+						"",
+					}
 
 					expectedBoolean := true
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
-							Array: []interface{}{
-								// include item so len != 0
-								"",
-							},
+							Array: array,
 						},
 					)
 
@@ -341,7 +341,7 @@ var _ = Context("toBooleaner", func() {
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
-							Object: map[string]interface{}{},
+							Object: new(map[string]interface{}),
 						},
 					)
 
@@ -355,15 +355,16 @@ var _ = Context("toBooleaner", func() {
 					/* arrange */
 					objectUnderTest := _toBooleaner{}
 
+					object := &map[string]interface{}{
+						"dummyProp": nil,
+					}
+
 					expectedBoolean := true
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
 						&model.Value{
-							Object: map[string]interface{}{
-								// include item so len != 0
-								"dummyProp": nil,
-							},
+							Object: object,
 						},
 					)
 

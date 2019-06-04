@@ -16,6 +16,7 @@ import (
 
 type Client interface {
 	GetEventStream(
+		ctx context.Context,
 		req *model.GetEventStreamReq,
 	) (
 		stream chan model.Event,

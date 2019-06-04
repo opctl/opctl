@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api"
 	"path"
@@ -9,6 +10,7 @@ import (
 )
 
 func (c client) GetEventStream(
+	ctx context.Context,
 	req *model.GetEventStreamReq,
 ) (chan model.Event, error) {
 
@@ -25,7 +27,8 @@ func (c client) GetEventStream(
 	}
 	reqURL.RawQuery = queryValues.Encode()
 
-	wsConn, _, err := c.wsDialer.Dial(
+	wsConn, _, err := c.wsDialer.DialContext(
+		ctx,
 		reqURL.String(),
 		nil,
 	)

@@ -14,10 +14,10 @@ type Param struct {
 
 // ArrayParam represents a parameter of type object
 type ArrayParam struct {
-	Constraints Constraints   `yaml:"constraints,omitempty"`
-	Default     []interface{} `yaml:"default,omitempty"`
-	Description string        `yaml:"description,omitempty"`
-	IsSecret    bool          `yaml:"isSecret,omitempty"`
+	Constraints Constraints    `yaml:"constraints,omitempty"`
+	Default     *[]interface{} `yaml:"default,omitempty"`
+	Description string         `yaml:"description,omitempty"`
+	IsSecret    bool           `yaml:"isSecret,omitempty"`
 }
 
 // BooleanParam represents a parameter of type boolean
@@ -54,10 +54,10 @@ type NumberParam struct {
 
 // ObjectParam represents a parameter of type object
 type ObjectParam struct {
-	Constraints Constraints            `yaml:"constraints,omitempty"`
-	Default     map[string]interface{} `yaml:"default,omitempty"`
-	Description string                 `yaml:"description,omitempty"`
-	IsSecret    bool                   `yaml:"isSecret,omitempty"`
+	Constraints Constraints             `yaml:"constraints,omitempty"`
+	Default     *map[string]interface{} `yaml:"default,omitempty"`
+	Description string                  `yaml:"description,omitempty"`
+	IsSecret    bool                    `yaml:"isSecret,omitempty"`
 }
 
 // SocketParam represents a parameter of type socket

@@ -30,6 +30,7 @@ var _ = Context("cli", func() {
 		Context("events", func() {
 			It("should call core.Events w/ expected args", func() {
 				/* arrange */
+				providedCtx := context.Background()
 				fakeCore := new(core.Fake)
 
 				objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
@@ -38,7 +39,8 @@ var _ = Context("cli", func() {
 				objectUnderTest.Run([]string{"opctl", "events"})
 
 				/* assert */
-				Expect(fakeCore.EventsCallCount()).To(Equal(1))
+				actualCtx := fakeCore.EventsArgsForCall(0)
+				Expect(actualCtx).To(Equal(providedCtx))
 			})
 		})
 

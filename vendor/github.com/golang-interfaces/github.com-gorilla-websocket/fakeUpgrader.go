@@ -9,12 +9,12 @@ import (
 )
 
 type FakeUpgrader struct {
-	UpgradeStub        func(w http.ResponseWriter, r *http.Request, responseHeader http.Header) (*websocket.Conn, error)
+	UpgradeStub        func(http.ResponseWriter, *http.Request, http.Header) (*websocket.Conn, error)
 	upgradeMutex       sync.RWMutex
 	upgradeArgsForCall []struct {
-		w              http.ResponseWriter
-		r              *http.Request
-		responseHeader http.Header
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+		arg3 http.Header
 	}
 	upgradeReturns struct {
 		result1 *websocket.Conn
@@ -28,23 +28,24 @@ type FakeUpgrader struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUpgrader) Upgrade(w http.ResponseWriter, r *http.Request, responseHeader http.Header) (*websocket.Conn, error) {
+func (fake *FakeUpgrader) Upgrade(arg1 http.ResponseWriter, arg2 *http.Request, arg3 http.Header) (*websocket.Conn, error) {
 	fake.upgradeMutex.Lock()
 	ret, specificReturn := fake.upgradeReturnsOnCall[len(fake.upgradeArgsForCall)]
 	fake.upgradeArgsForCall = append(fake.upgradeArgsForCall, struct {
-		w              http.ResponseWriter
-		r              *http.Request
-		responseHeader http.Header
-	}{w, r, responseHeader})
-	fake.recordInvocation("Upgrade", []interface{}{w, r, responseHeader})
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+		arg3 http.Header
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Upgrade", []interface{}{arg1, arg2, arg3})
 	fake.upgradeMutex.Unlock()
 	if fake.UpgradeStub != nil {
-		return fake.UpgradeStub(w, r, responseHeader)
+		return fake.UpgradeStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.upgradeReturns.result1, fake.upgradeReturns.result2
+	fakeReturns := fake.upgradeReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeUpgrader) UpgradeCallCount() int {
@@ -53,13 +54,22 @@ func (fake *FakeUpgrader) UpgradeCallCount() int {
 	return len(fake.upgradeArgsForCall)
 }
 
+func (fake *FakeUpgrader) UpgradeCalls(stub func(http.ResponseWriter, *http.Request, http.Header) (*websocket.Conn, error)) {
+	fake.upgradeMutex.Lock()
+	defer fake.upgradeMutex.Unlock()
+	fake.UpgradeStub = stub
+}
+
 func (fake *FakeUpgrader) UpgradeArgsForCall(i int) (http.ResponseWriter, *http.Request, http.Header) {
 	fake.upgradeMutex.RLock()
 	defer fake.upgradeMutex.RUnlock()
-	return fake.upgradeArgsForCall[i].w, fake.upgradeArgsForCall[i].r, fake.upgradeArgsForCall[i].responseHeader
+	argsForCall := fake.upgradeArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeUpgrader) UpgradeReturns(result1 *websocket.Conn, result2 error) {
+	fake.upgradeMutex.Lock()
+	defer fake.upgradeMutex.Unlock()
 	fake.UpgradeStub = nil
 	fake.upgradeReturns = struct {
 		result1 *websocket.Conn
@@ -68,6 +78,8 @@ func (fake *FakeUpgrader) UpgradeReturns(result1 *websocket.Conn, result2 error)
 }
 
 func (fake *FakeUpgrader) UpgradeReturnsOnCall(i int, result1 *websocket.Conn, result2 error) {
+	fake.upgradeMutex.Lock()
+	defer fake.upgradeMutex.Unlock()
 	fake.UpgradeStub = nil
 	if fake.upgradeReturnsOnCall == nil {
 		fake.upgradeReturnsOnCall = make(map[int]struct {
@@ -86,7 +98,11 @@ func (fake *FakeUpgrader) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.upgradeMutex.RLock()
 	defer fake.upgradeMutex.RUnlock()
-	return fake.invocations
+	copiedInvocations := map[string][][]interface{}{}
+	for key, value := range fake.invocations {
+		copiedInvocations[key] = value
+	}
+	return copiedInvocations
 }
 
 func (fake *FakeUpgrader) recordInvocation(key string, args []interface{}) {

@@ -31,6 +31,15 @@ func (this _core) StartOp(
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
 	}
+
+	// pull Creds
+	if nil != req.Op.PullCreds {
+		scgOpCall.PullCreds = &model.SCGPullCreds{
+			Username: req.Op.PullCreds.Username,
+			Password: req.Op.PullCreds.Password,
+		}
+	}
+
 	for name := range req.Args {
 		// implicitly bind
 		scgOpCall.Inputs[name] = ""

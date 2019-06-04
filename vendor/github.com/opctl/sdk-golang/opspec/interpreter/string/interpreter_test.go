@@ -106,7 +106,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			fakeCoerce := new(coerce.Fake)
-			coercedValue := model.Value{Object: map[string]interface{}{}}
+			coercedValue := model.Value{Object: new(map[string]interface{})}
 			toStringErr := errors.New("dummyError")
 
 			fakeCoerce.ToStringReturns(&coercedValue, toStringErr)

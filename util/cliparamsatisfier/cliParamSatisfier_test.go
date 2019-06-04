@@ -58,7 +58,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					expectedValues := map[string]*model.Value{
 						input1Name: {
-							Array: []interface{}{"dummyItem"},
+							Array: new([]interface{}),
 						},
 					}
 
@@ -252,9 +252,7 @@ var _ = Context("parameterSatisfier", func() {
 
 					expectedValues := map[string]*model.Value{
 						input1Name: {
-							Object: map[string]interface{}{
-								"prop1Name": "prop1Value",
-							},
+							Object: new(map[string]interface{}),
 						},
 					}
 

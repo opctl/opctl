@@ -40,7 +40,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						inputName := "dummyInputName"
-						paramDefault := []interface{}{}
+						paramDefault := new([]interface{})
 						param := &model.Param{
 							Array: &model.ArrayParam{Default: paramDefault},
 						}
@@ -202,7 +202,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						inputName := "dummyInputName"
-						paramDefault := map[string]interface{}{}
+						paramDefault := new(map[string]interface{})
 						param := &model.Param{
 							Object: &model.ObjectParam{Default: paramDefault},
 						}
