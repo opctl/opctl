@@ -1,0 +1,11 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "vendor/github.com/blang/semver/package.json",
+        "vendor/golang.org/x/tools/cmd/gopls/integration/vscode/package.json",
+        "webapp/package.json"
+      ]
+    }
+  }
+}
