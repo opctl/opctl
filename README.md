@@ -30,7 +30,7 @@ or [open an issue](https://github.com/opctl/opctl/issues)
 # Releases
 
 releases are versioned according to
-[![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
+[![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html) [![Greenkeeper badge](https://badges.greenkeeper.io/opctl/opctl.svg)](https://greenkeeper.io/)
 and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
 [CHANGELOG.md](CHANGELOG.md) for release notes
 
