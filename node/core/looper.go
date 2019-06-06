@@ -238,23 +238,6 @@ func (lpr _looper) Loop(
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
-			case nil != event.OpEnded && event.OpEnded.OpID == callID:
-				for name, value := range event.OpEnded.Outputs {
-					outboundScope[name] = value
-				}
-				break eventLoop
-			case nil != event.ContainerExited && event.ContainerExited.ContainerID == callID:
-				for name, value := range event.ContainerExited.Outputs {
-					outboundScope[name] = value
-				}
-				break eventLoop
-			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == callID:
-				for name, value := range event.SerialCallEnded.Outputs {
-					outboundScope[name] = value
-				}
-				break eventLoop
-			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == callID:
-				break eventLoop
 			case nil != event.CallEnded && event.CallEnded.CallID == callID:
 				for name, value := range event.CallEnded.Outputs {
 					outboundScope[name] = value

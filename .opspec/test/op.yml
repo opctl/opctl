@@ -16,7 +16,7 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: github.com/opspec-pkgs/golang.fmt#1.1.0 }
+        pkg: { ref: github.com/opspec-pkgs/golang.fmt#1.2.0 }
         inputs: { srcDir }
         outputs: { srcDir }
     - op:

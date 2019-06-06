@@ -178,24 +178,6 @@ eventLoop:
 		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
 			// parent ended prematurely
 			return nil
-		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.ChildCallID:
-			for name, value := range event.OpEnded.Outputs {
-				opOutputs[name] = value
-			}
-			break eventLoop
-		case nil != event.ContainerExited && event.ContainerExited.ContainerID == dcgOpCall.ChildCallID:
-			for name, value := range event.ContainerExited.Outputs {
-				opOutputs[name] = value
-			}
-			break eventLoop
-		case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == dcgOpCall.ChildCallID:
-			for name, value := range event.SerialCallEnded.Outputs {
-				opOutputs[name] = value
-			}
-			break eventLoop
-		case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == dcgOpCall.ChildCallID:
-			// parallel calls have no outboundScope
-			return nil
 		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
 			for name, value := range event.CallEnded.Outputs {
 				opOutputs[name] = value

@@ -15,7 +15,7 @@ import (
 
 var _ = Context("GetEventStream", func() {
 
-	It("should call wsDialer.DialContext() w/ expected args", func() {
+	XIt("should call wsDialer.DialContext() w/ expected args", func() {
 
 		/* arrange */
 		providedCtx := context.Background()

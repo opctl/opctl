@@ -30,6 +30,9 @@ var _ = Context("caller", func() {
 		})
 	})
 	Context("Call", func() {
+		closedEventChan := make(chan model.Event, 1000)
+		close(closedEventChan)
+
 		Context("Null SCG", func() {
 			It("should not throw", func() {
 				/* arrange */
@@ -71,11 +74,15 @@ var _ = Context("caller", func() {
 				nil,
 			)
 
+			fakePubSub := new(pubsub.Fake)
+			// ensure eventChan closed so call exits
+			fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 			objectUnderTest := _caller{
 				callInterpreter: fakeCallInterpreter,
 				callStore:       new(fakeCallStore),
 				containerCaller: new(fakeContainerCaller),
-				pubSub:          new(pubsub.Fake),
+				pubSub:          fakePubSub,
 			}
 
 			/* act */
@@ -127,6 +134,8 @@ var _ = Context("caller", func() {
 				}
 
 				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
 
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
@@ -177,12 +186,16 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				fakeLooper := new(fakeLooper)
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					looper:          fakeLooper,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -230,11 +243,15 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: fakeContainerCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -284,11 +301,15 @@ var _ = Context("caller", func() {
 				providedParentID := "providedParentID"
 				providedRootOpID := "dummyRootOpID"
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					opCaller:        fakeOpCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -336,11 +357,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					parallelCaller:  fakeParallelCaller,
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 				}
 
 				/* act */
@@ -391,11 +416,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
 
@@ -443,11 +472,15 @@ var _ = Context("caller", func() {
 					nil,
 				)
 
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
 					containerCaller: new(fakeContainerCaller),
-					pubSub:          new(pubsub.Fake),
+					pubSub:          fakePubSub,
 					serialCaller:    fakeSerialCaller,
 				}
 

@@ -5,6 +5,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -87,13 +88,40 @@ func (clr _caller) Call(
 	rootOpID string,
 ) error {
 	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	var err error
+	var outputs map[string]*model.Value
+	var wg sync.WaitGroup
+
+	defer func() {
+		wg.Wait()
+		cancel()
+
+		// defer must be defined before conditional return statements so it always runs
+		event := model.Event{
+			CallEnded: &model.CallEndedEvent{
+				CallID:     id,
+				Outputs:    outputs,
+				RootCallID: rootOpID,
+			},
+			Timestamp: time.Now().UTC(),
+		}
+
+		if nil != err {
+			event.CallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		clr.pubSub.Publish(event)
+	}()
+
 	if nil == scg {
 		// No Op
 		return nil
 	}
 
-	dcg, err := clr.callInterpreter.Interpret(
+	var dcg *model.DCG
+	dcg, err = clr.callInterpreter.Interpret(
 		scope,
 		scg,
 		id,
@@ -105,22 +133,35 @@ func (clr _caller) Call(
 		return err
 	}
 
+	wg.Add(1)
 	go func() {
 		eventChannel, _ := clr.pubSub.Subscribe(
 			ctx,
 			model.EventFilter{Roots: []string{rootOpID}},
 		)
+
+	eventLoop:
 		for event := range eventChannel {
 			switch {
+			case nil != event.ContainerExited && event.ContainerExited.ContainerID == id:
+				outputs = event.ContainerExited.Outputs
+				break eventLoop
+			case nil != event.OpEnded && event.OpEnded.OpID == id:
+				outputs = event.OpEnded.Outputs
+				break eventLoop
+			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == id:
+				outputs = event.SerialCallEnded.Outputs
+				break eventLoop
 			// if call killed, propogate to context
 			case nil != event.CallKilled && event.CallKilled.CallID == id:
 				cancel()
 			}
 		}
+		wg.Done()
 	}()
 
 	if nil != dcg.Loop {
-		return clr.looper.Loop(
+		err = clr.looper.Loop(
 			ctx,
 			id,
 			scope,
@@ -129,19 +170,8 @@ func (clr _caller) Call(
 			parentCallID,
 			rootOpID,
 		)
+		return err
 	}
-
-	defer func() {
-		clr.pubSub.Publish(
-			model.Event{
-				CallEnded: &model.CallEndedEvent{
-					CallID:     id,
-					RootCallID: rootOpID,
-				},
-				Timestamp: time.Now().UTC(),
-			},
-		)
-	}()
 
 	if nil != dcg.If && !*dcg.If {
 		return nil
@@ -151,22 +181,24 @@ func (clr _caller) Call(
 
 	switch {
 	case nil != scg.Container:
-		return clr.containerCaller.Call(
+		err = clr.containerCaller.Call(
 			ctx,
 			dcg.Container,
 			scope,
 			scg.Container,
 		)
+		return err
 	case nil != scg.Op:
-		return clr.opCaller.Call(
+		err = clr.opCaller.Call(
 			ctx,
 			dcg.Op,
 			scope,
 			parentCallID,
 			scg.Op,
 		)
+		return err
 	case len(scg.Parallel) > 0:
-		return clr.parallelCaller.Call(
+		err = clr.parallelCaller.Call(
 			ctx,
 			id,
 			scope,
@@ -174,8 +206,9 @@ func (clr _caller) Call(
 			opHandle,
 			scg.Parallel,
 		)
+		return err
 	case len(scg.Serial) > 0:
-		return clr.serialCaller.Call(
+		err = clr.serialCaller.Call(
 			ctx,
 			id,
 			scope,
@@ -183,8 +216,10 @@ func (clr _caller) Call(
 			opHandle,
 			scg.Serial,
 		)
+		return err
 	default:
-		return fmt.Errorf("Invalid call graph %+v\n", scg)
+		err = fmt.Errorf("Invalid call graph %+v\n", scg)
+		return err
 	}
 
 }

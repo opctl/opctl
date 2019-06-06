@@ -9,7 +9,7 @@ var _ = Context("ErrDataProviderAuthentication", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			expectedResult := "Pkg pull failed due to invalid/lack of authentication"
+			expectedResult := "Data pull failed due to invalid/lack of authentication"
 			objectUnderTest := ErrDataProviderAuthentication{}
 
 			/* act */
@@ -26,7 +26,7 @@ var _ = Context("ErrDataProviderAuthorization", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			expectedResult := "Pkg pull failed due to insufficient/lack of authorization"
+			expectedResult := "Data pull failed due to insufficient/lack of authorization"
 			objectUnderTest := ErrDataProviderAuthorization{}
 
 			/* act */
@@ -42,7 +42,7 @@ var _ = Context("ErrDataRefResolution", func() {
 	Context("Error", func() {
 		It("should return expected result", func() {
 			/* arrange */
-			expectedResult := "Provider failed to resolve the requested pkg"
+			expectedResult := "Provider failed to resolve the requested data"
 			objectUnderTest := ErrDataRefResolution{}
 
 			/* act */
