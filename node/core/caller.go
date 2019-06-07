@@ -135,6 +135,7 @@ func (clr _caller) Call(
 
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		eventChannel, _ := clr.pubSub.Subscribe(
 			ctx,
 			model.EventFilter{Roots: []string{rootOpID}},
@@ -143,6 +144,9 @@ func (clr _caller) Call(
 	eventLoop:
 		for event := range eventChannel {
 			switch {
+			case nil != event.CallEnded && event.CallEnded.CallID == id:
+				outputs = event.CallEnded.Outputs
+				break eventLoop
 			case nil != event.ContainerExited && event.ContainerExited.ContainerID == id:
 				outputs = event.ContainerExited.Outputs
 				break eventLoop
@@ -152,12 +156,13 @@ func (clr _caller) Call(
 			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == id:
 				outputs = event.SerialCallEnded.Outputs
 				break eventLoop
+			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == id:
+				break eventLoop
 			// if call killed, propogate to context
 			case nil != event.CallKilled && event.CallKilled.CallID == id:
 				cancel()
 			}
 		}
-		wg.Done()
 	}()
 
 	if nil != dcg.Loop {
@@ -174,6 +179,7 @@ func (clr _caller) Call(
 	}
 
 	if nil != dcg.If && !*dcg.If {
+		cancel()
 		return nil
 	}
 
