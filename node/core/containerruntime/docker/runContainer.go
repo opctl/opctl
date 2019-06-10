@@ -59,6 +59,17 @@ func (cr _runContainer) RunContainer(
 ) (*int64, error) {
 	defer stdout.Close()
 	defer stderr.Close()
+	defer func() {
+		// ensure container always cleaned up
+		cr.dockerClient.ContainerRemove(
+			context.Background(),
+			req.ContainerID,
+			types.ContainerRemoveOptions{
+				RemoveVolumes: true,
+				Force:         true,
+			},
+		)
+	}()
 
 	portBindings, err := cr.portBindingsFactory.Construct(
 		req.Ports,

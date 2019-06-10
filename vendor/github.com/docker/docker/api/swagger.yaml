@@ -2882,6 +2882,18 @@ definitions:
             type: "object"
             additionalProperties:
               type: "string"
+          # This option is not used by Windows containers
+          Capabilities:
+            type: "array"
+            description: |
+              A list of kernel capabilities to be available for container (this overrides the default set).
+            items:
+              type: "string"
+            example:
+              - "CAP_NET_RAW"
+              - "CAP_SYS_ADMIN"
+              - "CAP_SYS_CHROOT"
+              - "CAP_SYSLOG"
       NetworkAttachmentSpec:
         description: |
           Read-only spec type for non-swarm containers attached to swarm overlay
@@ -3840,6 +3852,17 @@ definitions:
           or "Windows Server 2016 Datacenter"
         type: "string"
         example: "Alpine Linux v3.5"
+      OSVersion:
+        description: |
+          Version of the host's operating system
+
+          <p><br /></p>
+
+          > **Note**: The information returned in this field, including its
+          > very existence, and the formatting of values, should not be considered
+          > stable, and may change without notice.
+        type: "string"
+        example: "16.04"
       OSType:
         description: |
           Generic type of the operating system of the host, as returned by the
@@ -6229,6 +6252,10 @@ paths:
         - name: "noOverwriteDirNonDir"
           in: "query"
           description: "If “1”, “true”, or “True” then it will be an error if unpacking the given content would cause an existing directory to be replaced with a non-directory and vice versa."
+          type: "string"
+        - name: "copyUIDGID"
+          in: "query"
+          description: "If “1”, “true”, then it will copy UID/GID maps to the dest file or dir"
           type: "string"
         - name: "inputStream"
           in: "body"

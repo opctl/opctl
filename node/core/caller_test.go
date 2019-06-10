@@ -58,6 +58,59 @@ var _ = Context("caller", func() {
 				)
 			})
 		})
+
+		Context("nil != scg.Loop", func() {
+			It("should call looper.Loop w/ expected args", func() {
+				/* arrange */
+				providedCallID := "providedCallID"
+				providedScope := map[string]*model.Value{}
+				providedSCG := &model.SCG{
+					Loop: &model.SCGLoop{},
+				}
+				providedOpHandle := new(data.FakeHandle)
+				providedParentIDValue := "providedParentID"
+				providedParentID := &providedParentIDValue
+				providedRootOpID := "providedRootOpID"
+
+				fakePubSub := new(pubsub.Fake)
+				// ensure eventChan closed so call exits
+				fakePubSub.SubscribeReturns(closedEventChan, nil)
+
+				fakeLooper := new(fakeLooper)
+				objectUnderTest := _caller{
+					callStore: new(fakeCallStore),
+					looper:    fakeLooper,
+					pubSub:    fakePubSub,
+				}
+
+				/* act */
+				objectUnderTest.Call(
+					context.Background(),
+					providedCallID,
+					providedScope,
+					providedSCG,
+					providedOpHandle,
+					providedParentID,
+					providedRootOpID,
+				)
+
+				/* assert */
+				_,
+					actualID,
+					actualScope,
+					actualSCG,
+					actualOpHandle,
+					actualParentID,
+					actualRootOpID := fakeLooper.LoopArgsForCall(0)
+
+				Expect(actualID).To(Equal(providedCallID))
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualSCG).To(Equal(providedSCG))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+				Expect(actualParentID).To(Equal(providedParentID))
+				Expect(actualRootOpID).To(Equal(providedRootOpID))
+			})
+		})
 		It("should call callInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
@@ -164,66 +217,6 @@ var _ = Context("caller", func() {
 				actualEvent.Timestamp = expectedEvent.Timestamp
 
 				Expect(actualEvent).To(Equal(expectedEvent))
-			})
-		})
-
-		Context("callInterpreter.Interpret result.If falsy", func() {
-			It("should call looper.Loop w/ expected args", func() {
-				/* arrange */
-				providedCallID := "providedCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
-				}
-				providedOpHandle := new(data.FakeHandle)
-				providedParentIDValue := "providedParentID"
-				providedParentID := &providedParentIDValue
-				providedRootOpID := "providedRootOpID"
-
-				expectedDCG := &model.DCG{
-					Loop: &model.DCGLoop{},
-				}
-				fakeCallInterpreter := new(call.FakeInterpreter)
-				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
-
-				fakePubSub := new(pubsub.Fake)
-				// ensure eventChan closed so call exits
-				fakePubSub.SubscribeReturns(closedEventChan, nil)
-
-				fakeLooper := new(fakeLooper)
-				objectUnderTest := _caller{
-					callInterpreter: fakeCallInterpreter,
-					callStore:       new(fakeCallStore),
-					looper:          fakeLooper,
-					pubSub:          fakePubSub,
-				}
-
-				/* act */
-				objectUnderTest.Call(
-					context.Background(),
-					providedCallID,
-					providedScope,
-					providedSCG,
-					providedOpHandle,
-					providedParentID,
-					providedRootOpID,
-				)
-
-				/* assert */
-				_,
-					actualID,
-					actualScope,
-					actualSCG,
-					actualOpHandle,
-					actualParentID,
-					actualRootOpID := fakeLooper.LoopArgsForCall(0)
-
-				Expect(actualID).To(Equal(providedCallID))
-				Expect(actualScope).To(Equal(providedScope))
-				Expect(actualSCG).To(Equal(providedSCG))
-				Expect(actualOpHandle).To(Equal(providedOpHandle))
-				Expect(actualParentID).To(Equal(providedParentID))
-				Expect(actualRootOpID).To(Equal(providedRootOpID))
 			})
 		})
 

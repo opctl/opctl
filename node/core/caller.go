@@ -120,19 +120,6 @@ func (clr _caller) Call(
 		return nil
 	}
 
-	var dcg *model.DCG
-	dcg, err = clr.callInterpreter.Interpret(
-		scope,
-		scg,
-		id,
-		opHandle,
-		parentCallID,
-		rootOpID,
-	)
-	if nil != err {
-		return err
-	}
-
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -165,7 +152,7 @@ func (clr _caller) Call(
 		}
 	}()
 
-	if nil != dcg.Loop {
+	if nil != scg.Loop {
 		err = clr.looper.Loop(
 			ctx,
 			id,
@@ -175,6 +162,19 @@ func (clr _caller) Call(
 			parentCallID,
 			rootOpID,
 		)
+		return err
+	}
+
+	var dcg *model.DCG
+	dcg, err = clr.callInterpreter.Interpret(
+		scope,
+		scg,
+		id,
+		opHandle,
+		parentCallID,
+		rootOpID,
+	)
+	if nil != err {
 		return err
 	}
 

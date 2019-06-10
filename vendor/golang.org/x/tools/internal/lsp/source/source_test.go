@@ -55,7 +55,7 @@ func (r *runner) Diagnostics(t *testing.T, data tests.Diagnostics) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		results, err := source.Diagnostics(context.Background(), r.view, f.(source.GoFile))
+		results, err := source.Diagnostics(context.Background(), r.view, f.(source.GoFile), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -296,12 +296,12 @@ func (r *runner) Format(t *testing.T, data tests.Formats) {
 			continue
 		}
 		ops := source.EditsToDiff(edits)
-		fc := f.Content(ctx)
-		if fc.Error != nil {
+		data, _, err := f.Handle(ctx).Read(ctx)
+		if err != nil {
 			t.Error(err)
 			continue
 		}
-		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(fc.Data)), ops), "")
+		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(data)), ops), "")
 		if gofmted != got {
 			t.Errorf("format failed for %s, expected:\n%v\ngot:\n%v", filename, gofmted, got)
 		}
@@ -337,12 +337,12 @@ func (r *runner) Import(t *testing.T, data tests.Imports) {
 			continue
 		}
 		ops := source.EditsToDiff(edits)
-		fc := f.Content(ctx)
-		if fc.Error != nil {
+		data, _, err := f.Handle(ctx).Read(ctx)
+		if err != nil {
 			t.Error(err)
 			continue
 		}
-		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(fc.Data)), ops), "")
+		got := strings.Join(diff.ApplyEdits(diff.SplitLines(string(data)), ops), "")
 		if goimported != got {
 			t.Errorf("import failed for %s, expected:\n%v\ngot:\n%v", filename, goimported, got)
 		}
@@ -362,11 +362,11 @@ func (r *runner) Definition(t *testing.T, data tests.Definitions) {
 		if err != nil {
 			t.Fatalf("failed for %v: %v", d.Src, err)
 		}
-		hover, err := ident.Hover(ctx, nil, false, true)
+		hover, err := ident.Hover(ctx, false, true)
 		if err != nil {
 			t.Fatalf("failed for %v: %v", d.Src, err)
 		}
-		rng := ident.Declaration.Range
+		rng := ident.DeclarationRange()
 		if d.IsType {
 			rng = ident.Type.Range
 			hover = ""
@@ -412,6 +412,46 @@ func (r *runner) Highlight(t *testing.T, data tests.Highlights) {
 		for i, h := range highlights {
 			if h != locations[i] {
 				t.Errorf("want %v, got %v\n", locations[i], h)
+			}
+		}
+	}
+}
+
+func (r *runner) Reference(t *testing.T, data tests.References) {
+	ctx := context.Background()
+	for src, itemList := range data {
+		f, err := r.view.GetFile(ctx, src.URI())
+		if err != nil {
+			t.Fatalf("failed for %v: %v", src, err)
+		}
+
+		tok := f.GetToken(ctx)
+		pos := tok.Pos(src.Start().Offset())
+		ident, err := source.Identifier(ctx, r.view, f.(source.GoFile), pos)
+		if err != nil {
+			t.Fatalf("failed for %v: %v", src, err)
+		}
+
+		want := make(map[span.Span]bool)
+		for _, pos := range itemList {
+			want[pos] = true
+		}
+
+		got, err := ident.References(ctx)
+		if err != nil {
+			t.Fatalf("failed for %v: %v", src, err)
+		}
+
+		if len(got) != len(itemList) {
+			t.Errorf("references failed: different lengths got %v want %v", len(got), len(itemList))
+		}
+		for _, refInfo := range got {
+			refSpan, err := refInfo.Range.Span()
+			if err != nil {
+				t.Errorf("failed for %v item %v: %v", src, refInfo.Name, err)
+			}
+			if !want[refSpan] {
+				t.Errorf("references failed: incorrect references got %v want locations %v", got, want)
 			}
 		}
 	}

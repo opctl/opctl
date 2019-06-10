@@ -69,7 +69,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c8aa532f691206b9fb5836b96562663339917c675c66e124582da614631bfdb2"
+  digest = "1:a62a55367dbc4faad4e67337ec14ed9633c51fa9ac962e20c7667a90137ba8a2"
   name = "github.com/docker/distribution"
   packages = [
     "digestset",
@@ -77,11 +77,11 @@
     "registry/api/errcode",
   ]
   pruneopts = ""
-  revision = "3226863cbcba6dbc2f6c83a37b28126c934af3f8"
+  revision = "dcfe05ce6cff995f419f8df37b59987257ffb8c1"
 
 [[projects]]
   branch = "master"
-  digest = "1:f99ff51f950cb67dece5d5960806ecc8ea69c51aef7da765faef5b7e5ab83971"
+  digest = "1:5eac0e65f4fbeb74ff48888278981a7b71f278d30c2ab1a11b12ee4b9658febb"
   name = "github.com/docker/docker"
   packages = [
     "api",
@@ -107,7 +107,7 @@
     "pkg/term/windows",
   ]
   pruneopts = ""
-  revision = "a6e1502575858cd063b0e75d400e04b6f334e86d"
+  revision = "238f8eaa31aa74be843c81703fabf774863ec30c"
 
 [[projects]]
   digest = "1:ebe593d8b65a2947b78b6e164a2dac1a230b977a700b694da3a398b03b7afb04"
@@ -523,12 +523,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  branch = "master"
   digest = "1:1d7cab09854959fe179fe2f209400626f3dda9ec8e8b719c661d7b2add7b54b5"
   name = "github.com/tidwall/pretty"
   packages = ["."]
   pruneopts = ""
   revision = "1166b9ac2b65e46a43d8618d30d1554f4652d49b"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -583,7 +583,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:23603929c559ebf5fa44cc2ed4a72ae729292e2b7e0295ab0e743641f0a47535"
+  digest = "1:9d150270ca2c3356f2224a0878daa1652e4d0b25b345f18b4f6e156cc4b8ec5e"
   name = "golang.org/x/crypto"
   packages = [
     "cast5",
@@ -604,11 +604,11 @@
     "ssh/knownhosts",
   ]
   pruneopts = ""
-  revision = "20be4c3c3ed52bfccdb2d59a412ee1a936d175a7"
+  revision = "f99c8df09eb5bff426315721bfa5f16a99cad32c"
 
 [[projects]]
   branch = "master"
-  digest = "1:8f557a9325893b454acdd05c69d6f6d481a24e8466646e5340c5b78c39a80cb8"
+  digest = "1:5a56f211e7c12a65c5585c629457a2fb91d8719844ee8fab92727ea8adb5721c"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -621,7 +621,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "60506f45cf65977eb3a9c6e30f995f54a721c271"
+  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
 
 [[projects]]
   branch = "master"
@@ -633,7 +633,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ab8e7eea4bffdd9000e76bb80d02b583b3864900ad86c6913ec1743fc833c80a"
+  digest = "1:e2a6a7d92d5bdb8002c65aa0916c725c4afc019827d415a46046acafc42edb16"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
@@ -641,7 +641,7 @@
     "windows",
   ]
   pruneopts = ""
-  revision = "4c4f7f33c9ed00de01c4c741d2177abfcfe19307"
+  revision = "93c9922d18aeb82498a065f07aec7ad7fa60dfb7"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -673,7 +673,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:84dfe81232c9cf95a6f125b60ab0d853f37cc7b86d627313c7f86611b549ece4"
+  digest = "1:e6435bbbb1f2c5b846fd59eb4f280567b55a94fb8a47bb1f5a8b9a2ec44b9519"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
@@ -687,15 +687,15 @@
     "internal/semver",
   ]
   pruneopts = ""
-  revision = "8aaa1484dc108aa23dcf2d4a09371c0c9e280f6b"
+  revision = "fe937a7521e50b486d5dcb5802db60e2d1e110d7"
 
 [[projects]]
   branch = "master"
-  digest = "1:303bb7bcb96f7562686015a90eabd865f2c32c468e6702e1724d69b178d0427b"
+  digest = "1:52c6a188a1f16480607d7753e02cbd5ad43089d5550c725f32f46d376c946f37"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = ""
-  revision = "fb225487d10142b5bcc35abfc6cb9a0609614976"
+  revision = "eb0b1bdb6ae60fcfc41b8d907b50dfb346112301"
 
 [[projects]]
   digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"

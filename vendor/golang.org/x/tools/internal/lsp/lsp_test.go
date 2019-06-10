@@ -68,7 +68,7 @@ func (r *runner) Diagnostics(t *testing.T, data tests.Diagnostics) {
 		if !ok {
 			t.Fatalf("%s is not a Go file: %v", uri, err)
 		}
-		results, err := source.Diagnostics(context.Background(), v, gof)
+		results, err := source.Diagnostics(context.Background(), v, gof, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -134,11 +134,11 @@ func summarizeDiagnostics(i int, want []source.Diagnostic, got []source.Diagnost
 	fmt.Fprintf(msg, reason, args...)
 	fmt.Fprint(msg, ":\nexpected:\n")
 	for _, d := range want {
-		fmt.Fprintf(msg, "  %v\n", d)
+		fmt.Fprintf(msg, "  %v: %s\n", d.Span, d.Message)
 	}
 	fmt.Fprintf(msg, "got:\n")
 	for _, d := range got {
-		fmt.Fprintf(msg, "  %v\n", d)
+		fmt.Fprintf(msg, "  %v: %s\n", d.Span, d.Message)
 	}
 	return msg.String()
 }
@@ -455,6 +455,48 @@ func (r *runner) Highlight(t *testing.T, data tests.Highlights) {
 				t.Fatalf("failed for %v: %v", highlights[i], err)
 			} else if h != locations[i] {
 				t.Errorf("want %v, got %v\n", locations[i], h)
+			}
+		}
+	}
+}
+
+func (r *runner) Reference(t *testing.T, data tests.References) {
+	for src, itemList := range data {
+		sm, err := r.mapper(src.URI())
+		if err != nil {
+			t.Fatal(err)
+		}
+		loc, err := sm.Location(src)
+		if err != nil {
+			t.Fatalf("failed for %v: %v", src, err)
+		}
+
+		want := make(map[protocol.Location]bool)
+		for _, pos := range itemList {
+			loc, err := sm.Location(pos)
+			if err != nil {
+				t.Fatalf("failed for %v: %v", src, err)
+			}
+			want[loc] = true
+		}
+
+		params := &protocol.ReferenceParams{
+			TextDocumentPositionParams: protocol.TextDocumentPositionParams{
+				TextDocument: protocol.TextDocumentIdentifier{URI: loc.URI},
+				Position:     loc.Range.Start,
+			},
+		}
+		got, err := r.server.References(context.Background(), params)
+		if err != nil {
+			t.Fatalf("failed for %v: %v", src, err)
+		}
+
+		if len(got) != len(itemList) {
+			t.Errorf("references failed: different lengths got %v want %v", len(got), len(itemList))
+		}
+		for _, loc := range got {
+			if !want[loc] {
+				t.Errorf("references failed: incorrect references got %v want %v", got, want)
 			}
 		}
 	}

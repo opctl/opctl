@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
@@ -36,7 +38,9 @@ var _ = Context("looper", func() {
 
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
+					loopDeScoper:        new(loop.FakeDeScoper),
 					loopInterpreter:     fakeLoopInterpreter,
+					iterationScoper:     new(iteration.FakeScoper),
 					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
@@ -75,7 +79,9 @@ var _ = Context("looper", func() {
 
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
+					loopDeScoper:        new(loop.FakeDeScoper),
 					loopInterpreter:     fakeLoopInterpreter,
+					iterationScoper:     new(iteration.FakeScoper),
 					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
@@ -121,10 +127,11 @@ var _ = Context("looper", func() {
 					nil,
 				)
 
-				zero := float64(0)
+				fakeIterationScoper := new(iteration.FakeScoper)
 				expectedScope := map[string]*model.Value{
-					index: &model.Value{Number: &zero},
+					index: &model.Value{Number: new(float64)},
 				}
+				fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
 				fakeCaller := new(fakeCaller)
 				// error to trigger immediate return
@@ -136,7 +143,9 @@ var _ = Context("looper", func() {
 
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
+					loopDeScoper:        new(loop.FakeDeScoper),
 					loopInterpreter:     fakeLoopInterpreter,
+					iterationScoper:     fakeIterationScoper,
 					pubSub:              new(pubsub.Fake),
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
