@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
@@ -47,13 +46,15 @@ var _ = Context("serialCaller", func() {
 			}
 
 			fakePubSub := new(pubsub.Fake)
-			subscribeCallIndex := 0
+			eventChannel := make(chan model.Event, 100)
 			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-				defer func() {
-					subscribeCallIndex++
-				}()
-				eventChannel := make(chan model.Event, 100)
-				eventChannel <- model.Event{CallEnded: &model.CallEndedEvent{CallID: fmt.Sprintf("%v", subscribeCallIndex)}}
+				for index := range providedSCGSerialCalls {
+					eventChannel <- model.Event{
+						CallEnded: &model.CallEndedEvent{
+							CallID: fmt.Sprintf("%v", index),
+						},
+					}
+				}
 				return eventChannel, make(chan error)
 			}
 
@@ -87,7 +88,7 @@ var _ = Context("serialCaller", func() {
 			/* assert */
 			for expectedSCGIndex, expectedSCG := range providedSCGSerialCalls {
 				actualCtx,
-					actualNodeId,
+					actualNodeID,
 					actualChildOutboundScope,
 					actualSCG,
 					actualOpHandle,
@@ -95,7 +96,7 @@ var _ = Context("serialCaller", func() {
 					actualRootOpID := fakeCaller.CallArgsForCall(expectedSCGIndex)
 
 				Expect(actualCtx).To(Equal(actualCtx))
-				Expect(actualNodeId).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
+				Expect(actualNodeID).To(Equal(fmt.Sprintf("%v", expectedSCGIndex)))
 				Expect(actualChildOutboundScope).To(Equal(providedInboundScope))
 				Expect(actualSCG).To(Equal(expectedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
@@ -116,19 +117,37 @@ var _ = Context("serialCaller", func() {
 					},
 				}
 
-				callErr := errors.New("dummyErr")
+				callID := "callID"
 
-				fakeCaller := new(fakeCaller)
-				fakeCaller.CallReturns(callErr)
+				expectedErrorMessage := "expectedErrorMessage"
+				fakePubSub := new(pubsub.Fake)
+				eventChannel := make(chan model.Event, 100)
+				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+					for range providedSCGSerialCalls {
+						eventChannel <- model.Event{
+							CallEnded: &model.CallEndedEvent{
+								CallID: callID,
+								Error: &model.CallEndedEventError{
+									Message: expectedErrorMessage,
+								},
+							},
+						}
+					}
+
+					return eventChannel, make(chan error)
+				}
+
+				fakeUniqueStringFactory := new(uniquestring.Fake)
+				fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 				objectUnderTest := _serialCaller{
-					caller:              fakeCaller,
-					pubSub:              new(pubsub.Fake),
-					uniqueStringFactory: new(uniquestring.Fake),
+					caller:              new(fakeCaller),
+					pubSub:              fakePubSub,
+					uniqueStringFactory: fakeUniqueStringFactory,
 				}
 
 				/* act */
-				actualErr := objectUnderTest.Call(
+				objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
 					providedInboundScope,
@@ -138,7 +157,9 @@ var _ = Context("serialCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(callErr))
+				actualEvent := fakePubSub.PublishArgsForCall(0)
+
+				Expect(actualEvent.SerialCallEnded.Error.Message).To(Equal(expectedErrorMessage))
 			})
 		})
 		Context("caller doesn't error", func() {
@@ -165,13 +186,16 @@ var _ = Context("serialCaller", func() {
 					}
 
 					fakePubSub := new(pubsub.Fake)
-					subscribeCallIndex := 0
+					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-						defer func() {
-							subscribeCallIndex++
-						}()
-						eventChannel := make(chan model.Event, 100)
-						eventChannel <- model.Event{CallEnded: &model.CallEndedEvent{CallID: fmt.Sprintf("%v", subscribeCallIndex)}}
+						for index := range providedSCGSerialCalls {
+							eventChannel <- model.Event{
+								CallEnded: &model.CallEndedEvent{
+									CallID: fmt.Sprintf("%v", index),
+								},
+							}
+						}
+
 						return eventChannel, make(chan error)
 					}
 
@@ -245,19 +269,18 @@ var _ = Context("serialCaller", func() {
 					}
 
 					fakePubSub := new(pubsub.Fake)
-					subscribeCallIndex := 0
+					eventChannel := make(chan model.Event, 100)
 					fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-						defer func() {
-							subscribeCallIndex++
-						}()
-						eventChannel := make(chan model.Event, 100)
-						eventChannel <- model.Event{
-							CallEnded: &model.CallEndedEvent{
-								RootCallID: providedRootOpID,
-								CallID:     fmt.Sprintf("%v", subscribeCallIndex),
-								Outputs:    firstChildOutputs,
-							},
+						for index := range providedSCGSerialCalls {
+							eventChannel <- model.Event{
+								CallEnded: &model.CallEndedEvent{
+									RootCallID: providedRootOpID,
+									CallID:     fmt.Sprintf("%v", index),
+									Outputs:    firstChildOutputs,
+								},
+							}
 						}
+
 						return eventChannel, make(chan error)
 					}
 

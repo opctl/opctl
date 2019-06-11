@@ -4,8 +4,8 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -55,7 +55,6 @@ func newCaller(
 
 	instance.parallelCaller = newParallelCaller(
 		instance,
-		callKiller,
 		pubSub,
 	)
 
@@ -90,11 +89,9 @@ func (clr _caller) Call(
 	ctx, cancel := context.WithCancel(ctx)
 	var err error
 	var outputs map[string]*model.Value
-	var wg sync.WaitGroup
 
 	defer func() {
-		wg.Wait()
-		cancel()
+		<-ctx.Done()
 
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
@@ -116,13 +113,13 @@ func (clr _caller) Call(
 	}()
 
 	if nil == scg {
+		cancel()
 		// No Op
 		return nil
 	}
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer cancel()
 		eventChannel, _ := clr.pubSub.Subscribe(
 			ctx,
 			model.EventFilter{Roots: []string{rootOpID}},
@@ -132,22 +129,35 @@ func (clr _caller) Call(
 		for event := range eventChannel {
 			switch {
 			case nil != event.CallEnded && event.CallEnded.CallID == id:
+				if nil != event.CallEnded.Error {
+					err = errors.New(event.CallEnded.Error.Message)
+				}
 				outputs = event.CallEnded.Outputs
 				break eventLoop
 			case nil != event.ContainerExited && event.ContainerExited.ContainerID == id:
 				outputs = event.ContainerExited.Outputs
 				break eventLoop
 			case nil != event.OpEnded && event.OpEnded.OpID == id:
+				if nil != event.OpEnded.Error {
+					err = errors.New(event.OpEnded.Error.Message)
+				}
 				outputs = event.OpEnded.Outputs
 				break eventLoop
 			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == id:
+				if nil != event.SerialCallEnded.Error {
+					err = errors.New(event.SerialCallEnded.Error.Message)
+				}
 				outputs = event.SerialCallEnded.Outputs
 				break eventLoop
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == id:
+				if nil != event.ParallelCallEnded.Error {
+					err = errors.New(event.ParallelCallEnded.Error.Message)
+				}
+				outputs = event.ParallelCallEnded.Outputs
 				break eventLoop
 			// if call killed, propogate to context
 			case nil != event.CallKilled && event.CallKilled.CallID == id:
-				cancel()
+				break eventLoop
 			}
 		}
 	}()
@@ -204,7 +214,7 @@ func (clr _caller) Call(
 		)
 		return err
 	case len(scg.Parallel) > 0:
-		err = clr.parallelCaller.Call(
+		clr.parallelCaller.Call(
 			ctx,
 			id,
 			scope,
@@ -214,7 +224,7 @@ func (clr _caller) Call(
 		)
 		return err
 	case len(scg.Serial) > 0:
-		err = clr.serialCaller.Call(
+		clr.serialCaller.Call(
 			ctx,
 			id,
 			scope,

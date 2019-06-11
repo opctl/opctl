@@ -3,10 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeParallelCaller.go --fake-name fakeParallelCaller ./ parallelCaller
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"sync"
+	"strings"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -18,22 +17,20 @@ type parallelCaller interface {
 	// Executes a parallel call
 	Call(
 		ctx context.Context,
-		callId string,
+		callID string,
 		inboundScope map[string]*model.Value,
 		rootOpID string,
 		opHandle model.DataHandle,
 		scgParallelCall []*model.SCG,
-	) error
+	)
 }
 
 func newParallelCaller(
 	caller caller,
-	callKiller callKiller,
 	pubSub pubsub.PubSub,
 ) parallelCaller {
 
 	return _parallelCaller{
-		callKiller:          callKiller,
 		caller:              caller,
 		pubSub:              pubSub,
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
@@ -42,104 +39,115 @@ func newParallelCaller(
 }
 
 type _parallelCaller struct {
-	callKiller          callKiller
 	caller              caller
 	pubSub              pubsub.PubSub
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
-func (this _parallelCaller) Call(
+func (pc _parallelCaller) Call(
 	ctx context.Context,
-	callId string,
+	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opHandle model.DataHandle,
 	scgParallelCall []*model.SCG,
-) error {
+) {
+	// setup cancellation
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	outputs := map[string]*model.Value{}
+	var err error
 
 	defer func() {
-
 		// defer must be defined before conditional return statements so it always runs
-		this.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				ParallelCallEnded: &model.ParallelCallEndedEvent{
-					CallID:   callId,
-					RootOpID: rootOpID,
-				},
+		event := model.Event{
+			ParallelCallEnded: &model.ParallelCallEndedEvent{
+				CallID:   callID,
+				Outputs:  outputs,
+				RootOpID: rootOpID,
 			},
-		)
+			Timestamp: time.Now().UTC(),
+		}
 
+		if nil != err {
+			event.ParallelCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+		pc.pubSub.Publish(
+			event,
+		)
 	}()
 
-	var wg sync.WaitGroup
-	childErrChannel := make(chan error, len(scgParallelCall))
-
-	// setup cancellation
-	parallelCtx, parallelCancel := context.WithCancel(ctx)
-	defer parallelCancel()
+	childCallIDIndexMap := map[string]int{}
+	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
 	// perform calls in parallel w/ cancellation
-	for _, childCall := range scgParallelCall {
-		wg.Add(1)
+	for childCallIndex, childCall := range scgParallelCall {
 
-		go func(childCall *model.SCG) {
-			defer wg.Done()
+		var childCallID string
+		childCallID, err = pc.uniqueStringFactory.Construct()
+		if nil != err {
+			// trigger parallel cancellation
+			cancel()
+		}
+		childCallIDIndexMap[childCallID] = childCallIndex
 
-			childCallID, err := this.uniqueStringFactory.Construct()
-			if nil != err {
-				childErrChannel <- err
-				// trigger parallel cancellation
-				parallelCancel()
-			}
+		go pc.caller.Call(
+			ctx,
+			childCallID,
+			inboundScope,
+			childCall,
+			opHandle,
+			&callID,
+			rootOpID,
+		)
+	}
 
-			childCtx, childCancel := context.WithCancel(parallelCtx)
-			go func() {
-				defer childCancel()
-				if childErr := this.caller.Call(
-					childCtx,
-					childCallID,
-					inboundScope,
-					childCall,
-					opHandle,
-					&callId,
-					rootOpID,
-				); nil != childErr {
-					childErrChannel <- childErr
-					// trigger parallel cancellation
-					parallelCancel()
+	// subscribe to events
+	// @TODO: handle err channel
+	eventFilterSince := time.Now().UTC()
+	eventChannel, _ := pc.pubSub.Subscribe(
+		ctx,
+		model.EventFilter{
+			Roots: []string{rootOpID},
+			Since: &eventFilterSince,
+		},
+	)
+
+	childErrorMessages := []string{}
+eventLoop:
+	for event := range eventChannel {
+		if nil != event.CallEnded {
+			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.CallID]; isChildCallEnded {
+				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
+				if nil != event.CallEnded.Error {
+					cancel()
+					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
-			}()
-
-			select {
-			case <-parallelCtx.Done():
-				// ensure resources immediately reclaimed
-				this.callKiller.Kill(
-					childCallID,
-					rootOpID,
-				)
-			case <-childCtx.Done():
 			}
-		}(childCall)
-	}
-	wg.Wait()
 
-	if len(childErrChannel) != 0 {
-		messageBuffer := bytes.NewBufferString(
-			fmt.Sprint(`
--
-  Error during parallel call.
-  Error:`))
-		childErr := <-childErrChannel
-		messageBuffer.WriteString(fmt.Sprintf(`
-    - %v`,
-			childErr.Error(),
-		))
-		return fmt.Errorf(
-			`%v
--`, messageBuffer.String())
+			if len(callIndexOutputsMap) == len(scgParallelCall) {
+				// construct outputs
+				for i := 0; i < len(scgParallelCall); i++ {
+					callOutputs := callIndexOutputsMap[i]
+					for varName, varData := range callOutputs {
+						outputs[varName] = varData
+					}
+				}
+
+				break eventLoop
+			}
+
+		}
 	}
 
-	return nil
+	if len(childErrorMessages) != 0 {
+		err = fmt.Errorf(
+			"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
+			strings.Join(childErrorMessages, "\n"),
+		)
+	}
 
 }

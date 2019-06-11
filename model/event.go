@@ -32,6 +32,7 @@ type CallEndedEvent struct {
 	RootCallID string               `json:"rootCallId"`
 }
 
+// CallEndedEventError represents an error of associated w/ an ended call
 type CallEndedEventError struct {
 	Message string `json:"message"`
 }
@@ -87,11 +88,12 @@ type OpErredEvent struct {
 
 // OpEndedEvent represents the end of an op; no further events will occur for the op.
 type OpEndedEvent struct {
-	RootOpID string            `json:"rootOpId"`
-	OpID     string            `json:"opId"`
-	OpRef    string            `json:"opRef"`
-	Outcome  string            `json:"outcome"`
-	Outputs  map[string]*Value `json:"outputs"`
+	Error    *CallEndedEventError `json:"error,omitempty"`
+	RootOpID string               `json:"rootOpId"`
+	OpID     string               `json:"opId"`
+	OpRef    string               `json:"opRef"`
+	Outcome  string               `json:"outcome"`
+	Outputs  map[string]*Value    `json:"outputs"`
 }
 
 // OpStartedEvent represents the start of an op
@@ -103,13 +105,16 @@ type OpStartedEvent struct {
 
 // ParallelCallEndedEvent represents the exit of a parallel call; no further events will occur for the call.
 type ParallelCallEndedEvent struct {
-	CallID   string `json:"callId"`
-	RootOpID string `json:"rootOpId"`
+	CallID   string               `json:"callId"`
+	Error    *CallEndedEventError `json:"error,omitempty"`
+	Outputs  map[string]*Value    `json:"outputs"`
+	RootOpID string               `json:"rootOpId"`
 }
 
 // SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
-	CallID   string            `json:"callId"`
-	Outputs  map[string]*Value `json:"outputs"`
-	RootOpID string            `json:"rootOpId"`
+	CallID   string               `json:"callId"`
+	Error    *CallEndedEventError `json:"error,omitempty"`
+	Outputs  map[string]*Value    `json:"outputs"`
+	RootOpID string               `json:"rootOpId"`
 }

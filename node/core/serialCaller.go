@@ -4,6 +4,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -20,7 +21,7 @@ type serialCaller interface {
 		rootOpID string,
 		opHandle model.DataHandle,
 		scgSerialCall []*model.SCG,
-	) error
+	)
 }
 
 func newSerialCaller(
@@ -42,79 +43,89 @@ type _serialCaller struct {
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
 
-func (this _serialCaller) Call(
+func (sc _serialCaller) Call(
 	ctx context.Context,
 	callID string,
 	inboundScope map[string]*model.Value,
 	rootOpID string,
 	opHandle model.DataHandle,
 	scgSerialCall []*model.SCG,
-) error {
-	outboundScope := map[string]*model.Value{}
+) {
+	outputs := map[string]*model.Value{}
 	for varName, varData := range inboundScope {
-		outboundScope[varName] = varData
+		outputs[varName] = varData
 	}
+	var err error
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		this.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				SerialCallEnded: &model.SerialCallEndedEvent{
-					CallID:   callID,
-					RootOpID: rootOpID,
-					Outputs:  outboundScope,
-				},
+		event := model.Event{
+			SerialCallEnded: &model.SerialCallEndedEvent{
+				CallID:   callID,
+				Outputs:  outputs,
+				RootOpID: rootOpID,
 			},
+			Timestamp: time.Now().UTC(),
+		}
+
+		if nil != err {
+			event.SerialCallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+		sc.pubSub.Publish(
+			event,
 		)
 	}()
 
-	for _, scgCall := range scgSerialCall {
-		eventFilterSince := time.Now().UTC()
+	// subscribe to events
+	// @TODO: handle err channel
+	eventFilterSince := time.Now().UTC()
+	eventChannel, _ := sc.pubSub.Subscribe(
+		ctx,
+		model.EventFilter{
+			Roots: []string{rootOpID},
+			Since: &eventFilterSince,
+		},
+	)
 
-		childCallID, err := this.uniqueStringFactory.Construct()
+	for _, scgCall := range scgSerialCall {
+
+		var childCallID string
+		childCallID, err = sc.uniqueStringFactory.Construct()
 		if nil != err {
 			// end run immediately on any error
-			return err
+			return
 		}
 
-		if err := this.caller.Call(
+		if err = sc.caller.Call(
 			ctx,
 			childCallID,
-			outboundScope,
+			outputs,
 			scgCall,
 			opHandle,
 			&callID,
 			rootOpID,
 		); nil != err {
 			// end run immediately on any error
-			return err
+			return
 		}
-
-		// subscribe to events
-		// @TODO: handle err channel
-		eventChannel, _ := this.pubSub.Subscribe(
-			ctx,
-			model.EventFilter{
-				Roots: []string{rootOpID},
-				Since: &eventFilterSince,
-			},
-		)
 
 	eventLoop:
 		for event := range eventChannel {
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
 			case nil != event.CallEnded && event.CallEnded.CallID == childCallID:
+				if nil != event.CallEnded.Error {
+					err = errors.New(event.CallEnded.Error.Message)
+				}
 				for name, value := range event.CallEnded.Outputs {
-					outboundScope[name] = value
+					outputs[name] = value
 				}
 				break eventLoop
 			}
 		}
 
 	}
-
-	return nil
 
 }

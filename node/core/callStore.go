@@ -1,6 +1,8 @@
 package core
 
 import (
+	"sync"
+
 	"github.com/opctl/sdk-golang/model"
 )
 
@@ -26,20 +28,26 @@ func newCallStore() callStore {
 }
 
 type _callStore struct {
-	// synchronize access via mutex
 	callsByID map[string]*model.DCG
+	// synchronize access via mutex
+	mux sync.RWMutex
 }
 
 // O(1) complexity
-func (this *_callStore) Add(call *model.DCG) {
-	this.callsByID[call.Id] = call
+func (cs *_callStore) Add(call *model.DCG) {
+	cs.mux.Lock()
+	defer cs.mux.Unlock()
+
+	cs.callsByID[call.Id] = call
 }
 
 // O(n) complexity (n being active call count)
-func (this *_callStore) ListWithParentID(parentID string) []*model.DCG {
-	results := []*model.DCG{}
+func (cs *_callStore) ListWithParentID(parentID string) []*model.DCG {
+	cs.mux.RLock()
+	defer cs.mux.RUnlock()
 
-	for _, call := range this.callsByID {
+	results := []*model.DCG{}
+	for _, call := range cs.callsByID {
 		if nil != call.ParentID && *call.ParentID == parentID {
 			results = append(results, call)
 		}
@@ -47,12 +55,15 @@ func (this *_callStore) ListWithParentID(parentID string) []*model.DCG {
 	return results
 }
 
-func (this *_callStore) SetIsKilled(id string) {
-	this.callsByID[id].IsKilled = true
+func (cs *_callStore) SetIsKilled(id string) {
+	cs.callsByID[id].IsKilled = true
 }
 
-func (this _callStore) Get(
+func (cs _callStore) Get(
 	id string,
 ) model.DCG {
-	return *this.callsByID[id]
+	cs.mux.RLock()
+	defer cs.mux.RUnlock()
+
+	return *cs.callsByID[id]
 }
