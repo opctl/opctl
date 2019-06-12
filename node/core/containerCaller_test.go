@@ -122,24 +122,25 @@ var _ = Context("containerCaller", func() {
 			Expect(actualEventPublisher).To(Equal(fakePubSub))
 		})
 		Context("containerRuntime.RunContainer errors", func() {
-			It("should return expected error", func() {
+			It("should publish expected ContainerExitedEvent", func() {
 				/* arrange */
-				expectedError := errors.New("dummyError")
+				expectedErrorMessage := "expectedErrorMessage"
+				fakePubSub := new(pubsub.Fake)
 
 				fakeContainerRuntime := new(containerruntime.Fake)
-				fakeContainerRuntime.RunContainerReturns(nil, expectedError)
+				fakeContainerRuntime.RunContainerReturns(nil, errors.New(expectedErrorMessage))
 
 				fakeIIO := new(iio.Fake)
 				fakeIIO.PipeReturns(closedPipeReader, closedPipeWriter)
 
 				objectUnderTest := _containerCaller{
 					containerRuntime: fakeContainerRuntime,
-					pubSub:           new(pubsub.Fake),
+					pubSub:           fakePubSub,
 					io:               fakeIIO,
 				}
 
 				/* act */
-				actualError := objectUnderTest.Call(
+				objectUnderTest.Call(
 					context.Background(),
 					&model.DCGContainerCall{
 						DCGBaseCall: model.DCGBaseCall{
@@ -151,7 +152,9 @@ var _ = Context("containerCaller", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				actualEvent := fakePubSub.PublishArgsForCall(1)
+
+				Expect(actualEvent.ContainerExited.Error.Message).To(Equal(expectedErrorMessage))
 			})
 		})
 	})
@@ -172,9 +175,12 @@ var _ = Context("containerCaller", func() {
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
-				Outputs:     map[string]*model.Value{},
-				RootOpID:    providedDCGContainerCall.RootOpID,
+				Error: &model.CallEndedEventError{
+					Message: "io: read/write on closed pipe",
+				},
+				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
+				Outputs:  map[string]*model.Value{},
+				RootOpID: providedDCGContainerCall.RootOpID,
 			},
 		}
 
@@ -223,9 +229,12 @@ var _ = Context("containerCaller", func() {
 			Timestamp: time.Now().UTC(),
 			ContainerExited: &model.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				OpRef:       providedDCGContainerCall.OpHandle.Ref(),
-				Outputs:     map[string]*model.Value{},
-				RootOpID:    providedDCGContainerCall.RootOpID,
+				Error: &model.CallEndedEventError{
+					Message: "io: read/write on closed pipe",
+				},
+				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
+				Outputs:  map[string]*model.Value{},
+				RootOpID: providedDCGContainerCall.RootOpID,
 			},
 		}
 

@@ -105,7 +105,7 @@ var _ = Context("serialCaller", func() {
 			}
 		})
 		Context("caller errors", func() {
-			It("should return the expected error", func() {
+			It("should publish expected CallEndedEvent", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
 				providedInboundScope := map[string]*model.Value{}

@@ -5,7 +5,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -53,8 +52,8 @@ func (pc _parallelCaller) Call(
 	scgParallelCall []*model.SCG,
 ) {
 	// setup cancellation
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
+	defer cancelChildren()
 
 	outputs := map[string]*model.Value{}
 	var err error
@@ -89,13 +88,13 @@ func (pc _parallelCaller) Call(
 		var childCallID string
 		childCallID, err = pc.uniqueStringFactory.Construct()
 		if nil != err {
-			// trigger parallel cancellation
-			cancel()
+			// cancel all children on any error
+			cancelChildren()
 		}
 		childCallIDIndexMap[childCallID] = childCallIndex
 
 		go pc.caller.Call(
-			ctx,
+			ctxOfChildren,
 			childCallID,
 			inboundScope,
 			childCall,
@@ -117,19 +116,21 @@ func (pc _parallelCaller) Call(
 	)
 
 	childErrorMessages := []string{}
-eventLoop:
 	for event := range eventChannel {
 		if nil != event.CallEnded {
 			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.CallID]; isChildCallEnded {
 				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
 				if nil != event.CallEnded.Error {
-					cancel()
+					// cancel all children on any error
+					cancelChildren()
 					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
 				}
 			}
 
 			if len(callIndexOutputsMap) == len(scgParallelCall) {
-				// construct outputs
+				// all calls have ended
+
+				// construct parallel outputs
 				for i := 0; i < len(scgParallelCall); i++ {
 					callOutputs := callIndexOutputsMap[i]
 					for varName, varData := range callOutputs {
@@ -137,17 +138,22 @@ eventLoop:
 					}
 				}
 
-				break eventLoop
+				// construct parallel error
+				if len(childErrorMessages) != 0 {
+					var formattedChildErrorMessages string
+					for _, childErrorMessage := range childErrorMessages {
+						formattedChildErrorMessages = fmt.Sprintf("\t-%v\n", childErrorMessage)
+					}
+					err = fmt.Errorf(
+						"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
+						formattedChildErrorMessages,
+					)
+				}
+
+				return
 			}
 
 		}
-	}
-
-	if len(childErrorMessages) != 0 {
-		err = fmt.Errorf(
-			"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
-			strings.Join(childErrorMessages, "\n"),
-		)
 	}
 
 }

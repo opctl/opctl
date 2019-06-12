@@ -45,12 +45,13 @@ type CallKilledEvent struct {
 
 // ContainerExitedEvent represents the exit of a containerized process; no further events will occur for the container
 type ContainerExitedEvent struct {
-	ImageRef    string            `json:"imageRef"`
-	ExitCode    int64             `json:"exitCode"`
-	RootOpID    string            `json:"rootOpId"`
-	ContainerID string            `json:"containerId"`
-	OpRef       string            `json:"opRef"`
-	Outputs     map[string]*Value `json:"outputs"`
+	ImageRef    string               `json:"imageRef"`
+	Error       *CallEndedEventError `json:"error,omitempty"`
+	ExitCode    int64                `json:"exitCode"`
+	RootOpID    string               `json:"rootOpId"`
+	ContainerID string               `json:"containerId"`
+	OpRef       string               `json:"opRef"`
+	Outputs     map[string]*Value    `json:"outputs"`
 }
 
 type ContainerStartedEvent struct {

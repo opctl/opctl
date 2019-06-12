@@ -4,6 +4,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
@@ -25,7 +26,7 @@ type looper interface {
 		opHandle model.DataHandle,
 		parentCallID *string,
 		rootOpID string,
-	) error
+	)
 }
 
 func newLooper(
@@ -85,25 +86,31 @@ func (lpr _looper) Loop(
 	opHandle model.DataHandle,
 	parentCallID *string,
 	rootOpID string,
-) error {
+) {
+	var err error
 	outboundScope := map[string]*model.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		lpr.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				CallEnded: &model.CallEndedEvent{
-					CallID:     id,
-					RootCallID: rootOpID,
-					Outputs:    outboundScope,
-				},
+		event := model.Event{
+			Timestamp: time.Now().UTC(),
+			CallEnded: &model.CallEndedEvent{
+				CallID:     id,
+				RootCallID: rootOpID,
+				Outputs:    outboundScope,
 			},
-		)
+		}
+
+		if nil != err {
+			event.CallEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		lpr.pubSub.Publish(event)
 	}()
 
 	index := 0
-	var err error
 	outboundScope, err = lpr.iterationScoper.Scope(
 		index,
 		inboundScope,
@@ -111,7 +118,7 @@ func (lpr _looper) Loop(
 		opHandle,
 	)
 	if nil != err {
-		return err
+		return
 	}
 
 	// copy scg.Loop & remove from scg since we're already looping
@@ -119,24 +126,26 @@ func (lpr _looper) Loop(
 	scg.Loop = nil
 
 	// interpret initial iteration of the loop
-	dcgLoop, err := lpr.loopInterpreter.Interpret(
+	var dcgLoop *model.DCGLoop
+	dcgLoop, err = lpr.loopInterpreter.Interpret(
 		opHandle,
 		scgLoop,
 		outboundScope,
 	)
 	if nil != err {
-		return err
+		return
 	}
 
 	for !lpr.isLoopEnded(index, dcgLoop) {
 		eventFilterSince := time.Now().UTC()
 
-		callID, err := lpr.uniqueStringFactory.Construct()
+		var callID string
+		callID, err = lpr.uniqueStringFactory.Construct()
 		if nil != err {
-			return err
+			return
 		}
 
-		err = lpr.caller.Call(
+		lpr.caller.Call(
 			ctx,
 			callID,
 			outboundScope,
@@ -145,10 +154,6 @@ func (lpr _looper) Loop(
 			parentCallID,
 			rootOpID,
 		)
-		if nil != err {
-			// end looping on any error
-			return err
-		}
 
 		// subscribe to events
 		// @TODO: handle err channel
@@ -165,6 +170,10 @@ func (lpr _looper) Loop(
 			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
 			switch {
 			case nil != event.CallEnded && event.CallEnded.CallID == callID:
+				if nil != event.CallEnded.Error {
+					err = errors.New(event.CallEnded.Error.Message)
+					return
+				}
 				for name, value := range event.CallEnded.Outputs {
 					outboundScope[name] = value
 				}
@@ -185,7 +194,7 @@ func (lpr _looper) Loop(
 			opHandle,
 		)
 		if nil != err {
-			return err
+			return
 		}
 
 		// interpret next iteration of the loop
@@ -195,15 +204,13 @@ func (lpr _looper) Loop(
 			outboundScope,
 		)
 		if nil != err {
-			return err
+			return
 		}
 	}
 
-	lpr.loopDeScoper.DeScope(
+	outboundScope = lpr.loopDeScoper.DeScope(
 		inboundScope,
 		scgLoop,
 		outboundScope,
 	)
-
-	return nil
 }

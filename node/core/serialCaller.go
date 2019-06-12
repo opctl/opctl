@@ -98,7 +98,7 @@ func (sc _serialCaller) Call(
 			return
 		}
 
-		if err = sc.caller.Call(
+		sc.caller.Call(
 			ctx,
 			childCallID,
 			outputs,
@@ -106,10 +106,7 @@ func (sc _serialCaller) Call(
 			opHandle,
 			&callID,
 			rootOpID,
-		); nil != err {
-			// end run immediately on any error
-			return
-		}
+		)
 
 	eventLoop:
 		for event := range eventChannel {
@@ -118,6 +115,8 @@ func (sc _serialCaller) Call(
 			case nil != event.CallEnded && event.CallEnded.CallID == childCallID:
 				if nil != event.CallEnded.Error {
 					err = errors.New(event.CallEnded.Error.Message)
+					// end on any error
+					return
 				}
 				for name, value := range event.CallEnded.Outputs {
 					outputs[name] = value

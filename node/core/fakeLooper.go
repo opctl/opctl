@@ -9,7 +9,7 @@ import (
 )
 
 type fakeLooper struct {
-	LoopStub        func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) error
+	LoopStub        func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string)
 	loopMutex       sync.RWMutex
 	loopArgsForCall []struct {
 		arg1 context.Context
@@ -20,19 +20,12 @@ type fakeLooper struct {
 		arg6 *string
 		arg7 string
 	}
-	loopReturns struct {
-		result1 error
-	}
-	loopReturnsOnCall map[int]struct {
-		result1 error
-	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeLooper) Loop(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 *model.SCG, arg5 model.DataHandle, arg6 *string, arg7 string) error {
+func (fake *fakeLooper) Loop(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 *model.SCG, arg5 model.DataHandle, arg6 *string, arg7 string) {
 	fake.loopMutex.Lock()
-	ret, specificReturn := fake.loopReturnsOnCall[len(fake.loopArgsForCall)]
 	fake.loopArgsForCall = append(fake.loopArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -45,13 +38,8 @@ func (fake *fakeLooper) Loop(arg1 context.Context, arg2 string, arg3 map[string]
 	fake.recordInvocation("Loop", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6, arg7})
 	fake.loopMutex.Unlock()
 	if fake.LoopStub != nil {
-		return fake.LoopStub(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+		fake.LoopStub(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 	}
-	if specificReturn {
-		return ret.result1
-	}
-	fakeReturns := fake.loopReturns
-	return fakeReturns.result1
 }
 
 func (fake *fakeLooper) LoopCallCount() int {
@@ -60,7 +48,7 @@ func (fake *fakeLooper) LoopCallCount() int {
 	return len(fake.loopArgsForCall)
 }
 
-func (fake *fakeLooper) LoopCalls(stub func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) error) {
+func (fake *fakeLooper) LoopCalls(stub func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string)) {
 	fake.loopMutex.Lock()
 	defer fake.loopMutex.Unlock()
 	fake.LoopStub = stub
@@ -71,29 +59,6 @@ func (fake *fakeLooper) LoopArgsForCall(i int) (context.Context, string, map[str
 	defer fake.loopMutex.RUnlock()
 	argsForCall := fake.loopArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6, argsForCall.arg7
-}
-
-func (fake *fakeLooper) LoopReturns(result1 error) {
-	fake.loopMutex.Lock()
-	defer fake.loopMutex.Unlock()
-	fake.LoopStub = nil
-	fake.loopReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *fakeLooper) LoopReturnsOnCall(i int, result1 error) {
-	fake.loopMutex.Lock()
-	defer fake.loopMutex.Unlock()
-	fake.LoopStub = nil
-	if fake.loopReturnsOnCall == nil {
-		fake.loopReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.loopReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *fakeLooper) Invocations() map[string][][]interface{} {

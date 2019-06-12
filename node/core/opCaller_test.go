@@ -58,14 +58,15 @@ var _ = Context("opCaller", func() {
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeCaller := new(fakeCaller)
+			fakeDotYmlGetter := new(dotyml.FakeGetter)
 			// err to trigger immediate return
-			fakeCaller.CallReturns(errors.New("dummyError"))
+			fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
-				caller:    fakeCaller,
-				callStore: new(fakeCallStore),
-				pubSub:    fakePubSub,
+				caller:       new(fakeCaller),
+				callStore:    new(fakeCallStore),
+				dotYmlGetter: fakeDotYmlGetter,
+				pubSub:       fakePubSub,
 			}
 
 			/* act */
@@ -117,13 +118,16 @@ var _ = Context("opCaller", func() {
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
 			fakeCaller := new(fakeCaller)
+
+			fakeDotYmlGetter := new(dotyml.FakeGetter)
 			// err to trigger immediate return
-			fakeCaller.CallReturns(errors.New("dummyErr"))
+			fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
-				caller:    fakeCaller,
-				callStore: new(fakeCallStore),
-				pubSub:    fakePubSub,
+				caller:       fakeCaller,
+				callStore:    new(fakeCallStore),
+				dotYmlGetter: fakeDotYmlGetter,
+				pubSub:       fakePubSub,
 			}
 
 			/* act */
@@ -258,15 +262,15 @@ var _ = Context("opCaller", func() {
 					close(eventChannel)
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
-					fakeCaller := new(fakeCaller)
-					fakeCaller.CallReturns(
-						errors.New("dummyError"),
-					)
+					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					// err to trigger immediate return
+					fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
 
 					objectUnderTest := _opCaller{
-						caller:    fakeCaller,
-						callStore: new(fakeCallStore),
-						pubSub:    fakePubSub,
+						caller:       new(fakeCaller),
+						callStore:    new(fakeCallStore),
+						dotYmlGetter: fakeDotYmlGetter,
+						pubSub:       fakePubSub,
 					}
 
 					/* act */
