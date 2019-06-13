@@ -1,6 +1,7 @@
 package core
 
 import (
+	"sync"
 	"context"
 	"fmt"
 
@@ -44,10 +45,13 @@ var _ = Context("parallelCaller", func() {
 				},
 			}
 
+			mtx := sync.Mutex{}
+
 			fakeCaller := new(fakeCaller)
 			eventChannel := make(chan model.Event, 100)
 			callerCallIndex := 0
 			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+				mtx.Lock()
 				eventChannel <- model.Event{
 					CallEnded: &model.CallEndedEvent{
 						CallID: fmt.Sprintf("%v", callerCallIndex),
@@ -55,12 +59,12 @@ var _ = Context("parallelCaller", func() {
 				}
 
 				callerCallIndex++
+
+				mtx.Unlock()
 			}
 
 			fakePubSub := new(pubsub.Fake)
-			fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-				return eventChannel, make(chan error)
-			}
+			fakePubSub.SubscribeReturns(eventChannel, nil)
 
 			fakeUniqueStringFactory := new(uniquestring.Fake)
 			uniqueStringCallIndex := 0
@@ -110,7 +114,7 @@ var _ = Context("parallelCaller", func() {
 				Expect(providedSCGParallelCalls).To(ContainElement(actualSCG))
 			}
 		})
-		XContext("CallEnded event received w/ Error", func() {
+		Context("CallEnded event received w/ Error", func() {
 			It("should publish expected CallEndedEvent", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
@@ -138,21 +142,41 @@ var _ = Context("parallelCaller", func() {
 					childErrorMessages = append(childErrorMessages, errorMessage)
 				}
 
-				fakePubSub := new(pubsub.Fake)
+				mtx := sync.Mutex{}
+
+				fakeCaller := new(fakeCaller)
 				eventChannel := make(chan model.Event, 100)
-				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-					for index := range providedSCGParallelCalls {
-						eventChannel <- model.Event{
-							CallEnded: &model.CallEndedEvent{
-								CallID: fmt.Sprintf("%v", index),
-								Error: &model.CallEndedEventError{
-									Message: errorMessage,
-								},
+				callerCallIndex := 0
+				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+					mtx.Lock()
+
+					eventChannel <- model.Event{
+						CallEnded: &model.CallEndedEvent{
+							CallID: fmt.Sprintf("%v", callerCallIndex),
+							Error: &model.CallEndedEventError{
+								Message: errorMessage,
 							},
-						}
+						},
 					}
 
-					return eventChannel, make(chan error)
+					callerCallIndex++
+
+					mtx.Unlock()
+				}
+
+				fakePubSub := new(pubsub.Fake)
+				fakePubSub.SubscribeReturns(eventChannel, nil)
+
+				fakeUniqueStringFactory := new(uniquestring.Fake)
+				uniqueStringCallIndex := 0
+				expectedChildCallIds := []string{}
+				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
+					defer func() {
+						uniqueStringCallIndex++
+					}()
+					childCallID := fmt.Sprintf("%v", uniqueStringCallIndex)
+					expectedChildCallIds = append(expectedChildCallIds, childCallID)
+					return childCallID, nil
 				}
 
 				var formattedChildErrorMessages string
@@ -164,17 +188,8 @@ var _ = Context("parallelCaller", func() {
 					formattedChildErrorMessages,
 				)
 
-				fakeUniqueStringFactory := new(uniquestring.Fake)
-				uniqueStringCallIndex := 0
-				fakeUniqueStringFactory.ConstructStub = func() (string, error) {
-					defer func() {
-						uniqueStringCallIndex++
-					}()
-					return fmt.Sprintf("%v", uniqueStringCallIndex), nil
-				}
-
 				objectUnderTest := _parallelCaller{
-					caller:              new(fakeCaller),
+					caller:              fakeCaller,
 					pubSub:              fakePubSub,
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
@@ -217,10 +232,14 @@ var _ = Context("parallelCaller", func() {
 					},
 				}
 
+				mtx := sync.Mutex{}
+
 				fakeCaller := new(fakeCaller)
 				eventChannel := make(chan model.Event, 100)
 				callerCallIndex := 0
 				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+					mtx.Lock()
+					
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEndedEvent{
 							CallID: fmt.Sprintf("%v", callerCallIndex),
@@ -228,12 +247,11 @@ var _ = Context("parallelCaller", func() {
 					}
 
 					callerCallIndex++
+					mtx.Unlock()
 				}
 
 				fakePubSub := new(pubsub.Fake)
-				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-					return eventChannel, make(chan error)
-				}
+				fakePubSub.SubscribeReturns(eventChannel, nil)
 
 				fakeUniqueStringFactory := new(uniquestring.Fake)
 				uniqueStringCallIndex := 0

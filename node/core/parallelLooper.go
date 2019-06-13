@@ -4,7 +4,7 @@ package core
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"time"
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
@@ -16,7 +16,7 @@ import (
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
 
-type looper interface {
+type parallelLooper interface {
 	// Loop loops a call
 	Loop(
 		ctx context.Context,
@@ -29,11 +29,11 @@ type looper interface {
 	)
 }
 
-func newLooper(
+func newParallelLooper(
 	caller caller,
 	pubSub pubsub.PubSub,
 ) looper {
-	return _looper{
+	return _parallelLooper{
 		caller:              caller,
 		iterationScoper:     iteration.NewScoper(),
 		loopableInterpreter: loopable.NewInterpreter(),
@@ -44,7 +44,7 @@ func newLooper(
 	}
 }
 
-type _looper struct {
+type _parallelLooper struct {
 	caller              caller
 	iterationScoper     iteration.Scoper
 	loopableInterpreter loopable.Interpreter
@@ -54,7 +54,7 @@ type _looper struct {
 	loopInterpreter     loop.Interpreter
 }
 
-func (lpr _looper) Loop(
+func (plpr _parallelLooper) Loop(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
@@ -63,8 +63,12 @@ func (lpr _looper) Loop(
 	parentCallID *string,
 	rootOpID string,
 ) {
-	var err error
+	// setup cancellation
+	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
+	defer cancelChildren()
+
 	outboundScope := map[string]*model.Value{}
+	var err error
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
@@ -83,12 +87,12 @@ func (lpr _looper) Loop(
 			}
 		}
 
-		lpr.pubSub.Publish(event)
+		plpr.pubSub.Publish(event)
 	}()
 
-	index := 0
-	outboundScope, err = lpr.iterationScoper.Scope(
-		index,
+	childCallIndex := 0
+	outboundScope, err = plpr.iterationScoper.Scope(
+		childCallIndex,
 		inboundScope,
 		scg.Loop,
 		opHandle,
@@ -103,7 +107,7 @@ func (lpr _looper) Loop(
 
 	// interpret initial iteration of the loop
 	var dcgLoop *model.DCGLoop
-	dcgLoop, err = lpr.loopInterpreter.Interpret(
+	dcgLoop, err = plpr.loopInterpreter.Interpret(
 		opHandle,
 		scgLoop,
 		outboundScope,
@@ -112,18 +116,23 @@ func (lpr _looper) Loop(
 		return
 	}
 
-	for !loop.IsIterationComplete(index, dcgLoop) {
-		eventFilterSince := time.Now().UTC()
+	startTime := time.Now().UTC()
+	childCallIDIndexMap := map[string]int{}
+	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
-		var callID string
-		callID, err = lpr.uniqueStringFactory.Construct()
+	for !loop.IsIterationComplete(childCallIndex, dcgLoop) {
+
+		var childCallID string
+		childCallID, err = plpr.uniqueStringFactory.Construct()
 		if nil != err {
-			return
+			// cancel all children on any error
+			cancelChildren()
 		}
+		childCallIDIndexMap[childCallID] = childCallIndex
 
-		lpr.caller.Call(
-			ctx,
-			callID,
+		go plpr.caller.Call(
+			ctxOfChildren,
+			childCallID,
 			outboundScope,
 			scg,
 			opHandle,
@@ -131,40 +140,14 @@ func (lpr _looper) Loop(
 			rootOpID,
 		)
 
-		// subscribe to events
-		// @TODO: handle err channel
-		eventChannel, _ := lpr.pubSub.Subscribe(
-			ctx,
-			model.EventFilter{
-				Roots: []string{rootOpID},
-				Since: &eventFilterSince,
-			},
-		)
+		childCallIndex++
 
-	eventLoop:
-		for event := range eventChannel {
-			// merge child outboundScope w/ outboundScope, child outboundScope having precedence
-			switch {
-			case nil != event.CallEnded && event.CallEnded.CallID == callID:
-				if nil != event.CallEnded.Error {
-					err = errors.New(event.CallEnded.Error.Message)
-					return
-				}
-				for name, value := range event.CallEnded.Outputs {
-					outboundScope[name] = value
-				}
-				break eventLoop
-			}
-		}
-
-		index++
-
-		if loop.IsIterationComplete(index, dcgLoop) {
+		if loop.IsIterationComplete(childCallIndex, dcgLoop) {
 			break
 		}
 
-		outboundScope, err = lpr.iterationScoper.Scope(
-			index,
+		outboundScope, err = plpr.iterationScoper.Scope(
+			childCallIndex,
 			outboundScope,
 			scgLoop,
 			opHandle,
@@ -174,7 +157,7 @@ func (lpr _looper) Loop(
 		}
 
 		// interpret next iteration of the loop
-		dcgLoop, err = lpr.loopInterpreter.Interpret(
+		dcgLoop, err = plpr.loopInterpreter.Interpret(
 			opHandle,
 			scgLoop,
 			outboundScope,
@@ -182,9 +165,65 @@ func (lpr _looper) Loop(
 		if nil != err {
 			return
 		}
+
 	}
 
-	outboundScope = lpr.loopDeScoper.DeScope(
+	// subscribe to events
+	// @TODO: handle err channel
+	eventChannel, _ := plpr.pubSub.Subscribe(
+		ctx,
+		model.EventFilter{
+			Roots: []string{rootOpID},
+			Since: &startTime,
+		},
+	)
+
+	if len(childCallIDIndexMap) == 0 {
+		return
+	}
+
+	childErrorMessages := []string{}
+	for event := range eventChannel {
+		if nil != event.CallEnded {
+			if childCallIndex, isChildCallEnded := childCallIDIndexMap[event.CallEnded.CallID]; isChildCallEnded {
+				callIndexOutputsMap[childCallIndex] = event.CallEnded.Outputs
+				if nil != event.CallEnded.Error {
+					// cancel all children on any error
+					cancelChildren()
+					childErrorMessages = append(childErrorMessages, event.CallEnded.Error.Message)
+				}
+			}
+
+			if len(callIndexOutputsMap) == len(childCallIDIndexMap) {
+				// all calls have ended
+
+				// construct parallel outputs
+				for i := 0; i < len(childCallIDIndexMap); i++ {
+					callOutputs := callIndexOutputsMap[i]
+					for varName, varData := range callOutputs {
+						outboundScope[varName] = varData
+					}
+				}
+
+				// construct parallel error
+				if len(childErrorMessages) != 0 {
+					var formattedChildErrorMessages string
+					for _, childErrorMessage := range childErrorMessages {
+						formattedChildErrorMessages = fmt.Sprintf("\t-%v\n", childErrorMessage)
+					}
+					err = fmt.Errorf(
+						"-\nError(s) during parallel call. Error(s) were:\n%v\n-",
+						formattedChildErrorMessages,
+					)
+				}
+
+				return
+			}
+
+		}
+	}
+
+	outboundScope = plpr.loopDeScoper.DeScope(
 		inboundScope,
 		scgLoop,
 		outboundScope,

@@ -79,6 +79,7 @@ func (pc _parallelCaller) Call(
 		)
 	}()
 
+	startTime := time.Now().UTC()
 	childCallIDIndexMap := map[string]int{}
 	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
@@ -106,12 +107,11 @@ func (pc _parallelCaller) Call(
 
 	// subscribe to events
 	// @TODO: handle err channel
-	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := pc.pubSub.Subscribe(
 		ctx,
 		model.EventFilter{
 			Roots: []string{rootOpID},
-			Since: &eventFilterSince,
+			Since: &startTime,
 		},
 	)
 
@@ -127,7 +127,7 @@ func (pc _parallelCaller) Call(
 				}
 			}
 
-			if len(callIndexOutputsMap) == len(scgParallelCall) {
+			if len(callIndexOutputsMap) == len(childCallIDIndexMap) {
 				// all calls have ended
 
 				// construct parallel outputs

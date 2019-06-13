@@ -128,6 +128,7 @@ func (oc _opCaller) Call(
 
 	opOutputs := map[string]*model.Value{}
 
+eventLoop:
 	for event := range eventChannel {
 		switch {
 		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
@@ -142,7 +143,7 @@ func (oc _opCaller) Call(
 			for name, value := range event.CallEnded.Outputs {
 				opOutputs[name] = value
 			}
-			return
+			break eventLoop
 		}
 	}
 
