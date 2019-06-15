@@ -1,9 +1,9 @@
 package core
 
 import (
-	"sync"
 	"context"
 	"fmt"
+	"sync"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -239,7 +239,7 @@ var _ = Context("parallelCaller", func() {
 				callerCallIndex := 0
 				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
 					mtx.Lock()
-					
+
 					eventChannel <- model.Event{
 						CallEnded: &model.CallEndedEvent{
 							CallID: fmt.Sprintf("%v", callerCallIndex),

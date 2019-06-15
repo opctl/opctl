@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
@@ -16,7 +17,6 @@ import (
 	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/uniquestring"
-	"github.com/ghodss/yaml"
 )
 
 var _ = Context("Interpreter", func() {
@@ -33,7 +33,7 @@ var _ = Context("Interpreter", func() {
 				if nil != err {
 					panic(err)
 				}
-				rootPath := "../../../../github.com/opctl/specs/test-suite"
+				rootPath := "./testdata/test-suite"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {

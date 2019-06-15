@@ -41,7 +41,7 @@ run:
             statik -src webapp/build -dest node -f
         dirs:
           /go/src/github.com/opctl/opctl: $(srcDir)
-        image: { ref: 'golang:1.11.5' }
+        image: { ref: 'golang:1.12.6' }
         workDir: /go/src/github.com/opctl/opctl
     - op:
         pkg: { ref: node/build }

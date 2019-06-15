@@ -5,8 +5,8 @@ package dotyml
 import (
 	"bytes"
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
 	"github.com/ghodss/yaml"
+	"github.com/opctl/sdk-golang/model"
 )
 
 // @TODO make private

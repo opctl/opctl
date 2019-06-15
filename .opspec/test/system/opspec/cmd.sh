@@ -10,7 +10,7 @@ test_description="opspec test-suite scenarios"
 
 . sharness/sharness.sh
 
-for dir in $(find /src/github.com/opctl/specs/test-suite/pkg/**/ -type d)
+for dir in $(find /src/specs/test-suite/pkg/**/ -type d)
 do
   if [ -f "$dir/scenarios.yml" ]
   then

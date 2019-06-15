@@ -26,5 +26,5 @@ run:
         go generate "$(path)"
     dirs:
       /go/src/github.com/opctl/sdk-golang: $(srcDir)
-    image: { ref: 'golang:1.11.5' }
+    image: { ref: 'golang:1.12.6' }
     workDir: /go/src/github.com/opctl/sdk-golang

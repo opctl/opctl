@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/opfile"
-	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -25,7 +25,7 @@ var _ = Describe("Validator", func() {
 	Context("Validate", func() {
 		Context("called w/ opspec test-suite scenarios", func() {
 			It("should return result fulfilling scenario.validate.expect", func() {
-				rootPath := "../github.com/opctl/specs/test-suite"
+				rootPath := "./testdata/test-suite"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {

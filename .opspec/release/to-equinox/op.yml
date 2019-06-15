@@ -53,5 +53,5 @@ run:
     envVars:
       EQUINOX_SIGNING_KEY: $(equinoxSigningKey)
       CGO_ENABLED: '0'
-    image: { ref: 'golang:1.11.5' }
+    image: { ref: 'golang:1.12.6' }
     workDir: /go/src/github.com/opctl/opctl
