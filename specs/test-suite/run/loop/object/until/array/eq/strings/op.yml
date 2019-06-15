@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/eq/strings
+run:
+  loop:
+    until:
+      - eq: [string2,string1]
+  serial: []

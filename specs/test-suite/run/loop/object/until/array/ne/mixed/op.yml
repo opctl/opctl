@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/eq/mixed
+run:
+  loop:
+    until:
+      - eq: [true, 2, { p1: v1 }, "string"]
+  serial: []

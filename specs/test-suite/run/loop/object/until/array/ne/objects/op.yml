@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/ne/objects
+run:
+  loop:
+    until:
+      - ne: [{p1: v1},{p2: v2}]
+  serial: []

@@ -1,0 +1,10 @@
+name: inputs/object-input/constraints/required
+inputs:
+  object:
+    object:
+      constraints:
+        required: [ a, b ]
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

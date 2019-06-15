@@ -1,0 +1,24 @@
+description: runs a build
+name: build
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+run:
+  serial:
+    - container:
+        cmd:
+          - sh
+          - -ce
+          - |
+            yarn add json-schema-ref-parser
+            node /index.js
+        dirs:
+          /src: $(srcDir)
+        files:
+          /index.js:
+        image: { ref: "node:11.2.0-alpine" }
+    - op:
+        ref: test
+        inputs: { srcDir }

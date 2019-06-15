@@ -1,0 +1,5 @@
+name: run/if/array/eq/not-array
+run:
+  if:
+    - eq: *
+  serial: []

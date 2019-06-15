@@ -1,0 +1,4 @@
+{
+    "description": "True if no value exists w/ reference",
+    "$ref": "../../reference.json"
+  }

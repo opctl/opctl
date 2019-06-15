@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "each": {
+      "description": "Value to be looped over",
+      "$ref": "../../loopableExpression.json"
+    },
+    "key": {
+      "description": "Variable each iterations associated key will be made available through",
+      "type": "string"
+    },
+    "value": {
+      "description": "Variable each iterations associated value will be made available through",
+      "type": "string"
+    }
+  },
+  "required": [
+    "each"
+  ],
+  "type": "object"
+}

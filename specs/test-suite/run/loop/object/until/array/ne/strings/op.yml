@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/ne/strings
+run:
+  loop:
+    until:
+      - ne: [string2,string1]
+  serial: []

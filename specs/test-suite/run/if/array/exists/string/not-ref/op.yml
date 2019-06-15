@@ -1,0 +1,5 @@
+name: run/if/array/exists/string/not-ref
+run:
+  if:
+    - exists: (/)
+  serial: []

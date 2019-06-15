@@ -1,0 +1,4 @@
+name: run/op/pkg/not-object
+run:
+  op:
+    pkg: []

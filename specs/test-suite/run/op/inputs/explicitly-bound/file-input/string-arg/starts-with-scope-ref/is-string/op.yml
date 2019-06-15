@@ -1,0 +1,9 @@
+name: run/op/inputs/explicitly-bound/file-input/string-arg/starts-with-scope-ref/is-string
+inputs:
+  string:
+    string:
+      default: " "
+run:
+  op:
+    pkg: { ref: is-string/_ }
+    inputs: { file: $(string)suffix }

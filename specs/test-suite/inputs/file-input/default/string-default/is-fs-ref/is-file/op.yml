@@ -1,0 +1,10 @@
+name: inputs/file-input/default/string-default/is-fs-ref/is-file
+inputs:
+  file:
+    file:
+      default: /op.yml
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [cat, /file]
+    files: { /file: $(file) }

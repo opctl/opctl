@@ -1,0 +1,3 @@
+name: run/serial/not-array
+run:
+  serial: *

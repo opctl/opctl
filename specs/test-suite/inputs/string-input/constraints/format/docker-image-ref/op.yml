@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/docker-image-ref
+inputs:
+  string:
+    string:
+      constraints:
+        format: docker-image-ref
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

@@ -1,0 +1,9 @@
+name: inputs/string-input/default/object-default
+inputs:
+  string:
+    string:
+      default: { hello: world }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

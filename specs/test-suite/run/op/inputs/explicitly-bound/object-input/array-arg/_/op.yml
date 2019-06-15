@@ -1,0 +1,8 @@
+name: _
+inputs:
+  object:
+    object: {}
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

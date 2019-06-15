@@ -1,0 +1,38 @@
+- name: all applicable properties meets constraints
+  call:
+    expect: success
+    scope:
+      object:
+        object: { a: a, b: b }
+- name: no applicable properties meet constraints
+  call:
+    expect: failure
+    scope:
+      object:
+        object: { a: b, b: a }
+- name: some applicable properties meets constraints
+  call:
+    expect: failure
+    scope:
+      object:
+        object: { a: a, b: a }
+- name: all applicable properties meets constraints
+  interpret:
+    expect: success
+    scope:
+      object:
+        object: { a: a, b: b }
+- name: no applicable properties meet constraints
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: { a: b, b: a }
+- name: some applicable properties meets constraints
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: { a: a, b: a }
+- validate:
+    expect: success

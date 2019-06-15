@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/number-input/string-arg/is-fs-ref/is-file/contains-number
+run:
+  op:
+    pkg: { ref: contains-number/_ }
+    inputs: { number: $(/file.txt) }

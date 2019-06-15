@@ -1,0 +1,10 @@
+name: inputs/string/constraints/minlength
+inputs:
+  string:
+    string:
+      constraints:
+        minLength: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

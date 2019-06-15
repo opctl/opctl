@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/string-input/string-arg/contains-fs-ref/isnt-resolvable
+run:
+  op:
+    pkg: { ref: isnt-resolvable/_ }
+    inputs: { string: prefix$(/file.txt)suffix }

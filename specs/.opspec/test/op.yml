@@ -1,0 +1,17 @@
+description: runs all test ops
+name: test
+inputs:
+  srcDir:
+    dir:
+      default: .
+      description: directory containing the projects source code
+run:
+  parallel:
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/openapispec.v3.validate-spec#1.0.0 }
+        inputs:
+          spec: $(srcDir/api/openapi.yaml)
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/jsonschema.draft7.validate-schema#1.0.0 }
+        inputs:
+          schema: $(srcDir/opspec/opfile/jsonschema.json)

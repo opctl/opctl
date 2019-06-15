@@ -1,0 +1,6 @@
+name: run/loop/object/until/array/eq/numbers
+run:
+  loop:
+    until:
+      - eq: [2,3]
+  serial: []

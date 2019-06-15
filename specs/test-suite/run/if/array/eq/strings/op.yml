@@ -1,0 +1,5 @@
+name: run/if/array/eq/strings
+run:
+  if:
+    - eq: [string2,string1]
+  serial: []

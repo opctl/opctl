@@ -1,0 +1,9 @@
+name: inputs/dir-input/default/string-default/is-fs-ref/is-file
+inputs:
+  dir:
+    dir:
+      default: /op.yml
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]
