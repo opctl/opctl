@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/opfile"
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 	"path/filepath"
 )
 
