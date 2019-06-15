@@ -83,7 +83,7 @@ func githubComOpctlSpecsOpspecOpfileJsonschemaJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "github.com/opctl/specs/opspec/opfile/jsonschema.json", size: 40555, mode: os.FileMode(420), modTime: time.Unix(1559259542, 0)}
+	info := bindataFileInfo{name: "github.com/opctl/specs/opspec/opfile/jsonschema.json", size: 40555, mode: os.FileMode(420), modTime: time.Unix(1560472523, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

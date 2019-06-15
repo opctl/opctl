@@ -153,7 +153,7 @@ var _ = Context("pubSub", func() {
 							OpID:     "dummyOpID",
 							OpRef:    "dummyOpRef",
 						},
-						Timestamp: time.Now(),
+						Timestamp: time.Now().Add(time.Second),
 					}
 
 					tempFilePath, err := ioutil.TempFile("", "")

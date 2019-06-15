@@ -63,21 +63,21 @@ type Value struct {
 // Unbox unboxes a Value into a native go type
 func (vlu Value) Unbox() (interface{}, error) {
 	if nil != vlu.Array {
-		return vlu.Array, nil
+		return *vlu.Array, nil
 	} else if nil != vlu.Boolean {
-		return vlu.Boolean, nil
+		return *vlu.Boolean, nil
 	} else if nil != vlu.Dir {
-		return vlu.Dir, nil
+		return *vlu.Dir, nil
 	} else if nil != vlu.File {
-		return vlu.File, nil
+		return *vlu.File, nil
 	} else if nil != vlu.Number {
-		return vlu.Number, nil
+		return *vlu.Number, nil
 	} else if nil != vlu.Object {
-		return vlu.Object, nil
+		return *vlu.Object, nil
 	} else if nil != vlu.Socket {
-		return vlu.Socket, nil
+		return *vlu.Socket, nil
 	} else if nil != vlu.String {
-		return vlu.String, nil
+		return *vlu.String, nil
 	}
 	return nil, fmt.Errorf("unable to unbox value %+v; box unknown", vlu)
 }

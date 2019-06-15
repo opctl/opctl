@@ -9,7 +9,7 @@ import (
 )
 
 type fakeSerialCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG) error
+	CallStub        func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
@@ -19,24 +19,17 @@ type fakeSerialCaller struct {
 		arg5 model.DataHandle
 		arg6 []*model.SCG
 	}
-	callReturns struct {
-		result1 error
-	}
-	callReturnsOnCall map[int]struct {
-		result1 error
-	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 model.DataHandle, arg6 []*model.SCG) error {
+func (fake *fakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 model.DataHandle, arg6 []*model.SCG) {
 	var arg6Copy []*model.SCG
 	if arg6 != nil {
 		arg6Copy = make([]*model.SCG, len(arg6))
 		copy(arg6Copy, arg6)
 	}
 	fake.callMutex.Lock()
-	ret, specificReturn := fake.callReturnsOnCall[len(fake.callArgsForCall)]
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
@@ -48,13 +41,8 @@ func (fake *fakeSerialCaller) Call(arg1 context.Context, arg2 string, arg3 map[s
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.callMutex.Unlock()
 	if fake.CallStub != nil {
-		return fake.CallStub(arg1, arg2, arg3, arg4, arg5, arg6)
+		fake.CallStub(arg1, arg2, arg3, arg4, arg5, arg6)
 	}
-	if specificReturn {
-		return ret.result1
-	}
-	fakeReturns := fake.callReturns
-	return fakeReturns.result1
 }
 
 func (fake *fakeSerialCaller) CallCallCount() int {
@@ -63,7 +51,7 @@ func (fake *fakeSerialCaller) CallCallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeSerialCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG) error) {
+func (fake *fakeSerialCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
@@ -74,29 +62,6 @@ func (fake *fakeSerialCaller) CallArgsForCall(i int) (context.Context, string, m
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
-}
-
-func (fake *fakeSerialCaller) CallReturns(result1 error) {
-	fake.callMutex.Lock()
-	defer fake.callMutex.Unlock()
-	fake.CallStub = nil
-	fake.callReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *fakeSerialCaller) CallReturnsOnCall(i int, result1 error) {
-	fake.callMutex.Lock()
-	defer fake.callMutex.Unlock()
-	fake.CallStub = nil
-	if fake.callReturnsOnCall == nil {
-		fake.callReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.callReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *fakeSerialCaller) Invocations() map[string][][]interface{} {

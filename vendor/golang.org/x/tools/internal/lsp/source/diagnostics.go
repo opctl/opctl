@@ -63,8 +63,11 @@ func Diagnostics(ctx context.Context, v View, f GoFile, disabledAnalyses map[str
 	}
 
 	// Prepare any additional reports for the errors in this package.
-	for _, pkgErr := range pkg.GetErrors() {
-		addReport(v, reports, packageErrorSpan(pkgErr).URI(), nil)
+	for _, err := range pkg.GetErrors() {
+		if err.Kind != packages.ListError {
+			continue
+		}
+		addReport(v, reports, listErrorSpan(err).URI(), nil)
 	}
 
 	// Run diagnostics for the package that this URI belongs to.
@@ -108,7 +111,7 @@ func diagnostics(ctx context.Context, v View, pkg Package, reports map[span.URI]
 		diags = listErrors
 	}
 	for _, diag := range diags {
-		spn := packageErrorSpan(diag)
+		spn := listErrorSpan(diag)
 		if spn.IsPoint() && diag.Kind == packages.TypeError {
 			spn = pointToSpan(ctx, v, spn)
 		}
@@ -178,7 +181,7 @@ func parseDiagnosticMessage(input string) span.Span {
 	return span.Parse(input[:msgIndex])
 }
 
-func packageErrorSpan(pkgErr packages.Error) span.Span {
+func listErrorSpan(pkgErr packages.Error) span.Span {
 	if pkgErr.Pos == "" {
 		return parseDiagnosticMessage(pkgErr.Msg)
 	}
@@ -234,33 +237,35 @@ func singleDiagnostic(uri span.URI, format string, a ...interface{}) map[span.UR
 	}
 }
 
-func runAnalyses(ctx context.Context, v View, pkg Package, disabledAnalyses map[string]struct{}, report func(a *analysis.Analyzer, diag analysis.Diagnostic) error) error {
+var Analyzers = []*analysis.Analyzer{
 	// The traditional vet suite:
+	asmdecl.Analyzer,
+	assign.Analyzer,
+	atomic.Analyzer,
+	atomicalign.Analyzer,
+	bools.Analyzer,
+	buildtag.Analyzer,
+	cgocall.Analyzer,
+	composite.Analyzer,
+	copylock.Analyzer,
+	httpresponse.Analyzer,
+	loopclosure.Analyzer,
+	lostcancel.Analyzer,
+	nilfunc.Analyzer,
+	printf.Analyzer,
+	shift.Analyzer,
+	stdmethods.Analyzer,
+	structtag.Analyzer,
+	tests.Analyzer,
+	unmarshal.Analyzer,
+	unreachable.Analyzer,
+	unsafeptr.Analyzer,
+	unusedresult.Analyzer,
+}
+
+func runAnalyses(ctx context.Context, v View, pkg Package, disabledAnalyses map[string]struct{}, report func(a *analysis.Analyzer, diag analysis.Diagnostic) error) error {
 	var analyzers []*analysis.Analyzer
-	for _, a := range []*analysis.Analyzer{
-		asmdecl.Analyzer,
-		assign.Analyzer,
-		atomic.Analyzer,
-		atomicalign.Analyzer,
-		bools.Analyzer,
-		buildtag.Analyzer,
-		cgocall.Analyzer,
-		composite.Analyzer,
-		copylock.Analyzer,
-		httpresponse.Analyzer,
-		loopclosure.Analyzer,
-		lostcancel.Analyzer,
-		nilfunc.Analyzer,
-		printf.Analyzer,
-		shift.Analyzer,
-		stdmethods.Analyzer,
-		structtag.Analyzer,
-		tests.Analyzer,
-		unmarshal.Analyzer,
-		unreachable.Analyzer,
-		unsafeptr.Analyzer,
-		unusedresult.Analyzer,
-	} {
+	for _, a := range Analyzers {
 		if _, ok := disabledAnalyses[a.Name]; ok {
 			continue
 		}

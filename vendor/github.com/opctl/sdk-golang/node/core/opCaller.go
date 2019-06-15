@@ -4,6 +4,7 @@ package core
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -20,7 +21,7 @@ type opCaller interface {
 		inboundScope map[string]*model.Value,
 		parentCallID *string,
 		scgOpCall *model.SCGOpCall,
-	) error
+	)
 }
 
 func newOpCaller(
@@ -52,7 +53,7 @@ func (oc _opCaller) Call(
 	inboundScope map[string]*model.Value,
 	parentCallID *string,
 	scgOpCall *model.SCGOpCall,
-) error {
+) {
 	var err error
 	outboundScope := map[string]*model.Value{}
 
@@ -93,9 +94,11 @@ func (oc _opCaller) Call(
 
 	}()
 
+	opStartedTime := time.Now().UTC()
+
 	oc.pubSub.Publish(
 		model.Event{
-			Timestamp: time.Now().UTC(),
+			Timestamp: opStartedTime,
 			OpStarted: &model.OpStartedEvent{
 				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpHandle.Ref(),
@@ -104,16 +107,7 @@ func (oc _opCaller) Call(
 		},
 	)
 
-	// establish op output channel
-	opOutputsChan := make(chan map[string]*model.Value, 1)
-	go func() {
-		opOutputsChan <- oc.waitOnOpOutputs(
-			ctx,
-			dcgOpCall,
-		)
-	}()
-
-	err = oc.caller.Call(
+	oc.caller.Call(
 		ctx,
 		dcgOpCall.ChildCallID,
 		dcgOpCall.Inputs,
@@ -123,19 +117,43 @@ func (oc _opCaller) Call(
 		dcgOpCall.RootOpID,
 	)
 
-	if nil != err {
-		return err
+	// subscribe to events
+	eventChannel, _ := oc.pubSub.Subscribe(
+		ctx,
+		model.EventFilter{
+			Roots: []string{dcgOpCall.RootOpID},
+			Since: &opStartedTime,
+		},
+	)
+
+	opOutputs := map[string]*model.Value{}
+
+eventLoop:
+	for event := range eventChannel {
+		switch {
+		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
+			// parent ended prematurely
+			return
+		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
+			if nil != event.CallEnded.Error {
+				err = errors.New(event.CallEnded.Error.Message)
+				// end on any error
+				return
+			}
+			for name, value := range event.CallEnded.Outputs {
+				opOutputs[name] = value
+			}
+			break eventLoop
+		}
 	}
 
-	// wait on op outboundScope
-	opOutputs := <-opOutputsChan
-
-	opDotYml, err := oc.dotYmlGetter.Get(
+	var opDotYml *model.OpDotYml
+	opDotYml, err = oc.dotYmlGetter.Get(
 		ctx,
 		dcgOpCall.OpHandle,
 	)
 	if nil != err {
-		return err
+		return
 	}
 	opPath := dcgOpCall.OpHandle.Path()
 	opOutputs, err = oc.outputsInterpreter.Interpret(opOutputs, opDotYml.Outputs, *opPath)
@@ -153,38 +171,4 @@ func (oc _opCaller) Call(
 			}
 		}
 	}
-
-	return err
-}
-
-func (oc _opCaller) waitOnOpOutputs(
-	ctx context.Context,
-	dcgOpCall *model.DCGOpCall,
-) map[string]*model.Value {
-	// subscribe to events
-	eventFilterSince := time.Now().UTC()
-	eventChannel, _ := oc.pubSub.Subscribe(
-		ctx,
-		model.EventFilter{
-			Roots: []string{dcgOpCall.RootOpID},
-			Since: &eventFilterSince,
-		},
-	)
-
-	opOutputs := map[string]*model.Value{}
-eventLoop:
-	for event := range eventChannel {
-		switch {
-		case nil != event.OpEnded && event.OpEnded.OpID == dcgOpCall.OpID:
-			// parent ended prematurely
-			return nil
-		case nil != event.CallEnded && event.CallEnded.CallID == dcgOpCall.ChildCallID:
-			for name, value := range event.CallEnded.Outputs {
-				opOutputs[name] = value
-			}
-			break eventLoop
-		}
-	}
-
-	return opOutputs
 }
