@@ -7,7 +7,7 @@
     outerRef:
       number:
         1000000
-  expected: 1000000
+  expected: '1000000'
 
 - name: at start
   template: $($(innerRef))suffix

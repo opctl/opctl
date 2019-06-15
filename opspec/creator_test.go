@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 )
 
 var _ = Context("Creator", func() {
@@ -103,7 +103,7 @@ var _ = Context("Creator", func() {
 		/* assert */
 		actualPath, actualData, actualPerms := fakeIOUtil.WriteFileArgsForCall(0)
 		Expect(actualPath).To(Equal(expectedPath))
-		Expect(actualData).To(Equal(expectedData))
+		Expect(string(actualData)).To(Equal(string(expectedData)))
 		Expect(actualPerms).To(Equal(expectedPerms))
 	})
 

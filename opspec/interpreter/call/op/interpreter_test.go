@@ -16,7 +16,7 @@ import (
 	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 	"github.com/opctl/sdk-golang/opspec/opfile"
 	"github.com/opctl/sdk-golang/util/uniquestring"
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 )
 
 var _ = Context("Interpreter", func() {

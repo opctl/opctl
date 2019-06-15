@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/opfile"
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"os"
 	"path/filepath"

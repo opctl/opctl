@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
-	"gopkg.in/yaml.v2"
+	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"os"
 	"path/filepath"
