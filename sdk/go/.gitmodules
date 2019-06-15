@@ -1,0 +1,4 @@
+[submodule "github.com/opctl/specs"]
+	path = github.com/opctl/specs
+	url = https://github.com/opctl/specs.git
+
