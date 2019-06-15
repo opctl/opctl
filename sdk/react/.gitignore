@@ -1,0 +1,12 @@
+### yarn
+node_modules
+yarn-*
+
+### codecov.io
+coverage/
+
+### jest
+jest*/
+
+## build
+lib/
