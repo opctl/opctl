@@ -1,0 +1,40 @@
+name: release
+description: creates a release
+inputs:
+  srcDir:
+    dir:
+      description: dir containing the projects source code
+      default: .
+  npmAuthToken:
+    string:
+      description: |
+        authToken cred for auth w/ registry; see 
+        [how to create a new authentication token](https://docs.npmjs.com/private-modules/ci-server-config#how-to-create-a-new-authentication-token)
+        for how to create one for the [npm](https://npmjs.com) registry. 
+      isSecret: true
+  version:
+    string:
+      constraints: { format: semver }
+      description: version being published
+opspec: 0.1.6
+run:
+  serial:
+    - op:
+        pkg: { ref: build }
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/npm.pkg.set-version#1.1.0 }
+        inputs:
+          pkgDotJson: $(srcDir/package.json)
+          version:
+        outputs:
+          $(srcDir/package.json): pkgDotJson
+    - op:
+        pkg: { ref: github.com/opspec-pkgs/npm.publish-dir#2.0.0 }
+        inputs:
+          authToken: $(npmAuthToken)
+          access: public
+          pkgDir: $(srcDir)
+
+

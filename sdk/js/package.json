@@ -1,0 +1,43 @@
+{
+  "dependencies": {
+    "@codefresh-io/docker-reference": "^0.0.5",
+    "@types/node-fetch": "^2.3.2",
+    "ajv": "^5.2.3",
+    "node-fetch": "^1.7.3",
+    "typescript": "^3.4.3",
+    "universal-websocket-client": "^1.0.1"
+  },
+  "files": [
+    "lib"
+  ],
+  "name": "@opctl/sdk",
+  "version": "0.0.0-alpha.4",
+  "description": "Javascript SDK for opctl",
+  "scripts": {
+    "test": "standard --fix *.ts && jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opctl/sdk-js.git"
+  },
+  "keywords": [
+    "opctl"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/opctl/sdk-js/issues"
+  },
+  "main": "lib",
+  "standard": {
+    "envs": [
+      "jest"
+    ]
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "jest": "^24.7.1",
+    "nock": "^9.0.22",
+    "standard": "^11.0.1",
+    "ts-jest": "^24.0.2"
+  }
+}
