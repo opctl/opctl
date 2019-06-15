@@ -1,4 +1,0 @@
-tree:
-  dir1
-    \
-     file2.txt
