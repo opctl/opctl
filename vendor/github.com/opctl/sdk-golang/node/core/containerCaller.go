@@ -22,7 +22,7 @@ type containerCaller interface {
 		dcgContainerCall *model.DCGContainerCall,
 		inboundScope map[string]*model.Value,
 		scgContainerCall *model.SCGContainerCall,
-	) error
+	)
 }
 
 func newContainerCaller(
@@ -49,7 +49,32 @@ func (cc _containerCaller) Call(
 	dcgContainerCall *model.DCGContainerCall,
 	inboundScope map[string]*model.Value,
 	scgContainerCall *model.SCGContainerCall,
-) error {
+) {
+	var err error
+	outputs := map[string]*model.Value{}
+	var exitCode int64
+
+	defer func() {
+		event := model.Event{
+			Timestamp: time.Now().UTC(),
+			ContainerExited: &model.ContainerExitedEvent{
+				ContainerID: dcgContainerCall.ContainerID,
+				OpRef:       dcgContainerCall.OpHandle.Ref(),
+				RootOpID:    dcgContainerCall.RootOpID,
+				ExitCode:    exitCode,
+				Outputs:     outputs,
+			},
+		}
+
+		if nil != err {
+			event.ContainerExited.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		cc.pubSub.Publish(event)
+	}()
+
 	cc.pubSub.Publish(
 		model.Event{
 			Timestamp: time.Now().UTC(),
@@ -74,20 +99,21 @@ func (cc _containerCaller) Call(
 		)
 	}()
 
-	outputs := cc.interpretOutputs(
+	outputs = cc.interpretOutputs(
 		scgContainerCall,
 		dcgContainerCall,
 	)
 
-	rawExitCode, err := cc.containerRuntime.RunContainer(
+	var rawExitCode *int64
+	rawExitCode, err = cc.containerRuntime.RunContainer(
 		ctx,
 		dcgContainerCall,
 		cc.pubSub,
 		logStdOutPW,
 		logStdErrPW,
 	)
+
 	// @TODO: handle no exit code
-	var exitCode int64
 	if nil != rawExitCode {
 		exitCode = *rawExitCode
 	}
@@ -101,20 +127,6 @@ func (cc _containerCaller) Call(
 		// non-destructively set err
 		err = logChanErr
 	}
-
-	cc.pubSub.Publish(
-		model.Event{
-			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
-				ContainerID: dcgContainerCall.ContainerID,
-				OpRef:       dcgContainerCall.OpHandle.Ref(),
-				RootOpID:    dcgContainerCall.RootOpID,
-				ExitCode:    exitCode,
-				Outputs:     outputs,
-			},
-		},
-	)
-	return err
 }
 
 func (this _containerCaller) interpretLogs(

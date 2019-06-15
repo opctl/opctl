@@ -269,6 +269,7 @@ var _ = Context("caller", func() {
 				Expect(actualSCG).To(Equal(providedSCG.Container))
 			})
 		})
+
 		Context("Op SCG", func() {
 			It("should call opCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -329,6 +330,7 @@ var _ = Context("caller", func() {
 				Expect(actualSCG).To(Equal(providedSCG.Op))
 			})
 		})
+
 		Context("Parallel SCG", func() {
 			It("should call parallelCaller.Call w/ expected args", func() {
 				/* arrange */
@@ -387,6 +389,7 @@ var _ = Context("caller", func() {
 				Expect(actualSCG).To(Equal(providedSCG.Parallel))
 			})
 		})
+
 		Context("Serial SCG", func() {
 
 			It("should call serialCaller.Call w/ expected args", func() {
@@ -447,11 +450,10 @@ var _ = Context("caller", func() {
 				Expect(actualSCG).To(Equal(providedSCG.Serial))
 			})
 		})
+
 		Context("No SCG", func() {
 			It("should error", func() {
 				/* arrange */
-				fakeSerialCaller := new(fakeSerialCaller)
-
 				providedCallID := "dummyCallID"
 				providedArgs := map[string]*model.Value{}
 				providedSCG := &model.SCG{}
@@ -472,13 +474,11 @@ var _ = Context("caller", func() {
 				objectUnderTest := _caller{
 					callInterpreter: fakeCallInterpreter,
 					callStore:       new(fakeCallStore),
-					containerCaller: new(fakeContainerCaller),
 					pubSub:          fakePubSub,
-					serialCaller:    fakeSerialCaller,
 				}
 
 				/* act */
-				actualError := objectUnderTest.Call(
+				objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
 					providedArgs,
@@ -489,7 +489,9 @@ var _ = Context("caller", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(expectedError))
+				actualEvent := fakePubSub.PublishArgsForCall(0)
+
+				Expect(actualEvent.CallEnded.Error.Message).To(Equal(expectedError.Error()))
 			})
 		})
 	})

@@ -3,9 +3,9 @@ package cache
 import (
 	"context"
 	"fmt"
-	"go/parser"
 
 	"golang.org/x/tools/go/packages"
+	"golang.org/x/tools/internal/lsp/source"
 	"golang.org/x/tools/internal/span"
 )
 
@@ -18,9 +18,8 @@ func (v *view) loadParseTypecheck(ctx context.Context, f *goFile) ([]packages.Er
 	if f.astIsTrimmed() {
 		f.invalidateAST()
 	}
-
 	// Save the metadata's current missing imports, if any.
-	var originalMissingImports map[string]struct{}
+	var originalMissingImports map[packagePath]struct{}
 	if f.meta != nil {
 		originalMissingImports = f.meta.missingImports
 	}
@@ -37,23 +36,24 @@ func (v *view) loadParseTypecheck(ctx context.Context, f *goFile) ([]packages.Er
 	if sameSet(originalMissingImports, f.meta.missingImports) && f.pkg != nil {
 		return nil, nil
 	}
-
 	imp := &importer{
 		view:          v,
-		seen:          make(map[string]struct{}),
+		seen:          make(map[packageID]struct{}),
 		ctx:           ctx,
 		fset:          f.FileSet(),
 		topLevelPkgID: f.meta.id,
 	}
-
 	// Start prefetching direct imports.
-	for importPath := range f.meta.children {
-		go imp.Import(importPath)
+	for importID := range f.meta.children {
+		go imp.getPkg(importID)
 	}
 	// Type-check package.
-	pkg, err := imp.getPkg(f.meta.pkgPath)
-	if pkg == nil || pkg.IsIllTyped() {
+	pkg, err := imp.getPkg(f.meta.id)
+	if err != nil {
 		return nil, err
+	}
+	if pkg == nil || pkg.IsIllTyped() {
+		return nil, fmt.Errorf("loadParseTypecheck: %s is ill typed", f.meta.pkgPath)
 	}
 	// If we still have not found the package for the file, something is wrong.
 	if f.pkg == nil {
@@ -62,7 +62,7 @@ func (v *view) loadParseTypecheck(ctx context.Context, f *goFile) ([]packages.Er
 	return nil, nil
 }
 
-func sameSet(x, y map[string]struct{}) bool {
+func sameSet(x, y map[packagePath]struct{}) bool {
 	if len(x) != len(y) {
 		return false
 	}
@@ -83,13 +83,13 @@ func (v *view) checkMetadata(ctx context.Context, f *goFile) ([]packages.Error, 
 	pkgs, err := packages.Load(v.buildConfig(), fmt.Sprintf("file=%s", f.filename()))
 	if len(pkgs) == 0 {
 		if err == nil {
-			err = fmt.Errorf("no packages found for %s", f.filename())
+			err = fmt.Errorf("go/packages.Load: no packages found for %s", f.filename())
 		}
 		// Return this error as a diagnostic to the user.
 		return []packages.Error{
 			{
 				Msg:  err.Error(),
-				Kind: packages.ListError,
+				Kind: packages.UnknownError,
 			},
 		}, err
 	}
@@ -100,7 +100,7 @@ func (v *view) checkMetadata(ctx context.Context, f *goFile) ([]packages.Error, 
 			return pkg.Errors, fmt.Errorf("package %s has errors, skipping type-checking", pkg.PkgPath)
 		}
 		// Build the import graph for this package.
-		v.link(ctx, pkg.PkgPath, pkg, nil)
+		v.link(ctx, packagePath(pkg.PkgPath), pkg, nil)
 	}
 	return nil, nil
 }
@@ -112,11 +112,7 @@ func (v *view) parseImports(ctx context.Context, f *goFile) bool {
 		return true
 	}
 	// Get file content in case we don't already have it.
-	data, _, err := f.Handle(ctx).Read(ctx)
-	if err != nil {
-		return true
-	}
-	parsed, _ := parser.ParseFile(f.FileSet(), f.filename(), data, parser.ImportsOnly)
+	parsed, _ := v.session.cache.ParseGoHandle(f.Handle(ctx), source.ParseHeader).Parse(ctx)
 	if parsed == nil {
 		return true
 	}
@@ -130,25 +126,33 @@ func (v *view) parseImports(ctx context.Context, f *goFile) bool {
 		return true
 	}
 	for i, importSpec := range f.imports {
-		if importSpec.Path.Value != f.imports[i].Path.Value {
+		if importSpec.Path.Value != parsed.Imports[i].Path.Value {
 			return true
 		}
 	}
 	return false
 }
 
-func (v *view) link(ctx context.Context, pkgPath string, pkg *packages.Package, parent *metadata) *metadata {
-	m, ok := v.mcache.packages[pkgPath]
+func (v *view) link(ctx context.Context, pkgPath packagePath, pkg *packages.Package, parent *metadata) *metadata {
+	id := packageID(pkg.ID)
+	m, ok := v.mcache.packages[id]
+
+	// If a file was added or deleted we need to invalidate the package cache
+	// so relevant packages get parsed and type checked again.
+	if ok && !filenamesIdentical(m.files, pkg.CompiledGoFiles) {
+		v.invalidatePackage(id)
+	}
+	// If we haven't seen this package before.
 	if !ok {
 		m = &metadata{
-			pkgPath:        pkgPath,
-			id:             pkg.ID,
-			typesSizes:     pkg.TypesSizes,
-			parents:        make(map[string]bool),
-			children:       make(map[string]bool),
-			missingImports: make(map[string]struct{}),
+			pkgPath:    pkgPath,
+			id:         id,
+			typesSizes: pkg.TypesSizes,
+			parents:    make(map[packageID]bool),
+			children:   make(map[packageID]bool),
 		}
-		v.mcache.packages[pkgPath] = m
+		v.mcache.packages[id] = m
+		v.mcache.ids[pkgPath] = id
 	}
 	// Reset any field that could have changed across calls to packages.Load.
 	m.name = pkg.Name
@@ -164,25 +168,51 @@ func (v *view) link(ctx context.Context, pkgPath string, pkg *packages.Package, 
 	}
 	// Connect the import graph.
 	if parent != nil {
-		m.parents[parent.pkgPath] = true
-		parent.children[pkgPath] = true
+		m.parents[parent.id] = true
+		parent.children[id] = true
 	}
+	m.missingImports = make(map[packagePath]struct{})
 	for importPath, importPkg := range pkg.Imports {
 		if len(importPkg.Errors) > 0 {
-			m.missingImports[pkg.PkgPath] = struct{}{}
+			m.missingImports[pkgPath] = struct{}{}
 		}
-		if _, ok := m.children[importPath]; !ok {
-			v.link(ctx, importPath, importPkg, m)
+		if _, ok := m.children[packageID(importPkg.ID)]; !ok {
+			v.link(ctx, packagePath(importPath), importPkg, m)
 		}
 	}
 	// Clear out any imports that have been removed.
-	for importPath := range m.children {
-		if _, ok := pkg.Imports[importPath]; !ok {
-			delete(m.children, importPath)
-			if child, ok := v.mcache.packages[importPath]; ok {
-				delete(child.parents, pkgPath)
-			}
+	for importID := range m.children {
+		child, ok := v.mcache.packages[importID]
+		if !ok {
+			continue
 		}
+		importPath := string(child.pkgPath)
+		if _, ok := pkg.Imports[importPath]; ok {
+			continue
+		}
+		delete(m.children, importID)
+		delete(child.parents, id)
 	}
 	return m
+}
+
+// filenamesIdentical reports whether two sets of file names are identical.
+func filenamesIdentical(oldFiles, newFiles []string) bool {
+	if len(oldFiles) != len(newFiles) {
+		return false
+	}
+
+	oldByName := make(map[string]struct{}, len(oldFiles))
+	for _, filename := range oldFiles {
+		oldByName[filename] = struct{}{}
+	}
+
+	for _, newFilename := range newFiles {
+		if _, found := oldByName[newFilename]; !found {
+			return false
+		}
+		delete(oldByName, newFilename)
+	}
+
+	return len(oldByName) == 0
 }

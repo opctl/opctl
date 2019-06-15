@@ -5,8 +5,9 @@ package iteration
 import (
 	"sort"
 
+	"github.com/opctl/sdk-golang/opspec/interpreter/value"
+
 	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 
 	"github.com/opctl/sdk-golang/model"
 )
@@ -27,13 +28,13 @@ type Scoper interface {
 func NewScoper() Scoper {
 	return _scoper{
 		loopableInterpreter: loopable.NewInterpreter(),
-		stringInterpreter:   stringPkg.NewInterpreter(),
+		valueInterpreter:    value.NewInterpreter(),
 	}
 }
 
 type _scoper struct {
 	loopableInterpreter loopable.Interpreter
-	stringInterpreter   stringPkg.Interpreter
+	valueInterpreter    value.Interpreter
 }
 
 func (lpr _scoper) sortMap(
@@ -97,14 +98,18 @@ func (lpr _scoper) Scope(
 			}
 		}
 
-		// interpret value as string since everything is coercible to string
-		outboundScope[*scgLoop.For.Value], err = lpr.stringInterpreter.Interpret(
-			outboundScope,
-			rawValue,
-			opHandle,
-		)
-		if nil != err {
-			return nil, err
+		if nil != scgLoop.For.Value {
+			var value model.Value
+			value, err = lpr.valueInterpreter.Interpret(
+				rawValue,
+				outboundScope,
+				opHandle,
+			)
+			if nil != err {
+				return nil, err
+			}
+
+			outboundScope[*scgLoop.For.Value] = &value
 		}
 	}
 

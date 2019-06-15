@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
 
@@ -134,19 +133,34 @@ var _ = Context("looper", func() {
 				fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
 				fakeCaller := new(fakeCaller)
-				// error to trigger immediate return
-				fakeCaller.CallReturns(errors.New("dummyError"))
 
-				expectedID := "expectedID"
+				callID := "callID"
+
+				expectedErrorMessage := "expectedErrorMessage"
+				fakePubSub := new(pubsub.Fake)
+				eventChannel := make(chan model.Event, 100)
+				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+					eventChannel <- model.Event{
+						CallEnded: &model.CallEndedEvent{
+							CallID: callID,
+							Error: &model.CallEndedEventError{
+								Message: expectedErrorMessage,
+							},
+						},
+					}
+
+					return eventChannel, make(chan error)
+				}
+
 				fakeUniqueStringFactory := new(uniquestring.Fake)
-				fakeUniqueStringFactory.ConstructReturns(expectedID, nil)
+				fakeUniqueStringFactory.ConstructReturns(callID, nil)
 
 				objectUnderTest := _looper{
 					caller:              fakeCaller,
 					loopDeScoper:        new(loop.FakeDeScoper),
 					loopInterpreter:     fakeLoopInterpreter,
 					iterationScoper:     fakeIterationScoper,
-					pubSub:              new(pubsub.Fake),
+					pubSub:              fakePubSub,
 					uniqueStringFactory: fakeUniqueStringFactory,
 				}
 
@@ -171,7 +185,7 @@ var _ = Context("looper", func() {
 					actualRootOpID := fakeCaller.CallArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(providedCtx))
-				Expect(actualCallID).To(Equal(expectedID))
+				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
 				Expect(actualSCG).To(Equal(providedSCG))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))

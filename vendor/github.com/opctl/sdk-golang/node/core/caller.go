@@ -4,8 +4,8 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/opctl/sdk-golang/model"
@@ -23,7 +23,7 @@ type caller interface {
 		opHandle model.DataHandle,
 		parentCallID *string,
 		rootOpID string,
-	) error
+	)
 }
 
 func newCaller(
@@ -55,7 +55,6 @@ func newCaller(
 
 	instance.parallelCaller = newParallelCaller(
 		instance,
-		callKiller,
 		pubSub,
 	)
 
@@ -86,15 +85,14 @@ func (clr _caller) Call(
 	opHandle model.DataHandle,
 	parentCallID *string,
 	rootOpID string,
-) error {
+) {
 	ctx, cancel := context.WithCancel(ctx)
 	var err error
 	var outputs map[string]*model.Value
-	var wg sync.WaitGroup
+	callStartTime := time.Now().UTC()
 
 	defer func() {
-		wg.Wait()
-		cancel()
+		<-ctx.Done()
 
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
@@ -116,44 +114,63 @@ func (clr _caller) Call(
 	}()
 
 	if nil == scg {
+		cancel()
 		// No Op
-		return nil
+		return
 	}
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer cancel()
+
 		eventChannel, _ := clr.pubSub.Subscribe(
 			ctx,
-			model.EventFilter{Roots: []string{rootOpID}},
+			model.EventFilter{
+				Roots: []string{rootOpID},
+				Since: &callStartTime,
+			},
 		)
 
-	eventLoop:
 		for event := range eventChannel {
 			switch {
 			case nil != event.CallEnded && event.CallEnded.CallID == id:
+				if nil != event.CallEnded.Error {
+					err = errors.New(event.CallEnded.Error.Message)
+				}
 				outputs = event.CallEnded.Outputs
-				break eventLoop
+				return
 			case nil != event.ContainerExited && event.ContainerExited.ContainerID == id:
+				if nil != event.ContainerExited.Error {
+					err = errors.New(event.ContainerExited.Error.Message)
+				}
 				outputs = event.ContainerExited.Outputs
-				break eventLoop
+				return
 			case nil != event.OpEnded && event.OpEnded.OpID == id:
+				if nil != event.OpEnded.Error {
+					err = errors.New(event.OpEnded.Error.Message)
+				}
 				outputs = event.OpEnded.Outputs
-				break eventLoop
+				return
 			case nil != event.SerialCallEnded && event.SerialCallEnded.CallID == id:
+				if nil != event.SerialCallEnded.Error {
+					err = errors.New(event.SerialCallEnded.Error.Message)
+				}
 				outputs = event.SerialCallEnded.Outputs
-				break eventLoop
+				return
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == id:
-				break eventLoop
+				if nil != event.ParallelCallEnded.Error {
+					err = errors.New(event.ParallelCallEnded.Error.Message)
+				}
+				outputs = event.ParallelCallEnded.Outputs
+				return
 			// if call killed, propogate to context
 			case nil != event.CallKilled && event.CallKilled.CallID == id:
-				cancel()
+				return
 			}
 		}
 	}()
 
 	if nil != scg.Loop {
-		err = clr.looper.Loop(
+		clr.looper.Loop(
 			ctx,
 			id,
 			scope,
@@ -162,7 +179,7 @@ func (clr _caller) Call(
 			parentCallID,
 			rootOpID,
 		)
-		return err
+		return
 	}
 
 	var dcg *model.DCG
@@ -175,36 +192,37 @@ func (clr _caller) Call(
 		rootOpID,
 	)
 	if nil != err {
-		return err
+		cancel()
+		return
 	}
 
 	if nil != dcg.If && !*dcg.If {
 		cancel()
-		return nil
+		return
 	}
 
 	clr.callStore.Add(dcg)
 
 	switch {
 	case nil != scg.Container:
-		err = clr.containerCaller.Call(
+		clr.containerCaller.Call(
 			ctx,
 			dcg.Container,
 			scope,
 			scg.Container,
 		)
-		return err
+		return
 	case nil != scg.Op:
-		err = clr.opCaller.Call(
+		clr.opCaller.Call(
 			ctx,
 			dcg.Op,
 			scope,
 			parentCallID,
 			scg.Op,
 		)
-		return err
+		return
 	case len(scg.Parallel) > 0:
-		err = clr.parallelCaller.Call(
+		clr.parallelCaller.Call(
 			ctx,
 			id,
 			scope,
@@ -212,9 +230,9 @@ func (clr _caller) Call(
 			opHandle,
 			scg.Parallel,
 		)
-		return err
+		return
 	case len(scg.Serial) > 0:
-		err = clr.serialCaller.Call(
+		clr.serialCaller.Call(
 			ctx,
 			id,
 			scope,
@@ -222,10 +240,11 @@ func (clr _caller) Call(
 			opHandle,
 			scg.Serial,
 		)
-		return err
+		return
 	default:
 		err = fmt.Errorf("Invalid call graph %+v\n", scg)
-		return err
+		cancel()
+		return
 	}
 
 }
