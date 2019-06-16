@@ -5,5 +5,5 @@ inputs:
       default: /file.txt
 run:
   op:
-    pkg: { ref: contains-letter/_ }
+    ref: contains-letter/_
     inputs: { number: $(file) }

@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/string-input/string-arg/is-fs-ref/isnt-resolvable
 run:
   op:
-    pkg: { ref: isnt-resolvable/_ }
+    ref: isnt-resolvable/_
     inputs: { string: $(/file.txt) }

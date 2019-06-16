@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/file-input/string-arg/is-fs-ref-with-path/is-file
 run:
   op:
-    pkg: { ref: is-file/_ }
+    ref: is-file/_
     inputs: { file: $(/dir/file.txt) }

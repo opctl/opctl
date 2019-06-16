@@ -4,5 +4,5 @@ inputs:
     string: {}
 run:
   op:
-    pkg: { ref: input-undefined/_ }
+    ref: input-undefined/_
     inputs: { undefined }

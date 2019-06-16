@@ -5,5 +5,5 @@ inputs:
       default: " "
 run:
   op:
-    pkg: { ref: is-string/_ }
+    ref: is-string/_
     inputs: { dir: $(string) }

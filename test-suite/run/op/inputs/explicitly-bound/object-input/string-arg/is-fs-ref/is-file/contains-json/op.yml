@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/object-input/string-arg/is-fs-ref/is-file/contains-json
 run:
   op:
-    pkg: { ref: contains-json/_ }
+    ref: contains-json/_
     inputs: { object: $(/file.json) }

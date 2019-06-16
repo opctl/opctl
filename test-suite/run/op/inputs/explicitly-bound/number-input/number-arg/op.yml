@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/number-input/number-arg
 run:
   op:
-    pkg: { ref: number-arg/_ }
+    ref: number-arg/_
     inputs: { number: 7}

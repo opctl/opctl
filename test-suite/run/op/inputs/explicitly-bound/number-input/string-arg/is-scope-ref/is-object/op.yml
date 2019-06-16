@@ -5,5 +5,5 @@ inputs:
       default: {}
 run:
   op:
-    pkg: { ref: is-object/_ }
+    ref: is-object/_
     inputs: { number: $(object) }

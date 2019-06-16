@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/string-input/string-arg/isnt-ref
 run:
   op:
-    pkg: { ref: isnt-ref/_ }
+    ref: isnt-ref/_
     inputs: { string: a}

@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/dir-input/array-arg
 run:
   op:
-    pkg: { ref: array-arg/_ }
+    ref: array-arg/_
     inputs: { dir: [] }

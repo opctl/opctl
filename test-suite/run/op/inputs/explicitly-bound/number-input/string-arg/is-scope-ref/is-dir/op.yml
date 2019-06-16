@@ -5,5 +5,5 @@ inputs:
       default: /dir
 run:
   op:
-    pkg: { ref: is-dir/_ }
+    ref: is-dir/_
     inputs: { number: $(dir) }

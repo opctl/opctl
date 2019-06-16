@@ -5,5 +5,5 @@ inputs:
       default: /file.txt
 run:
   op:
-    pkg: { ref: is-file/_ }
+    ref: is-file/_
     inputs: { dir: $(file) }

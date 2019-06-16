@@ -5,5 +5,5 @@ inputs:
       default: /file.json
 run:
   op:
-    pkg: { ref: contains-json/_ }
+    ref: contains-json/_
     inputs: { object: $(file) }

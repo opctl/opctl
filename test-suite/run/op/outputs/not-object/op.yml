@@ -1,5 +1,5 @@
 name: run/op/outputs/not-object
 run:
   op:
-    pkg: { ref: not-object/_ }
+    ref: not-object/_
     outputs: []

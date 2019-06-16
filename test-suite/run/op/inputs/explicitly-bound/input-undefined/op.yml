@@ -1,5 +1,5 @@
 name: run/op/inputs/explicitly-bound/input-undefined
 run:
   op:
-    pkg: { ref: input-undefined/_ }
+    ref: input-undefined/_
     inputs: { undefined: a}
