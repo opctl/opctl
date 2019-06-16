@@ -79,18 +79,24 @@ func (oc _opCaller) Call(
 			opOutcome = model.OpOutcomeSucceeded
 		}
 
-		oc.pubSub.Publish(
-			model.Event{
-				Timestamp: time.Now().UTC(),
-				OpEnded: &model.OpEndedEvent{
-					OpID:     dcgOpCall.OpID,
-					OpRef:    dcgOpCall.OpHandle.Ref(),
-					Outcome:  opOutcome,
-					RootOpID: dcgOpCall.RootOpID,
-					Outputs:  outboundScope,
-				},
+		event := model.Event{
+			Timestamp: time.Now().UTC(),
+			OpEnded: &model.OpEndedEvent{
+				OpID:     dcgOpCall.OpID,
+				OpRef:    dcgOpCall.OpHandle.Ref(),
+				Outcome:  opOutcome,
+				RootOpID: dcgOpCall.RootOpID,
+				Outputs:  outboundScope,
 			},
-		)
+		}
+
+		if nil != err {
+			event.OpEnded.Error = &model.CallEndedEventError{
+				Message: err.Error(),
+			}
+		}
+
+		oc.pubSub.Publish(event)
 
 	}()
 

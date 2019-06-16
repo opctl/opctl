@@ -6,12 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/ghodss/yaml"
 )
 
 var _ = Context("Creator", func() {

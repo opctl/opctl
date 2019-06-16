@@ -4,8 +4,8 @@ package dotyml
 
 import (
 	"fmt"
-	"github.com/xeipuuv/gojsonschema"
 	"github.com/ghodss/yaml"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 type validator interface {

@@ -3,10 +3,10 @@ package dotyml
 import (
 	"errors"
 	"fmt"
+	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/ghodss/yaml"
 )
 
 var _ = Context("unmarshaller", func() {

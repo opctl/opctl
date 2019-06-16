@@ -244,10 +244,14 @@ var _ = Context("opCaller", func() {
 					}
 
 					providedSCGOpCall := &model.SCGOpCall{}
+					errMsg := "errMsg"
 
 					expectedEvent := model.Event{
 						Timestamp: time.Now().UTC(),
 						OpEnded: &model.OpEndedEvent{
+							Error: &model.CallEndedEventError{
+								Message: errMsg,
+							},
 							OpID:     providedDCGOpCall.OpID,
 							OpRef:    providedOpHandleRef,
 							Outcome:  model.OpOutcomeFailed,
@@ -264,7 +268,7 @@ var _ = Context("opCaller", func() {
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					// err to trigger immediate return
-					fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
+					fakeDotYmlGetter.GetReturns(nil, errors.New(errMsg))
 
 					objectUnderTest := _opCaller{
 						caller:       new(fakeCaller),

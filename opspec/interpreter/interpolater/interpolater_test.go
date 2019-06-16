@@ -3,11 +3,11 @@ package interpolater
 import (
 	"context"
 	"fmt"
+	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/ghodss/yaml"
 	"io/ioutil"
 	"os"
 	"path/filepath"
