@@ -39,8 +39,8 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
-	Ref       string     `yaml:"ref"`
-	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
+	Ref       string     `json:"ref"`
+	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
 type DCGLoop struct {
@@ -64,8 +64,8 @@ type DCGOpCall struct {
 }
 
 type DCGOpCallPkg struct {
-	Ref       string     `yaml:"ref"`
-	PullCreds *PullCreds `yaml:"pullCreds,omitempty"`
+	Ref       string     `json:"ref"`
+	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
 type DCGPredicate struct {

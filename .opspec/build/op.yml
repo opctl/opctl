@@ -18,19 +18,19 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: clean }
+        ref: clean
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: test }
+        ref: test
         inputs: { srcDir }
         outputs: { srcDir, coverprofile }
     - op:
-        pkg: { ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2 }
+        ref: github.com/opspec-pkgs/git.repo.resolve-commit#1.0.2
         inputs: { dotGitDir: $(srcDir/.git) }
         outputs: { commit }
     - op:
-        pkg: { ref: github.com/opspec-pkgs/codecov.upload#1.1.0 }
+        ref: github.com/opspec-pkgs/codecov.upload#1.1.0
         inputs:
           gitBranch:
           gitCommit: $(commit)

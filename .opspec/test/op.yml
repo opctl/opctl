@@ -16,10 +16,10 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: github.com/opspec-pkgs/golang.fmt#1.2.0 }
+        ref: github.com/opspec-pkgs/golang.fmt#1.2.0
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: test/unit }
+        ref: test/unit
         inputs: { srcDir }
         outputs: { srcDir, coverprofile}

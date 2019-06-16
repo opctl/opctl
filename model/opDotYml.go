@@ -1,10 +1,10 @@
 package model
 
 type OpDotYml struct {
-	Description string            `yaml:"description"`
-	Inputs      map[string]*Param `yaml:"inputs,omitempty"`
-	Name        string            `yaml:"name"`
-	Outputs     map[string]*Param `yaml:"outputs,omitempty"`
-	Run         *SCG              `yaml:"run,omitempty"`
-	Version     string            `yaml:"version,omitempty"`
+	Description string            `json:"description"`
+	Inputs      map[string]*Param `json:"inputs,omitempty"`
+	Name        string            `json:"name"`
+	Outputs     map[string]*Param `json:"outputs,omitempty"`
+	Run         *SCG              `json:"run,omitempty"`
+	Version     string            `json:"version,omitempty"`
 }

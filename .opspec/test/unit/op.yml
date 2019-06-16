@@ -35,5 +35,5 @@ run:
         image: { ref: 'golang:1.12.6' }
         workDir: /src
     - op:
-        pkg: { ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0 }
+        ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
         inputs: { coverprofile, minCoverage: 46 }
