@@ -17,6 +17,8 @@ All notable changes will be documented in this file in accordance with
 ### Removed
 
 - [`stdOut` & `stdErr` attributes from container call.](https://github.com/opctl/specs/issues/231). Use files.
+- `pkg` attribute in
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall); `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
 
 ## \[0.1.6] - 2018-04-05
 
