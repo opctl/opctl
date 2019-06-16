@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/opctl/sdk-golang.svg?branch=master)](https://travis-ci.org/opctl/sdk-golang)
-[![Go Report Card](https://goreportcard.com/badge/github.com/opctl/sdk-golang)](https://goreportcard.com/report/github.com/opctl/sdk-golang)
+[![Go Report Card](https://goreportcard.com/badge/github.com/opctl/opctl/sdk/go)](https://goreportcard.com/report/github.com/opctl/opctl/sdk/go)
 [![Coverage](https://codecov.io/gh/opctl/sdk-golang/branch/master/graph/badge.svg)](https://codecov.io/gh/opctl/sdk-golang)
 
 > *Be advised: this project is currently at Major version zero. Per the
@@ -11,13 +11,13 @@ Golang SDK for [opctl](https://opctl.io)
 
 # Documentation
 
-see [![GoDoc](https://godoc.org/github.com/opctl/sdk-golang?status.svg)](http://godoc.org/github.com/opctl/sdk-golang)
+see [![GoDoc](https://godoc.org/github.com/opctl/opctl/sdk/go?status.svg)](http://godoc.org/github.com/opctl/opctl/sdk/go)
 
 # Support
 
 join us on
 [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
-or [open an issue](https://github.com/opctl/sdk-golang/issues)
+or [open an issue](https://github.com/opctl/opctl/sdk/go/issues)
 
 # Releases
 

@@ -1,8 +1,8 @@
 package notexists
 
 import (
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/reference"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

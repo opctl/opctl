@@ -1,9 +1,9 @@
 package ops
 
 import (
-	"github.com/opctl/sdk-golang/node/api/handler/ops/kills"
-	"github.com/opctl/sdk-golang/node/api/handler/ops/starts"
-	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/opctl/sdk/go/node/api/handler/ops/kills"
+	"github.com/opctl/opctl/sdk/go/node/api/handler/ops/starts"
+	"github.com/opctl/opctl/sdk/go/node/core"
 	"net/http"
 	"net/http/httptest"
 	"strings"

@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api/handler/pkgs/ref/contents"
-	"github.com/opctl/sdk-golang/node/core"
-	"github.com/opctl/sdk-golang/util/urlpath"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/node/api/handler/pkgs/ref/contents"
+	"github.com/opctl/opctl/sdk/go/node/core"
+	"github.com/opctl/opctl/sdk/go/util/urlpath"
 )
 
 // Handler deprecated

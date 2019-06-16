@@ -3,5 +3,5 @@
 // Implementation
 //
 // The interpreter is a Tree-Walking interpreter.
-// Values are represented by the Value struct of the github.com/opctl/sdk-golang/model package.
+// Values are represented by the Value struct of the github.com/opctl/opctl/sdk/go/model package.
 package interpreter

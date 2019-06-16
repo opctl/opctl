@@ -3,9 +3,9 @@ package unbracketed
 import (
 	"fmt"
 
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
+	"github.com/opctl/opctl/sdk/go/data/coerce"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/reference/identifier/value"
 )
 
 // Interpreter interprets an unbracketed identifier from ref as determined by unbracketed/parser.go

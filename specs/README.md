@@ -19,7 +19,7 @@ Rule of thumb for all integrations should be
 # Support
 
 join us on [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
-or [open an issue](https://github.com/opctl/sdk-golang/issues)
+or [open an issue](https://github.com/opctl/opctl/sdk/go/issues)
 
 # Releases
 

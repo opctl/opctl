@@ -5,11 +5,11 @@ package iteration
 import (
 	"sort"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/value"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 type Scoper interface {

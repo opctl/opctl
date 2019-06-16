@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference/direntry"
-	unbracketedIdentifier "github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/unbracketed"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/reference/direntry"
+	unbracketedIdentifier "github.com/opctl/opctl/sdk/go/opspec/interpreter/reference/identifier/unbracketed"
 
-	"github.com/opctl/sdk-golang/data/coerce"
+	"github.com/opctl/opctl/sdk/go/data/coerce"
 
-	"github.com/opctl/sdk-golang/model"
-	bracketedIdentifier "github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/bracketed"
+	"github.com/opctl/opctl/sdk/go/model"
+	bracketedIdentifier "github.com/opctl/opctl/sdk/go/opspec/interpreter/reference/identifier/bracketed"
 )
 
 // Interpreter interprets refs of the form:

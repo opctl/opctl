@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/golang-interfaces/ios"
+	"github.com/opctl/opctl/sdk/go/data"
+	"github.com/opctl/opctl/sdk/go/model"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
 	"net/url"
 )
 

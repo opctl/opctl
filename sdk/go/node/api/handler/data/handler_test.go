@@ -1,12 +1,12 @@
 package data
 
 import (
-	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/opctl/sdk/go/node/core"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opctl/sdk-golang/node/api/handler/data/ref"
+	"github.com/opctl/opctl/sdk/go/node/api/handler/data/ref"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

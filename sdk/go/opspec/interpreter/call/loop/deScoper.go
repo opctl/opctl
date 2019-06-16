@@ -3,7 +3,7 @@ package loop
 //go:generate counterfeiter -o ./fakeDeScoper.go --fake-name FakeDeScoper ./ DeScoper
 
 import (
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 type DeScoper interface {

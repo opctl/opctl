@@ -3,8 +3,8 @@ package params
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/params/param"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/op/params/param"
 )
 
 var _ = Context("Validator", func() {

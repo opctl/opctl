@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/cmd"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/dirs"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/envvars"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/files"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/image"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container/sockets"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/cmd"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/dirs"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/envvars"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/files"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/image"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/container/sockets"
+	stringPkg "github.com/opctl/opctl/sdk/go/opspec/interpreter/string"
 )
 
 type Interpreter interface {

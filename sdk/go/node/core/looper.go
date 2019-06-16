@@ -7,13 +7,13 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
-	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/loop"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/loop/iteration"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/util/pubsub"
+	"github.com/opctl/opctl/sdk/go/util/uniquestring"
 )
 
 type looper interface {

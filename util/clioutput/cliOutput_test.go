@@ -4,8 +4,8 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdk/go/model"
 	"github.com/opctl/opctl/util/clicolorer"
-	"github.com/opctl/sdk-golang/model"
 	"time"
 )
 

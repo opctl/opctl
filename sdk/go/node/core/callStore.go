@@ -3,7 +3,7 @@ package core
 import (
 	"sync"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 //go:generate counterfeiter -o ./fakeCallStore.go --fake-name fakeCallStore ./ callStore

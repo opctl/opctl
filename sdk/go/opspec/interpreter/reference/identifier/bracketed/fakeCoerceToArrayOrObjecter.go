@@ -4,7 +4,7 @@ package bracketed
 import (
 	"sync"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 type fakeCoerceToArrayOrObjecter struct {

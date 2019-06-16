@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/inputs"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
-	"github.com/opctl/sdk-golang/opspec/opfile"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdk/go/data"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/op/inputs"
+	stringPkg "github.com/opctl/opctl/sdk/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdk/go/opspec/opfile"
+	"github.com/opctl/opctl/sdk/go/util/uniquestring"
 )
 
 type Interpreter interface {

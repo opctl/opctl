@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 // Interpreter interprets a dir entry ref i.e. refs of the form name/sub/file.ext

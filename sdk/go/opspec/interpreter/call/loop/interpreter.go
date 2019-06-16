@@ -1,9 +1,9 @@
 package loop
 
 import (
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/forpkg"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/loop/forpkg"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/predicates"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

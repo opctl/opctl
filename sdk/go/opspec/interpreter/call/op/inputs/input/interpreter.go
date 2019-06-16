@@ -4,14 +4,14 @@ package input
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array"
-	"github.com/opctl/sdk-golang/opspec/interpreter/boolean"
-	"github.com/opctl/sdk-golang/opspec/interpreter/dir"
-	"github.com/opctl/sdk-golang/opspec/interpreter/file"
-	"github.com/opctl/sdk-golang/opspec/interpreter/number"
-	"github.com/opctl/sdk-golang/opspec/interpreter/object"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/array"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/boolean"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/dir"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/file"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/number"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/object"
+	stringPkg "github.com/opctl/opctl/sdk/go/opspec/interpreter/string"
 )
 
 type Interpreter interface {

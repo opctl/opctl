@@ -2,7 +2,7 @@ package pubsub
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 func isRootOpIDExcludedByFilter(

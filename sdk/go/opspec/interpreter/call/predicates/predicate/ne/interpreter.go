@@ -1,8 +1,8 @@
 package ne
 
 import (
-	"github.com/opctl/sdk-golang/model"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdk/go/model"
+	stringPkg "github.com/opctl/opctl/sdk/go/opspec/interpreter/string"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

@@ -3,9 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
+	"github.com/opctl/opctl/sdk/go/model"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/model"
 	"os"
 	"os/signal"
 	"syscall"

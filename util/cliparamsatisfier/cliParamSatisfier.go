@@ -10,11 +10,11 @@ import (
 	"sort"
 
 	"github.com/ghodss/yaml"
+	"github.com/opctl/opctl/sdk/go/data/coerce"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/op/params"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/params"
 )
 
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer

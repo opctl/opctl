@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/node/api"
 )
 
 func (c client) ListDescendants(

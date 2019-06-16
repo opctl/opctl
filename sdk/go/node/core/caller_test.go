@@ -7,10 +7,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call"
-	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/opctl/sdk/go/data"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdk/go/util/pubsub"
 )
 
 var _ = Context("caller", func() {

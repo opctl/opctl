@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/golang-interfaces/ihttp"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/node/core"
 )
 
 // Handler deprecated

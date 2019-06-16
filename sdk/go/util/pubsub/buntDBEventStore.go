@@ -3,7 +3,7 @@ package pubsub
 import (
 	"context"
 	"encoding/json"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 	"github.com/tidwall/buntdb"
 	"os"
 	"path"

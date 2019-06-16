@@ -5,8 +5,8 @@ package op
 import (
 	"context"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/opfile"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/opfile"
 	"path/filepath"
 )
 

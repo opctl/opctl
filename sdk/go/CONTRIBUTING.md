@@ -26,7 +26,7 @@ All go dependencies are vendored.
 
 ## GoDoc
 
-Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](http://godoc.org/github.com/opctl/sdk-golang)
+Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](http://godoc.org/github.com/opctl/opctl/sdk/go)
 
 
 # Testing

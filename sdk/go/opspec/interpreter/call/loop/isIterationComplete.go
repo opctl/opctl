@@ -1,7 +1,7 @@
 package loop
 
 import (
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 // IsIterationComplete tests if an index is within range of the loop

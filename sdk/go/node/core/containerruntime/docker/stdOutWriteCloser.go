@@ -2,8 +2,8 @@ package docker
 
 import (
 	"bufio"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/util/pubsub"
 	"io"
 	"time"
 )

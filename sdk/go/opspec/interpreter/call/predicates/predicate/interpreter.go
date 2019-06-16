@@ -3,11 +3,11 @@ package predicate
 import (
 	"fmt"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/eq"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/exists"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/ne"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates/predicate/notexists"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/predicates/predicate/eq"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/predicates/predicate/exists"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/predicates/predicate/ne"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/call/predicates/predicate/notexists"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

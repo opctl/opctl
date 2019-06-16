@@ -2,7 +2,7 @@ package param
 
 import (
 	"errors"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 )
 
 // validateSocket validates a value against a socket parameter

@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
+	"github.com/opctl/opctl/sdk/go/model"
 	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/sdk-golang/model"
 )
 
 func (this _core) OpKill(

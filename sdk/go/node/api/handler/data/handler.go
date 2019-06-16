@@ -5,9 +5,9 @@ package data
 import (
 	"net/http"
 
-	"github.com/opctl/sdk-golang/node/api/handler/data/ref"
-	"github.com/opctl/sdk-golang/node/core"
-	"github.com/opctl/sdk-golang/util/urlpath"
+	"github.com/opctl/opctl/sdk/go/node/api/handler/data/ref"
+	"github.com/opctl/opctl/sdk/go/node/core"
+	"github.com/opctl/opctl/sdk/go/util/urlpath"
 )
 
 type Handler interface {

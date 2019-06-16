@@ -5,8 +5,8 @@ package image
 import (
 	"errors"
 
-	"github.com/opctl/sdk-golang/model"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdk/go/model"
+	stringPkg "github.com/opctl/opctl/sdk/go/opspec/interpreter/string"
 )
 
 type Interpreter interface {

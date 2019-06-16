@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/interpolater"
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/interpolater"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/reference"
 )
 
 type Interpreter interface {

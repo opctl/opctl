@@ -9,9 +9,9 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/file"
+	"github.com/opctl/opctl/sdk/go/data/coerce"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/file"
 )
 
 type Interpreter interface {

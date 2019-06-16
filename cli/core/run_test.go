@@ -9,14 +9,14 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdk/go/data"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/node/api/client"
+	dotyml "github.com/opctl/opctl/sdk/go/opspec/opfile"
 	"github.com/opctl/opctl/util/clicolorer"
 	"github.com/opctl/opctl/util/cliexiter"
 	"github.com/opctl/opctl/util/clioutput"
 	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api/client"
-	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
 )
 
 var _ = Context("Run", func() {

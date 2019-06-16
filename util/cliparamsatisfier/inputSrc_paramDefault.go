@@ -1,7 +1,7 @@
 package cliparamsatisfier
 
 import (
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdk/go/model"
 	"strings"
 )
 

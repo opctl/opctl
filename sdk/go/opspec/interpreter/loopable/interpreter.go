@@ -1,9 +1,9 @@
 package loopable
 
 import (
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/array"
-	"github.com/opctl/sdk-golang/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdk/go/model"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/array"
+	"github.com/opctl/opctl/sdk/go/opspec/interpreter/object"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
