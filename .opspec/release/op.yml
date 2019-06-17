@@ -20,18 +20,18 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: build }
+        ref: build
         inputs: { srcDir }
         outputs: { srcDir }
     - op:
-        pkg: { ref: github.com/opspec-pkgs/npm.pkg.set-version#1.1.0 }
+        ref: github.com/opspec-pkgs/npm.pkg.set-version#1.1.0
         inputs:
           pkgDotJson: $(srcDir/package.json)
           version:
         outputs:
           $(srcDir/package.json): pkgDotJson
     - op:
-        pkg: { ref: github.com/opspec-pkgs/npm.publish-dir#2.0.0 }
+        ref: github.com/opspec-pkgs/npm.publish-dir#2.0.0
         inputs:
           authToken: $(npmAuthToken)
           access: public

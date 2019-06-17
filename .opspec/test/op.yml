@@ -16,11 +16,11 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: init }
+        ref: init
         inputs: { srcDir }
         outputs: { srcDir }
     - container:
-        image: { ref: 'node:11.13.0-alpine' }
+        image: { ref: 'node:12.4.0-alpine' }
         cmd: [npm, test]
         dirs:
           /src: $(srcDir)
