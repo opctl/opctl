@@ -16,7 +16,7 @@ opspec: 0.1.6
 run:
   serial:
     - op:
-        pkg: { ref: init }
+        ref: init
         inputs: { srcDir }
         outputs: { srcDir }
     - container:
