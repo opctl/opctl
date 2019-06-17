@@ -4,6 +4,8 @@ import { EventFilter } from '@opctl/sdk/lib/api/client/events/stream'
 const getEventRootOpId = (event: Event) => {
     if (event.callEnded) {
       return event.callEnded.rootOpId
+    } else if (event.callKilled) {
+      return event.callKilled.rootOpId
     } else if (event.containerExited) {
       return event.containerExited.rootOpId
     } else if (event.containerStarted) {
