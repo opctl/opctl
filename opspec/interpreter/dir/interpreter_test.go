@@ -60,7 +60,7 @@ var _ = Context("Interpret", func() {
 				interpretErr := errors.New("dummyError")
 				fakeReferenceInterpreter.InterpretReturns(nil, interpretErr)
 
-				expectedErr := fmt.Errorf("unable to interpret %+v to file; error was %v", providedExpression, interpretErr)
+				expectedErr := fmt.Errorf("unable to interpret %+v to dir; error was %v", providedExpression, interpretErr)
 
 				objectUnderTest := _interpreter{
 					referenceInterpreter: fakeReferenceInterpreter,

@@ -36,4 +36,4 @@ run:
         workDir: /src
     - op:
         ref: github.com/opspec-pkgs/golang.coverprofile.assert#1.1.0
-        inputs: { coverprofile, minCoverage: 46 }
+        inputs: { coverprofile, minCoverage: 45 }
