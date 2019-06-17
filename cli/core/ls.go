@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 	"text/tabwriter"
 )
 

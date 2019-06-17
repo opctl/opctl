@@ -2,6 +2,8 @@
 const getEventRootOpId = (event) => {
   if (event.callEnded) {
     return event.callEnded.rootOpId
+  } else if (event.callKilled) {
+    return event.callKilled.rootOpId
   } else if (event.containerExited) {
     return event.containerExited.rootOpId
   } else if (event.containerStarted) {

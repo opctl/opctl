@@ -3,9 +3,9 @@ package core
 //go:generate counterfeiter -o ./fakeNodeReachabilityEnsurer.go --fake-name fakeNodeReachabilityEnsurer ./ nodeReachabilityEnsurer
 
 import (
-	"github.com/opctl/opctl/nodeprovider"
-	"github.com/opctl/opctl/nodeprovider/local"
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/nodeprovider"
+	"github.com/opctl/opctl/cli/nodeprovider/local"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 	"time"
 )
 

@@ -37,7 +37,7 @@ run:
         dirs:
           /context: $(context)
     - op:
-        pkg: { ref: github.com/opspec-pkgs/docker.image.build#2.1.0 }
+        ref: github.com/opspec-pkgs/docker.image.build#2.1.0
         inputs:
           imageName:
           dockerfile: $(/Dockerfile)
@@ -48,7 +48,7 @@ run:
         outputs:
           imageTar:
     - op:
-        pkg: { ref: github.com/opspec-pkgs/docker.image.push#2.1.0 }
+        ref: github.com/opspec-pkgs/docker.image.push#2.1.0
         inputs:
           imageTar:
           imageName:

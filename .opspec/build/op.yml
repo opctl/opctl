@@ -10,6 +10,11 @@ inputs:
     dir:
       default: .
       description: directory containing the projects source code
+  version:
+    string:
+      default: 0.0.0
+      constraints:
+        format: semver
 outputs:
   opctlForLinux:
     file:
@@ -20,14 +25,9 @@ outputs:
 run:
   serial:
     - op:
-        ref: clean
-        inputs:
-          srcDir:
-        outputs:
-          srcDir:
-    - op:
         ref: ../webapp/.opspec/build
-        inputs: { srcDir: $(srcDir/webapp) }
+        inputs:
+          srcDir: $(srcDir/webapp)
     # embed webapp in node
     - container:
         cmd:
@@ -38,12 +38,16 @@ run:
             go get github.com/rakyll/statik
 
             echo "embedding webapp in node"
-            statik -src webapp/build -dest node -f
+            statik -src webapp/build -dest cli/cmds/node/create -f
         dirs:
           /go/src/github.com/opctl/opctl: $(srcDir)
-        image: { ref: 'golang:1.11.5' }
+        image: { ref: 'golang:1.12.6' }
         workDir: /go/src/github.com/opctl/opctl
     - op:
-        pkg: { ref: node/build }
-        inputs: { srcDir }
-        outputs: { opctlForLinux, srcDir }
+        ref: ../cli/.opspec/build
+        inputs:
+          gitBranch:
+          srcDir:
+          version:
+        outputs:
+          opctlForLinux:

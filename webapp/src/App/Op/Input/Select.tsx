@@ -13,10 +13,6 @@ interface Props {
 }
 
 export default class Select extends Component<Props,any> {
-  constructor (props) {
-    super(props)
-  }
-
   state = {
     value: this.props.value,
     validationErrs: [] as any[]

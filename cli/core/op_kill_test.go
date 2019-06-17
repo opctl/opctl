@@ -5,7 +5,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api/client"
 )

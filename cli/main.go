@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
 	"github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/util/clicolorer"
+	"github.com/opctl/opctl/cli/util/clicolorer"
 	"os"
 )
 
@@ -17,6 +18,10 @@ func main() {
 		}
 	}()
 
-	newCli(core.New(_cliColorer), _cliColorer).Run(os.Args)
+	newCli(
+		core.New(_cliColorer),
+		_cliColorer,
+		nodeCreateCmd.NewInvoker(),
+	).Run(os.Args)
 
 }

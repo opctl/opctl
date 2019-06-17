@@ -15,10 +15,6 @@ import 'react-virtualized/styles.css'
 import 'react-resizable/css/styles.css'
 
 export default class Page extends Component<any,any> {
-  constructor (props) {
-    super(props)
-  }
-
   state={
     isSideMenuCollapsed: false
   }

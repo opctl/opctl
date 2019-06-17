@@ -1,6 +1,6 @@
 package core
 
-import "github.com/opctl/opctl/util/cliexiter"
+import "github.com/opctl/opctl/cli/util/cliexiter"
 
 func (this _core) NodeKill() {
 	err := this.nodeProvider.KillNodeIfExists("")

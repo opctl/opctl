@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 
 	mow "github.com/jawher/mow.cli"
+	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
 	corePkg "github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/util/clicolorer"
+	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/sdk-golang/opspec"
 )
 
@@ -20,6 +22,7 @@ type cli interface {
 func newCli(
 	core corePkg.Core,
 	cliColorer clicolorer.CliColorer,
+	nodeCreateCmdInvoker nodeCreateCmd.Invoker,
 ) cli {
 
 	cli := mow.App("opctl", "Opctl is a free and open source distributed operation control system.")
@@ -52,11 +55,14 @@ func newCli(
 
 		nodeCmd.Command("create", "Creates a node", func(createCmd *mow.Cmd) {
 			dataDir := createCmd.StringOpt("data-dir", "", "Path of dir used to store node data (since v0.1.25)")
+			if "" == *dataDir {
+				dataDir = nil
+			}
 
 			createCmd.Action = func() {
-				core.NodeCreate(
-					corePkg.NodeCreateOpts{
-						DataDir: *dataDir,
+				nodeCreateCmdInvoker.Invoke(
+					model.NodeCreateOpts{
+						DataDir: dataDir,
 					},
 				)
 			}
@@ -126,7 +132,7 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 		runCmd.Action = func() {
-			core.Run(context.TODO(), *opRef, &corePkg.RunOpts{Args: *args, ArgFile: *argFile})
+			core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile})
 		}
 	})
 

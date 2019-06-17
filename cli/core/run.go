@@ -3,8 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/opctl/util/cliparamsatisfier"
+	cliModel "github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
 	"github.com/opctl/sdk-golang/model"
 	"os"
 	"os/signal"
@@ -15,7 +16,7 @@ import (
 func (this _core) Run(
 	ctx context.Context,
 	opRef string,
-	opts *RunOpts,
+	opts *cliModel.RunOpts,
 ) {
 	startTime := time.Now().UTC()
 

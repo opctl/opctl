@@ -11,7 +11,7 @@ run:
           srcDir:
         outputs:
           srcDir:
-        ref: ensureDeps
+        ref: init
     - container:
         cmd: [ yarn, test ]
         image: { ref: 'node:11.2.0-alpine' }

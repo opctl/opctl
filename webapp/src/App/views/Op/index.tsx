@@ -13,9 +13,6 @@ interface State {
 }
 
 export default class OpView extends Component<Props, State> {
-  constructor(props) {
-    super(props)
-  }
   initialOpRef = new window.URLSearchParams(this.props.location.search).get('op') || 'github.com/opspec-pkgs/uuid.v4.generate#1.1.0'
 
   state: State = {}

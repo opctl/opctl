@@ -9,10 +9,11 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/util/clicolorer"
-	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/opctl/util/cliparamsatisfier"
+	cliModel "github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/util/clicolorer"
+	"github.com/opctl/opctl/cli/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/clioutput"
+	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/node/api/client"
@@ -41,7 +42,7 @@ var _ = Context("Run", func() {
 			}
 
 			/* act */
-			objectUnderTest.Run(context.TODO(), providedOpRef, &RunOpts{})
+			objectUnderTest.Run(context.TODO(), providedOpRef, &cliModel.RunOpts{})
 
 			/* assert */
 			actualOpRef, actualPullCreds := fakeDataResolver.ResolveArgsForCall(0)
@@ -74,7 +75,7 @@ var _ = Context("Run", func() {
 			objectUnderTest.Run(
 				providedCtx,
 				"",
-				new(RunOpts),
+				new(cliModel.RunOpts),
 			)
 
 			/* assert */
@@ -107,7 +108,7 @@ var _ = Context("Run", func() {
 				}
 
 				/* act */
-				objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+				objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 				/* assert */
 				Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -154,7 +155,7 @@ var _ = Context("Run", func() {
 				}
 
 				/* act */
-				objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+				objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 				/* assert */
 				_, actualParams := fakeCliParamSatisfier.SatisfyArgsForCall(0)
@@ -207,7 +208,7 @@ var _ = Context("Run", func() {
 				}
 
 				/* act */
-				objectUnderTest.Run(providedContext, "", &RunOpts{})
+				objectUnderTest.Run(providedContext, "", &cliModel.RunOpts{})
 
 				/* assert */
 				actualCtx, actualArgs := fakeAPIClient.StartOpArgsForCall(0)
@@ -241,7 +242,7 @@ var _ = Context("Run", func() {
 					}
 
 					/* act */
-					objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+					objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 					/* assert */
 					Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -285,7 +286,7 @@ var _ = Context("Run", func() {
 					}
 
 					/* act */
-					objectUnderTest.Run(providedCtx, "", &RunOpts{})
+					objectUnderTest.Run(providedCtx, "", &cliModel.RunOpts{})
 
 					/* assert */
 					actualCtx,
@@ -326,7 +327,7 @@ var _ = Context("Run", func() {
 						}
 
 						/* act */
-						objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+						objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -362,7 +363,7 @@ var _ = Context("Run", func() {
 							}
 
 							/* act */
-							objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+							objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 
 							/* assert */
 							Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -415,7 +416,7 @@ var _ = Context("Run", func() {
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 										Expect(fakeCliExiter.ExitArgsForCall(0)).
 											To(Equal(cliexiter.ExitReq{Code: 0}))
 									})
@@ -462,7 +463,7 @@ var _ = Context("Run", func() {
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 										Expect(fakeCliExiter.ExitArgsForCall(0)).
 											To(Equal(cliexiter.ExitReq{Code: 137}))
 									})
@@ -510,7 +511,7 @@ var _ = Context("Run", func() {
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 										Expect(fakeCliExiter.ExitArgsForCall(0)).
 											To(Equal(cliexiter.ExitReq{Code: 1}))
 									})
@@ -557,7 +558,7 @@ var _ = Context("Run", func() {
 										}
 
 										/* act/assert */
-										objectUnderTest.Run(context.TODO(), "", &RunOpts{})
+										objectUnderTest.Run(context.TODO(), "", &cliModel.RunOpts{})
 										Expect(fakeCliExiter.ExitArgsForCall(0)).
 											To(Equal(cliexiter.ExitReq{Code: 1}))
 									})

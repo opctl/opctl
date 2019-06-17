@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/sdk-golang/model"
 )
 

@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/nodeprovider"
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/nodeprovider"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 )
 
 var _ = Context("nodeKill", func() {

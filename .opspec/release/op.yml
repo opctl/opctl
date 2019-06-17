@@ -35,16 +35,12 @@ inputs:
 run:
   serial:
     - op:
-        pkg: { ref: set-version }
-        inputs: { srcDir, version }
-        outputs: { srcDir }
-    - op:
-        pkg: { ref: build }
-        inputs: { srcDir, gitBranch }
+        ref: build
+        inputs: { srcDir, gitBranch, version }
         outputs: { opctlForLinux, srcDir }
     - parallel:
         - op:
-            pkg: { ref: release/to-docker }
+            ref: release/to-docker
             inputs:
               dockerPassword:
               dockerUsername:
@@ -53,5 +49,5 @@ run:
         # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
         # requiring the current build artifact such as system testing or publishing to docker.
         - op:
-            pkg: { ref: release/to-equinox }
+            ref: release/to-equinox
             inputs: { equinoxSigningKey, equinoxToken, srcDir, version }

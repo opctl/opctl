@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/opctl/opctl/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/cliexiter"
 	"path/filepath"
 )
 

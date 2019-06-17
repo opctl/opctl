@@ -5,8 +5,10 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
 	"github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/util/clicolorer"
+	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/util/clicolorer"
 )
 
 var _ = Context("cli", func() {
@@ -17,7 +19,11 @@ var _ = Context("cli", func() {
 				/* arrange */
 				fakeCliColorer := new(clicolorer.Fake)
 
-				objectUnderTest := newCli(new(core.Fake), fakeCliColorer)
+				objectUnderTest := newCli(
+					new(core.Fake),
+					fakeCliColorer,
+					new(nodeCreateCmd.FakeInvoker),
+				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "--no-color", "ls"})
@@ -33,7 +39,11 @@ var _ = Context("cli", func() {
 				providedCtx := context.Background()
 				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+				objectUnderTest := newCli(
+					fakeCore,
+					new(clicolorer.Fake),
+					new(nodeCreateCmd.FakeInvoker),
+				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "events"})
@@ -52,7 +62,11 @@ var _ = Context("cli", func() {
 					fakeCore := new(core.Fake)
 
 					expectedDirRef := "dummyPath"
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "ls", expectedDirRef})
@@ -72,7 +86,11 @@ var _ = Context("cli", func() {
 					fakeCore := new(core.Fake)
 
 					expectedDirRef := ".opspec"
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "ls"})
@@ -93,15 +111,19 @@ var _ = Context("cli", func() {
 
 				It("should call core.NodeCreate w/ expected args", func() {
 					/* arrange */
-					fakeCore := new(core.Fake)
+					fakeNodeCreateCmdInvoker := new(nodeCreateCmd.FakeInvoker)
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						new(core.Fake),
+						new(clicolorer.Fake),
+						fakeNodeCreateCmdInvoker,
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "node", "create"})
 
 					/* assert */
-					Expect(fakeCore.NodeCreateCallCount()).To(Equal(1))
+					Expect(fakeNodeCreateCmdInvoker.InvokeCallCount()).To(Equal(1))
 				})
 
 			})
@@ -112,7 +134,11 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "node", "kill"})
@@ -135,7 +161,11 @@ var _ = Context("cli", func() {
 						expectedOpName := "dummyOpName"
 						expectedPath := "dummyPath"
 
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+						objectUnderTest := newCli(
+							fakeCore,
+							new(clicolorer.Fake),
+							new(nodeCreateCmd.FakeInvoker),
+						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "--path", expectedPath, expectedOpName})
@@ -157,7 +187,11 @@ var _ = Context("cli", func() {
 						expectedOpName := "dummyOpName"
 						expectedPath := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+						objectUnderTest := newCli(
+							fakeCore,
+							new(clicolorer.Fake),
+							new(nodeCreateCmd.FakeInvoker),
+						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedOpName})
@@ -179,7 +213,11 @@ var _ = Context("cli", func() {
 						expectedOpDescription := "dummyOpDescription"
 						expectedPath := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+						objectUnderTest := newCli(
+							fakeCore,
+							new(clicolorer.Fake),
+							new(nodeCreateCmd.FakeInvoker),
+						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "-d", expectedOpDescription, expectedOpName})
@@ -201,7 +239,11 @@ var _ = Context("cli", func() {
 						expectedName := "dummyOpName"
 						expectedPath := ".opspec"
 
-						objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+						objectUnderTest := newCli(
+							fakeCore,
+							new(clicolorer.Fake),
+							new(nodeCreateCmd.FakeInvoker),
+						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedName})
@@ -226,7 +268,11 @@ var _ = Context("cli", func() {
 					expectedUsername := "dummyUsername"
 					expectedPassword := "dummyPassword"
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{
@@ -264,7 +310,11 @@ var _ = Context("cli", func() {
 
 					expectedOpID := "dummyOpID"
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpID})
@@ -288,7 +338,11 @@ var _ = Context("cli", func() {
 
 					opRef := ".opspec/dummyOpName"
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "op", "validate", opRef})
@@ -311,13 +365,17 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedRunOpts := &core.RunOpts{
+					expectedRunOpts := &model.RunOpts{
 						Args:    []string{"arg1Name=arg1Value", "arg2Name=arg2Value"},
 						ArgFile: "dummyArgFile",
 					}
 					expectedOpRef := ".opspec/dummyOpName"
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{
@@ -350,7 +408,11 @@ var _ = Context("cli", func() {
 
 					expectedOpRef := ".opspec/dummyOpName"
 
-					objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+					objectUnderTest := newCli(
+						fakeCore,
+						new(clicolorer.Fake),
+						new(nodeCreateCmd.FakeInvoker),
+					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "run", expectedOpRef})
@@ -378,7 +440,11 @@ var _ = Context("cli", func() {
 
 				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+				objectUnderTest := newCli(
+					fakeCore,
+					new(clicolorer.Fake),
+					new(nodeCreateCmd.FakeInvoker),
+				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update", "-c", expectedChannel})
@@ -399,7 +465,11 @@ var _ = Context("cli", func() {
 
 				fakeCore := new(core.Fake)
 
-				objectUnderTest := newCli(fakeCore, new(clicolorer.Fake))
+				objectUnderTest := newCli(
+					fakeCore,
+					new(clicolorer.Fake),
+					new(nodeCreateCmd.FakeInvoker),
+				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update"})

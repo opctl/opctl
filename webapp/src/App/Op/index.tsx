@@ -9,9 +9,6 @@ import { opKill, opStart, eventStreamGet } from '@opctl/sdk/lib/api/client'
 import { toast } from 'react-toastify'
 
 export default class Op extends Component<any, any> {
-  constructor(props) {
-    super(props)
-  }
   args
   apiBaseUrl = getApiBaseUrl()
 

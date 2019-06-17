@@ -25,12 +25,8 @@ export default class OperationsView extends PureComponent<any, State> {
     className: 'layout',
     cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
     rowHeight: 100
-  };
-
-  constructor(props) {
-    super(props)
   }
-
+  
   state: State = contentStore.get({ key: CONTENT_STORE_KEY }) ||
     {
       layouts: {},

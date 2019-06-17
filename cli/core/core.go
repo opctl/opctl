@@ -10,13 +10,14 @@ import (
 
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/nodeprovider"
-	"github.com/opctl/opctl/nodeprovider/local"
-	"github.com/opctl/opctl/util/clicolorer"
-	"github.com/opctl/opctl/util/cliexiter"
-	"github.com/opctl/opctl/util/clioutput"
-	"github.com/opctl/opctl/util/cliparamsatisfier"
-	"github.com/opctl/opctl/util/updater"
+	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/nodeprovider"
+	"github.com/opctl/opctl/cli/nodeprovider/local"
+	"github.com/opctl/opctl/cli/util/clicolorer"
+	"github.com/opctl/opctl/cli/util/cliexiter"
+	"github.com/opctl/opctl/cli/util/clioutput"
+	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
+	"github.com/opctl/opctl/cli/util/updater"
 	"github.com/opctl/sdk-golang/node/api/client"
 	op "github.com/opctl/sdk-golang/opspec"
 	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
@@ -25,10 +26,6 @@ import (
 type Core interface {
 	Events(
 		ctx context.Context,
-	)
-
-	NodeCreate(
-		opts NodeCreateOpts,
 	)
 
 	NodeKill()
@@ -65,7 +62,7 @@ type Core interface {
 	Run(
 		ctx context.Context,
 		opRef string,
-		opts *RunOpts,
+		opts *model.RunOpts,
 	)
 
 	SelfUpdate(
