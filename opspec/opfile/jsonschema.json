@@ -737,16 +737,35 @@
           "additionalProperties": false
         },
         "loop": {
+          "additionalProperties": false,
           "properties": {
-            "for": {
+            "on": {
+              "description": "Value to be looped over",
+              "type": [
+                "array",
+                "object",
+                "string"
+              ]
+            },
+            "isParallel": {
+              "description": "If true, all iterations of the loop are run simultaneously",
+              "default": false,
+              "type": "boolean"
+            },
+            "until": {
+              "description": "If any predicate evaluates to false, the loop will exit. Predicates are evaluated before every iteration.",
+              "type": "array",
+              "items": {
+                "$ref": "#/properties/run/properties/if/items"
+              }
+            },
+            "vars": {
+              "additionalProperties": false,
+              "description": "Variables in scope during each iteration of the loop",
               "properties": {
-                "each": {
-                  "description": "Value to be looped over",
-                  "type": [
-                    "array",
-                    "object",
-                    "string"
-                  ]
+                "index": {
+                  "description": "Variable each iterations associated index will be made available through",
+                  "type": "string"
                 },
                 "key": {
                   "description": "Variable each iterations associated key will be made available through",
@@ -757,20 +776,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "each"
-              ],
               "type": "object"
-            },
-            "index": {
-              "type": "string"
-            },
-            "until": {
-              "description": "If any predicate evaluates to false, the loop will exit. Predicates are evaluated before every iteration.",
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/run/properties/if/items"
-              }
             }
           },
           "type": "object"

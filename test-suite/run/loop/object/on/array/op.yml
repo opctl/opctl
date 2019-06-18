@@ -1,0 +1,5 @@
+name: run/loop/object/on/array
+run:
+  loop:
+    on: [1,2]
+  serial: []

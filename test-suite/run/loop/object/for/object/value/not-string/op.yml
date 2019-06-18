@@ -1,7 +1,0 @@
-name: run/loop/object/for/object/value/not-string
-run:
-  loop:
-    for:
-      each: []
-      value: 1
-  serial: []

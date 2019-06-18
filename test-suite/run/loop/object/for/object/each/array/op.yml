@@ -1,6 +1,0 @@
-name: run/loop/object/for/object/each/array
-run:
-  loop:
-    for:
-      each: [1,2]
-  serial: []

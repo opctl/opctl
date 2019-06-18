@@ -1,13 +1,20 @@
 {
+  "additionalProperties": false,
   "properties": {
-    "for": {
-      "$ref": "for.json"
+    "on": {
+      "description": "Value to be looped over",
+      "$ref": "../../loopableExpression.json"
     },
-    "index": {
-      "type": "string"
+    "isParallel": {
+      "description": "If true, all iterations of the loop are run simultaneously",
+      "default": false,
+      "type": "boolean"
     },
     "until": {
       "$ref": "until.json"
+    },
+    "vars": {
+      "$ref": "vars.json"
     }
   },
   "type": "object"
