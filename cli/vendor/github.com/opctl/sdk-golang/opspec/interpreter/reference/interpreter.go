@@ -15,6 +15,14 @@ import (
 	bracketedIdentifier "github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/bracketed"
 )
 
+const (
+	operator  = '$'
+	refOpener = '('
+	refCloser = ')'
+	RefStart  = string(operator) + string(refOpener)
+	RefEnd    = string(refCloser)
+)
+
 // Interpreter interprets refs of the form:
 // /p1.ext
 // i1
@@ -56,39 +64,115 @@ type _interpreter struct {
 	unbracketedIdentifierParser      unbracketedIdentifier.Parser
 }
 
-func (dr _interpreter) Interpret(
+func (itp _interpreter) Interpret(
 	ref string,
 	scope map[string]*model.Value,
 	opHandle model.DataHandle,
 ) (*model.Value, error) {
 
 	var data *model.Value
-	var refRemainder string
 	var err error
 
-	ref = strings.TrimSuffix(strings.TrimPrefix(ref, "$("), ")")
-
-	if strings.HasPrefix(ref, "/") {
-		// op path ref
-		data = &model.Value{Dir: opHandle.Path()}
-		refRemainder = ref
-	} else {
-		// scope ref
-		var identifier string
-		identifier, refRemainder = dr.unbracketedIdentifierParser.Parse(ref)
-
-		var isInScope bool
-		data, isInScope = scope[identifier]
-		if !isInScope {
-			return nil, fmt.Errorf("unable to interpret '%v' as reference; '%v' not in scope", identifier, identifier)
-		}
+	ref = strings.TrimSuffix(strings.TrimPrefix(ref, RefStart), RefEnd)
+	ref, err = itp.interpolate(
+		ref,
+		scope,
+		opHandle,
+	)
+	if nil != err {
+		return nil, err
 	}
 
-	_, data, err = dr.rInterpret(
-		refRemainder,
+	data, ref, err = itp.getRootValue(
+		ref,
+		scope,
+		opHandle,
+	)
+	if nil != err {
+		return nil, err
+	}
+
+	_, data, err = itp.rInterpret(
+		ref,
 		data,
 	)
 	return data, err
+}
+
+// interpolate interpolates a ref; refs can be nested at most, one level i.e. $(refOuter$(refInner))
+func (itp _interpreter) interpolate(
+	ref string,
+	scope map[string]*model.Value,
+	opHandle model.DataHandle,
+) (string, error) {
+	refBuffer := []byte{}
+	i := 0
+
+	for i < len(ref) {
+		switch {
+		case ref[i] == operator:
+			nestedRefStartIndex := i + len(RefStart)
+			nestedRefEndBracketOffset := strings.Index(ref[nestedRefStartIndex:], RefEnd)
+			if nestedRefEndBracketOffset < 0 {
+				return "", fmt.Errorf("unable to interpret '%v' as reference; expected ')'", ref[i:])
+			}
+			nestedRefEndBracketIndex := nestedRefStartIndex + nestedRefEndBracketOffset
+			nestedRef := ref[nestedRefStartIndex:nestedRefEndBracketIndex]
+			i += len(RefStart) + len(nestedRef) + len(RefEnd)
+
+			var nestedRefRootValue *model.Value
+			var err error
+			nestedRefRootValue, nestedRef, err = itp.getRootValue(
+				nestedRef,
+				scope,
+				opHandle,
+			)
+			if nil != err {
+				return "", err
+			}
+
+			_, nestedRefValue, err := itp.rInterpret(
+				nestedRef,
+				nestedRefRootValue,
+			)
+			if nil != err {
+				return "", err
+			}
+
+			nestedRefValueAsString, err := itp.coerce.ToString(nestedRefValue)
+			if nil != err {
+				return "", err
+			}
+			refBuffer = append(refBuffer, *nestedRefValueAsString.String...)
+
+		default:
+			refBuffer = append(refBuffer, ref[i])
+			i++
+		}
+	}
+	return string(refBuffer), nil
+}
+
+func (itp _interpreter) getRootValue(
+	ref string,
+	scope map[string]*model.Value,
+	opHandle model.DataHandle,
+) (*model.Value, string, error) {
+	if strings.HasPrefix(ref, "/") {
+		// op path ref
+		return &model.Value{Dir: opHandle.Path()}, ref, nil
+	}
+
+	// scope ref
+	var identifier string
+	var refRemainder string
+	identifier, refRemainder = itp.unbracketedIdentifierParser.Parse(ref)
+
+	if value, ok := scope[identifier]; ok {
+		return value, refRemainder, nil
+	}
+
+	return nil, "", fmt.Errorf("unable to interpret '%v' as reference; '%v' not in scope", ref, identifier)
 }
 
 // rInterpret interprets refs of the form:
@@ -98,7 +182,7 @@ func (dr _interpreter) Interpret(
 // [i1].i2
 // [i1][i2]
 // i1/p1.ext
-func (dr _interpreter) rInterpret(
+func (itp _interpreter) rInterpret(
 	ref string,
 	data *model.Value,
 ) (string, *model.Value, error) {
@@ -109,28 +193,28 @@ func (dr _interpreter) rInterpret(
 
 	switch ref[0] {
 	case '[':
-		ref, data, err := dr.bracketedIdentifierInterpreter.Interpret(ref, data)
+		ref, data, err := itp.bracketedIdentifierInterpreter.Interpret(ref, data)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return dr.rInterpret(ref, data)
+		return itp.rInterpret(ref, data)
 	case '.':
-		ref, data, err := dr.unbracketedIdentifierInterpreter.Interpret(ref[1:], data)
+		ref, data, err := itp.unbracketedIdentifierInterpreter.Interpret(ref[1:], data)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return dr.rInterpret(ref, data)
+		return itp.rInterpret(ref, data)
 	case '/':
-		ref, data, err := dr.dirEntryInterpreter.Interpret(ref, data)
+		ref, data, err := itp.dirEntryInterpreter.Interpret(ref, data)
 		if nil != err {
 			return "", nil, err
 		}
 
-		return dr.rInterpret(ref, data)
+		return itp.rInterpret(ref, data)
 	default:
-		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '[', '.', or '/'", ref)
+		return "", nil, fmt.Errorf("unable to interpret '%v' as reference; expected '[', '.', or '/'", ref)
 	}
 
 }

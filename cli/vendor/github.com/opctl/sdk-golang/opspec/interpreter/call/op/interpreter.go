@@ -76,8 +76,6 @@ func (itp _interpreter) Interpret(
 		pkgPullCreds.Password = *interpretdPassword.String
 	}
 
-	fmt.Printf("opspec/interpreter/call/op/interpreter.go#l79: parentOpDirPath: %v, scgOpCall.Ref: %v",parentOpHandle.Path(), scgOpCall.Ref)
-
 	parentOpDirPath := parentOpHandle.Path()
 	opHandle, err := itp.data.Resolve(
 		context.TODO(),

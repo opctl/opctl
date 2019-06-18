@@ -177,7 +177,7 @@ github.com/onsi/gomega/matchers/support/goraph/bipartitegraph
 github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
-# github.com/opctl/sdk-golang v0.0.0-20190616175842-82e38aaee589
+# github.com/opctl/sdk-golang v0.0.0-20190617235601-9e9451d49ff3
 github.com/opctl/sdk-golang/opspec
 github.com/opctl/sdk-golang/node/api/handler
 github.com/opctl/sdk-golang/node/core

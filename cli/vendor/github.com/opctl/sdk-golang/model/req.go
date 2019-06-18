@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"time"
 )
 
@@ -43,30 +42,4 @@ type StartOpReq struct {
 type StartOpReqOp struct {
 	Ref       string
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
-}
-
-// UnmarshalJSON implements the json.Unmarshaler interface to handle deprecated properties gracefully in one place
-func (sor *StartOpReq) UnmarshalJSON(
-	b []byte,
-) error {
-	// handle deprecated property
-	deprecated := struct {
-		Args map[string]*Value `json:"args,omitempty"`
-		Op   *StartOpReqOp     `json:"op,omitempty"`
-		Pkg  *StartOpReqOp     `json:"pkg,omitempty"`
-	}{}
-	if err := json.Unmarshal(b, &deprecated); nil != err {
-		return err
-	}
-
-	sor.Args = deprecated.Args
-
-	if nil != deprecated.Op {
-		sor.Op = *deprecated.Op
-	}
-	if nil != deprecated.Pkg {
-		sor.Op = *deprecated.Pkg
-	}
-	return nil
-
 }

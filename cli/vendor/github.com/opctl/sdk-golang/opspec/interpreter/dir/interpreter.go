@@ -54,7 +54,7 @@ func (itp _interpreter) Interpret(
 				opHandle,
 			)
 			if nil != err {
-				return nil, fmt.Errorf("unable to interpret %+v to file; error was %v", expression, err)
+				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
 			}
 
 			return value, nil
