@@ -16,7 +16,7 @@ require (
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0
-	github.com/opctl/sdk-golang v0.0.0-20190616175842-82e38aaee589
+	github.com/opctl/sdk-golang v0.0.0-20190617235601-9e9451d49ff3
 	github.com/peterh/liner v1.1.0
 	github.com/pkg/errors v0.8.1
 	github.com/rakyll/statik v0.1.6
