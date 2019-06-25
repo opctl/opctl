@@ -32,10 +32,6 @@
     "envVars": {
       "oneOf": [
         {
-          "description": "(will be bound to in scope ref w/ same name)",
-          "type": "null"
-        },
-        {
           "additionalProperties": false,
           "patternProperties": {
             "^[^=]+$": {
