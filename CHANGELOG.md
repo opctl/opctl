@@ -7,6 +7,7 @@ All notable changes will be documented in this file in accordance with
 
 ### Added
 
+- [Allow dynamically setting env vars of a container](https://github.com/opctl/specs/issues/250)
 - [NotExists predicate](https://github.com/opctl/specs/issues/245)
 - [Exists predicate](https://github.com/opctl/specs/issues/241)
 - [Allow Numbers & Implicit Binding On Container Ports](https://github.com/opctl/specs/issues/233)

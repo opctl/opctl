@@ -30,23 +30,34 @@
       "additionalProperties": false
     },
     "envVars": {
-      "type": "object",
-      "description": "Environment variables in the container",
-      "patternProperties": {
-        "^[^=]+$": {
-          "oneOf": [
-            {
-              "description": "(will be bound to in scope ref w/ same name)",
-              "type": "null"
-            },
-            {
-              "description": "Expression coercible to string value",
-              "$ref": "../stringExpression.json"
+      "oneOf": [
+        {
+          "description": "(will be bound to in scope ref w/ same name)",
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[^=]+$": {
+              "oneOf": [
+                {
+                  "description": "(will be bound to in scope ref w/ same name)",
+                  "type": "null"
+                },
+                {
+                  "description": "Expression coercible to string value",
+                  "$ref": "../stringExpression.json"
+                }
+              ]
             }
-          ]
+          },
+          "type": "object"
+        },
+        {
+          "$ref": "../reference.json"
         }
-      },
-      "additionalProperties": false
+      ],
+      "description": "Environment variables in the container"
     },
     "files": {
       "type": "object",
@@ -94,7 +105,6 @@
         "[0-9]+(-[0-9]+)?(tcp|udp)?": {
           "description": "Host port(s) to bind to",
           "type": [
-            "null",
             "string",
             "number"
           ],
