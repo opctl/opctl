@@ -59,7 +59,7 @@ func (cs *_callStore) SetIsKilled(id string) {
 	cs.callsByID[id].IsKilled = true
 }
 
-func (cs _callStore) Get(
+func (cs *_callStore) Get(
 	id string,
 ) model.DCG {
 	cs.mux.RLock()
