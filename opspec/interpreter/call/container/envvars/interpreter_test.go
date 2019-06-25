@@ -3,10 +3,12 @@ package envvars
 import (
 	"errors"
 	"fmt"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/sdk-golang/opspec/interpreter/object"
 	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 )
 
@@ -18,94 +20,63 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		Context("implicitly bound", func() {
-			Context("name not in scope", func() {
-				It("should return expected error", func() {
-					/* arrange */
-					envVarName := "dummyEnvVarName"
-					providedSCGContainerCallEnvVars := map[string]interface{}{
-						// implicitly bound
-						envVarName: nil,
-					}
-
-					expectedErr := fmt.Errorf("unable to bind env var to '%v' via implicit ref; '%v' not in scope", envVarName, envVarName)
-
-					objectUnderTest := _interpreter{}
-
-					/* act */
-					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						providedSCGContainerCallEnvVars,
-						new(data.FakeHandle),
-					)
-
-					/* assert */
-					Expect(actualErr).To(Equal(expectedErr))
-				})
-			})
-		})
-		It("should call stringInterpreter.Interpret w/ expected args", func() {
+		It("should call objectInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			envVarName := "dummyEnvVar"
 			providedScope := map[string]*model.Value{
 				envVarName: nil,
 			}
+			providedSCGContainerCallEnvVars := "providedSCGContainerCallEnvVars"
 			providedOpHandle := new(data.FakeHandle)
 
-			fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-			fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+			fakeObjectInterpreter := new(object.FakeInterpreter)
+			// err to trigger immediate return
+			fakeObjectInterpreter.InterpretReturns(&model.Value{String: new(string)}, errors.New("dummyErr"))
 
 			objectUnderTest := _interpreter{
-				stringInterpreter: fakeStringInterpreter,
+				objectInterpreter: fakeObjectInterpreter,
 			}
 
 			/* act */
 			objectUnderTest.Interpret(
 				providedScope,
-				map[string]interface{}{
-					// implicitly bound to string
-					envVarName: nil,
-				},
+				providedSCGContainerCallEnvVars,
 				providedOpHandle,
 			)
 
 			/* assert */
 			actualScope,
 				actualExpression,
-				actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(0)
+				actualOpHandle := fakeObjectInterpreter.InterpretArgsForCall(0)
 
 			Expect(actualScope).To(Equal(providedScope))
-			Expect(actualExpression).To(Equal(fmt.Sprintf("$(%v)", envVarName)))
+			Expect(actualExpression).To(Equal(providedSCGContainerCallEnvVars))
 			Expect(actualOpHandle).To(Equal(actualOpHandle))
 		})
-		Context("stringInterpreter.Interpret errs", func() {
+		Context("objectInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				envVarName := "dummyEnvVar"
-				envVarExpression := "dummyEnvVarExpression"
+				providedSCGContainerCallEnvVars := "providedSCGContainerCallEnvVars"
 
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				fakeObjectInterpreter := new(object.FakeInterpreter)
 
 				interpretErr := errors.New("dummyError")
-				fakeStringInterpreter.InterpretReturns(nil, interpretErr)
+				fakeObjectInterpreter.InterpretReturns(nil, interpretErr)
 
 				expectedErr := fmt.Errorf(
-					"unable to interpret %+v as value of env var '%v'; error was %v",
-					envVarExpression,
-					envVarName,
+					"unable to interpret '%v' as envVars; error was %v",
+					providedSCGContainerCallEnvVars,
 					interpretErr,
 				)
 
 				objectUnderTest := _interpreter{
-					stringInterpreter: fakeStringInterpreter,
+					objectInterpreter: fakeObjectInterpreter,
 				}
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					map[string]*model.Value{},
-					map[string]interface{}{
-						envVarName: envVarExpression,
-					},
+					providedSCGContainerCallEnvVars,
 					new(data.FakeHandle),
 				)
 
@@ -113,39 +84,141 @@ var _ = Context("Interpreter", func() {
 				Expect(actualErr).To(Equal(expectedErr))
 			})
 		})
-		Context("stringInterpreter.Interpret doesn't err", func() {
-			It("should return expected result", func() {
+		Context("objectInterpreter.Interpret doesn't err", func() {
+			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				envVarName := "dummyEnvVar"
-
-				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-
-				interpretedEnvVar := "dummyEnvVarValue"
-				fakeStringInterpreter.InterpretReturns(&model.Value{String: &interpretedEnvVar}, nil)
-
-				expectedEnvVars := map[string]string{
-					envVarName: interpretedEnvVar,
+				providedScope := map[string]*model.Value{
+					envVarName: nil,
 				}
 
+				providedOpHandle := new(data.FakeHandle)
+
+				fakeObjectInterpreter := new(object.FakeInterpreter)
+
+				expectedEnvVarValue := "expectedEnvVarValue"
+				interpretedValueObject := map[string]interface{}{
+					envVarName: expectedEnvVarValue,
+				}
+				// err to trigger immediate return
+				fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+
+				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+				// err to trigger immediate return
+				fakeStringInterpreter.InterpretReturns(nil, errors.New("dummyErr"))
+
 				objectUnderTest := _interpreter{
+					objectInterpreter: fakeObjectInterpreter,
 					stringInterpreter: fakeStringInterpreter,
 				}
 
 				/* act */
-				actualValue, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{
-						envVarName: nil,
-					},
-					map[string]interface{}{
-						// implicitly bound to string
-						envVarName: "",
-					},
-					new(data.FakeHandle),
+				objectUnderTest.Interpret(
+					providedScope,
+					map[string]interface{}{},
+					providedOpHandle,
 				)
 
 				/* assert */
-				Expect(actualValue).To(Equal(expectedEnvVars))
+				actualScope,
+					actualExpression,
+					actualOpHandle := fakeStringInterpreter.InterpretArgsForCall(0)
 
+				Expect(actualScope).To(Equal(providedScope))
+				Expect(actualExpression).To(Equal(expectedEnvVarValue))
+				Expect(actualOpHandle).To(Equal(providedOpHandle))
+			})
+			Context("stringInterpreter.Interpret errs", func() {
+
+				It("should return expected result", func() {
+					/* arrange */
+					envVarName := "dummyEnvVar"
+					providedScope := map[string]*model.Value{
+						envVarName: nil,
+					}
+
+					providedOpHandle := new(data.FakeHandle)
+
+					fakeObjectInterpreter := new(object.FakeInterpreter)
+
+					expectedEnvVarValue := "expectedEnvVarValue"
+					interpretedValueObject := map[string]interface{}{
+						envVarName: expectedEnvVarValue,
+					}
+					// err to trigger immediate return
+					fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+
+					err := errors.New("err")
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+					// err to trigger immediate return
+					fakeStringInterpreter.InterpretReturns(nil, err)
+
+					expectedErr := fmt.Errorf(
+						"unable to interpret %+v as value of env var '%v'; error was %v",
+						expectedEnvVarValue,
+						envVarName,
+						err,
+					)
+
+					objectUnderTest := _interpreter{
+						objectInterpreter: fakeObjectInterpreter,
+						stringInterpreter: fakeStringInterpreter,
+					}
+
+					/* act */
+					_, actualErr := objectUnderTest.Interpret(
+						providedScope,
+						map[string]interface{}{},
+						providedOpHandle,
+					)
+
+					/* assert */
+					Expect(actualErr).To(Equal(expectedErr))
+				})
+			})
+			Context("stringInterpreter.Interpret doesn't err", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					envVarName := "dummyEnvVar"
+					providedScope := map[string]*model.Value{
+						envVarName: nil,
+					}
+
+					providedOpHandle := new(data.FakeHandle)
+
+					fakeObjectInterpreter := new(object.FakeInterpreter)
+
+					interpretedValueObject := map[string]interface{}{
+						envVarName: "envVarValue",
+					}
+					// err to trigger immediate return
+					fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+
+					expectedEnvVarValueString := "expectedEnvVarValueString"
+					expectedEnvVarValue := &model.Value{String: &expectedEnvVarValueString}
+					expectedResult := map[string]string{
+						envVarName: expectedEnvVarValueString,
+					}
+
+					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+					// err to trigger immediate return
+					fakeStringInterpreter.InterpretReturns(expectedEnvVarValue, nil)
+
+					objectUnderTest := _interpreter{
+						objectInterpreter: fakeObjectInterpreter,
+						stringInterpreter: fakeStringInterpreter,
+					}
+
+					/* act */
+					actualResult, _ := objectUnderTest.Interpret(
+						providedScope,
+						map[string]interface{}{},
+						providedOpHandle,
+					)
+
+					/* assert */
+					Expect(actualResult).To(Equal(expectedResult))
+				})
 			})
 		})
 	})

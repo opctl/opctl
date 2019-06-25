@@ -4,14 +4,17 @@ package envvars
 
 import (
 	"fmt"
+
+	"github.com/opctl/sdk-golang/data/coerce"
 	"github.com/opctl/sdk-golang/model"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/sdk-golang/opspec/interpreter/object"
+	stringpkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
 )
 
 type Interpreter interface {
 	Interpret(
 		scope map[string]*model.Value,
-		scgContainerCallEnvVars map[string]interface{},
+		scgContainerCallEnvVars interface{},
 		opHandle model.DataHandle,
 	) (map[string]string, error)
 }
@@ -19,44 +22,54 @@ type Interpreter interface {
 // NewInterpreter returns a new Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		stringInterpreter: stringPkg.NewInterpreter(),
+		objectInterpreter: object.NewInterpreter(),
+		stringInterpreter: stringpkg.NewInterpreter(),
+		coerce:            coerce.New(),
 	}
 }
 
 type _interpreter struct {
-	stringInterpreter stringPkg.Interpreter
+	coerce            coerce.Coerce
+	objectInterpreter object.Interpreter
+	stringInterpreter stringpkg.Interpreter
 }
 
 func (itp _interpreter) Interpret(
 	scope map[string]*model.Value,
-	scgContainerCallEnvVars map[string]interface{},
+	scgContainerCallEnvVars interface{},
 	opHandle model.DataHandle,
 ) (map[string]string, error) {
-	dcgContainerCallEnvVars := map[string]string{}
-	for envVarName, envVarExpression := range scgContainerCallEnvVars {
-		if nil == envVarExpression {
-			// implicitly bound
-			if _, ok := scope[envVarName]; !ok {
-				return nil, fmt.Errorf(
-					"unable to bind env var to '%v' via implicit ref; '%v' not in scope",
-					envVarName,
-					envVarName,
-				)
-			}
-			envVarExpression = fmt.Sprintf("$(%v)", envVarName)
-		}
+	if nil == scgContainerCallEnvVars {
+		return nil, nil
+	}
 
-		stringValue, err := itp.stringInterpreter.Interpret(scope, envVarExpression, opHandle)
+	envVarsMap, err := itp.objectInterpreter.Interpret(
+		scope,
+		scgContainerCallEnvVars,
+		opHandle,
+	)
+	if nil != err {
+		return nil, fmt.Errorf(
+			"unable to interpret '%v' as envVars; error was %v",
+			scgContainerCallEnvVars,
+			err,
+		)
+	}
+
+	envVarsStringMap := map[string]string{}
+	for envVarName, envVarValue := range *envVarsMap.Object {
+		envVarValueString, err := itp.stringInterpreter.Interpret(scope, envVarValue, opHandle)
 		if nil != err {
 			return nil, fmt.Errorf(
 				"unable to interpret %+v as value of env var '%v'; error was %v",
-				envVarExpression,
+				envVarValue,
 				envVarName,
 				err,
 			)
 		}
 
-		dcgContainerCallEnvVars[envVarName] = *stringValue.String
+		envVarsStringMap[envVarName] = *envVarValueString.String
 	}
-	return dcgContainerCallEnvVars, nil
+
+	return envVarsStringMap, nil
 }

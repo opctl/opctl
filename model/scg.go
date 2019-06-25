@@ -18,7 +18,7 @@ type SCGContainerCall struct {
 	Dirs map[string]string `json:"dirs,omitempty"`
 
 	// EnvVars entries will be evaluated to strings
-	EnvVars map[string]interface{} `json:"envVars,omitempty"`
+	EnvVars interface{} `json:"envVars,omitempty"`
 
 	// Files entries will be evaluated to files
 	Files   map[string]interface{} `json:"files,omitempty"`
