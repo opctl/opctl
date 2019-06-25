@@ -44,6 +44,14 @@ run:
         outputs:
           opctlForLinux: bin
     - op:
+        ref: github.com/opspec-pkgs/fs.cp-file#2.0.1
+        inputs:
+          dst: $(srcDir)
+          dstPath: opctl
+          src: $(opctlForLinux)
+        outputs:
+          $(srcDir): dst
+    - op:
         ref: ../test/system/opspec
         inputs:
           srcDir: $(srcDir/cli)
