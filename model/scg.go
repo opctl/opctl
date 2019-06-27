@@ -2,13 +2,13 @@ package model
 
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {
-	Container    *SCGContainerCall `json:"container,omitempty"`
-	If           *[]*SCGPredicate  `json:"if,omitempty"`
-	Op           *SCGOpCall        `json:"op,omitempty"`
-	Parallel     []*SCG            `json:"parallel,omitempty"`
-	ParallelLoop *SCGParallelLoop  `json:"parallelLoop,omitempty"`
-	Serial       []*SCG            `json:"serial,omitempty"`
-	SerialLoop   *SCGSerialLoop    `json:"serialLoop,omitempty"`
+	Container    *SCGContainerCall    `json:"container,omitempty"`
+	If           *[]*SCGPredicate     `json:"if,omitempty"`
+	Op           *SCGOpCall           `json:"op,omitempty"`
+	Parallel     []*SCG               `json:"parallel,omitempty"`
+	ParallelLoop *SCGParallelLoopCall `json:"parallelLoop,omitempty"`
+	Serial       []*SCG               `json:"serial,omitempty"`
+	SerialLoop   *SCGSerialLoopCall   `json:"serialLoop,omitempty"`
 }
 
 type SCGContainerCall struct {
@@ -25,8 +25,6 @@ type SCGContainerCall struct {
 	Files   map[string]interface{} `json:"files,omitempty"`
 	Image   *SCGContainerCallImage `json:"image"`
 	Sockets map[string]string      `json:"sockets,omitempty"`
-	StdErr  map[string]string      `json:"stdErr,omitempty"`
-	StdOut  map[string]string      `json:"stdOut,omitempty"`
 	WorkDir string                 `json:"workDir,omitempty"`
 	Name    *string                `json:"name,omitempty"`
 	Ports   map[string]string      `json:"ports,omitempty"`
@@ -55,7 +53,7 @@ type SCGOpCall struct {
 	Outputs map[string]string `json:"outputs,omitempty"`
 }
 
-type SCGParallelLoop struct {
+type SCGParallelLoopCall struct {
 	Range interface{}  `json:"range,omitempty"`
 	Run   SCG          `json:"run,omitempty"`
 	Vars  *SCGLoopVars `json:"vars,omitempty"`
@@ -75,7 +73,7 @@ type SCGPullCreds struct {
 	Password string `json:"password"`
 }
 
-type SCGSerialLoop struct {
+type SCGSerialLoopCall struct {
 	Range interface{}     `json:"range,omitempty"`
 	Run   SCG             `json:"run,omitempty"`
 	Until []*SCGPredicate `json:"until,omitempty"`

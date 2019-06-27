@@ -11,9 +11,9 @@ import (
 type Interpreter interface {
 	Interpret(
 		opHandle model.DataHandle,
-		scgSerialLoop model.SCGSerialLoop,
+		scgSerialLoop model.SCGSerialLoopCall,
 		scope map[string]*model.Value,
-	) (*model.DCGSerialLoop, error)
+	) (*model.DCGSerialLoopCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -31,10 +31,10 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	opHandle model.DataHandle,
-	scgSerialLoop model.SCGSerialLoop,
+	scgSerialLoop model.SCGSerialLoopCall,
 	scope map[string]*model.Value,
-) (*model.DCGSerialLoop, error) {
-	dcgSerialLoop := model.DCGSerialLoop{}
+) (*model.DCGSerialLoopCall, error) {
+	dcgSerialLoop := model.DCGSerialLoopCall{}
 
 	scgLoopRange := scgSerialLoop.Range
 	if nil != scgLoopRange {

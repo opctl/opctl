@@ -32,7 +32,7 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				until := true
-				fakeSerialLoopInterpreter.InterpretReturns(&model.DCGSerialLoop{Until: &until}, nil)
+				fakeSerialLoopInterpreter.InterpretReturns(&model.DCGSerialLoopCall{Until: &until}, nil)
 
 				fakeCaller := new(fakeCaller)
 
@@ -50,14 +50,14 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGSerialLoop{},
+					model.SCGSerialLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCount()).To(Equal(0))
 			})
 		})
 		Context("initial dcgSerialLoop.On empty", func() {
@@ -65,7 +65,7 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoop{
+					&model.DCGSerialLoopCall{
 						Range: &model.Value{
 							Array: new([]interface{}),
 						},
@@ -89,14 +89,14 @@ var _ = Context("serialLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGSerialLoop{},
+					model.SCGSerialLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCount()).To(Equal(0))
 			})
 		})
 		Context("initial dcgSerialLoop.Until false", func() {
@@ -105,7 +105,7 @@ var _ = Context("serialLoopCaller", func() {
 				providedCtx := context.Background()
 				providedScope := map[string]*model.Value{}
 				index := "index"
-				providedSCGSerialLoop := model.SCGSerialLoop{
+				providedSCGSerialLoopCall := model.SCGSerialLoopCall{
 					Run: model.SCG{
 						Container: new(model.SCGContainerCall),
 					},
@@ -121,7 +121,7 @@ var _ = Context("serialLoopCaller", func() {
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				until := false
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoop{
+					&model.DCGSerialLoopCall{
 						Until: &until,
 						Vars: &model.DCGLoopVars{
 							Index: &index,
@@ -173,7 +173,7 @@ var _ = Context("serialLoopCaller", func() {
 					providedCtx,
 					"id",
 					providedScope,
-					providedSCGSerialLoop,
+					providedSCGSerialLoopCall,
 					providedOpHandle,
 					providedParentCallID,
 					providedRootOpID,
@@ -191,7 +191,7 @@ var _ = Context("serialLoopCaller", func() {
 				Expect(actualCtx).To(Equal(providedCtx))
 				Expect(actualCallID).To(Equal(callID))
 				Expect(actualScope).To(Equal(expectedScope))
-				Expect(actualSCG).To(Equal(&providedSCGSerialLoop.Run))
+				Expect(actualSCG).To(Equal(&providedSCGSerialLoopCall.Run))
 				Expect(actualOpHandle).To(Equal(providedOpHandle))
 				Expect(actualParentCallID).To(Equal(providedParentCallID))
 				Expect(actualRootOpID).To(Equal(providedRootOpID))

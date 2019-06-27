@@ -7,7 +7,7 @@ import (
 // IsIterationComplete tests if an index is within range of the loop
 func IsIterationComplete(
 	index int,
-	dcgParallelLoop model.DCGParallelLoop,
+	dcgParallelLoop model.DCGParallelLoopCall,
 ) bool {
 	loopRange := dcgParallelLoop.Range
 	if nil != loopRange {

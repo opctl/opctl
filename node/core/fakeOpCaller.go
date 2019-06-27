@@ -38,13 +38,13 @@ func (fake *fakeOpCaller) Call(arg1 context.Context, arg2 *model.DCGOpCall, arg3
 	}
 }
 
-func (fake *fakeOpCaller) CallCallCount() int {
+func (fake *fakeOpCaller) CallCount() int {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeOpCaller) CallCalls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall)) {
+func (fake *fakeOpCaller) Calls(stub func(context.Context, *model.DCGOpCall, map[string]*model.Value, *string, *model.SCGOpCall)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub

@@ -23,7 +23,7 @@ type parallelLoopCaller interface {
 		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		scgParallelLoop model.SCGParallelLoop,
+		scgParallelLoop model.SCGParallelLoopCall,
 		opHandle model.DataHandle,
 		parentCallID *string,
 		rootOpID string,
@@ -59,7 +59,7 @@ func (plpr _parallelLoopCaller) Call(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	scgParallelLoop model.SCGParallelLoop,
+	scgParallelLoop model.SCGParallelLoopCall,
 	opHandle model.DataHandle,
 	parentCallID *string,
 	rootOpID string,
@@ -104,7 +104,7 @@ func (plpr _parallelLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgParallelLoop *model.DCGParallelLoop
+	var dcgParallelLoop *model.DCGParallelLoopCall
 	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 		opHandle,
 		scgParallelLoop,

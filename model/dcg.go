@@ -4,16 +4,16 @@ package model
 type DCG struct {
 	Container *DCGContainerCall `json:"container,omitempty"`
 	// id of call
-	Id           string           `json:"id"`
-	If           *bool            `json:"if,omitempty"`
-	IsKilled     bool             `json:"isKilled"`
-	Op           *DCGOpCall       `json:"op,omitempty"`
-	Parallel     []*SCG           `json:"parallel,omitempty"`
-	ParallelLoop *DCGParallelLoop `json:"parallelLoop,omitempty"`
+	Id           string               `json:"id"`
+	If           *bool                `json:"if,omitempty"`
+	IsKilled     bool                 `json:"isKilled"`
+	Op           *DCGOpCall           `json:"op,omitempty"`
+	Parallel     []*SCG               `json:"parallel,omitempty"`
+	ParallelLoop *DCGParallelLoopCall `json:"parallelLoop,omitempty"`
 	// id of parent call
-	ParentID   *string        `json:"parentId,omitempty"`
-	Serial     []*SCG         `json:"serial,omitempty"`
-	SerialLoop *DCGSerialLoop `json:"serialLoop,omitempty"`
+	ParentID   *string            `json:"parentId,omitempty"`
+	Serial     []*SCG             `json:"serial,omitempty"`
+	SerialLoop *DCGSerialLoopCall `json:"serialLoop,omitempty"`
 }
 
 type DCGBaseCall struct {
@@ -63,7 +63,7 @@ type DCGOpCallPkg struct {
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
-type DCGParallelLoop struct {
+type DCGParallelLoopCall struct {
 	// an array or object
 	Range *Value       `json:"range,omitempty"`
 	Run   DCG          `json:"run,omitempty"`
@@ -75,7 +75,7 @@ type DCGPredicate struct {
 	Ne []*Value `json:"ne"`
 }
 
-type DCGSerialLoop struct {
+type DCGSerialLoopCall struct {
 	// an array or object
 	Range *Value       `json:"range,omitempty"`
 	Run   DCG          `json:"run,omitempty"`

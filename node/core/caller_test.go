@@ -346,14 +346,14 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					ParallelLoop: &model.SCGParallelLoop{},
+					ParallelLoop: &model.SCGParallelLoopCall{},
 				}
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
-					ParallelLoop: &model.DCGParallelLoop{},
+					ParallelLoop: &model.DCGParallelLoopCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
@@ -467,14 +467,14 @@ var _ = Context("caller", func() {
 				providedCallID := "dummyCallID"
 				providedScope := map[string]*model.Value{}
 				providedSCG := &model.SCG{
-					SerialLoop: &model.SCGSerialLoop{},
+					SerialLoop: &model.SCGSerialLoopCall{},
 				}
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
 				expectedDCG := &model.DCG{
-					SerialLoop: &model.DCGSerialLoop{},
+					SerialLoop: &model.DCGSerialLoopCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)

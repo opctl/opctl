@@ -32,7 +32,7 @@ var _ = Context("parallelLoopCaller", func() {
 				/* arrange */
 				fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
 				fakeParallelLoopInterpreter.InterpretReturns(
-					&model.DCGParallelLoop{
+					&model.DCGParallelLoopCall{
 						Range: &model.Value{
 							Array: new([]interface{}),
 						},
@@ -56,14 +56,14 @@ var _ = Context("parallelLoopCaller", func() {
 					context.Background(),
 					"id",
 					map[string]*model.Value{},
-					model.SCGParallelLoop{},
+					model.SCGParallelLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
 				)
 
 				/* assert */
-				Expect(fakeCaller.CallCallCount()).To(Equal(0))
+				Expect(fakeCaller.CallCount()).To(Equal(0))
 			})
 		})
 		It("should call caller.Call w/ expected args", func() {
@@ -71,7 +71,7 @@ var _ = Context("parallelLoopCaller", func() {
 			providedCtx := context.Background()
 			providedScope := map[string]*model.Value{}
 			index := "index"
-			providedSCGParallelLoop := model.SCGParallelLoop{
+			providedSCGParallelLoopCall := model.SCGParallelLoopCall{
 				Vars: &model.SCGLoopVars{
 					Index: &index,
 				},
@@ -92,7 +92,7 @@ var _ = Context("parallelLoopCaller", func() {
 			fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				0,
-				&model.DCGParallelLoop{
+				&model.DCGParallelLoopCall{
 					Range: loopRange,
 					Vars: &model.DCGLoopVars{
 						Index: &index,
@@ -103,7 +103,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				1,
-				&model.DCGParallelLoop{
+				&model.DCGParallelLoopCall{
 					Range: loopRange,
 					Vars: &model.DCGLoopVars{
 						Index: &index,
@@ -154,7 +154,7 @@ var _ = Context("parallelLoopCaller", func() {
 				providedCtx,
 				"id",
 				providedScope,
-				providedSCGParallelLoop,
+				providedSCGParallelLoopCall,
 				providedOpHandle,
 				providedParentCallID,
 				providedRootOpID,
@@ -171,7 +171,7 @@ var _ = Context("parallelLoopCaller", func() {
 
 			Expect(actualCallID).To(Equal(callID))
 			Expect(actualScope).To(Equal(expectedScope))
-			Expect(actualSCG).To(Equal(&providedSCGParallelLoop.Run))
+			Expect(actualSCG).To(Equal(&providedSCGParallelLoopCall.Run))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 			Expect(actualParentCallID).To(Equal(providedParentCallID))
 			Expect(actualRootOpID).To(Equal(providedRootOpID))

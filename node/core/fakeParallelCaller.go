@@ -45,13 +45,13 @@ func (fake *fakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map
 	}
 }
 
-func (fake *fakeParallelCaller) CallCallCount() int {
+func (fake *fakeParallelCaller) CallCount() int {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeParallelCaller) CallCalls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)) {
+func (fake *fakeParallelCaller) Calls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub

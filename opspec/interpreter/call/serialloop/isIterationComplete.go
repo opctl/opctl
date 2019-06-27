@@ -7,7 +7,7 @@ import (
 // IsIterationComplete tests if an index is within range of the loop
 func IsIterationComplete(
 	index int,
-	dcgSerialLoop *model.DCGSerialLoop,
+	dcgSerialLoop *model.DCGSerialLoopCall,
 ) bool {
 	if nil != dcgSerialLoop.Until && *dcgSerialLoop.Until {
 		// exit condition provided & met
