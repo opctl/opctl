@@ -1,9 +1,9 @@
-package loop
+package serialloop
 
 import (
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/forpkg"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates"
+	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -11,58 +11,58 @@ import (
 type Interpreter interface {
 	Interpret(
 		opHandle model.DataHandle,
-		scgLoop *model.SCGLoop,
+		scgSerialLoop model.SCGSerialLoop,
 		scope map[string]*model.Value,
-	) (*model.DCGLoop, error)
+	) (*model.DCGSerialLoop, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return &_interpreter{
-		forInterpreter:        forpkg.NewInterpreter(),
+		loopableInterpreter:   loopable.NewInterpreter(),
 		predicatesInterpreter: predicates.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	forInterpreter        forpkg.Interpreter
+	loopableInterpreter   loopable.Interpreter
 	predicatesInterpreter predicates.Interpreter
 }
 
 func (itp _interpreter) Interpret(
 	opHandle model.DataHandle,
-	scgLoop *model.SCGLoop,
+	scgSerialLoop model.SCGSerialLoop,
 	scope map[string]*model.Value,
-) (*model.DCGLoop, error) {
-	dcgLoop := model.DCGLoop{
-		Index: scgLoop.Index,
-	}
+) (*model.DCGSerialLoop, error) {
+	dcgSerialLoop := model.DCGSerialLoop{}
 
-	if nil != scgLoop.For {
-		dcgLoopFor, err := itp.forInterpreter.Interpret(
+	scgLoopRange := scgSerialLoop.Range
+	if nil != scgLoopRange {
+		dcgLoopRange, err := itp.loopableInterpreter.Interpret(
+			scgLoopRange,
 			opHandle,
-			scgLoop.For,
 			scope,
 		)
 		if nil != err {
 			return nil, err
 		}
 
-		dcgLoop.For = dcgLoopFor
+		dcgSerialLoop.Range = dcgLoopRange
 	}
 
-	if nil != scgLoop.Until {
+	scgLoopUntil := scgSerialLoop.Until
+	if nil != scgLoopUntil {
 		dcgLoopUntil, err := itp.predicatesInterpreter.Interpret(
 			opHandle,
-			scgLoop.Until,
+			scgLoopUntil,
 			scope,
 		)
 		if nil != err {
 			return nil, err
 		}
 
-		dcgLoop.Until = &dcgLoopUntil
+		dcgSerialLoop.Until = &dcgLoopUntil
 	}
 
-	return &dcgLoop, nil
+	return &dcgSerialLoop, nil
 }

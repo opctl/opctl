@@ -8,13 +8,14 @@ import (
 )
 
 type FakeScoper struct {
-	ScopeStub        func(int, map[string]*model.Value, *model.SCGLoop, model.DataHandle) (map[string]*model.Value, error)
+	ScopeStub        func(int, map[string]*model.Value, interface{}, *model.SCGLoopVars, model.DataHandle) (map[string]*model.Value, error)
 	scopeMutex       sync.RWMutex
 	scopeArgsForCall []struct {
 		arg1 int
 		arg2 map[string]*model.Value
-		arg3 *model.SCGLoop
-		arg4 model.DataHandle
+		arg3 interface{}
+		arg4 *model.SCGLoopVars
+		arg5 model.DataHandle
 	}
 	scopeReturns struct {
 		result1 map[string]*model.Value
@@ -28,19 +29,20 @@ type FakeScoper struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeScoper) Scope(arg1 int, arg2 map[string]*model.Value, arg3 *model.SCGLoop, arg4 model.DataHandle) (map[string]*model.Value, error) {
+func (fake *FakeScoper) Scope(arg1 int, arg2 map[string]*model.Value, arg3 interface{}, arg4 *model.SCGLoopVars, arg5 model.DataHandle) (map[string]*model.Value, error) {
 	fake.scopeMutex.Lock()
 	ret, specificReturn := fake.scopeReturnsOnCall[len(fake.scopeArgsForCall)]
 	fake.scopeArgsForCall = append(fake.scopeArgsForCall, struct {
 		arg1 int
 		arg2 map[string]*model.Value
-		arg3 *model.SCGLoop
-		arg4 model.DataHandle
-	}{arg1, arg2, arg3, arg4})
-	fake.recordInvocation("Scope", []interface{}{arg1, arg2, arg3, arg4})
+		arg3 interface{}
+		arg4 *model.SCGLoopVars
+		arg5 model.DataHandle
+	}{arg1, arg2, arg3, arg4, arg5})
+	fake.recordInvocation("Scope", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.scopeMutex.Unlock()
 	if fake.ScopeStub != nil {
-		return fake.ScopeStub(arg1, arg2, arg3, arg4)
+		return fake.ScopeStub(arg1, arg2, arg3, arg4, arg5)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -55,17 +57,17 @@ func (fake *FakeScoper) ScopeCallCount() int {
 	return len(fake.scopeArgsForCall)
 }
 
-func (fake *FakeScoper) ScopeCalls(stub func(int, map[string]*model.Value, *model.SCGLoop, model.DataHandle) (map[string]*model.Value, error)) {
+func (fake *FakeScoper) ScopeCalls(stub func(int, map[string]*model.Value, interface{}, *model.SCGLoopVars, model.DataHandle) (map[string]*model.Value, error)) {
 	fake.scopeMutex.Lock()
 	defer fake.scopeMutex.Unlock()
 	fake.ScopeStub = stub
 }
 
-func (fake *FakeScoper) ScopeArgsForCall(i int) (int, map[string]*model.Value, *model.SCGLoop, model.DataHandle) {
+func (fake *FakeScoper) ScopeArgsForCall(i int) (int, map[string]*model.Value, interface{}, *model.SCGLoopVars, model.DataHandle) {
 	fake.scopeMutex.RLock()
 	defer fake.scopeMutex.RUnlock()
 	argsForCall := fake.scopeArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
 func (fake *FakeScoper) ScopeReturns(result1 map[string]*model.Value, result2 error) {

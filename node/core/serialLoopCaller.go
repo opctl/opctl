@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeLooper.go --fake-name fakeLooper ./ looper
+//go:generate counterfeiter -o ./fakeSerialLoopCaller.go --fake-name fakeSerialLoopCaller ./ serialLoopCaller
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/serialloop"
 	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 
 	"github.com/opctl/sdk-golang/model"
@@ -16,49 +17,49 @@ import (
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
 
-type looper interface {
-	// Loop loops a call
-	Loop(
+type serialLoopCaller interface {
+	// Executes a serial loop call
+	Call(
 		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		scg *model.SCG,
+		scgSerialLoop model.SCGSerialLoop,
 		opHandle model.DataHandle,
 		parentCallID *string,
 		rootOpID string,
 	)
 }
 
-func newLooper(
+func newSerialLoopCaller(
 	caller caller,
 	pubSub pubsub.PubSub,
-) looper {
-	return _looper{
-		caller:              caller,
-		iterationScoper:     iteration.NewScoper(),
-		loopableInterpreter: loopable.NewInterpreter(),
-		loopDeScoper:        loop.NewDeScoper(),
-		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
-		loopInterpreter:     loop.NewInterpreter(),
+) serialLoopCaller {
+	return _serialLoopCaller{
+		caller:                caller,
+		iterationScoper:       iteration.NewScoper(),
+		loopableInterpreter:   loopable.NewInterpreter(),
+		loopDeScoper:          loop.NewDeScoper(),
+		pubSub:                pubSub,
+		serialLoopInterpreter: serialloop.NewInterpreter(),
+		uniqueStringFactory:   uniquestring.NewUniqueStringFactory(),
 	}
 }
 
-type _looper struct {
-	caller              caller
-	iterationScoper     iteration.Scoper
-	loopableInterpreter loopable.Interpreter
-	loopDeScoper        loop.DeScoper
-	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
-	loopInterpreter     loop.Interpreter
+type _serialLoopCaller struct {
+	caller                caller
+	iterationScoper       iteration.Scoper
+	loopableInterpreter   loopable.Interpreter
+	loopDeScoper          loop.DeScoper
+	pubSub                pubsub.PubSub
+	serialLoopInterpreter serialloop.Interpreter
+	uniqueStringFactory   uniquestring.UniqueStringFactory
 }
 
-func (lpr _looper) Loop(
+func (lpr _serialLoopCaller) Call(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	scg *model.SCG,
+	scgSerialLoop model.SCGSerialLoop,
 	opHandle model.DataHandle,
 	parentCallID *string,
 	rootOpID string,
@@ -70,15 +71,15 @@ func (lpr _looper) Loop(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			CallEnded: &model.CallEndedEvent{
-				CallID:     id,
-				RootCallID: rootOpID,
-				Outputs:    outboundScope,
+			SerialLoopCallEnded: &model.SerialLoopCallEndedEvent{
+				CallID:   id,
+				RootOpID: rootOpID,
+				Outputs:  outboundScope,
 			},
 		}
 
 		if nil != err {
-			event.CallEnded.Error = &model.CallEndedEventError{
+			event.SerialLoopCallEnded.Error = &model.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -90,29 +91,26 @@ func (lpr _looper) Loop(
 	outboundScope, err = lpr.iterationScoper.Scope(
 		index,
 		inboundScope,
-		scg.Loop,
+		scgSerialLoop.Range,
+		scgSerialLoop.Vars,
 		opHandle,
 	)
 	if nil != err {
 		return
 	}
 
-	// copy scg.Loop & remove from scg since we're already looping
-	scgLoop := scg.Loop
-	scg.Loop = nil
-
 	// interpret initial iteration of the loop
-	var dcgLoop *model.DCGLoop
-	dcgLoop, err = lpr.loopInterpreter.Interpret(
+	var dcgSerialLoop *model.DCGSerialLoop
+	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 		opHandle,
-		scgLoop,
+		scgSerialLoop,
 		outboundScope,
 	)
 	if nil != err {
 		return
 	}
 
-	for !loop.IsIterationComplete(index, dcgLoop) {
+	for !serialloop.IsIterationComplete(index, dcgSerialLoop) {
 		eventFilterSince := time.Now().UTC()
 
 		var callID string
@@ -125,7 +123,7 @@ func (lpr _looper) Loop(
 			ctx,
 			callID,
 			outboundScope,
-			scg,
+			&scgSerialLoop.Run,
 			opHandle,
 			parentCallID,
 			rootOpID,
@@ -159,14 +157,15 @@ func (lpr _looper) Loop(
 
 		index++
 
-		if loop.IsIterationComplete(index, dcgLoop) {
+		if serialloop.IsIterationComplete(index, dcgSerialLoop) {
 			break
 		}
 
 		outboundScope, err = lpr.iterationScoper.Scope(
 			index,
 			outboundScope,
-			scgLoop,
+			scgSerialLoop.Range,
+			scgSerialLoop.Vars,
 			opHandle,
 		)
 		if nil != err {
@@ -174,9 +173,9 @@ func (lpr _looper) Loop(
 		}
 
 		// interpret next iteration of the loop
-		dcgLoop, err = lpr.loopInterpreter.Interpret(
+		dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 			opHandle,
-			scgLoop,
+			scgSerialLoop,
 			outboundScope,
 		)
 		if nil != err {
@@ -186,7 +185,8 @@ func (lpr _looper) Loop(
 
 	outboundScope = lpr.loopDeScoper.DeScope(
 		inboundScope,
-		scgLoop,
+		scgSerialLoop.Range,
+		scgSerialLoop.Vars,
 		outboundScope,
 	)
 }

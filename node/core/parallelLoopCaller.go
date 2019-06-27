@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeLooper.go --fake-name fakeLooper ./ looper
+//go:generate counterfeiter -o ./fakeParallelLoopCaller.go --fake-name fakeParallelLoopCaller ./ parallelLoopCaller
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/parallelloop"
 	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 
 	"github.com/opctl/sdk-golang/model"
@@ -16,49 +17,49 @@ import (
 	"github.com/opctl/sdk-golang/util/uniquestring"
 )
 
-type parallelLooper interface {
-	// Loop loops a call
-	Loop(
+type parallelLoopCaller interface {
+	// Executes a parallel loop call
+	Call(
 		ctx context.Context,
 		id string,
 		inboundScope map[string]*model.Value,
-		scg *model.SCG,
+		scgParallelLoop model.SCGParallelLoop,
 		opHandle model.DataHandle,
 		parentCallID *string,
 		rootOpID string,
 	)
 }
 
-func newParallelLooper(
+func newParallelLoopCaller(
 	caller caller,
 	pubSub pubsub.PubSub,
-) looper {
-	return _parallelLooper{
-		caller:              caller,
-		iterationScoper:     iteration.NewScoper(),
-		loopableInterpreter: loopable.NewInterpreter(),
-		loopDeScoper:        loop.NewDeScoper(),
-		pubSub:              pubSub,
-		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
-		loopInterpreter:     loop.NewInterpreter(),
+) parallelLoopCaller {
+	return _parallelLoopCaller{
+		caller:                  caller,
+		iterationScoper:         iteration.NewScoper(),
+		loopableInterpreter:     loopable.NewInterpreter(),
+		loopDeScoper:            loop.NewDeScoper(),
+		parallelLoopInterpreter: parallelloop.NewInterpreter(),
+		pubSub:                  pubSub,
+		uniqueStringFactory:     uniquestring.NewUniqueStringFactory(),
 	}
 }
 
-type _parallelLooper struct {
-	caller              caller
-	iterationScoper     iteration.Scoper
-	loopableInterpreter loopable.Interpreter
-	loopDeScoper        loop.DeScoper
-	pubSub              pubsub.PubSub
-	uniqueStringFactory uniquestring.UniqueStringFactory
-	loopInterpreter     loop.Interpreter
+type _parallelLoopCaller struct {
+	caller                  caller
+	iterationScoper         iteration.Scoper
+	loopableInterpreter     loopable.Interpreter
+	loopDeScoper            loop.DeScoper
+	parallelLoopInterpreter parallelloop.Interpreter
+	pubSub                  pubsub.PubSub
+	uniqueStringFactory     uniquestring.UniqueStringFactory
 }
 
-func (plpr _parallelLooper) Loop(
+func (plpr _parallelLoopCaller) Call(
 	ctx context.Context,
 	id string,
 	inboundScope map[string]*model.Value,
-	scg *model.SCG,
+	scgParallelLoop model.SCGParallelLoop,
 	opHandle model.DataHandle,
 	parentCallID *string,
 	rootOpID string,
@@ -74,15 +75,15 @@ func (plpr _parallelLooper) Loop(
 		// defer must be defined before conditional return statements so it always runs
 		event := model.Event{
 			Timestamp: time.Now().UTC(),
-			CallEnded: &model.CallEndedEvent{
-				CallID:     id,
-				RootCallID: rootOpID,
-				Outputs:    outboundScope,
+			ParallelLoopCallEnded: &model.ParallelLoopCallEndedEvent{
+				CallID:   id,
+				RootOpID: rootOpID,
+				Outputs:  outboundScope,
 			},
 		}
 
 		if nil != err {
-			event.CallEnded.Error = &model.CallEndedEventError{
+			event.ParallelLoopCallEnded.Error = &model.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -94,22 +95,19 @@ func (plpr _parallelLooper) Loop(
 	outboundScope, err = plpr.iterationScoper.Scope(
 		childCallIndex,
 		inboundScope,
-		scg.Loop,
+		scgParallelLoop.Range,
+		scgParallelLoop.Vars,
 		opHandle,
 	)
 	if nil != err {
 		return
 	}
 
-	// copy scg.Loop & remove from scg since we're already looping
-	scgLoop := scg.Loop
-	scg.Loop = nil
-
 	// interpret initial iteration of the loop
-	var dcgLoop *model.DCGLoop
-	dcgLoop, err = plpr.loopInterpreter.Interpret(
+	var dcgParallelLoop *model.DCGParallelLoop
+	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 		opHandle,
-		scgLoop,
+		scgParallelLoop,
 		outboundScope,
 	)
 	if nil != err {
@@ -120,7 +118,7 @@ func (plpr _parallelLooper) Loop(
 	childCallIDIndexMap := map[string]int{}
 	callIndexOutputsMap := map[int]map[string]*model.Value{}
 
-	for !loop.IsIterationComplete(childCallIndex, dcgLoop) {
+	for !parallelloop.IsIterationComplete(childCallIndex, *dcgParallelLoop) {
 
 		var childCallID string
 		childCallID, err = plpr.uniqueStringFactory.Construct()
@@ -134,7 +132,7 @@ func (plpr _parallelLooper) Loop(
 			ctxOfChildren,
 			childCallID,
 			outboundScope,
-			scg,
+			&scgParallelLoop.Run,
 			opHandle,
 			parentCallID,
 			rootOpID,
@@ -142,14 +140,15 @@ func (plpr _parallelLooper) Loop(
 
 		childCallIndex++
 
-		if loop.IsIterationComplete(childCallIndex, dcgLoop) {
+		if parallelloop.IsIterationComplete(childCallIndex, *dcgParallelLoop) {
 			break
 		}
 
 		outboundScope, err = plpr.iterationScoper.Scope(
 			childCallIndex,
 			outboundScope,
-			scgLoop,
+			scgParallelLoop.Range,
+			scgParallelLoop.Vars,
 			opHandle,
 		)
 		if nil != err {
@@ -157,9 +156,9 @@ func (plpr _parallelLooper) Loop(
 		}
 
 		// interpret next iteration of the loop
-		dcgLoop, err = plpr.loopInterpreter.Interpret(
+		dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 			opHandle,
-			scgLoop,
+			scgParallelLoop,
 			outboundScope,
 		)
 		if nil != err {
@@ -225,7 +224,8 @@ func (plpr _parallelLooper) Loop(
 
 	outboundScope = plpr.loopDeScoper.DeScope(
 		inboundScope,
-		scgLoop,
+		scgParallelLoop.Range,
+		scgParallelLoop.Vars,
 		outboundScope,
 	)
 }

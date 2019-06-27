@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/sdk-golang/data"
 	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/forpkg"
+	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
 )
 
 var _ = Context("Interpreter", func() {
@@ -20,19 +20,19 @@ var _ = Context("Interpreter", func() {
 		})
 	})
 	Context("Interpret", func() {
-		It("should call forInterpreter.Interpret w/ expected args", func() {
+		It("should call loopableInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedSCGLoop := &model.SCGLoop{
-				For: &model.SCGLoopFor{},
+				On: "on",
 			}
 
 			providedOpHandle := new(data.FakeHandle)
 			providedScope := map[string]*model.Value{}
 
-			fakeForInterpreter := new(forpkg.FakeInterpreter)
+			fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
-				forInterpreter:        fakeForInterpreter,
+				loopableInterpreter:   fakeLoopableInterpreter,
 				predicatesInterpreter: new(predicates.FakeInterpreter),
 			}
 
@@ -44,27 +44,27 @@ var _ = Context("Interpreter", func() {
 			)
 
 			/* assert */
-			actualOpHandle,
-				actualSCGLoopFor,
-				actualScope := fakeForInterpreter.InterpretArgsForCall(0)
+			actualSCGLoopOn,
+				actualOpHandle,
+				actualScope := fakeLoopableInterpreter.InterpretArgsForCall(0)
 
+			Expect(actualSCGLoopOn).To(Equal(providedSCGLoop.On))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
-			Expect(actualSCGLoopFor).To(Equal(providedSCGLoop.For))
 			Expect(actualScope).To(Equal(providedScope))
 		})
-		Context("forInterpreter.Interpret errs", func() {
+		Context("loopableInterpreter.Interpret errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeForInterpreter := new(forpkg.FakeInterpreter)
+				fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
 				expectedError := errors.New("expectedError")
-				fakeForInterpreter.InterpretReturns(
+				fakeLoopableInterpreter.InterpretReturns(
 					nil,
 					expectedError,
 				)
 
 				objectUnderTest := _interpreter{
-					forInterpreter:        fakeForInterpreter,
+					loopableInterpreter:   fakeLoopableInterpreter,
 					predicatesInterpreter: new(predicates.FakeInterpreter),
 				}
 
@@ -72,7 +72,7 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					&model.SCGLoop{
-						For: &model.SCGLoopFor{},
+						On: "on",
 					},
 					map[string]*model.Value{},
 				)
@@ -93,7 +93,7 @@ var _ = Context("Interpreter", func() {
 			fakePredicatesInterpreter := new(predicates.FakeInterpreter)
 
 			objectUnderTest := _interpreter{
-				forInterpreter:        new(forpkg.FakeInterpreter),
+				loopableInterpreter:   new(loopable.FakeInterpreter),
 				predicatesInterpreter: fakePredicatesInterpreter,
 			}
 
@@ -125,7 +125,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				objectUnderTest := _interpreter{
-					forInterpreter:        new(forpkg.FakeInterpreter),
+					loopableInterpreter:   new(loopable.FakeInterpreter),
 					predicatesInterpreter: fakePredicatesInterpreter,
 				}
 
@@ -144,18 +144,16 @@ var _ = Context("Interpreter", func() {
 		})
 		It("should return expected result", func() {
 			/* arrange */
-			expectedIndex := "Index"
 			providedScgLoop := &model.SCGLoop{
-				For:   &model.SCGLoopFor{},
-				Index: &expectedIndex,
+				On:    "on",
 				Until: []*model.SCGPredicate{},
 			}
 
-			fakeForInterpreter := new(forpkg.FakeInterpreter)
+			fakeLoopableInterpreter := new(loopable.FakeInterpreter)
 
-			expectedDCGLoopFor := &model.DCGLoopFor{}
-			fakeForInterpreter.InterpretReturns(
-				expectedDCGLoopFor,
+			expectedDCGLoopOn := &model.Value{Array: new([]interface{})}
+			fakeLoopableInterpreter.InterpretReturns(
+				expectedDCGLoopOn,
 				nil,
 			)
 
@@ -168,13 +166,12 @@ var _ = Context("Interpreter", func() {
 			)
 
 			expectedResult := &model.DCGLoop{
-				For:   expectedDCGLoopFor,
-				Index: providedScgLoop.Index,
+				On:    expectedDCGLoopOn,
 				Until: &expectedDCGLoopUntil,
 			}
 
 			objectUnderTest := _interpreter{
-				forInterpreter:        fakeForInterpreter,
+				loopableInterpreter:   fakeLoopableInterpreter,
 				predicatesInterpreter: fakePredicatesInterpreter,
 			}
 
