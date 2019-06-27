@@ -1,7 +1,0 @@
-{
-  "description": "If any predicate evaluates to false, the loop will exit. Predicates are evaluated before every iteration.",
-  "type": "array",
-  "items": {
-    "$ref": "../predicate/index.json"
-  }
-}

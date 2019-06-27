@@ -19,16 +19,23 @@
     },
     {
       "required": [
+        "parallelLoop"
+      ]
+    },
+    {
+      "required": [
         "serial"
+      ]
+    },
+    {
+      "required": [
+        "serialLoop"
       ]
     }
   ],
   "properties": {
     "container": {
       "$ref": "container.json"
-    },
-    "loop": {
-      "$ref": "loop/index.json"
     },
     "if": {
       "$ref": "if.json"
@@ -39,8 +46,14 @@
     "parallel": {
       "$ref": "parallel.json"
     },
+    "parallelLoop": {
+      "$ref": "parallelLoop.json"
+    },
     "serial": {
       "$ref": "serial.json"
+    },
+    "serialLoop": {
+      "$ref": "serialLoop.json"
     }
   },
   "title": "call"

@@ -1,0 +1,6 @@
+name: run/serialLoop/object/range/number
+run:
+  serialLoop:
+    range: 2
+    run:
+      serial: []

@@ -1,5 +1,0 @@
-name: run/loop/object/on/number
-run:
-  loop:
-    on: 2
-  serial: []

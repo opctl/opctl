@@ -592,7 +592,17 @@
         },
         {
           "required": [
+            "parallelLoop"
+          ]
+        },
+        {
+          "required": [
             "serial"
+          ]
+        },
+        {
+          "required": [
+            "serialLoop"
           ]
         }
       ],
@@ -736,53 +746,8 @@
           ],
           "additionalProperties": false
         },
-        "loop": {
-          "additionalProperties": false,
-          "properties": {
-            "on": {
-              "description": "Value to be looped over",
-              "type": [
-                "array",
-                "object",
-                "string"
-              ]
-            },
-            "isParallel": {
-              "description": "If true, all iterations of the loop are run simultaneously",
-              "default": false,
-              "type": "boolean"
-            },
-            "until": {
-              "description": "If any predicate evaluates to false, the loop will exit. Predicates are evaluated before every iteration.",
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/run/properties/if/items"
-              }
-            },
-            "vars": {
-              "additionalProperties": false,
-              "description": "Variables in scope during each iteration of the loop",
-              "properties": {
-                "index": {
-                  "description": "Variable each iterations associated index will be made available through",
-                  "type": "string"
-                },
-                "key": {
-                  "description": "Variable each iterations associated key will be made available through",
-                  "type": "string"
-                },
-                "value": {
-                  "description": "Variable each iterations associated value will be made available through",
-                  "type": "string"
-                }
-              },
-              "type": "object"
-            }
-          },
-          "type": "object"
-        },
         "if": {
-          "description": "If any predicate evaluates to false, the call (or \"loop\" iteration) will be skipped.",
+          "description": "If any predicate evaluates to false, the call will be skipped.",
           "type": "array",
           "items": {
             "description": "Condition which evaluates to true or false",
@@ -920,12 +885,93 @@
             "$ref": "#/properties/run"
           }
         },
+        "parallelLoop": {
+          "additionalProperties": false,
+          "description": "Loop in which all iterations are called simultaneously.",
+          "properties": {
+            "range": {
+              "$ref": "#/properties/run/properties/serialLoop/properties/range"
+            },
+            "run": {
+              "description": "What gets run on each iteration of the loop",
+              "$ref": "#/properties/run"
+            },
+            "vars": {
+              "$ref": "#/properties/run/properties/serialLoop/properties/vars"
+            }
+          },
+          "required": [
+            "range",
+            "run"
+          ],
+          "type": "object"
+        },
         "serial": {
           "title": "serialCall",
           "type": "array",
           "items": {
             "$ref": "#/properties/run"
           }
+        },
+        "serialLoop": {
+          "additionalProperties": false,
+          "description": "Loop in which each iteration gets called sequentially.",
+          "oneOf": [
+            {
+              "required": [
+                "range",
+                "run"
+              ]
+            },
+            {
+              "required": [
+                "until",
+                "run"
+              ]
+            }
+          ],
+          "properties": {
+            "range": {
+              "description": "Range of the loop, i.e. the value to loop over",
+              "type": [
+                "array",
+                "object",
+                "string"
+              ]
+            },
+            "run": {
+              "description": "What gets run on each iteration of the loop",
+              "$ref": "#/properties/run"
+            },
+            "until": {
+              "description": "Exit condition of the loop; evaluated before each iteration.",
+              "type": "array",
+              "items": {
+                "$ref": "#/properties/run/properties/if/items"
+              }
+            },
+            "vars": {
+              "additionalProperties": false,
+              "description": "Variables added to scope on each iteration",
+              "properties": {
+                "index": {
+                  "description": "Variable each iterations associated index will be made available through",
+                  "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key"
+                },
+                "key": {
+                  "description": "Variable each iterations associated key will be made available through",
+                  "type": "string",
+                  "pattern": "^[-_.a-zA-Z0-9]+$"
+                },
+                "value": {
+                  "description": "Variable each iterations associated value will be made available through",
+                  "$ref": "#/properties/run/properties/serialLoop/properties/vars/properties/key"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
         }
       },
       "title": "call"

@@ -1,6 +1,0 @@
-name: run/loop/object/until/array/ne/numbers
-run:
-  loop:
-    until:
-      - ne: [2,3]
-  serial: []

@@ -1,7 +1,0 @@
-name: run/loop/object/vars/object/value/string
-run:
-  loop:
-    on: []
-    vars:
-      value: value
-  serial: []

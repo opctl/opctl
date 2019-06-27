@@ -1,0 +1,7 @@
+name: run/serialLoop/object/until/array/eq/not-array
+run:
+  serialLoop:
+    until:
+      - eq: *
+    run:
+      serial: []

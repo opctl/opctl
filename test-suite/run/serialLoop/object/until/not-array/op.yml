@@ -1,0 +1,6 @@
+name: run/serialLoop/object/until/not-array
+run:
+  serialLoop:
+    until: *
+    run:
+      serial: []

@@ -1,6 +1,0 @@
-name: run/loop/object/until/array/eq/not-array
-run:
-  loop:
-    until:
-      - eq: *
-  serial: []

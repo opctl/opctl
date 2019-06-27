@@ -1,6 +1,0 @@
-name: run/loop/object/until/array/ne/booleans
-run:
-  loop:
-    until:
-      - ne: [true,false]
-  serial: []

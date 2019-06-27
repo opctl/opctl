@@ -1,0 +1,7 @@
+name: run/serialLoop/object/until/array/ne/booleans
+run:
+  serialLoop:
+    until:
+      - ne: [true,false]
+    run:
+      serial: []

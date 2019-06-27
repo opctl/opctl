@@ -1,19 +1,19 @@
 {
-    "additionalProperties": false,
-    "description": "Variables in scope during each iteration of the loop",
-    "properties": {
-      "index": {
-        "description": "Variable each iterations associated index will be made available through",
-        "type": "string"
-      },
-      "key": {
-        "description": "Variable each iterations associated key will be made available through",
-        "type": "string"
-      },
-      "value": {
-        "description": "Variable each iterations associated value will be made available through",
-        "type": "string"
-      }
+  "additionalProperties": false,
+  "description": "Variables added to scope on each iteration",
+  "properties": {
+    "index": {
+      "description": "Variable each iterations associated index will be made available through",
+      "$ref": "../../variableName.json"
     },
-    "type": "object"
-  }
+    "key": {
+      "description": "Variable each iterations associated key will be made available through",
+      "$ref": "../../variableName.json"
+    },
+    "value": {
+      "description": "Variable each iterations associated value will be made available through",
+      "$ref": "../../variableName.json"
+    }
+  },
+  "type": "object"
+}

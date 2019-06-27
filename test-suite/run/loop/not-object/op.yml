@@ -1,4 +1,0 @@
-name: run/loop/not-object
-run:
-  loop: *
-  serial: []

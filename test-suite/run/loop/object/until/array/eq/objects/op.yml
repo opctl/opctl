@@ -1,6 +1,0 @@
-name: run/loop/object/until/array/eq/objects
-run:
-  loop:
-    until:
-      - eq: [{p1: v1},{p2: v2}]
-  serial: []
