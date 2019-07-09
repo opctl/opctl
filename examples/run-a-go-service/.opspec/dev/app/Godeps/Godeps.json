@@ -1,0 +1,12 @@
+{
+	"ImportPath": "github.com/golang-ops-example/app",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.4.0-2-g749ddf1",
+			"Rev": "749ddf1598b47e3cd909414bda735fe790ef3d30"
+		}
+	]
+}

@@ -1,0 +1,37 @@
+description: deploys website to github pages
+name: deploy
+inputs:
+  srcDir:
+    dir:
+      default: ..
+      description: dir containing the doc source
+  github:
+    object:
+      constraints:
+        properties:
+          accessToken:
+            minLength: 1
+            type: string
+            writeOnly: true
+          username:
+            minLength: 1
+            type: string
+        required: [accessToken, username]
+      description: configuration required to interact w/ github
+run:
+  serial:
+    - op:
+        ref: init
+        inputs:
+          srcDir:
+    - container:
+        cmd: [/cmd.sh]
+        dirs:
+          /src: $(srcDir)
+        envVars:
+          GIT_USER: $(github.username)
+          GITHUB_ACCESS_TOKEN: $(github.accessToken)
+        files:
+          /cmd.sh:
+        image: { ref: 'node:12.5.0' }
+        workDir: /src/website

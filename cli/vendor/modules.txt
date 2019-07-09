@@ -11,7 +11,7 @@ github.com/appdataspec/sdk-golang/appdatapath
 github.com/blang/semver
 # github.com/boltdb/bolt v1.3.1
 github.com/boltdb/bolt
-# github.com/dgraph-io/badger v1.5.4
+# github.com/dgraph-io/badger v1.5.5
 github.com/dgraph-io/badger
 github.com/dgraph-io/badger/options
 github.com/dgraph-io/badger/protos
@@ -177,7 +177,7 @@ github.com/onsi/gomega/matchers/support/goraph/bipartitegraph
 github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
-# github.com/opctl/sdk-golang v0.0.0-20190625202527-62dd802dc500
+# github.com/opctl/sdk-golang v0.0.0-20190627211734-09d4f76e2edc
 github.com/opctl/sdk-golang/opspec
 github.com/opctl/sdk-golang/node/api/handler
 github.com/opctl/sdk-golang/node/core
@@ -202,6 +202,8 @@ github.com/opctl/sdk-golang/opspec/interpreter/call/loop
 github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration
 github.com/opctl/sdk-golang/opspec/interpreter/call/op
 github.com/opctl/sdk-golang/opspec/interpreter/call/op/outputs
+github.com/opctl/sdk-golang/opspec/interpreter/call/parallelloop
+github.com/opctl/sdk-golang/opspec/interpreter/call/serialloop
 github.com/opctl/sdk-golang/opspec/interpreter/loopable
 github.com/opctl/sdk-golang/util/uniquestring
 github.com/opctl/sdk-golang/util/iruntime
@@ -220,7 +222,6 @@ github.com/opctl/sdk-golang/opspec/interpreter/call/container/files
 github.com/opctl/sdk-golang/opspec/interpreter/call/container/image
 github.com/opctl/sdk-golang/opspec/interpreter/call/container/sockets
 github.com/opctl/sdk-golang/opspec/interpreter/string
-github.com/opctl/sdk-golang/opspec/interpreter/call/loop/forpkg
 github.com/opctl/sdk-golang/opspec/interpreter/value
 github.com/opctl/sdk-golang/opspec/interpreter/call/op/inputs
 github.com/opctl/sdk-golang/opspec/interpreter/array
@@ -261,7 +262,7 @@ github.com/rakyll/statik/fs
 github.com/satori/go.uuid
 # github.com/sergi/go-diff v1.0.0
 github.com/sergi/go-diff/diffmatchpatch
-# github.com/sethgrid/pester v0.0.0-20180430140037-03e26c9abbbf
+# github.com/sethgrid/pester v0.0.0-20190127155807-68a33a018ad0
 github.com/sethgrid/pester
 # github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
@@ -295,7 +296,7 @@ github.com/xeipuuv/gojsonpointer
 github.com/xeipuuv/gojsonreference
 # github.com/xeipuuv/gojsonschema v1.1.0
 github.com/xeipuuv/gojsonschema
-# golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
+# golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/openpgp/armor
 golang.org/x/crypto/openpgp/errors
@@ -312,7 +313,7 @@ golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
-# golang.org/x/net v0.0.0-20190607181551-461777fb6f67
+# golang.org/x/net v0.0.0-20190620200207-3b0461eec859
 golang.org/x/net/context
 golang.org/x/net/trace
 golang.org/x/net/html/charset
@@ -323,7 +324,7 @@ golang.org/x/net/internal/socks
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.0.0-20190423024810-112230192c58
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20190610200419-93c9922d18ae
+# golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/cpu
@@ -345,7 +346,7 @@ golang.org/x/text/runes
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
-# google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6
+# google.golang.org/genproto v0.0.0-20190627203621-eb59cef1c072
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.21.1
 google.golang.org/grpc/codes
@@ -358,7 +359,7 @@ gopkg.in/src-d/go-billy.v4/osfs
 gopkg.in/src-d/go-billy.v4/util
 gopkg.in/src-d/go-billy.v4/helper/chroot
 gopkg.in/src-d/go-billy.v4/helper/polyfill
-# gopkg.in/src-d/go-git.v4 v4.11.0
+# gopkg.in/src-d/go-git.v4 v4.12.0
 gopkg.in/src-d/go-git.v4
 gopkg.in/src-d/go-git.v4/plumbing
 gopkg.in/src-d/go-git.v4/plumbing/transport
@@ -404,5 +405,5 @@ gopkg.in/src-d/go-git.v4/plumbing/transport/server
 gopkg.in/tomb.v1
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.2.1
+# gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2
