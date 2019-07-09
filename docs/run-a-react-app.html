@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Run a react app · opctl</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="&lt;p&gt;We&#x27;ll now look at an op to run a sample React application. Please see the code at &lt;a href=&quot;https://github.com/opctl/opctl/tree/master/examples/run-a-react-app&quot;&gt;https://github.com/opctl/opctl/tree/master/examples/run-a-react-app&lt;/a&gt;&lt;/p&gt;
+"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Run a react app · opctl"/><meta property="og:type" content="website"/><meta property="og:url" content="https://opctl.io/"/><meta property="og:description" content="&lt;p&gt;We&#x27;ll now look at an op to run a sample React application. Please see the code at &lt;a href=&quot;https://github.com/opctl/opctl/tree/master/examples/run-a-react-app&quot;&gt;https://github.com/opctl/opctl/tree/master/examples/run-a-react-app&lt;/a&gt;&lt;/p&gt;
+"/><meta property="og:image" content="https://opctl.io/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://opctl.io/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/img/logo.svg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/logo.svg" alt="opctl"/><h2 class="headerTitleWithLogo">opctl</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/setup" target="_self">Docs</a></li><li class="siteNavGroupActive siteNavItemActive"><a href="/docs/run-a-react-app" target="_self">Examples</a></li><li class=""><a href="https://github.com/opctl/opctl" target="_self">GitHub</a></li><li class=""><a href="https://opctl-slackin.herokuapp.com" target="_self">Slack</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Portable Dev</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Portable Dev</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/docs/run-a-react-app">run a react app</a></li><li class="navListItem"><a class="navItem" href="/docs/run-a-go-service">run a go service</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/opctl/opctl/edit/master/docs/run-a-react-app.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Run a react app</h1></header><article><div><span><p>We'll now look at an op to run a sample React application. Please see the code at <a href="https://github.com/opctl/opctl/tree/master/examples/run-a-react-app">https://github.com/opctl/opctl/tree/master/examples/run-a-react-app</a></p>
+<p>We'll stick to simple node.js conventions of including the run command in an <code>npm start</code> script in <code>package.json</code>. Because we used <code>create-react-app</code> to bootstrap our project, the start script is <code>react-scripts start</code>, which will launch the webpack dev server to serve our app for development.</p>
+<p>Let's say our frontend React app needs to call the a go api from our previous example. When running that stack we want our services running locally (React app running via webpack, our go service, and the mysql database). We however prefer to have the ops running each service to live with the source code it runs, rather than in a separate place.</p>
+<p>What we need our <code>dev</code> op to do then is to:</p>
+<ol>
+<li>call <code>go-svc</code>'s <code>dev</code> op by remote reference</li>
+<li>call <code>react-app</code>'s <code>init</code> op by local reference</li>
+<li>run our React app in a container</li>
+</ol>
+<p>So our ops in <code>react-ops-example</code> would look like this</p>
+<h4><a class="anchor" aria-hidden="true" id="init"></a><a href="#init" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>init</h4>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">init</span>
+<span class="hljs-attr">description:</span> <span class="hljs-string">installs</span> <span class="hljs-string">dependencies</span> <span class="hljs-string">of</span> <span class="hljs-string">the</span> <span class="hljs-string">project</span>
+<span class="hljs-attr">inputs:</span>
+<span class="hljs-attr">  srcDir:</span>
+<span class="hljs-attr">    dir:</span>
+<span class="hljs-attr">      default:</span> <span class="hljs-string">.</span>
+<span class="hljs-attr">      description:</span> <span class="hljs-string">project</span> <span class="hljs-string">source</span> <span class="hljs-string">location</span>
+<span class="hljs-attr">run:</span>
+<span class="hljs-attr">  container:</span>
+<span class="hljs-attr">    image:</span> <span class="hljs-string">{</span> <span class="hljs-attr">ref:</span> <span class="hljs-string">'node:10-alpine'</span><span class="hljs-string">}</span>
+<span class="hljs-attr">    cmd:</span> <span class="hljs-string">[npm,</span> <span class="hljs-string">install]</span>
+<span class="hljs-attr">    dirs:</span>
+      <span class="hljs-string">/src:</span> <span class="hljs-string">$(srcDir)</span>
+<span class="hljs-attr">    workDir:</span> <span class="hljs-string">/src</span>
+
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" id="dev"></a><a href="#dev" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>dev</h4>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">dev</span>
+<span class="hljs-attr">description:</span> <span class="hljs-string">runs</span> <span class="hljs-string">react-app</span> <span class="hljs-string">for</span> <span class="hljs-string">development</span>
+<span class="hljs-attr">run:</span>
+<span class="hljs-attr">  parallel:</span>
+<span class="hljs-attr">    - op:</span>
+<span class="hljs-attr">        ref:</span> <span class="hljs-string">github.com/opctl/golang-ops-example#1.0.2/.opspec/dev</span> <span class="hljs-comment"># remotely referencing an op via git</span>
+<span class="hljs-attr">    - serial:</span>
+<span class="hljs-attr">      - op:</span>
+<span class="hljs-attr">          ref:</span> <span class="hljs-string">init</span>
+<span class="hljs-attr">      - container:</span>
+<span class="hljs-attr">          image:</span> <span class="hljs-string">{</span> <span class="hljs-attr">ref:</span> <span class="hljs-string">'node:10-alpine'</span><span class="hljs-string">}</span>
+<span class="hljs-attr">          cmd:</span> <span class="hljs-string">[npm,</span> <span class="hljs-string">run,</span> <span class="hljs-string">'start'</span><span class="hljs-string">]</span>
+<span class="hljs-attr">          dirs:</span>
+            <span class="hljs-string">/src:</span> <span class="hljs-string">$(/srcDir)</span>
+<span class="hljs-attr">          workDir:</span> <span class="hljs-string">/src</span>
+<span class="hljs-attr">          ports:</span> <span class="hljs-string">{</span>
+            <span class="hljs-string">'3000'</span><span class="hljs-string">:'3000'</span>
+          <span class="hljs-string">}</span>
+</code></pre>
+<p>going to <a href="http://localhost:8080">http://localhost:8080</a> should show us the <code>go-svc</code> api being served, and <a href="http://localhost:3000">http://localhost:3000</a> should show us the react app, which in turns is making a call to <code>go-svc</code> and fetching data to show.</p>
+<p>Notice the following:</p>
+<ol>
+<li>we're referencing the <code>dev</code> op for go-svc remotely - which has been designed to be self-containing. opctl clones the <code>golang-ops-example</code> repo and runs the op for us</li>
+<li>we can run our ops in any combination of <code>parallel</code> and <code>serial</code> blocks, composing them as needed. for our case the <code>dev</code> op can run in the background while we init then run our react app</li>
+<li>networking between our services &quot;just works&quot; by referencing containers by name, thanks to how they all are in the same Docker container network, so the webpack dev server proxy configuration in <code>package.json</code> targets <code>go-svc</code>:</li>
+</ol>
+<pre><code class="hljs css language-json">"proxy": {
+    "/api": {
+      "target": "http://go-svc:8080"
+    }
+  }
+</code></pre>
+</span></div></article></div><div class="docLastUpdate"><em>Last updated on 7/9/2019 by Chris Dostert</em></div><div class="docs-prevnext"><a class="docs-next button" href="/docs/run-a-go-service"><span>run a go service</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/logo.svg" alt="opctl" width="66" height="58"/></a><div><h5>Docs</h5><a href="/docs/en/setup.html">Beginner Guides</a><a href="/docs/en/opspec.html">Opspec Reference</a><a href="/docs/en/interop-azure-pipelines.html">Interop</a></div><div><h5>Community</h5><a href="https://opctl-slackin.herokuapp.com">Slack</a></div><div><h5>More</h5><a href="https://github.com/opctl/opctl">GitHub</a><a class="github-button" href="https://github.com/opctl/opctl" data-icon="octicon-star" data-count-href="/opctl/opctl/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2019 opctl</section></footer></div></body></html>

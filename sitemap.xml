@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url> <loc>https://opctl.io/help</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/en/help" /> </url>
+<url> <loc>https://opctl.io/index</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/en/index" /> </url>
+<url> <loc>https://opctl.io/users</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/en/users" /> </url>
+<url> <loc>https://opctl.io/docs/commands</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/commands" /> </url>
+<url> <loc>https://opctl.io/docs/getting-started</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/getting-started" /> </url>
+<url> <loc>https://opctl.io/docs/interop-azure-pipelines</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-azure-pipelines" /> </url>
+<url> <loc>https://opctl.io/docs/interop-docker</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-docker" /> </url>
+<url> <loc>https://opctl.io/docs/interop-gitlab</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-gitlab" /> </url>
+<url> <loc>https://opctl.io/docs/interop-golang</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-golang" /> </url>
+<url> <loc>https://opctl.io/docs/interop-js</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-js" /> </url>
+<url> <loc>https://opctl.io/docs/interop-kubernetes</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-kubernetes" /> </url>
+<url> <loc>https://opctl.io/docs/interop-travis</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/interop-travis" /> </url>
+<url> <loc>https://opctl.io/docs/opspec</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/opspec" /> </url>
+<url> <loc>https://opctl.io/docs/run-a-go-service</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/run-a-go-service" /> </url>
+<url> <loc>https://opctl.io/docs/run-a-react-app</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/run-a-react-app" /> </url>
+<url> <loc>https://opctl.io/docs/setup</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/setup" /> </url>
+<url> <loc>https://opctl.io/docs/what-why</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/what-why" /> </url>
+<url> <loc>https://opctl.io/docs/whats-in-an-op</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://opctl.io/docs/whats-in-an-op" /> </url>
+</urlset>
