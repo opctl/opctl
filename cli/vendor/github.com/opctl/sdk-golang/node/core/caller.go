@@ -41,11 +41,6 @@ func newCaller(
 		pubSub:          pubSub,
 	}
 
-	instance.looper = newLooper(
-		instance,
-		pubSub,
-	)
-
 	instance.opCaller = newOpCaller(
 		callStore,
 		pubSub,
@@ -58,7 +53,17 @@ func newCaller(
 		pubSub,
 	)
 
+	instance.parallelLoopCaller = newParallelLoopCaller(
+		instance,
+		pubSub,
+	)
+
 	instance.serialCaller = newSerialCaller(
+		instance,
+		pubSub,
+	)
+
+	instance.serialLoopCaller = newSerialLoopCaller(
 		instance,
 		pubSub,
 	)
@@ -67,14 +72,15 @@ func newCaller(
 }
 
 type _caller struct {
-	callInterpreter call.Interpreter
-	containerCaller containerCaller
-	callStore       callStore
-	looper          looper
-	opCaller        opCaller
-	parallelCaller  parallelCaller
-	pubSub          pubsub.PubSub
-	serialCaller    serialCaller
+	callInterpreter    call.Interpreter
+	containerCaller    containerCaller
+	callStore          callStore
+	opCaller           opCaller
+	parallelCaller     parallelCaller
+	parallelLoopCaller parallelLoopCaller
+	pubSub             pubsub.PubSub
+	serialCaller       serialCaller
+	serialLoopCaller   serialLoopCaller
 }
 
 func (clr _caller) Call(
@@ -156,6 +162,18 @@ func (clr _caller) Call(
 				}
 				outputs = event.SerialCallEnded.Outputs
 				return
+			case nil != event.SerialLoopCallEnded && event.SerialLoopCallEnded.CallID == id:
+				if nil != event.SerialLoopCallEnded.Error {
+					err = errors.New(event.SerialLoopCallEnded.Error.Message)
+				}
+				outputs = event.SerialLoopCallEnded.Outputs
+				return
+			case nil != event.ParallelLoopCallEnded && event.ParallelLoopCallEnded.CallID == id:
+				if nil != event.ParallelLoopCallEnded.Error {
+					err = errors.New(event.ParallelLoopCallEnded.Error.Message)
+				}
+				outputs = event.ParallelLoopCallEnded.Outputs
+				return
 			case nil != event.ParallelCallEnded && event.ParallelCallEnded.CallID == id:
 				if nil != event.ParallelCallEnded.Error {
 					err = errors.New(event.ParallelCallEnded.Error.Message)
@@ -168,19 +186,6 @@ func (clr _caller) Call(
 			}
 		}
 	}()
-
-	if nil != scg.Loop {
-		clr.looper.Loop(
-			ctx,
-			id,
-			scope,
-			scg,
-			opHandle,
-			parentCallID,
-			rootOpID,
-		)
-		return
-	}
 
 	var dcg *model.DCG
 	dcg, err = clr.callInterpreter.Interpret(
@@ -231,6 +236,17 @@ func (clr _caller) Call(
 			scg.Parallel,
 		)
 		return
+	case nil != scg.ParallelLoop:
+		clr.parallelLoopCaller.Call(
+			ctx,
+			id,
+			scope,
+			*scg.ParallelLoop,
+			opHandle,
+			parentCallID,
+			rootOpID,
+		)
+		return
 	case len(scg.Serial) > 0:
 		clr.serialCaller.Call(
 			ctx,
@@ -239,6 +255,17 @@ func (clr _caller) Call(
 			rootOpID,
 			opHandle,
 			scg.Serial,
+		)
+		return
+	case nil != scg.SerialLoop:
+		clr.serialLoopCaller.Call(
+			ctx,
+			id,
+			scope,
+			*scg.SerialLoop,
+			opHandle,
+			parentCallID,
+			rootOpID,
 		)
 		return
 	default:

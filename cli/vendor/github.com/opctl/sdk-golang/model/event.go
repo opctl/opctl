@@ -15,7 +15,9 @@ type Event struct {
 	OpErred                  *OpErredEvent                  `json:"opErred,omitempty"`
 	Timestamp                time.Time                      `json:"timestamp"`
 	ParallelCallEnded        *ParallelCallEndedEvent        `json:"parallelCallEnded,omitempty"`
+	ParallelLoopCallEnded    *ParallelLoopCallEndedEvent    `json:"parallelLoopCallEnded,omitempty"`
 	SerialCallEnded          *SerialCallEndedEvent          `json:"serialCallEnded,omitempty"`
+	SerialLoopCallEnded      *SerialLoopCallEndedEvent      `json:"serialLoopCallEnded,omitempty"`
 }
 
 const (
@@ -112,8 +114,24 @@ type ParallelCallEndedEvent struct {
 	RootOpID string               `json:"rootOpId"`
 }
 
+// ParallelLoopCallEndedEvent represents the exit of a parallel loop call; no further events will occur for the call.
+type ParallelLoopCallEndedEvent struct {
+	CallID   string               `json:"callId"`
+	Error    *CallEndedEventError `json:"error,omitempty"`
+	Outputs  map[string]*Value    `json:"outputs"`
+	RootOpID string               `json:"rootOpId"`
+}
+
 // SerialCallEndedEvent represents the exit of a serial call; no further events will occur for the call.
 type SerialCallEndedEvent struct {
+	CallID   string               `json:"callId"`
+	Error    *CallEndedEventError `json:"error,omitempty"`
+	Outputs  map[string]*Value    `json:"outputs"`
+	RootOpID string               `json:"rootOpId"`
+}
+
+// SerialLoopCallEndedEvent represents the exit of a serial loop call; no further events will occur for the call.
+type SerialLoopCallEndedEvent struct {
 	CallID   string               `json:"callId"`
 	Error    *CallEndedEventError `json:"error,omitempty"`
 	Outputs  map[string]*Value    `json:"outputs"`

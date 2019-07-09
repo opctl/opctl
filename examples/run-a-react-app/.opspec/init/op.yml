@@ -1,0 +1,9 @@
+name: init
+description: installs dependencies of the project
+run:
+  container:
+    image: { ref: 'node:12-alpine'}
+    cmd: [yarn]
+    dirs:
+      /src: $(/srcDir)
+    workDir: /src

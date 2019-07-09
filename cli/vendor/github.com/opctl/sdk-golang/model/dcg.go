@@ -4,15 +4,16 @@ package model
 type DCG struct {
 	Container *DCGContainerCall `json:"container,omitempty"`
 	// id of call
-	Id       string     `json:"id"`
-	If       *bool      `json:"if,omitempty"`
-	IsKilled bool       `json:"isKilled"`
-	Loop     *DCGLoop   `json:"loop,omitempty"`
-	Op       *DCGOpCall `json:"op,omitempty"`
-	Parallel []*SCG     `json:"parallel,omitempty"`
+	Id           string           `json:"id"`
+	If           *bool            `json:"if,omitempty"`
+	IsKilled     bool             `json:"isKilled"`
+	Op           *DCGOpCall       `json:"op,omitempty"`
+	Parallel     []*SCG           `json:"parallel,omitempty"`
+	ParallelLoop *DCGParallelLoop `json:"parallelLoop,omitempty"`
 	// id of parent call
-	ParentID *string `json:"parentId,omitempty"`
-	Serial   []*SCG  `json:"serial,omitempty"`
+	ParentID   *string        `json:"parentId,omitempty"`
+	Serial     []*SCG         `json:"serial,omitempty"`
+	SerialLoop *DCGSerialLoop `json:"serialLoop,omitempty"`
 }
 
 type DCGBaseCall struct {
@@ -43,15 +44,9 @@ type DCGContainerCallImage struct {
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
-type DCGLoop struct {
-	For   *DCGLoopFor `json:"for,omitempty"`
-	Index *string     `json:"index,omitempty"`
-	Until *bool       `json:"until,omitempty"`
-}
-
-type DCGLoopFor struct {
-	// an array or object
-	Each  *Value  `json:"each"`
+type DCGLoopVars struct {
+	Index *string `json:"index,omitempty"`
+	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 }
 
@@ -68,7 +63,22 @@ type DCGOpCallPkg struct {
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }
 
+type DCGParallelLoop struct {
+	// an array or object
+	Range *Value       `json:"range,omitempty"`
+	Run   DCG          `json:"run,omitempty"`
+	Vars  *DCGLoopVars `json:"vars,omitempty"`
+}
+
 type DCGPredicate struct {
 	Eq []*Value `json:"eq"`
 	Ne []*Value `json:"ne"`
+}
+
+type DCGSerialLoop struct {
+	// an array or object
+	Range *Value       `json:"range,omitempty"`
+	Run   DCG          `json:"run,omitempty"`
+	Until *bool        `json:"until,omitempty"`
+	Vars  *DCGLoopVars `json:"vars,omitempty"`
 }
