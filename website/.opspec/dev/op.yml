@@ -1,0 +1,23 @@
+description: serves the webapp locally on port 80
+name: dev
+inputs:
+  srcDir:
+    dir:
+      default: ..
+run:
+  serial:
+    - op:
+        ref: init
+        inputs: { srcDir }
+        outputs: { srcDir }
+    - container:
+        cmd: [ yarn, start ]
+        image: { ref: 'node:12.5.0-alpine' }
+        envVars:
+          PORT: 80
+        dirs:
+          /src: $(srcDir)
+        ports:
+          80: 80
+          35729: 35729
+        workDir: /src/website

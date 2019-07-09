@@ -2,7 +2,9 @@ package call
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
+
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/parallelloop"
+	"github.com/opctl/sdk-golang/opspec/interpreter/call/serialloop"
 
 	"github.com/opctl/sdk-golang/model"
 	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
@@ -31,17 +33,19 @@ func NewInterpreter(
 ) Interpreter {
 	return _interpreter{
 		containerCallInterpreter: containerCallInterpreter,
-		loopInterpreter:          loop.NewInterpreter(),
-		predicatesInterpreter:    predicates.NewInterpreter(),
 		opCallInterpreter:        op.NewInterpreter(dataDirPath),
+		predicatesInterpreter:    predicates.NewInterpreter(),
+		parallelLoopInterpreter:  parallelloop.NewInterpreter(),
+		serialLoopInterpreter:    serialloop.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
 	containerCallInterpreter container.Interpreter
-	loopInterpreter          loop.Interpreter
 	opCallInterpreter        op.Interpreter
+	parallelLoopInterpreter  parallelloop.Interpreter
 	predicatesInterpreter    predicates.Interpreter
+	serialLoopInterpreter    serialloop.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -57,17 +61,6 @@ func (itp _interpreter) Interpret(
 		ParentID: parentID,
 	}
 	var err error
-
-	if nil != scg.Loop {
-		dcg.Loop, err = itp.loopInterpreter.Interpret(
-			opHandle,
-			scg.Loop,
-			scope,
-		)
-		if nil != err {
-			return nil, err
-		}
-	}
 
 	if nil != scg.If {
 		dcgIf, err := itp.predicatesInterpreter.Interpret(
@@ -109,9 +102,23 @@ func (itp _interpreter) Interpret(
 	case nil != scg.Parallel:
 		dcg.Parallel = scg.Parallel
 		return dcg, nil
+	case nil != scg.ParallelLoop:
+		dcg.ParallelLoop, err = itp.parallelLoopInterpreter.Interpret(
+			opHandle,
+			*scg.ParallelLoop,
+			scope,
+		)
+		return dcg, err
 	case nil != scg.Serial:
 		dcg.Serial = scg.Serial
 		return dcg, nil
+	case nil != scg.SerialLoop:
+		dcg.SerialLoop, err = itp.serialLoopInterpreter.Interpret(
+			opHandle,
+			*scg.SerialLoop,
+			scope,
+		)
+		return dcg, err
 	default:
 		return nil, fmt.Errorf("Invalid call graph %+v\n", scg)
 	}
