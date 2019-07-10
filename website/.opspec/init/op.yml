@@ -12,7 +12,7 @@ outputs:
 opspec: 0.1.6
 run:
   container:
-    image: { ref: 'node:12.5.0' }
+    image: { ref: 'node:12.5.0-alpine' }
     cmd: [yarn]
     dirs:
       /src: $(srcDir)

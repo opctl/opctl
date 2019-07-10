@@ -30,7 +30,7 @@ const users = [
     caption: 'Nintex',
     // You will need to prepend the image path with your baseUrl
     // if it is not '/', like: '/test-site/img/image.jpg'.
-    image: '/img/nintex-logo.webp',
+    image: '/img/nintex-logo.svg',
     infoLink: 'https://nintex.com',
     pinned: true,
   },
