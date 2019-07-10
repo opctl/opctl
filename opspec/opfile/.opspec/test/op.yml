@@ -1,0 +1,11 @@
+description: tests if jsonschema.json is valid
+name: test
+inputs:
+  jsonschemaDotJson:
+    file:
+      default: jsonschema.json
+run:
+  op:
+    ref: github.com/opspec-pkgs/jsonschema.draft7.validate-schema#1.0.0
+    inputs:
+      schema: $(jsonschemaDotJson)
