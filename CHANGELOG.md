@@ -8,12 +8,16 @@ accordance with
 
 ### Added
 
+- [Allow dynamically setting env vars of a container](https://github.com/opctl/specs/issues/250)
+- [NotExists predicate](https://github.com/opctl/specs/issues/245)
+- [Exists predicate](https://github.com/opctl/specs/issues/241)
 - up to 10x disk performance improvement on OSX
 - [Ability to specify custom node data dir](https://github.com/opctl/opctl/issues/449)
-- [Allow Numbers & Implicit Binding On Container Ports](https://github.com/opctl/specs/issues/233)
+- [Allow Numbers for Container Ports](https://github.com/opctl/specs/issues/233)
 - [Interpolate Container Name](https://github.com/opctl/specs/issues/232)
 - [Conditional running](https://github.com/opctl/specs/issues/223)
-- [Looping](https://github.com/opctl/specs/issues/207)
+- serialLoop call
+- parallelLoop call
 
 ### Fixed
 
@@ -24,6 +28,7 @@ accordance with
 ### Removed
 
 - [`stdOut` & `stdErr` attributes from container call.](https://github.com/opctl/specs/issues/231). Use files.
+- `pkg` attribute in opcall; `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
 
 ### Changed
 
