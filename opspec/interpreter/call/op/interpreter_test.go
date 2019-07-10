@@ -33,7 +33,7 @@ var _ = Context("Interpreter", func() {
 				if nil != err {
 					panic(err)
 				}
-				rootPath := "../../../../github.com/opctl/specs/test-suite"
+				rootPath := "../../../../test-suite"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {
