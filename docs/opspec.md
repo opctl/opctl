@@ -33,6 +33,7 @@ Opspec is a declarative language designed for the sole purpose of describing ope
       - [ref](#container-image-ref)
       - [pullCreds](#pull-creds)
     - [name](#container-name)
+    - [ports](#container-ports)
     - [workDir](#container-workdir)
   - [op](#op-call)
     - [ref](#op-call-ref)
@@ -461,6 +462,7 @@ Properties:
   - [envVars](#container-env-vars)
   - [files](#container-files)
   - [name](#container-name)
+  - [ports](#container-ports)
   - [sockets](#container-sockets)
   - [workDir](#workdir)
 
@@ -491,6 +493,11 @@ Object where each key is an [absolute path](#absolute-path) in the container and
 |null|Shorthand for reference to file path|
 |[reference](#reference)|On call start, reference will be de-referenced and coerced to file at specified path. On call end, reference will be set to file at specified path|
 |[initializer](#initializer)|Initializer will be initialized and coerced to file at specified path|
+
+#### Container Ports
+Object defining container ports exposed on the opctl host where:
+- each key is a container port or range of ports (optionally including protocol) matching `[0-9]+(-[0-9]+)?(tcp|udp)`
+- each value is a corresponding opctl host port or range of ports matching `[0-9]+(-[0-9]+)?`
 
 #### Container Sockets
 Object where each key is an [absolute path](#absolute-path) in the container and the value is a [reference](#reference) to a socket to be mounted. 
@@ -640,7 +647,7 @@ Array defining [calls](#call) which happen in parallel (all at once without orde
 
 Items:
 - must be
-  - [call](#call)
+  - [calls](#call)
 
 ### Parallel Loop
 Object defining a call loop in which all iterations happen in parallel (all at once without order).
@@ -653,6 +660,10 @@ Properties:
 
 ### Serial
 Array defining [calls](#call) which happen in serial (one after another in order).
+
+Items:
+- must be
+  - [calls](#call)
 
 ### Serial Loop
 Object defining a call loop in which each iteration happens in serial (one after another in order)
