@@ -1,0 +1,6 @@
+name: run/parallelLoop/object/range/array
+run:
+  parallelLoop:
+    range: [1,2]
+    run:
+      serial: []

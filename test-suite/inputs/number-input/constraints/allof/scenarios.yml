@@ -1,0 +1,38 @@
+- name: doesn't meet any allOf constraints
+  call:
+    expect: failure
+    scope:
+      number:
+        number: 3.1
+- name: doesn't meet all allOf constraints
+  call:
+    expect: failure
+    scope:
+      number:
+        number: 3
+- name: meets all allOf constraints
+  call:
+    expect: success
+    scope:
+      number:
+        number: 2
+- name: doesn't meet any allOf constraints
+  interpret:
+    expect: failure
+    scope:
+      number:
+        number: 3.1
+- name: doesn't meet all allOf constraints
+  interpret:
+    expect: failure
+    scope:
+      number:
+        number: 3
+- name: meets all allOf constraints
+  interpret:
+    expect: success
+    scope:
+      number:
+        number: 2
+- validate:
+    expect: success

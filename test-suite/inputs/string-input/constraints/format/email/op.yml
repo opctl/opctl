@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/email
+inputs:
+  string:
+    string:
+      constraints:
+        format: email
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

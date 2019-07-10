@@ -1,0 +1,5 @@
+name: run/op/inputs/not-object
+run:
+  op:
+    ref: not-object/_
+    inputs: []

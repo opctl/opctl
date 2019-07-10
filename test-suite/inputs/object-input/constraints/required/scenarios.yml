@@ -1,0 +1,38 @@
+- name: has no required properties
+  call:
+    expect: failure
+    scope:
+      object:
+        object: { c: c }
+- name: has some required properties
+  call:
+    expect: failure
+    scope:
+      object:
+        object: { a: a }
+- name: has all required properties
+  call:
+    expect: success
+    scope:
+      object:
+        object: { a: a, b: b, c: c }
+- name: has no required properties
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: { c: c }
+- name: has some required properties
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: { a: a }
+- name: has all required properties
+  interpret:
+    expect: success
+    scope:
+      object:
+        object: { a: a, b: b, c: c }
+- validate:
+    expect: success

@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/number-input/string-arg/is-scope-ref/isnt-resolvable
+run:
+  op:
+    ref: isnt-resolvable/_
+    inputs: { number: $(number)}

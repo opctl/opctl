@@ -1,0 +1,5 @@
+name: run/if/array/eq/numbers
+run:
+  if:
+    - eq: [2,3]
+  serial: []

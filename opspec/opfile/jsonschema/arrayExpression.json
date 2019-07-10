@@ -1,0 +1,7 @@
+{
+  "description": "Expression which evaluates to an array",
+  "type": [
+    "array",
+    "string"
+  ]
+}

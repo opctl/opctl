@@ -1,0 +1,10 @@
+name: inputs/object-input/constraints/additionalproperties
+inputs:
+  object:
+    object:
+      constraints:
+        additionalProperties: { minLength: 2 }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

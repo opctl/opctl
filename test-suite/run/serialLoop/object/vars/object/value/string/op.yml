@@ -1,0 +1,8 @@
+name: run/serialLoop/object/vars/object/value/string
+run:
+  serialLoop:
+    range: []
+    vars:
+      value: value
+    run:
+      serial: []

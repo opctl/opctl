@@ -1,0 +1,6 @@
+name: run/parallelLoop/object/range/number
+run:
+  parallelLoop:
+    range: 2
+    run:
+      serial: []

@@ -1,0 +1,7 @@
+- call:
+    # although desired; can't fail due to lack of escape syntax for interpolation
+    expect: success
+- interpret:
+    expect: success
+- validate:
+    expect: success

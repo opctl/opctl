@@ -1,0 +1,9 @@
+name: inputs/string-input/default/number-default
+inputs:
+  string:
+    string:
+      default: 7
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

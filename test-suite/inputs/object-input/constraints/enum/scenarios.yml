@@ -1,0 +1,26 @@
+- name: in enum
+  call:
+    expect: success
+    scope:
+      object:
+        object: {a: a}
+- name: not in enum
+  call:
+    expect: failure
+    scope:
+      object:
+        object: {b: b}
+- name: in enum
+  interpret:
+    expect: success
+    scope:
+      object:
+        object: {a: a}
+- name: not in enum
+  interpret:
+    expect: failure
+    scope:
+      object:
+        object: {b: b}
+- validate:
+    expect: success

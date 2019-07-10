@@ -1,0 +1,11 @@
+name: inputs/object-input/constraints/enum
+inputs:
+  object:
+    object:
+      constraints:
+        enum:
+          - { a: a }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

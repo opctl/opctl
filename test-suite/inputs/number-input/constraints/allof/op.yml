@@ -1,0 +1,12 @@
+name: inputs/number/constraints/allof
+inputs:
+  number:
+    number:
+      constraints:
+        allOf:
+          - format: integer
+          - maximum: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

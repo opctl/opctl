@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "items": {
+    "properties": {
+      "name": {
+        "type": "string"
+      }
+    },
+    "oneOf": [
+      {
+        "description": "A test scenario for caller implementations",
+        "properties": {
+          "call": {
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "$ref": "#/definitions/scope"
+              },
+              "expect": {
+                "enum": ["failure", "success"]
+              }
+            }
+          }
+        },
+        "required": [
+          "call"
+        ]
+      },
+      {
+        "description": "A test scenario for interpreter implementations",
+        "properties": {
+          "interpret": {
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "$ref": "#/definitions/scope"
+              },
+              "expect": {
+                "enum": ["failure", "success"]
+              }
+            }
+          }
+        },
+        "required": [
+          "interpret"
+        ]
+      },
+      {
+        "description": "A test scenario for validator implementations",
+        "properties": {
+          "validate": {
+            "additionalProperties": false,
+            "properties": {
+              "expect": {
+                "enum": ["failure", "success"]
+              }
+            }
+          }
+        },
+        "required": [
+          "validate"
+        ]
+      }
+    ]
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "scope": {
+      "items": {
+        "additionalProperties": false,
+        "patternProperties": {
+          "[a-zA-Z]+": {
+            "oneOf": [
+              {
+                "properties": {
+                  "string": {}
+                },
+                "required": [
+                  "string"
+                ]
+              },
+              {
+                "properties": {
+                  "number": {}
+                },
+                "required": [
+                  "number"
+                ]
+              },
+              {
+                "properties": {
+                  "object": {}
+                },
+                "required": [
+                  "object"
+                ]
+              },
+              {
+                "properties": {
+                  "file": {}
+                },
+                "required": [
+                  "file"
+                ]
+              },
+              {
+                "properties": {
+                  "dir": {}
+                },
+                "required": [
+                  "dir"
+                ]
+              },
+              {
+                "properties": {
+                  "socket": {}
+                },
+                "required": [
+                  "socket"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

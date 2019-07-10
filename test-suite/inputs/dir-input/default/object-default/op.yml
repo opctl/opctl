@@ -1,0 +1,9 @@
+name: inputs/dir-input/default/object-default
+inputs:
+  dir:
+    dir:
+      default: { hello: world }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

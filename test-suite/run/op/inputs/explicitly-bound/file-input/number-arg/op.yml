@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/file-input/number-arg
+run:
+  op:
+    ref: number-arg/_
+    inputs: { file: 7}

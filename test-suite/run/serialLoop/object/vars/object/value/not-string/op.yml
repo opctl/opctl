@@ -1,0 +1,8 @@
+name: run/serialLoop/object/vars/object/value/not-string
+run:
+  serialLoop:
+    each: []
+    vars:
+      value: 1
+    run:
+      serial: []

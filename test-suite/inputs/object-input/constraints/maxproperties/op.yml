@@ -1,0 +1,10 @@
+name: inputs/object-input/constraints/maxproperties
+inputs:
+  object:
+    object:
+      constraints:
+        maxProperties: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

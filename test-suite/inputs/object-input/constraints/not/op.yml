@@ -1,0 +1,10 @@
+name: inputs/object-input/constraints/not
+inputs:
+  object:
+    object:
+      constraints:
+        not: { minProperties: 1 }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

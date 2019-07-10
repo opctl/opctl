@@ -1,0 +1,7 @@
+name: run/serialLoop/object/until/array/eq/strings
+run:
+  serialLoop:
+    until:
+      - eq: [string2,string1]
+    run:
+      serial: []

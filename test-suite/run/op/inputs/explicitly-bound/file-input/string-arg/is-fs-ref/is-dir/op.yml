@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/file-input/string-arg/is-fs-ref/is-dir
+run:
+  op:
+    ref: is-dir/_
+    inputs: { file: $(/dir) }

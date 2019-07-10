@@ -1,0 +1,9 @@
+name: run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-string/contains-json
+inputs:
+  string:
+    string:
+      default: "{}"
+run:
+  op:
+    ref: contains-json/_
+    inputs: { object: $(string) }

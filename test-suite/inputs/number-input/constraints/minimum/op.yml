@@ -1,0 +1,10 @@
+name: inputs/number/constraints/minimum
+inputs:
+  number:
+    number:
+      constraints:
+        minimum: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

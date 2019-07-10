@@ -1,0 +1,12 @@
+name: inputs/object-input/constraints/allof
+inputs:
+  object:
+    object:
+      constraints:
+        allOf:
+          - required: [a]
+          - minProperties: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/ipv4
+inputs:
+  string:
+    string:
+      constraints:
+        format: ipv4
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

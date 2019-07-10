@@ -1,0 +1,10 @@
+name: _
+inputs:
+  file:
+    file: {}
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]
+    files:
+      /file: $(file)

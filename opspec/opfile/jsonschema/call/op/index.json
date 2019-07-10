@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "inputs": {
+      "$ref": "inputs.json"
+    },
+    "outputs": {
+      "$ref": "outputs.json"
+    },
+    "pullCreds": {
+      "$ref": "../pullCreds.json"
+    },
+    "ref": {
+      "description": "Reference to an op",
+      "type": "string",
+      "format": "uri-reference"
+    }
+  },
+  "required": [
+    "ref"
+  ],
+  "additionalProperties": false
+}
