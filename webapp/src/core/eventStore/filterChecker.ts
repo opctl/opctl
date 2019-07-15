@@ -20,8 +20,12 @@ const getEventRootOpId = (event) => {
     return event.opStarted.rootOpId
   } else if (event.parallelCallEnded) {
     return event.parallelCallEnded.rootOpId
+  } else if (event.parallelLoopCallEnded) {
+    return event.parallelLoopCallEnded.rootOpId
   } else if (event.serialCallEnded) {
     return event.serialCallEnded.rootOpId
+  } else if (event.serialLoopCallEnded) {
+    return event.serialLoopCallEnded.rootOpId
   } else {
     throw new Error(`received unexpected event ${JSON.stringify(event)}`)
   }
