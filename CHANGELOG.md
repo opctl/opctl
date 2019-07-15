@@ -36,13 +36,32 @@ accordance with
 
 ## 0.1.24 - 2018-04-06
 
-### Added 
+### Added
 
-- [opspec 0.1.6 support](https://github.com/opctl/spec/blob/0.1.6/CHANGELOG.md#016)
+- [`opspec` property in op schema](https://github.com/opctl/specs/issues/20)
+- Client back pressure in `GET event-stream` endpoint via `ack` query param
+- [Support declaring SVG icon for op](https://github.com/opctl/specs/issues/139)
+- [Support CommonMark for op & param descriptions](https://github.com/opctl/specs/issues/174)
+- [Boolean type](https://github.com/opctl/specs/issues/195)
+- [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opctl/specs/issues/196)
+- [Support paths in object refs](https://github.com/opctl/specs/issues/170)
+- Object & Array initializers
+- Support referencing object properties via `object[propertyName]`
+- Support referencing array items via `array[index]` or `array[-index]` to index from end of array
+- [Interpolation escape syntax](https://github.com/opctl/specs/issues/193) by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
+- [Unified data API](https://github.com/opctl/specs/issues/204)
 
-### Removed 
+### Deprecated
 
-- [opspec 0.1.5 support](https://github.com/opctl/spec/blob/0.1.6/CHANGELOG.md#015)
+- `pkg` attribute in
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall); `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
+- `pkg` changed to `op` in [node-api.spec.yml#/components](spec/node-api.spec.yml#/components)
+- [Deprecate pkgs API](https://github.com/opctl/specs/issues/205)
+- `stdOut` & `stdErr` attributes from container call. Use files.
+
+### Removed
+
+- [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opctl/specs/issues/184)
 
 ## 0.1.23 - 2018-01-15
 
@@ -70,10 +89,19 @@ accordance with
 
 ### Added
 
-- Add opspec 0.1.5 support
 - [Validation of outputs](https://github.com/opctl/opctl/issues/186)
 - Remote pkg run
 - Remote pkg validate
+- [Type coercion](https://github.com/opctl/specs/issues/165)
+- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opctl/specs/issues/132)
+- [Support binding strings &/or numbers to/from container files](https://github.com/opctl/specs/issues/131)
+- [Add support for object param type](https://github.com/opctl/specs/issues/65)
+- [Add support for array param type](https://github.com/opctl/specs/issues/160)
+
+### Deprecated
+
+- op.yml without `opspec` property
+- References in/as expressions w/out explicit opener `$(` and closer `)`
 
 ### Fixed
 
@@ -81,6 +109,20 @@ accordance with
 - [Race condition for non-cached pkgs](https://github.com/opctl/opctl/issues/253)
 - [Binding pkg file/dir to sub op input doesn't work](https://github.com/opctl/opctl/issues/249)
 - [Outputs not defaulted](https://github.com/opctl/opctl/issues/314)
+
+### Removed
+
+- `ref` attribute in
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall).
+  Use new `pkg` attribute.
+- `pullIdentity` & `pullSecret` attributes in
+  [op.yml.schema.json#/definitions/containerCall](spec/op.yml.schema.json#/definitions/containerCall).
+  Use new `pullCreds` attribute.
+
+### Changed
+
+- [node-api.spec.yml](spec/node-api.spec.yml) updated to OAS 3.0.0
+  syntax
 
 ## 0.1.20 - 2017-06-23
 
@@ -92,13 +134,25 @@ accordance with
 
 ### Added
 
-- Add opspec 0.1.4 support
+- [Support using dir/file embedded in op as input/output param default](https://github.com/opctl/specs/issues/127)
+- [Allow path expansion w/in sub op call inputs](https://github.com/opctl/specs/issues/120)
+- [Allow string/number literals as sub op call inputs](https://github.com/opctl/specs/issues/121)
+- [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opctl/specs/issues/117)
 - `pkg install` command
 - [Validate file/dir inputs are valid files/dirs (respectively)](https://github.com/opctl/opctl/issues/175)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
 - [Support since in event filter](https://github.com/opctl/opctl/issues/187)
 - [Add github style heading links to web docs](https://github.com/opctl/opctl/issues/194)
 - [Add copy code to clipboard link to web docs](https://github.com/opctl/opctl/issues/195)
+
+### Deprecated
+
+- `ref` attribute in
+  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall).
+  Use new `pkg` attribute.
+- `pullIdentity` & `pullSecret` attributes in
+  [op.yml.schema.json#/definitions/containerCall](spec/op.yml.schema.json#/definitions/containerCall).
+  Use new `pullCreds` attribute.
 
 ### Removed
 
@@ -135,14 +189,36 @@ accordance with
 
 - Add `node` command w/ `create` and `kill` subcommands
 - [Add ability to override default (`.opspec`) package location for `pkg set`, `pkg create`, `run`, and `ls` commands](https://github.com/opctl/opctl/issues/44)
-- [Add opspec 0.1.3 support](https://github.com/opctl/opctl/issues/48)
 - [Add output coloring](https://github.com/opctl/opctl/issues/49)
 - Add input validation
 - Added package validation via `pkg validate` command & before `run`
 - Add `pkg` command w/ `validate`, `set`, `create` subcommands
+- typed params; `dir`, `file`, `number`, `socket`, `string`
+- `string` and `number` parameter constraints
+- support for container calls
+- `filter` to node API `/events/stream` resource
+- [support for private images](https://github.com/opctl/specs/issues/71)
+
+### Changed
+
+- op call changed from `string` to `object` w/ `ref`, `inputs`, and
+  `outputs` attributes. To migrate, replace string value with object
+  having `ref` attribute equal to existing string and pass
+  `inputs`/`outputs` as applicable.
+- String parameters must now be declared as an object:
+
+```yaml
+paramName:
+      string:
+        description: ...
+        # and so on...
+```
 
 ### Removed
 
+- `docker-compose.yml`; replaced with container calls
+- collections
+- bubbling of default collection lookup
 - support for < [opspec 0.1.3](https://opspec.io)
 - `collection` command
 
@@ -154,10 +230,17 @@ accordance with
 
 ## 0.1.9 - 2016-11-06
 
+### Added
+
+- `serial`, `op`, and `parallel` calls
+- nested calls (applicable to `serial` & `parallel` calls)
+- json schema
+
 ### Changed
 
-- refactored to use
-  [opspec sdk](https://github.com/opctl/sdk-golang)
+- refactored to use [sdks/go](https://github.com/opctl/opctl/sdks/go)
+- params no longer support `type` attribute;
+- `subOps` call; use new `op` call
 
 ### Fixed
 
