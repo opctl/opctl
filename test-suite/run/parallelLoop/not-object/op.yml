@@ -1,0 +1,4 @@
+name: run/parallelLoop/not-object
+run:
+  parallelLoop: *
+  serial: []

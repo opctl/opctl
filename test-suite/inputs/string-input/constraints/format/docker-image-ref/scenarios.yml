@@ -1,0 +1,14 @@
+- name: doesn't match format
+  call:
+    expect: failure
+    scope:
+      string:
+        string: "*"
+- name: doesn't match format
+  interpret:
+    expect: failure
+    scope:
+      string:
+        string: "*"
+- validate:
+    expect: success

@@ -1,0 +1,5 @@
+name: run/if/array/eq/objects
+run:
+  if:
+    - eq: [{p1: v1},{p2: v2}]
+  serial: []

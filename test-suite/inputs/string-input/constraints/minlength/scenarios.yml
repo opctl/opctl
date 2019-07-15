@@ -1,0 +1,14 @@
+- name: shorter than minLength
+  call:
+    expect: failure
+    scope:
+      string:
+        string: a
+- name: shorter than minLength
+  interpret:
+    expect: failure
+    scope:
+      string:
+        string: a
+- validate:
+    expect: success

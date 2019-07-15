@@ -1,0 +1,8 @@
+name: run/parallelLoop/object/vars/object/value/string
+run:
+  parallelLoop:
+    range: []
+    vars:
+      value: value
+    run:
+      serial: []

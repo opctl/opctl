@@ -1,0 +1,98 @@
+- name: standalone
+  template: $(string1)$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: value1value2
+
+- name: all escaped
+  template: \\ \$(string1)\$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: \\ $(string1)$(string2)
+
+- name: all double escaped
+  template: \\$(string1)\\$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: \value1\value2
+
+- name: all tripple escaped
+  template: \\\$(string1)\\\$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: \$(string1)\$(string2)
+
+- name: first escaped
+  template: \$(string1)$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: $(string1)value2
+
+- name: last escaped
+  template: $(string1)\$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: value1$(string2)
+
+- name: at start
+  template: $(string1)$(string2)suffix
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: value1value2suffix
+
+- name: at end
+  template: prefix$(string1)$(string2)
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: prefixvalue1value2
+
+- name: within
+  template: prefix$(string1)$(string2)suffix
+  scope:
+    string1:
+      string:
+        value1
+    string2:
+      string:
+        value2
+  expected: prefixvalue1value2suffix

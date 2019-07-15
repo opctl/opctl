@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/number-input/object-arg
+run:
+  op:
+    ref: object-arg/_
+    inputs: { number: {}}

@@ -1,0 +1,6 @@
+name: outputs/not-object
+inputs: *
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

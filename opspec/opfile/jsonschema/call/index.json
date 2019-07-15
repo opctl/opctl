@@ -1,0 +1,60 @@
+{
+  "additionalProperties": false,
+  "description": "A single node of the [call graph](https://en.wikipedia.org/wiki/Call_graph)",
+  "oneOf": [
+    {
+      "required": [
+        "container"
+      ]
+    },
+    {
+      "required": [
+        "op"
+      ]
+    },
+    {
+      "required": [
+        "parallel"
+      ]
+    },
+    {
+      "required": [
+        "parallelLoop"
+      ]
+    },
+    {
+      "required": [
+        "serial"
+      ]
+    },
+    {
+      "required": [
+        "serialLoop"
+      ]
+    }
+  ],
+  "properties": {
+    "container": {
+      "$ref": "container.json"
+    },
+    "if": {
+      "$ref": "if.json"
+    },
+    "op": {
+      "$ref": "op/index.json"
+    },
+    "parallel": {
+      "$ref": "parallel.json"
+    },
+    "parallelLoop": {
+      "$ref": "parallelLoop.json"
+    },
+    "serial": {
+      "$ref": "serial.json"
+    },
+    "serialLoop": {
+      "$ref": "serialLoop.json"
+    }
+  },
+  "title": "call"
+}

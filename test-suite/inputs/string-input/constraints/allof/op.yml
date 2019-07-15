@@ -1,0 +1,11 @@
+name: inputs/string/constraints/allof
+inputs:
+  string:
+    string:
+      constraints:
+        allOf:
+          - pattern: ^$
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

@@ -1,0 +1,10 @@
+name: inputs/number/constraints/format/integer
+inputs:
+  number:
+    number:
+      constraints:
+        format: integer
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

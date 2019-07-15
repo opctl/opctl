@@ -1,0 +1,6 @@
+### JetBrains
+.idea/
+
+### codecov.io
+coverage.txt
+*.coverprofile

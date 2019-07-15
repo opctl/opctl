@@ -1,0 +1,11 @@
+name: inputs/string/constraints/oneof
+inputs:
+  string:
+    string:
+      constraints:
+        oneOf:
+          - pattern: ^$
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

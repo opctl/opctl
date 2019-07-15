@@ -1,0 +1,11 @@
+name: inputs/number/constraints/oneof
+inputs:
+  number:
+    number:
+      constraints:
+        oneOf:
+          - maximum: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

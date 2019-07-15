@@ -1,0 +1,10 @@
+{
+  "description": "Expression which evaluates to a string",
+  "type": [
+    "array",
+    "boolean",
+    "number",
+    "object",
+    "string"
+  ]
+}

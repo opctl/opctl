@@ -1,0 +1,4 @@
+name: run/serialLoop/not-object
+run:
+  serialLoop: *
+  serial: []

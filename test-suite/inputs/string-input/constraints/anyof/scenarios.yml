@@ -1,0 +1,14 @@
+- name: doesn't meet any anyOf constraints
+  call:
+    expect: failure
+    scope:
+      string:
+        string: a
+- name: doesn't meet any anyOf constraints
+  interpret:
+    expect: failure
+    scope:
+      string:
+        string: a
+- validate:
+    expect: success

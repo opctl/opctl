@@ -1,0 +1,9 @@
+name: run/op/inputs/explicitly-bound/object-input/string-arg/is-scope-ref/is-file/contains-letter
+inputs:
+  file:
+    file:
+      default: /file.txt
+run:
+  op:
+    ref: contains-letter/_
+    inputs: { object: $(file) }

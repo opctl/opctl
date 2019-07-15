@@ -1,0 +1,11 @@
+name: inputs/number/constraints/not
+inputs:
+  number:
+    number:
+      constraints:
+        not:
+          enum: [2]
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

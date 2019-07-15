@@ -1,0 +1,34 @@
+- name: standalone
+  template: $(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}'
+  
+- name: escaped
+  template: \$(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: $(object1)
+
+- name: at start
+  template: $(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: '{"name":"value"}suffix'
+
+- name: at end
+  template: prefix$(object1)
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}'
+
+- name: within
+  template: prefix$(object1)suffix
+  scope:
+    object1:
+      object: { name: value }
+  expected: 'prefix{"name":"value"}suffix'

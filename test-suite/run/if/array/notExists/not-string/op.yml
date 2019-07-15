@@ -1,0 +1,5 @@
+name: run/if/array/notExists/not-string
+run:
+  if:
+    - notExists: 2
+  serial: []

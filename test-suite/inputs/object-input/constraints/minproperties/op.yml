@@ -1,0 +1,10 @@
+name: inputs/object-input/constraints/minproperties
+inputs:
+  object:
+    object:
+      constraints:
+        minProperties: 2
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

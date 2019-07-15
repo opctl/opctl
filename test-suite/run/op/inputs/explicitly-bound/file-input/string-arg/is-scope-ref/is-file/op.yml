@@ -1,0 +1,9 @@
+name: run/op/inputs/explicitly-bound/file-input/string-arg/is-scope-ref/is-file
+inputs:
+  file:
+    file:
+      default: /file.txt
+run:
+  op:
+    ref: is-file/_
+    inputs: { file: $(file) }

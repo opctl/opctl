@@ -1,0 +1,5 @@
+name: run/if/array/ne/strings
+run:
+  if:
+    - ne: [string2,string1]
+  serial: []

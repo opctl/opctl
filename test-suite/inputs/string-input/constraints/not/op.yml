@@ -1,0 +1,10 @@
+name: inputs/string/constraints/not
+inputs:
+  string:
+    string:
+      constraints:
+        not: { pattern: ^.*$ }
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

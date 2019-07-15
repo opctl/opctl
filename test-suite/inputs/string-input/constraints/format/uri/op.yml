@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/uri
+inputs:
+  string:
+    string:
+      constraints:
+        format: uri
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

@@ -1,0 +1,5 @@
+name: run/op/inputs/explicitly-bound/input-undefined
+run:
+  op:
+    ref: input-undefined/_
+    inputs: { undefined: a}

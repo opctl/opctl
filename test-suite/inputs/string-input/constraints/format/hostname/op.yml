@@ -1,0 +1,10 @@
+name: inputs/string/constraints/format/hostname
+inputs:
+  string:
+    string:
+      constraints:
+        format: hostname
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

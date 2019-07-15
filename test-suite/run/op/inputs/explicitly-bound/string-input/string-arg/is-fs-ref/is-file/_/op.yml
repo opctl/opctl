@@ -1,0 +1,8 @@
+name: _
+inputs:
+  string:
+    string: {}
+run:
+  container:
+    image: { ref: alpine }
+    cmd: [echo]

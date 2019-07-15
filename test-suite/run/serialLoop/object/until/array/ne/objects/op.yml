@@ -1,0 +1,7 @@
+name: run/serialLoop/object/until/array/ne/objects
+run:
+  serialLoop:
+    until:
+      - ne: [{p1: v1},{p2: v2}]
+    run:
+      serial: []
