@@ -35,6 +35,6 @@ export default (
           return [err]
         }
       }}
-      value={value || jsYaml.safeDump(object.default ? object.default : '')}
+      value={jsYaml.safeDump(value || object.default || '')}
     />
   )
