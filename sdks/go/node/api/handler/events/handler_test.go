@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/opctl/sdk-golang/node/api/handler/events/stream"
-	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/events/stream"
+	"github.com/opctl/opctl/sdks/go/node/core"
 	"net/http"
 	"net/http/httptest"
 	"strings"

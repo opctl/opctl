@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/opctl/sdk-golang/data"
+	"github.com/opctl/opctl/sdks/go/data"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/core"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/core"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -4,7 +4,7 @@ package serialloop
 import (
 	"sync"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type FakeInterpreter struct {

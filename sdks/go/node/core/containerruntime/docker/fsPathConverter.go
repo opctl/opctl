@@ -3,7 +3,7 @@ package docker
 //go:generate counterfeiter -o ./fakeFSPathConverter.go --fake-name fakeFSPathConverter ./ fsPathConverter
 
 import (
-	"github.com/opctl/sdk-golang/util/iruntime"
+	"github.com/opctl/opctl/sdks/go/util/iruntime"
 	"path"
 	"regexp"
 	"strings"

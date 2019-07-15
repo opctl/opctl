@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 func (this _core) KillOp(

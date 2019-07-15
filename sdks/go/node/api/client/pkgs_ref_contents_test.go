@@ -11,8 +11,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
 var _ = Context("ListDescendants", func() {

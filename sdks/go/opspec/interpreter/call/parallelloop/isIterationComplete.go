@@ -1,7 +1,7 @@
 package parallelloop
 
 import (
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // IsIterationComplete tests if an index is within range of the loop

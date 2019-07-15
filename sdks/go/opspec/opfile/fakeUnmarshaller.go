@@ -4,7 +4,7 @@ package dotyml
 import (
 	"sync"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type FakeUnmarshaller struct {

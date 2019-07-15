@@ -7,9 +7,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 type serialCaller interface {

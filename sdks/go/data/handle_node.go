@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api/client"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 func newNodeHandle(

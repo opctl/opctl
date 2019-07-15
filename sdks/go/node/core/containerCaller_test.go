@@ -9,10 +9,10 @@ import (
 	"github.com/golang-interfaces/iio"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
 var _ = Context("containerCaller", func() {

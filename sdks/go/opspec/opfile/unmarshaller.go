@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // @TODO make private

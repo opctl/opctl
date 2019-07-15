@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/loop/iteration"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/parallelloop"
-	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/loop/iteration"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 type parallelLoopCaller interface {

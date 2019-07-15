@@ -6,11 +6,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference"
-	"github.com/opctl/sdk-golang/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/data/coerce"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
 )
 
 var _ = Context("Interpret", func() {

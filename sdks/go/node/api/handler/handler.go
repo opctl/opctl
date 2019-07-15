@@ -3,13 +3,13 @@ package handler
 import (
 	"net/http"
 
-	"github.com/opctl/sdk-golang/node/api/handler/data"
-	"github.com/opctl/sdk-golang/node/api/handler/events"
-	"github.com/opctl/sdk-golang/node/api/handler/liveness"
-	"github.com/opctl/sdk-golang/node/api/handler/ops"
-	"github.com/opctl/sdk-golang/node/api/handler/pkgs"
-	"github.com/opctl/sdk-golang/node/core"
-	"github.com/opctl/sdk-golang/util/urlpath"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/data"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/events"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/liveness"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/ops"
+	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs"
+	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/util/urlpath"
 )
 
 func New(

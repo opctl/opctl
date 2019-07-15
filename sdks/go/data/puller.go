@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"

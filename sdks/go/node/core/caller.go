@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call"
-	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
 type caller interface {

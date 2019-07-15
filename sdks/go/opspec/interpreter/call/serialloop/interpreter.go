@@ -1,9 +1,9 @@
 package serialloop
 
 import (
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates"
-	"github.com/opctl/sdk-golang/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

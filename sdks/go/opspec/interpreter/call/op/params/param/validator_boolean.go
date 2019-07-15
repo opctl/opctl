@@ -2,7 +2,7 @@ package param
 
 import (
 	"errors"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // validateBoolean validates a value against a boolean parameter

@@ -5,15 +5,15 @@ import (
 	"context"
 	"path/filepath"
 
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/core/containerruntime"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
-	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
-	"github.com/opctl/sdk-golang/util/pubsub"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
+	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 //go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core

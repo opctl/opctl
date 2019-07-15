@@ -5,7 +5,7 @@ package dotyml
 import (
 	"context"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type Getter interface {

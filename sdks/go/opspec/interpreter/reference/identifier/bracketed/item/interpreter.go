@@ -4,8 +4,8 @@ package item
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 )
 
 // Interpreter interprets an item from data via indexString.

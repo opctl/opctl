@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type resolver interface {

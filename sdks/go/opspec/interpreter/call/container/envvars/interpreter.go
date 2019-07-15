@@ -5,10 +5,10 @@ package envvars
 import (
 	"fmt"
 
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/object"
-	stringpkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/data/coerce"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	stringpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 )
 
 type Interpreter interface {

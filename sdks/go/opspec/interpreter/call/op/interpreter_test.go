@@ -11,12 +11,12 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/inputs"
-	stringPkg "github.com/opctl/sdk-golang/opspec/interpreter/string"
-	"github.com/opctl/sdk-golang/opspec/opfile"
-	"github.com/opctl/sdk-golang/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
+	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 var _ = Context("Interpreter", func() {

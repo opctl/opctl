@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgraph-io/badger"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"log"
 	"os"
 	"path"

@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"os"
 	"path/filepath"
 )

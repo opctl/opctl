@@ -7,10 +7,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/outputs"
-	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
-	"github.com/opctl/sdk-golang/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
+	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
 type opCaller interface {

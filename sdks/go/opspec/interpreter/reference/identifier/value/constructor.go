@@ -4,7 +4,7 @@ package value
 
 import (
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type Constructor interface {

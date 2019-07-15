@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/boltdb/bolt"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"os"
 	"path"
 	"sync"

@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/bracketed/item"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed/item"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/reference/identifier/value"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // Interpreter interprets a bracketed identifier from ref by consuming from '[' up to & including the first ']'

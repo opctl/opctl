@@ -3,13 +3,13 @@ package call
 import (
 	"fmt"
 
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/parallelloop"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/serialloop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/container"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/predicates"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter

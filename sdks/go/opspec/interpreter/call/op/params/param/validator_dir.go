@@ -3,7 +3,7 @@ package param
 import (
 	"errors"
 	"fmt"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 // validateDir validates a value against a dir parameter

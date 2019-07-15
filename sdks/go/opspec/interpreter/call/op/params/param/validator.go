@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/data/coerce"
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/xeipuuv/gojsonschema"
 )
 

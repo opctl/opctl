@@ -5,7 +5,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 type FakeValidator struct {

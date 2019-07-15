@@ -10,7 +10,7 @@ import (
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/sethgrid/pester"
 )
 

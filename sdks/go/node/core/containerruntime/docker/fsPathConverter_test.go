@@ -3,7 +3,7 @@ package docker
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/sdk-golang/util/iruntime"
+	"github.com/opctl/opctl/sdks/go/util/iruntime"
 )
 
 var _ = Context("fsPathConverter", func() {

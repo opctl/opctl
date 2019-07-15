@@ -25,6 +25,6 @@ run:
         echo "generating fakes"
         go generate "$(path)"
     dirs:
-      /go/src/github.com/opctl/sdk-golang: $(srcDir)
+      /go/src/github.com/opctl/opctl/sdks/go: $(srcDir)
     image: { ref: 'golang:1.12.6' }
-    workDir: /go/src/github.com/opctl/sdk-golang/sdks/go
+    workDir: /go/src/github.com/opctl/opctl/sdks/go/sdks/go
