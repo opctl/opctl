@@ -23,9 +23,9 @@ var _ = Describe("Validator", func() {
 		})
 	})
 	Context("Validate", func() {
-		Context("called w/ opspec test-suite scenarios", func() {
+		Context("called w/ opspec ../../test-suite scenarios", func() {
 			It("should return result fulfilling scenario.validate.expect", func() {
-				rootPath := "../test-suite"
+				rootPath := "../../../test-suite"
 
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {

@@ -3,7 +3,7 @@ description: runs all tests
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ../..
       description: directory containing the projects source code
 outputs:
   srcDir:
@@ -17,8 +17,7 @@ run:
   serial:
     - op:
         ref: github.com/opspec-pkgs/golang.fmt#1.2.0
-        inputs: { srcDir }
-        outputs: { srcDir }
+        inputs: { srcDir: $(srcDir/sdks/go) }
     - op:
         ref: test/unit
         inputs: { srcDir }

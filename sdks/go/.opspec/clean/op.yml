@@ -3,7 +3,7 @@ description: removes files & dirs ignored by git
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ../..
       description: directory containing the projects source code
 outputs:
   srcDir:
@@ -13,5 +13,5 @@ opspec: 0.1.6
 run:
   op:
     ref: github.com/opspec-pkgs/git.repo.clean#1.1.0
-    inputs: { srcDir, opts: -ffXd -e !.idea/ }
+    inputs: { srcDir }
     outputs: { srcDir }

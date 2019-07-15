@@ -3,7 +3,7 @@ name: gen-fakes
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ../..
       description: directory containing the projects source code
   path:
     string:
@@ -27,4 +27,4 @@ run:
     dirs:
       /go/src/github.com/opctl/sdk-golang: $(srcDir)
     image: { ref: 'golang:1.12.6' }
-    workDir: /go/src/github.com/opctl/sdk-golang
+    workDir: /go/src/github.com/opctl/sdk-golang/sdks/go
