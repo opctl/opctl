@@ -140,6 +140,7 @@ one of:
 - [array initializer](#array-initializer)
 - [number initializer](#number-initializer)
 - [object initializer](#object-initializer)
+- [string initializer](#string-initializer)
 
 ### Array Initializer
 
