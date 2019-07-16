@@ -17,7 +17,7 @@ Contributions are subject to:
 
 # Repo layout
 
-The structure of this repo mirrors the [golang SDK](https://github.com/opctl/sdk-golang) less un implemented functionality. 
+The structure of this repo mirrors the [golang SDK](https://github.com/opctl/opctl/sdks/go) less un implemented functionality. 
 
 # Code style
 
