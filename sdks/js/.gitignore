@@ -1,0 +1,11 @@
+### NPM
+node_modules
+
+### codecov.io
+coverage/
+
+### jest
+jest*/
+
+## build
+lib/
