@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 func (this _core) OpInstall(

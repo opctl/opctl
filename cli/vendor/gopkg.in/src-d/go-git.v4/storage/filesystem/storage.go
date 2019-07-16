@@ -31,9 +31,6 @@ type Options struct {
 	// KeepDescriptors makes the file descriptors to be reused but they will
 	// need to be manually closed calling Close().
 	KeepDescriptors bool
-	// MaxOpenDescriptors is the max number of file descriptors to keep
-	// open. If KeepDescriptors is true, all file descriptors will remain open.
-	MaxOpenDescriptors int
 }
 
 // NewStorage returns a new Storage backed by a given `fs.Filesystem` and cache.
@@ -46,6 +43,7 @@ func NewStorage(fs billy.Filesystem, cache cache.Object) *Storage {
 func NewStorageWithOptions(fs billy.Filesystem, cache cache.Object, ops Options) *Storage {
 	dirOps := dotgit.Options{
 		ExclusiveAccess: ops.ExclusiveAccess,
+		KeepDescriptors: ops.KeepDescriptors,
 	}
 	dir := dotgit.NewWithOptions(fs, dirOps)
 

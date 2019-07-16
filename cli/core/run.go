@@ -6,7 +6,7 @@ import (
 	cliModel "github.com/opctl/opctl/cli/model"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"os"
 	"os/signal"
 	"syscall"

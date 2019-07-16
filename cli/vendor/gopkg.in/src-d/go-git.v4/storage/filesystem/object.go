@@ -26,10 +26,6 @@ type ObjectStorage struct {
 
 	dir   *dotgit.DotGit
 	index map[plumbing.Hash]idxfile.Index
-
-	packList    []plumbing.Hash
-	packListIdx int
-	packfiles   map[plumbing.Hash]*packfile.Packfile
 }
 
 // NewObjectStorage creates a new ObjectStorage with the given .git directory and cache.
@@ -191,73 +187,6 @@ func (s *ObjectStorage) encodedObjectSizeFromUnpacked(h plumbing.Hash) (
 	return size, err
 }
 
-func (s *ObjectStorage) packfile(idx idxfile.Index, pack plumbing.Hash) (*packfile.Packfile, error) {
-	if p := s.packfileFromCache(pack); p != nil {
-		return p, nil
-	}
-
-	f, err := s.dir.ObjectPack(pack)
-	if err != nil {
-		return nil, err
-	}
-
-	var p *packfile.Packfile
-	if s.objectCache != nil {
-		p = packfile.NewPackfileWithCache(idx, s.dir.Fs(), f, s.objectCache)
-	} else {
-		p = packfile.NewPackfile(idx, s.dir.Fs(), f)
-	}
-
-	return p, s.storePackfileInCache(pack, p)
-}
-
-func (s *ObjectStorage) packfileFromCache(hash plumbing.Hash) *packfile.Packfile {
-	if s.packfiles == nil {
-		if s.options.KeepDescriptors {
-			s.packfiles = make(map[plumbing.Hash]*packfile.Packfile)
-		} else if s.options.MaxOpenDescriptors > 0 {
-			s.packList = make([]plumbing.Hash, s.options.MaxOpenDescriptors)
-			s.packfiles = make(map[plumbing.Hash]*packfile.Packfile, s.options.MaxOpenDescriptors)
-		}
-	}
-
-	return s.packfiles[hash]
-}
-
-func (s *ObjectStorage) storePackfileInCache(hash plumbing.Hash, p *packfile.Packfile) error {
-	if s.options.KeepDescriptors {
-		s.packfiles[hash] = p
-		return nil
-	}
-
-	if s.options.MaxOpenDescriptors <= 0 {
-		return nil
-	}
-
-	// start over as the limit of packList is hit
-	if s.packListIdx >= len(s.packList) {
-		s.packListIdx = 0
-	}
-
-	// close the existing packfile if open
-	if next := s.packList[s.packListIdx]; !next.IsZero() {
-		open := s.packfiles[next]
-		delete(s.packfiles, next)
-		if open != nil {
-			if err := open.Close(); err != nil {
-				return err
-			}
-		}
-	}
-
-	// cache newly open packfile
-	s.packList[s.packListIdx] = hash
-	s.packfiles[hash] = p
-	s.packListIdx++
-
-	return nil
-}
-
 func (s *ObjectStorage) encodedObjectSizeFromPackfile(h plumbing.Hash) (
 	size int64, err error) {
 	if err := s.requireIndex(); err != nil {
@@ -268,6 +197,12 @@ func (s *ObjectStorage) encodedObjectSizeFromPackfile(h plumbing.Hash) (
 	if offset == -1 {
 		return 0, plumbing.ErrObjectNotFound
 	}
+
+	f, err := s.dir.ObjectPack(pack)
+	if err != nil {
+		return 0, err
+	}
+	defer ioutil.CheckClose(f, &err)
 
 	idx := s.index[pack]
 	hash, err := idx.FindHash(offset)
@@ -280,13 +215,11 @@ func (s *ObjectStorage) encodedObjectSizeFromPackfile(h plumbing.Hash) (
 		return 0, err
 	}
 
-	p, err := s.packfile(idx, pack)
-	if err != nil {
-		return 0, err
-	}
-
-	if !s.options.KeepDescriptors && s.options.MaxOpenDescriptors == 0 {
-		defer ioutil.CheckClose(p, &err)
+	var p *packfile.Packfile
+	if s.objectCache != nil {
+		p = packfile.NewPackfileWithCache(idx, s.dir.Fs(), f, s.objectCache)
+	} else {
+		p = packfile.NewPackfile(idx, s.dir.Fs(), f)
 	}
 
 	return p.GetSizeByOffset(offset)
@@ -428,28 +361,29 @@ func (s *ObjectStorage) getFromPackfile(h plumbing.Hash, canBeDelta bool) (
 		return nil, plumbing.ErrObjectNotFound
 	}
 
-	idx := s.index[pack]
-	p, err := s.packfile(idx, pack)
+	f, err := s.dir.ObjectPack(pack)
 	if err != nil {
 		return nil, err
 	}
 
-	if !s.options.KeepDescriptors && s.options.MaxOpenDescriptors == 0 {
-		defer ioutil.CheckClose(p, &err)
+	if !s.options.KeepDescriptors {
+		defer ioutil.CheckClose(f, &err)
 	}
 
+	idx := s.index[pack]
 	if canBeDelta {
-		return s.decodeDeltaObjectAt(p, offset, hash)
+		return s.decodeDeltaObjectAt(f, idx, offset, hash)
 	}
 
-	return s.decodeObjectAt(p, offset)
+	return s.decodeObjectAt(f, idx, offset)
 }
 
 func (s *ObjectStorage) decodeObjectAt(
-	p *packfile.Packfile,
+	f billy.File,
+	idx idxfile.Index,
 	offset int64,
 ) (plumbing.EncodedObject, error) {
-	hash, err := p.FindHash(offset)
+	hash, err := idx.FindHash(offset)
 	if err == nil {
 		obj, ok := s.objectCache.Get(hash)
 		if ok {
@@ -461,16 +395,28 @@ func (s *ObjectStorage) decodeObjectAt(
 		return nil, err
 	}
 
+	var p *packfile.Packfile
+	if s.objectCache != nil {
+		p = packfile.NewPackfileWithCache(idx, s.dir.Fs(), f, s.objectCache)
+	} else {
+		p = packfile.NewPackfile(idx, s.dir.Fs(), f)
+	}
+
 	return p.GetByOffset(offset)
 }
 
 func (s *ObjectStorage) decodeDeltaObjectAt(
-	p *packfile.Packfile,
+	f billy.File,
+	idx idxfile.Index,
 	offset int64,
 	hash plumbing.Hash,
 ) (plumbing.EncodedObject, error) {
-	scan := p.Scanner()
-	header, err := scan.SeekObjectHeader(offset)
+	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		return nil, err
+	}
+
+	p := packfile.NewScanner(f)
+	header, err := p.SeekObjectHeader(offset)
 	if err != nil {
 		return nil, err
 	}
@@ -483,12 +429,12 @@ func (s *ObjectStorage) decodeDeltaObjectAt(
 	case plumbing.REFDeltaObject:
 		base = header.Reference
 	case plumbing.OFSDeltaObject:
-		base, err = p.FindHash(header.OffsetReference)
+		base, err = idx.FindHash(header.OffsetReference)
 		if err != nil {
 			return nil, err
 		}
 	default:
-		return s.decodeObjectAt(p, offset)
+		return s.decodeObjectAt(f, idx, offset)
 	}
 
 	obj := &plumbing.MemoryObject{}
@@ -498,7 +444,7 @@ func (s *ObjectStorage) decodeDeltaObjectAt(
 		return nil, err
 	}
 
-	if _, _, err := scan.NextObject(w); err != nil {
+	if _, _, err := p.NextObject(w); err != nil {
 		return nil, err
 	}
 
@@ -569,20 +515,7 @@ func (s *ObjectStorage) buildPackfileIters(
 
 // Close closes all opened files.
 func (s *ObjectStorage) Close() error {
-	var firstError error
-	if s.options.KeepDescriptors || s.options.MaxOpenDescriptors > 0 {
-		for _, packfile := range s.packfiles {
-			err := packfile.Close()
-			if firstError == nil && err != nil {
-				firstError = err
-			}
-		}
-	}
-
-	s.packfiles = nil
-	s.dir.Close()
-
-	return firstError
+	return s.dir.Close()
 }
 
 type lazyPackfilesIter struct {

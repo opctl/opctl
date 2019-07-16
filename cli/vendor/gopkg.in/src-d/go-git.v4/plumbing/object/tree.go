@@ -230,9 +230,7 @@ func (t *Tree) Decode(o plumbing.EncodedObject) (err error) {
 	}
 	defer ioutil.CheckClose(reader, &err)
 
-	r := bufPool.Get().(*bufio.Reader)
-	defer bufPool.Put(r)
-	r.Reset(reader)
+	r := bufio.NewReader(reader)
 	for {
 		str, err := r.ReadString(' ')
 		if err != nil {
@@ -385,7 +383,7 @@ func NewTreeWalker(t *Tree, recursive bool, seen map[plumbing.Hash]bool) *TreeWa
 // underlying repository will be skipped automatically. It is possible that this
 // may change in future versions.
 func (w *TreeWalker) Next() (name string, entry TreeEntry, err error) {
-	var obj *Tree
+	var obj Object
 	for {
 		current := len(w.stack) - 1
 		if current < 0 {
@@ -405,7 +403,7 @@ func (w *TreeWalker) Next() (name string, entry TreeEntry, err error) {
 			// Finished with the current tree, move back up to the parent
 			w.stack = w.stack[:current]
 			w.base, _ = path.Split(w.base)
-			w.base = strings.TrimSuffix(w.base, "/")
+			w.base = path.Clean(w.base) // Remove trailing slash
 			continue
 		}
 
@@ -421,7 +419,7 @@ func (w *TreeWalker) Next() (name string, entry TreeEntry, err error) {
 			obj, err = GetTree(w.s, entry.Hash)
 		}
 
-		name = simpleJoin(w.base, entry.Name)
+		name = path.Join(w.base, entry.Name)
 
 		if err != nil {
 			err = io.EOF
@@ -435,9 +433,9 @@ func (w *TreeWalker) Next() (name string, entry TreeEntry, err error) {
 		return
 	}
 
-	if obj != nil {
-		w.stack = append(w.stack, &treeEntryIter{obj, 0})
-		w.base = simpleJoin(w.base, entry.Name)
+	if t, ok := obj.(*Tree); ok {
+		w.stack = append(w.stack, &treeEntryIter{t, 0})
+		w.base = path.Join(w.base, entry.Name)
 	}
 
 	return
@@ -510,11 +508,4 @@ func (iter *TreeIter) ForEach(cb func(*Tree) error) error {
 
 		return cb(t)
 	})
-}
-
-func simpleJoin(parent, child string) string {
-	if len(parent) > 0 {
-		return parent + "/" + child
-	}
-	return child
 }

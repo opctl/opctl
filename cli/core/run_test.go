@@ -14,10 +14,10 @@ import (
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api/client"
-	dotyml "github.com/opctl/sdk-golang/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
+	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
 var _ = Context("Run", func() {

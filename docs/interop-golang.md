@@ -5,7 +5,7 @@ sidebar_label: Golang
 
 ## Examples
 
-Run an op using the [Golang SDKs](https://github.com/opctl/sdk-golang) API client.
+Run an op using the [Golang SDKs](https://github.com/opctl/opctl/sdks/go) API client.
 
 ```golang
 package main
@@ -17,8 +17,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/node/api/client"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 func constructAPIClient(

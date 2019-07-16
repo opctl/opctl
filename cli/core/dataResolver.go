@@ -8,8 +8,8 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/model"
 	"net/url"
 )
 

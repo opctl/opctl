@@ -2,7 +2,6 @@ package packfile
 
 import (
 	"bytes"
-	"compress/zlib"
 	"io"
 	"sync"
 
@@ -65,14 +64,5 @@ func WritePackfileToObjectStorage(
 var bufPool = sync.Pool{
 	New: func() interface{} {
 		return bytes.NewBuffer(nil)
-	},
-}
-
-var zlibInitBytes = []byte{0x78, 0x9c, 0x01, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x01}
-
-var zlibReaderPool = sync.Pool{
-	New: func() interface{} {
-		r, _ := zlib.NewReader(bytes.NewReader(zlibInitBytes))
-		return r
 	},
 }

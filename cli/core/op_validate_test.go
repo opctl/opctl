@@ -9,8 +9,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/sdk-golang/data"
-	"github.com/opctl/sdk-golang/opspec"
+	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 var _ = Context("opValidate", func() {
