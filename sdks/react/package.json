@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@opctl/sdk": "^0.0.0-alpha.5",
+    "@opctl/sdk": "../js",
     "@types/react": "^16.8.13",
     "@types/reactstrap": "^8.0.0",
     "ansi-to-react": "^5.0.0",

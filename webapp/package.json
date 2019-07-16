@@ -1,10 +1,10 @@
 {
-  "name": "opctl",
+  "name": "@opctl/webapp",
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@opctl/sdk": "^0.0.0-alpha.5",
+    "@opctl/sdk": "../sdks/js/",
     "ansi-to-react": "5.0.0",
     "bootstrap": "^4.3.1",
     "brace": "^0.11.1",

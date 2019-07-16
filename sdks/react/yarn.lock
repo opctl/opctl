@@ -368,6 +368,16 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
+"@opctl/sdk@../js":
+  version "0.0.0-alpha.5"
+  dependencies:
+    "@codefresh-io/docker-reference" "^0.0.5"
+    "@types/node-fetch" "^2.3.2"
+    ajv "^5.2.3"
+    node-fetch "^1.7.3"
+    typescript "^3.4.3"
+    universal-websocket-client "^1.0.1"
+
 "@opctl/sdk@^0.0.0-alpha.5":
   version "0.0.0-alpha.5"
   resolved "https://registry.yarnpkg.com/@opctl/sdk/-/sdk-0.0.0-alpha.5.tgz#1d9f17fa53e818f1fcab3a8f585350badf5bbc9a"
