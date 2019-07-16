@@ -12,7 +12,7 @@ import (
 	corePkg "github.com/opctl/opctl/cli/core"
 	"github.com/opctl/opctl/cli/model"
 	"github.com/opctl/opctl/cli/util/clicolorer"
-	"github.com/opctl/sdk-golang/opspec"
+	"github.com/opctl/opctl/sdks/go/opspec"
 )
 
 type cli interface {

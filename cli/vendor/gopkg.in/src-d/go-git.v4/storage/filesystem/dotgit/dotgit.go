@@ -83,7 +83,7 @@ type DotGit struct {
 	packList   []plumbing.Hash
 	packMap    map[plumbing.Hash]struct{}
 
-	files map[plumbing.Hash]billy.File
+	files map[string]billy.File
 }
 
 // New returns a DotGit value ready to be used. The path argument must
@@ -245,15 +245,8 @@ func (d *DotGit) objectPackPath(hash plumbing.Hash, extension string) string {
 }
 
 func (d *DotGit) objectPackOpen(hash plumbing.Hash, extension string) (billy.File, error) {
-	if d.options.KeepDescriptors && extension == "pack" {
-		if d.files == nil {
-			d.files = make(map[plumbing.Hash]billy.File)
-		}
-
-		f, ok := d.files[hash]
-		if ok {
-			return f, nil
-		}
+	if d.files == nil {
+		d.files = make(map[string]billy.File)
 	}
 
 	err := d.hasPack(hash)
@@ -262,6 +255,11 @@ func (d *DotGit) objectPackOpen(hash plumbing.Hash, extension string) (billy.Fil
 	}
 
 	path := d.objectPackPath(hash, extension)
+	f, ok := d.files[path]
+	if ok {
+		return f, nil
+	}
+
 	pack, err := d.fs.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -272,7 +270,7 @@ func (d *DotGit) objectPackOpen(hash plumbing.Hash, extension string) (billy.Fil
 	}
 
 	if d.options.KeepDescriptors && extension == "pack" {
-		d.files[hash] = pack
+		d.files[path] = pack
 	}
 
 	return pack, nil

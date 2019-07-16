@@ -1,5 +1,5 @@
-description: builds the node
-name: node/build
+description: builds the cli
+name: build
 inputs:
   gitBranch:
     string:
@@ -51,11 +51,12 @@ run:
           src: $(opctlForLinux)
         outputs:
           $(srcDir): dst
-    - op:
-        ref: ../test/system/opspec
-        inputs:
-          srcDir: $(srcDir/cli)
-          opctlForLinux:
+    # re-enable once speed issue resolved
+    # - op:
+    #     ref: ../test/system/opspec
+    #     inputs:
+    #       srcDir: $(srcDir)
+    #       opctlForLinux:
     - op:
         ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
         inputs: { dotGitDir: $(srcDir/.git) }

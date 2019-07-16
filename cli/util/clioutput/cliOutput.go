@@ -5,7 +5,7 @@ package clioutput
 import (
 	"fmt"
 	"github.com/opctl/opctl/cli/util/clicolorer"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"io"
 	"time"
 )

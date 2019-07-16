@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 )
 
 //go:generate counterfeiter -o ./fakeInputSrc.go --fake-name FakeInputSrc ./ InputSrc

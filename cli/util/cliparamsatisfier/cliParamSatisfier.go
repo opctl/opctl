@@ -12,9 +12,9 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
-	"github.com/opctl/sdk-golang/data/coerce"
-	"github.com/opctl/sdk-golang/model"
-	"github.com/opctl/sdk-golang/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/data/coerce"
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
 )
 
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer

@@ -39,7 +39,8 @@ type ObjectHeader struct {
 }
 
 type Scanner struct {
-	r   *scannerReader
+	r   reader
+	zr  readerResetter
 	crc hash.Hash32
 
 	// pendingObject is used to detect if an object has been read, or still
@@ -55,25 +56,17 @@ type Scanner struct {
 // NewScanner returns a new Scanner based on a reader, if the given reader
 // implements io.ReadSeeker the Scanner will be also Seekable
 func NewScanner(r io.Reader) *Scanner {
-	_, ok := r.(io.ReadSeeker)
+	seeker, ok := r.(io.ReadSeeker)
+	if !ok {
+		seeker = &trackableReader{Reader: r}
+	}
 
 	crc := crc32.NewIEEE()
 	return &Scanner{
-		r:          newScannerReader(r, crc),
+		r:          newTeeReader(newByteReadSeeker(seeker), crc),
 		crc:        crc,
 		IsSeekable: ok,
 	}
-}
-
-func (s *Scanner) Reset(r io.Reader) {
-	_, ok := r.(io.ReadSeeker)
-
-	s.r.Reset(r)
-	s.crc.Reset()
-	s.IsSeekable = ok
-	s.pendingObject = nil
-	s.version = 0
-	s.objects = 0
 }
 
 // Header reads the whole packfile header (signature, version and object count).
@@ -189,7 +182,8 @@ func (s *Scanner) NextObjectHeader() (*ObjectHeader, error) {
 // nextObjectHeader returns the ObjectHeader for the next object in the reader
 // without the Offset field
 func (s *Scanner) nextObjectHeader() (*ObjectHeader, error) {
-	s.r.Flush()
+	defer s.Flush()
+
 	s.crc.Reset()
 
 	h := &ObjectHeader{}
@@ -310,29 +304,35 @@ func (s *Scanner) readLength(first byte) (int64, error) {
 // NextObject writes the content of the next object into the reader, returns
 // the number of bytes written, the CRC32 of the content and an error, if any
 func (s *Scanner) NextObject(w io.Writer) (written int64, crc32 uint32, err error) {
+	defer s.crc.Reset()
+
 	s.pendingObject = nil
 	written, err = s.copyObject(w)
-
-	s.r.Flush()
+	s.Flush()
 	crc32 = s.crc.Sum32()
-	s.crc.Reset()
-
 	return
 }
 
 // ReadRegularObject reads and write a non-deltified object
 // from it zlib stream in an object entry in the packfile.
 func (s *Scanner) copyObject(w io.Writer) (n int64, err error) {
-	zr := zlibReaderPool.Get().(io.ReadCloser)
-	defer zlibReaderPool.Put(zr)
+	if s.zr == nil {
+		var zr io.ReadCloser
+		zr, err = zlib.NewReader(s.r)
+		if err != nil {
+			return 0, fmt.Errorf("zlib initialization error: %s", err)
+		}
 
-	if err = zr.(zlib.Resetter).Reset(s.r, nil); err != nil {
-		return 0, fmt.Errorf("zlib reset error: %s", err)
+		s.zr = zr.(readerResetter)
+	} else {
+		if err = s.zr.Reset(s.r, nil); err != nil {
+			return 0, fmt.Errorf("zlib reset error: %s", err)
+		}
 	}
 
-	defer ioutil.CheckClose(zr, &err)
+	defer ioutil.CheckClose(s.zr, &err)
 	buf := byteSlicePool.Get().([]byte)
-	n, err = io.CopyBuffer(w, zr, buf)
+	n, err = io.CopyBuffer(w, s.zr, buf)
 	byteSlicePool.Put(buf)
 	return
 }
@@ -378,89 +378,110 @@ func (s *Scanner) Close() error {
 	return err
 }
 
-// Flush is a no-op (deprecated)
+// Flush finishes writing the buffer to crc hasher in case we are using
+// a teeReader. Otherwise it is a no-op.
 func (s *Scanner) Flush() error {
+	tee, ok := s.r.(*teeReader)
+	if ok {
+		return tee.Flush()
+	}
 	return nil
 }
 
-// scannerReader has the following characteristics:
-// - Provides an io.SeekReader impl for bufio.Reader, when the underlying
-//   reader supports it.
-// - Keeps track of the current read position, for when the underlying reader
-//   isn't an io.SeekReader, but we still want to know the current offset.
-// - Writes to the hash writer what it reads, with the aid of a smaller buffer.
-//   The buffer helps avoid a performance penality for performing small writes
-//   to the crc32 hash writer.
-type scannerReader struct {
-	reader io.Reader
-	crc    io.Writer
-	rbuf   *bufio.Reader
-	wbuf   *bufio.Writer
-	offset int64
+type trackableReader struct {
+	count int64
+	io.Reader
 }
 
-func newScannerReader(r io.Reader, h io.Writer) *scannerReader {
-	sr := &scannerReader{
-		rbuf: bufio.NewReader(nil),
-		wbuf: bufio.NewWriterSize(nil, 64),
-		crc:  h,
+// Read reads up to len(p) bytes into p.
+func (r *trackableReader) Read(p []byte) (n int, err error) {
+	n, err = r.Reader.Read(p)
+	r.count += int64(n)
+
+	return
+}
+
+// Seek only supports io.SeekCurrent, any other operation fails
+func (r *trackableReader) Seek(offset int64, whence int) (int64, error) {
+	if whence != io.SeekCurrent {
+		return -1, ErrSeekNotSupported
 	}
-	sr.Reset(r)
 
-	return sr
+	return r.count, nil
 }
 
-func (r *scannerReader) Reset(reader io.Reader) {
-	r.reader = reader
-	r.rbuf.Reset(r.reader)
-	r.wbuf.Reset(r.crc)
-
-	r.offset = 0
-	if seeker, ok := r.reader.(io.ReadSeeker); ok {
-		r.offset, _ = seeker.Seek(0, io.SeekCurrent)
+func newByteReadSeeker(r io.ReadSeeker) *bufferedSeeker {
+	return &bufferedSeeker{
+		r:      r,
+		Reader: *bufio.NewReader(r),
 	}
 }
 
-func (r *scannerReader) Read(p []byte) (n int, err error) {
-	n, err = r.rbuf.Read(p)
+type bufferedSeeker struct {
+	r io.ReadSeeker
+	bufio.Reader
+}
 
-	r.offset += int64(n)
-	if _, err := r.wbuf.Write(p[:n]); err != nil {
-		return n, err
+func (r *bufferedSeeker) Seek(offset int64, whence int) (int64, error) {
+	if whence == io.SeekCurrent && offset == 0 {
+		current, err := r.r.Seek(offset, whence)
+		if err != nil {
+			return current, err
+		}
+
+		return current - int64(r.Buffered()), nil
+	}
+
+	defer r.Reader.Reset(r.r)
+	return r.r.Seek(offset, whence)
+}
+
+type readerResetter interface {
+	io.ReadCloser
+	zlib.Resetter
+}
+
+type reader interface {
+	io.Reader
+	io.ByteReader
+	io.Seeker
+}
+
+type teeReader struct {
+	reader
+	w         hash.Hash32
+	bufWriter *bufio.Writer
+}
+
+func newTeeReader(r reader, h hash.Hash32) *teeReader {
+	return &teeReader{
+		reader:    r,
+		w:         h,
+		bufWriter: bufio.NewWriter(h),
+	}
+}
+
+func (r *teeReader) Read(p []byte) (n int, err error) {
+	r.Flush()
+
+	n, err = r.reader.Read(p)
+	if n > 0 {
+		if n, err := r.w.Write(p[:n]); err != nil {
+			return n, err
+		}
 	}
 	return
 }
 
-func (r *scannerReader) ReadByte() (b byte, err error) {
-	b, err = r.rbuf.ReadByte()
+func (r *teeReader) ReadByte() (b byte, err error) {
+	b, err = r.reader.ReadByte()
 	if err == nil {
-		r.offset++
-		return b, r.wbuf.WriteByte(b)
+		return b, r.bufWriter.WriteByte(b)
 	}
+
 	return
 }
 
-func (r *scannerReader) Flush() error {
-	return r.wbuf.Flush()
-}
-
-// Seek seeks to a location. If the underlying reader is not an io.ReadSeeker,
-// then only whence=io.SeekCurrent is supported, any other operation fails.
-func (r *scannerReader) Seek(offset int64, whence int) (int64, error) {
-	var err error
-
-	if seeker, ok := r.reader.(io.ReadSeeker); !ok {
-		if whence != io.SeekCurrent || offset != 0 {
-			return -1, ErrSeekNotSupported
-		}
-	} else {
-		if whence == io.SeekCurrent && offset == 0 {
-			return r.offset, nil
-		}
-
-		r.offset, err = seeker.Seek(offset, whence)
-		r.rbuf.Reset(r.reader)
-	}
-
-	return r.offset, err
+func (r *teeReader) Flush() (err error) {
+	return r.bufWriter.Flush()
 }

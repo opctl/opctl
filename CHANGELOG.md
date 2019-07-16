@@ -8,26 +8,26 @@ accordance with
 
 ### Added
 
-- [Allow dynamically setting env vars of a container](https://github.com/opctl/specs/issues/250)
-- [NotExists predicate](https://github.com/opctl/specs/issues/245)
-- [Exists predicate](https://github.com/opctl/specs/issues/241)
+- Allow dynamically setting env vars of a container
+- NotExists predicate
+- Exists predicate
 - up to 10x disk performance improvement on OSX
-- [Ability to specify custom node data dir](https://github.com/opctl/opctl/issues/449)
-- [Allow Numbers for Container Ports](https://github.com/opctl/specs/issues/233)
-- [Interpolate Container Name](https://github.com/opctl/specs/issues/232)
-- [Conditional running](https://github.com/opctl/specs/issues/223)
+- Ability to specify custom node data dir
+- Allow Numbers for Container Ports
+- Interpolate Container Name
+- Conditional running
 - serialLoop call
 - parallelLoop call
 
 ### Fixed
 
-- [opctl ls on windows does not list anything](https://github.com/opctl/opctl/issues/460)
-- [object & array initializers don't support multiline values](https://github.com/opctl/sdk-golang/issues/416)
-- [errors from parallel calls not logged](https://github.com/opctl/opctl/issues/421)
+- opctl ls on windows does not list anything
+- object & array initializers don't support multiline values
+- errors from parallel calls not logged
 
 ### Removed
 
-- [`stdOut` & `stdErr` attributes from container call.](https://github.com/opctl/specs/issues/231). Use files.
+- `stdOut` & `stdErr` attributes from container call. Use files.
 - `pkg` attribute in opcall; `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
 
 ### Changed
@@ -38,37 +38,35 @@ accordance with
 
 ### Added
 
-- [`opspec` property in op schema](https://github.com/opctl/specs/issues/20)
+- `opspec` property in op schema
 - Client back pressure in `GET event-stream` endpoint via `ack` query param
-- [Support declaring SVG icon for op](https://github.com/opctl/specs/issues/139)
-- [Support CommonMark for op & param descriptions](https://github.com/opctl/specs/issues/174)
-- [Boolean type](https://github.com/opctl/specs/issues/195)
-- [Support type, description, writeOnly, & title keywords in constraints of object params](https://github.com/opctl/specs/issues/196)
-- [Support paths in object refs](https://github.com/opctl/specs/issues/170)
+- Support declaring SVG icon for op
+- Support CommonMark for op & param descriptions
+- Boolean type
+- Support type, description, writeOnly, & title keywords in constraints of object params
+- Support paths in object refs
 - Object & Array initializers
 - Support referencing object properties via `object[propertyName]`
 - Support referencing array items via `array[index]` or `array[-index]` to index from end of array
-- [Interpolation escape syntax](https://github.com/opctl/specs/issues/193) by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
-- [Unified data API](https://github.com/opctl/specs/issues/204)
+- Interpolation escape syntax by prefixing w/ a single backslash; i.e. `\$(not-a-ref)`
+- Unified data API
 
 ### Deprecated
 
-- `pkg` attribute in
-  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall); `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary.
-- `pkg` changed to `op` in [node-api.spec.yml#/components](spec/node-api.spec.yml#/components)
-- [Deprecate pkgs API](https://github.com/opctl/specs/issues/205)
+- `pkg` attribute in opcall; `ref` & `pullCreds` raised up a level, nesting within `pkg` unnecessary
+- Deprecate pkgs API
 - `stdOut` & `stdErr` attributes from container call. Use files.
 
 ### Removed
 
-- [References in/as expressions w/out explicit opener $( and closer )](https://github.com/opctl/specs/issues/184)
+- References in/as expressions w/out explicit opener $( and closer )
 
 ## 0.1.23 - 2018-01-15
 
 ### Added
 
-- [opspec 0.1.6) Support declaring SVG icon for pkg](https://github.com/opctl/spec/issues/139)
-- [opspec 0.1.6) Support CommonMark for pkg & param descriptions](https://github.com/opctl/spec/issues/174)
+- opspec 0.1.6) Support declaring SVG icon for pkg
+- opspec 0.1.6) Support CommonMark for pkg & param descriptions
 
 ### Fixed
 
@@ -79,24 +77,24 @@ accordance with
 
 ### Added
 
-- [Always pull container images when running ops](https://github.com/opctl/opctl/issues/362)
+- Always pull container images when running ops
 
 ### Fixed
 
-- [Auto node creation requires opctl bin within path](https://github.com/opctl/opctl/issues/363)
+- Auto node creation requires opctl bin within path
 
 ## 0.1.21 - 2017-10-01
 
 ### Added
 
-- [Validation of outputs](https://github.com/opctl/opctl/issues/186)
+- Validation of outputs
 - Remote pkg run
 - Remote pkg validate
-- [Type coercion](https://github.com/opctl/specs/issues/165)
-- [Add /pkgs/{ref}/contents endpoints to node API](https://github.com/opctl/specs/issues/132)
-- [Support binding strings &/or numbers to/from container files](https://github.com/opctl/specs/issues/131)
-- [Add support for object param type](https://github.com/opctl/specs/issues/65)
-- [Add support for array param type](https://github.com/opctl/specs/issues/160)
+- Type coercion
+- Add /pkgs/{ref}/contents endpoints to node API
+- Support binding strings &/or numbers to/from container files
+- Add support for object param type
+- Add support for array param type
 
 ### Deprecated
 
@@ -112,16 +110,14 @@ accordance with
 
 ### Removed
 
-- `ref` attribute in
-  [op.yml.schema.json#/definitions/opCall](spec/op.yml.schema.json#/definitions/opCall).
+- `ref` attribute in opcall
   Use new `pkg` attribute.
-- `pullIdentity` & `pullSecret` attributes in
-  [op.yml.schema.json#/definitions/containerCall](spec/op.yml.schema.json#/definitions/containerCall).
+- `pullIdentity` & `pullSecret` attributes in container call.
   Use new `pullCreds` attribute.
 
 ### Changed
 
-- [node-api.spec.yml](spec/node-api.spec.yml) updated to OAS 3.0.0
+- api schema updated to OAS 3.0.0
   syntax
 
 ## 0.1.20 - 2017-06-23
@@ -134,10 +130,10 @@ accordance with
 
 ### Added
 
-- [Support using dir/file embedded in op as input/output param default](https://github.com/opctl/specs/issues/127)
-- [Allow path expansion w/in sub op call inputs](https://github.com/opctl/specs/issues/120)
-- [Allow string/number literals as sub op call inputs](https://github.com/opctl/specs/issues/121)
-- [Implicitly bind env vars to in scope refs if names are identical](https://github.com/opctl/specs/issues/117)
+- Support using dir/file embedded in op as input/output param default
+- Allow path expansion w/in sub op call inputs
+- Allow string/number literals as sub op call inputs
+- Implicitly bind env vars to in scope refs if names are identical
 - `pkg install` command
 - [Validate file/dir inputs are valid files/dirs (respectively)](https://github.com/opctl/opctl/issues/175)
 - [Fail fast during parallel call](https://github.com/opctl/opctl/issues/154)
@@ -197,7 +193,7 @@ accordance with
 - `string` and `number` parameter constraints
 - support for container calls
 - `filter` to node API `/events/stream` resource
-- [support for private images](https://github.com/opctl/specs/issues/71)
+- support for private images
 
 ### Changed
 

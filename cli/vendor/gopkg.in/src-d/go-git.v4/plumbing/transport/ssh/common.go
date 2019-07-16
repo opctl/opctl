@@ -2,7 +2,6 @@
 package ssh
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -12,7 +11,6 @@ import (
 
 	"github.com/kevinburke/ssh_config"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/net/proxy"
 )
 
 // DefaultClient is the default SSH client.
@@ -117,7 +115,7 @@ func (c *command) connect() error {
 
 	overrideConfig(c.config, config)
 
-	c.client, err = dial("tcp", c.getHostWithPort(), config)
+	c.client, err = ssh.Dial("tcp", c.getHostWithPort(), config)
 	if err != nil {
 		return err
 	}
@@ -130,29 +128,6 @@ func (c *command) connect() error {
 
 	c.connected = true
 	return nil
-}
-
-func dial(network, addr string, config *ssh.ClientConfig) (*ssh.Client, error) {
-	var (
-		ctx    = context.Background()
-		cancel context.CancelFunc
-	)
-	if config.Timeout > 0 {
-		ctx, cancel = context.WithTimeout(ctx, config.Timeout)
-	} else {
-		ctx, cancel = context.WithCancel(ctx)
-	}
-	defer cancel()
-
-	conn, err := proxy.Dial(ctx, network, addr)
-	if err != nil {
-		return nil, err
-	}
-	c, chans, reqs, err := ssh.NewClientConn(conn, addr, config)
-	if err != nil {
-		return nil, err
-	}
-	return ssh.NewClient(c, chans, reqs), nil
 }
 
 func (c *command) getHostWithPort() string {

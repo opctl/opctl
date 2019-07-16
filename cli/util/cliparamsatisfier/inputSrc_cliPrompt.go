@@ -3,7 +3,7 @@ package cliparamsatisfier
 import (
 	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/opctl/cli/util/clioutput"
-	"github.com/opctl/sdk-golang/model"
+	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/peterh/liner"
 	"os"
 )

@@ -1,16 +1,16 @@
-description: runs the [opspec test suite](https://github.com/opctl/spec) against opctl. 
+description: uses the cli to run all test-suite scenarios. 
 name: test/system/opspec
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ..
       description: directory containing the projects source code
   opctlForLinux:
     file:
       description: opctl for linux binary to be tested
 run:
   container:
-    image: { ref: 'docker:18.02.0-dind' }
+    image: { ref: 'docker:18.09.7-dind' }
     dirs:
       /src: $(srcDir)
       /sharness:
