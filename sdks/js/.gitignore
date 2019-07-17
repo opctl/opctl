@@ -1,5 +1,6 @@
-### NPM
+### yarn
 node_modules
+yarn-error.log
 
 ### codecov.io
 coverage/
@@ -9,3 +10,4 @@ jest*/
 
 ## build
 lib/
+tsconfig.tsbuildinfo

@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParamDir from '@opctl/sdk/lib/model/param/dir'
+import ModelParamDir from '@opctl/sdk/src/model/param/dir'
 import _DomInput from './_DomInput'
 
 interface Props {

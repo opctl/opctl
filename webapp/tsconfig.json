@@ -18,8 +18,17 @@
     "noImplicitAny": false,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "rootDir": "src"
   },
+  "references": [
+    {
+      "path": "../sdks/js"
+    }
+  ],
+  "exclude": [
+    "src/**/*.test.ts*"
+  ],
   "include": [
     "src"
   ]

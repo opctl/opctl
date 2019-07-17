@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@opctl/sdk": "../js",
+    "@opctl/sdk": "^0.0.0-alpha.5",
     "@types/react": "^16.8.13",
     "@types/reactstrap": "^8.0.0",
     "ansi-to-react": "^5.0.0",
@@ -23,7 +23,7 @@
   "files": [
     "lib"
   ],
-  "name": "@opctl/sdk-react",
+  "name": "@opctl/react",
   "version": "0.0.0-alpha.17",
   "description": "React SDK for opctl",
   "scripts": {
@@ -31,14 +31,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/opctl/sdk-react.git"
+    "url": "git+https://github.com/opctl/opctl.git"
   },
   "keywords": [
     "opctl"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/opctl/sdk-react/issues"
+    "url": "https://github.com/opctl/opctl/issues"
   },
   "main": "lib",
   "standard": {

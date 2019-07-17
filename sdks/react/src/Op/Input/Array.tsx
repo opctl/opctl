@@ -1,8 +1,8 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
-import ModelParamArray from '@opctl/sdk/lib/model/param/array'
-import paramArrayValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/array/validate'
+import ModelParamArray from '@opctl/sdk/src/model/param/array'
+import paramArrayValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/array/validate'
 
 interface Props {
   array: ModelParamArray

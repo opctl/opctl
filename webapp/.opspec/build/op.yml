@@ -3,7 +3,7 @@ name: build
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ..
 outputs:
   srcDir:
     dir:
@@ -21,4 +21,4 @@ run:
         image: { ref: 'node:11.2.0-alpine' }
         dirs:
           /src: $(srcDir)
-        workDir: /src
+        workDir: /src/webapp

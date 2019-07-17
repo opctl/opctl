@@ -23,7 +23,7 @@ Contributions are subject to:
 
 # Implementation
 
-- [react](https://facebook.github.io/react/) via [create react app](https://github.com/facebookincubator/create-react-app).
+The webapp is built using [react](https://facebook.github.io/react/) via [create react app](https://github.com/facebookincubator/create-react-app).
 
 # Unit testing
 

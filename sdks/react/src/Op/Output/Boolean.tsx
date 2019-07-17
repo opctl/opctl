@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Description from '../Param/Description'
-import ModelParamBoolean from '@opctl/sdk/lib/model/param/boolean'
-import { dataGet } from '@opctl/sdk/lib/api/client'
+import ModelParamBoolean from '@opctl/sdk/src/model/param/boolean'
+import { dataGet } from '@opctl/sdk/src/api/client'
 
 interface Props {
   apiBaseUrl: string

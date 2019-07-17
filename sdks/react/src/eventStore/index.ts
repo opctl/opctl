@@ -1,8 +1,8 @@
-import { eventStreamGet as opctlEventStreamGet } from '@opctl/sdk/lib/api/client'
+import { eventStreamGet as opctlEventStreamGet } from '@opctl/sdk/src/api/client'
 import uuidV4 from 'uuid/v4'
 import isFiltered from './isFiltered'
-import ModelEvent from '@opctl/sdk/lib/model/event'
-import { EventFilter } from '@opctl/sdk/lib/api/client/events/stream'
+import ModelEvent from '@opctl/sdk/src/model/event'
+import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 import { toast } from 'react-toastify'
 
 interface Subscription {

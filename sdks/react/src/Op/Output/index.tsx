@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParam from '@opctl/sdk/lib/model/param'
+import ModelParam from '@opctl/sdk/src/model/param'
 import OutputArray from './Array'
 import OutputBoolean from './Boolean'
 import OutputDir from './Dir'

@@ -4,3 +4,4 @@ coverprofile
 ### build
 /build/
 /opctl
+node_modules/

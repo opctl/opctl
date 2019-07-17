@@ -3,7 +3,7 @@ name: test
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ..
 run:
   serial:
     - op:
@@ -17,4 +17,4 @@ run:
         image: { ref: 'node:11.2.0-alpine' }
         dirs:
           /src: $(srcDir)
-        workDir: /src
+        workDir: /src/webapp

@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/opctl/sdk-js.git"
+    "url": "git+https://github.com/opctl/opctl.git"
   },
   "keywords": [
     "opctl"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/opctl/sdk-js/issues"
+    "url": "https://github.com/opctl/opctl/issues"
   },
   "main": "lib",
   "standard": {

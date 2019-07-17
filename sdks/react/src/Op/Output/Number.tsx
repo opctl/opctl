@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Description from '../Param/Description'
-import ModelParamNumber from '@opctl/sdk/lib/model/param/number'
-import { dataGet } from '@opctl/sdk/lib/api/client'
+import ModelParamNumber from '@opctl/sdk/src/model/param/number'
+import { dataGet } from '@opctl/sdk/src/api/client'
 
 interface Props {
   apiBaseUrl: string

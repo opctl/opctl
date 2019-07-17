@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParamBoolean from '@opctl/sdk/lib/model/param/boolean'
+import ModelParamBoolean from '@opctl/sdk/src/model/param/boolean'
 import _DomInput from './_DomInput'
 
 interface Props {

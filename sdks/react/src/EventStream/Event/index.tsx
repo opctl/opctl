@@ -8,7 +8,7 @@ import EventOpErred from './OpErred'
 import EventOpStarted from './OpStarted'
 import EventSerialCallEnded from './SerialCallEnded'
 import EventParallelCallEnded from './ParallelCallEnded'
-import Event from '@opctl/sdk/lib/model/event'
+import Event from '@opctl/sdk/src/model/event'
 
 interface Props {
   event: Event

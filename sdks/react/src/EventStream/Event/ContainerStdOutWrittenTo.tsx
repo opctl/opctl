@@ -1,6 +1,6 @@
 import React from 'react'
 import Ansi from 'ansi-to-react'
-import ContainerStdOutWrittenTo from '@opctl/sdk/lib/model/event/containerStdOutWrittenTo'
+import ContainerStdOutWrittenTo from '@opctl/sdk/src/model/event/containerStdOutWrittenTo'
 
 interface Props {
   containerStdOutWrittenTo: ContainerStdOutWrittenTo

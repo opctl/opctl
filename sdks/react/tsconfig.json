@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     /* Basic Options */
     "target": "ES2015", /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
@@ -9,12 +10,15 @@
     /* Strict Type-Checking Options */
     "strict": true, /* Enable all strict type-checking options. */
     "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
-    "jsx": "react"
+    "jsx": "react",
+    "rootDir": "src"
   },
-  "exclude": [
-    "src/**/*.test.ts*"
-  ],
   "include": [
     "src"
+  ],
+  "references": [
+    {
+      "path": "../js"
+    }
   ]
 }

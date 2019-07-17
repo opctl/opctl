@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParamSocket from '@opctl/sdk/lib/model/param/socket'
+import ModelParamSocket from '@opctl/sdk/src/model/param/socket'
 import _DomInput from './_DomInput'
 
 interface Props {

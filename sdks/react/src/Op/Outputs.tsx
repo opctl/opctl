@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParam from '@opctl/sdk/lib/model/param'
+import ModelParam from '@opctl/sdk/src/model/param'
 import Output from './Output/index'
 
 interface Props {

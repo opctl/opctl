@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Event from './Event'
-import ModelEvent from '@opctl/sdk/lib/model/event'
+import ModelEvent from '@opctl/sdk/src/model/event'
 import EventStore from '../eventStore'
-import { EventFilter } from '@opctl/sdk/lib/api/client/events/stream'
+import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 import {
   AutoSizer,
   CellMeasurer,

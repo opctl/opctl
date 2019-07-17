@@ -1,8 +1,8 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
-import ModelParamObject from '@opctl/sdk/lib/model/param/object'
-import paramObjectValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/object/validate'
+import ModelParamObject from '@opctl/sdk/src/model/param/object'
+import paramObjectValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/object/validate'
 
 interface Props {
   name: string

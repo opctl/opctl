@@ -3,7 +3,7 @@ name: debug
 inputs:
   srcDir:
     dir:
-      default: .
+      default: ..
 run:
   serial:
     - op:
@@ -19,4 +19,4 @@ run:
           /src: $(srcDir)
         ports:
           '80': '80'
-        workDir: /src
+        workDir: /src/webapp

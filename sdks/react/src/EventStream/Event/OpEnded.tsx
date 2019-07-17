@@ -1,5 +1,5 @@
 import React from 'react'
-import OpEnded from '@opctl/sdk/lib/model/event/opEnded'
+import OpEnded from '@opctl/sdk/src/model/event/opEnded'
 
 interface Props {
   opEnded: OpEnded

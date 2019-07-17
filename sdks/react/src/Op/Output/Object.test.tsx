@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Object from './Object'
-jest.mock('@opctl/sdk/lib/api/client', () => ({
+jest.mock('@opctl/sdk/src/api/client', () => ({
   dataGet: async () => ({
     json: async () => ''
   })

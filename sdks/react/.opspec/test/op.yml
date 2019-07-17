@@ -4,7 +4,7 @@ inputs:
   srcDir:
     dir:
       description: dir containing the projects source code
-      default: .
+      default: ../..
 outputs:
   srcDir:
     dir:
@@ -25,5 +25,5 @@ run:
         dirs:
           /src: $(srcDir)
         files:
-          /src/coverage/lcov.info: $(coverageReport)
-        workDir: /src
+          /src/sdks/react/coverage/lcov.info: $(coverageReport)
+        workDir: /src/sdks/react

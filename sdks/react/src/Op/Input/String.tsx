@@ -1,8 +1,8 @@
 import React from 'react'
 import _DomInput from './_DomInput'
 import Select from './Select'
-import ModelParamString from '@opctl/sdk/lib/model/param/string'
-import paramStringValidate from '@opctl/sdk/lib/opspec/interpreter/opcall/params/param/string/validate'
+import ModelParamString from '@opctl/sdk/src/model/param/string'
+import paramStringValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/string/validate'
 
 interface Props {
   name: string

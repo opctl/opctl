@@ -1,5 +1,5 @@
 import React from 'react'
-import SerialCallEnded from '@opctl/sdk/lib/model/event/serialCallEnded'
+import SerialCallEnded from '@opctl/sdk/src/model/event/serialCallEnded'
 
 interface Props {
   serialCallEnded: SerialCallEnded

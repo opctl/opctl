@@ -1,5 +1,5 @@
-import Event from '@opctl/sdk/lib/model/event'
-import { EventFilter } from '@opctl/sdk/lib/api/client/events/stream'
+import Event from '@opctl/sdk/src/model/event'
+import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 
 const getEventRootOpId = (event: Event) => {
     if (event.callEnded) {

@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import jsYaml from 'js-yaml'
 import Textarea from 'react-textarea-autosize'
 import Description from '../Param/Description'
-import ModelParamArray from '@opctl/sdk/lib/model/param/array'
-import { dataGet } from '@opctl/sdk/lib/api/client'
+import ModelParamArray from '@opctl/sdk/src/model/param/array'
+import { dataGet } from '@opctl/sdk/src/api/client'
 
 interface Props {
   apiBaseUrl: string
