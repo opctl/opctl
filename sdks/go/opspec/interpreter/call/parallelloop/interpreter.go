@@ -1,19 +1,19 @@
 package parallelloop
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
-		scgParallelLoop model.SCGParallelLoopCall,
-		scope map[string]*model.Value,
-	) (*model.DCGParallelLoopCall, error)
+		opHandle types.DataHandle,
+		scgParallelLoop types.SCGParallelLoopCall,
+		scope map[string]*types.Value,
+	) (*types.DCGParallelLoopCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -30,11 +30,11 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
-	scgParallelLoop model.SCGParallelLoopCall,
-	scope map[string]*model.Value,
-) (*model.DCGParallelLoopCall, error) {
-	dcgParallelLoop := model.DCGParallelLoopCall{}
+	opHandle types.DataHandle,
+	scgParallelLoop types.SCGParallelLoopCall,
+	scope map[string]*types.Value,
+) (*types.DCGParallelLoopCall, error) {
+	dcgParallelLoop := types.DCGParallelLoopCall{}
 
 	scgLoopRange := scgParallelLoop.Range
 	if nil != scgLoopRange {

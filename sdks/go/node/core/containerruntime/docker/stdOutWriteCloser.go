@@ -2,7 +2,7 @@ package docker
 
 import (
 	"bufio"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"io"
 	"time"
@@ -25,9 +25,9 @@ func NewStdOutWriteCloser(
 			if b, err = reader.ReadBytes('\n'); len(b) > 0 {
 				// always publish if len(bytes) read to ensure full stream sent; even under error conditions
 				eventPublisher.Publish(
-					model.Event{
+					types.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+						ContainerStdOutWrittenTo: &types.ContainerStdOutWrittenToEvent{
 							Data:        b,
 							ContainerID: containerID,
 							RootOpID:    rootOpID,

@@ -7,8 +7,8 @@ import (
 	"github.com/jfbus/httprs"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -21,10 +21,10 @@ var _ = Context("GetData", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.GetDataReq{
+		providedReq := types.GetDataReq{
 			ContentPath: "dummy/content/path",
 			PkgRef:      "dummyOpRef",
-			PullCreds: &model.PullCreds{
+			PullCreds: &types.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},
@@ -98,7 +98,7 @@ var _ = Context("GetData", func() {
 			/* act */
 			actualReadSeekCloser, actualErr := objectUnderTest.GetData(
 				context.TODO(),
-				model.GetDataReq{},
+				types.GetDataReq{},
 			)
 
 			/* assert */
@@ -127,11 +127,11 @@ var _ = Context("GetData", func() {
 				/* act */
 				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetDataReq{},
+					types.GetDataReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthentication{}))
+				Expect(actualErr).To(Equal(types.ErrDataProviderAuthentication{}))
 
 			})
 		})
@@ -154,11 +154,11 @@ var _ = Context("GetData", func() {
 				/* act */
 				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetDataReq{},
+					types.GetDataReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthorization{}))
+				Expect(actualErr).To(Equal(types.ErrDataProviderAuthorization{}))
 
 			})
 
@@ -182,11 +182,11 @@ var _ = Context("GetData", func() {
 				/* act */
 				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetDataReq{},
+					types.GetDataReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(Equal(types.ErrDataRefResolution{}))
 
 			})
 
@@ -211,7 +211,7 @@ var _ = Context("GetData", func() {
 				/* act */
 				_, actualErr := objectUnderTest.GetData(
 					context.TODO(),
-					model.GetDataReq{},
+					types.GetDataReq{},
 				)
 
 				/* assert */

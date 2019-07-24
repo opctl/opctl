@@ -2,7 +2,7 @@ jest.mock('../../api/client/data/get', () => jest.fn())
 import dataGet from '../../api/client/data/get'
 
 import objectUnderTest from './toObject'
-import Value from '../../model/value'
+import Value from '../../types/value'
 
 describe('toObject', () => {
   beforeEach(() => {

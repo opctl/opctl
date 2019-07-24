@@ -4,36 +4,36 @@ package core
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type fakeCallStore struct {
-	AddStub        func(*model.DCG)
+	AddStub        func(*types.DCG)
 	addMutex       sync.RWMutex
 	addArgsForCall []struct {
-		arg1 *model.DCG
+		arg1 *types.DCG
 	}
-	GetStub        func(string) model.DCG
+	GetStub        func(string) types.DCG
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		arg1 string
 	}
 	getReturns struct {
-		result1 model.DCG
+		result1 types.DCG
 	}
 	getReturnsOnCall map[int]struct {
-		result1 model.DCG
+		result1 types.DCG
 	}
-	ListWithParentIDStub        func(string) []*model.DCG
+	ListWithParentIDStub        func(string) []*types.DCG
 	listWithParentIDMutex       sync.RWMutex
 	listWithParentIDArgsForCall []struct {
 		arg1 string
 	}
 	listWithParentIDReturns struct {
-		result1 []*model.DCG
+		result1 []*types.DCG
 	}
 	listWithParentIDReturnsOnCall map[int]struct {
-		result1 []*model.DCG
+		result1 []*types.DCG
 	}
 	SetIsKilledStub        func(string)
 	setIsKilledMutex       sync.RWMutex
@@ -44,10 +44,10 @@ type fakeCallStore struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCallStore) Add(arg1 *model.DCG) {
+func (fake *fakeCallStore) Add(arg1 *types.DCG) {
 	fake.addMutex.Lock()
 	fake.addArgsForCall = append(fake.addArgsForCall, struct {
-		arg1 *model.DCG
+		arg1 *types.DCG
 	}{arg1})
 	fake.recordInvocation("Add", []interface{}{arg1})
 	fake.addMutex.Unlock()
@@ -62,20 +62,20 @@ func (fake *fakeCallStore) AddCallCount() int {
 	return len(fake.addArgsForCall)
 }
 
-func (fake *fakeCallStore) AddCalls(stub func(*model.DCG)) {
+func (fake *fakeCallStore) AddCalls(stub func(*types.DCG)) {
 	fake.addMutex.Lock()
 	defer fake.addMutex.Unlock()
 	fake.AddStub = stub
 }
 
-func (fake *fakeCallStore) AddArgsForCall(i int) *model.DCG {
+func (fake *fakeCallStore) AddArgsForCall(i int) *types.DCG {
 	fake.addMutex.RLock()
 	defer fake.addMutex.RUnlock()
 	argsForCall := fake.addArgsForCall[i]
 	return argsForCall.arg1
 }
 
-func (fake *fakeCallStore) Get(arg1 string) model.DCG {
+func (fake *fakeCallStore) Get(arg1 string) types.DCG {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -99,7 +99,7 @@ func (fake *fakeCallStore) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *fakeCallStore) GetCalls(stub func(string) model.DCG) {
+func (fake *fakeCallStore) GetCalls(stub func(string) types.DCG) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
@@ -112,30 +112,30 @@ func (fake *fakeCallStore) GetArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *fakeCallStore) GetReturns(result1 model.DCG) {
+func (fake *fakeCallStore) GetReturns(result1 types.DCG) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 model.DCG
+		result1 types.DCG
 	}{result1}
 }
 
-func (fake *fakeCallStore) GetReturnsOnCall(i int, result1 model.DCG) {
+func (fake *fakeCallStore) GetReturnsOnCall(i int, result1 types.DCG) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 model.DCG
+			result1 types.DCG
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 model.DCG
+		result1 types.DCG
 	}{result1}
 }
 
-func (fake *fakeCallStore) ListWithParentID(arg1 string) []*model.DCG {
+func (fake *fakeCallStore) ListWithParentID(arg1 string) []*types.DCG {
 	fake.listWithParentIDMutex.Lock()
 	ret, specificReturn := fake.listWithParentIDReturnsOnCall[len(fake.listWithParentIDArgsForCall)]
 	fake.listWithParentIDArgsForCall = append(fake.listWithParentIDArgsForCall, struct {
@@ -159,7 +159,7 @@ func (fake *fakeCallStore) ListWithParentIDCallCount() int {
 	return len(fake.listWithParentIDArgsForCall)
 }
 
-func (fake *fakeCallStore) ListWithParentIDCalls(stub func(string) []*model.DCG) {
+func (fake *fakeCallStore) ListWithParentIDCalls(stub func(string) []*types.DCG) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = stub
@@ -172,26 +172,26 @@ func (fake *fakeCallStore) ListWithParentIDArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *fakeCallStore) ListWithParentIDReturns(result1 []*model.DCG) {
+func (fake *fakeCallStore) ListWithParentIDReturns(result1 []*types.DCG) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = nil
 	fake.listWithParentIDReturns = struct {
-		result1 []*model.DCG
+		result1 []*types.DCG
 	}{result1}
 }
 
-func (fake *fakeCallStore) ListWithParentIDReturnsOnCall(i int, result1 []*model.DCG) {
+func (fake *fakeCallStore) ListWithParentIDReturnsOnCall(i int, result1 []*types.DCG) {
 	fake.listWithParentIDMutex.Lock()
 	defer fake.listWithParentIDMutex.Unlock()
 	fake.ListWithParentIDStub = nil
 	if fake.listWithParentIDReturnsOnCall == nil {
 		fake.listWithParentIDReturnsOnCall = make(map[int]struct {
-			result1 []*model.DCG
+			result1 []*types.DCG
 		})
 	}
 	fake.listWithParentIDReturnsOnCall[i] = struct {
-		result1 []*model.DCG
+		result1 []*types.DCG
 	}{result1}
 }
 

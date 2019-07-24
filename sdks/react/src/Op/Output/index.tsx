@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParam from '@opctl/sdk/src/model/param'
+import Param from '@opctl/sdk/src/types/param'
 import OutputArray from './Array'
 import OutputBoolean from './Boolean'
 import OutputDir from './Dir'
@@ -12,7 +12,7 @@ import OutputString from './String'
 interface Props {
   apiBaseUrl: string
   name: string
-  param: ModelParam
+  param: Param
   opRef: string
   value: any
 }

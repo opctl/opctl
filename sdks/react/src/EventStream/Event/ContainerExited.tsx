@@ -1,5 +1,5 @@
 import React from 'react'
-import ContainerExited from '@opctl/sdk/src/model/event/containerExited'
+import ContainerExited from '@opctl/sdk/src/types/event/containerExited'
 
 interface Props {
   containerExited: ContainerExited

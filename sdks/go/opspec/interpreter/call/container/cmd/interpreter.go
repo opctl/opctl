@@ -3,15 +3,15 @@ package cmd
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		scgContainerCallCmd []interface{},
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 	) ([]string, error)
 }
 
@@ -27,9 +27,9 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	scgContainerCallCmd []interface{},
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 ) ([]string, error) {
 	dcgContainerCallCmd := []string{}
 

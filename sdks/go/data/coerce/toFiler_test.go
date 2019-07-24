@@ -8,7 +8,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 	"os"
 	"path/filepath"
@@ -48,7 +48,7 @@ var _ = Context("toFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					var providedValue *model.Value
+					var providedValue *types.Value
 
 					fakeIOUtil := new(iioutil.Fake)
 
@@ -83,7 +83,7 @@ var _ = Context("toFile", func() {
 					uniqueString := "dummyUniqueString"
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-					expectedValue := model.Value{File: &expectedValuePath}
+					expectedValue := types.Value{File: &expectedValuePath}
 
 					fakeUniqueString := new(uniquestring.Fake)
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
@@ -110,7 +110,7 @@ var _ = Context("toFile", func() {
 				/* arrange */
 				providedArray := &[]interface{}{"arrayItem"}
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Array: providedArray,
 				}
 
@@ -144,7 +144,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					_, actualErr := arrayUnderTest.ToFile(
-						&model.Value{Array: new([]interface{})},
+						&types.Value{Array: new([]interface{})},
 						"dummyScratchDir",
 					)
 
@@ -177,7 +177,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					arrayUnderTest.ToFile(
-						&model.Value{Array: new([]interface{})},
+						&types.Value{Array: new([]interface{})},
 						providedScratchDir,
 					)
 
@@ -193,7 +193,7 @@ var _ = Context("toFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						providedValue := &model.Value{Array: new([]interface{})}
+						providedValue := &types.Value{Array: new([]interface{})}
 
 						fakeIOUtil := new(iioutil.Fake)
 
@@ -232,7 +232,7 @@ var _ = Context("toFile", func() {
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-						expectedValue := model.Value{File: &expectedValuePath}
+						expectedValue := types.Value{File: &expectedValuePath}
 
 						arrayUnderTest := _toFiler{
 							json:         new(ijson.Fake),
@@ -242,7 +242,7 @@ var _ = Context("toFile", func() {
 
 						/* act */
 						actualValue, actualErr := arrayUnderTest.ToFile(
-							&model.Value{
+							&types.Value{
 								Array: new([]interface{}),
 							},
 							providedScratchDir,
@@ -261,7 +261,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 
 				providedBoolean := true
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Boolean: &providedBoolean,
 				}
 
@@ -292,7 +292,7 @@ var _ = Context("toFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						Boolean: new(bool),
 					}
 
@@ -332,7 +332,7 @@ var _ = Context("toFile", func() {
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-					expectedValue := model.Value{File: &expectedValuePath}
+					expectedValue := types.Value{File: &expectedValuePath}
 
 					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
@@ -341,7 +341,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToFile(
-						&model.Value{
+						&types.Value{
 							Boolean: new(bool),
 						},
 						providedScratchDir,
@@ -359,7 +359,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 
 				providedDir := "dummyValue"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Dir: &providedDir,
 				}
 
@@ -379,7 +379,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 
 				providedFile := "dummyFile"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedFile,
 				}
 
@@ -399,7 +399,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 
 				providedNumber := 2.2
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Number: &providedNumber,
 				}
 
@@ -430,7 +430,7 @@ var _ = Context("toFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						Number: new(float64),
 					}
 
@@ -470,7 +470,7 @@ var _ = Context("toFile", func() {
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-					expectedValue := model.Value{File: &expectedValuePath}
+					expectedValue := types.Value{File: &expectedValuePath}
 
 					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
@@ -479,7 +479,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToFile(
-						&model.Value{
+						&types.Value{
 							Number: new(float64),
 						},
 						providedScratchDir,
@@ -498,7 +498,7 @@ var _ = Context("toFile", func() {
 					"dummyName": "dummyValue",
 				}
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Object: providedObject,
 				}
 
@@ -532,7 +532,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.ToFile(
-						&model.Value{Object: new(map[string]interface{})},
+						&types.Value{Object: new(map[string]interface{})},
 						"dummyScratchDir",
 					)
 
@@ -565,7 +565,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					objectUnderTest.ToFile(
-						&model.Value{Object: new(map[string]interface{})},
+						&types.Value{Object: new(map[string]interface{})},
 						providedScratchDir,
 					)
 
@@ -581,7 +581,7 @@ var _ = Context("toFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						providedValue := &model.Value{Object: new(map[string]interface{})}
+						providedValue := &types.Value{Object: new(map[string]interface{})}
 
 						fakeIOUtil := new(iioutil.Fake)
 
@@ -620,7 +620,7 @@ var _ = Context("toFile", func() {
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-						expectedValue := model.Value{File: &expectedValuePath}
+						expectedValue := types.Value{File: &expectedValuePath}
 
 						objectUnderTest := _toFiler{
 							json:         new(ijson.Fake),
@@ -630,7 +630,7 @@ var _ = Context("toFile", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToFile(
-							&model.Value{
+							&types.Value{
 								Object: new(map[string]interface{}),
 							},
 							providedScratchDir,
@@ -649,7 +649,7 @@ var _ = Context("toFile", func() {
 				providedScratchDir := "dummyScratchDir"
 
 				providedString := "dummyString"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					String: &providedString,
 				}
 
@@ -680,7 +680,7 @@ var _ = Context("toFile", func() {
 			Context("ioutil.WriteFile errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						String: new(string),
 					}
 
@@ -720,7 +720,7 @@ var _ = Context("toFile", func() {
 					fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 					expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-					expectedValue := model.Value{File: &expectedValuePath}
+					expectedValue := types.Value{File: &expectedValuePath}
 
 					objectUnderTest := _toFiler{
 						uniqueString: fakeUniqueString,
@@ -729,7 +729,7 @@ var _ = Context("toFile", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToFile(
-						&model.Value{
+						&types.Value{
 							String: new(string),
 						},
 						providedScratchDir,
@@ -746,7 +746,7 @@ var _ = Context("toFile", func() {
 				/* arrange */
 				providedScratchDir := "dummyScratchDir"
 
-				providedValue := &model.Value{}
+				providedValue := &types.Value{}
 
 				objectUnderTest := _toFiler{}
 
@@ -761,7 +761,7 @@ var _ = Context("toFile", func() {
 		Context("scratchDir doesn't exist", func() {
 			It("should call os.MkdirAll w/ expected args", func() {
 				/* arrange */
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					String: new(string),
 				}
 				providedScratchDir := "dummyScratchDir"
@@ -797,7 +797,7 @@ var _ = Context("toFile", func() {
 			Context("os.MkdirAll errs", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						String: new(string),
 					}
 
@@ -836,7 +836,7 @@ var _ = Context("toFile", func() {
 					providedScratchDir := "dummyScratchDir"
 
 					providedString := "dummyString"
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						String: &providedString,
 					}
 
@@ -870,7 +870,7 @@ var _ = Context("toFile", func() {
 				Context("ioutil.WriteFile errs", func() {
 					It("should return expected result", func() {
 						/* arrange */
-						providedValue := &model.Value{
+						providedValue := &types.Value{
 							String: new(string),
 						}
 
@@ -915,7 +915,7 @@ var _ = Context("toFile", func() {
 						fakeUniqueString.ConstructReturns(uniqueString, nil)
 
 						expectedValuePath := filepath.Join(providedScratchDir, uniqueString)
-						expectedValue := model.Value{File: &expectedValuePath}
+						expectedValue := types.Value{File: &expectedValuePath}
 
 						objectUnderTest := _toFiler{
 							uniqueString: fakeUniqueString,
@@ -925,7 +925,7 @@ var _ = Context("toFile", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToFile(
-							&model.Value{
+							&types.Value{
 								String: new(string),
 							},
 							providedScratchDir,

@@ -4,14 +4,14 @@ package sockets
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(scope map[string]*model.Value, scgContainerCallSockets map[string]string, scratchDirPath string) (map[string]string, error)
+	InterpretStub        func(scope map[string]*types.Value, scgContainerCallSockets map[string]string, scratchDirPath string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		scope                   map[string]*model.Value
+		scope                   map[string]*types.Value
 		scgContainerCallSockets map[string]string
 		scratchDirPath          string
 	}
@@ -27,11 +27,11 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgContainerCallSockets map[string]string, scratchDirPath string) (map[string]string, error) {
+func (fake *FakeInterpreter) Interpret(scope map[string]*types.Value, scgContainerCallSockets map[string]string, scratchDirPath string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		scope                   map[string]*model.Value
+		scope                   map[string]*types.Value
 		scgContainerCallSockets map[string]string
 		scratchDirPath          string
 	}{scope, scgContainerCallSockets, scratchDirPath})
@@ -52,7 +52,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, map[string]string, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*types.Value, map[string]string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallSockets, fake.interpretArgsForCall[i].scratchDirPath

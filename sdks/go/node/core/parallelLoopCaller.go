@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -22,9 +22,9 @@ type parallelLoopCaller interface {
 	Call(
 		ctx context.Context,
 		id string,
-		inboundScope map[string]*model.Value,
-		scgParallelLoop model.SCGParallelLoopCall,
-		opHandle model.DataHandle,
+		inboundScope map[string]*types.Value,
+		scgParallelLoop types.SCGParallelLoopCall,
+		opHandle types.DataHandle,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -58,9 +58,9 @@ type _parallelLoopCaller struct {
 func (plpr _parallelLoopCaller) Call(
 	ctx context.Context,
 	id string,
-	inboundScope map[string]*model.Value,
-	scgParallelLoop model.SCGParallelLoopCall,
-	opHandle model.DataHandle,
+	inboundScope map[string]*types.Value,
+	scgParallelLoop types.SCGParallelLoopCall,
+	opHandle types.DataHandle,
 	parentCallID *string,
 	rootOpID string,
 ) {
@@ -68,14 +68,14 @@ func (plpr _parallelLoopCaller) Call(
 	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
 	defer cancelChildren()
 
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*types.Value{}
 	var err error
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
+		event := types.Event{
 			Timestamp: time.Now().UTC(),
-			ParallelLoopCallEnded: &model.ParallelLoopCallEndedEvent{
+			ParallelLoopCallEnded: &types.ParallelLoopCallEndedEvent{
 				CallID:   id,
 				RootOpID: rootOpID,
 				Outputs:  outboundScope,
@@ -83,7 +83,7 @@ func (plpr _parallelLoopCaller) Call(
 		}
 
 		if nil != err {
-			event.ParallelLoopCallEnded.Error = &model.CallEndedEventError{
+			event.ParallelLoopCallEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -104,7 +104,7 @@ func (plpr _parallelLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgParallelLoop *model.DCGParallelLoopCall
+	var dcgParallelLoop *types.DCGParallelLoopCall
 	dcgParallelLoop, err = plpr.parallelLoopInterpreter.Interpret(
 		opHandle,
 		scgParallelLoop,
@@ -116,7 +116,7 @@ func (plpr _parallelLoopCaller) Call(
 
 	startTime := time.Now().UTC()
 	childCallIDIndexMap := map[string]int{}
-	callIndexOutputsMap := map[int]map[string]*model.Value{}
+	callIndexOutputsMap := map[int]map[string]*types.Value{}
 
 	for !parallelloop.IsIterationComplete(childCallIndex, *dcgParallelLoop) {
 
@@ -171,7 +171,7 @@ func (plpr _parallelLoopCaller) Call(
 	// @TODO: handle err channel
 	eventChannel, _ := plpr.pubSub.Subscribe(
 		ctx,
-		model.EventFilter{
+		types.EventFilter{
 			Roots: []string{rootOpID},
 			Since: &startTime,
 		},

@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("core", func() {
@@ -16,7 +16,7 @@ var _ = Context("core", func() {
 		It("should call dataResolver w/ expected args", func() {
 			/* arrange */
 			providedPkgRef := "dummyPkgRef"
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &types.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}

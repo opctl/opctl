@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 )
 
@@ -132,7 +132,7 @@ var _ = Context("pkg", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadAllReturns(bytesFromReadAll, nil)
 
-					expectedOpDotYml := &model.OpDotYml{
+					expectedOpDotYml := &types.OpDotYml{
 						Name: "dummyName",
 					}
 					expectedErr := errors.New("dummyError")

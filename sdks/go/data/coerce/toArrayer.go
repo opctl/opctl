@@ -5,14 +5,14 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type toArrayer interface {
 	// ToArray attempts to coerce value to an array
 	ToArray(
-		value *model.Value,
-	) (*model.Value, error)
+		value *types.Value,
+	) (*types.Value, error)
 }
 
 func newToArrayer() toArrayer {
@@ -30,8 +30,8 @@ type _toArrayer struct {
 }
 
 func (c _toArrayer) ToArray(
-	value *model.Value,
-) (*model.Value, error) {
+	value *types.Value,
+) (*types.Value, error) {
 	switch {
 	case nil == value:
 		return nil, nil
@@ -51,7 +51,7 @@ func (c _toArrayer) ToArray(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to array; error was %v", err.Error())
 		}
-		return &model.Value{Array: valueArray}, nil
+		return &types.Value{Array: valueArray}, nil
 	case nil != value.Number:
 		return nil, fmt.Errorf("unable to coerce number '%v' to array; incompatible types", *value.Number)
 	case nil != value.Socket:
@@ -62,7 +62,7 @@ func (c _toArrayer) ToArray(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to array; error was %v", err.Error())
 		}
-		return &model.Value{Array: valueArray}, nil
+		return &types.Value{Array: valueArray}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to array", value)
 	}

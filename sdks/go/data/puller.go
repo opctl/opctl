@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang-interfaces/gopkg.in-src-d-go-git.v4"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -28,7 +28,7 @@ type puller interface {
 		ctx context.Context,
 		path string,
 		dataRef string,
-		pullCreds *model.PullCreds,
+		pullCreds *types.PullCreds,
 	) error
 }
 
@@ -50,7 +50,7 @@ func (plr _puller) Pull(
 	ctx context.Context,
 	path string,
 	dataRef string,
-	authOpts *model.PullCreds,
+	authOpts *types.PullCreds,
 ) error {
 
 	parsedPkgRef, err := plr.refParser.Parse(dataRef)
@@ -83,11 +83,11 @@ func (plr _puller) Pull(
 		case transport.ErrAuthenticationRequired.Error():
 			// clone failed; cleanup remnants
 			plr.os.RemoveAll(opPath)
-			return model.ErrDataProviderAuthentication{}
+			return types.ErrDataProviderAuthentication{}
 		case transport.ErrAuthorizationFailed.Error():
 			// clone failed; cleanup remnants
 			plr.os.RemoveAll(opPath)
-			return model.ErrDataProviderAuthorization{}
+			return types.ErrDataProviderAuthorization{}
 		case git.ErrRepositoryAlreadyExists.Error():
 			return nil
 			// NoOp on repo already exists

@@ -10,8 +10,8 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
@@ -25,11 +25,11 @@ type Interpreter interface {
 	// pkg fs ref: $(/pkg-fs-ref)
 	// pkg fs ref w/ path: $(/pkg-fs-ref/file.txt)
 	Interpret(
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		expression interface{},
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 		scratchDir string,
-	) (*model.Value, error)
+	) (*types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -48,11 +48,11 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	expression interface{},
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 	scratchDir string,
-) (*model.Value, error) {
+) (*types.Value, error) {
 	expressionAsString, expressionIsString := expression.(string)
 
 	// @TODO: this incorrectly treats $(inScope)$(inScope) as ref

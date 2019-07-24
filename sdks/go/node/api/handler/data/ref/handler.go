@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/urlpath"
 )
 
@@ -48,10 +48,10 @@ func (hdlr _handler) Handle(
 
 	switch pathSegment {
 	case "":
-		var pullCreds *model.PullCreds
+		var pullCreds *types.PullCreds
 		pullUsername, pullPassword, hasBasicAuth := httpReq.BasicAuth()
 		if hasBasicAuth {
-			pullCreds = &model.PullCreds{
+			pullCreds = &types.PullCreds{
 				Username: pullUsername,
 				Password: pullPassword,
 			}
@@ -65,13 +65,13 @@ func (hdlr _handler) Handle(
 		if nil != err {
 			var status int
 			switch err.(type) {
-			case model.ErrDataProviderAuthentication:
+			case types.ErrDataProviderAuthentication:
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusUnauthorized
-			case model.ErrDataProviderAuthorization:
+			case types.ErrDataProviderAuthorization:
 				hdlr.setWWWAuthenticateHeader(dataRef, httpResp.Header())
 				status = http.StatusForbidden
-			case model.ErrDataRefResolution:
+			case types.ErrDataRefResolution:
 				status = http.StatusNotFound
 			default:
 				status = http.StatusInternalServerError

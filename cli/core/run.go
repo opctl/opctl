@@ -3,10 +3,10 @@ package core
 import (
 	"context"
 	"fmt"
-	cliModel "github.com/opctl/opctl/cli/model"
+	cliModel "github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"os"
 	"os/signal"
 	"syscall"
@@ -65,9 +65,9 @@ func (this _core) Run(
 	// start op
 	rootOpID, err := this.apiClient.StartOp(
 		ctx,
-		model.StartOpReq{
+		types.StartOpReq{
 			Args: argsMap,
-			Op: model.StartOpReqOp{
+			Op: types.StartOpReqOp{
 				Ref: opHandle.Ref(),
 			},
 		},
@@ -80,8 +80,8 @@ func (this _core) Run(
 	// start event loop
 	eventChannel, err := this.apiClient.GetEventStream(
 		ctx,
-		&model.GetEventStreamReq{
-			Filter: model.EventFilter{
+		&types.GetEventStreamReq{
+			Filter: types.EventFilter{
 				Roots: []string{rootOpID},
 				Since: &startTime,
 			},
@@ -103,7 +103,7 @@ func (this _core) Run(
 
 				this.apiClient.KillOp(
 					ctx,
-					model.KillOpReq{
+					types.KillOpReq{
 						OpID: rootOpID,
 					},
 				)
@@ -123,12 +123,12 @@ func (this _core) Run(
 			if nil != event.OpEnded {
 				if event.OpEnded.OpID == rootOpID {
 					switch event.OpEnded.Outcome {
-					case model.OpOutcomeSucceeded:
+					case types.OpOutcomeSucceeded:
 						this.cliExiter.Exit(cliexiter.ExitReq{Code: 0})
-					case model.OpOutcomeKilled:
+					case types.OpOutcomeKilled:
 						this.cliExiter.Exit(cliexiter.ExitReq{Code: 137})
 					default:
-						// treat model.OpOutcomeFailed & unexpected values as errors.
+						// treat types.OpOutcomeFailed & unexpected values as errors.
 						this.cliExiter.Exit(cliexiter.ExitReq{Code: 1})
 					}
 					return // support fake exiter

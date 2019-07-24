@@ -1,12 +1,12 @@
 import React from 'react'
-import ModelParamBoolean from '@opctl/sdk/src/model/param/boolean'
+import ParamBoolean from '@opctl/sdk/src/types/param/boolean'
 import _DomInput from './_DomInput'
 
 interface Props {
   name: string
   onValid: (value: any) => any
   opRef: string
-  boolean: ModelParamBoolean
+  boolean: ParamBoolean
   value: any
 }
 

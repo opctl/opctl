@@ -1,10 +1,10 @@
 import React from 'react'
-import ModelParamSocket from '@opctl/sdk/src/model/param/socket'
+import ParamSocket from '@opctl/sdk/src/types/param/socket'
 import Description from '../Param/Description'
 
 interface Props {
   name: string
-  param: ModelParamSocket
+  param: ParamSocket
   opRef: string
 }
 

@@ -8,7 +8,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -23,7 +23,7 @@ var _ = Context("Interpreter", func() {
 		It("should call parseIndexer.ParseIndex w/ expected args", func() {
 			/* arrange */
 			providedIndexString := "dummyIndexString"
-			providedData := model.Value{Array: new([]interface{})}
+			providedData := types.Value{Array: new([]interface{})}
 
 			fakeParseIndexer := new(fakeParseIndexer)
 			// err to trigger immediate return
@@ -63,7 +63,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
 					"dummyIndexString",
-					model.Value{Array: new([]interface{})},
+					types.Value{Array: new([]interface{})},
 				)
 
 				/* assert */
@@ -72,7 +72,7 @@ var _ = Context("Interpreter", func() {
 		})
 		Context("parseIndexer.ParseIndex doesn't err", func() {
 			array := &[]interface{}{"dummyItem"}
-			nonEmptyArrayValue := model.Value{Array: array}
+			nonEmptyArrayValue := types.Value{Array: array}
 
 			It("should call valueConstructor.Construct w/ expected args", func() {
 				/* arrange */
@@ -138,7 +138,7 @@ var _ = Context("Interpreter", func() {
 					fakeParseIndexer.ParseIndexReturns(0, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
-					constructedValue := model.Value{String: new(string)}
+					constructedValue := types.Value{String: new(string)}
 					fakeValueConstructor.ConstructReturns(&constructedValue, nil)
 
 					objectUnderTest := _interpreter{

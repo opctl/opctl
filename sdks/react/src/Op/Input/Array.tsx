@@ -1,11 +1,11 @@
 import React from 'react'
 import jsYaml from 'js-yaml'
 import TextArea from './AceEditor'
-import ModelParamArray from '@opctl/sdk/src/model/param/array'
+import ParamArray from '@opctl/sdk/src/types/param/array'
 import paramArrayValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/array/validate'
 
 interface Props {
-  array: ModelParamArray
+  array: ParamArray
   name: string
   onInvalid?: () => any | null | undefined
   onValid: (value: any) => any

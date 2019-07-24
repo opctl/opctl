@@ -8,20 +8,20 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpret", func() {
 	It("should call valueInterpreter.Interpret w/ expected args", func() {
 		/* arrange */
-		providedScope := map[string]*model.Value{"dummyName": {}}
+		providedScope := map[string]*types.Value{"dummyName": {}}
 		providedExpression := "dummyExpression"
 		providedOpRef := new(data.FakeHandle)
 
 		fakeValueInterpreter := new(value.FakeInterpreter)
 		// err to trigger immediate return
-		fakeValueInterpreter.InterpretReturns(model.Value{}, errors.New("dummyError"))
+		fakeValueInterpreter.InterpretReturns(types.Value{}, errors.New("dummyError"))
 
 		objectUnderTest := _interpreter{
 			valueInterpreter: fakeValueInterpreter,
@@ -51,7 +51,7 @@ var _ = Context("Interpret", func() {
 
 			fakeValueInterpreter := new(value.FakeInterpreter)
 			interpretErr := errors.New("dummyError")
-			fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
+			fakeValueInterpreter.InterpretReturns(types.Value{}, interpretErr)
 
 			expectedErr := fmt.Errorf("unable to interpret %+v to object; error was %v", providedExpression, interpretErr)
 
@@ -61,7 +61,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				"dummyExpression",
 				new(data.FakeHandle),
 			)
@@ -76,12 +76,12 @@ var _ = Context("Interpret", func() {
 			/* arrange */
 			fakeValueInterpreter := new(value.FakeInterpreter)
 
-			expectedValue := model.Value{String: new(string)}
+			expectedValue := types.Value{String: new(string)}
 			fakeValueInterpreter.InterpretReturns(expectedValue, nil)
 
 			fakeCoerce := new(coerce.Fake)
 
-			coercedValue := model.Value{Object: new(map[string]interface{})}
+			coercedValue := types.Value{Object: new(map[string]interface{})}
 			fakeCoerce.ToObjectReturns(&coercedValue, nil)
 
 			objectUnderTest := _interpreter{
@@ -91,7 +91,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualObject, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				"dummyExpression",
 				new(data.FakeHandle),
 			)

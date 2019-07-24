@@ -5,7 +5,7 @@ package clioutput
 import (
 	"fmt"
 	"github.com/opctl/opctl/cli/util/clicolorer"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io"
 	"time"
 )
@@ -20,7 +20,7 @@ type CliOutput interface {
 
 	// outputs an event
 	// @TODO: not generic
-	Event(event *model.Event)
+	Event(event *types.Event)
 
 	// outputs an info msg
 	Info(format string, values ...interface{})
@@ -55,7 +55,7 @@ func (this _cliOutput) Error(format string, values ...interface{}) {
 	fmt.Fprintln(this.errWriter, this.cliColorer.Error(format, values...))
 }
 
-func (this _cliOutput) Event(event *model.Event) {
+func (this _cliOutput) Event(event *types.Event) {
 	switch {
 	case nil != event.ContainerExited:
 		this.containerExited(event)
@@ -74,7 +74,7 @@ func (this _cliOutput) Event(event *model.Event) {
 	}
 }
 
-func (this _cliOutput) containerExited(event *model.Event) {
+func (this _cliOutput) containerExited(event *types.Event) {
 	this.Info(
 		"ContainerExited Id='%v' OpRef='%v' ExitCode='%v' Timestamp='%v'\n",
 		event.ContainerExited.ContainerID,
@@ -84,7 +84,7 @@ func (this _cliOutput) containerExited(event *model.Event) {
 	)
 }
 
-func (this _cliOutput) containerStarted(event *model.Event) {
+func (this _cliOutput) containerStarted(event *types.Event) {
 	this.Info(
 		"ContainerStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
 		event.ContainerStarted.ContainerID,
@@ -93,15 +93,15 @@ func (this _cliOutput) containerStarted(event *model.Event) {
 	)
 }
 
-func (this _cliOutput) containerStdErrWrittenTo(event *model.Event) {
+func (this _cliOutput) containerStdErrWrittenTo(event *types.Event) {
 	fmt.Fprint(this.errWriter, string(event.ContainerStdErrWrittenTo.Data))
 }
 
-func (this _cliOutput) containerStdOutWrittenTo(event *model.Event) {
+func (this _cliOutput) containerStdOutWrittenTo(event *types.Event) {
 	fmt.Fprint(this.stdWriter, string(event.ContainerStdOutWrittenTo.Data))
 }
 
-func (this _cliOutput) opErred(event *model.Event) {
+func (this _cliOutput) opErred(event *types.Event) {
 	this.Error(
 		"OpErred Id='%v' OpRef='%v' Timestamp='%v' Msg='%v'\n",
 		event.OpErred.OpID,
@@ -111,7 +111,7 @@ func (this _cliOutput) opErred(event *model.Event) {
 	)
 }
 
-func (this _cliOutput) opEnded(event *model.Event) {
+func (this _cliOutput) opEnded(event *types.Event) {
 	message := fmt.Sprintf(
 		"OpEnded Id='%v' OpRef='%v' Outcome='%v' Timestamp='%v'\n",
 		event.OpEnded.OpID,
@@ -120,16 +120,16 @@ func (this _cliOutput) opEnded(event *model.Event) {
 		event.Timestamp.Format(time.RFC3339),
 	)
 	switch event.OpEnded.Outcome {
-	case model.OpOutcomeSucceeded:
+	case types.OpOutcomeSucceeded:
 		this.Success(message)
-	case model.OpOutcomeKilled:
+	case types.OpOutcomeKilled:
 		this.Info(message)
 	default:
 		this.Error(message)
 	}
 }
 
-func (this _cliOutput) opStarted(event *model.Event) {
+func (this _cliOutput) opStarted(event *types.Event) {
 	this.Info(
 		"OpStarted Id='%v' OpRef='%v' Timestamp='%v'\n",
 		event.OpStarted.OpID,

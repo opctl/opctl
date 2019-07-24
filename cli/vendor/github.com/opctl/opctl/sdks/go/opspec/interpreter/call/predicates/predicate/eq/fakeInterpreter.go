@@ -4,16 +4,16 @@ package eq
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func([]interface{}, model.DataHandle, map[string]*model.Value) (bool, error)
+	InterpretStub        func([]interface{}, types.DataHandle, map[string]*types.Value) (bool, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		arg1 []interface{}
-		arg2 model.DataHandle
-		arg3 map[string]*model.Value
+		arg2 types.DataHandle
+		arg3 map[string]*types.Value
 	}
 	interpretReturns struct {
 		result1 bool
@@ -27,7 +27,7 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 []interface{}, arg2 model.DataHandle, arg3 map[string]*model.Value) (bool, error) {
+func (fake *FakeInterpreter) Interpret(arg1 []interface{}, arg2 types.DataHandle, arg3 map[string]*types.Value) (bool, error) {
 	var arg1Copy []interface{}
 	if arg1 != nil {
 		arg1Copy = make([]interface{}, len(arg1))
@@ -37,8 +37,8 @@ func (fake *FakeInterpreter) Interpret(arg1 []interface{}, arg2 model.DataHandle
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		arg1 []interface{}
-		arg2 model.DataHandle
-		arg3 map[string]*model.Value
+		arg2 types.DataHandle
+		arg3 map[string]*types.Value
 	}{arg1Copy, arg2, arg3})
 	fake.recordInvocation("Interpret", []interface{}{arg1Copy, arg2, arg3})
 	fake.interpretMutex.Unlock()
@@ -58,13 +58,13 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func([]interface{}, model.DataHandle, map[string]*model.Value) (bool, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func([]interface{}, types.DataHandle, map[string]*types.Value) (bool, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) ([]interface{}, model.DataHandle, map[string]*model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) ([]interface{}, types.DataHandle, map[string]*types.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]

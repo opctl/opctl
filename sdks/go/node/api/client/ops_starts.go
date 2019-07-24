@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -14,7 +14,7 @@ import (
 // StartOp starts an op & returns its root op id (ROId)
 func (c client) StartOp(
 	ctx context.Context,
-	req model.StartOpReq,
+	req types.StartOpReq,
 ) (string, error) {
 
 	reqBytes, err := json.Marshal(req)

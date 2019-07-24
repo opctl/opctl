@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"github.com/docker/docker/api/types"
+	dockerApiTypes "github.com/docker/docker/api/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"io/ioutil"
 )
@@ -16,8 +16,8 @@ var _ = Context("imagePuller", func() {
 	Context("imageRef valid", func() {
 		It("should call dockerClient.ImagePull w/ expected args", func() {
 			/* arrange */
-			providedImage := &model.DCGContainerCallImage{Ref: "dummy-ref"}
-			expectedImagePullOptions := types.ImagePullOptions{}
+			providedImage := &types.DCGContainerCallImage{Ref: "dummy-ref"}
+			expectedImagePullOptions := dockerApiTypes.ImagePullOptions{}
 			providedCtx := context.Background()
 
 			imagePullResponse := ioutil.NopCloser(bytes.NewBufferString(""))
@@ -64,7 +64,7 @@ var _ = Context("imagePuller", func() {
 				/* act */
 				actualError := objectUnderTest.Pull(
 					context.Background(),
-					&model.DCGContainerCallImage{Ref: "dummy-ref"},
+					&types.DCGContainerCallImage{Ref: "dummy-ref"},
 					"",
 					"",
 					new(pubsub.FakeEventPublisher),

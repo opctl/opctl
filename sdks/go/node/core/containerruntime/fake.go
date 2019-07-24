@@ -6,7 +6,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -22,11 +22,11 @@ type Fake struct {
 	deleteContainerIfExistsReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RunContainerStub        func(ctx context.Context, req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error)
+	RunContainerStub        func(ctx context.Context, req *types.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error)
 	runContainerMutex       sync.RWMutex
 	runContainerArgsForCall []struct {
 		ctx            context.Context
-		req            *model.DCGContainerCall
+		req            *types.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 		stdout         io.WriteCloser
 		stderr         io.WriteCloser
@@ -91,12 +91,12 @@ func (fake *Fake) DeleteContainerIfExistsReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *Fake) RunContainer(ctx context.Context, req *model.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error) {
+func (fake *Fake) RunContainer(ctx context.Context, req *types.DCGContainerCall, eventPublisher pubsub.EventPublisher, stdout io.WriteCloser, stderr io.WriteCloser) (*int64, error) {
 	fake.runContainerMutex.Lock()
 	ret, specificReturn := fake.runContainerReturnsOnCall[len(fake.runContainerArgsForCall)]
 	fake.runContainerArgsForCall = append(fake.runContainerArgsForCall, struct {
 		ctx            context.Context
-		req            *model.DCGContainerCall
+		req            *types.DCGContainerCall
 		eventPublisher pubsub.EventPublisher
 		stdout         io.WriteCloser
 		stderr         io.WriteCloser
@@ -118,7 +118,7 @@ func (fake *Fake) RunContainerCallCount() int {
 	return len(fake.runContainerArgsForCall)
 }
 
-func (fake *Fake) RunContainerArgsForCall(i int) (context.Context, *model.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
+func (fake *Fake) RunContainerArgsForCall(i int) (context.Context, *types.DCGContainerCall, pubsub.EventPublisher, io.WriteCloser, io.WriteCloser) {
 	fake.runContainerMutex.RLock()
 	defer fake.runContainerMutex.RUnlock()
 	return fake.runContainerArgsForCall[i].ctx, fake.runContainerArgsForCall[i].req, fake.runContainerArgsForCall[i].eventPublisher, fake.runContainerArgsForCall[i].stdout, fake.runContainerArgsForCall[i].stderr

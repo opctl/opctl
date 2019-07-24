@@ -2,12 +2,12 @@ package param
 
 import (
 	"errors"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // validateSocket validates a value against a socket parameter
 func (vdt _validator) validateSocket(
-	value *model.Value,
+	value *types.Value,
 ) []error {
 
 	// handle no value passed

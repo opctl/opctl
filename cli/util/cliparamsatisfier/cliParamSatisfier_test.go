@@ -7,8 +7,8 @@ import (
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("parameterSatisfier", func() {
@@ -16,9 +16,9 @@ var _ = Context("parameterSatisfier", func() {
 		It("should call inputSourcer.Source w/ expected args for each input", func() {
 			/* arrange */
 			providedInputSourcer := new(FakeInputSourcer)
-			providedInputs := map[string]*model.Param{
-				"input1": {String: &model.StringParam{}},
-				"input2": {String: &model.StringParam{}},
+			providedInputs := map[string]*types.Param{
+				"input1": {String: &types.StringParam{}},
+				"input2": {String: &types.StringParam{}},
 			}
 
 			expectedInputNames := map[string]struct{}{
@@ -52,11 +52,11 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer := new(FakeInputSourcer)
 
 					input1Name := "input1Name"
-					providedInputs := map[string]*model.Param{
-						input1Name: {Array: &model.ArrayParam{}},
+					providedInputs := map[string]*types.Param{
+						input1Name: {Array: &types.ArrayParam{}},
 					}
 
-					expectedValues := map[string]*model.Value{
+					expectedValues := map[string]*types.Value{
 						input1Name: {
 							Array: new([]interface{}),
 						},
@@ -96,14 +96,14 @@ var _ = Context("parameterSatisfier", func() {
 					/* arrange */
 					providedInputSourcer := new(FakeInputSourcer)
 
-					providedInputs := map[string]*model.Param{
-						"dummyInputName": {Boolean: &model.BooleanParam{}},
+					providedInputs := map[string]*types.Param{
+						"dummyInputName": {Boolean: &types.BooleanParam{}},
 					}
 
 					valueString := "dummyString"
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					expectedValue := model.Value{String: &valueString}
+					expectedValue := types.Value{String: &valueString}
 
 					fakeCoerce := new(coerce.Fake)
 
@@ -127,8 +127,8 @@ var _ = Context("parameterSatisfier", func() {
 						providedInputSourcer := new(FakeInputSourcer)
 
 						input1Name := "input1Name"
-						providedInputs := map[string]*model.Param{
-							input1Name: {Boolean: &model.BooleanParam{}},
+						providedInputs := map[string]*types.Param{
+							input1Name: {Boolean: &types.BooleanParam{}},
 						}
 
 						providedInputSourcer.SourceReturns(new(string), true)
@@ -136,7 +136,7 @@ var _ = Context("parameterSatisfier", func() {
 						fakeCoerce := new(coerce.Fake)
 
 						expectedBoolean := true
-						expectedValues := map[string]*model.Value{
+						expectedValues := map[string]*types.Value{
 							input1Name: {
 								Boolean: &expectedBoolean,
 							},
@@ -170,14 +170,14 @@ var _ = Context("parameterSatisfier", func() {
 					/* arrange */
 					providedInputSourcer := new(FakeInputSourcer)
 
-					providedInputs := map[string]*model.Param{
-						"dummyInputName": {Number: &model.NumberParam{}},
+					providedInputs := map[string]*types.Param{
+						"dummyInputName": {Number: &types.NumberParam{}},
 					}
 
 					valueString := "dummyString"
 					providedInputSourcer.SourceReturns(&valueString, true)
 
-					expectedValue := model.Value{String: &valueString}
+					expectedValue := types.Value{String: &valueString}
 
 					fakeCoerce := new(coerce.Fake)
 
@@ -201,8 +201,8 @@ var _ = Context("parameterSatisfier", func() {
 						providedInputSourcer := new(FakeInputSourcer)
 
 						input1Name := "input1Name"
-						providedInputs := map[string]*model.Param{
-							input1Name: {Number: &model.NumberParam{}},
+						providedInputs := map[string]*types.Param{
+							input1Name: {Number: &types.NumberParam{}},
 						}
 
 						providedInputSourcer.SourceReturns(new(string), true)
@@ -210,7 +210,7 @@ var _ = Context("parameterSatisfier", func() {
 						fakeCoerce := new(coerce.Fake)
 
 						expectedNumber := 2.2
-						expectedValues := map[string]*model.Value{
+						expectedValues := map[string]*types.Value{
 							input1Name: {
 								Number: &expectedNumber,
 							},
@@ -246,11 +246,11 @@ var _ = Context("parameterSatisfier", func() {
 					providedInputSourcer := new(FakeInputSourcer)
 
 					input1Name := "input1Name"
-					providedInputs := map[string]*model.Param{
-						input1Name: {Object: &model.ObjectParam{}},
+					providedInputs := map[string]*types.Param{
+						input1Name: {Object: &types.ObjectParam{}},
 					}
 
-					expectedValues := map[string]*model.Value{
+					expectedValues := map[string]*types.Value{
 						input1Name: {
 							Object: new(map[string]interface{}),
 						},

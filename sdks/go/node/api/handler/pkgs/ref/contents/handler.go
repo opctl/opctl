@@ -6,16 +6,16 @@ import (
 	"net/http"
 
 	"github.com/golang-interfaces/encoding-ijson"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents/path"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/urlpath"
 )
 
 // Handler deprecated
 type Handler interface {
 	Handle(
-		dataHandle model.DataHandle,
+		dataHandle types.DataHandle,
 		httpResp http.ResponseWriter,
 		httpReq *http.Request,
 	)
@@ -39,7 +39,7 @@ type _handler struct {
 }
 
 func (hdlr _handler) Handle(
-	dataHandle model.DataHandle,
+	dataHandle types.DataHandle,
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {

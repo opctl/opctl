@@ -5,16 +5,16 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInstaller struct {
-	InstallStub        func(ctx context.Context, path string, opHandle model.DataHandle) error
+	InstallStub        func(ctx context.Context, path string, opHandle types.DataHandle) error
 	installMutex       sync.RWMutex
 	installArgsForCall []struct {
 		ctx      context.Context
 		path     string
-		opHandle model.DataHandle
+		opHandle types.DataHandle
 	}
 	installReturns struct {
 		result1 error
@@ -26,13 +26,13 @@ type FakeInstaller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInstaller) Install(ctx context.Context, path string, opHandle model.DataHandle) error {
+func (fake *FakeInstaller) Install(ctx context.Context, path string, opHandle types.DataHandle) error {
 	fake.installMutex.Lock()
 	ret, specificReturn := fake.installReturnsOnCall[len(fake.installArgsForCall)]
 	fake.installArgsForCall = append(fake.installArgsForCall, struct {
 		ctx      context.Context
 		path     string
-		opHandle model.DataHandle
+		opHandle types.DataHandle
 	}{ctx, path, opHandle})
 	fake.recordInvocation("Install", []interface{}{ctx, path, opHandle})
 	fake.installMutex.Unlock()
@@ -51,7 +51,7 @@ func (fake *FakeInstaller) InstallCallCount() int {
 	return len(fake.installArgsForCall)
 }
 
-func (fake *FakeInstaller) InstallArgsForCall(i int) (context.Context, string, model.DataHandle) {
+func (fake *FakeInstaller) InstallArgsForCall(i int) (context.Context, string, types.DataHandle) {
 	fake.installMutex.RLock()
 	defer fake.installMutex.RUnlock()
 	return fake.installArgsForCall[i].ctx, fake.installArgsForCall[i].path, fake.installArgsForCall[i].opHandle

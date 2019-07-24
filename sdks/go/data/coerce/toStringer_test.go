@@ -9,7 +9,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("toStringer", func() {
@@ -23,7 +23,7 @@ var _ = Context("toStringer", func() {
 				actualValue, actualErr := objectUnderTest.ToString(nil)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{String: new(string)}))
+				Expect(*actualValue).To(Equal(types.Value{String: new(string)}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -32,7 +32,7 @@ var _ = Context("toStringer", func() {
 				/* arrange */
 				providedArray := &[]interface{}{"dummyItem"}
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Array: providedArray,
 				}
 
@@ -65,7 +65,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToString(
-						&model.Value{Array: new([]interface{})},
+						&types.Value{Array: new([]interface{})},
 					)
 
 					/* assert */
@@ -82,7 +82,7 @@ var _ = Context("toStringer", func() {
 					fakeJSON.MarshalReturns(marshaledBytes, nil)
 
 					marshaledString := string(marshaledBytes)
-					expectedValue := model.Value{String: &marshaledString}
+					expectedValue := types.Value{String: &marshaledString}
 
 					arrayUnderTest := _toStringer{
 						json: fakeJSON,
@@ -90,7 +90,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToString(
-						&model.Value{Array: new([]interface{})},
+						&types.Value{Array: new([]interface{})},
 					)
 
 					/* assert */
@@ -103,12 +103,12 @@ var _ = Context("toStringer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedBoolean := true
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Boolean: &providedBoolean,
 				}
 
 				booleanString := strconv.FormatBool(providedBoolean)
-				expectedValue := model.Value{String: &booleanString}
+				expectedValue := types.Value{String: &booleanString}
 
 				objectUnderTest := _toStringer{}
 
@@ -124,7 +124,7 @@ var _ = Context("toStringer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDir := "dummyValue"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Dir: &providedDir,
 				}
 
@@ -143,7 +143,7 @@ var _ = Context("toStringer", func() {
 				/* arrange */
 				providedFile := "dummyFile"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedFile,
 				}
 
@@ -175,7 +175,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := fileUnderTest.ToString(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -193,7 +193,7 @@ var _ = Context("toStringer", func() {
 
 					marshaledString := string(marshaledBytes)
 
-					expectedValue := model.Value{String: &marshaledString}
+					expectedValue := types.Value{String: &marshaledString}
 
 					fileUnderTest := _toStringer{
 						ioUtil: fakeIOUtil,
@@ -201,7 +201,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := fileUnderTest.ToString(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -214,12 +214,12 @@ var _ = Context("toStringer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedNumber := 2.2
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Number: &providedNumber,
 				}
 
 				numberString := strconv.FormatFloat(providedNumber, 'f', -1, 64)
-				expectedValue := model.Value{String: &numberString}
+				expectedValue := types.Value{String: &numberString}
 
 				objectUnderTest := _toStringer{}
 
@@ -238,7 +238,7 @@ var _ = Context("toStringer", func() {
 					"dummyName": "dummyValue",
 				}
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Object: providedObject,
 				}
 
@@ -271,7 +271,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToString(
-						&model.Value{Object: new(map[string]interface{})},
+						&types.Value{Object: new(map[string]interface{})},
 					)
 
 					/* assert */
@@ -288,7 +288,7 @@ var _ = Context("toStringer", func() {
 					fakeJSON.MarshalReturns(marshaledBytes, nil)
 
 					marshaledString := string(marshaledBytes)
-					expectedValue := model.Value{String: &marshaledString}
+					expectedValue := types.Value{String: &marshaledString}
 
 					objectUnderTest := _toStringer{
 						json: fakeJSON,
@@ -296,7 +296,7 @@ var _ = Context("toStringer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToString(
-						&model.Value{Object: new(map[string]interface{})},
+						&types.Value{Object: new(map[string]interface{})},
 					)
 
 					/* assert */
@@ -309,7 +309,7 @@ var _ = Context("toStringer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedString := "dummyValue"
-				providedValue := model.Value{
+				providedValue := types.Value{
 					String: &providedString,
 				}
 
@@ -326,7 +326,7 @@ var _ = Context("toStringer", func() {
 		Context("Value.Dir,File,Number,Object,String nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{}
+				providedValue := &types.Value{}
 
 				objectUnderTest := _toStringer{}
 

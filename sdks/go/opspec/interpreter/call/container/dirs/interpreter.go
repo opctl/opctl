@@ -9,14 +9,14 @@ import (
 
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/dircopier"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
-		scope map[string]*model.Value,
+		opHandle types.DataHandle,
+		scope map[string]*types.Value,
 		scgContainerCallFiles map[string]string,
 		scratchDirPath string,
 	) (map[string]string, error)
@@ -42,8 +42,8 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
-	scope map[string]*model.Value,
+	opHandle types.DataHandle,
+	scope map[string]*types.Value,
 	scgContainerCallDirs map[string]string,
 	scratchDirPath string,
 ) (map[string]string, error) {

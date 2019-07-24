@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/boltdb/bolt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"os"
 	"path"
 	"sync"
@@ -42,12 +42,12 @@ func NewBoltDBEventStore(
 
 type boltDBEventStore struct {
 	db               *bolt.DB
-	eventsByRootOpID map[string][]*model.Event
+	eventsByRootOpID map[string][]*types.Event
 	eventsMutex      sync.RWMutex
 }
 
 // O(1); threadsafe
-func (this *boltDBEventStore) Add(event model.Event) error {
+func (this *boltDBEventStore) Add(event types.Event) error {
 
 	return this.db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("events"))
@@ -63,9 +63,9 @@ func (this *boltDBEventStore) Add(event model.Event) error {
 
 // O(n) (n being number of subscriptions that exist); threadsafe
 func (this *boltDBEventStore) List(ctx context.Context,
-	filter model.EventFilter,
-) (<-chan model.Event, <-chan error) {
-	eventChannel := make(chan model.Event, 1000)
+	filter types.EventFilter,
+) (<-chan types.Event, <-chan error) {
+	eventChannel := make(chan types.Event, 1000)
 	errChannel := make(chan error, 1)
 
 	go func() {
@@ -82,7 +82,7 @@ func (this *boltDBEventStore) List(ctx context.Context,
 
 			sinceBytes := []byte(sinceTime.Format(sortableRFC3339Nano))
 			for k, v := cursor.Seek(sinceBytes); k != nil; k, v = cursor.Next() {
-				event := model.Event{}
+				event := types.Event{}
 				err := json.Unmarshal(v, &event)
 				if nil != err {
 					return err

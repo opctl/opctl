@@ -7,9 +7,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -17,10 +17,10 @@ type opCaller interface {
 	// Executes an op call
 	Call(
 		ctx context.Context,
-		dcgOpCall *model.DCGOpCall,
-		inboundScope map[string]*model.Value,
+		dcgOpCall *types.DCGOpCall,
+		inboundScope map[string]*types.Value,
 		parentCallID *string,
-		scgOpCall *model.SCGOpCall,
+		scgOpCall *types.SCGOpCall,
 	)
 }
 
@@ -49,24 +49,24 @@ type _opCaller struct {
 
 func (oc _opCaller) Call(
 	ctx context.Context,
-	dcgOpCall *model.DCGOpCall,
-	inboundScope map[string]*model.Value,
+	dcgOpCall *types.DCGOpCall,
+	inboundScope map[string]*types.Value,
 	parentCallID *string,
-	scgOpCall *model.SCGOpCall,
+	scgOpCall *types.SCGOpCall,
 ) {
 	var err error
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*types.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
 		var opOutcome string
 		if oc.callStore.Get(dcgOpCall.OpID).IsKilled {
-			opOutcome = model.OpOutcomeKilled
+			opOutcome = types.OpOutcomeKilled
 		} else if nil != err {
 			oc.pubSub.Publish(
-				model.Event{
+				types.Event{
 					Timestamp: time.Now().UTC(),
-					OpErred: &model.OpErredEvent{
+					OpErred: &types.OpErredEvent{
 						Msg:      err.Error(),
 						OpID:     dcgOpCall.OpID,
 						OpRef:    dcgOpCall.OpHandle.Ref(),
@@ -74,14 +74,14 @@ func (oc _opCaller) Call(
 					},
 				},
 			)
-			opOutcome = model.OpOutcomeFailed
+			opOutcome = types.OpOutcomeFailed
 		} else {
-			opOutcome = model.OpOutcomeSucceeded
+			opOutcome = types.OpOutcomeSucceeded
 		}
 
-		event := model.Event{
+		event := types.Event{
 			Timestamp: time.Now().UTC(),
-			OpEnded: &model.OpEndedEvent{
+			OpEnded: &types.OpEndedEvent{
 				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpHandle.Ref(),
 				Outcome:  opOutcome,
@@ -91,7 +91,7 @@ func (oc _opCaller) Call(
 		}
 
 		if nil != err {
-			event.OpEnded.Error = &model.CallEndedEventError{
+			event.OpEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -103,9 +103,9 @@ func (oc _opCaller) Call(
 	opStartedTime := time.Now().UTC()
 
 	oc.pubSub.Publish(
-		model.Event{
+		types.Event{
 			Timestamp: opStartedTime,
-			OpStarted: &model.OpStartedEvent{
+			OpStarted: &types.OpStartedEvent{
 				OpID:     dcgOpCall.OpID,
 				OpRef:    dcgOpCall.OpHandle.Ref(),
 				RootOpID: dcgOpCall.RootOpID,
@@ -126,13 +126,13 @@ func (oc _opCaller) Call(
 	// subscribe to events
 	eventChannel, _ := oc.pubSub.Subscribe(
 		ctx,
-		model.EventFilter{
+		types.EventFilter{
 			Roots: []string{dcgOpCall.RootOpID},
 			Since: &opStartedTime,
 		},
 	)
 
-	opOutputs := map[string]*model.Value{}
+	opOutputs := map[string]*types.Value{}
 
 eventLoop:
 	for event := range eventChannel {
@@ -153,7 +153,7 @@ eventLoop:
 		}
 	}
 
-	var opDotYml *model.OpDotYml
+	var opDotYml *types.OpDotYml
 	opDotYml, err = oc.dotYmlGetter.Get(
 		ctx,
 		dcgOpCall.OpHandle,

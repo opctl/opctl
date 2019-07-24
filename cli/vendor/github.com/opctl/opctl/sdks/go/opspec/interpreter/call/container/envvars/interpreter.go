@@ -6,16 +6,16 @@ import (
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	stringpkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		scgContainerCallEnvVars interface{},
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 	) (map[string]string, error)
 }
 
@@ -35,9 +35,9 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	scgContainerCallEnvVars interface{},
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 ) (map[string]string, error) {
 	if nil == scgContainerCallEnvVars {
 		return nil, nil

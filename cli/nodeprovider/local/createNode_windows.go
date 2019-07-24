@@ -1,14 +1,14 @@
 package local
 
 import (
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
 )
 
-func (np nodeProvider) CreateNode() (nodeInfo *model.NodeInfoView, err error) {
+func (np nodeProvider) CreateNode() (nodeInfo *types.NodeInfoView, err error) {
 	pathToOpctlBin, err := os.Executable()
 	if nil != err {
 		return nil, err
@@ -35,7 +35,7 @@ func (np nodeProvider) CreateNode() (nodeInfo *model.NodeInfoView, err error) {
 		panic(err)
 	}
 
-	nodeInfo = &model.NodeInfoView{}
+	nodeInfo = &types.NodeInfoView{}
 
 	return
 }

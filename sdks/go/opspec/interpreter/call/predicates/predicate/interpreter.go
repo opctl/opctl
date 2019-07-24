@@ -3,20 +3,20 @@ package predicate
 import (
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/eq"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/exists"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/ne"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/notexists"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
-		scgPredicate *model.SCGPredicate,
-		scope map[string]*model.Value,
+		opHandle types.DataHandle,
+		scgPredicate *types.SCGPredicate,
+		scope map[string]*types.Value,
 	) (bool, error)
 }
 
@@ -38,9 +38,9 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
-	scgPredicate *model.SCGPredicate,
-	scope map[string]*model.Value,
+	opHandle types.DataHandle,
+	scgPredicate *types.SCGPredicate,
+	scope map[string]*types.Value,
 ) (bool, error) {
 	switch {
 	case nil != scgPredicate.Eq:

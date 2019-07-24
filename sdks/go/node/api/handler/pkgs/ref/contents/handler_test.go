@@ -12,8 +12,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Handler", func() {
@@ -127,7 +127,7 @@ var _ = Context("Handler", func() {
 					fakeCore := new(core.Fake)
 
 					fakeHandle := new(data.FakeHandle)
-					contentsList := []*model.DirEntry{
+					contentsList := []*types.DirEntry{
 						{Path: "dummyPath"},
 					}
 					fakeHandle.ListDescendantsReturns(contentsList, nil)

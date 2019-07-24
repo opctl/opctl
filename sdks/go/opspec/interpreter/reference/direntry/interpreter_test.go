@@ -5,7 +5,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -68,12 +68,12 @@ var _ = Context("Interpreter", func() {
 
 				actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 					providedRef,
-					&model.Value{Dir: &value},
+					&types.Value{Dir: &value},
 				)
 
 				/* assert */
 				Expect(actualRefRemainder).To(BeEmpty())
-				Expect(*actualValue).To(Equal(model.Value{File: &expectedPath}))
+				Expect(*actualValue).To(Equal(types.Value{File: &expectedPath}))
 				Expect(actualErr).To(BeNil())
 
 			})
@@ -109,12 +109,12 @@ var _ = Context("Interpreter", func() {
 
 				actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 					providedRef,
-					&model.Value{Dir: &value},
+					&types.Value{Dir: &value},
 				)
 
 				/* assert */
 				Expect(actualRefRemainder).To(BeEmpty())
-				Expect(*actualValue).To(Equal(model.Value{Dir: &expectedPath}))
+				Expect(*actualValue).To(Equal(types.Value{Dir: &expectedPath}))
 				Expect(actualErr).To(BeNil())
 
 			})

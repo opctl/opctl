@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpret", func() {
@@ -20,12 +20,12 @@ var _ = Context("Interpret", func() {
 				/* act */
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					new(data.FakeHandle),
 				)
 
 				/* assert */
-				Expect(actualValue).To(Equal(model.Value{Boolean: &providedValueExpression}))
+				Expect(actualValue).To(Equal(types.Value{Boolean: &providedValueExpression}))
 			})
 		})
 		Context("expression is float64", func() {
@@ -37,12 +37,12 @@ var _ = Context("Interpret", func() {
 				/* act */
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					new(data.FakeHandle),
 				)
 
 				/* assert */
-				Expect(actualValue).To(Equal(model.Value{Number: &providedValueExpression}))
+				Expect(actualValue).To(Equal(types.Value{Number: &providedValueExpression}))
 			})
 		})
 		Context("expression is int", func() {
@@ -55,12 +55,12 @@ var _ = Context("Interpret", func() {
 				/* act */
 				actualValue, _ := objectUnderTest.Interpret(
 					providedValueExpression,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					new(data.FakeHandle),
 				)
 
 				/* assert */
-				Expect(actualValue).To(Equal(model.Value{Number: &expectedNumber}))
+				Expect(actualValue).To(Equal(types.Value{Number: &expectedNumber}))
 			})
 		})
 		Context("expression is map[string]interface{}", func() {
@@ -70,7 +70,7 @@ var _ = Context("Interpret", func() {
 		Context("expression is string", func() {
 			It("should call interpolater.Interpolate w/ expected args & return expected result", func() {
 				/* arrange */
-				providedScope := map[string]*model.Value{"dummyName": {}}
+				providedScope := map[string]*types.Value{"dummyName": {}}
 				providedExpression := "dummyExpression"
 				providedOpRef := new(data.FakeHandle)
 
@@ -113,7 +113,7 @@ var _ = Context("Interpret", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						"dummyExpression",
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						new(data.FakeHandle),
 					)
 
@@ -137,12 +137,12 @@ var _ = Context("Interpret", func() {
 			/* act */
 			actualValue, actualErr := objectUnderTest.Interpret(
 				"dummyExpression",
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				new(data.FakeHandle),
 			)
 
 			/* assert */
-			Expect(actualValue).To(Equal(model.Value{String: &interpolatedValue}))
+			Expect(actualValue).To(Equal(types.Value{String: &interpolatedValue}))
 			Expect(actualErr).To(BeNil())
 		})
 	})

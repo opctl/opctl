@@ -5,16 +5,16 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
 type fakeImagePuller struct {
-	PullStub        func(ctx context.Context, dcgContainerImage *model.DCGContainerCallImage, containerID string, rootOpID string, eventPublisher pubsub.EventPublisher) error
+	PullStub        func(ctx context.Context, dcgContainerImage *types.DCGContainerCallImage, containerID string, rootOpID string, eventPublisher pubsub.EventPublisher) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
 		ctx               context.Context
-		dcgContainerImage *model.DCGContainerCallImage
+		dcgContainerImage *types.DCGContainerCallImage
 		containerID       string
 		rootOpID          string
 		eventPublisher    pubsub.EventPublisher
@@ -29,12 +29,12 @@ type fakeImagePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeImagePuller) Pull(ctx context.Context, dcgContainerImage *model.DCGContainerCallImage, containerID string, rootOpID string, eventPublisher pubsub.EventPublisher) error {
+func (fake *fakeImagePuller) Pull(ctx context.Context, dcgContainerImage *types.DCGContainerCallImage, containerID string, rootOpID string, eventPublisher pubsub.EventPublisher) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
 		ctx               context.Context
-		dcgContainerImage *model.DCGContainerCallImage
+		dcgContainerImage *types.DCGContainerCallImage
 		containerID       string
 		rootOpID          string
 		eventPublisher    pubsub.EventPublisher
@@ -56,7 +56,7 @@ func (fake *fakeImagePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *fakeImagePuller) PullArgsForCall(i int) (context.Context, *model.DCGContainerCallImage, string, string, pubsub.EventPublisher) {
+func (fake *fakeImagePuller) PullArgsForCall(i int) (context.Context, *types.DCGContainerCallImage, string, string, pubsub.EventPublisher) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
 	return fake.pullArgsForCall[i].ctx, fake.pullArgsForCall[i].dcgContainerImage, fake.pullArgsForCall[i].containerID, fake.pullArgsForCall[i].rootOpID, fake.pullArgsForCall[i].eventPublisher

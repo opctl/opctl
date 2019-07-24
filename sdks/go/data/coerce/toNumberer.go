@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"strconv"
 )
 
 type toNumberer interface {
 	// ToNumber attempts to coerce value to a number
 	ToNumber(
-		value *model.Value,
-	) (*model.Value, error)
+		value *types.Value,
+	) (*types.Value, error)
 }
 
 func newToNumberer() toNumberer {
@@ -29,11 +29,11 @@ type _toNumberer struct {
 }
 
 func (c _toNumberer) ToNumber(
-	value *model.Value,
-) (*model.Value, error) {
+	value *types.Value,
+) (*types.Value, error) {
 	switch {
 	case nil == value:
-		return &model.Value{Number: new(float64)}, nil
+		return &types.Value{Number: new(float64)}, nil
 	case nil != value.Array:
 		return nil, errors.New("unable to coerce array to number; incompatible types")
 	case nil != value.Dir:
@@ -48,7 +48,7 @@ func (c _toNumberer) ToNumber(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to number; error was %v", err.Error())
 		}
-		return &model.Value{Number: &float64Value}, nil
+		return &types.Value{Number: &float64Value}, nil
 	case nil != value.Number:
 		return value, nil
 	case nil != value.Object:
@@ -58,7 +58,7 @@ func (c _toNumberer) ToNumber(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to number; error was %v", err.Error())
 		}
-		return &model.Value{Number: &float64Value}, nil
+		return &types.Value{Number: &float64Value}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to number", value)
 	}

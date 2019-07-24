@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import jsYaml from 'js-yaml'
 import Textarea from 'react-textarea-autosize'
 import Description from '../Param/Description'
-import ModelParamArray from '@opctl/sdk/src/model/param/array'
+import ParamArray from '@opctl/sdk/src/types/param/array'
 import { dataGet } from '@opctl/sdk/src/api/client'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   description?: string
   name: string
   opRef: string
-  param: ModelParamArray
+  param: ParamArray
   value: any
 }
 

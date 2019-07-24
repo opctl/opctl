@@ -6,7 +6,7 @@ package containerruntime
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"io"
 )
@@ -20,7 +20,7 @@ type ContainerRuntime interface {
 	// RunContainer creates, starts, and waits on a container. ExitCode &/Or an error will be returned
 	RunContainer(
 		ctx context.Context,
-		req *model.DCGContainerCall,
+		req *types.DCGContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,

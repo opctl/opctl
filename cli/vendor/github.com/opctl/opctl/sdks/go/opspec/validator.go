@@ -4,15 +4,15 @@ package op
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Validator interface {
 	// Validate validates an op
 	Validate(
 		ctx context.Context,
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 	) []error
 }
 
@@ -29,7 +29,7 @@ type _validator struct {
 
 func (vdr _validator) Validate(
 	ctx context.Context,
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 ) []error {
 	errs := []error{}
 	if _, err := vdr.dotYmlGetter.Get(

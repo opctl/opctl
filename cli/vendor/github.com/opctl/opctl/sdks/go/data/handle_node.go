@@ -3,15 +3,15 @@ package data
 import (
 	"context"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func newNodeHandle(
 	client client.Client,
 	dataRef string,
-	pullCreds *model.PullCreds,
-) model.DataHandle {
+	pullCreds *types.PullCreds,
+) types.DataHandle {
 	return nodeHandle{
 		client:    client,
 		dataRef:   dataRef,
@@ -23,12 +23,12 @@ func (nh nodeHandle) GetContent(
 	ctx context.Context,
 	contentPath string,
 ) (
-	model.ReadSeekCloser,
+	types.ReadSeekCloser,
 	error,
 ) {
 	return nh.client.GetData(
 		ctx,
-		model.GetDataReq{
+		types.GetDataReq{
 			ContentPath: contentPath,
 			PkgRef:      nh.dataRef,
 			PullCreds:   nh.pullCreds,
@@ -40,18 +40,18 @@ func (nh nodeHandle) GetContent(
 type nodeHandle struct {
 	client    client.Client
 	dataRef   string
-	pullCreds *model.PullCreds
+	pullCreds *types.PullCreds
 }
 
 func (nh nodeHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 	return nh.client.ListDescendants(
 		ctx,
-		model.ListDescendantsReq{
+		types.ListDescendantsReq{
 			PkgRef:    nh.dataRef,
 			PullCreds: nh.pullCreds,
 		},

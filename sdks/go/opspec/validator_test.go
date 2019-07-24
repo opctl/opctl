@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -53,7 +53,7 @@ var _ = Describe("Validator", func() {
 									if nil != scenario.Validate {
 										/* act */
 										fakeHandle := new(data.FakeHandle)
-										fakeHandle.GetContentStub = func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
+										fakeHandle.GetContentStub = func(ctx context.Context, contentPath string) (types.ReadSeekCloser, error) {
 											return os.Open(filepath.Join(path, contentPath))
 										}
 

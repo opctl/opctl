@@ -5,16 +5,16 @@ package dotyml
 import (
 	"context"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Getter interface {
 	// Get gets the validated, deserialized representation of an "op.yml" file
 	Get(
 		ctx context.Context,
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 	) (
-		*model.OpDotYml,
+		*types.OpDotYml,
 		error,
 	)
 }
@@ -33,9 +33,9 @@ type _getter struct {
 
 func (gtr _getter) Get(
 	ctx context.Context,
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 ) (
-	*model.OpDotYml,
+	*types.OpDotYml,
 	error,
 ) {
 	manifestReader, err := opHandle.GetContent(ctx, FileName)

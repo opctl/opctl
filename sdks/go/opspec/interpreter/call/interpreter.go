@@ -6,10 +6,10 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -17,13 +17,13 @@ import (
 type Interpreter interface {
 	// Interpret interprets an SCG into a DCG
 	Interpret(
-		scope map[string]*model.Value,
-		scg *model.SCG,
+		scope map[string]*types.Value,
+		scg *types.SCG,
 		id string,
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 		parentID *string,
 		rootOpID string,
-	) (*model.DCG, error)
+	) (*types.DCG, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -49,14 +49,14 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
-	scg *model.SCG,
+	scope map[string]*types.Value,
+	scg *types.SCG,
 	id string,
-	opHandle model.DataHandle,
+	opHandle types.DataHandle,
 	parentID *string,
 	rootOpID string,
-) (*model.DCG, error) {
-	dcg := &model.DCG{
+) (*types.DCG, error) {
+	dcg := &types.DCG{
 		Id:       id,
 		ParentID: parentID,
 	}

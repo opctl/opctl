@@ -4,7 +4,6 @@ package input
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/boolean"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
@@ -12,17 +11,18 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/number"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
 		name string,
 		value interface{},
-		param *model.Param,
-		parentOpHandle model.DataHandle,
-		scope map[string]*model.Value,
+		param *types.Param,
+		parentOpHandle types.DataHandle,
+		scope map[string]*types.Value,
 		opScratchDir string,
-	) (*model.Value, error)
+	) (*types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -51,11 +51,11 @@ type _interpreter struct {
 func (itp _interpreter) Interpret(
 	name string,
 	valueExpression interface{},
-	param *model.Param,
-	parentOpHandle model.DataHandle,
-	scope map[string]*model.Value,
+	param *types.Param,
+	parentOpHandle types.DataHandle,
+	scope map[string]*types.Value,
 	opScratchDir string,
-) (*model.Value, error) {
+) (*types.Value, error) {
 
 	if nil == param {
 		return nil, fmt.Errorf("unable to bind to '%v'; '%v' not a defined input", name, name)

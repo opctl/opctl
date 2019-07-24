@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -27,33 +27,33 @@ var _ = Context("parallelCaller", func() {
 		It("should call caller for every parallelCall w/ expected args", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
-			providedInboundScope := map[string]*model.Value{}
+			providedInboundScope := map[string]*types.Value{}
 			providedRootOpID := "dummyRootOpID"
 			providedOpHandle := new(data.FakeHandle)
-			providedSCGParallelCalls := []*model.SCG{
+			providedSCGParallelCalls := []*types.SCG{
 				{
-					Container: &model.SCGContainerCall{},
+					Container: &types.SCGContainerCall{},
 				},
 				{
-					Op: &model.SCGOpCall{},
+					Op: &types.SCGOpCall{},
 				},
 				{
-					Parallel: []*model.SCG{},
+					Parallel: []*types.SCG{},
 				},
 				{
-					Serial: []*model.SCG{},
+					Serial: []*types.SCG{},
 				},
 			}
 
 			mtx := sync.Mutex{}
 
 			fakeCaller := new(fakeCaller)
-			eventChannel := make(chan model.Event, 100)
+			eventChannel := make(chan types.Event, 100)
 			callerCallIndex := 0
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+			fakeCaller.CallStub = func(context.Context, string, map[string]*types.Value, *types.SCG, types.DataHandle, *string, string) {
 				mtx.Lock()
-				eventChannel <- model.Event{
-					CallEnded: &model.CallEndedEvent{
+				eventChannel <- types.Event{
+					CallEnded: &types.CallEndedEvent{
 						CallID: fmt.Sprintf("%v", callerCallIndex),
 					},
 				}
@@ -118,21 +118,21 @@ var _ = Context("parallelCaller", func() {
 			It("should publish expected CallEndedEvent", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
-				providedInboundScope := map[string]*model.Value{}
+				providedInboundScope := map[string]*types.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpHandle := new(data.FakeHandle)
-				providedSCGParallelCalls := []*model.SCG{
+				providedSCGParallelCalls := []*types.SCG{
 					{
-						Container: &model.SCGContainerCall{},
+						Container: &types.SCGContainerCall{},
 					},
 					{
-						Op: &model.SCGOpCall{},
+						Op: &types.SCGOpCall{},
 					},
 					{
-						Parallel: []*model.SCG{},
+						Parallel: []*types.SCG{},
 					},
 					{
-						Serial: []*model.SCG{},
+						Serial: []*types.SCG{},
 					},
 				}
 
@@ -145,15 +145,15 @@ var _ = Context("parallelCaller", func() {
 				mtx := sync.Mutex{}
 
 				fakeCaller := new(fakeCaller)
-				eventChannel := make(chan model.Event, 100)
+				eventChannel := make(chan types.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+				fakeCaller.CallStub = func(context.Context, string, map[string]*types.Value, *types.SCG, types.DataHandle, *string, string) {
 					mtx.Lock()
 
-					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+					eventChannel <- types.Event{
+						CallEnded: &types.CallEndedEvent{
 							CallID: fmt.Sprintf("%v", callerCallIndex),
-							Error: &model.CallEndedEventError{
+							Error: &types.CallEndedEventError{
 								Message: errorMessage,
 							},
 						},
@@ -214,34 +214,34 @@ var _ = Context("parallelCaller", func() {
 			It("shouldn't exit until all childCalls complete & not error", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
-				providedInboundScope := map[string]*model.Value{}
+				providedInboundScope := map[string]*types.Value{}
 				providedRootOpID := "dummyRootOpID"
 				providedOpHandle := new(data.FakeHandle)
-				providedSCGParallelCalls := []*model.SCG{
+				providedSCGParallelCalls := []*types.SCG{
 					{
-						Container: &model.SCGContainerCall{},
+						Container: &types.SCGContainerCall{},
 					},
 					{
-						Op: &model.SCGOpCall{},
+						Op: &types.SCGOpCall{},
 					},
 					{
-						Parallel: []*model.SCG{},
+						Parallel: []*types.SCG{},
 					},
 					{
-						Serial: []*model.SCG{},
+						Serial: []*types.SCG{},
 					},
 				}
 
 				mtx := sync.Mutex{}
 
 				fakeCaller := new(fakeCaller)
-				eventChannel := make(chan model.Event, 100)
+				eventChannel := make(chan types.Event, 100)
 				callerCallIndex := 0
-				fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
+				fakeCaller.CallStub = func(context.Context, string, map[string]*types.Value, *types.SCG, types.DataHandle, *string, string) {
 					mtx.Lock()
 
-					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+					eventChannel <- types.Event{
+						CallEnded: &types.CallEndedEvent{
 							CallID: fmt.Sprintf("%v", callerCallIndex),
 						},
 					}

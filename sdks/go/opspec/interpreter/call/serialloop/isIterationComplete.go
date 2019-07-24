@@ -1,13 +1,13 @@
 package serialloop
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // IsIterationComplete tests if an index is within range of the loop
 func IsIterationComplete(
 	index int,
-	dcgSerialLoop *model.DCGSerialLoopCall,
+	dcgSerialLoop *types.DCGSerialLoopCall,
 ) bool {
 	if nil != dcgSerialLoop.Until && *dcgSerialLoop.Until {
 		// exit condition provided & met

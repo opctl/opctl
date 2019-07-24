@@ -6,14 +6,14 @@ import (
 
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type toBooleaner interface {
 	// ToBoolean attempts to coerce value to a boolean
 	ToBoolean(
-		value *model.Value,
-	) (*model.Value, error)
+		value *types.Value,
+	) (*types.Value, error)
 }
 
 func newToBooleaner() toBooleaner {
@@ -43,14 +43,14 @@ func (c _toBooleaner) isStringTruthy(value string) bool {
 }
 
 func (c _toBooleaner) ToBoolean(
-	value *model.Value,
-) (*model.Value, error) {
+	value *types.Value,
+) (*types.Value, error) {
 	switch {
 	case nil == value:
-		return &model.Value{Boolean: new(bool)}, nil
+		return &types.Value{Boolean: new(bool)}, nil
 	case nil != value.Array:
 		booleanValue := nil != value.Array && len(*value.Array) != 0
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	case nil != value.Boolean:
 		return value, nil
 	case nil != value.Dir:
@@ -60,7 +60,7 @@ func (c _toBooleaner) ToBoolean(
 		}
 
 		booleanValue := len(fileInfos) > 0
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	case nil != value.File:
 		fileBytes, err := c.ioUtil.ReadFile(*value.File)
 		if nil != err {
@@ -68,16 +68,16 @@ func (c _toBooleaner) ToBoolean(
 		}
 
 		booleanValue := c.isStringTruthy(string(fileBytes))
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	case nil != value.Number:
 		booleanValue := *value.Number != 0
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	case nil != value.Object:
 		booleanValue := nil != value.Object && len(*value.Object) != 0
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	case nil != value.String:
 		booleanValue := c.isStringTruthy(*value.String)
-		return &model.Value{Boolean: &booleanValue}, nil
+		return &types.Value{Boolean: &booleanValue}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to boolean", value)
 	}

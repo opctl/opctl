@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -24,7 +24,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					nil,
 					new(data.FakeHandle),
 				)
@@ -37,22 +37,22 @@ var _ = Context("Interpreter", func() {
 			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Value{
+				providedCurrentScope := map[string]*types.Value{
 					"name1": {String: &providedString1},
 				}
 
 				providedOpHandle := new(data.FakeHandle)
 
-				providedSCGContainerCallImage := &model.SCGContainerCallImage{
+				providedSCGContainerCallImage := &types.SCGContainerCallImage{
 					Ref: "dummyImageRef",
-					PullCreds: &model.SCGPullCreds{
+					PullCreds: &types.SCGPullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
 				}
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+				fakeStringInterpreter.InterpretReturns(&types.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
 					stringInterpreter: fakeStringInterpreter,
@@ -90,25 +90,25 @@ var _ = Context("Interpreter", func() {
 			It("should return expected dcg.Image", func() {
 
 				/* arrange */
-				providedSCGContainerCallImage := &model.SCGContainerCallImage{
+				providedSCGContainerCallImage := &types.SCGContainerCallImage{
 					Ref:       "dummyImageRef",
-					PullCreds: &model.SCGPullCreds{},
+					PullCreds: &types.SCGPullCreds{},
 				}
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 				expectedImageRef := "expectedImageRef"
-				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedImageRef}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(0, &types.Value{String: &expectedImageRef}, nil)
 
 				expectedUsername := "expectedUsername"
-				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedUsername}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(1, &types.Value{String: &expectedUsername}, nil)
 
 				expectedPassword := "expectedPassword"
-				fakeStringInterpreter.InterpretReturnsOnCall(2, &model.Value{String: &expectedPassword}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(2, &types.Value{String: &expectedPassword}, nil)
 
-				expectedImage := &model.DCGContainerCallImage{
+				expectedImage := &types.DCGContainerCallImage{
 					Ref: expectedImageRef,
-					PullCreds: &model.PullCreds{
+					PullCreds: &types.PullCreds{
 						Username: expectedUsername,
 						Password: expectedPassword,
 					},
@@ -120,7 +120,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualDCGContainerCallImage, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					providedSCGContainerCallImage,
 					new(data.FakeHandle),
 				)

@@ -1,9 +1,9 @@
 import React from 'react'
-import ModelParam from '@opctl/sdk/src/model/param'
+import Param from '@opctl/sdk/src/types/param'
 import Input from './Input/index'
 
 interface Props {
-  inputs: { [name: string]: ModelParam }
+  inputs: { [name: string]: Param }
   onInvalid?: (name: string) => any | null | undefined
   onValid: (name: string, value: any) => any
   opRef: string

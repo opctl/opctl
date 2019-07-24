@@ -9,19 +9,19 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Scoper interface {
 	// Scope scopes loop iteration vars (index, key, value)
 	Scope(
 		index int,
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		scgLoopRange interface{},
-		scgLoopVars *model.SCGLoopVars,
-		opHandle model.DataHandle,
+		scgLoopVars *types.SCGLoopVars,
+		opHandle types.DataHandle,
 	) (
-		map[string]*model.Value,
+		map[string]*types.Value,
 		error,
 	)
 }
@@ -52,19 +52,19 @@ func (lpr _scoper) sortMap(
 
 func (lpr _scoper) Scope(
 	index int,
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	scgLoopRange interface{},
-	scgLoopVars *model.SCGLoopVars,
-	opHandle model.DataHandle,
+	scgLoopVars *types.SCGLoopVars,
+	opHandle types.DataHandle,
 ) (
-	map[string]*model.Value,
+	map[string]*types.Value,
 	error,
 ) {
 	if nil == scgLoopVars {
 		return scope, nil
 	}
 
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*types.Value{}
 	for varName, varData := range scope {
 		outboundScope[varName] = varData
 	}
@@ -72,7 +72,7 @@ func (lpr _scoper) Scope(
 	if nil != scgLoopVars.Index {
 		// assign iteration index to requested inboundScope variable
 		indexAsFloat64 := float64(index)
-		outboundScope[*scgLoopVars.Index] = &model.Value{
+		outboundScope[*scgLoopVars.Index] = &types.Value{
 			Number: &indexAsFloat64,
 		}
 	}
@@ -82,7 +82,7 @@ func (lpr _scoper) Scope(
 		return outboundScope, nil
 	}
 
-	var loopable *model.Value
+	var loopable *types.Value
 	var err error
 	loopable, err = lpr.loopableInterpreter.Interpret(
 		scgLoopRange,
@@ -111,12 +111,12 @@ func (lpr _scoper) Scope(
 
 		if nil != scgLoopVars.Key {
 			// only add key to scope if declared
-			outboundScope[*scgLoopVars.Key] = &model.Value{String: &name}
+			outboundScope[*scgLoopVars.Key] = &types.Value{String: &name}
 		}
 	}
 
 	if nil != scgLoopVars.Value {
-		var value model.Value
+		var value types.Value
 		value, err = lpr.valueInterpreter.Interpret(
 			rawValue,
 			outboundScope,

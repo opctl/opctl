@@ -1,12 +1,12 @@
 package cliparamsatisfier
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"strings"
 )
 
 func (isf _InputSrcFactory) NewParamDefaultInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*types.Param,
 ) InputSrc {
 	return paramDefaultInputSrc{
 		inputs:      inputs,
@@ -16,7 +16,7 @@ func (isf _InputSrcFactory) NewParamDefaultInputSrc(
 
 // paramDefaultInputSrc implements InputSrc interface by sourcing inputs from input defaults
 type paramDefaultInputSrc struct {
-	inputs      map[string]*model.Param
+	inputs      map[string]*types.Param
 	readHistory map[string]struct{} // tracks reads
 }
 

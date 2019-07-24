@@ -1,5 +1,5 @@
 import React from 'react'
-import OpStarted from '@opctl/sdk/src/model/event/opStarted'
+import OpStarted from '@opctl/sdk/src/types/event/opStarted'
 
 interface Props {
   opStarted: OpStarted

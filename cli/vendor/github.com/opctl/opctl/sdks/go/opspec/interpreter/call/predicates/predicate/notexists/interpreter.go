@@ -1,8 +1,8 @@
 package notexists
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -10,8 +10,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		expression string,
-		opHandle model.DataHandle,
-		scope map[string]*model.Value,
+		opHandle types.DataHandle,
+		scope map[string]*types.Value,
 	) (bool, error)
 }
 
@@ -28,8 +28,8 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expression string,
-	opHandle model.DataHandle,
-	scope map[string]*model.Value,
+	opHandle types.DataHandle,
+	scope map[string]*types.Value,
 ) (bool, error) {
 	// @TODO: make more exact. reference.Interpret can err for more reasons than simply null pointer exceptions.
 	_, err := itp.reference.Interpret(

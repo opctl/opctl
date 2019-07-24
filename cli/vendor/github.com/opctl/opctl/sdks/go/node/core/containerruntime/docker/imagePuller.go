@@ -5,10 +5,10 @@ package docker
 import (
 	"context"
 	"encoding/json"
-	"github.com/docker/docker/api/types"
+	dockerApiTypes "github.com/docker/docker/api/types"
 	dockerClientPkg "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"io"
 )
@@ -16,7 +16,7 @@ import (
 type imagePuller interface {
 	Pull(
 		ctx context.Context,
-		dcgContainerImage *model.DCGContainerCallImage,
+		dcgContainerImage *types.DCGContainerCallImage,
 		containerID string,
 		rootOpID string,
 		eventPublisher pubsub.EventPublisher,
@@ -37,13 +37,13 @@ type _imagePuller struct {
 
 func (ip _imagePuller) Pull(
 	ctx context.Context,
-	dcgContainerImage *model.DCGContainerCallImage,
+	dcgContainerImage *types.DCGContainerCallImage,
 	containerID string,
 	rootOpID string,
 	eventPublisher pubsub.EventPublisher,
 ) error {
 
-	imagePullOptions := types.ImagePullOptions{}
+	imagePullOptions := dockerApiTypes.ImagePullOptions{}
 	if nil != dcgContainerImage.PullCreds &&
 		"" != dcgContainerImage.PullCreds.Username &&
 		"" != dcgContainerImage.PullCreds.Password {

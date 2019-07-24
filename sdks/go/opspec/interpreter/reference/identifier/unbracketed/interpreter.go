@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Interpreter interprets an unbracketed identifier from ref as determined by unbracketed/parser.go
@@ -13,8 +13,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		ref string,
-		data *model.Value,
-	) (string, *model.Value, error)
+		data *types.Value,
+	) (string, *types.Value, error)
 }
 
 func NewInterpreter() Interpreter {
@@ -33,8 +33,8 @@ type _interpreter struct {
 
 func (dr _interpreter) Interpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *types.Value,
+) (string, *types.Value, error) {
 
 	dataAsObject, err := dr.coerce.ToObject(data)
 	if nil != err {

@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -22,9 +22,9 @@ type serialLoopCaller interface {
 	Call(
 		ctx context.Context,
 		id string,
-		inboundScope map[string]*model.Value,
-		scgSerialLoop model.SCGSerialLoopCall,
-		opHandle model.DataHandle,
+		inboundScope map[string]*types.Value,
+		scgSerialLoop types.SCGSerialLoopCall,
+		opHandle types.DataHandle,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -58,20 +58,20 @@ type _serialLoopCaller struct {
 func (lpr _serialLoopCaller) Call(
 	ctx context.Context,
 	id string,
-	inboundScope map[string]*model.Value,
-	scgSerialLoop model.SCGSerialLoopCall,
-	opHandle model.DataHandle,
+	inboundScope map[string]*types.Value,
+	scgSerialLoop types.SCGSerialLoopCall,
+	opHandle types.DataHandle,
 	parentCallID *string,
 	rootOpID string,
 ) {
 	var err error
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*types.Value{}
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
+		event := types.Event{
 			Timestamp: time.Now().UTC(),
-			SerialLoopCallEnded: &model.SerialLoopCallEndedEvent{
+			SerialLoopCallEnded: &types.SerialLoopCallEndedEvent{
 				CallID:   id,
 				RootOpID: rootOpID,
 				Outputs:  outboundScope,
@@ -79,7 +79,7 @@ func (lpr _serialLoopCaller) Call(
 		}
 
 		if nil != err {
-			event.SerialLoopCallEnded.Error = &model.CallEndedEventError{
+			event.SerialLoopCallEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -100,7 +100,7 @@ func (lpr _serialLoopCaller) Call(
 	}
 
 	// interpret initial iteration of the loop
-	var dcgSerialLoop *model.DCGSerialLoopCall
+	var dcgSerialLoop *types.DCGSerialLoopCall
 	dcgSerialLoop, err = lpr.serialLoopInterpreter.Interpret(
 		opHandle,
 		scgSerialLoop,
@@ -133,7 +133,7 @@ func (lpr _serialLoopCaller) Call(
 		// @TODO: handle err channel
 		eventChannel, _ := lpr.pubSub.Subscribe(
 			ctx,
-			model.EventFilter{
+			types.EventFilter{
 				Roots: []string{rootOpID},
 				Since: &eventFilterSince,
 			},

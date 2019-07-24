@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type fakeHandleGetOrHeader struct {
-	HandleGetOrHeadStub        func(dataHandle model.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request)
+	HandleGetOrHeadStub        func(dataHandle types.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request)
 	handleGetOrHeadMutex       sync.RWMutex
 	handleGetOrHeadArgsForCall []struct {
-		dataHandle model.DataHandle
+		dataHandle types.DataHandle
 		httpResp   http.ResponseWriter
 		httpReq    *http.Request
 	}
@@ -20,10 +20,10 @@ type fakeHandleGetOrHeader struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeHandleGetOrHeader) HandleGetOrHead(dataHandle model.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request) {
+func (fake *fakeHandleGetOrHeader) HandleGetOrHead(dataHandle types.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request) {
 	fake.handleGetOrHeadMutex.Lock()
 	fake.handleGetOrHeadArgsForCall = append(fake.handleGetOrHeadArgsForCall, struct {
-		dataHandle model.DataHandle
+		dataHandle types.DataHandle
 		httpResp   http.ResponseWriter
 		httpReq    *http.Request
 	}{dataHandle, httpResp, httpReq})
@@ -40,7 +40,7 @@ func (fake *fakeHandleGetOrHeader) HandleGetOrHeadCallCount() int {
 	return len(fake.handleGetOrHeadArgsForCall)
 }
 
-func (fake *fakeHandleGetOrHeader) HandleGetOrHeadArgsForCall(i int) (model.DataHandle, http.ResponseWriter, *http.Request) {
+func (fake *fakeHandleGetOrHeader) HandleGetOrHeadArgsForCall(i int) (types.DataHandle, http.ResponseWriter, *http.Request) {
 	fake.handleGetOrHeadMutex.RLock()
 	defer fake.handleGetOrHeadMutex.RUnlock()
 	return fake.handleGetOrHeadArgsForCall[i].dataHandle, fake.handleGetOrHeadArgsForCall[i].httpResp, fake.handleGetOrHeadArgsForCall[i].httpReq

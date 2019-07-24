@@ -7,15 +7,15 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpret", func() {
 	It("should call valueInterpreter.Interpret w/ expected args", func() {
 
 		/* arrange */
-		providedScope := map[string]*model.Value{"dummyName": {}}
+		providedScope := map[string]*types.Value{"dummyName": {}}
 		providedExpression := map[string]interface{}{
 			"prop1Name": "prop1Value",
 		}
@@ -24,7 +24,7 @@ var _ = Context("Interpret", func() {
 		fakeValueInterpreter := new(value.FakeInterpreter)
 		// err to trigger immediate return
 		interpretErr := errors.New("interpretErr")
-		fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
+		fakeValueInterpreter.InterpretReturns(types.Value{}, interpretErr)
 
 		objectUnderTest := _interpreter{
 			valueInterpreter: fakeValueInterpreter,
@@ -58,7 +58,7 @@ var _ = Context("Interpret", func() {
 			fakeValueInterpreter := new(value.FakeInterpreter)
 			// err to trigger immediate return
 			interpretErr := errors.New("interpretErr")
-			fakeValueInterpreter.InterpretReturns(model.Value{}, interpretErr)
+			fakeValueInterpreter.InterpretReturns(types.Value{}, interpretErr)
 
 			expectedErr := fmt.Errorf("unable to interpret %+v to string; error was %v", providedExpression, interpretErr)
 
@@ -68,7 +68,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			_, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				providedExpression,
 				new(data.FakeHandle),
 			)
@@ -80,7 +80,7 @@ var _ = Context("Interpret", func() {
 	Context("valueInterpreter.Interpret doesn't err", func() {
 		It("should call coerce.ToString w/ expected args", func() {
 			/* arrange */
-			expectedObjectValue := model.Value{String: new(string)}
+			expectedObjectValue := types.Value{String: new(string)}
 
 			fakeValueInterpreter := new(value.FakeInterpreter)
 			fakeValueInterpreter.InterpretReturns(expectedObjectValue, nil)
@@ -94,7 +94,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				map[string]interface{}{},
 				new(data.FakeHandle),
 			)
@@ -106,7 +106,7 @@ var _ = Context("Interpret", func() {
 		It("should return expected result", func() {
 			/* arrange */
 			fakeCoerce := new(coerce.Fake)
-			coercedValue := model.Value{Object: new(map[string]interface{})}
+			coercedValue := types.Value{Object: new(map[string]interface{})}
 			toStringErr := errors.New("dummyError")
 
 			fakeCoerce.ToStringReturns(&coercedValue, toStringErr)
@@ -118,7 +118,7 @@ var _ = Context("Interpret", func() {
 
 			/* act */
 			actualValue, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				map[string]interface{}{},
 				new(data.FakeHandle),
 			)

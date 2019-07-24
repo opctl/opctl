@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Interpreter interprets a dir entry ref i.e. refs of the form name/sub/file.ext
@@ -17,8 +17,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		ref string,
-		data *model.Value,
-	) (string, *model.Value, error)
+		data *types.Value,
+	) (string, *types.Value, error)
 }
 
 func NewInterpreter() Interpreter {
@@ -33,8 +33,8 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *types.Value,
+) (string, *types.Value, error) {
 
 	if !strings.HasPrefix(ref, "/") {
 		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '/'", ref)
@@ -48,9 +48,9 @@ func (itp _interpreter) Interpret(
 	}
 
 	if fileInfo.IsDir() {
-		return "", &model.Value{Dir: &valuePath}, nil
+		return "", &types.Value{Dir: &valuePath}, nil
 	}
 
-	return "", &model.Value{File: &valuePath}, nil
+	return "", &types.Value{File: &valuePath}, nil
 
 }

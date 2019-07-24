@@ -1,4 +1,4 @@
-import Value from '../../../model/value'
+import Value from '../../../types/value'
 import isStringTruthy from './isStringTruthy'
 import dataGet from '../../../api/client/data/get'
 

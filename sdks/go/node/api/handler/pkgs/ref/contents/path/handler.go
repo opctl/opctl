@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/golang-interfaces/ihttp"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Handler deprecated
 type Handler interface {
 	Handle(
-		dataHandle model.DataHandle,
+		dataHandle types.DataHandle,
 		dataPath string,
 		httpResp http.ResponseWriter,
 		httpReq *http.Request,
@@ -38,7 +38,7 @@ type _handler struct {
 }
 
 func (hdlr _handler) Handle(
-	dataHandle model.DataHandle,
+	dataHandle types.DataHandle,
 	dataPath string,
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,

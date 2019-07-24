@@ -6,7 +6,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"strconv"
 )
 
@@ -21,14 +21,14 @@ var _ = Context("toNumberer", func() {
 				actualValue, actualErr := objectUnderTest.ToNumber(nil)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Number: new(float64)}))
+				Expect(*actualValue).To(Equal(types.Value{Number: new(float64)}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("Value.Array isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Array: new([]interface{}),
 				}
 
@@ -46,7 +46,7 @@ var _ = Context("toNumberer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDir := "dummyValue"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Dir: &providedDir,
 				}
 
@@ -65,7 +65,7 @@ var _ = Context("toNumberer", func() {
 				/* arrange */
 				providedFile := "dummyFile"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedFile,
 				}
 
@@ -97,7 +97,7 @@ var _ = Context("toNumberer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToNumber(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -124,11 +124,11 @@ var _ = Context("toNumberer", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToNumber(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
+					Expect(*actualValue).To(Equal(types.Value{Number: &parsedNumber}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -137,7 +137,7 @@ var _ = Context("toNumberer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedNumber := float64(2.2)
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Number: &providedNumber,
 				}
 
@@ -154,7 +154,7 @@ var _ = Context("toNumberer", func() {
 		Context("Value.Object isn't nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Object: new(map[string]interface{}),
 				}
 
@@ -172,7 +172,7 @@ var _ = Context("toNumberer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedString := "2.2"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					String: &providedString,
 				}
 
@@ -187,14 +187,14 @@ var _ = Context("toNumberer", func() {
 				actualValue, actualErr := objectUnderTest.ToNumber(providedValue)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Number: &parsedNumber}))
+				Expect(*actualValue).To(Equal(types.Value{Number: &parsedNumber}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
 		Context("Value.Array,Value.Dir,File,Number,Object,Number nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{}
+				providedValue := &types.Value{}
 
 				objectUnderTest := _toNumberer{}
 

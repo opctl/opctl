@@ -3,7 +3,7 @@ package params
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path/filepath"
 )
 
@@ -22,19 +22,19 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := new([]interface{})
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {Array: &model.ArrayParam{Default: providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {Array: &types.ArrayParam{Default: providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {Array: providedOutputDefault},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						"dummyOpPath",
 					)
@@ -51,19 +51,19 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := true
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {Boolean: &model.BooleanParam{Default: &providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {Boolean: &types.BooleanParam{Default: &providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {Boolean: &providedOutputDefault},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						"dummyOpPath",
 					)
@@ -80,21 +80,21 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := "/pkgDirDefault"
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {Dir: &model.DirParam{Default: &providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {Dir: &types.DirParam{Default: &providedOutputDefault}},
 					}
 					providedOpPath := "dummyOpPath"
 
 					objectUnderTest := _defaulter{}
 
 					expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {Dir: &expectedOutputValue},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						providedOpPath,
 					)
@@ -112,20 +112,20 @@ var _ = Context("Defaulter", func() {
 					providedOutputDefault := "/pkgFileDefault"
 					providedOpPath := "dummyOpPath"
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {File: &model.FileParam{Default: &providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {File: &types.FileParam{Default: &providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
 					expectedOutputValue := filepath.Join(providedOpPath, providedOutputDefault)
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {File: &expectedOutputValue},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						providedOpPath,
 					)
@@ -142,19 +142,19 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := 2.2
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {Number: &model.NumberParam{Default: &providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {Number: &types.NumberParam{Default: &providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {Number: &providedOutputDefault},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						"dummyOpPath",
 					)
@@ -171,19 +171,19 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := new(map[string]interface{})
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {Object: &model.ObjectParam{Default: providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {Object: &types.ObjectParam{Default: providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {Object: providedOutputDefault},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						"dummyOpPath",
 					)
@@ -200,19 +200,19 @@ var _ = Context("Defaulter", func() {
 					providedOutputName := "outputName"
 					providedOutputDefault := "outputDefault"
 
-					providedOutputParams := map[string]*model.Param{
-						providedOutputName: {String: &model.StringParam{Default: &providedOutputDefault}},
+					providedOutputParams := map[string]*types.Param{
+						providedOutputName: {String: &types.StringParam{Default: &providedOutputDefault}},
 					}
 
 					objectUnderTest := _defaulter{}
 
-					expectedOutputs := map[string]*model.Value{
+					expectedOutputs := map[string]*types.Value{
 						providedOutputName: {String: &providedOutputDefault},
 					}
 
 					/* act */
 					actualOutputs := objectUnderTest.Default(
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedOutputParams,
 						"dummyOpPath",
 					)

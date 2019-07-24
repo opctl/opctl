@@ -4,28 +4,28 @@ package dotyml
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeUnmarshaller struct {
-	UnmarshalStub        func(manifestBytes []byte) (*model.OpDotYml, error)
+	UnmarshalStub        func(manifestBytes []byte) (*types.OpDotYml, error)
 	unmarshalMutex       sync.RWMutex
 	unmarshalArgsForCall []struct {
 		manifestBytes []byte
 	}
 	unmarshalReturns struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}
 	unmarshalReturnsOnCall map[int]struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUnmarshaller) Unmarshal(manifestBytes []byte) (*model.OpDotYml, error) {
+func (fake *FakeUnmarshaller) Unmarshal(manifestBytes []byte) (*types.OpDotYml, error) {
 	var manifestBytesCopy []byte
 	if manifestBytes != nil {
 		manifestBytesCopy = make([]byte, len(manifestBytes))
@@ -59,24 +59,24 @@ func (fake *FakeUnmarshaller) UnmarshalArgsForCall(i int) []byte {
 	return fake.unmarshalArgsForCall[i].manifestBytes
 }
 
-func (fake *FakeUnmarshaller) UnmarshalReturns(result1 *model.OpDotYml, result2 error) {
+func (fake *FakeUnmarshaller) UnmarshalReturns(result1 *types.OpDotYml, result2 error) {
 	fake.UnmarshalStub = nil
 	fake.unmarshalReturns = struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUnmarshaller) UnmarshalReturnsOnCall(i int, result1 *model.OpDotYml, result2 error) {
+func (fake *FakeUnmarshaller) UnmarshalReturnsOnCall(i int, result1 *types.OpDotYml, result2 error) {
 	fake.UnmarshalStub = nil
 	if fake.unmarshalReturnsOnCall == nil {
 		fake.unmarshalReturnsOnCall = make(map[int]struct {
-			result1 *model.OpDotYml
+			result1 *types.OpDotYml
 			result2 error
 		})
 	}
 	fake.unmarshalReturnsOnCall[i] = struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}{result1, result2}
 }

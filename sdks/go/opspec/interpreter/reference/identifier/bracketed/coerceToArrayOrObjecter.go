@@ -4,14 +4,14 @@ package bracketed
 
 import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // coerceToArrayOrObjecter coerces data ao an object or an array value
 type coerceToArrayOrObjecter interface {
 	CoerceToArrayOrObject(
-		data *model.Value,
-	) (*model.Value, error)
+		data *types.Value,
+	) (*types.Value, error)
 }
 
 func newCoerceToArrayOrObjecter() coerceToArrayOrObjecter {
@@ -25,8 +25,8 @@ type _coerceToArrayOrObjecter struct {
 }
 
 func (cao _coerceToArrayOrObjecter) CoerceToArrayOrObject(
-	data *model.Value,
-) (*model.Value, error) {
+	data *types.Value,
+) (*types.Value, error) {
 
 	if dataAsArray, err := cao.coerce.ToArray(data); nil == err {
 		// array coercible type

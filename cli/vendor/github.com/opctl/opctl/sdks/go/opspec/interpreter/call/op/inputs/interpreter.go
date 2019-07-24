@@ -6,9 +6,9 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
@@ -16,12 +16,12 @@ type Interpreter interface {
 	// opScratchDir will be used to store any run data such as type coercions to files
 	Interpret(
 		inputArgs map[string]interface{},
-		inputParams map[string]*model.Param,
-		parentOpHandle model.DataHandle,
+		inputParams map[string]*types.Param,
+		parentOpHandle types.DataHandle,
 		opPath string,
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		opScratchDir string,
-	) (map[string]*model.Value, error)
+	) (map[string]*types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -41,13 +41,13 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	inputArgs map[string]interface{},
-	inputParams map[string]*model.Param,
-	parentOpHandle model.DataHandle,
+	inputParams map[string]*types.Param,
+	parentOpHandle types.DataHandle,
 	opPath string,
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	opScratchDir string,
-) (map[string]*model.Value, error) {
-	interpretedArgs := map[string]*model.Value{}
+) (map[string]*types.Value, error) {
+	interpretedArgs := map[string]*types.Value{}
 
 	// 1) interpret
 	paramErrMap := map[string]error{}

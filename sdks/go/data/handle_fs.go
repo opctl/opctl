@@ -7,12 +7,12 @@ import (
 
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func newFSHandle(
 	path string,
-) model.DataHandle {
+) types.DataHandle {
 	return fsHandle{
 		ioUtil: iioutil.New(),
 		os:     ios.New(),
@@ -31,7 +31,7 @@ func (lh fsHandle) GetContent(
 	ctx context.Context,
 	contentPath string,
 ) (
-	model.ReadSeekCloser,
+	types.ReadSeekCloser,
 	error,
 ) {
 	return lh.os.Open(filepath.Join(lh.path, contentPath))
@@ -40,7 +40,7 @@ func (lh fsHandle) GetContent(
 func (lh fsHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 	return lh.rListDescendants(lh.path)
@@ -50,7 +50,7 @@ func (lh fsHandle) ListDescendants(
 func (lh fsHandle) rListDescendants(
 	path string,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 	childFileInfos, err := lh.ioUtil.ReadDir(path)
@@ -58,7 +58,7 @@ func (lh fsHandle) rListDescendants(
 		return nil, err
 	}
 
-	var contents []*model.DirEntry
+	var contents []*types.DirEntry
 	for _, contentFileInfo := range childFileInfos {
 
 		absContentPath := filepath.Join(path, contentFileInfo.Name())
@@ -78,7 +78,7 @@ func (lh fsHandle) rListDescendants(
 		}
 		contents = append(
 			contents,
-			&model.DirEntry{
+			&types.DirEntry{
 				Mode: contentFileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
 				Size: contentFileInfo.Size(),

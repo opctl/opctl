@@ -4,7 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Validate", func() {
@@ -12,7 +12,7 @@ var _ = Context("Validate", func() {
 	Context("invoked w/ nil param", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			providedValue := &model.Value{}
+			providedValue := &types.Value{}
 
 			expectedErrs := []error{errors.New("param required")}
 

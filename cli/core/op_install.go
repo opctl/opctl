@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (this _core) OpInstall(
@@ -16,7 +16,7 @@ func (this _core) OpInstall(
 
 	opDirHandle := this.dataResolver.Resolve(
 		opRef,
-		&model.PullCreds{
+		&types.PullCreds{
 			Username: username,
 			Password: password,
 		},

@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -18,9 +18,9 @@ type caller interface {
 	Call(
 		ctx context.Context,
 		id string,
-		scope map[string]*model.Value,
-		scg *model.SCG,
-		opHandle model.DataHandle,
+		scope map[string]*types.Value,
+		scg *types.SCG,
+		opHandle types.DataHandle,
 		parentCallID *string,
 		rootOpID string,
 	)
@@ -86,23 +86,23 @@ type _caller struct {
 func (clr _caller) Call(
 	ctx context.Context,
 	id string,
-	scope map[string]*model.Value,
-	scg *model.SCG,
-	opHandle model.DataHandle,
+	scope map[string]*types.Value,
+	scg *types.SCG,
+	opHandle types.DataHandle,
 	parentCallID *string,
 	rootOpID string,
 ) {
 	ctx, cancel := context.WithCancel(ctx)
 	var err error
-	var outputs map[string]*model.Value
+	var outputs map[string]*types.Value
 	callStartTime := time.Now().UTC()
 
 	defer func() {
 		<-ctx.Done()
 
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			CallEnded: &model.CallEndedEvent{
+		event := types.Event{
+			CallEnded: &types.CallEndedEvent{
 				CallID:     id,
 				Outputs:    outputs,
 				RootCallID: rootOpID,
@@ -111,7 +111,7 @@ func (clr _caller) Call(
 		}
 
 		if nil != err {
-			event.CallEnded.Error = &model.CallEndedEventError{
+			event.CallEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -130,7 +130,7 @@ func (clr _caller) Call(
 
 		eventChannel, _ := clr.pubSub.Subscribe(
 			ctx,
-			model.EventFilter{
+			types.EventFilter{
 				Roots: []string{rootOpID},
 				Since: &callStartTime,
 			},
@@ -187,7 +187,7 @@ func (clr _caller) Call(
 		}
 	}()
 
-	var dcg *model.DCG
+	var dcg *types.DCG
 	dcg, err = clr.callInterpreter.Interpret(
 		scope,
 		scg,

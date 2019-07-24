@@ -6,15 +6,15 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Validator interface {
 	// Validate validates values for/against params
 	Validate(
-		values map[string]*model.Value,
-		params map[string]*model.Param,
+		values map[string]*types.Value,
+		params map[string]*types.Param,
 	) error
 }
 
@@ -30,8 +30,8 @@ type _validator struct {
 }
 
 func (vdr _validator) Validate(
-	values map[string]*model.Value,
-	params map[string]*model.Param,
+	values map[string]*types.Value,
+	params map[string]*types.Param,
 ) error {
 
 	paramErrMap := map[string][]error{}

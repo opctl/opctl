@@ -8,7 +8,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport"
@@ -72,7 +72,7 @@ var _ = Context("puller", func() {
 				/* arrange */
 				providedCtx := context.Background()
 				providedPath := "dummyPath"
-				providedPullCreds := &model.PullCreds{
+				providedPullCreds := &types.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}
@@ -173,7 +173,7 @@ var _ = Context("puller", func() {
 						)
 
 						fakeOS := new(ios.Fake)
-						expectedError := model.ErrDataProviderAuthentication{}
+						expectedError := types.ErrDataProviderAuthentication{}
 
 						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthenticationRequired)
@@ -217,7 +217,7 @@ var _ = Context("puller", func() {
 						)
 
 						fakeOS := new(ios.Fake)
-						expectedError := model.ErrDataProviderAuthorization{}
+						expectedError := types.ErrDataProviderAuthorization{}
 
 						fakeGit := new(igit.Fake)
 						fakeGit.PlainCloneReturns(nil, transport.ErrAuthorizationFailed)

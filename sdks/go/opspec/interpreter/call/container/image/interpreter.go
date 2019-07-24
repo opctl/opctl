@@ -5,16 +5,16 @@ package image
 import (
 	"errors"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
-		scope map[string]*model.Value,
-		scgContainerCallImage *model.SCGContainerCallImage,
-		opHandle model.DataHandle,
-	) (*model.DCGContainerCallImage, error)
+		scope map[string]*types.Value,
+		scgContainerCallImage *types.SCGContainerCallImage,
+		opHandle types.DataHandle,
+	) (*types.DCGContainerCallImage, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance.
@@ -29,10 +29,10 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
-	scgContainerCallImage *model.SCGContainerCallImage,
-	opHandle model.DataHandle,
-) (*model.DCGContainerCallImage, error) {
+	scope map[string]*types.Value,
+	scgContainerCallImage *types.SCGContainerCallImage,
+	opHandle types.DataHandle,
+) (*types.DCGContainerCallImage, error) {
 
 	if nil == scgContainerCallImage {
 		return nil, errors.New("image required")
@@ -44,7 +44,7 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	dcgContainerCallImage := &model.DCGContainerCallImage{
+	dcgContainerCallImage := &types.DCGContainerCallImage{
 		Ref: *ref.String,
 	}
 
@@ -59,7 +59,7 @@ func (itp _interpreter) Interpret(
 			return nil, err
 		}
 
-		dcgContainerCallImage.PullCreds = &model.PullCreds{
+		dcgContainerCallImage.PullCreds = &types.PullCreds{
 			Username: *username.String,
 			Password: *password.String,
 		}

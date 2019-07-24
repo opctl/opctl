@@ -4,36 +4,36 @@ package direntry
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(ref string, data *model.Value) (string, *model.Value, error)
+	InterpretStub        func(ref string, data *types.Value) (string, *types.Value, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		ref  string
-		data *model.Value
+		data *types.Value
 	}
 	interpretReturns struct {
 		result1 string
-		result2 *model.Value
+		result2 *types.Value
 		result3 error
 	}
 	interpretReturnsOnCall map[int]struct {
 		result1 string
-		result2 *model.Value
+		result2 *types.Value
 		result3 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(ref string, data *model.Value) (string, *model.Value, error) {
+func (fake *FakeInterpreter) Interpret(ref string, data *types.Value) (string, *types.Value, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		ref  string
-		data *model.Value
+		data *types.Value
 	}{ref, data})
 	fake.recordInvocation("Interpret", []interface{}{ref, data})
 	fake.interpretMutex.Unlock()
@@ -52,33 +52,33 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (string, *model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (string, *types.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].ref, fake.interpretArgsForCall[i].data
 }
 
-func (fake *FakeInterpreter) InterpretReturns(result1 string, result2 *model.Value, result3 error) {
+func (fake *FakeInterpreter) InterpretReturns(result1 string, result2 *types.Value, result3 error) {
 	fake.InterpretStub = nil
 	fake.interpretReturns = struct {
 		result1 string
-		result2 *model.Value
+		result2 *types.Value
 		result3 error
 	}{result1, result2, result3}
 }
 
-func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 string, result2 *model.Value, result3 error) {
+func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 string, result2 *types.Value, result3 error) {
 	fake.InterpretStub = nil
 	if fake.interpretReturnsOnCall == nil {
 		fake.interpretReturnsOnCall = make(map[int]struct {
 			result1 string
-			result2 *model.Value
+			result2 *types.Value
 			result3 error
 		})
 	}
 	fake.interpretReturnsOnCall[i] = struct {
 		result1 string
-		result2 *model.Value
+		result2 *types.Value
 		result3 error
 	}{result1, result2, result3}
 }

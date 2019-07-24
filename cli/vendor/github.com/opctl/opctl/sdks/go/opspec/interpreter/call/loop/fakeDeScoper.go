@@ -4,36 +4,36 @@ package loop
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeDeScoper struct {
-	DeScopeStub        func(map[string]*model.Value, interface{}, *model.SCGLoopVars, map[string]*model.Value) map[string]*model.Value
+	DeScopeStub        func(map[string]*types.Value, interface{}, *types.SCGLoopVars, map[string]*types.Value) map[string]*types.Value
 	deScopeMutex       sync.RWMutex
 	deScopeArgsForCall []struct {
-		arg1 map[string]*model.Value
+		arg1 map[string]*types.Value
 		arg2 interface{}
-		arg3 *model.SCGLoopVars
-		arg4 map[string]*model.Value
+		arg3 *types.SCGLoopVars
+		arg4 map[string]*types.Value
 	}
 	deScopeReturns struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 	}
 	deScopeReturnsOnCall map[int]struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDeScoper) DeScope(arg1 map[string]*model.Value, arg2 interface{}, arg3 *model.SCGLoopVars, arg4 map[string]*model.Value) map[string]*model.Value {
+func (fake *FakeDeScoper) DeScope(arg1 map[string]*types.Value, arg2 interface{}, arg3 *types.SCGLoopVars, arg4 map[string]*types.Value) map[string]*types.Value {
 	fake.deScopeMutex.Lock()
 	ret, specificReturn := fake.deScopeReturnsOnCall[len(fake.deScopeArgsForCall)]
 	fake.deScopeArgsForCall = append(fake.deScopeArgsForCall, struct {
-		arg1 map[string]*model.Value
+		arg1 map[string]*types.Value
 		arg2 interface{}
-		arg3 *model.SCGLoopVars
-		arg4 map[string]*model.Value
+		arg3 *types.SCGLoopVars
+		arg4 map[string]*types.Value
 	}{arg1, arg2, arg3, arg4})
 	fake.recordInvocation("DeScope", []interface{}{arg1, arg2, arg3, arg4})
 	fake.deScopeMutex.Unlock()
@@ -53,39 +53,39 @@ func (fake *FakeDeScoper) DeScopeCallCount() int {
 	return len(fake.deScopeArgsForCall)
 }
 
-func (fake *FakeDeScoper) DeScopeCalls(stub func(map[string]*model.Value, interface{}, *model.SCGLoopVars, map[string]*model.Value) map[string]*model.Value) {
+func (fake *FakeDeScoper) DeScopeCalls(stub func(map[string]*types.Value, interface{}, *types.SCGLoopVars, map[string]*types.Value) map[string]*types.Value) {
 	fake.deScopeMutex.Lock()
 	defer fake.deScopeMutex.Unlock()
 	fake.DeScopeStub = stub
 }
 
-func (fake *FakeDeScoper) DeScopeArgsForCall(i int) (map[string]*model.Value, interface{}, *model.SCGLoopVars, map[string]*model.Value) {
+func (fake *FakeDeScoper) DeScopeArgsForCall(i int) (map[string]*types.Value, interface{}, *types.SCGLoopVars, map[string]*types.Value) {
 	fake.deScopeMutex.RLock()
 	defer fake.deScopeMutex.RUnlock()
 	argsForCall := fake.deScopeArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *FakeDeScoper) DeScopeReturns(result1 map[string]*model.Value) {
+func (fake *FakeDeScoper) DeScopeReturns(result1 map[string]*types.Value) {
 	fake.deScopeMutex.Lock()
 	defer fake.deScopeMutex.Unlock()
 	fake.DeScopeStub = nil
 	fake.deScopeReturns = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 	}{result1}
 }
 
-func (fake *FakeDeScoper) DeScopeReturnsOnCall(i int, result1 map[string]*model.Value) {
+func (fake *FakeDeScoper) DeScopeReturnsOnCall(i int, result1 map[string]*types.Value) {
 	fake.deScopeMutex.Lock()
 	defer fake.deScopeMutex.Unlock()
 	fake.DeScopeStub = nil
 	if fake.deScopeReturnsOnCall == nil {
 		fake.deScopeReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Value
+			result1 map[string]*types.Value
 		})
 	}
 	fake.deScopeReturnsOnCall[i] = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 	}{result1}
 }
 

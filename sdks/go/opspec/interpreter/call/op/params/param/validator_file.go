@@ -3,12 +3,12 @@ package param
 import (
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // validateFile validates a value against a file parameter
 func (vdt _validator) validateFile(
-	value *model.Value,
+	value *types.Value,
 ) []error {
 	if nil == value || nil == value.File {
 		return []error{errors.New("file required")}

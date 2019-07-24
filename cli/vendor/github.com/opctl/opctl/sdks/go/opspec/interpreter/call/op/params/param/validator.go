@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/xeipuuv/gojsonschema"
 )
 
 type Validator interface {
 	Validate(
-		value *model.Value,
-		param *model.Param,
+		value *types.Value,
+		param *types.Param,
 	) []error
 }
 
@@ -38,8 +38,8 @@ type _validator struct {
 // Validate validates a value against a parameter
 // note: param defaults aren't considered
 func (vdt _validator) Validate(
-	value *model.Value,
-	param *model.Param,
+	value *types.Value,
+	param *types.Param,
 ) []error {
 	if nil == param {
 		return []error{errors.New("param required")}

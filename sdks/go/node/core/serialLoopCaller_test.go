@@ -9,8 +9,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -32,7 +32,7 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				until := true
-				fakeSerialLoopInterpreter.InterpretReturns(&model.DCGSerialLoopCall{Until: &until}, nil)
+				fakeSerialLoopInterpreter.InterpretReturns(&types.DCGSerialLoopCall{Until: &until}, nil)
 
 				fakeCaller := new(fakeCaller)
 
@@ -49,8 +49,8 @@ var _ = Context("serialLoopCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"id",
-					map[string]*model.Value{},
-					model.SCGSerialLoopCall{},
+					map[string]*types.Value{},
+					types.SCGSerialLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
@@ -65,8 +65,8 @@ var _ = Context("serialLoopCaller", func() {
 				/* arrange */
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoopCall{
-						Range: &model.Value{
+					&types.DCGSerialLoopCall{
+						Range: &types.Value{
 							Array: new([]interface{}),
 						},
 					},
@@ -88,8 +88,8 @@ var _ = Context("serialLoopCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"id",
-					map[string]*model.Value{},
-					model.SCGSerialLoopCall{},
+					map[string]*types.Value{},
+					types.SCGSerialLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
@@ -103,13 +103,13 @@ var _ = Context("serialLoopCaller", func() {
 			It("should call caller.Call w/ expected args", func() {
 				/* arrange */
 				providedCtx := context.Background()
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 				index := "index"
-				providedSCGSerialLoopCall := model.SCGSerialLoopCall{
-					Run: model.SCG{
-						Container: new(model.SCGContainerCall),
+				providedSCGSerialLoopCall := types.SCGSerialLoopCall{
+					Run: types.SCG{
+						Container: new(types.SCGContainerCall),
 					},
-					Vars: &model.SCGLoopVars{
+					Vars: &types.SCGLoopVars{
 						Index: &index,
 					},
 				}
@@ -121,9 +121,9 @@ var _ = Context("serialLoopCaller", func() {
 				fakeSerialLoopInterpreter := new(serialloop.FakeInterpreter)
 				until := false
 				fakeSerialLoopInterpreter.InterpretReturns(
-					&model.DCGSerialLoopCall{
+					&types.DCGSerialLoopCall{
 						Until: &until,
-						Vars: &model.DCGLoopVars{
+						Vars: &types.DCGLoopVars{
 							Index: &index,
 						},
 					},
@@ -131,8 +131,8 @@ var _ = Context("serialLoopCaller", func() {
 				)
 
 				fakeIterationScoper := new(iteration.FakeScoper)
-				expectedScope := map[string]*model.Value{
-					index: &model.Value{Number: new(float64)},
+				expectedScope := map[string]*types.Value{
+					index: &types.Value{Number: new(float64)},
 				}
 				fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
@@ -142,12 +142,12 @@ var _ = Context("serialLoopCaller", func() {
 
 				expectedErrorMessage := "expectedErrorMessage"
 				fakePubSub := new(pubsub.Fake)
-				eventChannel := make(chan model.Event, 100)
-				fakePubSub.SubscribeStub = func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
-					eventChannel <- model.Event{
-						CallEnded: &model.CallEndedEvent{
+				eventChannel := make(chan types.Event, 100)
+				fakePubSub.SubscribeStub = func(ctx context.Context, filter types.EventFilter) (<-chan types.Event, <-chan error) {
+					eventChannel <- types.Event{
+						CallEnded: &types.CallEndedEvent{
 							CallID: callID,
-							Error: &model.CallEndedEventError{
+							Error: &types.CallEndedEventError{
 								Message: expectedErrorMessage,
 							},
 						},

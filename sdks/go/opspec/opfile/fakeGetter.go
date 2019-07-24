@@ -5,34 +5,34 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeGetter struct {
-	GetStub        func(ctx context.Context, opHandle model.DataHandle) (*model.OpDotYml, error)
+	GetStub        func(ctx context.Context, opHandle types.DataHandle) (*types.OpDotYml, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		ctx      context.Context
-		opHandle model.DataHandle
+		opHandle types.DataHandle
 	}
 	getReturns struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeGetter) Get(ctx context.Context, opHandle model.DataHandle) (*model.OpDotYml, error) {
+func (fake *FakeGetter) Get(ctx context.Context, opHandle types.DataHandle) (*types.OpDotYml, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
 		ctx      context.Context
-		opHandle model.DataHandle
+		opHandle types.DataHandle
 	}{ctx, opHandle})
 	fake.recordInvocation("Get", []interface{}{ctx, opHandle})
 	fake.getMutex.Unlock()
@@ -51,30 +51,30 @@ func (fake *FakeGetter) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, model.DataHandle) {
+func (fake *FakeGetter) GetArgsForCall(i int) (context.Context, types.DataHandle) {
 	fake.getMutex.RLock()
 	defer fake.getMutex.RUnlock()
 	return fake.getArgsForCall[i].ctx, fake.getArgsForCall[i].opHandle
 }
 
-func (fake *FakeGetter) GetReturns(result1 *model.OpDotYml, result2 error) {
+func (fake *FakeGetter) GetReturns(result1 *types.OpDotYml, result2 error) {
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *model.OpDotYml, result2 error) {
+func (fake *FakeGetter) GetReturnsOnCall(i int, result1 *types.OpDotYml, result2 error) {
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *model.OpDotYml
+			result1 *types.OpDotYml
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 *model.OpDotYml
+		result1 *types.OpDotYml
 		result2 error
 	}{result1, result2}
 }

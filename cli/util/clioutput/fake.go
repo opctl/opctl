@@ -4,7 +4,7 @@ package clioutput
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Fake struct {
@@ -20,10 +20,10 @@ type Fake struct {
 		format string
 		values []interface{}
 	}
-	EventStub        func(event *model.Event)
+	EventStub        func(event *types.Event)
 	eventMutex       sync.RWMutex
 	eventArgsForCall []struct {
-		event *model.Event
+		event *types.Event
 	}
 	InfoStub        func(format string, values ...interface{})
 	infoMutex       sync.RWMutex
@@ -91,10 +91,10 @@ func (fake *Fake) ErrorArgsForCall(i int) (string, []interface{}) {
 	return fake.errorArgsForCall[i].format, fake.errorArgsForCall[i].values
 }
 
-func (fake *Fake) Event(event *model.Event) {
+func (fake *Fake) Event(event *types.Event) {
 	fake.eventMutex.Lock()
 	fake.eventArgsForCall = append(fake.eventArgsForCall, struct {
-		event *model.Event
+		event *types.Event
 	}{event})
 	fake.recordInvocation("Event", []interface{}{event})
 	fake.eventMutex.Unlock()
@@ -109,7 +109,7 @@ func (fake *Fake) EventCallCount() int {
 	return len(fake.eventArgsForCall)
 }
 
-func (fake *Fake) EventArgsForCall(i int) *model.Event {
+func (fake *Fake) EventArgsForCall(i int) *types.Event {
 	fake.eventMutex.RLock()
 	defer fake.eventMutex.RUnlock()
 	return fake.eventArgsForCall[i].event

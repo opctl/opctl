@@ -13,8 +13,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Dirs", func() {
@@ -39,7 +39,7 @@ var _ = Context("Dirs", func() {
 				containerDirPath: "",
 			}
 			providedOpHandle := new(data.FakeHandle)
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 			providedScratchDir := "dummyScratchDir"
 
 			fakeDirInterpreter := new(dir.FakeInterpreter)
@@ -98,7 +98,7 @@ var _ = Context("Dirs", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					providedSCGContainerCallDirs,
 					providedScratchDirPath,
 				)
@@ -119,7 +119,7 @@ var _ = Context("Dirs", func() {
 
 					fakeDirInterpreter := new(dir.FakeInterpreter)
 					filePath := tempDir.Name()
-					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
+					fakeDirInterpreter.InterpretReturns(&types.Value{Dir: &filePath}, nil)
 
 					expectedDCGContainerCallDirs := map[string]string{
 						containerDirPath: filePath,
@@ -133,7 +133,7 @@ var _ = Context("Dirs", func() {
 					/* act */
 					actualDCGContainerCallDirs, actualErr := objectUnderTest.Interpret(
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						map[string]string{
 							// implicitly bound
 							containerDirPath: "",
@@ -155,7 +155,7 @@ var _ = Context("Dirs", func() {
 
 					fakeDirInterpreter := new(dir.FakeInterpreter)
 					filePath := tempDir.Name()
-					fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
+					fakeDirInterpreter.InterpretReturns(&types.Value{Dir: &filePath}, nil)
 
 					expectedPath := filepath.Join(providedScratchDir, containerDirPath)
 
@@ -172,7 +172,7 @@ var _ = Context("Dirs", func() {
 					/* act */
 					objectUnderTest.Interpret(
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						map[string]string{
 							// implicitly bound
 							containerDirPath: "",
@@ -195,7 +195,7 @@ var _ = Context("Dirs", func() {
 
 						fakeDirInterpreter := new(dir.FakeInterpreter)
 						filePath := tempDir.Name()
-						fakeDirInterpreter.InterpretReturns(&model.Value{Dir: &filePath}, nil)
+						fakeDirInterpreter.InterpretReturns(&types.Value{Dir: &filePath}, nil)
 
 						fakeDirCopier := new(dircopier.Fake)
 
@@ -219,7 +219,7 @@ var _ = Context("Dirs", func() {
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
 							new(data.FakeHandle),
-							map[string]*model.Value{},
+							map[string]*types.Value{},
 							map[string]string{
 								// implicitly bound
 								containerDirPath: "",

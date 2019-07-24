@@ -5,7 +5,7 @@ package op
 import (
 	"context"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io"
 	"path/filepath"
 )
@@ -15,7 +15,7 @@ type Installer interface {
 	Install(
 		ctx context.Context,
 		path string,
-		opHandle model.DataHandle,
+		opHandle types.DataHandle,
 	) error
 }
 
@@ -34,7 +34,7 @@ type _installer struct {
 func (inst _installer) Install(
 	ctx context.Context,
 	path string,
-	handle model.DataHandle,
+	handle types.DataHandle,
 ) error {
 	contentsList, err := handle.ListDescendants(ctx)
 	if nil != err {

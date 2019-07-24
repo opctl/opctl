@@ -1,8 +1,8 @@
 package eq
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -10,8 +10,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		expressions []interface{},
-		opHandle model.DataHandle,
-		scope map[string]*model.Value,
+		opHandle types.DataHandle,
+		scope map[string]*types.Value,
 	) (bool, error)
 }
 
@@ -28,8 +28,8 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expressions []interface{},
-	opHandle model.DataHandle,
-	scope map[string]*model.Value,
+	opHandle types.DataHandle,
+	scope map[string]*types.Value,
 ) (bool, error) {
 	var firstItemAsString string
 	for i, expression := range expressions {

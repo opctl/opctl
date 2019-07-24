@@ -4,14 +4,14 @@ package sockets
 
 import (
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"os"
 	"path/filepath"
 )
 
 type Interpreter interface {
 	Interpret(
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		scgContainerCallSockets map[string]string,
 		scratchDirPath string,
 	) (map[string]string, error)
@@ -29,7 +29,7 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	scgContainerCallSockets map[string]string,
 	scratchDirPath string,
 ) (map[string]string, error) {

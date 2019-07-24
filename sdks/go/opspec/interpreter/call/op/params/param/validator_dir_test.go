@@ -6,7 +6,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 )
 
@@ -16,9 +16,9 @@ var _ = Context("Validate", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Value{}
-				providedParam := &model.Param{
-					Dir: &model.DirParam{},
+				providedValue := &types.Value{}
+				providedParam := &types.Param{
+					Dir: &types.DirParam{},
 				}
 
 				expectedErrors := []error{
@@ -44,11 +44,11 @@ var _ = Context("Validate", func() {
 
 					/* arrange */
 					providedValueDir := "dummyDir"
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						Dir: &providedValueDir,
 					}
-					providedParam := &model.Param{
-						Dir: &model.DirParam{},
+					providedParam := &types.Param{
+						Dir: &types.DirParam{},
 					}
 
 					fakeOS := new(ios.Fake)
@@ -74,11 +74,11 @@ var _ = Context("Validate", func() {
 
 						/* arrange */
 						providedValueDir := "dummyDir"
-						providedValue := &model.Value{
+						providedValue := &types.Value{
 							Dir: &providedValueDir,
 						}
-						providedParam := &model.Param{
-							Dir: &model.DirParam{},
+						providedParam := &types.Param{
+							Dir: &types.DirParam{},
 						}
 
 						expectedErrors := []error{
@@ -115,11 +115,11 @@ var _ = Context("Validate", func() {
 								panic(err)
 							}
 
-							providedValue := &model.Value{
+							providedValue := &types.Value{
 								Dir: &tmpDirPath,
 							}
-							providedParam := &model.Param{
-								Dir: &model.DirParam{},
+							providedParam := &types.Param{
+								Dir: &types.DirParam{},
 							}
 
 							expectedErrors := []error{}
@@ -149,11 +149,11 @@ var _ = Context("Validate", func() {
 
 							tmpFilePath := tmpFile.Name()
 
-							providedValue := &model.Value{
+							providedValue := &types.Value{
 								Dir: &tmpFilePath,
 							}
-							providedParam := &model.Param{
-								Dir: &model.DirParam{},
+							providedParam := &types.Param{
+								Dir: &types.DirParam{},
 							}
 
 							expectedErrors := []error{

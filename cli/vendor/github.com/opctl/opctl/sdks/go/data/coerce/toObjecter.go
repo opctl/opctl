@@ -5,14 +5,14 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type toObjecter interface {
 	// ToObject attempts to coerce value to an object
 	ToObject(
-		value *model.Value,
-	) (*model.Value, error)
+		value *types.Value,
+	) (*types.Value, error)
 }
 
 func newToObjecter() toObjecter {
@@ -30,8 +30,8 @@ type _toObjecter struct {
 }
 
 func (c _toObjecter) ToObject(
-	value *model.Value,
-) (*model.Value, error) {
+	value *types.Value,
+) (*types.Value, error) {
 	switch {
 	case nil == value:
 		return nil, nil
@@ -49,7 +49,7 @@ func (c _toObjecter) ToObject(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce file to object; error was %v", err.Error())
 		}
-		return &model.Value{Object: valueMap}, nil
+		return &types.Value{Object: valueMap}, nil
 	case nil != value.Number:
 		return nil, fmt.Errorf("unable to coerce number '%v' to object; incompatible types", *value.Number)
 	case nil != value.Object:
@@ -60,7 +60,7 @@ func (c _toObjecter) ToObject(
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce string to object; error was %v", err.Error())
 		}
-		return &model.Value{Object: valueMap}, nil
+		return &types.Value{Object: valueMap}, nil
 	default:
 		return nil, fmt.Errorf("unable to coerce '%+v' to object", value)
 	}

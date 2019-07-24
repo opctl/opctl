@@ -7,9 +7,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -23,7 +23,7 @@ var _ = Context("Interpreter", func() {
 		It("should call objectInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			envVarName := "dummyEnvVar"
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				envVarName: nil,
 			}
 			providedSCGContainerCallEnvVars := "providedSCGContainerCallEnvVars"
@@ -31,7 +31,7 @@ var _ = Context("Interpreter", func() {
 
 			fakeObjectInterpreter := new(object.FakeInterpreter)
 			// err to trigger immediate return
-			fakeObjectInterpreter.InterpretReturns(&model.Value{String: new(string)}, errors.New("dummyErr"))
+			fakeObjectInterpreter.InterpretReturns(&types.Value{String: new(string)}, errors.New("dummyErr"))
 
 			objectUnderTest := _interpreter{
 				objectInterpreter: fakeObjectInterpreter,
@@ -75,7 +75,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					providedSCGContainerCallEnvVars,
 					new(data.FakeHandle),
 				)
@@ -88,7 +88,7 @@ var _ = Context("Interpreter", func() {
 			It("should call stringInterpreter.Interpret w/ expected args", func() {
 				/* arrange */
 				envVarName := "dummyEnvVar"
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*types.Value{
 					envVarName: nil,
 				}
 
@@ -101,7 +101,7 @@ var _ = Context("Interpreter", func() {
 					envVarName: expectedEnvVarValue,
 				}
 				// err to trigger immediate return
-				fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+				fakeObjectInterpreter.InterpretReturns(&types.Value{Object: &interpretedValueObject}, nil)
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 				// err to trigger immediate return
@@ -133,7 +133,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					envVarName := "dummyEnvVar"
-					providedScope := map[string]*model.Value{
+					providedScope := map[string]*types.Value{
 						envVarName: nil,
 					}
 
@@ -146,7 +146,7 @@ var _ = Context("Interpreter", func() {
 						envVarName: expectedEnvVarValue,
 					}
 					// err to trigger immediate return
-					fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+					fakeObjectInterpreter.InterpretReturns(&types.Value{Object: &interpretedValueObject}, nil)
 
 					err := errors.New("err")
 					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
@@ -180,7 +180,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					envVarName := "dummyEnvVar"
-					providedScope := map[string]*model.Value{
+					providedScope := map[string]*types.Value{
 						envVarName: nil,
 					}
 
@@ -192,10 +192,10 @@ var _ = Context("Interpreter", func() {
 						envVarName: "envVarValue",
 					}
 					// err to trigger immediate return
-					fakeObjectInterpreter.InterpretReturns(&model.Value{Object: &interpretedValueObject}, nil)
+					fakeObjectInterpreter.InterpretReturns(&types.Value{Object: &interpretedValueObject}, nil)
 
 					expectedEnvVarValueString := "expectedEnvVarValueString"
-					expectedEnvVarValue := &model.Value{String: &expectedEnvVarValueString}
+					expectedEnvVarValue := &types.Value{String: &expectedEnvVarValueString}
 					expectedResult := map[string]string{
 						envVarName: expectedEnvVarValueString,
 					}

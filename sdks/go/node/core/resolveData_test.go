@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("core", func() {
@@ -14,7 +14,7 @@ var _ = Context("core", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedOpRef := "dummyOpRef"
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &types.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}

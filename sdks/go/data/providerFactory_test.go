@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 )
 
@@ -30,7 +30,7 @@ var _ = Context("providerFactory", func() {
 		It("should return expected Provider", func() {
 			/* arrange */
 			providedBasePath := "dummyBasePath"
-			providedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			providedPullCreds := &types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			objectUnderTest := _providerFactory{}
 
@@ -65,7 +65,7 @@ var _ = Context("providerFactory", func() {
 			/* act */
 			actualProvider := objectUnderTest.NewNodeProvider(
 				*providedAPIBaseURL,
-				&model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"},
+				&types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"},
 			)
 
 			/* assert */

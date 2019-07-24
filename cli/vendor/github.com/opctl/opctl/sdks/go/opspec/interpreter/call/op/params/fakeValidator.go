@@ -4,15 +4,15 @@ package params
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeValidator struct {
-	ValidateStub        func(values map[string]*model.Value, params map[string]*model.Param) error
+	ValidateStub        func(values map[string]*types.Value, params map[string]*types.Param) error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		values map[string]*model.Value
-		params map[string]*model.Param
+		values map[string]*types.Value
+		params map[string]*types.Param
 	}
 	validateReturns struct {
 		result1 error
@@ -24,12 +24,12 @@ type FakeValidator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeValidator) Validate(values map[string]*model.Value, params map[string]*model.Param) error {
+func (fake *FakeValidator) Validate(values map[string]*types.Value, params map[string]*types.Param) error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		values map[string]*model.Value
-		params map[string]*model.Param
+		values map[string]*types.Value
+		params map[string]*types.Param
 	}{values, params})
 	fake.recordInvocation("Validate", []interface{}{values, params})
 	fake.validateMutex.Unlock()
@@ -48,7 +48,7 @@ func (fake *FakeValidator) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *FakeValidator) ValidateArgsForCall(i int) (map[string]*model.Value, map[string]*model.Param) {
+func (fake *FakeValidator) ValidateArgsForCall(i int) (map[string]*types.Value, map[string]*types.Param) {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	return fake.validateArgsForCall[i].values, fake.validateArgsForCall[i].params

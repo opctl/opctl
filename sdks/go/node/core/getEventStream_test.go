@@ -4,7 +4,7 @@ import (
 	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -13,8 +13,8 @@ var _ = Context("core", func() {
 		It("should call pubSub.Subscribe w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.TODO()
-			providedReq := &model.GetEventStreamReq{
-				Filter: model.EventFilter{
+			providedReq := &types.GetEventStreamReq{
+				Filter: types.EventFilter{
 					Roots: []string{
 						"dummyRootOpID",
 					},

@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/boolean"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
@@ -15,6 +14,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/number"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -40,7 +40,7 @@ var _ = Context("Interpreter", func() {
 					"dummyValue",
 					nil,
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					"dummyScratchDir",
 				)
 
@@ -62,9 +62,9 @@ var _ = Context("Interpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						providedName,
 						"",
-						&model.Param{},
+						&types.Param{},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -77,9 +77,9 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					providedName := "dummyName"
 					providedValue := ""
-					providedParam := &model.Param{}
-					expectedValue := &model.Value{String: new(string)}
-					providedScope := map[string]*model.Value{providedName: expectedValue}
+					providedParam := &types.Param{}
+					expectedValue := &types.Value{String: new(string)}
+					providedScope := map[string]*types.Value{providedName: expectedValue}
 
 					objectUnderTest := _interpreter{}
 
@@ -103,7 +103,7 @@ var _ = Context("Interpreter", func() {
 			Context("Input is array", func() {
 				It("should call arrayInterpreter.Interpret w/ expected args", func() {
 					/* arrange */
-					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
+					providedScope := map[string]*types.Value{"dummyValue": new(types.Value)}
 					providedExpression := "[dummyItem]"
 					providedOpHandle := new(data.FakeHandle)
 
@@ -119,7 +119,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						"dummyName",
 						providedExpression,
-						&model.Param{Array: &model.ArrayParam{}},
+						&types.Param{Array: &types.ArrayParam{}},
 						providedOpHandle,
 						providedScope,
 						"dummyScratchDir",
@@ -138,7 +138,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected results", func() {
 					fakeArrayInterpreter := new(array.FakeInterpreter)
 
-					arrayValue := new(model.Value)
+					arrayValue := new(types.Value)
 					fakeArrayInterpreter.InterpretReturns(arrayValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -149,9 +149,9 @@ var _ = Context("Interpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						&model.Param{Array: &model.ArrayParam{}},
+						&types.Param{Array: &types.ArrayParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -165,7 +165,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					fakeBooleanInterpreter := new(boolean.FakeInterpreter)
 
-					interpolatedValue := &model.Value{Boolean: new(bool)}
+					interpolatedValue := &types.Value{Boolean: new(bool)}
 					fakeBooleanInterpreter.InterpretReturns(interpolatedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -176,9 +176,9 @@ var _ = Context("Interpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyExpression",
-						&model.Param{Boolean: &model.BooleanParam{}},
+						&types.Param{Boolean: &types.BooleanParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -192,7 +192,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 					fakeDirInterpreter := new(dir.FakeInterpreter)
 
-					interpolatedValue := &model.Value{Dir: new(string)}
+					interpolatedValue := &types.Value{Dir: new(string)}
 					fakeDirInterpreter.InterpretReturns(interpolatedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -203,9 +203,9 @@ var _ = Context("Interpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"$(/somePkgDir)",
-						&model.Param{Dir: &model.DirParam{}},
+						&types.Param{Dir: &types.DirParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -217,7 +217,7 @@ var _ = Context("Interpreter", func() {
 			Context("Input is file", func() {
 				It("should call fileInterpreter.Interpret w/ expected args", func() {
 					/* arrange */
-					providedScope := map[string]*model.Value{"dummyValue": new(model.Value)}
+					providedScope := map[string]*types.Value{"dummyValue": new(types.Value)}
 					providedExpression := "$(/somePkgFile)"
 					providedOpHandle := new(data.FakeHandle)
 					providedScratchDir := "dummyScratchDir"
@@ -234,7 +234,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest.Interpret(
 						"dummyName",
 						providedExpression,
-						&model.Param{File: &model.FileParam{}},
+						&types.Param{File: &types.FileParam{}},
 						providedOpHandle,
 						providedScope,
 						providedScratchDir,
@@ -255,7 +255,7 @@ var _ = Context("Interpreter", func() {
 				It("should return expected results", func() {
 					fakeFileInterpreter := new(file.FakeInterpreter)
 
-					fileValue := new(model.Value)
+					fileValue := new(types.Value)
 					fakeFileInterpreter.InterpretReturns(fileValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -266,9 +266,9 @@ var _ = Context("Interpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						&model.Param{File: &model.FileParam{}},
+						&types.Param{File: &types.FileParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -281,7 +281,7 @@ var _ = Context("Interpreter", func() {
 				It("should call validate w/ expected args", func() {
 					/* arrange */
 					fakeNumberInterpreter := new(number.FakeInterpreter)
-					interpretedValue := model.Value{Number: new(float64)}
+					interpretedValue := types.Value{Number: new(float64)}
 					fakeNumberInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -292,9 +292,9 @@ var _ = Context("Interpreter", func() {
 					actualResult, actualError := objectUnderTest.Interpret(
 						"dummyName",
 						"dummyValue",
-						&model.Param{Number: &model.NumberParam{}},
+						&types.Param{Number: &types.NumberParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -306,10 +306,10 @@ var _ = Context("Interpreter", func() {
 			Context("Input is object", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedParam := &model.Param{Object: &model.ObjectParam{}}
+					providedParam := &types.Param{Object: &types.ObjectParam{}}
 
 					fakeObjectInterpreter := new(object.FakeInterpreter)
-					interpretedValue := model.Value{Object: new(map[string]interface{})}
+					interpretedValue := types.Value{Object: new(map[string]interface{})}
 					fakeObjectInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -322,7 +322,7 @@ var _ = Context("Interpreter", func() {
 						"dummyValue",
 						providedParam,
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -334,10 +334,10 @@ var _ = Context("Interpreter", func() {
 			Context("Input is string", func() {
 				It("should return expected result", func() {
 					/* arrange */
-					providedParam := &model.Param{String: &model.StringParam{}}
+					providedParam := &types.Param{String: &types.StringParam{}}
 
 					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-					interpretedValue := model.Value{String: new(string)}
+					interpretedValue := types.Value{String: new(string)}
 					fakeStringInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -350,7 +350,7 @@ var _ = Context("Interpreter", func() {
 						"dummyValue",
 						providedParam,
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 
@@ -366,7 +366,7 @@ var _ = Context("Interpreter", func() {
 					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 
 					interpolatedValue := "dummyValue"
-					interpretedValue := model.Value{String: &interpolatedValue}
+					interpretedValue := types.Value{String: &interpolatedValue}
 					fakeStringInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					expectedError := fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", providedName, interpolatedValue)
@@ -379,9 +379,9 @@ var _ = Context("Interpreter", func() {
 					_, actualError := objectUnderTest.Interpret(
 						providedName,
 						"dummyValue",
-						&model.Param{Socket: &model.SocketParam{}},
+						&types.Param{Socket: &types.SocketParam{}},
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyScratchDir",
 					)
 

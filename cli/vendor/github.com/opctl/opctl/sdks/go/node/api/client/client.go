@@ -10,16 +10,16 @@ import (
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/golang-interfaces/ihttp"
 	"github.com/gorilla/websocket"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/sethgrid/pester"
 )
 
 type Client interface {
 	GetEventStream(
 		ctx context.Context,
-		req *model.GetEventStreamReq,
+		req *types.GetEventStreamReq,
 	) (
-		stream chan model.Event,
+		stream chan types.Event,
 		err error,
 	)
 
@@ -31,15 +31,15 @@ type Client interface {
 	//  - ErrDataRefResolution on resolution failure
 	GetData(
 		ctx context.Context,
-		req model.GetDataReq,
+		req types.GetDataReq,
 	) (
-		model.ReadSeekCloser,
+		types.ReadSeekCloser,
 		error,
 	)
 
 	KillOp(
 		ctx context.Context,
-		req model.KillOpReq,
+		req types.KillOpReq,
 	) (
 		err error,
 	)
@@ -52,15 +52,15 @@ type Client interface {
 	//  - ErrDataRefResolution on resolution failure
 	ListDescendants(
 		ctx context.Context,
-		req model.ListDescendantsReq,
+		req types.ListDescendantsReq,
 	) (
-		[]*model.DirEntry,
+		[]*types.DirEntry,
 		error,
 	)
 
 	StartOp(
 		ctx context.Context,
-		req model.StartOpReq,
+		req types.StartOpReq,
 	) (
 		opID string,
 		err error,

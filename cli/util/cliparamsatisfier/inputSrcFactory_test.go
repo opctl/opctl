@@ -8,7 +8,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"reflect"
 )
 
@@ -29,7 +29,7 @@ var _ = Describe("inputSrcFactory", func() {
 		It("should not return nil", func() {
 			/* arrange/act/assert */
 			Expect(_InputSrcFactory{}.NewParamDefaultInputSrc(
-				map[string]*model.Param{},
+				map[string]*types.Param{},
 			)).To(Not(BeNil()))
 		})
 	})

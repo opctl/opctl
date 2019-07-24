@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"golang.org/x/sync/singleflight"
 	"path/filepath"
 )
@@ -12,7 +12,7 @@ var resolveSingleFlightGroup singleflight.Group
 
 func (pf _providerFactory) NewGitProvider(
 	basePath string,
-	pullCreds *model.PullCreds,
+	pullCreds *types.PullCreds,
 ) Provider {
 	return gitProvider{
 		localFSProvider: pf.NewFSProvider(basePath),
@@ -27,13 +27,13 @@ type gitProvider struct {
 	localFSProvider Provider
 	basePath        string
 	puller          puller
-	pullCreds       *model.PullCreds
+	pullCreds       *types.PullCreds
 }
 
 func (gp gitProvider) TryResolve(
 	ctx context.Context,
 	dataRef string,
-) (model.DataHandle, error) {
+) (types.DataHandle, error) {
 
 	// attempt to resolve within singleFlight.Group to ensure concurrent resolves don't race
 	handle, err, _ := resolveSingleFlightGroup.Do(
@@ -59,5 +59,5 @@ func (gp gitProvider) TryResolve(
 	if nil != err {
 		return nil, err
 	}
-	return handle.(model.DataHandle), nil
+	return handle.(types.DataHandle), nil
 }

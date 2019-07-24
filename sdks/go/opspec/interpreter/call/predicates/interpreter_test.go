@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -20,13 +20,13 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should call predicateInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			providedSCGPredicates := []*model.SCGPredicate{
-				&model.SCGPredicate{Eq: new([]interface{})},
-				&model.SCGPredicate{Ne: new([]interface{})},
+			providedSCGPredicates := []*types.SCGPredicate{
+				&types.SCGPredicate{Eq: new([]interface{})},
+				&types.SCGPredicate{Ne: new([]interface{})},
 			}
 
 			providedOpHandle := new(data.FakeHandle)
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 
 			fakePredicateInterpreter := new(predicate.FakeInterpreter)
 			fakePredicateInterpreter.InterpretReturns(
@@ -80,10 +80,10 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				_, actualError := objectUnderTest.Interpret(
 					new(data.FakeHandle),
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
+					[]*types.SCGPredicate{
+						&types.SCGPredicate{Eq: new([]interface{})},
 					},
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */
@@ -107,11 +107,11 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					new(data.FakeHandle),
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
-						&model.SCGPredicate{Ne: new([]interface{})},
+					[]*types.SCGPredicate{
+						&types.SCGPredicate{Eq: new([]interface{})},
+						&types.SCGPredicate{Ne: new([]interface{})},
 					},
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */
@@ -135,11 +135,11 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
 					new(data.FakeHandle),
-					[]*model.SCGPredicate{
-						&model.SCGPredicate{Eq: new([]interface{})},
-						&model.SCGPredicate{Ne: new([]interface{})},
+					[]*types.SCGPredicate{
+						&types.SCGPredicate{Eq: new([]interface{})},
+						&types.SCGPredicate{Ne: new([]interface{})},
 					},
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */

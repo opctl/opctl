@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 )
 
@@ -17,8 +17,8 @@ import (
 type dataResolver interface {
 	Resolve(
 		dataRef string,
-		pullCreds *model.PullCreds,
-	) model.DataHandle
+		pullCreds *types.PullCreds,
+	) types.DataHandle
 }
 
 func newDataResolver(
@@ -47,8 +47,8 @@ type _dataResolver struct {
 
 func (this _dataResolver) Resolve(
 	dataRef string,
-	pullCreds *model.PullCreds,
-) model.DataHandle {
+	pullCreds *types.PullCreds,
+) types.DataHandle {
 
 	// ensure node reachable
 	this.nodeReachabilityEnsurer.EnsureNodeReachable()
@@ -74,9 +74,9 @@ func (this _dataResolver) Resolve(
 
 		var isAuthError bool
 		switch err.(type) {
-		case model.ErrDataProviderAuthorization:
+		case types.ErrDataProviderAuthorization:
 			isAuthError = true
-		case model.ErrDataProviderAuthentication:
+		case types.ErrDataProviderAuthentication:
 			isAuthError = true
 		}
 
@@ -93,7 +93,7 @@ func (this _dataResolver) Resolve(
 			)
 
 			// save providedArgs & re-attempt
-			pullCreds = &model.PullCreds{
+			pullCreds = &types.PullCreds{
 				Username: *(argMap[usernameInputName].String),
 				Password: *(argMap[passwordInputName].String),
 			}
@@ -119,9 +119,9 @@ const (
 )
 
 var (
-	credsPromptInputs = map[string]*model.Param{
+	credsPromptInputs = map[string]*types.Param{
 		usernameInputName: {
-			String: &model.StringParam{
+			String: &types.StringParam{
 				Description: "username used to auth w/ the pkg source",
 				Constraints: map[string]interface{}{
 					"MinLength": 1,
@@ -129,7 +129,7 @@ var (
 			},
 		},
 		passwordInputName: {
-			String: &model.StringParam{
+			String: &types.StringParam{
 				Description: "password used to auth w/ the pkg source",
 				Constraints: map[string]interface{}{
 					"MinLength": 1,

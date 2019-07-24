@@ -11,8 +11,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("ListDescendants", func() {
@@ -21,9 +21,9 @@ var _ = Context("ListDescendants", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.ListDescendantsReq{
+		providedReq := types.ListDescendantsReq{
 			PkgRef: "dummyOpRef",
-			PullCreds: &model.PullCreds{
+			PullCreds: &types.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			},
@@ -89,11 +89,11 @@ var _ = Context("ListDescendants", func() {
 			/* act */
 			actualContentsList, actualErr := objectUnderTest.ListDescendants(
 				context.TODO(),
-				model.ListDescendantsReq{},
+				types.ListDescendantsReq{},
 			)
 
 			/* assert */
-			Expect(actualContentsList).To(Equal([]*model.DirEntry{}))
+			Expect(actualContentsList).To(Equal([]*types.DirEntry{}))
 			Expect(actualErr).To(BeNil())
 
 		})
@@ -118,11 +118,11 @@ var _ = Context("ListDescendants", func() {
 				/* act */
 				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					types.ListDescendantsReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthentication{}))
+				Expect(actualErr).To(Equal(types.ErrDataProviderAuthentication{}))
 
 			})
 		})
@@ -145,11 +145,11 @@ var _ = Context("ListDescendants", func() {
 				/* act */
 				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					types.ListDescendantsReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataProviderAuthorization{}))
+				Expect(actualErr).To(Equal(types.ErrDataProviderAuthorization{}))
 
 			})
 
@@ -173,11 +173,11 @@ var _ = Context("ListDescendants", func() {
 				/* act */
 				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					types.ListDescendantsReq{},
 				)
 
 				/* assert */
-				Expect(actualErr).To(Equal(model.ErrDataRefResolution{}))
+				Expect(actualErr).To(Equal(types.ErrDataRefResolution{}))
 
 			})
 
@@ -202,7 +202,7 @@ var _ = Context("ListDescendants", func() {
 				/* act */
 				_, actualErr := objectUnderTest.ListDescendants(
 					context.TODO(),
-					model.ListDescendantsReq{},
+					types.ListDescendantsReq{},
 				)
 
 				/* assert */

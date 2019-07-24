@@ -6,7 +6,7 @@ import (
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("unmarshaller", func() {
@@ -66,9 +66,9 @@ var _ = Context("unmarshaller", func() {
 
 				/* arrange */
 				paramDefault := "dummyDefault"
-				dummyParams := map[string]*model.Param{
+				dummyParams := map[string]*types.Param{
 					"dummyName": {
-						String: &model.StringParam{
+						String: &types.StringParam{
 							Constraints: map[string]interface{}{
 								"MinLength": 0,
 								"MaxLength": 1000,
@@ -83,13 +83,13 @@ var _ = Context("unmarshaller", func() {
 					},
 				}
 
-				expectedOpDotYml := &model.OpDotYml{
+				expectedOpDotYml := &types.OpDotYml{
 					Description: "dummyDescription",
 					Inputs:      dummyParams,
 					Name:        "dummyName",
 					Outputs:     dummyParams,
-					Run: &model.SCG{
-						Op: &model.SCGOpCall{
+					Run: &types.SCG{
+						Op: &types.SCGOpCall{
 							Ref: "dummyOpRef",
 						},
 					},

@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
 	"github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/cli/util/clicolorer"
 )
 
@@ -365,7 +365,7 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
-					expectedRunOpts := &model.RunOpts{
+					expectedRunOpts := &types.RunOpts{
 						Args:    []string{"arg1Name=arg1Value", "arg2Name=arg2Value"},
 						ArgFile: "dummyArgFile",
 					}

@@ -1,9 +1,9 @@
 import React from 'react'
-import ModelParamFile from '@opctl/sdk/src/model/param/file'
+import ParamFile from '@opctl/sdk/src/types/param/file'
 import _DomInput from './_DomInput'
 
 interface Props {
-  file: ModelParamFile
+  file: ParamFile
   name: string
   onValid: (value: any) => any
   opRef: string

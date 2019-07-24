@@ -1,11 +1,11 @@
 package core
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (this _core) KillOp(
-	req model.KillOpReq,
+	req types.KillOpReq,
 ) {
 	this.callKiller.Kill(
 		req.OpID,

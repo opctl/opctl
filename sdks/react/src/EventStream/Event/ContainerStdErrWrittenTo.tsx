@@ -1,6 +1,6 @@
 import React from 'react'
 import Ansi from 'ansi-to-react'
-import ContainerStdErrWrittenTo from '@opctl/sdk/src/model/event/containerStdErrWrittenTo'
+import ContainerStdErrWrittenTo from '@opctl/sdk/src/types/event/containerStdErrWrittenTo'
 
 interface Props {
   containerStdErrWrittenTo: ContainerStdErrWrittenTo

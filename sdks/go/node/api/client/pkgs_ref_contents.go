@@ -10,15 +10,15 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (c client) ListDescendants(
 	ctx context.Context,
-	req model.ListDescendantsReq,
+	req types.ListDescendantsReq,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 
@@ -52,11 +52,11 @@ func (c client) ListDescendants(
 	if httpResp.StatusCode >= 400 {
 		switch httpResp.StatusCode {
 		case http.StatusUnauthorized:
-			return nil, model.ErrDataProviderAuthentication{}
+			return nil, types.ErrDataProviderAuthentication{}
 		case http.StatusForbidden:
-			return nil, model.ErrDataProviderAuthorization{}
+			return nil, types.ErrDataProviderAuthorization{}
 		case http.StatusNotFound:
-			return nil, model.ErrDataRefResolution{}
+			return nil, types.ErrDataRefResolution{}
 		default:
 			body, err := ioutil.ReadAll(httpResp.Body)
 			if nil != err {
@@ -70,7 +70,7 @@ func (c client) ListDescendants(
 		}
 	}
 
-	var contentList []*model.DirEntry
+	var contentList []*types.DirEntry
 	return contentList, json.NewDecoder(httpResp.Body).Decode(&contentList)
 
 }

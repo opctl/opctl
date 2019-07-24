@@ -4,8 +4,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("outputs.interpreter", func() {
@@ -19,8 +19,8 @@ var _ = Context("outputs.interpreter", func() {
 
 		It("should call paramsDefaulter.Default w/ expected args", func() {
 			/* arrange */
-			providedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
-			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
+			providedOutputArgs := map[string]*types.Value{"dummyArgName": new(types.Value)}
+			providedOutputParams := map[string]*types.Param{"dummyParamName": new(types.Param)}
 			providedOpPath := "dummyOpPath"
 
 			fakeParamsDefaulter := new(params.FakeDefaulter)
@@ -49,11 +49,11 @@ var _ = Context("outputs.interpreter", func() {
 		})
 		It("should call paramsValidator.Validate w/ expected args & return expected result", func() {
 			/* arrange */
-			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
+			providedOutputParams := map[string]*types.Param{"dummyParamName": new(types.Param)}
 			providedOpPath := "dummyOpPath"
 
 			fakeParamsDefaulter := new(params.FakeDefaulter)
-			defaultedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
+			defaultedOutputArgs := map[string]*types.Value{"dummyArgName": new(types.Value)}
 
 			fakeParamsDefaulter.DefaultReturns(defaultedOutputArgs)
 
@@ -68,7 +68,7 @@ var _ = Context("outputs.interpreter", func() {
 
 			/* act */
 			actualOutputs, actualErr := objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				providedOutputParams,
 				providedOpPath,
 			)

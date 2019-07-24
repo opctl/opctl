@@ -2,15 +2,15 @@ package data
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 )
 
 // NewNodeProvider returns a pkg provider which sources pkgs from a node
 func (pf _providerFactory) NewNodeProvider(
 	apiBaseURL url.URL,
-	pullCreds *model.PullCreds,
+	pullCreds *types.PullCreds,
 ) Provider {
 	return nodeProvider{
 		nodeClient: client.New(apiBaseURL, nil),
@@ -22,18 +22,18 @@ func (pf _providerFactory) NewNodeProvider(
 type nodeProvider struct {
 	nodeClient client.Client
 	puller     puller
-	pullCreds  *model.PullCreds
+	pullCreds  *types.PullCreds
 }
 
 func (np nodeProvider) TryResolve(
 	ctx context.Context,
 	dataRef string,
-) (model.DataHandle, error) {
+) (types.DataHandle, error) {
 
 	// ensure resolvable by listing contents w/out err
 	if _, err := np.nodeClient.ListDescendants(
 		ctx,
-		model.ListDescendantsReq{
+		types.ListDescendantsReq{
 			PkgRef:    dataRef,
 			PullCreds: np.pullCreds,
 		},

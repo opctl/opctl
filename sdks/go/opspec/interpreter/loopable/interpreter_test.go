@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -24,7 +24,7 @@ var _ = Context("Interpreter", func() {
 			providedExpression := "providedExpression"
 
 			providedOpHandle := new(data.FakeHandle)
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 
 			fakeArrayInterpreter := new(array.FakeInterpreter)
 
@@ -53,13 +53,13 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				fakeArrayInterpreter := new(array.FakeInterpreter)
 
-				expectedValue := &model.Value{}
+				expectedValue := &types.Value{}
 				fakeArrayInterpreter.InterpretReturns(
 					expectedValue,
 					nil,
 				)
 
-				expectedResult := &model.Value{}
+				expectedResult := &types.Value{}
 
 				objectUnderTest := _interpreter{
 					arrayInterpreter: fakeArrayInterpreter,
@@ -69,7 +69,7 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */
@@ -82,7 +82,7 @@ var _ = Context("Interpreter", func() {
 				providedExpression := "providedExpression"
 
 				providedOpHandle := new(data.FakeHandle)
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 
 				fakeArrayInterpreter := new(array.FakeInterpreter)
 				fakeArrayInterpreter.InterpretReturns(
@@ -123,13 +123,13 @@ var _ = Context("Interpreter", func() {
 
 				fakeObjectInterpreter := new(object.FakeInterpreter)
 
-				expectedValue := &model.Value{}
+				expectedValue := &types.Value{}
 				fakeObjectInterpreter.InterpretReturns(
 					expectedValue,
 					nil,
 				)
 
-				expectedResult := &model.Value{}
+				expectedResult := &types.Value{}
 
 				objectUnderTest := _interpreter{
 					arrayInterpreter:  fakeArrayInterpreter,
@@ -140,7 +140,7 @@ var _ = Context("Interpreter", func() {
 				actualResult, _ := objectUnderTest.Interpret(
 					"dummyExpression",
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */

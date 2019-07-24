@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeHandler struct {
-	HandleStub        func(dataHandle model.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request)
+	HandleStub        func(dataHandle types.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request)
 	handleMutex       sync.RWMutex
 	handleArgsForCall []struct {
-		dataHandle model.DataHandle
+		dataHandle types.DataHandle
 		httpResp   http.ResponseWriter
 		httpReq    *http.Request
 	}
@@ -20,10 +20,10 @@ type FakeHandler struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandler) Handle(dataHandle model.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request) {
+func (fake *FakeHandler) Handle(dataHandle types.DataHandle, httpResp http.ResponseWriter, httpReq *http.Request) {
 	fake.handleMutex.Lock()
 	fake.handleArgsForCall = append(fake.handleArgsForCall, struct {
-		dataHandle model.DataHandle
+		dataHandle types.DataHandle
 		httpResp   http.ResponseWriter
 		httpReq    *http.Request
 	}{dataHandle, httpResp, httpReq})
@@ -40,7 +40,7 @@ func (fake *FakeHandler) HandleCallCount() int {
 	return len(fake.handleArgsForCall)
 }
 
-func (fake *FakeHandler) HandleArgsForCall(i int) (model.DataHandle, http.ResponseWriter, *http.Request) {
+func (fake *FakeHandler) HandleArgsForCall(i int) (types.DataHandle, http.ResponseWriter, *http.Request) {
 	fake.handleMutex.RLock()
 	defer fake.handleMutex.RUnlock()
 	return fake.handleArgsForCall[i].dataHandle, fake.handleArgsForCall[i].httpResp, fake.handleArgsForCall[i].httpReq

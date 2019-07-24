@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Constructor", func() {
@@ -25,7 +25,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: &providedData}))
+				Expect(*actualValue).To(Equal(types.Value{Boolean: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -39,7 +39,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Number: &providedData}))
+				Expect(*actualValue).To(Equal(types.Value{Number: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -54,7 +54,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Number: &providedDataAsFloat64}))
+				Expect(*actualValue).To(Equal(types.Value{Number: &providedDataAsFloat64}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -68,7 +68,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{String: &providedData}))
+				Expect(*actualValue).To(Equal(types.Value{String: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -82,7 +82,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Object: &providedData}))
+				Expect(*actualValue).To(Equal(types.Value{Object: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -96,7 +96,7 @@ var _ = Context("Constructor", func() {
 				actualValue, actualErr := objectUnderTest.Construct(providedData)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Array: &providedData}))
+				Expect(*actualValue).To(Equal(types.Value{Array: &providedData}))
 				Expect(actualErr).To(BeNil())
 			})
 		})

@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Lister", func() {
@@ -67,10 +67,10 @@ var _ = Context("Lister", func() {
 						providedCtx := context.Background()
 
 						providedDirHandle := new(data.FakeHandle)
-						item := model.DirEntry{
+						item := types.DirEntry{
 							Path: dotyml.FileName,
 						}
-						providedDirHandle.ListDescendantsReturns([]*model.DirEntry{&item}, nil)
+						providedDirHandle.ListDescendantsReturns([]*types.DirEntry{&item}, nil)
 
 						// err to trigger immediate return
 						providedDirHandle.GetContentReturns(nil, errors.New("dummyError"))
@@ -95,7 +95,7 @@ var _ = Context("Lister", func() {
 						It("should return expected result", func() {
 							/* arrange */
 							providedDirHandle := new(data.FakeHandle)
-							providedDirHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+							providedDirHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 							getContentErr := errors.New("getContentErr")
 							providedDirHandle.GetContentReturns(nil, getContentErr)

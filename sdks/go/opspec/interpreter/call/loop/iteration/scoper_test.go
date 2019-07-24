@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("scoper", func() {
@@ -31,16 +31,16 @@ var _ = Context("scoper", func() {
 
 						objectUnderTest := _scoper{}
 
-						expectedScope := map[string]*model.Value{
-							indexName: &model.Value{Number: &indexValueAsFloat64},
+						expectedScope := map[string]*types.Value{
+							indexName: &types.Value{Number: &indexValueAsFloat64},
 						}
 
 						/* act */
 						actualScope, _ := objectUnderTest.Scope(
 							indexValue,
-							map[string]*model.Value{},
+							map[string]*types.Value{},
 							nil,
-							&model.SCGLoopVars{
+							&types.SCGLoopVars{
 								Index: &indexName,
 							},
 							new(data.FakeHandle),
@@ -56,8 +56,8 @@ var _ = Context("scoper", func() {
 					/* arrange */
 					providedLoopRange := "providedLoopRange"
 
-					providedScope := map[string]*model.Value{
-						"name1": &model.Value{String: new(string)},
+					providedScope := map[string]*types.Value{
+						"name1": &types.Value{String: new(string)},
 					}
 					providedOpHandle := new(data.FakeHandle)
 
@@ -74,7 +74,7 @@ var _ = Context("scoper", func() {
 						0,
 						providedScope,
 						providedLoopRange,
-						&model.SCGLoopVars{},
+						&types.SCGLoopVars{},
 						providedOpHandle,
 					)
 
@@ -93,8 +93,8 @@ var _ = Context("scoper", func() {
 						/* arrange */
 						providedLoopRange := "providedLoopRange"
 
-						providedScope := map[string]*model.Value{
-							"name1": &model.Value{String: new(string)},
+						providedScope := map[string]*types.Value{
+							"name1": &types.Value{String: new(string)},
 						}
 						providedOpHandle := new(data.FakeHandle)
 
@@ -111,7 +111,7 @@ var _ = Context("scoper", func() {
 							0,
 							providedScope,
 							providedLoopRange,
-							&model.SCGLoopVars{
+							&types.SCGLoopVars{
 								Index: new(string),
 							},
 							providedOpHandle,

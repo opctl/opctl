@@ -7,7 +7,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"reflect"
 )
 
@@ -30,7 +30,7 @@ var _ = Context("toArrayer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				array := &[]interface{}{"dummyItem"}
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Array: array,
 				}
 
@@ -48,7 +48,7 @@ var _ = Context("toArrayer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedBoolean := true
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Boolean: &providedBoolean,
 				}
 
@@ -66,7 +66,7 @@ var _ = Context("toArrayer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDir := "dummyValue"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Dir: &providedDir,
 				}
 
@@ -85,7 +85,7 @@ var _ = Context("toArrayer", func() {
 				/* arrange */
 				providedFile := "dummyFile"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedFile,
 				}
 
@@ -117,7 +117,7 @@ var _ = Context("toArrayer", func() {
 
 					/* act */
 					actualValue, actualErr := fileUnderTest.ToArray(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -144,7 +144,7 @@ var _ = Context("toArrayer", func() {
 
 					/* act */
 					arrayUnderTest.ToArray(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -168,7 +168,7 @@ var _ = Context("toArrayer", func() {
 
 						/* act */
 						actualValue, actualErr := arrayUnderTest.ToArray(
-							&model.Value{File: new(string)},
+							&types.Value{File: new(string)},
 						)
 
 						/* assert */
@@ -183,7 +183,7 @@ var _ = Context("toArrayer", func() {
 
 						arrayItem := "dummyMapValue"
 						array := &[]interface{}{arrayItem}
-						expectedValue := model.Value{Array: array}
+						expectedValue := types.Value{Array: array}
 
 						fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 							reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))
@@ -197,7 +197,7 @@ var _ = Context("toArrayer", func() {
 
 						/* act */
 						actualValue, actualErr := arrayUnderTest.ToArray(
-							&model.Value{File: new(string)},
+							&types.Value{File: new(string)},
 						)
 
 						/* assert */
@@ -211,7 +211,7 @@ var _ = Context("toArrayer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedNumber := 2.2
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Number: &providedNumber,
 				}
 
@@ -229,7 +229,7 @@ var _ = Context("toArrayer", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedSocket := "dummySocket"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Socket: &providedSocket,
 				}
 
@@ -248,7 +248,7 @@ var _ = Context("toArrayer", func() {
 				/* arrange */
 				providedString := "{}"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					String: &providedString,
 				}
 
@@ -283,7 +283,7 @@ var _ = Context("toArrayer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToArray(
-						&model.Value{String: new(string)},
+						&types.Value{String: new(string)},
 					)
 
 					/* assert */
@@ -298,7 +298,7 @@ var _ = Context("toArrayer", func() {
 
 					arrayItem := "dummyMapValue"
 					array := &[]interface{}{arrayItem}
-					expectedValue := model.Value{Array: array}
+					expectedValue := types.Value{Array: array}
 
 					fakeJSON.UnmarshalStub = func(data []byte, v interface{}) error {
 						reflect.ValueOf(v).Elem().Set(reflect.ValueOf([]interface{}{arrayItem}))
@@ -311,7 +311,7 @@ var _ = Context("toArrayer", func() {
 
 					/* act */
 					actualValue, actualErr := arrayUnderTest.ToArray(
-						&model.Value{String: new(string)},
+						&types.Value{String: new(string)},
 					)
 
 					/* assert */
@@ -323,7 +323,7 @@ var _ = Context("toArrayer", func() {
 		Context("Value.Dir,File,Number,Array,String nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{}
+				providedValue := &types.Value{}
 
 				arrayUnderTest := _toArrayer{}
 

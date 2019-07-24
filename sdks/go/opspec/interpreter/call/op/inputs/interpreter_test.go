@@ -6,9 +6,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -29,15 +29,15 @@ var _ = Context("Interpreter", func() {
 					providedArgName: providedArgValue,
 				}
 
-				providedInputParams := map[string]*model.Param{
-					providedArgName: {String: &model.StringParam{}},
+				providedInputParams := map[string]*types.Param{
+					providedArgName: {String: &types.StringParam{}},
 				}
 
 				expectedParam := providedInputParams[providedArgName]
 
 				providedParentOpHandle := new(data.FakeHandle)
 
-				providedScope := map[string]*model.Value{
+				providedScope := map[string]*types.Value{
 					"scopeRef1Name": {},
 				}
 
@@ -88,14 +88,14 @@ var _ = Context("Interpreter", func() {
 						providedArgName: "",
 					}
 
-					providedParams := map[string]*model.Param{
+					providedParams := map[string]*types.Param{
 						providedArgName: nil,
 					}
 
 					providedOpPath := "dummyOpPath"
 
-					expectedInput := &model.Value{String: new(string)}
-					expectedInputs := map[string]*model.Value{
+					expectedInput := &types.Value{String: new(string)}
+					expectedInputs := map[string]*types.Value{
 						providedArgName: expectedInput,
 					}
 
@@ -116,7 +116,7 @@ var _ = Context("Interpreter", func() {
 						providedParams,
 						new(data.FakeHandle),
 						providedOpPath,
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyOpScratchDir",
 					)
 
@@ -137,13 +137,13 @@ var _ = Context("Interpreter", func() {
 						providedArgName: "",
 					}
 
-					providedInputParams := map[string]*model.Param{
+					providedInputParams := map[string]*types.Param{
 						providedArgName: nil,
 					}
 
 					fakeParamsDefaulter := new(params.FakeDefaulter)
-					expectedInputs := map[string]*model.Value{
-						providedArgName: new(model.Value),
+					expectedInputs := map[string]*types.Value{
+						providedArgName: new(types.Value),
 					}
 					fakeParamsDefaulter.DefaultReturns(expectedInputs)
 
@@ -161,7 +161,7 @@ var _ = Context("Interpreter", func() {
 						providedInputParams,
 						new(data.FakeHandle),
 						"dummyOpPath",
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						"dummyOpScratchDir",
 					)
 

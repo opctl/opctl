@@ -7,8 +7,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("events", func() {
@@ -19,7 +19,7 @@ var _ = Context("events", func() {
 			fakeCliExiter := new(cliexiter.Fake)
 
 			fakeAPIClient := new(client.Fake)
-			eventChannel := make(chan model.Event)
+			eventChannel := make(chan types.Event)
 			close(eventChannel)
 			fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
@@ -39,7 +39,7 @@ var _ = Context("events", func() {
 				actualGetEventStreamReq := fakeAPIClient.GetEventStreamArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(*actualGetEventStreamReq).To(Equal(model.GetEventStreamReq{}))
+			Expect(*actualGetEventStreamReq).To(Equal(types.GetEventStreamReq{}))
 
 		})
 		Context("client.GetEventStream errors", func() {
@@ -74,7 +74,7 @@ var _ = Context("events", func() {
 					fakeCliExiter := new(cliexiter.Fake)
 
 					fakeAPIClient := new(client.Fake)
-					eventChannel := make(chan model.Event)
+					eventChannel := make(chan types.Event)
 					close(eventChannel)
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 

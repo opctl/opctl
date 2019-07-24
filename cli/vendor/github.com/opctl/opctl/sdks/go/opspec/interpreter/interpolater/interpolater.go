@@ -5,8 +5,8 @@ package interpolater
 import (
 	"fmt"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 const (
@@ -22,8 +22,8 @@ type Interpolater interface {
 	// Interpolate interpolates the provided expression
 	Interpolate(
 		expression string,
-		scope map[string]*model.Value,
-		opHandle model.DataHandle,
+		scope map[string]*types.Value,
+		opHandle types.DataHandle,
 	) (string, error)
 }
 
@@ -42,8 +42,8 @@ type _Interpolater struct {
 // similar: https://github.com/kubernetes/kubernetes/blob/5066a67caaf8638c7473d4bd228037d0c270c546/third_party/forked/golang/expansion/expand.go#L1
 func (itp _Interpolater) Interpolate(
 	expression string,
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -99,8 +99,8 @@ func (itp _Interpolater) Interpolate(
 // returns the interpreted value (if any), number of bytes consumed, and any err
 func (itp _Interpolater) tryDeRef(
 	possibleRef string,
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
 ) (string, int, error) {
 	refBuffer := []byte{}
 	i := 0

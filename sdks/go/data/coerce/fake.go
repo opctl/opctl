@@ -4,98 +4,98 @@ package coerce
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Fake struct {
-	ToArrayStub        func(value *model.Value) (*model.Value, error)
+	ToArrayStub        func(value *types.Value) (*types.Value, error)
 	toArrayMutex       sync.RWMutex
 	toArrayArgsForCall []struct {
-		value *model.Value
+		value *types.Value
 	}
 	toArrayReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toArrayReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
-	ToBooleanStub        func(value *model.Value) (*model.Value, error)
+	ToBooleanStub        func(value *types.Value) (*types.Value, error)
 	toBooleanMutex       sync.RWMutex
 	toBooleanArgsForCall []struct {
-		value *model.Value
+		value *types.Value
 	}
 	toBooleanReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toBooleanReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
-	ToFileStub        func(value *model.Value, scratchDir string) (*model.Value, error)
+	ToFileStub        func(value *types.Value, scratchDir string) (*types.Value, error)
 	toFileMutex       sync.RWMutex
 	toFileArgsForCall []struct {
-		value      *model.Value
+		value      *types.Value
 		scratchDir string
 	}
 	toFileReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toFileReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
-	ToNumberStub        func(value *model.Value) (*model.Value, error)
+	ToNumberStub        func(value *types.Value) (*types.Value, error)
 	toNumberMutex       sync.RWMutex
 	toNumberArgsForCall []struct {
-		value *model.Value
+		value *types.Value
 	}
 	toNumberReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toNumberReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
-	ToObjectStub        func(value *model.Value) (*model.Value, error)
+	ToObjectStub        func(value *types.Value) (*types.Value, error)
 	toObjectMutex       sync.RWMutex
 	toObjectArgsForCall []struct {
-		value *model.Value
+		value *types.Value
 	}
 	toObjectReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toObjectReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
-	ToStringStub        func(value *model.Value) (*model.Value, error)
+	ToStringStub        func(value *types.Value) (*types.Value, error)
 	toStringMutex       sync.RWMutex
 	toStringArgsForCall []struct {
-		value *model.Value
+		value *types.Value
 	}
 	toStringReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	toStringReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) ToArray(value *model.Value) (*model.Value, error) {
+func (fake *Fake) ToArray(value *types.Value) (*types.Value, error) {
 	fake.toArrayMutex.Lock()
 	ret, specificReturn := fake.toArrayReturnsOnCall[len(fake.toArrayArgsForCall)]
 	fake.toArrayArgsForCall = append(fake.toArrayArgsForCall, struct {
-		value *model.Value
+		value *types.Value
 	}{value})
 	fake.recordInvocation("ToArray", []interface{}{value})
 	fake.toArrayMutex.Unlock()
@@ -114,39 +114,39 @@ func (fake *Fake) ToArrayCallCount() int {
 	return len(fake.toArrayArgsForCall)
 }
 
-func (fake *Fake) ToArrayArgsForCall(i int) *model.Value {
+func (fake *Fake) ToArrayArgsForCall(i int) *types.Value {
 	fake.toArrayMutex.RLock()
 	defer fake.toArrayMutex.RUnlock()
 	return fake.toArrayArgsForCall[i].value
 }
 
-func (fake *Fake) ToArrayReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToArrayReturns(result1 *types.Value, result2 error) {
 	fake.ToArrayStub = nil
 	fake.toArrayReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToArrayReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToArrayReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToArrayStub = nil
 	if fake.toArrayReturnsOnCall == nil {
 		fake.toArrayReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toArrayReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToBoolean(value *model.Value) (*model.Value, error) {
+func (fake *Fake) ToBoolean(value *types.Value) (*types.Value, error) {
 	fake.toBooleanMutex.Lock()
 	ret, specificReturn := fake.toBooleanReturnsOnCall[len(fake.toBooleanArgsForCall)]
 	fake.toBooleanArgsForCall = append(fake.toBooleanArgsForCall, struct {
-		value *model.Value
+		value *types.Value
 	}{value})
 	fake.recordInvocation("ToBoolean", []interface{}{value})
 	fake.toBooleanMutex.Unlock()
@@ -165,39 +165,39 @@ func (fake *Fake) ToBooleanCallCount() int {
 	return len(fake.toBooleanArgsForCall)
 }
 
-func (fake *Fake) ToBooleanArgsForCall(i int) *model.Value {
+func (fake *Fake) ToBooleanArgsForCall(i int) *types.Value {
 	fake.toBooleanMutex.RLock()
 	defer fake.toBooleanMutex.RUnlock()
 	return fake.toBooleanArgsForCall[i].value
 }
 
-func (fake *Fake) ToBooleanReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToBooleanReturns(result1 *types.Value, result2 error) {
 	fake.ToBooleanStub = nil
 	fake.toBooleanReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToBooleanReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToBooleanReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToBooleanStub = nil
 	if fake.toBooleanReturnsOnCall == nil {
 		fake.toBooleanReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toBooleanReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToFile(value *model.Value, scratchDir string) (*model.Value, error) {
+func (fake *Fake) ToFile(value *types.Value, scratchDir string) (*types.Value, error) {
 	fake.toFileMutex.Lock()
 	ret, specificReturn := fake.toFileReturnsOnCall[len(fake.toFileArgsForCall)]
 	fake.toFileArgsForCall = append(fake.toFileArgsForCall, struct {
-		value      *model.Value
+		value      *types.Value
 		scratchDir string
 	}{value, scratchDir})
 	fake.recordInvocation("ToFile", []interface{}{value, scratchDir})
@@ -217,39 +217,39 @@ func (fake *Fake) ToFileCallCount() int {
 	return len(fake.toFileArgsForCall)
 }
 
-func (fake *Fake) ToFileArgsForCall(i int) (*model.Value, string) {
+func (fake *Fake) ToFileArgsForCall(i int) (*types.Value, string) {
 	fake.toFileMutex.RLock()
 	defer fake.toFileMutex.RUnlock()
 	return fake.toFileArgsForCall[i].value, fake.toFileArgsForCall[i].scratchDir
 }
 
-func (fake *Fake) ToFileReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToFileReturns(result1 *types.Value, result2 error) {
 	fake.ToFileStub = nil
 	fake.toFileReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToFileReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToFileReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToFileStub = nil
 	if fake.toFileReturnsOnCall == nil {
 		fake.toFileReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toFileReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToNumber(value *model.Value) (*model.Value, error) {
+func (fake *Fake) ToNumber(value *types.Value) (*types.Value, error) {
 	fake.toNumberMutex.Lock()
 	ret, specificReturn := fake.toNumberReturnsOnCall[len(fake.toNumberArgsForCall)]
 	fake.toNumberArgsForCall = append(fake.toNumberArgsForCall, struct {
-		value *model.Value
+		value *types.Value
 	}{value})
 	fake.recordInvocation("ToNumber", []interface{}{value})
 	fake.toNumberMutex.Unlock()
@@ -268,39 +268,39 @@ func (fake *Fake) ToNumberCallCount() int {
 	return len(fake.toNumberArgsForCall)
 }
 
-func (fake *Fake) ToNumberArgsForCall(i int) *model.Value {
+func (fake *Fake) ToNumberArgsForCall(i int) *types.Value {
 	fake.toNumberMutex.RLock()
 	defer fake.toNumberMutex.RUnlock()
 	return fake.toNumberArgsForCall[i].value
 }
 
-func (fake *Fake) ToNumberReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToNumberReturns(result1 *types.Value, result2 error) {
 	fake.ToNumberStub = nil
 	fake.toNumberReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToNumberReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToNumberReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToNumberStub = nil
 	if fake.toNumberReturnsOnCall == nil {
 		fake.toNumberReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toNumberReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToObject(value *model.Value) (*model.Value, error) {
+func (fake *Fake) ToObject(value *types.Value) (*types.Value, error) {
 	fake.toObjectMutex.Lock()
 	ret, specificReturn := fake.toObjectReturnsOnCall[len(fake.toObjectArgsForCall)]
 	fake.toObjectArgsForCall = append(fake.toObjectArgsForCall, struct {
-		value *model.Value
+		value *types.Value
 	}{value})
 	fake.recordInvocation("ToObject", []interface{}{value})
 	fake.toObjectMutex.Unlock()
@@ -319,39 +319,39 @@ func (fake *Fake) ToObjectCallCount() int {
 	return len(fake.toObjectArgsForCall)
 }
 
-func (fake *Fake) ToObjectArgsForCall(i int) *model.Value {
+func (fake *Fake) ToObjectArgsForCall(i int) *types.Value {
 	fake.toObjectMutex.RLock()
 	defer fake.toObjectMutex.RUnlock()
 	return fake.toObjectArgsForCall[i].value
 }
 
-func (fake *Fake) ToObjectReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToObjectReturns(result1 *types.Value, result2 error) {
 	fake.ToObjectStub = nil
 	fake.toObjectReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToObjectReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToObjectReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToObjectStub = nil
 	if fake.toObjectReturnsOnCall == nil {
 		fake.toObjectReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toObjectReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToString(value *model.Value) (*model.Value, error) {
+func (fake *Fake) ToString(value *types.Value) (*types.Value, error) {
 	fake.toStringMutex.Lock()
 	ret, specificReturn := fake.toStringReturnsOnCall[len(fake.toStringArgsForCall)]
 	fake.toStringArgsForCall = append(fake.toStringArgsForCall, struct {
-		value *model.Value
+		value *types.Value
 	}{value})
 	fake.recordInvocation("ToString", []interface{}{value})
 	fake.toStringMutex.Unlock()
@@ -370,30 +370,30 @@ func (fake *Fake) ToStringCallCount() int {
 	return len(fake.toStringArgsForCall)
 }
 
-func (fake *Fake) ToStringArgsForCall(i int) *model.Value {
+func (fake *Fake) ToStringArgsForCall(i int) *types.Value {
 	fake.toStringMutex.RLock()
 	defer fake.toStringMutex.RUnlock()
 	return fake.toStringArgsForCall[i].value
 }
 
-func (fake *Fake) ToStringReturns(result1 *model.Value, result2 error) {
+func (fake *Fake) ToStringReturns(result1 *types.Value, result2 error) {
 	fake.ToStringStub = nil
 	fake.toStringReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ToStringReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *Fake) ToStringReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ToStringStub = nil
 	if fake.toStringReturnsOnCall == nil {
 		fake.toStringReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.toStringReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }

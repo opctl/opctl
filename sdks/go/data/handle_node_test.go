@@ -4,8 +4,8 @@ import (
 	"context"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("fsHandle", func() {
@@ -18,7 +18,7 @@ var _ = Context("fsHandle", func() {
 			providedContentPath := "dummyContentPath"
 
 			dataRef := "dummyDataRef"
-			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			pullCreds := &types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(client.Fake)
 
@@ -36,7 +36,7 @@ var _ = Context("fsHandle", func() {
 				actualReq := fakeClient.GetDataArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualReq).To(Equal(model.GetDataReq{
+			Expect(actualReq).To(Equal(types.GetDataReq{
 				ContentPath: providedContentPath,
 				PkgRef:      dataRef,
 				PullCreds:   pullCreds,
@@ -50,7 +50,7 @@ var _ = Context("fsHandle", func() {
 			providedCtx := context.TODO()
 
 			dataRef := "dummyDataRef"
-			pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+			pullCreds := &types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			fakeClient := new(client.Fake)
 
@@ -68,7 +68,7 @@ var _ = Context("fsHandle", func() {
 				actualReq := fakeClient.ListDescendantsArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
-			Expect(actualReq).To(Equal(model.ListDescendantsReq{
+			Expect(actualReq).To(Equal(types.ListDescendantsReq{
 				PkgRef:    dataRef,
 				PullCreds: pullCreds,
 			}))

@@ -5,8 +5,8 @@ package op
 import (
 	"context"
 	"github.com/golang-interfaces/iioutil"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path/filepath"
 )
 
@@ -14,8 +14,8 @@ type Lister interface {
 	// List recursively lists ops within a directory
 	List(
 		ctx context.Context,
-		dirHandle model.DataHandle,
-	) ([]*model.OpDotYml, error)
+		dirHandle types.DataHandle,
+	) ([]*types.OpDotYml, error)
 }
 
 // NewLister returns an initialized Lister instance
@@ -33,15 +33,15 @@ type _lister struct {
 
 func (ls _lister) List(
 	ctx context.Context,
-	dirHandle model.DataHandle,
-) ([]*model.OpDotYml, error) {
+	dirHandle types.DataHandle,
+) ([]*types.OpDotYml, error) {
 
 	contents, err := dirHandle.ListDescendants(ctx)
 	if nil != err {
 		return nil, err
 	}
 
-	var ops []*model.OpDotYml
+	var ops []*types.OpDotYml
 	for _, content := range contents {
 		if filepath.Base(content.Path) == dotyml.FileName {
 

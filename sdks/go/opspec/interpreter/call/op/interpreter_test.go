@@ -12,10 +12,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
@@ -65,7 +65,7 @@ var _ = Context("Interpreter", func() {
 									Name      string
 									Interpret *struct {
 										Expect string
-										Scope  map[string]*model.Value
+										Scope  map[string]*types.Value
 									}
 								}
 								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
@@ -74,7 +74,7 @@ var _ = Context("Interpreter", func() {
 
 								for _, scenario := range scenarioDotYml {
 									if nil != scenario.Interpret {
-										scgOpCall := &model.SCGOpCall{
+										scgOpCall := &types.SCGOpCall{
 											Ref:    absOpPath,
 											Inputs: map[string]interface{}{},
 										}
@@ -125,8 +125,8 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				&model.SCGOpCall{
+				map[string]*types.Value{},
+				&types.SCGOpCall{
 					Ref: "dummyOpRef",
 				},
 				"dummyOpID",
@@ -156,8 +156,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGOpCall{
+					map[string]*types.Value{},
+					&types.SCGOpCall{
 						Ref: "dummyOpRef",
 					},
 					"dummyOpID",
@@ -187,9 +187,9 @@ var _ = Context("Interpreter", func() {
 
 					/* act */
 					_, actualError := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						&model.SCGOpCall{
-							PullCreds: &model.SCGPullCreds{},
+						map[string]*types.Value{},
+						&types.SCGOpCall{
+							PullCreds: &types.SCGPullCreds{},
 						},
 						"dummyOpID",
 						new(data.FakeHandle),
@@ -209,9 +209,9 @@ var _ = Context("Interpreter", func() {
 					providedDataCachePath := "dummyDataCachePath"
 
 					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-					expectedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
-					fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedPullCreds.Username}, nil)
-					fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedPullCreds.Password}, nil)
+					expectedPullCreds := &types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+					fakeStringInterpreter.InterpretReturnsOnCall(0, &types.Value{String: &expectedPullCreds.Username}, nil)
+					fakeStringInterpreter.InterpretReturnsOnCall(1, &types.Value{String: &expectedPullCreds.Password}, nil)
 
 					fakeData := new(data.Fake)
 					// error to trigger immediate return
@@ -225,10 +225,10 @@ var _ = Context("Interpreter", func() {
 
 					/* act */
 					objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						&model.SCGOpCall{
+						map[string]*types.Value{},
+						&types.SCGOpCall{
 							Ref:       "dummyOpRef",
-							PullCreds: &model.SCGPullCreds{},
+							PullCreds: &types.SCGPullCreds{},
 						},
 						"dummyOpID",
 						providedParentOpHandle,
@@ -250,7 +250,7 @@ var _ = Context("Interpreter", func() {
 			providedParentOpHandle.PathReturns(new(string))
 
 			provideddataDirPath := "dummydataDirPath"
-			providedSCGOpCall := &model.SCGOpCall{
+			providedSCGOpCall := &types.SCGOpCall{
 				Ref: "dummyOpRef",
 			}
 
@@ -275,7 +275,7 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			objectUnderTest.Interpret(
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				providedSCGOpCall,
 				"dummyOpID",
 				providedParentOpHandle,
@@ -308,8 +308,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGOpCall{},
+					map[string]*types.Value{},
+					&types.SCGOpCall{},
 					"dummyOpID",
 					providedParentOpHandle,
 					"dummyRootOpID",
@@ -343,8 +343,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGOpCall{},
+					map[string]*types.Value{},
+					&types.SCGOpCall{},
 					"dummyOpID",
 					providedParentOpHandle,
 					"dummyRootOpID",
@@ -375,8 +375,8 @@ var _ = Context("Interpreter", func() {
 
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
-						map[string]*model.Value{},
-						&model.SCGOpCall{},
+						map[string]*types.Value{},
+						&types.SCGOpCall{},
 						"dummyOpID",
 						providedParentOpHandle,
 						"dummyRootOpID",
@@ -389,14 +389,14 @@ var _ = Context("Interpreter", func() {
 			Context("pkg.GetManifest doesn't err", func() {
 				It("should call inputs.Interpret w/ expected inputs", func() {
 					/* arrange */
-					providedScope := map[string]*model.Value{
+					providedScope := map[string]*types.Value{
 						"dummyScopeRef1Name": {String: new(string)},
 					}
 					expectedScope := providedScope
 
 					expectedInputArgs := map[string]interface{}{"dummySCGOpCallInputName": "dummyScgOpCallInputValue"}
 
-					providedSCGOpCall := &model.SCGOpCall{
+					providedSCGOpCall := &types.SCGOpCall{
 						Inputs: expectedInputArgs,
 					}
 
@@ -413,12 +413,12 @@ var _ = Context("Interpreter", func() {
 					fakeData := new(data.Fake)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					expectedInputParams := map[string]*model.Param{
-						"dummyParam1Name": {String: &model.StringParam{}},
+					expectedInputParams := map[string]*types.Param{
+						"dummyParam1Name": {String: &types.StringParam{}},
 					}
 
 					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					returnedManifest := &model.OpDotYml{
+					returnedManifest := &types.OpDotYml{
 						Inputs: expectedInputParams,
 					}
 					fakeOpDotYmlGetter.GetReturns(returnedManifest, nil)

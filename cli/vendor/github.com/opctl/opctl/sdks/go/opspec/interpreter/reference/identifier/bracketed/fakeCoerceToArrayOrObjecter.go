@@ -4,32 +4,32 @@ package bracketed
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type fakeCoerceToArrayOrObjecter struct {
-	CoerceToArrayOrObjectStub        func(data *model.Value) (*model.Value, error)
+	CoerceToArrayOrObjectStub        func(data *types.Value) (*types.Value, error)
 	coerceToArrayOrObjectMutex       sync.RWMutex
 	coerceToArrayOrObjectArgsForCall []struct {
-		data *model.Value
+		data *types.Value
 	}
 	coerceToArrayOrObjectReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	coerceToArrayOrObjectReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObject(data *model.Value) (*model.Value, error) {
+func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObject(data *types.Value) (*types.Value, error) {
 	fake.coerceToArrayOrObjectMutex.Lock()
 	ret, specificReturn := fake.coerceToArrayOrObjectReturnsOnCall[len(fake.coerceToArrayOrObjectArgsForCall)]
 	fake.coerceToArrayOrObjectArgsForCall = append(fake.coerceToArrayOrObjectArgsForCall, struct {
-		data *model.Value
+		data *types.Value
 	}{data})
 	fake.recordInvocation("CoerceToArrayOrObject", []interface{}{data})
 	fake.coerceToArrayOrObjectMutex.Unlock()
@@ -48,30 +48,30 @@ func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectCallCount() int {
 	return len(fake.coerceToArrayOrObjectArgsForCall)
 }
 
-func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectArgsForCall(i int) *model.Value {
+func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectArgsForCall(i int) *types.Value {
 	fake.coerceToArrayOrObjectMutex.RLock()
 	defer fake.coerceToArrayOrObjectMutex.RUnlock()
 	return fake.coerceToArrayOrObjectArgsForCall[i].data
 }
 
-func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectReturns(result1 *model.Value, result2 error) {
+func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectReturns(result1 *types.Value, result2 error) {
 	fake.CoerceToArrayOrObjectStub = nil
 	fake.coerceToArrayOrObjectReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *fakeCoerceToArrayOrObjecter) CoerceToArrayOrObjectReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.CoerceToArrayOrObjectStub = nil
 	if fake.coerceToArrayOrObjectReturnsOnCall == nil {
 		fake.coerceToArrayOrObjectReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.coerceToArrayOrObjectReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }

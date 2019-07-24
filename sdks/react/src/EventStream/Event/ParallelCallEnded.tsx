@@ -1,5 +1,5 @@
 import React from 'react'
-import ParallelCallEnded from '@opctl/sdk/src/model/event/parallelCallEnded'
+import ParallelCallEnded from '@opctl/sdk/src/types/event/parallelCallEnded'
 
 interface Props {
   parallelCallEnded: ParallelCallEnded

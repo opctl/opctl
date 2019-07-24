@@ -8,22 +8,22 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 type Interpreter interface {
 	// Interpret interprets an SCGOpCall into a DCGOpCall
 	Interpret(
-		scope map[string]*model.Value,
-		scgOpCall *model.SCGOpCall,
+		scope map[string]*types.Value,
+		scgOpCall *types.SCGOpCall,
 		opID string,
-		parentOpHandle model.DataHandle,
+		parentOpHandle types.DataHandle,
 		rootOpID string,
-	) (*model.DCGOpCall, error)
+	) (*types.DCGOpCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -52,16 +52,16 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
-	scgOpCall *model.SCGOpCall,
+	scope map[string]*types.Value,
+	scgOpCall *types.SCGOpCall,
 	opID string,
-	parentOpHandle model.DataHandle,
+	parentOpHandle types.DataHandle,
 	rootOpID string,
-) (*model.DCGOpCall, error) {
+) (*types.DCGOpCall, error) {
 
-	var pkgPullCreds *model.PullCreds
+	var pkgPullCreds *types.PullCreds
 	if scgPullCreds := scgOpCall.PullCreds; nil != scgPullCreds {
-		pkgPullCreds = &model.PullCreds{}
+		pkgPullCreds = &types.PullCreds{}
 		var err error
 		interpretdUsername, err := itp.stringInterpreter.Interpret(scope, scgPullCreds.Username, parentOpHandle)
 		if nil != err {
@@ -100,8 +100,8 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	dcgOpCall := &model.DCGOpCall{
-		DCGBaseCall: model.DCGBaseCall{
+	dcgOpCall := &types.DCGOpCall{
+		DCGBaseCall: types.DCGBaseCall{
 			RootOpID: rootOpID,
 			OpHandle: opHandle,
 		},

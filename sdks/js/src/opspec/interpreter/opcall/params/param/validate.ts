@@ -1,5 +1,5 @@
-import Value from '../../../../../model/value'
-import Param from '../../../../../model/param'
+import Value from '../../../../../types/value'
+import Param from '../../../../../types/param'
 import arrayValidate from './array/validate'
 import booleanValidate from './boolean/validate'
 import dirValidate from './dir/validate'

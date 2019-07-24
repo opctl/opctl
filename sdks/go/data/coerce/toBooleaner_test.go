@@ -9,7 +9,7 @@ import (
 	"github.com/golang-interfaces/iioutil"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("toBooleaner", func() {
@@ -23,7 +23,7 @@ var _ = Context("toBooleaner", func() {
 				actualValue, actualErr := objectUnderTest.ToBoolean(nil)
 
 				/* assert */
-				Expect(*actualValue).To(Equal(model.Value{Boolean: new(bool)}))
+				Expect(*actualValue).To(Equal(types.Value{Boolean: new(bool)}))
 				Expect(actualErr).To(BeNil())
 			})
 		})
@@ -37,13 +37,13 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{
+						&types.Value{
 							Array: new([]interface{}),
 						},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -59,13 +59,13 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{
+						&types.Value{
 							Array: array,
 						},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -74,7 +74,7 @@ var _ = Context("toBooleaner", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedBoolean := true
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Boolean: &providedBoolean,
 				}
 
@@ -93,7 +93,7 @@ var _ = Context("toBooleaner", func() {
 				/* arrange */
 				providedDir := "dummyDir"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Dir: &providedDir,
 				}
 
@@ -125,7 +125,7 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{Dir: new(string)},
+						&types.Value{Dir: new(string)},
 					)
 
 					/* assert */
@@ -150,11 +150,11 @@ var _ = Context("toBooleaner", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToBoolean(
-							&model.Value{Dir: new(string)},
+							&types.Value{Dir: new(string)},
 						)
 
 						/* assert */
-						Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+						Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 						Expect(actualErr).To(BeNil())
 					})
 				})
@@ -182,11 +182,11 @@ var _ = Context("toBooleaner", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToBoolean(
-							&model.Value{Dir: new(string)},
+							&types.Value{Dir: new(string)},
 						)
 
 						/* assert */
-						Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+						Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 						Expect(actualErr).To(BeNil())
 					})
 				})
@@ -197,7 +197,7 @@ var _ = Context("toBooleaner", func() {
 				/* arrange */
 				providedFile := "dummyFile"
 
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedFile,
 				}
 
@@ -229,7 +229,7 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{File: new(string)},
+						&types.Value{File: new(string)},
 					)
 
 					/* assert */
@@ -254,11 +254,11 @@ var _ = Context("toBooleaner", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToBoolean(
-							&model.Value{File: new(string)},
+							&types.Value{File: new(string)},
 						)
 
 						/* assert */
-						Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+						Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 						Expect(actualErr).To(BeNil())
 					})
 				})
@@ -278,11 +278,11 @@ var _ = Context("toBooleaner", func() {
 
 						/* act */
 						actualValue, actualErr := objectUnderTest.ToBoolean(
-							&model.Value{File: new(string)},
+							&types.Value{File: new(string)},
 						)
 
 						/* assert */
-						Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+						Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 						Expect(actualErr).To(BeNil())
 					})
 				})
@@ -293,7 +293,7 @@ var _ = Context("toBooleaner", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedNumber := 0.0
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						Number: &providedNumber,
 					}
 
@@ -305,7 +305,7 @@ var _ = Context("toBooleaner", func() {
 					actualValue, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -313,7 +313,7 @@ var _ = Context("toBooleaner", func() {
 				It("should return expected result", func() {
 					/* arrange */
 					providedNumber := 1.0
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						Number: &providedNumber,
 					}
 
@@ -325,7 +325,7 @@ var _ = Context("toBooleaner", func() {
 					actualValue, actualErr := objectUnderTest.ToBoolean(providedValue)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -340,13 +340,13 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{
+						&types.Value{
 							Object: new(map[string]interface{}),
 						},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -363,13 +363,13 @@ var _ = Context("toBooleaner", func() {
 
 					/* act */
 					actualValue, actualErr := objectUnderTest.ToBoolean(
-						&model.Value{
+						&types.Value{
 							Object: object,
 						},
 					)
 
 					/* assert */
-					Expect(*actualValue).To(Equal(model.Value{Boolean: &expectedBoolean}))
+					Expect(*actualValue).To(Equal(types.Value{Boolean: &expectedBoolean}))
 					Expect(actualErr).To(BeNil())
 				})
 			})
@@ -377,7 +377,7 @@ var _ = Context("toBooleaner", func() {
 		Context("Value.Array,Boolean,Dir,File,Number,Object,Boolean nil", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedValue := &model.Value{}
+				providedValue := &types.Value{}
 
 				objectUnderTest := _toBooleaner{}
 

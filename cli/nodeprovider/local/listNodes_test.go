@@ -4,7 +4,7 @@ import (
 	"github.com/golang-utils/lockfile"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 )
 
 var _ = Context("listNodes", func() {
@@ -43,7 +43,7 @@ var _ = Context("listNodes", func() {
 	Context("lockfile.PIdOfOwner != 0", func() {
 		It("should return expected results", func() {
 			/* arrange */
-			expectedNodes := []*model.NodeInfoView{{}}
+			expectedNodes := []*types.NodeInfoView{{}}
 
 			fakeLockFile := new(lockfile.Fake)
 			fakeLockFile.PIdOfOwnerReturns(333)

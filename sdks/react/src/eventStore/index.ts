@@ -1,16 +1,16 @@
 import { eventStreamGet as opctlEventStreamGet } from '@opctl/sdk/src/api/client'
 import uuidV4 from 'uuid/v4'
 import isFiltered from './isFiltered'
-import ModelEvent from '@opctl/sdk/src/model/event'
+import Event from '@opctl/sdk/src/types/event'
 import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 import { toast } from 'react-toastify'
 
 interface Subscription {
   filter: EventFilter
-  onEvent: (event: ModelEvent) => any
+  onEvent: (event: Event) => any
 }
 
-const events = [] as ModelEvent[]
+const events = [] as Event[]
 const subscriptions = {} as { [subscriptionId: string]: Subscription }
 
 export default class EventStore {
@@ -20,14 +20,14 @@ export default class EventStore {
     opctlEventStreamGet(
       apiBaseUrl,
       {
-        onEvent: (event: ModelEvent) => this.add(event),
+        onEvent: (event: Event) => this.add(event),
         onError: (error: Error) => toast.error(error.message)
       }
     )
   }
 
   add(
-    event: ModelEvent
+    event: Event
   ) {
     events.push(event)
     Object.values(subscriptions).forEach(subscription => {
@@ -48,7 +48,7 @@ export default class EventStore {
    */
   getStream(
     filter: EventFilter,
-    onEvent: (event: ModelEvent) => any
+    onEvent: (event: Event) => any
   ): () => void {
     const subscriptionId = uuidV4()
 

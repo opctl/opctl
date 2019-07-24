@@ -1,12 +1,12 @@
 import React from 'react'
-import ModelParamSocket from '@opctl/sdk/src/model/param/socket'
+import ParamSocket from '@opctl/sdk/src/types/param/socket'
 import _DomInput from './_DomInput'
 
 interface Props {
   name: string
   onValid: (value: any) => any
   opRef: string
-  socket: ModelParamSocket
+  socket: ParamSocket
   value: any
 }
 

@@ -3,7 +3,7 @@ package cliparamsatisfier
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Describe("paramDefaultInputSrc", func() {
@@ -14,13 +14,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 					/* arrange */
 					inputName := "dummyInputName"
 					paramDefault := "dummyParamDefault"
-					param := &model.Param{
-						String: &model.StringParam{Default: &paramDefault},
+					param := &types.Param{
+						String: &types.StringParam{Default: &paramDefault},
 					}
 
 					inputSrcFactory := _InputSrcFactory{}
 					objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-						map[string]*model.Param{inputName: param},
+						map[string]*types.Param{inputName: param},
 					)
 
 					/* act */
@@ -41,13 +41,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new([]interface{})
-						param := &model.Param{
-							Array: &model.ArrayParam{Default: paramDefault},
+						param := &types.Param{
+							Array: &types.ArrayParam{Default: paramDefault},
 						}
 
 						inputSrcFactory := _InputSrcFactory{}
 						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
+							map[string]*types.Param{inputName: param},
 						)
 
 						/* act */
@@ -63,13 +63,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := true
-						param := &model.Param{
-							Boolean: &model.BooleanParam{Default: &paramDefault},
+						param := &types.Param{
+							Boolean: &types.BooleanParam{Default: &paramDefault},
 						}
 
 						inputSrcFactory := _InputSrcFactory{}
 						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
+							map[string]*types.Param{inputName: param},
 						)
 
 						/* act */
@@ -86,13 +86,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								Dir: &model.DirParam{Default: &paramDefault},
+							param := &types.Param{
+								Dir: &types.DirParam{Default: &paramDefault},
 							}
 
 							inputSrcFactory := _InputSrcFactory{}
 							objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-								map[string]*model.Param{inputName: param},
+								map[string]*types.Param{inputName: param},
 							)
 
 							/* act */
@@ -108,15 +108,15 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "dummyParamDefault"
-							param := &model.Param{
-								Dir: &model.DirParam{Default: &paramDefault},
+							param := &types.Param{
+								Dir: &types.DirParam{Default: &paramDefault},
 							}
 
 							expectedValue := param.Dir.Default
 
 							inputSrcFactory := _InputSrcFactory{}
 							objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-								map[string]*model.Param{inputName: param},
+								map[string]*types.Param{inputName: param},
 							)
 
 							/* act */
@@ -134,13 +134,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "/dummyParamDefault"
-							param := &model.Param{
-								File: &model.FileParam{Default: &paramDefault},
+							param := &types.Param{
+								File: &types.FileParam{Default: &paramDefault},
 							}
 
 							inputSrcFactory := _InputSrcFactory{}
 							objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-								map[string]*model.Param{inputName: param},
+								map[string]*types.Param{inputName: param},
 							)
 
 							/* act */
@@ -156,15 +156,15 @@ var _ = Describe("paramDefaultInputSrc", func() {
 							/* arrange */
 							inputName := "dummyInputName"
 							paramDefault := "dummyParamDefault"
-							param := &model.Param{
-								File: &model.FileParam{Default: &paramDefault},
+							param := &types.Param{
+								File: &types.FileParam{Default: &paramDefault},
 							}
 
 							expectedValue := param.File.Default
 
 							inputSrcFactory := _InputSrcFactory{}
 							objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-								map[string]*model.Param{inputName: param},
+								map[string]*types.Param{inputName: param},
 							)
 
 							/* act */
@@ -181,13 +181,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := 2.1
-						param := &model.Param{
-							Number: &model.NumberParam{Default: &paramDefault},
+						param := &types.Param{
+							Number: &types.NumberParam{Default: &paramDefault},
 						}
 
 						inputSrcFactory := _InputSrcFactory{}
 						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
+							map[string]*types.Param{inputName: param},
 						)
 
 						/* act */
@@ -203,13 +203,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := new(map[string]interface{})
-						param := &model.Param{
-							Object: &model.ObjectParam{Default: paramDefault},
+						param := &types.Param{
+							Object: &types.ObjectParam{Default: paramDefault},
 						}
 
 						inputSrcFactory := _InputSrcFactory{}
 						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
+							map[string]*types.Param{inputName: param},
 						)
 
 						/* act */
@@ -225,13 +225,13 @@ var _ = Describe("paramDefaultInputSrc", func() {
 						/* arrange */
 						inputName := "dummyInputName"
 						paramDefault := "dummyParamDefault"
-						param := &model.Param{
-							String: &model.StringParam{Default: &paramDefault},
+						param := &types.Param{
+							String: &types.StringParam{Default: &paramDefault},
 						}
 
 						inputSrcFactory := _InputSrcFactory{}
 						objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-							map[string]*model.Param{inputName: param},
+							map[string]*types.Param{inputName: param},
 						)
 
 						/* act */
@@ -250,7 +250,7 @@ var _ = Describe("paramDefaultInputSrc", func() {
 			/* arrange */
 			inputSrcFactory := _InputSrcFactory{}
 			objectUnderTest := inputSrcFactory.NewParamDefaultInputSrc(
-				map[string]*model.Param{},
+				map[string]*types.Param{},
 			)
 
 			/* act */

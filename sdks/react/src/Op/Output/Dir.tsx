@@ -1,10 +1,10 @@
 import React from 'react'
-import ModelParamDir from '@opctl/sdk/src/model/param/dir'
+import ParamDir from '@opctl/sdk/src/types/param/dir'
 import Description from '../Param/Description'
 
 interface Props {
   name: string
-  param: ModelParamDir
+  param: ParamDir
   opRef: string
   value: any
 }

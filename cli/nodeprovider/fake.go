@@ -2,23 +2,23 @@
 package nodeprovider
 
 import (
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"sync"
 )
 
 type Fake struct {
-	ListNodesStub        func() (nodes []*model.NodeInfoView, err error)
+	ListNodesStub        func() (nodes []*types.NodeInfoView, err error)
 	listNodesMutex       sync.RWMutex
 	listNodesArgsForCall []struct{}
 	listNodesReturns     struct {
-		result1 []*model.NodeInfoView
+		result1 []*types.NodeInfoView
 		result2 error
 	}
-	CreateNodeStub        func() (nodeInfo *model.NodeInfoView, err error)
+	CreateNodeStub        func() (nodeInfo *types.NodeInfoView, err error)
 	createNodeMutex       sync.RWMutex
 	createNodeArgsForCall []struct{}
 	createNodeReturns     struct {
-		result1 *model.NodeInfoView
+		result1 *types.NodeInfoView
 		result2 error
 	}
 	KillNodeIfExistsStub        func(nodeId string) (err error)
@@ -33,7 +33,7 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) ListNodes() (nodes []*model.NodeInfoView, err error) {
+func (fake *Fake) ListNodes() (nodes []*types.NodeInfoView, err error) {
 	fake.listNodesMutex.Lock()
 	fake.listNodesArgsForCall = append(fake.listNodesArgsForCall, struct{}{})
 	fake.recordInvocation("ListNodes", []interface{}{})
@@ -51,15 +51,15 @@ func (fake *Fake) ListNodesCallCount() int {
 	return len(fake.listNodesArgsForCall)
 }
 
-func (fake *Fake) ListNodesReturns(result1 []*model.NodeInfoView, result2 error) {
+func (fake *Fake) ListNodesReturns(result1 []*types.NodeInfoView, result2 error) {
 	fake.ListNodesStub = nil
 	fake.listNodesReturns = struct {
-		result1 []*model.NodeInfoView
+		result1 []*types.NodeInfoView
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CreateNode() (nodeInfo *model.NodeInfoView, err error) {
+func (fake *Fake) CreateNode() (nodeInfo *types.NodeInfoView, err error) {
 	fake.createNodeMutex.Lock()
 	fake.createNodeArgsForCall = append(fake.createNodeArgsForCall, struct{}{})
 	fake.recordInvocation("CreateNode", []interface{}{})
@@ -77,10 +77,10 @@ func (fake *Fake) CreateNodeCallCount() int {
 	return len(fake.createNodeArgsForCall)
 }
 
-func (fake *Fake) CreateNodeReturns(result1 *model.NodeInfoView, result2 error) {
+func (fake *Fake) CreateNodeReturns(result1 *types.NodeInfoView, result2 error) {
 	fake.CreateNodeStub = nil
 	fake.createNodeReturns = struct {
-		result1 *model.NodeInfoView
+		result1 *types.NodeInfoView
 		result2 error
 	}{result1, result2}
 }

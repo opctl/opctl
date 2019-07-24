@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -34,7 +34,7 @@ var _ = Context("Interpolate", func() {
 							scenarioDotYml := []struct {
 								Name     string
 								Template string
-								Scope    map[string]*model.Value
+								Scope    map[string]*types.Value
 								Expected string
 							}{}
 							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
@@ -56,7 +56,7 @@ var _ = Context("Interpolate", func() {
 									// make file refs absolute
 									if nil != value.File {
 										absFilePath := filepath.Join(absPath, *value.File)
-										scenario.Scope[name] = &model.Value{File: &absFilePath}
+										scenario.Scope[name] = &types.Value{File: &absFilePath}
 									}
 								}
 								/* act */

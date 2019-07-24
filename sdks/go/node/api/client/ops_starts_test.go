@@ -7,8 +7,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,11 +20,11 @@ var _ = Context("StartOp", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.StartOpReq{
-			Args: map[string]*model.Value{},
-			Op: model.StartOpReqOp{
+		providedReq := types.StartOpReq{
+			Args: map[string]*types.Value{},
+			Op: types.StartOpReqOp{
 				Ref: "dummyOpRef",
-				PullCreds: &model.PullCreds{
+				PullCreds: &types.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				},

@@ -4,39 +4,39 @@ package op
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opID string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error)
+	InterpretStub        func(scope map[string]*types.Value, scgOpCall *types.SCGOpCall, opID string, parentOpHandle types.DataHandle, rootOpID string) (*types.DCGOpCall, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		scope          map[string]*model.Value
-		scgOpCall      *model.SCGOpCall
+		scope          map[string]*types.Value
+		scgOpCall      *types.SCGOpCall
 		opID           string
-		parentOpHandle model.DataHandle
+		parentOpHandle types.DataHandle
 		rootOpID       string
 	}
 	interpretReturns struct {
-		result1 *model.DCGOpCall
+		result1 *types.DCGOpCall
 		result2 error
 	}
 	interpretReturnsOnCall map[int]struct {
-		result1 *model.DCGOpCall
+		result1 *types.DCGOpCall
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(scope map[string]*model.Value, scgOpCall *model.SCGOpCall, opID string, parentOpHandle model.DataHandle, rootOpID string) (*model.DCGOpCall, error) {
+func (fake *FakeInterpreter) Interpret(scope map[string]*types.Value, scgOpCall *types.SCGOpCall, opID string, parentOpHandle types.DataHandle, rootOpID string) (*types.DCGOpCall, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		scope          map[string]*model.Value
-		scgOpCall      *model.SCGOpCall
+		scope          map[string]*types.Value
+		scgOpCall      *types.SCGOpCall
 		opID           string
-		parentOpHandle model.DataHandle
+		parentOpHandle types.DataHandle
 		rootOpID       string
 	}{scope, scgOpCall, opID, parentOpHandle, rootOpID})
 	fake.recordInvocation("Interpret", []interface{}{scope, scgOpCall, opID, parentOpHandle, rootOpID})
@@ -56,30 +56,30 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*model.Value, *model.SCGOpCall, string, model.DataHandle, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]*types.Value, *types.SCGOpCall, string, types.DataHandle, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgOpCall, fake.interpretArgsForCall[i].opID, fake.interpretArgsForCall[i].parentOpHandle, fake.interpretArgsForCall[i].rootOpID
 }
 
-func (fake *FakeInterpreter) InterpretReturns(result1 *model.DCGOpCall, result2 error) {
+func (fake *FakeInterpreter) InterpretReturns(result1 *types.DCGOpCall, result2 error) {
 	fake.InterpretStub = nil
 	fake.interpretReturns = struct {
-		result1 *model.DCGOpCall
+		result1 *types.DCGOpCall
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 *model.DCGOpCall, result2 error) {
+func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 *types.DCGOpCall, result2 error) {
 	fake.InterpretStub = nil
 	if fake.interpretReturnsOnCall == nil {
 		fake.interpretReturnsOnCall = make(map[int]struct {
-			result1 *model.DCGOpCall
+			result1 *types.DCGOpCall
 			result2 error
 		})
 	}
 	fake.interpretReturnsOnCall[i] = struct {
-		result1 *model.DCGOpCall
+		result1 *types.DCGOpCall
 		result2 error
 	}{result1, result2}
 }

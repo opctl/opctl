@@ -3,8 +3,8 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -57,7 +57,7 @@ var _ = Context("core", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
 
-				nodesReturnedFromCallStore := []*model.DCG{
+				nodesReturnedFromCallStore := []*types.DCG{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},
@@ -99,7 +99,7 @@ var _ = Context("core", func() {
 				/* arrange */
 				providedCallID := "providedCallID"
 
-				nodesReturnedFromCallStore := []*model.DCG{
+				nodesReturnedFromCallStore := []*types.DCG{
 					{Id: "dummyNode1Id"},
 					{Id: "dummyNode2Id"},
 					{Id: "dummyNode3Id"},

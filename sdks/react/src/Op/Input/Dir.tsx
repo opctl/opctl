@@ -1,9 +1,9 @@
 import React from 'react'
-import ModelParamDir from '@opctl/sdk/src/model/param/dir'
+import ParamDir from '@opctl/sdk/src/types/param/dir'
 import _DomInput from './_DomInput'
 
 interface Props {
-  dir: ModelParamDir
+  dir: ParamDir
   name: string
   onValid: (value: any) => any
   opRef: string

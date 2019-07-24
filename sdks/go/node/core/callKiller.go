@@ -5,7 +5,7 @@ package core
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
@@ -40,8 +40,8 @@ func (ckr _callKiller) Kill(
 	callID string,
 	rootCallID string,
 ) {
-	ckr.eventPublisher.Publish(model.Event{
-		CallKilled: &model.CallKilledEvent{
+	ckr.eventPublisher.Publish(types.Event{
+		CallKilled: &types.CallKilledEvent{
 			CallID:     callID,
 			RootCallID: rootCallID,
 		},
@@ -55,7 +55,7 @@ func (ckr _callKiller) Kill(
 	for _, childCallGraph := range ckr.callStore.ListWithParentID(callID) {
 		// recursively kill all child calls
 		waitGroup.Add(1)
-		go func(childCallGraph *model.DCG) {
+		go func(childCallGraph *types.DCG) {
 			defer waitGroup.Done()
 
 			ckr.Kill(

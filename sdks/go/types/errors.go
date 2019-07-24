@@ -1,4 +1,4 @@
-package model
+package types
 
 // ErrDataProviderAuthentication conveys data pull failed due to authentication
 type ErrDataProviderAuthentication struct{}

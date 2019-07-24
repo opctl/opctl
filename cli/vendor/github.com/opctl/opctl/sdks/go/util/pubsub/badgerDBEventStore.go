@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgraph-io/badger"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"log"
 	"os"
 	"path"
@@ -46,7 +46,7 @@ type badgerDBEventStore struct {
 
 // O(1); threadsafe
 func (er *badgerDBEventStore) Add(
-	event model.Event,
+	event types.Event,
 ) error {
 
 	return er.db.Update(func(txn *badger.Txn) error {
@@ -63,9 +63,9 @@ func (er *badgerDBEventStore) Add(
 // O(n) (n being number of events that exist); threadsafe
 func (er badgerDBEventStore) List(
 	ctx context.Context,
-	filter model.EventFilter,
-) (<-chan model.Event, <-chan error) {
-	eventChannel := make(chan model.Event, 1000)
+	filter types.EventFilter,
+) (<-chan types.Event, <-chan error) {
+	eventChannel := make(chan types.Event, 1000)
 	errChannel := make(chan error, 1)
 
 	go func() {
@@ -91,7 +91,7 @@ func (er badgerDBEventStore) List(
 					return err
 				}
 
-				event := model.Event{}
+				event := types.Event{}
 				if err := json.Unmarshal(value, &event); nil != err {
 					return err
 				}

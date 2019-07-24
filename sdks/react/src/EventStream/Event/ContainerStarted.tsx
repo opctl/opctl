@@ -1,5 +1,5 @@
 import React from 'react'
-import ContainerStarted from '@opctl/sdk/src/model/event/containerStarted'
+import ContainerStarted from '@opctl/sdk/src/types/event/containerStarted'
 
 interface Props {
   containerStarted: ContainerStarted

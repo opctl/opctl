@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path/filepath"
 )
 
@@ -23,7 +23,7 @@ var _ = Context("Interpreter", func() {
 			providedCurrentScopeRef2 := "/dummy-unix-socket"
 			providedCurrentScopeRef2String := "dummyScopeRef2String"
 
-			providedCurrentScope := map[string]*model.Value{
+			providedCurrentScope := map[string]*types.Value{
 				providedCurrentScopeRef1: {Socket: &providedCurrentScopeRef1String},
 			}
 

@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/util/clicolorer"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"time"
 )
 
@@ -69,8 +69,8 @@ var _ = Context("output", func() {
 		Context("ContainerExited", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					ContainerExited: &model.ContainerExitedEvent{
+				providedEvent := &types.Event{
+					ContainerExited: &types.ContainerExitedEvent{
 						ContainerID: "dummyContainerID",
 						OpRef:       "dummyOpRef",
 						ExitCode:    1,
@@ -105,8 +105,8 @@ var _ = Context("output", func() {
 		Context("ContainerStarted", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					ContainerStarted: &model.ContainerStartedEvent{
+				providedEvent := &types.Event{
+					ContainerStarted: &types.ContainerStartedEvent{
 						ContainerID: "dummyContainerID",
 						OpRef:       "dummyOpRef",
 					},
@@ -139,8 +139,8 @@ var _ = Context("output", func() {
 		Context("ContainerStdErrWrittenTo", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+				providedEvent := &types.Event{
+					ContainerStdErrWrittenTo: &types.ContainerStdErrWrittenToEvent{
 						Data: []byte("dummyData"),
 					},
 					Timestamp: time.Now(),
@@ -165,8 +165,8 @@ var _ = Context("output", func() {
 		Context("ContainerOutWrittenTo", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+				providedEvent := &types.Event{
+					ContainerStdOutWrittenTo: &types.ContainerStdOutWrittenToEvent{
 						Data: []byte("dummyData"),
 					},
 					Timestamp: time.Now(),
@@ -191,8 +191,8 @@ var _ = Context("output", func() {
 		Context("OpErred", func() {
 			It("should call errWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					OpErred: &model.OpErredEvent{
+				providedEvent := &types.Event{
+					OpErred: &types.OpErredEvent{
 						OpID:  "dummyOpID",
 						OpRef: "dummyOpRef",
 						Msg:   "dummyMsg",
@@ -228,8 +228,8 @@ var _ = Context("output", func() {
 			Context("Outcome==SUCCEEDED", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
-					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+					providedEvent := &types.Event{
+						OpEnded: &types.OpEndedEvent{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "SUCCEEDED",
@@ -264,8 +264,8 @@ var _ = Context("output", func() {
 			Context("Outcome==KILLED", func() {
 				It("should call stdWriter w/ expected args", func() {
 					/* arrange */
-					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+					providedEvent := &types.Event{
+						OpEnded: &types.OpEndedEvent{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "KILLED",
@@ -300,8 +300,8 @@ var _ = Context("output", func() {
 			Context("Outcome==FAILED", func() {
 				It("should call errWriter w/ expected args", func() {
 					/* arrange */
-					providedEvent := &model.Event{
-						OpEnded: &model.OpEndedEvent{
+					providedEvent := &types.Event{
+						OpEnded: &types.OpEndedEvent{
 							OpID:    "dummyOpID",
 							OpRef:   "dummyOpRef",
 							Outcome: "FAILED",
@@ -337,8 +337,8 @@ var _ = Context("output", func() {
 		Context("OpStarted", func() {
 			It("should call stdWriter w/ expected args", func() {
 				/* arrange */
-				providedEvent := &model.Event{
-					OpStarted: &model.OpStartedEvent{
+				providedEvent := &types.Event{
+					OpStarted: &types.OpStartedEvent{
 						OpID:  "dummyOpID",
 						OpRef: "dummyOpRef",
 					},

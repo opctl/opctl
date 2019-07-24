@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -21,19 +21,19 @@ import (
 type Core interface {
 	GetEventStream(
 		ctx context.Context,
-		req *model.GetEventStreamReq,
+		req *types.GetEventStreamReq,
 	) (
-		<-chan model.Event,
+		<-chan types.Event,
 		<-chan error,
 	)
 
 	KillOp(
-		req model.KillOpReq,
+		req types.KillOpReq,
 	)
 
 	StartOp(
 		ctx context.Context,
-		req model.StartOpReq,
+		req types.StartOpReq,
 	) (
 		callId string,
 		err error,
@@ -49,9 +49,9 @@ type Core interface {
 	ResolveData(
 		ctx context.Context,
 		dataRef string,
-		pullCreds *model.PullCreds,
+		pullCreds *types.PullCreds,
 	) (
-		model.DataHandle,
+		types.DataHandle,
 		error,
 	)
 }

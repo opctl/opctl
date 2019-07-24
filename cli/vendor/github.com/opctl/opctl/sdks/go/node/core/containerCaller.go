@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/golang-interfaces/iio"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -19,9 +19,9 @@ type containerCaller interface {
 	// Executes a container call
 	Call(
 		ctx context.Context,
-		dcgContainerCall *model.DCGContainerCall,
-		inboundScope map[string]*model.Value,
-		scgContainerCall *model.SCGContainerCall,
+		dcgContainerCall *types.DCGContainerCall,
+		inboundScope map[string]*types.Value,
+		scgContainerCall *types.SCGContainerCall,
 	)
 }
 
@@ -46,18 +46,18 @@ type _containerCaller struct {
 
 func (cc _containerCaller) Call(
 	ctx context.Context,
-	dcgContainerCall *model.DCGContainerCall,
-	inboundScope map[string]*model.Value,
-	scgContainerCall *model.SCGContainerCall,
+	dcgContainerCall *types.DCGContainerCall,
+	inboundScope map[string]*types.Value,
+	scgContainerCall *types.SCGContainerCall,
 ) {
 	var err error
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*types.Value{}
 	var exitCode int64
 
 	defer func() {
-		event := model.Event{
+		event := types.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &types.ContainerExitedEvent{
 				ContainerID: dcgContainerCall.ContainerID,
 				OpRef:       dcgContainerCall.OpHandle.Ref(),
 				RootOpID:    dcgContainerCall.RootOpID,
@@ -67,7 +67,7 @@ func (cc _containerCaller) Call(
 		}
 
 		if nil != err {
-			event.ContainerExited.Error = &model.CallEndedEventError{
+			event.ContainerExited.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -76,9 +76,9 @@ func (cc _containerCaller) Call(
 	}()
 
 	cc.pubSub.Publish(
-		model.Event{
+		types.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerStarted: &model.ContainerStartedEvent{
+			ContainerStarted: &types.ContainerStartedEvent{
 				ContainerID: dcgContainerCall.ContainerID,
 				OpRef:       dcgContainerCall.OpHandle.Ref(),
 				RootOpID:    dcgContainerCall.RootOpID,
@@ -132,7 +132,7 @@ func (cc _containerCaller) Call(
 func (this _containerCaller) interpretLogs(
 	stdOutReader io.Reader,
 	stdErrReader io.Reader,
-	dcgContainerCall *model.DCGContainerCall,
+	dcgContainerCall *types.DCGContainerCall,
 ) error {
 	stdOutLogChan := make(chan error, 1)
 	go func() {
@@ -141,9 +141,9 @@ func (this _containerCaller) interpretLogs(
 			stdOutReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(
-					model.Event{
+					types.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdOutWrittenTo: &model.ContainerStdOutWrittenToEvent{
+						ContainerStdOutWrittenTo: &types.ContainerStdOutWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
@@ -162,9 +162,9 @@ func (this _containerCaller) interpretLogs(
 			stdErrReader,
 			func(chunk []byte) {
 				this.pubSub.Publish(
-					model.Event{
+					types.Event{
 						Timestamp: time.Now().UTC(),
-						ContainerStdErrWrittenTo: &model.ContainerStdErrWrittenToEvent{
+						ContainerStdErrWrittenTo: &types.ContainerStdErrWrittenToEvent{
 							Data:        chunk,
 							ContainerID: dcgContainerCall.ContainerID,
 							ImageRef:    dcgContainerCall.Image.Ref,
@@ -192,15 +192,15 @@ func (this _containerCaller) interpretLogs(
 }
 
 func (this _containerCaller) interpretOutputs(
-	scgContainerCall *model.SCGContainerCall,
-	dcgContainerCall *model.DCGContainerCall,
-) map[string]*model.Value {
-	outputs := map[string]*model.Value{}
+	scgContainerCall *types.SCGContainerCall,
+	dcgContainerCall *types.DCGContainerCall,
+) map[string]*types.Value {
+	outputs := map[string]*types.Value{}
 
 	for socketAddr, name := range scgContainerCall.Sockets {
 		// add socket outputs
 		if "0.0.0.0" == socketAddr {
-			outputs[name] = &model.Value{Socket: &dcgContainerCall.ContainerID}
+			outputs[name] = &types.Value{Socket: &dcgContainerCall.ContainerID}
 		}
 	}
 	for scgContainerFilePath, name := range scgContainerCall.Files {
@@ -210,7 +210,7 @@ func (this _containerCaller) interpretOutputs(
 				// copy dcgHostFilePath before taking address; range vars have same address for every iteration
 				value := dcgHostFilePath
 				if nameAsString, ok := name.(string); ok {
-					outputs[strings.TrimSuffix(strings.TrimPrefix(nameAsString, "$("), ")")] = &model.Value{File: &value}
+					outputs[strings.TrimSuffix(strings.TrimPrefix(nameAsString, "$("), ")")] = &types.Value{File: &value}
 				}
 			}
 		}
@@ -221,7 +221,7 @@ func (this _containerCaller) interpretOutputs(
 			if scgContainerDirPath == dcgContainerDirPath {
 				// copy dcgHostDirPath before taking address; range vars have same address for every iteration
 				value := dcgHostDirPath
-				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &model.Value{Dir: &value}
+				outputs[strings.TrimSuffix(strings.TrimPrefix(name, "$("), ")")] = &types.Value{Dir: &value}
 			}
 		}
 	}

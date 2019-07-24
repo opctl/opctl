@@ -5,29 +5,29 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeProvider struct {
-	TryResolveStub        func(ctx context.Context, dataRef string) (model.DataHandle, error)
+	TryResolveStub        func(ctx context.Context, dataRef string) (types.DataHandle, error)
 	tryResolveMutex       sync.RWMutex
 	tryResolveArgsForCall []struct {
 		ctx     context.Context
 		dataRef string
 	}
 	tryResolveReturns struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}
 	tryResolveReturnsOnCall map[int]struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProvider) TryResolve(ctx context.Context, dataRef string) (model.DataHandle, error) {
+func (fake *FakeProvider) TryResolve(ctx context.Context, dataRef string) (types.DataHandle, error) {
 	fake.tryResolveMutex.Lock()
 	ret, specificReturn := fake.tryResolveReturnsOnCall[len(fake.tryResolveArgsForCall)]
 	fake.tryResolveArgsForCall = append(fake.tryResolveArgsForCall, struct {
@@ -57,24 +57,24 @@ func (fake *FakeProvider) TryResolveArgsForCall(i int) (context.Context, string)
 	return fake.tryResolveArgsForCall[i].ctx, fake.tryResolveArgsForCall[i].dataRef
 }
 
-func (fake *FakeProvider) TryResolveReturns(result1 model.DataHandle, result2 error) {
+func (fake *FakeProvider) TryResolveReturns(result1 types.DataHandle, result2 error) {
 	fake.TryResolveStub = nil
 	fake.tryResolveReturns = struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeProvider) TryResolveReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
+func (fake *FakeProvider) TryResolveReturnsOnCall(i int, result1 types.DataHandle, result2 error) {
 	fake.TryResolveStub = nil
 	if fake.tryResolveReturnsOnCall == nil {
 		fake.tryResolveReturnsOnCall = make(map[int]struct {
-			result1 model.DataHandle
+			result1 types.DataHandle
 			result2 error
 		})
 	}
 	fake.tryResolveReturnsOnCall[i] = struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}{result1, result2}
 }

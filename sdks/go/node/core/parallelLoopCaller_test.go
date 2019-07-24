@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -32,8 +32,8 @@ var _ = Context("parallelLoopCaller", func() {
 				/* arrange */
 				fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
 				fakeParallelLoopInterpreter.InterpretReturns(
-					&model.DCGParallelLoopCall{
-						Range: &model.Value{
+					&types.DCGParallelLoopCall{
+						Range: &types.Value{
 							Array: new([]interface{}),
 						},
 					},
@@ -55,8 +55,8 @@ var _ = Context("parallelLoopCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"id",
-					map[string]*model.Value{},
-					model.SCGParallelLoopCall{},
+					map[string]*types.Value{},
+					types.SCGParallelLoopCall{},
 					new(data.FakeHandle),
 					nil,
 					"rootOpID",
@@ -69,14 +69,14 @@ var _ = Context("parallelLoopCaller", func() {
 		It("should call caller.Call w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 			index := "index"
-			providedSCGParallelLoopCall := model.SCGParallelLoopCall{
-				Vars: &model.SCGLoopVars{
+			providedSCGParallelLoopCall := types.SCGParallelLoopCall{
+				Vars: &types.SCGLoopVars{
 					Index: &index,
 				},
-				Run: model.SCG{
-					Container: new(model.SCGContainerCall),
+				Run: types.SCG{
+					Container: new(types.SCGContainerCall),
 				},
 			}
 			providedOpHandle := new(data.FakeHandle)
@@ -85,16 +85,16 @@ var _ = Context("parallelLoopCaller", func() {
 			providedRootOpID := "providedRootOpID"
 
 			loopRangeValue := []interface{}{"value1", "value2"}
-			loopRange := &model.Value{
+			loopRange := &types.Value{
 				Array: &loopRangeValue,
 			}
 
 			fakeParallelLoopInterpreter := new(parallelloop.FakeInterpreter)
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				0,
-				&model.DCGParallelLoopCall{
+				&types.DCGParallelLoopCall{
 					Range: loopRange,
-					Vars: &model.DCGLoopVars{
+					Vars: &types.DCGLoopVars{
 						Index: &index,
 					},
 				},
@@ -103,9 +103,9 @@ var _ = Context("parallelLoopCaller", func() {
 
 			fakeParallelLoopInterpreter.InterpretReturnsOnCall(
 				1,
-				&model.DCGParallelLoopCall{
+				&types.DCGParallelLoopCall{
 					Range: loopRange,
-					Vars: &model.DCGLoopVars{
+					Vars: &types.DCGLoopVars{
 						Index: &index,
 					},
 				},
@@ -113,8 +113,8 @@ var _ = Context("parallelLoopCaller", func() {
 			)
 
 			fakeIterationScoper := new(iteration.FakeScoper)
-			expectedScope := map[string]*model.Value{
-				index: &model.Value{Number: new(float64)},
+			expectedScope := map[string]*types.Value{
+				index: &types.Value{Number: new(float64)},
 			}
 			fakeIterationScoper.ScopeReturns(expectedScope, nil)
 
@@ -122,12 +122,12 @@ var _ = Context("parallelLoopCaller", func() {
 			expectedErrorMessage := "expectedErrorMessage"
 
 			fakeCaller := new(fakeCaller)
-			eventChannel := make(chan model.Event, 100)
-			fakeCaller.CallStub = func(context.Context, string, map[string]*model.Value, *model.SCG, model.DataHandle, *string, string) {
-				eventChannel <- model.Event{
-					CallEnded: &model.CallEndedEvent{
+			eventChannel := make(chan types.Event, 100)
+			fakeCaller.CallStub = func(context.Context, string, map[string]*types.Value, *types.SCG, types.DataHandle, *string, string) {
+				eventChannel <- types.Event{
+					CallEnded: &types.CallEndedEvent{
 						CallID: callID,
-						Error: &model.CallEndedEventError{
+						Error: &types.CallEndedEventError{
 							Message: expectedErrorMessage,
 						},
 					},

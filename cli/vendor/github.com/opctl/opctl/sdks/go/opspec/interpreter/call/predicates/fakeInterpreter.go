@@ -4,16 +4,16 @@ package predicates
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(model.DataHandle, []*model.SCGPredicate, map[string]*model.Value) (bool, error)
+	InterpretStub        func(types.DataHandle, []*types.SCGPredicate, map[string]*types.Value) (bool, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		arg1 model.DataHandle
-		arg2 []*model.SCGPredicate
-		arg3 map[string]*model.Value
+		arg1 types.DataHandle
+		arg2 []*types.SCGPredicate
+		arg3 map[string]*types.Value
 	}
 	interpretReturns struct {
 		result1 bool
@@ -27,18 +27,18 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(arg1 model.DataHandle, arg2 []*model.SCGPredicate, arg3 map[string]*model.Value) (bool, error) {
-	var arg2Copy []*model.SCGPredicate
+func (fake *FakeInterpreter) Interpret(arg1 types.DataHandle, arg2 []*types.SCGPredicate, arg3 map[string]*types.Value) (bool, error) {
+	var arg2Copy []*types.SCGPredicate
 	if arg2 != nil {
-		arg2Copy = make([]*model.SCGPredicate, len(arg2))
+		arg2Copy = make([]*types.SCGPredicate, len(arg2))
 		copy(arg2Copy, arg2)
 	}
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		arg1 model.DataHandle
-		arg2 []*model.SCGPredicate
-		arg3 map[string]*model.Value
+		arg1 types.DataHandle
+		arg2 []*types.SCGPredicate
+		arg3 map[string]*types.Value
 	}{arg1, arg2Copy, arg3})
 	fake.recordInvocation("Interpret", []interface{}{arg1, arg2Copy, arg3})
 	fake.interpretMutex.Unlock()
@@ -58,13 +58,13 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretCalls(stub func(model.DataHandle, []*model.SCGPredicate, map[string]*model.Value) (bool, error)) {
+func (fake *FakeInterpreter) InterpretCalls(stub func(types.DataHandle, []*types.SCGPredicate, map[string]*types.Value) (bool, error)) {
 	fake.interpretMutex.Lock()
 	defer fake.interpretMutex.Unlock()
 	fake.InterpretStub = stub
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.DataHandle, []*model.SCGPredicate, map[string]*model.Value) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (types.DataHandle, []*types.SCGPredicate, map[string]*types.Value) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	argsForCall := fake.interpretArgsForCall[i]

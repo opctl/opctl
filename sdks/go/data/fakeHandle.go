@@ -5,35 +5,35 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeHandle struct {
-	ListDescendantsStub        func(ctx context.Context) ([]*model.DirEntry, error)
+	ListDescendantsStub        func(ctx context.Context) ([]*types.DirEntry, error)
 	listDescendantsMutex       sync.RWMutex
 	listDescendantsArgsForCall []struct {
 		ctx context.Context
 	}
 	listDescendantsReturns struct {
-		result1 []*model.DirEntry
+		result1 []*types.DirEntry
 		result2 error
 	}
 	listDescendantsReturnsOnCall map[int]struct {
-		result1 []*model.DirEntry
+		result1 []*types.DirEntry
 		result2 error
 	}
-	GetContentStub        func(ctx context.Context, contentPath string) (model.ReadSeekCloser, error)
+	GetContentStub        func(ctx context.Context, contentPath string) (types.ReadSeekCloser, error)
 	getContentMutex       sync.RWMutex
 	getContentArgsForCall []struct {
 		ctx         context.Context
 		contentPath string
 	}
 	getContentReturns struct {
-		result1 model.ReadSeekCloser
+		result1 types.ReadSeekCloser
 		result2 error
 	}
 	getContentReturnsOnCall map[int]struct {
-		result1 model.ReadSeekCloser
+		result1 types.ReadSeekCloser
 		result2 error
 	}
 	PathStub        func() *string
@@ -58,7 +58,7 @@ type FakeHandle struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeHandle) ListDescendants(ctx context.Context) ([]*model.DirEntry, error) {
+func (fake *FakeHandle) ListDescendants(ctx context.Context) ([]*types.DirEntry, error) {
 	fake.listDescendantsMutex.Lock()
 	ret, specificReturn := fake.listDescendantsReturnsOnCall[len(fake.listDescendantsArgsForCall)]
 	fake.listDescendantsArgsForCall = append(fake.listDescendantsArgsForCall, struct {
@@ -87,29 +87,29 @@ func (fake *FakeHandle) ListDescendantsArgsForCall(i int) context.Context {
 	return fake.listDescendantsArgsForCall[i].ctx
 }
 
-func (fake *FakeHandle) ListDescendantsReturns(result1 []*model.DirEntry, result2 error) {
+func (fake *FakeHandle) ListDescendantsReturns(result1 []*types.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
 	fake.listDescendantsReturns = struct {
-		result1 []*model.DirEntry
+		result1 []*types.DirEntry
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) ListDescendantsReturnsOnCall(i int, result1 []*model.DirEntry, result2 error) {
+func (fake *FakeHandle) ListDescendantsReturnsOnCall(i int, result1 []*types.DirEntry, result2 error) {
 	fake.ListDescendantsStub = nil
 	if fake.listDescendantsReturnsOnCall == nil {
 		fake.listDescendantsReturnsOnCall = make(map[int]struct {
-			result1 []*model.DirEntry
+			result1 []*types.DirEntry
 			result2 error
 		})
 	}
 	fake.listDescendantsReturnsOnCall[i] = struct {
-		result1 []*model.DirEntry
+		result1 []*types.DirEntry
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) GetContent(ctx context.Context, contentPath string) (model.ReadSeekCloser, error) {
+func (fake *FakeHandle) GetContent(ctx context.Context, contentPath string) (types.ReadSeekCloser, error) {
 	fake.getContentMutex.Lock()
 	ret, specificReturn := fake.getContentReturnsOnCall[len(fake.getContentArgsForCall)]
 	fake.getContentArgsForCall = append(fake.getContentArgsForCall, struct {
@@ -139,24 +139,24 @@ func (fake *FakeHandle) GetContentArgsForCall(i int) (context.Context, string) {
 	return fake.getContentArgsForCall[i].ctx, fake.getContentArgsForCall[i].contentPath
 }
 
-func (fake *FakeHandle) GetContentReturns(result1 model.ReadSeekCloser, result2 error) {
+func (fake *FakeHandle) GetContentReturns(result1 types.ReadSeekCloser, result2 error) {
 	fake.GetContentStub = nil
 	fake.getContentReturns = struct {
-		result1 model.ReadSeekCloser
+		result1 types.ReadSeekCloser
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeHandle) GetContentReturnsOnCall(i int, result1 model.ReadSeekCloser, result2 error) {
+func (fake *FakeHandle) GetContentReturnsOnCall(i int, result1 types.ReadSeekCloser, result2 error) {
 	fake.GetContentStub = nil
 	if fake.getContentReturnsOnCall == nil {
 		fake.getContentReturnsOnCall = make(map[int]struct {
-			result1 model.ReadSeekCloser
+			result1 types.ReadSeekCloser
 			result2 error
 		})
 	}
 	fake.getContentReturnsOnCall[i] = struct {
-		result1 model.ReadSeekCloser
+		result1 types.ReadSeekCloser
 		result2 error
 	}{result1, result2}
 }
@@ -271,4 +271,4 @@ func (fake *FakeHandle) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ model.DataHandle = new(FakeHandle)
+var _ types.DataHandle = new(FakeHandle)

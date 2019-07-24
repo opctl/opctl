@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Fake struct {
@@ -21,11 +21,11 @@ type Fake struct {
 	newFSProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
-	NewGitProviderStub        func(basePath string, pullCreds *model.PullCreds) Provider
+	NewGitProviderStub        func(basePath string, pullCreds *types.PullCreds) Provider
 	newGitProviderMutex       sync.RWMutex
 	newGitProviderArgsForCall []struct {
 		basePath  string
-		pullCreds *model.PullCreds
+		pullCreds *types.PullCreds
 	}
 	newGitProviderReturns struct {
 		result1 Provider
@@ -33,11 +33,11 @@ type Fake struct {
 	newGitProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
-	NewNodeProviderStub        func(apiBaseURL url.URL, pullCreds *model.PullCreds) Provider
+	NewNodeProviderStub        func(apiBaseURL url.URL, pullCreds *types.PullCreds) Provider
 	newNodeProviderMutex       sync.RWMutex
 	newNodeProviderArgsForCall []struct {
 		apiBaseURL url.URL
-		pullCreds  *model.PullCreds
+		pullCreds  *types.PullCreds
 	}
 	newNodeProviderReturns struct {
 		result1 Provider
@@ -45,7 +45,7 @@ type Fake struct {
 	newNodeProviderReturnsOnCall map[int]struct {
 		result1 Provider
 	}
-	ResolveStub        func(ctx context.Context, dataRef string, providers ...Provider) (model.DataHandle, error)
+	ResolveStub        func(ctx context.Context, dataRef string, providers ...Provider) (types.DataHandle, error)
 	resolveMutex       sync.RWMutex
 	resolveArgsForCall []struct {
 		ctx       context.Context
@@ -53,11 +53,11 @@ type Fake struct {
 		providers []Provider
 	}
 	resolveReturns struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}
 	resolveReturnsOnCall map[int]struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -112,12 +112,12 @@ func (fake *Fake) NewFSProviderReturnsOnCall(i int, result1 Provider) {
 	}{result1}
 }
 
-func (fake *Fake) NewGitProvider(basePath string, pullCreds *model.PullCreds) Provider {
+func (fake *Fake) NewGitProvider(basePath string, pullCreds *types.PullCreds) Provider {
 	fake.newGitProviderMutex.Lock()
 	ret, specificReturn := fake.newGitProviderReturnsOnCall[len(fake.newGitProviderArgsForCall)]
 	fake.newGitProviderArgsForCall = append(fake.newGitProviderArgsForCall, struct {
 		basePath  string
-		pullCreds *model.PullCreds
+		pullCreds *types.PullCreds
 	}{basePath, pullCreds})
 	fake.recordInvocation("NewGitProvider", []interface{}{basePath, pullCreds})
 	fake.newGitProviderMutex.Unlock()
@@ -136,7 +136,7 @@ func (fake *Fake) NewGitProviderCallCount() int {
 	return len(fake.newGitProviderArgsForCall)
 }
 
-func (fake *Fake) NewGitProviderArgsForCall(i int) (string, *model.PullCreds) {
+func (fake *Fake) NewGitProviderArgsForCall(i int) (string, *types.PullCreds) {
 	fake.newGitProviderMutex.RLock()
 	defer fake.newGitProviderMutex.RUnlock()
 	return fake.newGitProviderArgsForCall[i].basePath, fake.newGitProviderArgsForCall[i].pullCreds
@@ -161,12 +161,12 @@ func (fake *Fake) NewGitProviderReturnsOnCall(i int, result1 Provider) {
 	}{result1}
 }
 
-func (fake *Fake) NewNodeProvider(apiBaseURL url.URL, pullCreds *model.PullCreds) Provider {
+func (fake *Fake) NewNodeProvider(apiBaseURL url.URL, pullCreds *types.PullCreds) Provider {
 	fake.newNodeProviderMutex.Lock()
 	ret, specificReturn := fake.newNodeProviderReturnsOnCall[len(fake.newNodeProviderArgsForCall)]
 	fake.newNodeProviderArgsForCall = append(fake.newNodeProviderArgsForCall, struct {
 		apiBaseURL url.URL
-		pullCreds  *model.PullCreds
+		pullCreds  *types.PullCreds
 	}{apiBaseURL, pullCreds})
 	fake.recordInvocation("NewNodeProvider", []interface{}{apiBaseURL, pullCreds})
 	fake.newNodeProviderMutex.Unlock()
@@ -185,7 +185,7 @@ func (fake *Fake) NewNodeProviderCallCount() int {
 	return len(fake.newNodeProviderArgsForCall)
 }
 
-func (fake *Fake) NewNodeProviderArgsForCall(i int) (url.URL, *model.PullCreds) {
+func (fake *Fake) NewNodeProviderArgsForCall(i int) (url.URL, *types.PullCreds) {
 	fake.newNodeProviderMutex.RLock()
 	defer fake.newNodeProviderMutex.RUnlock()
 	return fake.newNodeProviderArgsForCall[i].apiBaseURL, fake.newNodeProviderArgsForCall[i].pullCreds
@@ -210,7 +210,7 @@ func (fake *Fake) NewNodeProviderReturnsOnCall(i int, result1 Provider) {
 	}{result1}
 }
 
-func (fake *Fake) Resolve(ctx context.Context, dataRef string, providers ...Provider) (model.DataHandle, error) {
+func (fake *Fake) Resolve(ctx context.Context, dataRef string, providers ...Provider) (types.DataHandle, error) {
 	fake.resolveMutex.Lock()
 	ret, specificReturn := fake.resolveReturnsOnCall[len(fake.resolveArgsForCall)]
 	fake.resolveArgsForCall = append(fake.resolveArgsForCall, struct {
@@ -241,24 +241,24 @@ func (fake *Fake) ResolveArgsForCall(i int) (context.Context, string, []Provider
 	return fake.resolveArgsForCall[i].ctx, fake.resolveArgsForCall[i].dataRef, fake.resolveArgsForCall[i].providers
 }
 
-func (fake *Fake) ResolveReturns(result1 model.DataHandle, result2 error) {
+func (fake *Fake) ResolveReturns(result1 types.DataHandle, result2 error) {
 	fake.ResolveStub = nil
 	fake.resolveReturns = struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) ResolveReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
+func (fake *Fake) ResolveReturnsOnCall(i int, result1 types.DataHandle, result2 error) {
 	fake.ResolveStub = nil
 	if fake.resolveReturnsOnCall == nil {
 		fake.resolveReturnsOnCall = make(map[int]struct {
-			result1 model.DataHandle
+			result1 types.DataHandle
 			result2 error
 		})
 	}
 	fake.resolveReturnsOnCall[i] = struct {
-		result1 model.DataHandle
+		result1 types.DataHandle
 		result2 error
 	}{result1, result2}
 }

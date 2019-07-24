@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jfbus/httprs"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -15,9 +15,9 @@ import (
 
 func (c client) GetData(
 	ctx context.Context,
-	req model.GetDataReq,
+	req types.GetDataReq,
 ) (
-	model.ReadSeekCloser,
+	types.ReadSeekCloser,
 	error,
 ) {
 
@@ -52,11 +52,11 @@ func (c client) GetData(
 
 		switch httpResp.StatusCode {
 		case http.StatusUnauthorized:
-			return nil, model.ErrDataProviderAuthentication{}
+			return nil, types.ErrDataProviderAuthentication{}
 		case http.StatusForbidden:
-			return nil, model.ErrDataProviderAuthorization{}
+			return nil, types.ErrDataProviderAuthorization{}
 		case http.StatusNotFound:
-			return nil, model.ErrDataRefResolution{}
+			return nil, types.ErrDataRefResolution{}
 		default:
 			body, err := ioutil.ReadAll(httpResp.Body)
 			if nil != err {

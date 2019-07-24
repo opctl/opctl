@@ -10,14 +10,14 @@ import (
 	"github.com/golang-interfaces/ios"
 	"github.com/golang-utils/filecopier"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
-		scope map[string]*model.Value,
+		opHandle types.DataHandle,
+		scope map[string]*types.Value,
 		scgContainerCallFiles map[string]interface{},
 		scratchDirPath string,
 	) (map[string]string, error)
@@ -45,8 +45,8 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
-	scope map[string]*model.Value,
+	opHandle types.DataHandle,
+	scope map[string]*types.Value,
 	scgContainerCallFiles map[string]interface{},
 	scratchDirPath string,
 ) (map[string]string, error) {
@@ -67,7 +67,7 @@ fileLoop:
 		)
 		if nil != err {
 			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment
-			fileValue, err = itp.coerce.ToFile(&model.Value{String: new(string)}, scratchDirPath)
+			fileValue, err = itp.coerce.ToFile(&types.Value{String: new(string)}, scratchDirPath)
 			if nil != err {
 				return nil, fmt.Errorf(
 					"unable to bind %v to %v; error was %v",

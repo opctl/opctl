@@ -11,7 +11,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Creator", func() {
@@ -74,7 +74,7 @@ var _ = Context("Creator", func() {
 		providedPkgName := "dummyPkgName"
 		providedPkgDescription := "dummyPkgDescription"
 
-		expectedOpDotYmlBytes, err := yaml.Marshal(&model.OpDotYml{
+		expectedOpDotYmlBytes, err := yaml.Marshal(&types.OpDotYml{
 			Description: providedPkgDescription,
 			Name:        providedPkgName,
 		})

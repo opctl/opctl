@@ -4,7 +4,7 @@ package data
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 )
 
@@ -19,7 +19,7 @@ type Provider interface {
 	TryResolve(
 		ctx context.Context,
 		dataRef string,
-	) (model.DataHandle, error)
+	) (types.DataHandle, error)
 }
 
 type providerFactory interface {
@@ -31,13 +31,13 @@ type providerFactory interface {
 	// NewGitProvider returns a pkg provider which sources pkgs from git repos
 	NewGitProvider(
 		basePath string,
-		pullCreds *model.PullCreds,
+		pullCreds *types.PullCreds,
 	) Provider
 
 	// NewNodeProvider returns a pkg provider which sources pkgs from a node
 	NewNodeProvider(
 		apiBaseURL url.URL,
-		pullCreds *model.PullCreds,
+		pullCreds *types.PullCreds,
 	) Provider
 }
 

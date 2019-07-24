@@ -4,8 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -20,7 +20,7 @@ var _ = Context("Interpreter", func() {
 			It("should call stringInterpreter.Interpret w/ expected args for each container.Cmd entry", func() {
 				/* arrange */
 				providedString1 := "dummyString1"
-				providedCurrentScope := map[string]*model.Value{
+				providedCurrentScope := map[string]*types.Value{
 					"name1": {String: &providedString1},
 				}
 				providedOpHandle := new(data.FakeHandle)
@@ -31,7 +31,7 @@ var _ = Context("Interpreter", func() {
 				}
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturns(&model.Value{String: new(string)}, nil)
+				fakeStringInterpreter.InterpretReturns(&types.Value{String: new(string)}, nil)
 
 				objectUnderTest := _interpreter{
 					stringInterpreter: fakeStringInterpreter,
@@ -68,8 +68,8 @@ var _ = Context("Interpreter", func() {
 				}
 
 				fakeStringInterpreter := new(stringPkg.FakeInterpreter)
-				fakeStringInterpreter.InterpretReturnsOnCall(0, &model.Value{String: &expectedResult[0]}, nil)
-				fakeStringInterpreter.InterpretReturnsOnCall(1, &model.Value{String: &expectedResult[1]}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(0, &types.Value{String: &expectedResult[0]}, nil)
+				fakeStringInterpreter.InterpretReturnsOnCall(1, &types.Value{String: &expectedResult[1]}, nil)
 
 				objectUnderTest := _interpreter{
 					stringInterpreter: fakeStringInterpreter,
@@ -77,7 +77,7 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					providedSCGContainerCallCmd,
 					new(data.FakeHandle),
 				)

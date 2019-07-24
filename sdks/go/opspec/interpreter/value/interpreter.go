@@ -5,17 +5,17 @@ package value
 import (
 	"fmt"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	// Interpret interprets a value expression
 	Interpret(
 		valueExpression interface{},
-		scope map[string]*model.Value,
-		opHandle model.DataHandle,
-	) (model.Value, error)
+		scope map[string]*types.Value,
+		opHandle types.DataHandle,
+	) (types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -31,17 +31,17 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	valueExpression interface{},
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
-) (model.Value, error) {
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
+) (types.Value, error) {
 	switch typedValueExpression := valueExpression.(type) {
 	case bool:
-		return model.Value{Boolean: &typedValueExpression}, nil
+		return types.Value{Boolean: &typedValueExpression}, nil
 	case float64:
-		return model.Value{Number: &typedValueExpression}, nil
+		return types.Value{Number: &typedValueExpression}, nil
 	case int:
 		number := float64(typedValueExpression)
-		return model.Value{Number: &number}, nil
+		return types.Value{Number: &number}, nil
 	case map[string]interface{}:
 		// object initializer
 		value := map[string]interface{}{}
@@ -52,7 +52,7 @@ func (itp _interpreter) Interpret(
 				opHandle,
 			)
 			if nil != err {
-				return model.Value{}, err
+				return types.Value{}, err
 			}
 
 			if nil == propertyValueExpression {
@@ -65,15 +65,15 @@ func (itp _interpreter) Interpret(
 				opHandle,
 			)
 			if nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+				return types.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
 			}
 
 			if value[propertyKey], err = boxedPropertyValue.Unbox(); nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+				return types.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
 			}
 		}
 
-		return model.Value{Object: &value}, nil
+		return types.Value{Object: &value}, nil
 	case []interface{}:
 		// array initializer
 		value := []interface{}{}
@@ -84,16 +84,16 @@ func (itp _interpreter) Interpret(
 				opHandle,
 			)
 			if nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
+				return types.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
 			}
 
 			itemValue, err := boxedItemValue.Unbox()
 			if nil != err {
-				return model.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
+				return types.Value{}, fmt.Errorf("unable to interpret '%+v' as array initializer item; error was %v", itemExpression, err)
 			}
 			value = append(value, itemValue)
 		}
-		return model.Value{Array: &value}, nil
+		return types.Value{Array: &value}, nil
 	case string:
 		value, err := itp.interpolater.Interpolate(
 			typedValueExpression,
@@ -101,11 +101,11 @@ func (itp _interpreter) Interpret(
 			opHandle,
 		)
 		if nil != err {
-			return model.Value{}, err
+			return types.Value{}, err
 		}
 
-		return model.Value{String: &value}, nil
+		return types.Value{String: &value}, nil
 	default:
-		return model.Value{}, fmt.Errorf("unable to interpret %+v to string; unsupported type", typedValueExpression)
+		return types.Value{}, fmt.Errorf("unable to interpret %+v to string; unsupported type", typedValueExpression)
 	}
 }

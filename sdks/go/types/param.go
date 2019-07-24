@@ -1,4 +1,4 @@
-package model
+package types
 
 // Param represents a typed param of an op
 type Param struct {

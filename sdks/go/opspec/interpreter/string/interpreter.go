@@ -6,17 +6,17 @@ import (
 	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	// Interpret interprets an expression to a string value.
 	Interpret(
-		scope map[string]*model.Value,
+		scope map[string]*types.Value,
 		expression interface{},
-		opHandle model.DataHandle,
-	) (*model.Value, error)
+		opHandle types.DataHandle,
+	) (*types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -33,10 +33,10 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
+	scope map[string]*types.Value,
 	expression interface{},
-	opHandle model.DataHandle,
-) (*model.Value, error) {
+	opHandle types.DataHandle,
+) (*types.Value, error) {
 	value, err := itp.valueInterpreter.Interpret(
 		expression,
 		scope,

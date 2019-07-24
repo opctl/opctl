@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -18,9 +18,9 @@ var _ = Context("core", func() {
 	Context("StartOp", func() {
 		It("should call data.NewGitProvider w/ expected args", func() {
 			/* arrange */
-			providedStartOpReq := model.StartOpReq{
-				Op: model.StartOpReqOp{
-					PullCreds: &model.PullCreds{
+			providedStartOpReq := types.StartOpReq{
+				Op: types.StartOpReqOp{
+					PullCreds: &types.PullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -53,8 +53,8 @@ var _ = Context("core", func() {
 		It("should call data.Resolve w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedStartOpReq := model.StartOpReq{
-				Op: model.StartOpReqOp{
+			providedStartOpReq := types.StartOpReq{
+				Op: types.StartOpReqOp{
 					Ref: "dummyOpRef",
 				},
 			}
@@ -98,8 +98,8 @@ var _ = Context("core", func() {
 
 				/* arrange */
 				providedCtx := context.Background()
-				providedStartOpReq := model.StartOpReq{
-					Op: model.StartOpReqOp{
+				providedStartOpReq := types.StartOpReq{
+					Op: types.StartOpReqOp{
 						Ref: "dummyOpRef",
 					},
 				}
@@ -143,7 +143,7 @@ var _ = Context("core", func() {
 				/* act */
 				objectUnderTest.StartOp(
 					providedCtx,
-					model.StartOpReq{},
+					types.StartOpReq{},
 				)
 
 				/* assert */
@@ -162,7 +162,7 @@ var _ = Context("core", func() {
 
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, expectedErr)
+					fakeDotYmlGetter.GetReturns(&types.OpDotYml{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
@@ -173,7 +173,7 @@ var _ = Context("core", func() {
 					/* act */
 					_, actualErr := objectUnderTest.StartOp(
 						context.Background(),
-						model.StartOpReq{},
+						types.StartOpReq{},
 					)
 
 					/* assert */
@@ -188,14 +188,14 @@ var _ = Context("core", func() {
 					providedArg2Dir := "dummyArg2Value"
 					providedArg3Dir := "dummyArg3Value"
 					providedArg4Dir := "dummyArg4Value"
-					providedReq := model.StartOpReq{
-						Args: map[string]*model.Value{
+					providedReq := types.StartOpReq{
+						Args: map[string]*types.Value{
 							"dummyArg1Name": {String: &providedArg1String},
 							"dummyArg2Name": {Dir: &providedArg2Dir},
 							"dummyArg3Name": {Dir: &providedArg3Dir},
 							"dummyArg4Name": {Dir: &providedArg4Dir},
 						},
-						Op: model.StartOpReqOp{
+						Op: types.StartOpReqOp{
 							Ref: "dummyOpRef",
 						},
 					}
@@ -204,8 +204,8 @@ var _ = Context("core", func() {
 					expectedOpHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(expectedOpHandle, nil)
 
-					opDotYml := &model.OpDotYml{
-						Outputs: map[string]*model.Param{
+					opDotYml := &types.OpDotYml{
+						Outputs: map[string]*types.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
 						},
@@ -214,7 +214,7 @@ var _ = Context("core", func() {
 					fakeDotYmlGetter := new(dotyml.FakeGetter)
 					fakeDotYmlGetter.GetReturns(opDotYml, nil)
 
-					expectedSCGOpCall := &model.SCGOpCall{
+					expectedSCGOpCall := &types.SCGOpCall{
 						Ref:     expectedOpHandle.Ref(),
 						Inputs:  map[string]interface{}{},
 						Outputs: map[string]string{},
@@ -261,7 +261,7 @@ var _ = Context("core", func() {
 					Expect(actualCtx).To(Equal(providedCtx))
 					Expect(actualID).To(Equal(expectedID))
 					Expect(actualScope).To(Equal(providedReq.Args))
-					Expect(actualSCG).To(Equal(&model.SCG{Op: expectedSCGOpCall}))
+					Expect(actualSCG).To(Equal(&types.SCG{Op: expectedSCGOpCall}))
 					Expect(actualOpHandle).To(Equal(expectedOpHandle))
 					Expect(actualParentCallID).To(BeNil())
 					Expect(actualRootOpID).To(Equal(expectedRootOpID))

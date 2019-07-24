@@ -6,7 +6,7 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 )
 
@@ -16,9 +16,9 @@ var _ = Context("Validate", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Value{}
-				providedParam := &model.Param{
-					File: &model.FileParam{},
+				providedValue := &types.Value{}
+				providedParam := &types.Param{
+					File: &types.FileParam{},
 				}
 
 				expectedErrors := []error{
@@ -43,11 +43,11 @@ var _ = Context("Validate", func() {
 
 				/* arrange */
 				providedValueFile := "dummyFile"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					File: &providedValueFile,
 				}
-				providedParam := &model.Param{
-					File: &model.FileParam{},
+				providedParam := &types.Param{
+					File: &types.FileParam{},
 				}
 
 				fakeOS := new(ios.Fake)
@@ -73,11 +73,11 @@ var _ = Context("Validate", func() {
 
 					/* arrange */
 					providedValueFile := "dummyFile"
-					providedValue := &model.Value{
+					providedValue := &types.Value{
 						File: &providedValueFile,
 					}
-					providedParam := &model.Param{
-						File: &model.FileParam{},
+					providedParam := &types.Param{
+						File: &types.FileParam{},
 					}
 
 					expectedErrors := []error{
@@ -116,11 +116,11 @@ var _ = Context("Validate", func() {
 
 						tmpFilePath := tmpFile.Name()
 
-						providedValue := &model.Value{
+						providedValue := &types.Value{
 							File: &tmpFilePath,
 						}
-						providedParam := &model.Param{
-							File: &model.FileParam{},
+						providedParam := &types.Param{
+							File: &types.FileParam{},
 						}
 
 						expectedErrors := []error{}
@@ -148,11 +148,11 @@ var _ = Context("Validate", func() {
 							panic(err)
 						}
 
-						providedValue := &model.Value{
+						providedValue := &types.Value{
 							File: &tmpDirPath,
 						}
-						providedParam := &model.Param{
-							File: &model.FileParam{},
+						providedParam := &types.Param{
+							File: &types.FileParam{},
 						}
 
 						expectedErrors := []error{

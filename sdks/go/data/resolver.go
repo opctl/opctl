@@ -2,7 +2,7 @@ package data
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type resolver interface {
@@ -17,7 +17,7 @@ type resolver interface {
 		dataRef string,
 		providers ...Provider,
 	) (
-		model.DataHandle,
+		types.DataHandle,
 		error,
 	)
 }
@@ -33,7 +33,7 @@ func (rslv _resolver) Resolve(
 	dataRef string,
 	providers ...Provider,
 ) (
-	model.DataHandle,
+	types.DataHandle,
 	error,
 ) {
 	for _, src := range providers {
@@ -46,5 +46,5 @@ func (rslv _resolver) Resolve(
 	}
 
 	// if we reached this point resolution failed, return err
-	return nil, model.ErrDataRefResolution{}
+	return nil, types.ErrDataRefResolution{}
 }

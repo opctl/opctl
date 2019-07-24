@@ -2,14 +2,14 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (this _core) GetEventStream(
 	ctx context.Context,
-	req *model.GetEventStreamReq,
+	req *types.GetEventStreamReq,
 ) (
-	<-chan model.Event,
+	<-chan types.Event,
 	<-chan error,
 ) {
 

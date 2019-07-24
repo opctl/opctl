@@ -4,15 +4,15 @@ package dirs
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(opHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error)
+	InterpretStub        func(opHandle types.DataHandle, scope map[string]*types.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
-		opHandle              model.DataHandle
-		scope                 map[string]*model.Value
+		opHandle              types.DataHandle
+		scope                 map[string]*types.Value
 		scgContainerCallFiles map[string]string
 		scratchDirPath        string
 	}
@@ -28,12 +28,12 @@ type FakeInterpreter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(opHandle model.DataHandle, scope map[string]*model.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error) {
+func (fake *FakeInterpreter) Interpret(opHandle types.DataHandle, scope map[string]*types.Value, scgContainerCallFiles map[string]string, scratchDirPath string) (map[string]string, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
-		opHandle              model.DataHandle
-		scope                 map[string]*model.Value
+		opHandle              types.DataHandle
+		scope                 map[string]*types.Value
 		scgContainerCallFiles map[string]string
 		scratchDirPath        string
 	}{opHandle, scope, scgContainerCallFiles, scratchDirPath})
@@ -54,7 +54,7 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (model.DataHandle, map[string]*model.Value, map[string]string, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (types.DataHandle, map[string]*types.Value, map[string]string, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].opHandle, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].scgContainerCallFiles, fake.interpretArgsForCall[i].scratchDirPath

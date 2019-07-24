@@ -14,8 +14,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Files", func() {
@@ -40,7 +40,7 @@ var _ = Context("Files", func() {
 				containerFilePath: nil,
 			}
 			providedOpHandle := new(data.FakeHandle)
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 			providedScratchDir := "dummyScratchDir"
 
 			fakeFileInterpreter := new(file.FakeInterpreter)
@@ -107,7 +107,7 @@ var _ = Context("Files", func() {
 					/* act */
 					_, actualErr := objectUnderTest.Interpret(
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						providedSCGContainerCallFiles,
 						"dummyScratchDirPath",
 					)
@@ -125,7 +125,7 @@ var _ = Context("Files", func() {
 
 					fakeFileInterpreter := new(file.FakeInterpreter)
 					filePath := tempFile.Name()
-					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
+					fakeFileInterpreter.InterpretReturns(&types.Value{File: &filePath}, nil)
 
 					expectedDCGContainerCallFiles := map[string]string{
 						containerFilePath: filePath,
@@ -139,7 +139,7 @@ var _ = Context("Files", func() {
 					/* act */
 					actualDCGContainerCallFiles, actualErr := objectUnderTest.Interpret(
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						map[string]interface{}{
 							// implicitly bound
 							containerFilePath: "",
@@ -161,7 +161,7 @@ var _ = Context("Files", func() {
 
 					fakeFileInterpreter := new(file.FakeInterpreter)
 					filePath := tempFile.Name()
-					fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
+					fakeFileInterpreter.InterpretReturns(&types.Value{File: &filePath}, nil)
 
 					fakeOS := new(ios.Fake)
 
@@ -178,7 +178,7 @@ var _ = Context("Files", func() {
 					/* act */
 					objectUnderTest.Interpret(
 						new(data.FakeHandle),
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						map[string]interface{}{
 							// implicitly bound
 							containerFilePath: "",
@@ -201,7 +201,7 @@ var _ = Context("Files", func() {
 
 						fakeFileInterpreter := new(file.FakeInterpreter)
 						filePath := tempFile.Name()
-						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
+						fakeFileInterpreter.InterpretReturns(&types.Value{File: &filePath}, nil)
 
 						fakeOS := new(ios.Fake)
 
@@ -223,7 +223,7 @@ var _ = Context("Files", func() {
 						/* act */
 						_, actualErr := objectUnderTest.Interpret(
 							new(data.FakeHandle),
-							map[string]*model.Value{},
+							map[string]*types.Value{},
 							map[string]interface{}{
 								// implicitly bound
 								containerFilePath: nil,
@@ -243,7 +243,7 @@ var _ = Context("Files", func() {
 
 						fakeFileInterpreter := new(file.FakeInterpreter)
 						filePath := tempFile.Name()
-						fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
+						fakeFileInterpreter.InterpretReturns(&types.Value{File: &filePath}, nil)
 
 						expectedPath := filepath.Join(providedScratchDir, containerFilePath)
 
@@ -261,7 +261,7 @@ var _ = Context("Files", func() {
 						/* act */
 						objectUnderTest.Interpret(
 							new(data.FakeHandle),
-							map[string]*model.Value{},
+							map[string]*types.Value{},
 							map[string]interface{}{
 								// implicitly bound
 								containerFilePath: nil,
@@ -284,7 +284,7 @@ var _ = Context("Files", func() {
 
 							fakeFileInterpreter := new(file.FakeInterpreter)
 							filePath := tempFile.Name()
-							fakeFileInterpreter.InterpretReturns(&model.Value{File: &filePath}, nil)
+							fakeFileInterpreter.InterpretReturns(&types.Value{File: &filePath}, nil)
 
 							fakeFileCopier := new(filecopier.Fake)
 
@@ -309,7 +309,7 @@ var _ = Context("Files", func() {
 							/* act */
 							_, actualErr := objectUnderTest.Interpret(
 								new(data.FakeHandle),
-								map[string]*model.Value{},
+								map[string]*types.Value{},
 								map[string]interface{}{
 									// implicitly bound
 									containerFilePath: nil,

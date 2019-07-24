@@ -4,41 +4,41 @@ package inputs
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeInterpreter struct {
-	InterpretStub        func(inputArgs map[string]interface{}, inputParams map[string]*model.Param, parentOpHandle model.DataHandle, opPath string, scope map[string]*model.Value, opScratchDir string) (map[string]*model.Value, error)
+	InterpretStub        func(inputArgs map[string]interface{}, inputParams map[string]*types.Param, parentOpHandle types.DataHandle, opPath string, scope map[string]*types.Value, opScratchDir string) (map[string]*types.Value, error)
 	interpretMutex       sync.RWMutex
 	interpretArgsForCall []struct {
 		inputArgs      map[string]interface{}
-		inputParams    map[string]*model.Param
-		parentOpHandle model.DataHandle
+		inputParams    map[string]*types.Param
+		parentOpHandle types.DataHandle
 		opPath         string
-		scope          map[string]*model.Value
+		scope          map[string]*types.Value
 		opScratchDir   string
 	}
 	interpretReturns struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 		result2 error
 	}
 	interpretReturnsOnCall map[int]struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInterpreter) Interpret(inputArgs map[string]interface{}, inputParams map[string]*model.Param, parentOpHandle model.DataHandle, opPath string, scope map[string]*model.Value, opScratchDir string) (map[string]*model.Value, error) {
+func (fake *FakeInterpreter) Interpret(inputArgs map[string]interface{}, inputParams map[string]*types.Param, parentOpHandle types.DataHandle, opPath string, scope map[string]*types.Value, opScratchDir string) (map[string]*types.Value, error) {
 	fake.interpretMutex.Lock()
 	ret, specificReturn := fake.interpretReturnsOnCall[len(fake.interpretArgsForCall)]
 	fake.interpretArgsForCall = append(fake.interpretArgsForCall, struct {
 		inputArgs      map[string]interface{}
-		inputParams    map[string]*model.Param
-		parentOpHandle model.DataHandle
+		inputParams    map[string]*types.Param
+		parentOpHandle types.DataHandle
 		opPath         string
-		scope          map[string]*model.Value
+		scope          map[string]*types.Value
 		opScratchDir   string
 	}{inputArgs, inputParams, parentOpHandle, opPath, scope, opScratchDir})
 	fake.recordInvocation("Interpret", []interface{}{inputArgs, inputParams, parentOpHandle, opPath, scope, opScratchDir})
@@ -58,30 +58,30 @@ func (fake *FakeInterpreter) InterpretCallCount() int {
 	return len(fake.interpretArgsForCall)
 }
 
-func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]interface{}, map[string]*model.Param, model.DataHandle, string, map[string]*model.Value, string) {
+func (fake *FakeInterpreter) InterpretArgsForCall(i int) (map[string]interface{}, map[string]*types.Param, types.DataHandle, string, map[string]*types.Value, string) {
 	fake.interpretMutex.RLock()
 	defer fake.interpretMutex.RUnlock()
 	return fake.interpretArgsForCall[i].inputArgs, fake.interpretArgsForCall[i].inputParams, fake.interpretArgsForCall[i].parentOpHandle, fake.interpretArgsForCall[i].opPath, fake.interpretArgsForCall[i].scope, fake.interpretArgsForCall[i].opScratchDir
 }
 
-func (fake *FakeInterpreter) InterpretReturns(result1 map[string]*model.Value, result2 error) {
+func (fake *FakeInterpreter) InterpretReturns(result1 map[string]*types.Value, result2 error) {
 	fake.InterpretStub = nil
 	fake.interpretReturns = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 map[string]*model.Value, result2 error) {
+func (fake *FakeInterpreter) InterpretReturnsOnCall(i int, result1 map[string]*types.Value, result2 error) {
 	fake.InterpretStub = nil
 	if fake.interpretReturnsOnCall == nil {
 		fake.interpretReturnsOnCall = make(map[int]struct {
-			result1 map[string]*model.Value
+			result1 map[string]*types.Value
 			result2 error
 		})
 	}
 	fake.interpretReturnsOnCall[i] = struct {
-		result1 map[string]*model.Value
+		result1 map[string]*types.Value
 		result2 error
 	}{result1, result2}
 }

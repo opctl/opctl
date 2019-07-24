@@ -8,18 +8,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/docker/docker/api/types"
+	dockerApiTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	dockerClientPkg "github.com/docker/docker/client"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
 type runContainer interface {
 	RunContainer(
 		ctx context.Context,
-		req *model.DCGContainerCall,
+		req *types.DCGContainerCall,
 		eventPublisher pubsub.EventPublisher,
 		stdout io.WriteCloser,
 		stderr io.WriteCloser,
@@ -52,7 +52,7 @@ type _runContainer struct {
 
 func (cr _runContainer) RunContainer(
 	ctx context.Context,
-	req *model.DCGContainerCall,
+	req *types.DCGContainerCall,
 	eventPublisher pubsub.EventPublisher,
 	stdout io.WriteCloser,
 	stderr io.WriteCloser,
@@ -64,7 +64,7 @@ func (cr _runContainer) RunContainer(
 		cr.dockerClient.ContainerRemove(
 			context.Background(),
 			req.ContainerID,
-			types.ContainerRemoveOptions{
+			dockerApiTypes.ContainerRemoveOptions{
 				RemoveVolumes: true,
 				Force:         true,
 			},
@@ -142,7 +142,7 @@ func (cr _runContainer) RunContainer(
 	if err := cr.dockerClient.ContainerStart(
 		ctx,
 		containerCreatedResponse.ID,
-		types.ContainerStartOptions{},
+		dockerApiTypes.ContainerStartOptions{},
 	); nil != err {
 		return nil, err
 	}

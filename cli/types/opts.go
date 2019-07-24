@@ -1,4 +1,4 @@
-package model
+package types
 
 type RunOpts struct {
 	ArgFile string

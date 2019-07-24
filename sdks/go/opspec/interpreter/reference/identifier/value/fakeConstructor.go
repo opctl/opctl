@@ -4,28 +4,28 @@ package value
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeConstructor struct {
-	ConstructStub        func(data interface{}) (*model.Value, error)
+	ConstructStub        func(data interface{}) (*types.Value, error)
 	constructMutex       sync.RWMutex
 	constructArgsForCall []struct {
 		data interface{}
 	}
 	constructReturns struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	constructReturnsOnCall map[int]struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeConstructor) Construct(data interface{}) (*model.Value, error) {
+func (fake *FakeConstructor) Construct(data interface{}) (*types.Value, error) {
 	fake.constructMutex.Lock()
 	ret, specificReturn := fake.constructReturnsOnCall[len(fake.constructArgsForCall)]
 	fake.constructArgsForCall = append(fake.constructArgsForCall, struct {
@@ -54,24 +54,24 @@ func (fake *FakeConstructor) ConstructArgsForCall(i int) interface{} {
 	return fake.constructArgsForCall[i].data
 }
 
-func (fake *FakeConstructor) ConstructReturns(result1 *model.Value, result2 error) {
+func (fake *FakeConstructor) ConstructReturns(result1 *types.Value, result2 error) {
 	fake.ConstructStub = nil
 	fake.constructReturns = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeConstructor) ConstructReturnsOnCall(i int, result1 *model.Value, result2 error) {
+func (fake *FakeConstructor) ConstructReturnsOnCall(i int, result1 *types.Value, result2 error) {
 	fake.ConstructStub = nil
 	if fake.constructReturnsOnCall == nil {
 		fake.constructReturnsOnCall = make(map[int]struct {
-			result1 *model.Value
+			result1 *types.Value
 			result2 error
 		})
 	}
 	fake.constructReturnsOnCall[i] = struct {
-		result1 *model.Value
+		result1 *types.Value
 		result2 error
 	}{result1, result2}
 }

@@ -1,4 +1,4 @@
-package model
+package types
 
 // static call graph; see https://en.wikipedia.org/wiki/Call_graph
 type SCG struct {

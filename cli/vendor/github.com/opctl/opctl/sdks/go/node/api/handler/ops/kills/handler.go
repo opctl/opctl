@@ -4,8 +4,8 @@ package kills
 
 import (
 	"encoding/json"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/http"
 )
 
@@ -33,7 +33,7 @@ func (hdlr _handler) Handle(
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {
-	killOpReq := model.KillOpReq{}
+	killOpReq := types.KillOpReq{}
 
 	err := json.NewDecoder(httpReq.Body).Decode(&killOpReq)
 	if nil != err {

@@ -5,7 +5,7 @@ jest.mock('./isStringTruthy', () => jest.fn())
 import isStringTruthy from './isStringTruthy'
 
 import objectUnderTest from './index'
-import Value from '../../../model/value';
+import Value from '../../../types/value';
 
 describe('toBoolean', () => {
   beforeEach(() => {

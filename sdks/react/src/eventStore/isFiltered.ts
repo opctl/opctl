@@ -1,4 +1,4 @@
-import Event from '@opctl/sdk/src/model/event'
+import Event from '@opctl/sdk/src/types/event'
 import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 
 const getEventRootOpId = (event: Event) => {

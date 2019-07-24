@@ -17,7 +17,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
@@ -47,9 +47,9 @@ func main() {
 	// start op
 	rootID, err := apiClient.StartOp(
 		ctx,
-		model.StartOpReq{
-			Args: map[string]*model.Value{},
-			Op: model.StartOpReqOp{
+		types.StartOpReq{
+			Args: map[string]*types.Value{},
+			Op: types.StartOpReqOp{
 				Ref: "github.com/opspec-pkgs/uuid.v4.generate#1.1.0",
 			},
 		},
@@ -61,8 +61,8 @@ func main() {
 	// get event stream filtered to events from our op
 	eventChan, err := apiClient.GetEventStream(
 		ctx,
-		&model.GetEventStreamReq{
-			Filter: model.EventFilter{
+		&types.GetEventStreamReq{
+			Filter: types.EventFilter{
 				Roots: []string{rootID},
 				Since: &startTime,
 			},

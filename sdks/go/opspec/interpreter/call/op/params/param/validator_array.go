@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/xeipuuv/gojsonschema"
 	"strings"
 )
 
 // validateArray validates a value against an array parameter
 func (vdt _validator) validateArray(
-	value *model.Value,
+	value *types.Value,
 	constraints map[string]interface{},
 ) []error {
 	valueAsArray, err := vdt.coerce.ToArray(value)

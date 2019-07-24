@@ -5,7 +5,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path/filepath"
 	"time"
 )
@@ -94,7 +94,7 @@ var _ = Context("gitProvider", func() {
 						providedCtx := context.Background()
 						providedDataRef := "dummyDataRef"
 						basePath := "dummyBasePath"
-						pullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
+						pullCreds := &types.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 						fakePuller := new(fakePuller)
 						// err to trigger immediate return
@@ -181,7 +181,7 @@ var _ = Context("gitProvider", func() {
 
 				fakeLocalFSProvider := new(FakeProvider)
 				// err to trigger immediate return
-				fakeLocalFSProvider.TryResolveStub = func(ctx context.Context, dataRef string) (model.DataHandle, error) {
+				fakeLocalFSProvider.TryResolveStub = func(ctx context.Context, dataRef string) (types.DataHandle, error) {
 					// ensure go routine has time to overlap
 					<-time.After(100 * time.Millisecond)
 

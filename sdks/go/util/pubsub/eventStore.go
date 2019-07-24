@@ -2,16 +2,16 @@ package pubsub
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type EventStore interface {
-	Add(event model.Event) error
+	Add(event types.Event) error
 	List(
 		ctx context.Context,
-		filter model.EventFilter,
+		filter types.EventFilter,
 	) (
-		<-chan model.Event,
+		<-chan types.Event,
 		<-chan error,
 	)
 }

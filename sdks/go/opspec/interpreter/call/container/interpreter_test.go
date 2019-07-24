@@ -9,13 +9,13 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/files"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -55,8 +55,8 @@ var _ = Context("Interpreter", func() {
 
 			/* act */
 			_, actualError := objectUnderTest.Interpret(
-				map[string]*model.Value{},
-				&model.SCGContainerCall{},
+				map[string]*types.Value{},
+				&types.SCGContainerCall{},
 				providedContainerID,
 				providedRootOpID,
 				new(data.FakeHandle),
@@ -73,11 +73,11 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerFileBind: {String: new(string)},
 			}
 
-			providedSCGContainerCall := &model.SCGContainerCall{
+			providedSCGContainerCall := &types.SCGContainerCall{
 				Cmd: []interface{}{
 					"cmd",
 				},
@@ -130,8 +130,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -163,8 +163,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -179,12 +179,12 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerDirBind := "dummyContainerDirBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerDirBind: {String: new(string)},
 			}
 
 			dirName := "dummyDirName"
-			providedSCGContainerCall := &model.SCGContainerCall{
+			providedSCGContainerCall := &types.SCGContainerCall{
 				Dirs: map[string]string{
 					// implicitly bound
 					dirName: "",
@@ -251,8 +251,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -284,8 +284,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -300,12 +300,12 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerFileBind: {String: new(string)},
 			}
 
 			envVarName := "dummyEnvVarName"
-			providedSCGContainerCall := &model.SCGContainerCall{
+			providedSCGContainerCall := &types.SCGContainerCall{
 				EnvVars: map[string]interface{}{
 					// implicitly bound
 					envVarName: "",
@@ -361,8 +361,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -394,8 +394,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -410,12 +410,12 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerFileBind: {String: new(string)},
 			}
 
 			fileName := "dummyFileName"
-			providedSCGContainerCall := &model.SCGContainerCall{
+			providedSCGContainerCall := &types.SCGContainerCall{
 				Files: map[string]interface{}{
 					// implicitly bound
 					fileName: "",
@@ -483,8 +483,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -516,8 +516,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -532,13 +532,13 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerFileBind: {String: new(string)},
 			}
-			providedSCGContainerCall := &model.SCGContainerCall{
-				Image: &model.SCGContainerCallImage{
+			providedSCGContainerCall := &types.SCGContainerCall{
+				Image: &types.SCGContainerCallImage{
 					Ref: "dummyImageRef",
-					PullCreds: &model.SCGPullCreds{
+					PullCreds: &types.SCGPullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -596,8 +596,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -610,9 +610,9 @@ var _ = Context("Interpreter", func() {
 		Context("image.Interpret doesn't error", func() {
 			It("should return expected dcgContainerCall.Image", func() {
 				/* arrange */
-				expectedDCGContainerCallImage := &model.DCGContainerCallImage{
+				expectedDCGContainerCallImage := &types.DCGContainerCallImage{
 					Ref: "dummyImageRef",
-					PullCreds: &model.PullCreds{
+					PullCreds: &types.PullCreds{
 						Username: "dummyUsername",
 						Password: "dummyPassword",
 					},
@@ -633,8 +633,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -649,12 +649,12 @@ var _ = Context("Interpreter", func() {
 			/* arrange */
 			containerFileBind := "dummyContainerFileBind"
 
-			providedScope := map[string]*model.Value{
+			providedScope := map[string]*types.Value{
 				containerFileBind: {String: new(string)},
 			}
 
 			envVarName := "dummyEnvVarName"
-			providedSCGContainerCall := &model.SCGContainerCall{
+			providedSCGContainerCall := &types.SCGContainerCall{
 				Sockets: map[string]string{
 					// implicitly bound
 					envVarName: "",
@@ -721,8 +721,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				_, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),
@@ -754,8 +754,8 @@ var _ = Context("Interpreter", func() {
 
 				/* act */
 				actualResult, _ := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 					"dummyContainerID",
 					"dummyRootOpID",
 					new(data.FakeHandle),

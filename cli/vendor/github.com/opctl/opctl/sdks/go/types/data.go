@@ -1,4 +1,4 @@
-package model
+package types
 
 //go:generate counterfeiter -o ../pkg/fakeHandle.go --fake-name FakeHandle ./ DataHandle
 

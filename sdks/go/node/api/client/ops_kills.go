@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/http"
 	"path"
 )
 
 func (c client) KillOp(
 	ctx context.Context,
-	req model.KillOpReq,
+	req types.KillOpReq,
 ) error {
 
 	reqBytes, err := json.Marshal(req)

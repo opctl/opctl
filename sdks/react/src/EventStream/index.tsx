@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Event from './Event'
-import ModelEvent from '@opctl/sdk/src/model/event'
+import EventType from '@opctl/sdk/src/types/event'
 import EventStore from '../eventStore'
 import { EventFilter } from '@opctl/sdk/src/api/client/events/stream'
 import {
@@ -18,7 +18,7 @@ interface Props {
 }
 
 interface State {
-  events: ModelEvent[]
+  events: EventType[]
   throttleInterval?: number | null | undefined
 }
 
@@ -43,7 +43,7 @@ class EventStream extends Component<Props, State> {
   componentDidMount() {
     this.eventStreamCloser = this.props.eventStore.getStream(
       this.props.filter,
-      (event: ModelEvent) => {
+      (event: EventType) => {
         this.setState(prevState => ({
           events: [...prevState.events, event]
         }))

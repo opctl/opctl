@@ -5,34 +5,34 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeEventSubscriber struct {
-	SubscribeStub        func(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error)
+	SubscribeStub        func(ctx context.Context, filter types.EventFilter) (<-chan types.Event, <-chan error)
 	subscribeMutex       sync.RWMutex
 	subscribeArgsForCall []struct {
 		ctx    context.Context
-		filter model.EventFilter
+		filter types.EventFilter
 	}
 	subscribeReturns struct {
-		result1 <-chan model.Event
+		result1 <-chan types.Event
 		result2 <-chan error
 	}
 	subscribeReturnsOnCall map[int]struct {
-		result1 <-chan model.Event
+		result1 <-chan types.Event
 		result2 <-chan error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEventSubscriber) Subscribe(ctx context.Context, filter model.EventFilter) (<-chan model.Event, <-chan error) {
+func (fake *FakeEventSubscriber) Subscribe(ctx context.Context, filter types.EventFilter) (<-chan types.Event, <-chan error) {
 	fake.subscribeMutex.Lock()
 	ret, specificReturn := fake.subscribeReturnsOnCall[len(fake.subscribeArgsForCall)]
 	fake.subscribeArgsForCall = append(fake.subscribeArgsForCall, struct {
 		ctx    context.Context
-		filter model.EventFilter
+		filter types.EventFilter
 	}{ctx, filter})
 	fake.recordInvocation("Subscribe", []interface{}{ctx, filter})
 	fake.subscribeMutex.Unlock()
@@ -51,30 +51,30 @@ func (fake *FakeEventSubscriber) SubscribeCallCount() int {
 	return len(fake.subscribeArgsForCall)
 }
 
-func (fake *FakeEventSubscriber) SubscribeArgsForCall(i int) (context.Context, model.EventFilter) {
+func (fake *FakeEventSubscriber) SubscribeArgsForCall(i int) (context.Context, types.EventFilter) {
 	fake.subscribeMutex.RLock()
 	defer fake.subscribeMutex.RUnlock()
 	return fake.subscribeArgsForCall[i].ctx, fake.subscribeArgsForCall[i].filter
 }
 
-func (fake *FakeEventSubscriber) SubscribeReturns(result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeEventSubscriber) SubscribeReturns(result1 <-chan types.Event, result2 <-chan error) {
 	fake.SubscribeStub = nil
 	fake.subscribeReturns = struct {
-		result1 <-chan model.Event
+		result1 <-chan types.Event
 		result2 <-chan error
 	}{result1, result2}
 }
 
-func (fake *FakeEventSubscriber) SubscribeReturnsOnCall(i int, result1 <-chan model.Event, result2 <-chan error) {
+func (fake *FakeEventSubscriber) SubscribeReturnsOnCall(i int, result1 <-chan types.Event, result2 <-chan error) {
 	fake.SubscribeStub = nil
 	if fake.subscribeReturnsOnCall == nil {
 		fake.subscribeReturnsOnCall = make(map[int]struct {
-			result1 <-chan model.Event
+			result1 <-chan types.Event
 			result2 <-chan error
 		})
 	}
 	fake.subscribeReturnsOnCall[i] = struct {
-		result1 <-chan model.Event
+		result1 <-chan types.Event
 		result2 <-chan error
 	}{result1, result2}
 }

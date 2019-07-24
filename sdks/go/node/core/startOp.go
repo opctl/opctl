@@ -2,12 +2,12 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (this _core) StartOp(
 	ctx context.Context,
-	req model.StartOpReq,
+	req types.StartOpReq,
 ) (string, error) {
 	opHandle, err := this.data.Resolve(
 		ctx,
@@ -26,7 +26,7 @@ func (this _core) StartOp(
 	}
 
 	// construct scgOpCall
-	scgOpCall := &model.SCGOpCall{
+	scgOpCall := &types.SCGOpCall{
 		Ref:     opHandle.Ref(),
 		Inputs:  map[string]interface{}{},
 		Outputs: map[string]string{},
@@ -34,7 +34,7 @@ func (this _core) StartOp(
 
 	// pull Creds
 	if nil != req.Op.PullCreds {
-		scgOpCall.PullCreds = &model.SCGPullCreds{
+		scgOpCall.PullCreds = &types.SCGPullCreds{
 			Username: req.Op.PullCreds.Username,
 			Password: req.Op.PullCreds.Password,
 		}
@@ -63,7 +63,7 @@ func (this _core) StartOp(
 			context.Background(),
 			opID,
 			req.Args,
-			&model.SCG{
+			&types.SCG{
 				Op: scgOpCall,
 			},
 			opHandle,

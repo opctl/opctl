@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -22,7 +22,7 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should call coerce.ToObject w/ expected args", func() {
 			/* arrange */
-			providedData := model.Value{String: new(string)}
+			providedData := types.Value{String: new(string)}
 
 			fakeCoerce := new(coerce.Fake)
 			// err to trigger immediate return
@@ -49,7 +49,7 @@ var _ = Context("Interpreter", func() {
 
 				/* arrange */
 				providedRef := "dummyRef"
-				providedData := model.Value{String: new(string)}
+				providedData := types.Value{String: new(string)}
 
 				fakeCoerce := new(coerce.Fake)
 				toObjectErr := errors.New("toObjectErr")
@@ -79,7 +79,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeCoerce := new(coerce.Fake)
 				// empty Object to trigger immediate return
-				fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
+				fakeCoerce.ToObjectReturns(&types.Value{Object: new(map[string]interface{})}, nil)
 
 				fakeParser := new(FakeParser)
 				fakeParser.ParseReturns("dummyIdentifier", "dummyRefRemainder")
@@ -108,7 +108,7 @@ var _ = Context("Interpreter", func() {
 					providedRef := "dummyRef"
 
 					fakeCoerce := new(coerce.Fake)
-					fakeCoerce.ToObjectReturns(&model.Value{Object: new(map[string]interface{})}, nil)
+					fakeCoerce.ToObjectReturns(&types.Value{Object: new(map[string]interface{})}, nil)
 
 					fakeParser := new(FakeParser)
 					identifier := "identifier"
@@ -124,7 +124,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, _, actualErr := objectUnderTest.Interpret(
 						providedRef,
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */
@@ -139,7 +139,7 @@ var _ = Context("Interpreter", func() {
 
 					fakeCoerce := new(coerce.Fake)
 					object := &map[string]interface{}{identifier: "dummyValue"}
-					objectValue := model.Value{Object: object}
+					objectValue := types.Value{Object: object}
 					fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 					fakeParser := new(FakeParser)
@@ -157,7 +157,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					objectUnderTest.Interpret(
 						"dummyRef",
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */
@@ -175,7 +175,7 @@ var _ = Context("Interpreter", func() {
 
 						fakeCoerce := new(coerce.Fake)
 						object := &map[string]interface{}{identifier: "dummyValue"}
-						objectValue := model.Value{Object: object}
+						objectValue := types.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 						fakeParser := new(FakeParser)
@@ -196,7 +196,7 @@ var _ = Context("Interpreter", func() {
 						/* act */
 						_, _, actualErr := objectUnderTest.Interpret(
 							providedRef,
-							new(model.Value),
+							new(types.Value),
 						)
 
 						/* assert */
@@ -213,14 +213,14 @@ var _ = Context("Interpreter", func() {
 
 						fakeCoerce := new(coerce.Fake)
 						object := &map[string]interface{}{identifier: "dummyValue"}
-						objectValue := model.Value{Object: object}
+						objectValue := types.Value{Object: object}
 						fakeCoerce.ToObjectReturns(&objectValue, nil)
 
 						fakeParser := new(FakeParser)
 						fakeParser.ParseReturns(identifier, refRemainder)
 
 						fakeValueConstructor := new(value.FakeConstructor)
-						identifierValue := model.Value{String: new(string)}
+						identifierValue := types.Value{String: new(string)}
 						fakeValueConstructor.ConstructReturns(&identifierValue, nil)
 
 						objectUnderTest := _interpreter{
@@ -232,7 +232,7 @@ var _ = Context("Interpreter", func() {
 						/* act */
 						actualRefRemainder, actualValue, actualErr := objectUnderTest.Interpret(
 							"dummyRef",
-							new(model.Value),
+							new(types.Value),
 						)
 
 						/* assert */

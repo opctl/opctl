@@ -7,7 +7,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -17,10 +17,10 @@ type serialCaller interface {
 	Call(
 		ctx context.Context,
 		callID string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*types.Value,
 		rootOpID string,
-		opHandle model.DataHandle,
-		scgSerialCall []*model.SCG,
+		opHandle types.DataHandle,
+		scgSerialCall []*types.SCG,
 	)
 }
 
@@ -46,12 +46,12 @@ type _serialCaller struct {
 func (sc _serialCaller) Call(
 	ctx context.Context,
 	callID string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*types.Value,
 	rootOpID string,
-	opHandle model.DataHandle,
-	scgSerialCall []*model.SCG,
+	opHandle types.DataHandle,
+	scgSerialCall []*types.SCG,
 ) {
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*types.Value{}
 	for varName, varData := range inboundScope {
 		outputs[varName] = varData
 	}
@@ -59,8 +59,8 @@ func (sc _serialCaller) Call(
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			SerialCallEnded: &model.SerialCallEndedEvent{
+		event := types.Event{
+			SerialCallEnded: &types.SerialCallEndedEvent{
 				CallID:   callID,
 				Outputs:  outputs,
 				RootOpID: rootOpID,
@@ -69,7 +69,7 @@ func (sc _serialCaller) Call(
 		}
 
 		if nil != err {
-			event.SerialCallEnded.Error = &model.CallEndedEventError{
+			event.SerialCallEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -83,7 +83,7 @@ func (sc _serialCaller) Call(
 	eventFilterSince := time.Now().UTC()
 	eventChannel, _ := sc.pubSub.Subscribe(
 		ctx,
-		model.EventFilter{
+		types.EventFilter{
 			Roots: []string{rootOpID},
 			Since: &eventFilterSince,
 		},

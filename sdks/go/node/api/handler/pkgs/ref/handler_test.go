@@ -10,8 +10,8 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/data"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -73,7 +73,7 @@ var _ = Context("Handler", func() {
 						providedPassword,
 					)
 
-					expectedPullCreds := model.PullCreds{
+					expectedPullCreds := types.PullCreds{
 						Username: providedUsername,
 						Password: providedPassword,
 					}
@@ -134,7 +134,7 @@ var _ = Context("Handler", func() {
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
 						fakeCore := new(core.Fake)
-						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthentication{})
+						fakeCore.ResolveDataReturns(nil, types.ErrDataProviderAuthentication{})
 
 						objectUnderTest := _handler{
 							core: fakeCore,
@@ -165,7 +165,7 @@ var _ = Context("Handler", func() {
 						providedDataRef := strings.Join([]string{dataRefSegment1, "dataRefSegment2"}, "/")
 
 						fakeCore := new(core.Fake)
-						fakeCore.ResolveDataReturns(nil, model.ErrDataProviderAuthorization{})
+						fakeCore.ResolveDataReturns(nil, types.ErrDataProviderAuthorization{})
 
 						objectUnderTest := _handler{
 							core: fakeCore,
@@ -193,7 +193,7 @@ var _ = Context("Handler", func() {
 					It("should return expected result", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
-						fakeCore.ResolveDataReturns(nil, model.ErrDataRefResolution{})
+						fakeCore.ResolveDataReturns(nil, types.ErrDataRefResolution{})
 
 						objectUnderTest := _handler{
 							core: fakeCore,

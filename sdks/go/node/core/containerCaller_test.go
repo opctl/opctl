@@ -10,8 +10,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -35,19 +35,19 @@ var _ = Context("containerCaller", func() {
 	Context("Call", func() {
 		It("should call pubSub.Publish w/ expected ContainerStartedEvent", func() {
 			/* arrange */
-			providedDCGContainerCall := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedDCGContainerCall := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{
 					OpHandle: fakeOpHandle,
 					RootOpID: "providedRootID",
 				},
 				ContainerID: "providedContainerID",
 			}
-			providedInboundScope := map[string]*model.Value{}
-			providedSCGContainerCall := &model.SCGContainerCall{}
+			providedInboundScope := map[string]*types.Value{}
+			providedSCGContainerCall := &types.SCGContainerCall{}
 
-			expectedEvent := model.Event{
+			expectedEvent := types.Event{
 				Timestamp: time.Now().UTC(),
-				ContainerStarted: &model.ContainerStartedEvent{
+				ContainerStarted: &types.ContainerStartedEvent{
 					ContainerID: providedDCGContainerCall.ContainerID,
 					OpRef:       providedDCGContainerCall.OpHandle.Ref(),
 					RootOpID:    providedDCGContainerCall.RootOpID,
@@ -86,8 +86,8 @@ var _ = Context("containerCaller", func() {
 		It("should call containerRuntime.RunContainer w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedDCGContainerCall := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedDCGContainerCall := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{
 					OpHandle: fakeOpHandle,
 				},
 			}
@@ -108,8 +108,8 @@ var _ = Context("containerCaller", func() {
 			objectUnderTest.Call(
 				providedCtx,
 				providedDCGContainerCall,
-				map[string]*model.Value{},
-				&model.SCGContainerCall{},
+				map[string]*types.Value{},
+				&types.SCGContainerCall{},
 			)
 
 			/* assert */
@@ -142,13 +142,13 @@ var _ = Context("containerCaller", func() {
 				/* act */
 				objectUnderTest.Call(
 					context.Background(),
-					&model.DCGContainerCall{
-						DCGBaseCall: model.DCGBaseCall{
+					&types.DCGContainerCall{
+						DCGBaseCall: types.DCGBaseCall{
 							OpHandle: fakeOpHandle,
 						},
 					},
-					map[string]*model.Value{},
-					&model.SCGContainerCall{},
+					map[string]*types.Value{},
+					&types.SCGContainerCall{},
 				)
 
 				/* assert */
@@ -161,25 +161,25 @@ var _ = Context("containerCaller", func() {
 
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
-		providedDCGContainerCall := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{
+		providedDCGContainerCall := &types.DCGContainerCall{
+			DCGBaseCall: types.DCGBaseCall{
 				OpHandle: fakeOpHandle,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
-		providedInboundScope := map[string]*model.Value{}
-		providedSCGContainerCall := &model.SCGContainerCall{}
+		providedInboundScope := map[string]*types.Value{}
+		providedSCGContainerCall := &types.SCGContainerCall{}
 
-		expectedEvent := model.Event{
+		expectedEvent := types.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &types.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				Error: &model.CallEndedEventError{
+				Error: &types.CallEndedEventError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
-				Outputs:  map[string]*model.Value{},
+				Outputs:  map[string]*types.Value{},
 				RootOpID: providedDCGContainerCall.RootOpID,
 			},
 		}
@@ -215,25 +215,25 @@ var _ = Context("containerCaller", func() {
 	})
 	It("should call pubSub.Publish w/ expected ContainerExitedEvent", func() {
 		/* arrange */
-		providedDCGContainerCall := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{
+		providedDCGContainerCall := &types.DCGContainerCall{
+			DCGBaseCall: types.DCGBaseCall{
 				OpHandle: fakeOpHandle,
 				RootOpID: "providedRootID",
 			},
 			ContainerID: "providedContainerID",
 		}
-		providedInboundScope := map[string]*model.Value{}
-		providedSCGContainerCall := &model.SCGContainerCall{}
+		providedInboundScope := map[string]*types.Value{}
+		providedSCGContainerCall := &types.SCGContainerCall{}
 
-		expectedEvent := model.Event{
+		expectedEvent := types.Event{
 			Timestamp: time.Now().UTC(),
-			ContainerExited: &model.ContainerExitedEvent{
+			ContainerExited: &types.ContainerExitedEvent{
 				ContainerID: providedDCGContainerCall.ContainerID,
-				Error: &model.CallEndedEventError{
+				Error: &types.CallEndedEventError{
 					Message: "io: read/write on closed pipe",
 				},
 				OpRef:    providedDCGContainerCall.OpHandle.Ref(),
-				Outputs:  map[string]*model.Value{},
+				Outputs:  map[string]*types.Value{},
 				RootOpID: providedDCGContainerCall.RootOpID,
 			},
 		}

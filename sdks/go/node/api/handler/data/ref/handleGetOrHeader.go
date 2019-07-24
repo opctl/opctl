@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/golang-interfaces/ihttp"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // handleGetOrHeader handles GET or HEAD's
 type handleGetOrHeader interface {
 	HandleGetOrHead(
-		dataHandle model.DataHandle,
+		dataHandle types.DataHandle,
 		httpResp http.ResponseWriter,
 		httpReq *http.Request,
 	)
@@ -37,7 +37,7 @@ type _handleGetOrHeader struct {
 }
 
 func (hg _handleGetOrHeader) HandleGetOrHead(
-	dataHandle model.DataHandle,
+	dataHandle types.DataHandle,
 	httpResp http.ResponseWriter,
 	httpReq *http.Request,
 ) {

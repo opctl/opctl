@@ -2,12 +2,12 @@ package param
 
 import (
 	"errors"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // validateBoolean validates a value against a boolean parameter
 func (vdt _validator) validateBoolean(
-	value *model.Value,
+	value *types.Value,
 ) []error {
 
 	// handle no value passed

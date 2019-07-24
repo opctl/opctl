@@ -4,7 +4,7 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInputSrc.go --fake-name FakeInputSrc ./ InputSrc
@@ -18,13 +18,13 @@ type InputSrc interface {
 
 type InputSrcFactory interface {
 	NewCliPromptInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*types.Param,
 	) InputSrc
 
 	NewEnvVarInputSrc() InputSrc
 
 	NewParamDefaultInputSrc(
-		inputs map[string]*model.Param,
+		inputs map[string]*types.Param,
 	) InputSrc
 
 	NewSliceInputSrc(

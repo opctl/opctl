@@ -3,7 +3,7 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"sync"
 )
 
@@ -19,10 +19,10 @@ type Fake struct {
 		arg1 context.Context
 		arg2 string
 	}
-	NodeCreateStub        func(model.NodeCreateOpts)
+	NodeCreateStub        func(types.NodeCreateOpts)
 	nodeCreateMutex       sync.RWMutex
 	nodeCreateArgsForCall []struct {
-		arg1 model.NodeCreateOpts
+		arg1 types.NodeCreateOpts
 	}
 	NodeKillStub        func()
 	nodeKillMutex       sync.RWMutex
@@ -56,12 +56,12 @@ type Fake struct {
 		arg1 context.Context
 		arg2 string
 	}
-	RunStub        func(context.Context, string, *model.RunOpts)
+	RunStub        func(context.Context, string, *types.RunOpts)
 	runMutex       sync.RWMutex
 	runArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *model.RunOpts
+		arg3 *types.RunOpts
 	}
 	SelfUpdateStub        func(string)
 	selfUpdateMutex       sync.RWMutex
@@ -135,10 +135,10 @@ func (fake *Fake) LsArgsForCall(i int) (context.Context, string) {
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *Fake) NodeCreate(arg1 model.NodeCreateOpts) {
+func (fake *Fake) NodeCreate(arg1 types.NodeCreateOpts) {
 	fake.nodeCreateMutex.Lock()
 	fake.nodeCreateArgsForCall = append(fake.nodeCreateArgsForCall, struct {
-		arg1 model.NodeCreateOpts
+		arg1 types.NodeCreateOpts
 	}{arg1})
 	fake.recordInvocation("NodeCreate", []interface{}{arg1})
 	fake.nodeCreateMutex.Unlock()
@@ -153,13 +153,13 @@ func (fake *Fake) NodeCreateCallCount() int {
 	return len(fake.nodeCreateArgsForCall)
 }
 
-func (fake *Fake) NodeCreateCalls(stub func(model.NodeCreateOpts)) {
+func (fake *Fake) NodeCreateCalls(stub func(types.NodeCreateOpts)) {
 	fake.nodeCreateMutex.Lock()
 	defer fake.nodeCreateMutex.Unlock()
 	fake.NodeCreateStub = stub
 }
 
-func (fake *Fake) NodeCreateArgsForCall(i int) model.NodeCreateOpts {
+func (fake *Fake) NodeCreateArgsForCall(i int) types.NodeCreateOpts {
 	fake.nodeCreateMutex.RLock()
 	defer fake.nodeCreateMutex.RUnlock()
 	argsForCall := fake.nodeCreateArgsForCall[i]
@@ -321,12 +321,12 @@ func (fake *Fake) OpValidateArgsForCall(i int) (context.Context, string) {
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *Fake) Run(arg1 context.Context, arg2 string, arg3 *model.RunOpts) {
+func (fake *Fake) Run(arg1 context.Context, arg2 string, arg3 *types.RunOpts) {
 	fake.runMutex.Lock()
 	fake.runArgsForCall = append(fake.runArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 *model.RunOpts
+		arg3 *types.RunOpts
 	}{arg1, arg2, arg3})
 	fake.recordInvocation("Run", []interface{}{arg1, arg2, arg3})
 	fake.runMutex.Unlock()
@@ -341,13 +341,13 @@ func (fake *Fake) RunCallCount() int {
 	return len(fake.runArgsForCall)
 }
 
-func (fake *Fake) RunCalls(stub func(context.Context, string, *model.RunOpts)) {
+func (fake *Fake) RunCalls(stub func(context.Context, string, *types.RunOpts)) {
 	fake.runMutex.Lock()
 	defer fake.runMutex.Unlock()
 	fake.RunStub = stub
 }
 
-func (fake *Fake) RunArgsForCall(i int) (context.Context, string, *model.RunOpts) {
+func (fake *Fake) RunArgsForCall(i int) (context.Context, string, *types.RunOpts) {
 	fake.runMutex.RLock()
 	defer fake.runMutex.RUnlock()
 	argsForCall := fake.runArgsForCall[i]

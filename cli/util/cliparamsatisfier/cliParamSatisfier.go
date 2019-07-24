@@ -13,8 +13,8 @@ import (
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
 	"github.com/opctl/opctl/sdks/go/data/coerce"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // CLIParamSatisfier attempts to satisfy the provided inputs via the provided inputSourcer
@@ -25,8 +25,8 @@ type CLIParamSatisfier interface {
 
 	Satisfy(
 		inputSourcer InputSourcer,
-		inputs map[string]*model.Param,
-	) map[string]*model.Value
+		inputs map[string]*types.Param,
+	) map[string]*types.Value
 }
 
 func New(
@@ -53,16 +53,16 @@ type _CLIParamSatisfier struct {
 
 func (cps _CLIParamSatisfier) Satisfy(
 	inputSourcer InputSourcer,
-	inputs map[string]*model.Param,
-) map[string]*model.Value {
+	inputs map[string]*types.Param,
+) map[string]*types.Value {
 
-	argMap := map[string]*model.Value{}
+	argMap := map[string]*types.Value{}
 	for _, paramName := range cps.getSortedParamNames(inputs) {
 		param := inputs[paramName]
 
 	paramLoop:
 		for {
-			var arg *model.Value
+			var arg *types.Value
 
 			rawArg, ok := inputSourcer.Source(paramName)
 			if !ok {
@@ -91,10 +91,10 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Array: argValue}
+				arg = &types.Value{Array: argValue}
 			case nil != param.Boolean:
 				var err error
-				if arg, err = cps.coerce.ToBoolean(&model.Value{String: rawArg}); nil != err {
+				if arg, err = cps.coerce.ToBoolean(&types.Value{String: rawArg}); nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -106,7 +106,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Dir: &absPath}
+				arg = &types.Value{Dir: &absPath}
 			case nil != param.File:
 				absPath, err := filepath.Abs(*rawArg)
 				if nil != err {
@@ -114,10 +114,10 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{File: &absPath}
+				arg = &types.Value{File: &absPath}
 			case nil != param.Number:
 				var err error
-				if arg, err = cps.coerce.ToNumber(&model.Value{String: rawArg}); nil != err {
+				if arg, err = cps.coerce.ToNumber(&types.Value{String: rawArg}); nil != err {
 					// param not satisfied; notify & re-attempt!
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
@@ -136,16 +136,16 @@ func (cps _CLIParamSatisfier) Satisfy(
 					cps.notifyOfArgErrors([]error{err}, paramName)
 					continue
 				}
-				arg = &model.Value{Object: argValue}
+				arg = &types.Value{Object: argValue}
 			case nil != param.Socket:
-				arg = &model.Value{Socket: rawArg}
+				arg = &types.Value{Socket: rawArg}
 			case nil != param.String:
-				arg = &model.Value{String: rawArg}
+				arg = &types.Value{String: rawArg}
 			}
 
 			validateErr := cps.paramsValidator.Validate(
-				map[string]*model.Value{paramName: arg},
-				map[string]*model.Param{paramName: param},
+				map[string]*types.Value{paramName: arg},
+				map[string]*types.Param{paramName: param},
 			)
 			if nil != validateErr {
 				cps.notifyOfArgErrors([]error{validateErr}, paramName)
@@ -168,7 +168,7 @@ func (cps _CLIParamSatisfier) Satisfy(
 }
 
 func (this _CLIParamSatisfier) getSortedParamNames(
-	params map[string]*model.Param,
+	params map[string]*types.Param,
 ) []string {
 	paramNames := []string{}
 	for paramname := range params {

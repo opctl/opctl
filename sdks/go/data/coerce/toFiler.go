@@ -5,7 +5,7 @@ import (
 	"github.com/golang-interfaces/encoding-ijson"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 	"os"
 	"path/filepath"
@@ -17,9 +17,9 @@ type toFiler interface {
 	// scratchDir/{UUID} will be used as file path if file creation necessary;
 	// if scratchDir doesn't exist it will be created
 	ToFile(
-		value *model.Value,
+		value *types.Value,
 		scratchDir string,
-	) (*model.Value, error)
+	) (*types.Value, error)
 }
 
 func newToFiler() toFiler {
@@ -39,9 +39,9 @@ type _toFiler struct {
 }
 
 func (c _toFiler) ToFile(
-	value *model.Value,
+	value *types.Value,
 	scratchDir string,
-) (*model.Value, error) {
+) (*types.Value, error) {
 	var data []byte
 
 	switch {
@@ -100,5 +100,5 @@ func (c _toFiler) ToFile(
 		return nil, fmt.Errorf("unable to coerce '%+v' to file; error was %v", value, err.Error())
 	}
 
-	return &model.Value{File: &path}, nil
+	return &types.Value{File: &path}, nil
 }

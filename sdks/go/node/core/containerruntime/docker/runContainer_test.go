@@ -3,13 +3,13 @@ package docker
 import (
 	"context"
 	"errors"
-	"github.com/docker/docker/api/types"
+	dockerApiTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"io"
 	"io/ioutil"
@@ -21,12 +21,12 @@ var _ = Context("RunContainer", func() {
 
 	It("should call dockerClient.ContainerRemove w/ expected args", func() {
 		/* arrange */
-		providedReq := &model.DCGContainerCall{
+		providedReq := &types.DCGContainerCall{
 			ContainerID: "containerID",
-			DCGBaseCall: model.DCGBaseCall{},
+			DCGBaseCall: types.DCGBaseCall{},
 		}
 
-		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
+		expectedContainerRemoveOptions := dockerApiTypes.ContainerRemoveOptions{
 			RemoveVolumes: true,
 			Force:         true,
 		}
@@ -62,9 +62,9 @@ var _ = Context("RunContainer", func() {
 	})
 	It("should call portBindingsFactory.Construct w expected args", func() {
 		/* arrange */
-		providedReq := &model.DCGContainerCall{
-			DCGBaseCall: model.DCGBaseCall{},
-			Image:       &model.DCGContainerCallImage{},
+		providedReq := &types.DCGContainerCall{
+			DCGBaseCall: types.DCGBaseCall{},
+			Image:       &types.DCGContainerCallImage{},
 			Ports: map[string]string{
 				"6060/udp":  "6060",
 				"8080-8081": "9090-9091",
@@ -119,7 +119,7 @@ var _ = Context("RunContainer", func() {
 			/* act */
 			_, actualErr := objectUnderTest.RunContainer(
 				context.Background(),
-				&model.DCGContainerCall{},
+				&types.DCGContainerCall{},
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},
@@ -132,15 +132,15 @@ var _ = Context("RunContainer", func() {
 	Context("portBindingsFactory.Construct doesn't err", func() {
 		It("should call containerConfigFactory.Construct w expected args", func() {
 			/* arrange */
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{},
+			providedReq := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{},
 				Cmd:         []string{"dummyCmd"},
 				EnvVars: map[string]string{
 					"envVar1Name": "envVar1Value",
 					"envVar2Name": "envVar2Value",
 					"envVar3Name": "envVar3Value",
 				},
-				Image:   &model.DCGContainerCallImage{Ref: "dummyImage"},
+				Image:   &types.DCGContainerCallImage{Ref: "dummyImage"},
 				WorkDir: "dummyWorkDir",
 			}
 
@@ -188,8 +188,8 @@ var _ = Context("RunContainer", func() {
 
 		It("should call hostConfigFactory.Construct w expected args", func() {
 			/* arrange */
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{},
+			providedReq := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{},
 				Dirs: map[string]string{
 					"dir1ContainerPath": "dir1HostPath",
 					"dir2ContainerPath": "dir2HostPath",
@@ -198,7 +198,7 @@ var _ = Context("RunContainer", func() {
 					"file1ContainerPath": "file1HostPath",
 					"file2ContainerPath": "file2HostPath",
 				},
-				Image: &model.DCGContainerCallImage{},
+				Image: &types.DCGContainerCallImage{},
 				Sockets: map[string]string{
 					"/unixSocket1ContainerAddress": "/unixSocket1HostAddress",
 					"/unixSocket2ContainerAddress": "/unixSocket2HostAddress",
@@ -248,12 +248,12 @@ var _ = Context("RunContainer", func() {
 
 			/* arrange */
 			providedCtx := context.Background()
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedReq := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{
 					RootOpID: "dummyRootOpID",
 				},
 				ContainerID: "dummyContainerID",
-				Image:       &model.DCGContainerCallImage{Ref: "dummyImage"},
+				Image:       &types.DCGContainerCallImage{Ref: "dummyImage"},
 			}
 
 			providedEventPublisher := new(pubsub.FakeEventPublisher)
@@ -299,12 +299,12 @@ var _ = Context("RunContainer", func() {
 		It("should call dockerClient.ContainerCreate w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			providedReq := &model.DCGContainerCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedReq := &types.DCGContainerCall{
+				DCGBaseCall: types.DCGBaseCall{
 					RootOpID: "dummyRootOpID",
 				},
 				ContainerID: "dummyContainerID",
-				Image:       &model.DCGContainerCallImage{},
+				Image:       &types.DCGContainerCallImage{},
 				Name:        new(string),
 			}
 

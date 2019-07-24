@@ -7,10 +7,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/eq"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/exists"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/ne"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -26,11 +26,11 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedOpHandle := new(data.FakeHandle)
 
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &types.SCGPredicate{
 					Eq: new([]interface{}),
 				}
 
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 
 				fakeEqInterpreter := new(eq.FakeInterpreter)
 				expectedResult := true
@@ -66,11 +66,11 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedOpHandle := new(data.FakeHandle)
 
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &types.SCGPredicate{
 					Exists: new(string),
 				}
 
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 
 				fakeExistsInterpreter := new(exists.FakeInterpreter)
 				expectedResult := true
@@ -106,11 +106,11 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedOpHandle := new(data.FakeHandle)
 
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &types.SCGPredicate{
 					Ne: new([]interface{}),
 				}
 
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 
 				fakeNeInterpreter := new(ne.FakeInterpreter)
 				expectedResult := true
@@ -146,11 +146,11 @@ var _ = Context("Interpreter", func() {
 				/* arrange */
 				providedOpHandle := new(data.FakeHandle)
 
-				providedScgPredicate := &model.SCGPredicate{
+				providedScgPredicate := &types.SCGPredicate{
 					NotExists: new(string),
 				}
 
-				providedScope := map[string]*model.Value{}
+				providedScope := map[string]*types.Value{}
 
 				fakeNotExistsInterpreter := new(exists.FakeInterpreter)
 				expectedResult := true
@@ -184,7 +184,7 @@ var _ = Context("Interpreter", func() {
 		Context("Unexpected predicate", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				providedScgPredicate := &model.SCGPredicate{}
+				providedScgPredicate := &types.SCGPredicate{}
 				objectUnderTest := _interpreter{}
 
 				expectedError := fmt.Errorf("unable to interpret predicate; predicate was unexpected type %+v", providedScgPredicate)
@@ -193,7 +193,7 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					new(data.FakeHandle),
 					providedScgPredicate,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */

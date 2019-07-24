@@ -9,7 +9,7 @@ import (
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 )
 
@@ -30,7 +30,7 @@ var _ = Context("dataResolver", func() {
 			}
 
 			/* act */
-			objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+			objectUnderTest.Resolve("dummyDataRef", &types.PullCreds{})
 
 			/* assert */
 			Expect(fakeNodeReachabilityEnsurer.EnsureNodeReachableCallCount()).To(Equal(1))
@@ -83,14 +83,14 @@ var _ = Context("dataResolver", func() {
 				}
 
 				/* act */
-				objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+				objectUnderTest.Resolve("dummyDataRef", &types.PullCreds{})
 
 				/* assert */
 				Expect(fakeData.NewFSProviderArgsForCall(0)).To(ConsistOf(workDir))
 			})
 			It("should call data.NewNodeProvider w/ expected args", func() {
 				/* arrange */
-				providedPullCreds := &model.PullCreds{
+				providedPullCreds := &types.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}
@@ -149,7 +149,7 @@ var _ = Context("dataResolver", func() {
 				/* act */
 				objectUnderTest.Resolve(
 					providedDataRef,
-					&model.PullCreds{},
+					&types.PullCreds{},
 				)
 
 				/* assert */
@@ -165,7 +165,7 @@ var _ = Context("dataResolver", func() {
 					It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
 						fakeData := new(data.Fake)
-						expectedError := model.ErrDataProviderAuthorization{}
+						expectedError := types.ErrDataProviderAuthorization{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
 						username := "dummyUsername"
@@ -173,7 +173,7 @@ var _ = Context("dataResolver", func() {
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Value{
+							map[string]*types.Value{
 								usernameInputName: {String: &username},
 								passwordInputName: {String: &password},
 							},
@@ -188,7 +188,7 @@ var _ = Context("dataResolver", func() {
 						}
 
 						/* act */
-						objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+						objectUnderTest.Resolve("dummyDataRef", &types.PullCreds{})
 
 						/* assert */
 						_, actualInputs := fakeCliParamSatisfier.SatisfyArgsForCall(0)
@@ -200,17 +200,17 @@ var _ = Context("dataResolver", func() {
 						fakeNodeProvider := new(data.FakeProvider)
 						fakeData.NewNodeProviderReturns(fakeNodeProvider)
 
-						expectedError := model.ErrDataProviderAuthentication{}
+						expectedError := types.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
-						pullCreds := &model.PullCreds{
+						pullCreds := &types.PullCreds{
 							Username: "dummyUsername",
 							Password: "dummyPassword",
 						}
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Value{
+							map[string]*types.Value{
 								usernameInputName: {String: &pullCreds.Username},
 								passwordInputName: {String: &pullCreds.Password},
 							},
@@ -230,7 +230,7 @@ var _ = Context("dataResolver", func() {
 						/* act */
 						objectUnderTest.Resolve(
 							"dummyDataRef",
-							&model.PullCreds{},
+							&types.PullCreds{},
 						)
 
 						/* assert */
@@ -251,12 +251,12 @@ var _ = Context("dataResolver", func() {
 						fakeNodeProvider := new(data.FakeProvider)
 						fakeData.NewNodeProviderReturns(fakeNodeProvider)
 
-						expectedError := model.ErrDataProviderAuthentication{}
+						expectedError := types.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
 
 						fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 						fakeCliParamSatisfier.SatisfyReturns(
-							map[string]*model.Value{
+							map[string]*types.Value{
 								usernameInputName: {String: new(string)},
 								passwordInputName: {String: new(string)},
 							},
@@ -273,7 +273,7 @@ var _ = Context("dataResolver", func() {
 						/* act */
 						objectUnderTest.Resolve(
 							providedDataRef,
-							&model.PullCreds{},
+							&types.PullCreds{},
 						)
 
 						/* assert */
@@ -310,7 +310,7 @@ var _ = Context("dataResolver", func() {
 						}
 
 						/* act */
-						objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
+						objectUnderTest.Resolve("dummyDataRef", &types.PullCreds{})
 
 						/* assert */
 						Expect(fakeCliExiter.ExitArgsForCall(0)).
@@ -337,7 +337,7 @@ var _ = Context("dataResolver", func() {
 					/* act */
 					actualPkgHandle := objectUnderTest.Resolve(
 						"dummyDataRef",
-						&model.PullCreds{},
+						&types.PullCreds{},
 					)
 
 					/* assert */

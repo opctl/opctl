@@ -4,7 +4,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Validate", func() {
@@ -14,9 +14,9 @@ var _ = Context("Validate", func() {
 			It("should return expected errors", func() {
 
 				/* arrange */
-				providedValue := &model.Value{}
-				providedParam := &model.Param{
-					Socket: &model.SocketParam{},
+				providedValue := &types.Value{}
+				providedParam := &types.Param{
+					Socket: &types.SocketParam{},
 				}
 
 				expectedErrors := []error{
@@ -36,11 +36,11 @@ var _ = Context("Validate", func() {
 
 				/* arrange */
 				providedValueSocket := "dummySocket"
-				providedValue := &model.Value{
+				providedValue := &types.Value{
 					Socket: &providedValueSocket,
 				}
-				providedParam := &model.Param{
-					Socket: &model.SocketParam{},
+				providedParam := &types.Param{
+					Socket: &types.SocketParam{},
 				}
 
 				expectedErrors := []error{}

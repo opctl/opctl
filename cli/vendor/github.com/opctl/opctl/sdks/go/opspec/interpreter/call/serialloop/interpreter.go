@@ -1,19 +1,19 @@
 package serialloop
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 type Interpreter interface {
 	Interpret(
-		opHandle model.DataHandle,
-		scgSerialLoop model.SCGSerialLoopCall,
-		scope map[string]*model.Value,
-	) (*model.DCGSerialLoopCall, error)
+		opHandle types.DataHandle,
+		scgSerialLoop types.SCGSerialLoopCall,
+		scope map[string]*types.Value,
+	) (*types.DCGSerialLoopCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -30,11 +30,11 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	opHandle model.DataHandle,
-	scgSerialLoop model.SCGSerialLoopCall,
-	scope map[string]*model.Value,
-) (*model.DCGSerialLoopCall, error) {
-	dcgSerialLoop := model.DCGSerialLoopCall{}
+	opHandle types.DataHandle,
+	scgSerialLoop types.SCGSerialLoopCall,
+	scope map[string]*types.Value,
+) (*types.DCGSerialLoopCall, error) {
+	dcgSerialLoop := types.DCGSerialLoopCall{}
 
 	scgLoopRange := scgSerialLoop.Range
 	if nil != scgLoopRange {

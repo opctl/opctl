@@ -3,13 +3,13 @@ package cliparamsatisfier
 import (
 	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/opctl/cli/util/clioutput"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/peterh/liner"
 	"os"
 )
 
 func (isf _InputSrcFactory) NewCliPromptInputSrc(
-	inputs map[string]*model.Param,
+	inputs map[string]*types.Param,
 ) InputSrc {
 	return cliPromptInputSrc{
 		inputs:    inputs,
@@ -19,7 +19,7 @@ func (isf _InputSrcFactory) NewCliPromptInputSrc(
 
 // cliPromptInputSrc implements InputSrc interface by sourcing inputs from std in
 type cliPromptInputSrc struct {
-	inputs    map[string]*model.Param
+	inputs    map[string]*types.Param
 	cliOutput clioutput.CliOutput
 }
 

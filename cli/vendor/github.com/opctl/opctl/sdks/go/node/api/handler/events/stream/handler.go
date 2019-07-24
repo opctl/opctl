@@ -6,8 +6,8 @@ import (
 	"context"
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	"github.com/gorilla/websocket"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/http"
 	"strings"
 	"time"
@@ -53,7 +53,7 @@ func (hdlr _handler) Handle(
 
 	defer conn.Close()
 
-	req := &model.GetEventStreamReq{Filter: model.EventFilter{}}
+	req := &types.GetEventStreamReq{Filter: types.EventFilter{}}
 	if sinceString := httpReq.URL.Query().Get("since"); "" != sinceString {
 		sinceTime, err := time.Parse(time.RFC3339, sinceString)
 		if nil != err {

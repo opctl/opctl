@@ -1,6 +1,6 @@
 import nodeFetch from 'node-fetch'
 import _assertStatusSuccessful from '../../_assertStatusSuccessful'
-import Value from '../../../../model/value'
+import Value from '../../../../types/value'
 
 /**
  * Starts an op

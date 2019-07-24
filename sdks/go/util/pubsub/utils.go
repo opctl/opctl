@@ -2,12 +2,12 @@ package pubsub
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func isRootOpIDExcludedByFilter(
 	rootOpID string,
-	filter model.EventFilter,
+	filter types.EventFilter,
 ) bool {
 	if nil != filter.Roots {
 		isMatchFound := false
@@ -25,7 +25,7 @@ func isRootOpIDExcludedByFilter(
 }
 
 func getEventRootOpID(
-	event model.Event,
+	event types.Event,
 ) string {
 	switch {
 	case nil != event.CallEnded:

@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -26,11 +26,11 @@ var _ = Context("Interpreter", func() {
 			}
 
 			providedOpHandle := new(data.FakeHandle)
-			providedScope := map[string]*model.Value{}
+			providedScope := map[string]*types.Value{}
 
 			fakeStringInterpreter := new(stringPkg.FakeInterpreter)
 			fakeStringInterpreter.InterpretReturns(
-				&model.Value{String: new(string)},
+				&types.Value{String: new(string)},
 				nil,
 			)
 
@@ -81,7 +81,7 @@ var _ = Context("Interpreter", func() {
 				_, actualError := objectUnderTest.Interpret(
 					[]interface{}{"dummyExpression"},
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */
@@ -95,7 +95,7 @@ var _ = Context("Interpreter", func() {
 
 				str := "str"
 				fakeStringInterpreter.InterpretReturns(
-					&model.Value{String: &str},
+					&types.Value{String: &str},
 					nil,
 				)
 
@@ -110,7 +110,7 @@ var _ = Context("Interpreter", func() {
 						"expression1",
 					},
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */
@@ -125,14 +125,14 @@ var _ = Context("Interpreter", func() {
 				zero := "zero"
 				fakeStringInterpreter.InterpretReturnsOnCall(
 					0,
-					&model.Value{String: &zero},
+					&types.Value{String: &zero},
 					nil,
 				)
 
 				one := "one"
 				fakeStringInterpreter.InterpretReturnsOnCall(
 					1,
-					&model.Value{String: &one},
+					&types.Value{String: &one},
 					nil,
 				)
 
@@ -147,7 +147,7 @@ var _ = Context("Interpreter", func() {
 						"expression1",
 					},
 					new(data.FakeHandle),
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 				)
 
 				/* assert */

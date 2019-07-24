@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("opKill", func() {
@@ -19,7 +19,7 @@ var _ = Context("opKill", func() {
 			providedCtx := context.TODO()
 
 			expectedCtx := providedCtx
-			expectedReq := model.KillOpReq{
+			expectedReq := types.KillOpReq{
 				OpID: "dummyOpID",
 			}
 

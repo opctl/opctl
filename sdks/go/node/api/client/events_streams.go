@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path"
 	"strings"
 	"time"
@@ -11,8 +11,8 @@ import (
 
 func (c client) GetEventStream(
 	ctx context.Context,
-	req *model.GetEventStreamReq,
-) (chan model.Event, error) {
+	req *types.GetEventStreamReq,
+) (chan types.Event, error) {
 
 	reqURL := c.baseUrl
 	reqURL.Scheme = "ws"
@@ -36,7 +36,7 @@ func (c client) GetEventStream(
 		return nil, err
 	}
 
-	eventStream := make(chan model.Event, 1000)
+	eventStream := make(chan types.Event, 1000)
 	go func() {
 		// ensure web socket closed on exit
 		defer wsConn.Close()
@@ -45,7 +45,7 @@ func (c client) GetEventStream(
 		defer close(eventStream)
 
 		for {
-			var event model.Event
+			var event types.Event
 			err := wsConn.ReadJSON(&event)
 			if nil != err {
 				return

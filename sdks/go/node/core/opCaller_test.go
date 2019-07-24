@@ -8,9 +8,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -33,19 +33,19 @@ var _ = Context("opCaller", func() {
 			fakeOpHandle := new(data.FakeHandle)
 			fakeOpHandle.RefReturns(providedOpHandleRef)
 
-			providedDCGOpCall := &model.DCGOpCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedDCGOpCall := &types.DCGOpCall{
+				DCGBaseCall: types.DCGBaseCall{
 					OpHandle: fakeOpHandle,
 					RootOpID: "providedRootID",
 				},
 				OpID: "providedOpId",
 			}
 
-			providedSCGOpCall := &model.SCGOpCall{}
+			providedSCGOpCall := &types.SCGOpCall{}
 
-			expectedEvent := model.Event{
+			expectedEvent := types.Event{
 				Timestamp: time.Now().UTC(),
-				OpStarted: &model.OpStartedEvent{
+				OpStarted: &types.OpStartedEvent{
 					OpID:     providedDCGOpCall.OpID,
 					OpRef:    providedOpHandleRef,
 					RootOpID: providedDCGOpCall.RootOpID,
@@ -53,7 +53,7 @@ var _ = Context("opCaller", func() {
 			}
 
 			fakePubSub := new(pubsub.Fake)
-			eventChannel := make(chan model.Event)
+			eventChannel := make(chan types.Event)
 			// close eventChannel to trigger immediate return
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
@@ -73,7 +73,7 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				context.Background(),
 				providedDCGOpCall,
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				nil,
 				providedSCGOpCall,
 			)
@@ -92,27 +92,27 @@ var _ = Context("opCaller", func() {
 			/* arrange */
 			dummyString := "dummyString"
 			providedCtx := context.Background()
-			providedDCGOpCall := &model.DCGOpCall{
-				DCGBaseCall: model.DCGBaseCall{
+			providedDCGOpCall := &types.DCGOpCall{
+				DCGBaseCall: types.DCGBaseCall{
 					OpHandle: new(data.FakeHandle),
 					RootOpID: "providedRootID",
 				},
 				ChildCallID: "dummyChildCallID",
-				ChildCallSCG: &model.SCG{
-					Parallel: []*model.SCG{
+				ChildCallSCG: &types.SCG{
+					Parallel: []*types.SCG{
 						{
-							Container: &model.SCGContainerCall{},
+							Container: &types.SCGContainerCall{},
 						},
 					},
 				},
-				Inputs: map[string]*model.Value{
+				Inputs: map[string]*types.Value{
 					"dummyScopeName": {String: &dummyString},
 				},
 				OpID: "providedOpID",
 			}
 
 			fakePubSub := new(pubsub.Fake)
-			eventChannel := make(chan model.Event)
+			eventChannel := make(chan types.Event)
 			// close eventChannel to trigger immediate return
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
@@ -134,9 +134,9 @@ var _ = Context("opCaller", func() {
 			objectUnderTest.Call(
 				providedCtx,
 				providedDCGOpCall,
-				map[string]*model.Value{},
+				map[string]*types.Value{},
 				nil,
-				&model.SCGOpCall{},
+				&types.SCGOpCall{},
 			)
 
 			/* assert */
@@ -164,35 +164,35 @@ var _ = Context("opCaller", func() {
 				fakeOpHandle.RefReturns(providedOpHandleRef)
 				fakeOpHandle.PathReturns(new(string))
 
-				providedDCGOpCall := &model.DCGOpCall{
-					DCGBaseCall: model.DCGBaseCall{
+				providedDCGOpCall := &types.DCGOpCall{
+					DCGBaseCall: types.DCGBaseCall{
 						OpHandle: fakeOpHandle,
 						RootOpID: "providedRootID",
 					},
 					OpID: "providedOpID",
 				}
 
-				providedSCGOpCall := &model.SCGOpCall{}
+				providedSCGOpCall := &types.SCGOpCall{}
 
-				expectedEvent := model.Event{
+				expectedEvent := types.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEndedEvent{
+					OpEnded: &types.OpEndedEvent{
 						OpID:     providedDCGOpCall.OpID,
-						Outcome:  model.OpOutcomeKilled,
+						Outcome:  types.OpOutcomeKilled,
 						RootOpID: providedDCGOpCall.RootOpID,
 						OpRef:    providedOpHandleRef,
-						Outputs:  map[string]*model.Value{},
+						Outputs:  map[string]*types.Value{},
 					},
 				}
 
 				fakeCallStore := new(fakeCallStore)
-				fakeCallStore.GetReturns(model.DCG{IsKilled: true})
+				fakeCallStore.GetReturns(types.DCG{IsKilled: true})
 
 				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
-				eventChannel := make(chan model.Event)
+				eventChannel := make(chan types.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
@@ -209,7 +209,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					providedDCGOpCall,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					nil,
 					providedSCGOpCall,
 				)
@@ -235,33 +235,33 @@ var _ = Context("opCaller", func() {
 					fakeOpHandle.RefReturns(providedOpHandleRef)
 					fakeOpHandle.PathReturns(new(string))
 
-					providedDCGOpCall := &model.DCGOpCall{
-						DCGBaseCall: model.DCGBaseCall{
+					providedDCGOpCall := &types.DCGOpCall{
+						DCGBaseCall: types.DCGBaseCall{
 							OpHandle: fakeOpHandle,
 							RootOpID: "providedRootID",
 						},
 						OpID: "providedOpId",
 					}
 
-					providedSCGOpCall := &model.SCGOpCall{}
+					providedSCGOpCall := &types.SCGOpCall{}
 					errMsg := "errMsg"
 
-					expectedEvent := model.Event{
+					expectedEvent := types.Event{
 						Timestamp: time.Now().UTC(),
-						OpEnded: &model.OpEndedEvent{
-							Error: &model.CallEndedEventError{
+						OpEnded: &types.OpEndedEvent{
+							Error: &types.CallEndedEventError{
 								Message: errMsg,
 							},
 							OpID:     providedDCGOpCall.OpID,
 							OpRef:    providedOpHandleRef,
-							Outcome:  model.OpOutcomeFailed,
+							Outcome:  types.OpOutcomeFailed,
 							RootOpID: providedDCGOpCall.RootOpID,
-							Outputs:  map[string]*model.Value{},
+							Outputs:  map[string]*types.Value{},
 						},
 					}
 
 					fakePubSub := new(pubsub.Fake)
-					eventChannel := make(chan model.Event)
+					eventChannel := make(chan types.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
 					fakePubSub.SubscribeReturns(eventChannel, nil)
@@ -281,7 +281,7 @@ var _ = Context("opCaller", func() {
 					objectUnderTest.Call(
 						context.Background(),
 						providedDCGOpCall,
-						map[string]*model.Value{},
+						map[string]*types.Value{},
 						nil,
 						providedSCGOpCall,
 					)
@@ -306,8 +306,8 @@ var _ = Context("opCaller", func() {
 				fakeOpHandle.RefReturns(providedOpHandleRef)
 				fakeOpHandle.PathReturns(new(string))
 
-				providedDCGOpCall := &model.DCGOpCall{
-					DCGBaseCall: model.DCGBaseCall{
+				providedDCGOpCall := &types.DCGOpCall{
+					DCGBaseCall: types.DCGBaseCall{
 						OpHandle: fakeOpHandle,
 						RootOpID: "providedRootID",
 					},
@@ -316,38 +316,38 @@ var _ = Context("opCaller", func() {
 
 				expectedOutputName := "expectedOutputName"
 
-				providedSCGOpCall := &model.SCGOpCall{
+				providedSCGOpCall := &types.SCGOpCall{
 					Outputs: map[string]string{
 						expectedOutputName: "",
 					},
 				}
 
 				fakeOutputsInterpreter := new(outputs.FakeInterpreter)
-				interpretedOutputs := map[string]*model.Value{
-					expectedOutputName: new(model.Value),
+				interpretedOutputs := map[string]*types.Value{
+					expectedOutputName: new(types.Value),
 					// include unbound output to ensure it's not added to scope
-					"unexpectedOutputName": new(model.Value),
+					"unexpectedOutputName": new(types.Value),
 				}
 				fakeOutputsInterpreter.InterpretReturns(interpretedOutputs, nil)
 
-				expectedEvent := model.Event{
+				expectedEvent := types.Event{
 					Timestamp: time.Now().UTC(),
-					OpEnded: &model.OpEndedEvent{
+					OpEnded: &types.OpEndedEvent{
 						OpID:     providedDCGOpCall.OpID,
 						OpRef:    providedOpHandleRef,
-						Outcome:  model.OpOutcomeSucceeded,
+						Outcome:  types.OpOutcomeSucceeded,
 						RootOpID: providedDCGOpCall.RootOpID,
-						Outputs: map[string]*model.Value{
+						Outputs: map[string]*types.Value{
 							expectedOutputName: interpretedOutputs[expectedOutputName],
 						},
 					},
 				}
 
 				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
-				eventChannel := make(chan model.Event)
+				eventChannel := make(chan types.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakePubSub.SubscribeReturns(eventChannel, nil)
@@ -364,7 +364,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					providedDCGOpCall,
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					nil,
 					providedSCGOpCall,
 				)

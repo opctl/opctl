@@ -6,8 +6,8 @@ import (
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"net/url"
 	"strings"
 	"time"
@@ -20,8 +20,8 @@ var _ = Context("GetEventStream", func() {
 		/* arrange */
 		providedCtx := context.Background()
 		providedSince := time.Now().UTC()
-		providedReq := &model.GetEventStreamReq{
-			Filter: model.EventFilter{
+		providedReq := &types.GetEventStreamReq{
+			Filter: types.EventFilter{
 				Since: &providedSince,
 				Roots: []string{
 					"dummyRoot",

@@ -11,9 +11,9 @@ import (
 	"github.com/golang-interfaces/github.com-gorilla-websocket"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Handler", func() {
@@ -90,7 +90,7 @@ var _ = Context("Handler", func() {
 
 					/* arrange */
 					fakeCore := new(core.Fake)
-					eventChannel := make(chan model.Event)
+					eventChannel := make(chan types.Event)
 					// close eventChannel to trigger immediate return
 					close(eventChannel)
 					fakeCore.GetEventStreamReturns(eventChannel, nil)
@@ -100,8 +100,8 @@ var _ = Context("Handler", func() {
 					}
 
 					expectedSince := time.Now().UTC()
-					expectedReq := &model.GetEventStreamReq{
-						Filter: model.EventFilter{
+					expectedReq := &types.GetEventStreamReq{
+						Filter: types.EventFilter{
 							Since: &expectedSince,
 						},
 					}
@@ -134,7 +134,7 @@ var _ = Context("Handler", func() {
 
 				/* arrange */
 				fakeCore := new(core.Fake)
-				eventChannel := make(chan model.Event)
+				eventChannel := make(chan types.Event)
 				// close eventChannel to trigger immediate return
 				close(eventChannel)
 				fakeCore.GetEventStreamReturns(eventChannel, nil)
@@ -147,8 +147,8 @@ var _ = Context("Handler", func() {
 				root2 := "dummyRoot2"
 
 				expectedRoots := []string{root1, root2}
-				expectedReq := &model.GetEventStreamReq{
-					Filter: model.EventFilter{
+				expectedReq := &types.GetEventStreamReq{
+					Filter: types.EventFilter{
 						Roots: expectedRoots,
 					},
 				}

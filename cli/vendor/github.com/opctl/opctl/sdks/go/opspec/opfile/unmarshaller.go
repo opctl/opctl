@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ghodss/yaml"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // @TODO make private
@@ -14,7 +14,7 @@ type Unmarshaller interface {
 	// Unmarshal validates and unmarshals an "op.yml" file
 	Unmarshal(
 		manifestBytes []byte,
-	) (*model.OpDotYml, error)
+	) (*types.OpDotYml, error)
 }
 
 // NewUnmarshaller returns an initialized Unmarshaller instance
@@ -30,7 +30,7 @@ type _unmarshaller struct {
 
 func (uml _unmarshaller) Unmarshal(
 	manifestBytes []byte,
-) (*model.OpDotYml, error) {
+) (*types.OpDotYml, error) {
 
 	var err error
 
@@ -54,7 +54,7 @@ func (uml _unmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	opDotYml := model.OpDotYml{}
+	opDotYml := types.OpDotYml{}
 	return &opDotYml, yaml.Unmarshal(manifestBytes, &opDotYml)
 
 }

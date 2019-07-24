@@ -3,8 +3,8 @@ package params
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Validator", func() {
@@ -19,12 +19,12 @@ var _ = Context("Validator", func() {
 			/* arrange */
 
 			expectedName1 := "expectedName1"
-			providedValues := map[string]*model.Value{
-				expectedName1: new(model.Value),
+			providedValues := map[string]*types.Value{
+				expectedName1: new(types.Value),
 			}
 
-			providedParams := map[string]*model.Param{
-				expectedName1: new(model.Param),
+			providedParams := map[string]*types.Param{
+				expectedName1: new(types.Param),
 			}
 
 			fakeParamValidator := new(param.FakeValidator)

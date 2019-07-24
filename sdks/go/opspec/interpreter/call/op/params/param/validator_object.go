@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/xeipuuv/gojsonschema"
 	"strings"
 )
 
 // validateObject validates a value against an object parameter
 func (vdt _validator) validateObject(
-	value *model.Value,
+	value *types.Value,
 	constraints map[string]interface{},
 ) []error {
 	valueAsObject, err := vdt.coerce.ToObject(value)

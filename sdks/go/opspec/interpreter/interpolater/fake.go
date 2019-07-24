@@ -2,17 +2,17 @@
 package interpolater
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"sync"
 )
 
 type Fake struct {
-	InterpolateStub        func(expression string, scope map[string]*model.Value, opHandle model.DataHandle) (string, error)
+	InterpolateStub        func(expression string, scope map[string]*types.Value, opHandle types.DataHandle) (string, error)
 	interpolateMutex       sync.RWMutex
 	interpolateArgsForCall []struct {
 		expression string
-		scope      map[string]*model.Value
-		opHandle   model.DataHandle
+		scope      map[string]*types.Value
+		opHandle   types.DataHandle
 	}
 	interpolateReturns struct {
 		result1 string
@@ -26,13 +26,13 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) Interpolate(expression string, scope map[string]*model.Value, opHandle model.DataHandle) (string, error) {
+func (fake *Fake) Interpolate(expression string, scope map[string]*types.Value, opHandle types.DataHandle) (string, error) {
 	fake.interpolateMutex.Lock()
 	ret, specificReturn := fake.interpolateReturnsOnCall[len(fake.interpolateArgsForCall)]
 	fake.interpolateArgsForCall = append(fake.interpolateArgsForCall, struct {
 		expression string
-		scope      map[string]*model.Value
-		opHandle   model.DataHandle
+		scope      map[string]*types.Value
+		opHandle   types.DataHandle
 	}{expression, scope, opHandle})
 	fake.recordInvocation("Interpolate", []interface{}{expression, scope, opHandle})
 	fake.interpolateMutex.Unlock()
@@ -51,7 +51,7 @@ func (fake *Fake) InterpolateCallCount() int {
 	return len(fake.interpolateArgsForCall)
 }
 
-func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*model.Value, model.DataHandle) {
+func (fake *Fake) InterpolateArgsForCall(i int) (string, map[string]*types.Value, types.DataHandle) {
 	fake.interpolateMutex.RLock()
 	defer fake.interpolateMutex.RUnlock()
 	return fake.interpolateArgsForCall[i].expression, fake.interpolateArgsForCall[i].scope, fake.interpolateArgsForCall[i].opHandle

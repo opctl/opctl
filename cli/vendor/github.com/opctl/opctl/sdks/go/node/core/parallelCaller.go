@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
@@ -17,10 +17,10 @@ type parallelCaller interface {
 	Call(
 		ctx context.Context,
 		callID string,
-		inboundScope map[string]*model.Value,
+		inboundScope map[string]*types.Value,
 		rootOpID string,
-		opHandle model.DataHandle,
-		scgParallelCall []*model.SCG,
+		opHandle types.DataHandle,
+		scgParallelCall []*types.SCG,
 	)
 }
 
@@ -46,22 +46,22 @@ type _parallelCaller struct {
 func (pc _parallelCaller) Call(
 	ctx context.Context,
 	callID string,
-	inboundScope map[string]*model.Value,
+	inboundScope map[string]*types.Value,
 	rootOpID string,
-	opHandle model.DataHandle,
-	scgParallelCall []*model.SCG,
+	opHandle types.DataHandle,
+	scgParallelCall []*types.SCG,
 ) {
 	// setup cancellation
 	ctxOfChildren, cancelChildren := context.WithCancel(ctx)
 	defer cancelChildren()
 
-	outputs := map[string]*model.Value{}
+	outputs := map[string]*types.Value{}
 	var err error
 
 	defer func() {
 		// defer must be defined before conditional return statements so it always runs
-		event := model.Event{
-			ParallelCallEnded: &model.ParallelCallEndedEvent{
+		event := types.Event{
+			ParallelCallEnded: &types.ParallelCallEndedEvent{
 				CallID:   callID,
 				Outputs:  outputs,
 				RootOpID: rootOpID,
@@ -70,7 +70,7 @@ func (pc _parallelCaller) Call(
 		}
 
 		if nil != err {
-			event.ParallelCallEnded.Error = &model.CallEndedEventError{
+			event.ParallelCallEnded.Error = &types.CallEndedEventError{
 				Message: err.Error(),
 			}
 		}
@@ -81,7 +81,7 @@ func (pc _parallelCaller) Call(
 
 	startTime := time.Now().UTC()
 	childCallIDIndexMap := map[string]int{}
-	callIndexOutputsMap := map[int]map[string]*model.Value{}
+	callIndexOutputsMap := map[int]map[string]*types.Value{}
 
 	// perform calls in parallel w/ cancellation
 	for childCallIndex, childCall := range scgParallelCall {
@@ -109,7 +109,7 @@ func (pc _parallelCaller) Call(
 	// @TODO: handle err channel
 	eventChannel, _ := pc.pubSub.Subscribe(
 		ctx,
-		model.EventFilter{
+		types.EventFilter{
 			Roots: []string{rootOpID},
 			Since: &startTime,
 		},

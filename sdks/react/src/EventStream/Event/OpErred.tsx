@@ -1,5 +1,5 @@
 import React from 'react'
-import OpErred from '@opctl/sdk/src/model/event/opErred'
+import OpErred from '@opctl/sdk/src/types/event/opErred'
 
 interface Props {
   opErred: OpErred

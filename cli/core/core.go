@@ -10,9 +10,9 @@ import (
 
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/cli/model"
 	"github.com/opctl/opctl/cli/nodeprovider"
 	"github.com/opctl/opctl/cli/nodeprovider/local"
+	"github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
@@ -62,7 +62,7 @@ type Core interface {
 	Run(
 		ctx context.Context,
 		opRef string,
-		opts *model.RunOpts,
+		opts *types.RunOpts,
 	)
 
 	SelfUpdate(

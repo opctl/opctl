@@ -1,9 +1,9 @@
 package loopable
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 //go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
@@ -11,9 +11,9 @@ import (
 type Interpreter interface {
 	Interpret(
 		expression interface{},
-		opHandle model.DataHandle,
-		scope map[string]*model.Value,
-	) (*model.Value, error)
+		opHandle types.DataHandle,
+		scope map[string]*types.Value,
+	) (*types.Value, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -31,9 +31,9 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	expression interface{},
-	opHandle model.DataHandle,
-	scope map[string]*model.Value,
-) (*model.Value, error) {
+	opHandle types.DataHandle,
+	scope map[string]*types.Value,
+) (*types.Value, error) {
 	// try interpreting as array
 	if dcgForEach, err := itp.arrayInterpreter.Interpret(
 		scope,

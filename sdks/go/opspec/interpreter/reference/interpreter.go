@@ -11,8 +11,8 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/data/coerce"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	bracketedIdentifier "github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 const (
@@ -40,9 +40,9 @@ type Interpreter interface {
 	// Interpret returns the interpreted value (if any), and any err
 	Interpret(
 		ref string,
-		scope map[string]*model.Value,
-		opHandle model.DataHandle,
-	) (*model.Value, error)
+		scope map[string]*types.Value,
+		opHandle types.DataHandle,
+	) (*types.Value, error)
 }
 
 // NewInterpreter returns a Interpreter
@@ -66,11 +66,11 @@ type _interpreter struct {
 
 func (itp _interpreter) Interpret(
 	ref string,
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
-) (*model.Value, error) {
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
+) (*types.Value, error) {
 
-	var data *model.Value
+	var data *types.Value
 	var err error
 
 	ref = strings.TrimSuffix(strings.TrimPrefix(ref, RefStart), RefEnd)
@@ -102,8 +102,8 @@ func (itp _interpreter) Interpret(
 // interpolate interpolates a ref; refs can be nested at most, one level i.e. $(refOuter$(refInner))
 func (itp _interpreter) interpolate(
 	ref string,
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
 ) (string, error) {
 	refBuffer := []byte{}
 	i := 0
@@ -120,7 +120,7 @@ func (itp _interpreter) interpolate(
 			nestedRef := ref[nestedRefStartIndex:nestedRefEndBracketIndex]
 			i += len(RefStart) + len(nestedRef) + len(RefEnd)
 
-			var nestedRefRootValue *model.Value
+			var nestedRefRootValue *types.Value
 			var err error
 			nestedRefRootValue, nestedRef, err = itp.getRootValue(
 				nestedRef,
@@ -155,12 +155,12 @@ func (itp _interpreter) interpolate(
 
 func (itp _interpreter) getRootValue(
 	ref string,
-	scope map[string]*model.Value,
-	opHandle model.DataHandle,
-) (*model.Value, string, error) {
+	scope map[string]*types.Value,
+	opHandle types.DataHandle,
+) (*types.Value, string, error) {
 	if strings.HasPrefix(ref, "/") {
 		// op path ref
-		return &model.Value{Dir: opHandle.Path()}, ref, nil
+		return &types.Value{Dir: opHandle.Path()}, ref, nil
 	}
 
 	// scope ref
@@ -184,8 +184,8 @@ func (itp _interpreter) getRootValue(
 // i1/p1.ext
 func (itp _interpreter) rInterpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *types.Value,
+) (string, *types.Value, error) {
 
 	if "" == ref {
 		return "", data, nil

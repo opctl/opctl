@@ -1,5 +1,5 @@
 import React from 'react'
-import ModelParam from '@opctl/sdk/src/model/param'
+import Param from '@opctl/sdk/src/types/param'
 import InputArray from './Array'
 import InputBoolean from './Boolean'
 import InputDir from './Dir'
@@ -8,7 +8,7 @@ import InputNumber from './Number'
 import InputObject from './Object'
 import InputSocket from './Socket'
 import InputString from './String'
-import Value from '@opctl/sdk/src/model/value'
+import Value from '@opctl/sdk/src/types/value'
 
 interface DataStore {
   get(
@@ -18,7 +18,7 @@ interface DataStore {
 
 interface Props {
   dataStore?: DataStore | null | undefined
-  input: ModelParam
+  input: Param
   name: string
   onInvalid?: () => any | null | undefined
   onValid: (value: any) => any

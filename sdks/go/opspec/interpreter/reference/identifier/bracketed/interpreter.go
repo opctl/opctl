@@ -8,7 +8,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Interpreter interprets a bracketed identifier from ref by consuming from '[' up to & including the first ']'
@@ -17,8 +17,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		ref string,
-		data *model.Value,
-	) (string, *model.Value, error)
+		data *types.Value,
+	) (string, *types.Value, error)
 }
 
 func NewInterpreter() Interpreter {
@@ -37,8 +37,8 @@ type _interpreter struct {
 
 func (dr _interpreter) Interpret(
 	ref string,
-	data *model.Value,
-) (string, *model.Value, error) {
+	data *types.Value,
+) (string, *types.Value, error) {
 
 	if !strings.HasPrefix(ref, "[") {
 		return "", nil, fmt.Errorf("unable to interpret '%v'; expected '['", ref)

@@ -6,7 +6,7 @@ package pubsub
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"sync"
 	"time"
 )
@@ -16,13 +16,13 @@ func New(
 ) PubSub {
 	return &pubSub{
 		eventStore:    eventStore,
-		subscriptions: map[chan model.Event]subscriptionInfo{},
+		subscriptions: map[chan types.Event]subscriptionInfo{},
 	}
 }
 
 type EventPublisher interface {
 	Publish(
-		event model.Event,
+		event types.Event,
 	)
 }
 
@@ -34,9 +34,9 @@ type EventSubscriber interface {
 	// note: method signature is based on https://medium.com/statuscode/pipeline-patterns-in-go-a37bb3a7e61d
 	Subscribe(
 		ctx context.Context,
-		filter model.EventFilter,
+		filter types.EventFilter,
 	) (
-		<-chan model.Event,
+		<-chan types.Event,
 		<-chan error,
 	)
 }
@@ -49,25 +49,25 @@ type PubSub interface {
 type pubSub struct {
 	eventStore EventStore
 	// subscriptions is a map where key is a channel for the subscription & value is info about the subscription
-	subscriptions      map[chan model.Event]subscriptionInfo
+	subscriptions      map[chan types.Event]subscriptionInfo
 	subscriptionsMutex sync.RWMutex
 }
 
 func (ps *pubSub) Subscribe(
 	ctx context.Context,
-	filter model.EventFilter,
+	filter types.EventFilter,
 ) (
-	<-chan model.Event,
+	<-chan types.Event,
 	<-chan error,
 ) {
-	dstEventChannel := make(chan model.Event, 1000)
+	dstEventChannel := make(chan types.Event, 1000)
 	dstErrChannel := make(chan error, 1)
 
 	go func() {
 		defer close(dstEventChannel)
 		defer close(dstErrChannel)
 
-		publishEventChannel := make(chan model.Event, 1000)
+		publishEventChannel := make(chan types.Event, 1000)
 		defer ps.gcSubscription(publishEventChannel)
 
 		subscriptionInfo := subscriptionInfo{
@@ -115,7 +115,7 @@ func (ps *pubSub) Subscribe(
 }
 
 func (ps *pubSub) gcSubscription(
-	channel chan model.Event,
+	channel chan types.Event,
 ) {
 	ps.subscriptionsMutex.RLock()
 	close(ps.subscriptions[channel].Done)
@@ -128,7 +128,7 @@ func (ps *pubSub) gcSubscription(
 
 // O(n) complexity (n being number of existing subscriptions); thread safe
 func (ps *pubSub) Publish(
-	event model.Event,
+	event types.Event,
 ) {
 	ps.eventStore.Add(event)
 
@@ -156,9 +156,9 @@ func (ps *pubSub) Publish(
 publishToSubscription publishes event to subscription
 */
 func (ps *pubSub) publishToSubscription(
-	subscriptionChannel chan model.Event,
+	subscriptionChannel chan types.Event,
 	subscriptionInfo subscriptionInfo,
-	event model.Event,
+	event types.Event,
 ) {
 	select {
 	case <-subscriptionInfo.Done:

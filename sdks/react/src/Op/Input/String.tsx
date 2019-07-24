@@ -1,7 +1,7 @@
 import React from 'react'
 import _DomInput from './_DomInput'
 import Select from './Select'
-import ModelParamString from '@opctl/sdk/src/model/param/string'
+import ParamString from '@opctl/sdk/src/types/param/string'
 import paramStringValidate from '@opctl/sdk/src/opspec/interpreter/opcall/params/param/string/validate'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
   onInvalid?: () => any | null | undefined
   onValid: (value: any) => any
   opRef: string
-  string: ModelParamString
+  string: ParamString
   value: any
 }
 

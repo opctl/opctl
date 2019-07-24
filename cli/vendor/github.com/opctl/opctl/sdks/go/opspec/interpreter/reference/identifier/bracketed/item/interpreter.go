@@ -4,8 +4,8 @@ package item
 
 import (
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Interpreter interprets an item from data via indexString.
@@ -13,8 +13,8 @@ import (
 type Interpreter interface {
 	Interpret(
 		indexString string,
-		data model.Value,
-	) (*model.Value, error)
+		data types.Value,
+	) (*types.Value, error)
 }
 
 func NewInterpreter() Interpreter {
@@ -31,8 +31,8 @@ type _interpreter struct {
 
 func (dr _interpreter) Interpret(
 	indexString string,
-	data model.Value,
-) (*model.Value, error) {
+	data types.Value,
+) (*types.Value, error) {
 	itemIndex, err := dr.parseIndexer.ParseIndex(indexString, *data.Array)
 	if nil != err {
 		return nil, fmt.Errorf("unable to interpret item; error was %v", err.Error())

@@ -5,34 +5,34 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeLister struct {
-	ListStub        func(ctx context.Context, dirHandle model.DataHandle) ([]*model.OpDotYml, error)
+	ListStub        func(ctx context.Context, dirHandle types.DataHandle) ([]*types.OpDotYml, error)
 	listMutex       sync.RWMutex
 	listArgsForCall []struct {
 		ctx       context.Context
-		dirHandle model.DataHandle
+		dirHandle types.DataHandle
 	}
 	listReturns struct {
-		result1 []*model.OpDotYml
+		result1 []*types.OpDotYml
 		result2 error
 	}
 	listReturnsOnCall map[int]struct {
-		result1 []*model.OpDotYml
+		result1 []*types.OpDotYml
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeLister) List(ctx context.Context, dirHandle model.DataHandle) ([]*model.OpDotYml, error) {
+func (fake *FakeLister) List(ctx context.Context, dirHandle types.DataHandle) ([]*types.OpDotYml, error) {
 	fake.listMutex.Lock()
 	ret, specificReturn := fake.listReturnsOnCall[len(fake.listArgsForCall)]
 	fake.listArgsForCall = append(fake.listArgsForCall, struct {
 		ctx       context.Context
-		dirHandle model.DataHandle
+		dirHandle types.DataHandle
 	}{ctx, dirHandle})
 	fake.recordInvocation("List", []interface{}{ctx, dirHandle})
 	fake.listMutex.Unlock()
@@ -51,30 +51,30 @@ func (fake *FakeLister) ListCallCount() int {
 	return len(fake.listArgsForCall)
 }
 
-func (fake *FakeLister) ListArgsForCall(i int) (context.Context, model.DataHandle) {
+func (fake *FakeLister) ListArgsForCall(i int) (context.Context, types.DataHandle) {
 	fake.listMutex.RLock()
 	defer fake.listMutex.RUnlock()
 	return fake.listArgsForCall[i].ctx, fake.listArgsForCall[i].dirHandle
 }
 
-func (fake *FakeLister) ListReturns(result1 []*model.OpDotYml, result2 error) {
+func (fake *FakeLister) ListReturns(result1 []*types.OpDotYml, result2 error) {
 	fake.ListStub = nil
 	fake.listReturns = struct {
-		result1 []*model.OpDotYml
+		result1 []*types.OpDotYml
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeLister) ListReturnsOnCall(i int, result1 []*model.OpDotYml, result2 error) {
+func (fake *FakeLister) ListReturnsOnCall(i int, result1 []*types.OpDotYml, result2 error) {
 	fake.ListStub = nil
 	if fake.listReturnsOnCall == nil {
 		fake.listReturnsOnCall = make(map[int]struct {
-			result1 []*model.OpDotYml
+			result1 []*types.OpDotYml
 			result2 error
 		})
 	}
 	fake.listReturnsOnCall[i] = struct {
-		result1 []*model.OpDotYml
+		result1 []*types.OpDotYml
 		result2 error
 	}{result1, result2}
 }

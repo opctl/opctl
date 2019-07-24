@@ -8,8 +8,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
 )
 
@@ -30,7 +30,7 @@ var _ = Context("caller", func() {
 		})
 	})
 	Context("Call", func() {
-		closedEventChan := make(chan model.Event, 1000)
+		closedEventChan := make(chan types.Event, 1000)
 		close(closedEventChan)
 
 		Context("Null SCG", func() {
@@ -50,7 +50,7 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					"dummyCallID",
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					nil,
 					new(data.FakeHandle),
 					nil,
@@ -62,8 +62,8 @@ var _ = Context("caller", func() {
 		It("should call callInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
 			providedCallID := "dummyCallID"
-			providedScope := map[string]*model.Value{}
-			providedSCG := &model.SCG{}
+			providedScope := map[string]*types.Value{}
+			providedSCG := &types.SCG{}
 			providedOpHandle := new(data.FakeHandle)
 			providedParentIDValue := "providedParentID"
 			providedParentID := &providedParentIDValue
@@ -71,7 +71,7 @@ var _ = Context("caller", func() {
 
 			fakeCallInterpreter := new(call.FakeInterpreter)
 			fakeCallInterpreter.InterpretReturns(
-				&model.DCG{},
+				&types.DCG{},
 				nil,
 			)
 
@@ -121,14 +121,14 @@ var _ = Context("caller", func() {
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				falseBoolean := false
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{
+					&types.DCG{
 						If: &falseBoolean,
 					},
 					nil,
 				)
 
-				expectedEvent := model.Event{
-					CallEnded: &model.CallEndedEvent{
+				expectedEvent := types.Event{
+					CallEnded: &types.CallEndedEvent{
 						CallID:     providedCallID,
 						RootCallID: providedRootOpID,
 					},
@@ -149,8 +149,8 @@ var _ = Context("caller", func() {
 				objectUnderTest.Call(
 					context.Background(),
 					providedCallID,
-					map[string]*model.Value{},
-					&model.SCG{},
+					map[string]*types.Value{},
+					&types.SCG{},
 					new(data.FakeHandle),
 					nil,
 					providedRootOpID,
@@ -173,13 +173,13 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeContainerCaller := new(fakeContainerCaller)
 
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Container: &model.SCGContainerCall{},
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					Container: &types.SCGContainerCall{},
 				}
 
-				expectedDCG := &model.DCG{
-					Container: &model.DCGContainerCall{},
+				expectedDCG := &types.DCG{
+					Container: &types.DCGContainerCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
@@ -223,8 +223,8 @@ var _ = Context("caller", func() {
 				/* arrange */
 				fakeOpCaller := new(fakeOpCaller)
 
-				expectedDCG := &model.DCG{
-					Op: &model.DCGOpCall{},
+				expectedDCG := &types.DCG{
+					Op: &types.DCGOpCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
@@ -233,9 +233,9 @@ var _ = Context("caller", func() {
 				)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Op: &model.SCGOpCall{
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					Op: &types.SCGOpCall{
 						Ref: "dummyOpRef",
 					},
 				}
@@ -285,10 +285,10 @@ var _ = Context("caller", func() {
 				fakeParallelCaller := new(fakeParallelCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Parallel: []*model.SCG{
-						{Container: &model.SCGContainerCall{}},
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					Parallel: []*types.SCG{
+						{Container: &types.SCGContainerCall{}},
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
@@ -296,7 +296,7 @@ var _ = Context("caller", func() {
 
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&types.DCG{},
 					nil,
 				)
 
@@ -344,16 +344,16 @@ var _ = Context("caller", func() {
 				fakeParallelLoopCaller := new(fakeParallelLoopCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					ParallelLoop: &model.SCGParallelLoopCall{},
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					ParallelLoop: &types.SCGParallelLoopCall{},
 				}
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
-					ParallelLoop: &model.DCGParallelLoopCall{},
+				expectedDCG := &types.DCG{
+					ParallelLoop: &types.DCGParallelLoopCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
@@ -405,10 +405,10 @@ var _ = Context("caller", func() {
 				fakeSerialCaller := new(fakeSerialCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					Serial: []*model.SCG{
-						{Container: &model.SCGContainerCall{}},
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					Serial: []*types.SCG{
+						{Container: &types.SCGContainerCall{}},
 					},
 				}
 				providedOpHandle := new(data.FakeHandle)
@@ -416,7 +416,7 @@ var _ = Context("caller", func() {
 
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&types.DCG{},
 					nil,
 				)
 
@@ -465,16 +465,16 @@ var _ = Context("caller", func() {
 				fakeSerialLoopCaller := new(fakeSerialLoopCaller)
 
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{
-					SerialLoop: &model.SCGSerialLoopCall{},
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{
+					SerialLoop: &types.SCGSerialLoopCall{},
 				}
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 				providedParentID := "providedParentID"
 
-				expectedDCG := &model.DCG{
-					SerialLoop: &model.DCGSerialLoopCall{},
+				expectedDCG := &types.DCG{
+					SerialLoop: &types.DCGSerialLoopCall{},
 				}
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(expectedDCG, nil)
@@ -523,15 +523,15 @@ var _ = Context("caller", func() {
 			It("should error", func() {
 				/* arrange */
 				providedCallID := "dummyCallID"
-				providedScope := map[string]*model.Value{}
-				providedSCG := &model.SCG{}
+				providedScope := map[string]*types.Value{}
+				providedSCG := &types.SCG{}
 				providedOpHandle := new(data.FakeHandle)
 				providedRootOpID := "dummyRootOpID"
 				expectedError := fmt.Errorf("Invalid call graph %+v\n", providedSCG)
 
 				fakeCallInterpreter := new(call.FakeInterpreter)
 				fakeCallInterpreter.InterpretReturns(
-					&model.DCG{},
+					&types.DCG{},
 					nil,
 				)
 

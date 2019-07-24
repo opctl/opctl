@@ -5,17 +5,17 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type fakePuller struct {
-	PullStub        func(ctx context.Context, path string, dataRef string, pullCreds *model.PullCreds) error
+	PullStub        func(ctx context.Context, path string, dataRef string, pullCreds *types.PullCreds) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
 		ctx       context.Context
 		path      string
 		dataRef   string
-		pullCreds *model.PullCreds
+		pullCreds *types.PullCreds
 	}
 	pullReturns struct {
 		result1 error
@@ -27,14 +27,14 @@ type fakePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakePuller) Pull(ctx context.Context, path string, dataRef string, pullCreds *model.PullCreds) error {
+func (fake *fakePuller) Pull(ctx context.Context, path string, dataRef string, pullCreds *types.PullCreds) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
 		ctx       context.Context
 		path      string
 		dataRef   string
-		pullCreds *model.PullCreds
+		pullCreds *types.PullCreds
 	}{ctx, path, dataRef, pullCreds})
 	fake.recordInvocation("Pull", []interface{}{ctx, path, dataRef, pullCreds})
 	fake.pullMutex.Unlock()
@@ -53,7 +53,7 @@ func (fake *fakePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
-func (fake *fakePuller) PullArgsForCall(i int) (context.Context, string, string, *model.PullCreds) {
+func (fake *fakePuller) PullArgsForCall(i int) (context.Context, string, string, *types.PullCreds) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
 	return fake.pullArgsForCall[i].ctx, fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].dataRef, fake.pullArgsForCall[i].pullCreds

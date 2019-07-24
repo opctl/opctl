@@ -1,5 +1,5 @@
 import _Websocket from '../_Websocket'
-import Event from '../../../model/event'
+import Event from '../../../types/event'
 
 export interface EventFilter {
     roots: string[]

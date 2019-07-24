@@ -6,8 +6,8 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("fsProvider", func() {
@@ -18,7 +18,7 @@ var _ = Context("fsProvider", func() {
 
 			fakeNodeClient := new(client.Fake)
 
-			providedPullCreds := &model.PullCreds{
+			providedPullCreds := &types.PullCreds{
 				Username: "dummyUsername",
 				Password: "dummyPassword",
 			}
@@ -39,7 +39,7 @@ var _ = Context("fsProvider", func() {
 				actualReq := fakeNodeClient.ListDescendantsArgsForCall(0)
 
 			Expect(actualContext).To(Equal(context.TODO()))
-			Expect(actualReq).To(Equal(model.ListDescendantsReq{
+			Expect(actualReq).To(Equal(types.ListDescendantsReq{
 				PkgRef:    providedDataRef,
 				PullCreds: providedPullCreds,
 			}))
@@ -73,7 +73,7 @@ var _ = Context("fsProvider", func() {
 
 				fakeNodeClient := new(client.Fake)
 
-				providedPullCreds := &model.PullCreds{
+				providedPullCreds := &types.PullCreds{
 					Username: "dummyUsername",
 					Password: "dummyPassword",
 				}

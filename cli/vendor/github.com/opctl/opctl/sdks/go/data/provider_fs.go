@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"os"
 	"path/filepath"
 )
@@ -25,7 +25,7 @@ type fsProvider struct {
 func (fp fsProvider) TryResolve(
 	ctx context.Context,
 	dataRef string,
-) (model.DataHandle, error) {
+) (types.DataHandle, error) {
 
 	if filepath.IsAbs(dataRef) {
 		if _, err := fp.os.Stat(dataRef); nil != err && !os.IsNotExist(err) {

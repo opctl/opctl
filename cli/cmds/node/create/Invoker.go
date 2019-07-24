@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/appdataspec/sdk-golang/appdatapath"
 	"github.com/golang-utils/lockfile"
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
 	"github.com/opctl/opctl/sdks/go/util/pubsub"
@@ -18,7 +18,7 @@ import (
 
 type Invoker interface {
 	Invoke(
-		opts model.NodeCreateOpts,
+		opts types.NodeCreateOpts,
 	)
 }
 
@@ -30,7 +30,7 @@ func NewInvoker() Invoker {
 type _invoker struct{}
 
 func (ivkr _invoker) Invoke(
-	opts model.NodeCreateOpts,
+	opts types.NodeCreateOpts,
 ) {
 	dataDirPath, err := dataDirPath(opts)
 	if nil != err {
@@ -89,7 +89,7 @@ func (ivkr _invoker) Invoke(
 
 // dataDirPath returns path of dir used to store node data
 func dataDirPath(
-	opts model.NodeCreateOpts,
+	opts types.NodeCreateOpts,
 ) (string, error) {
 	if nil != opts.DataDir {
 		return filepath.Abs(*opts.DataDir)

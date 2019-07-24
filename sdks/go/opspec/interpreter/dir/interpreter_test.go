@@ -8,16 +8,16 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpret", func() {
 	Context("expression is scope ref", func() {
 		It("should call referenceInterpreter.Interpret w/ expected args", func() {
 			/* arrange */
-			providedScope := map[string]*model.Value{"": new(model.Value)}
+			providedScope := map[string]*types.Value{"": new(types.Value)}
 
 			providedExpression := "$(providedReference)"
 			providedOpRef := new(data.FakeHandle)
@@ -52,7 +52,7 @@ var _ = Context("Interpret", func() {
 			It("should return expected result", func() {
 
 				/* arrange */
-				providedScope := map[string]*model.Value{"": new(model.Value)}
+				providedScope := map[string]*types.Value{"": new(types.Value)}
 
 				providedExpression := "$(providedReference)"
 
@@ -82,7 +82,7 @@ var _ = Context("Interpret", func() {
 		Context("referenceInterpreter.Interpret doesn't error", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				expectedValue := new(model.Value)
+				expectedValue := new(types.Value)
 				fakeReferenceInterpreter := new(reference.FakeInterpreter)
 				fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
 
@@ -92,7 +92,7 @@ var _ = Context("Interpret", func() {
 
 				/* act */
 				actualValue, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
+					map[string]*types.Value{},
 					"$(providedReference)",
 					new(data.FakeHandle),
 				)

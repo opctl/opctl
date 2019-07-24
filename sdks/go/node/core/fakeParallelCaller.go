@@ -5,38 +5,38 @@ import (
 	"context"
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type fakeParallelCaller struct {
-	CallStub        func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)
+	CallStub        func(context.Context, string, map[string]*types.Value, string, types.DataHandle, []*types.SCG)
 	callMutex       sync.RWMutex
 	callArgsForCall []struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string]*model.Value
+		arg3 map[string]*types.Value
 		arg4 string
-		arg5 model.DataHandle
-		arg6 []*model.SCG
+		arg5 types.DataHandle
+		arg6 []*types.SCG
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*model.Value, arg4 string, arg5 model.DataHandle, arg6 []*model.SCG) {
-	var arg6Copy []*model.SCG
+func (fake *fakeParallelCaller) Call(arg1 context.Context, arg2 string, arg3 map[string]*types.Value, arg4 string, arg5 types.DataHandle, arg6 []*types.SCG) {
+	var arg6Copy []*types.SCG
 	if arg6 != nil {
-		arg6Copy = make([]*model.SCG, len(arg6))
+		arg6Copy = make([]*types.SCG, len(arg6))
 		copy(arg6Copy, arg6)
 	}
 	fake.callMutex.Lock()
 	fake.callArgsForCall = append(fake.callArgsForCall, struct {
 		arg1 context.Context
 		arg2 string
-		arg3 map[string]*model.Value
+		arg3 map[string]*types.Value
 		arg4 string
-		arg5 model.DataHandle
-		arg6 []*model.SCG
+		arg5 types.DataHandle
+		arg6 []*types.SCG
 	}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.recordInvocation("Call", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6Copy})
 	fake.callMutex.Unlock()
@@ -51,13 +51,13 @@ func (fake *fakeParallelCaller) CallCount() int {
 	return len(fake.callArgsForCall)
 }
 
-func (fake *fakeParallelCaller) Calls(stub func(context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG)) {
+func (fake *fakeParallelCaller) Calls(stub func(context.Context, string, map[string]*types.Value, string, types.DataHandle, []*types.SCG)) {
 	fake.callMutex.Lock()
 	defer fake.callMutex.Unlock()
 	fake.CallStub = stub
 }
 
-func (fake *fakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*model.Value, string, model.DataHandle, []*model.SCG) {
+func (fake *fakeParallelCaller) CallArgsForCall(i int) (context.Context, string, map[string]*types.Value, string, types.DataHandle, []*types.SCG) {
 	fake.callMutex.RLock()
 	defer fake.callMutex.RUnlock()
 	argsForCall := fake.callArgsForCall[i]

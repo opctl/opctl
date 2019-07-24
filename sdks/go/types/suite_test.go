@@ -1,4 +1,4 @@
-package model
+package types
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -8,5 +8,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "model")
+	RunSpecs(t, "types")
 }

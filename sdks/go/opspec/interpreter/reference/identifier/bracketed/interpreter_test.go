@@ -9,7 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Interpreter", func() {
@@ -59,7 +59,7 @@ var _ = Context("Interpreter", func() {
 		It("should call coerceToArrayOrObjecter.CoerceToArrayOrObject w/ expected args", func() {
 
 			/* arrange */
-			providedData := model.Value{String: new(string)}
+			providedData := types.Value{String: new(string)}
 
 			fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
 			// err to trigger immediate return
@@ -86,7 +86,7 @@ var _ = Context("Interpreter", func() {
 
 				/* arrange */
 				providedRef := "[]"
-				providedData := model.Value{String: new(string)}
+				providedData := types.Value{String: new(string)}
 
 				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
 				coerceToArrayOrObjectErr := errors.New("coerceToArrayOrObjectErr")
@@ -115,7 +115,7 @@ var _ = Context("Interpreter", func() {
 				providedRef := fmt.Sprintf("[%v]", providedRefIdentifier)
 
 				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-				coercedArray := model.Value{Array: new([]interface{})}
+				coercedArray := types.Value{Array: new([]interface{})}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 				fakeItemInterpreter := new(item.FakeInterpreter)
@@ -130,7 +130,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedRef,
-					new(model.Value),
+					new(types.Value),
 				)
 
 				/* assert */
@@ -145,7 +145,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedArray := model.Value{Array: new([]interface{})}
+					coercedArray := types.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 					fakeItemInterpreter := new(item.FakeInterpreter)
@@ -160,7 +160,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, _, actualErr := objectUnderTest.Interpret(
 						"[]",
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */
@@ -173,11 +173,11 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedArray := model.Value{Array: new([]interface{})}
+					coercedArray := types.Value{Array: new([]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedArray, nil)
 
 					fakeItemInterpreter := new(item.FakeInterpreter)
-					interpretdItemValue := model.Value{}
+					interpretdItemValue := types.Value{}
 					fakeItemInterpreter.InterpretReturns(&interpretdItemValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -188,7 +188,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					actualRefRemainder, actualData, actualErr := objectUnderTest.Interpret(
 						"[]",
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */
@@ -206,7 +206,7 @@ var _ = Context("Interpreter", func() {
 
 				fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
 				object := &map[string]interface{}{providedRefIdentifier: "dummyValue"}
-				coercedObject := model.Value{Object: object}
+				coercedObject := types.Value{Object: object}
 				fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 				fakeValueConstructor := new(value.FakeConstructor)
@@ -221,7 +221,7 @@ var _ = Context("Interpreter", func() {
 				/* act */
 				objectUnderTest.Interpret(
 					providedRef,
-					new(model.Value),
+					new(types.Value),
 				)
 
 				/* assert */
@@ -234,7 +234,7 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedObject := model.Value{Object: new(map[string]interface{})}
+					coercedObject := types.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
@@ -251,7 +251,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					_, _, actualErr := objectUnderTest.Interpret(
 						"[]",
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */
@@ -264,11 +264,11 @@ var _ = Context("Interpreter", func() {
 					/* arrange */
 
 					fakeCoerceToArrayOrObjecter := new(fakeCoerceToArrayOrObjecter)
-					coercedObject := model.Value{Object: new(map[string]interface{})}
+					coercedObject := types.Value{Object: new(map[string]interface{})}
 					fakeCoerceToArrayOrObjecter.CoerceToArrayOrObjectReturns(&coercedObject, nil)
 
 					fakeValueConstructor := new(value.FakeConstructor)
-					interpretdItemValue := model.Value{}
+					interpretdItemValue := types.Value{}
 					fakeValueConstructor.ConstructReturns(&interpretdItemValue, nil)
 
 					objectUnderTest := _interpreter{
@@ -279,7 +279,7 @@ var _ = Context("Interpreter", func() {
 					/* act */
 					actualRefRemainder, actualData, actualErr := objectUnderTest.Interpret(
 						"[]",
-						new(model.Value),
+						new(types.Value),
 					)
 
 					/* assert */

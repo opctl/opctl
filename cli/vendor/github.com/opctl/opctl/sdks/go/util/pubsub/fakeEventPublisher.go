@@ -4,23 +4,23 @@ package pubsub
 import (
 	"sync"
 
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type FakeEventPublisher struct {
-	PublishStub        func(event model.Event)
+	PublishStub        func(event types.Event)
 	publishMutex       sync.RWMutex
 	publishArgsForCall []struct {
-		event model.Event
+		event types.Event
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeEventPublisher) Publish(event model.Event) {
+func (fake *FakeEventPublisher) Publish(event types.Event) {
 	fake.publishMutex.Lock()
 	fake.publishArgsForCall = append(fake.publishArgsForCall, struct {
-		event model.Event
+		event types.Event
 	}{event})
 	fake.recordInvocation("Publish", []interface{}{event})
 	fake.publishMutex.Unlock()
@@ -35,7 +35,7 @@ func (fake *FakeEventPublisher) PublishCallCount() int {
 	return len(fake.publishArgsForCall)
 }
 
-func (fake *FakeEventPublisher) PublishArgsForCall(i int) model.Event {
+func (fake *FakeEventPublisher) PublishArgsForCall(i int) types.Event {
 	fake.publishMutex.RLock()
 	defer fake.publishMutex.RUnlock()
 	return fake.publishArgsForCall[i].event

@@ -3,17 +3,17 @@ package loop
 //go:generate counterfeiter -o ./fakeDeScoper.go --fake-name FakeDeScoper ./ DeScoper
 
 import (
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type DeScoper interface {
 	// DeScope de-scopes loop vars (index, key, value)
 	DeScope(
-		parentScope map[string]*model.Value,
+		parentScope map[string]*types.Value,
 		scgLoopRange interface{},
-		scgLoopVars *model.SCGLoopVars,
-		iterationScope map[string]*model.Value,
-	) map[string]*model.Value
+		scgLoopVars *types.SCGLoopVars,
+		iterationScope map[string]*types.Value,
+	) map[string]*types.Value
 }
 
 func NewDeScoper() DeScoper {
@@ -23,16 +23,16 @@ func NewDeScoper() DeScoper {
 type _deScoper struct{}
 
 func (ds _deScoper) DeScope(
-	parentScope map[string]*model.Value,
+	parentScope map[string]*types.Value,
 	scgLoopRange interface{},
-	scgLoopVars *model.SCGLoopVars,
-	iterationScope map[string]*model.Value,
-) map[string]*model.Value {
+	scgLoopVars *types.SCGLoopVars,
+	iterationScope map[string]*types.Value,
+) map[string]*types.Value {
 	if nil == scgLoopVars {
 		return parentScope
 	}
 
-	outboundScope := map[string]*model.Value{}
+	outboundScope := map[string]*types.Value{}
 	for varName, varData := range iterationScope {
 		outboundScope[varName] = varData
 	}

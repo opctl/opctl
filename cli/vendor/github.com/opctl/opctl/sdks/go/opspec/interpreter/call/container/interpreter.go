@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/cmd"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/dirs"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/envvars"
@@ -14,17 +13,18 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/image"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container/sockets"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Interpreter interface {
 	// Interpret interprets an SCGContainerCall into a DCGContainerCall
 	Interpret(
-		scope map[string]*model.Value,
-		scgContainerCall *model.SCGContainerCall,
+		scope map[string]*types.Value,
+		scgContainerCall *types.SCGContainerCall,
 		containerID string,
 		rootOpID string,
-		opHandle model.DataHandle,
-	) (*model.DCGContainerCall, error)
+		opHandle types.DataHandle,
+	) (*types.DCGContainerCall, error)
 }
 
 // NewInterpreter returns an initialized Interpreter instance
@@ -57,15 +57,15 @@ type _interpreter struct {
 }
 
 func (itp _interpreter) Interpret(
-	scope map[string]*model.Value,
-	scgContainerCall *model.SCGContainerCall,
+	scope map[string]*types.Value,
+	scgContainerCall *types.SCGContainerCall,
 	containerID string,
 	rootOpID string,
-	opHandle model.DataHandle,
-) (*model.DCGContainerCall, error) {
+	opHandle types.DataHandle,
+) (*types.DCGContainerCall, error) {
 
-	dcgContainerCall := &model.DCGContainerCall{
-		DCGBaseCall: model.DCGBaseCall{
+	dcgContainerCall := &types.DCGContainerCall{
+		DCGBaseCall: types.DCGBaseCall{
 			RootOpID: rootOpID,
 			OpHandle: opHandle,
 		},

@@ -1,3 +1,3 @@
-package model
+package types
 
 type NodeInfoView struct{}

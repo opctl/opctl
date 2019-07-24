@@ -2,7 +2,7 @@ package core
 
 import (
 	"context"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 // Resolve attempts to resolve data via local filesystem or git
@@ -15,9 +15,9 @@ import (
 func (this _core) ResolveData(
 	ctx context.Context,
 	dataRef string,
-	pullCreds *model.PullCreds,
+	pullCreds *types.PullCreds,
 ) (
-	model.DataHandle,
+	types.DataHandle,
 	error,
 ) {
 	return this.data.Resolve(

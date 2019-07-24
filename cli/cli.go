@@ -10,7 +10,7 @@ import (
 	mow "github.com/jawher/mow.cli"
 	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
 	corePkg "github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/opctl/sdks/go/opspec"
 )
@@ -61,7 +61,7 @@ func newCli(
 
 			createCmd.Action = func() {
 				nodeCreateCmdInvoker.Invoke(
-					model.NodeCreateOpts{
+					types.NodeCreateOpts{
 						DataDir: dataDir,
 					},
 				)
@@ -132,7 +132,7 @@ func newCli(
 		opRef := runCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 		runCmd.Action = func() {
-			core.Run(context.TODO(), *opRef, &model.RunOpts{Args: *args, ArgFile: *argFile})
+			core.Run(context.TODO(), *opRef, &types.RunOpts{Args: *args, ArgFile: *argFile})
 		}
 	})
 

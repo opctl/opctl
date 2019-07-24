@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 	"github.com/xeipuuv/gojsonschema"
 	"strings"
 )
 
 // validateNumber validates a value against a number parameter
 func (vdt _validator) validateNumber(
-	value *model.Value,
+	value *types.Value,
 	constraints map[string]interface{},
 ) []error {
 	valueAsNumber, err := vdt.coerce.ToNumber(value)

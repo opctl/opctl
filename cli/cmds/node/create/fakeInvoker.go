@@ -4,23 +4,23 @@ package create
 import (
 	"sync"
 
-	"github.com/opctl/opctl/cli/model"
+	"github.com/opctl/opctl/cli/types"
 )
 
 type FakeInvoker struct {
-	InvokeStub        func(model.NodeCreateOpts)
+	InvokeStub        func(types.NodeCreateOpts)
 	invokeMutex       sync.RWMutex
 	invokeArgsForCall []struct {
-		arg1 model.NodeCreateOpts
+		arg1 types.NodeCreateOpts
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeInvoker) Invoke(arg1 model.NodeCreateOpts) {
+func (fake *FakeInvoker) Invoke(arg1 types.NodeCreateOpts) {
 	fake.invokeMutex.Lock()
 	fake.invokeArgsForCall = append(fake.invokeArgsForCall, struct {
-		arg1 model.NodeCreateOpts
+		arg1 types.NodeCreateOpts
 	}{arg1})
 	fake.recordInvocation("Invoke", []interface{}{arg1})
 	fake.invokeMutex.Unlock()
@@ -35,13 +35,13 @@ func (fake *FakeInvoker) InvokeCallCount() int {
 	return len(fake.invokeArgsForCall)
 }
 
-func (fake *FakeInvoker) InvokeCalls(stub func(model.NodeCreateOpts)) {
+func (fake *FakeInvoker) InvokeCalls(stub func(types.NodeCreateOpts)) {
 	fake.invokeMutex.Lock()
 	defer fake.invokeMutex.Unlock()
 	fake.InvokeStub = stub
 }
 
-func (fake *FakeInvoker) InvokeArgsForCall(i int) model.NodeCreateOpts {
+func (fake *FakeInvoker) InvokeArgsForCall(i int) types.NodeCreateOpts {
 	fake.invokeMutex.RLock()
 	defer fake.invokeMutex.RUnlock()
 	argsForCall := fake.invokeArgsForCall[i]

@@ -7,13 +7,13 @@ import (
 
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func newGitHandle(
 	path string,
 	dataRef string,
-) model.DataHandle {
+) types.DataHandle {
 	return gitHandle{
 		ioUtil:  iioutil.New(),
 		os:      ios.New(),
@@ -34,7 +34,7 @@ func (gh gitHandle) GetContent(
 	ctx context.Context,
 	contentPath string,
 ) (
-	model.ReadSeekCloser,
+	types.ReadSeekCloser,
 	error,
 ) {
 	return gh.os.Open(filepath.Join(gh.path, contentPath))
@@ -43,7 +43,7 @@ func (gh gitHandle) GetContent(
 func (gh gitHandle) ListDescendants(
 	ctx context.Context,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 	return gh.rListDescendants(gh.path)
@@ -53,7 +53,7 @@ func (gh gitHandle) ListDescendants(
 func (gh gitHandle) rListDescendants(
 	path string,
 ) (
-	[]*model.DirEntry,
+	[]*types.DirEntry,
 	error,
 ) {
 	childFileInfos, err := gh.ioUtil.ReadDir(path)
@@ -61,7 +61,7 @@ func (gh gitHandle) rListDescendants(
 		return nil, err
 	}
 
-	var contents []*model.DirEntry
+	var contents []*types.DirEntry
 	for _, contentFileInfo := range childFileInfos {
 		absContentPath := filepath.Join(path, contentFileInfo.Name())
 
@@ -81,7 +81,7 @@ func (gh gitHandle) rListDescendants(
 
 		contents = append(
 			contents,
-			&model.DirEntry{
+			&types.DirEntry{
 				Mode: contentFileInfo.Mode(),
 				Path: filepath.Join(string(os.PathSeparator), relContentPath),
 				Size: contentFileInfo.Size(),

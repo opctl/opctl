@@ -6,8 +6,8 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/golang-interfaces/iioutil"
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 	"path/filepath"
 )
 
@@ -47,7 +47,7 @@ func (cr _creator) Create(
 		return err
 	}
 
-	opDotYml := model.OpDotYml{
+	opDotYml := types.OpDotYml{
 		Description: pkgDescription,
 		Name:        pkgName,
 	}

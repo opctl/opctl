@@ -3,14 +3,14 @@ package core
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("core", func() {
 	Context("KillOp", func() {
 		It("should call callKiller.Kill w/ expected args", func() {
 			/* arrange */
-			providedReq := model.KillOpReq{OpID: "dummyOpID"}
+			providedReq := types.KillOpReq{OpID: "dummyOpID"}
 
 			fakeCallKiller := new(fakeCallKiller)
 

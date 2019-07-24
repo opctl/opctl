@@ -9,15 +9,15 @@ import (
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	cliModel "github.com/opctl/opctl/cli/model"
+	cliModel "github.com/opctl/opctl/cli/types"
 	"github.com/opctl/opctl/cli/util/clicolorer"
 	"github.com/opctl/opctl/cli/util/cliexiter"
 	"github.com/opctl/opctl/cli/util/clioutput"
 	"github.com/opctl/opctl/cli/util/cliparamsatisfier"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Run", func() {
@@ -119,10 +119,10 @@ var _ = Context("Run", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"
-				opDotYml := &model.OpDotYml{
-					Inputs: map[string]*model.Param{
+				opDotYml := &types.OpDotYml{
+					Inputs: map[string]*types.Param{
 						param1Name: {
-							String: &model.StringParam{},
+							String: &types.StringParam{},
 						},
 					},
 				}
@@ -138,7 +138,7 @@ var _ = Context("Run", func() {
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				fakeAPIClient := new(client.Fake)
-				eventChannel := make(chan model.Event)
+				eventChannel := make(chan types.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
@@ -170,17 +170,17 @@ var _ = Context("Run", func() {
 				expectedCtx := providedContext
 
 				expectedArg1ValueString := "dummyArg1Value"
-				expectedArgs := model.StartOpReq{
-					Args: map[string]*model.Value{
+				expectedArgs := types.StartOpReq{
+					Args: map[string]*types.Value{
 						"dummyArg1Name": {String: &expectedArg1ValueString},
 					},
-					Op: model.StartOpReqOp{
+					Op: types.StartOpReqOp{
 						Ref: resolvedOpRef,
 					},
 				}
 
 				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-				fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 				fakeOpHandle := new(data.FakeHandle)
 				fakeOpHandle.RefReturns(resolvedOpRef)
@@ -190,7 +190,7 @@ var _ = Context("Run", func() {
 
 				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				fakeAPIClient := new(client.Fake)
-				eventChannel := make(chan model.Event)
+				eventChannel := make(chan types.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
@@ -222,7 +222,7 @@ var _ = Context("Run", func() {
 					returnedError := errors.New("dummyError")
 
 					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+					fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(fakeDataResolver)
@@ -255,15 +255,15 @@ var _ = Context("Run", func() {
 					providedCtx := context.Background()
 					rootOpIDReturnedFromStartOp := "dummyRootOpID"
 					startTime := time.Now().UTC()
-					expectedReq := &model.GetEventStreamReq{
-						Filter: model.EventFilter{
+					expectedReq := &types.GetEventStreamReq{
+						Filter: types.EventFilter{
 							Roots: []string{rootOpIDReturnedFromStartOp},
 							Since: &startTime,
 						},
 					}
 
 					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+					fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(fakeDataResolver)
@@ -271,7 +271,7 @@ var _ = Context("Run", func() {
 
 					fakeAPIClient := new(client.Fake)
 					fakeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
-					eventChannel := make(chan model.Event)
+					eventChannel := make(chan types.Event)
 					close(eventChannel)
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
@@ -307,7 +307,7 @@ var _ = Context("Run", func() {
 						returnedError := errors.New("dummyError")
 
 						fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-						fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+						fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 						fakeOpHandle := new(data.FakeHandle)
 						fakeDataResolver := new(fakeDataResolver)
@@ -341,14 +341,14 @@ var _ = Context("Run", func() {
 							fakeCliExiter := new(cliexiter.Fake)
 
 							fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-							fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+							fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 							fakeOpHandle := new(data.FakeHandle)
 							fakeDataResolver := new(fakeDataResolver)
 							fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 							fakeAPIClient := new(client.Fake)
-							eventChannel := make(chan model.Event)
+							eventChannel := make(chan types.Event)
 							close(eventChannel)
 							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
@@ -377,12 +377,12 @@ var _ = Context("Run", func() {
 								Context("Outcome==SUCCEEDED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEndedEvent := types.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &types.OpEndedEvent{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeSucceeded,
+												Outcome:  types.OpOutcomeSucceeded,
 												RootOpID: rootOpID,
 											},
 										}
@@ -390,14 +390,14 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeAPIClient := new(client.Fake)
-										eventChannel := make(chan model.Event, 10)
+										eventChannel := make(chan types.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
@@ -424,12 +424,12 @@ var _ = Context("Run", func() {
 								Context("Outcome==KILLED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEndedEvent := types.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &types.OpEndedEvent{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeKilled,
+												Outcome:  types.OpOutcomeKilled,
 												RootOpID: rootOpID,
 											},
 										}
@@ -437,14 +437,14 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeAPIClient := new(client.Fake)
-										eventChannel := make(chan model.Event, 10)
+										eventChannel := make(chan types.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
@@ -472,12 +472,12 @@ var _ = Context("Run", func() {
 								Context("Outcome==FAILED", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEndedEvent := types.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &types.OpEndedEvent{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
-												Outcome:  model.OpOutcomeFailed,
+												Outcome:  types.OpOutcomeFailed,
 												RootOpID: rootOpID,
 											},
 										}
@@ -485,14 +485,14 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeAPIClient := new(client.Fake)
-										eventChannel := make(chan model.Event, 10)
+										eventChannel := make(chan types.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
@@ -519,9 +519,9 @@ var _ = Context("Run", func() {
 								Context("Outcome==?", func() {
 									It("should call exiter w/ expected args", func() {
 										/* arrange */
-										opEndedEvent := model.Event{
+										opEndedEvent := types.Event{
 											Timestamp: time.Now(),
-											OpEnded: &model.OpEndedEvent{
+											OpEnded: &types.OpEndedEvent{
 												OpID:     rootOpID,
 												OpRef:    "dummyOpRef",
 												Outcome:  "some unexpected outcome",
@@ -532,14 +532,14 @@ var _ = Context("Run", func() {
 										fakeCliExiter := new(cliexiter.Fake)
 
 										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpDotYmlGetter.GetReturns(&types.OpDotYml{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(fakeDataResolver)
 										fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 										fakeAPIClient := new(client.Fake)
-										eventChannel := make(chan model.Event, 10)
+										eventChannel := make(chan types.Event, 10)
 										eventChannel <- opEndedEvent
 										defer close(eventChannel)
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)

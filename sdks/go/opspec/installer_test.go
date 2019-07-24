@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 var _ = Context("Installer", func() {
@@ -63,7 +63,7 @@ var _ = Context("Installer", func() {
 				providedCtx := context.TODO()
 
 				fakeHandle := new(data.FakeHandle)
-				contentsList := []*model.DirEntry{
+				contentsList := []*types.DirEntry{
 					{
 						Path: "dirEntry1Path",
 					},
@@ -97,7 +97,7 @@ var _ = Context("Installer", func() {
 					expectedError := errors.New("dummyError")
 
 					fakeHandle := new(data.FakeHandle)
-					fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, expectedError)
+					fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, expectedError)
 
 					fakeHandle.GetContentReturns(nil, expectedError)
 
@@ -120,7 +120,7 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.DirEntry{
+						contentsList := []*types.DirEntry{
 							{
 								Path: "dirEntry1Path",
 								Mode: os.ModeDir,
@@ -158,7 +158,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListDescendantsReturns([]*model.DirEntry{{Mode: os.ModeDir}}, nil)
+							fakeHandle.ListDescendantsReturns([]*types.DirEntry{{Mode: os.ModeDir}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -182,7 +182,7 @@ var _ = Context("Installer", func() {
 
 						fakeHandle := new(data.FakeHandle)
 
-						contentsList := []*model.DirEntry{
+						contentsList := []*types.DirEntry{
 							{
 								Path: "dirEntry1Path",
 							},
@@ -221,7 +221,7 @@ var _ = Context("Installer", func() {
 							expectedError := errors.New("dummyError")
 
 							fakeHandle := new(data.FakeHandle)
-							fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+							fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 							fakeOS := new(ios.Fake)
 							fakeOS.MkdirAllReturns(expectedError)
@@ -243,7 +243,7 @@ var _ = Context("Installer", func() {
 							providedPath := "dummyPath"
 
 							fakeHandle := new(data.FakeHandle)
-							contentsList := []*model.DirEntry{
+							contentsList := []*types.DirEntry{
 								{
 									Path: "dirEntry1Path",
 								},
@@ -276,7 +276,7 @@ var _ = Context("Installer", func() {
 								expectedError := errors.New("dummyError")
 
 								fakeHandle := new(data.FakeHandle)
-								fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+								fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 								fakeOS := new(ios.Fake)
 								fakeOS.CreateReturns(nil, expectedError)
@@ -298,7 +298,7 @@ var _ = Context("Installer", func() {
 								providedPath := "dummyPath"
 
 								fakeHandle := new(data.FakeHandle)
-								contentsList := []*model.DirEntry{
+								contentsList := []*types.DirEntry{
 									{
 										Mode: os.FileMode(0777),
 										Path: "dirEntry1Path",
@@ -335,7 +335,7 @@ var _ = Context("Installer", func() {
 									expectedError := errors.New("dummyError")
 
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 									fakeOS := new(ios.Fake)
 									fakeOS.ChmodReturns(expectedError)
@@ -355,7 +355,7 @@ var _ = Context("Installer", func() {
 								It("should copy content", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 									// create tmpfile to use as src
 									contentSrc, err := ioutil.TempFile("", "")
@@ -402,7 +402,7 @@ var _ = Context("Installer", func() {
 								It("shouldn't err", func() {
 									/* arrange */
 									fakeHandle := new(data.FakeHandle)
-									fakeHandle.ListDescendantsReturns([]*model.DirEntry{{}}, nil)
+									fakeHandle.ListDescendantsReturns([]*types.DirEntry{{}}, nil)
 
 									// create tmpfile to use as src
 									file, err := ioutil.TempFile("", "")

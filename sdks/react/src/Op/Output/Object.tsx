@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import jsYaml from 'js-yaml'
-import ModelParamObject from '@opctl/sdk/src/model/param/object'
+import ParamObject from '@opctl/sdk/src/types/param/object'
 import Textarea from 'react-textarea-autosize'
 import Description from '../Param/Description'
 import { dataGet } from '@opctl/sdk/src/api/client'
@@ -9,7 +9,7 @@ interface Props {
   apiBaseUrl: string
   name: string
   opRef: string
-  param: ModelParamObject
+  param: ParamObject
   value: any
 }
 

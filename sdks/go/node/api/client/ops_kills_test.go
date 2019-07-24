@@ -7,8 +7,8 @@ import (
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"github.com/opctl/opctl/sdks/go/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,7 +20,7 @@ var _ = Context("KillOp", func() {
 
 		/* arrange */
 		providedCtx := context.TODO()
-		providedReq := model.KillOpReq{
+		providedReq := types.KillOpReq{
 			OpID: "dummyRootOpID",
 		}
 

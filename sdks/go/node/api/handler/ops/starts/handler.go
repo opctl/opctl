@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 type Handler interface {
@@ -35,7 +35,7 @@ func (hdlr _handler) Handle(
 	httpReq *http.Request,
 ) {
 
-	startOpReq := model.StartOpReq{}
+	startOpReq := types.StartOpReq{}
 
 	err := json.NewDecoder(httpReq.Body).Decode(&startOpReq)
 	if nil != err {

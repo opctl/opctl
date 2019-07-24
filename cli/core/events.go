@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"github.com/opctl/opctl/cli/util/cliexiter"
-	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/types"
 )
 
 func (this _core) Events(
@@ -15,7 +15,7 @@ func (this _core) Events(
 
 	eventChannel, err := this.apiClient.GetEventStream(
 		ctx,
-		&model.GetEventStreamReq{},
+		&types.GetEventStreamReq{},
 	)
 	if nil != err {
 		this.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
