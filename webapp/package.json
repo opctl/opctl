@@ -42,9 +42,10 @@
     ]
   },
   "scripts": {
-    "start": "export PORT=80; cd ../sdks/js && tsc && cd ../../webapp && react-scripts start",
-    "build": "react-scripts build",
-    "test": "standard --fix && CI=true react-scripts test --env=jsdom",
+    "compile-deps": "tsc -p ../sdks/js/tsconfig.json",
+    "start": "yarn compile-deps && export PORT=80; react-scripts start",
+    "build": "yarn compile-deps && react-scripts build",
+    "test": "yarn compile-deps && standard --fix && CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": {

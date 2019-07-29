@@ -42,14 +42,14 @@ const users = [
     infoLink: 'https://prokarma.com',
     pinned: true,
   },
-  {
-    caption: 'Remitly',
-    // You will need to prepend the image path with your baseUrl
-    // if it is not '/', like: '/test-site/img/image.jpg'.
-    image: '/img/remitly-logo.png',
-    infoLink: 'https://remitly.com',
-    pinned: true,
-  },
+  // {
+  //   caption: 'Remitly',
+  //   // You will need to prepend the image path with your baseUrl
+  //   // if it is not '/', like: '/test-site/img/image.jpg'.
+  //   image: '/img/remitly-logo.png',
+  //   infoLink: 'https://remitly.com',
+  //   pinned: true,
+  // },
   {
     caption: 'Samsung SDS',
     // You will need to prepend the image path with your baseUrl
