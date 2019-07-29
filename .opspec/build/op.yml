@@ -27,7 +27,7 @@ run:
     - op:
         ref: ../webapp/.opspec/build
         inputs:
-          srcDir: $(srcDir/webapp)
+          srcDir: $(srcDir)
     # embed webapp in node
     - container:
         cmd:
