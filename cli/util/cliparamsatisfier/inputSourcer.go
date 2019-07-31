@@ -1,6 +1,6 @@
 package cliparamsatisfier
 
-//go:generate counterfeiter -o ./fakeInputSourcer.go --fake-name FakeInputSourcer ./ InputSourcer
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInputSourcer.go --fake-name FakeInputSourcer ./ InputSourcer
 
 type InputSourcer interface {
 	// Source obtains values for inputs in order of precedence.

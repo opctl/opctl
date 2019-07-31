@@ -1,6 +1,6 @@
 package data
 
-//go:generate counterfeiter -o ./fakeProvider.go --fake-name FakeProvider ./ Provider
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeProvider.go --fake-name FakeProvider ./ Provider
 
 import (
 	"context"

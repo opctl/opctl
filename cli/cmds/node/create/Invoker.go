@@ -1,6 +1,6 @@
 package create
 
-//go:generate counterfeiter -o ./fakeInvoker.go --fake-name FakeInvoker ./ Invoker
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInvoker.go --fake-name FakeInvoker ./ Invoker
 
 import (
 	"context"

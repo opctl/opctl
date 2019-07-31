@@ -1,6 +1,6 @@
 package updater
 
-//go:generate counterfeiter -o ./fakeEquinoxClient.go --fake-name fakeEquinoxClient ./ equinoxClient
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeEquinoxClient.go --fake-name fakeEquinoxClient ./ equinoxClient
 
 import "github.com/equinox-io/equinox"
 

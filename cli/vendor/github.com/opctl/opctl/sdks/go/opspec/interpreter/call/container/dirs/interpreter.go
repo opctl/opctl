@@ -1,6 +1,6 @@
 package dirs
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 import (
 	"fmt"
@@ -62,7 +62,6 @@ dirLoop:
 			dirExpression,
 			opHandle,
 		)
-		fmt.Printf("dirs/interpreter.go#l66 dirValue: %v, error: %v\n", dirValue, err)
 		if nil != err {
 			// @TODO: return existence from fileInterpreter.Interpret (rather than treating all errors as due to non-existence) so we unambiguously know this is an assignment
 			if err := itp.os.MkdirAll(

@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates"
 )
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 type Interpreter interface {
 	// Interpret interprets an SCG into a DCG

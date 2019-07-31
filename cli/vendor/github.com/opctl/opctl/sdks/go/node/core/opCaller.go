@@ -1,10 +1,11 @@
 package core
 
-//go:generate counterfeiter -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeOpCaller.go --fake-name fakeOpCaller ./ opCaller
 
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"time"
 
 	"github.com/opctl/opctl/sdks/go/model"
@@ -33,6 +34,7 @@ func newOpCaller(
 	return _opCaller{
 		caller:             caller,
 		callStore:          callStore,
+		dcgScratchDir:      filepath.Join(dataDirPath, "dcg"),
 		outputsInterpreter: outputs.NewInterpreter(),
 		dotYmlGetter:       dotyml.NewGetter(),
 		pubSub:             pubSub,
@@ -42,6 +44,7 @@ func newOpCaller(
 type _opCaller struct {
 	callStore          callStore
 	caller             caller
+	dcgScratchDir      string
 	outputsInterpreter outputs.Interpreter
 	dotYmlGetter       dotyml.Getter
 	pubSub             pubsub.PubSub
@@ -162,7 +165,12 @@ eventLoop:
 		return
 	}
 	opPath := dcgOpCall.OpHandle.Path()
-	opOutputs, err = oc.outputsInterpreter.Interpret(opOutputs, opDotYml.Outputs, *opPath)
+	opOutputs, err = oc.outputsInterpreter.Interpret(
+		opOutputs,
+		opDotYml.Outputs,
+		*opPath,
+		filepath.Join(oc.dcgScratchDir, dcgOpCall.OpID),
+	)
 
 	// filter op outboundScope to bound call outboundScope
 	for boundName, boundValue := range scgOpCall.Outputs {

@@ -1,6 +1,6 @@
 package ref
 
-//go:generate counterfeiter -o ./fakeHandleGetOrHeader.go --fake-name fakeHandleGetOrHeader ./ handleGetOrHeader
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandleGetOrHeader.go --fake-name fakeHandleGetOrHeader ./ handleGetOrHeader
 
 import (
 	"net/http"

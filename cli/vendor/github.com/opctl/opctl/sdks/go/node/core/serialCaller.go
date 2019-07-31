@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeSerialCaller.go --fake-name fakeSerialCaller ./ serialCaller
 
 import (
 	"context"

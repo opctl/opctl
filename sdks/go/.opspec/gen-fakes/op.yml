@@ -7,7 +7,7 @@ inputs:
       description: directory containing the projects source code
   path:
     string:
-      description: relative path to file containing a 'go:generate counterfeiter' pre-processing directive
+      description: relative path to file containing a 'go:generate go run github.com/maxbrunsfeld/counterfeiter/v6' pre-processing directive
 outputs:
   srcDir:
     dir:
@@ -16,15 +16,12 @@ opspec: 0.1.6
 run:
   container:
     cmd:
-      - sh
-      - -ce
-      - |
-        echo "installing deps"
-        go get github.com/maxbrunsfeld/counterfeiter
-
-        echo "generating fakes"
-        go generate "$(path)"
+      - go
+      - generate
+      - $(path)
+    envVars:
+      GOFLAGS: -mod=vendor
     dirs:
-      /go/src/github.com/opctl/opctl/sdks/go: $(srcDir)
+      /src: $(srcDir)
     image: { ref: 'golang:1.12.6' }
-    workDir: /go/src/github.com/opctl/opctl/sdks/go/sdks/go
+    workDir: /src/sdks/go

@@ -1,6 +1,6 @@
 package clioutput
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliOutput
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliOutput
 
 import (
 	"fmt"

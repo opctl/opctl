@@ -1,6 +1,6 @@
 package data
 
-//go:generate counterfeiter -o ./fakePuller.go --fake-name fakePuller ./ puller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakePuller.go --fake-name fakePuller ./ puller
 
 import (
 	"context"

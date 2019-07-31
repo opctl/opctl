@@ -16,7 +16,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Core
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Core
 
 type Core interface {
 	GetEventStream(
@@ -92,7 +92,7 @@ func New(
 		caller:              caller,
 		containerRuntime:    containerRuntime,
 		data:                data.New(),
-		dataCachePath:       filepath.Join(dataDirPath, "pkgs"),
+		dataCachePath:       filepath.Join(dataDirPath, "ops"),
 		callStore:           callStore,
 		dotYmlGetter:        dotyml.NewGetter(),
 		opInterpreter:       opInterpreter,

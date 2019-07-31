@@ -1,6 +1,6 @@
 package bracketed
 
-//go:generate counterfeiter -o ./fakeCoerceToArrayOrObjecter.go --fake-name fakeCoerceToArrayOrObjecter ./ coerceToArrayOrObjecter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCoerceToArrayOrObjecter.go --fake-name fakeCoerceToArrayOrObjecter ./ coerceToArrayOrObjecter
 
 import (
 	"github.com/opctl/opctl/sdks/go/data/coerce"

@@ -1,6 +1,6 @@
 package dotyml
 
-//go:generate counterfeiter -o ./fakeGetter.go --fake-name FakeGetter ./ Getter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeGetter.go --fake-name FakeGetter ./ Getter
 
 import (
 	"context"

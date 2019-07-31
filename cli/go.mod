@@ -16,6 +16,7 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/jawher/mow.cli v1.1.0
 	github.com/mattn/go-colorable v0.1.2 // indirect
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/onsi/ginkgo v1.8.0
 	github.com/onsi/gomega v1.5.0
 	github.com/opctl/opctl/sdks/go v0.0.0

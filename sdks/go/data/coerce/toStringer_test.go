@@ -36,6 +36,8 @@ var _ = Context("toStringer", func() {
 					Array: providedArray,
 				}
 
+				expectedArray, _ := providedValue.Unbox()
+
 				fakeJSON := new(ijson.Fake)
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
@@ -48,7 +50,7 @@ var _ = Context("toStringer", func() {
 				arrayUnderTest.ToString(providedValue)
 
 				/* assert */
-				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedArray))
+				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(expectedArray))
 			})
 			Context("json.Marshal errs", func() {
 				It("should return expected result", func() {
@@ -242,6 +244,8 @@ var _ = Context("toStringer", func() {
 					Object: providedObject,
 				}
 
+				expectedObject, _ := providedValue.Unbox()
+
 				fakeJSON := new(ijson.Fake)
 				// err to trigger immediate return
 				fakeJSON.MarshalReturns(nil, errors.New("dummyError"))
@@ -254,7 +258,7 @@ var _ = Context("toStringer", func() {
 				objectUnderTest.ToString(providedValue)
 
 				/* assert */
-				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(providedObject))
+				Expect(fakeJSON.MarshalArgsForCall(0)).To(Equal(expectedObject))
 			})
 			Context("json.Marshal errs", func() {
 				It("should return expected result", func() {

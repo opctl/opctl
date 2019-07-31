@@ -1,6 +1,6 @@
 package docker
 
-//go:generate counterfeiter -o ./fakePortBindingsFactory.go --fake-name fakePortBindingsFactory ./ portBindingsFactory
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakePortBindingsFactory.go --fake-name fakePortBindingsFactory ./ portBindingsFactory
 
 import (
 	"fmt"

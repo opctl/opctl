@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeDataResolver.go --fake-name fakeDataResolver ./ dataResolver
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDataResolver.go --fake-name fakeDataResolver ./ dataResolver
 
 import (
 	"context"

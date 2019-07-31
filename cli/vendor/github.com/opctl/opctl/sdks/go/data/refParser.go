@@ -1,6 +1,6 @@
 package data
 
-//go:generate counterfeiter -o ./fakeRefParser.go --fake-name fakeRefParser ./ refParser
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeRefParser.go --fake-name fakeRefParser ./ refParser
 
 import (
 	"fmt"

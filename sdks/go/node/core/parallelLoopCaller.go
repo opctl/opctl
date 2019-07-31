@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeParallelLoopCaller.go --fake-name fakeParallelLoopCaller ./ parallelLoopCaller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeParallelLoopCaller.go --fake-name fakeParallelLoopCaller ./ parallelLoopCaller
 
 import (
 	"context"

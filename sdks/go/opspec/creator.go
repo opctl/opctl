@@ -1,6 +1,6 @@
 package op
 
-//go:generate counterfeiter -o ./fakeCreator.go --fake-name FakeCreator ./ Creator
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCreator.go --fake-name FakeCreator ./ Creator
 
 import (
 	"github.com/ghodss/yaml"

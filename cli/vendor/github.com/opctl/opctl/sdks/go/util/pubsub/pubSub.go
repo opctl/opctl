@@ -1,8 +1,8 @@
 package pubsub
 
-//go:generate counterfeiter -o ./fakeEventSubscriber.go --fake-name FakeEventSubscriber ./ EventSubscriber
-//go:generate counterfeiter -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ PubSub
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeEventSubscriber.go --fake-name FakeEventSubscriber ./ EventSubscriber
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeEventPublisher.go --fake-name FakeEventPublisher ./ EventPublisher
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ PubSub
 
 import (
 	"context"

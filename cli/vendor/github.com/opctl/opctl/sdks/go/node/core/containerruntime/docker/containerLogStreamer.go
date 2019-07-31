@@ -1,6 +1,6 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeContainerLogStreamer.go --fake-name fakeContainerLogStreamer ./ containerLogStreamer
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerLogStreamer.go --fake-name fakeContainerLogStreamer ./ containerLogStreamer
 
 import (
 	"context"

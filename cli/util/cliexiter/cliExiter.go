@@ -1,6 +1,6 @@
 package cliexiter
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliExiter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliExiter
 
 import (
 	"github.com/golang-interfaces/ios"

@@ -17,15 +17,54 @@ var _ = Context("outputs.interpreter", func() {
 	})
 	Context("Interpret", func() {
 
+		It("should call paramsCoercer.Coerce w/ expected args", func() {
+			/* arrange */
+			providedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
+			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
+			providedOpScratchDir := "providedOpScratchDir"
+
+			fakeParamsCoercer := new(params.FakeCoercer)
+
+			objectUnderTest := _interpreter{
+				paramsCoercer:   fakeParamsCoercer,
+				paramsDefaulter: new(params.FakeDefaulter),
+				paramsValidator: new(params.FakeValidator),
+			}
+
+			/* act */
+			objectUnderTest.Interpret(
+				providedOutputArgs,
+				providedOutputParams,
+				"providedOpPath",
+				providedOpScratchDir,
+			)
+
+			/* assert */
+			actualOutputArgs,
+				actualOutputParams,
+				actualOpScratchDir := fakeParamsCoercer.CoerceArgsForCall(0)
+
+			Expect(actualOutputArgs).To(Equal(providedOutputArgs))
+			Expect(actualOutputParams).To(Equal(providedOutputParams))
+			Expect(actualOpScratchDir).To(Equal(providedOpScratchDir))
+
+		})
+
 		It("should call paramsDefaulter.Default w/ expected args", func() {
 			/* arrange */
 			providedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
 			providedOutputParams := map[string]*model.Param{"dummyParamName": new(model.Param)}
 			providedOpPath := "dummyOpPath"
 
+			fakeParamsCoercer := new(params.FakeCoercer)
+			coercedOutputArgs := map[string]*model.Value{"dummyArgName": new(model.Value)}
+
+			fakeParamsCoercer.CoerceReturns(coercedOutputArgs, nil)
+
 			fakeParamsDefaulter := new(params.FakeDefaulter)
 
 			objectUnderTest := _interpreter{
+				paramsCoercer:   fakeParamsCoercer,
 				paramsDefaulter: fakeParamsDefaulter,
 				paramsValidator: new(params.FakeValidator),
 			}
@@ -35,6 +74,7 @@ var _ = Context("outputs.interpreter", func() {
 				providedOutputArgs,
 				providedOutputParams,
 				providedOpPath,
+				"dummyOpScratchDir",
 			)
 
 			/* assert */
@@ -42,7 +82,7 @@ var _ = Context("outputs.interpreter", func() {
 				actualOutputParams,
 				actualOpPath := fakeParamsDefaulter.DefaultArgsForCall(0)
 
-			Expect(actualOutputArgs).To(Equal(providedOutputArgs))
+			Expect(actualOutputArgs).To(Equal(coercedOutputArgs))
 			Expect(actualOutputParams).To(Equal(providedOutputParams))
 			Expect(actualOpPath).To(Equal(providedOpPath))
 
@@ -62,6 +102,7 @@ var _ = Context("outputs.interpreter", func() {
 			fakeParamsValidator.ValidateReturns(validateErr)
 
 			objectUnderTest := _interpreter{
+				paramsCoercer:   new(params.FakeCoercer),
 				paramsDefaulter: fakeParamsDefaulter,
 				paramsValidator: fakeParamsValidator,
 			}
@@ -71,6 +112,7 @@ var _ = Context("outputs.interpreter", func() {
 				map[string]*model.Value{},
 				providedOutputParams,
 				providedOpPath,
+				"dummyOpScratchDir",
 			)
 
 			/* assert */

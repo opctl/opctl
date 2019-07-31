@@ -37,7 +37,12 @@ func (c _toStringer) ToString(
 	case nil == value:
 		return &model.Value{String: new(string)}, nil
 	case nil != value.Array:
-		arrayBytes, err := c.json.Marshal(value.Array)
+		nativeArray, err := value.Unbox()
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce array to string; error was %v", err)
+		}
+
+		arrayBytes, err := c.json.Marshal(nativeArray)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce array to string; error was %v", err.Error())
 		}
@@ -59,7 +64,12 @@ func (c _toStringer) ToString(
 		numberString := strconv.FormatFloat(*value.Number, 'f', -1, 64)
 		return &model.Value{String: &numberString}, nil
 	case nil != value.Object:
-		objectBytes, err := c.json.Marshal(value.Object)
+		nativeObject, err := value.Unbox()
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce object to string; error was %v", err)
+		}
+
+		objectBytes, err := c.json.Marshal(nativeObject)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce object to string; error was %v", err.Error())
 		}

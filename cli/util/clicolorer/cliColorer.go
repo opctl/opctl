@@ -1,6 +1,6 @@
 package clicolorer
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ CliColorer
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ CliColorer
 
 import (
 	"github.com/fatih/color"

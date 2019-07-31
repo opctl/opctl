@@ -1,6 +1,6 @@
 package value
 
-//go:generate counterfeiter -o ./fakeConstructor.go --fake-name FakeConstructor ./ Constructor
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeConstructor.go --fake-name FakeConstructor ./ Constructor
 
 import (
 	"fmt"
