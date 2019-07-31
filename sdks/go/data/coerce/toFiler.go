@@ -48,8 +48,12 @@ func (c _toFiler) ToFile(
 	case nil == value:
 		data = []byte{}
 	case nil != value.Array:
-		var err error
-		data, err = c.json.Marshal(value.Array)
+		nativeArray, err := value.Unbox()
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce array to file; error was %v", err)
+		}
+
+		data, err = c.json.Marshal(nativeArray)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce array to file; error was %v", err.Error())
 		}
@@ -62,8 +66,12 @@ func (c _toFiler) ToFile(
 	case nil != value.Number:
 		data = []byte(strconv.FormatFloat(*value.Number, 'f', -1, 64))
 	case nil != value.Object:
-		var err error
-		data, err = c.json.Marshal(value.Object)
+		nativeObject, err := value.Unbox()
+		if nil != err {
+			return nil, fmt.Errorf("unable to coerce object to file; error was %v", err)
+		}
+
+		data, err = c.json.Marshal(nativeObject)
 		if nil != err {
 			return nil, fmt.Errorf("unable to coerce object to file; error was %v", err.Error())
 		}

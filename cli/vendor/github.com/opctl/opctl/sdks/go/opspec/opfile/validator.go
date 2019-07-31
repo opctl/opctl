@@ -1,6 +1,6 @@
 package dotyml
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name fakeValidator ./ validator
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name fakeValidator ./ validator
 
 import (
 	"fmt"

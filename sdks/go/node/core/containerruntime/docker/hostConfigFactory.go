@@ -1,6 +1,6 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeHostConfigFactory.go --fake-name fakeHostConfigFactory ./ hostConfigFactory
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHostConfigFactory.go --fake-name fakeHostConfigFactory ./ hostConfigFactory
 
 import (
 	"fmt"

@@ -1,6 +1,6 @@
 package item
 
-//go:generate counterfeiter -o ./fakeParseIndexer.go --fake-name fakeParseIndexer ./ parseIndexer
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeParseIndexer.go --fake-name fakeParseIndexer ./ parseIndexer
 
 import (
 	"fmt"

@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeCallKiller.go --fake-name fakeCallKiller ./ callKiller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCallKiller.go --fake-name fakeCallKiller ./ callKiller
 
 import (
 	"sync"

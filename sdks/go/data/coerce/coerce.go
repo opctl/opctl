@@ -1,7 +1,7 @@
 // Package coerce implements typed data coercion
 package coerce
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Coerce
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Coerce
 
 // Coerce exposes use cases supported by the coerce package
 type Coerce interface {

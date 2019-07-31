@@ -2,7 +2,7 @@
 // A fake implementation is included to allow faking said interactions.
 package containerruntime
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ ContainerRuntime
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ ContainerRuntime
 
 import (
 	"context"

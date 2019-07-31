@@ -8,12 +8,12 @@ import (
 )
 
 type FakeDefaulter struct {
-	DefaultStub        func(args map[string]*model.Value, params map[string]*model.Param, opPath string) map[string]*model.Value
+	DefaultStub        func(map[string]*model.Value, map[string]*model.Param, string) map[string]*model.Value
 	defaultMutex       sync.RWMutex
 	defaultArgsForCall []struct {
-		args   map[string]*model.Value
-		params map[string]*model.Param
-		opPath string
+		arg1 map[string]*model.Value
+		arg2 map[string]*model.Param
+		arg3 string
 	}
 	defaultReturns struct {
 		result1 map[string]*model.Value
@@ -25,23 +25,24 @@ type FakeDefaulter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDefaulter) Default(args map[string]*model.Value, params map[string]*model.Param, opPath string) map[string]*model.Value {
+func (fake *FakeDefaulter) Default(arg1 map[string]*model.Value, arg2 map[string]*model.Param, arg3 string) map[string]*model.Value {
 	fake.defaultMutex.Lock()
 	ret, specificReturn := fake.defaultReturnsOnCall[len(fake.defaultArgsForCall)]
 	fake.defaultArgsForCall = append(fake.defaultArgsForCall, struct {
-		args   map[string]*model.Value
-		params map[string]*model.Param
-		opPath string
-	}{args, params, opPath})
-	fake.recordInvocation("Default", []interface{}{args, params, opPath})
+		arg1 map[string]*model.Value
+		arg2 map[string]*model.Param
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("Default", []interface{}{arg1, arg2, arg3})
 	fake.defaultMutex.Unlock()
 	if fake.DefaultStub != nil {
-		return fake.DefaultStub(args, params, opPath)
+		return fake.DefaultStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.defaultReturns.result1
+	fakeReturns := fake.defaultReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeDefaulter) DefaultCallCount() int {
@@ -50,13 +51,22 @@ func (fake *FakeDefaulter) DefaultCallCount() int {
 	return len(fake.defaultArgsForCall)
 }
 
+func (fake *FakeDefaulter) DefaultCalls(stub func(map[string]*model.Value, map[string]*model.Param, string) map[string]*model.Value) {
+	fake.defaultMutex.Lock()
+	defer fake.defaultMutex.Unlock()
+	fake.DefaultStub = stub
+}
+
 func (fake *FakeDefaulter) DefaultArgsForCall(i int) (map[string]*model.Value, map[string]*model.Param, string) {
 	fake.defaultMutex.RLock()
 	defer fake.defaultMutex.RUnlock()
-	return fake.defaultArgsForCall[i].args, fake.defaultArgsForCall[i].params, fake.defaultArgsForCall[i].opPath
+	argsForCall := fake.defaultArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeDefaulter) DefaultReturns(result1 map[string]*model.Value) {
+	fake.defaultMutex.Lock()
+	defer fake.defaultMutex.Unlock()
 	fake.DefaultStub = nil
 	fake.defaultReturns = struct {
 		result1 map[string]*model.Value
@@ -64,6 +74,8 @@ func (fake *FakeDefaulter) DefaultReturns(result1 map[string]*model.Value) {
 }
 
 func (fake *FakeDefaulter) DefaultReturnsOnCall(i int, result1 map[string]*model.Value) {
+	fake.defaultMutex.Lock()
+	defer fake.defaultMutex.Unlock()
 	fake.DefaultStub = nil
 	if fake.defaultReturnsOnCall == nil {
 		fake.defaultReturnsOnCall = make(map[int]struct {

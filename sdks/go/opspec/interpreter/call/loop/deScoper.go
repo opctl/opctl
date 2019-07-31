@@ -1,6 +1,6 @@
 package loop
 
-//go:generate counterfeiter -o ./fakeDeScoper.go --fake-name FakeDeScoper ./ DeScoper
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDeScoper.go --fake-name FakeDeScoper ./ DeScoper
 
 import (
 	"github.com/opctl/opctl/sdks/go/model"

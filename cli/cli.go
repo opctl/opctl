@@ -1,6 +1,6 @@
 package main
 
-//go:generate counterfeiter -o ./fakeCli.go --fake-name FakeCli ./ cli
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCli.go --fake-name FakeCli ./ cli
 
 import (
 	"context"

@@ -7,7 +7,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 )
 
-//go:generate counterfeiter -o ./fakeInputSrc.go --fake-name FakeInputSrc ./ InputSrc
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInputSrc.go --fake-name FakeInputSrc ./ InputSrc
 
 type InputSrc interface {
 	// ReadString returns the value (if any) and true/false to indicate whether the read was successful

@@ -103,6 +103,11 @@ github.com/jfbus/httprs
 github.com/kevinburke/ssh_config
 # github.com/konsorten/go-windows-terminal-sequences v1.0.2
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
+github.com/maxbrunsfeld/counterfeiter/v6
+github.com/maxbrunsfeld/counterfeiter/v6/arguments
+github.com/maxbrunsfeld/counterfeiter/v6/command
+github.com/maxbrunsfeld/counterfeiter/v6/generator
 # github.com/mitchellh/copystructure v1.0.0
 github.com/mitchellh/copystructure
 # github.com/mitchellh/go-homedir v1.1.0
@@ -207,7 +212,7 @@ golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
-# golang.org/x/net v0.0.0-20190607181551-461777fb6f67
+# golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 golang.org/x/net/context
 golang.org/x/net/trace
 golang.org/x/net/proxy
@@ -218,7 +223,7 @@ golang.org/x/net/html
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.0.0-20190423024810-112230192c58
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20190610200419-93c9922d18ae
+# golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/cpu
@@ -240,6 +245,19 @@ golang.org/x/text/runes
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
+# golang.org/x/tools v0.0.0-20190706070813-72ffa07ba3db
+golang.org/x/tools/go/packages
+golang.org/x/tools/go/types/typeutil
+golang.org/x/tools/imports
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/internal/packagesdriver
+golang.org/x/tools/internal/gopathwalk
+golang.org/x/tools/internal/semver
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/internal/imports
+golang.org/x/tools/go/internal/gcimporter
+golang.org/x/tools/internal/fastwalk
+golang.org/x/tools/internal/module
 # google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.21.1
@@ -299,5 +317,5 @@ gopkg.in/src-d/go-git.v4/plumbing/transport/server
 gopkg.in/tomb.v1
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.2.1
+# gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2

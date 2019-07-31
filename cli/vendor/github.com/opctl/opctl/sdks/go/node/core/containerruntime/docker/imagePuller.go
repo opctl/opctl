@@ -1,6 +1,6 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeImagePuller.go --fake-name fakeImagePuller ./ imagePuller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeImagePuller.go --fake-name fakeImagePuller ./ imagePuller
 
 import (
 	"context"

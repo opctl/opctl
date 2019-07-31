@@ -1,6 +1,6 @@
 package docker
 
-//go:generate counterfeiter -o ./fakeFSPathConverter.go --fake-name fakeFSPathConverter ./ fsPathConverter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeFSPathConverter.go --fake-name fakeFSPathConverter ./ fsPathConverter
 
 import (
 	"github.com/opctl/opctl/sdks/go/util/iruntime"

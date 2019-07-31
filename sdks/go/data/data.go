@@ -1,7 +1,7 @@
 // Package data implements use cases specific to data
 package data
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Data
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Data
 
 type Data interface {
 	providerFactory

@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 echo "starting docker daemon as background process"
-nohup dockerd > /nohup.out &
+nohup dockerd \
+  --host=unix:///var/run/docker.sock \
+  --storage-driver=overlay2 &
 
 echo "installing jq"
 apk add -U jq

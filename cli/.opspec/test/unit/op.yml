@@ -9,6 +9,9 @@ outputs:
   srcDir:
     dir:
       description: directory containing the projects source code
+  coverprofile:
+    file:
+      description: aggregate coverprofile
 run:
   serial:
     - container:
@@ -17,7 +20,7 @@ run:
           - -ce
           - |
             echo "unit testing code"
-            go test -mod=vendor -coverprofile=coverprofile ./...
+            go test -coverprofile=coverprofile ./...
 
             echo "stripping generated code"
             sed '/fake/d' -i coverprofile
@@ -28,6 +31,8 @@ run:
           /coverprofile: $(coverprofile)
         dirs:
           /src: $(srcDir)
+        envVars:
+          GOFLAGS: -mod=vendor
         image: { ref: 'golang:1.12.6' }
         workDir: /src
     - op:

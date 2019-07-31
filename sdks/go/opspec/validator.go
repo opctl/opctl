@@ -1,6 +1,6 @@
 package op
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
 
 import (
 	"context"

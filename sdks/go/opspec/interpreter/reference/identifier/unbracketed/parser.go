@@ -1,6 +1,6 @@
 package unbracketed
 
-//go:generate counterfeiter -o ./fakeParser.go --fake-name FakeParser ./ Parser
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeParser.go --fake-name FakeParser ./ Parser
 
 // Parser parses an identifier by consuming ref up to (but not including) the first unbracketed identifier char i.e '.', '[', '/' encountered
 // returns the identifier and ref remainder

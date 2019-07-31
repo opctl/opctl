@@ -1,6 +1,6 @@
 package iteration
 
-//go:generate counterfeiter -o ./fakeScoper.go --fake-name FakeScoper ./ Scoper
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeScoper.go --fake-name FakeScoper ./ Scoper
 
 import (
 	"sort"

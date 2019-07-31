@@ -1,6 +1,6 @@
 package outputs
 
-//go:generate counterfeiter -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 import (
 	"github.com/opctl/opctl/sdks/go/model"
@@ -13,6 +13,7 @@ type Interpreter interface {
 		outputArgs map[string]*model.Value,
 		outputParams map[string]*model.Param,
 		opPath string,
+		opScratchDir string,
 	) (
 		map[string]*model.Value,
 		error,
@@ -22,12 +23,14 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
+		paramsCoercer:   params.NewCoercer(),
 		paramsDefaulter: params.NewDefaulter(),
 		paramsValidator: params.NewValidator(),
 	}
 }
 
 type _interpreter struct {
+	paramsCoercer   params.Coercer
 	paramsDefaulter params.Defaulter
 	paramsValidator params.Validator
 }
@@ -36,10 +39,17 @@ func (itp _interpreter) Interpret(
 	outputArgs map[string]*model.Value,
 	outputParams map[string]*model.Param,
 	opPath string,
+	opScratchDir string,
 ) (
 	map[string]*model.Value,
 	error,
 ) {
+
+	var err error
+	outputArgs, err = itp.paramsCoercer.Coerce(outputArgs, outputParams, opScratchDir)
+	if nil != err {
+		return outputArgs, err
+	}
 
 	argsWithDefaults := itp.paramsDefaulter.Default(outputArgs, outputParams, opPath)
 

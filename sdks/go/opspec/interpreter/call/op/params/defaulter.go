@@ -1,6 +1,6 @@
 package params
 
-//go:generate counterfeiter -o ./fakeDefaulter.go --fake-name FakeDefaulter ./ Defaulter
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeDefaulter.go --fake-name FakeDefaulter ./ Defaulter
 
 import (
 	"github.com/opctl/opctl/sdks/go/model"

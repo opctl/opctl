@@ -23,5 +23,7 @@ run:
         go-bindata -pkg dotyml -o opspec/opfile/bindata.go ../../opspec/opfile/jsonschema.json
     dirs:
       /go/src/github.com/opctl/opctl/sdks/go: $(srcDir)
+    envVars:
+      GOFLAGS: -mod=vendor
     image: { ref: 'golang:1.12.6' }
     workDir: /go/src/github.com/opctl/opctl/sdks/go/sdks/go

@@ -1,6 +1,6 @@
 package path
 
-//go:generate counterfeiter -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
 
 import (
 	"net/http"

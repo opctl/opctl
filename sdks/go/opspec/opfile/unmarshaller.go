@@ -1,6 +1,6 @@
 package dotyml
 
-//go:generate counterfeiter -o ./fakeUnmarshaller.go --fake-name FakeUnmarshaller ./ Unmarshaller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeUnmarshaller.go --fake-name FakeUnmarshaller ./ Unmarshaller
 
 import (
 	"bytes"

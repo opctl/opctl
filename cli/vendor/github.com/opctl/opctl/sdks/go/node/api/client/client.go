@@ -1,7 +1,7 @@
 // Package client implements a client for the opspec node api
 package client
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ Client
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Client
 
 import (
 	"context"

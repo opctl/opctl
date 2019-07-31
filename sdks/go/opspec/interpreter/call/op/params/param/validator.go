@@ -1,14 +1,19 @@
 package param
 
-//go:generate counterfeiter -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name FakeValidator ./ Validator
 
 import (
 	"errors"
 	"fmt"
-	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/sdks/go/data/coerce"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/array"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/boolean"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/dir"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/file"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/number"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/object"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/socket"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/str"
 )
 
 type Validator interface {
@@ -19,20 +24,27 @@ type Validator interface {
 }
 
 func NewValidator() Validator {
-	// register custom format checkers
-	gojsonschema.FormatCheckers.Add("docker-image-ref", DockerImageRefFormatChecker{})
-	gojsonschema.FormatCheckers.Add("integer", IntegerFormatChecker{})
-	gojsonschema.FormatCheckers.Add("semver", SemVerFormatChecker{})
-
 	return _validator{
-		os:     ios.New(),
-		coerce: coerce.New(),
+		arrayValidator:   array.NewValidator(),
+		booleanValidator: boolean.NewValidator(),
+		dirValidator:     dir.NewValidator(),
+		fileValidator:    file.NewValidator(),
+		numberValidator:  number.NewValidator(),
+		objectValidator:  object.NewValidator(),
+		strValidator:     str.NewValidator(),
+		socketValidator:  socket.NewValidator(),
 	}
 }
 
 type _validator struct {
-	coerce coerce.Coerce
-	os     ios.IOS
+	arrayValidator   array.Validator
+	booleanValidator boolean.Validator
+	dirValidator     dir.Validator
+	fileValidator    file.Validator
+	numberValidator  number.Validator
+	objectValidator  object.Validator
+	strValidator     str.Validator
+	socketValidator  socket.Validator
 }
 
 // Validate validates a value against a parameter
@@ -47,21 +59,21 @@ func (vdt _validator) Validate(
 
 	switch {
 	case nil != param.Array:
-		return vdt.validateArray(value, param.Array.Constraints)
+		return vdt.arrayValidator.Validate(value, param.Array.Constraints)
 	case nil != param.Boolean:
-		return vdt.validateBoolean(value)
+		return vdt.booleanValidator.Validate(value)
 	case nil != param.Dir:
-		return vdt.validateDir(value)
+		return vdt.dirValidator.Validate(value)
 	case nil != param.File:
-		return vdt.validateFile(value)
-	case nil != param.String:
-		return vdt.validateString(value, param.String.Constraints)
+		return vdt.fileValidator.Validate(value)
 	case nil != param.Number:
-		return vdt.validateNumber(value, param.Number.Constraints)
+		return vdt.numberValidator.Validate(value, param.Number.Constraints)
+	case nil != param.String:
+		return vdt.strValidator.Validate(value, param.String.Constraints)
 	case nil != param.Object:
-		return vdt.validateObject(value, param.Object.Constraints)
+		return vdt.objectValidator.Validate(value, param.Object.Constraints)
 	case nil != param.Socket:
-		return vdt.validateSocket(value)
+		return vdt.socketValidator.Validate(value)
 	default:
 		return []error{fmt.Errorf("unable to validate value; param was unexpected type %+v", param)}
 	}

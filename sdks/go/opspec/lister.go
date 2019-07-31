@@ -1,6 +1,6 @@
 package op
 
-//go:generate counterfeiter -o ./fakeLister.go --fake-name FakeLister ./ Lister
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeLister.go --fake-name FakeLister ./ Lister
 
 import (
 	"context"

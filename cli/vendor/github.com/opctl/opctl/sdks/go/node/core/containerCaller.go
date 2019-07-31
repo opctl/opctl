@@ -1,6 +1,6 @@
 package core
 
-//go:generate counterfeiter -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerCaller.go --fake-name fakeContainerCaller ./ containerCaller
 
 import (
 	"context"

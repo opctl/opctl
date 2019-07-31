@@ -1,6 +1,6 @@
 package uniquestring
 
-//go:generate counterfeiter -o ./fake.go --fake-name Fake ./ UniqueStringFactory
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ UniqueStringFactory
 
 import (
 	"github.com/golang-interfaces/satori-go.uuid"
