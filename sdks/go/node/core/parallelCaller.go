@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
-	"github.com/opctl/opctl/sdks/go/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 type parallelCaller interface {

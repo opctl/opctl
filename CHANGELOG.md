@@ -6,6 +6,8 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.1.25 - 2019-07-13
+
 ### Added
 
 - Allow dynamically setting env vars of a container

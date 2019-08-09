@@ -12,7 +12,7 @@ import (
 	"github.com/golang-interfaces/iio"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 type containerCaller interface {

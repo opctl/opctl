@@ -6,14 +6,14 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
-	"github.com/opctl/opctl/sdks/go/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Core

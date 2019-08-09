@@ -114,6 +114,7 @@ func (itp _interpreter) Interpret(
 		}
 		return stringValue, nil
 	case nil != param.Socket:
+
 		return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
 	}
 

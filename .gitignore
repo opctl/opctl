@@ -5,3 +5,4 @@ coverprofile
 /build/
 /opctl
 node_modules/
+coverage/

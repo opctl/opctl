@@ -5,9 +5,9 @@ package pkgs
 import (
 	"net/http"
 
+	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref"
 	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/opctl/opctl/sdks/go/util/urlpath"
 )
 
 // Handler deprecated; use data

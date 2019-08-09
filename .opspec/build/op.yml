@@ -38,7 +38,7 @@ run:
             go get github.com/rakyll/statik
 
             echo "embedding webapp in node"
-            statik -src webapp/build -dest cli/cmds/node/create -f
+            statik -src webapp/build -dest cli/internal/core/node/create -f
         dirs:
           /go/src/github.com/opctl/opctl: $(srcDir)
         image: { ref: 'golang:1.12.6' }

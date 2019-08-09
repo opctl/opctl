@@ -11,7 +11,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
 	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 type opCaller interface {

@@ -3,9 +3,9 @@ package events
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeHandler.go --fake-name FakeHandler ./ Handler
 
 import (
+	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/events/stream"
 	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/opctl/opctl/sdks/go/util/urlpath"
 	"net/http"
 )
 
