@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 type fakeImagePuller struct {

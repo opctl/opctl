@@ -8,11 +8,10 @@ import (
 	"path/filepath"
 
 	mow "github.com/jawher/mow.cli"
-	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
-	corePkg "github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/cli/model"
-	"github.com/opctl/opctl/cli/util/clicolorer"
-	"github.com/opctl/opctl/sdks/go/opspec"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	core "github.com/opctl/opctl/cli/internal/core"
+	"github.com/opctl/opctl/cli/internal/model"
+	op "github.com/opctl/opctl/sdks/go/opspec"
 )
 
 type cli interface {
@@ -20,9 +19,8 @@ type cli interface {
 }
 
 func newCli(
-	core corePkg.Core,
 	cliColorer clicolorer.CliColorer,
-	nodeCreateCmdInvoker nodeCreateCmd.Invoker,
+	core core.Core,
 ) cli {
 
 	cli := mow.App("opctl", "Opctl is a free and open source distributed operation control system.")
@@ -60,7 +58,7 @@ func newCli(
 			}
 
 			createCmd.Action = func() {
-				nodeCreateCmdInvoker.Invoke(
+				core.Node().Create(
 					model.NodeCreateOpts{
 						DataDir: dataDir,
 					},
@@ -70,7 +68,7 @@ func newCli(
 
 		nodeCmd.Command("kill", "Kills a node", func(killCmd *mow.Cmd) {
 			killCmd.Action = func() {
-				core.NodeKill()
+				core.Node().Kill()
 			}
 		})
 	})
@@ -85,7 +83,7 @@ func newCli(
 				name := createCmd.StringArg("NAME", "", "Op name")
 
 				createCmd.Action = func() {
-					core.OpCreate(*path, *description, *name)
+					core.Op().Create(*path, *description, *name)
 				}
 			})
 
@@ -102,15 +100,15 @@ func newCli(
 					if *path == defaultPath {
 						*path = filepath.Join(op.DotOpspecDirName, *opRef)
 					}
-					core.OpInstall(context.TODO(), *path, *opRef, *username, *password)
+					core.Op().Install(context.TODO(), *path, *opRef, *username, *password)
 				}
 			})
 
 		opCmd.Command("kill", "Kill an op", func(killCmd *mow.Cmd) {
-			opId := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
+			opID := killCmd.StringArg("OP_ID", "", "Id of the op to kill")
 
 			killCmd.Action = func() {
-				core.OpKill(context.TODO(), *opId)
+				core.Op().Kill(context.TODO(), *opID)
 			}
 		})
 
@@ -120,7 +118,7 @@ func newCli(
 				opRef := validateCmd.StringArg("OP_REF", "", "Op reference (either `relative/path`, `/absolute/path`, `host/path/repo#tag` (since v0.1.19), or `host/path/repo#tag/path` (since v0.1.24))")
 
 				validateCmd.Action = func() {
-					core.OpValidate(context.TODO(), *opRef)
+					core.Op().Validate(context.TODO(), *opRef)
 				}
 			})
 

@@ -46,9 +46,13 @@ func (crc _coercer) Coerce(
 	paramErrMap := map[string]error{}
 paramLoop:
 	for paramName, paramValue := range params {
-		value := values[paramName]
-		var err error
+		value, ok := values[paramName]
+		if !ok {
+			// only coerce provided values
+			continue
+		}
 
+		var err error
 		switch {
 		case nil != paramValue.Array:
 			coercedValues[paramName], err = crc.coerce.ToArray(value)

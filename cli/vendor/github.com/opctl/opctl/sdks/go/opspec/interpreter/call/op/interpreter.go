@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 
 	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"github.com/opctl/opctl/sdks/go/util/uniquestring"
 )
 
 type Interpreter interface {

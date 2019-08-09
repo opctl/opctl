@@ -5,10 +5,11 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	nodeCreateCmd "github.com/opctl/opctl/cli/cmds/node/create"
-	"github.com/opctl/opctl/cli/core"
-	"github.com/opctl/opctl/cli/model"
-	"github.com/opctl/opctl/cli/util/clicolorer"
+	"github.com/opctl/opctl/cli/internal/clicolorer"
+	"github.com/opctl/opctl/cli/internal/core"
+	"github.com/opctl/opctl/cli/internal/core/node"
+	"github.com/opctl/opctl/cli/internal/core/op"
+	"github.com/opctl/opctl/cli/internal/model"
 )
 
 var _ = Context("cli", func() {
@@ -20,9 +21,8 @@ var _ = Context("cli", func() {
 				fakeCliColorer := new(clicolorer.Fake)
 
 				objectUnderTest := newCli(
-					new(core.Fake),
 					fakeCliColorer,
-					new(nodeCreateCmd.FakeInvoker),
+					new(core.Fake),
 				)
 
 				/* act */
@@ -40,9 +40,8 @@ var _ = Context("cli", func() {
 				fakeCore := new(core.Fake)
 
 				objectUnderTest := newCli(
-					fakeCore,
 					new(clicolorer.Fake),
-					new(nodeCreateCmd.FakeInvoker),
+					fakeCore,
 				)
 
 				/* act */
@@ -63,9 +62,8 @@ var _ = Context("cli", func() {
 
 					expectedDirRef := "dummyPath"
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -87,9 +85,8 @@ var _ = Context("cli", func() {
 
 					expectedDirRef := ".opspec"
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -109,42 +106,46 @@ var _ = Context("cli", func() {
 
 			Context("create", func() {
 
-				It("should call core.NodeCreate w/ expected args", func() {
+				It("should call nodeCreateCmd.Invoke w/ expected args", func() {
 					/* arrange */
-					fakeNodeCreateCmdInvoker := new(nodeCreateCmd.FakeInvoker)
+					fakeCore := new(core.Fake)
+
+					fakeNode := new(node.Fake)
+					fakeCore.NodeReturns(fakeNode)
 
 					objectUnderTest := newCli(
-						new(core.Fake),
 						new(clicolorer.Fake),
-						fakeNodeCreateCmdInvoker,
+						fakeCore,
 					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "node", "create"})
 
 					/* assert */
-					Expect(fakeNodeCreateCmdInvoker.InvokeCallCount()).To(Equal(1))
+					Expect(fakeNode.CreateCallCount()).To(Equal(1))
 				})
 
 			})
 
 			Context("kill", func() {
 
-				It("should call core.NodeKill w/ expected args", func() {
+				It("should call nodeKillCmd.Invoke w/ expected args", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
+					fakeNode := new(node.Fake)
+					fakeCore.NodeReturns(fakeNode)
+
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "node", "kill"})
 
 					/* assert */
-					Expect(fakeCore.NodeKillCallCount()).To(Equal(1))
+					Expect(fakeNode.KillCallCount()).To(Equal(1))
 				})
 
 			})
@@ -158,21 +159,22 @@ var _ = Context("cli", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
+						fakeOp := new(op.Fake)
+						fakeCore.OpReturns(fakeOp)
+
 						expectedOpName := "dummyOpName"
 						expectedPath := "dummyPath"
 
 						objectUnderTest := newCli(
-							fakeCore,
 							new(clicolorer.Fake),
-							new(nodeCreateCmd.FakeInvoker),
+							fakeCore,
 						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "--path", expectedPath, expectedOpName})
 
 						/* assert */
-						Expect(fakeCore.OpCreateCallCount()).To(Equal(1))
-						actualPath, actualOpDescription, actualOpName := fakeCore.OpCreateArgsForCall(0)
+						actualPath, actualOpDescription, actualOpName := fakeOp.CreateArgsForCall(0)
 						Expect(actualOpName).To(Equal(expectedOpName))
 						Expect(actualOpDescription).To(BeEmpty())
 						Expect(actualPath).To(Equal(expectedPath))
@@ -184,21 +186,22 @@ var _ = Context("cli", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
+						fakeOp := new(op.Fake)
+						fakeCore.OpReturns(fakeOp)
+
 						expectedOpName := "dummyOpName"
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							fakeCore,
 							new(clicolorer.Fake),
-							new(nodeCreateCmd.FakeInvoker),
+							fakeCore,
 						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedOpName})
 
 						/* assert */
-						Expect(fakeCore.OpCreateCallCount()).To(Equal(1))
-						actualPath, actualOpDescription, actualOpName := fakeCore.OpCreateArgsForCall(0)
+						actualPath, actualOpDescription, actualOpName := fakeOp.CreateArgsForCall(0)
 						Expect(actualOpName).To(Equal(expectedOpName))
 						Expect(actualOpDescription).To(BeEmpty())
 						Expect(actualPath).To(Equal(expectedPath))
@@ -209,22 +212,23 @@ var _ = Context("cli", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
+						fakeOp := new(op.Fake)
+						fakeCore.OpReturns(fakeOp)
+
 						expectedOpName := "dummyOpName"
 						expectedOpDescription := "dummyOpDescription"
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							fakeCore,
 							new(clicolorer.Fake),
-							new(nodeCreateCmd.FakeInvoker),
+							fakeCore,
 						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", "-d", expectedOpDescription, expectedOpName})
 
 						/* assert */
-						Expect(fakeCore.OpCreateCallCount()).To(Equal(1))
-						actualPath, actualOpDescription, actualOpName := fakeCore.OpCreateArgsForCall(0)
+						actualPath, actualOpDescription, actualOpName := fakeOp.CreateArgsForCall(0)
 						Expect(actualOpName).To(Equal(expectedOpName))
 						Expect(actualOpDescription).To(Equal(expectedOpDescription))
 						Expect(actualPath).To(Equal(expectedPath))
@@ -236,21 +240,22 @@ var _ = Context("cli", func() {
 						/* arrange */
 						fakeCore := new(core.Fake)
 
+						fakeOp := new(op.Fake)
+						fakeCore.OpReturns(fakeOp)
+
 						expectedName := "dummyOpName"
 						expectedPath := ".opspec"
 
 						objectUnderTest := newCli(
-							fakeCore,
 							new(clicolorer.Fake),
-							new(nodeCreateCmd.FakeInvoker),
+							fakeCore,
 						)
 
 						/* act */
 						objectUnderTest.Run([]string{"opctl", "op", "create", expectedName})
 
 						/* assert */
-						Expect(fakeCore.OpCreateCallCount()).To(Equal(1))
-						actualPath, actualOpDescription, actualOpName := fakeCore.OpCreateArgsForCall(0)
+						actualPath, actualOpDescription, actualOpName := fakeOp.CreateArgsForCall(0)
 						Expect(actualOpName).To(Equal(expectedName))
 						Expect(actualOpDescription).To(BeEmpty())
 						Expect(actualPath).To(Equal(expectedPath))
@@ -263,15 +268,17 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
+					fakeOp := new(op.Fake)
+					fakeCore.OpReturns(fakeOp)
+
 					expectedPath := "dummyPath"
 					expectedOpRef := "dummyOpRef"
 					expectedUsername := "dummyUsername"
 					expectedPassword := "dummyPassword"
 
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -293,7 +300,7 @@ var _ = Context("cli", func() {
 						actualPath,
 						actualOpRef,
 						actualUsername,
-						actualPassword := fakeCore.OpInstallArgsForCall(0)
+						actualPassword := fakeOp.InstallArgsForCall(0)
 
 					Expect(actualCtx).To(Equal(context.TODO()))
 					Expect(actualPath).To(Equal(expectedPath))
@@ -308,22 +315,22 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
+					fakeOp := new(op.Fake)
+					fakeCore.OpReturns(fakeOp)
+
 					expectedOpID := "dummyOpID"
 
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
 					objectUnderTest.Run([]string{"opctl", "op", "kill", expectedOpID})
 
 					/* assert */
-					Expect(fakeCore.OpKillCallCount()).To(Equal(1))
-
 					actualCtx,
-						actualOpID := fakeCore.OpKillArgsForCall(0)
+						actualOpID := fakeOp.KillArgsForCall(0)
 
 					Expect(actualCtx).To(Equal(context.TODO()))
 					Expect(actualOpID).To(Equal(expectedOpID))
@@ -336,12 +343,14 @@ var _ = Context("cli", func() {
 					/* arrange */
 					fakeCore := new(core.Fake)
 
+					fakeOp := new(op.Fake)
+					fakeCore.OpReturns(fakeOp)
+
 					opRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -349,7 +358,7 @@ var _ = Context("cli", func() {
 
 					/* assert */
 					actualCtx,
-						actualOpRef := fakeCore.OpValidateArgsForCall(0)
+						actualOpRef := fakeOp.ValidateArgsForCall(0)
 
 					Expect(actualCtx).To(Equal(context.TODO()))
 					Expect(actualOpRef).To(Equal(opRef))
@@ -372,9 +381,8 @@ var _ = Context("cli", func() {
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -409,9 +417,8 @@ var _ = Context("cli", func() {
 					expectedOpRef := ".opspec/dummyOpName"
 
 					objectUnderTest := newCli(
-						fakeCore,
 						new(clicolorer.Fake),
-						new(nodeCreateCmd.FakeInvoker),
+						fakeCore,
 					)
 
 					/* act */
@@ -441,20 +448,18 @@ var _ = Context("cli", func() {
 				fakeCore := new(core.Fake)
 
 				objectUnderTest := newCli(
-					fakeCore,
 					new(clicolorer.Fake),
-					new(nodeCreateCmd.FakeInvoker),
+					fakeCore,
 				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update", "-c", expectedChannel})
 
 				/* assert */
-				Expect(fakeCore.SelfUpdateCallCount()).To(Equal(1))
-
 				actualChannel := fakeCore.SelfUpdateArgsForCall(0)
 				Expect(actualChannel).To(Equal(expectedChannel))
 			})
+
 		})
 
 		Context("without channel flag", func() {
@@ -466,17 +471,14 @@ var _ = Context("cli", func() {
 				fakeCore := new(core.Fake)
 
 				objectUnderTest := newCli(
-					fakeCore,
 					new(clicolorer.Fake),
-					new(nodeCreateCmd.FakeInvoker),
+					fakeCore,
 				)
 
 				/* act */
 				objectUnderTest.Run([]string{"opctl", "self-update"})
 
 				/* assert */
-				Expect(fakeCore.SelfUpdateCallCount()).To(Equal(1))
-
 				actualChannel := fakeCore.SelfUpdateArgsForCall(0)
 				Expect(actualChannel).To(Equal(expectedChannel))
 			})

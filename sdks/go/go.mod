@@ -9,7 +9,7 @@ require (
 	github.com/containerd/containerd v1.2.7 // indirect
 	github.com/dgraph-io/badger v1.5.4
 	github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2 // indirect
-	github.com/docker/distribution v0.0.0-20190711223531-1fb7fffdb266
+	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/docker v0.7.3-0.20190808172531-150530564a14
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0 // indirect
@@ -26,6 +26,7 @@ require (
 	github.com/golang-interfaces/satori-go.uuid v0.0.0-20180127202525-399ef31ed58a
 	github.com/golang-utils/dircopier v0.0.0-20170803194507-75bc9e581ed2
 	github.com/golang-utils/filecopier v0.0.0-20170803193939-16f96e9dcff4
+	github.com/gorilla/mux v1.7.2 // indirect
 	github.com/gorilla/websocket v1.4.0
 	github.com/jfbus/httprs v0.0.0-20180614100821-7861a1150846
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
@@ -39,7 +40,11 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b // indirect
 	github.com/sethgrid/pester v0.0.0-20180430140037-03e26c9abbbf
+	github.com/sirupsen/logrus v1.4.2 // indirect
+	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
+	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/tidwall/btree v0.0.0-20170113224114-9876f1454cf0 // indirect
 	github.com/tidwall/buntdb v1.1.0
 	github.com/tidwall/gjson v1.2.1 // indirect
@@ -56,6 +61,7 @@ require (
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
+	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6 // indirect
 	google.golang.org/grpc v1.21.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect

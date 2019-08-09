@@ -5,10 +5,10 @@ package ops
 import (
 	"net/http"
 
+	"github.com/opctl/opctl/sdks/go/internal/urlpath"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/kills"
 	"github.com/opctl/opctl/sdks/go/node/api/handler/ops/starts"
 	"github.com/opctl/opctl/sdks/go/node/core"
-	"github.com/opctl/opctl/sdks/go/util/urlpath"
 )
 
 type Handler interface {

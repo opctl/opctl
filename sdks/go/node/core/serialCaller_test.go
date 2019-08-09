@@ -7,9 +7,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
+	"github.com/opctl/opctl/sdks/go/internal/uniquestring"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/util/pubsub"
-	"github.com/opctl/opctl/sdks/go/util/uniquestring"
+	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
 var _ = Context("serialCaller", func() {
