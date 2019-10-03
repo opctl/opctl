@@ -29,11 +29,12 @@ func New(
 	nodeURL url.URL,
 ) DataResolver {
 	return _dataResolver{
-		cliExiter:         cliExiter,
-		cliParamSatisfier: cliParamSatisfier,
-		data:              data.New(),
 		apiReachabilityEnsurer: apireachabilityensurer.New(cliExiter),
-		os: ios.New(),
+		cliExiter:              cliExiter,
+		cliParamSatisfier:      cliParamSatisfier,
+		data:                   data.New(),
+		nodeURL:                nodeURL,
+		os:                     ios.New(),
 	}
 }
 
