@@ -33,5 +33,9 @@ run:
           GITHUB_ACCESS_TOKEN: $(github.accessToken)
         files:
           /cmd.sh:
+          /root/.netrc: |
+            machine github.com
+            login $(github.username)
+            password $(github.accessToken)
         image: { ref: 'node:12.5.0' }
         workDir: /src/website
