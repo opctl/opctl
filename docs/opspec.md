@@ -28,6 +28,7 @@ Opspec is a declarative language designed for the sole purpose of describing ope
   - [container](#container)
     - [cmd](#container-cmd)
     - [dirs](#container-dirs)
+    - [envVars](#container-env-vars)
     - [files](#container-files)
     - [image](#container-image)
       - [ref](#container-image-ref)
@@ -57,17 +58,88 @@ Opspec is a declarative language designed for the sole purpose of describing ope
 
 ## Concepts
 
+### Array
+Arrays hold a list of values, i.e. they are a container for ordered values.
+
+Arrays...
+- are immutable, i.e. assigning to an array results in a copy of the original array
+- can be passed in/out of ops via [array parameters](#array-parameter)
+- can be initialized via [array initializers](#array-initializer)
+- are coerced according to [array coercion](#array-coercion)
+
+### Dir
+Dirs hold a filesystem directory entry.
+
+Dirs...
+- are mutable, i.e. making changes to a directory results in the directory being changed everywhere it's referenced
+- can be passed in/out of ops via [dir parameters](#dir-parameter)
+
+### File
+Files hold a filesystem file entry.
+
+Files...
+- are mutable, i.e. making changes to a file results in the file being changed everywhere it's referenced
+- can be passed in/out of ops via [file parameters](#file-parameter)
+- can be initialized via [file initializers](#file-initializer)
+- are coerced according to [file coercion](#file-coercion)
+
+### Number
+Numbers hold a numeric value.
+
+Numbers...
+- are immutable, i.e. assigning to an number results in a copy of the original number
+- can be passed in/out of ops via [number parameters](#number-parameter)
+- can be initialized via [number initializers](#number-initializer)
+- are coerced according to [number coercion](#number-coercion)
+
+### Object
+Objects hold a map of values, i.e. they are a container for unordered key value pairs.
+
+Objects...
+- are immutable, i.e. assigning to an object results in a copy of the original object
+- can be passed in/out of ops via [object parameters](#object-parameter)
+- can be initialized via [object initializers](#object-initializer)
+- are coerced according to [object coercion](#object-coercion)
+
+### Socket
+Sockets hold one endpoint of a two way communication i.e. network/unix sockets, named-pipes etc...
+
+Sockets...
+- are immutable, i.e. assigning to an socket results in a copy of the original socket
+- can be passed in/out of ops via [socket parameters](#socket-parameter)
+
 ### Reference
-References a value
+References allow reading or assigning values. 
+
+References start with a reference opener `$(` and end with a reference closer `)`.
+
+Within the reference opener and closer:
+- there MUST be a [reference root](#reference-root)
+- there MAY be a [reference path](#reference-path) IF the [reference root](#reference-root) is an [array](#array), [dir](#dir), [file](#file), or [object](#object)
+
+### Reference Root
+Root of the value being referenced.
 
 one of:
-- [array item reference](#array-item-reference)
-- [dir entry reference](#dir-entry-reference)
-- [object property reference](#object-property-reference)
+- [embedded value reference](#embedded-value-reference)
+- [scope value reference](#scope-value-reference)
 
-### Array Item Reference
-A single item of an array can be referenced via `[index]` syntax, where `index` is the zero based index of the item. 
-If `index` is negative, indexing will take place from the end of the array. 
+### Reference Path
+Path of the value being referenced (from [reference root](#reference-root)).
+one of:
+- [array path](#array-path)
+- [dir path](#dir-path)
+- [object path](#object-path)
+
+#### Embedded Value Reference
+Embedded value references are an absolute file path from the root of the op dir, i.e. `/op.yml` references the current op.yml, `/` references the current op dir
+
+#### Scope Value Reference
+Scope value references are an identifier either being assigned, or previously assigned, to the current scope, i.e. `myInput` references an in scope
+
+### Array Path
+Array items can be referenced via `ROOT[index]` syntax, where `index` is the zero based index of the item. 
+If `index` is negative, indexing will take place from the end of the array.
 
 #### Examples
 
@@ -93,8 +165,8 @@ given:
 $(someArray[-1])
 ```
 
-### Dir Entry Reference
-Dir entries (subdirs &/or files of a dir) can be referenced via `/dirEntry` syntax.
+### Dir Path
+Dir entries (subdirs &/or files of a dir) can be referenced via `ROOT/child/path` syntax.
 
 #### Examples
 
@@ -117,8 +189,8 @@ given:
 $(someDir/file2.txt)
 ```
 
-### Object Property Reference
-Object properties can be referenced via `.propertyName` syntax.
+### Object Path
+Object properties can be referenced via `ROOT.child.path` syntax.
 
 #### Examples
 
@@ -480,12 +552,49 @@ Object where each key is an [absolute path](#absolute-path) in the container and
 |[reference](#reference)|On call start, reference will be de-referenced at specified path. On call end, reference will be set to dir at specified path|
 
 #### Container Env Vars
-Object where each key is an environment variable in the container and the value is one of:
-|value|behavior|
-|--|--|
-|null|Shorthand for reference to env var name|
-|[reference](#reference)|Reference will be de-referenced and coerced to string|
-|[initializer](#initializer)|Initializer will be initialized and coerced to string|
+[Object](#object) or [reference](#reference) to an object, where each key and value of the object represent the name and value of an environment variable in the container.
+
+> note, keys and values will be coerced to strings. Refer to [coercion](#coercion) docs for details.
+
+##### Examples
+
+```
+name: envVars
+inputs:
+  customEnvVars:
+    object:
+      default: 
+        key1: 1
+        key2: two
+  greeting:
+    string:
+      default: hello
+run:
+  serial:
+    - container:
+        image: { ref: alpine }
+        envVars: $(customEnvVars)
+        cmd: [env]
+        # prints:
+        # ...
+        # key1=1
+        # key2=two
+    - container:
+        image: { ref: alpine }
+        envVars:
+          key1: $(customEnvVars.key1)
+          key2:
+            key2.2: 2.2
+          key3: [1,2,3]
+          greeting:
+        cmd: [env]
+        # prints:
+        # ...
+        # key1=1
+        # key2={"key2.2":2.2}
+        # key3=[1,2,3]
+        # greeting=hello
+```
 
 #### Container Files
 Object where each key is an [absolute path](#absolute-path) in the container and the value is one of:
@@ -732,38 +841,46 @@ An [initializer](#initializer) or [reference](#reference) which is [coercible](#
 ### Type Coercion
 Type coercion takes place automatically when necessary/possible.
 
+one of:
+- [array coercion](#array-coercion)
+- [file coercion](#file-coercion)
+- [number coercion](#number-coercion)
+- [object coercion](#object-coercion)
+- [string coercion](#string-coercion)
+- [number coercion](#number-coercion)
+
 #### Array coercion
 Array typed values are coercible to:
 
-- file (will be serialized to JSON)
-- string (will be serialized to JSON)
+- [file](#file) (will be serialized to JSON)
+- [string](#string) (will be serialized to JSON)
 
 #### File coercion
 File typed values are coercible to:
 
-- array (if value of file is an array in JSON format)
-- number (if value of file is numeric)
-- object (if value of file is an object in JSON format)
-- string
+- [array](#array) (if value of file is an array in JSON format)
+- [number](#number) (if value of file is numeric)
+- [object](#object) (if value of file is an object in JSON format)
+- [string](#string)
 
 #### Number coercion
 Number typed values are coercible to:
 
-- file
-- string
+- [file](#file)
+- [string](#string)
 
 #### Object coercion
 Object typed values are coercible to:
 
-- file (will be serialized to JSON)
-- string (will be serialized to JSON)
+- [file](#file) (will be serialized to JSON)
+- [string](#string) (will be serialized to JSON)
 
 #### String coercion
 String typed values are coercible to:
 
-- file
-- number (if value of string is numeric)
-- object (if value of string is an object in JSON format)
+- [file](#file)
+- [number](#number) (if value of string is numeric)
+- [object](#object) (if value of string is an object in JSON format)
 
 #### Examples
 
