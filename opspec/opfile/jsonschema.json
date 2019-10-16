@@ -689,15 +689,28 @@
               "type": "object",
               "properties": {
                 "ref": {
-                  "description": "Reference to an image",
+                  "description": "Image reference to resolve from `src` (if specified) or network. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `org.opencontainers.image.ref.name annotation`](https://github.com/opencontainers/image-spec/blob/v1.0.1/annotations.md).",
                   "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                 },
                 "pullCreds": {
                   "$ref": "#/properties/run/properties/op/properties/pullCreds"
+                },
+                "src": {
+                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md).",
+                  "type": "string"
                 }
               },
-              "required": [
-                "ref"
+              "anyOf": [
+                {
+                  "required": [
+                    "ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "src"
+                  ]
+                }
               ],
               "additionalProperties": false
             },

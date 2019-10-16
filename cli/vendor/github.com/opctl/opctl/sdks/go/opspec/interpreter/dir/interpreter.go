@@ -57,6 +57,10 @@ func (itp _interpreter) Interpret(
 				return nil, fmt.Errorf("unable to interpret %+v to dir; error was %v", expression, err)
 			}
 
+			if nil == value.Dir {
+				return nil, fmt.Errorf("unable to interpret %+v to dir", expression)
+			}
+
 			return value, nil
 
 		}

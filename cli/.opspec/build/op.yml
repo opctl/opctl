@@ -36,11 +36,12 @@ run:
           srcDir: $(srcDir/cli)
           version:
     - op:
-        ref: github.com/opspec-pkgs/golang.build.bin#1.1.0
+        ref: github.com/opspec-pkgs/golang.build.bin#1.2.0
         inputs:
           baseImport: github.com/opctl/opctl
           import: github.com/opctl/opctl/cli
           srcDir:
+          GOFLAGS: -mod=vendor -tags=containers_image_openpgp
         outputs:
           opctlForLinux: bin
     - op:
@@ -50,8 +51,8 @@ run:
           dstPath: opctl
           src: $(opctlForLinux)
         outputs:
-          $(srcDir): dst
-    # re-enable once speed issue resolved
+          srcDir: dst
+    # re-enable once lockup issue resolved
     # - op:
     #     ref: ../test/system/opspec
     #     inputs:

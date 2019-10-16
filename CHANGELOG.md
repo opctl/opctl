@@ -6,6 +6,14 @@ accordance with
 
 ## \[Unreleased]
 
+### Added
+
+- [Support in scope dir as container image](https://github.com/opctl/opctl/issues/498)
+
+### Fixed
+
+- [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)
+
 ## 0.1.25 - 2019-07-13
 
 ### Added
