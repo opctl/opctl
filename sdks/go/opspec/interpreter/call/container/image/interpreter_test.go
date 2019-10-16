@@ -1,7 +1,7 @@
 package image
 
 import (
-	"errors"
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
@@ -30,7 +30,7 @@ var _ = Context("Interpreter", func() {
 				)
 
 				/* assert */
-				Expect(actualError).To(Equal(errors.New("image required")))
+				Expect(actualError).To(Equal(fmt.Errorf("image required")))
 			})
 		})
 		Context("scgContainerCallImage isn't nill", func() {

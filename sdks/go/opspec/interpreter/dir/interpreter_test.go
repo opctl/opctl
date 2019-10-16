@@ -80,26 +80,54 @@ var _ = Context("Interpret", func() {
 			})
 		})
 		Context("referenceInterpreter.Interpret doesn't error", func() {
-			It("should return expected result", func() {
-				/* arrange */
-				expectedValue := new(model.Value)
-				fakeReferenceInterpreter := new(reference.FakeInterpreter)
-				fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
+			Context("value.Dir nil", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					providedExpression := "$(providedReference)"
+					expectedValue := &model.Value{}
+					fakeReferenceInterpreter := new(reference.FakeInterpreter)
+					fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
 
-				objectUnderTest := _interpreter{
-					referenceInterpreter: fakeReferenceInterpreter,
-				}
+					objectUnderTest := _interpreter{
+						referenceInterpreter: fakeReferenceInterpreter,
+					}
 
-				/* act */
-				actualValue, actualErr := objectUnderTest.Interpret(
-					map[string]*model.Value{},
-					"$(providedReference)",
-					new(data.FakeHandle),
-				)
+					/* act */
+					actualValue, actualErr := objectUnderTest.Interpret(
+						map[string]*model.Value{},
+						providedExpression,
+						new(data.FakeHandle),
+					)
 
-				/* assert */
-				Expect(actualValue).To(Equal(expectedValue))
-				Expect(actualErr).To(BeNil())
+					/* assert */
+					Expect(actualValue).To(BeNil())
+					Expect(actualErr).To(Equal(fmt.Errorf("unable to interpret %+v to dir", providedExpression)))
+				})
+			})
+			Context("value.Dir not nil", func() {
+				It("should return expected result", func() {
+					/* arrange */
+					expectedValue := &model.Value{
+						Dir: new(string),
+					}
+					fakeReferenceInterpreter := new(reference.FakeInterpreter)
+					fakeReferenceInterpreter.InterpretReturns(expectedValue, nil)
+
+					objectUnderTest := _interpreter{
+						referenceInterpreter: fakeReferenceInterpreter,
+					}
+
+					/* act */
+					actualValue, actualErr := objectUnderTest.Interpret(
+						map[string]*model.Value{},
+						"$(providedReference)",
+						new(data.FakeHandle),
+					)
+
+					/* assert */
+					Expect(actualValue).To(Equal(expectedValue))
+					Expect(actualErr).To(BeNil())
+				})
 			})
 		})
 	})

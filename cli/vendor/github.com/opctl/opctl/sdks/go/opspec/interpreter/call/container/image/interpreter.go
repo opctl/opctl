@@ -3,9 +3,10 @@ package image
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeInterpreter.go --fake-name FakeInterpreter ./ Interpreter
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/dir"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 )
 
@@ -20,11 +21,13 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance.
 func NewInterpreter() Interpreter {
 	return _interpreter{
+		dirInterpreter:    dir.NewInterpreter(),
 		stringInterpreter: stringPkg.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
+	dirInterpreter    dir.Interpreter
 	stringInterpreter stringPkg.Interpreter
 }
 
@@ -35,10 +38,24 @@ func (itp _interpreter) Interpret(
 ) (*model.DCGContainerCallImage, error) {
 
 	if nil == scgContainerCallImage {
-		return nil, errors.New("image required")
+		return nil, fmt.Errorf("image required")
 	}
 
-	// construct image
+	if nil != scgContainerCallImage.Src {
+		src, err := itp.dirInterpreter.Interpret(
+			scope,
+			*scgContainerCallImage.Src,
+			opHandle,
+		)
+		if nil != err {
+			return nil, fmt.Errorf("error encountered interpreting image src; error was: %v", err)
+		}
+
+		return &model.DCGContainerCallImage{
+			Src: src,
+		}, nil
+	}
+
 	ref, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.Ref, opHandle)
 	if nil != err {
 		return nil, err
@@ -51,12 +68,12 @@ func (itp _interpreter) Interpret(
 	if nil != scgContainerCallImage.PullCreds {
 		username, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Username, opHandle)
 		if nil != err {
-			return nil, err
+			return nil, fmt.Errorf("error encountered interpreting image pullcreds username; error was: %v", err)
 		}
 
 		password, err := itp.stringInterpreter.Interpret(scope, scgContainerCallImage.PullCreds.Password, opHandle)
 		if nil != err {
-			return nil, err
+			return nil, fmt.Errorf("error encountered interpreting image pullcreds password; error was: %v", err)
 		}
 
 		dcgContainerCallImage.PullCreds = &model.PullCreds{

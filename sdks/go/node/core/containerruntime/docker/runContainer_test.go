@@ -3,6 +3,9 @@ package docker
 import (
 	"context"
 	"errors"
+	"io"
+	"io/ioutil"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
@@ -11,8 +14,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/pubsub"
-	"io"
-	"io/ioutil"
 )
 
 var _ = Context("RunContainer", func() {
@@ -24,6 +25,7 @@ var _ = Context("RunContainer", func() {
 		providedReq := &model.DCGContainerCall{
 			ContainerID: "containerID",
 			DCGBaseCall: model.DCGBaseCall{},
+			Image:       &model.DCGContainerCallImage{},
 		}
 
 		expectedContainerRemoveOptions := types.ContainerRemoveOptions{
@@ -42,6 +44,7 @@ var _ = Context("RunContainer", func() {
 			containerStdErrStreamer: new(fakeContainerLogStreamer),
 			containerStdOutStreamer: new(fakeContainerLogStreamer),
 			dockerClient:            fakeDockerClient,
+			imagePuller:             new(fakeImagePuller),
 			portBindingsFactory:     fakePortBindingsFactory,
 		}
 
@@ -119,7 +122,9 @@ var _ = Context("RunContainer", func() {
 			/* act */
 			_, actualErr := objectUnderTest.RunContainer(
 				context.Background(),
-				&model.DCGContainerCall{},
+				&model.DCGContainerCall{
+					Image: &model.DCGContainerCallImage{},
+				},
 				new(pubsub.FakeEventPublisher),
 				nopWriteCloser{ioutil.Discard},
 				nopWriteCloser{ioutil.Discard},

@@ -32,7 +32,7 @@ run:
         dirs:
           /src: $(srcDir)
         envVars:
-          GOFLAGS: -mod=vendor
+          GOFLAGS: -mod=vendor -tags=containers_image_openpgp 
         image: { ref: 'golang:1.12.6' }
         workDir: /src
     - op:

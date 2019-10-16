@@ -36,6 +36,7 @@ func newRunContainer(
 		dockerClient:            dockerClient,
 		hostConfigFactory:       newHostConfigFactory(),
 		imagePuller:             newImagePuller(dockerClient),
+		imagePusher:             newImagePusher(),
 		portBindingsFactory:     newPortBindingsFactory(),
 	}
 }
@@ -47,6 +48,7 @@ type _runContainer struct {
 	dockerClient            dockerClientPkg.CommonAPIClient
 	hostConfigFactory       hostConfigFactory
 	imagePuller             imagePuller
+	imagePusher             imagePusher
 	portBindingsFactory     portBindingsFactory
 }
 
@@ -70,6 +72,30 @@ func (cr _runContainer) RunContainer(
 			},
 		)
 	}()
+
+	var pullErr error
+	if nil != req.Image.Src {
+		req.Image.Ref = fmt.Sprintf("%s:latest", req.ContainerID)
+
+		pullErr = cr.imagePusher.Push(
+			ctx,
+			req.Image,
+			req.ContainerID,
+			req.RootOpID,
+			eventPublisher,
+		)
+	} else {
+		// always pull latest version of image
+		// note: this trades local reproducibility for distributed reproducibility
+		pullErr = cr.imagePuller.Pull(
+			ctx,
+			req.Image,
+			req.ContainerID,
+			req.RootOpID,
+			eventPublisher,
+		)
+		// don't err yet; image might be cached. We allow this to support offline use
+	}
 
 	portBindings, err := cr.portBindingsFactory.Construct(
 		req.Ports,
@@ -104,17 +130,6 @@ func (cr _runContainer) RunContainer(
 			*req.Name,
 		}
 	}
-
-	// always pull latest version of image
-	// note: this trades local reproducibility for distributed reproducibility
-	pullErr := cr.imagePuller.Pull(
-		ctx,
-		req.Image,
-		req.ContainerID,
-		req.RootOpID,
-		eventPublisher,
-	)
-	// don't err yet; image might be cached. We allow this to support offline use
 
 	// create container
 	containerCreatedResponse, createErr := cr.dockerClient.ContainerCreate(

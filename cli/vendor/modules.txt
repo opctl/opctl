@@ -5,6 +5,8 @@ github.com/Azure/go-ansiterm/winterm
 github.com/Azure/go-ansiterm
 # github.com/Microsoft/go-winio v0.4.12
 github.com/Microsoft/go-winio
+# github.com/VividCortex/ewma v1.1.1
+github.com/VividCortex/ewma
 # github.com/appdataspec/sdk-golang v0.0.0-20170917062448-0c0ade7a92f7
 github.com/appdataspec/sdk-golang/appdatapath
 # github.com/blang/semver v0.0.0-20190414102917-ba2c2ddd8906
@@ -13,6 +15,40 @@ github.com/blang/semver
 github.com/boltdb/bolt
 # github.com/containerd/containerd v1.2.7
 github.com/containerd/containerd/errdefs
+# github.com/containers/image/v4 v4.0.1
+github.com/containers/image/v4/copy
+github.com/containers/image/v4/docker/daemon
+github.com/containers/image/v4/oci/layout
+github.com/containers/image/v4/signature
+github.com/containers/image/v4/docker/reference
+github.com/containers/image/v4/image
+github.com/containers/image/v4/manifest
+github.com/containers/image/v4/pkg/blobinfocache
+github.com/containers/image/v4/pkg/compression
+github.com/containers/image/v4/transports
+github.com/containers/image/v4/types
+github.com/containers/image/v4/docker/policyconfiguration
+github.com/containers/image/v4/docker/tarfile
+github.com/containers/image/v4/directory/explicitfilepath
+github.com/containers/image/v4/oci/internal
+github.com/containers/image/v4/pkg/tlsclientconfig
+github.com/containers/image/v4/version
+github.com/containers/image/v4/pkg/blobinfocache/none
+github.com/containers/image/v4/pkg/strslice
+github.com/containers/image/v4/pkg/blobinfocache/boltdb
+github.com/containers/image/v4/pkg/blobinfocache/memory
+github.com/containers/image/v4/pkg/compression/internal
+github.com/containers/image/v4/pkg/compression/types
+github.com/containers/image/v4/internal/tmpdir
+github.com/containers/image/v4/pkg/blobinfocache/internal/prioritize
+# github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b
+github.com/containers/libtrust
+# github.com/containers/storage v1.13.5
+github.com/containers/storage/pkg/homedir
+github.com/containers/storage/pkg/idtools
+github.com/containers/storage/pkg/system
+github.com/containers/storage/pkg/mount
+github.com/containers/storage/pkg/fileutils
 # github.com/dgraph-io/badger v1.5.4
 github.com/dgraph-io/badger
 github.com/dgraph-io/badger/options
@@ -50,8 +86,8 @@ github.com/docker/docker/pkg/term
 github.com/docker/docker/pkg/term/windows
 # github.com/docker/go-connections v0.4.0
 github.com/docker/go-connections/nat
-github.com/docker/go-connections/sockets
 github.com/docker/go-connections/tlsconfig
+github.com/docker/go-connections/sockets
 # github.com/docker/go-units v0.4.0
 github.com/docker/go-units
 # github.com/emirpasic/gods v1.12.0
@@ -68,6 +104,8 @@ github.com/equinox-io/equinox/internal/osext
 github.com/equinox-io/equinox/proto
 github.com/equinox-io/equinox/internal/go-update/internal/binarydist
 github.com/equinox-io/equinox/internal/go-update/internal/osext
+# github.com/etcd-io/bbolt v1.3.3
+github.com/etcd-io/bbolt
 # github.com/fatih/color v1.7.0
 github.com/fatih/color
 # github.com/ghodss/yaml v1.0.0
@@ -98,7 +136,7 @@ github.com/golang-utils/filecopier
 github.com/golang-utils/lockfile
 # github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e
 github.com/golang-utils/pscanary
-# github.com/golang/protobuf v1.3.1
+# github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
@@ -131,11 +169,22 @@ github.com/jbenet/go-context/io
 github.com/jfbus/httprs
 # github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
 github.com/kevinburke/ssh_config
+# github.com/klauspost/compress v1.8.6
+github.com/klauspost/compress/zstd
+github.com/klauspost/compress/huff0
+github.com/klauspost/compress/snappy
+github.com/klauspost/compress/zstd/internal/xxhash
+github.com/klauspost/compress/flate
+github.com/klauspost/compress/fse
+# github.com/klauspost/cpuid v1.2.1
+github.com/klauspost/cpuid
+# github.com/klauspost/pgzip v1.2.1
+github.com/klauspost/pgzip
 # github.com/konsorten/go-windows-terminal-sequences v1.0.2
 github.com/konsorten/go-windows-terminal-sequences
 # github.com/mattn/go-colorable v0.1.2
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.8
+# github.com/mattn/go-isatty v0.0.10
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.3
 github.com/mattn/go-runewidth
@@ -152,6 +201,8 @@ github.com/mitchellh/go-homedir
 github.com/mitchellh/reflectwalk
 # github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c
 github.com/morikuni/aec
+# github.com/mtrmac/gpgme v0.0.0-20170102180018-b2432428689c
+github.com/mtrmac/gpgme
 # github.com/onsi/ginkgo v1.8.0
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
@@ -194,6 +245,7 @@ github.com/opctl/opctl/sdks/go/opspec/opfile
 github.com/opctl/opctl/sdks/go/node/api/handler
 github.com/opctl/opctl/sdks/go/node/core
 github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker
+github.com/opctl/opctl/sdks/go/pubsub
 github.com/opctl/opctl/sdks/go/data
 github.com/opctl/opctl/sdks/go/internal/uniquestring
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param
@@ -214,7 +266,6 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/parallelloop
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/serialloop
 github.com/opctl/opctl/sdks/go/opspec/interpreter/loopable
-github.com/opctl/opctl/sdks/go/pubsub
 github.com/opctl/opctl/sdks/go/internal/iruntime
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/array
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/params/param/boolean
@@ -263,9 +314,11 @@ github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/bracketed
 github.com/opctl/opctl/sdks/go/opspec/interpreter/reference/identifier/value
 # github.com/opencontainers/go-digest v1.0.0-rc1
 github.com/opencontainers/go-digest
-# github.com/opencontainers/image-spec v1.0.1
-github.com/opencontainers/image-spec/specs-go/v1
+# github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6
 github.com/opencontainers/image-spec/specs-go
+github.com/opencontainers/image-spec/specs-go/v1
+# github.com/opencontainers/runc v1.0.0-rc8
+github.com/opencontainers/runc/libcontainer/user
 # github.com/pelletier/go-buffruneio v0.2.0
 github.com/pelletier/go-buffruneio
 # github.com/peterh/liner v1.1.0
@@ -304,15 +357,26 @@ github.com/tidwall/rtree
 github.com/tidwall/rtree/base
 # github.com/tidwall/tinyqueue v0.0.0-20180302190814-1e39f5511563
 github.com/tidwall/tinyqueue
+# github.com/ulikunitz/xz v0.5.6
+github.com/ulikunitz/xz
+github.com/ulikunitz/xz/internal/xlog
+github.com/ulikunitz/xz/lzma
+github.com/ulikunitz/xz/internal/hash
+# github.com/vbauerster/mpb v3.4.0+incompatible
+github.com/vbauerster/mpb
+github.com/vbauerster/mpb/decor
+github.com/vbauerster/mpb/cwriter
+github.com/vbauerster/mpb/internal
 # github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
-# github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f
+# github.com/xeipuuv/gojsonpointer v0.0.0-20190809123943-df4f5c81cb3b
 github.com/xeipuuv/gojsonpointer
 # github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 github.com/xeipuuv/gojsonreference
 # github.com/xeipuuv/gojsonschema v1.1.0
 github.com/xeipuuv/gojsonschema
 # golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
+golang.org/x/crypto/ssh/terminal
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/openpgp/armor
 golang.org/x/crypto/openpgp/errors
@@ -331,16 +395,17 @@ golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
 # golang.org/x/net v0.0.0-20190628185345-da137c7871d7
 golang.org/x/net/context
-golang.org/x/net/html/charset
 golang.org/x/net/trace
+golang.org/x/net/html/charset
 golang.org/x/net/proxy
-golang.org/x/net/html
 golang.org/x/net/internal/timeseries
+golang.org/x/net/html
 golang.org/x/net/internal/socks
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.0.0-20190423024810-112230192c58
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb
+golang.org/x/sync/semaphore
+# golang.org/x/sys v0.0.0-20191008105621-543471e840be
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/cpu

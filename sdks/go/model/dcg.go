@@ -40,6 +40,7 @@ type DCGContainerCall struct {
 }
 
 type DCGContainerCallImage struct {
+	Src       *Value     `json:"src,omitempty"`
 	Ref       string     `json:"ref"`
 	PullCreds *PullCreds `json:"pullCreds,omitempty"`
 }

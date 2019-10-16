@@ -8,12 +8,12 @@ import (
 )
 
 func (ctp _containerRuntime) EnsureNetworkExists(
-	networkId string,
+	networkID string,
 ) (err error) {
 
 	_, networkInspectErr := ctp.dockerClient.NetworkInspect(
 		context.Background(),
-		networkId,
+		networkID,
 		types.NetworkInspectOptions{},
 	)
 	if nil == networkInspectErr {
@@ -28,7 +28,7 @@ func (ctp _containerRuntime) EnsureNetworkExists(
 
 	_, err = ctp.dockerClient.NetworkCreate(
 		context.Background(),
-		networkId,
+		networkID,
 		types.NetworkCreate{
 			CheckDuplicate: true,
 			Attachable:     true,
