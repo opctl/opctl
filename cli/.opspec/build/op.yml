@@ -16,9 +16,6 @@ inputs:
       constraints:
         format: semver
 outputs:
-  opctlForLinux:
-    file:
-      description: opctl for linux binary resulting from the build
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -36,28 +33,16 @@ run:
           srcDir: $(srcDir/cli)
           version:
     - op:
-        ref: github.com/opspec-pkgs/golang.build.bin#1.2.0
+        ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
         inputs:
-          baseImport: github.com/opctl/opctl
-          import: github.com/opctl/opctl/cli
-          srcDir:
+          name: opctl
+          srcDir: $(srcDir/cli)
           GOFLAGS: -mod=vendor -tags=containers_image_openpgp
-        outputs:
-          opctlForLinux: bin
-    - op:
-        ref: github.com/opspec-pkgs/fs.cp-file#2.0.1
-        inputs:
-          dst: $(srcDir)
-          dstPath: opctl
-          src: $(opctlForLinux)
-        outputs:
-          srcDir: dst
     # re-enable once lockup issue resolved
     # - op:
     #     ref: ../test/system/opspec
     #     inputs:
     #       srcDir: $(srcDir)
-    #       opctlForLinux:
     - op:
         ref: github.com/opspec-pkgs/git.resolve-commit#1.0.2
         inputs: { dotGitDir: $(srcDir/.git) }

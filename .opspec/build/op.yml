@@ -16,9 +16,6 @@ inputs:
       constraints:
         format: semver
 outputs:
-  opctlForLinux:
-    file:
-      description: opctl for linux binary resulting from the build
   srcDir:
     dir:
       description: directory containing the projects source code
@@ -34,20 +31,15 @@ run:
           - sh
           - -ce
           - |
-            echo "installing deps"
-            go get github.com/rakyll/statik
-
             echo "embedding webapp in node"
-            statik -src webapp/build -dest cli/internal/core/node/create -f
+            go run github.com/rakyll/statik -src ../webapp/build -dest internal/core/node/create -f
         dirs:
-          /go/src/github.com/opctl/opctl: $(srcDir)
-        image: { ref: 'golang:1.12.6' }
-        workDir: /go/src/github.com/opctl/opctl
+          /src: $(srcDir)
+        image: { ref: 'golang:1.13' }
+        workDir: /src/cli
     - op:
         ref: ../cli/.opspec/build
         inputs:
           gitBranch:
           srcDir:
           version:
-        outputs:
-          opctlForLinux:

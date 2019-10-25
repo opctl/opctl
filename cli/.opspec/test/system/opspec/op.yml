@@ -4,10 +4,7 @@ inputs:
   srcDir:
     dir:
       default: ..
-      description: directory containing the projects source code
-  opctlForLinux:
-    file:
-      description: opctl for linux binary to be tested
+      description: directory containing the projects source code & binary to test
 run:
   container:
     image: { ref: 'docker:19.03-dind' }
@@ -15,7 +12,7 @@ run:
       /src: $(srcDir)
       /sharness:
     files:
-      /opctl: $(opctlForLinux)
+      /opctl: $(srcDir/cli/opctl)
       /cmd.sh:
       /yaml:
     cmd: [/cmd.sh]
