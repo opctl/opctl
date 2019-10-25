@@ -4,6 +4,7 @@ package main
 
 import (
 	_ "github.com/maxbrunsfeld/counterfeiter/v6"
+	_ "github.com/rakyll/statik"
 )
 
 // This file imports packages that are used when running go generate, or used

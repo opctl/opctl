@@ -23,5 +23,5 @@ run:
       GOFLAGS: -mod=vendor
     dirs:
       /src: $(srcDir)
-    image: { ref: 'golang:1.12.6' }
+    image: { ref: 'golang:1.13' }
     workDir: /src/sdks/go

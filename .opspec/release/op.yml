@@ -37,14 +37,14 @@ run:
     - op:
         ref: build
         inputs: { srcDir, gitBranch, version }
-        outputs: { opctlForLinux, srcDir }
+        outputs: { srcDir }
     - parallel:
         - op:
             ref: release/to-docker
             inputs:
               dockerPassword:
               dockerUsername:
-              opctlForLinux:
+              opctlForLinux: $(srcDir/cli/opctl)
         # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
         # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
         # requiring the current build artifact such as system testing or publishing to docker.
