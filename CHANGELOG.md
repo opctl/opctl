@@ -13,6 +13,7 @@ accordance with
 ### Fixed
 
 - [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)
+- Implicit inputs not coerced
 
 ## 0.1.25 - 2019-07-13
 

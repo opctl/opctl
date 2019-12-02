@@ -72,32 +72,6 @@ var _ = Context("Interpreter", func() {
 					Expect(actualError).To(Equal(expectedError))
 				})
 			})
-			Context("Ref in scope", func() {
-				It("should call validate.Validate w/ expected args & return result", func() {
-					/* arrange */
-					providedName := "dummyName"
-					providedValue := ""
-					providedParam := &model.Param{}
-					expectedValue := &model.Value{String: new(string)}
-					providedScope := map[string]*model.Value{providedName: expectedValue}
-
-					objectUnderTest := _interpreter{}
-
-					/* act */
-					actualValue, actualError := objectUnderTest.Interpret(
-						providedName,
-						providedValue,
-						providedParam,
-						new(data.FakeHandle),
-						providedScope,
-						"dummyScratchDir",
-					)
-
-					/* assert */
-					Expect(actualValue).To(Equal(expectedValue))
-					Expect(actualError).To(BeNil())
-				})
-			})
 		})
 		Context("Arg is string", func() {
 			Context("Input is array", func() {

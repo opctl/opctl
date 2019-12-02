@@ -63,11 +63,11 @@ func (itp _interpreter) Interpret(
 
 	if nil == valueExpression || "" == valueExpression {
 		// implicitly bound
-		dcgValue, ok := scope[name]
+		_, ok := scope[name]
 		if !ok {
 			return nil, fmt.Errorf("unable to bind to '%v' via implicit ref; '%v' not in scope", name, name)
 		}
-		return dcgValue, nil
+		valueExpression = fmt.Sprintf("$(%v)", name)
 	}
 
 	switch {
