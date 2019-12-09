@@ -14,6 +14,7 @@ accordance with
 
 - [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)
 - Implicit inputs not coerced
+- Results of Serial Call Children Running For > 10s Ignored
 
 ## 0.1.25 - 2019-07-13
 

@@ -8,7 +8,6 @@ import (
 	"context"
 	"github.com/opctl/opctl/sdks/go/model"
 	"sync"
-	"time"
 )
 
 func New(
@@ -87,9 +86,6 @@ func (ps *pubSub) Subscribe(
 			case dstEventChannel <- event:
 			case <-ctx.Done():
 				return
-			case <-time.After(time.Second * 10):
-				// evict the subscriber (they didn't accept the event within 10 seconds)
-				return
 			}
 		}
 
@@ -103,9 +99,6 @@ func (ps *pubSub) Subscribe(
 			select {
 			case dstEventChannel <- event:
 			case <-ctx.Done():
-				return
-			case <-time.After(time.Second * 10):
-				// evict the subscriber (they didn't accept the event within 10 seconds)
 				return
 			}
 		}
