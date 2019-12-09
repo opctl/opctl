@@ -204,6 +204,11 @@ func (this _containerCaller) interpretOutputs(
 		}
 	}
 	for scgContainerFilePath, name := range scgContainerCall.Files {
+		if "" == name {
+			// skip embedded files
+			continue
+		}
+
 		// add file outputs
 		for dcgContainerFilePath, dcgHostFilePath := range dcgContainerCall.Files {
 			if scgContainerFilePath == dcgContainerFilePath {
@@ -216,6 +221,11 @@ func (this _containerCaller) interpretOutputs(
 		}
 	}
 	for scgContainerDirPath, name := range scgContainerCall.Dirs {
+		if "" == name {
+			// skip embedded dirs
+			continue
+		}
+
 		// add dir outputs
 		for dcgContainerDirPath, dcgHostDirPath := range dcgContainerCall.Dirs {
 			if scgContainerDirPath == dcgContainerDirPath {
