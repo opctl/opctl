@@ -1,4 +1,4 @@
-package dotyml
+package opfile
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeUnmarshaller.go --fake-name FakeUnmarshaller ./ Unmarshaller
 
@@ -13,8 +13,8 @@ import (
 type Unmarshaller interface {
 	// Unmarshal validates and unmarshals an "op.yml" file
 	Unmarshal(
-		manifestBytes []byte,
-	) (*model.OpDotYml, error)
+		opFileBytes []byte,
+	) (*model.OpFile, error)
 }
 
 // NewUnmarshaller returns an initialized Unmarshaller instance
@@ -29,13 +29,13 @@ type _unmarshaller struct {
 }
 
 func (uml _unmarshaller) Unmarshal(
-	manifestBytes []byte,
-) (*model.OpDotYml, error) {
+	opFileBytes []byte,
+) (*model.OpFile, error) {
 
 	var err error
 
 	// 1) ensure valid
-	errs := uml.validator.Validate(manifestBytes)
+	errs := uml.validator.Validate(opFileBytes)
 	if len(errs) > 0 {
 		messageBuffer := bytes.NewBufferString(
 			fmt.Sprint(`
@@ -54,7 +54,7 @@ func (uml _unmarshaller) Unmarshal(
 	}
 
 	// 2) build
-	opDotYml := model.OpDotYml{}
-	return &opDotYml, yaml.Unmarshal(manifestBytes, &opDotYml)
+	opFile := model.OpFile{}
+	return &opFile, yaml.Unmarshal(opFileBytes, &opFile)
 
 }

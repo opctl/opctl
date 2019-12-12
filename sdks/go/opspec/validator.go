@@ -19,12 +19,12 @@ type Validator interface {
 // NewValidator returns an initialized Validator instance
 func NewValidator() Validator {
 	return _validator{
-		dotYmlGetter: dotyml.NewGetter(),
+		opFileGetter: opfile.NewGetter(),
 	}
 }
 
 type _validator struct {
-	dotYmlGetter dotyml.Getter
+	opFileGetter opfile.Getter
 }
 
 func (vdr _validator) Validate(
@@ -32,7 +32,7 @@ func (vdr _validator) Validate(
 	opHandle model.DataHandle,
 ) []error {
 	errs := []error{}
-	if _, err := vdr.dotYmlGetter.Get(
+	if _, err := vdr.opFileGetter.Get(
 		ctx,
 		opHandle,
 	); nil != err {

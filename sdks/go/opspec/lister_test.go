@@ -68,7 +68,7 @@ var _ = Context("Lister", func() {
 
 						providedDirHandle := new(data.FakeHandle)
 						item := model.DirEntry{
-							Path: dotyml.FileName,
+							Path: opfile.FileName,
 						}
 						providedDirHandle.ListDescendantsReturns([]*model.DirEntry{&item}, nil)
 

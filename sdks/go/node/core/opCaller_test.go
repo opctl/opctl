@@ -10,7 +10,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
-	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -58,14 +58,14 @@ var _ = Context("opCaller", func() {
 			close(eventChannel)
 			fakePubSub.SubscribeReturns(eventChannel, nil)
 
-			fakeDotYmlGetter := new(dotyml.FakeGetter)
+			fakeOpFileGetter := new(opfile.FakeGetter)
 			// err to trigger immediate return
-			fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
 				caller:       new(fakeCaller),
 				callStore:    new(fakeCallStore),
-				dotYmlGetter: fakeDotYmlGetter,
+				opFileGetter: fakeOpFileGetter,
 				pubSub:       fakePubSub,
 			}
 
@@ -119,14 +119,14 @@ var _ = Context("opCaller", func() {
 
 			fakeCaller := new(fakeCaller)
 
-			fakeDotYmlGetter := new(dotyml.FakeGetter)
+			fakeOpFileGetter := new(opfile.FakeGetter)
 			// err to trigger immediate return
-			fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _opCaller{
 				caller:       fakeCaller,
 				callStore:    new(fakeCallStore),
-				dotYmlGetter: fakeDotYmlGetter,
+				opFileGetter: fakeOpFileGetter,
 				pubSub:       fakePubSub,
 			}
 
@@ -188,8 +188,8 @@ var _ = Context("opCaller", func() {
 				fakeCallStore := new(fakeCallStore)
 				fakeCallStore.GetReturns(model.DCG{IsKilled: true})
 
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -200,7 +200,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest := _opCaller{
 					caller:             new(fakeCaller),
 					callStore:          fakeCallStore,
-					dotYmlGetter:       fakeDotYmlGetter,
+					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
 					outputsInterpreter: new(outputs.FakeInterpreter),
 				}
@@ -266,14 +266,14 @@ var _ = Context("opCaller", func() {
 					close(eventChannel)
 					fakePubSub.SubscribeReturns(eventChannel, nil)
 
-					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeOpFileGetter := new(opfile.FakeGetter)
 					// err to trigger immediate return
-					fakeDotYmlGetter.GetReturns(nil, errors.New(errMsg))
+					fakeOpFileGetter.GetReturns(nil, errors.New(errMsg))
 
 					objectUnderTest := _opCaller{
 						caller:       new(fakeCaller),
 						callStore:    new(fakeCallStore),
-						dotYmlGetter: fakeDotYmlGetter,
+						opFileGetter: fakeOpFileGetter,
 						pubSub:       fakePubSub,
 					}
 
@@ -343,8 +343,8 @@ var _ = Context("opCaller", func() {
 					},
 				}
 
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 				fakePubSub := new(pubsub.Fake)
 				eventChannel := make(chan model.Event)
@@ -355,7 +355,7 @@ var _ = Context("opCaller", func() {
 				objectUnderTest := _opCaller{
 					caller:             new(fakeCaller),
 					callStore:          new(fakeCallStore),
-					dotYmlGetter:       fakeDotYmlGetter,
+					opFileGetter:       fakeOpFileGetter,
 					pubSub:             fakePubSub,
 					outputsInterpreter: fakeOutputsInterpreter,
 				}

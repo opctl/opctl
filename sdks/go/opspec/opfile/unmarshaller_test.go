@@ -1,4 +1,4 @@
-package dotyml
+package opfile
 
 import (
 	"errors"
@@ -62,7 +62,7 @@ var _ = Context("unmarshaller", func() {
 		})
 		Context("Validator.Validate doesn't return errors", func() {
 
-			XIt("should return expected opDotYml", func() {
+			XIt("should return expected opFile", func() {
 
 				/* arrange */
 				paramDefault := "dummyDefault"
@@ -83,7 +83,7 @@ var _ = Context("unmarshaller", func() {
 					},
 				}
 
-				expectedOpDotYml := &model.OpDotYml{
+				expectedOpFile := &model.OpFile{
 					Description: "dummyDescription",
 					Inputs:      dummyParams,
 					Name:        "dummyName",
@@ -95,7 +95,7 @@ var _ = Context("unmarshaller", func() {
 					},
 					Version: "dummyVersion",
 				}
-				providedBytes, err := yaml.Marshal(expectedOpDotYml)
+				providedBytes, err := yaml.Marshal(expectedOpFile)
 				if nil != err {
 					panic(err.Error())
 				}
@@ -105,10 +105,10 @@ var _ = Context("unmarshaller", func() {
 				}
 
 				/* act */
-				actualOpDotYml, _ := objectUnderTest.Unmarshal(providedBytes)
+				actualOpFile, _ := objectUnderTest.Unmarshal(providedBytes)
 
 				/* assert */
-				Expect(*actualOpDotYml).To(Equal(*expectedOpDotYml))
+				Expect(*actualOpFile).To(Equal(*expectedOpFile))
 
 			})
 		})

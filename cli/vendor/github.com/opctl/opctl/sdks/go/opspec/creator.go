@@ -47,19 +47,19 @@ func (cr _creator) Create(
 		return err
 	}
 
-	opDotYml := model.OpDotYml{
+	opFile := model.OpFile{
 		Description: pkgDescription,
 		Name:        pkgName,
 	}
 
-	opDotYmlBytes, err := yaml.Marshal(&opDotYml)
+	opFileBytes, err := yaml.Marshal(&opFile)
 	if nil != err {
 		return err
 	}
 
 	return cr.ioUtil.WriteFile(
-		filepath.Join(path, dotyml.FileName),
-		opDotYmlBytes,
+		filepath.Join(path, opfile.FileName),
+		opFileBytes,
 		0777,
 	)
 

@@ -38,8 +38,8 @@ var _ = Context("Interpreter", func() {
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {
 						if info.IsDir() {
-							scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
-							if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
+							scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
+							if _, err := os.Stat(scenariosOpFilePath); nil == err {
 								/* arrange */
 								absOpPath, err := filepath.Abs(path)
 								if nil != err {
@@ -56,23 +56,23 @@ var _ = Context("Interpreter", func() {
 									panic(fmt.Errorf("error resolving pkg for %v; error was %v", path, err))
 								}
 
-								scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
+								scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
 								if nil != err {
 									panic(err)
 								}
 
-								var scenarioDotYml []struct {
+								var scenarioOpFile []struct {
 									Name      string
 									Interpret *struct {
 										Expect string
 										Scope  map[string]*model.Value
 									}
 								}
-								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
+								if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); nil != err {
 									panic(fmt.Errorf("error unmarshalling scenario.yml for %v; error was %v", path, err))
 								}
 
-								for _, scenario := range scenarioDotYml {
+								for _, scenario := range scenarioOpFile {
 									if nil != scenario.Interpret {
 										scgOpCall := &model.SCGOpCall{
 											Ref:    absOpPath,
@@ -330,14 +330,14 @@ var _ = Context("Interpreter", func() {
 				fakeData := new(data.Fake)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpFileGetter := new(opfile.FakeGetter)
 				expectedErr := errors.New("dummyError")
 				// err to trigger immediate return
-				fakeOpDotYmlGetter.GetReturns(nil, expectedErr)
+				fakeOpFileGetter.GetReturns(nil, expectedErr)
 
 				objectUnderTest := _interpreter{
 					data:                fakeData,
-					opOpDotYmlGetter:    fakeOpDotYmlGetter,
+					opFileGetter:        fakeOpFileGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -352,7 +352,7 @@ var _ = Context("Interpreter", func() {
 
 				/* assert */
 				actualCtx,
-					actualHandle := fakeOpDotYmlGetter.GetArgsForCall(0)
+					actualHandle := fakeOpFileGetter.GetArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(context.TODO()))
 				Expect(actualHandle).To(Equal(fakeDataHandle))
@@ -364,12 +364,12 @@ var _ = Context("Interpreter", func() {
 					providedParentOpHandle.PathReturns(new(string))
 
 					expectedErr := errors.New("dummyError")
-					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(nil, expectedErr)
+					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter.GetReturns(nil, expectedErr)
 
 					objectUnderTest := _interpreter{
 						data:                new(data.Fake),
-						opOpDotYmlGetter:    fakeOpDotYmlGetter,
+						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -417,11 +417,11 @@ var _ = Context("Interpreter", func() {
 						"dummyParam1Name": {String: &model.StringParam{}},
 					}
 
-					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					returnedManifest := &model.OpDotYml{
+					fakeOpFileGetter := new(opfile.FakeGetter)
+					returnedManifest := &model.OpFile{
 						Inputs: expectedInputParams,
 					}
-					fakeOpDotYmlGetter.GetReturns(returnedManifest, nil)
+					fakeOpFileGetter.GetReturns(returnedManifest, nil)
 
 					fakeInputsInterpreter := new(inputs.FakeInterpreter)
 
@@ -430,7 +430,7 @@ var _ = Context("Interpreter", func() {
 					objectUnderTest := _interpreter{
 						dcgScratchDir:       dcgScratchDir,
 						data:                fakeData,
-						opOpDotYmlGetter:    fakeOpDotYmlGetter,
+						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 						inputsInterpreter:   fakeInputsInterpreter,
 					}

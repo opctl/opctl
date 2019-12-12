@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -108,21 +109,12 @@ func (di dirInfo) ModTime() time.Time { return time.Time{} }
 func (di dirInfo) IsDir() bool        { return true }
 func (di dirInfo) Sys() interface{}   { return nil }
 
-func unzip(zf *zip.File) ([]byte, error) {
-	rc, err := zf.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer rc.Close()
-	return ioutil.ReadAll(rc)
-}
-
 // Open returns a file matching the given file name, or os.ErrNotExists if
 // no file matching the given file name is found in the archive.
 // If a directory is requested, Open returns the file named "index.html"
 // in the requested directory, if that file exists.
 func (fs *statikFS) Open(name string) (http.File, error) {
-	name = strings.Replace(name, "//", "/", -1)
+	name = filepath.ToSlash(filepath.Clean(name))
 	if f, ok := fs.files[name]; ok {
 		return newHTTPFile(f), nil
 	}
@@ -182,7 +174,7 @@ func (f *httpFile) Readdir(count int) ([]os.FileInfo, error) {
 	}
 
 	// If count is positive, the specified number of files will be returned,
-	// and if negative, all remaining files will be returned.
+	// and if non-positive, all remaining files will be returned.
 	// The reading position of which file is returned is held in dirIndex.
 	fnames := f.file.fs.dirs[di.name]
 	flen := len(fnames)
@@ -196,7 +188,7 @@ func (f *httpFile) Readdir(count int) ([]os.FileInfo, error) {
 		return fis, io.EOF
 	}
 	var end int
-	if count < 0 {
+	if count <= 0 {
 		end = flen
 	} else {
 		end = start + count
@@ -213,4 +205,13 @@ func (f *httpFile) Readdir(count int) ([]os.FileInfo, error) {
 
 func (f *httpFile) Close() error {
 	return nil
+}
+
+func unzip(zf *zip.File) ([]byte, error) {
+	rc, err := zf.Open()
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+	return ioutil.ReadAll(rc)
 }

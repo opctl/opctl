@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/ghodss/yaml"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var _ = Describe("Validator", func() {
@@ -30,26 +31,26 @@ var _ = Describe("Validator", func() {
 				filepath.Walk(rootPath,
 					func(path string, info os.FileInfo, err error) error {
 						if info.IsDir() {
-							scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
-							if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
+							scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
+							if _, err := os.Stat(scenariosOpFilePath); nil == err {
 								/* arrange */
-								scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
+								scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
 								if nil != err {
 									panic(err)
 								}
 
-								scenarioDotYml := []struct {
+								scenarioOpFile := []struct {
 									Validate *struct {
 										Expect string
 									}
 								}{}
 
 								description := fmt.Sprintf("scenario '%v'", path)
-								if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
+								if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); nil != err {
 									panic(fmt.Errorf("error unmarshalling %v; error was %v", description, err))
 								}
 
-								for _, scenario := range scenarioDotYml {
+								for _, scenario := range scenarioOpFile {
 									if nil != scenario.Validate {
 										/* act */
 										fakeHandle := new(data.FakeHandle)
@@ -78,17 +79,17 @@ var _ = Describe("Validator", func() {
 					})
 			})
 		})
-		It("should call dotYmlGetter.Get w/ expected args", func() {
+		It("should call opFileGetter.Get w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
 			providedOpHandle := new(data.FakeHandle)
 
-			fakeDotYmlGetter := new(dotyml.FakeGetter)
+			fakeOpFileGetter := new(opfile.FakeGetter)
 			// error to trigger immediate return
-			fakeDotYmlGetter.GetReturns(nil, errors.New("dummyErr"))
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyErr"))
 
 			objectUnderTest := _validator{
-				dotYmlGetter: fakeDotYmlGetter,
+				opFileGetter: fakeOpFileGetter,
 			}
 
 			/* act */
@@ -99,21 +100,21 @@ var _ = Describe("Validator", func() {
 
 			/* assert */
 			actualCtx,
-				actualOpHandle := fakeDotYmlGetter.GetArgsForCall(0)
+				actualOpHandle := fakeOpFileGetter.GetArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualOpHandle).To(Equal(providedOpHandle))
 		})
-		Context("dotYmlGetter.Get errs", func() {
+		Context("opFileGetter.Get errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				expectedErrors := []error{errors.New("dummyError")}
 
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
-				fakeDotYmlGetter.GetReturns(nil, expectedErrors[0])
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(nil, expectedErrors[0])
 
 				objectUnderTest := _validator{
-					dotYmlGetter: fakeDotYmlGetter,
+					opFileGetter: fakeOpFileGetter,
 				}
 
 				/* act */
@@ -126,13 +127,13 @@ var _ = Describe("Validator", func() {
 				Expect(actualErrors).To(Equal(expectedErrors))
 			})
 		})
-		Context("dotYmlGetter.Get doesn't err", func() {
+		Context("opFileGetter.Get doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpFileGetter := new(opfile.FakeGetter)
 
 				objectUnderTest := _validator{
-					dotYmlGetter: fakeDotYmlGetter,
+					opFileGetter: fakeOpFileGetter,
 				}
 
 				/* act */

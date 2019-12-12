@@ -1,4 +1,4 @@
-package dotyml
+package opfile
 
 import (
 	"context"
@@ -118,7 +118,7 @@ var _ = Context("pkg", func() {
 				})
 			})
 			Context("ioUtil.ReadAll doesn't err", func() {
-				It("should call manifest.Unmarshal w/ expected args & return result", func() {
+				It("should call opFile.Unmarshal w/ expected args & return result", func() {
 					/* arrange */
 					file, err := ioutil.TempFile("", "")
 					if nil != err {
@@ -132,13 +132,13 @@ var _ = Context("pkg", func() {
 					fakeIOUtil := new(iioutil.Fake)
 					fakeIOUtil.ReadAllReturns(bytesFromReadAll, nil)
 
-					expectedOpDotYml := &model.OpDotYml{
+					expectedOpFile := &model.OpFile{
 						Name: "dummyName",
 					}
 					expectedErr := errors.New("dummyError")
 					FakeUnmarshaller := new(FakeUnmarshaller)
 
-					FakeUnmarshaller.UnmarshalReturns(expectedOpDotYml, expectedErr)
+					FakeUnmarshaller.UnmarshalReturns(expectedOpFile, expectedErr)
 
 					objectUnderTest := _getter{
 						ioUtil:       fakeIOUtil,
@@ -146,14 +146,14 @@ var _ = Context("pkg", func() {
 					}
 
 					/* act */
-					actualOpDotYml, actualErr := objectUnderTest.Get(
+					actualOpFile, actualErr := objectUnderTest.Get(
 						context.Background(),
 						providedOpHandle,
 					)
 
 					/* assert */
 					Expect(FakeUnmarshaller.UnmarshalArgsForCall(0)).To(Equal(bytesFromReadAll))
-					Expect(actualOpDotYml).To(Equal(expectedOpDotYml))
+					Expect(actualOpFile).To(Equal(expectedOpFile))
 					Expect(actualErr).To(Equal(expectedErr))
 				})
 			})

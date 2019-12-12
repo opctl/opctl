@@ -10,13 +10,13 @@
     },
     "description": {
       "description": "Description of the op",
-      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+      "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
     },
     "inputs": {
       "additionalProperties": false,
       "description": "Parameter of an op",
       "patternProperties": {
-        "[-_.a-zA-Z0-9]+": {
+        "[-_a-zA-Z0-9]+": {
           "oneOf": [
             {
               "required": [
@@ -66,7 +66,7 @@
               "description": "Array parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "type": "array"
@@ -81,17 +81,17 @@
                   "properties": {
                     "additionalItems": {
                       "description": "JSON Schema [additionalItems keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.10)",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                     },
                     "items": {
                       "description": "JSON Schema [items keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-01#section-6.9)",
                       "anyOf": [
                         {
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                         },
                         {
                           "items": {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                           }
                         }
                       ]
@@ -122,7 +122,7 @@
               "description": "Boolean parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "description": "Default value",
@@ -158,7 +158,7 @@
               "description": "File parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "description": "Default value; an absolute path rooted at dir containing op.yml or, a relative path interpreted from where the op is started",
@@ -177,7 +177,7 @@
               "description": "Number parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "type": "number"
@@ -194,14 +194,14 @@
                       "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
                       }
                     },
                     "anyOf": {
                       "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
                       }
                     },
                     "enum": {
@@ -237,13 +237,13 @@
                     },
                     "not": {
                       "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
                     },
                     "oneOf": {
                       "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
                       }
                     }
                   },
@@ -258,7 +258,7 @@
               "description": "Object parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "type": "object"
@@ -278,7 +278,7 @@
                           "type": "boolean"
                         },
                         {
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                         }
                       ]
                     },
@@ -286,21 +286,21 @@
                       "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
                       }
                     },
                     "anyOf": {
                       "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
                       }
                     },
                     "dependencies": {
                       "description": "JSON Schema [dependencies keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.19)",
                       "oneOf": [
                         {
-                          "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                          "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                         },
                         {
                           "items": {
@@ -331,13 +331,13 @@
                     },
                     "not": {
                       "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
                     },
                     "oneOf": {
                       "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
                       }
                     },
                     "properties": {
@@ -371,16 +371,16 @@
                             }
                           },
                           {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/array/properties/constraints"
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/array/properties/constraints"
                           },
                           {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/number/properties/constraints"
                           },
                           {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints"
                           },
                           {
-                            "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                            "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
                           }
                         ]
                       }
@@ -389,7 +389,7 @@
                       "description": "JSON Schema [patternProperties keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.17)",
                       "type": "object",
                       "additionalProperties": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/object/properties/constraints/properties/properties/additionalProperties"
                       }
                     },
                     "required": {
@@ -411,7 +411,7 @@
               "description": "Socket parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "isSecret": {
                   "description": "If the socket is secret",
@@ -426,7 +426,7 @@
               "description": "String parameter of an op",
               "properties": {
                 "description": {
-                  "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/dir/properties/description"
+                  "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/dir/properties/description"
                 },
                 "default": {
                   "type": "string"
@@ -443,14 +443,14 @@
                       "description": "JSON Schema [allOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.22)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
                       }
                     },
                     "anyOf": {
                       "description": "JSON Schema [anyOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.23)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
                       }
                     },
                     "enum": {
@@ -542,13 +542,13 @@
                     },
                     "not": {
                       "description": "JSON Schema [not keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.25)",
-                      "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                      "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
                     },
                     "oneOf": {
                       "description": "JSON Schema [oneOf keyword](https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.24)",
                       "type": "array",
                       "items": {
-                        "$ref": "#/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
+                        "$ref": "#/properties/inputs/patternProperties/%5B-_a-zA-Z0-9%5D%2B/properties/string/properties/constraints"
                       }
                     },
                     "pattern": {
@@ -689,18 +689,18 @@
               "type": "object",
               "properties": {
                 "ref": {
-                  "description": "Image reference to resolve from `src` (if specified) or network. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `org.opencontainers.image.ref.name annotation`](https://github.com/opencontainers/image-spec/blob/v1.0.1/annotations.md).",
+                  "description": "Image reference to resolve from network.",
                   "$ref": "#/properties/run/properties/op/properties/inputs/patternProperties/%5B-_.a-zA-Z0-9%5D%2B/oneOf/1"
                 },
                 "pullCreds": {
                   "$ref": "#/properties/run/properties/op/properties/pullCreds"
                 },
                 "src": {
-                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md).",
+                  "description": "Source of image. MUST be a valid [v1.0.1 OCI (Open Container Initiative) `image-layout`](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-layout.md) tar or directory.",
                   "type": "string"
                 }
               },
-              "anyOf": [
+              "oneOf": [
                 {
                   "required": [
                     "ref"

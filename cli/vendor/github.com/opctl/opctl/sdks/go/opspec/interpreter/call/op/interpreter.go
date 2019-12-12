@@ -35,7 +35,7 @@ func NewInterpreter(
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "ops"),
 		inputsInterpreter:   inputs.NewInterpreter(),
-		opOpDotYmlGetter:    dotyml.NewGetter(),
+		opFileGetter:        opfile.NewGetter(),
 		stringInterpreter:   stringPkg.NewInterpreter(),
 		uniqueStringFactory: uniquestring.NewUniqueStringFactory(),
 	}
@@ -46,7 +46,7 @@ type _interpreter struct {
 	data                data.Data
 	dataCachePath       string
 	inputsInterpreter   inputs.Interpreter
-	opOpDotYmlGetter    dotyml.Getter
+	opFileGetter        opfile.Getter
 	stringInterpreter   stringPkg.Interpreter
 	uniqueStringFactory uniquestring.UniqueStringFactory
 }
@@ -87,7 +87,7 @@ func (itp _interpreter) Interpret(
 		return nil, err
 	}
 
-	opDotYml, err := itp.opOpDotYmlGetter.Get(
+	opFile, err := itp.opFileGetter.Get(
 		context.TODO(),
 		opHandle,
 	)
@@ -107,12 +107,12 @@ func (itp _interpreter) Interpret(
 		},
 		OpID:         opID,
 		ChildCallID:  childCallID,
-		ChildCallSCG: opDotYml.Run,
+		ChildCallSCG: opFile.Run,
 	}
 
 	dcgOpCall.Inputs, err = itp.inputsInterpreter.Interpret(
 		scgOpCall.Inputs,
-		opDotYml.Inputs,
+		opFile.Inputs,
 		parentOpHandle,
 		*opHandle.Path(),
 		scope,

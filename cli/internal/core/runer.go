@@ -17,7 +17,7 @@ import (
 	cliModel "github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
-	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
 // Runer exposes the "run" command
@@ -47,7 +47,7 @@ func newRuner(
 		cliOutput:              cliOutput,
 		cliParamSatisfier:      cliParamSatisfier,
 		dataResolver:           dataResolver,
-		opDotYmlGetter:         dotyml.NewGetter(),
+		opFileGetter:           opfile.NewGetter(),
 	}
 }
 
@@ -59,7 +59,7 @@ type _runer struct {
 	cliExiter              cliexiter.CliExiter
 	cliOutput              clioutput.CliOutput
 	cliParamSatisfier      cliparamsatisfier.CLIParamSatisfier
-	opDotYmlGetter         dotyml.Getter
+	opFileGetter           opfile.Getter
 }
 
 func (ivkr _runer) Run(
@@ -74,7 +74,7 @@ func (ivkr _runer) Run(
 		nil,
 	)
 
-	opDotYml, err := ivkr.opDotYmlGetter.Get(
+	opFile, err := ivkr.opFileGetter.Get(
 		ctx,
 		opHandle,
 	)
@@ -95,10 +95,10 @@ func (ivkr _runer) Run(
 			ivkr.cliParamSatisfier.NewSliceInputSrc(opts.Args, "="),
 			ymlFileInputSrc,
 			ivkr.cliParamSatisfier.NewEnvVarInputSrc(),
-			ivkr.cliParamSatisfier.NewParamDefaultInputSrc(opDotYml.Inputs),
-			ivkr.cliParamSatisfier.NewCliPromptInputSrc(opDotYml.Inputs),
+			ivkr.cliParamSatisfier.NewParamDefaultInputSrc(opFile.Inputs),
+			ivkr.cliParamSatisfier.NewCliPromptInputSrc(opFile.Inputs),
 		),
-		opDotYml.Inputs,
+		opFile.Inputs,
 	)
 
 	// init signal channel
