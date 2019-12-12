@@ -15,54 +15,54 @@ type Lister interface {
 	List(
 		ctx context.Context,
 		dirHandle model.DataHandle,
-	) ([]*model.OpDotYml, error)
+	) ([]*model.OpFile, error)
 }
 
 // NewLister returns an initialized Lister instance
 func NewLister() Lister {
 	return _lister{
 		ioUtil:             iioutil.New(),
-		dotYmlUnmarshaller: dotyml.NewUnmarshaller(),
+		opFileUnmarshaller: opfile.NewUnmarshaller(),
 	}
 }
 
 type _lister struct {
 	ioUtil             iioutil.IIOUtil
-	dotYmlUnmarshaller dotyml.Unmarshaller
+	opFileUnmarshaller opfile.Unmarshaller
 }
 
 func (ls _lister) List(
 	ctx context.Context,
 	dirHandle model.DataHandle,
-) ([]*model.OpDotYml, error) {
+) ([]*model.OpFile, error) {
 
 	contents, err := dirHandle.ListDescendants(ctx)
 	if nil != err {
 		return nil, err
 	}
 
-	var ops []*model.OpDotYml
+	var ops []*model.OpFile
 	for _, content := range contents {
-		if filepath.Base(content.Path) == dotyml.FileName {
+		if filepath.Base(content.Path) == opfile.FileName {
 
-			opDotYmlReader, err := dirHandle.GetContent(ctx, content.Path)
+			opFileReader, err := dirHandle.GetContent(ctx, content.Path)
 			if nil != err {
 				// ignore errors for now;
 				continue
 			}
 
-			opDotYmlBytes, err := ls.ioUtil.ReadAll(opDotYmlReader)
-			opDotYmlReader.Close()
+			opFileBytes, err := ls.ioUtil.ReadAll(opFileReader)
+			opFileReader.Close()
 			if nil != err {
 				// ignore errors for now;
 				continue
 			}
 
-			if opDotYml, err := ls.dotYmlUnmarshaller.Unmarshal(
-				opDotYmlBytes,
+			if opFile, err := ls.opFileUnmarshaller.Unmarshal(
+				opFileBytes,
 			); nil == err {
 				// ignore invalid ops
-				ops = append(ops, opDotYml)
+				ops = append(ops, opFile)
 			}
 		}
 

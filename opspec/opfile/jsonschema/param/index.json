@@ -2,7 +2,7 @@
   "additionalProperties": false,
   "description": "Parameter of an op",
   "patternProperties": {
-    "[-_.a-zA-Z0-9]+": {
+    "[-_a-zA-Z0-9]+": {
       "oneOf": [
         {
           "required": [

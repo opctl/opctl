@@ -23,21 +23,21 @@ var _ = Context("Interpolate", func() {
 			filepath.Walk(rootPath,
 				func(path string, info os.FileInfo, err error) error {
 					if info.IsDir() {
-						scenariosDotYmlFilePath := filepath.Join(path, "scenarios.yml")
-						if _, err := os.Stat(scenariosDotYmlFilePath); nil == err {
+						scenariosOpFilePath := filepath.Join(path, "scenarios.yml")
+						if _, err := os.Stat(scenariosOpFilePath); nil == err {
 							/* arrange */
-							scenariosDotYmlBytes, err := ioutil.ReadFile(scenariosDotYmlFilePath)
+							scenariosOpFileBytes, err := ioutil.ReadFile(scenariosOpFilePath)
 							if nil != err {
 								panic(err)
 							}
 
-							scenarioDotYml := []struct {
+							scenarioOpFile := []struct {
 								Name     string
 								Template string
 								Scope    map[string]*model.Value
 								Expected string
 							}{}
-							if err := yaml.Unmarshal(scenariosDotYmlBytes, &scenarioDotYml); nil != err {
+							if err := yaml.Unmarshal(scenariosOpFileBytes, &scenarioOpFile); nil != err {
 								panic(fmt.Errorf("error unmarshalling scenario.yml for %v; error was %v", path, err))
 							}
 
@@ -51,7 +51,7 @@ var _ = Context("Interpolate", func() {
 								panic(fmt.Errorf("error getting opHandle for %v; error was %v", path, err))
 							}
 
-							for _, scenario := range scenarioDotYml {
+							for _, scenario := range scenarioOpFile {
 								for name, value := range scenario.Scope {
 									// make file refs absolute
 									if nil != value.File {

@@ -1,6 +1,6 @@
 package model
 
-type OpDotYml struct {
+type OpFile struct {
 	Description string            `json:"description"`
 	Inputs      map[string]*Param `json:"inputs,omitempty"`
 	Name        string            `json:"name"`

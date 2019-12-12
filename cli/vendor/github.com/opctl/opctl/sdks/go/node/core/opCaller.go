@@ -10,7 +10,7 @@ import (
 
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/outputs"
-	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -36,7 +36,7 @@ func newOpCaller(
 		callStore:          callStore,
 		dcgScratchDir:      filepath.Join(dataDirPath, "dcg"),
 		outputsInterpreter: outputs.NewInterpreter(),
-		dotYmlGetter:       dotyml.NewGetter(),
+		opFileGetter:       opfile.NewGetter(),
 		pubSub:             pubSub,
 	}
 }
@@ -46,7 +46,7 @@ type _opCaller struct {
 	caller             caller
 	dcgScratchDir      string
 	outputsInterpreter outputs.Interpreter
-	dotYmlGetter       dotyml.Getter
+	opFileGetter       opfile.Getter
 	pubSub             pubsub.PubSub
 }
 
@@ -156,8 +156,8 @@ eventLoop:
 		}
 	}
 
-	var opDotYml *model.OpDotYml
-	opDotYml, err = oc.dotYmlGetter.Get(
+	var opFile *model.OpFile
+	opFile, err = oc.opFileGetter.Get(
 		ctx,
 		dcgOpCall.OpHandle,
 	)
@@ -167,7 +167,7 @@ eventLoop:
 	opPath := dcgOpCall.OpHandle.Path()
 	opOutputs, err = oc.outputsInterpreter.Interpret(
 		opOutputs,
-		opDotYml.Outputs,
+		opFile.Outputs,
 		*opPath,
 		filepath.Join(oc.dcgScratchDir, dcgOpCall.OpID),
 	)

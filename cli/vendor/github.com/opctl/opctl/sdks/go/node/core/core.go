@@ -12,7 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/container"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op"
-	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
 
@@ -94,7 +94,7 @@ func New(
 		data:                data.New(),
 		dataCachePath:       filepath.Join(dataDirPath, "ops"),
 		callStore:           callStore,
-		dotYmlGetter:        dotyml.NewGetter(),
+		opFileGetter:        opfile.NewGetter(),
 		opInterpreter:       opInterpreter,
 		callKiller:          callKiller,
 		pubSub:              pubSub,
@@ -110,7 +110,7 @@ type _core struct {
 	data                data.Data
 	dataCachePath       string
 	callStore           callStore
-	dotYmlGetter        dotyml.Getter
+	opFileGetter        opfile.Getter
 	opInterpreter       op.Interpreter
 	callKiller          callKiller
 	pubSub              pubsub.PubSub

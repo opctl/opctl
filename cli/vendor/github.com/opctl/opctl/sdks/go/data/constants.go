@@ -1,6 +1,6 @@
 package data
 
 const (
-	OpDotYmlFileName = "op.yml"
+	OpFileName       = "op.yml"
 	DotOpspecDirName = ".opspec"
 )

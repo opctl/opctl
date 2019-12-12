@@ -130,13 +130,13 @@ var _ = Context("core", func() {
 				fakeDataHandle := new(data.FakeHandle)
 				fakeData.ResolveReturns(fakeDataHandle, nil)
 
-				fakeDotYmlGetter := new(dotyml.FakeGetter)
+				fakeOpFileGetter := new(opfile.FakeGetter)
 				// err to trigger immediate return
-				fakeDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
+				fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _core{
 					data:                fakeData,
-					dotYmlGetter:        fakeDotYmlGetter,
+					opFileGetter:        fakeOpFileGetter,
 					uniqueStringFactory: new(uniquestring.Fake),
 				}
 
@@ -148,7 +148,7 @@ var _ = Context("core", func() {
 
 				/* assert */
 				actualCtx,
-					actualDataHandle := fakeDotYmlGetter.GetArgsForCall(0)
+					actualDataHandle := fakeOpFileGetter.GetArgsForCall(0)
 
 				Expect(actualCtx).To(Equal(providedCtx))
 				Expect(actualDataHandle).To(Equal(fakeDataHandle))
@@ -160,13 +160,13 @@ var _ = Context("core", func() {
 					fakeDataHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(fakeDataHandle, nil)
 
-					fakeDotYmlGetter := new(dotyml.FakeGetter)
+					fakeOpFileGetter := new(opfile.FakeGetter)
 					expectedErr := errors.New("dummyError")
-					fakeDotYmlGetter.GetReturns(&model.OpDotYml{}, expectedErr)
+					fakeOpFileGetter.GetReturns(&model.OpFile{}, expectedErr)
 
 					objectUnderTest := _core{
 						data:                fakeData,
-						dotYmlGetter:        fakeDotYmlGetter,
+						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: new(uniquestring.Fake),
 					}
 
@@ -204,15 +204,15 @@ var _ = Context("core", func() {
 					expectedOpHandle := new(data.FakeHandle)
 					fakeData.ResolveReturns(expectedOpHandle, nil)
 
-					opDotYml := &model.OpDotYml{
+					opFile := &model.OpFile{
 						Outputs: map[string]*model.Param{
 							"dummyOutput1": nil,
 							"dummyOutput2": nil,
 						},
 					}
 
-					fakeDotYmlGetter := new(dotyml.FakeGetter)
-					fakeDotYmlGetter.GetReturns(opDotYml, nil)
+					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter.GetReturns(opFile, nil)
 
 					expectedSCGOpCall := &model.SCGOpCall{
 						Ref:     expectedOpHandle.Ref(),
@@ -222,7 +222,7 @@ var _ = Context("core", func() {
 					for name := range providedReq.Args {
 						expectedSCGOpCall.Inputs[name] = ""
 					}
-					for name := range opDotYml.Outputs {
+					for name := range opFile.Outputs {
 						expectedSCGOpCall.Outputs[name] = ""
 					}
 
@@ -237,7 +237,7 @@ var _ = Context("core", func() {
 						caller:              fakeCaller,
 						pubSub:              new(pubsub.Fake),
 						data:                fakeData,
-						dotYmlGetter:        fakeDotYmlGetter,
+						opFileGetter:        fakeOpFileGetter,
 						uniqueStringFactory: fakeUniqueStringFactory,
 					}
 

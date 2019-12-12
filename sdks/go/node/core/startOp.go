@@ -45,14 +45,14 @@ func (this _core) StartOp(
 		scgOpCall.Inputs[name] = ""
 	}
 
-	opDotYml, err := this.dotYmlGetter.Get(
+	opFile, err := this.opFileGetter.Get(
 		ctx,
 		opHandle,
 	)
 	if nil != err {
 		return "", err
 	}
-	for name := range opDotYml.Outputs {
+	for name := range opFile.Outputs {
 		// implicitly bind
 		scgOpCall.Outputs[name] = ""
 	}

@@ -13,46 +13,40 @@ github.com/blang/semver
 github.com/boltdb/bolt
 # github.com/containerd/containerd v1.2.7
 github.com/containerd/containerd/errdefs
-# github.com/containers/image/v4 v4.0.1
-github.com/containers/image/v4/copy
-github.com/containers/image/v4/docker/daemon
-github.com/containers/image/v4/oci/archive
-github.com/containers/image/v4/oci/layout
-github.com/containers/image/v4/signature
-github.com/containers/image/v4/types
-github.com/containers/image/v4/docker/reference
-github.com/containers/image/v4/image
-github.com/containers/image/v4/manifest
-github.com/containers/image/v4/pkg/blobinfocache
-github.com/containers/image/v4/pkg/compression
-github.com/containers/image/v4/transports
-github.com/containers/image/v4/docker/policyconfiguration
-github.com/containers/image/v4/docker/tarfile
-github.com/containers/image/v4/directory/explicitfilepath
-github.com/containers/image/v4/internal/tmpdir
-github.com/containers/image/v4/oci/internal
-github.com/containers/image/v4/pkg/tlsclientconfig
-github.com/containers/image/v4/version
-github.com/containers/image/v4/pkg/compression/types
-github.com/containers/image/v4/pkg/blobinfocache/none
-github.com/containers/image/v4/pkg/strslice
-github.com/containers/image/v4/pkg/blobinfocache/boltdb
-github.com/containers/image/v4/pkg/blobinfocache/memory
-github.com/containers/image/v4/pkg/compression/internal
-github.com/containers/image/v4/pkg/blobinfocache/internal/prioritize
+# github.com/containers/image/v5 v5.0.0
+github.com/containers/image/v5/copy
+github.com/containers/image/v5/docker/daemon
+github.com/containers/image/v5/oci/layout
+github.com/containers/image/v5/signature
+github.com/containers/image/v5/docker/reference
+github.com/containers/image/v5/image
+github.com/containers/image/v5/manifest
+github.com/containers/image/v5/pkg/blobinfocache
+github.com/containers/image/v5/pkg/compression
+github.com/containers/image/v5/transports
+github.com/containers/image/v5/types
+github.com/containers/image/v5/docker/policyconfiguration
+github.com/containers/image/v5/docker/tarfile
+github.com/containers/image/v5/directory/explicitfilepath
+github.com/containers/image/v5/oci/internal
+github.com/containers/image/v5/pkg/tlsclientconfig
+github.com/containers/image/v5/version
+github.com/containers/image/v5/pkg/blobinfocache/none
+github.com/containers/image/v5/pkg/strslice
+github.com/containers/image/v5/pkg/blobinfocache/boltdb
+github.com/containers/image/v5/pkg/blobinfocache/memory
+github.com/containers/image/v5/pkg/compression/internal
+github.com/containers/image/v5/pkg/compression/types
+github.com/containers/image/v5/internal/tmpdir
+github.com/containers/image/v5/pkg/blobinfocache/internal/prioritize
 # github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b
 github.com/containers/libtrust
 # github.com/containers/storage v1.13.5
-github.com/containers/storage/pkg/archive
 github.com/containers/storage/pkg/homedir
-github.com/containers/storage/pkg/fileutils
 github.com/containers/storage/pkg/idtools
-github.com/containers/storage/pkg/ioutils
-github.com/containers/storage/pkg/longpath
-github.com/containers/storage/pkg/pools
-github.com/containers/storage/pkg/promise
 github.com/containers/storage/pkg/system
 github.com/containers/storage/pkg/mount
+github.com/containers/storage/pkg/fileutils
 # github.com/dgraph-io/badger v1.5.4
 github.com/dgraph-io/badger
 github.com/dgraph-io/badger/options
@@ -173,6 +167,9 @@ github.com/mitchellh/copystructure
 github.com/mitchellh/go-homedir
 # github.com/mitchellh/reflectwalk v1.0.1
 github.com/mitchellh/reflectwalk
+# github.com/mjibson/esc v0.2.0
+github.com/mjibson/esc
+github.com/mjibson/esc/embed
 # github.com/morikuni/aec v0.0.0-20170113033406-39771216ff4c
 github.com/morikuni/aec
 # github.com/mtrmac/gpgme v0.0.0-20170102180018-b2432428689c
@@ -215,15 +212,11 @@ github.com/opencontainers/go-digest
 github.com/opencontainers/image-spec/specs-go/v1
 github.com/opencontainers/image-spec/specs-go
 # github.com/opencontainers/runc v1.0.0-rc8
-github.com/opencontainers/runc/libcontainer/system
 github.com/opencontainers/runc/libcontainer/user
 # github.com/pelletier/go-buffruneio v0.2.0
 github.com/pelletier/go-buffruneio
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
-# github.com/pquerna/ffjson v0.0.0-20190813045741-dac163c6c0a9
-github.com/pquerna/ffjson/fflib/v1
-github.com/pquerna/ffjson/fflib/v1/internal
 # github.com/satori/go.uuid v0.0.0-20181028125025-b2ce2384e17b
 github.com/satori/go.uuid
 # github.com/sergi/go-diff v1.0.0
@@ -272,7 +265,7 @@ github.com/xeipuuv/gojsonpointer
 github.com/xeipuuv/gojsonreference
 # github.com/xeipuuv/gojsonschema v1.1.0
 github.com/xeipuuv/gojsonschema
-# golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
+# golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/ssh/terminal
 golang.org/x/crypto/openpgp/armor
@@ -396,5 +389,5 @@ gopkg.in/src-d/go-git.v4/plumbing/transport/server
 gopkg.in/tomb.v1
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.2.2
+# gopkg.in/yaml.v2 v2.2.5
 gopkg.in/yaml.v2

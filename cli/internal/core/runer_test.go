@@ -16,7 +16,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
-	dotyml "github.com/opctl/opctl/sdks/go/opspec/opfile"
+	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
 var _ = Context("Runer", func() {
@@ -25,16 +25,16 @@ var _ = Context("Runer", func() {
 			/* arrange */
 			providedOpRef := "dummyOpRef"
 
-			fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+			fakeOpFileGetter := new(opfile.FakeGetter)
 			// err to trigger immediate return
-			fakeOpDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
 			fakeOpHandle := new(data.FakeHandle)
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _runer{
-				opDotYmlGetter:    fakeOpDotYmlGetter,
+				opFileGetter:      fakeOpFileGetter,
 				dataResolver:      fakeDataResolver,
 				cliExiter:         new(cliexiter.Fake),
 				cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -52,16 +52,16 @@ var _ = Context("Runer", func() {
 			/* arrange */
 			providedCtx := context.Background()
 
-			fakeOpDotYmlGetter := new(dotyml.FakeGetter)
+			fakeOpFileGetter := new(opfile.FakeGetter)
 			// error to trigger immediate return
-			fakeOpDotYmlGetter.GetReturns(nil, errors.New("dummyError"))
+			fakeOpFileGetter.GetReturns(nil, errors.New("dummyError"))
 
 			fakeOpHandle := new(data.FakeHandle)
 			fakeDataResolver := new(dataresolver.Fake)
 			fakeDataResolver.ResolveReturns(fakeOpHandle)
 
 			objectUnderTest := _runer{
-				opDotYmlGetter:    fakeOpDotYmlGetter,
+				opFileGetter:      fakeOpFileGetter,
 				dataResolver:      fakeDataResolver,
 				apiClient:         new(client.Fake),
 				cliExiter:         new(cliexiter.Fake),
@@ -77,7 +77,7 @@ var _ = Context("Runer", func() {
 
 			/* assert */
 			actualCtx,
-				actualOpHandle := fakeOpDotYmlGetter.GetArgsForCall(0)
+				actualOpHandle := fakeOpFileGetter.GetArgsForCall(0)
 
 			Expect(actualCtx).To(Equal(providedCtx))
 			Expect(actualOpHandle).To(Equal(fakeOpHandle))
@@ -87,8 +87,8 @@ var _ = Context("Runer", func() {
 				/* arrange */
 				getManifestErr := errors.New("dummyError")
 
-				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-				fakeOpDotYmlGetter.GetReturns(nil, getManifestErr)
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(nil, getManifestErr)
 
 				fakeOpHandle := new(data.FakeHandle)
 				fakeDataResolver := new(dataresolver.Fake)
@@ -97,7 +97,7 @@ var _ = Context("Runer", func() {
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _runer{
-					opDotYmlGetter:    fakeOpDotYmlGetter,
+					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
 					cliExiter:         fakeCliExiter,
 					cliParamSatisfier: new(cliparamsatisfier.Fake),
@@ -115,7 +115,7 @@ var _ = Context("Runer", func() {
 			It("should call paramSatisfier.Satisfy w/ expected args", func() {
 				/* arrange */
 				param1Name := "DUMMY_PARAM1_NAME"
-				opDotYml := &model.OpDotYml{
+				opFile := &model.OpFile{
 					Inputs: map[string]*model.Param{
 						param1Name: {
 							String: &model.StringParam{},
@@ -123,10 +123,10 @@ var _ = Context("Runer", func() {
 					},
 				}
 
-				expectedParams := opDotYml.Inputs
+				expectedParams := opFile.Inputs
 
-				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-				fakeOpDotYmlGetter.GetReturns(opDotYml, nil)
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(opFile, nil)
 
 				fakeOpHandle := new(data.FakeHandle)
 				fakeDataResolver := new(dataresolver.Fake)
@@ -141,7 +141,7 @@ var _ = Context("Runer", func() {
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 				objectUnderTest := _runer{
-					opDotYmlGetter:    fakeOpDotYmlGetter,
+					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
 					apiClient:         fakeAPIClient,
 					cliExiter:         new(cliexiter.Fake),
@@ -173,8 +173,8 @@ var _ = Context("Runer", func() {
 					},
 				}
 
-				fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-				fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+				fakeOpFileGetter := new(opfile.FakeGetter)
+				fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 				fakeOpHandle := new(data.FakeHandle)
 				fakeOpHandle.RefReturns(resolvedOpRef)
@@ -192,7 +192,7 @@ var _ = Context("Runer", func() {
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
 
 				objectUnderTest := _runer{
-					opDotYmlGetter:    fakeOpDotYmlGetter,
+					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
 					apiClient:         fakeAPIClient,
 					cliExiter:         new(cliexiter.Fake),
@@ -213,8 +213,8 @@ var _ = Context("Runer", func() {
 					fakeCliExiter := new(cliexiter.Fake)
 					returnedError := errors.New("dummyError")
 
-					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(dataresolver.Fake)
@@ -224,7 +224,7 @@ var _ = Context("Runer", func() {
 					fakeAPIClient.StartOpReturns("dummyOpID", returnedError)
 
 					objectUnderTest := _runer{
-						opDotYmlGetter:    fakeOpDotYmlGetter,
+						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
 						apiClient:         fakeAPIClient,
 						cliExiter:         fakeCliExiter,
@@ -252,8 +252,8 @@ var _ = Context("Runer", func() {
 						},
 					}
 
-					fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-					fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+					fakeOpFileGetter := new(opfile.FakeGetter)
+					fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 					fakeOpHandle := new(data.FakeHandle)
 					fakeDataResolver := new(dataresolver.Fake)
@@ -266,7 +266,7 @@ var _ = Context("Runer", func() {
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _runer{
-						opDotYmlGetter:    fakeOpDotYmlGetter,
+						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
 						apiClient:         fakeAPIClient,
 						cliExiter:         new(cliexiter.Fake),
@@ -294,8 +294,8 @@ var _ = Context("Runer", func() {
 						fakeCliExiter := new(cliexiter.Fake)
 						returnedError := errors.New("dummyError")
 
-						fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-						fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+						fakeOpFileGetter := new(opfile.FakeGetter)
+						fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 						fakeOpHandle := new(data.FakeHandle)
 						fakeDataResolver := new(dataresolver.Fake)
@@ -305,7 +305,7 @@ var _ = Context("Runer", func() {
 						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 						objectUnderTest := _runer{
-							opDotYmlGetter:    fakeOpDotYmlGetter,
+							opFileGetter:      fakeOpFileGetter,
 							dataResolver:      fakeDataResolver,
 							apiClient:         fakeAPIClient,
 							cliExiter:         fakeCliExiter,
@@ -326,8 +326,8 @@ var _ = Context("Runer", func() {
 							/* arrange */
 							fakeCliExiter := new(cliexiter.Fake)
 
-							fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-							fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+							fakeOpFileGetter := new(opfile.FakeGetter)
+							fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 							fakeOpHandle := new(data.FakeHandle)
 							fakeDataResolver := new(dataresolver.Fake)
@@ -339,7 +339,7 @@ var _ = Context("Runer", func() {
 							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 							objectUnderTest := _runer{
-								opDotYmlGetter:    fakeOpDotYmlGetter,
+								opFileGetter:      fakeOpFileGetter,
 								dataResolver:      fakeDataResolver,
 								apiClient:         fakeAPIClient,
 								cliExiter:         fakeCliExiter,
@@ -373,8 +373,8 @@ var _ = Context("Runer", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(dataresolver.Fake)
@@ -388,7 +388,7 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _runer{
-											opDotYmlGetter:    fakeOpDotYmlGetter,
+											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											apiClient:         fakeAPIClient,
@@ -418,8 +418,8 @@ var _ = Context("Runer", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(dataresolver.Fake)
@@ -433,7 +433,7 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _runer{
-											opDotYmlGetter:    fakeOpDotYmlGetter,
+											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											apiClient:         fakeAPIClient,
@@ -464,8 +464,8 @@ var _ = Context("Runer", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(dataresolver.Fake)
@@ -479,7 +479,7 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _runer{
-											opDotYmlGetter:    fakeOpDotYmlGetter,
+											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											apiClient:         fakeAPIClient,
@@ -509,8 +509,8 @@ var _ = Context("Runer", func() {
 
 										fakeCliExiter := new(cliexiter.Fake)
 
-										fakeOpDotYmlGetter := new(dotyml.FakeGetter)
-										fakeOpDotYmlGetter.GetReturns(&model.OpDotYml{}, nil)
+										fakeOpFileGetter := new(opfile.FakeGetter)
+										fakeOpFileGetter.GetReturns(&model.OpFile{}, nil)
 
 										fakeOpHandle := new(data.FakeHandle)
 										fakeDataResolver := new(dataresolver.Fake)
@@ -524,7 +524,7 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
 										objectUnderTest := _runer{
-											opDotYmlGetter:    fakeOpDotYmlGetter,
+											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
 											apiClient:         fakeAPIClient,

@@ -7,6 +7,7 @@ require (
 	github.com/equinox-io/equinox v1.2.0
 	github.com/fatih/color v1.7.0
 	github.com/ghodss/yaml v1.0.0
+	github.com/go-delve/delve v1.3.2
 	github.com/golang-interfaces/encoding-ijson v0.0.0-20170731144015-49fbc3963d10
 	github.com/golang-interfaces/iioutil v0.0.0-20170803194630-7d1c0886acdc
 	github.com/golang-interfaces/ios v0.0.0-20170803194714-da59acb78efc
@@ -22,7 +23,7 @@ require (
 	github.com/opctl/opctl/sdks/go v0.0.0-00010101000000-000000000000
 	github.com/peterh/liner v1.1.0
 	github.com/pkg/errors v0.8.1
-	github.com/rakyll/statik v0.1.6
+	github.com/rakyll/statik v0.1.7-0.20191104211043-6b2f3ee522b6
 )
 
 replace github.com/opctl/opctl/sdks/go => ../sdks/go

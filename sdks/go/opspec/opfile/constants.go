@@ -1,4 +1,4 @@
-package dotyml
+package opfile
 
 const (
 	FileName = "op.yml"

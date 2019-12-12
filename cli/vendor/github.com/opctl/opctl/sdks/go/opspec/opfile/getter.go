@@ -1,9 +1,10 @@
-package dotyml
+package opfile
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeGetter.go --fake-name FakeGetter ./ Getter
 
 import (
 	"context"
+
 	"github.com/golang-interfaces/iioutil"
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -14,7 +15,7 @@ type Getter interface {
 		ctx context.Context,
 		opHandle model.DataHandle,
 	) (
-		*model.OpDotYml,
+		*model.OpFile,
 		error,
 	)
 }
@@ -35,19 +36,19 @@ func (gtr _getter) Get(
 	ctx context.Context,
 	opHandle model.DataHandle,
 ) (
-	*model.OpDotYml,
+	*model.OpFile,
 	error,
 ) {
-	manifestReader, err := opHandle.GetContent(ctx, FileName)
+	opFileReader, err := opHandle.GetContent(ctx, FileName)
 	if nil != err {
 		return nil, err
 	}
-	defer manifestReader.Close()
+	defer opFileReader.Close()
 
-	manifestBytes, err := gtr.ioUtil.ReadAll(manifestReader)
+	opFileBytes, err := gtr.ioUtil.ReadAll(opFileReader)
 	if nil != err {
 		return nil, err
 	}
 
-	return gtr.unmarshaller.Unmarshal(manifestBytes)
+	return gtr.unmarshaller.Unmarshal(opFileBytes)
 }

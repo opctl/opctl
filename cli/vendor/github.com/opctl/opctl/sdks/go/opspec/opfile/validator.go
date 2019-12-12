@@ -1,9 +1,11 @@
-package dotyml
+package opfile
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeValidator.go --fake-name fakeValidator ./ validator
+//go:generate go run github.com/mjibson/esc -pkg=opfile -o validator_schema.go -private ../../../../opspec/opfile/jsonschema.json
 
 import (
 	"fmt"
+
 	"github.com/ghodss/yaml"
 	"github.com/xeipuuv/gojsonschema"
 )
@@ -11,45 +13,45 @@ import (
 type validator interface {
 	// Validate validates an "op.yml"
 	Validate(
-		manifestBytes []byte,
+		opFileBytes []byte,
 	) []error
 }
 
 func newValidator() validator {
-	manifestSchemaBytes, err := OpspecOpfileJsonschemaJsonBytes()
+	opFileSchemaBytes, err := _escFSByte(false, "/opspec/opfile/jsonschema.json")
 	if nil != err {
 		panic(err)
 	}
 
-	manifestSchema, err := gojsonschema.NewSchema(
-		gojsonschema.NewBytesLoader(manifestSchemaBytes),
+	opFileSchema, err := gojsonschema.NewSchema(
+		gojsonschema.NewBytesLoader(opFileSchemaBytes),
 	)
 	if err != nil {
 		panic(err)
 	}
 
 	return _validator{
-		manifestSchema: manifestSchema,
+		opFileSchema: opFileSchema,
 	}
 }
 
 type _validator struct {
-	manifestSchema *gojsonschema.Schema
+	opFileSchema *gojsonschema.Schema
 }
 
 func (vdr _validator) Validate(
-	manifestBytes []byte,
+	opFileBytes []byte,
 ) []error {
 
 	var unmarshalledYAML map[string]interface{}
-	err := yaml.Unmarshal(manifestBytes, &unmarshalledYAML)
+	err := yaml.Unmarshal(opFileBytes, &unmarshalledYAML)
 	if nil != err {
 		// handle syntax errors specially
 		return []error{err}
 	}
 
 	var errs []error
-	result, err := vdr.manifestSchema.Validate(
+	result, err := vdr.opFileSchema.Validate(
 		gojsonschema.NewGoLoader(unmarshalledYAML),
 	)
 	if nil != err {

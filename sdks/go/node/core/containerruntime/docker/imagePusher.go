@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/containers/image/v4/copy"
-	"github.com/containers/image/v4/docker/daemon"
-	"github.com/containers/image/v4/oci/layout"
-	"github.com/containers/image/v4/signature"
+	"github.com/containers/image/v5/copy"
+	"github.com/containers/image/v5/docker/daemon"
+	"github.com/containers/image/v5/oci/layout"
+	"github.com/containers/image/v5/signature"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/pubsub"
 )
