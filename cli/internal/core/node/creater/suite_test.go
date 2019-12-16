@@ -9,5 +9,5 @@ import (
 
 func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "opctl/cli/internal/core/node/create")
+	RunSpecs(t, "opctl/cli/internal/core/node/creater")
 }

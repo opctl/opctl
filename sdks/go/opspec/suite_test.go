@@ -1,4 +1,4 @@
-package op
+package opspec
 
 import (
 	. "github.com/onsi/ginkgo"

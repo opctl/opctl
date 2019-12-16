@@ -1,4 +1,4 @@
-package op
+package opspec
 
 import (
 	"context"
