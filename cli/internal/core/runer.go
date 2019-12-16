@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
@@ -32,7 +31,6 @@ type Runer interface {
 // newRuner returns an initialized "run" command
 func newRuner(
 	apiClient client.Client,
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer,
 	cliColorer clicolorer.CliColorer,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
@@ -40,26 +38,24 @@ func newRuner(
 	dataResolver dataresolver.DataResolver,
 ) Runer {
 	return _runer{
-		apiClient:              apiClient,
-		apiReachabilityEnsurer: apiReachabilityEnsurer,
-		cliColorer:             cliColorer,
-		cliExiter:              cliExiter,
-		cliOutput:              cliOutput,
-		cliParamSatisfier:      cliParamSatisfier,
-		dataResolver:           dataResolver,
-		opFileGetter:           opfile.NewGetter(),
+		apiClient:         apiClient,
+		cliColorer:        cliColorer,
+		cliExiter:         cliExiter,
+		cliOutput:         cliOutput,
+		cliParamSatisfier: cliParamSatisfier,
+		dataResolver:      dataResolver,
+		opFileGetter:      opfile.NewGetter(),
 	}
 }
 
 type _runer struct {
-	apiClient              client.Client
-	dataResolver           dataresolver.DataResolver
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer
-	cliColorer             clicolorer.CliColorer
-	cliExiter              cliexiter.CliExiter
-	cliOutput              clioutput.CliOutput
-	cliParamSatisfier      cliparamsatisfier.CLIParamSatisfier
-	opFileGetter           opfile.Getter
+	apiClient         client.Client
+	dataResolver      dataresolver.DataResolver
+	cliColorer        clicolorer.CliColorer
+	cliExiter         cliexiter.CliExiter
+	cliOutput         clioutput.CliOutput
+	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
+	opFileGetter      opfile.Getter
 }
 
 func (ivkr _runer) Run(

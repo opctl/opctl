@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/clicolorer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
@@ -54,7 +53,6 @@ func New(
 		},
 	)
 
-	apiReachabilityEnsurer := apireachabilityensurer.New(cliExiter)
 	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
 	dataResolver := dataresolver.New(
 		cliExiter,
@@ -65,13 +63,11 @@ func New(
 	return _core{
 		Eventser: newEventser(
 			apiClient,
-			apiReachabilityEnsurer,
 			cliExiter,
 			cliOutput,
 		),
 		Lser: newLser(
 			apiClient,
-			apiReachabilityEnsurer,
 			cliExiter,
 			cliOutput,
 			dataResolver,
@@ -87,7 +83,6 @@ func New(
 		),
 		Runer: newRuner(
 			apiClient,
-			apiReachabilityEnsurer,
 			cliColorer,
 			cliExiter,
 			cliOutput,

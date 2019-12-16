@@ -20,7 +20,7 @@ var _ = Context("Lser", func() {
 
 			fakeDataResolver := new(dataresolver.Fake)
 
-			fakeOpLister := new(op.FakeLister)
+			fakeOpLister := new(opspec.FakeLister)
 			// err to trigger immediate return
 			fakeOpLister.ListReturns(nil, errors.New("dummyError"))
 
@@ -55,7 +55,7 @@ var _ = Context("Lser", func() {
 			fakeDataHandle := new(data.FakeHandle)
 			fakeDataResolver.ResolveReturns(fakeDataHandle)
 
-			fakeOpLister := new(op.FakeLister)
+			fakeOpLister := new(opspec.FakeLister)
 			// err to trigger immediate return
 			fakeOpLister.ListReturns(nil, errors.New("dummyError"))
 
@@ -84,7 +84,7 @@ var _ = Context("Lser", func() {
 		Context("opLister.List errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeOpLister := new(op.FakeLister)
+				fakeOpLister := new(opspec.FakeLister)
 				expectedError := errors.New("dummyError")
 				fakeOpLister.ListReturns(nil, expectedError)
 

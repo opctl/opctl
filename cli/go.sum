@@ -122,6 +122,7 @@ github.com/golang-utils/lockfile v0.0.0-20170803195317-342df9650a96/go.mod h1:NT
 github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e h1:p1IFBtTUIWsxrle2OV+/2EdBB6EBTSFy3bbGBhizIw4=
 github.com/golang-utils/pscanary v0.0.0-20170803195345-167b86ee2e7e/go.mod h1:IDUm8xWd84kcSlNSpeWUzvtT16pknpADFI7kX8YD+zg=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b/go.mod h1:SBH7ygxi8pfUlaOkMMuAQtPIUF8ecWP5IEl/CR7VP2Q=
+github.com/golang/mock v1.1.1 h1:G5FRp8JnTd7RQH5kemVNlMeyXQAztQ3mOWV95KxsXH8=
 github.com/golang/mock v1.1.1/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfbm0A=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.3.1 h1:YF8+flBXS5eO826T4nzqPrxfhQThhXl0YzfuUPu4SBg=

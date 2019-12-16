@@ -53,8 +53,8 @@ func (vdt _validator) Validate(
 	value *model.Value,
 	param *model.Param,
 ) []error {
-	if nil == param {
-		return []error{errors.New("param required")}
+	if nil == value {
+		return []error{errors.New("required")}
 	}
 
 	switch {

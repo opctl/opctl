@@ -1,4 +1,4 @@
-package op
+package opspec
 
 const (
 	DotOpspecDirName = ".opspec"

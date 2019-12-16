@@ -1,4 +1,4 @@
-package op
+package opspec
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeCreator.go --fake-name FakeCreator ./ Creator
 

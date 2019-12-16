@@ -15,6 +15,7 @@ accordance with
 - [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)
 - Implicit inputs not coerced
 - Results of Serial Call Children Running For > 10s Ignored
+- [Child Op Call Inputs Not Required](https://github.com/opctl/opctl/pull/665)
 
 ### Removed
 

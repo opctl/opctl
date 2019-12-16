@@ -12,12 +12,13 @@ var _ = Context("Validate", func() {
 	Context("invoked w/ nil param", func() {
 		It("should return expected error", func() {
 			/* arrange */
-			providedValue := &model.Value{}
-
-			expectedErrs := []error{errors.New("param required")}
+			expectedErrs := []error{errors.New("required")}
 
 			/* act */
-			actualErrs := objectUnderTest.Validate(providedValue, nil)
+			actualErrs := objectUnderTest.Validate(
+				nil,
+				&model.Param{},
+			)
 			Expect(actualErrs).To(Equal(expectedErrs))
 		})
 	})

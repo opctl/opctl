@@ -13,7 +13,7 @@ var _ = Context("Creater", func() {
 	Context("Create", func() {
 		It("should call opCreator.Create w/ expected args", func() {
 			/* arrange */
-			fakeOpCreator := new(op.FakeCreator)
+			fakeOpCreator := new(opspec.FakeCreator)
 
 			providedPath := "dummyPath"
 			providedPkgName := "dummyPkgName"
@@ -42,7 +42,7 @@ var _ = Context("Creater", func() {
 		Context("opCreator.Create errors", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
-				fakeOpCreator := new(op.FakeCreator)
+				fakeOpCreator := new(opspec.FakeCreator)
 				expectedError := errors.New("dummyError")
 				fakeOpCreator.CreateReturns(expectedError)
 

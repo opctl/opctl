@@ -20,13 +20,12 @@ type Eventser interface {
 // newEventser returns an initialized "events" command
 func newEventser(
 	apiClient client.Client,
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 ) Eventser {
 	return _eventser{
 		apiClient:              apiClient,
-		apiReachabilityEnsurer: apiReachabilityEnsurer,
+		apiReachabilityEnsurer: apireachabilityensurer.New(cliExiter),
 		cliExiter:              cliExiter,
 		cliOutput:              cliOutput,
 	}

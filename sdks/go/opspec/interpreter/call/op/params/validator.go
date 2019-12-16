@@ -45,10 +45,10 @@ func (vdr _validator) Validate(
 	if len(paramErrMap) > 0 {
 		// return error w/ fancy formatted msg
 		messageBuffer := bytes.NewBufferString("")
-		for outputName, errs := range paramErrMap {
+		for paramName, errs := range paramErrMap {
 			for _, err := range errs {
 				messageBuffer.WriteString(fmt.Sprintf(`
-    - %v: %v`, outputName, err.Error()))
+    - %v: %v`, paramName, err.Error()))
 			}
 		}
 		messageBuffer.WriteString(`

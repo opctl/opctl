@@ -7,7 +7,6 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
@@ -26,30 +25,27 @@ type Lser interface {
 // newLser returns an initialized "ls" command
 func newLser(
 	apiClient client.Client,
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	dataResolver dataresolver.DataResolver,
 ) Lser {
 	return _lsInvoker{
-		apiClient:              apiClient,
-		apiReachabilityEnsurer: apiReachabilityEnsurer,
-		cliExiter:              cliExiter,
-		cliOutput:              cliOutput,
-		dataResolver:           dataResolver,
-		opLister:               op.NewLister(),
-		writer:                 os.Stdout,
+		apiClient:    apiClient,
+		cliExiter:    cliExiter,
+		cliOutput:    cliOutput,
+		dataResolver: dataResolver,
+		opLister:     op.NewLister(),
+		writer:       os.Stdout,
 	}
 }
 
 type _lsInvoker struct {
-	apiClient              client.Client
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer
-	cliExiter              cliexiter.CliExiter
-	cliOutput              clioutput.CliOutput
-	dataResolver           dataresolver.DataResolver
-	opLister               op.Lister
-	writer                 io.Writer
+	apiClient    client.Client
+	cliExiter    cliexiter.CliExiter
+	cliOutput    clioutput.CliOutput
+	dataResolver dataresolver.DataResolver
+	opLister     op.Lister
+	writer       io.Writer
 }
 
 func (ivkr _lsInvoker) Ls(
