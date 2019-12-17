@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
+	"io/ioutil"
 	"net/http"
 	"path"
 )
@@ -40,6 +42,15 @@ func (c client) KillOp(
 	}
 	// don't leak resources
 	defer httpResp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	if nil != err {
+		return err
+	}
+
+	if http.StatusOK != httpResp.StatusCode {
+		return errors.New(string(bodyBytes))
+	}
 
 	return nil
 

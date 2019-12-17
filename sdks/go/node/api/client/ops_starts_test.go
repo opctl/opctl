@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+
 	"github.com/golang-interfaces/ihttp"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 )
 
 var _ = Context("StartOp", func() {
@@ -43,18 +44,24 @@ var _ = Context("StartOp", func() {
 			bytes.NewBuffer(expectedReqBytes),
 		)
 
-		fakeHttpClient := new(ihttp.FakeClient)
-		fakeHttpClient.DoReturns(&http.Response{Body: ioutil.NopCloser(bytes.NewReader([]byte(expectedResult)))}, nil)
+		fakeHTTPClient := new(ihttp.FakeClient)
+		fakeHTTPClient.DoReturns(
+			&http.Response{
+				Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedResult))),
+				StatusCode: http.StatusOK,
+			},
+			nil,
+		)
 
 		objectUnderTest := client{
-			httpClient: fakeHttpClient,
+			httpClient: fakeHTTPClient,
 		}
 
 		/* act */
 		actualResult, _ := objectUnderTest.StartOp(providedCtx, providedReq)
 
 		/* assert */
-		actualHTTPReq := fakeHttpClient.DoArgsForCall(0)
+		actualHTTPReq := fakeHTTPClient.DoArgsForCall(0)
 
 		Expect(actualHTTPReq.URL).To(Equal(expectedHTTPReq.URL))
 		Expect(actualHTTPReq.Body).To(Equal(expectedHTTPReq.Body))

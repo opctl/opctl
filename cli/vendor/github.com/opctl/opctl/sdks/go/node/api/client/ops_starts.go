@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"path"
+
+	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/node/api"
 )
 
 // StartOp starts an op & returns its root op id (ROId)
@@ -19,7 +21,7 @@ func (c client) StartOp(
 
 	reqBytes, err := json.Marshal(req)
 	if nil != err {
-		return "", nil
+		return "", err
 	}
 
 	reqURL := c.baseUrl
@@ -31,7 +33,7 @@ func (c client) StartOp(
 		bytes.NewBuffer(reqBytes),
 	)
 	if nil != err {
-		return "", nil
+		return "", err
 	}
 
 	httpReq = httpReq.WithContext(ctx)
@@ -43,7 +45,15 @@ func (c client) StartOp(
 	// don't leak resources
 	defer httpResp.Body.Close()
 
-	opIDBuffer, err := ioutil.ReadAll(httpResp.Body)
-	return string(opIDBuffer), nil
+	bodyBytes, err := ioutil.ReadAll(httpResp.Body)
+	if nil != err {
+		return "", err
+	}
+
+	if http.StatusOK != httpResp.StatusCode {
+		return "", errors.New(string(bodyBytes))
+	}
+
+	return string(bodyBytes), nil
 
 }
