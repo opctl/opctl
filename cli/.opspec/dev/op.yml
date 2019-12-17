@@ -20,7 +20,7 @@ run:
       - exec
       - ./opctl
       - run
-      - op2
+      - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
     dirs:
       /src: $(srcDir)
     envVars:

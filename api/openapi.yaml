@@ -565,6 +565,9 @@ components:
           format: dateTime
       oneOf:
         - properties:
+            callEndedEvent:
+              $ref: '#/components/schemas/callEndedEvent'
+        - properties:
             containerExited:
               $ref: '#/components/schemas/containerExitedEvent'
         - properties:
@@ -589,8 +592,39 @@ components:
             parallelCallEnded:
               $ref: '#/components/schemas/parallelCallEndedEvent'
         - properties:
+            parallelLoopCallEnded:
+              $ref: '#/components/schemas/parallelLoopCallEndedEvent'
+        - properties:
             serialCallEnded:
               $ref: '#/components/schemas/serialCallEndedEvent'
+        - properties:
+            serialLoopCallEnded:
+              $ref: '#/components/schemas/serialLoopCallEndedEvent'
+      type: object
+    callEndedEvent:
+      properties:
+        callId:
+          type: string
+        error:
+          $ref: '#/components/schemas/callEndedEventError'
+        rootCallId:
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/value'
+      type: object
+    callEndedEventError:
+      properties:
+        message:
+          type: string
+      type: object
+    callKilledEvent:
+      properties:
+        callId:
+          type: string
+        rootCallId:
+          type: string
       type: object
     containerExitedEvent:
       properties:
@@ -694,11 +728,37 @@ components:
         callId:
           type: string
       type: object
+    parallelLoopCallEndedEvent:
+      properties:
+        callId:
+          type: string
+        error:
+          $ref: '#/components/schemas/callEndedEventError'
+        rootCallId:
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/value'
+      type: object
     serialCallEndedEvent:
       properties:
         rootOpId:
           type: string
         callId:
+          type: string
+        outputs:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/value'
+      type: object
+    serialLoopCallEndedEvent:
+      properties:
+        callId:
+          type: string
+        error:
+          $ref: '#/components/schemas/callEndedEventError'
+        rootCallId:
           type: string
         outputs:
           type: object
