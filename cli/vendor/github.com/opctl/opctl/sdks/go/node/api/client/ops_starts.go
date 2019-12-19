@@ -50,7 +50,7 @@ func (c client) StartOp(
 		return "", err
 	}
 
-	if http.StatusOK != httpResp.StatusCode {
+	if http.StatusCreated != httpResp.StatusCode {
 		return "", errors.New(string(bodyBytes))
 	}
 

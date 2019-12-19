@@ -48,7 +48,7 @@ var _ = Context("StartOp", func() {
 		fakeHTTPClient.DoReturns(
 			&http.Response{
 				Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedResult))),
-				StatusCode: http.StatusOK,
+				StatusCode: http.StatusCreated,
 			},
 			nil,
 		)
