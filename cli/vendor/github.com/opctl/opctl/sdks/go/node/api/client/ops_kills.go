@@ -48,7 +48,7 @@ func (c client) KillOp(
 		return err
 	}
 
-	if http.StatusOK != httpResp.StatusCode {
+	if http.StatusCreated != httpResp.StatusCode {
 		return errors.New(string(bodyBytes))
 	}
 
