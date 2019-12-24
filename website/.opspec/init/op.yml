@@ -13,14 +13,7 @@ opspec: 0.1.6
 run:
   container:
     image: { ref: 'node:12.5.0-alpine' }
-    cmd:
-      - sh
-      - -ce
-      - |
-          # required by gitsicle; see https://github.com/imagemin/gifsicle-bin/issues/79
-          apk add -U libtool automake autoconf nasm build-base
-
-          yarn
+    cmd: [yarn]
     dirs:
       /src: $(srcDir)
     workDir: /src/website
