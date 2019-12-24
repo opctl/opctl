@@ -1,0 +1,1 @@
+favicons generated from logo.svg via favicon.ico
