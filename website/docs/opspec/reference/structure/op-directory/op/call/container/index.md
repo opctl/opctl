@@ -19,7 +19,7 @@ An object defining a container call.
   - [workDir](#workdir)
 
 ### image
-An [image](image) object defining the container image run by the call.
+An [image](./image) object defining the container image run by the call.
 
 ### cmd
 An array of [string initializers](../../../../../types/string#initializer) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.

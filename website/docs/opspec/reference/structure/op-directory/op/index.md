@@ -12,7 +12,7 @@ An object which defines an operations inputs, outputs, call graph... etc.
     - [inputs](#inputs)
     - [opspec](#opspec)
     - [outputs](#outputs)
-    - [run](#call)
+    - [run](#run)
     - [version](#version)
 
 ### name
@@ -30,20 +30,20 @@ name: `github.com/opspec-pkgs/jwt.encode`
 ```
 
 ### description
-A [markdown](markdown) string defining a human friendly description of the op (since v0.1.6).
+A [markdown](./markdown) string defining a human friendly description of the op (since v0.1.6).
 
 ### inputs
 An object defining input parameters of the operation.
 
 For each property:
-- key is a [variable name](variable-name) string defining the name of the input.
+- key is a [variable name](./variable-name) string defining the name of the input.
 - value is a [parameter](parameter/index) object defining the output. 
 
 ### outputs
 An object defining output parameters of the operation.
 
 For each property:
-- key is a [variable name](variable-name) string defining the name of the output.
+- key is a [variable name](./variable-name) string defining the name of the output.
 - value is a [parameter](parameter/index) object defining the output.
 
 ### opspec
