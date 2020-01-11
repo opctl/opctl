@@ -7,6 +7,7 @@ module.exports = {
   organizationName: 'opctl', // Usually your GitHub org/user name.
   projectName: 'opctl', // Usually your repo name.
   themeConfig: {
+    disableDarkMode: true,
     navbar: {
       title: 'Opctl',
       logo: {
@@ -14,7 +15,7 @@ module.exports = {
         src: 'img/logo.svg',
       },
       links: [
-        { to: 'docs/what-why', label: 'Docs', position: 'left' },
+        { to: 'docs/zero-to-hero/hello-world', label: 'Docs', position: 'left' },
         {
           href: 'https://opctl-slackin.herokuapp.com/',
           label: 'Slack',
