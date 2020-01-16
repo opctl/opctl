@@ -10,6 +10,10 @@ accordance with
 
 - [Support in scope dir as container image](https://github.com/opctl/opctl/issues/498)
 
+### Changed
+
+- Make failure to cleanup OPCTL_DATA_DIR on node creation a soft error. 
+
 ### Fixed
 
 - [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)

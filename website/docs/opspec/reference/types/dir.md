@@ -33,4 +33,4 @@ $(someDir/file2.txt)
 ### Coercion
 Object typed values are coercible to:
 
-- [boolean](#boolean) (dirs which are empty coerce to false; all else coerce to true)
+- [boolean](boolean.md) (dirs which are empty coerce to false; all else coerce to true)

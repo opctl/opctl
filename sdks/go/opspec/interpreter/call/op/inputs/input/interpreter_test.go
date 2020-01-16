@@ -15,6 +15,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/number"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 )
 
 var _ = Context("Interpreter", func() {
@@ -334,33 +335,62 @@ var _ = Context("Interpreter", func() {
 				})
 			})
 			Context("Input is socket", func() {
-				It("should return expected error", func() {
+				It("should return expected result", func() {
 					/* arrange */
-					providedName := "dummyName"
-					fakeStringInterpreter := new(stringPkg.FakeInterpreter)
+					providedParam := &model.Param{Socket: &model.SocketParam{}}
 
-					interpolatedValue := "dummyValue"
-					interpretedValue := model.Value{String: &interpolatedValue}
-					fakeStringInterpreter.InterpretReturns(&interpretedValue, nil)
-
-					expectedError := fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", providedName, interpolatedValue)
+					fakeReferenceInterpreter := new(reference.FakeInterpreter)
+					interpretedValue := model.Value{Socket: new(string)}
+					fakeReferenceInterpreter.InterpretReturns(&interpretedValue, nil)
 
 					objectUnderTest := _interpreter{
-						stringInterpreter: fakeStringInterpreter,
+						referenceInterpreter: fakeReferenceInterpreter,
 					}
 
 					/* act */
-					_, actualError := objectUnderTest.Interpret(
-						providedName,
+					actualResult, actualError := objectUnderTest.Interpret(
+						"dummyName",
 						"dummyValue",
-						&model.Param{Socket: &model.SocketParam{}},
+						providedParam,
 						new(data.FakeHandle),
 						map[string]*model.Value{},
 						"dummyScratchDir",
 					)
 
 					/* assert */
-					Expect(actualError).To(Equal(expectedError))
+					Expect(*actualResult).To(Equal(interpretedValue))
+					Expect(actualError).To(BeNil())
+				})
+				Context("referenceInterpreter.Interpret errs", func() {
+					It("should return expected error", func() {
+						/* arrange */
+						providedName := "dummyName"
+
+						interpolatedValue := "dummyValue"
+
+						fakeReferenceInterpreter := new(reference.FakeInterpreter)
+						interpretedValue := model.Value{Socket: new(string)}
+						fakeReferenceInterpreter.InterpretReturns(&interpretedValue, fmt.Errorf(""))
+
+						objectUnderTest := _interpreter{
+							referenceInterpreter: fakeReferenceInterpreter,
+						}
+
+						expectedError := fmt.Errorf("unable to bind '%v' to '%+v'; error was: ''", providedName, interpolatedValue)
+
+						/* act */
+						_, actualError := objectUnderTest.Interpret(
+							providedName,
+							"dummyValue",
+							&model.Param{Socket: &model.SocketParam{}},
+							new(data.FakeHandle),
+							map[string]*model.Value{},
+							"dummyScratchDir",
+						)
+
+						/* assert */
+						Expect(actualError).To(Equal(expectedError))
+					})
 				})
 			})
 		})

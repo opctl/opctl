@@ -16,8 +16,8 @@ File typed values can be constructed from a literal string or templated string; 
 ### Coercion
 File typed values are coercible to:
 
-- [boolean](#boolean) (files which are empty, all `"0"`, or (case insensitive) `"f"` or `"false"` coerce to false; all else coerce to true)
-- [array](array) (if value of file is an array in JSON format)
-- [number](number) (if value of file is numeric)
-- [object](object) (if value of file is an object in JSON format)
-- [string](string)
+- [boolean](boolean.md) (files which are empty, all `"0"`, or (case insensitive) `"f"` or `"false"` coerce to false; all else coerce to true)
+- [array](array.md) (if value of file is an array in JSON format)
+- [number](number.md) (if value of file is numeric)
+- [object](object.md) (if value of file is an object in JSON format)
+- [string](string.md)

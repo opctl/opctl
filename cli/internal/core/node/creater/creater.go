@@ -74,36 +74,40 @@ func (ivkr _creater) initDataDir(
 	dataDirPath,
 	dcgDataDirPath string,
 ) {
-	// cleanup [legacy] op cache (if it exists)
-	legacyOpCachePath := filepath.Join(dataDirPath, "pkgs")
-	if err := os.RemoveAll(legacyOpCachePath); nil != err {
-		panic(fmt.Errorf("unable to cleanup op cache at path: %v\n", legacyOpCachePath))
-	}
-
-	// cleanup op cache
-	opCachePath := filepath.Join(dataDirPath, "ops")
-	if err := os.RemoveAll(opCachePath); nil != err {
-		panic(fmt.Errorf("unable to cleanup op cache at path: %v\n", opCachePath))
-	}
-
-	// cleanup existing DCG (dynamic call graph) data
-	if err := os.RemoveAll(dcgDataDirPath); nil != err {
-		panic(fmt.Errorf("unable to cleanup DCG (dynamic call graph) data at path: %v\n", dcgDataDirPath))
-	}
-
-	if err := os.MkdirAll(dataDirPath, 0775|os.ModeSetgid); nil != err {
-		panic(fmt.Errorf("unable to create OPCTL_DATA_DIR at path: %v; error was %v\n", dcgDataDirPath, err))
-	}
-
-	if err := os.Chmod(dataDirPath, 0775|os.ModeSetgid); nil != err {
-		panic(fmt.Errorf("unable to setgid of OPCTL_DATA_DIR at path: %v; error was %v\n", dcgDataDirPath, err))
-	}
 
 	lockFile := lockfile.New()
 	// ensure we're the only node around these parts
 	if err := lockFile.Lock(lockFilePath(dataDirPath)); nil != err {
 		pIDOfExistingNode := lockFile.PIdOfOwner(lockFilePath(dataDirPath))
-		panic(fmt.Errorf("node already running w/ PId: %v\n", pIDOfExistingNode))
+		panic(fmt.Errorf("node already running w/ PId: %v", pIDOfExistingNode))
+	}
+
+	// cleanup [legacy] op cache (if it exists)
+	legacyOpCachePath := filepath.Join(dataDirPath, "pkgs")
+	if err := os.RemoveAll(legacyOpCachePath); nil != err {
+		// don't hard error on cleanup failure
+		fmt.Printf("unable to cleanup op cache at path: %v\n; error was %v\n", legacyOpCachePath, err)
+	}
+
+	// cleanup op cache
+	opCachePath := filepath.Join(dataDirPath, "ops")
+	if err := os.RemoveAll(opCachePath); nil != err {
+		// don't hard error on cleanup failure
+		fmt.Printf("unable to cleanup op cache at path: %v\n; error was %v\n", opCachePath, err)
+	}
+
+	// cleanup existing DCG (dynamic call graph) data
+	if err := os.RemoveAll(dcgDataDirPath); nil != err {
+		// don't hard error on cleanup failure
+		fmt.Printf("unable to cleanup DCG (dynamic call graph) data at path: %v\nerror was %v\n", dcgDataDirPath, err)
+	}
+
+	if err := os.MkdirAll(dataDirPath, 0775|os.ModeSetgid); nil != err {
+		panic(fmt.Errorf("unable to create OPCTL_DATA_DIR at path: %v; error was %v", dcgDataDirPath, err))
+	}
+
+	if err := os.Chmod(dataDirPath, 0775|os.ModeSetgid); nil != err {
+		panic(fmt.Errorf("unable to setgid of OPCTL_DATA_DIR at path: %v; error was %v", dcgDataDirPath, err))
 	}
 }
 

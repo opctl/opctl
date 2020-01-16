@@ -61,9 +61,9 @@ $(someObject.someProperty)
 ### Coercion
 Object typed values are coercible to:
 
-- [boolean](#boolean) (objects which are null or empty coerce to false; all else coerce to true)
-- [file](#file) (will be serialized to JSON)
-- [string](#string) (will be serialized to JSON)
+- [boolean](boolean.md) (objects which are null or empty coerce to false; all else coerce to true)
+- [file](file.md) (will be serialized to JSON)
+- [string](string.md) (will be serialized to JSON)
 
 #### Coercion Example (object to string)
 ```yaml

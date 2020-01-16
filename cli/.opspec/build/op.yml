@@ -37,6 +37,7 @@ run:
         inputs:
           name: opctl
           srcDir: $(srcDir/cli)
+          #GOOS: darwin
           GOFLAGS: -mod=vendor -tags=containers_image_openpgp
     # re-enable once lockup issue resolved
     # - op:

@@ -16,5 +16,5 @@ Boolean typed values can be constructed from a literal boolean.
 ### Coercion
 Boolean typed values are coercible to:
 
-- [file](#file) (will be serialized to JSON)
-- [string](#string) (will be serialized to JSON)
+- [file](file.md) (will be serialized to JSON)
+- [string](string.md) (will be serialized to JSON)

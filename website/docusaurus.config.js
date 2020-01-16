@@ -7,7 +7,10 @@ module.exports = {
   organizationName: 'opctl', // Usually your GitHub org/user name.
   projectName: 'opctl', // Usually your repo name.
   themeConfig: {
-    disableDarkMode: true,
+    disableDarkMode: true,    
+    googleAnalytics: {
+      trackingID: 'UA-94109316-1',
+    },
     navbar: {
       title: 'Opctl',
       logo: {
