@@ -66,6 +66,6 @@ $(someArray[-1])
 ### Coercion
 Array typed values are coercible to:
 
-- [boolean](#boolean) (arrays which are null or empty coerce to false; all else coerce to true)
-- [file](#file) (will be serialized to JSON)
-- [string](#string) (will be serialized to JSON)
+- [boolean](boolean.md) (arrays which are null or empty coerce to false; all else coerce to true)
+- [file](file.md) (will be serialized to JSON)
+- [string](string.md) (will be serialized to JSON)

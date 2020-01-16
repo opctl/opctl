@@ -30,27 +30,27 @@ name: `github.com/opspec-pkgs/jwt.encode`
 ```
 
 ### description
-A [markdown](./markdown) string defining a human friendly description of the op (since v0.1.6).
+A [markdown](markdown.md) string defining a human friendly description of the op (since v0.1.6).
 
 ### inputs
 An object defining input parameters of the operation.
 
 For each property:
-- key is a [variable name](./variable-name) string defining the name of the input.
-- value is a [parameter](parameter/index) object defining the output. 
+- key is a [variable name](variable-name.md) string defining the name of the input.
+- value is a [parameter](parameter/index.md) object defining the output. 
 
 ### outputs
 An object defining output parameters of the operation.
 
 For each property:
-- key is a [variable name](./variable-name) string defining the name of the output.
-- value is a [parameter](parameter/index) object defining the output.
+- key is a [variable name](variable-name.md) string defining the name of the output.
+- value is a [parameter](parameter/index.md) object defining the output.
 
 ### opspec
 A [semver v2.0.0](https://semver.org/spec/v2.0.0.html) string which defines the version of opspec used to define the operation.
 
 ### run
-A [call](call/index) object defining the ops call graph; i.e. what gets run by the operation. 
+A [call](call/index.md) object defining the ops call graph; i.e. what gets run by the operation. 
 
 ### version
 A [semver v2.0.0](https://semver.org/spec/v2.0.0.html) string which defines the version of the operation. 

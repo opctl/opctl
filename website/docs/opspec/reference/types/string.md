@@ -37,7 +37,7 @@ pre $(someObject) $(dir/file.txt)
 ### Coercion
 String typed values are coercible to:
 
-- [boolean](#boolean) (strings which are empty, all `"0"`, or (case insensitive) `"f"` or `"false"` coerce to false; all else coerce to true)
-- [file](#file)
-- [number](#number) (if value of string is numeric)
-- [object](#object) (if value of string is an object in JSON format)
+- [boolean](boolean.md) (strings which are empty, all `"0"`, or (case insensitive) `"f"` or `"false"` coerce to false; all else coerce to true)
+- [file](file.md)
+- [number](number.md) (if value of string is numeric)
+- [object](object.md) (if value of string is an object in JSON format)

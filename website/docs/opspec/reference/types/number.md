@@ -35,9 +35,9 @@ given:
 ### Coercion
 Number typed values are coercible to:
 
-- [boolean](#boolean) (numbers which are 0 coerce to false; all else coerce to true)
-- [file](#file)
-- [string](#string)
+- [boolean](boolean.md) (numbers which are 0 coerce to false; all else coerce to true)
+- [file](file.md)
+- [string](string.md)
 
 #### Coercion Example (number to file)
 ```yaml

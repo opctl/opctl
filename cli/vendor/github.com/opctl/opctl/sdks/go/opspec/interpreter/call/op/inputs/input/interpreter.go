@@ -4,6 +4,7 @@ package input
 
 import (
 	"fmt"
+
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/array"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/boolean"
@@ -11,6 +12,7 @@ import (
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/file"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/number"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/object"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	stringPkg "github.com/opctl/opctl/sdks/go/opspec/interpreter/string"
 )
 
@@ -28,24 +30,26 @@ type Interpreter interface {
 // NewInterpreter returns an initialized Interpreter instance
 func NewInterpreter() Interpreter {
 	return _interpreter{
-		arrayInterpreter:   array.NewInterpreter(),
-		booleanInterpreter: boolean.NewInterpreter(),
-		dirInterpreter:     dir.NewInterpreter(),
-		fileInterpreter:    file.NewInterpreter(),
-		numberInterpreter:  number.NewInterpreter(),
-		objectInterpreter:  object.NewInterpreter(),
-		stringInterpreter:  stringPkg.NewInterpreter(),
+		arrayInterpreter:     array.NewInterpreter(),
+		booleanInterpreter:   boolean.NewInterpreter(),
+		dirInterpreter:       dir.NewInterpreter(),
+		fileInterpreter:      file.NewInterpreter(),
+		numberInterpreter:    number.NewInterpreter(),
+		objectInterpreter:    object.NewInterpreter(),
+		referenceInterpreter: reference.NewInterpreter(),
+		stringInterpreter:    stringPkg.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
-	arrayInterpreter   array.Interpreter
-	booleanInterpreter boolean.Interpreter
-	dirInterpreter     dir.Interpreter
-	fileInterpreter    file.Interpreter
-	numberInterpreter  number.Interpreter
-	objectInterpreter  object.Interpreter
-	stringInterpreter  stringPkg.Interpreter
+	arrayInterpreter     array.Interpreter
+	booleanInterpreter   boolean.Interpreter
+	dirInterpreter       dir.Interpreter
+	fileInterpreter      file.Interpreter
+	numberInterpreter    number.Interpreter
+	objectInterpreter    object.Interpreter
+	referenceInterpreter reference.Interpreter
+	stringInterpreter    stringPkg.Interpreter
 }
 
 func (itp _interpreter) Interpret(
@@ -114,8 +118,20 @@ func (itp _interpreter) Interpret(
 		}
 		return stringValue, nil
 	case nil != param.Socket:
+		stringValueExpression, isString := valueExpression.(string)
+		if !isString {
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
+		}
 
-		return nil, fmt.Errorf("unable to bind '%v' to '%+v'; sockets must be passed by reference", name, valueExpression)
+		socketValue, err := itp.referenceInterpreter.Interpret(stringValueExpression, scope, parentOpHandle)
+		if nil != err {
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; error was: '%v'", name, valueExpression, err.Error())
+		}
+		if nil == socketValue.Socket {
+			return nil, fmt.Errorf("unable to bind '%v' to '%+v'; '%+v' must reference a socket", name, valueExpression, valueExpression)
+		}
+
+		return socketValue, nil
 	}
 
 	return nil, fmt.Errorf("unable to bind '%v' to '%v'", name, valueExpression)
