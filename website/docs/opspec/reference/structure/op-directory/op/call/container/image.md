@@ -17,4 +17,4 @@ A string referencing a container image.
 `ref: 'ubuntu:19.10'`
 
 ### pullCreds
-A [pull-creds](../pull-creds) object defining creds used to pull the image from a private source.
+A [pull-creds](../../pull-creds) object defining creds used to pull the image from a private source.

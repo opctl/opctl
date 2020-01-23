@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/golang-interfaces/iioutil"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater"
 	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
@@ -24,12 +25,14 @@ type Interpreter interface {
 func NewInterpreter() Interpreter {
 	return _interpreter{
 		interpolater:         interpolater.New(),
+		ioUtil:               iioutil.New(),
 		referenceInterpreter: reference.NewInterpreter(),
 	}
 }
 
 type _interpreter struct {
 	interpolater         interpolater.Interpolater
+	ioUtil               iioutil.IIOUtil
 	referenceInterpreter reference.Interpreter
 }
 
@@ -70,6 +73,20 @@ func (itp _interpreter) Interpret(
 			)
 			if nil != err {
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+			}
+
+			if nil != propertyValue.File {
+				fileBytes, err := itp.ioUtil.ReadFile(*propertyValue.File)
+				if nil != err {
+					return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; error was %v", propertyKeyExpression, propertyValueExpression, err)
+				}
+
+				value[propertyKey] = string(fileBytes)
+				continue
+			} else if nil != propertyValue.Dir {
+				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; directories aren't valid object properties", propertyKeyExpression, propertyValueExpression)
+			} else if nil != propertyValue.Socket {
+				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}
 
 			value[propertyKey] = propertyValue
