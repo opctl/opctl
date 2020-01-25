@@ -5,7 +5,7 @@ package op
 import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 )
 
 // Op exposes the "op" sub command
@@ -18,9 +18,9 @@ type Op interface {
 
 // New returns an initialized "op" sub command
 func New(
-	apiClient client.Client,
 	cliExiter cliexiter.CliExiter,
 	dataResolver dataresolver.DataResolver,
+	nodeProvider nodeprovider.NodeProvider,
 ) Op {
 	return _op{
 		Creater: newCreater(
@@ -31,8 +31,8 @@ func New(
 			dataResolver,
 		),
 		Killer: newKiller(
-			apiClient,
 			cliExiter,
+			nodeProvider,
 		),
 		Validater: newValidater(
 			cliExiter,

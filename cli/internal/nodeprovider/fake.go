@@ -7,18 +7,18 @@ import (
 )
 
 type Fake struct {
-	ListNodesStub        func() (nodes []*model.NodeInfoView, err error)
+	ListNodesStub        func() (nodes []model.NodeHandle, err error)
 	listNodesMutex       sync.RWMutex
 	listNodesArgsForCall []struct{}
 	listNodesReturns     struct {
-		result1 []*model.NodeInfoView
+		result1 []model.NodeHandle
 		result2 error
 	}
-	CreateNodeStub        func() (nodeInfo *model.NodeInfoView, err error)
-	createNodeMutex       sync.RWMutex
-	createNodeArgsForCall []struct{}
-	createNodeReturns     struct {
-		result1 *model.NodeInfoView
+	CreateNodeIfNotExistsStub        func() (nodeHandle model.NodeHandle, err error)
+	createNodeIfNotExistsMutex       sync.RWMutex
+	createNodeIfNotExistsArgsForCall []struct{}
+	createNodeIfNotExistsReturns     struct {
+		result1 model.NodeHandle
 		result2 error
 	}
 	KillNodeIfExistsStub        func(nodeId string) (err error)
@@ -33,7 +33,7 @@ type Fake struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *Fake) ListNodes() (nodes []*model.NodeInfoView, err error) {
+func (fake *Fake) ListNodes() (nodes []model.NodeHandle, err error) {
 	fake.listNodesMutex.Lock()
 	fake.listNodesArgsForCall = append(fake.listNodesArgsForCall, struct{}{})
 	fake.recordInvocation("ListNodes", []interface{}{})
@@ -51,36 +51,36 @@ func (fake *Fake) ListNodesCallCount() int {
 	return len(fake.listNodesArgsForCall)
 }
 
-func (fake *Fake) ListNodesReturns(result1 []*model.NodeInfoView, result2 error) {
+func (fake *Fake) ListNodesReturns(result1 []model.NodeHandle, result2 error) {
 	fake.ListNodesStub = nil
 	fake.listNodesReturns = struct {
-		result1 []*model.NodeInfoView
+		result1 []model.NodeHandle
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *Fake) CreateNode() (nodeInfo *model.NodeInfoView, err error) {
-	fake.createNodeMutex.Lock()
-	fake.createNodeArgsForCall = append(fake.createNodeArgsForCall, struct{}{})
-	fake.recordInvocation("CreateNode", []interface{}{})
-	fake.createNodeMutex.Unlock()
-	if fake.CreateNodeStub != nil {
-		return fake.CreateNodeStub()
+func (fake *Fake) CreateNodeIfNotExists() (nodeHandle model.NodeHandle, err error) {
+	fake.createNodeIfNotExistsMutex.Lock()
+	fake.createNodeIfNotExistsArgsForCall = append(fake.createNodeIfNotExistsArgsForCall, struct{}{})
+	fake.recordInvocation("CreateNodeIfNotExists", []interface{}{})
+	fake.createNodeIfNotExistsMutex.Unlock()
+	if fake.CreateNodeIfNotExistsStub != nil {
+		return fake.CreateNodeIfNotExistsStub()
 	} else {
-		return fake.createNodeReturns.result1, fake.createNodeReturns.result2
+		return fake.createNodeIfNotExistsReturns.result1, fake.createNodeIfNotExistsReturns.result2
 	}
 }
 
-func (fake *Fake) CreateNodeCallCount() int {
-	fake.createNodeMutex.RLock()
-	defer fake.createNodeMutex.RUnlock()
-	return len(fake.createNodeArgsForCall)
+func (fake *Fake) CreateNodeIfNotExistsCallCount() int {
+	fake.createNodeIfNotExistsMutex.RLock()
+	defer fake.createNodeIfNotExistsMutex.RUnlock()
+	return len(fake.createNodeIfNotExistsArgsForCall)
 }
 
-func (fake *Fake) CreateNodeReturns(result1 *model.NodeInfoView, result2 error) {
-	fake.CreateNodeStub = nil
-	fake.createNodeReturns = struct {
-		result1 *model.NodeInfoView
+func (fake *Fake) CreateNodeIfNotExistsReturns(result1 model.NodeHandle, result2 error) {
+	fake.CreateNodeIfNotExistsStub = nil
+	fake.createNodeIfNotExistsReturns = struct {
+		result1 model.NodeHandle
 		result2 error
 	}{result1, result2}
 }
@@ -123,8 +123,8 @@ func (fake *Fake) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.listNodesMutex.RLock()
 	defer fake.listNodesMutex.RUnlock()
-	fake.createNodeMutex.RLock()
-	defer fake.createNodeMutex.RUnlock()
+	fake.createNodeIfNotExistsMutex.RLock()
+	defer fake.createNodeIfNotExistsMutex.RUnlock()
 	fake.killNodeIfExistsMutex.RLock()
 	defer fake.killNodeIfExistsMutex.RUnlock()
 	return fake.invocations

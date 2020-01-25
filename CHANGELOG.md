@@ -9,10 +9,12 @@ accordance with
 ### Added
 
 - [Support in scope dir as container image](https://github.com/opctl/opctl/issues/498)
+- [Pass thru errors encountered when cli auto daemonizes a node](https://github.com/opctl/opctl/issues/368)
+- [Allow Interpolating Container `workDir`](https://github.com/opctl/opctl/issues/648)
 
 ### Changed
 
-- Make failure to cleanup OPCTL_DATA_DIR on node creation a soft error. 
+- Don't cleanup OPCTL_DATA_DIR on node creation.
 
 ### Fixed
 

@@ -3,9 +3,12 @@ package op
 import (
 	"context"
 	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliModel "github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
@@ -15,6 +18,11 @@ var _ = Context("Killer", func() {
 		It("should call apiClient.Invoke w/ expected args", func() {
 			/* arrange */
 			fakeAPIClient := new(client.Fake)
+			fakeNodeHandle := new(cliModel.FakeNodeHandle)
+			fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+			fakeNodeProvider := new(nodeprovider.Fake)
+			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 			providedCtx := context.TODO()
 
@@ -24,7 +32,7 @@ var _ = Context("Killer", func() {
 			}
 
 			objectUnderTest := _killer{
-				apiClient: fakeAPIClient,
+				nodeProvider: fakeNodeProvider,
 			}
 
 			/* act */
@@ -42,11 +50,17 @@ var _ = Context("Killer", func() {
 				expectedError := errors.New("dummyError")
 				fakeAPIClient.KillOpReturns(expectedError)
 
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 				fakeCliExiter := new(cliexiter.Fake)
 
 				objectUnderTest := _killer{
-					apiClient: fakeAPIClient,
-					cliExiter: fakeCliExiter,
+					cliExiter:    fakeCliExiter,
+					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */

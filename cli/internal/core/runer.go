@@ -14,8 +14,8 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	cliModel "github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 	"github.com/opctl/opctl/sdks/go/opspec/opfile"
 )
 
@@ -30,31 +30,31 @@ type Runer interface {
 
 // newRuner returns an initialized "run" command
 func newRuner(
-	apiClient client.Client,
 	cliColorer clicolorer.CliColorer,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
 	dataResolver dataresolver.DataResolver,
+	nodeProvider nodeprovider.NodeProvider,
 ) Runer {
 	return _runer{
-		apiClient:         apiClient,
 		cliColorer:        cliColorer,
 		cliExiter:         cliExiter,
 		cliOutput:         cliOutput,
 		cliParamSatisfier: cliParamSatisfier,
 		dataResolver:      dataResolver,
+		nodeProvider:      nodeProvider,
 		opFileGetter:      opfile.NewGetter(),
 	}
 }
 
 type _runer struct {
-	apiClient         client.Client
 	dataResolver      dataresolver.DataResolver
 	cliColorer        clicolorer.CliColorer
 	cliExiter         cliexiter.CliExiter
 	cliOutput         clioutput.CliOutput
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
+	nodeProvider      nodeprovider.NodeProvider
 	opFileGetter      opfile.Getter
 }
 
@@ -107,8 +107,14 @@ func (ivkr _runer) Run(
 		syscall.SIGINT, //handle SIGINTs
 	)
 
+	nodeHandle, createNodeIfNotExistsErr := ivkr.nodeProvider.CreateNodeIfNotExists()
+	if nil != createNodeIfNotExistsErr {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: createNodeIfNotExistsErr.Error(), Code: 1})
+		return // support fake exiter
+	}
+
 	// start op
-	rootOpID, err := ivkr.apiClient.StartOp(
+	rootOpID, err := nodeHandle.APIClient().StartOp(
 		ctx,
 		model.StartOpReq{
 			Args: argsMap,
@@ -123,7 +129,7 @@ func (ivkr _runer) Run(
 	}
 
 	// start event loop
-	eventChannel, err := ivkr.apiClient.GetEventStream(
+	eventChannel, err := nodeHandle.APIClient().GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{
 			Filter: model.EventFilter{
@@ -146,7 +152,7 @@ func (ivkr _runer) Run(
 				intSignalsReceived++
 				fmt.Println(ivkr.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
-				ivkr.apiClient.KillOp(
+				nodeHandle.APIClient().KillOp(
 					ctx,
 					model.KillOpReq{
 						OpID: rootOpID,

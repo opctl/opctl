@@ -7,7 +7,7 @@ import (
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ NodeProvider
 
 type NodeProvider interface {
-	ListNodes() (nodes []*model.NodeInfoView, err error)
-	CreateNode() (nodeInfo *model.NodeInfoView, err error)
+	ListNodes() (nodes []model.NodeHandle, err error)
+	CreateNodeIfNotExists() (nodeHandle model.NodeHandle, err error)
 	KillNodeIfExists(nodeId string) (err error)
 }

@@ -4,25 +4,24 @@ import (
 	"context"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
-	"net/url"
 )
 
 // NewNodeProvider returns a pkg provider which sources pkgs from a node
 func (pf _providerFactory) NewNodeProvider(
-	apiBaseURL url.URL,
+	apiClient client.Client,
 	pullCreds *model.PullCreds,
 ) Provider {
 	return nodeProvider{
-		nodeClient: client.New(apiBaseURL, nil),
-		puller:     newPuller(),
-		pullCreds:  pullCreds,
+		apiClient: apiClient,
+		puller:    newPuller(),
+		pullCreds: pullCreds,
 	}
 }
 
 type nodeProvider struct {
-	nodeClient client.Client
-	puller     puller
-	pullCreds  *model.PullCreds
+	apiClient client.Client
+	puller    puller
+	pullCreds *model.PullCreds
 }
 
 func (np nodeProvider) TryResolve(
@@ -31,7 +30,7 @@ func (np nodeProvider) TryResolve(
 ) (model.DataHandle, error) {
 
 	// ensure resolvable by listing contents w/out err
-	if _, err := np.nodeClient.ListDescendants(
+	if _, err := np.apiClient.ListDescendants(
 		ctx,
 		model.ListDescendantsReq{
 			PkgRef:    dataRef,
@@ -41,5 +40,5 @@ func (np nodeProvider) TryResolve(
 		return nil, err
 	}
 
-	return newNodeHandle(np.nodeClient, dataRef, np.pullCreds), nil
+	return newNodeHandle(np.apiClient, dataRef, np.pullCreds), nil
 }

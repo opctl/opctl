@@ -6,10 +6,10 @@ import (
 )
 
 type fakeRefParser struct {
-	ParseStub        func(dataRef string) (*Ref, error)
+	ParseStub        func(string) (*Ref, error)
 	parseMutex       sync.RWMutex
 	parseArgsForCall []struct {
-		dataRef string
+		arg1 string
 	}
 	parseReturns struct {
 		result1 *Ref
@@ -23,21 +23,22 @@ type fakeRefParser struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakeRefParser) Parse(dataRef string) (*Ref, error) {
+func (fake *fakeRefParser) Parse(arg1 string) (*Ref, error) {
 	fake.parseMutex.Lock()
 	ret, specificReturn := fake.parseReturnsOnCall[len(fake.parseArgsForCall)]
 	fake.parseArgsForCall = append(fake.parseArgsForCall, struct {
-		dataRef string
-	}{dataRef})
-	fake.recordInvocation("Parse", []interface{}{dataRef})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Parse", []interface{}{arg1})
 	fake.parseMutex.Unlock()
 	if fake.ParseStub != nil {
-		return fake.ParseStub(dataRef)
+		return fake.ParseStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.parseReturns.result1, fake.parseReturns.result2
+	fakeReturns := fake.parseReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *fakeRefParser) ParseCallCount() int {
@@ -46,13 +47,22 @@ func (fake *fakeRefParser) ParseCallCount() int {
 	return len(fake.parseArgsForCall)
 }
 
+func (fake *fakeRefParser) ParseCalls(stub func(string) (*Ref, error)) {
+	fake.parseMutex.Lock()
+	defer fake.parseMutex.Unlock()
+	fake.ParseStub = stub
+}
+
 func (fake *fakeRefParser) ParseArgsForCall(i int) string {
 	fake.parseMutex.RLock()
 	defer fake.parseMutex.RUnlock()
-	return fake.parseArgsForCall[i].dataRef
+	argsForCall := fake.parseArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *fakeRefParser) ParseReturns(result1 *Ref, result2 error) {
+	fake.parseMutex.Lock()
+	defer fake.parseMutex.Unlock()
 	fake.ParseStub = nil
 	fake.parseReturns = struct {
 		result1 *Ref
@@ -61,6 +71,8 @@ func (fake *fakeRefParser) ParseReturns(result1 *Ref, result2 error) {
 }
 
 func (fake *fakeRefParser) ParseReturnsOnCall(i int, result1 *Ref, result2 error) {
+	fake.parseMutex.Lock()
+	defer fake.parseMutex.Unlock()
 	fake.ParseStub = nil
 	if fake.parseReturnsOnCall == nil {
 		fake.parseReturnsOnCall = make(map[int]struct {

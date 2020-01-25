@@ -22,7 +22,7 @@ func (ctp _containerRuntime) EnsureNetworkExists(
 	}
 
 	if !client.IsErrNotFound(networkInspectErr) {
-		err = fmt.Errorf("unable to inspect network. Response from docker was:\n %v", networkInspectErr.Error())
+		err = fmt.Errorf("unable to inspect network. Response from docker was: %v", networkInspectErr.Error())
 		return
 	}
 
@@ -35,7 +35,7 @@ func (ctp _containerRuntime) EnsureNetworkExists(
 		},
 	)
 	if nil != err {
-		err = fmt.Errorf("unable to create network. Response from docker was:\n %v", err.Error())
+		err = fmt.Errorf("unable to create network. Response from docker was: %v", err.Error())
 	}
 	return
 }
