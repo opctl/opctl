@@ -36,14 +36,17 @@ var _ = Context("listNodes", func() {
 			actualNodes, actualError := objectUnderTest.ListNodes()
 
 			/* assert */
-			Expect(actualNodes).To(BeNil())
+			Expect(actualNodes).To(BeEmpty())
 			Expect(actualError).To(BeNil())
 		})
 	})
 	Context("lockfile.PIdOfOwner != 0", func() {
 		It("should return expected results", func() {
 			/* arrange */
-			expectedNodes := []*model.NodeInfoView{{}}
+			nodeHandle, _ := newNodeHandle()
+			expectedNodes := []model.NodeHandle{
+				nodeHandle,
+			}
 
 			fakeLockFile := new(lockfile.Fake)
 			fakeLockFile.PIdOfOwnerReturns(333)

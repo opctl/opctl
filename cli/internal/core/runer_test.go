@@ -13,6 +13,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	cliModel "github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
@@ -63,7 +64,6 @@ var _ = Context("Runer", func() {
 			objectUnderTest := _runer{
 				opFileGetter:      fakeOpFileGetter,
 				dataResolver:      fakeDataResolver,
-				apiClient:         new(client.Fake),
 				cliExiter:         new(cliexiter.Fake),
 				cliParamSatisfier: new(cliparamsatisfier.Fake),
 			}
@@ -132,20 +132,28 @@ var _ = Context("Runer", func() {
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
+				// stub node provider
 				fakeAPIClient := new(client.Fake)
+
+				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 
 				objectUnderTest := _runer{
 					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
-					apiClient:         fakeAPIClient,
 					cliExiter:         new(cliexiter.Fake),
 					cliParamSatisfier: fakeCliParamSatisfier,
+					nodeProvider:      fakeNodeProvider,
 				}
 
 				/* act */
@@ -156,7 +164,7 @@ var _ = Context("Runer", func() {
 
 				Expect(actualParams).To(Equal(expectedParams))
 			})
-			It("should call apiClient.StartOp w/ expected args", func() {
+			It("should call nodeHandle.APIClient().StartOp w/ expected args", func() {
 				/* arrange */
 				resolvedOpRef := "dummyOpRef"
 
@@ -182,11 +190,19 @@ var _ = Context("Runer", func() {
 				fakeDataResolver := new(dataresolver.Fake)
 				fakeDataResolver.ResolveReturns(fakeOpHandle)
 
-				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
+				// stub node provider
 				fakeAPIClient := new(client.Fake)
+
+				// stub GetEventStream w/ closed channel so test doesn't wait for events indefinitely
 				eventChannel := make(chan model.Event)
 				close(eventChannel)
 				fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
+
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 				fakeCliParamSatisfier := new(cliparamsatisfier.Fake)
 				fakeCliParamSatisfier.SatisfyReturns(expectedArgs.Args)
@@ -194,9 +210,9 @@ var _ = Context("Runer", func() {
 				objectUnderTest := _runer{
 					opFileGetter:      fakeOpFileGetter,
 					dataResolver:      fakeDataResolver,
-					apiClient:         fakeAPIClient,
 					cliExiter:         new(cliexiter.Fake),
 					cliParamSatisfier: fakeCliParamSatisfier,
+					nodeProvider:      fakeNodeProvider,
 				}
 
 				/* act */
@@ -220,15 +236,22 @@ var _ = Context("Runer", func() {
 					fakeDataResolver := new(dataresolver.Fake)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
+					// stub node provider
 					fakeAPIClient := new(client.Fake)
 					fakeAPIClient.StartOpReturns("dummyOpID", returnedError)
+
+					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+					fakeNodeProvider := new(nodeprovider.Fake)
+					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 					objectUnderTest := _runer{
 						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
-						apiClient:         fakeAPIClient,
 						cliExiter:         fakeCliExiter,
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						nodeProvider:      fakeNodeProvider,
 					}
 
 					/* act */
@@ -240,7 +263,7 @@ var _ = Context("Runer", func() {
 				})
 			})
 			Context("apiClient.StartOp doesn't error", func() {
-				It("should call apiClient.GetEventStream w/ expected args", func() {
+				It("should call nodeHandle.APIClient().GetEventStream w/ expected args", func() {
 					/* arrange */
 					providedCtx := context.Background()
 					rootOpIDReturnedFromStartOp := "dummyRootOpID"
@@ -259,8 +282,16 @@ var _ = Context("Runer", func() {
 					fakeDataResolver := new(dataresolver.Fake)
 					fakeDataResolver.ResolveReturns(fakeOpHandle)
 
+					// stub node provider
 					fakeAPIClient := new(client.Fake)
 					fakeAPIClient.StartOpReturns(rootOpIDReturnedFromStartOp, nil)
+
+					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+					fakeNodeProvider := new(nodeprovider.Fake)
+					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
@@ -268,9 +299,9 @@ var _ = Context("Runer", func() {
 					objectUnderTest := _runer{
 						opFileGetter:      fakeOpFileGetter,
 						dataResolver:      fakeDataResolver,
-						apiClient:         fakeAPIClient,
 						cliExiter:         new(cliexiter.Fake),
 						cliParamSatisfier: new(cliparamsatisfier.Fake),
+						nodeProvider:      fakeNodeProvider,
 					}
 
 					/* act */
@@ -304,12 +335,18 @@ var _ = Context("Runer", func() {
 						fakeAPIClient := new(client.Fake)
 						fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
+						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+						fakeNodeProvider := new(nodeprovider.Fake)
+						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 						objectUnderTest := _runer{
 							opFileGetter:      fakeOpFileGetter,
 							dataResolver:      fakeDataResolver,
-							apiClient:         fakeAPIClient,
 							cliExiter:         fakeCliExiter,
 							cliParamSatisfier: new(cliparamsatisfier.Fake),
+							nodeProvider:      fakeNodeProvider,
 						}
 
 						/* act */
@@ -338,12 +375,18 @@ var _ = Context("Runer", func() {
 							close(eventChannel)
 							fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
+							fakeNodeHandle := new(cliModel.FakeNodeHandle)
+							fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+							fakeNodeProvider := new(nodeprovider.Fake)
+							fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 							objectUnderTest := _runer{
 								opFileGetter:      fakeOpFileGetter,
 								dataResolver:      fakeDataResolver,
-								apiClient:         fakeAPIClient,
 								cliExiter:         fakeCliExiter,
 								cliParamSatisfier: new(cliparamsatisfier.Fake),
+								nodeProvider:      fakeNodeProvider,
 							}
 
 							/* act */
@@ -387,14 +430,20 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
+										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+										fakeNodeProvider := new(nodeprovider.Fake)
+										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 										objectUnderTest := _runer{
 											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											apiClient:         fakeAPIClient,
 											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutput.Fake),
 											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
@@ -432,14 +481,20 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
+										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+										fakeNodeProvider := new(nodeprovider.Fake)
+										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 										objectUnderTest := _runer{
 											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											apiClient:         fakeAPIClient,
 											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutput.Fake),
 											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
@@ -478,14 +533,20 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
+										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+										fakeNodeProvider := new(nodeprovider.Fake)
+										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 										objectUnderTest := _runer{
 											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											apiClient:         fakeAPIClient,
 											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutput.Fake),
 											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */
@@ -523,14 +584,20 @@ var _ = Context("Runer", func() {
 										fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 										fakeAPIClient.StartOpReturns(opEndedEvent.OpEnded.RootOpID, nil)
 
+										fakeNodeHandle := new(cliModel.FakeNodeHandle)
+										fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+										fakeNodeProvider := new(nodeprovider.Fake)
+										fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 										objectUnderTest := _runer{
 											opFileGetter:      fakeOpFileGetter,
 											dataResolver:      fakeDataResolver,
 											cliColorer:        clicolorer.New(),
-											apiClient:         fakeAPIClient,
 											cliExiter:         fakeCliExiter,
 											cliOutput:         new(clioutput.Fake),
 											cliParamSatisfier: new(cliparamsatisfier.Fake),
+											nodeProvider:      fakeNodeProvider,
 										}
 
 										/* act/assert */

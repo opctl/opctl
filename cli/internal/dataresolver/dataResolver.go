@@ -5,12 +5,11 @@ package dataresolver
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/golang-interfaces/ios"
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
 )
@@ -26,35 +25,29 @@ type DataResolver interface {
 func New(
 	cliExiter cliexiter.CliExiter,
 	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier,
-	nodeURL url.URL,
+	nodeProvider nodeprovider.NodeProvider,
 ) DataResolver {
 	return _dataResolver{
-		apiReachabilityEnsurer: apireachabilityensurer.New(cliExiter),
-		cliExiter:              cliExiter,
-		cliParamSatisfier:      cliParamSatisfier,
-		data:                   data.New(),
-		nodeURL:                nodeURL,
-		os:                     ios.New(),
+		cliExiter:         cliExiter,
+		cliParamSatisfier: cliParamSatisfier,
+		data:              data.New(),
+		nodeProvider:      nodeProvider,
+		os:                ios.New(),
 	}
 }
 
 type _dataResolver struct {
-	cliExiter              cliexiter.CliExiter
-	cliParamSatisfier      cliparamsatisfier.CLIParamSatisfier
-	data                   data.Data
-	nodeURL                url.URL
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer
-	os                     ios.IOS
+	cliExiter         cliexiter.CliExiter
+	cliParamSatisfier cliparamsatisfier.CLIParamSatisfier
+	data              data.Data
+	nodeProvider      nodeprovider.NodeProvider
+	os                ios.IOS
 }
 
 func (dtr _dataResolver) Resolve(
 	dataRef string,
 	pullCreds *model.PullCreds,
 ) model.DataHandle {
-
-	// ensure node reachable
-	dtr.apiReachabilityEnsurer.Ensure()
-
 	cwd, err := dtr.os.Getwd()
 	if nil != err {
 		dtr.cliExiter.Exit(cliexiter.ExitReq{Message: err.Error(), Code: 1})
@@ -63,13 +56,19 @@ func (dtr _dataResolver) Resolve(
 
 	fsProvider := dtr.data.NewFSProvider(cwd)
 
+	nodeHandle, createNodeIfNotExistsErr := dtr.nodeProvider.CreateNodeIfNotExists()
+	if nil != createNodeIfNotExistsErr {
+		dtr.cliExiter.Exit(cliexiter.ExitReq{Message: createNodeIfNotExistsErr.Error(), Code: 1})
+		return nil // support fake exiter
+	}
+
 	for {
 		opDirHandle, err := dtr.data.Resolve(
 			context.TODO(),
 			dataRef,
 			fsProvider,
 			dtr.data.NewNodeProvider(
-				dtr.nodeURL,
+				nodeHandle.APIClient(),
 				pullCreds,
 			),
 		)

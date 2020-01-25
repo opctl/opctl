@@ -6,28 +6,35 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	cliModel "github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 var _ = Context("Eventser", func() {
 	Context("Events", func() {
-		It("should call client.GetEventStream w/ expected args", func() {
+		It("should call nodeHandle.APIClient().GetEventStream w/ expected args", func() {
 			/* arrange */
 			providedCtx := context.Background()
-			fakeCliExiter := new(cliexiter.Fake)
 
 			fakeAPIClient := new(client.Fake)
+			fakeNodeHandle := new(cliModel.FakeNodeHandle)
+			fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+			fakeNodeProvider := new(nodeprovider.Fake)
+			fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
+			fakeCliExiter := new(cliexiter.Fake)
+
 			eventChannel := make(chan model.Event)
 			close(eventChannel)
 			fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 			objectUnderTest := _eventser{
-				apiClient:              fakeAPIClient,
-				cliExiter:              fakeCliExiter,
-				apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
+				cliExiter:    fakeCliExiter,
+				nodeProvider: fakeNodeProvider,
 			}
 
 			/* act */
@@ -50,12 +57,17 @@ var _ = Context("Eventser", func() {
 				returnedError := errors.New("dummyError")
 
 				fakeAPIClient := new(client.Fake)
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 				fakeAPIClient.GetEventStreamReturns(nil, returnedError)
 
 				objectUnderTest := _eventser{
-					apiClient:              fakeAPIClient,
-					cliExiter:              fakeCliExiter,
-					apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
+					cliExiter:    fakeCliExiter,
+					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
@@ -75,14 +87,18 @@ var _ = Context("Eventser", func() {
 					fakeCliExiter := new(cliexiter.Fake)
 
 					fakeAPIClient := new(client.Fake)
+					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+					fakeNodeProvider := new(nodeprovider.Fake)
+					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 					eventChannel := make(chan model.Event)
 					close(eventChannel)
 					fakeAPIClient.GetEventStreamReturns(eventChannel, nil)
 
 					objectUnderTest := _eventser{
-						apiClient:              fakeAPIClient,
-						cliExiter:              fakeCliExiter,
-						apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
+						cliExiter:    fakeCliExiter,
+						nodeProvider: fakeNodeProvider,
 					}
 
 					/* act */

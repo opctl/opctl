@@ -3,11 +3,10 @@ package core
 import (
 	"context"
 
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 // Eventser exposes the "events" command
@@ -19,33 +18,33 @@ type Eventser interface {
 
 // newEventser returns an initialized "events" command
 func newEventser(
-	apiClient client.Client,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
+	nodeProvider nodeprovider.NodeProvider,
 ) Eventser {
 	return _eventser{
-		apiClient:              apiClient,
-		apiReachabilityEnsurer: apireachabilityensurer.New(cliExiter),
-		cliExiter:              cliExiter,
-		cliOutput:              cliOutput,
+		cliExiter:    cliExiter,
+		cliOutput:    cliOutput,
+		nodeProvider: nodeProvider,
 	}
 }
 
 type _eventser struct {
-	apiClient              client.Client
-	apiReachabilityEnsurer apireachabilityensurer.APIReachabilityEnsurer
-	cliExiter              cliexiter.CliExiter
-	cliOutput              clioutput.CliOutput
+	cliExiter    cliexiter.CliExiter
+	cliOutput    clioutput.CliOutput
+	nodeProvider nodeprovider.NodeProvider
 }
 
 func (ivkr _eventser) Events(
 	ctx context.Context,
 ) {
+	nodeHandle, createNodeIfNotExistsErr := ivkr.nodeProvider.CreateNodeIfNotExists()
+	if nil != createNodeIfNotExistsErr {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: createNodeIfNotExistsErr.Error(), Code: 1})
+		return // support fake exiter
+	}
 
-	// ensure node reachable
-	ivkr.apiReachabilityEnsurer.Ensure()
-
-	eventChannel, err := ivkr.apiClient.GetEventStream(
+	eventChannel, err := nodeHandle.APIClient().GetEventStream(
 		ctx,
 		&model.GetEventStreamReq{},
 	)
@@ -55,7 +54,6 @@ func (ivkr _eventser) Events(
 	}
 
 	for {
-
 		event, isEventChannelOpen := <-eventChannel
 		if !isEventChannelOpen {
 			ivkr.cliExiter.Exit(

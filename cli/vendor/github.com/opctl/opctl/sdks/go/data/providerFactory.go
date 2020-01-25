@@ -5,7 +5,7 @@ package data
 import (
 	"context"
 	"github.com/opctl/opctl/sdks/go/model"
-	"net/url"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 // Provider is the interface for something that provides pkgs
@@ -36,7 +36,7 @@ type providerFactory interface {
 
 	// NewNodeProvider returns a pkg provider which sources pkgs from a node
 	NewNodeProvider(
-		apiBaseURL url.URL,
+		apiClient client.Client,
 		pullCreds *model.PullCreds,
 	) Provider
 }

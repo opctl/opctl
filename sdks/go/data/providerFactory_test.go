@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/model"
-	"net/url"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 var _ = Context("providerFactory", func() {
@@ -55,17 +55,15 @@ var _ = Context("providerFactory", func() {
 	Context("NewNodeProvider", func() {
 		It("should return nodeProvider", func() {
 			/* arrange */
-			providedAPIBaseURL, err := url.Parse("dummyAPIBaseURL")
-			if nil != err {
-				panic(err)
-			}
+			fakeAPIClient := new(client.Fake)
+			providedPullCreds := &model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"}
 
 			objectUnderTest := _providerFactory{}
 
 			/* act */
 			actualProvider := objectUnderTest.NewNodeProvider(
-				*providedAPIBaseURL,
-				&model.PullCreds{Username: "dummyUsername", Password: "dummyPassword"},
+				fakeAPIClient,
+				providedPullCreds,
 			)
 
 			/* assert */
@@ -73,7 +71,11 @@ var _ = Context("providerFactory", func() {
 			if _, ok := actualProvider.(nodeProvider); !ok {
 				Fail("actualProvider wrong type")
 			}
-			Expect(actualProvider).NotTo(BeNil())
+			Expect(actualProvider).To(Equal(nodeProvider{
+				apiClient: fakeAPIClient,
+				puller:    newPuller(),
+				pullCreds: providedPullCreds,
+			}))
 		})
 	})
 })

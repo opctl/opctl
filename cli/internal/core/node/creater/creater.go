@@ -4,13 +4,8 @@ package creater
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path"
-	"path/filepath"
 
-	"github.com/appdataspec/sdk-golang/appdatapath"
-	"github.com/golang-utils/lockfile"
+	"github.com/opctl/opctl/cli/internal/datadir"
 	"github.com/opctl/opctl/cli/internal/model"
 	"github.com/opctl/opctl/sdks/go/node/core"
 	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker"
@@ -29,26 +24,33 @@ func New() Creater {
 	return _creater{}
 }
 
+// recordErrorAndPanic records errors encountered creating the node to the data dir in order to enable
+// access them across process boundaries such as when it's daemonized.
+func recordErrorAndPanic(
+	dataDir datadir.DataDir,
+	err error,
+) {
+	dataDir.RecordNodeCreateError(err)
+	panic(err)
+}
+
 type _creater struct{}
 
 func (ivkr _creater) Create(
 	opts model.NodeCreateOpts,
 ) {
-	dataDirPath, err := dataDirPath(opts)
+	dataDir, err := datadir.New(opts.DataDir)
 	if nil != err {
 		panic(err)
 	}
 
-	dcgDataDirPath := dcgDataDirPath(dataDirPath)
-
-	ivkr.initDataDir(
-		dataDirPath,
-		dcgDataDirPath,
-	)
+	if err := dataDir.InitAndLock(); nil != err {
+		recordErrorAndPanic(dataDir, err)
+	}
 
 	containerRuntime, err := docker.New()
 	if nil != err {
-		panic(err)
+		recordErrorAndPanic(dataDir, err)
 	}
 
 	ctx := context.Background()
@@ -56,101 +58,27 @@ func (ivkr _creater) Create(
 	defer cancel()
 
 	httpErrChannel :=
-		newHTTPListener(core.New(
-			pubsub.New(pubsub.NewBadgerDBEventStore(eventDbPath(dcgDataDirPath))),
-			containerRuntime,
-			dataDirPath,
-		)).
+		newHTTPListener(
+			core.New(
+				pubsub.New(
+					pubsub.NewBadgerDBEventStore(
+						dataDir.EventDBPath(),
+					),
+				),
+				containerRuntime,
+				dataDir.Path(),
+			),
+		).
 			Listen(ctx)
+
+	err = dataDir.ClearNodeCreateErrorIfExists()
+	if nil != err {
+		recordErrorAndPanic(dataDir, err)
+	}
 
 	select {
 	case httpErr := <-httpErrChannel:
-		panic(httpErr)
+		recordErrorAndPanic(dataDir, httpErr)
 	}
 
-}
-
-func (ivkr _creater) initDataDir(
-	dataDirPath,
-	dcgDataDirPath string,
-) {
-
-	lockFile := lockfile.New()
-	// ensure we're the only node around these parts
-	if err := lockFile.Lock(lockFilePath(dataDirPath)); nil != err {
-		pIDOfExistingNode := lockFile.PIdOfOwner(lockFilePath(dataDirPath))
-		panic(fmt.Errorf("node already running w/ PId: %v", pIDOfExistingNode))
-	}
-
-	// cleanup [legacy] op cache (if it exists)
-	legacyOpCachePath := filepath.Join(dataDirPath, "pkgs")
-	if err := os.RemoveAll(legacyOpCachePath); nil != err {
-		// don't hard error on cleanup failure
-		fmt.Printf("unable to cleanup op cache at path: %v\n; error was %v\n", legacyOpCachePath, err)
-	}
-
-	// cleanup op cache
-	opCachePath := filepath.Join(dataDirPath, "ops")
-	if err := os.RemoveAll(opCachePath); nil != err {
-		// don't hard error on cleanup failure
-		fmt.Printf("unable to cleanup op cache at path: %v\n; error was %v\n", opCachePath, err)
-	}
-
-	// cleanup existing DCG (dynamic call graph) data
-	if err := os.RemoveAll(dcgDataDirPath); nil != err {
-		// don't hard error on cleanup failure
-		fmt.Printf("unable to cleanup DCG (dynamic call graph) data at path: %v\nerror was %v\n", dcgDataDirPath, err)
-	}
-
-	if err := os.MkdirAll(dataDirPath, 0775|os.ModeSetgid); nil != err {
-		panic(fmt.Errorf("unable to create OPCTL_DATA_DIR at path: %v; error was %v", dcgDataDirPath, err))
-	}
-
-	if err := os.Chmod(dataDirPath, 0775|os.ModeSetgid); nil != err {
-		panic(fmt.Errorf("unable to setgid of OPCTL_DATA_DIR at path: %v; error was %v", dcgDataDirPath, err))
-	}
-}
-
-// dataDirPath returns path of dir used to store node data
-func dataDirPath(
-	opts model.NodeCreateOpts,
-) (string, error) {
-	if nil != opts.DataDir {
-		return filepath.Abs(*opts.DataDir)
-	}
-
-	if dataDirEnvVar, ok := os.LookupEnv("OPCTL_DATA_DIR"); ok {
-		return filepath.Abs(dataDirEnvVar)
-	}
-
-	perUserAppDataPath, err := appdatapath.New().PerUser()
-	if nil != err {
-		return "", err
-	}
-
-	return path.Join(
-		perUserAppDataPath,
-		"opctl",
-	), nil
-}
-
-func dcgDataDirPath(rootFSPath string) string {
-	return path.Join(
-		rootFSPath,
-		"dcg",
-	)
-}
-
-func eventDbPath(dcgDataDirPath string) string {
-	return path.Join(
-		dcgDataDirPath,
-		"event.db",
-	)
-}
-
-func lockFilePath(rootFSPath string) string {
-	return path.Join(
-		rootFSPath,
-		"pid.lock",
-	)
 }

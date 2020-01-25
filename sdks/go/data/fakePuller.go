@@ -9,13 +9,13 @@ import (
 )
 
 type fakePuller struct {
-	PullStub        func(ctx context.Context, path string, dataRef string, pullCreds *model.PullCreds) error
+	PullStub        func(context.Context, string, string, *model.PullCreds) error
 	pullMutex       sync.RWMutex
 	pullArgsForCall []struct {
-		ctx       context.Context
-		path      string
-		dataRef   string
-		pullCreds *model.PullCreds
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 *model.PullCreds
 	}
 	pullReturns struct {
 		result1 error
@@ -27,24 +27,25 @@ type fakePuller struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *fakePuller) Pull(ctx context.Context, path string, dataRef string, pullCreds *model.PullCreds) error {
+func (fake *fakePuller) Pull(arg1 context.Context, arg2 string, arg3 string, arg4 *model.PullCreds) error {
 	fake.pullMutex.Lock()
 	ret, specificReturn := fake.pullReturnsOnCall[len(fake.pullArgsForCall)]
 	fake.pullArgsForCall = append(fake.pullArgsForCall, struct {
-		ctx       context.Context
-		path      string
-		dataRef   string
-		pullCreds *model.PullCreds
-	}{ctx, path, dataRef, pullCreds})
-	fake.recordInvocation("Pull", []interface{}{ctx, path, dataRef, pullCreds})
+		arg1 context.Context
+		arg2 string
+		arg3 string
+		arg4 *model.PullCreds
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("Pull", []interface{}{arg1, arg2, arg3, arg4})
 	fake.pullMutex.Unlock()
 	if fake.PullStub != nil {
-		return fake.PullStub(ctx, path, dataRef, pullCreds)
+		return fake.PullStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.pullReturns.result1
+	fakeReturns := fake.pullReturns
+	return fakeReturns.result1
 }
 
 func (fake *fakePuller) PullCallCount() int {
@@ -53,13 +54,22 @@ func (fake *fakePuller) PullCallCount() int {
 	return len(fake.pullArgsForCall)
 }
 
+func (fake *fakePuller) PullCalls(stub func(context.Context, string, string, *model.PullCreds) error) {
+	fake.pullMutex.Lock()
+	defer fake.pullMutex.Unlock()
+	fake.PullStub = stub
+}
+
 func (fake *fakePuller) PullArgsForCall(i int) (context.Context, string, string, *model.PullCreds) {
 	fake.pullMutex.RLock()
 	defer fake.pullMutex.RUnlock()
-	return fake.pullArgsForCall[i].ctx, fake.pullArgsForCall[i].path, fake.pullArgsForCall[i].dataRef, fake.pullArgsForCall[i].pullCreds
+	argsForCall := fake.pullArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *fakePuller) PullReturns(result1 error) {
+	fake.pullMutex.Lock()
+	defer fake.pullMutex.Unlock()
 	fake.PullStub = nil
 	fake.pullReturns = struct {
 		result1 error
@@ -67,6 +77,8 @@ func (fake *fakePuller) PullReturns(result1 error) {
 }
 
 func (fake *fakePuller) PullReturnsOnCall(i int, result1 error) {
+	fake.pullMutex.Lock()
+	defer fake.pullMutex.Unlock()
 	fake.PullStub = nil
 	if fake.pullReturnsOnCall == nil {
 		fake.pullReturnsOnCall = make(map[int]struct {

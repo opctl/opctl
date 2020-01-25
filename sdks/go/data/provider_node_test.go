@@ -10,13 +10,13 @@ import (
 	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
-var _ = Context("fsProvider", func() {
+var _ = Context("nodeProvider", func() {
 	Context("TryResolve", func() {
-		It("should call nodeClient.ListDescendants w/ expected args", func() {
+		It("should call apiClient.ListDescendants w/ expected args", func() {
 			/* arrange */
 			providedDataRef := "dummyDataRef"
 
-			fakeNodeClient := new(client.Fake)
+			fakeAPIClient := new(client.Fake)
 
 			providedPullCreds := &model.PullCreds{
 				Username: "dummyUsername",
@@ -24,8 +24,8 @@ var _ = Context("fsProvider", func() {
 			}
 
 			objectUnderTest := nodeProvider{
-				nodeClient: fakeNodeClient,
-				pullCreds:  providedPullCreds,
+				apiClient: fakeAPIClient,
+				pullCreds: providedPullCreds,
 			}
 
 			/* act */
@@ -36,7 +36,7 @@ var _ = Context("fsProvider", func() {
 
 			/* assert */
 			actualContext,
-				actualReq := fakeNodeClient.ListDescendantsArgsForCall(0)
+				actualReq := fakeAPIClient.ListDescendantsArgsForCall(0)
 
 			Expect(actualContext).To(Equal(context.TODO()))
 			Expect(actualReq).To(Equal(model.ListDescendantsReq{
@@ -44,16 +44,16 @@ var _ = Context("fsProvider", func() {
 				PullCreds: providedPullCreds,
 			}))
 		})
-		Context("nodeClient.ListDirEntryd errs", func() {
+		Context("apiClient.ListDirEntryd errs", func() {
 			It("should return expected result", func() {
 				/* arrange */
-				fakeNodeClient := new(client.Fake)
+				fakeAPIClient := new(client.Fake)
 
 				listDirEntrysErr := errors.New("dummyError")
-				fakeNodeClient.ListDescendantsReturns(nil, listDirEntrysErr)
+				fakeAPIClient.ListDescendantsReturns(nil, listDirEntrysErr)
 
 				objectUnderTest := nodeProvider{
-					nodeClient: fakeNodeClient,
+					apiClient: fakeAPIClient,
 				}
 
 				/* act */
@@ -66,12 +66,12 @@ var _ = Context("fsProvider", func() {
 				Expect(actualErr).To(Equal(listDirEntrysErr))
 			})
 		})
-		Context("nodeClient.ListDescendants doesn't err", func() {
+		Context("apiClient.ListDescendants doesn't err", func() {
 			It("should return expected result", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
-				fakeNodeClient := new(client.Fake)
+				fakeAPIClient := new(client.Fake)
 
 				providedPullCreds := &model.PullCreds{
 					Username: "dummyUsername",
@@ -81,9 +81,9 @@ var _ = Context("fsProvider", func() {
 				fakePuller := new(fakePuller)
 
 				objectUnderTest := nodeProvider{
-					nodeClient: fakeNodeClient,
-					pullCreds:  providedPullCreds,
-					puller:     fakePuller,
+					apiClient: fakeAPIClient,
+					pullCreds: providedPullCreds,
+					puller:    fakePuller,
 				}
 
 				/* act */
@@ -93,7 +93,7 @@ var _ = Context("fsProvider", func() {
 				)
 
 				/* assert */
-				Expect(actualHandle).To(Equal(newNodeHandle(fakeNodeClient, providedDataRef, providedPullCreds)))
+				Expect(actualHandle).To(Equal(newNodeHandle(fakeAPIClient, providedDataRef, providedPullCreds)))
 				Expect(actualErr).To(BeNil())
 			})
 		})

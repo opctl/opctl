@@ -3,39 +3,21 @@ package dataresolver
 import (
 	"errors"
 	"fmt"
+
 	"github.com/golang-interfaces/ios"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/opctl/opctl/cli/internal/apireachabilityensurer"
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
+	cliModel "github.com/opctl/opctl/cli/internal/model"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/data"
 	"github.com/opctl/opctl/sdks/go/model"
-	"net/url"
+	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 var _ = Context("dataResolver", func() {
 	Context("Resolve", func() {
-		It("should call apiReachabilityEnsurer.Ensure", func() {
-			/* arrange */
-			fakeAPIReachabilityEnsurer := new(apireachabilityensurer.Fake)
-
-			fakeIOS := new(ios.Fake)
-			// err to trigger immediate return
-			fakeIOS.GetwdReturns("", errors.New("dummyError"))
-
-			objectUnderTest := _dataResolver{
-				cliExiter:              new(cliexiter.Fake),
-				apiReachabilityEnsurer: fakeAPIReachabilityEnsurer,
-				os: fakeIOS,
-			}
-
-			/* act */
-			objectUnderTest.Resolve("dummyDataRef", &model.PullCreds{})
-
-			/* assert */
-			Expect(fakeAPIReachabilityEnsurer.EnsureCallCount()).To(Equal(1))
-		})
 		Context("os.Getwd errs", func() {
 			It("should call exiter w/ expected args", func() {
 				/* arrange */
@@ -48,7 +30,6 @@ var _ = Context("dataResolver", func() {
 				objectUnderTest := _dataResolver{
 					cliExiter: fakeCliExiter,
 					os:        fakeIOS,
-					apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
 				}
 
 				/* act */
@@ -65,22 +46,26 @@ var _ = Context("dataResolver", func() {
 		Context("os.Getwd doesn't err", func() {
 			It("should call data.NewFSProvider w/ expected args", func() {
 				/* arrange */
-				fakeData := new(data.Fake)
-				fakeFSProvider := new(data.FakeProvider)
-				fakeData.NewFSProviderReturns(fakeFSProvider)
+				fakeAPIClient := new(client.Fake)
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
 
-				// error to trigger immediate return
-				fakeData.ResolveReturns(nil, errors.New("dummyError"))
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, errors.New("dummyError"))
+
+				fakeData := new(data.Fake)
+				fakeFSDataProvider := new(data.FakeProvider)
+				fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
 				fakeIOS := new(ios.Fake)
 				workDir := "dummyWorkDir"
 				fakeIOS.GetwdReturns(workDir, nil)
 
 				objectUnderTest := _dataResolver{
-					data:                   fakeData,
-					cliExiter:              new(cliexiter.Fake),
-					apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-					os: fakeIOS,
+					data:         fakeData,
+					cliExiter:    new(cliexiter.Fake),
+					os:           fakeIOS,
+					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
@@ -96,21 +81,25 @@ var _ = Context("dataResolver", func() {
 					Password: "dummyPassword",
 				}
 
+				fakeAPIClient := new(client.Fake)
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 				fakeData := new(data.Fake)
-				fakeNodeProvider := new(data.FakeProvider)
-				fakeData.NewNodeProviderReturns(fakeNodeProvider)
+				fakeNodeDataProvider := new(data.FakeProvider)
+				fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 				// err to trigger immediate return
 				fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
-				nodeURL := url.URL{Path: "dummyNodeURL"}
-
 				objectUnderTest := _dataResolver{
-					data:                   fakeData,
-					cliExiter:              new(cliexiter.Fake),
-					apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-					nodeURL:                nodeURL,
-					os:                     new(ios.Fake),
+					data:         fakeData,
+					cliExiter:    new(cliexiter.Fake),
+					os:           new(ios.Fake),
+					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
@@ -120,31 +109,38 @@ var _ = Context("dataResolver", func() {
 				)
 
 				/* assert */
-				actualNodeURL,
+				actualAPIClient,
 					actualPullCreds := fakeData.NewNodeProviderArgsForCall(0)
-				Expect(actualNodeURL).To(Equal(nodeURL))
+				Expect(actualAPIClient).To(Equal(fakeAPIClient))
 				Expect(actualPullCreds).To(Equal(providedPullCreds))
 			})
 			It("should call data.Resolve w/ expected args", func() {
 				/* arrange */
 				providedDataRef := "dummyDataRef"
 
+				fakeAPIClient := new(client.Fake)
+				fakeNodeHandle := new(cliModel.FakeNodeHandle)
+				fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+				fakeNodeProvider := new(nodeprovider.Fake)
+				fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 				fakeData := new(data.Fake)
 
-				fakeFSProvider := new(data.FakeProvider)
-				fakeData.NewFSProviderReturns(fakeFSProvider)
+				fakeFSDataProvider := new(data.FakeProvider)
+				fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
-				fakeNodeProvider := new(data.FakeProvider)
-				fakeData.NewNodeProviderReturns(fakeNodeProvider)
+				fakeNodeDataProvider := new(data.FakeProvider)
+				fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 				// err to trigger immediate return
 				fakeData.ResolveReturns(nil, errors.New("dummyError"))
 
 				objectUnderTest := _dataResolver{
-					data:                   fakeData,
-					cliExiter:              new(cliexiter.Fake),
-					apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-					os: new(ios.Fake),
+					data:         fakeData,
+					cliExiter:    new(cliexiter.Fake),
+					os:           new(ios.Fake),
+					nodeProvider: fakeNodeProvider,
 				}
 
 				/* act */
@@ -159,12 +155,19 @@ var _ = Context("dataResolver", func() {
 					actualProviders := fakeData.ResolveArgsForCall(0)
 
 				Expect(actualDataRef).To(Equal(providedDataRef))
-				Expect(actualProviders).To(ConsistOf(fakeFSProvider, fakeNodeProvider))
+				Expect(actualProviders).To(ConsistOf(fakeFSDataProvider, fakeNodeDataProvider))
 			})
 			Context("data.Resolve errs", func() {
 				Context("data.ErrDataProviderAuthorization", func() {
 					It("should call cliParamSatisfier.Satisfy w/ expected args", func() {
 						/* arrange */
+						fakeAPIClient := new(client.Fake)
+						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+						fakeNodeProvider := new(nodeprovider.Fake)
+						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 						fakeData := new(data.Fake)
 						expectedError := model.ErrDataProviderAuthorization{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
@@ -181,11 +184,11 @@ var _ = Context("dataResolver", func() {
 						)
 
 						objectUnderTest := _dataResolver{
-							data:                   fakeData,
-							cliParamSatisfier:      fakeCliParamSatisfier,
-							cliExiter:              new(cliexiter.Fake),
-							apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-							os: new(ios.Fake),
+							data:              fakeData,
+							cliParamSatisfier: fakeCliParamSatisfier,
+							cliExiter:         new(cliexiter.Fake),
+							os:                new(ios.Fake),
+							nodeProvider:      fakeNodeProvider,
 						}
 
 						/* act */
@@ -197,9 +200,16 @@ var _ = Context("dataResolver", func() {
 					})
 					It("should call data.NewNodeProvider w/ expected args", func() {
 						/* arrange */
+						fakeAPIClient := new(client.Fake)
+						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+						fakeNodeProvider := new(nodeprovider.Fake)
+						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 						fakeData := new(data.Fake)
-						fakeNodeProvider := new(data.FakeProvider)
-						fakeData.NewNodeProviderReturns(fakeNodeProvider)
+						fakeNodeDataProvider := new(data.FakeProvider)
+						fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 						expectedError := model.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
@@ -217,15 +227,12 @@ var _ = Context("dataResolver", func() {
 							},
 						)
 
-						nodeURL := url.URL{Path: "dummyPath"}
-
 						objectUnderTest := _dataResolver{
-							data:                   fakeData,
-							cliParamSatisfier:      fakeCliParamSatisfier,
-							cliExiter:              new(cliexiter.Fake),
-							apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-							nodeURL:                nodeURL,
-							os:                     new(ios.Fake),
+							data:              fakeData,
+							cliParamSatisfier: fakeCliParamSatisfier,
+							cliExiter:         new(cliexiter.Fake),
+							os:                new(ios.Fake),
+							nodeProvider:      fakeNodeProvider,
 						}
 
 						/* act */
@@ -235,22 +242,29 @@ var _ = Context("dataResolver", func() {
 						)
 
 						/* assert */
-						actualNodeURL,
+						actualAPIClient,
 							actualPullCreds := fakeData.NewNodeProviderArgsForCall(1)
-						Expect(actualNodeURL).To(Equal(nodeURL))
+						Expect(actualAPIClient).To(Equal(fakeAPIClient))
 						Expect(actualPullCreds).To(Equal(pullCreds))
 					})
 					It("should call data.Resolve w/ expected args", func() {
 						/* arrange */
 						providedDataRef := "dummyDataRef"
 
+						fakeAPIClient := new(client.Fake)
+						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+						fakeNodeProvider := new(nodeprovider.Fake)
+						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 						fakeData := new(data.Fake)
 
-						fakeFSProvider := new(data.FakeProvider)
-						fakeData.NewFSProviderReturns(fakeFSProvider)
+						fakeFSDataProvider := new(data.FakeProvider)
+						fakeData.NewFSProviderReturns(fakeFSDataProvider)
 
-						fakeNodeProvider := new(data.FakeProvider)
-						fakeData.NewNodeProviderReturns(fakeNodeProvider)
+						fakeNodeDataProvider := new(data.FakeProvider)
+						fakeData.NewNodeProviderReturns(fakeNodeDataProvider)
 
 						expectedError := model.ErrDataProviderAuthentication{}
 						fakeData.ResolveReturnsOnCall(0, nil, expectedError)
@@ -264,11 +278,11 @@ var _ = Context("dataResolver", func() {
 						)
 
 						objectUnderTest := _dataResolver{
-							data:                   fakeData,
-							cliParamSatisfier:      fakeCliParamSatisfier,
-							cliExiter:              new(cliexiter.Fake),
-							apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-							os: new(ios.Fake),
+							data:              fakeData,
+							cliParamSatisfier: fakeCliParamSatisfier,
+							cliExiter:         new(cliexiter.Fake),
+							os:                new(ios.Fake),
+							nodeProvider:      fakeNodeProvider,
 						}
 
 						/* act */
@@ -283,13 +297,20 @@ var _ = Context("dataResolver", func() {
 							actualProviders := fakeData.ResolveArgsForCall(1)
 
 						Expect(actualDataRef).To(Equal(providedDataRef))
-						Expect(actualProviders).To(ConsistOf(fakeFSProvider, fakeNodeProvider))
+						Expect(actualProviders).To(ConsistOf(fakeFSDataProvider, fakeNodeDataProvider))
 					})
 				})
 				Context("not data.ErrAuthenticationFailed", func() {
 					It("should call exiter w/ expected args", func() {
 						/* arrange */
 						providedDataRef := "dummyDataRef"
+
+						fakeAPIClient := new(client.Fake)
+						fakeNodeHandle := new(cliModel.FakeNodeHandle)
+						fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+						fakeNodeProvider := new(nodeprovider.Fake)
+						fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
 
 						fakeData := new(data.Fake)
 						resolveError := errors.New("dummyError")
@@ -304,10 +325,10 @@ var _ = Context("dataResolver", func() {
 						fakeCliExiter := new(cliexiter.Fake)
 
 						objectUnderTest := _dataResolver{
-							data:                   fakeData,
-							cliExiter:              fakeCliExiter,
-							apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-							os: new(ios.Fake),
+							data:         fakeData,
+							cliExiter:    fakeCliExiter,
+							os:           new(ios.Fake),
+							nodeProvider: fakeNodeProvider,
 						}
 
 						/* act */
@@ -323,6 +344,13 @@ var _ = Context("dataResolver", func() {
 			Context("data.Resolve doesn't err", func() {
 				It("should return expected result", func() {
 					/* arrange */
+					fakeAPIClient := new(client.Fake)
+					fakeNodeHandle := new(cliModel.FakeNodeHandle)
+					fakeNodeHandle.APIClientReturns(fakeAPIClient)
+
+					fakeNodeProvider := new(nodeprovider.Fake)
+					fakeNodeProvider.CreateNodeIfNotExistsReturns(fakeNodeHandle, nil)
+
 					fakeData := new(data.Fake)
 					fakeHandle := new(data.FakeHandle)
 
@@ -330,9 +358,9 @@ var _ = Context("dataResolver", func() {
 					fakeData.ResolveReturns(fakeHandle, nil)
 
 					objectUnderTest := _dataResolver{
-						data: fakeData,
-						apiReachabilityEnsurer: new(apireachabilityensurer.Fake),
-						os: new(ios.Fake),
+						data:         fakeData,
+						os:           new(ios.Fake),
+						nodeProvider: fakeNodeProvider,
 					}
 
 					/* act */

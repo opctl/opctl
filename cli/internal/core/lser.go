@@ -10,7 +10,6 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliexiter"
 	"github.com/opctl/opctl/cli/internal/clioutput"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 	op "github.com/opctl/opctl/sdks/go/opspec"
 )
 
@@ -24,13 +23,11 @@ type Lser interface {
 
 // newLser returns an initialized "ls" command
 func newLser(
-	apiClient client.Client,
 	cliExiter cliexiter.CliExiter,
 	cliOutput clioutput.CliOutput,
 	dataResolver dataresolver.DataResolver,
 ) Lser {
 	return _lsInvoker{
-		apiClient:    apiClient,
 		cliExiter:    cliExiter,
 		cliOutput:    cliOutput,
 		dataResolver: dataResolver,
@@ -40,7 +37,6 @@ func newLser(
 }
 
 type _lsInvoker struct {
-	apiClient    client.Client
 	cliExiter    cliexiter.CliExiter
 	cliOutput    clioutput.CliOutput
 	dataResolver dataresolver.DataResolver

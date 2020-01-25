@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/opctl/opctl/cli/internal/cliexiter"
+	"github.com/opctl/opctl/cli/internal/nodeprovider"
 	"github.com/opctl/opctl/sdks/go/model"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 // Killer exposes the "op kill" sub command
@@ -18,25 +18,31 @@ type Killer interface {
 
 // newKiller returns an initialized "op kill" sub command
 func newKiller(
-	apiClient client.Client,
 	cliExiter cliexiter.CliExiter,
+	nodeProvider nodeprovider.NodeProvider,
 ) Killer {
 	return _killer{
-		apiClient: apiClient,
-		cliExiter: cliExiter,
+		cliExiter:    cliExiter,
+		nodeProvider: nodeProvider,
 	}
 }
 
 type _killer struct {
-	apiClient client.Client
-	cliExiter cliexiter.CliExiter
+	cliExiter    cliexiter.CliExiter
+	nodeProvider nodeprovider.NodeProvider
 }
 
 func (ivkr _killer) Kill(
 	ctx context.Context,
 	opID string,
 ) {
-	err := ivkr.apiClient.KillOp(
+	nodeHandle, createNodeIfNotExistsErr := ivkr.nodeProvider.CreateNodeIfNotExists()
+	if nil != createNodeIfNotExistsErr {
+		ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: createNodeIfNotExistsErr.Error(), Code: 1})
+		return // support fake exiter
+	}
+
+	err := nodeHandle.APIClient().KillOp(
 		ctx,
 		model.KillOpReq{
 			OpID: opID,

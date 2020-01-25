@@ -9,11 +9,11 @@ import (
 )
 
 type FakeProvider struct {
-	TryResolveStub        func(ctx context.Context, dataRef string) (model.DataHandle, error)
+	TryResolveStub        func(context.Context, string) (model.DataHandle, error)
 	tryResolveMutex       sync.RWMutex
 	tryResolveArgsForCall []struct {
-		ctx     context.Context
-		dataRef string
+		arg1 context.Context
+		arg2 string
 	}
 	tryResolveReturns struct {
 		result1 model.DataHandle
@@ -27,22 +27,23 @@ type FakeProvider struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProvider) TryResolve(ctx context.Context, dataRef string) (model.DataHandle, error) {
+func (fake *FakeProvider) TryResolve(arg1 context.Context, arg2 string) (model.DataHandle, error) {
 	fake.tryResolveMutex.Lock()
 	ret, specificReturn := fake.tryResolveReturnsOnCall[len(fake.tryResolveArgsForCall)]
 	fake.tryResolveArgsForCall = append(fake.tryResolveArgsForCall, struct {
-		ctx     context.Context
-		dataRef string
-	}{ctx, dataRef})
-	fake.recordInvocation("TryResolve", []interface{}{ctx, dataRef})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("TryResolve", []interface{}{arg1, arg2})
 	fake.tryResolveMutex.Unlock()
 	if fake.TryResolveStub != nil {
-		return fake.TryResolveStub(ctx, dataRef)
+		return fake.TryResolveStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.tryResolveReturns.result1, fake.tryResolveReturns.result2
+	fakeReturns := fake.tryResolveReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeProvider) TryResolveCallCount() int {
@@ -51,13 +52,22 @@ func (fake *FakeProvider) TryResolveCallCount() int {
 	return len(fake.tryResolveArgsForCall)
 }
 
+func (fake *FakeProvider) TryResolveCalls(stub func(context.Context, string) (model.DataHandle, error)) {
+	fake.tryResolveMutex.Lock()
+	defer fake.tryResolveMutex.Unlock()
+	fake.TryResolveStub = stub
+}
+
 func (fake *FakeProvider) TryResolveArgsForCall(i int) (context.Context, string) {
 	fake.tryResolveMutex.RLock()
 	defer fake.tryResolveMutex.RUnlock()
-	return fake.tryResolveArgsForCall[i].ctx, fake.tryResolveArgsForCall[i].dataRef
+	argsForCall := fake.tryResolveArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeProvider) TryResolveReturns(result1 model.DataHandle, result2 error) {
+	fake.tryResolveMutex.Lock()
+	defer fake.tryResolveMutex.Unlock()
 	fake.TryResolveStub = nil
 	fake.tryResolveReturns = struct {
 		result1 model.DataHandle
@@ -66,6 +76,8 @@ func (fake *FakeProvider) TryResolveReturns(result1 model.DataHandle, result2 er
 }
 
 func (fake *FakeProvider) TryResolveReturnsOnCall(i int, result1 model.DataHandle, result2 error) {
+	fake.tryResolveMutex.Lock()
+	defer fake.tryResolveMutex.Unlock()
 	fake.TryResolveStub = nil
 	if fake.tryResolveReturnsOnCall == nil {
 		fake.tryResolveReturnsOnCall = make(map[int]struct {

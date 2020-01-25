@@ -8,8 +8,8 @@ import (
 	"path"
 )
 
+// New returns an initialized "local" node provider
 func New() nodeprovider.NodeProvider {
-
 	perUserAppDataPath, err := appdatapath.New().PerUser()
 	if nil != err {
 		panic(err)

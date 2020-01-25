@@ -18,7 +18,7 @@ func (ctp _containerRuntime) DeleteContainerIfExists(
 		},
 	)
 	if nil != err {
-		err = fmt.Errorf("unable to delete container. Response from docker was:\n %v", err.Error())
+		err = fmt.Errorf("unable to delete container. Response from docker was: %v", err.Error())
 	}
 	return
 }

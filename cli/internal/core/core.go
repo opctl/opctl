@@ -3,7 +3,6 @@ package core
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fake.go --fake-name Fake ./ Core
 
 import (
-	"net/url"
 	"os"
 
 	"github.com/golang-interfaces/ios"
@@ -13,7 +12,6 @@ import (
 	"github.com/opctl/opctl/cli/internal/cliparamsatisfier"
 	"github.com/opctl/opctl/cli/internal/dataresolver"
 	"github.com/opctl/opctl/cli/internal/nodeprovider/local"
-	"github.com/opctl/opctl/sdks/go/node/api/client"
 )
 
 // Core exposes all cli commands
@@ -35,39 +33,20 @@ func New(
 	cliExiter := cliexiter.New(cliOutput, _os)
 	nodeProvider := local.New()
 
-	apiBaseURLStr := os.Getenv("OPCTL_CLI_API_BASEURL")
-	if "" == apiBaseURLStr {
-		apiBaseURLStr = "http://localhost:42224/api"
-	}
-	apiBaseURL, err := url.Parse(apiBaseURLStr)
-	if nil != err {
-		panic(err)
-	}
-
-	apiClient := client.New(
-		*apiBaseURL,
-		&client.Opts{
-			RetryLogHook: func(err error) {
-				cliOutput.Attention("request resulted in a recoverable error & will be retried; error was: %v", err)
-			},
-		},
-	)
-
 	cliParamSatisfier := cliparamsatisfier.New(cliExiter, cliOutput)
 	dataResolver := dataresolver.New(
 		cliExiter,
 		cliParamSatisfier,
-		*apiBaseURL,
+		nodeProvider,
 	)
 
 	return _core{
 		Eventser: newEventser(
-			apiClient,
 			cliExiter,
 			cliOutput,
+			nodeProvider,
 		),
 		Lser: newLser(
-			apiClient,
 			cliExiter,
 			cliOutput,
 			dataResolver,
@@ -77,17 +56,17 @@ func New(
 			nodeProvider,
 		),
 		Oper: newOper(
-			apiClient,
 			cliExiter,
 			dataResolver,
+			nodeProvider,
 		),
 		Runer: newRuner(
-			apiClient,
 			cliColorer,
 			cliExiter,
 			cliOutput,
 			cliParamSatisfier,
 			dataResolver,
+			nodeProvider,
 		),
 		SelfUpdater: newSelfUpdater(
 			cliExiter,
