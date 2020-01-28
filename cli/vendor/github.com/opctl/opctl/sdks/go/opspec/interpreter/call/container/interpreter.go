@@ -131,6 +131,16 @@ func (itp _interpreter) Interpret(
 		dcgContainerCall.Name = dcgContainerCallName.String
 	}
 
+	// interpret workDir
+	if "" != scgContainerCall.WorkDir {
+		dcgContainerCallWorkDir, err := itp.stringInterpreter.Interpret(scope, scgContainerCall.WorkDir, opHandle)
+		if nil != err {
+			return nil, err
+		}
+
+		dcgContainerCall.WorkDir = *dcgContainerCallWorkDir.String
+	}
+
 	// interpret sockets
 	dcgContainerCall.Sockets, err = itp.socketsInterpreter.Interpret(scope, scgContainerCall.Sockets, scratchDirPath)
 
