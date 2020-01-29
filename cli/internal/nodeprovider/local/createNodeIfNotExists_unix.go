@@ -14,10 +14,7 @@ import (
 	"github.com/opctl/opctl/cli/internal/model"
 )
 
-func (np nodeProvider) CreateNodeIfNotExists() (
-	nodeHandle model.NodeHandle,
-	err error,
-) {
+func (np nodeProvider) CreateNodeIfNotExists() (model.NodeHandle, error) {
 	nodes, err := np.ListNodes()
 	if nil != err {
 		return nil, err
@@ -48,14 +45,13 @@ func (np nodeProvider) CreateNodeIfNotExists() (
 		Setpgid: true,
 	}
 
-	err = nodeCmd.Start()
-	if nil != err {
-		return nil, err
+	if nodeCmdStartErr := nodeCmd.Start(); nil != nodeCmdStartErr {
+		return nil, nodeCmdStartErr
 	}
 
-	dataDir, err := datadir.New(nil)
-	if nil != err {
-		return nil, err
+	dataDir, newDataDirErr := datadir.New(nil)
+	if nil != newDataDirErr {
+		return nil, newDataDirErr
 	}
 
 	// Because the command is exec'd as a parentless process, error's aren't available to us.

@@ -11,6 +11,7 @@ import (
 	"github.com/golang-utils/lockfile"
 )
 
+// DataDir is an interface exposing the functionality we require in conjunction with our "data dir".
 type DataDir interface {
 	// ClearNodeCreateErrorIfExists clears any recorded error which previously occured during node creation
 	ClearNodeCreateErrorIfExists() error
@@ -36,37 +37,58 @@ type DataDir interface {
 	TryGetNodeCreateError() error
 }
 
-// New returns an initialized data dir
+// resolvePath resolves the data dir path
+func resolvePath(
+	dataDirPath *string,
+) (string, error) {
+	if nil != dataDirPath {
+		return filepath.Abs(*dataDirPath)
+	} else if dataDirEnvVar, ok := os.LookupEnv("OPCTL_DATA_DIR"); ok {
+		return filepath.Abs(dataDirEnvVar)
+	}
+
+	perUserAppDataPath, err := appdatapath.New().PerUser()
+	return filepath.Join(
+		perUserAppDataPath,
+		"opctl",
+	), err
+}
+
+// ensureExists ensures resolvedDataDirPath exists
+func ensureExists(
+	resolvedDataDirPath string,
+) error {
+	if err := os.MkdirAll(resolvedDataDirPath, 0775|os.ModeSetgid); nil != err {
+		return err
+	}
+	return nil
+}
+
+// New returns an initialized data dir instance
 func New(
 	dataDirPath *string,
 ) (DataDir, error) {
-	var resolvedPath string
-	var err error
-	if nil != dataDirPath {
-		resolvedPath, err = filepath.Abs(*dataDirPath)
-		if nil != err {
-			return nil, err
-		}
-	} else if dataDirEnvVar, ok := os.LookupEnv("OPCTL_DATA_DIR"); ok {
-		resolvedPath, err = filepath.Abs(dataDirEnvVar)
-		if nil != err {
-			return nil, err
-		}
-	} else {
-		perUserAppDataPath, err := appdatapath.New().PerUser()
-		if nil != err {
-			return nil, err
-		}
+	resolvedDataDirPath, err := resolvePath(dataDirPath)
+	if nil != err {
+		return nil, fmt.Errorf("error initializing opctl data dir; error was %v", err)
+	}
 
-		resolvedPath = filepath.Join(
-			perUserAppDataPath,
-			"opctl",
-		)
+	if err := ensureExists(resolvedDataDirPath); nil != err {
+		return nil, fmt.Errorf("error initializing opctl data dir; error was %v", err)
+	}
+
+	// ensure we can write
+	if err := ioutil.WriteFile(
+		filepath.Join(resolvedDataDirPath, "write-test"),
+		[]byte(""),
+		0775,
+	); nil != err {
+		return nil, fmt.Errorf("error initializing opctl data dir; error was %v", err)
 	}
 
 	return _datadir{
-		resolvedPath,
-	}, nil
+		resolvedPath: resolvedDataDirPath,
+	}, err
 }
 
 type _datadir struct {
@@ -112,8 +134,8 @@ func (dd _datadir) nodeCreateErrorPath() string {
 }
 
 func (dd _datadir) InitAndLock() error {
-	if err := os.MkdirAll(dd.resolvedPath, 0775|os.ModeSetgid); nil != err {
-		return fmt.Errorf("unable to create OPCTL_DATA_DIR at path: %v; error was: %v", dd.resolvedPath, err)
+	if err := ensureExists(dd.resolvedPath); nil != err {
+		return err
 	}
 
 	lockFilePath := filepath.Join(
