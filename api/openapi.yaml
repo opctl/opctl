@@ -1,7 +1,7 @@
 openapi: 3.0.0
 servers: []
 info:
-  version: 0.1.6
+  version: 0.1.26
   title: Opctl API
 paths:
   /events/stream:

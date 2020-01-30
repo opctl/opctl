@@ -10,5 +10,5 @@ An official docker opctl image is [maintained on docker hub](https://hub.docker.
 ### Examples
 
 ```shell
-docker run --privileged opctl/opctl:0.1.25 opctl run github.com/opspec-pkgs/uuid.v4.generate#1.0.0
+docker run --privileged opctl/opctl:0.1.26 opctl run github.com/opspec-pkgs/uuid.v4.generate#1.0.0
 ```
