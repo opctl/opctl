@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://opspec.io/0.1.7/op.yml.schema.json",
+  "$id": "https://opspec.io/0.1.26/op.yml.schema.json",
   "title": "Op File",
   "description": "Defines an op",
   "properties": {

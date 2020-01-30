@@ -6,6 +6,8 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.1.26 - 2020-01-30
+
 ### Added
 
 - [Support in scope dir as container image](https://github.com/opctl/opctl/issues/498)
