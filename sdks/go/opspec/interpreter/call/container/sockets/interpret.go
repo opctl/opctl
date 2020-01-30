@@ -5,8 +5,10 @@ package sockets
 import (
 	"github.com/golang-interfaces/ios"
 	"github.com/opctl/opctl/sdks/go/model"
+	"github.com/opctl/opctl/sdks/go/opspec/interpreter/reference"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Interpreter interface {
@@ -35,6 +37,9 @@ func (itp _interpreter) Interpret(
 ) (map[string]string, error) {
 	dcgContainerCallSockets := map[string]string{}
 	for scgContainerSocketAddress, scgContainerSocketBind := range scgContainerCallSockets {
+		// @TODO: use reference.interpret once reference syntax no longer optional
+		scgContainerSocketBind = strings.TrimSuffix(strings.TrimPrefix(scgContainerSocketBind, reference.RefStart), reference.RefEnd)
+
 		if boundArg, ok := scope[scgContainerSocketBind]; ok {
 			// bound to var
 			dcgContainerCallSockets[scgContainerSocketAddress] = *boundArg.Socket

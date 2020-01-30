@@ -62,6 +62,6 @@ An object defining container ports exposed on the opctl host where:
 An object for which each key is an absolute path in the container and and each value is a [socket](../../../../../../types/socket) [reference](../../../reference) to mount. 
 
 ### workDir
-An absolute path which defines where [cmd](#cmd) is executed.
+A [string initializer](../../../../../../types/string#initializer) defining absolute path from which [cmd](#cmd) will be executed.
 
 > defining workDir overrides any defined by the image
