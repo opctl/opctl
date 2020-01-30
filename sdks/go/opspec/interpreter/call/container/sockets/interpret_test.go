@@ -18,10 +18,10 @@ var _ = Context("Interpreter", func() {
 	Context("Interpret", func() {
 		It("should return expected dcg.Sockets", func() {
 			/* arrange */
-			providedCurrentScopeRef1 := "dummyScopeRef1"
-			providedCurrentScopeRef1String := "dummyScopeRef1String"
-			providedCurrentScopeRef2 := "/dummy-unix-socket"
-			providedCurrentScopeRef2String := "dummyScopeRef2String"
+			providedCurrentScopeRef1 := "scopeRef1"
+			providedCurrentScopeRef1String := "scopeRef1String"
+			providedCurrentScopeRef2 := "/unix-socket"
+			providedCurrentScopeRef2String := "scopeRef2String"
 
 			providedCurrentScope := map[string]*model.Value{
 				providedCurrentScopeRef1: {Socket: &providedCurrentScopeRef1String},

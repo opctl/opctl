@@ -330,8 +330,8 @@ github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate
 github.com/opctl/opctl/sdks/go/opspec/interpreter/dir
 github.com/opctl/opctl/sdks/go/opspec/interpreter/file
-github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater
 github.com/opctl/opctl/sdks/go/opspec/interpreter/reference
+github.com/opctl/opctl/sdks/go/opspec/interpreter/interpolater
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/op/inputs/input
 github.com/opctl/opctl/sdks/go/node/api/handler/pkgs/ref/contents/path
 github.com/opctl/opctl/sdks/go/opspec/interpreter/call/predicates/predicate/eq

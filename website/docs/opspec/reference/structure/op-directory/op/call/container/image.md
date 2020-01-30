@@ -11,7 +11,7 @@ An object which defines the image of a container call.
   - [pullCreds](#pullcreds)
 
 ### ref
-A string referencing a container image.
+A [string initializer](../../../../../../types/string#initializer) referencing a container image.
 
 ### Example ref ([official ubuntu 19.10](https://hub.docker.com/_/ubuntu))
 `ref: 'ubuntu:19.10'`

@@ -16,6 +16,10 @@ accordance with
 
 - Don't cleanup OPCTL_DATA_DIR on node creation.
 
+### Deprecated
+
+- `Container.sockets` bindings without reference syntax i.e. instead of `/my/socket: mySocket`, use `/my/socket: $(mySocket)`.
+
 ### Fixed
 
 - [Referencing Non Directories As Directories Hangs](https://github.com/opctl/opctl/issues/637)
