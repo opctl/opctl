@@ -89,7 +89,12 @@ func (itp _interpreter) Interpret(
 				return model.Value{}, fmt.Errorf("unable to interpret '%v: %v' as object initializer property; sockets aren't valid object properties", propertyKeyExpression, propertyValueExpression)
 			}
 
-			value[propertyKey] = propertyValue
+			unboxedPropertyValue, unboxErr := propertyValue.Unbox()
+			if nil != unboxErr {
+				return model.Value{}, unboxErr
+			}
+
+			value[propertyKey] = unboxedPropertyValue
 		}
 
 		return model.Value{Object: &value}, nil

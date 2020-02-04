@@ -1,0 +1,25 @@
+.side-menu {
+  background-color: #fafafa;
+  border-right: solid thin #ececec;
+  height: 100%;
+  position: fixed;
+  top: 57px;
+  width: 268px;
+  list-style: none;
+  cursor: pointer;
+  padding-left: 0;
+}
+
+.side-menu .menu-item a {
+  padding: 12px 15px;
+  width: 100%;
+  display: flex;
+}
+
+.side-menu .menu-item a.active {
+  background-color: rgba(0,0,0,0.04);
+}
+
+.side-menu .menu-item:hover {
+  background-color: rgba(0,0,0,0.04);
+}

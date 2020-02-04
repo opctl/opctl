@@ -6,6 +6,12 @@ accordance with
 
 ## \[Unreleased]
 
+## 0.1.27 - 2020-02-04
+
+### Fixed
+
+- Object initializers passed as inputs to constrained parameters don't pass validation
+
 ## 0.1.26 - 2020-01-30
 
 ### Added
