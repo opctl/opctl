@@ -12,7 +12,7 @@ run:
       /src: $(srcDir)
       /sharness:
     files:
-      /opctl: $(srcDir/cli/opctl)
+      /opctl: $(srcDir/cli/opctl.linux)
       /cmd.sh:
       /yaml:
     cmd: [/cmd.sh]

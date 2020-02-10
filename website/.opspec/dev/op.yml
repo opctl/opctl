@@ -1,4 +1,4 @@
-description: serves the webapp locally on port 3000
+description: Initializes and starts the website with live-reload. Exposes it on localhost:3000
 name: dev
 inputs:
   srcDir:

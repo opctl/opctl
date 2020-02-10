@@ -1,5 +1,5 @@
 name: dev
-description: exposes a delv debugger for the cli
+description: compiles and exposes a delv debugger for the cli
 inputs:
   srcDir:
     dir:
@@ -8,26 +8,31 @@ inputs:
     socket:
       description: docker socket to use as container runtime
 run:
-  container:
-    image: { ref: 'golang:1.13' }
-    cmd:
-      - go
-      - run
-      - github.com/go-delve/delve/cmd/dlv
-      - --listen=:40000
-      - --headless=true
-      - --api-version=2
-      - exec
-      - ./opctl
-      - run
-      - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
-    dirs:
-      /src: $(srcDir)
-    envVars:
-      GOFLAGS: -mod=vendor
-    ports:
-      # debug port for delve
-      40000: 40000
-    sockets:
-      /var/run/docker.sock: dockerSocket
-    workDir: /src/cli
+  serial:
+    - op:
+        ref: build
+        inputs:
+          srcDir:
+    - container:
+        image: { ref: 'golang:1.13' }
+        cmd:
+          - go
+          - run
+          - github.com/go-delve/delve/cmd/dlv
+          - --listen=:40000
+          - --headless=true
+          - --api-version=2
+          - exec
+          - ./opctl.linux
+          - run
+          - github.com/opspec-pkgs/uuid.v4.generate#1.1.0
+        dirs:
+          /src: $(srcDir)
+        envVars:
+          GOFLAGS: -mod=vendor
+        ports:
+          # debug port for delve
+          40000: 40000
+        sockets:
+          /var/run/docker.sock: dockerSocket
+        workDir: /src/cli

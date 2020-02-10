@@ -22,7 +22,7 @@ An object defining a container call.
 An [image](image.md) object defining the container image run by the call.
 
 ### cmd
-An array of [string initializers](../../../../../../types/string#initializer) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.
+An array of [string initializers](../../../../../types/string#initialization) defining the path (from [workDir](#workdir)) of the binary to call and it's arguments.
 
 > defining cmd overrides any entrypoint and/or cmd defined by the image
 
@@ -32,10 +32,10 @@ An object for which each key is an absolute path in the container and each value
 |value|meaning|
 |--|--|
 |null|Mount dir embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
-|[dir](../../../../../../types/dir) [reference](../../../reference)|Mount dir|
+|[dir](../../../../../types/dir) [reference](../../../reference)|Mount dir|
 
 ### envVars
-An [object initializer](../../../../../../types/object#initializer) or [reference](../../../reference), whos properties represent the name and value of an environment variable to be set in the container.
+An [object initializer](../../../../../types/object#initialization) or [reference](../../../reference), whos properties represent the name and value of an environment variable to be set in the container.
 
 > upon evaluation, the key and value of each property will be coerced to a string.
 
@@ -45,11 +45,11 @@ An object for which each key is an absolute path in the container and each value
 |value|meaning|
 |--|--|
 |null|Mount file embedded in op w/ same path (equivalent to `$(/absolute/path)`)|
-|[file](../../../../../../types/file) [reference](../../../reference)|Mount file|
-|[file initializer](../../../../../../types/file#initializer)|Evaluate and mount|
+|[file](../../../../../types/file) [reference](../../../reference)|Mount file|
+|[file initializer](../../../../../types/file#initialization)|Evaluate and mount|
 
 ### name
-A [string initializer](../../../../../../types/string#initializer) defining a name by which the container can be resolved on the opctl network.
+A [string initializer](../../../../../types/string#initialization) defining a name by which the container can be resolved on the opctl network.
 
 > if multiple containers are given the same name, network requests will be distributed (load balanced) across them. 
 
@@ -59,9 +59,9 @@ An object defining container ports exposed on the opctl host where:
 - each value is a corresponding opctl host port or range of ports matching `[0-9]+(-[0-9]+)?`
 
 ### sockets
-An object for which each key is an absolute path in the container and and each value is a [socket](../../../../../../types/socket) [reference](../../../reference) to mount. 
+An object for which each key is an absolute path in the container and and each value is a [socket](../../../../../types/socket) [reference](../../../reference) to mount. 
 
 ### workDir
-A [string initializer](../../../../../../types/string#initializer) defining absolute path from which [cmd](#cmd) will be executed.
+A [string initializer](../../../../../types/string#initialization) defining absolute path from which [cmd](#cmd) will be executed.
 
 > defining workDir overrides any defined by the image

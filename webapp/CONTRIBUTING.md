@@ -1,36 +1,24 @@
-A web UI for opctl
-
-# Dev ops
-
-Ops are maintained in
-[![opspec 0.1.6](https://img.shields.io/badge/opspec-0.1.6-brightgreen.svg?colorA=6b6b6b&colorB=fc16be)](https://opspec.io/0.1.6) definition
-format.
-
-They can be consumed via tools like [opctl](https://opctl.io).
-
-# Acceptance criteria
-
-Contributions are subject to:
-
-- accepted review by one or more
-  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
-- the [build](../.opspec/build) op continuing to run with a successful
-  outcome
-
-# Code style
-
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) is enforced.
-
-# Implementation
-
+# Implementation details
 The webapp is built using [react](https://facebook.github.io/react/) via [create react app](https://github.com/facebookincubator/create-react-app).
 
-# Unit testing
 
-## Test location
+# How do I...
 
-Tests are kept alongside source code.
+## List operations
+1. `opctl ls` from this directory will print a full operation manual.
 
-## Test format
+## Dev
+1. `opctl run dev` from this directory to init and start the webapp with live-reload 
+1. browse to [localhost](http://localhost) in your web browser
+1. make some changes, your browser should live-reload them
 
-Tests are written in arrange, act, assert format w/ the given object under test referred to as `objectUnderTest`
+## Run a build
+1. `opctl run build` from this directory to init, test, and compile the webapp for deployment.
+
+
+# Contribution guidelines
+- DO follow [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com).
+- DO use style objects and fallback to emotion css object generated classNames when not possible. 
+- DO write tests in `arrange`, `act`, `assert` format w/ the given object under test referred to as `objectUnderTest`.
+- DO keep tests alongside source code; i.e. place `code.test.ts` alongside `code.ts`.
+- DO use functional components & react hooks instead of class components & HOC's (Higher Order Components).

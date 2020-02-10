@@ -4,12 +4,17 @@
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-Go SDK for [opctl](https://opctl.io)
+# Problem statement
+Go SDK for [opctl](https://opctl.io).
 
-## Examples
 
-Run an op using an API client.
+# Documentation
+Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](https://pkg.go.dev/mod/github.com/opctl/opctl/sdks/go)
 
+
+# Usage
+
+## Run an op using an API client.
 ```golang
 package main
 
@@ -94,3 +99,7 @@ func main() {
 	}
 }
 ```
+
+
+# Contributing
+see [CONTRIBUTING.md](CONTRIBUTING.md)

@@ -1,34 +1,21 @@
-# Dev ops
+# Implementation details
+The js SDK is maintained in typescript and released to NPM as javascript (plus type definitions).
 
-Ops are maintained in
-[![opspec 0.1.6](https://img.shields.io/badge/opspec-0.1.6-brightgreen.svg?colorA=6b6b6b&colorB=fc16be)](https://opspec.io/0.1.6) definition
-format.
 
-They can be consumed via tools like [opctl](https://opctl.io).
+# How do I...
 
-# Acceptance criteria
+## List operations
+1. `opctl ls` from this directory will print a full operation manual.
 
-Contributions are subject to:
+## Run tests
+1. `opctl run test` from this directory to init and test the SDK.
 
-- accepted review by one or more
-  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
-- the [build](.opspec/build) op continuing to run with a successful
-  outcome
+## Release to NPM
+1. `opctl run release` from this directory to init, test, compile, and publish the SDK to NPM.
 
-# Repo layout
 
-The structure of this repo mirrors the [golang SDK](https://github.com/opctl/opctl/sdks/go) less un implemented functionality. 
-
-# Code style
-
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) is enforced.
-
-# Unit testing
-
-## Test location
-
-Tests are kept alongside source code.
-
-## Test format
-
-Tests are written in arrange, act, assert format w/ the given object under test referred to as `objectUnderTest`
+# Contribution guidelines
+- DO follow [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com).
+- DO mirror the publicly exposed API of the [golang SDK](../go/README.md) less un-implemented functionality & language specific idioms. 
+- DO write tests in `arrange`, `act`, `assert` format w/ the given object under test referred to as `objectUnderTest`.
+- DO keep tests alongside source code; i.e. place `code.test.ts` alongside `code.ts`.

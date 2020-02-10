@@ -1,40 +1,23 @@
-# Dev ops
+# Implementation details
+The go SDK is maintained as a go module.
 
-Ops are maintained in
-[![opspec 0.1.6](https://img.shields.io/badge/opspec-0.1.6-brightgreen.svg?colorA=6b6b6b&colorB=fc16be)](https://opspec.io)
-definition format.
+# How do I...
 
-They can be consumed via tools like [opctl](https://opctl.io).
+## List operations
+1. `opctl ls` from this directory will print a full operation manual.
 
-# Acceptance criteria
+## (Re)Vendor
+1. `go mod vendor` from this directory will (re)vendor all go dependencies.
 
-Contributions are subject to:
+## Test
+1. `opctl run test` from this directory to compile and test the SDK.
 
-- accepted review by one or more
-  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
-- the [build](.opspec/build) op continuing to run with a successful
-  outcome
-- adherence to
-  [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments)
-  
-# Dependency management
-
- [dep](https://golang.github.io/dep/) is used to manage go dependencies
-All go dependencies are vendored. 
-
-# Documentation
-
-## GoDoc
-
-Documentation for SDK packages are maintained in golang's native go doc format; which is web browsable via the [godoc webpage](http://godoc.org/github.com/opctl/sdk-golang)
+# (Re)Generate fake implementations
+1. `opctl run generate` from this directory to (re)generate fake implementations of interfaces as they're added/changed.
 
 
-# Testing
-
-`opctl run test` runs all tests inclusive of code coverage.
-
-## Fakes
-
-To streamline unit test related maintenance, [counterfeiter](https://github.com/maxbrunsfeld/counterfeiter) is used to auto-generate fake implementations of interfaces.
-
-The fakes are then used to assert on & stub the object under tests interactions w/ its dependencies. 
+# Contribution guidelines
+- DO follow [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments).
+- DO write tests in `arrange`, `act`, `assert` format w/ the given object under test referred to as `objectUnderTest`.
+- DO keep tests alongside source code; i.e. place `code_test.go` alongside `code.go`.
+- DO depend on interfaces, not implementations, and use [fakes](https://github.com/maxbrunsfeld/counterfeiter) to test dependency interactions.

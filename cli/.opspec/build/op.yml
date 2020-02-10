@@ -32,13 +32,21 @@ run:
         inputs:
           srcDir: $(srcDir/cli)
           version:
-    - op:
-        ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
-        inputs:
-          name: opctl
-          srcDir: $(srcDir/cli)
-          #GOOS: darwin
-          GOFLAGS: -mod=vendor -tags=containers_image_openpgp
+    - parallelLoop:
+        range:
+          - darwin
+          - linux
+          - windows
+        vars:
+          value: GOOS
+        run:
+          op:
+            ref: github.com/opspec-pkgs/golang.build.bin#2.0.0
+            inputs:
+              name: opctl.$(GOOS)
+              srcDir: $(srcDir/cli)
+              GOOS:
+              GOFLAGS: -mod=vendor -tags=containers_image_openpgp
     # re-enable once lockup issue resolved
     # - op:
     #     ref: ../test/system/opspec

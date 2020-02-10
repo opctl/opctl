@@ -1,4 +1,4 @@
-description: initializes and starts the webapp locally on port 80 so it can be hacked on.
+description: Initializes and starts the webapp with live-reload. Exposes it on localhost:80
 name: dev
 inputs:
   srcDir:
@@ -14,7 +14,7 @@ run:
         ref: init
     - container:
         cmd: [ yarn, start ]
-        image: { ref: 'node:11.2.0-alpine' }
+        image: { ref: 'node:12.8.1-alpine' }
         dirs:
           /src: $(srcDir)
         ports:

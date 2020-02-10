@@ -6,44 +6,44 @@
 > development. Anything may change at any time. The public API should
 > not be considered stable."*
 
-React SDK for [opctl](https://opctl.io)
+# Problem statement
+React SDK for [opctl](https://opctl.io).
+
 
 # Supported runtimes
-
 This library is isomorphic & should be consumable from either nodejs or
 web browsers.
 
-# Installation
 
+# Installation
 ```shell
 npm install --save @opctl/sdk-react
 ```
 
 # Typescript
-
 This library is written in typescript. The package published to NPM targets ES2015 and includes type declarations.
+
 
 # Usage
 
 ## API client
-
 ```typescript
 import Op from '@opctl/sdk-react/lib/Op'
 ```
 
-# Support
 
+# Support
 join us on
 [![Slack](https://opctl-slackin.herokuapp.com/badge.svg)](https://opctl-slackin.herokuapp.com/)
-or [open an issue](https://github.com/opctl/sdk-react/issues)
+or [open an issue](https://github.com/opctl/opctl/issues)
+
 
 # Releases
-
 releases are versioned according to
 [![semver 2.0.0](https://img.shields.io/badge/semver-2.0.0-brightgreen.svg)](http://semver.org/spec/v2.0.0.html)
 and [tagged](https://git-scm.com/book/en/v2/Git-Basics-Tagging); see
 [CHANGELOG.md](CHANGELOG.md) for release notes
 
-# Contributing
 
+# Contributing
 see [CONTRIBUTING.md](CONTRIBUTING.md)

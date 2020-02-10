@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import { cx, css } from 'emotion'
-import LeftNav from './LeftNav'
 import RightNav from './RightNav'
 import brandColors from '../../brandColors'
 
@@ -81,7 +80,7 @@ export default (
         >
           <div
             className={css({
-              color: brandColors.blue,
+              color: brandColors.active,
               cursor: 'pointer',
               flex: '1 0 0',
               marginLeft: '1.2rem'
