@@ -6,6 +6,14 @@ accordance with
 
 ## \[Unreleased]
 
+### Added
+
+- UI: Workspace page (explorer, op visualizer with pan/zoom) 
+
+### Removed
+
+- UI: Events/Op/Vars pages
+
 ## 0.1.27 - 2020-02-04
 
 ### Fixed

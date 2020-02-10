@@ -1,32 +1,32 @@
-# Dev Ops
+# Implementation details
+The CLI is built using [mow](https://github.com/jawher/mow.cli) and tries to rely on the [opctl go SDK](../sdks/go/README.md) whenever behavior is not specific to the CLI.
 
-Ops are maintained in
-[![opspec 0.1.6](https://img.shields.io/badge/opspec-0.1.6-brightgreen.svg?colorA=6b6b6b&colorB=fc16be)](https://opspec.io)
-definition format.
+The [opctl webapp](../webapp/README.md) is statically embedded and hosted at runtime.
 
-They can be consumed via tools like [opctl](https://opctl.io).
 
-# Acceptance criteria
+# How do I...
 
-Contributions are subject to:
+## List operations
+1. `opctl ls` from this directory will print a full operation manual.
 
-- accepted review by one or more
-  [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
-- the [build](.opspec/build) op continuing to run with a successful
-  outcome
-- adherence to
-  [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments)
+## Build
+1. `opctl run build` from this directory to compile and test the CLI. On success, `opctl.linux`, `opctl.darwin`, `opctl.windows` will exist in this directory.
 
-# Implementation
+## (Re)Vendor
+1. `go mod vendor` from this directory will (re)vendor all go dependencies.
 
-The CLI is built using [mow](https://github.com/jawher/mow.cli)
+## Pull in local [go SDK](../sdks/go/README.md) changes
+1. same as [(Re)Vendor](#revendor).
 
-# Testing
+## Test
+1. `opctl run test` from this directory to compile and test the CLI.
 
-`opctl run test` runs all unit tests inclusive of code coverage.
+# (Re)Generate fake implementations
+1. `opctl run generate` from this directory to (re)generate fake implementations of interfaces as they're added/changed.
 
-## Fakes
 
-To streamline unit test related maintenance, [counterfeiter](https://github.com/maxbrunsfeld/counterfeiter) is used to auto-generate fake implementations of interfaces.
-
-The fakes are then used to assert on & stub the object under tests interactions w/ its dependencies. 
+# Conribution guidelines
+- DO follow [go code review comments](https://github.com/golang/go/wiki/CodeReviewComments).
+- DO write tests in `arrange`, `act`, `assert` format w/ the given object under test referred to as `objectUnderTest`.
+- DO keep tests alongside source code; i.e. place `code_test.go` alongside `code.go`.
+- DO depend on interfaces, not implementations, and use [fakes](https://github.com/maxbrunsfeld/counterfeiter) to test dependency interactions.

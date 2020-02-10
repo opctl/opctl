@@ -8,7 +8,7 @@ export default ({
 }) =>
   <div
     className={css({
-      color: brandColors.blue,
+      color: brandColors.active,
       cursor: 'pointer',
       flex: '1 0 0',
       textAlign: 'right',

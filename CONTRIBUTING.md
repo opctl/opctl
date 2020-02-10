@@ -1,19 +1,59 @@
-Welcome!
+# Implementation details
+To streamline dev efforts, the opctl project is maintained as a monorepo containing semi-independent sub-projects.
 
-# Repo layout
-The opctl project is maintained as a monorepo. 
+Typically at a minimum, each sub-project includes it's own `README.md`, `CONTRIBUTING.md`, and`.opspec`. 
 
-## [cli](#cli)
-CLI included in the opctl binary.
+# How it's laid out
 
-## [docs](#docs)
-Docs hosted at [https://opctl.io/docs](https://opctl.io/docs).
+## [api](api)
+OpenAPI spec for the opctl ReST API.
 
-## [sdks](#sdks)
-SDK's for building integrations with opctl.
+## [cli](cli)
+CLI for opctl.
 
-## [webapp](#webapp)
-Webapp included in the opctl binary.
+## [opspec](opspec)
+JSON schema for the opspec language.
 
-## [website](#website)
+used by:
+- [sdks/go](sdks/go)
+
+## [sdks/go](sdks/go)
+SDK for integrations between opctl and golang apps.
+
+used by:
+- [cli](cli)
+
+## [sdks/js](sdks/js)
+SDK (written in typescript) for integrations between opctl and javascript/typescript apps.
+
+used by:
+- [webapp](webapp)
+- [sdks/react](sdks/react)
+
+## [sdks/react](sdks/react)
+SDK (written in typescript) for integrations between opctl and react apps.
+
+used by:
+- [webapp](webapp)
+
+## [test-suite](test-suite)
+End to end tests, maintained as ops, for testing opctl and SDKs.
+
+used by:
+- [cli](cli)
+- [sdks/go](sdks/go)
+
+## [webapp](webapp)
+Webapp for opctl.
+
+used by:
+- [cli](cli)
+
+## [website](website)
 Website hosted at [https://opctl.io](https://opctl.io).
+
+# Pull requests
+Pull requests are subject to:
+
+- approval by one or more [maintainers](https://github.com/orgs/opctl/teams/maintainers/members)
+- the [build](.opspec/build) op continuing to run with a successful outcome

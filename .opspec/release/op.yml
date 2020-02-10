@@ -44,7 +44,7 @@ run:
             inputs:
               dockerPassword:
               dockerUsername:
-              opctlForLinux: $(srcDir/cli/opctl)
+              opctlForLinux: $(srcDir/cli/opctl.linux)
         # @TODO: either remove equinox or figure out how to obtain explicit versions of equinox artifacts.
         # At present, equinox doesn't support downloading explicit versions of artifacts so can't be used for anything
         # requiring the current build artifact such as system testing or publishing to docker.

@@ -1,54 +1,17 @@
-import React, { Component } from 'react'
-import Operations from '../pages/Operations'
-import Events from '../pages/Events'
-import Environment from '../pages/Environment'
-import { Route, HashRouter } from 'react-router-dom'
-import TopMenu from './TopMenu'
-import SideMenu from './SideMenu'
+import React from 'react'
+import Workspace from './Workspace'
+import { BrowserRouter } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
-import OpView from '../pages/Op'
-import './bootstrap.scss'
 
 // shared vendor css
 import 'react-toastify/dist/ReactToastify.min.css'
-import 'react-virtualized/styles.css'
-import 'react-resizable/css/styles.css'
+import 'reboot.css'
 
-export default class Page extends Component<any,any> {
-  state={
-    isSideMenuCollapsed: false
-  }
-
-  handleSideMenuToggled () {
-    this.setState(state => {
-      return {
-        isSideMenuCollapsed: !state.isSideMenuCollapsed
-      }
-    })
-  }
-
-  render () {
-    return (
-      <HashRouter>
-        <div style={{ height: '100vh' }}>
-          <TopMenu onCollapseToggled={() => this.handleSideMenuToggled()} />
-          <SideMenu isCollapsed={this.state.isSideMenuCollapsed} />
-          <ToastContainer
-            autoClose={20000}
-            style={{ zIndex: 100000 }}
-          />
-          <div
-            style={{
-              height: 'calc(100vh - 58px)',
-              marginLeft: this.state.isSideMenuCollapsed ? '0' : '269px'
-            }}>
-            <Route exact path='/' component={Operations} />
-            <Route path='/events' component={Events} />
-            <Route path='/op' component={OpView} />
-            <Route path='/environment' component={Environment} />
-          </div>
-        </div>
-      </HashRouter>
-    )
-  }
-}
+export default () =>
+  <BrowserRouter>
+    <ToastContainer
+      autoClose={20000}
+      style={{ zIndex: 100000 }}
+    />
+    <Workspace />
+  </BrowserRouter> 

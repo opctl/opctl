@@ -13,7 +13,7 @@ run:
           - |
             echo "installing deps"
             yarn install -q
-        image: { ref: 'node:11.2.0-alpine' }
+        image: { ref: 'node:12.8.1-alpine' }
         dirs:
           /src: $(srcDir)
         workDir: /src/webapp
