@@ -22,8 +22,13 @@ func New() (
 	// degrade client version to version of server
 	dockerClient.NegotiateAPIVersion(context.TODO())
 
+	rc, err := newRunContainer(dockerClient)
+	if nil != err {
+		return
+	}
+
 	objectUnderConstruction := _containerRuntime{
-		runContainer: newRunContainer(dockerClient),
+		runContainer: rc,
 		dockerClient: dockerClient,
 		os:           ios.New(),
 	}
