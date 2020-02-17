@@ -4,6 +4,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/opctl/opctl/sdks/go/internal/iruntime"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
+	uuid "github.com/satori/go.uuid"
 )
 
 var _ = Context("fsPathConverter", func() {
@@ -12,7 +14,8 @@ var _ = Context("fsPathConverter", func() {
 		fakeRuntime := new(iruntime.Fake)
 		fakeRuntime.GOOSReturns("windows")
 		objectUnderTest := _fsPathConverter{
-			runtime: fakeRuntime,
+			runtime:     fakeRuntime,
+			hostRuntime: hostruntime.RuntimeInfo{},
 		}
 
 		Context("when path contains drive letter", func() {
@@ -69,6 +72,71 @@ var _ = Context("fsPathConverter", func() {
 
 				/* assert */
 				Expect(actual).To(Equal(expected))
+			})
+		})
+	})
+
+	Context("when runtime.GOOS == linux", func() {
+		Context("when running outside a container", func() {
+			fakeRuntime := new(iruntime.Fake)
+			fakeRuntime.GOOSReturns("windows")
+			objectUnderTest := _fsPathConverter{
+				runtime:     fakeRuntime,
+				hostRuntime: hostruntime.RuntimeInfo{},
+			}
+
+			It("should not modify path", func() {
+				/* arrange */
+				path := "/app"
+
+				/* act */
+				actual := objectUnderTest.LocalToEngine(path)
+
+				/* assert */
+				Expect(actual).To(Equal(path))
+			})
+		})
+
+		Context("when running inside a container", func() {
+			fakeRuntime := new(iruntime.Fake)
+			fakeRuntime.GOOSReturns("linux")
+			dockerID, _ := uuid.NewV4()
+			objectUnderTest := _fsPathConverter{
+				runtime: fakeRuntime,
+				hostRuntime: hostruntime.RuntimeInfo{
+					InAContainer: true,
+					DockerID:     dockerID.String(),
+					HostPathMap: map[string]string{
+						"/home/user/foo": "/foo",
+					},
+				},
+			}
+
+			Context("when path is mounted from the host", func() {
+				It("should modify path", func() {
+					/* arrange */
+					given := "/foo"
+					expected := "/home/user/foo"
+
+					/* act */
+					actual := objectUnderTest.LocalToEngine(given)
+
+					/* assert */
+					Expect(actual).To(Equal(expected))
+				})
+			})
+
+			Context("when path is not mounted from the host", func() {
+				It("should not modify path", func() {
+					/* arrange */
+					path := "/app"
+
+					/* act */
+					actual := objectUnderTest.LocalToEngine(path)
+
+					/* assert */
+					Expect(actual).To(Equal(path))
+				})
 			})
 		})
 	})

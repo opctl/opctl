@@ -5,6 +5,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/opctl/opctl/sdks/go/internal/iruntime"
 )
 
 var _ = Context("hostConfigFactory", func() {
@@ -46,7 +47,7 @@ var _ = Context("hostConfigFactory", func() {
 			}
 
 			objectUnderTest := _hostConfigFactory{
-				fsPathConverter: newFSPathConverter(),
+				fsPathConverter: _fsPathConverter{runtime: iruntime.New()},
 			}
 
 			/* act */

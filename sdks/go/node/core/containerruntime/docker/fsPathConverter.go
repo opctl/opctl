@@ -4,6 +4,8 @@ package docker
 
 import (
 	"github.com/opctl/opctl/sdks/go/internal/iruntime"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
+	"github.com/pkg/errors"
 	"path"
 	"regexp"
 	"strings"
@@ -13,14 +15,21 @@ type fsPathConverter interface {
 	LocalToEngine(localPath string) string
 }
 
-func newFSPathConverter() fsPathConverter {
-	return _fsPathConverter{
-		runtime: iruntime.New(),
+func newFSPathConverter(cli hostruntime.ContainerInspector) (fsPathConverter, error) {
+	hr, err := hostruntime.New(cli)
+	if err != nil {
+		return _fsPathConverter{}, errors.Wrap(err, "error detecting docker host runtime")
 	}
+	pc := _fsPathConverter{
+		runtime:     iruntime.New(),
+		hostRuntime: hr,
+	}
+	return pc, nil
 }
 
 type _fsPathConverter struct {
-	runtime iruntime.IRuntime
+	runtime     iruntime.IRuntime
+	hostRuntime hostruntime.RuntimeInfo
 }
 
 var (
@@ -39,6 +48,10 @@ func (npc _fsPathConverter) LocalToEngine(localPath string) string {
 			return path.Join(`/`, strings.ToLower(windowsVolumeRegexMatches[1]), windowsVolumeRegexMatches[2])
 		}
 		return slashSeparatedPath
+	}
+
+	if npc.runtime.GOOS() == "linux" && npc.hostRuntime.InAContainer {
+		return npc.hostRuntime.HostPathMap.ToHostPath(localPath)
 	}
 
 	return localPath
