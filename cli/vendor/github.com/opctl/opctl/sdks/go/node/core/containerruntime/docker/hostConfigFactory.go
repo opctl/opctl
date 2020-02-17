@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
+	"github.com/opctl/opctl/sdks/go/node/core/containerruntime/docker/hostruntime"
 	"sort"
 	"strings"
 )
@@ -19,10 +20,16 @@ type hostConfigFactory interface {
 	) *container.HostConfig
 }
 
-func newHostConfigFactory() hostConfigFactory {
-	return _hostConfigFactory{
-		fsPathConverter: newFSPathConverter(),
+func newHostConfigFactory(cli hostruntime.ContainerInspector) (hostConfigFactory, error) {
+	fspc, err := newFSPathConverter(cli)
+	if err != nil {
+		return _hostConfigFactory{}, err
 	}
+
+	hcf := _hostConfigFactory{
+		fsPathConverter: fspc,
+	}
+	return hcf, nil
 }
 
 type _hostConfigFactory struct {

@@ -28,17 +28,23 @@ type runContainer interface {
 
 func newRunContainer(
 	dockerClient dockerClientPkg.CommonAPIClient,
-) runContainer {
-	return _runContainer{
+) (runContainer, error) {
+	hcf, err := newHostConfigFactory(dockerClient)
+	if err != nil {
+		return _runContainer{}, err
+	}
+
+	rc := _runContainer{
 		containerConfigFactory:  newContainerConfigFactory(),
 		containerStdErrStreamer: newContainerStdErrStreamer(dockerClient),
 		containerStdOutStreamer: newContainerStdOutStreamer(dockerClient),
 		dockerClient:            dockerClient,
-		hostConfigFactory:       newHostConfigFactory(),
+		hostConfigFactory:       hcf,
 		imagePuller:             newImagePuller(dockerClient),
 		imagePusher:             newImagePusher(),
 		portBindingsFactory:     newPortBindingsFactory(),
 	}
+	return rc, nil
 }
 
 type _runContainer struct {
