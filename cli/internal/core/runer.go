@@ -98,13 +98,19 @@ func (ivkr _runer) Run(
 	)
 
 	// init signal channel
-	intSignalsReceived := 0
-	signalChannel := make(chan os.Signal, 1)
-	defer close(signalChannel)
-
+	sigIntsReceived := 0
+	sigIntChannel := make(chan os.Signal, 1)
+	defer close(sigIntChannel)
 	signal.Notify(
-		signalChannel,
-		syscall.SIGINT, //handle SIGINTs
+		sigIntChannel,
+		syscall.SIGINT,
+	)
+
+	sigTermChannel := make(chan os.Signal, 1)
+	defer close(sigTermChannel)
+	signal.Notify(
+		sigTermChannel,
+		syscall.SIGTERM,
 	)
 
 	nodeHandle, createNodeIfNotExistsErr := ivkr.nodeProvider.CreateNodeIfNotExists()
@@ -146,10 +152,9 @@ func (ivkr _runer) Run(
 	for {
 		select {
 
-		case <-signalChannel:
-			if intSignalsReceived == 0 {
-
-				intSignalsReceived++
+		case <-sigIntChannel:
+			sigIntsReceived++
+			if sigIntsReceived == 1 {
 				fmt.Println(ivkr.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
 
 				nodeHandle.APIClient().KillOp(
@@ -162,6 +167,17 @@ func (ivkr _runer) Run(
 				ivkr.cliExiter.Exit(cliexiter.ExitReq{Message: "Terminated by Control-C", Code: 130})
 				return // support fake exiter
 			}
+
+		case <-sigTermChannel:
+			fmt.Println(ivkr.cliColorer.Error("Gracefully stopping..."))
+
+			nodeHandle.APIClient().KillOp(
+				ctx,
+				model.KillOpReq{
+					OpID: rootOpID,
+				},
+			)
+			return // support fake exiter
 
 		case event, isEventChannelOpen := <-eventChannel:
 			if !isEventChannelOpen {
