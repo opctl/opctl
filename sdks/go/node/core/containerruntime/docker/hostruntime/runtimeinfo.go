@@ -10,12 +10,12 @@ import (
 
 // RuntimeInfo provides relation between opctl and docker engine host
 type RuntimeInfo struct {
-  // InAContainer indicates if opctl is running on and spinning up new containers on same docker engine host
+	// InAContainer indicates if opctl is running on and spinning up new containers on same docker engine host
 	InAContainer bool
 	// DockerID is ID of opctl's container
-	DockerID     string
+	DockerID string
 	// HostPathMap provides remapping of paths inside opctl container to paths on docker engine host
-	HostPathMap  HostPathMap
+	HostPathMap HostPathMap
 }
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ./fakeContainerInspector.go --fake-name fakeContainerInspector ./ ContainerInspector
