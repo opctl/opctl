@@ -98,7 +98,7 @@ func (ivkr _runer) Run(
 	)
 
 	// init signal channel
-	sigIntsReceived := 0
+	aSigIntWasReceivedAlready := false
 	sigIntChannel := make(chan os.Signal, 1)
 	defer close(sigIntChannel)
 	signal.Notify(
@@ -153,9 +153,9 @@ func (ivkr _runer) Run(
 		select {
 
 		case <-sigIntChannel:
-			sigIntsReceived++
-			if sigIntsReceived == 1 {
+			if aSigIntWasReceivedAlready {
 				fmt.Println(ivkr.cliColorer.Error("Gracefully stopping... (signal Control-C again to force)"))
+				aSigIntWasReceivedAlready = true
 
 				nodeHandle.APIClient().KillOp(
 					ctx,
