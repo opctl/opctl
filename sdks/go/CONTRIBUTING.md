@@ -12,7 +12,7 @@ The go SDK is maintained as a go module.
 ## Test
 1. `opctl run test` from this directory to compile and test the SDK.
 
-# (Re)Generate fake implementations
+## (Re)Generate fake implementations
 1. `opctl run generate` from this directory to (re)generate fake implementations of interfaces as they're added/changed.
 
 
