@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: opctl GitHub repo
+    url: https://github.com/opctl/opctl/issues
+    about: Please report issues here.
+  - name: opctl Slack channel
+    url: https://opctl-slackin.herokuapp.com/
+    about: Please join our Slack channel for questions/proposals.
