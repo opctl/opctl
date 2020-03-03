@@ -7,11 +7,11 @@ An object defining a parameter of an operation; i.e. a value that is passed into
 
 ## Properties
 - must have exactly one of
-  - [array](array)
-  - [boolean](boolean)
-  - [dir](dir)
-  - [file](file)
-  - [number](number)
-  - [object](object)
-  - [socket](socket)
-  - [string](string)
+  - [array](array.md)
+  - [boolean](boolean.md)
+  - [dir](dir.md)
+  - [file](file.md)
+  - [number](number.md)
+  - [object](object.md)
+  - [socket](socket.md)
+  - [string](string.md)

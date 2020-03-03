@@ -2,7 +2,7 @@
 title: Socket Parameter [object]
 ---
 
-An object defining a parameter which accepts a [socket typed value](../../../../types/socket).
+An object defining a parameter which accepts a [socket typed value](../../../../types/socket.md).
 
 ## Socket Properties:
 - must have:
@@ -11,7 +11,7 @@ An object defining a parameter which accepts a [socket typed value](../../../../
   - [isSecret](#issecret)
 
 ### description
-A [markdown](../markdown) string defining a human friendly description of the parameter.
+A [markdown](../markdown.md) string defining a human friendly description of the parameter.
 
 ### isSecret
 A boolean indicating if the value of the parameter is secret. This will cause it to be hidden in UI's for example. 

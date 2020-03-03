@@ -24,7 +24,7 @@ Must be one of:
 `ref: 'github.com/opspec-pkgs/golang.build.bin#2.0.0'`
 
 ### pullCreds
-An [pull-creds](pull-creds) object defining creds used to pull the op from a private source.
+An [pull-creds](pull-creds.md) object defining creds used to pull the op from a private source.
 
 ### inputs
 An object for which each key is an input of the referenced op and the value is one of:
@@ -32,8 +32,8 @@ An object for which each key is an input of the referenced op and the value is o
 |value|meaning|
 |--|--|
 |null|Bind input to variable w/ same name (equivalent to `$(INPUT_NAME)`)|
-|[reference](../reference)|Bind referenced variable to the named input|
-|[initializer](../initializer)|Evaluate and bind to the named input|
+|[reference](../reference.md)|Bind referenced variable to the named input|
+|[initializer](../initializer.md)|Evaluate and bind to the named input|
 
 > This is equivalent to providing named arguments to a function in modern programming languages.
 
@@ -43,6 +43,6 @@ An object for which each key is a variable to assign and the value is one of:
 |value|meaning|
 |--|--|
 |null|Bind variable to output w/ same name (equivalent to `$(OUTPUT_NAME)`)|
-|[reference](../reference)|Bind named output to referenced variable|
+|[reference](../reference.md)|Bind named output to referenced variable|
 
 > This is equivalent to consuming named return values from a function in modern programming languages.

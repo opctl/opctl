@@ -17,7 +17,7 @@ An object defining a call in an operations call graph.
   - [if](#if)
 
 ### container
-A [container-call](container/index) object defining a container to run.
+A [container-call](container/index.md) object defining a container to run.
 
 ### op
 An [op-call](op.md) object defining an op to run.

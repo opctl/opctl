@@ -6,7 +6,7 @@ Object typed values are a container for string indexed values (referred to as pr
 
 Objects...
 - are immutable, i.e. assigning to an object results in a copy of the original object
-- can be passed in/out of ops via [object parameters](../structure/op-directory/op/parameter/object)
+- can be passed in/out of ops via [object parameters](../structure/op-directory/op/parameter/object.md)
 - can be initialized via [object initialization](#initialization)
 - properties can be referenced via [object property referencing](#property-referencing)
 - are coerced according to [object coercion](#coercion)

@@ -17,4 +17,4 @@ An optional [SVG 1.1](https://www.w3.org/TR/SVG11/) file defining the icon to us
 > SVG is a vector (as opposed to raster) graphic format; it scales infinitely large/small w/out loss of quality.
 
 ### op.yml
-A [YAML 1.2](https://yaml.org/spec/1.2/spec.html) file whos content is an [op](op/index) object defining the operations inputs, outputs, and call graph.
+A [YAML 1.2](https://yaml.org/spec/1.2/spec.html) file whos content is an [op](op/index.md) object defining the operations inputs, outputs, and call graph.

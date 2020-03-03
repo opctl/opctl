@@ -16,19 +16,19 @@ An array defining a predicate, true when all items are equal.
 
 Items:
 - must be one of
-  - [reference](../reference) string
-  - [initializer](../initializer)
+  - [reference](../reference.md) string
+  - [initializer](../initializer.md)
 
 ### exists
-A [reference](../reference) string defining a predicate, true when the referenced value exists.
+A [reference](../reference.md) string defining a predicate, true when the referenced value exists.
 
 ### ne
 An array defining a predicate, true when one or more items aren't equal.
 
 Items:
 - must be
-  - [reference](../reference) string
-  - [initializer](../initializer)
+  - [reference](../reference.md) string
+  - [initializer](../initializer.md)
 
 ### notExists
-A [reference](../reference) string defining a predicate, true when the referenced value doesn't exist.
+A [reference](../reference.md) string defining a predicate, true when the referenced value doesn't exist.

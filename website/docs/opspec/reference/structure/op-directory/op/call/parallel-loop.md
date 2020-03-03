@@ -12,10 +12,10 @@ An object defining a call loop in which all iterations happen in parallel (all a
   - [vars](#vars)
 
 ### range
-A [rangeable value](rangeable-value) to loop over.
+A [rangeable value](rangeable-value.md) to loop over.
 
 ### run
-A [call](../call/index) object defining a call run on each iteration of the loop
+A [call](../call/index.md) object defining a call run on each iteration of the loop
 
 ### vars
-A [loop-vars](loop-vars) object binding iteration info to variables.
+A [loop-vars](loop-vars.md) object binding iteration info to variables.

@@ -6,12 +6,12 @@ File typed values are a filesystem file entry.
 
 Files...
 - are mutable, i.e. making changes to a file results in the file being changed everywhere it's referenced
-- can be passed in/out of ops via [file parameters](../structure/op-directory/op/parameter/file)
+- can be passed in/out of ops via [file parameters](../structure/op-directory/op/parameter/file.md)
 - can be initialized via [file initialization](#initialization)
 - are coerced according to [file coercion](#coercion)
 
 ### Initialization
-File typed values can be constructed from a literal string or templated string; see [string initialization](string#initialization).
+File typed values can be constructed from a literal string or templated string; see [string initialization](string.md#initialization).
 
 ### Coercion
 File typed values are coercible to:

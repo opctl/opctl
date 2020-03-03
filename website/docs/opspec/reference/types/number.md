@@ -6,7 +6,7 @@ Number typed values are a number.
 
 Numbers...
 - are immutable, i.e. assigning to an number results in a copy of the original number
-- can be passed in/out of ops via [number parameters](../structure/op-directory/op/parameter/number)
+- can be passed in/out of ops via [number parameters](../structure/op-directory/op/parameter/number.md)
 - can be initialized via [number initialization](#initialization)
 - are coerced according to [number coercion](#coercion)
 
