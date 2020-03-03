@@ -18,20 +18,20 @@ used by:
 - [sdks/go](sdks/go)
 
 ## [sdks/go](sdks/go)
-SDK for integrations between opctl and golang apps.
+SDK for integrating with opctl from golang.
 
 used by:
 - [cli](cli)
 
 ## [sdks/js](sdks/js)
-SDK (written in typescript) for integrations between opctl and javascript/typescript apps.
+SDK (written in typescript) for integrating with opctl from javascript/typescript.
 
 used by:
 - [webapp](webapp)
 - [sdks/react](sdks/react)
 
 ## [sdks/react](sdks/react)
-SDK (written in typescript) for integrations between opctl and react apps.
+SDK (written in typescript) for integrating with opctl from react.
 
 used by:
 - [webapp](webapp)
